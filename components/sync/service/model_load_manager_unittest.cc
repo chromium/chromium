@@ -35,7 +35,7 @@ class MockModelLoadManagerDelegate : public ModelLoadManagerDelegate {
   MOCK_METHOD(void, OnAllDataTypesReadyForConfigure, (), (override));
   MOCK_METHOD(void,
               OnSingleDataTypeWillStop,
-              (ModelType, const SyncError& error),
+              (DataType, const SyncError& error),
               (override));
 };
 
@@ -43,8 +43,8 @@ class SyncModelLoadManagerTest : public testing::Test {
  public:
   SyncModelLoadManagerTest() = default;
 
-  FakeDataTypeController* GetController(ModelType model_type) {
-    auto it = controllers_.find(model_type);
+  FakeDataTypeController* GetController(DataType data_type) {
+    auto it = controllers_.find(data_type);
     if (it == controllers_.end()) {
       return nullptr;
     }
@@ -65,7 +65,7 @@ TEST_F(SyncModelLoadManagerTest, SimpleModelStart) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet types = {BOOKMARKS, APPS};
+  DataTypeSet types = {BOOKMARKS, APPS};
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
 
   EXPECT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
@@ -85,7 +85,7 @@ TEST_F(SyncModelLoadManagerTest, SimpleModelStart) {
 TEST_F(SyncModelLoadManagerTest, StopAfterFinish) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet types;
+  DataTypeSet types;
   types.Put(BOOKMARKS);
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
 
@@ -107,7 +107,7 @@ TEST_F(SyncModelLoadManagerTest, ModelLoadFail) {
   GetController(BOOKMARKS)->model()->SimulateModelError(
       ModelError(FROM_HERE, "Test error"));
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet types;
+  DataTypeSet types;
   types.Put(BOOKMARKS);
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _));
 
@@ -122,7 +122,7 @@ TEST_F(SyncModelLoadManagerTest, ModelLoadFail) {
 TEST_F(SyncModelLoadManagerTest, StopAfterConfiguration) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet types;
+  DataTypeSet types;
   types.Put(BOOKMARKS);
 
   model_load_manager.Configure(/*preferred_types_without_errors=*/types,
@@ -148,7 +148,7 @@ TEST_F(SyncModelLoadManagerTest, OnAllDataTypesReadyForConfigure) {
   GetController(APPS)->model()->EnableManualModelStart();
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet types = {BOOKMARKS, APPS};
+  DataTypeSet types = {BOOKMARKS, APPS};
   // OnAllDataTypesReadyForConfigure shouldn't be called, APPS data type is not
   // loaded yet.
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure()).Times(0);
@@ -182,7 +182,7 @@ TEST_F(SyncModelLoadManagerTest, OnAllDataTypesReadyForConfigure) {
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
 
-  ModelTypeSet reduced_types = {APPS};
+  DataTypeSet reduced_types = {APPS};
   model_load_manager.Configure(
       /*preferred_types_without_errors=*/reduced_types,
       /*preferred_types=*/reduced_types, BuildConfigureContext());
@@ -200,7 +200,7 @@ TEST_F(SyncModelLoadManagerTest,
   GetController(APPS)->model()->EnableManualModelStart();
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet types = {APPS};
+  DataTypeSet types = {APPS};
   // OnAllDataTypesReadyForConfigure shouldn't be called, APPS data type is not
   // loaded yet.
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure()).Times(0);
@@ -233,7 +233,7 @@ TEST_F(SyncModelLoadManagerTest,
   GetController(APPS)->model()->EnableManualModelStart();
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet types = {BOOKMARKS, APPS};
+  DataTypeSet types = {BOOKMARKS, APPS};
 
   // Apps will finish loading but bookmarks won't.
   // OnAllDataTypesReadyForConfigure shouldn't be called.
@@ -275,7 +275,7 @@ TEST_F(SyncModelLoadManagerTest, StopClearMetadata) {
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
 
-  ModelTypeSet types = {BOOKMARKS};
+  DataTypeSet types = {BOOKMARKS};
 
   // Configure() kicks off model loading.
   model_load_manager.Configure(/*preferred_types_without_errors=*/types,
@@ -338,8 +338,8 @@ TEST_F(SyncModelLoadManagerTest, KeepsMetadataForPreferredDataType) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet preferred_types = {BOOKMARKS, APPS};
-  ModelTypeSet desired_types = preferred_types;
+  DataTypeSet preferred_types = {BOOKMARKS, APPS};
+  DataTypeSet desired_types = preferred_types;
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
 
@@ -373,8 +373,8 @@ TEST_F(SyncModelLoadManagerTest, ClearsMetadataForNotPreferredDataType) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet preferred_types = {BOOKMARKS, APPS};
-  ModelTypeSet desired_types = preferred_types;
+  DataTypeSet preferred_types = {BOOKMARKS, APPS};
+  DataTypeSet desired_types = preferred_types;
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
 
@@ -411,7 +411,7 @@ TEST_F(SyncModelLoadManagerTest,
       APPS, /*enable_transport_only_model=*/true);
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet preferred_types = {BOOKMARKS, APPS};
+  DataTypeSet preferred_types = {BOOKMARKS, APPS};
 
   ConfigureContext configure_context;
   configure_context.sync_mode = SyncMode::kFull;
@@ -467,8 +467,8 @@ TEST_F(SyncModelLoadManagerTest,
       APPS, /*enable_transport_only_model=*/true);
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet preferred_types = {BOOKMARKS, APPS};
-  ModelTypeSet desired_types = preferred_types;
+  DataTypeSet preferred_types = {BOOKMARKS, APPS};
+  DataTypeSet desired_types = preferred_types;
 
   ConfigureContext configure_context;
   configure_context.sync_mode = SyncMode::kTransportOnly;
@@ -515,7 +515,7 @@ TEST_F(SyncModelLoadManagerTest,
 TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataAfterStopped) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet types;
+  DataTypeSet types;
   types.Put(BOOKMARKS);
 
   // Bring the type to a stopped state.
@@ -554,7 +554,7 @@ TEST_F(SyncModelLoadManagerTest, ShouldNotClearMetadataIfFailed) {
       ModelError(FROM_HERE, "Test error"));
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet types{BOOKMARKS};
+  DataTypeSet types{BOOKMARKS};
 
   ASSERT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_count());
   // Trying to configure exposes the error to the controller (which calls back
@@ -583,7 +583,7 @@ TEST_F(SyncModelLoadManagerTest,
   GetController(BOOKMARKS)->model()->EnableManualModelStart();
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet preferred_types = {APPS, BOOKMARKS};
+  DataTypeSet preferred_types = {APPS, BOOKMARKS};
 
   model_load_manager.Configure(
       /*preferred_types_without_errors=*/preferred_types, preferred_types,
@@ -634,8 +634,8 @@ TEST_F(SyncModelLoadManagerTest,
   GetController(BOOKMARKS)->model()->EnableManualModelStart();
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet preferred_types = {APPS, BOOKMARKS};
-  ModelTypeSet preferred_types_without_errors = preferred_types;
+  DataTypeSet preferred_types = {APPS, BOOKMARKS};
+  DataTypeSet preferred_types_without_errors = preferred_types;
 
   model_load_manager.Configure(preferred_types_without_errors, preferred_types,
                                BuildConfigureContext());
@@ -674,7 +674,7 @@ TEST_F(SyncModelLoadManagerTest, ShouldTimeoutIfNotAllTypesLoaded) {
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure).Times(0);
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet types = {BOOKMARKS, APPS};
+  DataTypeSet types = {BOOKMARKS, APPS};
 
   model_load_manager.Configure(/*preferred_types_without_errors=*/types,
                                /*preferred_types=*/types,
@@ -704,7 +704,7 @@ TEST_F(SyncModelLoadManagerTest, ShouldNotTimeoutAfterStop) {
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure).Times(0);
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet types = {BOOKMARKS};
+  DataTypeSet types = {BOOKMARKS};
 
   model_load_manager.Configure(/*preferred_types_without_errors=*/types,
                                /*preferred_types=*/types,
@@ -732,7 +732,7 @@ TEST_F(SyncModelLoadManagerTest, ShouldNotStartFailedTypesUponLoadModels) {
   GetController(BOOKMARKS)->model()->EnableManualModelStart();
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet preferred_types = {APPS, BOOKMARKS};
+  DataTypeSet preferred_types = {APPS, BOOKMARKS};
 
   model_load_manager.Configure(
       /*preferred_types_without_errors=*/preferred_types, preferred_types,
@@ -773,7 +773,7 @@ TEST_F(SyncModelLoadManagerTest,
   GetController(BOOKMARKS)->model()->EnableManualModelStart();
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet preferred_types = {BOOKMARKS};
+  DataTypeSet preferred_types = {BOOKMARKS};
 
   model_load_manager.Configure(
       /*preferred_types_without_errors=*/preferred_types, preferred_types,

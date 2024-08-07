@@ -22,7 +22,7 @@ namespace syncer {
 class FakeDataTypeController : public DataTypeController {
  public:
   explicit FakeDataTypeController(
-      ModelType type,
+      DataType type,
       bool enable_transport_mode = false,
       std::unique_ptr<DataTypeLocalDataBatchUploader> uploader = nullptr);
   ~FakeDataTypeController() override;

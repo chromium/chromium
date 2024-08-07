@@ -20,7 +20,7 @@ class MockDataTypesHandler : public InterestedDataTypesHandler {
   MOCK_METHOD(void, OnInterestedDataTypesChanged, (), (override));
   MOCK_METHOD(void,
               SetCommittedAdditionalInterestedDataTypesCallback,
-              (base::RepeatingCallback<void(const ModelTypeSet&)> callback),
+              (base::RepeatingCallback<void(const DataTypeSet&)> callback),
               (override));
 };
 
@@ -46,11 +46,11 @@ class SyncInvalidationsServiceImplTest : public testing::Test {
 TEST_F(SyncInvalidationsServiceImplTest, ShouldReturnGivenDataTypes) {
   sync_invalidations_service_impl_.SetInterestedDataTypes(
       {BOOKMARKS, PREFERENCES});
-  EXPECT_EQ(ModelTypeSet({BOOKMARKS, PREFERENCES}),
+  EXPECT_EQ(DataTypeSet({BOOKMARKS, PREFERENCES}),
             sync_invalidations_service_impl_.GetInterestedDataTypes());
   sync_invalidations_service_impl_.SetInterestedDataTypes(
       {PREFERENCES, PASSWORDS});
-  EXPECT_EQ(ModelTypeSet({PREFERENCES, PASSWORDS}),
+  EXPECT_EQ(DataTypeSet({PREFERENCES, PASSWORDS}),
             sync_invalidations_service_impl_.GetInterestedDataTypes());
 }
 

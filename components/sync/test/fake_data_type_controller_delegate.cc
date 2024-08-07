@@ -13,7 +13,7 @@
 
 namespace syncer {
 
-FakeDataTypeControllerDelegate::FakeDataTypeControllerDelegate(ModelType type)
+FakeDataTypeControllerDelegate::FakeDataTypeControllerDelegate(DataType type)
     : type_(type) {}
 
 FakeDataTypeControllerDelegate::~FakeDataTypeControllerDelegate() = default;

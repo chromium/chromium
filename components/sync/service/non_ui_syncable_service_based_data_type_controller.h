@@ -9,7 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/service/data_type_controller.h"
 
@@ -46,7 +46,7 @@ class NonUiSyncableServiceBasedDataTypeController
   // mode) will be created, or two separate delegates for both full-sync and
   // transport mode.
   NonUiSyncableServiceBasedDataTypeController(
-      ModelType type,
+      DataType type,
       OnceDataTypeStoreFactory store_factory,
       SyncableServiceProvider syncable_service_provider,
       const base::RepeatingClosure& dump_stack,

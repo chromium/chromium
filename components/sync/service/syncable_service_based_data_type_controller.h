@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/service/data_type_controller.h"
 
@@ -37,7 +37,7 @@ class SyncableServiceBasedDataTypeController : public DataTypeController {
   // mode) will be created, or two separate delegates for both full-sync and
   // transport mode.
   SyncableServiceBasedDataTypeController(
-      ModelType type,
+      DataType type,
       OnceDataTypeStoreFactory store_factory,
       base::WeakPtr<SyncableService> syncable_service,
       const base::RepeatingClosure& dump_stack,

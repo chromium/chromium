@@ -22,7 +22,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/events/protocol_event_observer.h"
@@ -125,13 +125,13 @@ class SyncServiceImpl : public SyncService,
   std::unique_ptr<SyncSetupInProgressHandle> GetSetupInProgressHandle()
       override;
   bool IsSetupInProgress() const override;
-  ModelTypeSet GetPreferredDataTypes() const override;
-  ModelTypeSet GetActiveDataTypes() const override;
-  ModelTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
+  DataTypeSet GetPreferredDataTypes() const override;
+  DataTypeSet GetActiveDataTypes() const override;
+  DataTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
   void StopAndClear() override;
-  void OnDataTypeRequestsSyncStartup(ModelType type) override;
-  void TriggerRefresh(const ModelTypeSet& types) override;
-  void DataTypePreconditionChanged(ModelType type) override;
+  void OnDataTypeRequestsSyncStartup(DataType type) override;
+  void TriggerRefresh(const DataTypeSet& types) override;
+  void DataTypePreconditionChanged(DataType type) override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
   void SendExplicitPassphraseToPlatformClient() override;
   void AddObserver(SyncServiceObserver* observer) override;
@@ -152,15 +152,15 @@ class SyncServiceImpl : public SyncService,
   void RemoveProtocolEventObserver(ProtocolEventObserver* observer) override;
   void GetAllNodesForDebugging(
       base::OnceCallback<void(base::Value::List)> callback) override;
-  ModelTypeDownloadStatus GetDownloadStatusFor(ModelType type) const override;
+  DataTypeDownloadStatus GetDownloadStatusFor(DataType type) const override;
   void GetTypesWithUnsyncedData(
-      ModelTypeSet requested_types,
-      base::OnceCallback<void(ModelTypeSet)> callback) const override;
+      DataTypeSet requested_types,
+      base::OnceCallback<void(DataTypeSet)> callback) const override;
   void GetLocalDataDescriptions(
-      ModelTypeSet types,
-      base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+      DataTypeSet types,
+      base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback) override;
-  void TriggerLocalDataMigration(ModelTypeSet types) override;
+  void TriggerLocalDataMigration(DataTypeSet types) override;
 
   // SyncEngineHost implementation.
   void OnEngineInitialized(bool success,
@@ -168,7 +168,7 @@ class SyncServiceImpl : public SyncService,
   void OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) override;
   void OnProtocolEvent(const ProtocolEvent& event) override;
   void OnConnectionStatusChange(ConnectionStatus status) override;
-  void OnMigrationNeededForTypes(ModelTypeSet types) override;
+  void OnMigrationNeededForTypes(DataTypeSet types) override;
   void OnActionableProtocolError(const SyncProtocolError& error) override;
   void OnBackedOffTypesChanged() override;
   void OnInvalidationStatusChanged() override;
@@ -243,11 +243,11 @@ class SyncServiceImpl : public SyncService,
   void OverrideNetworkForTest(const CreateHttpPostProviderFactory&
                                   create_http_post_provider_factory_cb);
 
-  ModelTypeSet GetRegisteredDataTypesForTest() const;
-  bool HasAnyDatatypeErrorForTest(ModelTypeSet types) const;
+  DataTypeSet GetRegisteredDataTypesForTest() const;
+  bool HasAnyDatatypeErrorForTest(DataTypeSet types) const;
 
   void GetThrottledDataTypesForTest(
-      base::OnceCallback<void(ModelTypeSet)> cb) const;
+      base::OnceCallback<void(DataTypeSet)> cb) const;
 
   // Some tests rely on injecting calls to the encryption observer.
   SyncEncryptionHandler::Observer* GetEncryptionObserverForTest();
@@ -255,7 +255,7 @@ class SyncServiceImpl : public SyncService,
   SyncClient* GetSyncClientForTest();
 
   // Simulates data type error reported by the bridge.
-  void ReportDataTypeErrorForTest(ModelType type);
+  void ReportDataTypeErrorForTest(DataType type);
 
  private:
   enum UnrecoverableErrorReason {
@@ -373,7 +373,7 @@ class SyncServiceImpl : public SyncService,
   void RegisterTrustedVaultSyntheticFieldTrialsIfNecessary();
 
   // Returns the types that have a non-null DataTypeLocalDataBatchUploader.
-  ModelTypeSet GetModelTypesWithLocalDataBatchUploader() const;
+  DataTypeSet GetDataTypesWithLocalDataBatchUploader() const;
 
   // This profile's SyncClient.
   const std::unique_ptr<SyncClient> sync_client_;

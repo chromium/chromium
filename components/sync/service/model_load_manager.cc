@@ -15,8 +15,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/model/sync_error.h"
 #include "components/sync/service/data_type_controller.h"
@@ -49,14 +49,14 @@ ModelLoadManager::ModelLoadManager(
 
 ModelLoadManager::~ModelLoadManager() = default;
 
-void ModelLoadManager::Configure(ModelTypeSet preferred_types_without_errors,
-                                 ModelTypeSet preferred_types,
+void ModelLoadManager::Configure(DataTypeSet preferred_types_without_errors,
+                                 DataTypeSet preferred_types,
                                  const ConfigureContext& context) {
   // |preferred_types_without_errors| must be a subset of |preferred_types|.
   DCHECK(preferred_types.HasAll(preferred_types_without_errors))
       << " desired: "
-      << ModelTypeSetToDebugString(preferred_types_without_errors)
-      << ", preferred: " << ModelTypeSetToDebugString(preferred_types);
+      << DataTypeSetToDebugString(preferred_types_without_errors)
+      << ", preferred: " << DataTypeSetToDebugString(preferred_types);
 
   const bool sync_mode_changed =
       configure_context_.has_value() &&
@@ -66,7 +66,7 @@ void ModelLoadManager::Configure(ModelTypeSet preferred_types_without_errors,
 
   // Only keep types that have controllers.
   preferred_types_without_errors_.Clear();
-  for (ModelType type : preferred_types_without_errors) {
+  for (DataType type : preferred_types_without_errors) {
     auto dtc_iter = controllers_->find(type);
     if (dtc_iter != controllers_->end()) {
       const DataTypeController* dtc = dtc_iter->second.get();
@@ -78,7 +78,7 @@ void ModelLoadManager::Configure(ModelTypeSet preferred_types_without_errors,
   }
 
   DVLOG(1) << "ModelLoadManager: Initializing for "
-           << ModelTypeSetToDebugString(preferred_types_without_errors_);
+           << DataTypeSetToDebugString(preferred_types_without_errors_);
 
   delegate_waiting_for_ready_for_configure_ = true;
 
@@ -126,7 +126,7 @@ void ModelLoadManager::Configure(ModelTypeSet preferred_types_without_errors,
   LoadDesiredTypes();
 }
 
-void ModelLoadManager::StopDatatype(ModelType type,
+void ModelLoadManager::StopDatatype(DataType type,
                                     SyncStopMetadataFate metadata_fate,
                                     SyncError error) {
   DCHECK(error.IsSet());
@@ -146,13 +146,13 @@ void ModelLoadManager::StopDatatypeImpl(
     SyncStopMetadataFate metadata_fate,
     DataTypeController* dtc,
     DataTypeController::StopCallback callback) {
-  const ModelType model_type = dtc->type();
+  const DataType data_type = dtc->type();
 
   // Avoid that the local variable is optimized away, motivated by
   // crbug.com/1456872.
-  base::debug::Alias(&model_type);
+  base::debug::Alias(&data_type);
 
-  delegate_->OnSingleDataTypeWillStop(model_type, error);
+  delegate_->OnSingleDataTypeWillStop(data_type, error);
 
   // Note: Depending on |metadata_fate|, data types will clear their metadata
   // in response to Stop().
@@ -162,12 +162,12 @@ void ModelLoadManager::StopDatatypeImpl(
 void ModelLoadManager::LoadDesiredTypes() {
   // Note: |preferred_types_without_errors_| might be modified during iteration
   // (e.g. in ModelLoadCallback()), so make a copy.
-  const ModelTypeSet types = preferred_types_without_errors_;
+  const DataTypeSet types = preferred_types_without_errors_;
 
   // Start timer to measure time for loading to complete.
   load_models_elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
 
-  for (ModelType type : types) {
+  for (DataType type : types) {
     auto dtc_iter = controllers_->find(type);
     CHECK(dtc_iter != controllers_->end(), base::NotFatalUntil::M130);
     DataTypeController* dtc = dtc_iter->second.get();
@@ -211,10 +211,10 @@ void ModelLoadManager::Stop(SyncStopMetadataFate metadata_fate) {
   preferred_types_without_errors_.Clear();
 }
 
-void ModelLoadManager::ModelLoadCallback(ModelType type,
+void ModelLoadManager::ModelLoadCallback(DataType type,
                                          const SyncError& error) {
   DVLOG(1) << "ModelLoadManager: ModelLoadCallback for "
-           << ModelTypeToDebugString(type);
+           << DataTypeToDebugString(type);
 
   if (error.IsSet()) {
     DVLOG(1) << "ModelLoadManager: Type encountered an error.";
@@ -241,7 +241,7 @@ void ModelLoadManager::NotifyDelegateIfReadyForConfigure() {
   }
 
   // Check (and early-return) if any type is not ready.
-  for (ModelType type : preferred_types_without_errors_) {
+  for (DataType type : preferred_types_without_errors_) {
     if (!ModelIsLoadedOrFailed(*controllers_->find(type)->second)) {
       return;
     }
@@ -265,11 +265,11 @@ void ModelLoadManager::NotifyDelegateIfReadyForConfigure() {
 }
 
 void ModelLoadManager::OnLoadModelsTimeout() {
-  const ModelTypeSet types = preferred_types_without_errors_;
-  for (ModelType type : types) {
+  const DataTypeSet types = preferred_types_without_errors_;
+  for (DataType type : types) {
     if (!ModelIsLoadedOrFailed(*controllers_->find(type)->second)) {
       base::UmaHistogramEnumeration("Sync.ModelLoadManager.LoadModelsTimeout",
-                                    ModelTypeHistogramValue(type));
+                                    DataTypeHistogramValue(type));
       // All the types which have not loaded yet are removed from
       // `preferred_types_without_errors_`. This will cause ModelLoadCallback()
       // to stop these types when they finish loading. The intention here is to

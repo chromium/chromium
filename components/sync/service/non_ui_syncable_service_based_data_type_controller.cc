@@ -12,7 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
@@ -77,7 +77,7 @@ class FakeSyncableServiceBasedBridge : public DataTypeSyncBridge {
 class BridgeBuilder {
  public:
   BridgeBuilder(
-      ModelType type,
+      DataType type,
       OnceDataTypeStoreFactory store_factory,
       NonUiSyncableServiceBasedDataTypeController::SyncableServiceProvider
           syncable_service_provider,
@@ -110,7 +110,7 @@ class BridgeBuilder {
 
  private:
   void InitOnModelThread(
-      ModelType type,
+      DataType type,
       OnceDataTypeStoreFactory store_factory,
       NonUiSyncableServiceBasedDataTypeController::SyncableServiceProvider
           syncable_service_provider,
@@ -169,7 +169,7 @@ struct CustomOnTaskRunnerDeleter {
 };
 
 ProxyDataTypeControllerDelegate::DelegateProvider BuildDelegateProvider(
-    ModelType type,
+    DataType type,
     OnceDataTypeStoreFactory store_factory,
     NonUiSyncableServiceBasedDataTypeController::SyncableServiceProvider
         syncable_service_provider,
@@ -191,7 +191,7 @@ ProxyDataTypeControllerDelegate::DelegateProvider BuildDelegateProvider(
 
 NonUiSyncableServiceBasedDataTypeController::
     NonUiSyncableServiceBasedDataTypeController(
-        ModelType type,
+        DataType type,
         OnceDataTypeStoreFactory store_factory,
         SyncableServiceProvider syncable_service_provider,
         const base::RepeatingClosure& dump_stack,

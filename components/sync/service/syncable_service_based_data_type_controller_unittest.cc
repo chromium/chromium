@@ -6,7 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/test/data_type_store_test_util.h"

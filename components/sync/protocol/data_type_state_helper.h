@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SYNC_PROTOCOL_DATA_TYPE_STATE_HELPER_H_
 #define COMPONENTS_SYNC_PROTOCOL_DATA_TYPE_STATE_HELPER_H_
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 
 namespace syncer {

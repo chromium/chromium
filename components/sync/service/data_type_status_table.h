@@ -7,7 +7,7 @@
 
 #include <map>
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/sync_error.h"
 
 namespace syncer {
@@ -15,7 +15,7 @@ namespace syncer {
 // Class to keep track of data types that have encountered an error during sync.
 class DataTypeStatusTable {
  public:
-  using TypeErrorMap = std::map<ModelType, SyncError>;
+  using TypeErrorMap = std::map<DataType, SyncError>;
 
   DataTypeStatusTable();
   DataTypeStatusTable(const DataTypeStatusTable& other);
@@ -30,7 +30,7 @@ class DataTypeStatusTable {
   // Update an individual failed datatype. The type will be added to its
   // corresponding error map based on |error.error_type()|. Returns true if
   // there was an actual change.
-  bool UpdateFailedDataType(ModelType type, const SyncError& error);
+  bool UpdateFailedDataType(DataType type, const SyncError& error);
 
   // Resets the current set of data type errors.
   void Reset();
@@ -41,28 +41,28 @@ class DataTypeStatusTable {
   // Removes |type| from the data_type_errors_ set. Returns true if the type
   // was removed from the error set, false if the type did not have a data type
   // error to begin with.
-  bool ResetDataTypePolicyErrorFor(ModelType type);
+  bool ResetDataTypePolicyErrorFor(DataType type);
 
   // Removes |type| from the unread_errors_ set. Returns true if the type
   // was removed from the error set, false if the type did not have an unready
   // error to begin with.
-  bool ResetUnreadyErrorFor(ModelType type);
+  bool ResetUnreadyErrorFor(DataType type);
 
   // Returns a list of all the errors this class has recorded.
   TypeErrorMap GetAllErrors() const;
 
   // Returns all types with failure errors. This includes, fatal, crypto, and
   // unready types.
-  ModelTypeSet GetFailedTypes() const;
+  DataTypeSet GetFailedTypes() const;
 
   // Returns the types that are failing due to datatype errors.
-  ModelTypeSet GetFatalErrorTypes() const;
+  DataTypeSet GetFatalErrorTypes() const;
 
   // Returns the types that are failing due to cryptographer errors.
-  ModelTypeSet GetCryptoErrorTypes() const;
+  DataTypeSet GetCryptoErrorTypes() const;
 
   // Returns the types that cannot be configured due to not being ready.
-  ModelTypeSet GetUnreadyErrorTypes() const;
+  DataTypeSet GetUnreadyErrorTypes() const;
 
  private:
   // List of data types that failed due to runtime errors and should be

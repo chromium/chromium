@@ -14,7 +14,7 @@
 namespace syncer {
 
 FakeDataTypeController::FakeDataTypeController(
-    ModelType type,
+    DataType type,
     bool enable_transport_mode,
     std::unique_ptr<DataTypeLocalDataBatchUploader> uploader)
     : DataTypeController(

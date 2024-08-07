@@ -291,7 +291,7 @@ void NigoriDataTypeProcessor::GetAllNodesForDebugging(
   // data node.
   root_node.Set("PARENT_ID", "r");
   root_node.Set("UNIQUE_SERVER_TAG", "Nigori");
-  root_node.Set("modelType", ModelTypeToDebugString(NIGORI));
+  root_node.Set("modelType", DataTypeToDebugString(NIGORI));
 
   base::Value::List all_nodes;
   all_nodes.Append(std::move(root_node));
@@ -312,8 +312,8 @@ void NigoriDataTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
   size_t memory_usage = 0;
   memory_usage += EstimateMemoryUsage(data_type_state_);
   memory_usage += entity_ ? entity_->EstimateMemoryUsage() : 0;
-  SyncRecordDataTypeMemoryHistogram(ModelType::NIGORI, memory_usage);
-  SyncRecordDataTypeCountHistogram(ModelType::NIGORI, entity_ ? 1 : 0);
+  SyncRecordDataTypeMemoryHistogram(DataType::NIGORI, memory_usage);
+  SyncRecordDataTypeCountHistogram(DataType::NIGORI, entity_ ? 1 : 0);
 }
 
 void NigoriDataTypeProcessor::ModelReadyToSync(
@@ -353,7 +353,7 @@ void NigoriDataTypeProcessor::Put(std::unique_ptr<EntityData> entity_data) {
   DCHECK(!entity_data->is_deleted());
   DCHECK(!entity_data->name.empty());
   DCHECK(!entity_data->specifics.has_encrypted());
-  DCHECK_EQ(NIGORI, GetModelTypeFromSpecifics(entity_data->specifics));
+  DCHECK_EQ(NIGORI, GetDataTypeFromSpecifics(entity_data->specifics));
   DCHECK(entity_);
 
   if (!IsInitialSyncDone(data_type_state_.initial_sync_state())) {

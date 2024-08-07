@@ -77,9 +77,9 @@ class SyncServiceImplStartupTest : public testing::Test {
     sync_service_->Initialize(std::move(controllers));
   }
 
-  void CreateSyncService(ModelTypeSet registered_types = {BOOKMARKS}) {
+  void CreateSyncService(DataTypeSet registered_types = {BOOKMARKS}) {
     DataTypeController::TypeVector controllers;
-    for (ModelType type : registered_types) {
+    for (DataType type : registered_types) {
       controllers.push_back(std::make_unique<FakeDataTypeController>(type));
     }
     CreateSyncServiceWithControllers(std::move(controllers));
@@ -168,7 +168,7 @@ class SyncServiceImplStartupTest : public testing::Test {
 
   FakeSyncEngine* engine() { return engine_factory()->last_created_engine(); }
 
-  FakeDataTypeController* get_controller(ModelType type) {
+  FakeDataTypeController* get_controller(DataType type) {
     return controller_map_[type];
   }
 
@@ -182,7 +182,7 @@ class SyncServiceImplStartupTest : public testing::Test {
   SyncPrefs sync_prefs_;
   std::unique_ptr<SyncServiceImpl> sync_service_;
   // The controllers are owned by |sync_service_|.
-  std::map<ModelType, FakeDataTypeController*> controller_map_;
+  std::map<DataType, FakeDataTypeController*> controller_map_;
 };
 
 // ChromeOS does not support sign-in after startup

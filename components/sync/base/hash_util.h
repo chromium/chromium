@@ -12,7 +12,7 @@ class AutofillOfferSpecifics;
 class AutofillWalletSpecifics;
 }  // namespace sync_pb
 
-// TODO(crbug.com/41412176): Rename this file to model_type_util.h or something
+// TODO(crbug.com/41412176): Rename this file to data_type_util.h or something
 // else that better reflects GetUnhashedClientTagFromAutofillWalletSpecifics()
 // has nothing to do with hashes.
 

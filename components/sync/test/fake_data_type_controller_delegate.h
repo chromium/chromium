@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/model_error.h"
@@ -19,7 +19,7 @@ namespace syncer {
 
 class FakeDataTypeControllerDelegate : public DataTypeControllerDelegate {
  public:
-  explicit FakeDataTypeControllerDelegate(ModelType type);
+  explicit FakeDataTypeControllerDelegate(DataType type);
 
   FakeDataTypeControllerDelegate(const FakeDataTypeControllerDelegate&) =
       delete;
@@ -73,7 +73,7 @@ class FakeDataTypeControllerDelegate : public DataTypeControllerDelegate {
  private:
   std::unique_ptr<DataTypeActivationResponse> MakeActivationResponse() const;
 
-  const ModelType type_;
+  const DataType type_;
   bool manual_model_start_enabled_ = false;
   bool sync_started_ = false;
   int clear_metadata_count_ = 0;

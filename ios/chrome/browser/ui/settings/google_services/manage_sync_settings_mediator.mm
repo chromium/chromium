@@ -743,7 +743,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   for (syncer::UserSelectableType userSelectableType : kAccountSwitchItems) {
     if (![self isManagedSyncSettingsDataType:userSelectableType]) {
       requestedTypes.Put(
-          syncer::UserSelectableTypeToCanonicalModelType(userSelectableType));
+          syncer::UserSelectableTypeToCanonicalDataType(userSelectableType));
     }
   }
 

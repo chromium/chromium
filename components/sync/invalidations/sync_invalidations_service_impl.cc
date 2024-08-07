@@ -93,14 +93,14 @@ void SyncInvalidationsServiceImpl::SetInterestedDataTypesHandler(
   interested_data_types_handler_ = handler;
 }
 
-std::optional<ModelTypeSet>
+std::optional<DataTypeSet>
 SyncInvalidationsServiceImpl::GetInterestedDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return interested_data_types_;
 }
 
 void SyncInvalidationsServiceImpl::SetInterestedDataTypes(
-    const ModelTypeSet& data_types) {
+    const DataTypeSet& data_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(interested_data_types_handler_);
 

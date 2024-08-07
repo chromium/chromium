@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/type_entities_count.h"
@@ -63,12 +63,12 @@ std::string DataTypeController::StateToString(State state) {
 }
 
 DataTypeController::DataTypeController(
-    ModelType type,
+    DataType type,
     std::unique_ptr<DataTypeLocalDataBatchUploader> batch_uploader)
     : type_(type), batch_uploader_(std::move(batch_uploader)) {}
 
 DataTypeController::DataTypeController(
-    ModelType type,
+    DataType type,
     std::unique_ptr<DataTypeControllerDelegate> delegate_for_full_sync_mode,
     std::unique_ptr<DataTypeControllerDelegate> delegate_for_transport_mode,
     std::unique_ptr<DataTypeLocalDataBatchUploader> batch_uploader)
@@ -122,39 +122,38 @@ void DataTypeController::InitDataTypeController(
     // COOKIES).
     //
     // All other data types listed here will likely have to be migrated.
-    static constexpr ModelTypeSet kLegacyTypes = {
-        BOOKMARKS,
-        PREFERENCES,
-        PASSWORDS,
-        AUTOFILL_PROFILE,
-        AUTOFILL,
-        AUTOFILL_WALLET_METADATA,
-        AUTOFILL_WALLET_OFFER,
-        THEMES,
-        EXTENSIONS,
-        SEARCH_ENGINES,
-        SESSIONS,
-        APPS,
-        APP_SETTINGS,
-        EXTENSION_SETTINGS,
-        HISTORY_DELETE_DIRECTIVES,
-        DICTIONARY,
-        PRIORITY_PREFERENCES,
-        PRINTERS,
-        READING_LIST,
-        USER_EVENTS,
-        WIFI_CONFIGURATIONS,
-        WEB_APPS,
-        OS_PREFERENCES,
-        OS_PRIORITY_PREFERENCES,
-        WORKSPACE_DESK,
-        HISTORY,
-        PRINTERS_AUTHORIZATION_SERVERS,
-        POWER_BOOKMARK,
-        NIGORI,
-        COOKIES};
+    static constexpr DataTypeSet kLegacyTypes = {BOOKMARKS,
+                                                 PREFERENCES,
+                                                 PASSWORDS,
+                                                 AUTOFILL_PROFILE,
+                                                 AUTOFILL,
+                                                 AUTOFILL_WALLET_METADATA,
+                                                 AUTOFILL_WALLET_OFFER,
+                                                 THEMES,
+                                                 EXTENSIONS,
+                                                 SEARCH_ENGINES,
+                                                 SESSIONS,
+                                                 APPS,
+                                                 APP_SETTINGS,
+                                                 EXTENSION_SETTINGS,
+                                                 HISTORY_DELETE_DIRECTIVES,
+                                                 DICTIONARY,
+                                                 PRIORITY_PREFERENCES,
+                                                 PRINTERS,
+                                                 READING_LIST,
+                                                 USER_EVENTS,
+                                                 WIFI_CONFIGURATIONS,
+                                                 WEB_APPS,
+                                                 OS_PREFERENCES,
+                                                 OS_PRIORITY_PREFERENCES,
+                                                 WORKSPACE_DESK,
+                                                 HISTORY,
+                                                 PRINTERS_AUTHORIZATION_SERVERS,
+                                                 POWER_BOOKMARK,
+                                                 NIGORI,
+                                                 COOKIES};
     CHECK(kLegacyTypes.Has(type()))
-        << ModelTypeToDebugString(type())
+        << DataTypeToDebugString(type())
         << " must support running in transport mode!";
   }
 }
@@ -167,11 +166,11 @@ void DataTypeController::LoadModels(
   CHECK_EQ(NOT_RUNNING, state_);
 
   auto it = delegate_map_.find(configure_context.sync_mode);
-  CHECK(it != delegate_map_.end()) << ModelTypeToDebugString(type());
+  CHECK(it != delegate_map_.end()) << DataTypeToDebugString(type());
   delegate_ = it->second.get();
   CHECK(delegate_);
 
-  DVLOG(1) << "Sync starting for " << ModelTypeToDebugString(type());
+  DVLOG(1) << "Sync starting for " << DataTypeToDebugString(type());
   state_ = MODEL_STARTING;
   model_load_callback_ = model_load_callback;
 
@@ -207,7 +206,7 @@ std::unique_ptr<DataTypeActivationResponse> DataTypeController::Connect() {
   CHECK_EQ(MODEL_LOADED, state_);
 
   state_ = RUNNING;
-  DVLOG(1) << "Sync running for " << ModelTypeToDebugString(type());
+  DVLOG(1) << "Sync running for " << DataTypeToDebugString(type());
 
   return std::move(activation_response_);
 }
@@ -244,7 +243,7 @@ void DataTypeController::Stop(SyncStopMetadataFate fate,
     case MODEL_STARTING:
       DCHECK(model_load_callback_);
       DCHECK(model_stop_callbacks_.empty());
-      DLOG(WARNING) << "Deferring stop for " << ModelTypeToDebugString(type())
+      DLOG(WARNING) << "Deferring stop for " << DataTypeToDebugString(type())
                     << " because it's still starting";
       model_load_callback_.Reset();
       model_stop_metadata_fate_ = fate;
@@ -255,7 +254,7 @@ void DataTypeController::Stop(SyncStopMetadataFate fate,
 
     case MODEL_LOADED:
     case RUNNING:
-      DVLOG(1) << "Stopping sync for " << ModelTypeToDebugString(type());
+      DVLOG(1) << "Stopping sync for " << DataTypeToDebugString(type());
       model_load_callback_.Reset();
       state_ = NOT_RUNNING;
       delegate_->OnSyncStopping(fate);
@@ -375,13 +374,13 @@ bool DataTypeController::CalledOnValidThread() const {
 void DataTypeController::RecordStartFailure() const {
   DCHECK(CalledOnValidThread());
   UMA_HISTOGRAM_ENUMERATION("Sync.DataTypeStartFailures2",
-                            ModelTypeHistogramValue(type()));
+                            DataTypeHistogramValue(type()));
 }
 
 void DataTypeController::RecordRunFailure() const {
   DCHECK(CalledOnValidThread());
   UMA_HISTOGRAM_ENUMERATION("Sync.DataTypeRunFailures2",
-                            ModelTypeHistogramValue(type()));
+                            DataTypeHistogramValue(type()));
 }
 
 void DataTypeController::OnDelegateStarted(
@@ -396,7 +395,7 @@ void DataTypeController::OnDelegateStarted(
       [[fallthrough]];
     case FAILED:
       DVLOG(1) << "Successful sync start completion received late for "
-               << ModelTypeToDebugString(type())
+               << DataTypeToDebugString(type())
                << ", it has been stopped meanwhile";
       delegate_->OnSyncStopping(model_stop_metadata_fate_);
       delegate_ = nullptr;
@@ -406,12 +405,12 @@ void DataTypeController::OnDelegateStarted(
       // Hold on to the activation context until Connect is called.
       activation_response_ = std::move(activation_response);
       state_ = MODEL_LOADED;
-      DVLOG(1) << "Sync start completed for " << ModelTypeToDebugString(type());
+      DVLOG(1) << "Sync start completed for " << DataTypeToDebugString(type());
       break;
     case MODEL_LOADED:
     case RUNNING:
     case NOT_RUNNING:
-      NOTREACHED_IN_MIGRATION() << " type " << ModelTypeToDebugString(type())
+      NOTREACHED_IN_MIGRATION() << " type " << DataTypeToDebugString(type())
                                 << " state " << StateToString(state_);
   }
 

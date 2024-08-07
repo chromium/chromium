@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/model/data_type_controller_delegate.h"
@@ -54,14 +54,14 @@ class DataTypeController {
   // Note: This seems like it should be a OnceCallback, but it can actually be
   // called multiple times in the case of errors.
   using ModelLoadCallback =
-      base::RepeatingCallback<void(ModelType, const SyncError&)>;
+      base::RepeatingCallback<void(DataType, const SyncError&)>;
 
   using StopCallback = base::OnceClosure;
 
   using AllNodesCallback =
-      base::OnceCallback<void(const ModelType, base::Value::List)>;
+      base::OnceCallback<void(const DataType, base::Value::List)>;
 
-  using TypeMap = std::map<ModelType, std::unique_ptr<DataTypeController>>;
+  using TypeMap = std::map<DataType, std::unique_ptr<DataTypeController>>;
   using TypeVector = std::vector<std::unique_ptr<DataTypeController>>;
 
   // For legacy data types that do not support transport mode,
@@ -72,7 +72,7 @@ class DataTypeController {
   // can be passed and will be exposed via GetLocalDataBatchUploader()
   // to allow moving local data to the account.
   DataTypeController(
-      ModelType type,
+      DataType type,
       std::unique_ptr<DataTypeControllerDelegate> delegate_for_full_sync_mode,
       std::unique_ptr<DataTypeControllerDelegate> delegate_for_transport_mode,
       std::unique_ptr<DataTypeLocalDataBatchUploader> batch_uploader = nullptr);
@@ -82,11 +82,11 @@ class DataTypeController {
 
   virtual ~DataTypeController();
 
-  // Unique model type for this data type controller.
-  ModelType type() const { return type_; }
+  // Unique data type for this data type controller.
+  DataType type() const { return type_; }
 
   // Name of this data type.  For logging purposes only.
-  std::string name() const { return ModelTypeToDebugString(type()); }
+  std::string name() const { return DataTypeToDebugString(type()); }
 
   // Returns whether the datatype knows how to, and wants to, run in
   // transport-only mode (see syncer::SyncMode enum).
@@ -117,7 +117,7 @@ class DataTypeController {
   // propagate from sync again from point where Stop() is called.
   virtual void Stop(SyncStopMetadataFate fate, StopCallback callback);
 
-  // Current state of the model type controller.
+  // Current state of the data type controller.
   virtual State state() const;
 
   // Whether preconditions are met for the datatype to start. This is useful for
@@ -153,7 +153,7 @@ class DataTypeController {
   // Returns the uploader passed on construction.
   DataTypeLocalDataBatchUploader* GetLocalDataBatchUploader();
 
-  // Reports model type error to simulate the error reported by the bridge.
+  // Reports data type error to simulate the error reported by the bridge.
   virtual void ReportBridgeErrorForTest();
 
   DataTypeControllerDelegate* GetDelegateForTesting(SyncMode sync_mode);
@@ -161,7 +161,7 @@ class DataTypeController {
  protected:
   // Subclasses that use this constructor must call InitDataTypeController().
   explicit DataTypeController(
-      ModelType type,
+      DataType type,
       std::unique_ptr<DataTypeLocalDataBatchUploader> batch_uploader = nullptr);
 
   // |delegate_for_transport_mode| may be null if the type does not run in
@@ -186,9 +186,9 @@ class DataTypeController {
   void ClearMetadataIfStopped();
 
   // The type this object is responsible for controlling.
-  const ModelType type_;
+  const DataType type_;
 
-  // Null if the ModelType does not support batch upload.
+  // Null if the DataType does not support batch upload.
   const std::unique_ptr<DataTypeLocalDataBatchUploader> batch_uploader_;
 
   // Used to check that functions are called on the correct sequence.

@@ -46,9 +46,9 @@ namespace {
 const base::FilePath::CharType kNigoriStorageFilename[] =
     FILE_PATH_LITERAL("Nigori.bin");
 
-void RecordInvalidationPerModelType(ModelType type) {
+void RecordInvalidationPerDataType(DataType type) {
   UMA_HISTOGRAM_ENUMERATION("Sync.InvalidationPerModelType",
-                            ModelTypeHistogramValue(type));
+                            DataTypeHistogramValue(type));
 }
 
 void RecordIncomingInvalidationStatus(
@@ -87,7 +87,7 @@ void SyncEngineBackend::OnSyncCycleCompleted(
              snapshot);
 }
 
-void SyncEngineBackend::DoRefreshTypes(ModelTypeSet types) {
+void SyncEngineBackend::DoRefreshTypes(DataTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_manager_->RefreshTypes(types);
 }
@@ -107,7 +107,7 @@ void SyncEngineBackend::OnActionableProtocolError(
              sync_error);
 }
 
-void SyncEngineBackend::OnMigrationRequested(ModelTypeSet types) {
+void SyncEngineBackend::OnMigrationRequested(DataTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   host_.Call(FROM_HERE, &SyncEngineImpl::HandleMigrationRequestedOnFrontendLoop,
              types);
@@ -184,10 +184,10 @@ void SyncEngineBackend::DoInitialize(
                                ? CONFIGURE_REASON_NEW_CLIENT
                                : CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE;
 
-  ModelTypeSet new_control_types =
+  DataTypeSet new_control_types =
       Difference(ControlTypes(), sync_manager_->InitialSyncEndedTypes());
 
-  SDVLOG(1) << "Control Types " << ModelTypeSetToDebugString(new_control_types)
+  SDVLOG(1) << "Control Types " << DataTypeSetToDebugString(new_control_types)
             << " added; calling ConfigureSyncer";
 
   sync_manager_->ConfigureSyncer(
@@ -311,7 +311,7 @@ void SyncEngineBackend::DoShutdown(ShutdownReason reason) {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void SyncEngineBackend::DoPurgeDisabledTypes(const ModelTypeSet& to_purge) {
+void SyncEngineBackend::DoPurgeDisabledTypes(const DataTypeSet& to_purge) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (to_purge.Has(NIGORI)) {
     // We are using USS implementation of Nigori and someone asked us to purge
@@ -347,17 +347,17 @@ void SyncEngineBackend::DoConfigureSyncer(
 }
 
 void SyncEngineBackend::DoFinishConfigureDataTypes(
-    ModelTypeSet types_to_download,
-    base::OnceCallback<void(ModelTypeSet, ModelTypeSet)> ready_task) {
+    DataTypeSet types_to_download,
+    base::OnceCallback<void(DataTypeSet, DataTypeSet)> ready_task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Update the enabled types for the bridge and sync manager.
-  const ModelTypeSet enabled_types = sync_manager_->GetConnectedTypes();
+  const DataTypeSet enabled_types = sync_manager_->GetConnectedTypes();
   DCHECK(Difference(enabled_types, ProtocolTypes()).empty());
 
-  const ModelTypeSet failed_types =
+  const DataTypeSet failed_types =
       Difference(types_to_download, sync_manager_->InitialSyncEndedTypes());
-  const ModelTypeSet succeeded_types =
+  const DataTypeSet succeeded_types =
       Difference(types_to_download, failed_types);
   CHECK_EQ(
       succeeded_types,
@@ -404,7 +404,7 @@ void SyncEngineBackend::DoOnCookieJarChanged(bool account_mismatch,
 
 void SyncEngineBackend::DoOnStandaloneInvalidationReceived(
     const std::string& payload,
-    const ModelTypeSet& interested_data_types) {
+    const DataTypeSet& interested_data_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const IncomingInvalidationStatus status =
       DoOnStandaloneInvalidationReceivedImpl(payload, interested_data_types);
@@ -414,13 +414,13 @@ void SyncEngineBackend::DoOnStandaloneInvalidationReceived(
 SyncEngineBackend::IncomingInvalidationStatus
 SyncEngineBackend::DoOnStandaloneInvalidationReceivedImpl(
     const std::string& payload,
-    const ModelTypeSet& interested_data_types) {
+    const DataTypeSet& interested_data_types) {
   sync_pb::SyncInvalidationsPayload payload_message;
   if (!payload_message.ParseFromString(payload)) {
     return IncomingInvalidationStatus::kPayloadParseFailed;
   }
 
-  bool contains_valid_model_type = false;
+  bool contains_valid_data_type = false;
 
   std::vector<int> field_numbers;
   field_numbers.reserve(payload_message.data_type_invalidations_size());
@@ -428,15 +428,15 @@ SyncEngineBackend::DoOnStandaloneInvalidationReceivedImpl(
        payload_message.data_type_invalidations()) {
     field_numbers.push_back(data_type_invalidation.data_type_id());
   }
-  for (auto model_type :
-       GetModelTypeSetFromSpecificsFieldNumberList(field_numbers)) {
-    if (!interested_data_types.Has(model_type)) {
+  for (auto data_type :
+       GetDataTypeSetFromSpecificsFieldNumberList(field_numbers)) {
+    if (!interested_data_types.Has(data_type)) {
       // Filter out invalidations for unsubscribed data types.
       continue;
     }
 
-    contains_valid_model_type = true;
-    RecordInvalidationPerModelType(model_type);
+    contains_valid_data_type = true;
+    RecordInvalidationPerDataType(data_type);
     std::optional<int64_t> version;
     if (payload_message.has_version()) {
       version = payload_message.version();
@@ -444,12 +444,12 @@ SyncEngineBackend::DoOnStandaloneInvalidationReceivedImpl(
     std::unique_ptr<SyncInvalidation> inv_adapter =
         std::make_unique<SyncInvalidationAdapter>(payload_message.hint(),
                                                   version);
-    sync_manager_->OnIncomingInvalidation(model_type, std::move(inv_adapter));
+    sync_manager_->OnIncomingInvalidation(data_type, std::move(inv_adapter));
   }
-  if (contains_valid_model_type) {
+  if (contains_valid_data_type) {
     return IncomingInvalidationStatus::kSuccess;
   }
-  return IncomingInvalidationStatus::kUnknownModelType;
+  return IncomingInvalidationStatus::kUnknownDataType;
 }
 
 void SyncEngineBackend::DoOnActiveDevicesChanged(
@@ -474,7 +474,7 @@ bool SyncEngineBackend::HasUnsyncedItemsForTest() const {
   return sync_manager_->HasUnsyncedItemsForTest();
 }
 
-ModelTypeSet SyncEngineBackend::GetTypesWithUnsyncedData() const {
+DataTypeSet SyncEngineBackend::GetTypesWithUnsyncedData() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sync_manager_);
   return sync_manager_->GetTypesWithUnsyncedData();

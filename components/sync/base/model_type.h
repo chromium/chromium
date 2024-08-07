@@ -13,8 +13,6 @@
 
 namespace syncer {
 
-using ModelTypeForHistograms = DataTypeForHistograms;
-
 constexpr int GetNumModelTypes() {
   return GetNumDataTypes();
 }
@@ -88,23 +86,6 @@ inline int ModelTypeToStableIdentifier(ModelType model_type) {
 // Returns the comma-separated string representation of |model_types|.
 inline std::string ModelTypeSetToDebugString(ModelTypeSet model_types) {
   return DataTypeSetToDebugString(model_types);
-}
-
-// Returns a string corresponding to the root tag as exposed in the sync
-// protocol as the root entity's ID, which makes the root entity trivially
-// distinguishable from regular entities. Note that the existence of a root
-// entity in the sync protocol is a legacy artifact, and modern clients ignore
-// it except for bookmarks and Nigori. For this reason, the server may or may
-// not return the root entity.
-inline std::string ModelTypeToProtocolRootTag(ModelType model_type) {
-  return DataTypeToProtocolRootTag(model_type);
-}
-
-// As opposed to ModelTypeToProtocolRootTag(), this returns a string that isn't
-// exposed in the sync protocol, but that is still stable and thus can be used
-// for local persistence. It is guaranteed to be lowercase.
-inline const char* GetModelTypeLowerCaseRootTag(ModelType model_type) {
-  return GetDataTypeLowerCaseRootTag(model_type);
 }
 
 }  // namespace syncer

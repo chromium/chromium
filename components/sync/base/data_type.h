@@ -493,6 +493,14 @@ bool IsActOnceDataType(DataType data_type);
 // migrated.
 using ModelType = DataType;
 using ModelTypeSet = DataTypeSet;
+using ModelTypeForHistograms = DataTypeForHistograms;
+
+// TODO(crbug.com/356649891): Remove this function when all dependencies are
+// migrated. It is temporarily added to this header file to work around IWYU
+// issues.
+inline const char* GetModelTypeLowerCaseRootTag(ModelType model_type) {
+  return GetDataTypeLowerCaseRootTag(model_type);
+}
 
 }  // namespace syncer
 

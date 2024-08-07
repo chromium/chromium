@@ -257,7 +257,7 @@ class MockObserver : public SyncEncryptionHandler::Observer {
   MOCK_METHOD(void, OnPassphraseAccepted, (), (override));
   MOCK_METHOD(void, OnTrustedVaultKeyRequired, (), (override));
   MOCK_METHOD(void, OnTrustedVaultKeyAccepted, (), (override));
-  MOCK_METHOD(void, OnEncryptedTypesChanged, (ModelTypeSet, bool), (override));
+  MOCK_METHOD(void, OnEncryptedTypesChanged, (DataTypeSet, bool), (override));
   MOCK_METHOD(void,
               OnCryptographerStateChanged,
               (Cryptographer*, bool has_pending_keys),
@@ -314,7 +314,7 @@ class NigoriSyncBridgeImplTest : public testing::Test {
     std::optional<syncer::ModelError> error =
         bridge_->MergeFullSyncData(std::move(entity_data));
     if (error) {
-      LOG(ERROR) << "Model type error during the initial sync: "
+      LOG(ERROR) << "Data type error during the initial sync: "
                  << error->ToString();
       return false;
     }

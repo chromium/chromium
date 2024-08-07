@@ -47,7 +47,7 @@ DataTypeSet MultiGroupTypes(const DataTypeSet& registered_types) {
   DataTypeSet multi;
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     const DataTypeSet grouped_types =
-        syncer::UserSelectableTypeToAllModelTypes(type);
+        syncer::UserSelectableTypeToAllDataTypes(type);
     for (DataType grouped_type : grouped_types) {
       if (seen.Has(grouped_type)) {
         multi.Put(grouped_type);
@@ -108,7 +108,7 @@ class EnableDisableSingleClientTest : public SyncTest {
   }
 
   DataTypeSet ResolveGroup(UserSelectableType type) {
-    DataTypeSet grouped_types = syncer::UserSelectableTypeToAllModelTypes(type);
+    DataTypeSet grouped_types = syncer::UserSelectableTypeToAllDataTypes(type);
     grouped_types.RetainAll(registered_data_types_);
     return grouped_types;
   }

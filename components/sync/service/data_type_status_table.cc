@@ -12,9 +12,9 @@ namespace syncer {
 
 namespace {
 
-ModelTypeSet GetTypesFromErrorMap(
+DataTypeSet GetTypesFromErrorMap(
     const DataTypeStatusTable::TypeErrorMap& errors) {
-  ModelTypeSet result;
+  DataTypeSet result;
   for (const auto& [type, error] : errors) {
     DCHECK(!result.Has(type));
     result.Put(type);
@@ -34,12 +34,12 @@ DataTypeStatusTable::~DataTypeStatusTable() = default;
 void DataTypeStatusTable::UpdateFailedDataTypes(const TypeErrorMap& errors) {
   DVLOG(1) << "Setting " << errors.size() << " new failed types.";
 
-  for (const auto& [model_type, error] : errors) {
-    UpdateFailedDataType(model_type, error);
+  for (const auto& [data_type, error] : errors) {
+    UpdateFailedDataType(data_type, error);
   }
 }
 
-bool DataTypeStatusTable::UpdateFailedDataType(ModelType type,
+bool DataTypeStatusTable::UpdateFailedDataType(DataType type,
                                                const SyncError& error) {
   switch (error.error_type()) {
     case SyncError::UNSET:
@@ -70,11 +70,11 @@ void DataTypeStatusTable::ResetCryptoErrors() {
   crypto_errors_.clear();
 }
 
-bool DataTypeStatusTable::ResetDataTypePolicyErrorFor(ModelType type) {
+bool DataTypeStatusTable::ResetDataTypePolicyErrorFor(DataType type) {
   return data_type_policy_errors_.erase(type) > 0;
 }
 
-bool DataTypeStatusTable::ResetUnreadyErrorFor(ModelType type) {
+bool DataTypeStatusTable::ResetUnreadyErrorFor(DataType type) {
   return unready_errors_.erase(type) > 0;
 }
 
@@ -88,27 +88,27 @@ DataTypeStatusTable::TypeErrorMap DataTypeStatusTable::GetAllErrors() const {
   return result;
 }
 
-ModelTypeSet DataTypeStatusTable::GetFailedTypes() const {
-  ModelTypeSet result = GetFatalErrorTypes();
+DataTypeSet DataTypeStatusTable::GetFailedTypes() const {
+  DataTypeSet result = GetFatalErrorTypes();
   result.PutAll(GetCryptoErrorTypes());
   result.PutAll(GetUnreadyErrorTypes());
   return result;
 }
 
-ModelTypeSet DataTypeStatusTable::GetFatalErrorTypes() const {
-  ModelTypeSet result;
+DataTypeSet DataTypeStatusTable::GetFatalErrorTypes() const {
+  DataTypeSet result;
   result.PutAll(GetTypesFromErrorMap(data_type_errors_));
   result.PutAll(GetTypesFromErrorMap(data_type_policy_errors_));
   return result;
 }
 
-ModelTypeSet DataTypeStatusTable::GetCryptoErrorTypes() const {
-  ModelTypeSet result = GetTypesFromErrorMap(crypto_errors_);
+DataTypeSet DataTypeStatusTable::GetCryptoErrorTypes() const {
+  DataTypeSet result = GetTypesFromErrorMap(crypto_errors_);
   return result;
 }
 
-ModelTypeSet DataTypeStatusTable::GetUnreadyErrorTypes() const {
-  ModelTypeSet result = GetTypesFromErrorMap(unready_errors_);
+DataTypeSet DataTypeStatusTable::GetUnreadyErrorTypes() const {
+  DataTypeSet result = GetTypesFromErrorMap(unready_errors_);
   return result;
 }
 

@@ -9,7 +9,7 @@
 
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace syncer {
 
@@ -17,8 +17,8 @@ namespace {
 
 struct UserSelectableTypeInfo {
   const char* const type_name;
-  const ModelType canonical_model_type;
-  const ModelTypeSet model_type_group;
+  const DataType canonical_data_type;
+  const DataTypeSet data_type_group;
 };
 
 constexpr char kBookmarksTypeName[] = "bookmarks";
@@ -41,8 +41,8 @@ constexpr char kProductComparisonTypeName[] = "productComparison";
 constexpr char kCookiesTypeName[] = "cookies";
 
 UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
-  static_assert(53 == syncer::GetNumModelTypes(),
-                "Almost always when adding a new ModelType, you must tie it to "
+  static_assert(53 == syncer::GetNumDataTypes(),
+                "Almost always when adding a new DataType, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
                 "disable syncing of that data. Today you must also update the "
                 "UI code yourself; crbug.com/1067282 and related bugs will "
@@ -207,12 +207,12 @@ std::string UserSelectableTypeSetToString(UserSelectableTypeSet types) {
   return result;
 }
 
-ModelTypeSet UserSelectableTypeToAllModelTypes(UserSelectableType type) {
-  return GetUserSelectableTypeInfo(type).model_type_group;
+DataTypeSet UserSelectableTypeToAllDataTypes(UserSelectableType type) {
+  return GetUserSelectableTypeInfo(type).data_type_group;
 }
 
-ModelType UserSelectableTypeToCanonicalModelType(UserSelectableType type) {
-  return GetUserSelectableTypeInfo(type).canonical_model_type;
+DataType UserSelectableTypeToCanonicalDataType(UserSelectableType type) {
+  return GetUserSelectableTypeInfo(type).canonical_data_type;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -261,12 +261,12 @@ std::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
   return std::nullopt;
 }
 
-ModelTypeSet UserSelectableOsTypeToAllModelTypes(UserSelectableOsType type) {
-  return GetUserSelectableOsTypeInfo(type).model_type_group;
+DataTypeSet UserSelectableOsTypeToAllDataTypes(UserSelectableOsType type) {
+  return GetUserSelectableOsTypeInfo(type).data_type_group;
 }
 
-ModelType UserSelectableOsTypeToCanonicalModelType(UserSelectableOsType type) {
-  return GetUserSelectableOsTypeInfo(type).canonical_model_type;
+DataType UserSelectableOsTypeToCanonicalDataType(UserSelectableOsType type) {
+  return GetUserSelectableOsTypeInfo(type).canonical_data_type;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

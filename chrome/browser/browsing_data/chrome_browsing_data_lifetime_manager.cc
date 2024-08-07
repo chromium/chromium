@@ -457,7 +457,7 @@ bool ChromeBrowsingDataLifetimeManager::
     if (!sync_service->GetUserSettings()->IsTypeManagedByPolicy(type)) {
       return false;
     } else if (sync_service->GetActiveDataTypes().HasAny(
-                   syncer::UserSelectableTypeToAllModelTypes(type))) {
+                   syncer::UserSelectableTypeToAllDataTypes(type))) {
       // If the sync type is disabled by policy, but the sync service has not
       // deactivated the type yet, then data can not be safely cleared yet.
       return false;

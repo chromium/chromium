@@ -19,7 +19,7 @@ namespace {
 // reference to SyncableService in a lazy way, which is convenient for tests.
 class ControllerDelegate : public DataTypeControllerDelegate {
  public:
-  ControllerDelegate(ModelType type,
+  ControllerDelegate(DataType type,
                      OnceDataTypeStoreFactory store_factory,
                      base::WeakPtr<SyncableService> syncable_service,
                      const base::RepeatingClosure& dump_stack)
@@ -111,7 +111,7 @@ class ControllerDelegate : public DataTypeControllerDelegate {
     return bridge_->change_processor()->GetControllerDelegate().get();
   }
 
-  const ModelType type_;
+  const DataType type_;
   const base::RepeatingClosure dump_stack_;
   std::unique_ptr<DataTypeSyncBridge> bridge_;
 };
@@ -119,7 +119,7 @@ class ControllerDelegate : public DataTypeControllerDelegate {
 }  // namespace
 
 SyncableServiceBasedDataTypeController::SyncableServiceBasedDataTypeController(
-    ModelType type,
+    DataType type,
     OnceDataTypeStoreFactory store_factory,
     base::WeakPtr<SyncableService> syncable_service,
     const base::RepeatingClosure& dump_stack,

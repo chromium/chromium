@@ -34,7 +34,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
                           public SyncManager::Observer {
  public:
   using AllNodesCallback =
-      base::OnceCallback<void(const ModelType, base::Value::List)>;
+      base::OnceCallback<void(const DataType, base::Value::List)>;
 
   // Struct that allows passing back data upon init, for data previously
   // produced by SyncEngineBackend (which doesn't itself have the ability to
@@ -68,9 +68,9 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
     kPayloadParseFailed = 1,
 
     // All data types in the payload are unknown.
-    kUnknownModelType = 2,
+    kUnknownDataType = 2,
 
-    kMaxValue = kUnknownModelType,
+    kMaxValue = kUnknownDataType,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncIncomingInvalidationStatus)
 
@@ -87,7 +87,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) override;
   void OnConnectionStatusChange(ConnectionStatus status) override;
   void OnActionableProtocolError(const SyncProtocolError& sync_error) override;
-  void OnMigrationRequested(ModelTypeSet types) override;
+  void OnMigrationRequested(DataTypeSet types) override;
   void OnProtocolEvent(const ProtocolEvent& event) override;
   void OnSyncStatusChanged(const SyncStatus& status) override;
 
@@ -136,7 +136,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
       const std::vector<std::vector<uint8_t>>& keys);
 
   // Ask the syncer to check for updates for the specified types.
-  void DoRefreshTypes(ModelTypeSet types);
+  void DoRefreshTypes(DataTypeSet types);
 
   // Called to perform tasks which require the control data to be downloaded.
   // This includes refreshing encryption, etc.
@@ -151,11 +151,11 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void DoShutdown(ShutdownReason reason);
 
   // Configuration methods that must execute on sync loop.
-  void DoPurgeDisabledTypes(const ModelTypeSet& to_purge);
+  void DoPurgeDisabledTypes(const DataTypeSet& to_purge);
   void DoConfigureSyncer(DataTypeConfigurer::ConfigureParams params);
   void DoFinishConfigureDataTypes(
-      ModelTypeSet types_to_config,
-      base::OnceCallback<void(ModelTypeSet, ModelTypeSet)> ready_task);
+      DataTypeSet types_to_config,
+      base::OnceCallback<void(DataTypeSet, DataTypeSet)> ready_task);
 
   void SendBufferedProtocolEventsAndEnableForwarding();
   void DisableProtocolEventForwarding();
@@ -168,7 +168,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // invalidations.
   void DoOnStandaloneInvalidationReceived(
       const std::string& payload,
-      const ModelTypeSet& interested_data_types);
+      const DataTypeSet& interested_data_types);
 
   // Returns a Value::List representing Nigori node.
   void GetNigoriNodeForDebugging(AllNodesCallback callback);
@@ -177,7 +177,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void RecordNigoriMemoryUsageAndCountsHistograms();
 
   // Returns types that have local changes yet to be synced to the server.
-  ModelTypeSet GetTypesWithUnsyncedData() const;
+  DataTypeSet GetTypesWithUnsyncedData() const;
 
   bool HasUnsyncedItemsForTest() const;
 
@@ -197,7 +197,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
   IncomingInvalidationStatus DoOnStandaloneInvalidationReceivedImpl(
       const std::string& payload,
-      const ModelTypeSet& interested_data_types);
+      const DataTypeSet& interested_data_types);
 
   // Name used for debugging.
   const std::string name_;

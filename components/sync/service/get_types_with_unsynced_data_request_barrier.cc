@@ -11,8 +11,8 @@
 namespace syncer {
 
 GetTypesWithUnsyncedDataRequestBarrier::GetTypesWithUnsyncedDataRequestBarrier(
-    ModelTypeSet requested_types,
-    base::OnceCallback<void(ModelTypeSet)> callback)
+    DataTypeSet requested_types,
+    base::OnceCallback<void(DataTypeSet)> callback)
     : awaiting_types_(requested_types), callback_(std::move(callback)) {
   CHECK(!awaiting_types_.empty());
 }
@@ -22,12 +22,12 @@ GetTypesWithUnsyncedDataRequestBarrier::
   if (!awaiting_types_.empty()) {
     DLOG(WARNING) << "GetTypesWithUnsyncedDataRequestHelper deleted before "
                      "request was fulfilled. Missing types are: "
-                  << ModelTypeSetToDebugString(awaiting_types_);
+                  << DataTypeSetToDebugString(awaiting_types_);
   }
 }
 
 void GetTypesWithUnsyncedDataRequestBarrier::OnReceivedResultForType(
-    const ModelType type,
+    const DataType type,
     bool has_unsynced_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

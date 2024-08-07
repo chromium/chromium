@@ -16,7 +16,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -394,28 +394,28 @@ class SyncService : public KeyedService {
   // superset of the active types (see GetActiveDataTypes()).
   // TODO(crbug.com/40262598): Deprecated, DO NOT USE! You probably want
   // `GetUserSettings()->GetSelectedTypes()` instead.
-  virtual ModelTypeSet GetPreferredDataTypes() const = 0;
+  virtual DataTypeSet GetPreferredDataTypes() const = 0;
 
   // Returns the set of currently active data types (those chosen or configured
   // by the user which have not also encountered a runtime error).
   // Note that if the Sync engine is in the middle of a configuration, this will
   // be the empty set. Once the configuration completes the set will be updated.
-  virtual ModelTypeSet GetActiveDataTypes() const = 0;
+  virtual DataTypeSet GetActiveDataTypes() const = 0;
 
   // Returns the datatypes that are about to become active, but are currently
   // in the process of downloading the initial data from the server (either
   // actively ongoing or queued). Note that it is not always feasible to
   // determine this reliably (e.g. during initialization) and hence the
   // implementation may return a sensible likely value.
-  virtual ModelTypeSet GetTypesWithPendingDownloadForInitialSync() const = 0;
+  virtual DataTypeSet GetTypesWithPendingDownloadForInitialSync() const = 0;
 
   // Returns the datatypes which have local changes that have not yet been
   // synced with the server.
   // Note: This only queries the datatypes in `requested_types`.
   // Note: This includes deletions as well.
   virtual void GetTypesWithUnsyncedData(
-      ModelTypeSet requested_types,
-      base::OnceCallback<void(ModelTypeSet)> callback) const = 0;
+      DataTypeSet requested_types,
+      base::OnceCallback<void(DataTypeSet)> callback) const = 0;
 
   // Queries the count and description/preview of existing local data for
   // `types` data types. This is an asynchronous method which returns the result
@@ -425,8 +425,8 @@ class SyncService : public KeyedService {
   // part of the response.
   // Note: Only data types that are ready for migration are returned.
   virtual void GetLocalDataDescriptions(
-      ModelTypeSet types,
-      base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+      DataTypeSet types,
+      base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback) = 0;
 
   // Requests sync service to move all local data to account for `types` data
@@ -435,7 +435,7 @@ class SyncService : public KeyedService {
   // part of the regular commit process, and is NOT part of this method.
   // Note: Only data types that are enabled and support this functionality are
   // triggered for upload.
-  virtual void TriggerLocalDataMigration(ModelTypeSet types) = 0;
+  virtual void TriggerLocalDataMigration(DataTypeSet types) = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   // ACTIONS / STATE CHANGE REQUESTS
@@ -450,11 +450,11 @@ class SyncService : public KeyedService {
   // still in deferred start mode, meaning the SyncableService hasn't been
   // told to MergeDataAndStartSyncing yet.
   // TODO(crbug.com/40901006): Remove this API.
-  virtual void OnDataTypeRequestsSyncStartup(ModelType type) = 0;
+  virtual void OnDataTypeRequestsSyncStartup(DataType type) = 0;
 
   // Triggers a GetUpdates call for the specified |types|, pulling any new data
   // from the sync server. Used by tests and debug UI (sync-internals).
-  virtual void TriggerRefresh(const ModelTypeSet& types) = 0;
+  virtual void TriggerRefresh(const DataTypeSet& types) = 0;
 
   // Informs the data type manager that the preconditions for a controller have
   // changed. If preconditions are NOT met, the datatype will be stopped
@@ -462,7 +462,7 @@ class SyncService : public KeyedService {
   // GetPreconditionState(). Otherwise, if preconditions are newly met,
   // reconfiguration will be triggered so that |type| gets started again. No-op
   // if the type's state didn't actually change.
-  virtual void DataTypePreconditionChanged(ModelType type) = 0;
+  virtual void DataTypePreconditionChanged(DataType type) = 0;
 
   // Enables/disables invalidations for session sync related datatypes.
   // The session sync generates a lot of changes, which results in many
@@ -558,8 +558,7 @@ class SyncService : public KeyedService {
   // Returns current download status for the given |type|. The caller can use
   // SyncServiceObserver::OnStateChanged() to track status changes. Must be
   // called for real data types only.
-  virtual ModelTypeDownloadStatus GetDownloadStatusFor(
-      ModelType type) const = 0;
+  virtual DataTypeDownloadStatus GetDownloadStatusFor(DataType type) const = 0;
 };
 
 }  // namespace syncer

@@ -9,7 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,10 +46,10 @@ class SyncFeatureStatusForMigrationsRecorderTest : public testing::Test {
             prefs::internal::kSyncFeatureStatusForSyncToSigninMigration));
   }
 
-  bool GetDataTypeStatus(ModelType type) const {
+  bool GetDataTypeStatus(DataType type) const {
     return pref_service_.GetBoolean(base::StrCat(
         {prefs::internal::kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
-         ".", GetModelTypeLowerCaseRootTag(type)}));
+         ".", GetDataTypeLowerCaseRootTag(type)}));
   }
 
   TestSyncService& sync_service() { return sync_service_; }

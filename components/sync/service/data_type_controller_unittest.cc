@@ -34,7 +34,7 @@ using testing::NiceMock;
 using testing::NotNull;
 using testing::SaveArg;
 
-const ModelType kTestModelType = AUTOFILL;
+const DataType kTestDataType = AUTOFILL;
 const char kCacheGuid[] = "SomeCacheGuid";
 const char kAccountId[] = "SomeAccountId";
 
@@ -50,9 +50,9 @@ class TestDataTypeController : public DataTypeController {
  public:
   explicit TestDataTypeController(
       std::unique_ptr<DataTypeControllerDelegate> delegate_for_full_sync_mode)
-      : DataTypeController(kTestModelType,
-                            std::move(delegate_for_full_sync_mode),
-                            /*delegate_for_transport_mode=*/nullptr) {}
+      : DataTypeController(kTestDataType,
+                           std::move(delegate_for_full_sync_mode),
+                           /*delegate_for_transport_mode=*/nullptr) {}
   ~TestDataTypeController() override = default;
 
   using DataTypeController::ReportModelError;
@@ -114,7 +114,7 @@ class DataTypeControllerTest : public testing::Test {
 };
 
 TEST_F(DataTypeControllerTest, InitialState) {
-  EXPECT_EQ(kTestModelType, controller()->type());
+  EXPECT_EQ(kTestDataType, controller()->type());
   EXPECT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 }
 
@@ -130,7 +130,7 @@ TEST_F(DataTypeControllerTest, LoadModelsOnBackendThread) {
   ASSERT_TRUE(start_callback);
 
   // Mimic completion for OnSyncStarting().
-  EXPECT_CALL(load_models_done, Run(kTestModelType, _));
+  EXPECT_CALL(load_models_done, Run(kTestDataType, _));
   std::move(start_callback).Run(std::make_unique<DataTypeActivationResponse>());
   EXPECT_EQ(DataTypeController::MODEL_LOADED, controller()->state());
 }
@@ -189,8 +189,8 @@ TEST_F(DataTypeControllerTest, ConnectWithError) {
   // DataTypeController currently uses task-posting for errors.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
-  histogram_tester.ExpectBucketCount(
-      kStartFailuresHistogram, ModelTypeHistogramValue(kTestModelType), 1);
+  histogram_tester.ExpectBucketCount(kStartFailuresHistogram,
+                                     DataTypeHistogramValue(kTestDataType), 1);
   histogram_tester.ExpectTotalCount(kRunFailuresHistogram, 0);
 }
 
@@ -375,7 +375,7 @@ TEST_F(DataTypeControllerTest, StopWhileStartingWithError) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
   histogram_tester.ExpectBucketCount(kStartFailuresHistogram,
-                                     ModelTypeHistogramValue(kTestModelType),
+                                     DataTypeHistogramValue(kTestDataType),
                                      /*count=*/1);
   histogram_tester.ExpectTotalCount(kRunFailuresHistogram, 0);
 }
@@ -490,7 +490,7 @@ TEST(DataTypeControllerWithMultiDelegateTest, ToggleSyncMode) {
   NiceMock<MockDataTypeControllerDelegate> delegate_for_transport_mode;
 
   DataTypeController controller(
-      kTestModelType,
+      kTestDataType,
       std::make_unique<ForwardingDataTypeControllerDelegate>(
           &delegate_for_full_sync_mode),
       std::make_unique<ForwardingDataTypeControllerDelegate>(
@@ -568,7 +568,7 @@ TEST_F(DataTypeControllerTest, ReportErrorAfterLoaded) {
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
   histogram_tester.ExpectTotalCount(kRunFailuresHistogram, 0);
   histogram_tester.ExpectBucketCount(kStartFailuresHistogram,
-                                     ModelTypeHistogramValue(kTestModelType),
+                                     DataTypeHistogramValue(kTestDataType),
                                      /*count=*/1);
 }
 
@@ -606,7 +606,7 @@ TEST_F(DataTypeControllerTest, ReportErrorAfterRegisteredWithBackend) {
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
   histogram_tester.ExpectTotalCount(kStartFailuresHistogram, 0);
   histogram_tester.ExpectBucketCount(kRunFailuresHistogram,
-                                     ModelTypeHistogramValue(kTestModelType),
+                                     DataTypeHistogramValue(kTestDataType),
                                      /*count=*/1);
 }
 

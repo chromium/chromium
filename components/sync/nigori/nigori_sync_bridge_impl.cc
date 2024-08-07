@@ -360,7 +360,7 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
     }
   }
 
-  void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
+  void OnEncryptedTypesChanged(DataTypeSet encrypted_types,
                                bool encrypt_everything) override {
     for (Observer& observer : observers_) {
       observer.OnEncryptedTypesChanged(encrypted_types, encrypt_everything);
@@ -487,7 +487,7 @@ void NigoriSyncBridgeImpl::NotifyInitialStateToObservers() {
   }
 }
 
-ModelTypeSet NigoriSyncBridgeImpl::GetEncryptedTypes() {
+DataTypeSet NigoriSyncBridgeImpl::GetEncryptedTypes() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return state_.GetEncryptedTypes();
 }
@@ -749,7 +749,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
   }
 
   const bool had_pending_keys_before_update = state_.pending_keys.has_value();
-  const ModelTypeSet encrypted_types_before_update = state_.GetEncryptedTypes();
+  const DataTypeSet encrypted_types_before_update = state_.GetEncryptedTypes();
 
   state_.encrypt_everything = specifics.encrypt_everything();
 

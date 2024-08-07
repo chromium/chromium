@@ -14,8 +14,8 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/sync_prefs.h"
@@ -28,8 +28,8 @@ namespace syncer {
 
 namespace {
 
-ModelTypeSet GetUserTypes() {
-  ModelTypeSet user_types = UserTypes();
+DataTypeSet GetUserTypes() {
+  DataTypeSet user_types = UserTypes();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Ignore all Chrome OS types on non-Chrome OS platforms.
   user_types.RemoveAll(
@@ -39,7 +39,7 @@ ModelTypeSet GetUserTypes() {
   return user_types;
 }
 
-ModelTypeSet GetPreferredUserTypes(
+DataTypeSet GetPreferredUserTypes(
     const SyncUserSettingsImpl& sync_user_settings) {
   return Intersection(UserTypes(), sync_user_settings.GetPreferredDataTypes());
 }
@@ -105,7 +105,7 @@ class SyncUserSettingsImplTest : public testing::Test,
   }
 
   std::unique_ptr<SyncUserSettingsImpl> MakeSyncUserSettings(
-      ModelTypeSet registered_types) {
+      DataTypeSet registered_types) {
     return std::make_unique<SyncUserSettingsImpl>(
         /*delegate=*/this, sync_service_crypto_.get(), sync_prefs_.get(),
         registered_types);
@@ -127,7 +127,7 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
 
-  ModelTypeSet expected_types = GetUserTypes();
+  DataTypeSet expected_types = GetUserTypes();
   UserSelectableTypeSet all_registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
 
@@ -270,7 +270,7 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
 
-  ModelTypeSet expected_types = GetUserTypes();
+  DataTypeSet expected_types = GetUserTypes();
   expected_types.RemoveAll({WEB_APKS});
   EXPECT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
   EXPECT_EQ(expected_types, GetPreferredUserTypes(*sync_user_settings));
@@ -291,7 +291,7 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesNotKeepEverythingSynced) {
       /*sync_everything=*/false,
       /*types=*/UserSelectableTypeSet());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // GetPreferredUserTypes() returns ModelTypes, which includes both browser
+  // GetPreferredUserTypes() returns DataTypes, which includes both browser
   // and OS types. However, this test exercises browser UserSelectableTypes,
   // so disable OS selectable types.
   sync_user_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false,
@@ -317,8 +317,8 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesNotKeepEverythingSynced) {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   for (UserSelectableType type : all_registered_types) {
-    ModelTypeSet expected_preferred_types =
-        UserSelectableTypeToAllModelTypes(type);
+    DataTypeSet expected_preferred_types =
+        UserSelectableTypeToAllDataTypes(type);
     expected_preferred_types.PutAll(AlwaysPreferredUserTypes());
     sync_user_settings->SetSelectedTypes(/*sync_everything=*/false,
                                          /*types=*/{type});
@@ -344,8 +344,8 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesNotAllOsTypesSynced) {
             GetPreferredUserTypes(*sync_user_settings));
 
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
-    ModelTypeSet expected_preferred_types =
-        UserSelectableOsTypeToAllModelTypes(type);
+    DataTypeSet expected_preferred_types =
+        UserSelectableOsTypeToAllDataTypes(type);
     expected_preferred_types.PutAll(AlwaysPreferredUserTypes());
     sync_user_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false,
                                            /*types=*/{type});
@@ -421,7 +421,7 @@ TEST_F(SyncUserSettingsImplTest, AlwaysPreferredTypes_ChromeOS) {
       /*types=*/UserSelectableOsTypeSet());
 
   // Important types are still preferred.
-  ModelTypeSet preferred_types = sync_user_settings->GetPreferredDataTypes();
+  DataTypeSet preferred_types = sync_user_settings->GetPreferredDataTypes();
   EXPECT_TRUE(preferred_types.Has(DEVICE_INFO));
   EXPECT_TRUE(preferred_types.Has(USER_CONSENTS));
 }
@@ -433,7 +433,7 @@ TEST_F(SyncUserSettingsImplTest, AppsAreHandledByOsSettings) {
   ASSERT_TRUE(settings->IsSyncEverythingEnabled());
   ASSERT_TRUE(settings->IsSyncAllOsTypesEnabled());
 
-  // App model types are enabled.
+  // App data types are enabled.
   EXPECT_TRUE(settings->GetPreferredDataTypes().Has(APP_LIST));
   EXPECT_TRUE(settings->GetPreferredDataTypes().Has(APP_SETTINGS));
   EXPECT_TRUE(settings->GetPreferredDataTypes().Has(APPS));
@@ -445,7 +445,7 @@ TEST_F(SyncUserSettingsImplTest, AppsAreHandledByOsSettings) {
       /*sync_everything=*/false,
       /*types=*/UserSelectableTypeSet());
 
-  // App model types are still enabled.
+  // App data types are still enabled.
   EXPECT_TRUE(settings->GetPreferredDataTypes().Has(APP_LIST));
   EXPECT_TRUE(settings->GetPreferredDataTypes().Has(APP_SETTINGS));
   EXPECT_TRUE(settings->GetPreferredDataTypes().Has(APPS));
@@ -476,7 +476,7 @@ TEST_F(SyncUserSettingsImplTest, AppsAreHandledByOsSettings) {
 
   ASSERT_TRUE(settings->IsSyncEverythingEnabled());
 
-  // App model types are disabled by default, even though "Sync everything" is
+  // App data types are disabled by default, even though "Sync everything" is
   // on.
   EXPECT_FALSE(settings->GetPreferredDataTypes().Has(APP_SETTINGS));
   EXPECT_FALSE(settings->GetPreferredDataTypes().Has(APPS));
@@ -485,13 +485,13 @@ TEST_F(SyncUserSettingsImplTest, AppsAreHandledByOsSettings) {
   // Mimic apps toggle enabled in the OS.
   settings->SetAppsSyncEnabledByOs(true);
 
-  // App model types should become enabled.
+  // App data types should become enabled.
   EXPECT_TRUE(settings->GetPreferredDataTypes().Has(APP_SETTINGS));
   EXPECT_TRUE(settings->GetPreferredDataTypes().Has(APPS));
   EXPECT_TRUE(settings->GetPreferredDataTypes().Has(WEB_APPS));
 
   // Mimic "Sync everything" and all individual types toggle are disabled, app
-  // model types should stay enabled.
+  // data types should stay enabled.
   settings->SetSelectedTypes(/*sync_everything=*/false,
                              UserSelectableTypeSet());
   ASSERT_FALSE(settings->IsSyncEverythingEnabled());
@@ -511,14 +511,14 @@ TEST_F(SyncUserSettingsImplTest, ShouldSyncSessionsOnlyIfOpenTabsIsSelected) {
       MakeSyncUserSettings(GetUserTypes());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // GetPreferredUserTypes() returns ModelTypes, which includes both browser
+  // GetPreferredUserTypes() returns DataTypes, which includes both browser
   // and OS types. However, this test exercises browser UserSelectableTypes,
   // so disable OS selectable types.
   sync_user_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false,
                                          UserSelectableOsTypeSet());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // History and OpenTabs enabled: All the history-related ModelTypes should be
+  // History and OpenTabs enabled: All the history-related DataTypes should be
   // enabled.
   sync_user_settings->SetSelectedTypes(
       /*sync_everything=*/false,

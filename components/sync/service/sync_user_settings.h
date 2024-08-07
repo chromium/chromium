@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/gaia_id_hash.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
 
@@ -102,8 +102,8 @@ class SyncUserSettings {
   virtual void KeepAccountSettingsPrefsOnlyForUsers(
       const std::vector<signin::GaiaIdHash>& available_gaia_ids) = 0;
 
-  // Registered user selectable types are derived from registered model types.
-  // A UserSelectableType is registered if any of its ModelTypes is registered.
+  // Registered user selectable types are derived from registered data types.
+  // A UserSelectableType is registered if any of its DataTypes is registered.
   virtual UserSelectableTypeSet GetRegisteredSelectableTypes() const = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -154,7 +154,7 @@ class SyncUserSettings {
   // Whether we are currently set to encrypt all the Sync data.
   virtual bool IsEncryptEverythingEnabled() const = 0;
   // The current set of encrypted data types.
-  virtual ModelTypeSet GetAllEncryptedDataTypes() const = 0;
+  virtual DataTypeSet GetAllEncryptedDataTypes() const = 0;
   // Whether a passphrase is required for encryption or decryption to proceed.
   // Note that Sync might still be working fine if the user has disabled all
   // encrypted data types.
