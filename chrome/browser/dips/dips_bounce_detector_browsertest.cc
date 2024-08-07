@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -3347,7 +3348,7 @@ IN_PROC_BROWSER_TEST_F(DIPSPrivacySandboxApiInteractionTest,
   // Have the PAT-using site client-side-redirect back to the source site and
   // end the redirect chain.
   GURL bounce_back_url =
-      embedded_https_test_server_.GetURL(source_host, "/title1.html");
+      embedded_https_test_server_.GetURL(source_host, "/title1.html?unique");
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, bounce_back_url));
   EndRedirectChain();
@@ -3426,7 +3427,7 @@ IN_PROC_BROWSER_TEST_F(
   // Have the PAT-using site client-side-redirect back to the source site and
   // end the redirect chain.
   GURL bounce_back_url =
-      embedded_https_test_server_.GetURL(source_host, "/title1.html");
+      embedded_https_test_server_.GetURL(source_host, "/title1.html?unique");
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, bounce_back_url));
   EndRedirectChain();
@@ -3508,7 +3509,7 @@ IN_PROC_BROWSER_TEST_F(
   // Have the PAT-using site client-side-redirect back to the source site and
   // end the redirect chain.
   GURL bounce_back_url =
-      embedded_https_test_server_.GetURL(source_host, "/title1.html");
+      embedded_https_test_server_.GetURL(source_host, "/title1.html?unique");
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, bounce_back_url));
   EndRedirectChain();
@@ -3577,7 +3578,7 @@ IN_PROC_BROWSER_TEST_F(DIPSPrivacySandboxApiInteractionTest,
   // Have the PAT-using site client-side-redirect back to the source site and
   // end the redirect chain.
   GURL bounce_back_url =
-      embedded_https_test_server_.GetURL(source_host, "/title1.html");
+      embedded_https_test_server_.GetURL(source_host, "/title1.html?unique");
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, bounce_back_url));
   EndRedirectChain();
@@ -4112,6 +4113,37 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, LateCookieAccessTest) {
   EXPECT_THAT(redirect.access_type,
               testing::AnyOf(SiteDataAccessType::kWrite,
                              SiteDataAccessType::kReadWrite));
+}
+
+// Confirm that DIPS records a bounce that writes a cookie as stateful, even if
+// the chain ends immediately afterwards.
+IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, QuickEndChainTest) {
+  // Block 3PCs so DIPS will record bounces.
+  chrome_test_utils::GetProfile(this)->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+
+  const GURL initial_url =
+      embedded_test_server()->GetURL("a.test", "/empty.html");
+  const GURL bounce_url =
+      embedded_test_server()->GetURL("b.test", "/empty.html");
+  const GURL final_url =
+      embedded_test_server()->GetURL("c.test", "/empty.html");
+  WebContents* const web_contents = GetActiveWebContents();
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, initial_url));
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, bounce_url));
+  ASSERT_TRUE(content::ExecJs(web_contents, "document.cookie = 'bounce=true';",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                                   final_url));
+  // End the redirect chain without waiting for the cookie access notification.
+  EndRedirectChain();
+
+  std::optional<StateValue> state =
+      GetDIPSState(GetDipsService(web_contents), bounce_url);
+  ASSERT_TRUE(state.has_value());
+  ASSERT_TRUE(state->stateful_bounce_times.has_value());
 }
 
 // Confirm that WCO::OnCookiesAccessed() is always called even if the user

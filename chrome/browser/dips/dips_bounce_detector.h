@@ -123,7 +123,7 @@ class DIPSRedirectContext {
 
   void ReportIssue(const GURL& final_url);
 
-  [[nodiscard]] bool AddLateCookieAccess(GURL url, CookieOperation op);
+  [[nodiscard]] bool AddLateCookieAccess(const GURL& url, CookieOperation op);
 
   size_t size() const { return redirects_.size(); }
 
@@ -319,6 +319,28 @@ class DIPSBounceDetector {
   base::RetainingOneShotTimer client_bounce_detection_timer_;
 };
 
+class DelayedChainHandler {
+ public:
+  explicit DelayedChainHandler(DIPSRedirectChainHandler handler);
+  ~DelayedChainHandler();
+
+  void HandleRedirectChain(std::vector<DIPSRedirectInfoPtr> redirects,
+                           DIPSRedirectChainInfoPtr chain);
+  [[nodiscard]] bool AddLateCookieAccess(const GURL& url, CookieOperation op);
+  void HandlePreviousChainNow() {
+    HandlePreviousChainNowImpl(/*timer_fired=*/false);
+  }
+
+ private:
+  void HandlePreviousChainNowImpl(bool timer_fired);
+
+  DIPSRedirectChainHandler handler_;
+  std::optional<
+      std::pair<std::vector<DIPSRedirectInfoPtr>, DIPSRedirectChainInfoPtr>>
+      prev_chain_pair_;
+  base::RetainingOneShotTimer timer_;
+};
+
 // Detects chains of server- and client redirects, and notifies observers.
 // TODO: crbug.com/324573485 - move to separate file.
 class RedirectChainDetector
@@ -404,7 +426,11 @@ class RedirectChainDetector
   void OnStatefulBounceDetected() override;
   // End SiteDataObserver overrides.
 
+  void NotifyOnRedirectChainEnded(std::vector<DIPSRedirectInfoPtr> redirects,
+                                  DIPSRedirectChainInfoPtr chain);
+
   DIPSBounceDetector detector_;
+  DelayedChainHandler delayed_handler_;
   base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<RedirectChainDetector> weak_factory_{this};
 

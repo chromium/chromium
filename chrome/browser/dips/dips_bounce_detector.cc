@@ -8,12 +8,14 @@
 #include <cstddef>
 #include <ctime>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/overloaded.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
@@ -133,7 +135,11 @@ RedirectChainDetector::RedirectChainDetector(content::WebContents* web_contents)
       content::WebContentsUserData<RedirectChainDetector>(*web_contents),
       detector_(this,
                 base::DefaultTickClock::GetInstance(),
-                base::DefaultClock::GetInstance()) {
+                base::DefaultClock::GetInstance()),
+      // Unretained() is safe because delayed_handler_ is owned by this.
+      delayed_handler_(base::BindRepeating(
+          &RedirectChainDetector::NotifyOnRedirectChainEnded,
+          base::Unretained(this))) {
   PrimaryPageMarker::CreateForPage(web_contents->GetPrimaryPage());
 }
 
@@ -427,14 +433,17 @@ void DIPSRedirectContext::EndChain(UrlAndSourceId final_url,
   redirects_.clear();
 }
 
-bool DIPSRedirectContext::AddLateCookieAccess(GURL url, CookieOperation op) {
+namespace {
+bool AddLateCookieAccess(const GURL& url,
+                         CookieOperation op,
+                         std::vector<DIPSRedirectInfoPtr>& redirects) {
   const size_t kMaxLookback = 5;
-  const size_t lookback = std::min(kMaxLookback, redirects_.size());
+  const size_t lookback = std::min(kMaxLookback, redirects.size());
   for (size_t i = 1; i <= lookback; i++) {
-    const size_t offset = redirects_.size() - i;
-    if (redirects_[offset]->url.url == url) {
-      redirects_[offset]->access_type =
-          redirects_[offset]->access_type | ToSiteDataAccessType(op);
+    const size_t offset = redirects.size() - i;
+    if (redirects[offset]->url.url == url) {
+      redirects[offset]->access_type =
+          redirects[offset]->access_type | ToSiteDataAccessType(op);
 
       // This cookie access might indicate a stateful bounce and ideally we'd
       // report an issue to notify the user, but the navigation already
@@ -445,6 +454,12 @@ bool DIPSRedirectContext::AddLateCookieAccess(GURL url, CookieOperation op) {
   }
 
   return false;
+}
+}  // namespace
+
+bool DIPSRedirectContext::AddLateCookieAccess(const GURL& url,
+                                              CookieOperation op) {
+  return ::AddLateCookieAccess(url, op, redirects_);
 }
 
 void DIPSWebContentsObserver::EmitDIPSIssue(
@@ -526,6 +541,12 @@ UrlAndSourceId RedirectChainDetector::GetLastCommittedURL() const {
 }
 
 void RedirectChainDetector::HandleRedirectChain(
+    std::vector<DIPSRedirectInfoPtr> redirects,
+    DIPSRedirectChainInfoPtr chain) {
+  delayed_handler_.HandleRedirectChain(std::move(redirects), std::move(chain));
+}
+
+void RedirectChainDetector::NotifyOnRedirectChainEnded(
     std::vector<DIPSRedirectInfoPtr> redirects,
     DIPSRedirectChainInfoPtr chain) {
   for (auto& observer : observers_) {
@@ -710,7 +731,8 @@ void RedirectChainDetector::OnCookiesAccessed(
   //
   // TODO(rtarpine): Is it possible for cookie accesses to be reported late
   // for uncommitted navigations?
-  if (detector_.AddLateCookieAccess(details.url, details.type)) {
+  if (delayed_handler_.AddLateCookieAccess(details.url, details.type) ||
+      detector_.AddLateCookieAccess(details.url, details.type)) {
     return;
   }
 
@@ -1087,6 +1109,7 @@ void DIPSWebContentsObserver::WebContentsDestroyed() {
 
 void RedirectChainDetector::WebContentsDestroyed() {
   detector_.BeforeDestruction();
+  delayed_handler_.HandlePreviousChainNow();
 }
 
 void DIPSBounceDetector::BeforeDestruction() {
@@ -1122,4 +1145,55 @@ void RedirectChainDetector::AddObserver(Observer* observer) {
 
 void RedirectChainDetector::RemoveObserver(const Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+DelayedChainHandler::DelayedChainHandler(DIPSRedirectChainHandler handler)
+    : handler_(handler),
+      timer_(
+          FROM_HERE,
+          base::Seconds(1),
+          base::BindRepeating(&DelayedChainHandler::HandlePreviousChainNowImpl,
+                              base::Unretained(this),
+                              /*timer_fired=*/true)) {
+  CHECK(!timer_.IsRunning());
+  CHECK(!prev_chain_pair_.has_value());
+}
+
+DelayedChainHandler::~DelayedChainHandler() = default;
+
+void DelayedChainHandler::HandleRedirectChain(
+    std::vector<DIPSRedirectInfoPtr> redirects,
+    DIPSRedirectChainInfoPtr chain) {
+  HandlePreviousChainNow();
+
+  prev_chain_pair_ = std::make_pair(std::move(redirects), std::move(chain));
+  timer_.Reset();
+}
+
+bool DelayedChainHandler::AddLateCookieAccess(const GURL& url,
+                                              CookieOperation op) {
+  if (!prev_chain_pair_.has_value()) {
+    return false;
+  }
+
+  return ::AddLateCookieAccess(url, op, prev_chain_pair_->first);
+}
+
+void DelayedChainHandler::HandlePreviousChainNowImpl(bool timer_fired) {
+  if (timer_fired) {
+    CHECK(!timer_.IsRunning());
+  }
+  // If `prev_chain_pair_` has a value, then either the timer is currently
+  // running or it just fired. If `prev_chain_pair_` doesn't have a value,
+  // then the timer is not running nor did it just fire.
+  CHECK_EQ(prev_chain_pair_.has_value(), timer_.IsRunning() ^ timer_fired);
+
+  if (!prev_chain_pair_.has_value()) {
+    return;
+  }
+
+  timer_.Stop();
+  auto [prev_redirects, prev_chain] = std::move(prev_chain_pair_.value());
+  prev_chain_pair_.reset();
+  handler_.Run(std::move(prev_redirects), std::move(prev_chain));
 }
