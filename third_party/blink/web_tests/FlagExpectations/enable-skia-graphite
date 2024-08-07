@@ -44,9 +44,9 @@ crbug.com/40937352 external/wpt/css/css-color/parsing/color-valid-relative-color
 crbug.com/40937352 external/wpt/css/css-color/parsing/color-computed-relative-color.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/compute-explicit-name-non-existent.html [ Failure ]
-virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nearest-nested.html [ Failure ]
-virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/normal-goes-up.html [ Failure ]
+crbug.com/358192560 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/compute-explicit-name-non-existent.html [ Failure ]
+crbug.com/358192560 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nearest-nested.html [ Failure ]
+crbug.com/358192560 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/normal-goes-up.html [ Failure ]
 crbug.com/356913289 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-reload-navigation-reload.html [ Crash ]
 crbug.com/355484322 external/wpt/css/filter-effects/backdrop-filter-boundary.html [ Failure ]
 crbug.com/355484322 external/wpt/css/filter-effects/backdrop-filter-edge-mirror.html [ Failure ]
