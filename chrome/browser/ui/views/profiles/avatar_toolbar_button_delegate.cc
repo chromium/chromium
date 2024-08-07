@@ -1175,6 +1175,12 @@ void AvatarToolbarButtonDelegate::OnThemeChanged(
     return;
   }
 
+  // Do not update the profile theme colors if the current browser window is a
+  // web app.
+  if (web_app::AppBrowserController::IsWebApp(browser_)) {
+    return;
+  }
+
   ProfileAttributesEntry* entry = GetProfileAttributesEntry(profile_);
   if (!entry) {
     return;
