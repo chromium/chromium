@@ -13,6 +13,10 @@
 #include "media/capture/video/video_capture_device_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
+namespace gpu {
+class SharedImageInterface;
+}
+
 namespace media {
 
 using MojoMjpegDecodeAcceleratorFactoryCB = base::RepeatingCallback<void(
@@ -38,6 +42,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
 
   static gpu::GpuMemoryBufferManager* GetBufferManager();
   static void SetGpuBufferManager(gpu::GpuMemoryBufferManager* buffer_manager);
+
+  static gpu::SharedImageInterface* GetSharedImageInterface();
+  static void SetSharedImageInterface(
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface);
 
   // This is only for vcd unittests to make sure CameraHalDelegate get the
   // camera module. It should not be invoked in the production code.
