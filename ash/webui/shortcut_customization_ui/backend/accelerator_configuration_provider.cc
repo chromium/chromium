@@ -1210,8 +1210,14 @@ void AcceleratorConfigurationProvider::InitializeNonConfigurableAccelerators(
           accessibility_accelerator_to_id_.InsertNew(
               std::make_pair(accelerator, action_id));
         } else {
-          non_configurable_accelerator_to_id_.InsertNew(
-              std::make_pair(accelerator, action_id));
+          auto* action_ids =
+              non_configurable_accelerator_to_id_.Find(accelerator);
+          if (!action_ids) {
+            non_configurable_accelerator_to_id_.InsertNew(std::make_pair(
+                accelerator, std::vector<AcceleratorActionId>{action_id}));
+          } else {
+            action_ids->push_back(action_id);
+          }
         }
         id_to_non_configurable_accelerators_[action_id].push_back(accelerator);
       }
@@ -1437,15 +1443,17 @@ AcceleratorConfigurationProvider::FindNonConfigurableIdFromAccelerator(
     const ui::Accelerator& accelerator) {
   std::vector<uint32_t> ids;
   // Check browser/text non-configurable accelerators first.
-  uint32_t* non_configurable_conflict_id =
+  auto* non_configurable_conflict_ids =
       non_configurable_accelerator_to_id_.Find(accelerator);
 
-  if (non_configurable_conflict_id) {
-    ids.push_back(*non_configurable_conflict_id);
+  if (non_configurable_conflict_ids) {
+    for (const auto id : *non_configurable_conflict_ids) {
+      ids.push_back(id);
+    }
   }
 
   // Then check accessibility accelerators.
-  non_configurable_conflict_id =
+  uint32_t* non_configurable_conflict_id =
       accessibility_accelerator_to_id_.Find(accelerator);
 
   if (non_configurable_conflict_id) {
