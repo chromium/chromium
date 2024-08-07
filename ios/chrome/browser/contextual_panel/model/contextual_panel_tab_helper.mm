@@ -106,17 +106,10 @@ void ContextualPanelTabHelper::SetMetricsData(
 bool ContextualPanelTabHelper::ShouldRefreshData(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  // `pushState` from Javascript shows up as this set of parameters, and should
-  // count as a navigation to a new page and thus a data refresh.
-  if (navigation_context->IsSameDocument() &&
-      navigation_context->HasUserGesture() &&
-      ui::PageTransitionCoreTypeIs(navigation_context->GetPageTransition(),
-                                   ui::PAGE_TRANSITION_LINK)) {
-    return true;
-  }
-
-  // Otherwise, refresh the data if the navigation is to a new document.
-  return !navigation_context->IsSameDocument();
+  // Refresh data if navigation is to a new URL (ignoring ref) or a new
+  // document.
+  return previous_url_ != navigation_context->GetUrl().GetWithoutRef() ||
+         !navigation_context->IsSameDocument();
 }
 
 #pragma mark - WebStateObserver
@@ -157,6 +150,9 @@ void ContextualPanelTabHelper::DidFinishNavigation(
   if (!ShouldRefreshData(web_state, navigation_context)) {
     return;
   }
+
+  // Don't track the URL's ref.
+  previous_url_ = navigation_context->GetUrl().GetWithoutRef();
 
   QueryModels();
 }

@@ -146,6 +146,10 @@ class ContextualPanelTabHelper
   // entrypoint has been shown for the current navigation.
   bool loud_moment_entrypoint_shown_for_curent_page_navigation_ = false;
 
+  // Stores the previous URL to help decide whether this navigation is to
+  // a new page.
+  GURL previous_url_;
+
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
   raw_ptr<web::WebState> web_state_ = nullptr;
