@@ -69,6 +69,7 @@ class MockOmniboxPopupMediatorDelegate : public OmniboxPopupMediatorDelegate {
               (const AutocompleteMatch& match),
               (override));
   MOCK_METHOD(void, OnScroll, (), (override));
+  MOCK_METHOD(void, OnCallActionTap, (), (override));
 };
 
 // Structure to configure fake AutocompleteMatch for tests.

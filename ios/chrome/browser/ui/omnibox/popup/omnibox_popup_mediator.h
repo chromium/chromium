@@ -49,6 +49,7 @@ class OmniboxPopupMediatorDelegate {
   virtual void OnMatchSelectedForAppending(const AutocompleteMatch& match) = 0;
   virtual void OnMatchSelectedForDeletion(const AutocompleteMatch& match) = 0;
   virtual void OnScroll() = 0;
+  virtual void OnCallActionTap() = 0;
 };
 
 /// Provider that returns protocols and services that are instantiated after

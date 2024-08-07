@@ -322,9 +322,14 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   switch (action.type) {
     case omnibox::ActionInfo_ActionType_CALL: {
       NSURL* URL = net::NSURLWithGURL(action.actionURI);
+      __weak __typeof__(self) weakSelf = self;
       [[UIApplication sharedApplication] openURL:URL
                                          options:@{}
-                               completionHandler:nil];
+                               completionHandler:^(BOOL success) {
+                                 if (success) {
+                                   [weakSelf callActionTapped];
+                                 }
+                               }];
       break;
     }
     case omnibox::ActionInfo_ActionType_DIRECTIONS: {
@@ -708,6 +713,10 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   DCHECK(begin <= self.autocompleteResult.size());
   DCHECK(end <= self.autocompleteResult.size());
   self.autocompleteController->GroupSuggestionsBySearchVsURL(begin, end);
+}
+
+- (void)callActionTapped {
+  _delegate->OnCallActionTap();
 }
 
 #pragma mark - CarouselItemMenuProvider
