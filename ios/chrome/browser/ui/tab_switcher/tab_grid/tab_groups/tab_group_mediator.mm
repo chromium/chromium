@@ -427,6 +427,8 @@
   if (_tabGroup) {
     [_groupConsumer setGroupTitle:_tabGroup->GetTitle()];
     [_groupConsumer setGroupColor:_tabGroup->GetColor()];
+  } else {
+    [self.tabGroupsHandler hideTabGroup];
   }
 }
 
