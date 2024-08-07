@@ -1756,6 +1756,7 @@ test("content_browsertests") {
     "//components/services/storage/public/mojom:test_api",
     "//components/ukm:test_support",
     "//components/url_formatter:url_formatter",
+    "//components/variations",
     "//components/viz/host",
     "//components/viz/test:test_support",
     "//components/web_package",

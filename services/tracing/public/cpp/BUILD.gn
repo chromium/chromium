@@ -65,6 +65,8 @@ target(tracing_lib_type, "cpp") {
       "perfetto/dummy_producer.cc",
       "perfetto/dummy_producer.h",
       "perfetto/interning_index.h",
+      "perfetto/metadata_data_source.cc",
+      "perfetto/metadata_data_source.h",
       "perfetto/perfetto_config.cc",
       "perfetto/perfetto_config.h",
       "perfetto/perfetto_producer.cc",
@@ -145,6 +147,7 @@ target(tracing_lib_type, "cpp") {
       ":buildflags",
       "//build:chromecast_buildflags",
       "//build:chromeos_buildflags",
+      "//components/variations",
       "//third_party/perfetto/protos/perfetto/trace/chrome:minimal_complete_lite",
     ]
 
