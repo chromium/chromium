@@ -18,7 +18,8 @@ declare_args() {
   enterprise_local_content_analysis = is_win || is_mac || is_linux
 
   # Indicates support for Data Control rules.
-  enterprise_data_controls = is_win || is_mac || is_linux || is_chromeos
+  enterprise_data_controls =
+      is_win || is_mac || is_linux || is_chromeos || is_android
 
   # Indicates support for client certificates provisioning.
   enterprise_client_certificates = is_win || is_mac || is_linux

@@ -5283,7 +5283,7 @@ if (!is_android) {
       deps += [ "../browser/enterprise/connectors/test:test_support" ]
     }
 
-    if (enterprise_data_controls) {
+    if (enterprise_data_controls && !is_android) {
       sources += [
         "//chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_browsertest.cc",
         "//chrome/browser/enterprise/data_protection/clipboard_browsertest.cc",
@@ -10232,7 +10232,8 @@ test("unit_tests") {
     ]
   }
 
-  if (enterprise_data_controls || enterprise_screenshot_protection) {
+  if ((enterprise_data_controls || enterprise_screenshot_protection) &&
+      !is_android) {
     sources += [
       "../browser/enterprise/data_protection/data_protection_clipboard_utils_unittest.cc",
       "../browser/enterprise/data_protection/paste_allowed_request_unittest.cc",

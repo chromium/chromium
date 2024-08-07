@@ -777,10 +777,10 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
-#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
@@ -7808,7 +7808,8 @@ void ChromeContentBrowserClient::IsClipboardPasteAllowedByPolicy(
     const content::ClipboardMetadata& metadata,
     ClipboardPasteData clipboard_paste_data,
     IsClipboardPasteAllowedCallback callback) {
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+// TODO(b/352728209): Add Android-specific hook for Data Controls.
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
   enterprise_data_protection::PasteAllowedRequest::StartPasteAllowedRequest(
       source, destination, metadata, std::move(clipboard_paste_data),
       std::move(callback));
@@ -7822,7 +7823,8 @@ void ChromeContentBrowserClient::IsClipboardCopyAllowedByPolicy(
     const content::ClipboardMetadata& metadata,
     const ClipboardPasteData& data,
     IsClipboardCopyAllowedCallback callback) {
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+// TODO(b/352728209): Add Android-specific hook for Data Controls.
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
   enterprise_data_protection::IsClipboardCopyAllowedByPolicy(
       source, metadata, data, std::move(callback));
 #else
@@ -7838,7 +7840,7 @@ void ChromeContentBrowserClient::IsClipboardCopyAllowedByPolicy(
     std::move(callback).Run(metadata.format_type, data,
                             std::move(replacement_data));
   }
-#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
 }
 
 #if BUILDFLAG(ENABLE_VR)

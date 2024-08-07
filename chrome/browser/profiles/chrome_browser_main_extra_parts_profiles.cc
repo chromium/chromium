@@ -773,8 +773,13 @@ void ChromeBrowserMainExtraPartsProfiles::
   }
 #endif
   DataTypeStoreServiceFactory::GetInstance();
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+
+// TODO(b/352728209): Add back this service when reporting is supported on
+// Android.
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
   data_controls::ReportingServiceFactory::GetInstance();
+#endif
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   data_controls::ChromeRulesServiceFactory::GetInstance();
 #endif
   data_sharing::DataSharingServiceFactory::GetInstance();

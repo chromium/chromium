@@ -187,6 +187,8 @@ schema:
         type: object
     type: object
   type: array
+future_on:
+- android
 supported_on:
 - chrome.*:128-
 - chrome_os:128-
