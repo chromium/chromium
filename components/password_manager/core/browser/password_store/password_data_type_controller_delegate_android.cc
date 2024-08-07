@@ -10,12 +10,12 @@
 
 namespace password_manager {
 
-PasswordModelTypeConrollerDelegateAndroid::
-    PasswordModelTypeConrollerDelegateAndroid() = default;
-PasswordModelTypeConrollerDelegateAndroid::
-    ~PasswordModelTypeConrollerDelegateAndroid() = default;
+PasswordDataTypeControllerDelegateAndroid::
+    PasswordDataTypeControllerDelegateAndroid() = default;
+PasswordDataTypeControllerDelegateAndroid::
+    ~PasswordDataTypeControllerDelegateAndroid() = default;
 
-void PasswordModelTypeConrollerDelegateAndroid::OnSyncStarting(
+void PasswordDataTypeControllerDelegateAndroid::OnSyncStarting(
     const syncer::DataTypeActivationRequest& request,
     StartCallback callback) {
   // Set `skip_engine_connection` to true to indicate that, actually, this sync
@@ -28,10 +28,10 @@ void PasswordModelTypeConrollerDelegateAndroid::OnSyncStarting(
   std::move(callback).Run(std::move(activation_response));
 }
 
-void PasswordModelTypeConrollerDelegateAndroid::OnSyncStopping(
+void PasswordDataTypeControllerDelegateAndroid::OnSyncStopping(
     syncer::SyncStopMetadataFate metadata_fate) {}
 
-void PasswordModelTypeConrollerDelegateAndroid::HasUnsyncedData(
+void PasswordDataTypeControllerDelegateAndroid::HasUnsyncedData(
     base::OnceCallback<void(bool)> callback) {
   // No data is managed by PasswordDataTypeControllerDelegate - this datatype
   // doesn't use the built-in SyncEngine to communicate changes to/from the Sync
@@ -40,14 +40,14 @@ void PasswordModelTypeConrollerDelegateAndroid::HasUnsyncedData(
   std::move(callback).Run(false);
 }
 
-void PasswordModelTypeConrollerDelegateAndroid::GetAllNodesForDebugging(
+void PasswordDataTypeControllerDelegateAndroid::GetAllNodesForDebugging(
     AllNodesCallback callback) {
   // This is not implemented because it's not worth the hassle just to display
   // debug information in chrome://sync-internals.
   std::move(callback).Run(syncer::PASSWORDS, base::Value::List());
 }
 
-void PasswordModelTypeConrollerDelegateAndroid::
+void PasswordDataTypeControllerDelegateAndroid::
     GetTypeEntitiesCountForDebugging(
         base::OnceCallback<void(const syncer::TypeEntitiesCount&)> callback)
         const {
@@ -56,24 +56,24 @@ void PasswordModelTypeConrollerDelegateAndroid::
   std::move(callback).Run(syncer::TypeEntitiesCount(syncer::PASSWORDS));
 }
 
-void PasswordModelTypeConrollerDelegateAndroid::
+void PasswordDataTypeControllerDelegateAndroid::
     RecordMemoryUsageAndCountsHistograms() {
   // This is not implemented because it's not worth the hassle. Password sync
   // module on Android doesn't hold any password. Instead passwords are
   // requested on demand from the GMS Core.
 }
 
-void PasswordModelTypeConrollerDelegateAndroid::ClearMetadataIfStopped() {
+void PasswordDataTypeControllerDelegateAndroid::ClearMetadataIfStopped() {
   // No metadata is managed by PasswordDataTypeControllerDelegate.
 }
 
-void PasswordModelTypeConrollerDelegateAndroid::ReportBridgeErrorForTest() {
+void PasswordDataTypeControllerDelegateAndroid::ReportBridgeErrorForTest() {
   // Not supported for Android.
   NOTREACHED_IN_MIGRATION();
 }
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
-PasswordModelTypeConrollerDelegateAndroid::GetWeakPtrToBaseClass() {
+PasswordDataTypeControllerDelegateAndroid::GetWeakPtrToBaseClass() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 }  // namespace password_manager

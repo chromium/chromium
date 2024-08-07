@@ -13,19 +13,19 @@ namespace password_manager {
 // This class implements `syncer::DataTypeControllerDelegate` but skips
 // conntecting to sync engine. It will be used to disable password sync
 // machinery and rely on GMS instead.
-class PasswordModelTypeConrollerDelegateAndroid
+class PasswordDataTypeControllerDelegateAndroid
     : public syncer::DataTypeControllerDelegate {
  public:
-  PasswordModelTypeConrollerDelegateAndroid();
-  PasswordModelTypeConrollerDelegateAndroid(
-      const PasswordModelTypeConrollerDelegateAndroid&) = delete;
-  PasswordModelTypeConrollerDelegateAndroid(
-      PasswordModelTypeConrollerDelegateAndroid&&) = delete;
-  PasswordModelTypeConrollerDelegateAndroid& operator=(
-      const PasswordModelTypeConrollerDelegateAndroid&) = delete;
-  PasswordModelTypeConrollerDelegateAndroid& operator=(
-      PasswordModelTypeConrollerDelegateAndroid&&) = delete;
-  ~PasswordModelTypeConrollerDelegateAndroid() override;
+  PasswordDataTypeControllerDelegateAndroid();
+  PasswordDataTypeControllerDelegateAndroid(
+      const PasswordDataTypeControllerDelegateAndroid&) = delete;
+  PasswordDataTypeControllerDelegateAndroid(
+      PasswordDataTypeControllerDelegateAndroid&&) = delete;
+  PasswordDataTypeControllerDelegateAndroid& operator=(
+      const PasswordDataTypeControllerDelegateAndroid&) = delete;
+  PasswordDataTypeControllerDelegateAndroid& operator=(
+      PasswordDataTypeControllerDelegateAndroid&&) = delete;
+  ~PasswordDataTypeControllerDelegateAndroid() override;
 
   // syncer::DataTypeControllerDelegate implementation.
   void OnSyncStarting(const syncer::DataTypeActivationRequest& request,
@@ -43,7 +43,7 @@ class PasswordModelTypeConrollerDelegateAndroid
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetWeakPtrToBaseClass();
 
  private:
-  base::WeakPtrFactory<PasswordModelTypeConrollerDelegateAndroid>
+  base::WeakPtrFactory<PasswordDataTypeControllerDelegateAndroid>
       weak_ptr_factory_{this};
 };
 }  // namespace password_manager

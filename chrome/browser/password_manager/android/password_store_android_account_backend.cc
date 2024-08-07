@@ -281,7 +281,7 @@ void PasswordStoreAndroidAccountBackend::DisableAutoSignInForOriginsAsync(
 
 std::unique_ptr<syncer::DataTypeControllerDelegate>
 PasswordStoreAndroidAccountBackend::CreateSyncControllerDelegate() {
-  return std::make_unique<PasswordModelTypeConrollerDelegateAndroid>();
+  return std::make_unique<PasswordDataTypeControllerDelegateAndroid>();
 }
 
 SmartBubbleStatsStore*

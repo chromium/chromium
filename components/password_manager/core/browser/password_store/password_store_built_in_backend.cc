@@ -435,7 +435,7 @@ PasswordStoreBuiltInBackend::CreateSyncControllerDelegate() {
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   if (password_manager::features::
           IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled()) {
-    return std::make_unique<PasswordModelTypeConrollerDelegateAndroid>();
+    return std::make_unique<PasswordDataTypeControllerDelegateAndroid>();
   }
 #endif
   DCHECK(helper_);
