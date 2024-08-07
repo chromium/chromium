@@ -101,6 +101,8 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"learnMoreA11yLabel", IDS_PRODUCT_SPECIFICATIONS_LEARN_MORE_A11Y_LABEL},
       {"offlineMessage", IDS_PRODUCT_SPECIFICATIONS_OFFLINE_TOAST_MESSAGE},
       {"priceRowTitle", IDS_PRODUCT_SPECIFICATIONS_PRICE_ROW_TITLE},
+      {"productSummaryRowTitle",
+       IDS_PRODUCT_SPECIFICATIONS_PRODUCT_SUMMARY_ROW_TITLE},
       {"recentlyViewedTabs",
        IDS_PRODUCT_SPECIFICATIONS_RECENTLY_VIEWED_TABS_SECTION},
       {"removeColumn", IDS_PRODUCT_SPECIFICATIONS_REMOVE_COLUMN},

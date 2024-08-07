@@ -47,7 +47,7 @@ function createSpecsProduct(overrides?: Partial<ProductSpecificationsProduct>):
         productUrl: {url: ''},
         imageUrl: {url: ''},
         productDimensionValues: new Map<bigint, string[]>(),
-        summary: '',
+        summary: [],
       },
       overrides);
 }
@@ -145,7 +145,8 @@ suite('AppTest', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    loadTimeData.overrideValues({priceRowTitle: 'price'});
+    loadTimeData.overrideValues(
+        {priceRowTitle: 'price', productSummaryRowTitle: 'summary'});
     shoppingServiceApi.reset();
     shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
     shoppingServiceApi.setResultFor(
@@ -318,6 +319,10 @@ suite('AppTest', () => {
       productClusterId: BigInt(123),
       title: 'qux',
       productDimensionValues: dimensionValuesMap,
+      summary: [{
+        text: 'product summary',
+        urls: [],
+      }],
     });
     const info1 = createInfo({
       clusterId: BigInt(123),
@@ -357,6 +362,15 @@ suite('AppTest', () => {
             productDetails: [
               {title: 'price', text: '$100', description: [], summary: []},
               {
+                title: 'summary',
+                text: null,
+                description: [],
+                summary: [{
+                  text: 'product summary',
+                  urls: [],
+                }],
+              },
+              {
                 title: detailTitle,
                 text: null,
                 description: [
@@ -387,6 +401,7 @@ suite('AppTest', () => {
             // summary`.
             productDetails: [
               {title: 'price', text: null, description: [], summary: []},
+              {title: 'summary', text: null, description: [], summary: []},
               {title: detailTitle, text: null, description: [], summary: []},
             ],
           },
@@ -457,6 +472,7 @@ suite('AppTest', () => {
             },
             productDetails: [
               {title: 'price', text: null, description: [], summary: []},
+              {title: 'summary', text: null, description: [], summary: []},
               {
                 title: detailTitle,
                 text: null,
@@ -577,6 +593,7 @@ suite('AppTest', () => {
             },
             productDetails: [
               {title: 'price', text: null, description: [], summary: []},
+              {title: 'summary', text: null, description: [], summary: []},
               {
                 title: detailTitle,
                 text: null,
@@ -593,6 +610,7 @@ suite('AppTest', () => {
             },
             productDetails: [
               {title: 'price', text: null, description: [], summary: []},
+              {title: 'summary', text: null, description: [], summary: []},
               {
                 title: detailTitle,
                 text: null,
@@ -741,6 +759,7 @@ suite('AppTest', () => {
             },
             productDetails: [
               {title: 'price', text: null, description: [], summary: []},
+              {title: 'summary', text: null, description: [], summary: []},
               {
                 title: rowTitle,
                 text: null,
@@ -757,6 +776,7 @@ suite('AppTest', () => {
             },
             productDetails: [
               {title: 'price', text: null, description: [], summary: []},
+              {title: 'summary', text: null, description: [], summary: []},
               {
                 title: rowTitle,
                 text: null,

@@ -94,6 +94,14 @@ function getProductDetails(
     summary: [],
   });
 
+  // The second row is the product-level summary.
+  productDetails.push({
+    title: loadTimeData.getString('productSummaryRowTitle'),
+    text: null,
+    description: [],
+    summary: product?.summary || [],
+  });
+
   productSpecs.productDimensionMap.forEach((title: string, key: bigint) => {
     if (!product) {
       // Fill missing product details with strings to ensure uniform table row

@@ -558,6 +558,9 @@
   <message name="IDS_PRODUCT_SPECIFICATIONS_PRICE_ROW_TITLE" translateable="false" desc="The title for the product price row in the product specifications table.">
     Price
   </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_PRODUCT_SUMMARY_ROW_TITLE" translateable="false" desc="The title for the product summary row in the product specifications table.">
+    Summary
+  </message>
   <message name="IDS_PRODUCT_SPECIFICATIONS_OFFLINE_TOAST_MESSAGE" translateable="false" desc="The message that shows when product specifications is offline.">
     Check your connection and try again.
   </message>
