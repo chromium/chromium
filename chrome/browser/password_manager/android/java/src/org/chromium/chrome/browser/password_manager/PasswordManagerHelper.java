@@ -178,8 +178,7 @@ public class PasswordManagerHelper {
 
         // Force instantiation of GMSCore password settings if GMSCore update is required. Launching
         // Password settings will fail and instead the blocking dialog with the suggestion to update
-        // will be displayed. This is the desired behavior with the
-        // `UnifiedPasswordManagerSyncOnlyInGMSCore` feature on.
+        // will be displayed.
         if (canUseUpm()
                 || PasswordManagerUtilBridge.isGmsCoreUpdateRequired(prefService, syncService)) {
             LoadingModalDialogCoordinator loadingDialogCoordinator =
@@ -708,10 +707,8 @@ public class PasswordManagerHelper {
                     "Backend version is not supported.",
                     CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
         }
-        // This check only may return true if the feature flag
-        // `UnifiedPasswordManagerSyncOnlyInGMSCore` is enabled. This checks against the account
-        // store GMSCore version if the user is syncing and against the local version if the user is
-        // not syncing.
+        // This checks against the account store GMSCore version if the user is syncing and against
+        // the local version if the user is not syncing.
         if (PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
                 UserPrefs.get(mProfile), SyncServiceFactory.getForProfile(mProfile))) {
             throw new PasswordCheckBackendException(
@@ -740,10 +737,8 @@ public class PasswordManagerHelper {
                     "Backend version is not supported.",
                     CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
         }
-        // This check only may return true if the feature flag
-        // UnifiedPasswordManagerSyncOnlyInGMSCore is enabled. This checks against the account store
-        // GMSCore version if the user is syncing and against the local version if the user is not
-        // syncing.
+        // This checks against the account store GMSCore version if the user is syncing and against
+        // the local version if the user is not syncing.
         if (PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
                 UserPrefs.get(mProfile), SyncServiceFactory.getForProfile(mProfile))) {
             throw new CredentialManagerBackendException(

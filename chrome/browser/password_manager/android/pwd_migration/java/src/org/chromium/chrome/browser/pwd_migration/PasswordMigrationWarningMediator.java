@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerBuildflags;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PasswordMigrationWarningSheetStateAtClosing;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PasswordMigrationWarningUserActions;
@@ -229,7 +229,7 @@ class PasswordMigrationWarningMediator
     }
 
     private boolean shouldOfferSync() {
-        if (PasswordManagerUtilBridge.isUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled()) {
+        if (!PasswordManagerBuildflags.USE_LOGIN_DATABASE_AS_BACKEND) {
             return false;
         }
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);

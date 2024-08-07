@@ -119,11 +119,6 @@ BASE_DECLARE_FEATURE(
 // Enables clearing the login database for the users who already migrated their
 // credentials to GMS Core.
 BASE_DECLARE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers);
-
-// Helper function returning the status of
-// `UnifiedPasswordManagerSyncOnlyInGMSCore`.
-bool IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Improves PSL matching capabilities by utilizing PSL-extension list from

@@ -11,6 +11,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/pass_key.h"
+#include "build/buildflag.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
@@ -174,8 +175,8 @@ bool PasswordStoreBuiltInBackend::IsAbleToSavePasswords() {
     return true;
   }
 
-  // Login database is empty, disable saving if M4 feature is enabled.
-  return !features::IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
+  // Login database is empty, disable saving.
+  return false;
 #endif
 }
 
@@ -432,12 +433,7 @@ SmartBubbleStatsStore* PasswordStoreBuiltInBackend::GetSmartBubbleStatsStore() {
 std::unique_ptr<syncer::DataTypeControllerDelegate>
 PasswordStoreBuiltInBackend::CreateSyncControllerDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-  if (password_manager::features::
-          IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled()) {
-    return std::make_unique<PasswordDataTypeControllerDelegateAndroid>();
-  }
-#endif
+#if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   DCHECK(helper_);
   // Note that a callback is bound for
   // GetSyncControllerDelegate() because this getter itself
@@ -449,6 +445,9 @@ PasswordStoreBuiltInBackend::CreateSyncControllerDelegate() {
       background_task_runner_,
       base::BindRepeating(&LoginDatabaseAsyncHelper::GetSyncControllerDelegate,
                           base::Unretained(helper_.get())));
+#else
+  return std::make_unique<PasswordDataTypeControllerDelegateAndroid>();
+#endif  // BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 }
 
 void PasswordStoreBuiltInBackend::OnSyncServiceInitialized(

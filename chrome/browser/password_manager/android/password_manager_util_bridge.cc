@@ -46,13 +46,6 @@ jboolean JNI_PasswordManagerUtilBridge_AreMinUpmRequirementsMet(JNIEnv* env) {
   return password_manager_android_util::AreMinUpmRequirementsMet();
 }
 
-jboolean
-JNI_PasswordManagerUtilBridge_IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled(
-    JNIEnv* env) {
-  return password_manager::features::
-      IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
-}
-
 jint JNI_PasswordManagerUtilBridge_GetPasswordAccessLossWarningType(
     JNIEnv* env,
     PrefService* pref_service) {

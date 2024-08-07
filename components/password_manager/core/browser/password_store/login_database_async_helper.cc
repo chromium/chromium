@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/buildflag.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
@@ -53,21 +54,15 @@ LoginDatabaseAsyncHelper::~LoginDatabaseAsyncHelper() {
 void LoginDatabaseAsyncHelper::CreateSyncBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+#if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   // Sync bridge must be constructed immediately to accommodate
   // GetSyncControllerDelegate() call.
   password_sync_bridge_ =
-#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-      features::IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled()
-          // This ensures all the changes to the passwords made while M4 feature
-          // flag is enabled won't propagate to the sync server even if the
-          // feature gets disabled.
-          ? nullptr
-          :
-#endif
           std::make_unique<PasswordSyncBridge>(
               std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
                   syncer::PASSWORDS, base::DoNothing()),
               wipe_model_upon_sync_disabled_behavior_);
+#endif  // BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 }
 
 bool LoginDatabaseAsyncHelper::Initialize(

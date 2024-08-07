@@ -127,11 +127,6 @@ BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
 BASE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers,
              "ClearLoginDatabaseForAllMigratedUPMUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled() {
-  // TODO(crbug.com/346556567): Inline.
-  return !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND);
-}
 #endif
 
 BASE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing,

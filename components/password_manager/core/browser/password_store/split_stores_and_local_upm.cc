@@ -7,7 +7,9 @@
 #include "base/android/build_info.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/buildflag.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -42,10 +44,9 @@ bool UsesSplitStoresAndUPMForLocal(const PrefService* pref_service) {
 
 bool IsGmsCoreUpdateRequired(const PrefService* pref_service,
                              const syncer::SyncService* sync_service) {
-  if (!features::IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled()) {
-    return false;
-  }
-
+#if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+  return false;
+#else
   std::string gms_version_str =
       base::android::BuildInfo::GetInstance()->gms_version_code();
   int gms_version = 0;
@@ -91,6 +92,7 @@ bool IsGmsCoreUpdateRequired(const PrefService* pref_service,
   bool is_user_unenrolled = pref_service->GetBoolean(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
   return is_user_unenrolled || is_initial_migration_missing;
+#endif  //  BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 }
 
 int GetLocalUpmMinGmsVersion() {
