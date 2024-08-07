@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_omnibox_mutator.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_result_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_selection_delegate.h"
@@ -15,10 +16,14 @@
 
 @protocol LensToolbarConsumer;
 @class OmniboxCoordinator;
+namespace web {
+class WebState;
+}  // namespace web
 
 /// Main mediator for Lens Overlay.
 /// Manages data flow between Selection, Omnibox and Results.
 @interface LensOverlayMediator : NSObject <LensOmniboxMutator,
+                                           LensOmniboxClientDelegate,
                                            LensOverlaySelectionDelegate,
                                            OmniboxFocusDelegate>
 
@@ -32,6 +37,12 @@
 
 /// Lens toolbar consumer.
 @property(nonatomic, weak) id<LensToolbarConsumer> toolbarConsumer;
+
+/// Active`webState` observed by this mediator.
+@property(nonatomic, assign) web::WebState* webState;
+
+/// Releases managed objects.
+- (void)disconnect;
 
 // Starts the main workflow for a given `snapshot` image.
 - (void)startWithSnapshot:(UIImage*)snapshot;

@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -50,12 +52,16 @@ class LensOverlayMediatorTest : public PlatformTest {
         [OCMockObject mockForClass:OmniboxCoordinator.class];
     mock_toolbar_consumer_ =
         [OCMockObject mockForProtocol:@protocol(LensToolbarConsumer)];
+    fake_web_state_ = std::make_unique<web::FakeWebState>();
 
     mediator_.resultConsumer = mock_result_consumer_;
     mediator_.snapshotConsumer = fake_snapshot_consumer_;
     mediator_.omniboxCoordinator = mock_omnibox_coordinator_;
     mediator_.toolbarConsumer = mock_toolbar_consumer_;
+    mediator_.webState = fake_web_state_.get();
   }
+
+  ~LensOverlayMediatorTest() override { [mediator_ disconnect]; }
 
  protected:
   LensOverlayMediator* mediator_;
@@ -63,6 +69,7 @@ class LensOverlayMediatorTest : public PlatformTest {
   FakeResultConsumer* mock_result_consumer_;
   FakeSnapshotConsumer* fake_snapshot_consumer_;
   id mock_omnibox_coordinator_;
+  std::unique_ptr<web::FakeWebState> fake_web_state_;
   OCMockObject<LensToolbarConsumer>* mock_toolbar_consumer_;
 };
 
@@ -125,6 +132,13 @@ TEST_F(LensOverlayMediatorTest, DefocusOmnibox) {
   [mediator_ omniboxDidResignFirstResponder];
   EXPECT_OCMOCK_VERIFY(mock_omnibox_coordinator_);
   EXPECT_OCMOCK_VERIFY(mock_toolbar_consumer_);
+}
+
+// Tests that the omnibox is updated on navigation.
+TEST_F(LensOverlayMediatorTest, UpdateOmniboxOnNavigation) {
+  OCMExpect([mock_omnibox_coordinator_ updateOmniboxState]);
+  fake_web_state_->OnNavigationFinished(nullptr);
+  EXPECT_OCMOCK_VERIFY(mock_omnibox_coordinator_);
 }
 
 }  // namespace

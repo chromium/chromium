@@ -11,12 +11,12 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_web_state_delegate.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_selection_placeholder_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_result_page_web_state_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -224,6 +224,16 @@
   [_resultMediator loadResultsURL:url];
 }
 
+#pragma mark - LensResultPageWebStateDelegate
+
+- (void)lensResultPageWebStateDestroyed {
+  [self stopResultPage];
+}
+
+- (void)lensResultPageDidChangeActiveWebState:(web::WebState*)webState {
+  _mediator.webState = webState;
+}
+
 #pragma mark - private
 
 - (void)startResultPage {
@@ -240,6 +250,7 @@
                   isIncognito:browserState->IsOffTheRecord()];
   _resultMediator.applicationHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  _resultMediator.webStateDelegate = self;
   _mediator.resultConsumer = _resultMediator;
 
   _resultViewController = [[LensResultPageViewController alloc] init];
@@ -269,7 +280,7 @@
       browserState,
       feature_engagement::TrackerFactory::GetForBrowserState(browserState),
       /*web_provider=*/_resultMediator,
-      /*omnibox_delegate=*/nil);
+      /*omnibox_delegate=*/_mediator);
 
   _omniboxCoordinator = [[OmniboxCoordinator alloc]
       initWithBaseViewController:nil
@@ -316,6 +327,7 @@
 - (void)destroyViewControllersAndMediators {
   [self stopResultPage];
   _containerViewController = nil;
+  [_mediator disconnect];
   _mediator = nil;
 }
 
@@ -367,10 +379,6 @@
 
 - (BOOL)isLensOverlayVisible {
   return self.baseViewController.presentedViewController != nil;
-}
-
-- (void)lensResultPageWebStateDestroyed {
-  [self stopResultPage];
 }
 
 @end
