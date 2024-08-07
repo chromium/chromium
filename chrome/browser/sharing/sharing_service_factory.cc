@@ -146,7 +146,7 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       content::GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE});
   auto sharing_message_sender = std::make_unique<SharingMessageSender>(
-      local_device_info_provider, std::move(task_runner));
+      local_device_info_provider, task_runner);
   SharingFCMSender* fcm_sender_ptr = fcm_sender.get();
   sharing_message_sender->RegisterSendDelegate(
       SharingMessageSender::DelegateType::kFCM, std::move(fcm_sender));
@@ -166,7 +166,7 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
       std::move(sync_prefs), std::move(vapid_key_manager),
       std::move(sharing_device_registration), std::move(sharing_message_sender),
       std::move(device_source), std::move(handler_registry),
-      std::move(fcm_handler), sync_service, std::move(task_runner));
+      std::move(fcm_handler), sync_service, task_runner);
 }
 
 bool SharingServiceFactory::ServiceIsNULLWhileTesting() const {
