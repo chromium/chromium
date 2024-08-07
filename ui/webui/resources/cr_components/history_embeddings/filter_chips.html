@@ -25,6 +25,7 @@ hr {
 </style>
 
 <select id="showByGroupSelectMenu" class="md-select"
+    aria-label="[[i18n('historyEmbeddingsShowByLabel')]]"
     value="[[showResultsByGroup]]"
     on-change="onShowByGroupSelectMenuChanged_"
     hidden$="[[!enableShowResultsByGroupOption]]">
