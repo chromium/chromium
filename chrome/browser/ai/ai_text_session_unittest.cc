@@ -13,9 +13,34 @@ using testing::Test;
 const uint32_t kTestMaxContextToken = 10u;
 const uint32_t kTestSystemPromptToken = 5u;
 
+// Tests `AITextSession::Context` creation without system prompt.
+TEST(AITextSessionTest, CreateContext_WithoutSystemPrompt) {
+  AITextSession::Context context(kTestMaxContextToken, std::nullopt);
+  EXPECT_FALSE(context.HasContextItem());
+}
+
+// Tests `AITextSession::Context` creation with valid system prompt.
+TEST(AITextSessionTest, CreateContext_WithSystemPrompt_Normal) {
+  AITextSession::Context context(
+      kTestMaxContextToken, AITextSession::Context::ContextItem{
+                                "system prompt\n", kTestSystemPromptToken});
+  EXPECT_TRUE(context.HasContextItem());
+}
+
+// Tests `AITextSession::Context` creation with system prompt that exceeds the
+// max token limit.
+TEST(AITextSessionTest, CreateContext_WithSystemPrompt_Overflow) {
+  EXPECT_DEATH_IF_SUPPORTED(
+      AITextSession::Context context(
+          kTestMaxContextToken,
+          AITextSession::Context::ContextItem{"long system prompt\n",
+                                              kTestMaxContextToken + 1u}),
+      "");
+}
+
 // Tests the `AITextSession::Context` that's initialized with/without any system
 // prompt.
-class AITextSessionTest
+class AITextSessionContextTest
     : public testing::Test,
       public testing::WithParamInterface</*is_init_with_system_prompt=*/bool> {
  public:
@@ -41,7 +66,7 @@ class AITextSessionTest
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         AITextSessionTest,
+                         AITextSessionContextTest,
                          testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "WithSystemPrompt"
@@ -49,7 +74,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          });
 
 // Tests `GetContextString()` and `HasContextItem()` when the context is empty.
-TEST_P(AITextSessionTest, TestContextOperation_Empty) {
+TEST_P(AITextSessionContextTest, TestContextOperation_Empty) {
   EXPECT_EQ(context_.GetContextString(), GetSystemPromptPrefix());
 
   if (IsInitializedWithSystemPrompt()) {
@@ -61,7 +86,7 @@ TEST_P(AITextSessionTest, TestContextOperation_Empty) {
 
 // Tests `GetContextString()` and `HasContextItem()` when some items are added
 // to the context.
-TEST_P(AITextSessionTest, TestContextOperation_NonEmpty) {
+TEST_P(AITextSessionContextTest, TestContextOperation_NonEmpty) {
   context_.AddContextItem({"test", 1u});
   EXPECT_EQ(context_.GetContextString(), GetSystemPromptPrefix() + "test");
   EXPECT_TRUE(context_.HasContextItem());
@@ -73,7 +98,7 @@ TEST_P(AITextSessionTest, TestContextOperation_NonEmpty) {
 }
 
 // Tests `GetContextString()` and `HasContextItem()` when the items overflow.
-TEST_P(AITextSessionTest, TestContextOperation_Overflow) {
+TEST_P(AITextSessionContextTest, TestContextOperation_Overflow) {
   context_.AddContextItem({"test", 1u});
   EXPECT_EQ(context_.GetContextString(), GetSystemPromptPrefix() + "test");
   EXPECT_TRUE(context_.HasContextItem());
@@ -88,7 +113,7 @@ TEST_P(AITextSessionTest, TestContextOperation_Overflow) {
 
 // Tests `GetContextString()` and `HasContextItem()` when the items overflow on
 // the first insertion.
-TEST_P(AITextSessionTest, TestContextOperation_OverflowOnFirstItem) {
+TEST_P(AITextSessionContextTest, TestContextOperation_OverflowOnFirstItem) {
   context_.AddContextItem({"test very long token", GetMaxContextToken() + 1u});
   EXPECT_EQ(context_.GetContextString(), GetSystemPromptPrefix());
   if (IsInitializedWithSystemPrompt()) {

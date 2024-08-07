@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/strings/stringprintf.h"
@@ -39,9 +40,10 @@ AITextSession::Context::Context(uint32_t max_tokens,
                                 std::optional<ContextItem> system_prompt)
     : max_tokens_(max_tokens), system_prompt_(system_prompt) {
   if (system_prompt.has_value()) {
-    // TODO(crbug.com/352461866): what if the system prompt's size is greater
-    // than the limit?
-    max_tokens_ -= system_prompt->tokens;
+    CHECK_GE(max_tokens_, system_prompt->tokens)
+        << "the caller shouldn't create an AITextSession with the system "
+           "prompt containing more tokens than the limit.";
+    current_tokens_ += system_prompt->tokens;
   }
 }
 
@@ -144,15 +146,23 @@ void AITextSession::InitializeContextWithSystemPrompt(
   // If the on device model service fails to get the size, it will be 0.
   // TODO(crbug.com/351935691): make sure the error is explicitly returned and
   // handled accordingly.
-  if (size) {
-    context_ = std::make_unique<Context>(
-        optimization_guide::features::GetOnDeviceModelMaxTokensForContext(),
-        Context::ContextItem{text, size});
-    std::move(callback).Run(true);
+  if (!size) {
+    std::move(callback).Run(false);
     return;
   }
 
-  std::move(callback).Run(false);
+  uint32_t max_token =
+      optimization_guide::features::GetOnDeviceModelMaxTokensForContext();
+  if (size > max_token) {
+    // The session cannot be created if the system prompt contains more tokens
+    // than the limit.
+    std::move(callback).Run(false);
+    return;
+  }
+
+  context_ =
+      std::make_unique<Context>(max_token, Context::ContextItem{text, size});
+  std::move(callback).Run(true);
 }
 
 // Adds the text into context. If the number of tokens in the current context

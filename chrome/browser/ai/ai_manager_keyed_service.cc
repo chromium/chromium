@@ -167,6 +167,8 @@ void AIManagerKeyedService::CreateTextSession(
   std::unique_ptr<AITextSession> session =
       CreateTextSessionInternal(sampling_params);
   if (!session) {
+    // TODO(crbug.com/343325183): probably we should consider returning an error
+    // enum and throw a clear exception from the blink side.
     std::move(callback).Run(false);
     return;
   }
@@ -174,7 +176,6 @@ void AIManagerKeyedService::CreateTextSession(
   // TODO(crbug.com/356809696): instead of using `mojo::MakeSelfOwnedReceiver`,
   // the session's lifetime should be associated with either the host of the
   // document or worker.
-
   if (!system_prompt.has_value()) {
     // The new `AITextSession` shares the same lifetime with the `receiver`.
     mojo::MakeSelfOwnedReceiver(std::move(session), std::move(receiver));
