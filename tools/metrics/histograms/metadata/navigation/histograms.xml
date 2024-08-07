@@ -679,16 +679,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.DeleteRenderFrame" units="ms"
-    expires_after="2024-12-24">
-  <owner>rakina@chromium.org</owner>
-  <owner>chrome-security-architecture@google.com</owner>
-  <summary>
-    The time it takes for the RenderFrameImpl::Delete() to run. Recorded on
-    every RenderFrameImpl::Delete() call.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.DidCommitSameDocumentNavigation.Duration"
     units="ms" expires_after="2025-01-05">
   <owner>peilinwang@google.com</owner>
@@ -1732,6 +1722,16 @@ chromium-metrics-reviews@google.com.
     https, this is not recorded.
   </summary>
   <token key="FrameType" variants="FrameTypes"/>
+</histogram>
+
+<histogram name="Navigation.RenderFrameDelete" units="ms"
+    expires_after="2024-12-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    The time it takes for the RenderFrameImpl::Delete() to run. Recorded on
+    every RenderFrameImpl::Delete() call.
+  </summary>
 </histogram>
 
 <histogram name="Navigation.RenderFrameHostConstructor" units="ms"
