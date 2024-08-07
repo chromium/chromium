@@ -340,6 +340,7 @@ void Display::UpdateFrameIntervalDeciderSettings() {
 #if BUILDFLAG(IS_ANDROID)
   matchers.push_back(std::make_unique<OnlyVideoMatcher>());
   matchers.push_back(std::make_unique<OnlyAnimatingImageMatcher>());
+  matchers.push_back(std::make_unique<OnlyScrollBarFadeOutAnimationMatcher>());
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

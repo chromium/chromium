@@ -125,6 +125,8 @@ std::string FrameIntervalMatcher::MatcherTypeToString(
       return "VideoConference";
     case FrameIntervalMatcherType::kOnlyAnimatingImage:
       return "kOnlyAnimatingImage";
+    case FrameIntervalMatcherType::kOnlyScrollBarFadeOut:
+      return "OnlyScrollBarFadeOut";
   }
 }
 
@@ -240,6 +242,14 @@ std::optional<FrameIntervalMatcher::Result> OnlyAnimatingImageMatcher::Match(
     const Inputs& matcher_inputs) {
   return MatchContentIntervalType(matcher_inputs,
                                   ContentFrameIntervalType::kAnimatingImage);
+}
+
+DefineSimpleMatcherConstructorDestructor(OnlyScrollBarFadeOutAnimationMatcher,
+                                         kOnlyScrollBarFadeOut);
+std::optional<FrameIntervalMatcher::Result>
+OnlyScrollBarFadeOutAnimationMatcher::Match(const Inputs& matcher_inputs) {
+  return MatchContentIntervalType(
+      matcher_inputs, ContentFrameIntervalType::kScrollBarFadeOutAnimation);
 }
 
 }  // namespace viz

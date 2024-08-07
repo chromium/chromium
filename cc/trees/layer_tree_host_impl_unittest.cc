@@ -5986,9 +5986,12 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
     std::move(animation_task_).Run();
 
     base::TimeTicks fake_now = base::TimeTicks::Now();
-    scrollbar_controller->Animate(fake_now);
+    bool fade_out_only = false;
+    scrollbar_controller->Animate(fake_now, fade_out_only);
+    EXPECT_TRUE(fade_out_only);
     fake_now += settings.scrollbar_fade_delay;
-    scrollbar_controller->Animate(fake_now);
+    scrollbar_controller->Animate(fake_now, fade_out_only);
+    EXPECT_TRUE(fade_out_only);
 
     ASSERT_TRUE(scrollbar_controller->ScrollbarsHidden());
     ClearMainThreadDeltasForTesting(host_impl_.get());
@@ -6022,9 +6025,12 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
     std::move(animation_task_).Run();
 
     base::TimeTicks fake_now = base::TimeTicks::Now();
-    scrollbar_controller->Animate(fake_now);
+    bool fade_out_only = false;
+    scrollbar_controller->Animate(fake_now, fade_out_only);
+    EXPECT_FALSE(fade_out_only);
     fake_now += settings.scrollbar_fade_duration;
-    scrollbar_controller->Animate(fake_now);
+    scrollbar_controller->Animate(fake_now, fade_out_only);
+    EXPECT_FALSE(fade_out_only);
 
     ASSERT_FALSE(scrollbar_controller->ScrollbarsHidden());
     EXPECT_TRUE(scrollbar_controller->visibility_changed());

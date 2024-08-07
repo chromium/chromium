@@ -1061,19 +1061,20 @@ void LayerTreeHostImpl::AnimateInternal() {
   // DCHECK(monotonic_time == current_begin_frame_tracker_.Current().frame_time)
   //  << "Called animate with unknown frame time!?";
 
-  bool did_animate = false;
-
   // TODO(bokan): This should return did_animate, see TODO in
   // ElasticOverscrollController::Animate. crbug.com/551138.
   if (input_delegate_)
     input_delegate_->TickAnimations(monotonic_time);
 
-  did_animate |= AnimatePageScale(monotonic_time);
-  did_animate |= AnimateLayers(monotonic_time, /* is_active_tree */ true);
-  did_animate |= AnimateScrollbars(monotonic_time);
-  did_animate |= AnimateBrowserControls(monotonic_time);
+  bool animated_others = AnimatePageScale(monotonic_time);
+  animated_others |= AnimateLayers(monotonic_time, /* is_active_tree */ true);
+  animated_others |= AnimateBrowserControls(monotonic_time);
 
-  if (did_animate) {
+  bool scroll_bar_fade_out_only_or_idle = false;
+  bool animated_scrollbars =
+      AnimateScrollbars(monotonic_time, scroll_bar_fade_out_only_or_idle);
+
+  if (animated_others || animated_scrollbars) {
     // Animating stuff can change the root scroll offset, so inform the
     // synchronous input handler.
     if (input_delegate_)
@@ -1081,7 +1082,12 @@ void LayerTreeHostImpl::AnimateInternal() {
 
     // If the tree changed, then we want to draw at the end of the current
     // frame.
-    SetNeedsRedrawOrUpdateDisplayTree(RedrawReason::kUntracked);
+    RedrawReason redraw_reason = RedrawReason::kUntracked;
+    if (!animated_others && animated_scrollbars &&
+        scroll_bar_fade_out_only_or_idle) {
+      redraw_reason = RedrawReason::kScrollbarFadeOutAnimation;
+    }
+    SetNeedsRedrawOrUpdateDisplayTree(redraw_reason);
   }
 }
 
@@ -2862,6 +2868,17 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     }
   }
 
+  if (frame->set_needs_redraw_reasons.Has(
+          RedrawReason::kScrollbarFadeOutAnimation)) {
+    // Lower fade out animation to 20hz somewhat arbitrarily since it's small
+    // and hard to notice a low frame rate.
+    metadata.frame_interval_inputs.content_interval_info.push_back(
+        {viz::ContentFrameIntervalType::kScrollBarFadeOutAnimation,
+         base::Hertz(20)});
+    frame->set_needs_redraw_reasons.Remove(
+        RedrawReason::kScrollbarFadeOutAnimation);
+  }
+
   // If all RedrawReasons have been recorded in `content_interval_info` and
   // removed, then can set `has_only_content_frame_interval_updates`.
   metadata.frame_interval_inputs.has_only_content_frame_interval_updates =
@@ -4559,10 +4576,17 @@ bool LayerTreeHostImpl::AnimateBrowserControls(base::TimeTicks time) {
   return true;
 }
 
-bool LayerTreeHostImpl::AnimateScrollbars(base::TimeTicks monotonic_time) {
+bool LayerTreeHostImpl::AnimateScrollbars(base::TimeTicks monotonic_time,
+                                          bool& fade_out_only_or_idle) {
   bool animated = false;
-  for (auto& pair : scrollbar_animation_controllers_)
-    animated |= pair.second->Animate(monotonic_time);
+  fade_out_only_or_idle = true;
+  for (auto& pair : scrollbar_animation_controllers_) {
+    bool fade_out_only = false;
+    if (pair.second->Animate(monotonic_time, fade_out_only)) {
+      animated = true;
+      fade_out_only_or_idle &= fade_out_only;
+    }
+  }
   return animated;
 }
 

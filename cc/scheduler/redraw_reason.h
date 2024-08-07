@@ -18,7 +18,8 @@ namespace cc {
 enum class RedrawReason {
   kUntracked,
   kAnimatedImage,
-  kMaxValue = kAnimatedImage,
+  kScrollbarFadeOutAnimation,
+  kMaxValue = kScrollbarFadeOutAnimation,
 };
 
 using RedrawReasonSet = base::

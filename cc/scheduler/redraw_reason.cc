@@ -12,6 +12,8 @@ std::string RedrawReasonToString(RedrawReason reason) {
       return "kUntracked";
     case RedrawReason::kAnimatedImage:
       return "kAnimatedImage";
+    case RedrawReason::kScrollbarFadeOutAnimation:
+      return "kScrollbarFadeOutAnimation";
   }
 }
 

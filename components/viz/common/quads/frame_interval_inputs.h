@@ -27,6 +27,7 @@ namespace viz {
 enum class ContentFrameIntervalType {
   kVideo,
   kAnimatingImage,  // Gifs.
+  kScrollBarFadeOutAnimation,
 };
 
 struct VIZ_COMMON_EXPORT ContentFrameIntervalInfo {

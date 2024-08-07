@@ -995,7 +995,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void UpdateRasterCapabilities();
 
   bool AnimatePageScale(base::TimeTicks monotonic_time);
-  bool AnimateScrollbars(base::TimeTicks monotonic_time);
+  // `fade_out_only_or_idle` is an output that's set to true if all scrollbars
+  // animations are either animating fade out or idle.
+  bool AnimateScrollbars(base::TimeTicks monotonic_time,
+                         bool& fade_out_only_or_idle);
   bool AnimateBrowserControls(base::TimeTicks monotonic_time);
 
   void UpdateTileManagerMemoryPolicy(const ManagedMemoryPolicy& policy);

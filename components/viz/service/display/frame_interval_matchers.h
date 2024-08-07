@@ -26,6 +26,7 @@ enum class FrameIntervalMatcherType {
   kOnlyVideo,
   kVideoConference,
   kOnlyAnimatingImage,
+  kOnlyScrollBarFadeOut,
 };
 
 // Works with `FrameIntervalDecider` to compute the ideal frame interval.
@@ -131,6 +132,7 @@ DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(InputBoostMatcher);
 DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(OnlyVideoMatcher);
 DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(VideoConferenceMatcher);
 DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(OnlyAnimatingImageMatcher);
+DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(OnlyScrollBarFadeOutAnimationMatcher);
 
 #undef DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER
 
