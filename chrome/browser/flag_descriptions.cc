@@ -2161,9 +2161,10 @@ const char kStartSurfaceReturnTimeName[] = "Start surface return time";
 const char kStartSurfaceReturnTimeDescription[] =
     "Enable showing start surface at startup after specified time has elapsed";
 
-const char kHttpsFirstBalancedModeName[] = "HTTPS-First Balanced Mode";
+const char kHttpsFirstBalancedModeName[] =
+    "Allow enabling Balanced Mode for HTTPS-First Mode.";
 const char kHttpsFirstBalancedModeDescription[] =
-    "Use HTTPS-First Mode only when secure connections are likely possible.";
+    "Enable tri-state HTTPS-First Mode setting in chrome://settings/security.";
 
 const char kHttpsFirstDialogUiName[] = "Dialog UI for HTTPS-First Modes";
 const char kHttpsFirstDialogUiDescription[] = "Use a dialog-based UI for HFM";
