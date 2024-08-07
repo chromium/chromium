@@ -156,6 +156,12 @@ UserConsentView::UserConsentView(
   set_suppress_default_focus_handling();
   views::FocusRing::Install(this);
 
+  auto desc_text = l10n_util::GetStringFUTF8(
+      IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_DESC_TEMPLATE,
+      l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT));
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  GetViewAccessibility().SetName(title_text_);
+  GetViewAccessibility().SetDescription(desc_text);
   // Read out user-consent text if screen-reader is active.
   GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
       IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_ALERT_TEXT));
@@ -186,15 +192,6 @@ void UserConsentView::OnThemeChanged() {
 
 views::FocusTraversable* UserConsentView::GetPaneFocusTraversable() {
   return &focus_search_;
-}
-
-void UserConsentView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetName(title_text_);
-  auto desc_text = l10n_util::GetStringFUTF8(
-      IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_DESC_TEMPLATE,
-      l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT));
-  node_data->SetDescription(desc_text);
 }
 
 void UserConsentView::UpdateBoundsForQuickAnswers() {

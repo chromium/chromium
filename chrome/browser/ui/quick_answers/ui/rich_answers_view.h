@@ -55,7 +55,6 @@ class RichAnswersView : public views::View, public views::WidgetObserver {
   void AddedToWidget() override;
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnThemeChanged() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;

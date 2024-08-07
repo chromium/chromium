@@ -333,6 +333,8 @@ QuickAnswersView::QuickAnswersView(
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   set_suppress_default_focus_handling();
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
 }
 
 QuickAnswersView::~QuickAnswersView() = default;
@@ -368,8 +370,6 @@ views::FocusTraversable* QuickAnswersView::GetPaneFocusTraversable() {
 }
 
 void QuickAnswersView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kDialog;
-
   // The view itself is not focused for retry-mode, so should not be announced
   // by the screen reader.
   if (retry_view_->GetVisible()) {
