@@ -35,6 +35,17 @@ html.no-match::view-transition {
     view-transition-group: red;
 }
 
+.nearest-ref {
+    view-transition-group: nearest;
+}
+
+.normal {
+    view-transition-name: normal;
+}
+
+.normal-ref {
+    view-transition-group: normal;
+}
 ::view-transition-group(green) {
     background: green;
 }

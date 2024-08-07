@@ -7006,6 +7006,10 @@ const CSSValue* ViewTransitionGroup::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
+  auto id = stream.Peek().Id();
+  if (id == CSSValueID::kNormal || id == CSSValueID::kNearest) {
+    return css_parsing_utils::ConsumeIdent(stream);
+  }
   return css_parsing_utils::ConsumeCustomIdent(stream, context);
 }
 
@@ -7014,10 +7018,13 @@ const CSSValue* ViewTransitionGroup::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (!style.ViewTransitionGroup()) {
+  if (style.ViewTransitionGroup().IsNormal()) {
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
+  } else if (style.ViewTransitionGroup().IsNearest()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNearest);
   }
-  return MakeGarbageCollected<CSSCustomIdentValue>(style.ViewTransitionGroup());
+  return MakeGarbageCollected<CSSCustomIdentValue>(
+      style.ViewTransitionGroup().CustomName());
 }
 
 const CSSValue* PaintOrder::ParseSingleValue(

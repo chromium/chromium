@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
+#include "third_party/blink/renderer/core/style/style_view_transition_group.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_content_element.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_builder.h"
@@ -547,7 +548,8 @@ void ViewTransitionStyleTracker::AddConsoleError(
 
 void ViewTransitionStyleTracker::AddTransitionElement(
     Element* element,
-    const AtomicString& name) {
+    const AtomicString& name,
+    const Vector<AtomicString>& containing_group_stack) {
   DCHECK(element);
 
   // Insert an empty hash set for the element if it doesn't exist, or get it if
@@ -555,6 +557,10 @@ void ViewTransitionStyleTracker::AddTransitionElement(
   auto& value = pending_transition_element_names_
                     .insert(element, HashSet<std::pair<AtomicString, int>>())
                     .stored_value->value;
+
+  if (!containing_group_stack.empty()) {
+    nearest_parent_map_.Set(name, containing_group_stack.back());
+  }
   // Find the existing name if one is there. If it is there, do nothing.
   if (base::Contains(value, name, &std::pair<AtomicString, int>::first))
     return;
@@ -616,13 +622,17 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSS() {
   DCHECK_GE(document_->Lifecycle().GetState(),
             DocumentLifecycle::kCompositingInputsClean);
 
+  Vector<AtomicString> containing_group_stack;
+
   AddTransitionElementsFromCSSRecursive(
-      document_->GetLayoutView()->PaintingLayer(), document_.Get());
+      document_->GetLayoutView()->PaintingLayer(), document_.Get(),
+      containing_group_stack);
 }
 
 void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
     PaintLayer* root,
-    const TreeScope* tree_scope) {
+    const TreeScope* tree_scope,
+    Vector<AtomicString>& containing_group_stack) {
   // We want to call AddTransitionElements in the order in which
   // PaintLayerPaintOrderIterator would cause us to paint the elements.
   // Specifically, parents are added before their children, and lower z-index
@@ -639,6 +649,7 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
   auto& root_style = root_object.StyleRef();
 
   const auto& view_transition_name = root_style.ViewTransitionName();
+  AtomicString current_name;
   if (view_transition_name && !root_object.IsFragmented()) {
     auto* node = root_object.GetNode();
     DCHECK(node);
@@ -652,19 +663,29 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
             : &node->GetTreeScope();
 
     if (relevant_tree_scope == tree_scope || !relevant_tree_scope) {
-      AddTransitionElement(DynamicTo<Element>(node),
-                           root_style.ViewTransitionName()->GetName());
+      current_name = root_style.ViewTransitionName()->GetName();
+      AddTransitionElement(DynamicTo<Element>(node), current_name,
+                           containing_group_stack);
     }
   }
 
   if (root_object.ChildPaintBlockedByDisplayLock())
     return;
 
+  if (current_name) {
+    containing_group_stack.push_back(current_name);
+  }
+
   // Even if tree scopes don't match, we process children since light slotted
   // children can have outer tree scope.
   PaintLayerPaintOrderIterator child_iterator(root, kAllChildren);
   while (auto* child = child_iterator.Next()) {
-    AddTransitionElementsFromCSSRecursive(child, tree_scope);
+    AddTransitionElementsFromCSSRecursive(child, tree_scope,
+                                          containing_group_stack);
+  }
+
+  if (current_name) {
+    containing_group_stack.pop_back();
   }
 }
 
@@ -745,16 +766,18 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
 }
 
 AtomicString ViewTransitionStyleTracker::ComputeContainingGroupName(
-    Element* element) const {
-  AtomicString group_name = element->ComputedStyleRef().ViewTransitionGroup();
-
-  // TODO: nearest / contain
-  if (group_name && element_data_map_.Contains(group_name) &&
-      element->IsDescendantOf(
-          element_data_map_.at(group_name)->target_element)) {
-    return group_name;
+    const AtomicString& name,
+    const StyleViewTransitionGroup& group) const {
+  if (group.IsNormal() || !nearest_parent_map_.Contains(name)) {
+    return g_null_atom;
   }
-  return g_null_atom;
+
+  AtomicString parent_group = nearest_parent_map_.at(name);
+  if (group.IsNearest() || group.CustomName() == parent_group) {
+    return parent_group;
+  }
+
+  return ComputeContainingGroupName(parent_group, group);
 }
 
 bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
@@ -813,7 +836,8 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
 
     // This is guaranteed to be in order if valid, as transition_names is
     // already sorted.
-    element_data->containing_group_name = ComputeContainingGroupName(element);
+    element_data->containing_group_name = ComputeContainingGroupName(
+        name, element->ComputedStyleRef().ViewTransitionGroup());
     element_data_map_.insert(name, std::move(element_data));
 
     if (element->IsDocumentElement()) {
@@ -974,7 +998,8 @@ bool ViewTransitionStyleTracker::Start() {
 
     // The parent is guaranteed to be in the list already, as transition_names
     // is sorted by paint order.
-    element_data->containing_group_name = ComputeContainingGroupName(element);
+    element_data->containing_group_name = ComputeContainingGroupName(
+        name, element->ComputedStyleRef().ViewTransitionGroup());
 
     // Verify that the element_index assigned in Capture is less than next_index
     // here, just as a sanity check.

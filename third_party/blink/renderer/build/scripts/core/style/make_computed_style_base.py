@@ -36,6 +36,7 @@ ALIGNMENT_ORDER = [
     'ComputedGridTrackList',
     'std::optional<gfx::Size>',
     'double',
+    'StyleViewTransitionGroup',
     # Aligns like a pointer (can be 32 or 64 bits)
     'NamedGridLinesMap',
     'NamedGridAreaMap',

@@ -24,6 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "third_party/blink/renderer/core/style/style_view_transition_group.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -2345,10 +2346,21 @@ scoped_refptr<SVGDashArray> StyleBuilderConverter::ConvertStrokeDasharray(
   return array;
 }
 
-AtomicString StyleBuilderConverter::ConvertViewTransitionGroup(
+StyleViewTransitionGroup StyleBuilderConverter::ConvertViewTransitionGroup(
     StyleResolverState& state,
     const CSSValue& value) {
-  return ConvertCustomIdent(state, value)->GetName();
+  if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+    switch (ident->GetValueID()) {
+      case CSSValueID::kNearest:
+        return StyleViewTransitionGroup::Nearest();
+      case CSSValueID::kNormal:
+        return StyleViewTransitionGroup::Normal();
+      default:
+        NOTREACHED_NORETURN();
+    }
+  }
+  return StyleViewTransitionGroup::Create(
+      ConvertCustomIdent(state, value)->GetName());
 }
 
 ScopedCSSName* StyleBuilderConverter::ConvertViewTransitionName(

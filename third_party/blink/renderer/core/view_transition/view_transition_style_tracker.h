@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/style/style_view_transition_group.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
@@ -221,6 +222,10 @@ class ViewTransitionStyleTracker
   enum class State { kIdle, kCapturing, kCaptured, kStarted, kFinished };
   static const char* StateToString(State state);
 
+  AtomicString ComputeContainingGroupName(
+      const AtomicString& name,
+      const StyleViewTransitionGroup& group) const;
+
   struct ElementData : public GarbageCollected<ElementData> {
     void Trace(Visitor* visitor) const;
 
@@ -296,10 +301,15 @@ class ViewTransitionStyleTracker
   void EndTransition();
 
   void AddConsoleError(String message, Vector<DOMNodeId> related_nodes = {});
-  void AddTransitionElement(Element*, const AtomicString&);
+  void AddTransitionElement(Element*,
+                            const AtomicString&,
+                            const Vector<AtomicString>& containing_group_stack);
   bool FlattenAndVerifyElements(VectorOf<Element>&, VectorOf<AtomicString>&);
 
-  void AddTransitionElementsFromCSSRecursive(PaintLayer*, const TreeScope*);
+  void AddTransitionElementsFromCSSRecursive(
+      PaintLayer*,
+      const TreeScope*,
+      Vector<AtomicString>& containing_group_stack);
 
   void InvalidateHitTestingCache();
 
@@ -386,6 +396,11 @@ class ViewTransitionStyleTracker
   // Returns true if GetViewTransitionState() has already been called. This is
   // used only to enforce additional captures don't happen after that.
   mutable bool state_extracted_ = false;
+
+  // A map from the element name to its nearest ancestor with a
+  // view-transition-name, if one exists. Used to save hierarchical information
+  // about view-transition-group
+  HashMap<AtomicString, AtomicString> nearest_parent_map_;
 };
 
 }  // namespace blink
