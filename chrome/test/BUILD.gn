@@ -345,6 +345,7 @@ static_library("test_support") {
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/webui:configs",
+    "//chrome/browser/ui/zoom",
     "//chrome/common/search:mojo_bindings",
     "//components/autofill/content/renderer:test_support",
     "//components/blocked_content:blocked_content",
@@ -3087,7 +3088,6 @@ if (!is_android) {
       "../browser/ui/webui/top_chrome/webui_contents_preload_manager_browsertest.cc",
       "../browser/ui/webui/webui_load_timer_browsertest.cc",
       "../browser/ui/webui/webui_url_hashes_browsertest.cc",
-      "../browser/ui/zoom/zoom_controller_browsertest.cc",
       "../browser/ukm_worker_browsertest.cc",
       "../browser/unload_browsertest.cc",
       "../browser/usb/chrome_usb_browsertest.cc",
@@ -3186,6 +3186,11 @@ if (!is_android) {
         "../browser/apps/platform_apps/platform_app_navigation_redirector_browsertest.cc",
         "../browser/apps/platform_apps/service_worker_browsertest.cc",
       ]
+
+      # TODO(357784804): Remove this explicit dependency on `//c/b/ui/zoom`
+      # when tests that include chrome_zoom_level_prefs.h get modularized, eg
+      # tabs_test.cc, app_browsertest.cc, host_zoom_map_browsertest.cc and ats_browsertest.cc.
+      deps += [ "//chrome/browser/ui/zoom" ]
     }
 
     if (is_win || is_mac || is_linux || is_chromeos_ash) {
@@ -4535,6 +4540,7 @@ if (!is_android) {
         "//chrome/browser/ui/actions:actions_headers",
         "//chrome/browser/ui/lens",
         "//chrome/browser/ui/lens:browser_tests",
+        "//chrome/browser/ui/zoom:browser_tests",
         "//components/commerce/core:account_checker_test_support",
         "//components/commerce/core:shopping_service_test_support",
         "//components/commerce/core:utils",
@@ -7956,7 +7962,6 @@ test("unit_tests") {
       "../browser/ui/window_sizer/window_sizer_common_unittest.cc",
       "../browser/ui/window_sizer/window_sizer_common_unittest.h",
       "../browser/ui/window_sizer/window_sizer_unittest.cc",
-      "../browser/ui/zoom/zoom_controller_unittest.cc",
       "../browser/upgrade_detector/build_state_unittest.cc",
       "../browser/upgrade_detector/mock_build_state_observer.cc",
       "../browser/upgrade_detector/mock_build_state_observer.h",
@@ -8201,6 +8206,8 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
       "//chrome/browser/ui/webui/top_chrome",
+      "//chrome/browser/ui/zoom",
+      "//chrome/browser/ui/zoom:unit_tests",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/webauthn:test_support",
       "//chrome/browser/webauthn/proto",

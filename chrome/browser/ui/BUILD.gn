@@ -393,10 +393,6 @@ static_library("ui") {
     "webui/version/version_ui.h",
     "webui/webui_load_timer.cc",
     "webui/webui_load_timer.h",
-    "zoom/chrome_zoom_level_otr_delegate.cc",
-    "zoom/chrome_zoom_level_otr_delegate.h",
-    "zoom/chrome_zoom_level_prefs.cc",
-    "zoom/chrome_zoom_level_prefs.h",
   ]
 
   if (enable_session_service) {
@@ -479,6 +475,7 @@ static_library("ui") {
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/omnibox:impl",
     "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/zoom",
     "//chrome/common",
     "//chrome/common/net",
     "//chrome/common/search:mojo_bindings",

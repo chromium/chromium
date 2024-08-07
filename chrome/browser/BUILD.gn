@@ -1964,6 +1964,7 @@ static_library("browser") {
     "//chrome/browser/ui/omnibox:impl",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/webui:configs",
+    "//chrome/browser/ui/zoom",
     "//chrome/browser/updater:scheduler",
     "//chrome/browser/updates/announcement_notification",
     "//chrome/browser/web_share_target",
