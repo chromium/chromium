@@ -7,6 +7,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "cc/paint/paint_flags.h"
+#include "components/global_media_controls/media_view_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -71,10 +72,6 @@ constexpr float kFocusRingRadius = 18.0f;
 // Defines how much the current media position will change for increment.
 constexpr base::TimeDelta kCurrentPositionChange = base::Seconds(5);
 
-int RoundToPercent(double fractional_value) {
-  return static_cast<int>(fractional_value * 100);
-}
-
 }  // namespace
 
 MediaProgressView::MediaProgressView(
@@ -102,10 +99,6 @@ MediaProgressView::MediaProgressView(
       on_update_progress_callback_(std::move(on_update_progress_callback)),
       slide_animation_(this) {
   SetFlipCanvasOnPaintForRTLUI(true);
-  GetViewAccessibility().SetProperties(
-      ax::mojom::Role::kProgressIndicator,
-      l10n_util::GetStringUTF16(
-          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_TIME_SCRUBBER));
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   slide_animation_.SetSlideDuration(kSlideAnimationDuration);
@@ -135,7 +128,10 @@ gfx::Size MediaProgressView::CalculatePreferredSize(
 
 void MediaProgressView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
-  node_data->SetValue(base::FormatPercent(RoundToPercent(current_value_)));
+  node_data->role = ax::mojom::Role::kSlider;
+  node_data->SetNameChecked(l10n_util::GetStringUTF16(
+      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_TIME_SCRUBBER));
+  node_data->SetValue(GetFormattedDuration(current_position_));
   node_data->AddAction(ax::mojom::Action::kIncrement);
   node_data->AddAction(ax::mojom::Action::kDecrement);
 }
@@ -406,11 +402,11 @@ void MediaProgressView::UpdateProgress(
 
 void MediaProgressView::MaybeNotifyAccessibilityValueChanged() {
   if (!GetWidget() || !GetWidget()->IsVisible() ||
-      RoundToPercent(current_value_) == last_announced_percentage_) {
+      current_position_ == last_announced_position_) {
     return;
   }
-  last_announced_percentage_ = RoundToPercent(current_value_);
-  NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+  last_announced_position_ = current_position_;
+  GetViewAccessibility().SetValue(GetFormattedDuration(current_position_));
 }
 
 void MediaProgressView::OnProgressDragStarted() {

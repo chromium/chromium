@@ -12,6 +12,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace global_media_controls {
@@ -337,6 +338,24 @@ TEST_F(MediaProgressViewTest, DragProgressForPausedMedia) {
   EXPECT_CALL(*this, OnPlaybackStateChangeForProgressDrag(testing::_)).Times(0);
   EXPECT_CALL(*this, SeekTo(testing::DoubleNear(0.25, 0.01)));
   view()->OnMouseReleased(released_event);
+}
+
+TEST_F(MediaProgressViewTest, MediaProgressAccessibleValue) {
+  ui::AXNodeData data;
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kValue),
+            u"0:00");
+
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/0, /*duration=*/base::Seconds(6),
+      /*position=*/base::Seconds(3), /*end_of_media=*/false);
+  EXPECT_CALL(*this, OnProgressUpdated(testing::_));
+  view()->UpdateProgress(media_position);
+
+  data = ui::AXNodeData();
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kValue),
+            u"0:03");
 }
 
 }  // namespace global_media_controls

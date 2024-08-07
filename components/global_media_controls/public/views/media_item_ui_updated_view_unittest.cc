@@ -13,6 +13,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -222,6 +223,11 @@ TEST_F(MediaItemUIUpdatedViewTest, UpdateWithMediaMetadata) {
             metadata.source_title);
   EXPECT_EQ(view()->GetArtistLabelForTesting()->GetText(), metadata.artist);
   EXPECT_EQ(view()->GetTitleLabelForTesting()->GetText(), metadata.title);
+
+  ui::AXNodeData data;
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            metadata.title);
 }
 
 TEST_F(MediaItemUIUpdatedViewTest, UpdateWithMediaActions) {

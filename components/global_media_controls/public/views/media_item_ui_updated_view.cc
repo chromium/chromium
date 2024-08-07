@@ -13,6 +13,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
@@ -325,8 +326,12 @@ void MediaItemUIUpdatedView::AddedToWidget() {
 void MediaItemUIUpdatedView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
   node_data->role = ax::mojom::Role::kListItem;
-  node_data->SetNameChecked(l10n_util::GetStringUTF8(
-      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
+  if (title_label_->GetText().empty()) {
+    node_data->SetNameChecked(l10n_util::GetStringUTF8(
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
+  } else {
+    node_data->SetNameChecked(title_label_->GetText());
+  }
 }
 
 bool MediaItemUIUpdatedView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -571,6 +576,13 @@ void MediaItemUIUpdatedView::MediaActionButtonPressed(views::Button* button) {
       break;
     default:
       NOTREACHED_NORETURN();
+  }
+
+  // Make the screen reader announce the button text for accessibility since
+  // there are only visual changes outside these buttons when they are clicked.
+  if (base::Contains(kProgressRowMediaActions,
+                     static_cast<MediaSessionAction>(button->GetID()))) {
+    GetViewAccessibility().AnnouncePolitely(button->GetTooltipText());
   }
 
   if (button->GetID() == static_cast<int>(MediaSessionAction::kSeekBackward)) {

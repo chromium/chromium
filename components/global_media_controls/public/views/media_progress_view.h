@@ -140,8 +140,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   // between squiggly and straight lines, in the range from 0.0 to 1.0.
   double progress_amp_fraction_ = 0;
 
-  // The percentage progress value last announced for accessibility.
-  int last_announced_percentage_ = -1;
+  // The media position last announced for accessibility.
+  base::TimeDelta last_announced_position_;
 
   // The progress phase offset changing as time passes for the progress wave to
   // move.
