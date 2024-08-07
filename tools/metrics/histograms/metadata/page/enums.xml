@@ -311,6 +311,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Visible"/>
 </enum>
 
+<!-- LINT.IfChange(PageLoadTimingStatus) -->
+
 <enum name="PageLoadTimingStatus">
   <summary>Status of PageLoadTimings received from the render process</summary>
   <int value="0" label="Valid"/>
@@ -327,23 +329,26 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Invalid order - parse start / parse stop"/>
   <int value="9" label="Invalid order - parse stop / dom content loaded"/>
   <int value="10" label="Invalid order - dom content loaded / load"/>
-  <int value="11" label="Invalid order - parse start / first layout"/>
-  <int value="12" label="Invalid order - first layout / first paint"/>
-  <int value="13" label="Invalid order - first paint / first text paint"/>
-  <int value="14" label="Invalid order - first paint / first image paint"/>
-  <int value="15" label="Invalid order - first paint / first contentful paint"/>
-  <int value="16" label="Invalid order - first paint / first meaningful paint"/>
-  <int value="17" label="Invalid order - first meaningful paint / interactive"/>
-  <int value="18" label="First input delay without first input timestamp"/>
-  <int value="19" label="First input timestamp without first input delay"/>
-  <int value="20" label="Longest input delay without longest input timestamp"/>
-  <int value="21" label="Longest input timestamp without longest input delay"/>
-  <int value="22"
+  <int value="11" label="Invalid order - parse start / first paint"/>
+  <int value="12" label="Invalid order - first paint / first text paint"/>
+  <int value="13" label="Invalid order - first paint / first image paint"/>
+  <int value="14" label="Invalid order - first paint / first contentful paint"/>
+  <int value="15" label="Invalid order - first paint / first meaningful paint"/>
+  <int value="16" label="Invalid order - first meaningful paint / interactive"/>
+  <int value="17" label="First input delay without first input timestamp"/>
+  <int value="18" label="First input timestamp without first input delay"/>
+  <int value="19" label="Longest input delay without longest input timestamp"/>
+  <int value="20" label="Longest input timestamp without longest input delay"/>
+  <int value="21" label="First scroll delay without first scroll timestamp"/>
+  <int value="22" label="First scroll timestamp without first scroll delay"/>
+  <int value="23"
       label="Longest input timestamp earlier than first input timestamp"/>
-  <int value="23" label="Longest input delay less than first input delay"/>
-  <int value="24" label="Invalid order - parse start / activation start"/>
-  <int value="25" label="Invalid order - activation start / first paint"/>
+  <int value="24" label="Longest input delay less than first input delay"/>
+  <int value="25" label="Invalid order - parse start / activation start"/>
+  <int value="26" label="Invalid order - activation start / first paint"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/page_load_metrics_update_dispatcher.h:PageLoadTimingStatus) -->
 
 <enum name="PageLoadTrackerPageType">
   <int value="0" label="Primary Page"/>
