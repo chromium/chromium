@@ -89,6 +89,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
@@ -2864,6 +2865,8 @@ void OverviewGrid::MaybeInitDesksWidget() {
     return;
   }
 
+  base::ScopedUmaHistogramTimer latency_recorder(
+      "Ash.Overview.DeskBarInitLatency");
   desks_widget_ = DeskBarViewBase::CreateDeskWidget(
       root_window_, GetDesksWidgetBounds(), DeskBarViewBase::Type::kOverview);
 

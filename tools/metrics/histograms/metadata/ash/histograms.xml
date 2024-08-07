@@ -6213,6 +6213,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Overview.DeskBarInitLatency" units="ms"
+    expires_after="2025-02-07">
+  <owner>esum@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Records the amount of time it takes to initialize the desk bar widget when
+    entering overview mode. Recorded each time overview mode is entered.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Overview.EndAction" enum="OverviewEndAction"
     expires_after="2025-01-05">
   <owner>minch@chromium.org</owner>
