@@ -5,14 +5,17 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
+#import "components/plus_addresses/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_text_cell.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -45,6 +48,7 @@ NSString* const kPasswordTableViewAccessibilityIdentifier =
 enum ManualFallbackItemType : NSInteger {
   kHeader = kItemTypeEnumZero,
   kCredential,
+  kPlusAddress,
   kNoCredentialsMessage,
 };
 
@@ -57,7 +61,13 @@ enum ManualFallbackItemType : NSInteger {
 
 @end
 
-@implementation PasswordViewController
+@implementation PasswordViewController {
+  // Credentials to be shown in the view.
+  NSArray<TableViewItem*>* _credentials;
+
+  // Plus Addresses to be shown in the view.
+  NSArray<TableViewItem*>* _plusAddresses;
+}
 
 - (instancetype)initWithSearchController:(UISearchController*)searchController {
   self = [super init];
@@ -108,9 +118,12 @@ enum ManualFallbackItemType : NSInteger {
   switch (itemType) {
     case manual_fill::ManualFallbackItemType::kCredential:
       // Retrieve favicons for credential cells.
-      [self loadFaviconForCell:cell indexPath:indexPath];
+      [self loadFaviconForCredentialCell:cell indexPath:indexPath];
       break;
-
+    case manual_fill::ManualFallbackItemType::kPlusAddress:
+      // Retrieve favicons for credential cells.
+      [self loadFaviconForPlusAddressCell:cell indexPath:indexPath];
+      break;
     default:
       break;
   }
@@ -174,7 +187,14 @@ enum ManualFallbackItemType : NSInteger {
     }
   }
 
-  [self presentDataItems:credentials];
+  if (!self.searchController &&
+      base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressIOSManualFallbackEnabled)) {
+    _credentials = (NSArray<TableViewItem*>*)credentials;
+    [self presentItems];
+  } else {
+    [self presentDataItems:credentials];
+  }
 }
 
 - (void)presentActions:(NSArray<ManualFillActionItem*>*)actions {
@@ -187,11 +207,62 @@ enum ManualFallbackItemType : NSInteger {
   [self.delegate didTapLinkURL:URL];
 }
 
+#pragma mark - ManualFillPlusAddressConsumer
+
+- (void)presentPlusAddresses:
+    (NSArray<ManualFillPlusAddressItem*>*)plusAddresses {
+  _plusAddresses = (NSArray<TableViewItem*>*)plusAddresses;
+  [self presentItems];
+}
+
 #pragma mark - Private
 
-// Retrieves favicon from FaviconLoader and sets image in `cell`.
-- (void)loadFaviconForCell:(UITableViewCell*)cell
-                 indexPath:(NSIndexPath*)indexPath {
+// Show items depending on the availibility of `_credentials` and
+// `_plusAddresses`.
+- (void)presentItems {
+  NSArray* items = nil;
+  if (_credentials && _plusAddresses) {
+    items = [_plusAddresses arrayByAddingObjectsFromArray:_credentials];
+
+  } else if (_credentials) {
+    items = _credentials;
+  } else if (_plusAddresses) {
+    items = _plusAddresses;
+  }
+
+  CHECK(items);
+  [self presentDataItems:items];
+}
+
+// Retrieves favicon from FaviconLoader and sets image in `cell` for plus
+// addresses.
+- (void)loadFaviconForPlusAddressCell:(UITableViewCell*)cell
+                            indexPath:(NSIndexPath*)indexPath {
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  ManualFillPlusAddressItem* plusAddressItem =
+      base::apple::ObjCCastStrict<ManualFillPlusAddressItem>(item);
+  CHECK(item);
+
+  ManualFillPlusAddressCell* plusAddressCell =
+      base::apple::ObjCCastStrict<ManualFillPlusAddressCell>(cell);
+
+  NSString* itemIdentifier = plusAddressItem.uniqueIdentifier;
+  CrURL* crurl = [[CrURL alloc] initWithGURL:plusAddressItem.faviconURL];
+  [self.imageDataSource
+      faviconForPageURL:crurl
+             completion:^(FaviconAttributes* attributes) {
+               // Only set favicon if the cell hasn't been reused.
+               if ([plusAddressCell.uniqueIdentifier
+                       isEqualToString:itemIdentifier]) {
+                 CHECK(attributes);
+                 [plusAddressCell configureWithFaviconAttributes:attributes];
+               }
+             }];
+}
+
+// Retrieves favicon from FaviconLoader and sets image in `cell` for passwords.
+- (void)loadFaviconForCredentialCell:(UITableViewCell*)cell
+                           indexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   DCHECK(item);
   DCHECK(cell);
@@ -213,7 +284,7 @@ enum ManualFallbackItemType : NSInteger {
                // Only set favicon if the cell hasn't been reused.
                if ([passwordCell.uniqueIdentifier
                        isEqualToString:itemIdentifier]) {
-                 DCHECK(attributes);
+                 CHECK(attributes);
                  [passwordCell configureWithFaviconAttributes:attributes];
                }
              }];

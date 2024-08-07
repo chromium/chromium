@@ -162,13 +162,14 @@ using manual_fill::ManualFillDataType;
 
   ManualFillPasswordCoordinator* passwordCoordinator =
       [[ManualFillPasswordCoordinator alloc]
-          initWithBaseViewController:self.baseViewController
-                             browser:self.browser
-                                 URL:URL
-                    injectionHandler:self.injectionHandler
-            invokedOnObfuscatedField:self.invokedOnObfuscatedField
-              showAutofillFormButton:(_focusedFieldDataType ==
-                                      ManualFillDataType::kPassword)];
+             initWithBaseViewController:self.baseViewController
+                                browser:self.browser
+          manualFillPlusAddressMediator:[self manualFillPlusAddressMediator]
+                                    URL:URL
+                       injectionHandler:self.injectionHandler
+               invokedOnObfuscatedField:self.invokedOnObfuscatedField
+                 showAutofillFormButton:(_focusedFieldDataType ==
+                                         ManualFillDataType::kPassword)];
   passwordCoordinator.delegate = self.delegate;
 
   self.expandedManualFillViewController.childViewController =

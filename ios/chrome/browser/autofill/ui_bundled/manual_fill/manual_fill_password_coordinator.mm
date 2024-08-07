@@ -8,6 +8,11 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_list_navigator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_view_controller.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
@@ -15,10 +20,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_mediator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_list_navigator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_view_controller.h"
 #import "ui/base/device_form_factor.h"
 
 @interface ManualFillPasswordCoordinator () <PasswordListNavigator>
@@ -45,6 +46,8 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+             manualFillPlusAddressMediator:
+                 (ManualFillPlusAddressMediator*)manualFillPlusAddressMediator
                                        URL:(const GURL&)URL
                           injectionHandler:
                               (ManualFillInjectionHandler*)injectionHandler
@@ -85,6 +88,10 @@
     _passwordMediator.contentInjector = injectionHandler;
 
     _passwordViewController.imageDataSource = _passwordMediator;
+
+    if (manualFillPlusAddressMediator) {
+      manualFillPlusAddressMediator.consumer = _passwordViewController;
+    }
   }
   return self;
 }

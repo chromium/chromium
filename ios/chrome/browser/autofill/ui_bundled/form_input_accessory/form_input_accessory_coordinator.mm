@@ -285,12 +285,13 @@ const base::Feature* FetchIPHFeatureFromEnum(
 
   ManualFillPasswordCoordinator* passwordCoordinator =
       [[ManualFillPasswordCoordinator alloc]
-          initWithBaseViewController:self.baseViewController
-                             browser:self.browser
-                                 URL:URL
-                    injectionHandler:self.injectionHandler
-            invokedOnObfuscatedField:invokedOnObfuscatedField
-              showAutofillFormButton:NO];
+             initWithBaseViewController:self.baseViewController
+                                browser:self.browser
+          manualFillPlusAddressMediator:nil
+                                    URL:URL
+                       injectionHandler:self.injectionHandler
+               invokedOnObfuscatedField:invokedOnObfuscatedField
+                 showAutofillFormButton:NO];
 
   passwordCoordinator.delegate = self;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {

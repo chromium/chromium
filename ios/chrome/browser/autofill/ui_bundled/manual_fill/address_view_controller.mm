@@ -83,7 +83,8 @@ enum ManualFallbackItemType : NSInteger {
 
 #pragma mark - Private
 
-// Show items once both the addresses and plus addresses are fetched.
+// Show items depending on the availibility of `_addresses` and
+// `_plusAddresses`.
 - (void)presentItems {
   NSArray<TableViewItem*>* items = nil;
   if (_addresses && _plusAddresses) {
