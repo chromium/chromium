@@ -232,7 +232,7 @@ export class DataSeries {
         this.findLowerBoundPointIndex(startTime - dataRetentionBuffer);
 
     // If there are points outside the buffer, remove them and points in buffer.
-    if (bufferStartIndex >= 0) {
+    if (bufferStartIndex > 0) {
       const newStartIndex: number = this.findLowerBoundPointIndex(startTime);
       assert(newStartIndex >= bufferStartIndex);
       this.dataPoints.splice(0, newStartIndex);

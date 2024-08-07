@@ -150,8 +150,10 @@ export class DataManager {
     const newStartTime = endTime - this.dataRetentionDuration;
     const shouldUpdateChart = (dataSeriesList: DataSeries[]) => {
       return dataSeriesList.reduce(
+          // The order within `or` expression is important because
+          // `removeOutdatedData` should be called for each `dataSeries`.
           (isDataRemoved, dataSeries) =>
-              isDataRemoved || dataSeries.removeOutdatedData(newStartTime),
+              dataSeries.removeOutdatedData(newStartTime) || isDataRemoved,
           false);
     };
 
