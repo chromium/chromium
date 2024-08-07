@@ -249,6 +249,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   static base::Time GetNow();
   static void SetClockForTesting(base::Clock* clock);
 
+  void SetAlreadyEvictedStaleStorageForTesting(
+      bool already_evicted_stale_storage);
+
  private:
   // Structures used for CreateSchema.
   struct TableSchema {
@@ -330,6 +333,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   // restore has taken place, otherwise we might fail to record current usage.
   // See crbug.com/40281870 for more info.
   base::Time evict_stale_buckets_after_{GetNow() + base::Minutes(1)};
+
+  // We only need to evict stale storage once per profile load. Unlike
+  // expired storage, there is no contract with the site to evict storage
+  // on a specific timeline. Saving on latency here is more important than
+  // cleaning ASAP in long-lived browsing sessions. Also, where possible we
+  // should parallel the stale storage clearing efforts in local storage,
+  // and once per profile load is the standard there.
+  bool already_evicted_stale_storage_{false};
 };
 
 }  // namespace storage

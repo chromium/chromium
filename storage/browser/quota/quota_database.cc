@@ -826,10 +826,12 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetExpiredBuckets(
       BucketInfosFromSqlStatement(statement_expired);
 
   // Return early if we don't need to gather stale buckets as well.
-  if (!base::FeatureList::IsEnabled(features::kEvictStaleQuotaStorage) ||
+  if (already_evicted_stale_storage_ ||
+      !base::FeatureList::IsEnabled(features::kEvictStaleQuotaStorage) ||
       GetNow() < evict_stale_buckets_after_) {
     return expired_buckets;
   }
+  already_evicted_stale_storage_ = true;
 
   // We gather stale buckets in a different fetch round so that we can count
   // the amount found for metrics and filter out persistent buckets. After
@@ -967,6 +969,11 @@ base::Time QuotaDatabase::GetNow() {
 // static
 void QuotaDatabase::SetClockForTesting(base::Clock* clock) {
   g_clock_for_testing = clock;
+}
+
+void QuotaDatabase::SetAlreadyEvictedStaleStorageForTesting(
+    bool already_evicted_stale_storage) {
+  already_evicted_stale_storage_ = already_evicted_stale_storage;
 }
 
 void QuotaDatabase::CommitNow() {

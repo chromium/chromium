@@ -1212,6 +1212,7 @@ TEST_P(QuotaDatabaseTest, Stale) {
                        db.UpdateOrCreateBucket(expired_params, 0));
 
   // Current accessed/modified time isn't stale.
+  db.SetAlreadyEvictedStaleStorageForTesting(false);
   ASSERT_OK_AND_ASSIGN(std::set<BucketInfo> stale_buckets,
                        db.GetExpiredBuckets(nullptr));
   EXPECT_EQ(0U, stale_buckets.size());
@@ -1220,6 +1221,7 @@ TEST_P(QuotaDatabaseTest, Stale) {
   ASSERT_OK_AND_ASSIGN(expired_bucket, db.UpdateBucketExpiration(
                                            expired_bucket.id,
                                            base::Time::Now() - base::Days(1)));
+  db.SetAlreadyEvictedStaleStorageForTesting(false);
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(nullptr));
   EXPECT_EQ(1U, stale_buckets.size());
 
@@ -1227,6 +1229,7 @@ TEST_P(QuotaDatabaseTest, Stale) {
   EXPECT_EQ(db.SetBucketLastAccessTime(named_bucket.id,
                                        base::Time::Now() - base::Days(401)),
             QuotaError::kNone);
+  db.SetAlreadyEvictedStaleStorageForTesting(false);
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(nullptr));
   EXPECT_EQ(1U, stale_buckets.size());
 
@@ -1236,6 +1239,7 @@ TEST_P(QuotaDatabaseTest, Stale) {
   EXPECT_EQ(db.SetBucketLastModifiedTime(named_bucket.id,
                                          base::Time::Now() - base::Days(401)),
             QuotaError::kNone);
+  db.SetAlreadyEvictedStaleStorageForTesting(false);
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(nullptr));
   EXPECT_EQ(1U, stale_buckets.size());
 
@@ -1243,11 +1247,18 @@ TEST_P(QuotaDatabaseTest, Stale) {
   EXPECT_EQ(db.SetBucketLastAccessTime(named_bucket.id,
                                        base::Time::Now() - base::Days(401)),
             QuotaError::kNone);
+  db.SetAlreadyEvictedStaleStorageForTesting(false);
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(nullptr));
   EXPECT_EQ(1U, stale_buckets.size());
 
-  // If we wait a minute after initialization then it's returned as stale.
+  // If we wait a minute after initialization then it's returned as stale as
+  // long as it's our first check.
   clock()->SetNow(base::Time::Now() + base::Minutes(1));
+  ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(nullptr));
+  EXPECT_EQ(evict_stale_buckets() ? 2U : 1U, stale_buckets.size());
+  ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(nullptr));
+  EXPECT_EQ(1u, stale_buckets.size());
+  db.SetAlreadyEvictedStaleStorageForTesting(false);
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(nullptr));
   EXPECT_EQ(evict_stale_buckets() ? 2U : 1U, stale_buckets.size());
 
@@ -1258,11 +1269,13 @@ TEST_P(QuotaDatabaseTest, Stale) {
   EXPECT_EQ(db.SetBucketLastModifiedTime(named_bucket.id,
                                          base::Time::Now() - base::Days(399)),
             QuotaError::kNone);
+  db.SetAlreadyEvictedStaleStorageForTesting(false);
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(nullptr));
   EXPECT_EQ(1U, stale_buckets.size());
 
   // But if we wait a day then it is enough at 400.
   clock()->SetNow(base::Time::Now() + base::Days(1));
+  db.SetAlreadyEvictedStaleStorageForTesting(false);
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(nullptr));
   EXPECT_EQ(evict_stale_buckets() ? 2U : 1U, stale_buckets.size());
 
@@ -1273,6 +1286,7 @@ TEST_P(QuotaDatabaseTest, Stale) {
   EXPECT_EQ(db.SetBucketLastModifiedTime(default_bucket.id,
                                          base::Time::Now() - base::Days(401)),
             QuotaError::kNone);
+  db.SetAlreadyEvictedStaleStorageForTesting(false);
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(nullptr));
   EXPECT_EQ(evict_stale_buckets() ? 3U : 1U, stale_buckets.size());
 
@@ -1283,26 +1297,31 @@ TEST_P(QuotaDatabaseTest, Stale) {
   EXPECT_EQ(db.SetBucketLastModifiedTime(persistent_bucket.id,
                                          base::Time::Now() - base::Days(401)),
             QuotaError::kNone);
+  db.SetAlreadyEvictedStaleStorageForTesting(false);
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(nullptr));
   EXPECT_EQ(evict_stale_buckets() ? 3U : 1U, stale_buckets.size());
 
   // Special storage policies are respected for default buckets.
   auto policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
   policy->AddUnlimited(default_bucket.storage_key.origin().GetURL());
+  db.SetAlreadyEvictedStaleStorageForTesting(false);
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(policy.get()));
   EXPECT_EQ(evict_stale_buckets() ? 2U : 1U, stale_buckets.size());
   policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
   policy->AddDurable(default_bucket.storage_key.origin().GetURL());
+  db.SetAlreadyEvictedStaleStorageForTesting(false);
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(policy.get()));
   EXPECT_EQ(evict_stale_buckets() ? 2U : 1U, stale_buckets.size());
 
   // Special storage policies are not respected for named buckets.
   policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
   policy->AddUnlimited(named_bucket.storage_key.origin().GetURL());
+  db.SetAlreadyEvictedStaleStorageForTesting(false);
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(policy.get()));
   EXPECT_EQ(evict_stale_buckets() ? 3U : 1U, stale_buckets.size());
   policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
   policy->AddDurable(named_bucket.storage_key.origin().GetURL());
+  db.SetAlreadyEvictedStaleStorageForTesting(false);
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(policy.get()));
   EXPECT_EQ(evict_stale_buckets() ? 3U : 1U, stale_buckets.size());
 }
@@ -1313,6 +1332,7 @@ TEST_P(QuotaDatabaseTest, Orphan) {
   clock()->SetNow(base::Time::Now() + base::Minutes(1));
   {
     base::HistogramTester histograms;
+    db.SetAlreadyEvictedStaleStorageForTesting(false);
     ASSERT_OK_AND_ASSIGN(std::set<BucketInfo> buckets,
                          db.GetExpiredBuckets(nullptr));
     EXPECT_EQ(0U, buckets.size());
@@ -1327,6 +1347,7 @@ TEST_P(QuotaDatabaseTest, Orphan) {
                        db.UpdateOrCreateBucket(first_party_params, 0));
   {
     base::HistogramTester histograms;
+    db.SetAlreadyEvictedStaleStorageForTesting(false);
     ASSERT_OK_AND_ASSIGN(std::set<BucketInfo> buckets,
                          db.GetExpiredBuckets(nullptr));
     EXPECT_EQ(0U, buckets.size());
@@ -1338,12 +1359,14 @@ TEST_P(QuotaDatabaseTest, Orphan) {
     EXPECT_EQ(db.SetBucketLastModifiedTime(first_party_bucket.id,
                                            base::Time::Now() - base::Days(2)),
               QuotaError::kNone);
+    db.SetAlreadyEvictedStaleStorageForTesting(false);
     ASSERT_OK_AND_ASSIGN(buckets, db.GetExpiredBuckets(nullptr));
     EXPECT_EQ(0U, buckets.size());
     EXPECT_EQ(0, histograms.GetTotalSum("Quota.OrphanBucketCount"));
   }
 
-  // First party nonce bucket does qualify, but only if it's old.
+  // First party nonce bucket does qualify, but only if it's old and we haven't
+  // already looked.
   BucketInitParams first_party_nonce_params(
       StorageKey::CreateWithNonce(
           url::Origin::Create(GURL("http://firstpartynonce/")),
@@ -1353,6 +1376,7 @@ TEST_P(QuotaDatabaseTest, Orphan) {
                        db.UpdateOrCreateBucket(first_party_nonce_params, 0));
   {
     base::HistogramTester histograms;
+    db.SetAlreadyEvictedStaleStorageForTesting(false);
     ASSERT_OK_AND_ASSIGN(std::set<BucketInfo> buckets,
                          db.GetExpiredBuckets(nullptr));
     EXPECT_EQ(0U, buckets.size());
@@ -1364,6 +1388,10 @@ TEST_P(QuotaDatabaseTest, Orphan) {
     EXPECT_EQ(db.SetBucketLastModifiedTime(first_party_nonce_bucket.id,
                                            base::Time::Now() - base::Days(2)),
               QuotaError::kNone);
+    ASSERT_OK_AND_ASSIGN(buckets, db.GetExpiredBuckets(nullptr));
+    EXPECT_EQ(0U, buckets.size());
+    EXPECT_EQ(0, histograms.GetTotalSum("Quota.OrphanBucketCount"));
+    db.SetAlreadyEvictedStaleStorageForTesting(false);
     ASSERT_OK_AND_ASSIGN(buckets, db.GetExpiredBuckets(nullptr));
     EXPECT_EQ(0U, buckets.size());
     EXPECT_EQ(evict_stale_buckets() ? 1 : 0,
@@ -1380,6 +1408,7 @@ TEST_P(QuotaDatabaseTest, Orphan) {
                        db.UpdateOrCreateBucket(third_party_params, 0));
   {
     base::HistogramTester histograms;
+    db.SetAlreadyEvictedStaleStorageForTesting(false);
     ASSERT_OK_AND_ASSIGN(std::set<BucketInfo> buckets,
                          db.GetExpiredBuckets(nullptr));
     EXPECT_EQ(0U, buckets.size());
@@ -1392,13 +1421,15 @@ TEST_P(QuotaDatabaseTest, Orphan) {
     EXPECT_EQ(db.SetBucketLastModifiedTime(third_party_bucket.id,
                                            base::Time::Now() - base::Days(2)),
               QuotaError::kNone);
+    db.SetAlreadyEvictedStaleStorageForTesting(false);
     ASSERT_OK_AND_ASSIGN(buckets, db.GetExpiredBuckets(nullptr));
     EXPECT_EQ(0U, buckets.size());
     EXPECT_EQ(evict_stale_buckets() ? 2 : 0,
               histograms.GetTotalSum("Quota.OrphanBucketCount"));
   }
 
-  // Third party nonce bucket does qualify, but only if it's old.
+  // Third party nonce bucket does qualify, but only if it's old and we haven't
+  // already looked.
   BucketInitParams third_party_nonce_params(
       StorageKey::Create(
           url::Origin::Create(GURL("https://thirdparty/")),
@@ -1410,6 +1441,7 @@ TEST_P(QuotaDatabaseTest, Orphan) {
                        db.UpdateOrCreateBucket(third_party_nonce_params, 0));
   {
     base::HistogramTester histograms;
+    db.SetAlreadyEvictedStaleStorageForTesting(false);
     ASSERT_OK_AND_ASSIGN(std::set<BucketInfo> buckets,
                          db.GetExpiredBuckets(nullptr));
     EXPECT_EQ(0U, buckets.size());
@@ -1422,6 +1454,11 @@ TEST_P(QuotaDatabaseTest, Orphan) {
     EXPECT_EQ(db.SetBucketLastModifiedTime(third_party_nonce_bucket.id,
                                            base::Time::Now() - base::Days(2)),
               QuotaError::kNone);
+    ASSERT_OK_AND_ASSIGN(buckets, db.GetExpiredBuckets(nullptr));
+    EXPECT_EQ(0U, buckets.size());
+    EXPECT_EQ(evict_stale_buckets() ? 1 : 0,
+              histograms.GetTotalSum("Quota.OrphanBucketCount"));
+    db.SetAlreadyEvictedStaleStorageForTesting(false);
     ASSERT_OK_AND_ASSIGN(buckets, db.GetExpiredBuckets(nullptr));
     EXPECT_EQ(0U, buckets.size());
     EXPECT_EQ(evict_stale_buckets() ? 3 : 0,
