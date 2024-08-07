@@ -1119,13 +1119,19 @@ bool HTMLPermissionElement::IsStyleValid() {
     AddConsoleWarning(
         String::Format("Cannot compute style for the permission element '%s'",
                        GetType().Utf8().c_str()));
+    base::UmaHistogramEnumeration("Blink.PermissionElement.InvalidStyleReason",
+                                  InvalidStyleReason::kNoComputedStyle);
     return false;
   }
 
   if (AreColorsNonOpaque(GetComputedStyle())) {
-    AddConsoleWarning(String::Format(
-        "Color or background color of the permission element '%s' is opaque",
-        GetType().Utf8().c_str()));
+    AddConsoleWarning(
+        String::Format("Color or background color of the permission element "
+                       "'%s' is non-opaque",
+                       GetType().Utf8().c_str()));
+    base::UmaHistogramEnumeration(
+        "Blink.PermissionElement.InvalidStyleReason",
+        InvalidStyleReason::kNonOpaqueColorOrBackgroundColor);
     return false;
   }
 
@@ -1135,6 +1141,9 @@ bool HTMLPermissionElement::IsStyleValid() {
         String::Format("Contrast between color and background color of the "
                        "permission element '%s' is too low",
                        GetType().Utf8().c_str()));
+    base::UmaHistogramEnumeration(
+        "Blink.PermissionElement.InvalidStyleReason",
+        InvalidStyleReason::kLowConstrastColorAndBackgroundColor);
     return false;
   }
 
@@ -1160,6 +1169,8 @@ bool HTMLPermissionElement::IsStyleValid() {
     AddConsoleWarning(
         String::Format("Font size of the permission element '%s' is too small",
                        GetType().Utf8().c_str()));
+    base::UmaHistogramEnumeration("Blink.PermissionElement.InvalidStyleReason",
+                                  InvalidStyleReason::kTooSmallFontSize);
     return false;
   }
 
@@ -1173,6 +1184,8 @@ bool HTMLPermissionElement::IsStyleValid() {
     AddConsoleWarning(
         String::Format("Font size of the permission element '%s' is too large",
                        GetType().Utf8().c_str()));
+    base::UmaHistogramEnumeration("Blink.PermissionElement.InvalidStyleReason",
+                                  InvalidStyleReason::kTooLargeFontSize);
     return false;
   }
 
