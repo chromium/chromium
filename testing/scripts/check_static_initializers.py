@@ -213,7 +213,8 @@ def main_compile_targets(args):
   else:
     compile_targets = []
 
-  json.dump(compile_targets, args.output)
+  with open(args.output.name, 'w') as fd:
+    json.dump(compile_targets, fd)
 
   return 0
 

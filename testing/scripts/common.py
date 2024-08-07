@@ -182,7 +182,8 @@ def record_local_script_results(name, output_fd, failures, valid):
     valid: Whether the results are valid.
   """
   local_script_results = {'valid': valid, 'failures': failures}
-  json.dump(local_script_results, output_fd)
+  with open(output_fd.name, 'w') as fd:
+    json.dump(local_script_results, fd)
 
   if not result_sink:
     return
