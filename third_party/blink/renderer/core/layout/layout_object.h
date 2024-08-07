@@ -950,6 +950,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return false;
   }
+  virtual bool IsLayoutMasonry() const {
+    NOT_DESTROYED();
+    return false;
+  }
   virtual bool IsLayoutMultiColumnSet() const {
     NOT_DESTROYED();
     return false;
