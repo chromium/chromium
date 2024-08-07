@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -555,8 +556,8 @@ class StartupAppLauncherNoCreateTest
 
     UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
     command_line_.GetProcessCommandLine()->AppendSwitch(
-        switches::kForceAppMode);
-    command_line_.GetProcessCommandLine()->AppendSwitch(switches::kAppId);
+        ::switches::kForceAppMode);
+    command_line_.GetProcessCommandLine()->AppendSwitch(::switches::kAppId);
 
     extensions::ExtensionServiceTestBase::SetUp();
 
@@ -1524,6 +1525,8 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
     enabled.push_back(
         ash::standalone_browser::features::kChromeKioskEnableLacros);
     scoped_feature_list_.InitWithFeatures(enabled, {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   void SetUp() override {
@@ -1630,6 +1633,7 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
   std::unique_ptr<KioskAppLauncher> startup_app_launcher_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
   std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
 };
 

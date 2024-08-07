@@ -988,6 +988,8 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
         ash::standalone_browser::GetFeatureRefs();
     enabled.push_back(ash::standalone_browser::features::kWebKioskEnableLacros);
     scoped_feature_list_.InitWithFeatures(enabled, {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   void SetUp() override {
@@ -1130,6 +1132,7 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
   KioskAppId kiosk_app_id_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 TEST_F(KioskLaunchControllerUsingLacrosTest,

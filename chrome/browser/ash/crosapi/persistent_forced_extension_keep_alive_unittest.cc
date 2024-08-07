@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
@@ -38,6 +40,8 @@ class PersistentForcedExtensionKeepAliveTest : public testing::Test {
   PersistentForcedExtensionKeepAliveTest() {
     scoped_feature_list_.InitWithFeatures(
         ash::standalone_browser::GetFeatureRefs(), {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   PersistentForcedExtensionKeepAliveTest(
@@ -96,6 +100,7 @@ class PersistentForcedExtensionKeepAliveTest : public testing::Test {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 
   content::BrowserTaskEnvironment task_environment_;
 
