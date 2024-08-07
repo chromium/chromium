@@ -375,7 +375,7 @@
 <translation id="1656489000284462475">الاستلام</translation>
 <translation id="1658111267661135323">تلفزيون وفيديو</translation>
 <translation id="1658918301167915956">أجهزة تتضمّن بلوتوث</translation>
-<translation id="1662550410081243962">حفظ طرق الدفع وملؤها</translation>
+<translation id="1662550410081243962">حفظ طرق الدفع واستخدامها لملء النماذج</translation>
 <translation id="1663943134801823270">‏يتم أخذ البطاقات والعناوين من Chrome، ويمكنك إدارتها في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">البوليمر الضوئي للطباعة الفلكسغرافية</translation>
 <translation id="1668071460721346172">تلقّي رسالة إلكترونية</translation>
@@ -3260,7 +3260,7 @@
 <translation id="7174545416324379297">تم الدمج</translation>
 <translation id="7175097078723125014">تم تحديد خيار تعديل العنوان.</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> وخيار <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> آخر}two{<ph name="SHIPPING_OPTION_PREVIEW" /> وخياران (<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />) آخران}few{<ph name="SHIPPING_OPTION_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيارات أخرى}many{<ph name="SHIPPING_OPTION_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيارًا آخر}other{<ph name="SHIPPING_OPTION_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيار آخر}}</translation>
-<translation id="7179323680825933600">حفظ طرق الدفع وملؤها</translation>
+<translation id="7179323680825933600">حفظ طرق الدفع واستخدامها لملء النماذج</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7181261019481237103">فتح نافذة التصفُّح المتخفي</translation>
 <translation id="7182878459783632708">لم يتم ضبط أي سياسات</translation>
