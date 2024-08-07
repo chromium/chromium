@@ -1788,6 +1788,13 @@ LayoutResult::EStatus BlockLayoutAlgorithm::HandleNewFormattingContext(
         /* self_collapsing_child_had_clearance */ false);
   }
 
+  // Update line-clamp data, and abort if needed
+  if (!line_clamp_data_.UpdateAfterLayout(layout_result,
+                                          container_builder_.BfcBlockOffset(),
+                                          *previous_inflow_position)) {
+    return LayoutResult::kNeedsLineClampRelayout;
+  }
+
   if (constraint_space.HasBlockFragmentation() &&
       !has_break_opportunity_before_next_child_) {
     has_break_opportunity_before_next_child_ =
