@@ -12,7 +12,7 @@ a pip package, by running `pipdeptree -p tensorflow`.
 # python_version: "3.8"
 # wheel: <
 #   name: "infra/python/wheels/absl-py-py3"
-#   version: "version:0.11.0"
+#   version: "version:2.1.0"
 # >
 # wheel: <
 #   name: "infra/python/wheels/astunparse-py2_py3"
@@ -32,7 +32,7 @@ a pip package, by running `pipdeptree -p tensorflow`.
 # >
 # wheel: <
 #   name: "infra/python/wheels/flatbuffers-py3"
-#   version: "version:2.0"
+#   version: "version:24.3.25"
 # >
 # wheel: <
 #   name: "infra/python/wheels/gast-py3"
@@ -40,11 +40,11 @@ a pip package, by running `pipdeptree -p tensorflow`.
 # >
 # wheel: <
 #   name: "infra/python/wheels/google-auth-oauthlib-py3"
-#   version: "version:0.4.5"
+#   version: "version:1.0.0"
 # >
 # wheel: <
-#   name: "infra/python/wheels/google-auth-py2_py3"
-#   version: "version:1.35.0"
+#   name: "infra/python/wheels/google-auth-py3"
+#   version: "version:2.16.2"
 # >
 # wheel: <
 #   name: "infra/python/wheels/google-pasta-py3"
@@ -52,31 +52,43 @@ a pip package, by running `pipdeptree -p tensorflow`.
 # >
 # wheel: <
 #   name: "infra/python/wheels/grpcio/${vpython_platform}"
-#   version: "version:1.39.0"
+#   version: "version:1.57.0"
 # >
 # wheel: <
 #   name: "infra/python/wheels/h5py/${vpython_platform}"
-#   version: "version:3.6.0"
+#   version: "version:3.11.0"
 # >
 # wheel: <
 #   name: "infra/python/wheels/idna-py3"
 #   version: "version:3.2"
 # >
 # wheel: <
-#   name: "infra/python/wheels/keras-py3"
-#   version: "version:2.7.0"
+#   name: "infra/python/wheels/importlib-metadata-py3"
+#   version: "version:8.0.0"
 # >
 # wheel: <
-#   name: "infra/python/wheels/keras-preprocessing-py2_py3"
-#   version: "version:1.1.2"
+#   name: "infra/python/wheels/jax-py3"
+#   version: "version:0.4.13"
+# >
+# wheel: <
+#   name: "infra/python/wheels/keras-py3"
+#   version: "version:2.12.0"
 # >
 # wheel: <
 #   name: "infra/python/wheels/libclang/${vpython_platform}"
-#   version: "version:12.0.0"
+#   version: "version:18.1.1"
 # >
 # wheel: <
 #   name: "infra/python/wheels/markdown-py3"
 #   version: "version:3.3.4"
+# >
+# wheel: <
+#   name: "infra/python/wheels/markupsafe/${vpython_platform}"
+#   version: "version:2.1.5"
+# >
+# wheel: <
+#   name: "infra/python/wheels/ml_dtypes/${vpython_platform}"
+#   version: "version:0.2.0"
 # >
 # wheel: <
 #   name: "infra/python/wheels/numpy/${vpython_platform}"
@@ -84,15 +96,19 @@ a pip package, by running `pipdeptree -p tensorflow`.
 # >
 # wheel: <
 #   name: "infra/python/wheels/oauthlib-py2_py3"
-#   version: "version:3.1.1"
+#   version: "version:3.2.2"
 # >
 # wheel: <
 #   name: "infra/python/wheels/opt-einsum-py3"
 #   version: "version:3.3.0"
 # >
 # wheel: <
-#   name: "infra/python/wheels/protobuf-py2_py3"
-#   version: "version:3.17.3"
+#   name: "infra/python/wheels/packaging-py3"
+#   version: "version:24.1"
+# >
+# wheel: <
+#   name: "infra/python/wheels/protobuf-py3"
+#   version: "version:4.25.1"
 # >
 # wheel: <
 #   name: "infra/python/wheels/pyasn1-py2_py3"
@@ -103,20 +119,24 @@ a pip package, by running `pipdeptree -p tensorflow`.
 #   version: "version:0.2.8"
 # >
 # wheel: <
-#   name: "infra/python/wheels/requests-py2_py3"
-#   version: "version:2.26.0"
+#   name: "infra/python/wheels/requests-py3"
+#   version: "version:2.31.0"
 # >
 # wheel: <
 #   name: "infra/python/wheels/requests-oauthlib-py2_py3"
-#   version: "version:1.3.0"
+#   version: "version:2.0.0"
 # >
 # wheel: <
 #   name: "infra/python/wheels/rsa-py3"
 #   version: "version:4.7.2"
 # >
 # wheel: <
+#   name: "infra/python/wheels/scipy/${vpython_platform}"
+#   version: "version:1.10.1"
+# >
+# wheel: <
 #   name: "infra/python/wheels/setuptools-py3"
-#   version: "version:57.4.0"
+#   version: "version:70.3.0"
 # >
 # wheel: <
 #   name: "infra/python/wheels/six-py2_py3"
@@ -124,31 +144,27 @@ a pip package, by running `pipdeptree -p tensorflow`.
 # >
 # wheel: <
 #   name: "infra/python/wheels/tensorboard-py3"
-#   version: "version:2.7.0"
+#   version: "version:2.12.3"
 # >
 # wheel: <
 #   name: "infra/python/wheels/tensorboard-data-server-py3"
-#   version: "version:0.6.1"
-# >
-# wheel: <
-#   name: "infra/python/wheels/tensorboard-plugin-wit-py3"
-#   version: "version:1.8.0"
+#   version: "version:0.7.2"
 # >
 # wheel: <
 #   name: "infra/python/wheels/tensorflow/${vpython_platform}"
-#   version: "version:2.7.0"
+#   version: "version:2.12.0"
 # >
 # wheel: <
 #   name: "infra/python/wheels/tensorflow-estimator-py3"
-#   version: "version:2.7.0"
+#   version: "version:2.12.0"
 # >
 # wheel: <
 #   name: "infra/python/wheels/tensorflow-io-gcs-filesystem/${vpython_platform}"
-#   version: "version:0.23.1"
+#   version: "version:0.34.0"
 # >
 # wheel: <
 #   name: "infra/python/wheels/termcolor-py2_py3"
-#   version: "version:1.1.0"
+#   version: "version:2.4.0"
 # >
 # wheel: <
 #   name: "infra/python/wheels/typing-extensions-py3"
@@ -160,16 +176,21 @@ a pip package, by running `pipdeptree -p tensorflow`.
 # >
 # wheel: <
 #   name: "infra/python/wheels/werkzeug-py3"
-#   version: "version:2.0.1"
+#   version: "version:3.0.3"
 # >
 # wheel: <
 #   name: "infra/python/wheels/wheel-py2_py3"
-#   version: "version:0.37.0"
+#   version: "version:0.37.1"
 # >
 # wheel: <
 #   name: "infra/python/wheels/wrapt/${vpython_platform}"
-#   version: "version:1.13.3"
+#   version: "version:1.14.1"
 # >
+# wheel: <
+#   name: "infra/python/wheels/zipp-py3"
+#   version: "version:3.7.0"
+# >
+
 # [VPYTHON:END]
 import importlib
 import os
