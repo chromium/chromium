@@ -337,6 +337,10 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdScrollMarker;
     case kPseudoScrollMarkerGroup:
       return kPseudoIdScrollMarkerGroup;
+    case kPseudoScrollNextButton:
+      return kPseudoIdScrollNextButton;
+    case kPseudoScrollPrevButton:
+      return kPseudoIdScrollPrevButton;
     case kPseudoScrollbarButton:
       return kPseudoIdScrollbarButton;
     case kPseudoScrollbarCorner:
@@ -611,6 +615,8 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"scope", CSSSelector::kPseudoScope},
     {"scroll-marker", CSSSelector::kPseudoScrollMarker},
     {"scroll-marker-group", CSSSelector::kPseudoScrollMarkerGroup},
+    {"scroll-next-button", CSSSelector::kPseudoScrollNextButton},
+    {"scroll-prev-button", CSSSelector::kPseudoScrollPrevButton},
     {"search-text", CSSSelector::kPseudoSearchText},
     {"select-fallback-button", CSSSelector::kPseudoSelectFallbackButton},
     {"select-fallback-button-icon",
@@ -727,6 +733,12 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
+  if ((match->type == CSSSelector::kPseudoScrollNextButton ||
+       match->type == CSSSelector::kPseudoScrollPrevButton) &&
+      !RuntimeEnabledFeatures::CSSPseudoScrollButtonsEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
   if ((match->type == CSSSelector::kPseudoOpen ||
        match->type == CSSSelector::kPseudoClosed) &&
       !RuntimeEnabledFeatures::CSSPseudoOpenClosedEnabled()) {
@@ -836,6 +848,8 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoScrollbarTrackPiece:
     case kPseudoScrollMarker:
     case kPseudoScrollMarkerGroup:
+    case kPseudoScrollNextButton:
+    case kPseudoScrollPrevButton:
     case kPseudoSelectFallbackButton:
     case kPseudoSelectFallbackButtonIcon:
     case kPseudoSelectFallbackButtonText:

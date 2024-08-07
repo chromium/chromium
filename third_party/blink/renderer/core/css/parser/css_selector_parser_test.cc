@@ -485,7 +485,7 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
   }
 }
 
-TEST(CSSSelectorParserTest, ScrollMarkerPseudos) {
+TEST(CSSSelectorParserTest, ScrollControlPseudos) {
   test::TaskEnvironment task_environment;
   struct TestCase {
     const char* selector;
@@ -495,6 +495,8 @@ TEST(CSSSelectorParserTest, ScrollMarkerPseudos) {
   TestCase test_cases[] = {
       {"ul::scroll-marker-group", CSSSelector::kPseudoScrollMarkerGroup},
       {"li::scroll-marker", CSSSelector::kPseudoScrollMarker},
+      {"div::scroll-next-button", CSSSelector::kPseudoScrollNextButton},
+      {"div::scroll-prev-button", CSSSelector::kPseudoScrollPrevButton},
   };
 
   HeapVector<CSSSelector> arena;

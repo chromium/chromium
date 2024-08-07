@@ -245,7 +245,7 @@ class CORE_EXPORT MatchResult {
   CascadeOrigin last_origin_{CascadeOrigin::kNone};
 #endif
   uint16_t current_tree_order_{0};
-  uint16_t pseudo_element_styles_{kPseudoIdNone};
+  uint32_t pseudo_element_styles_{kPseudoIdNone};
 };
 
 inline bool operator==(const MatchedProperties& a, const MatchedProperties& b) {

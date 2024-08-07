@@ -232,6 +232,10 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
     case kPseudoIdScrollMarkerGroupAfter:
     case kPseudoIdScrollMarkerGroupBefore:
       return protocol::DOM::PseudoTypeEnum::ScrollMarkerGroup;
+    case kPseudoIdScrollNextButton:
+      return protocol::DOM::PseudoTypeEnum::ScrollNextButton;
+    case kPseudoIdScrollPrevButton:
+      return protocol::DOM::PseudoTypeEnum::ScrollPrevButton;
     case kPseudoIdResizer:
       return protocol::DOM::PseudoTypeEnum::Resizer;
     case kPseudoIdInputListButton:

@@ -1121,6 +1121,12 @@
       status: "test",
     },
     {
+      // For ::scroll-up-button and ::scroll-down-button pseudo elements for Carousel.
+      // https://github.com/flackr/carousel/tree/main/scroll-button
+      name: "CSSPseudoScrollButtons",
+      status: "experimental",
+    },
+    {
       // For ::scroll-marker and ::scroll-marker-group pseudo elements for Carousel.
       // https://github.com/flackr/carousel/tree/main/scroll-marker
       name: "CSSPseudoScrollMarkers",
