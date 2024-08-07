@@ -216,7 +216,6 @@ chromium-metrics-reviews@google.com.
   <int value="9025" label="DevToggleAppList"/>
   <int value="9026" label="DevToggleUnifiedDesktop"/>
   <int value="9027" label="DebugToggleFocusModeState"/>
-  <int value="9028" label="DebugStartSunfishSession"/>
 </enum>
 
 <enum name="ArcIntentHandlerDestinationPlatform">
