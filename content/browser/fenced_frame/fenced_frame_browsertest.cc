@@ -1400,6 +1400,86 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
             net::ERR_NETWORK_ACCESS_REVOKED);
 }
 
+// Verify module preload from a link element works in fenced frame.
+IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest, LinkModulePreload) {
+  ASSERT_TRUE(https_server()->Start());
+
+  // Navigate to a page that contains a fenced frame.
+  const GURL main_url = https_server()->GetURL(
+      "a.test", "/cross_site_iframe_factory.html?a.test(a.test{fenced})");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Get fenced frame render frame host.
+  RenderFrameHostImpl* fenced_frame_rfh =
+      primary_main_frame_host()->GetFencedFrames().at(0)->GetInnerRoot();
+
+  // Set up URLLoaderMonitor.
+  const GURL module_preload_url =
+      https_server()->GetURL("a.test", "/empty-script.js");
+  URLLoaderMonitor monitor({module_preload_url});
+
+  // Navigate fenced frame to a page with a link element that does a module
+  // preload.
+  TestFrameNavigationObserver observer(fenced_frame_rfh);
+  EXPECT_TRUE(ExecJs(
+      primary_main_frame_host(),
+      JsReplace(
+          R"(document.querySelector('fencedframe').config
+                            = new FencedFrameConfig($1);)",
+          https_server()->GetURL(
+              "a.test", "/fenced_frames/link_rel_module_preload.html"))));
+  observer.WaitForCommit();
+
+  // The module preload request is received. It has script resource type.
+  monitor.WaitForUrl(module_preload_url);
+  std::optional<network::ResourceRequest> request =
+      monitor.GetRequestInfo(module_preload_url);
+
+  // The default request resource type of module preload is script.
+  EXPECT_EQ(request->resource_type,
+            static_cast<int>(blink::mojom::ResourceType::kScript));
+}
+
+// Verify module preload from a link element is disabled after fenced frame
+// network cutoff.
+IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
+                       NetworkCutoffDisablesLinkModulePreload) {
+  ASSERT_TRUE(https_server()->Start());
+
+  // Navigate to a page that contains a fenced frame.
+  const GURL main_url = https_server()->GetURL(
+      "a.test", "/cross_site_iframe_factory.html?a.test(a.test{fenced})");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Get fenced frame render frame host.
+  RenderFrameHostImpl* fenced_frame_rfh =
+      primary_main_frame_host()->GetFencedFrames().at(0)->GetInnerRoot();
+
+  // Set up URLLoaderMonitor.
+  const GURL module_preload_url =
+      https_server()->GetURL("a.test", "/empty-script.js");
+  URLLoaderMonitor monitor({module_preload_url});
+
+  // Navigate fenced frame to a page that disables network access, then adds a
+  // link element that does a module preload.
+  TestFrameNavigationObserver observer(fenced_frame_rfh);
+  EXPECT_TRUE(ExecJs(
+      primary_main_frame_host(),
+      JsReplace(
+          R"(document.querySelector('fencedframe').config
+                            = new FencedFrameConfig($1);)",
+          https_server()->GetURL(
+              "a.test",
+              "/fenced_frames/link_rel_module_preload_disable_network.html"))));
+  observer.WaitForCommit();
+
+  // The module preload request is blocked with code
+  // `ERR_NETWORK_ACCESS_REVOKED`.
+  monitor.WaitForUrl(module_preload_url);
+  EXPECT_EQ(monitor.WaitForRequestCompletion(module_preload_url).error_code,
+            net::ERR_NETWORK_ACCESS_REVOKED);
+}
+
 class FencedFrameWithSiteIsolationDisabledBrowserTest
     : public FencedFrameMPArchBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {

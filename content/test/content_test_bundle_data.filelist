@@ -6241,6 +6241,7 @@ data/dynamic1.html
 data/dynamic2.html
 data/echo-referrer.html
 data/empty-script.js
+data/empty-script.js.mock-http-headers
 data/empty-style.css
 data/empty-treat-as-public-address.html
 data/empty-treat-as-public-address.html.mock-http-headers
@@ -6279,6 +6280,10 @@ data/fenced_frames/find_in_page.html
 data/fenced_frames/find_in_page.html.mock-http-headers
 data/fenced_frames/in_iframe.html
 data/fenced_frames/in_iframe.html.mock-http-headers
+data/fenced_frames/link_rel_module_preload.html
+data/fenced_frames/link_rel_module_preload.html.mock-http-headers
+data/fenced_frames/link_rel_module_preload_disable_network.html
+data/fenced_frames/link_rel_module_preload_disable_network.html.mock-http-headers
 data/fenced_frames/link_rel_preload.html
 data/fenced_frames/link_rel_preload.html.mock-http-headers
 data/fenced_frames/link_rel_preload_disable_network.html
