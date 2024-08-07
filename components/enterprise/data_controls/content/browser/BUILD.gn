@@ -9,6 +9,8 @@ assert(enterprise_data_controls)
 
 source_set("browser") {
   sources = [
+    "last_replaced_clipboard_data.cc",
+    "last_replaced_clipboard_data.h",
     "reporting_service_base.h",
     "reporting_service_base_factory.h",
     "rules_service.cc",
@@ -20,5 +22,20 @@ source_set("browser") {
     "//components/enterprise/data_controls/core/browser:features",
     "//components/prefs",
     "//content/public/browser/",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "last_replaced_clipboard_data_unittest.cc" ]
+
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/base/clipboard:clipboard_test_support",
+    "//ui/gfx:test_support",
   ]
 }
