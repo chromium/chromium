@@ -116,7 +116,10 @@ source_set("navigation_throttle") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "app_install_navigation_throttle_unittest.cc" ]
+  sources = [
+    "app_install_navigation_throttle_unittest.cc",
+    "app_install_types_unittest.cc",
+  ]
 
   deps = [
     ":app_install",

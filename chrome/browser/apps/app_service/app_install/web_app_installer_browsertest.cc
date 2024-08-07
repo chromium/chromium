@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -456,6 +458,30 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, ManifestWithFailingIcons) {
       "Apps.AppInstallService.WebAppInstaller.CommandResultCode."
       "AppPreloadServiceOem",
       webapps::InstallResultCode::kIconDownloadingFailed, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallWebsiteAsShortcut) {
+  WebAppInstaller installer(profile());
+  SetManifestResponse(AddIconToManifest(R"({
+    "name": "Example App",
+    "start_url": "/",
+    "icons": $1
+  })"));
+
+  base::test::TestFuture<bool> result;
+  installer.InstallApp(
+      AppInstallSurface::kAppInstallUriUnknown,
+      CreateInstallData("Example App", "website:https://www.example.com/",
+                        "https://www.example.com/manifest.json",
+                        "/manifest.json"),
+      result.GetCallback());
+  ASSERT_TRUE(result.Get());
+
+  auto app_id =
+      web_app::GenerateAppId(std::nullopt, GURL("https://www.example.com/"));
+
+  // Verify that the app installed in App Service.
+  VerifyAppInstalled(app_id, "Example App", InstallReason::kSync);
 }
 
 }  // namespace apps

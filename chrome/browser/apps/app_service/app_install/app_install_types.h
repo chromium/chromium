@@ -111,6 +111,10 @@ struct AppInstallData {
   AppInstallData& operator=(AppInstallData&&);
   ~AppInstallData();
 
+  // Returns true if the data contains all the fields needed for installation,
+  // dependent on the PackageId and `app_type_data`.
+  bool IsValidForInstallation() const;
+
   PackageId package_id;
 
   std::string name;

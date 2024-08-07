@@ -92,6 +92,21 @@ AppInstallData& AppInstallData::operator=(AppInstallData&&) = default;
 
 AppInstallData::~AppInstallData() = default;
 
+bool AppInstallData::IsValidForInstallation() const {
+  if (package_id.package_type() == PackageType::kWeb ||
+      package_id.package_type() == PackageType::kWebsite) {
+    if (!absl::holds_alternative<WebAppInstallData>(app_type_data)) {
+      return false;
+    }
+  } else if (!install_url.is_valid()) {
+    // For all package types other than Web/Website, there must be an Install
+    // URL for us to launch.
+    return false;
+  }
+
+  return true;
+}
+
 std::ostream& operator<<(std::ostream& out, const AppInstallData& data) {
   out << "AppInstallData{";
 
