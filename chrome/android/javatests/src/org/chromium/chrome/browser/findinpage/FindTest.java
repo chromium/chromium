@@ -327,6 +327,51 @@ public class FindTest {
         Assert.assertEquals(0, findResults.length());
     }
 
+    /** Verify "Find in page" is dismissed when ESCAPE is pressed w/o modifiers. */
+    @Test
+    @SmallTest
+    @Feature({"FindInPage"})
+    public void testFindDismissOnEscape() {
+        sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(FILEPATH));
+        findInPageFromMenu();
+
+        final FindToolbar findToolbar = getFindToolbar();
+        Assert.assertEquals(View.VISIBLE, findToolbar.getVisibility());
+        final TextView findQueryText = getFindQueryText();
+        Assert.assertTrue(findQueryText.hasFocus());
+
+        KeyUtils.singleKeyEventView(
+                InstrumentationRegistry.getInstrumentation(),
+                findQueryText,
+                KeyEvent.KEYCODE_ESCAPE);
+
+        Assert.assertEquals(View.GONE, findToolbar.getVisibility());
+        Assert.assertFalse(findQueryText.hasFocus());
+    }
+
+    /** Verify "Find in page" isn't dismissed when ESCAPE is pressed w/ modifiers. */
+    @Test
+    @SmallTest
+    @Feature({"FindInPage"})
+    public void testFindDismissOnEscapeWithModifiers() {
+        sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(FILEPATH));
+        findInPageFromMenu();
+
+        final FindToolbar findToolbar = getFindToolbar();
+        Assert.assertEquals(View.VISIBLE, findToolbar.getVisibility());
+        final TextView findQueryText = getFindQueryText();
+        Assert.assertTrue(findQueryText.hasFocus());
+
+        KeyUtils.singleKeyEventView(
+                InstrumentationRegistry.getInstrumentation(),
+                findQueryText,
+                KeyEvent.KEYCODE_ESCAPE,
+                KeyEvent.META_CTRL_ON);
+
+        Assert.assertEquals(View.VISIBLE, findToolbar.getVisibility());
+        Assert.assertTrue(findQueryText.hasFocus());
+    }
+
     /** Verify FIP in IncognitoTabs. */
     @Test
     @SmallTest

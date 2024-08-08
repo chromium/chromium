@@ -135,6 +135,10 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
                 mFindToolbar.hideKeyboardAndStartFinding(!event.isShiftPressed());
                 return true;
             }
+            if (keyCode == KeyEvent.KEYCODE_ESCAPE && event.hasNoModifiers()) {
+                mFindToolbar.deactivate();
+                return true;
+            }
             return super.onKeyDown(keyCode, event);
         }
 
