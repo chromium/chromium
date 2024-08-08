@@ -1698,6 +1698,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter onmessage
 [Worker]     getter onopen
 [Worker]     getter ordered
+[Worker]     getter priority
 [Worker]     getter protocol
 [Worker]     getter readyState
 [Worker]     getter reliable

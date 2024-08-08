@@ -3580,6 +3580,10 @@
       base_feature: "none",
     },
     {
+      name: "RTCDataChannelPriority",
+      status: "experimental",
+    },
+    {
       name: "RTCEncodedAudioFrameAbsCaptureTime",
       status: "experimental",
     },

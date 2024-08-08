@@ -34,6 +34,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/api:make_ref_counted",
   "//third_party/webrtc/api:media_stream_interface",
   "//third_party/webrtc/api:packet_socket_factory",
+  "//third_party/webrtc/api:priority",
   "//third_party/webrtc/api:rtc_error",
   "//third_party/webrtc/api:rtc_stats_api",
   "//third_party/webrtc/api:rtp_headers",

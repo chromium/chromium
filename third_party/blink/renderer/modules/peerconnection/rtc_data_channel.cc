@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
+#include "third_party/webrtc/api/priority.h"
 
 namespace WTF {
 
@@ -390,6 +391,21 @@ std::optional<uint16_t> RTCDataChannel::id() const {
   id_ = static_cast<uint16_t>(id);
 
   return id;
+}
+
+String RTCDataChannel::priority() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  webrtc::PriorityValue priority = channel()->priority();
+  if (priority <= webrtc::PriorityValue(webrtc::Priority::kVeryLow)) {
+    return "very-low";
+  }
+  if (priority <= webrtc::PriorityValue(webrtc::Priority::kLow)) {
+    return "low";
+  }
+  if (priority <= webrtc::PriorityValue(webrtc::Priority::kMedium)) {
+    return "medium";
+  }
+  return "high";
 }
 
 String RTCDataChannel::readyState() const {

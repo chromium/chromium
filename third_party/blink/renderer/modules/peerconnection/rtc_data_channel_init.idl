@@ -11,4 +11,7 @@ dictionary RTCDataChannelInit {
     USVString protocol = "";
     boolean negotiated = false;
     [EnforceRange] unsigned short id;
+
+    // https://w3c.github.io/webrtc-priority/#datachannel
+    [RuntimeEnabled=RTCDataChannelPriority] RTCPriorityType priority = "low";
 };

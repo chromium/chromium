@@ -45,6 +45,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -137,6 +138,7 @@
 #include "third_party/webrtc/api/dtls_transport_interface.h"
 #include "third_party/webrtc/api/jsep.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
+#include "third_party/webrtc/api/priority.h"
 #include "third_party/webrtc/rtc_base/ssl_identity.h"
 
 namespace blink {
@@ -1891,6 +1893,23 @@ RTCDataChannel* RTCPeerConnection::createDataChannel(
   init.negotiated = data_channel_dict->negotiated();
   if (data_channel_dict->hasId())
     init.id = data_channel_dict->id();
+  if (data_channel_dict->hasPriority()) {
+    init.priority = [&] {
+      if (data_channel_dict->priority() == "very-low") {
+        return webrtc::PriorityValue(webrtc::Priority::kVeryLow);
+      }
+      if (data_channel_dict->priority() == "low") {
+        return webrtc::PriorityValue(webrtc::Priority::kLow);
+      }
+      if (data_channel_dict->priority() == "medium") {
+        return webrtc::PriorityValue(webrtc::Priority::kMedium);
+      }
+      if (data_channel_dict->priority() == "high") {
+        return webrtc::PriorityValue(webrtc::Priority::kHigh);
+      }
+      NOTREACHED_NORETURN();
+    }();
+  }
   // Checks from WebRTC specification section 6.1
   // If [[DataChannelLabel]] is longer than 65535 bytes, throw a
   // TypeError.
