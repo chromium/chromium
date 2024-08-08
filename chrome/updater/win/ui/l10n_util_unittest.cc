@@ -264,11 +264,6 @@ INSTANTIATE_TEST_SUITE_P(
                              std::vector<std::wstring>{
                                  L"FAILED_TO_DE_ELEVATE_METAINSTALLER",
                                  {}})},
-        {FAILED_DE_ELEVATED_METAINSTALLER, 0,
-         GetLocalizedStringF(IDS_GENERIC_METAINSTALLER_ERROR_BASE,
-                             std::vector<std::wstring>{
-                                 L"FAILED_DE_ELEVATED_METAINSTALLER",
-                                 {}})},
         {RUN_SETUP_FAILED_FILE_NOT_FOUND, 0,
          GetLocalizedStringF(IDS_GENERIC_METAINSTALLER_ERROR_BASE,
                              std::vector<std::wstring>{

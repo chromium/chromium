@@ -226,10 +226,11 @@ inline constexpr char kAppArgsSwitch[] = "appargs";  // backward-compatibility.
 // to install on a standard user account with UAC disabled.
 inline constexpr char kCmdLineExpectElevated[] = "expect-elevated";
 
-// The "de-elevation-id" switch indicates that updater setup should be running
-// de-elevated (at medium integrity), and also includes a unique guid that is
-// used by the child process to communicate the pid via the registry.
-inline constexpr char kCmdLineDeElevationId[] = "de-elevation-id";
+// The "expect-de-elevated" switch indicates that updater setup should be
+// running de-elevated (at medium integrity). This switch is needed to avoid
+// running into a loop trying (but failing repeatedly) to de-elevate updater
+// setup when attempting to install as a standard user account with UAC enabled.
+inline constexpr char kCmdLineExpectDeElevated[] = "expect-de-elevated";
 
 // The "prefers-user" switch indicates that updater setup could not elevate, and
 // is now trying to install the app per-user.

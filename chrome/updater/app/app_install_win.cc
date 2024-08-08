@@ -896,7 +896,7 @@ DWORD AppInstallControllerImpl::GetUIThreadID() const {
 bool AppInstallControllerImpl::DoLaunchBrowser(const std::string& url) {
   CHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
 
-  return SUCCEEDED(RunDeElevated(base::SysUTF8ToWide(url), {}));
+  return SUCCEEDED(RunDeElevatedNoWait(base::SysUTF8ToWide(url), {}));
 }
 
 bool AppInstallControllerImpl::DoRestartBrowser(bool restart_all_browsers,
