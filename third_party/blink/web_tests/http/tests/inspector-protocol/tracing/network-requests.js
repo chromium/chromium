@@ -71,9 +71,8 @@
     for (const event of events) {
       tracingHelper.logEventShape(event, ['headers'], ['name', 'resourceType', 'isLinkPreload', 'fetchPriorityHint', 'fetchType', 'protocol']);
       if(event.name === 'ResourceReceiveResponse') {
-        const headers = event.args.data.headers.sort((a, b) => a.name.localeCompare(b.name));
-        const headerNames = headers.map(h => h.name);
-        testRunner.log(`${event.name} headers: ${headerNames.join(', ')}\n`);
+        const headersCount = event.args.data.headers.length ?? 0;
+        testRunner.log(`${event.name} has headers: ${headersCount > 0}\n`);
       }
     }
   }
