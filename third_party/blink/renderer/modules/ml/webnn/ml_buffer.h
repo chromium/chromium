@@ -70,8 +70,8 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
 
   // Read data from the MLBuffer. The resolver should be resolved with a copy of
   // the buffer data. Otherwise, the resolver should be rejected accordingly.
-  // The caller must call `Promise()` on `resolver` before calling this method.
-  void ReadBufferImpl(ScriptPromiseResolver<DOMArrayBuffer>* resolver);
+  ScriptPromise<DOMArrayBuffer> ReadBufferImpl(ScriptState* script_state,
+                                               ExceptionState& exception_state);
 
   // Write data to the MLBuffer. If write was successful, the data will be
   // stored in the MLBuffer.

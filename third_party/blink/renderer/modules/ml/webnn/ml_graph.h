@@ -112,6 +112,8 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
 
   const MLContext* Context() const;
 
+  void OnConnectionError();
+
  private:
   void DidCompute(
       ScopedMLTrace scoped_trace,
@@ -121,8 +123,6 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
       std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
           outputs_info,
       webnn::mojom::blink::ComputeResultPtr mojo_result);
-
-  void OnConnectionError();
 
   // Describes the constraints on the inputs or outputs to this graph.
   // Note that `WTF::HashMap` values must be nullable, but

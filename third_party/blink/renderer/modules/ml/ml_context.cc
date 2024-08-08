@@ -98,12 +98,41 @@ unsigned int MLContext::GetNumThreads() const {
 void MLContext::Trace(Visitor* visitor) const {
   visitor->Trace(lost_property_);
   visitor->Trace(context_remote_);
-
+  visitor->Trace(pending_resolvers_);
+  visitor->Trace(graphs_);
+  visitor->Trace(graph_builders_);
+  visitor->Trace(buffers_);
   ScriptWrappable::Trace(visitor);
 }
 
 ScriptPromise<MLContextLostInfo> MLContext::lost(ScriptState* script_state) {
   return lost_property_->Promise(script_state->World());
+}
+
+void MLContext::destroy(ScriptState* script_state,
+                        ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "destroy() called on an invalid context.");
+    return;
+  }
+
+  if (context_remote_.is_bound()) {
+    OnLost(0, "destroy() called on MLContext.");
+
+    for (const auto& graph : graphs_) {
+      graph->OnConnectionError();
+    }
+
+    for (const auto& graph_builder : graph_builders_) {
+      graph_builder->OnConnectionError();
+    }
+
+    for (const auto& buffer : buffers_) {
+      buffer->destroy();
+    }
+  }
 }
 
 ScriptPromise<MLComputeResult> MLContext::compute(
@@ -129,17 +158,25 @@ ScriptPromise<MLComputeResult> MLContext::compute(
                         exception_state);
 }
 
-void MLContext::CreateWebNNGraphBuilder(
-    mojo::PendingAssociatedReceiver<webnn::mojom::blink::WebNNGraphBuilder>
-        pending_receiver,
+MLGraphBuilder* MLContext::CreateWebNNGraphBuilder(
+    ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!context_remote_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Context is lost.");
-    return;
+    return nullptr;
   }
 
-  context_remote_->CreateGraphBuilder(std::move(pending_receiver));
+  mojo::PendingAssociatedRemote<webnn::mojom::blink::WebNNGraphBuilder>
+      pending_remote;
+  context_remote_->CreateGraphBuilder(
+      pending_remote.InitWithNewEndpointAndPassReceiver());
+
+  auto* graph_builder = MakeGarbageCollected<MLGraphBuilder>(
+      ExecutionContext::From(script_state), this, std::move(pending_remote));
+  graph_builders_.insert(graph_builder);
+
+  return graph_builder;
 }
 
 void MLContext::OnLost(uint32_t custom_reason, const std::string& description) {
@@ -155,21 +192,12 @@ void MLContext::OnLost(uint32_t custom_reason, const std::string& description) {
 
   CHECK_EQ(lost_property_->GetState(), LostProperty::kPending);
   lost_property_->Resolve(context_lost_info);
-}
 
-void MLContext::CreateWebNNBuffer(
-    webnn::mojom::blink::BufferInfoPtr buffer_info,
-    webnn::mojom::blink::WebNNContext::CreateBufferCallback callback) {
-  if (!context_remote_.is_bound()) {
-    std::move(callback).Run(webnn::mojom::blink::CreateBufferResult::NewError(
-        webnn::mojom::blink::Error::New(
-            webnn::mojom::blink::Error::Code::kUnknownError,
-            "Context is lost.")));
-    return;
+  for (const auto& resolver : pending_resolvers_) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                     "Context is lost.");
   }
-  // Use `WebNNContext` to create `WebNNBuffer` message pipe.
-  context_remote_->CreateBuffer(std::move(buffer_info),
-                                WTF::BindOnce(std::move(callback)));
+  pending_resolvers_.clear();
 }
 
 const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
@@ -368,6 +396,10 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   return op_support_limits;
 }
 
+void MLContext::OnGraphCreated(MLGraph* graph) {
+  graphs_.insert(graph);
+}
+
 ScriptPromise<MLBuffer> MLContext::createBuffer(
     ScriptState* script_state,
     const MLBufferDescriptor* descriptor,
@@ -386,6 +418,12 @@ ScriptPromise<MLBuffer> MLContext::createBuffer(
     return EmptyPromise();
   }
 
+  if (!context_remote_.is_bound()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Context is lost.");
+    return EmptyPromise();
+  }
+
   ASSIGN_OR_RETURN(webnn::OperandDescriptor validated_descriptor,
                    webnn::OperandDescriptor::Create(
                        FromBlinkDataType(descriptor->dataType().AsEnum()),
@@ -401,21 +439,22 @@ ScriptPromise<MLBuffer> MLContext::createBuffer(
                     return ScriptPromise<MLBuffer>();
                   });
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLBuffer>>(
-      script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
-
   // TODO(crbug.com/343638938): Pass real buffer usages.
   auto buffer_info = webnn::mojom::blink::BufferInfo::New(
       validated_descriptor, webnn::MLBufferUsage());
 
-  // Create `WebNNBuffer` message pipe with `WebNNContext` mojo interface.
-  CreateWebNNBuffer(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLBuffer>>(
+      script_state, exception_state.GetContext());
+  pending_resolvers_.insert(resolver);
+
+  // Use `WebNNContext` to create `WebNNBuffer` message pipe.
+  context_remote_->CreateBuffer(
       std::move(buffer_info),
       WTF::BindOnce(&MLContext::DidCreateWebNNBuffer, WrapPersistent(this),
                     std::move(scoped_trace), WrapPersistent(resolver),
                     std::move(validated_descriptor)));
-  return promise;
+
+  return resolver->Promise();
 }
 
 void MLContext::writeBuffer(
@@ -482,12 +521,7 @@ ScriptPromise<DOMArrayBuffer> MLContext::readBuffer(
     return EmptyPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(
-      script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
-
-  src_buffer->ReadBufferImpl(resolver);
-  return promise;
+  return src_buffer->ReadBufferImpl(script_state, exception_state);
 }
 
 void MLContext::WriteWebNNBuffer(ScriptState* script_state,
@@ -598,6 +632,8 @@ void MLContext::DidCreateWebNNBuffer(
     ScriptPromiseResolver<blink::MLBuffer>* resolver,
     webnn::OperandDescriptor validated_descriptor,
     webnn::mojom::blink::CreateBufferResultPtr result) {
+  pending_resolvers_.erase(resolver);
+
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid()) {
     return;
@@ -614,6 +650,7 @@ void MLContext::DidCreateWebNNBuffer(
   auto* buffer = MakeGarbageCollected<MLBuffer>(
       resolver->GetExecutionContext(), this, std::move(validated_descriptor),
       std::move(result->get_success()), base::PassKey<MLContext>());
+  buffers_.insert(buffer);
 
   resolver->Resolve(buffer);
 }

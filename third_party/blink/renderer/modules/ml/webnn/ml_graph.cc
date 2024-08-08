@@ -241,7 +241,6 @@ ScriptPromise<MLComputeResult> MLGraph::Compute(
                     std::move(inputs_info), std::move(outputs_info)));
 
   return resolver->Promise();
-  ;
 }
 
 void MLGraph::Dispatch(ScopedMLTrace scoped_trace,
@@ -353,7 +352,7 @@ void MLGraph::OnConnectionError() {
   remote_graph_.reset();
 
   for (const auto& resolver : pending_resolvers_) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError,
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
                                      "Context is lost.");
   }
   pending_resolvers_.clear();

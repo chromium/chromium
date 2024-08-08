@@ -71,6 +71,8 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   // IDL interface:
   ScriptPromise<MLContextLostInfo> lost(ScriptState* script_state);
 
+  void destroy(ScriptState* script_state, ExceptionState& exception_state);
+
   ScriptPromise<MLComputeResult> compute(ScriptState* script_state,
                                          MLGraph* graph,
                                          const MLNamedArrayBufferViews& inputs,
@@ -122,17 +124,12 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                 const MLNamedBuffers& outputs,
                 ExceptionState& exception_state);
 
-  void CreateWebNNGraphBuilder(
-      mojo::PendingAssociatedReceiver<webnn::mojom::blink::WebNNGraphBuilder>
-          pending_receiver,
-      ExceptionState& exception_state);
-
-  // Creates platform specific buffer described by `buffer_info`.
-  void CreateWebNNBuffer(
-      webnn::mojom::blink::BufferInfoPtr buffer_info,
-      webnn::mojom::blink::WebNNContext::CreateBufferCallback callback);
+  MLGraphBuilder* CreateWebNNGraphBuilder(ScriptState* script_state,
+                                          ExceptionState& exception_state);
 
   const MLOpSupportLimits* opSupportLimits(ScriptState* script_state);
+
+  void OnGraphCreated(MLGraph* graph);
 
  private:
   using LostProperty = ScriptPromiseProperty<MLContextLostInfo, IDLUndefined>;
@@ -172,6 +169,14 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   // Identifies this `WebNNContext` mojo instance in the service process.
   const blink::WebNNContextToken webnn_handle_;
+
+  // Keep a set of unresolved `ScriptPromiseResolver`s which will be
+  // rejected when the Mojo pipe is unexpectedly disconnected.
+  HeapHashSet<Member<ScriptPromiseResolver<MLBuffer>>> pending_resolvers_;
+
+  HeapHashSet<WeakMember<MLGraph>> graphs_;
+  HeapHashSet<WeakMember<MLGraphBuilder>> graph_builders_;
+  HeapHashSet<WeakMember<MLBuffer>> buffers_;
 };
 
 }  // namespace blink

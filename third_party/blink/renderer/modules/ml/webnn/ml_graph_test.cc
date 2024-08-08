@@ -1446,11 +1446,9 @@ TEST_F(MLGraphTest, ReadWebNNBufferThenDestroyTest) {
 
   ml_buffer->destroy();
 
-  ScriptPromiseTester read_buffer_tester(
-      script_state, ml_context->readBuffer(script_state, ml_buffer,
-                                           scope.GetExceptionState()));
-  read_buffer_tester.WaitUntilSettled();
-  EXPECT_TRUE(read_buffer_tester.IsRejected());
+  ScriptPromise<DOMArrayBuffer> read_promise = ml_context->readBuffer(
+      script_state, ml_buffer, scope.GetExceptionState());
+  EXPECT_TRUE(read_promise.IsEmpty());
 }
 
 TEST_F(MLGraphTest, WebNNGraphDispatchTest) {

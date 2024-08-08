@@ -105,6 +105,12 @@ typedef record<DOMString, MLBuffer> MLNamedBuffers;
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
+    RaisesException
+  ] void destroy();
+
+  [
+    RuntimeEnabled=MachineLearningNeuralNetwork,
+    CallWith=ScriptState,
     RaisesException,
     Measure
   ] Promise<MLComputeResult> compute(

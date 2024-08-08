@@ -440,12 +440,19 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                                const MLNamedOperands& outputs,
                                ExceptionState& exception_state);
 
+  void OnConnectionError();
+
  private:
   void DidCreateWebNNGraph(
       ScriptPromiseResolver<blink::MLGraph>* resolver,
       std::pair<MLGraph::NamedOperandDescriptors,
                 MLGraph::NamedOperandDescriptors> input_and_output_constraints,
       webnn::mojom::blink::CreateGraphResultPtr result);
+
+  // Check whether the graph builder is in an invalid state when the
+  // `has_built_` is true or the `remote_` is unbound due to context lost. It
+  // must be run for each method of the graph builder.
+  [[nodiscard]] base::expected<void, String> ValidateGraphBuilderState() const;
 
   // Performs platform-agnostic and operand-agnostic validation checks which
   // must be run for each built operand. Returns an error message which may be
@@ -463,6 +470,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   // Tracks whether `build()` has been called (with valid inputs). If so, `this`
   // is effectively invalid and all methods should reject.
   bool has_built_ = false;
+
+  // Keep the unresolved `ScriptPromiseResolver` which will be rejected when the
+  // Mojo pipe is unexpectedly disconnected.
+  Member<ScriptPromiseResolver<MLGraph>> pending_resolver_;
 };
 
 }  // namespace blink

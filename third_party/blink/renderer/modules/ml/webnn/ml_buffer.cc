@@ -74,20 +74,27 @@ uint64_t MLBuffer::PackedByteLength() const {
   return descriptor_.PackedByteLength();
 }
 
-void MLBuffer::ReadBufferImpl(ScriptPromiseResolver<DOMArrayBuffer>* resolver) {
-  pending_resolvers_.insert(resolver);
-
+ScriptPromise<DOMArrayBuffer> MLBuffer::ReadBufferImpl(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   // Remote context gets automatically unbound when the execution context
   // destructs.
   if (!remote_buffer_.is_bound()) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
-                                     "Invalid buffer state");
-    return;
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Buffer has been destroyed or context is lost.");
+    return EmptyPromise();
   }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(
+      script_state, exception_state.GetContext());
+  pending_resolvers_.insert(resolver);
 
   remote_buffer_->ReadBuffer(WTF::BindOnce(&MLBuffer::OnDidReadBuffer,
                                            WrapPersistent(this),
                                            WrapPersistent(resolver)));
+
+  return resolver->Promise();
 }
 
 void MLBuffer::OnDidReadBuffer(
@@ -111,8 +118,9 @@ void MLBuffer::WriteBufferImpl(base::span<const uint8_t> src_data,
   // Remote context gets automatically unbound when the execution context
   // destructs.
   if (!remote_buffer_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid buffer state");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Buffer has been destroyed or context is lost.");
     return;
   }
 
@@ -124,8 +132,9 @@ void MLBuffer::OnConnectionError() {
   remote_buffer_.reset();
 
   for (const auto& resolver : pending_resolvers_) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
-                                     "Invalid buffer state");
+    resolver->RejectWithDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Buffer has been destroyed or context is lost.");
   }
   pending_resolvers_.clear();
 }
