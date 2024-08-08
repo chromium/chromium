@@ -116,7 +116,8 @@ class SupervisionMixin : public InProcessBrowserTestMixin {
 
 // Enables user-readable output from gtest (instead of binary streams).
 std::ostream& operator<<(std::ostream& stream,
-                         const SupervisionMixin::SignInMode& account_type);
+                         SupervisionMixin::SignInMode sign_in_mode);
+std::string SignInModeAsString(SupervisionMixin::SignInMode sign_in_mode);
 
 }  // namespace supervised_user
 
