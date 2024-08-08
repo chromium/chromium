@@ -11,6 +11,7 @@
 #import "base/notreached.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
+#import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 #import "url/url_constants.h"
 
 namespace ios {
@@ -32,6 +33,13 @@ using LensWebParamsCallback =
     base::OnceCallback<void(web::NavigationManager::WebLoadParams)>;
 
 id<ChromeLensController> NewChromeLensController(LensConfiguration* config) {
+  // Lens is not supported for tests.
+  return nil;
+}
+
+UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
+    UIImage* snapshot,
+    LensConfiguration* config) {
   // Lens is not supported for tests.
   return nil;
 }

@@ -15,3 +15,11 @@ source_set("lens_api") {
     "//ios/web/public/navigation:navigation",
   ]
 }
+
+source_set("lens_overlay_api") {
+  sources = [
+    "lens_overlay_api.h",
+    "lens_overlay_result.h",
+  ]
+  deps = [ "//base" ]
+}
