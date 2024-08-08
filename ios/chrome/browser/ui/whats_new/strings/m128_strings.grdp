@@ -58,11 +58,11 @@
 <message name="IDS_IOS_WHATS_NEW_PASSWORDSHARING_INSTRUCTIONS_STEP_5" desc="Text of the row indicating step 5 of PasswordSharing in What's New. [iOS only]">
         Select family members to share with
 </message>
-<message name="IDS_IOS_WHATS_NEW_PASSWORDSHARING_SCREENSHOT_TEXT_1" desc="Text in image displaying: Share Passwords with your Family Group for the feature: PasswordSharing in What's New. [iOS only]">
-        Share Passwords with your Family Group
+<message name="IDS_IOS_WHATS_NEW_PASSWORDSHARING_SCREENSHOT_TEXT_1" desc="Text in image displaying: Share Your Passwords for the feature: PasswordSharing in What's New. [iOS only]">
+        Share Your Passwords
 </message>
-<message name="IDS_IOS_WHATS_NEW_PASSWORDSHARING_SCREENSHOT_TEXT_2" desc="Text in image displaying: Easily and securely share a copy of a password with your family group in Google Password Manager. for the feature: PasswordSharing in What's New. [iOS only]">
-        Easily and securely share a copy of a password with your family group in Google Password Manager.
+<message name="IDS_IOS_WHATS_NEW_PASSWORDSHARING_SCREENSHOT_TEXT_2" desc="Text in image displaying: Share for the feature: PasswordSharing in What's New. [iOS only]">
+        Share
 </message>
 <message name="IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_TITLE" desc="CustomizableOverflowMenu Title displayed in What's New. [iOS only]">
         Customize Your Menu
