@@ -283,20 +283,15 @@ void PlusAddressHttpClientImpl::ReservePlusAddressInternal(
             PlusAddressRequestError(PlusAddressRequestErrorType::kOAuthError)));
     return;
   }
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->method = net::HttpRequestHeaders::kPutMethod;
-  resource_request->url =
-      server_url_.value().Resolve(kServerReservePlusAddressEndpoint);
-  resource_request->headers.SetHeader(
-      net::HttpRequestHeaders::kAuthorization,
-      base::StrCat({"Bearer ", auth_token.value()}));
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
+  std::unique_ptr<network::ResourceRequest> resource_request =
+      CreateRequest(kServerReservePlusAddressEndpoint,
+                    net::HttpRequestHeaders::kPutMethod, *auth_token);
   base::Value::Dict payload;
   payload.Set("facet", origin.Serialize());
   payload.Set("refresh_email_address", refresh);
   std::string request_body;
-  bool wrote_payload = base::JSONWriter::Write(payload, &request_body);
+  const bool wrote_payload = base::JSONWriter::Write(payload, &request_body);
   DCHECK(wrote_payload);
 
   std::unique_ptr<network::SimpleURLLoader> loader =
@@ -330,20 +325,15 @@ void PlusAddressHttpClientImpl::ConfirmPlusAddressInternal(
             PlusAddressRequestError(PlusAddressRequestErrorType::kOAuthError)));
     return;
   }
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->method = net::HttpRequestHeaders::kPutMethod;
-  resource_request->url =
-      server_url_.value().Resolve(kServerCreatePlusAddressEndpoint);
-  resource_request->headers.SetHeader(
-      net::HttpRequestHeaders::kAuthorization,
-      base::StrCat({"Bearer ", auth_token.value()}));
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
+  std::unique_ptr<network::ResourceRequest> resource_request =
+      CreateRequest(kServerCreatePlusAddressEndpoint,
+                    net::HttpRequestHeaders::kPutMethod, *auth_token);
   base::Value::Dict payload;
   payload.Set("facet", origin.Serialize());
   payload.Set("reserved_email_address", plus_address);
   std::string request_body;
-  bool wrote_payload = base::JSONWriter::Write(payload, &request_body);
+  const bool wrote_payload = base::JSONWriter::Write(payload, &request_body);
   DCHECK(wrote_payload);
 
   std::unique_ptr<network::SimpleURLLoader> loader =
@@ -373,15 +363,9 @@ void PlusAddressHttpClientImpl::GetAllPlusAddressesInternal(
     return;
   }
 
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->method = net::HttpRequestHeaders::kGetMethod;
-  resource_request->url =
-      server_url_.value().Resolve(kServerPlusProfileEndpoint);
-  resource_request->headers.SetHeader(
-      net::HttpRequestHeaders::kAuthorization,
-      base::StrCat({"Bearer ", auth_token.value()}));
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-
+  std::unique_ptr<network::ResourceRequest> resource_request =
+      CreateRequest(kServerPlusProfileEndpoint,
+                    net::HttpRequestHeaders::kGetMethod, *auth_token);
   loader_for_sync_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kGetAllPlusAddressesAnnotation);
   loader_for_sync_->SetTimeoutDuration(kRequestTimeout);
@@ -515,6 +499,19 @@ void PlusAddressHttpClientImpl::OnTokenFetched(
     std::move(pending_callbacks_.front()).Run(access_token);
     pending_callbacks_.pop();
   }
+}
+
+std::unique_ptr<network::ResourceRequest>
+PlusAddressHttpClientImpl::CreateRequest(std::string_view endpoint,
+                                         std::string_view method,
+                                         std::string_view auth_token) const {
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->method = std::string(method);
+  request->url = server_url_.value().Resolve(endpoint);
+  request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
+                             base::StrCat({"Bearer ", auth_token}));
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  return request;
 }
 
 }  // namespace plus_addresses
