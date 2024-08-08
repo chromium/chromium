@@ -764,6 +764,10 @@ class BLINK_EXPORT WebLocalFrameClient {
     return false;
   }
 
+  // Specifies whether to disable DOM storage interfaces such as localStorage
+  // and sessionStorage.
+  virtual bool IsDomStorageDisabled() const { return false; }
+
   // Returns a scriptable object for the given plugin element. This is used for
   // having an external handler implement certain customized APIs for the
   // plugin element (e.g., to expose postMessage).

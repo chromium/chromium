@@ -862,6 +862,21 @@ bool ChromeContentRendererClient::IsPluginHandledExternally(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(ENABLE_PLUGINS)
 }
 
+bool ChromeContentRendererClient::IsDomStorageDisabled() const {
+#if BUILDFLAG(ENABLE_PDF) && BUILDFLAG(ENABLE_EXTENSIONS)
+  // PDF renderers shouldn't need to access DOM storage interfaces. Note that
+  // it's still possible to access localStorage or sessionStorage in a PDF
+  // document's context via DevTools; returning false here ensures that these
+  // objects are just seen as null by JavaScript (similarly to what happens for
+  // opaque origins). This avoids a renderer kill by the browser process which
+  // isn't expecting PDF renderer processes to ever use DOM storage
+  // interfaces. See https://crbug.com/357014503.
+  return pdf::IsPdfRenderer();
+#else
+  return false;
+#endif
+}
+
 v8::Local<v8::Object> ChromeContentRendererClient::GetScriptableObject(
     const blink::WebElement& plugin_element,
     v8::Isolate* isolate) {

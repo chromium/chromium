@@ -60,6 +60,10 @@ bool ContentRendererClient::IsPluginHandledExternally(
   return false;
 }
 
+bool ContentRendererClient::IsDomStorageDisabled() const {
+  return false;
+}
+
 v8::Local<v8::Object> ContentRendererClient::GetScriptableObject(
     const blink::WebElement& plugin_element,
     v8::Isolate* isolate) {

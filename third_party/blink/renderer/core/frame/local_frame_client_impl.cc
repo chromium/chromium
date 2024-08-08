@@ -1198,4 +1198,8 @@ void LocalFrameClientImpl::BindDevToolsAgent(
   }
 }
 
+bool LocalFrameClientImpl::IsDomStorageDisabled() const {
+  return web_frame_->Client()->IsDomStorageDisabled();
+}
+
 }  // namespace blink

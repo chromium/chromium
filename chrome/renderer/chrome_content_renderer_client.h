@@ -108,6 +108,7 @@ class ChromeContentRendererClient
                                  const blink::WebElement& plugin_element,
                                  const GURL& original_url,
                                  const std::string& mime_type) override;
+  bool IsDomStorageDisabled() const override;
   v8::Local<v8::Object> GetScriptableObject(
       const blink::WebElement& plugin_element,
       v8::Isolate* isolate) override;

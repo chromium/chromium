@@ -134,6 +134,10 @@ class CONTENT_EXPORT ContentRendererClient {
       const GURL& original_url,
       const std::string& original_mime_type);
 
+  // Specifies whether to disable DOM storage interfaces such as localStorage
+  // and sessionStorage.
+  virtual bool IsDomStorageDisabled() const;
+
   // Returns a scriptable object which implements custom javascript API for the
   // given element. This is used for external plugin handlers for providing
   // custom API such as|postMessage| for <embed> and <object>.

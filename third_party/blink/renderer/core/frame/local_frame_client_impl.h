@@ -288,6 +288,8 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent> receiver)
       override;
 
+  bool IsDomStorageDisabled() const override;
+
  private:
   bool IsLocalFrameClientImpl() const override { return true; }
   WebDevToolsAgentImpl* DevToolsAgent(bool create_if_necessary);
