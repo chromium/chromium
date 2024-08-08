@@ -222,7 +222,7 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
   }
 
   // Create dml device.
-  Microsoft::WRL::ComPtr<IDMLDevice> dml_device;
+  Microsoft::WRL::ComPtr<IDMLDevice1> dml_device;
   auto dml_create_device1_proc = platform_functions->dml_create_device1_proc();
   hr = dml_create_device1_proc(d3d12_device.Get(), flags,
                                min_required_dml_feature_level,
@@ -295,7 +295,7 @@ void Adapter::EnableDebugLayerForTesting() {
 
 Adapter::Adapter(Microsoft::WRL::ComPtr<IUnknown> dxgi_or_dxcore_adapter,
                  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device,
-                 Microsoft::WRL::ComPtr<IDMLDevice> dml_device,
+                 Microsoft::WRL::ComPtr<IDMLDevice1> dml_device,
                  scoped_refptr<CommandQueue> command_queue,
                  scoped_refptr<CommandQueue> init_command_queue_for_npu,
                  DML_FEATURE_LEVEL max_supported_dml_feature_level,

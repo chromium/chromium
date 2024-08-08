@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
  public:
   static base::expected<std::unique_ptr<CommandRecorder>, HRESULT> Create(
       scoped_refptr<CommandQueue> queue,
-      Microsoft::WRL::ComPtr<IDMLDevice> dml_device);
+      Microsoft::WRL::ComPtr<IDMLDevice1> dml_device);
 
   ~CommandRecorder();
   CommandRecorder(const CommandRecorder&) = delete;
@@ -159,7 +159,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
  private:
   CommandRecorder(
       scoped_refptr<CommandQueue> command_queue,
-      Microsoft::WRL::ComPtr<IDMLDevice> dml_device,
+      Microsoft::WRL::ComPtr<IDMLDevice1> dml_device,
       Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator,
       Microsoft::WRL::ComPtr<IDMLCommandRecorder> command_recorder);
 
@@ -173,7 +173,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
   uint64_t last_submitted_fence_value_ = UINT64_MAX;
 
   scoped_refptr<CommandQueue> command_queue_;
-  Microsoft::WRL::ComPtr<IDMLDevice> dml_device_;
+  Microsoft::WRL::ComPtr<IDMLDevice1> dml_device_;
   Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device_;
   Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator_;
   Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> command_list_;

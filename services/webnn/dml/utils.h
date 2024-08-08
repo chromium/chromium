@@ -27,11 +27,11 @@ uint64_t CalculateDMLBufferTensorSize(DML_TENSOR_DATA_TYPE data_type,
 
 std::vector<uint32_t> CalculateStrides(base::span<const uint32_t> dimensions);
 
-// Gets the ID3D12Device used to create the IDMLDevice.
-Microsoft::WRL::ComPtr<ID3D12Device> GetD3D12Device(IDMLDevice* dml_device);
+// Gets the ID3D12Device used to create the IDMLDevice1.
+Microsoft::WRL::ComPtr<ID3D12Device> GetD3D12Device(IDMLDevice1* dml_device);
 
 // Returns the maximum feature level supported by the DML device.
-DML_FEATURE_LEVEL GetMaxSupportedDMLFeatureLevel(IDMLDevice* dml_device);
+DML_FEATURE_LEVEL GetMaxSupportedDMLFeatureLevel(IDMLDevice1* dml_device);
 
 // Creates a transition barrier which is used to specify the resource is
 // transitioning from `before` to `after` states.

@@ -22,7 +22,7 @@ class WebNNGraphBuilderDmlTest : public TestBase {
   void SetUp() override;
 
  protected:
-  Microsoft::WRL::ComPtr<IDMLDevice> dml_device_;
+  Microsoft::WRL::ComPtr<IDMLDevice1> dml_device_;
 };
 
 void WebNNGraphBuilderDmlTest::SetUp() {
