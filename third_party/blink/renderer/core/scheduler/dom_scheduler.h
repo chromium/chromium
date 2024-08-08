@@ -31,7 +31,6 @@ class AbortSignal;
 class DOMTaskSignal;
 class ExceptionState;
 class SchedulerPostTaskOptions;
-class SchedulerYieldOptions;
 class DOMSchedulerTest;
 class V8SchedulerPostTaskCallback;
 class WebSchedulingTaskQueue;
@@ -79,7 +78,6 @@ class CORE_EXPORT DOMScheduler : public ScriptWrappable,
                                  ExceptionState&);
 
   ScriptPromise<IDLUndefined> yield(ScriptState*,
-                                    SchedulerYieldOptions*,
                                     ExceptionState&);
 
   scheduler::TaskAttributionIdType taskId(ScriptState*);
@@ -151,23 +149,6 @@ class CORE_EXPORT DOMScheduler : public ScriptWrappable,
 
   // Callback for when the signal signals priority change.
   void OnPriorityChange(DOMTaskSignal*, DOMTaskQueue*);
-
-  // The state necessary for scheduling a task or continuation.
-  struct SchedulingState {
-    STACK_ALLOCATED();
-
-   public:
-    AbortSignal* abort_source = nullptr;
-    DOMTaskSignal* priority_source = nullptr;
-  };
-
-  // Gets the abort and priority sources (signals) from `signal_option` and
-  // `priority_option`.
-  enum class InheritOption { kInherit };
-  SchedulingState GetSchedulingStateFromOptions(
-      ScriptState*,
-      absl::variant<AbortSignal*, InheritOption> signal_option,
-      absl::variant<AtomicString, InheritOption> priority_option);
 
   // Gets the task queue used to schedule tasks or continuations with the given
   // signal and type, creating it if needed.
