@@ -373,15 +373,8 @@ PrivacySandboxServiceImpl::~PrivacySandboxServiceImpl() = default;
 
 PrivacySandboxService::PromptType
 PrivacySandboxServiceImpl::GetRequiredPromptType() {
-  bool third_party_cookies_blocked;
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxAdsDialogDisabledOnAll3PCBlock)) {
-    third_party_cookies_blocked = AreAllThirdPartyCookiesBlocked(
-        cookie_settings_.get(), pref_service_, tracking_protection_settings_);
-  } else {
-    third_party_cookies_blocked =
-        ShouldBlockThirdPartyOrFirstPartyCookies(cookie_settings_.get());
-  }
+  bool third_party_cookies_blocked = AreAllThirdPartyCookiesBlocked(
+      cookie_settings_.get(), pref_service_, tracking_protection_settings_);
   return GetRequiredPromptTypeInternal(
       pref_service_, profile_type_, privacy_sandbox_settings_,
       third_party_cookies_blocked,

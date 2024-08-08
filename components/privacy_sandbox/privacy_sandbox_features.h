@@ -291,10 +291,6 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<bool>
     kPrivacySandboxActivityTypeStorageSkipPreFirstTab;
 
-// Disables the Privacy Sandbox Ads Dialog when all 3pc are blocked.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxAdsDialogDisabledOnAll3PCBlock);
-
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxPrivacyGuideAdTopics);
 
