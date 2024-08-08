@@ -5,14 +5,14 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {LINK_TOGGLE_BUTTON_ID, PauseActionSource, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors} from './common.js';
 
 suite('LinksToggledIntegration', () => {
-  let app: ReadAnythingElement;
+  let app: AppElement;
   let linksToggleButton: CrIconButtonElement;
 
   // root htmlTag='#document' id=1

@@ -26,7 +26,7 @@ import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {VoicePackStatus} from './voice_language_util.js';
 import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getFilteredVoiceList, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, isWaitingForInstallLocally, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 
-const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
+const AppElementBase = WebUiListenerMixin(PolymerElement);
 
 interface UtteranceSettings {
   lang: string;
@@ -121,7 +121,7 @@ export interface WordBoundaryState {
   speechUtteranceStartIndex: number;
 }
 
-export interface ReadAnythingElement {
+export interface AppElement {
   $: {
     toolbar: ReadAnythingToolbarElement,
     appFlexParent: HTMLElement,
@@ -138,7 +138,7 @@ function isInvalidHighlightForWordHighlighting(textToHighlight: string|
       IGNORED_HIGHLIGHT_CHARACTERS_REGEX.test(textToHighlight);
 }
 
-export class ReadAnythingElement extends ReadAnythingElementBase {
+export class AppElement extends AppElementBase {
   static get is() {
     return 'read-anything-app';
   }
@@ -2520,8 +2520,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'read-anything-app': ReadAnythingElement;
+    'read-anything-app': AppElement;
   }
 }
 
-customElements.define(ReadAnythingElement.is, ReadAnythingElement);
+customElements.define(AppElement.is, AppElement);

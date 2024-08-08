@@ -5,7 +5,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {ToolbarEvent, VoiceClientSideStatusCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle} from 'chrome-untrusted://webui-test/test_util.js';
@@ -17,7 +17,7 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 
 suite('AppReceivesToolbarChanges', () => {
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
-  let app: ReadAnythingElement;
+  let app: AppElement;
 
   function containerLetterSpacing(): number {
     return +window.getComputedStyle(app.$.container)

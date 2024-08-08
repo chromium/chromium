@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {currentReadHighlightClass, previousReadHighlightClass} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
@@ -27,7 +27,7 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 // "highlight" means the reading mode highlight that indicates what text
 // has been or is being read out loud.
 suite('UpdateContentSelectionWithHighlights', () => {
-  let app: ReadAnythingElement;
+  let app: AppElement;
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let fakeTree: FakeTree;
 

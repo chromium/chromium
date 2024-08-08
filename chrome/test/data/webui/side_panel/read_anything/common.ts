@@ -4,7 +4,7 @@
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {MetricsBrowserProxyImpl, playFromSelectionTimeout} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
@@ -16,8 +16,7 @@ export function mockMetrics(): TestMetricsBrowserProxy {
   return metrics;
 }
 
-export function emitEvent(
-    app: ReadAnythingElement, name: string, options?: any): void {
+export function emitEvent(app: AppElement, name: string, options?: any): void {
   app.$.toolbar.dispatchEvent(new CustomEvent(name, options));
   flush();
 }
@@ -66,7 +65,7 @@ export function getItemsInMenu(
 
 // Creates SpeechSynthesisVoices and sets them on the given FakeSpeechSynthesis.
 export function createAndSetVoices(
-    app: ReadAnythingElement, speechSynthesis: FakeSpeechSynthesis,
+    app: AppElement, speechSynthesis: FakeSpeechSynthesis,
     overrides: Array<Partial<SpeechSynthesisVoice>>) {
   const voices: SpeechSynthesisVoice[] = [];
   overrides.forEach(partialVoice => {
@@ -76,7 +75,7 @@ export function createAndSetVoices(
 }
 
 export function setVoices(
-    app: ReadAnythingElement, speechSynthesis: FakeSpeechSynthesis,
+    app: AppElement, speechSynthesis: FakeSpeechSynthesis,
     voices: SpeechSynthesisVoice[]) {
   speechSynthesis.setVoices(voices);
   app.onVoicesChanged();
