@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_math.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -126,10 +127,33 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
   }
 
   gfx::Size GetMaximumDialogSize() override {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+    // Allows the dialog height to be up to 2x the content area height.
+    // 2x is a deliberate choice.
+    // 1x is too restrictive for displaying dialogs that have a header image.
+    // Beyond 2x, dialogs become too much higher than the browser window, so
+    // much so that they might be confused as top-level windows while not
+    // behaving like one (for example, top-level windows are draggable but
+    // dialogs are not).
+    // Note that the size will also be adjusted so that modals are fully visible
+    // on the current screen. This is handled by //components/constrained_window
+    // TODO(crbug.com/358138947): the content area can have zero height on
+    // Linux and Windows, resulting in invisible dialogs. Instead of setting
+    // a min dialog height, set a min content area height.
+    gfx::Size size = browser_view_layout_->contents_container_->size();
+    size.set_height(base::ClampMul(size.height(), 2));
+    return size;
+#else
+    // Modals use NativeWidget and cannot be rendered beyond the browser
+    // window boundaries. Restricting them to the browser window bottom
+    // boundary and let the dialog to figure out a good layout.
+    // TODO(crbug.com/334413759, crbug.com/346974105): use desktop widgets
+    // universally.
     views::View* view = browser_view_layout_->contents_container_;
     gfx::Rect content_area = view->ConvertRectToWidget(view->GetLocalBounds());
     const int top = browser_view_layout_->dialog_top_y_;
     return gfx::Size(content_area.width(), content_area.bottom() - top);
+#endif
   }
 
   views::Widget* GetHostWidget() const {
