@@ -3342,6 +3342,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         =1 {Password saved in your Google Account, {EMAIL}}
         other {Passwords saved in your Google Account, {EMAIL}}}
       </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_CHANGE_PIN" desc="Label of the button that allows to change the PIN for Google Password Manager in password settings. [iOS Only]">
+        Change PIN
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_GOOGLE_PASSWORD_MANAGER_PIN_DESCRIPTION" desc="Help text explaining the functionality of a PIN for Google Password Manager. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [iOS Only]">
+        Helps you access saved passkeys on any device
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_GOOGLE_PASSWORD_MANAGER_PIN_TITLE" desc="Title of the section for managing the PIN for Google Password Manager. [iOS Only]">
+        Google Password Manager PIN
+      </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION" desc="Section title in settings &gt; password, about on-device Encryption. [iOS Only]">
         On-Device Encryption
       </message>

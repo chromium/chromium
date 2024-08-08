@@ -42,6 +42,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierBulkMovePasswordsToAccount,
   SectionIdentifierPasswordsInOtherApps,
   SectionIdentifierAutomaticPasskeyUpgradesSwitch,
+  SectionIdentifierGooglePasswordManagerPin,
   SectionIdentifierOnDeviceEncryption,
   SectionIdentifierExportPasswordsButton,
 };
@@ -54,6 +55,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeBulkMovePasswordsToAccountButton,
   ItemTypePasswordsInOtherApps,
   ItemTypeAutomaticPasskeyUpgradesSwitch,
+  ItemTypeChangeGooglePasswordManagerPinDescription,
+  ItemTypeChangeGooglePasswordManagerPinButton,
   ItemTypeOnDeviceEncryptionOptInDescription,
   ItemTypeOnDeviceEncryptionOptedInDescription,
   ItemTypeOnDeviceEncryptionOptedInLearnMore,
@@ -142,6 +145,15 @@ bool SyncingWebauthnCredentialsEnabled() {
 @property(nonatomic, readonly)
     TableViewSwitchItem* automaticPasskeyUpgradesSwitchItem;
 
+// Descriptive text shown when the user has an option of changing their Google
+// Password Manager PIN.
+@property(nonatomic, readonly)
+    TableViewImageItem* changeGooglePasswordManagerPinDescriptionItem;
+
+// A button which triggers the change Google Password Manager PIN flow.
+@property(nonatomic, readonly)
+    TableViewTextItem* changeGooglePasswordManagerPinItem;
+
 // Descriptive text shown when the user has the option of enabling on-device
 // encryption.
 @property(nonatomic, readonly)
@@ -173,6 +185,10 @@ bool SyncingWebauthnCredentialsEnabled() {
 @synthesize passwordsInOtherAppsItem = _passwordsInOtherAppsItem;
 @synthesize automaticPasskeyUpgradesSwitchItem =
     _automaticPasskeyUpgradesSwitchItem;
+@synthesize changeGooglePasswordManagerPinDescriptionItem =
+    _changeGooglePasswordManagerPinDescriptionItem;
+@synthesize changeGooglePasswordManagerPinItem =
+    _changeGooglePasswordManagerPinItem;
 @synthesize onDeviceEncryptionOptInDescriptionItem =
     _onDeviceEncryptionOptInDescriptionItem;
 @synthesize onDeviceEncryptionOptedInDescription =
@@ -239,6 +255,14 @@ bool SyncingWebauthnCredentialsEnabled() {
     [model addItem:[self automaticPasskeyUpgradesSwitchItem]
         toSectionWithIdentifier:
             SectionIdentifierAutomaticPasskeyUpgradesSwitch];
+
+    // TODO(crbug.com/358342483): Add this section only if the device is
+    // bootstrapped for using passkeys.
+    [model addSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin];
+    [model addItem:[self changeGooglePasswordManagerPinDescriptionItem]
+        toSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin];
+    [model addItem:[self changeGooglePasswordManagerPinItem]
+        toSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin];
   }
 
   if (self.onDeviceEncryptionState !=
@@ -463,6 +487,29 @@ bool SyncingWebauthnCredentialsEnabled() {
   _automaticPasskeyUpgradesSwitchItem.detailText =
       l10n_util::GetNSString(IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES_SUBTITLE);
   return _automaticPasskeyUpgradesSwitchItem;
+}
+
+- (TableViewImageItem*)changeGooglePasswordManagerPinDescriptionItem {
+  _changeGooglePasswordManagerPinDescriptionItem = [[TableViewImageItem alloc]
+      initWithType:ItemTypeChangeGooglePasswordManagerPinDescription];
+  _changeGooglePasswordManagerPinDescriptionItem.title = l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_SETTINGS_GOOGLE_PASSWORD_MANAGER_PIN_TITLE);
+  _changeGooglePasswordManagerPinDescriptionItem.detailText =
+      l10n_util::GetNSString(
+          IDS_IOS_PASSWORD_SETTINGS_GOOGLE_PASSWORD_MANAGER_PIN_DESCRIPTION);
+  return _changeGooglePasswordManagerPinDescriptionItem;
+}
+
+- (TableViewTextItem*)changeGooglePasswordManagerPinItem {
+  _changeGooglePasswordManagerPinItem = [[TableViewTextItem alloc]
+      initWithType:ItemTypeChangeGooglePasswordManagerPinButton];
+  _changeGooglePasswordManagerPinItem.text =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_CHANGE_PIN);
+  _changeGooglePasswordManagerPinItem.textColor =
+      [UIColor colorNamed:kBlueColor];
+  _changeGooglePasswordManagerPinItem.accessibilityTraits =
+      UIAccessibilityTraitButton;
+  return _changeGooglePasswordManagerPinItem;
 }
 
 - (TableViewImageItem*)onDeviceEncryptionOptInDescriptionItem {
@@ -824,11 +871,11 @@ bool SyncingWebauthnCredentialsEnabled() {
   } else {
     // Find the section that's supposed to be before On-Device Encryption, and
     // insert after that.
-    NSInteger priorSectionIndex = [self.tableViewModel
-        sectionForSectionIdentifier:
-            SyncingWebauthnCredentialsEnabled()
-                ? SectionIdentifierAutomaticPasskeyUpgradesSwitch
-                : SectionIdentifierPasswordsInOtherApps];
+    NSInteger priorSectionIndex =
+        [self.tableViewModel sectionForSectionIdentifier:
+                                 SyncingWebauthnCredentialsEnabled()
+                                     ? SectionIdentifierGooglePasswordManagerPin
+                                     : SectionIdentifierPasswordsInOtherApps];
     NSInteger onDeviceEncryptionSectionIndex = priorSectionIndex + 1;
     [self.tableViewModel
         insertSectionWithIdentifier:SectionIdentifierOnDeviceEncryption
