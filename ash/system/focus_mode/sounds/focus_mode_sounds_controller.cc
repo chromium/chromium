@@ -27,12 +27,14 @@
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
 #include "base/barrier_callback.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/media_session/public/cpp/media_session_service.h"
+#include "services/media_session/public/cpp/util.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "url/gurl.h"
 
@@ -468,6 +470,50 @@ void FocusModeSoundsController::TogglePlaylist(
     ResetSelectedPlaylist();
   } else {
     SelectPlaylist(playlist_data);
+  }
+}
+
+void FocusModeSoundsController::PausePlayback() {
+  if (simulate_playback_for_testing_) {
+    CHECK_IS_TEST();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce([]() {
+          auto* sounds_controller =
+              FocusModeController::Get()->focus_mode_sounds_controller();
+          sounds_controller
+              ->update_selected_playlist_state_for_testing(  // IN-TEST
+                  focus_mode_util::SoundState::kPaused);
+        }));
+    return;
+  }
+
+  if (media_controller_remote_ && media_controller_remote_.is_bound() &&
+      !media_session_request_id_.is_empty()) {
+    media_session::PerformMediaSessionAction(
+        media_session::mojom::MediaSessionAction::kPause,
+        media_controller_remote_);
+  }
+}
+
+void FocusModeSoundsController::ResumePlayingPlayback() {
+  if (simulate_playback_for_testing_) {
+    CHECK_IS_TEST();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce([]() {
+          auto* sounds_controller =
+              FocusModeController::Get()->focus_mode_sounds_controller();
+          sounds_controller
+              ->update_selected_playlist_state_for_testing(  // IN-TEST
+                  focus_mode_util::SoundState::kPlaying);
+        }));
+    return;
+  }
+
+  if (media_controller_remote_ && media_controller_remote_.is_bound() &&
+      !media_session_request_id_.is_empty()) {
+    media_session::PerformMediaSessionAction(
+        media_session::mojom::MediaSessionAction::kPlay,
+        media_controller_remote_);
   }
 }
 

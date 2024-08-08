@@ -42,6 +42,21 @@ views::Widget* FindMediaWidget() {
       Shell::GetPrimaryRootWindow(), kShellWindowId_OverlayContainer));
 }
 
+void SimulatePlaybackState(bool is_playing) {
+  media_session::mojom::MediaSessionInfoPtr session_info(
+      media_session::mojom::MediaSessionInfo::New());
+
+  session_info->state =
+      media_session::mojom::MediaSessionInfo::SessionState::kActive;
+  session_info->playback_state =
+      is_playing ? media_session::mojom::MediaPlaybackState::kPlaying
+                 : media_session::mojom::MediaPlaybackState::kPaused;
+
+  FocusModeController::Get()
+      ->focus_mode_sounds_controller()
+      ->MediaSessionInfoChanged(std::move(session_info));
+}
+
 }  // namespace
 
 class FocusModeBrowserTest : public InProcessBrowserTest {
@@ -85,10 +100,10 @@ IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest, MediaWidget) {
   EXPECT_FALSE(sounds_controller->selected_playlist().empty());
   EXPECT_TRUE(FindMediaWidget());
 
-  // The media widget should be closed when the ending moment is triggered.
+  // The media widget should still exist when the ending moment is triggered.
   controller->TriggerEndingMomentImmediately();
   EXPECT_TRUE(controller->in_ending_moment());
-  EXPECT_FALSE(FindMediaWidget());
+  EXPECT_TRUE(FindMediaWidget());
 
   // If the user extends the time during the ending moment, the media widget
   // should be recreated.
@@ -107,6 +122,82 @@ IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest, MediaWidget) {
   controller->ToggleFocusMode();
   EXPECT_TRUE(controller->in_focus_session());
   EXPECT_TRUE(FindMediaWidget());
+}
+
+// Tests that the ending moment will pause the playlist without closing the
+// media widget.
+IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest, PauseMusicDuringEndingMoment) {
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // Toggle on focus mode. Verify that there is no media widget since there is
+  // no selected playlist.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  auto* sounds_controller = controller->focus_mode_sounds_controller();
+  sounds_controller->set_simulate_playback_for_testing();
+
+  // Case 1. If the music is paused by the ending moment, when extending the
+  // session, it should be resumed. Select a playlist with a type and verify
+  // that a media widget is created.
+  focus_mode_util::SelectedPlaylist selected_playlist;
+  selected_playlist.id = "id0";
+  selected_playlist.type = focus_mode_util::SoundType::kSoundscape;
+  sounds_controller->TogglePlaylist(selected_playlist);
+  EXPECT_TRUE(FindMediaWidget());
+  // Simulate the playlist is playing.
+  SimulatePlaybackState(/*is_playing=*/true);
+  EXPECT_EQ(focus_mode_util::SoundState::kPlaying,
+            sounds_controller->selected_playlist().state);
+
+  controller->TriggerEndingMomentImmediately();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(controller->in_ending_moment());
+  EXPECT_TRUE(FindMediaWidget());
+  EXPECT_EQ(focus_mode_util::SoundState::kPaused,
+            sounds_controller->selected_playlist().state);
+
+  // Extending the session will resume the playlist.
+  controller->ExtendSessionDuration();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_EQ(focus_mode_util::SoundState::kPlaying,
+            sounds_controller->selected_playlist().state);
+
+  // Case 2. If the user paused the playlist before ending moment, after
+  // extending the session, the playlist should still in paused state.
+  SimulatePlaybackState(/*is_playing=*/false);
+  EXPECT_EQ(focus_mode_util::SoundState::kPaused,
+            sounds_controller->selected_playlist().state);
+
+  controller->TriggerEndingMomentImmediately();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(controller->in_ending_moment());
+  EXPECT_TRUE(FindMediaWidget());
+
+  controller->ExtendSessionDuration();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_EQ(focus_mode_util::SoundState::kPaused,
+            sounds_controller->selected_playlist().state);
+
+  // Case 3. If the user selected another playlist during the ending moment,
+  // after extending the session, it should be the new playlist is playing.
+  controller->TriggerEndingMomentImmediately();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(controller->in_ending_moment());
+  const auto old_playlist_id = sounds_controller->selected_playlist().id;
+
+  selected_playlist.id = "id1";
+  sounds_controller->TogglePlaylist(selected_playlist);
+  EXPECT_EQ(focus_mode_util::SoundState::kSelected,
+            sounds_controller->selected_playlist().state);
+
+  controller->ExtendSessionDuration();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_TRUE(FindMediaWidget());
+  EXPECT_NE(old_playlist_id, sounds_controller->selected_playlist().id);
 }
 
 IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest,

@@ -133,6 +133,9 @@ class ASH_EXPORT FocusModeSoundsController
   // deselect based on its previous state.
   void TogglePlaylist(const focus_mode_util::SelectedPlaylist& playlist_data);
 
+  void PausePlayback();
+  void ResumePlayingPlayback();
+
   // Download images by providing urls. `update_sounds_view_callback` will be
   // called only when finishing downloading all non-empty thumbnails for the
   // Soundscape type or the YouTube Music type of playlists; however, if
@@ -165,6 +168,13 @@ class ASH_EXPORT FocusModeSoundsController
   void set_selected_playlist_for_testing(
       const focus_mode_util::SelectedPlaylist& playlist) {
     selected_playlist_ = playlist;
+  }
+  void update_selected_playlist_state_for_testing(
+      focus_mode_util::SoundState new_state) {
+    selected_playlist_.state = new_state;
+  }
+  void set_simulate_playback_for_testing() {
+    simulate_playback_for_testing_ = true;
   }
 
  private:
@@ -208,6 +218,8 @@ class ASH_EXPORT FocusModeSoundsController
   bool has_audio_focus_ = false;
   base::UnguessableToken media_session_request_id_ =
       base::UnguessableToken::Null();
+
+  bool simulate_playback_for_testing_ = false;
 
   base::ObserverList<Observer> observers_;
 

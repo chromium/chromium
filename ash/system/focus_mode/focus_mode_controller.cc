@@ -223,6 +223,11 @@ void FocusModeController::OnActiveUserSessionChanged(
 
 void FocusModeController::OnSelectedPlaylistChanged() {
   if (!in_focus_session()) {
+    // If a user swaps playlists or deselects the playlist, we should close the
+    // previous media widget.
+    if (media_widget_) {
+      CloseMediaWidget();
+    }
     return;
   }
 
@@ -306,7 +311,8 @@ void FocusModeController::ExtendSessionDuration() {
 
   std::string message;
   if (was_in_ending_moment) {
-    MaybeCreateMediaWidget();
+    PerformActionsForMusic();
+    paused_by_ending_moment_ = false;
 
     focus_mode_metrics_recorder_->RecordHistogramOnEndingMoment(
         focus_mode_histogram_names::EndingMomentBubbleClosedReason::kExtended);
@@ -525,6 +531,7 @@ FocusModeController::GetSystemMediaSessionInfo() {
 
 void FocusModeController::StartFocusSession(
     focus_mode_histogram_names::ToggleSource source) {
+  paused_by_ending_moment_ = false;
   focus_mode_sounds_controller_->reset_paused_event_count();
   focus_mode_metrics_recorder_ =
       std::make_unique<FocusModeMetricsRecorder>(session_duration_);
@@ -597,7 +604,12 @@ void FocusModeController::OnTimerTick() {
           /*min=*/0, /*max=*/focus_mode_util::kCongratulatoryTitleNum - 1);
 
       if (media_widget_) {
-        CloseMediaWidget();
+        paused_by_ending_moment_ =
+            focus_mode_sounds_controller_->selected_playlist().state ==
+            focus_mode_util::SoundState::kPlaying;
+        if (paused_by_ending_moment_) {
+          focus_mode_sounds_controller_->PausePlayback();
+        }
       }
 
       // Set a timer to terminate the ending moment. If the focus tray bubble is
@@ -746,10 +758,10 @@ bool FocusModeController::IsFocusTrayBubbleVisible() const {
   return false;
 }
 
-void FocusModeController::MaybeCreateMediaWidget() {
+bool FocusModeController::MaybeCreateMediaWidget() {
   if (media_widget_ ||
       focus_mode_sounds_controller_->selected_playlist().empty()) {
-    return;
+    return false;
   }
 
   CHECK(in_focus_session());
@@ -781,6 +793,7 @@ void FocusModeController::MaybeCreateMediaWidget() {
   focus_mode_media_view_ = media_widget_->SetContentsView(
       AshWebViewFactory::Get()->Create(web_view_params));
   focus_mode_media_view_->Navigate(GURL(chrome::kChromeUIFocusModeMediaURL));
+  return true;
 }
 
 void FocusModeController::CloseMediaWidget() {
@@ -788,6 +801,24 @@ void FocusModeController::CloseMediaWidget() {
   focus_mode_media_view_.ClearAndDelete();
   focus_mode_media_view_ = nullptr;
   media_widget_.reset();
+}
+
+void FocusModeController::PerformActionsForMusic() {
+  const auto& selected_playlist =
+      focus_mode_sounds_controller_->selected_playlist();
+  // Do nothing if there is no selected playlist, or a new media widget was
+  // created.
+  if (selected_playlist.empty() || MaybeCreateMediaWidget()) {
+    return;
+  }
+
+  // If the music was paused by the user before the ending moment, we should
+  // keep it in paused state after extending the session; otherwise, we will
+  // continue to play the existing music because it was paused by the ending
+  // moment.
+  if (paused_by_ending_moment_) {
+    focus_mode_sounds_controller_->ResumePlayingPlayback();
+  }
 }
 
 void FocusModeController::OnTasksReceived(
