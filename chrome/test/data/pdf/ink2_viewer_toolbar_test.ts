@@ -175,4 +175,60 @@ chrome.test.runTests([
     chrome.test.assertTrue(redoButton.disabled);
     chrome.test.succeed();
   },
+  // Test that the undo and redo buttons are disabled when a text form field is
+  // focused.
+  function testUndoRedoButtonsDisabledOnFormFieldFocus() {
+    chrome.test.assertTrue(viewerToolbar.annotationMode);
+
+    // Exit annotation mode, since form fields can only be focused outside of
+    // annotation mode.
+    viewerToolbar.toggleAnnotation();
+    chrome.test.assertFalse(viewerToolbar.annotationMode);
+
+    const controller = PluginController.getInstance();
+    const mockPlugin = createMockPdfPluginForTest();
+    controller.setPluginForTesting(mockPlugin);
+
+    const undoButton =
+        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo');
+    const redoButton =
+        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#redo');
+
+    // Draw two strokes and undo, so that both undo and redo buttons are
+    // enabled.
+    finishInkStroke(controller);
+    finishInkStroke(controller);
+
+    undoButton.click();
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') !== undefined);
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertFalse(redoButton.disabled);
+
+    mockPlugin.clearMessages();
+
+    // Simulate focusing on a text form field. Both buttons should be disabled.
+    mockPlugin.dispatchEvent(new MessageEvent(
+        'message', {data: {type: 'formFocusChange', focused: 'text'}}));
+
+    chrome.test.assertTrue(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
+
+    // Simulate focusing on a non-text form field. Both buttons should be
+    // enabled.
+    mockPlugin.dispatchEvent(new MessageEvent(
+        'message', {data: {type: 'formFocusChange', focused: 'non-text'}}));
+
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertFalse(redoButton.disabled);
+
+    // Simulate removing focus from the form. Both buttons should be enabled.
+    mockPlugin.dispatchEvent(new MessageEvent(
+        'message', {data: {type: 'formFocusChange', focused: 'none'}}));
+
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertFalse(redoButton.disabled);
+    chrome.test.succeed();
+  },
 ]);

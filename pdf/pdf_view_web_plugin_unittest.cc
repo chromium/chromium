@@ -644,7 +644,7 @@ TEST_F(PdfViewWebPluginTest, DocumentLoadComplete) {
   EXPECT_CALL(*client_ptr_, PostMessage);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
     "type": "formFocusChange",
-    "focused": false,
+    "focused": "none",
   })")));
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
@@ -673,7 +673,7 @@ TEST_F(PdfViewWebPluginFullFrameTest, DocumentLoadComplete) {
   EXPECT_CALL(*client_ptr_, PostMessage);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
     "type": "formFocusChange",
-    "focused": false,
+    "focused": "none",
   })")));
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
@@ -2363,7 +2363,7 @@ TEST_F(PdfViewWebPluginPrintPreviewTest, DocumentLoadComplete) {
   EXPECT_CALL(*client_ptr_, PostMessage);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
     "type": "formFocusChange",
-    "focused": false,
+    "focused": "none",
   })")));
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({

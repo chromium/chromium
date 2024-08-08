@@ -28,7 +28,7 @@ import {listenOnce} from 'chrome://resources/js/util.js';
 import type {Bookmark} from './bookmark_type.js';
 import type {BrowserApi} from './browser_api.js';
 import type {Attachment, DocumentMetadata, ExtendedKeyEvent, Point} from './constants.js';
-import {FittingType, SaveRequestType} from './constants.js';
+import {FittingType, FormFieldFocusType, SaveRequestType} from './constants.js';
 import type {MessageData} from './controller.js';
 import {PluginController} from './controller.js';
 // <if expr="enable_pdf_ink2">
@@ -211,9 +211,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       },
       // </if>
 
-      isFormFieldFocused_: {
-        type: Boolean,
-        value: false,
+      formFieldFocus_: {
+        type: FormFieldFocusType,
+        value: FormFieldFocusType.NONE,
       },
 
       /** The current loading progress of the PDF document (0 - 100). */
@@ -291,7 +291,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // <if expr="enable_pdf_ink2">
   private hasInk2Edits_: boolean;
   // </if>
-  private isFormFieldFocused_: boolean;
+  private formFieldFocus_: FormFieldFocusType;
   private loadProgress_: number;
   private navigator_: PdfNavigator|null = null;
   private pageNo_: number;
@@ -398,7 +398,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
 
     // Let the viewport handle directional key events.
-    if (this.viewport.handleDirectionalKeyEvent(e, this.isFormFieldFocused_)) {
+    if (this.viewport.handleDirectionalKeyEvent(
+            e, this.formFieldFocus_ !== FormFieldFocusType.NONE)) {
       return;
     }
 
@@ -880,8 +881,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             (data as unknown as {smoothScrolling: boolean}).smoothScrolling);
         return;
       case 'formFocusChange':
-        const focusedData = data as unknown as {focused: boolean};
-        this.isFormFieldFocused_ = focusedData.focused;
+        const focusedData = data as unknown as {focused: FormFieldFocusType};
+        this.formFieldFocus_ = focusedData.focused;
         return;
       case 'touchSelectionOccurred':
         this.sendScriptingMessage({
