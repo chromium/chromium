@@ -2064,6 +2064,23 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
           '^ios/',
         ),
     ),
+    BanRule(
+        pattern=r'UNSAFE_TODO(',
+        explanation=
+        ('Do not use UNSAFE_TODO() to write new unsafe code. Use only when '
+         'removing a pre-existing file-wide allow_unsafe_buffers pragma.',
+        ),
+        treat_as_error=False,
+    ),
+    BanRule(
+        pattern=r'UNSAFE_BUFFERS(',
+        explanation=
+        ('Do not use UNSAFE_BUFFERS() to write new unsafe code. As a last '
+         'resort, use only after contacting security@chromium.org to perform '
+         'a formal safety review.',
+        ),
+        treat_as_error=False,
+    ),
 )
 
 _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (

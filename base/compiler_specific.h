@@ -575,12 +575,14 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // what is unsafe, and prevent accidentally opting extra things out of the
 // warning.
 //
-// All usage of UNSAFE_BUFFERS() should come with a `// SAFETY: ...` comment
+// All usage of UNSAFE_BUFFERS() *must* come with a `// SAFETY: ...` comment
 // that explains how we have guaranteed that the pointer usage can never go
 // out-of-bounds, or that the requirements of the UNSAFE_BUFFER_USAGE function
-// are met. The safety comment should allow a reader to check that all
-// requirements have been met, using only local invariants. Examples of local
-// invariants include:
+// are met. The safety comment should allow the chrome security team to check
+// that all requirements have been met, using only local invariants. Contact
+// security@chromium.org to schedule such a review.
+//
+// Examples of local invariants include:
 // - Runtime conditions or CHECKs near the UNSAFE_BUFFERS macros
 // - Invariants guaranteed by types in the surrounding code
 // - Invariants guaranteed by function calls in the surrounding code
@@ -606,6 +608,16 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #else
 #define UNSAFE_BUFFERS(...) __VA_ARGS__
 #endif
+
+// Line-level suppression of unsafe buffers warnings. This gives finer-grained
+// control over opting out portions of code from buffer safety checks than the
+// file-level pragma. It is used to indicate code that should be re-written for
+// safety and makes such sections easy-to-find (contrast this with the
+// UNSAFE_BUFFERS macro that indicates code that is expected to remain present
+// and has been manually evaluated for safety). Use of this macro can increase
+// the number of non-exempt files, and hence prevent new unsafe code from
+// being written in them.
+#define UNSAFE_TODO(...) UNSAFE_BUFFERS(__VA_ARGS__)
 
 // Defines a condition for a function to be checked at compile time if the
 // parameter's value is known at compile time. If the condition is failed, the
