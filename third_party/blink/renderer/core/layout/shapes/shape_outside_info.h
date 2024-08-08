@@ -88,8 +88,8 @@ class ShapeOutsideInfo final : public GarbageCollected<ShapeOutsideInfo> {
                                              WritingMode,
                                              float margin) const;
 
-  LayoutUnit LogicalTopOffset() const;
-  LayoutUnit LogicalLeftOffset() const;
+  LayoutUnit BlockStartOffset() const;
+  LayoutUnit InlineStartOffset() const;
 
   using InfoMap =
       HeapHashMap<WeakMember<const LayoutBox>, Member<ShapeOutsideInfo>>;
