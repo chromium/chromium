@@ -35,10 +35,15 @@ std::unique_ptr<TilingSetRasterQueueAll> TilingSetRasterQueueAll::Create(
   DCHECK(tiling_set);
 
   // Early out if the tiling set has no tiles needing raster.
-  bool done = features::IsCCSlimmingEnabled() ? tiling_set->all_tiles_done()
-                                              : !tiling_set->num_tilings();
-  if (done) {
-    return nullptr;
+  if (features::IsCCSlimmingEnabled()) {
+    if (tiling_set->all_tiles_done()) {
+      return nullptr;
+    }
+  } else {
+    if (!tiling_set->num_tilings()) {
+      return base::WrapUnique(new TilingSetRasterQueueAll(
+          nullptr, nullptr, nullptr, is_drawing_layer));
+    }
   }
 
   const PictureLayerTilingClient* client = tiling_set->client();
@@ -75,7 +80,8 @@ std::unique_ptr<TilingSetRasterQueueAll> TilingSetRasterQueueAll::Create(
       !active_non_ideal_pending_high_res_tiling->all_tiles_done();
 
   if (!use_low_res_tiling && !use_high_res_tiling &&
-      !use_active_non_ideal_pending_high_res_tiling) {
+      !use_active_non_ideal_pending_high_res_tiling &&
+      features::IsCCSlimmingEnabled()) {
     return nullptr;
   }
 

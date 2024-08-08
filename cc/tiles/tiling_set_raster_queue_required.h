@@ -56,6 +56,7 @@ class CC_EXPORT TilingSetRasterQueueRequired {
     TilingData::Iterator visible_iterator_;
   };
 
+  TilingSetRasterQueueRequired();
   TilingSetRasterQueueRequired(PictureLayerTiling* tiling,
                                RasterTilePriorityQueue::Type type);
 

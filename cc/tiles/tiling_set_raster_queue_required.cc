@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "cc/base/features.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
 #include "cc/tiles/tile.h"
 #include "cc/tiles/tile_priority.h"
@@ -40,10 +41,16 @@ TilingSetRasterQueueRequired::Create(PictureLayerTilingSet* tiling_set,
     tiling = tiling_set->FindTilingWithResolution(HIGH_RESOLUTION);
   }
 
-  if (!tiling || tiling->all_tiles_done())
-    return nullptr;
+  if (!tiling || tiling->all_tiles_done()) {
+    if (features::IsCCSlimmingEnabled()) {
+      return nullptr;
+    }
+    return base::WrapUnique(new TilingSetRasterQueueRequired());
+  }
   return base::WrapUnique(new TilingSetRasterQueueRequired(tiling, type));
 }
+
+TilingSetRasterQueueRequired::TilingSetRasterQueueRequired() = default;
 
 TilingSetRasterQueueRequired::TilingSetRasterQueueRequired(
     PictureLayerTiling* tiling,
