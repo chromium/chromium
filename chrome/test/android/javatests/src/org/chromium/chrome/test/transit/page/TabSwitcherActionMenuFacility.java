@@ -8,7 +8,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertEquals;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
@@ -32,22 +31,17 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
 
     // withId() cannot differentiate items because android:id is id/menu_item_text for all items.
     public static final ViewSpec CLOSE_TAB_MENU_ITEM =
-            viewSpec(
-                    allOf(
-                            withText(R.string.close_tab),
-                            isDescendantOfA(APP_MENU_LIST.getViewMatcher())));
+            viewSpec(withText(R.string.close_tab), isDescendantOfA(APP_MENU_LIST.getViewMatcher()));
 
     public static final ViewSpec NEW_TAB_MENU_ITEM =
             viewSpec(
-                    allOf(
-                            withText(R.string.menu_new_tab),
-                            isDescendantOfA(APP_MENU_LIST.getViewMatcher())));
+                    withText(R.string.menu_new_tab),
+                    isDescendantOfA(APP_MENU_LIST.getViewMatcher()));
 
     public static final ViewSpec NEW_INCOGNITO_TAB_MENU_ITEM =
             viewSpec(
-                    allOf(
-                            withText(R.string.menu_new_incognito_tab),
-                            isDescendantOfA(APP_MENU_LIST.getViewMatcher())));
+                    withText(R.string.menu_new_incognito_tab),
+                    isDescendantOfA(APP_MENU_LIST.getViewMatcher()));
 
     @Override
     public void declareElements(Elements.Builder elements) {

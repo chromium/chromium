@@ -28,8 +28,15 @@ public class ViewSpec {
     private final Matcher<View> mViewMatcher;
     private final String mMatcherDescription;
 
+    /** Create a ViewSpec from a Matcher<View>. */
     public static ViewSpec viewSpec(Matcher<View> viewMatcher) {
         return new ViewSpec(viewMatcher);
+    }
+
+    /** Create a ViewSpec of a View that matches multiple Matchers<View>. */
+    @SafeVarargs
+    public static ViewSpec viewSpec(Matcher<View>... viewMatchers) {
+        return new ViewSpec(allOf(viewMatchers));
     }
 
     private ViewSpec(Matcher<View> viewMatcher) {

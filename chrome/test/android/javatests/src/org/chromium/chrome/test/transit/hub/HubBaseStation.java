@@ -46,9 +46,8 @@ public abstract class HubBaseStation extends Station {
     public static final ViewSpec HUB_PANE_HOST = viewSpec(withId(R.id.hub_pane_host));
     public static final ViewSpec HUB_MENU_BUTTON =
             viewSpec(
-                    allOf(
-                            isDescendantOfA(withId(R.id.hub_toolbar)),
-                            withId(org.chromium.chrome.R.id.menu_button)));
+                    isDescendantOfA(withId(R.id.hub_toolbar)),
+                    withId(org.chromium.chrome.R.id.menu_button));
     public static final ViewSpec HUB_PANE_SWITCHER =
             viewSpec(allOf(isDescendantOfA(withId(R.id.hub_toolbar)), withId(R.id.pane_switcher)));
 

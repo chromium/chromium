@@ -6,8 +6,6 @@ package org.chromium.chrome.test.transit.hub;
 
 import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
 
-import static org.hamcrest.CoreMatchers.allOf;
-
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import org.chromium.base.test.transit.Elements;
@@ -19,7 +17,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 public class IncognitoTabSwitcherStation extends TabSwitcherStation {
 
     public static final ViewSpec SELECTED_INCOGNITO_TOGGLE_TAB_BUTTON =
-            viewSpec(allOf(INCOGNITO_TOGGLE_TAB_BUTTON.getViewMatcher(), isSelected()));
+            viewSpec(INCOGNITO_TOGGLE_TAB_BUTTON.getViewMatcher(), isSelected());
 
     public IncognitoTabSwitcherStation(boolean regularTabsExist, boolean incognitoTabsExist) {
         super(/* isIncognito= */ true, regularTabsExist, incognitoTabsExist);
