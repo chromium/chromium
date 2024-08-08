@@ -233,6 +233,7 @@ source_set("unit_tests") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/safety_hub_magic_stack_icon_background.xml",
+    "java/res/drawable/safety_hub_notifications_icon.xml",
     "java/res/drawable/safety_hub_safety_tips_icon.xml",
     "java/res/layout/safety_hub_bottom_elements.xml",
     "java/res/layout/safety_hub_button_widget.xml",

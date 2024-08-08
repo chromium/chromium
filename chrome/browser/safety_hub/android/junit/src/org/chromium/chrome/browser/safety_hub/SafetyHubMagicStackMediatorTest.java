@@ -137,10 +137,28 @@ public class SafetyHubMagicStackMediatorTest {
         doReturn(entry).when(mMagicStackBridge).getModuleToShow();
         mMediator.showModule();
 
-        testSafeStateDisplayed(
+        verify(mModuleDelegate).onDataReady(eq(ModuleType.SAFETY_HUB), eq(mModel));
+        assertEquals(
+                mModel.get(SafetyHubMagicStackViewProperties.HEADER),
+                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
+        assertEquals(
+                mModel.get(SafetyHubMagicStackViewProperties.TITLE),
                 mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_notifications_title),
-                DESCRIPTION);
+                        .getString(R.string.safety_hub_magic_stack_notifications_title));
+        assertEquals(mModel.get(SafetyHubMagicStackViewProperties.SUMMARY), DESCRIPTION);
+        assertEquals(
+                mModel.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT),
+                mContext.getResources()
+                        .getString(R.string.safety_hub_magic_stack_safe_state_button_text));
+        assertEquals(
+                shadowOf(mModel.get(SafetyHubMagicStackViewProperties.ICON_DRAWABLE))
+                        .getCreatedFromResId(),
+                R.drawable.safety_hub_notifications_icon);
+
+        OnClickListener onClickListener =
+                mModel.get(SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER);
+        onClickListener.onClick(mView);
+        verify(mSettingsLauncher).launchSettingsActivity(eq(mContext), eq(SafetyHubFragment.class));
     }
 
     @Test

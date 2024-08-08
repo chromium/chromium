@@ -75,10 +75,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
 
         switch (magicStackEntry.getModuleType()) {
             case MagicStackEntry.ModuleType.NOTIFICATION_PERMISSIONS:
-                bindSafeStateView(
-                        mContext.getResources()
-                                .getString(R.string.safety_hub_magic_stack_notifications_title),
-                        magicStackEntry.getDescription());
+                bindNotificationReviewView(magicStackEntry.getDescription());
                 break;
             case MagicStackEntry.ModuleType.REVOKED_PERMISSIONS:
                 bindSafeStateView(magicStackEntry.getDescription(), null);
@@ -154,6 +151,33 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                         mContext,
                         R.drawable.ic_check_circle_filled_green_24dp,
                         R.color.default_green));
+        mModel.set(
+                SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
+                (view) -> {
+                    mSettingsLauncher.launchSettingsActivity(mContext, SafetyHubFragment.class);
+                    recordExternalInteractions(ExternalInteractions.OPEN_FROM_MAGIC_STACK);
+                });
+    }
+
+    private void bindNotificationReviewView(@NonNull String summary) {
+        mModel.set(
+                SafetyHubMagicStackViewProperties.HEADER,
+                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
+        mModel.set(
+                SafetyHubMagicStackViewProperties.TITLE,
+                mContext.getResources()
+                        .getString(R.string.safety_hub_magic_stack_notifications_title));
+        mModel.set(SafetyHubMagicStackViewProperties.SUMMARY, summary);
+        mModel.set(
+                SafetyHubMagicStackViewProperties.BUTTON_TEXT,
+                mContext.getResources()
+                        .getString(R.string.safety_hub_magic_stack_safe_state_button_text));
+        mModel.set(
+                SafetyHubMagicStackViewProperties.ICON_DRAWABLE,
+                SettingsUtils.getTintedIcon(
+                        mContext,
+                        R.drawable.safety_hub_notifications_icon,
+                        R.color.default_icon_color_accent1_baseline));
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
