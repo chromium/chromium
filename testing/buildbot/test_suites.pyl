@@ -4709,6 +4709,22 @@
       },
     },
 
+    'optimization_guide_cros_gtests': {
+      'optimization_guide_browser_tests': {
+        'test': 'browser_tests',
+        'args': [
+          '--gtest_filter=*OptimizationGuide*:*PageContentAnnotations*',
+        ],
+      },
+      'optimization_guide_components_unittests': {
+        'test': 'components_unittests',
+        'args': [
+          '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
+        ],
+      },
+      'optimization_guide_unittests': {},
+    },
+
     'optimization_guide_gpu_gtests': {
       'optimization_guide_gpu_unittests': {
         'linux_args': [

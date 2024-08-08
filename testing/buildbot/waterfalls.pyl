@@ -6801,7 +6801,7 @@
           'x86-64',
         ],
         'test_suites': {
-           'gtest_tests': 'optimization_guide_nogpu_gtests',
+           'gtest_tests': 'optimization_guide_cros_gtests',
         },
         'os_type': 'chromeos',
       },
