@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,6 +24,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -91,11 +93,23 @@ std::vector<FooterCommand> CreateManageAddressesFooter() {
   return commands;
 }
 
+std::string GetOriginFromPlusProfile(
+    const plus_addresses::PlusProfile& profile) {
+  if (absl::holds_alternative<std::string>(profile.facet)) {
+    return absl::get<std::string>(profile.facet);
+  } else {
+    return absl::get<affiliations::FacetURI>(profile.facet).canonical_spec();
+  }
+}
+
 }  // namespace
 
 AddressAccessoryControllerImpl::~AddressAccessoryControllerImpl() {
   if (personal_data_manager_)
     personal_data_manager_->RemoveObserver(this);
+  if (plus_profiles_provider_) {
+    plus_profiles_provider_->RemoveObserver(this);
+  }
 }
 
 // static
@@ -112,20 +126,29 @@ void AddressAccessoryControllerImpl::RegisterFillingSourceObserver(
 
 std::optional<autofill::AccessorySheetData>
 AddressAccessoryControllerImpl::GetSheetData() const {
-  if (!personal_data_manager_) {
-    return std::nullopt;
+  base::span<const plus_addresses::PlusProfile> plus_profiles;
+  if (plus_profiles_provider_) {
+    plus_profiles = plus_profiles_provider_->GetAffiliatedPlusProfiles();
   }
-  std::vector<const AutofillProfile*> profiles =
-      personal_data_manager_->address_data_manager().GetProfilesToSuggest();
+  std::vector<const AutofillProfile*> profiles;
+  if (personal_data_manager_) {
+    profiles =
+        personal_data_manager_->address_data_manager().GetProfilesToSuggest();
+  }
   std::u16string title_or_empty_message;
-  if (profiles.empty()) {
+  if (profiles.empty() && plus_profiles.empty()) {
     title_or_empty_message =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SHEET_EMPTY_MESSAGE);
   }
-  // TODO: crbug.com/327838324 - Populate the plus address section.
-  return autofill::CreateAccessorySheetData(
+  AccessorySheetData sheet_data = autofill::CreateAccessorySheetData(
       autofill::AccessoryTabType::ADDRESSES, title_or_empty_message,
       UserInfosForProfiles(profiles), CreateManageAddressesFooter());
+  for (const plus_addresses::PlusProfile& plus_profile : plus_profiles) {
+    sheet_data.add_plus_address_section(
+        PlusAddressSection(GetOriginFromPlusProfile(plus_profile),
+                           base::UTF8ToUTF16(plus_profile.plus_address)));
+  }
+  return sheet_data;
 }
 
 void AddressAccessoryControllerImpl::OnFillingTriggered(
@@ -185,6 +208,14 @@ void AddressAccessoryControllerImpl::OnToggleChanged(
                         << static_cast<int>(toggled_action);
 }
 
+void AddressAccessoryControllerImpl::RegisterPlusProfilesProvider(
+    base::WeakPtr<AffiliatedPlusProfilesProvider> provider) {
+  plus_profiles_provider_ = provider;
+  if (plus_profiles_provider_) {
+    plus_profiles_provider_->AddObserver(this);
+  }
+}
+
 void AddressAccessoryControllerImpl::RefreshSuggestions() {
   TRACE_EVENT0("passwords",
                "AddressAccessoryControllerImpl::RefreshSuggestions");
@@ -195,11 +226,16 @@ void AddressAccessoryControllerImpl::RefreshSuggestions() {
     personal_data_manager_->AddObserver(this);
   }
   CHECK(source_observer_);
-  source_observer_.Run(this, IsFillingSourceAvailable(
-                                 personal_data_manager_ &&
-                                 !personal_data_manager_->address_data_manager()
-                                      .GetProfilesToSuggest()
-                                      .empty()));
+  const bool address_data_available =
+      personal_data_manager_ && !personal_data_manager_->address_data_manager()
+                                     .GetProfilesToSuggest()
+                                     .empty();
+  const bool plus_profiles_data_available =
+      plus_profiles_provider_ &&
+      !plus_profiles_provider_->GetAffiliatedPlusProfiles().empty();
+  source_observer_.Run(this,
+                       IsFillingSourceAvailable(address_data_available ||
+                                                plus_profiles_data_available));
 }
 
 base::WeakPtr<AddressAccessoryController>
@@ -208,6 +244,10 @@ AddressAccessoryControllerImpl::AsWeakPtr() {
 }
 
 void AddressAccessoryControllerImpl::OnPersonalDataChanged() {
+  RefreshSuggestions();
+}
+
+void AddressAccessoryControllerImpl::OnAffiliatedPlusProfilesFetched() {
   RefreshSuggestions();
 }
 

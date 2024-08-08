@@ -335,6 +335,11 @@ std::ostream& operator<<(std::ostream& os, const AccessorySheetData& data) {
   for (const IbanInfo& iban_info : data.iban_info_list()) {
     os << iban_info << ", ";
   }
+  os << "], and plus address section list: [";
+  for (const PlusAddressSection& plus_address_section :
+       data.plus_address_section_list()) {
+    os << plus_address_section << ", ";
+  }
   os << "], footer commands: [";
   for (const FooterCommand& footer_command : data.footer_commands()) {
     os << footer_command << ", ";

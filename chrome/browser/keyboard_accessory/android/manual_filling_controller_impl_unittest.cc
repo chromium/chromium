@@ -6,22 +6,39 @@
 
 #include <string>
 
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
+#include "chrome/browser/keyboard_accessory/android/affiliated_plus_profiles_cache.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
+#include "chrome/browser/plus_addresses/plus_address_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/plus_addresses/fake_plus_address_service.h"
+#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 using autofill::AccessoryAction;
 using autofill::AccessorySheetData;
 using autofill::AccessoryTabType;
+using autofill::TestAutofillClientInjector;
+using autofill::TestContentAutofillClient;
 using autofill::mojom::FocusedFieldType;
+using plus_addresses::FakePlusAddressService;
+using plus_addresses::FakePlusAddressSettingService;
+using plus_addresses::PlusAddressSettingService;
 using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
@@ -50,6 +67,14 @@ std::vector<uint8_t> test_passkey_id() {
   return {23, 24, 25, 26, 27};
 }
 
+std::unique_ptr<KeyedService> BuildFakePlusAddressService(
+    signin::IdentityManager* identity_manager,
+    PlusAddressSettingService* setting_service,
+    content::BrowserContext* context) {
+  return std::make_unique<FakePlusAddressService>(identity_manager,
+                                                  setting_service);
+}
+
 constexpr autofill::FieldRendererId kFocusedFieldId(123);
 
 }  // namespace
@@ -58,8 +83,21 @@ constexpr autofill::FieldRendererId kFocusedFieldId(123);
 // of the keyboard accessory and all its fallback sheets.
 class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
  public:
+  ManualFillingControllerTest() {
+    features_.InitWithFeatures(
+        {plus_addresses::features::kPlusAddressesEnabled,
+         plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled},
+        {});
+  }
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+
+    PlusAddressServiceFactory::GetInstance()->SetTestingFactory(
+        GetBrowserContext(),
+        base::BindRepeating(&BuildFakePlusAddressService,
+                            identity_test_env_.identity_manager(),
+                            &setting_service_));
 
     ON_CALL(mock_pwd_controller_, RegisterFillingSourceObserver(_))
         .WillByDefault(SaveArg<0>(&pwd_source_observer_));
@@ -103,6 +141,7 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
+  base::test::ScopedFeatureList features_;
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
   NiceMock<MockPaymentMethodAccessoryController>
@@ -111,6 +150,11 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
   AccessoryController::FillingSourceObserver pwd_source_observer_;
   AccessoryController::FillingSourceObserver cc_source_observer_;
   AccessoryController::FillingSourceObserver address_source_observer_;
+
+  TestAutofillClientInjector<TestContentAutofillClient>
+      autofill_client_injector_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  FakePlusAddressSettingService setting_service_;
 };
 
 TEST_F(ManualFillingControllerTest, ShowsAccessoryForAutofillOnSearchField) {
@@ -212,6 +256,30 @@ TEST_F(ManualFillingControllerTest, HidesAccessoryWithoutAvailableSources) {
   EXPECT_CALL(*view(), Hide());
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                          /*has_suggestions=*/false);
+}
+
+TEST_F(ManualFillingControllerTest, FetchesAffiliatedPlusProfilesWhenShown) {
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+
+  // Not plus profiles should be fetched before the first call to `Show()`.
+  EXPECT_TRUE(controller()->plus_profiles_cache());
+  EXPECT_EQ(
+      controller()->plus_profiles_cache()->GetAffiliatedPlusProfiles().size(),
+      0u);
+
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true)));
+  controller()->UpdateSourceAvailability(FillingSource::ADDRESS_FALLBACKS,
+                                         /*has_suggestions=*/true);
+  EXPECT_EQ(
+      controller()->plus_profiles_cache()->GetAffiliatedPlusProfiles().size(),
+      1u);
+
+  EXPECT_CALL(*view(), Hide());
+  controller()->UpdateSourceAvailability(FillingSource::ADDRESS_FALLBACKS,
+                                         /*has_suggestions=*/false);
+  EXPECT_EQ(
+      controller()->plus_profiles_cache()->GetAffiliatedPlusProfiles().size(),
+      0u);
 }
 
 TEST_F(ManualFillingControllerTest, ForwardsCredManActionToPasswordController) {

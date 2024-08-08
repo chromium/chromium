@@ -25,6 +25,10 @@ class MockAddressAccessoryController
   ~MockAddressAccessoryController() override;
 
   MOCK_METHOD(void,
+              RegisterPlusProfilesProvider,
+              (base::WeakPtr<AffiliatedPlusProfilesProvider>),
+              (override));
+  MOCK_METHOD(void,
               RegisterFillingSourceObserver,
               (FillingSourceObserver),
               (override));

@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/keyboard_accessory/android/address_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/android/affiliated_plus_profiles_provider.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -33,6 +34,7 @@ class PersonalDataManager;
 class AddressAccessoryControllerImpl
     : public AddressAccessoryController,
       public PersonalDataManagerObserver,
+      public AffiliatedPlusProfilesProvider::Observer,
       public content::WebContentsUserData<AddressAccessoryControllerImpl> {
  public:
   AddressAccessoryControllerImpl(const AddressAccessoryControllerImpl&) =
@@ -52,11 +54,16 @@ class AddressAccessoryControllerImpl
   void OnToggleChanged(AccessoryAction toggled_action, bool enabled) override;
 
   // AddressAccessoryController:
+  void RegisterPlusProfilesProvider(
+      base::WeakPtr<AffiliatedPlusProfilesProvider> provider) override;
   void RefreshSuggestions() override;
   base::WeakPtr<AddressAccessoryController> AsWeakPtr() override;
 
   // PersonalDataManagerObserver:
   void OnPersonalDataChanged() override;
+
+  // AffiliatedPlusProfilesProvider::Observer:
+  void OnAffiliatedPlusProfilesFetched() override;
 
   // Like |CreateForWebContents|, it creates the controller and attaches it to
   // the given |web_contents|. Additionally, it allows inject a manual filling
@@ -101,6 +108,10 @@ class AddressAccessoryControllerImpl
 
   // The password accessory controller object to forward client requests to.
   base::WeakPtr<ManualFillingController> mf_controller_;
+
+  // The plus profiles provider that is used to generate the plus profiles
+  // section for the frontend.
+  base::WeakPtr<AffiliatedPlusProfilesProvider> plus_profiles_provider_;
 
   // The data manager used to retrieve the profiles.
   raw_ptr<PersonalDataManager> personal_data_manager_;

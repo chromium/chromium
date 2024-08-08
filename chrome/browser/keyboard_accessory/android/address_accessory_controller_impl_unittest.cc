@@ -10,11 +10,13 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/android/affiliated_plus_profiles_provider.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -28,6 +30,8 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_test_utils.h"
+#include "components/plus_addresses/plus_address_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,6 +50,7 @@ using testing::SaveArg;
 using testing::StrictMock;
 using FillingSource = ManualFillingController::FillingSource;
 using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
+using PlusProfile = plus_addresses::PlusProfile;
 
 constexpr char kExampleSite[] = "https://example.com";
 
@@ -93,6 +98,24 @@ class MockAutofillDriver : public TestContentAutofillDriver {
                const FieldGlobalId&,
                const std::u16string&),
               (override));
+};
+
+class MockAffiliatedPlusProfilesProvider
+    : public AffiliatedPlusProfilesProvider {
+ public:
+  using AffiliatedPlusProfilesProvider::AffiliatedPlusProfilesProvider;
+  MOCK_METHOD(base::span<const plus_addresses::PlusProfile>,
+              GetAffiliatedPlusProfiles,
+              (),
+              (const override));
+  MOCK_METHOD(void, AddObserver, (Observer*), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
+  base::WeakPtr<MockAffiliatedPlusProfilesProvider> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockAffiliatedPlusProfilesProvider> weak_factory_{this};
 };
 
 }  // namespace
@@ -166,17 +189,16 @@ TEST_F(AddressAccessoryControllerTest, IsNotRecreatedForSameWebContents) {
             initial_controller);
 }
 
-TEST_F(AddressAccessoryControllerTest, ProvidesNoSheetBeforeInitialRefresh) {
-  AutofillProfile canadian = test::GetFullValidProfileForCanada();
-  personal_data_manager()->address_data_manager().AddProfile(canadian);
-
-  EXPECT_FALSE(controller()->GetSheetData().has_value());
+TEST_F(AddressAccessoryControllerTest, ProvidesEmptySheetBeforeInitialRefresh) {
+  EXPECT_EQ(controller()->GetSheetData(),
+            AddressAccessorySheetDataBuilder(addresses_empty_str()).Build());
 
   EXPECT_CALL(filling_source_observer_,
-              Run(controller(), IsFillingSourceAvailable(true)));
+              Run(controller(), IsFillingSourceAvailable(false)));
   controller()->RefreshSuggestions();
 
-  EXPECT_TRUE(controller()->GetSheetData().has_value());
+  EXPECT_EQ(controller()->GetSheetData(),
+            AddressAccessorySheetDataBuilder(addresses_empty_str()).Build());
 }
 
 TEST_F(AddressAccessoryControllerTest, RefreshSuggestionsCallsUI) {
@@ -255,6 +277,36 @@ TEST_F(AddressAccessoryControllerTest, AppendsPlusAddressesActions) {
   EXPECT_EQ(
       controller()->GetSheetData(),
       AddressAccessorySheetDataBuilder(addresses_empty_str())
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
+              AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET)
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID),
+              AccessoryAction::SELECT_PLUS_ADDRESS_FROM_ADDRESS_SHEET)
+          .Build());
+}
+
+TEST_F(AddressAccessoryControllerTest, AppendsPlusAddressesSection) {
+  base::test::ScopedFeatureList features(
+      plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled);
+
+  MockAffiliatedPlusProfilesProvider provider;
+  EXPECT_CALL(provider, AddObserver);
+  controller()->RegisterPlusProfilesProvider(provider.GetWeakPtr());
+
+  std::vector<PlusProfile> profiles{plus_addresses::test::CreatePlusProfile()};
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
+  EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
+      .WillRepeatedly(Return(base::make_span(profiles)));
+  controller()->RefreshSuggestions();
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      AddressAccessorySheetDataBuilder(std::u16string())
+          .AddPlusAddressSection("foo.com", u"plus+foo@plus.plus")
           .AppendFooterCommand(
               l10n_util::GetStringUTF16(
                   IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
