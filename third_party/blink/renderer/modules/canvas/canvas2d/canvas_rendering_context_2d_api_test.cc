@@ -73,8 +73,6 @@ namespace v8 {
 class Isolate;
 }  // namespace v8
 
-using testing::Mock;
-
 namespace blink {
 
 class CanvasRenderingContext2DAPITest : public PageTestBase {

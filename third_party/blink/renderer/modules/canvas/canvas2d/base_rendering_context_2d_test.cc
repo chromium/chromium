@@ -77,7 +77,6 @@ using ::blink_testing::RecordedOpsView;
 using ::cc::ClipPathOp;
 using ::cc::ClipRectOp;
 using ::cc::DrawColorOp;
-using ::cc::DrawRecordOp;
 using ::cc::DrawRectOp;
 using ::cc::DrawVerticesOp;
 using ::cc::PaintFlags;
@@ -94,11 +93,6 @@ using ::cc::SetMatrixOp;
 using ::cc::TranslateOp;
 using ::cc::UsePaintCache;
 using ::testing::IsEmpty;
-using ::testing::Not;
-using ::testing::Pointee;
-using ::testing::TestParamInfo;
-using ::testing::TestWithParam;
-using ::testing::ValuesIn;
 
 // Test version of BaseRenderingContext2D. BaseRenderingContext2D can't be
 // tested directly because it's an abstract class. This test class essentially

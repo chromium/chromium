@@ -158,7 +158,6 @@ class ExecutionContext;
 
 using ::base::test::ScopedFeatureList;
 using ::blink_testing::RecordedOpsAre;
-using ::blink_testing::RecordedOpsView;
 using ::cc::ClipRectOp;
 using ::cc::DrawColorOp;
 using ::cc::DrawImageRectOp;
