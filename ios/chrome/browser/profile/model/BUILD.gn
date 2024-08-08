@@ -1,0 +1,14 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "off_the_record_profile_ios_impl.h",
+    "off_the_record_profile_ios_io_data.h",
+    "profile_ios_impl.h",
+    "profile_ios_impl_io_data.h",
+    "profile_ios_io_data.h",
+    "profile_manager_ios_impl.h",
+  ]
+}
