@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
-#include "base/observer_list.h"
-#include "components/content_settings/core/common/cookie_controls_enforcement.h"
 
 #include <utility>
 
@@ -14,13 +12,10 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "url/gurl.h"
 
 using content_settings::CookieControlsMode;
 
