@@ -24,6 +24,7 @@ static_library("people") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/account_manager",
     "//chrome/browser/ash/auth",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy",
@@ -46,7 +47,6 @@ static_library("people") {
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:resources",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/child_accounts",

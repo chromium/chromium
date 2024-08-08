@@ -24,6 +24,7 @@ static_library("a11y") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//components/prefs",
     "//components/soda",
     "//content/public/browser",
@@ -39,7 +40,6 @@ static_library("a11y") {
     "//base:i18n",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/accessibility:utils",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/crosapi:browser_util",

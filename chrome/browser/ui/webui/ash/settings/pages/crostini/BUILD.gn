@@ -18,6 +18,7 @@ static_library("crostini") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/plugin_vm",
@@ -34,7 +35,6 @@ static_library("crostini") {
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
     "//chrome/browser/ash/file_manager",

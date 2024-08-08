@@ -22,6 +22,7 @@ static_library("files") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_system_provider",
     "//chrome/browser/ui/webui/ash/settings/pages/files/mojom",
@@ -33,7 +34,6 @@ static_library("files") {
     "//ash/constants",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//chrome/app:generated_resources",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/upload_office_to_cloud",

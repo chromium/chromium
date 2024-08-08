@@ -18,6 +18,7 @@ static_library("settings_manager") {
     "//ash/webui/common/backend",
     "//ash/webui/eche_app_ui",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings/pages/device/display_settings",
     "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings",
@@ -26,7 +27,6 @@ static_library("settings_manager") {
 
   deps = [
     "//ash/public/cpp",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/eche_app",

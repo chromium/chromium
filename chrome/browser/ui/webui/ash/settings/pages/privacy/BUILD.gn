@@ -25,6 +25,7 @@ static_library("privacy") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy/mojom",
     "//chromeos/ash/components/audio",
@@ -47,7 +48,6 @@ static_library("privacy") {
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/privacy_hub",
