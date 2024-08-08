@@ -341,76 +341,105 @@ std::string FormatOriginForDisplay(const url::Origin& origin) {
 }
 
 FedCmMetrics::NumAccounts ComputeNumMatchingAccounts(
-    const IdpNetworkRequestManager::AccountList& accounts) {
-  if (accounts.empty()) {
+    size_t accounts_remaining) {
+  if (accounts_remaining == 0u) {
     return FedCmMetrics::NumAccounts::kZero;
   }
-  if (accounts.size() == 1u) {
+  if (accounts_remaining == 1u) {
     return FedCmMetrics::NumAccounts::kOne;
   }
   return FedCmMetrics::NumAccounts::kMultiple;
 }
 
-void FilterAccountsWithLabel(const std::string& label,
+// Returns whether there are accounts remaining after applying the account label
+// filter.
+bool FilterAccountsWithLabel(const std::string& label,
                              IdpNetworkRequestManager::AccountList& accounts) {
   if (label.empty()) {
-    return;
+    return true;
   }
 
-  // Remove all accounts whose labels do not match the requested label.
+  // Filter out all accounts whose labels do not match the requested label.
   // Note that it is technically possible for us to end up with more than one
   // account afterwards, in which case the multiple account chooser would be
   // shown.
-  auto filter = [&label](const IdentityRequestAccount& account) {
-    return !base::Contains(account.labels, label);
-  };
-  std::erase_if(accounts, filter);
-  FedCmMetrics::NumAccounts num_matching = ComputeNumMatchingAccounts(accounts);
+  size_t accounts_remaining = 0u;
+  for (auto& account : accounts) {
+    if (!base::Contains(account.labels, label)) {
+      account.is_filtered_out = true;
+    } else {
+      ++accounts_remaining;
+    }
+  }
+  FedCmMetrics::NumAccounts num_matching =
+      ComputeNumMatchingAccounts(accounts_remaining);
   base::UmaHistogramEnumeration("Blink.FedCm.AccountLabel.NumMatchingAccounts",
                                 num_matching);
+  return accounts_remaining > 0u;
 }
 
-void FilterAccountsWithLoginHint(
+// Returns whether there are accounts remaining after applying the login hint
+// filter.
+bool FilterAccountsWithLoginHint(
     const std::string& login_hint,
     IdpNetworkRequestManager::AccountList& accounts) {
   if (login_hint.empty()) {
-    return;
+    return true;
   }
 
-  // Remove all accounts whose ID and whose email do not match the login hint.
-  // Note that it is technically possible for us to end up with more than one
-  // account afterwards, in which case the multiple account chooser would be
+  // Filter out all accounts whose ID and whose email do not match the login
+  // hint. Note that it is technically possible for us to end up with more than
+  // one account afterwards, in which case the multiple account chooser would be
   // shown.
-  auto filter = [&login_hint](const IdentityRequestAccount& account) {
-    return !base::Contains(account.login_hints, login_hint);
-  };
-  std::erase_if(accounts, filter);
-  FedCmMetrics::NumAccounts num_matching = ComputeNumMatchingAccounts(accounts);
+  size_t accounts_remaining = 0u;
+  for (auto& account : accounts) {
+    if (account.is_filtered_out) {
+      continue;
+    }
+    if (!base::Contains(account.login_hints, login_hint)) {
+      account.is_filtered_out = true;
+    } else {
+      ++accounts_remaining;
+    }
+  }
+
+  FedCmMetrics::NumAccounts num_matching =
+      ComputeNumMatchingAccounts(accounts_remaining);
   base::UmaHistogramEnumeration("Blink.FedCm.LoginHint.NumMatchingAccounts",
                                 num_matching);
+  return accounts_remaining > 0u;
 }
 
-void FilterAccountsWithDomainHint(
+// Returns whether there are accounts remaining after applying the domain hint
+// filter.
+bool FilterAccountsWithDomainHint(
     const std::string& domain_hint,
     IdpNetworkRequestManager::AccountList& accounts) {
   if (domain_hint.empty()) {
-    return;
+    return true;
   }
 
-  if (domain_hint == FederatedAuthRequestImpl::kWildcardDomainHint) {
-    auto filter = [](const IdentityRequestAccount& account) {
-      return account.domain_hints.empty();
-    };
-    std::erase_if(accounts, filter);
-  } else {
-    auto filter = [&domain_hint](const IdentityRequestAccount& account) {
-      return !base::Contains(account.domain_hints, domain_hint);
-    };
-    std::erase_if(accounts, filter);
+  size_t accounts_remaining = 0u;
+  for (auto& account : accounts) {
+    if (account.is_filtered_out) {
+      continue;
+    }
+    if (domain_hint == FederatedAuthRequestImpl::kWildcardDomainHint) {
+      if (account.domain_hints.empty()) {
+        account.is_filtered_out = true;
+        continue;
+      }
+    } else if (!base::Contains(account.domain_hints, domain_hint)) {
+      account.is_filtered_out = true;
+      continue;
+    }
+    ++accounts_remaining;
   }
-  FedCmMetrics::NumAccounts num_matching = ComputeNumMatchingAccounts(accounts);
+  FedCmMetrics::NumAccounts num_matching =
+      ComputeNumMatchingAccounts(accounts_remaining);
   base::UmaHistogramEnumeration("Blink.FedCm.DomainHint.NumMatchingAccounts",
                                 num_matching);
+  return accounts_remaining > 0u;
 }
 
 std::string GetTopFrameOriginForDisplay(const url::Origin& top_frame_origin) {
@@ -1994,8 +2023,9 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       RecordRawAccountsSize(accounts.size());
       if (webid::IsFedCmAuthzEnabled(render_frame_host(),
                                      url::Origin::Create(idp_config_url))) {
-        FilterAccountsWithLabel(idp_info->metadata.requested_label, accounts);
-        if (accounts.empty()) {
+        if (!FilterAccountsWithLabel(idp_info->metadata.requested_label,
+                                     accounts)) {
+          // No accounts remain, so treat as account fetch failure.
           render_frame_host().AddMessageToConsole(
               blink::mojom::ConsoleMessageLevel::kError,
               "Accounts were received, but none matched the label.");
@@ -2009,8 +2039,9 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
           return;
         }
       }
-      FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts);
-      if (accounts.empty()) {
+      if (!FilterAccountsWithLoginHint(idp_info->provider->login_hint,
+                                       accounts)) {
+        // No accounts remain, so treat as account fetch failure.
         render_frame_host().AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kError,
             "Accounts were received, but none matched the loginHint.");
@@ -2023,8 +2054,9 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
             TokenStatus::kAccountsListEmpty);
         return;
       }
-      FilterAccountsWithDomainHint(idp_info->provider->domain_hint, accounts);
-      if (accounts.empty()) {
+      if (!FilterAccountsWithDomainHint(idp_info->provider->domain_hint,
+                                        accounts)) {
+        // No accounts remain, so treat as account fetch failure.
         render_frame_host().AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kError,
             "Accounts were received, but none matched the domainHint.");
@@ -2037,6 +2069,11 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
             TokenStatus::kAccountsListEmpty);
         return;
       }
+      // TODO(crbug.com/354977893): pass filtered out accounts to UI.
+      auto filter = [](const IdentityRequestAccount& account) {
+        return account.is_filtered_out;
+      };
+      std::erase_if(accounts, filter);
       RecordReadyToShowAccountsSize(accounts.size());
       ComputeLoginStateAndReorderAccounts(
           idp_info->provider->config->config_url, accounts);

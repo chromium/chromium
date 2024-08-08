@@ -78,6 +78,9 @@ struct CONTENT_EXPORT IdentityRequestAccount {
   // The last used timestamp, or nullopt if the account has not been used
   // before.
   std::optional<base::Time> last_used_timestamp;
+  // Whether this account is filtered out or not. An account may be filtered out
+  // due to login hint, domain hint, or account label.
+  bool is_filtered_out = false;
 };
 
 }  // namespace content
