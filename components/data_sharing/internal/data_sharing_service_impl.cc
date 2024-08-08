@@ -508,9 +508,7 @@ DataSharingServiceImpl::GetCollaborationGroupSyncBridgeForTesting() {
 
 bool DataSharingServiceImpl::ShouldInterceptNavigationForShareURL(
     const GURL& url) {
-  // TODO(b/336873603): Implement logic to filter URL.
-  NOTIMPLEMENTED();
-  return false;
+  return ParseDataSharingURL(url).has_value();
 }
 
 void DataSharingServiceImpl::HandleShareURLNavigationIntercepted(

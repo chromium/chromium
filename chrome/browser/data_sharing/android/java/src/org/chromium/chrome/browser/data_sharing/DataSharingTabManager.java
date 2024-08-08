@@ -20,6 +20,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,6 +43,7 @@ public class DataSharingTabManager {
             DataSharingTabSwitcherDelegate tabSwitcherDelegate,
             ObservableSupplier<Profile> profileSupplier) {
         mDataSharingTabSwitcherDelegate = tabSwitcherDelegate;
+        mTabGroupObserversList = new ArrayList<DataSharingTabObserver>();
 
         mProfileSupplier = profileSupplier;
         assert mProfileSupplier != null;
@@ -122,7 +124,8 @@ public class DataSharingTabManager {
         for (String syncGroupId : tabGroupSyncService.getAllGroupIds()) {
             SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(syncGroupId);
             assert !savedTabGroup.savedTabs.isEmpty();
-            if (savedTabGroup.collaborationId.equals(collaborationId)) {
+            if (savedTabGroup.collaborationId != null
+                    && savedTabGroup.collaborationId.equals(collaborationId)) {
                 return savedTabGroup;
             }
         }

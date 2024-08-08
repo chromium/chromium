@@ -61,6 +61,8 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager.Cont
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerSupplier;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchObserver;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabSwitcherDelegate;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeToolbarButtonController;
@@ -339,6 +341,8 @@ public class RootUiCoordinator
     private AppMenuObserver mAppMenuObserver;
     private boolean mKeyboardVisibleDuringFoldTransition;
     private Long mKeyboardVisibilityTimestamp;
+    private DataSharingTabManager mDataSharingTabManager;
+    private DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
 
     private OneshotSupplierImpl<ToolbarManager> mToolbarManagerOneshotSupplier =
             new OneshotSupplierImpl<>();
@@ -519,6 +523,19 @@ public class RootUiCoordinator
         mTabSwitcherSupplier = tabSwitcherSupplier;
         mIncognitoTabSwitcherSupplier = incognitoTabSwitcherSupplier;
         mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
+
+        mDataSharingTabSwitcherDelegate =
+                new DataSharingTabSwitcherDelegate() {
+                    @Override
+                    public void openTabGroupWithTabId(Integer tabId) {
+                        TabSwitcher tabSwitcher = mTabSwitcherSupplier.get();
+                        assert tabSwitcher != null;
+                        tabSwitcher.requestOpenTabGroupDialog(tabId);
+                    }
+                };
+
+        mDataSharingTabManager =
+                new DataSharingTabManager(mDataSharingTabSwitcherDelegate, mProfileSupplier);
 
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
         mTopUiThemeColorProvider =
@@ -2158,5 +2175,9 @@ public class RootUiCoordinator
         // Actually destroying or finishing the activity hinders the shutdown process after
         // a test is done. Just null it out to give an effect of |onDestroy| being invoked.
         mActivity = null;
+    }
+
+    public DataSharingTabManager getDataSharingTabManager() {
+        return mDataSharingTabManager;
     }
 }

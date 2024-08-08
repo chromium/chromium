@@ -187,6 +187,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleBuilder;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
@@ -1280,7 +1281,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
 
             // Launch tab switcher if it is a data sharing intent.
-            maybeShowTabSwitcher(intent);
+            maybeShowTabSwitcherAfterTabModelLoad(intent);
         } finally {
             TraceEvent.end("ChromeTabbedActivity.onNewIntentWithNative");
         }
@@ -1625,7 +1626,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 }
             }
 
-            maybeShowTabSwitcher(intent);
+            maybeShowTabSwitcherAfterTabModelLoad(intent);
         } finally {
             TraceEvent.end("ChromeTabbedActivity.initializeState");
         }
@@ -3573,28 +3574,30 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         };
     }
 
-    private void maybeShowTabSwitcher(Intent intent) {
+    private void maybeShowTabSwitcherAfterTabModelLoad(Intent intent) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) return;
         boolean shouldShowTabSwitcher =
                 IntentUtils.safeHasExtra(intent, DataSharingNotificationManager.DATA_SHARING_EXTRA)
                         && IntentHandler.wasIntentSenderChrome(intent)
                         && !mTabModelSelector.isIncognitoSelected();
-        if (shouldShowTabSwitcher) {
-            // TODO(haileywang): Close the tab grid dialog when showing tab switcher from this path.
-            TabModelUtils.runOnTabStateInitialized(
-                    getTabModelSelectorSupplier().get(),
-                    mCallbackController.makeCancelable(
-                            (tabModelSelectorReturn) -> {
-                                if (!isInOverviewMode()) {
-                                    showOverview();
-                                }
-                                if (mTabSwitcherSupplier.hasValue()) {
-                                    // TODO(b/332961197): Add the actual invitation id obtained from
-                                    // url
-                                    // intent.
-                                    mTabSwitcherSupplier.get().openInvitationModal("");
-                                }
-                            }));
+        if (!shouldShowTabSwitcher) {
+            return;
         }
+        GURL url =
+                new GURL(
+                        IntentUtils.safeGetStringExtra(
+                                intent, DataSharingNotificationManager.DATA_SHARING_EXTRA));
+        Runnable showJoinFlowRunnable =
+                () -> {
+                    mRootUiCoordinator.getDataSharingTabManager().initiateJoinFlow(url);
+                };
+        TabModelUtils.runOnTabStateInitialized(
+                getTabModelSelectorSupplier().get(),
+                mCallbackController.makeCancelable(
+                        (tabModelSelectorReturn) -> {
+                            assert tabModelSelectorReturn == getTabModelSelectorSupplier().get();
+                            TabSwitcherUtils.navigateToTabSwitcher(
+                                    mLayoutManager, /* animate= */ false, showJoinFlowRunnable);
+                        }));
     }
 }

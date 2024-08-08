@@ -395,7 +395,7 @@ TEST_F(DataSharingServiceImplTest, ShouldNotifyObserverOnGroupChange) {
   run_loop.Run();
 }
 
-TEST_F(DataSharingServiceImplTest, ParseDataSharingURL) {
+TEST_F(DataSharingServiceImplTest, ParseAndInterceptDataSharingURL) {
   GroupData group_data = GroupData();
   group_data.group_token =
       GroupToken(data_sharing::GroupId(kGroupId), kTokenBlob);
@@ -410,6 +410,7 @@ TEST_F(DataSharingServiceImplTest, ParseDataSharingURL) {
   EXPECT_EQ(group_data.group_token.group_id.value(),
             result.value().group_id.value());
   EXPECT_EQ(group_data.group_token.access_token, result.value().access_token);
+  EXPECT_TRUE(data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
 
   // Verify host/path error.
   std::string invalid = "https://www.test.com/";
@@ -418,6 +419,8 @@ TEST_F(DataSharingServiceImplTest, ParseDataSharingURL) {
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             DataSharingService::ParseURLStatus::kHostOrPathMismatchFailure);
+  EXPECT_FALSE(
+      data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
 
   // Verify query missing error.
   url = GURL(data_sharing::features::kDataSharingURL.Get() +
@@ -426,6 +429,8 @@ TEST_F(DataSharingServiceImplTest, ParseDataSharingURL) {
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             DataSharingService::ParseURLStatus::kQueryMissingFailure);
+  EXPECT_FALSE(
+      data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
 }
 
 TEST_F(DataSharingServiceImplTest, GetDataSharingURL) {

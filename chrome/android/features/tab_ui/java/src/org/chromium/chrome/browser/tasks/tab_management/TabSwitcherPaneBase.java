@@ -458,12 +458,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
         }
     }
 
-    /**
-     * Open the invitation modal on top of the tab switcher view when an invitation intent is
-     * intercepted.
-     *
-     * @param invitationId The id of the invitation.
-     */
     @Override
     public void openInvitationModal(String invitationId) {
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
@@ -471,12 +465,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
         coordinator.openInvitationModal(invitationId);
     }
 
-    /**
-     * Requests to show a dialog for a tab group.
-     *
-     * @param tabId The id of any tab in the group.
-     * @return Whether the request to show was able to be handled.
-     */
+    @Override
     public boolean requestOpenTabGroupDialog(int tabId) {
         @Nullable
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
