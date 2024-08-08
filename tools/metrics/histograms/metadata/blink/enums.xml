@@ -521,6 +521,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="keyboardUnlock()"/>
 </enum>
 
+<!-- LINT.IfChange(PermissionElementInvalidStyleReason) -->
+
+<enum name="PermissionElementInvalidStyleReason">
+  <int value="0" label="No computed style"/>
+  <int value="1" label="Non opaque color or background color"/>
+  <int value="2" label="Low constrast between color and background color"/>
+  <int value="3" label="Too small font size"/>
+  <int value="4" label="Too large font size"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_permission_element.h:InvalidStyleReason) -->
+
+<!-- LINT.IfChange(PermissionElementUserInteractionDeniedReason) -->
+
 <enum name="PermissionElementUserInteractionDeniedReason">
   <int value="0" label="Invalid type"/>
   <int value="1" label="Failed or has not been registered"/>
@@ -533,6 +547,8 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Intersection visiblity out of viewport or clipped"/>
   <int value="8" label="Intersection visiblity occluded or distorted"/>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_permission_element.h:UserInteractionDeniedReason) -->
 
 <enum name="RaceTaskPriority">
   <int value="0" label="LowerPriority"/>

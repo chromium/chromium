@@ -3812,6 +3812,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.PermissionElement.InvalidStyleReason"
+    enum="PermissionElementInvalidStyleReason" expires_after="2025-01-26">
+  <owner>tungnh@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the reason why the permission element's style is invalid. This
+    metric is emitted when the element's style is caculated/recaculated.
+  </summary>
+</histogram>
+
 <histogram name="Blink.PermissionElement.UserInteractionDeniedReason"
     enum="PermissionElementUserInteractionDeniedReason"
     expires_after="2024-11-17">
