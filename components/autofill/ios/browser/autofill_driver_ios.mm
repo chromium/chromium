@@ -137,7 +137,9 @@ bool AutofillDriverIOS::IsInAnyMainFrame() const {
 }
 
 bool AutofillDriverIOS::HasSharedAutofillPermission() const {
-  return false;
+  // Give the shared-autofill permission to the main frame of the webstate by
+  // default.
+  return IsInAnyMainFrame();
 }
 
 bool AutofillDriverIOS::CanShowAutofillUi() const {
