@@ -1069,8 +1069,6 @@ AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
       base::Unretained(this)));
 }
 
-// TODO(anthonygarant): Should we bind all `deferred_receivers_` when the
-// `AttributionDataHostManagerImpl` is about to be destroyed?
 AttributionDataHostManagerImpl::~AttributionDataHostManagerImpl() = default;
 
 void AttributionDataHostManagerImpl::RegisterDataHost(
