@@ -83,3 +83,9 @@ include_rules = [
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "user_session_manager\.cc": [
+    "+chrome/browser/metrics/first_web_contents_profiler.h",
+  ]
+}

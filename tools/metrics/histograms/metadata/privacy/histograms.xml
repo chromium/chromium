@@ -1058,6 +1058,11 @@ reviewer.
     Records the amount of time taken for the downloaded attestations file to be
     detected from application starts. The measurement ends when `ComponentReady`
     is invoked with valid inputs.
+
+    On ChromeOS: Before M129, the login screen counted as an interruption, so
+    most initialization times were being logged under
+    &quot;ComponentReadyFromApplicationStartWithInterruption&quot;. This was
+    fixed in M129 to count as &quot;ComponentReadyFromApplicationStart&quot;.
   </summary>
 </histogram>
 
@@ -1073,6 +1078,11 @@ reviewer.
     during the startup. This is a non-browser UI that interrupts the startup
     process. The measurement ends when `ComponentReady` is invoked with valid
     inputs.
+
+    On ChromeOS: Before M129, the login screen counted as an interruption, so
+    most initialization times were being logged under
+    &quot;ComponentReadyFromApplicationStartWithInterruption&quot;. This was
+    fixed in M129 to count as &quot;ComponentReadyFromApplicationStart&quot;.
   </summary>
 </histogram>
 

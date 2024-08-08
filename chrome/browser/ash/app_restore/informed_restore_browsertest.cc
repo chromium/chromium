@@ -166,6 +166,8 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, LaunchBrowsers) {
   EXPECT_EQ(2u, BrowserList::GetInstance()->size());
 
   histogram_tester_.ExpectBucketCount("Apps.FullRestoreWindowCount2", 2, 1);
+  histogram_tester_.ExpectUniqueSample("Ash.FirstWebContentsProfile.Recorded",
+                                       false, 1);
 }
 
 // Creates SWAs that will be restored in the main test.

@@ -626,6 +626,10 @@ class UserSessionManager
   // Callback that allows tests to inject a test EolNotification implementation.
   EolNotificationHandlerFactoryCallback eol_notification_handler_test_factory_;
 
+  // Whether `metrics::BeginFirstWebContentsProfiling()` has been called. Should
+  // only be called once per program lifetime.
+  bool has_recorded_first_web_contents_metrics_ = false;
+
   base::WeakPtrFactory<UserSessionManager> weak_factory_{this};
 };
 

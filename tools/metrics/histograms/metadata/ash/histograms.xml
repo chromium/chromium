@@ -3714,6 +3714,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.FirstWebContentsProfile.Recorded" enum="Boolean"
+    expires_after="2025-01-31">
+  <owner>esum@google.com</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Whether the Startup.FirstWebContents.* metrics were recorded for the first
+    active web browser window in a ChromeOS session. Recorded once per ChromeOS
+    session in which a browser window is restored. An example where this is
+    false: When the post-login feature is enabled and the user has selected
+    &quot;Ask every time&quot; for restoring their session, an overview mode
+    window is active on startup rather than a browser window, so
+    Startup.FirstWebContents metrics are skipped.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Float.FloatWindowCountsPerSession" units="windows"
     expires_after="2024-12-08">
   <owner>nupurjain@google.com</owner>

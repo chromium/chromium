@@ -93,6 +93,7 @@ static_library("session") {
     "//chromeos/ash/components/tpm",
     "//chromeos/constants",
     "//chromeos/dbus/tpm_manager",
+    "//chromeos/ui/base",
     "//chromeos/ui/vector_icons",
     "//components/account_id",
     "//components/account_manager_core",
@@ -109,6 +110,7 @@ static_library("session") {
     "//components/signin/public/base",
     "//components/signin/public/base:signin_switches",
     "//components/signin/public/identity_manager",
+    "//components/startup_metric_utils",
     "//components/supervised_user/core/browser",
     "//components/trusted_vault",
     "//components/user_manager:common",
@@ -119,6 +121,7 @@ static_library("session") {
     "//extensions/common:mojom",
     "//media",
     "//rlz/buildflags",
+    "//ui/aura",
     "//url",
 
     # TODO(b/353449319): Use //chrome/browser/ash after fixing cyclic dependency from

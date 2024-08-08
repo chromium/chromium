@@ -2356,6 +2356,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "first_web_contents_profiler_ash_browsertest.cc",
     "logging_browsertest.cc",
     "note_taking/note_taking_helper_browsertest.cc",
     "os_url_handler_browsertest.cc",
@@ -2373,6 +2374,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/app_restore",
+    "//chrome/browser/ash/app_restore:test_support",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/lock",
