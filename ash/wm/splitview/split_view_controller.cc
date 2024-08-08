@@ -2493,8 +2493,11 @@ void SplitViewController::OnResizeTimer() {
 void SplitViewController::UpdateTabletResizeMode(
     base::TimeTicks event_time_ticks,
     const gfx::Point& event_location) {
-  CHECK(presentation_time_recorder_);
-  presentation_time_recorder_->RequestNext();
+  if (!presentation_time_recorder_) {
+    base::debug::DumpWithoutCrashing();
+  } else {
+    presentation_time_recorder_->RequestNext();
+  }
 
   if (IsLayoutHorizontal(root_window_)) {
     accumulated_drag_distance_ += std::abs(
