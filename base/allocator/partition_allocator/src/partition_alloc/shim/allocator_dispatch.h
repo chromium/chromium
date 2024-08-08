@@ -12,79 +12,40 @@
 namespace allocator_shim {
 
 struct AllocatorDispatch {
-  using AllocFn = void*(const AllocatorDispatch* self,
-                        size_t size,
-                        void* context);
-  using AllocUncheckedFn = void*(const AllocatorDispatch* self,
-                                 size_t size,
-                                 void* context);
-  using AllocZeroInitializedFn = void*(const AllocatorDispatch* self,
-                                       size_t n,
-                                       size_t size,
-                                       void* context);
-  using AllocAlignedFn = void*(const AllocatorDispatch* self,
-                               size_t alignment,
-                               size_t size,
-                               void* context);
-  using ReallocFn = void*(const AllocatorDispatch* self,
-                          void* address,
-                          size_t size,
-                          void* context);
-  using ReallocUncheckedFn = void*(const AllocatorDispatch* self,
-                                   void* ptr,
-                                   size_t size,
-                                   void* context);
-  using FreeFn = void(const AllocatorDispatch* self,
-                      void* address,
-                      void* context);
+  using AllocFn = void*(size_t size, void* context);
+  using AllocUncheckedFn = void*(size_t size, void* context);
+  using AllocZeroInitializedFn = void*(size_t n, size_t size, void* context);
+  using AllocAlignedFn = void*(size_t alignment, size_t size, void* context);
+  using ReallocFn = void*(void* address, size_t size, void* context);
+  using ReallocUncheckedFn = void*(void* ptr, size_t size, void* context);
+  using FreeFn = void(void* address, void* context);
   // Returns the allocated size of user data (not including heap overhead).
   // Can be larger than the requested size.
-  using GetSizeEstimateFn = size_t(const AllocatorDispatch* self,
-                                   void* address,
-                                   void* context);
-  using GoodSizeFn = size_t(const AllocatorDispatch* self,
-                            size_t size,
-                            void* context);
-  using ClaimedAddressFn = bool(const AllocatorDispatch* self,
-                                void* address,
-                                void* context);
-  using BatchMallocFn = unsigned(const AllocatorDispatch* self,
-                                 size_t size,
+  using GetSizeEstimateFn = size_t(void* address, void* context);
+  using GoodSizeFn = size_t(size_t size, void* context);
+  using ClaimedAddressFn = bool(void* address, void* context);
+  using BatchMallocFn = unsigned(size_t size,
                                  void** results,
                                  unsigned num_requested,
                                  void* context);
-  using BatchFreeFn = void(const AllocatorDispatch* self,
-                           void** to_be_freed,
+  using BatchFreeFn = void(void** to_be_freed,
                            unsigned num_to_be_freed,
                            void* context);
-  using FreeDefiniteSizeFn = void(const AllocatorDispatch* self,
-                                  void* ptr,
-                                  size_t size,
-                                  void* context);
-  using TryFreeDefaultFn = void(const AllocatorDispatch* self,
-                                void* ptr,
-                                void* context);
-  using AlignedMallocFn = void*(const AllocatorDispatch* self,
-                                size_t size,
-                                size_t alignment,
-                                void* context);
-  using AlignedMallocUncheckedFn = void*(const AllocatorDispatch* self,
-                                         size_t size,
+  using FreeDefiniteSizeFn = void(void* ptr, size_t size, void* context);
+  using TryFreeDefaultFn = void(void* ptr, void* context);
+  using AlignedMallocFn = void*(size_t size, size_t alignment, void* context);
+  using AlignedMallocUncheckedFn = void*(size_t size,
                                          size_t alignment,
                                          void* context);
-  using AlignedReallocFn = void*(const AllocatorDispatch* self,
-                                 void* address,
+  using AlignedReallocFn = void*(void* address,
                                  size_t size,
                                  size_t alignment,
                                  void* context);
-  using AlignedReallocUncheckedFn = void*(const AllocatorDispatch* self,
-                                          void* address,
+  using AlignedReallocUncheckedFn = void*(void* address,
                                           size_t size,
                                           size_t alignment,
                                           void* context);
-  using AlignedFreeFn = void(const AllocatorDispatch* self,
-                             void* address,
-                             void* context);
+  using AlignedFreeFn = void(void* address, void* context);
 
   AllocFn* alloc_function;
   AllocUncheckedFn* alloc_unchecked_function;

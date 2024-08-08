@@ -49,30 +49,27 @@ SamplingState<MALLOC> sampling_state;
 // for every access.
 GuardedPageAllocator* gpa = nullptr;
 
-void* AllocFn(const AllocatorDispatch* self, size_t size, void* context) {
+extern AllocatorDispatch g_allocator_dispatch;
+
+void* AllocFn(size_t size, void* context) {
   if (sampling_state.Sample()) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size))
       return allocation;
   }
 
-  return self->next->alloc_function(self->next, size, context);
+  return g_allocator_dispatch.next->alloc_function(size, context);
 }
 
-void* AllocUncheckedFn(const AllocatorDispatch* self,
-                       size_t size,
-                       void* context) {
+void* AllocUncheckedFn(size_t size, void* context) {
   if (sampling_state.Sample()) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size))
       return allocation;
   }
 
-  return self->next->alloc_unchecked_function(self->next, size, context);
+  return g_allocator_dispatch.next->alloc_unchecked_function(size, context);
 }
 
-void* AllocZeroInitializedFn(const AllocatorDispatch* self,
-                             size_t n,
-                             size_t size,
-                             void* context) {
+void* AllocZeroInitializedFn(size_t n, size_t size, void* context) {
   if (sampling_state.Sample()) [[unlikely]] {
     base::CheckedNumeric<size_t> checked_total = size;
     checked_total *= n;
@@ -87,33 +84,27 @@ void* AllocZeroInitializedFn(const AllocatorDispatch* self,
     }
   }
 
-  return self->next->alloc_zero_initialized_function(self->next, n, size,
-                                                     context);
+  return g_allocator_dispatch.next->alloc_zero_initialized_function(n, size,
+                                                                    context);
 }
 
-void* AllocAlignedFn(const AllocatorDispatch* self,
-                     size_t alignment,
-                     size_t size,
-                     void* context) {
+void* AllocAlignedFn(size_t alignment, size_t size, void* context) {
   if (sampling_state.Sample()) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size, alignment))
       return allocation;
   }
 
-  return self->next->alloc_aligned_function(self->next, alignment, size,
-                                            context);
+  return g_allocator_dispatch.next->alloc_aligned_function(alignment, size,
+                                                           context);
 }
 
-void* ReallocFn(const AllocatorDispatch* self,
-                void* address,
-                size_t size,
-                void* context) {
+void* ReallocFn(void* address, size_t size, void* context) {
   if (!address) [[unlikely]] {
-    return AllocFn(self, size, context);
+    return AllocFn(size, context);
   }
 
   if (!gpa->PointerIsMine(address)) [[likely]] {
-    return self->next->realloc_function(self->next, address, size, context);
+    return g_allocator_dispatch.next->realloc_function(address, size, context);
   }
 
   if (!size) {
@@ -123,7 +114,7 @@ void* ReallocFn(const AllocatorDispatch* self,
 
   void* new_alloc = gpa->Allocate(size);
   if (!new_alloc)
-    new_alloc = self->next->alloc_function(self->next, size, context);
+    new_alloc = g_allocator_dispatch.next->alloc_function(size, context);
   if (!new_alloc)
     return nullptr;
 
@@ -132,17 +123,14 @@ void* ReallocFn(const AllocatorDispatch* self,
   return new_alloc;
 }
 
-void* ReallocUncheckedFn(const AllocatorDispatch* self,
-                         void* address,
-                         size_t size,
-                         void* context) {
+void* ReallocUncheckedFn(void* address, size_t size, void* context) {
   if (!address) [[unlikely]] {
-    return AllocFn(self, size, context);
+    return AllocFn(size, context);
   }
 
   if (!gpa->PointerIsMine(address)) [[likely]] {
-    return self->next->realloc_unchecked_function(self->next, address, size,
-                                                  context);
+    return g_allocator_dispatch.next->realloc_unchecked_function(address, size,
+                                                                 context);
   }
 
   if (!size) {
@@ -152,7 +140,8 @@ void* ReallocUncheckedFn(const AllocatorDispatch* self,
 
   void* new_alloc = gpa->Allocate(size);
   if (!new_alloc) {
-    new_alloc = self->next->alloc_unchecked_function(self->next, size, context);
+    new_alloc =
+        g_allocator_dispatch.next->alloc_unchecked_function(size, context);
   }
   if (!new_alloc) {
     return nullptr;
@@ -163,56 +152,49 @@ void* ReallocUncheckedFn(const AllocatorDispatch* self,
   return new_alloc;
 }
 
-void FreeFn(const AllocatorDispatch* self, void* address, void* context) {
+void FreeFn(void* address, void* context) {
   if (gpa->PointerIsMine(address)) [[unlikely]] {
     return gpa->Deallocate(address);
   }
 
-  self->next->free_function(self->next, address, context);
+  g_allocator_dispatch.next->free_function(address, context);
 }
 
-size_t GetSizeEstimateFn(const AllocatorDispatch* self,
-                         void* address,
-                         void* context) {
+size_t GetSizeEstimateFn(void* address, void* context) {
   if (gpa->PointerIsMine(address)) [[unlikely]] {
     return gpa->GetRequestedSize(address);
   }
 
-  return self->next->get_size_estimate_function(self->next, address, context);
+  return g_allocator_dispatch.next->get_size_estimate_function(address,
+                                                               context);
 }
 
-size_t GoodSizeFn(const AllocatorDispatch* self, size_t size, void* context) {
+size_t GoodSizeFn(size_t size, void* context) {
   // We don't know whether the allocation would be handled by the guarded page
   // allocator, cannot return what it would prefer here.
-  return self->next->good_size_function(self->next, size, context);
+  return g_allocator_dispatch.next->good_size_function(size, context);
 }
 
-bool ClaimedAddressFn(const AllocatorDispatch* self,
-                      void* address,
-                      void* context) {
+bool ClaimedAddressFn(void* address, void* context) {
   if (gpa->PointerIsMine(address)) [[unlikely]] {
     return true;
   }
 
-  return self->next->claimed_address_function(self->next, address, context);
+  return g_allocator_dispatch.next->claimed_address_function(address, context);
 }
 
-unsigned BatchMallocFn(const AllocatorDispatch* self,
-                       size_t size,
+unsigned BatchMallocFn(size_t size,
                        void** results,
                        unsigned num_requested,
                        void* context) {
   // The batch_malloc() routine is esoteric and only accessible for the system
   // allocator's zone, GWP-ASan interception is not provided.
 
-  return self->next->batch_malloc_function(self->next, size, results,
-                                           num_requested, context);
+  return g_allocator_dispatch.next->batch_malloc_function(
+      size, results, num_requested, context);
 }
 
-void BatchFreeFn(const AllocatorDispatch* self,
-                 void** to_be_freed,
-                 unsigned num_to_be_freed,
-                 void* context) {
+void BatchFreeFn(void** to_be_freed, unsigned num_to_be_freed, void* context) {
   // A batch_free() hook is implemented because it is imperative that we never
   // call free() with a GWP-ASan allocation.
   for (size_t i = 0; i < num_to_be_freed; i++) {
@@ -221,19 +203,16 @@ void BatchFreeFn(const AllocatorDispatch* self,
       // individual allocations to ensure the guarded allocations are handled
       // correctly.
       for (size_t j = 0; j < num_to_be_freed; j++)
-        FreeFn(self, to_be_freed[j], context);
+        FreeFn(to_be_freed[j], context);
       return;
     }
   }
 
-  self->next->batch_free_function(self->next, to_be_freed, num_to_be_freed,
-                                  context);
+  g_allocator_dispatch.next->batch_free_function(to_be_freed, num_to_be_freed,
+                                                 context);
 }
 
-void FreeDefiniteSizeFn(const AllocatorDispatch* self,
-                        void* address,
-                        size_t size,
-                        void* context) {
+void FreeDefiniteSizeFn(void* address, size_t size, void* context) {
   if (gpa->PointerIsMine(address)) [[unlikely]] {
     // TODO(vtsyrklevich): Perform this check in GuardedPageAllocator and report
     // failed checks using the same pipeline.
@@ -242,35 +221,30 @@ void FreeDefiniteSizeFn(const AllocatorDispatch* self,
     return;
   }
 
-  self->next->free_definite_size_function(self->next, address, size, context);
+  g_allocator_dispatch.next->free_definite_size_function(address, size,
+                                                         context);
 }
 
-void TryFreeDefaultFn(const AllocatorDispatch* self,
-                      void* address,
-                      void* context) {
+void TryFreeDefaultFn(void* address, void* context) {
   if (gpa->PointerIsMine(address)) [[unlikely]] {
     gpa->Deallocate(address);
     return;
   }
 
-  self->next->try_free_default_function(self->next, address, context);
+  g_allocator_dispatch.next->try_free_default_function(address, context);
 }
 
-static void* AlignedMallocFn(const AllocatorDispatch* self,
-                             size_t size,
-                             size_t alignment,
-                             void* context) {
+static void* AlignedMallocFn(size_t size, size_t alignment, void* context) {
   if (sampling_state.Sample()) [[unlikely]] {
     if (void* allocation = gpa->Allocate(size, alignment))
       return allocation;
   }
 
-  return self->next->aligned_malloc_function(self->next, size, alignment,
-                                             context);
+  return g_allocator_dispatch.next->aligned_malloc_function(size, alignment,
+                                                            context);
 }
 
-static void* AlignedMallocUncheckedFn(const AllocatorDispatch* self,
-                                      size_t size,
+static void* AlignedMallocUncheckedFn(size_t size,
                                       size_t alignment,
                                       void* context) {
   if (sampling_state.Sample()) [[unlikely]] {
@@ -279,22 +253,21 @@ static void* AlignedMallocUncheckedFn(const AllocatorDispatch* self,
     }
   }
 
-  return self->next->aligned_malloc_unchecked_function(self->next, size,
-                                                       alignment, context);
+  return g_allocator_dispatch.next->aligned_malloc_unchecked_function(
+      size, alignment, context);
 }
 
-static void* AlignedReallocFn(const AllocatorDispatch* self,
-                              void* address,
+static void* AlignedReallocFn(void* address,
                               size_t size,
                               size_t alignment,
                               void* context) {
   if (!address) [[unlikely]] {
-    return AlignedMallocFn(self, size, alignment, context);
+    return AlignedMallocFn(size, alignment, context);
   }
 
   if (!gpa->PointerIsMine(address)) [[likely]] {
-    return self->next->aligned_realloc_function(self->next, address, size,
-                                                alignment, context);
+    return g_allocator_dispatch.next->aligned_realloc_function(
+        address, size, alignment, context);
   }
 
   if (!size) {
@@ -304,8 +277,8 @@ static void* AlignedReallocFn(const AllocatorDispatch* self,
 
   void* new_alloc = gpa->Allocate(size, alignment);
   if (!new_alloc)
-    new_alloc = self->next->aligned_malloc_function(self->next, size, alignment,
-                                                    context);
+    new_alloc = g_allocator_dispatch.next->aligned_malloc_function(
+        size, alignment, context);
   if (!new_alloc)
     return nullptr;
 
@@ -314,18 +287,17 @@ static void* AlignedReallocFn(const AllocatorDispatch* self,
   return new_alloc;
 }
 
-static void* AlignedReallocUncheckedFn(const AllocatorDispatch* self,
-                                       void* address,
+static void* AlignedReallocUncheckedFn(void* address,
                                        size_t size,
                                        size_t alignment,
                                        void* context) {
   if (!address) [[unlikely]] {
-    return AlignedMallocFn(self, size, alignment, context);
+    return AlignedMallocFn(size, alignment, context);
   }
 
   if (!gpa->PointerIsMine(address)) [[likely]] {
-    return self->next->aligned_realloc_unchecked_function(
-        self->next, address, size, alignment, context);
+    return g_allocator_dispatch.next->aligned_realloc_unchecked_function(
+        address, size, alignment, context);
   }
 
   if (!size) {
@@ -335,8 +307,8 @@ static void* AlignedReallocUncheckedFn(const AllocatorDispatch* self,
 
   void* new_alloc = gpa->Allocate(size, alignment);
   if (!new_alloc) {
-    new_alloc = self->next->aligned_malloc_unchecked_function(
-        self->next, size, alignment, context);
+    new_alloc = g_allocator_dispatch.next->aligned_malloc_unchecked_function(
+        size, alignment, context);
   }
   if (!new_alloc) {
     return nullptr;
@@ -347,14 +319,12 @@ static void* AlignedReallocUncheckedFn(const AllocatorDispatch* self,
   return new_alloc;
 }
 
-static void AlignedFreeFn(const AllocatorDispatch* self,
-                          void* address,
-                          void* context) {
+static void AlignedFreeFn(void* address, void* context) {
   if (gpa->PointerIsMine(address)) [[unlikely]] {
     return gpa->Deallocate(address);
   }
 
-  self->next->aligned_free_function(self->next, address, context);
+  g_allocator_dispatch.next->aligned_free_function(address, context);
 }
 
 AllocatorDispatch g_allocator_dispatch = {

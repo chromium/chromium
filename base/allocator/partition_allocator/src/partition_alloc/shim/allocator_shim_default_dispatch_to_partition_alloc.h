@@ -14,8 +14,6 @@
 
 namespace allocator_shim {
 
-struct AllocatorDispatch;
-
 namespace internal {
 
 class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) PartitionAllocMalloc {
@@ -30,107 +28,76 @@ class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) PartitionAllocMalloc {
 };
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void* PartitionMalloc(const AllocatorDispatch*, size_t size, void* context);
+void* PartitionMalloc(size_t size, void* context);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void* PartitionMallocUnchecked(const AllocatorDispatch*,
-                               size_t size,
-                               void* context);
+void* PartitionMallocUnchecked(size_t size, void* context);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void* PartitionCalloc(const AllocatorDispatch*,
-                      size_t n,
-                      size_t size,
-                      void* context);
+void* PartitionCalloc(size_t n, size_t size, void* context);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void* PartitionMemalign(const AllocatorDispatch*,
-                        size_t alignment,
-                        size_t size,
-                        void* context);
+void* PartitionMemalign(size_t alignment, size_t size, void* context);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void* PartitionAlignedAlloc(const AllocatorDispatch* dispatch,
-                            size_t size,
-                            size_t alignment,
-                            void* context);
+void* PartitionAlignedAlloc(size_t size, size_t alignment, void* context);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void* PartitionAlignedAllocUnchecked(const AllocatorDispatch* dispatch,
-                                     size_t size,
+void* PartitionAlignedAllocUnchecked(size_t size,
                                      size_t alignment,
                                      void* context);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void* PartitionAlignedRealloc(const AllocatorDispatch* dispatch,
-                              void* address,
+void* PartitionAlignedRealloc(void* address,
                               size_t size,
                               size_t alignment,
                               void* context);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void* PartitionAlignedReallocUnchecked(const AllocatorDispatch* dispatch,
-                                       void* address,
+void* PartitionAlignedReallocUnchecked(void* address,
                                        size_t size,
                                        size_t alignment,
                                        void* context);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void* PartitionRealloc(const AllocatorDispatch*,
-                       void* address,
-                       size_t size,
-                       void* context);
+void* PartitionRealloc(void* address, size_t size, void* context);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void* PartitionReallocUnchecked(const AllocatorDispatch*,
-                                void* address,
-                                size_t size,
-                                void* context);
+void* PartitionReallocUnchecked(void* address, size_t size, void* context);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void PartitionFree(const AllocatorDispatch*, void* object, void* context);
+void PartitionFree(void* object, void* context);
 
 #if PA_BUILDFLAG(IS_APPLE)
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void PartitionFreeDefiniteSize(const AllocatorDispatch*,
-                               void* address,
-                               size_t size,
-                               void* context);
+void PartitionFreeDefiniteSize(void* address, size_t size, void* context);
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
-                                void* address,
-                                void* context);
+size_t PartitionGetSizeEstimate(void* address, void* context);
 
 #if PA_BUILDFLAG(IS_APPLE)
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-size_t PartitionGoodSize(const AllocatorDispatch*, size_t size, void* context);
+size_t PartitionGoodSize(size_t size, void* context);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-bool PartitionClaimedAddress(const AllocatorDispatch*,
-                             void* address,
-                             void* context);
+bool PartitionClaimedAddress(void* address, void* context);
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-unsigned PartitionBatchMalloc(const AllocatorDispatch*,
-                              size_t size,
+unsigned PartitionBatchMalloc(size_t size,
                               void** results,
                               unsigned num_requested,
                               void* context);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void PartitionBatchFree(const AllocatorDispatch*,
-                        void** to_be_freed,
+void PartitionBatchFree(void** to_be_freed,
                         unsigned num_to_be_freed,
                         void* context);
 
 #if PA_BUILDFLAG(IS_APPLE)
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void PartitionTryFreeDefault(const AllocatorDispatch*,
-                             void* address,
-                             void* context);
+void PartitionTryFreeDefault(void* address, void* context);
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
 inline constexpr AllocatorDispatch kPartitionAllocDispatch = {

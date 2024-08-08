@@ -72,17 +72,12 @@ void UninstallDispatchToPartitionAllocWithAdvancedChecks() {
 
 namespace internal {
 
-void FreeWithAdvancedChecks(const AllocatorDispatch*,
-                            void* address,
-                            void* context) {
+void FreeWithAdvancedChecks(void* address, void* context) {
   const AllocatorDispatch* delegate = GetDelegate();
   PA_MUSTTAIL return delegate->free_function(delegate, address, context);
 }
 
-void* ReallocWithAdvancedChecks(const AllocatorDispatch*,
-                                void* address,
-                                size_t size,
-                                void* context) {
+void* ReallocWithAdvancedChecks(void* address, size_t size, void* context) {
   const AllocatorDispatch* delegate = GetDelegate();
   PA_MUSTTAIL return delegate->realloc_function(delegate, address, size,
                                                 context);

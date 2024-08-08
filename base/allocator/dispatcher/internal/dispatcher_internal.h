@@ -125,193 +125,165 @@ struct DispatcherImpl {
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
-  static void* AllocFn(const AllocatorDispatch* self,
-                       size_t size,
-                       void* context) {
-    void* const address = self->next->alloc_function(self->next, size, context);
-
-    DoNotifyAllocationForShim(address, size);
-
-    return address;
-  }
-
-  static void* AllocUncheckedFn(const AllocatorDispatch* self,
-                                size_t size,
-                                void* context) {
+  static void* AllocFn(size_t size, void* context) {
     void* const address =
-        self->next->alloc_unchecked_function(self->next, size, context);
+        allocator_dispatch_.next->alloc_function(size, context);
 
     DoNotifyAllocationForShim(address, size);
 
     return address;
   }
 
-  static void* AllocZeroInitializedFn(const AllocatorDispatch* self,
-                                      size_t n,
-                                      size_t size,
-                                      void* context) {
-    void* const address = self->next->alloc_zero_initialized_function(
-        self->next, n, size, context);
+  static void* AllocUncheckedFn(size_t size, void* context) {
+    void* const address =
+        allocator_dispatch_.next->alloc_unchecked_function(size, context);
+
+    DoNotifyAllocationForShim(address, size);
+
+    return address;
+  }
+
+  static void* AllocZeroInitializedFn(size_t n, size_t size, void* context) {
+    void* const address =
+        allocator_dispatch_.next->alloc_zero_initialized_function(n, size,
+                                                                  context);
 
     DoNotifyAllocationForShim(address, n * size);
 
     return address;
   }
 
-  static void* AllocAlignedFn(const AllocatorDispatch* self,
-                              size_t alignment,
-                              size_t size,
-                              void* context) {
-    void* const address = self->next->alloc_aligned_function(
-        self->next, alignment, size, context);
+  static void* AllocAlignedFn(size_t alignment, size_t size, void* context) {
+    void* const address = allocator_dispatch_.next->alloc_aligned_function(
+        alignment, size, context);
 
     DoNotifyAllocationForShim(address, size);
 
     return address;
   }
 
-  static void* ReallocFn(const AllocatorDispatch* self,
-                         void* address,
-                         size_t size,
-                         void* context) {
+  static void* ReallocFn(void* address, size_t size, void* context) {
     // Note: size == 0 actually performs free.
     DoNotifyFreeForShim(address);
     void* const reallocated_address =
-        self->next->realloc_function(self->next, address, size, context);
+        allocator_dispatch_.next->realloc_function(address, size, context);
 
     DoNotifyAllocationForShim(reallocated_address, size);
 
     return reallocated_address;
   }
 
-  static void* ReallocUncheckedFn(const AllocatorDispatch* self,
-                                  void* address,
-                                  size_t size,
-                                  void* context) {
+  static void* ReallocUncheckedFn(void* address, size_t size, void* context) {
     // Note: size == 0 actually performs free.
     DoNotifyFreeForShim(address);
-    void* const reallocated_address = self->next->realloc_unchecked_function(
-        self->next, address, size, context);
+    void* const reallocated_address =
+        allocator_dispatch_.next->realloc_unchecked_function(address, size,
+                                                             context);
 
     DoNotifyAllocationForShim(reallocated_address, size);
 
     return reallocated_address;
   }
 
-  static void FreeFn(const AllocatorDispatch* self,
-                     void* address,
-                     void* context) {
+  static void FreeFn(void* address, void* context) {
     // Note: DoNotifyFree should be called before free_function (here and in
     // other places). That is because observers need to handle the allocation
     // being freed before calling free_function, as once the latter is executed
     // the address becomes available and can be allocated by another thread.
     // That would be racy otherwise.
     DoNotifyFreeForShim(address);
-    MUSTTAIL return self->next->free_function(self->next, address, context);
+    MUSTTAIL return allocator_dispatch_.next->free_function(address, context);
   }
 
-  static unsigned BatchMallocFn(const AllocatorDispatch* self,
-                                size_t size,
+  static unsigned BatchMallocFn(size_t size,
                                 void** results,
                                 unsigned num_requested,
                                 void* context) {
-    unsigned const num_allocated = self->next->batch_malloc_function(
-        self->next, size, results, num_requested, context);
+    unsigned const num_allocated =
+        allocator_dispatch_.next->batch_malloc_function(size, results,
+                                                        num_requested, context);
     for (unsigned i = 0; i < num_allocated; ++i) {
       DoNotifyAllocationForShim(results[i], size);
     }
     return num_allocated;
   }
 
-  static void BatchFreeFn(const AllocatorDispatch* self,
-                          void** to_be_freed,
+  static void BatchFreeFn(void** to_be_freed,
                           unsigned num_to_be_freed,
                           void* context) {
     for (unsigned i = 0; i < num_to_be_freed; ++i) {
       DoNotifyFreeForShim(to_be_freed[i]);
     }
 
-    MUSTTAIL return self->next->batch_free_function(self->next, to_be_freed,
-                                                    num_to_be_freed, context);
+    MUSTTAIL return allocator_dispatch_.next->batch_free_function(
+        to_be_freed, num_to_be_freed, context);
   }
 
-  static void FreeDefiniteSizeFn(const AllocatorDispatch* self,
-                                 void* address,
-                                 size_t size,
-                                 void* context) {
+  static void FreeDefiniteSizeFn(void* address, size_t size, void* context) {
     DoNotifyFreeForShim(address);
-    MUSTTAIL return self->next->free_definite_size_function(self->next, address,
-                                                            size, context);
+    MUSTTAIL return allocator_dispatch_.next->free_definite_size_function(
+        address, size, context);
   }
 
-  static void TryFreeDefaultFn(const AllocatorDispatch* self,
-                               void* address,
-                               void* context) {
+  static void TryFreeDefaultFn(void* address, void* context) {
     DoNotifyFreeForShim(address);
-    MUSTTAIL return self->next->try_free_default_function(self->next, address,
-                                                          context);
+    MUSTTAIL return allocator_dispatch_.next->try_free_default_function(
+        address, context);
   }
 
-  static void* AlignedMallocFn(const AllocatorDispatch* self,
-                               size_t size,
-                               size_t alignment,
-                               void* context) {
-    void* const address = self->next->aligned_malloc_function(
-        self->next, size, alignment, context);
+  static void* AlignedMallocFn(size_t size, size_t alignment, void* context) {
+    void* const address = allocator_dispatch_.next->aligned_malloc_function(
+        size, alignment, context);
 
     DoNotifyAllocationForShim(address, size);
 
     return address;
   }
 
-  static void* AlignedMallocUncheckedFn(const AllocatorDispatch* self,
-                                        size_t size,
+  static void* AlignedMallocUncheckedFn(size_t size,
                                         size_t alignment,
                                         void* context) {
-    void* const address = self->next->aligned_malloc_unchecked_function(
-        self->next, size, alignment, context);
+    void* const address =
+        allocator_dispatch_.next->aligned_malloc_unchecked_function(
+            size, alignment, context);
 
     DoNotifyAllocationForShim(address, size);
 
     return address;
   }
 
-  static void* AlignedReallocFn(const AllocatorDispatch* self,
-                                void* address,
+  static void* AlignedReallocFn(void* address,
                                 size_t size,
                                 size_t alignment,
                                 void* context) {
     // Note: size == 0 actually performs free.
     DoNotifyFreeForShim(address);
-    address = self->next->aligned_realloc_function(self->next, address, size,
-                                                   alignment, context);
+    address = allocator_dispatch_.next->aligned_realloc_function(
+        address, size, alignment, context);
 
     DoNotifyAllocationForShim(address, size);
 
     return address;
   }
 
-  static void* AlignedReallocUncheckedFn(const AllocatorDispatch* self,
-                                         void* address,
+  static void* AlignedReallocUncheckedFn(void* address,
                                          size_t size,
                                          size_t alignment,
                                          void* context) {
     // Note: size == 0 actually performs free.
     DoNotifyFreeForShim(address);
-    address = self->next->aligned_realloc_unchecked_function(
-        self->next, address, size, alignment, context);
+    address = allocator_dispatch_.next->aligned_realloc_unchecked_function(
+        address, size, alignment, context);
 
     DoNotifyAllocationForShim(address, size);
 
     return address;
   }
 
-  static void AlignedFreeFn(const AllocatorDispatch* self,
-                            void* address,
-                            void* context) {
+  static void AlignedFreeFn(void* address, void* context) {
     DoNotifyFreeForShim(address);
-    MUSTTAIL return self->next->aligned_free_function(self->next, address,
-                                                      context);
+    MUSTTAIL return allocator_dispatch_.next->aligned_free_function(address,
+                                                                    context);
   }
 
   ALWAYS_INLINE static void DoNotifyAllocationForShim(void* address,

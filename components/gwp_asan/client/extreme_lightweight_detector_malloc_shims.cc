@@ -173,26 +173,23 @@ inline bool Quarantine(void* object) {
   return true;
 }
 
-void FreeFn(const AllocatorDispatch* self, void* address, void* context) {
+void FreeFn(void* address, void* context) {
   if (sampling_state.Sample()) [[unlikely]] {
     if (Quarantine(address)) [[likely]] {
       return;
     }
   }
-  MUSTTAIL return self->next->free_function(self->next, address, context);
+  MUSTTAIL return allocator_dispatch.next->free_function(address, context);
 }
 
-void FreeDefiniteSizeFn(const AllocatorDispatch* self,
-                        void* address,
-                        size_t size,
-                        void* context) {
+void FreeDefiniteSizeFn(void* address, size_t size, void* context) {
   if (sampling_state.Sample()) [[unlikely]] {
     if (Quarantine(address)) [[likely]] {
       return;
     }
   }
-  MUSTTAIL return self->next->free_definite_size_function(self->next, address,
-                                                          size, context);
+  MUSTTAIL return allocator_dispatch.next->free_definite_size_function(
+      address, size, context);
 }
 
 AllocatorDispatch allocator_dispatch = {

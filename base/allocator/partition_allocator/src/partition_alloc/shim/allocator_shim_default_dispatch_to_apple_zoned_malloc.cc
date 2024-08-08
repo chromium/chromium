@@ -11,50 +11,41 @@
 namespace allocator_shim {
 namespace {
 
-void* MallocImpl(const AllocatorDispatch*, size_t size, void* context) {
+void* MallocImpl(size_t size, void* context) {
   MallocZoneFunctions& functions = GetFunctionsForZone(context);
   return functions.malloc(reinterpret_cast<struct _malloc_zone_t*>(context),
                           size);
 }
 
-void* CallocImpl(const AllocatorDispatch*,
-                 size_t n,
-                 size_t size,
-                 void* context) {
+void* CallocImpl(size_t n, size_t size, void* context) {
   MallocZoneFunctions& functions = GetFunctionsForZone(context);
   return functions.calloc(reinterpret_cast<struct _malloc_zone_t*>(context), n,
                           size);
 }
 
-void* MemalignImpl(const AllocatorDispatch*,
-                   size_t alignment,
-                   size_t size,
-                   void* context) {
+void* MemalignImpl(size_t alignment, size_t size, void* context) {
   MallocZoneFunctions& functions = GetFunctionsForZone(context);
   return functions.memalign(reinterpret_cast<struct _malloc_zone_t*>(context),
                             alignment, size);
 }
 
-void* ReallocImpl(const AllocatorDispatch*,
-                  void* ptr,
-                  size_t size,
-                  void* context) {
+void* ReallocImpl(void* ptr, size_t size, void* context) {
   MallocZoneFunctions& functions = GetFunctionsForZone(context);
   return functions.realloc(reinterpret_cast<struct _malloc_zone_t*>(context),
                            ptr, size);
 }
 
-void FreeImpl(const AllocatorDispatch*, void* ptr, void* context) {
+void FreeImpl(void* ptr, void* context) {
   MallocZoneFunctions& functions = GetFunctionsForZone(context);
   functions.free(reinterpret_cast<struct _malloc_zone_t*>(context), ptr);
 }
 
-size_t GetSizeEstimateImpl(const AllocatorDispatch*, void* ptr, void* context) {
+size_t GetSizeEstimateImpl(void* ptr, void* context) {
   MallocZoneFunctions& functions = GetFunctionsForZone(context);
   return functions.size(reinterpret_cast<struct _malloc_zone_t*>(context), ptr);
 }
 
-size_t GoodSizeImpl(const AllocatorDispatch*, size_t size, void* context) {
+size_t GoodSizeImpl(size_t size, void* context) {
   // Technically, libmalloc will only call good_size() on the default zone for
   // malloc_good_size(), but it doesn't matter that we are calling it on another
   // one.
@@ -63,7 +54,7 @@ size_t GoodSizeImpl(const AllocatorDispatch*, size_t size, void* context) {
                              size);
 }
 
-bool ClaimedAddressImpl(const AllocatorDispatch*, void* ptr, void* context) {
+bool ClaimedAddressImpl(void* ptr, void* context) {
   MallocZoneFunctions& functions = GetFunctionsForZone(context);
   if (functions.claimed_address) {
     return functions.claimed_address(
@@ -75,8 +66,7 @@ bool ClaimedAddressImpl(const AllocatorDispatch*, void* ptr, void* context) {
   return functions.size(reinterpret_cast<struct _malloc_zone_t*>(context), ptr);
 }
 
-unsigned BatchMallocImpl(const AllocatorDispatch* self,
-                         size_t size,
+unsigned BatchMallocImpl(size_t size,
                          void** results,
                          unsigned num_requested,
                          void* context) {
@@ -86,8 +76,7 @@ unsigned BatchMallocImpl(const AllocatorDispatch* self,
       num_requested);
 }
 
-void BatchFreeImpl(const AllocatorDispatch* self,
-                   void** to_be_freed,
+void BatchFreeImpl(void** to_be_freed,
                    unsigned num_to_be_freed,
                    void* context) {
   MallocZoneFunctions& functions = GetFunctionsForZone(context);
@@ -95,18 +84,13 @@ void BatchFreeImpl(const AllocatorDispatch* self,
                        to_be_freed, num_to_be_freed);
 }
 
-void FreeDefiniteSizeImpl(const AllocatorDispatch* self,
-                          void* ptr,
-                          size_t size,
-                          void* context) {
+void FreeDefiniteSizeImpl(void* ptr, size_t size, void* context) {
   MallocZoneFunctions& functions = GetFunctionsForZone(context);
   functions.free_definite_size(
       reinterpret_cast<struct _malloc_zone_t*>(context), ptr, size);
 }
 
-void TryFreeDefaultImpl(const AllocatorDispatch* self,
-                        void* ptr,
-                        void* context) {
+void TryFreeDefaultImpl(void* ptr, void* context) {
   MallocZoneFunctions& functions = GetFunctionsForZone(context);
   if (functions.try_free_default) {
     return functions.try_free_default(

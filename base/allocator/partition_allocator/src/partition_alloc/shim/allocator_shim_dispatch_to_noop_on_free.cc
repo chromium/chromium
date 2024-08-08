@@ -13,25 +13,15 @@
 namespace allocator_shim {
 namespace {
 
-void FreeFn(const AllocatorDispatch* self, void* address, void* context) {}
+void FreeFn(void* address, void* context) {}
 
-void BatchFreeFn(const AllocatorDispatch* self,
-                 void** to_be_freed,
-                 unsigned num_to_be_freed,
-                 void* context) {}
+void BatchFreeFn(void** to_be_freed, unsigned num_to_be_freed, void* context) {}
 
-void FreeDefiniteSizeFn(const AllocatorDispatch* self,
-                        void* address,
-                        size_t size,
-                        void* context) {}
+void FreeDefiniteSizeFn(void* address, size_t size, void* context) {}
 
-void TryFreeDefaultFn(const AllocatorDispatch* self,
-                      void* address,
-                      void* context) {}
+void TryFreeDefaultFn(void* address, void* context) {}
 
-static void AlignedFreeFn(const AllocatorDispatch* self,
-                          void* address,
-                          void* context) {}
+static void AlignedFreeFn(void* address, void* context) {}
 
 AllocatorDispatch allocator_dispatch = {
     nullptr,             // alloc_function

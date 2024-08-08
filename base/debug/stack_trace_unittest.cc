@@ -173,40 +173,27 @@ namespace {
 // In an actual implementation, this could cause infinite recursion into the
 // signal handler or other problems. Because malloc() is not guaranteed to be
 // async signal safe.
-void* BadMalloc(const allocator_shim::AllocatorDispatch*, size_t, void*) {
+void* BadMalloc(size_t, void*) {
   base::ImmediateCrash();
 }
 
-void* BadCalloc(const allocator_shim::AllocatorDispatch*,
-                size_t,
-                size_t,
-                void* context) {
+void* BadCalloc(size_t, size_t, void* context) {
   base::ImmediateCrash();
 }
 
-void* BadAlignedAlloc(const allocator_shim::AllocatorDispatch*,
-                      size_t,
-                      size_t,
-                      void*) {
+void* BadAlignedAlloc(size_t, size_t, void*) {
   base::ImmediateCrash();
 }
 
-void* BadAlignedRealloc(const allocator_shim::AllocatorDispatch*,
-                        void*,
-                        size_t,
-                        size_t,
-                        void*) {
+void* BadAlignedRealloc(void*, size_t, size_t, void*) {
   base::ImmediateCrash();
 }
 
-void* BadRealloc(const allocator_shim::AllocatorDispatch*,
-                 void*,
-                 size_t,
-                 void*) {
+void* BadRealloc(void*, size_t, void*) {
   base::ImmediateCrash();
 }
 
-void BadFree(const allocator_shim::AllocatorDispatch*, void*, void*) {
+void BadFree(void*, void*) {
   base::ImmediateCrash();
 }
 

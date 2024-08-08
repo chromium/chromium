@@ -29,38 +29,27 @@ namespace {
 
 using allocator_shim::AllocatorDispatch;
 
-void* RealMalloc(const AllocatorDispatch*, size_t size, void* context) {
+void* RealMalloc(size_t size, void* context) {
   return __real_malloc(size);
 }
 
-void* RealCalloc(const AllocatorDispatch*,
-                 size_t n,
-                 size_t size,
-                 void* context) {
+void* RealCalloc(size_t n, size_t size, void* context) {
   return __real_calloc(n, size);
 }
 
-void* RealRealloc(const AllocatorDispatch*,
-                  void* address,
-                  size_t size,
-                  void* context) {
+void* RealRealloc(void* address, size_t size, void* context) {
   return __real_realloc(address, size);
 }
 
-void* RealMemalign(const AllocatorDispatch*,
-                   size_t alignment,
-                   size_t size,
-                   void* context) {
+void* RealMemalign(size_t alignment, size_t size, void* context) {
   return __real_memalign(alignment, size);
 }
 
-void RealFree(const AllocatorDispatch*, void* address, void* context) {
+void RealFree(void* address, void* context) {
   __real_free(address);
 }
 
-size_t RealSizeEstimate(const AllocatorDispatch*,
-                        void* address,
-                        void* context) {
+size_t RealSizeEstimate(void* address, void* context) {
   return __real_malloc_usable_size(address);
 }
 
