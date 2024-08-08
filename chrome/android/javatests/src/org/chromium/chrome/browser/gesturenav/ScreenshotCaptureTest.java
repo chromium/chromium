@@ -34,6 +34,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.TestAnimations;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -120,6 +121,7 @@ public class ScreenshotCaptureTest {
 
     @Before
     public void setUp() {
+        TestAnimations.setEnabled(true);
         // Fix the port cause the screenshot includes the url bar
         mTestServer =
                 EmbeddedTestServer.createAndStartServerWithPort(

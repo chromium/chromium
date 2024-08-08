@@ -48,6 +48,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/view_android.h"
+#include "ui/gfx/switches.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -212,6 +213,11 @@ class NavigationEntryScreenshotBrowserTestBase : public ContentBrowserTest {
   }
 
   virtual bool EnableCompression() const { return false; }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForcePrefersNoReducedMotion);
+  }
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
@@ -1402,6 +1408,47 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(kNavTypes),
                          &DescribeNavType);
 
+class NavigationEntryScreenshotBrowserTestPrefersReducedMotion
+    : public NavigationEntryScreenshotBrowserTest {
+ public:
+  ~NavigationEntryScreenshotBrowserTestPrefersReducedMotion() override =
+      default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NavigationEntryScreenshotBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForcePrefersReducedMotion);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestPrefersReducedMotion,
+                       NoCapture) {
+  // Max of three screenshots per Profile (BrowserContext).
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
+  const size_t memory_budget = 3 * page_size;
+  auto* manager = GetManagerForTab(web_contents());
+  manager->SetMemoryBudgetForTesting(memory_budget);
+  auto& controller = web_contents()->GetController();
+
+  {
+    SCOPED_TRACE("tab1: [red, green*]");
+    ASSERT_TRUE(NavigateToURL(web_contents(), GetNextUrl("/green.html")));
+    auto* entry = controller.GetEntryAtIndex(0);
+    EXPECT_EQ(entry->navigation_transition_data().cache_hit_or_miss_reason(),
+              NavigationTransitionData::CacheHitOrMissReason::
+                  kCacheMissPrefersReducedMotion);
+    EXPECT_EQ(
+        NavigationTransitionUtils::GetNumCopyOutputRequestIssuedForTesting(),
+        0);
+    EXPECT_EQ(manager->GetCurrentCacheSize(), 0u);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationEntryScreenshotBrowserTestPrefersReducedMotion,
+    ::testing::ValuesIn(kNavTypes),
+    &DescribeNavType);
+
 class NavigationEntryScreenshotBrowserTestWithWebUI
     : public NavigationEntryScreenshotBrowserTest {
  public:
@@ -1724,6 +1771,43 @@ IN_PROC_BROWSER_TEST_F(SameDocNavigationEntryScreenshotBrowserTest, Basic) {
         controller, {std::nullopt, SK_ColorGREEN, SK_ColorBLUE, SK_ColorRED},
         GetCompareRegion());
     ASSERT_EQ(manager->GetCurrentCacheSize(), 3 * page_size);
+  }
+}
+
+class SameDocNavigationEntryScreenshotBrowserTestPrefersReducedMotion
+    : public SameDocNavigationEntryScreenshotBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SameDocNavigationEntryScreenshotBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForcePrefersReducedMotion);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SameDocNavigationEntryScreenshotBrowserTestPrefersReducedMotion,
+    NoCapture) {
+  // Max of three screenshots per Profile (BrowserContext).
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
+  const size_t memory_budget = 3 * page_size;
+  auto* manager = GetManagerForTab(web_contents());
+  manager->SetMemoryBudgetForTesting(memory_budget);
+  auto& controller = web_contents()->GetController();
+
+  {
+    SCOPED_TRACE("tab1: [red, green*]");
+    NavigationTransitionUtils::ResetNumCopyOutputRequestIssuedForTesting();
+    ASSERT_TRUE(NavigateToURL(web_contents(), GetURL("#green")));
+    auto* entry = controller.GetEntryAtIndex(0);
+    EXPECT_EQ(
+        NavigationTransitionUtils::GetNumCopyOutputRequestIssuedForTesting(),
+        0);
+    EXPECT_FALSE(entry->navigation_transition_data()
+                     .same_document_navigation_entry_screenshot_token()
+                     .has_value());
+    EXPECT_EQ(entry->navigation_transition_data().cache_hit_or_miss_reason(),
+              NavigationTransitionData::CacheHitOrMissReason::
+                  kCacheMissPrefersReducedMotion);
+    EXPECT_EQ(manager->GetCurrentCacheSize(), 0u);
   }
 }
 

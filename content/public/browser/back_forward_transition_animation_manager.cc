@@ -5,6 +5,7 @@
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 
 #include "third_party/blink/public/common/features_generated.h"
+#include "ui/gfx/animation/animation.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "ui/base/l10n/l10n_util_android.h"
@@ -18,6 +19,10 @@ bool BackForwardTransitionAnimationManager::ShouldAnimateNavigationTransition(
     ui::BackGestureEventSwipeEdge edge) {
 #if BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions)) {
+    return false;
+  }
+
+  if (gfx::Animation::PrefersReducedMotion()) {
     return false;
   }
 

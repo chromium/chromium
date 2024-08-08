@@ -59,7 +59,11 @@ class NavigationTransitionData {
     // Screenshot was evicted because the tab was invisible for a long duration.
     kCacheMissInvisible = 10,
 
-    kMaxValue = kCacheMissInvisible
+    // Screenshot was not captured because user had prefers-reduced-motion
+    // turned on when the navigation committed.
+    kCacheMissPrefersReducedMotion = 11,
+
+    kMaxValue = kCacheMissPrefersReducedMotion
   };
 
   NavigationTransitionData() = default;

@@ -35,6 +35,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.base.test.util.TestAnimations;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -91,6 +92,7 @@ public class NavigationHandlerTest {
 
     @Before
     public void setUp() throws InterruptedException {
+        TestAnimations.setEnabled(true);
         mTestServer =
                 EmbeddedTestServer.createAndStartServer(
                         InstrumentationRegistry.getInstrumentation().getContext());
@@ -301,6 +303,37 @@ public class NavigationHandlerTest {
                                 .getAnimatorForTesting()
                                 .isRunning(),
                 "Smooth transition should be finished");
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add({
+        "enable-features=BackForwardTransitions<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:transition_from_native_pages/true/"
+                + "transition_to_native_pages/true"
+    })
+    public void testSwipeBackWithoutTransition_AnimationsDisabled() throws InterruptedException {
+        TestAnimations.setEnabled(false);
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivity().getActivityTab());
+        mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
+
+        mNavUtils.swipeFromEdgeAndHold(true);
+        Assert.assertEquals(
+                "Back forward transition is disabled due to no animation",
+                AnimationStage.NONE,
+                tab.getWebContents().getCurrentBackForwardTransitionStage());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mNavigationHandler.release(true));
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        AnimationStage.NONE
+                                == tab.getWebContents().getCurrentBackForwardTransitionStage(),
+                "Back forward transition is disabled due to no animation");
     }
 
     @Test

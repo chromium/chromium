@@ -26932,6 +26932,7 @@ Called by update_use_counter_css.py.-->
   <int value="8" label="kCacheMissEmbeddedPages"/>
   <int value="9" label="kCacheMissCCNS"/>
   <int value="10" label="kCacheMissInvisible"/>
+  <int value="11" label="kCacheMissPrefersReducedMotion"/>
 </enum>
 
 <enum name="NetErrorCodes">

@@ -14,6 +14,7 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "ui/gfx/animation/animation.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/compositor_impl_android.h"
@@ -299,6 +300,13 @@ bool NavigationTransitionUtils::
   // the screenshot from the destination entry.
   RemoveScreenshotFromDestination(navigation_controller, destination_entry);
 
+  if (gfx::Animation::PrefersReducedMotion()) {
+    entry->navigation_transition_data().set_cache_hit_or_miss_reason(
+        CacheHitOrMissReason::kCacheMissPrefersReducedMotion);
+    InvokeTestCallbackForNoScreenshot(navigation_request);
+    return false;
+  }
+
   if (navigation_request.frame_tree_node()
           ->GetParentOrOuterDocumentOrEmbedder()) {
     // No support for embedded pages (including GuestView or fenced frames).
@@ -407,22 +415,18 @@ bool NavigationTransitionUtils::
 
 void NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
     NavigationRequest& navigation_request,
-    const blink::SameDocNavigationScreenshotDestinationToken&
+    std::optional<blink::SameDocNavigationScreenshotDestinationToken>
         destination_token) {
   if (!NavigationTransitionConfig::AreBackForwardTransitionsEnabled()) {
     // The source of this call is from the renderer. We can't always trust the
     // renderer thus fail safely.
     return;
   }
-  NavigationControllerImpl& nav_controller =
-      navigation_request.frame_tree_node()->navigator().controller();
-  if (GetEntryForToken(&nav_controller, destination_token)) {
-    // Again, can't always trust the renderer to send a non-duplicated token.
-    return;
-  }
 
   CHECK(navigation_request.IsSameDocument());
 
+  NavigationControllerImpl& nav_controller =
+      navigation_request.frame_tree_node()->navigator().controller();
   if (auto* destination_entry = navigation_request.GetNavigationEntry()) {
     RemoveScreenshotFromDestination(nav_controller, destination_entry);
   } else {
@@ -431,7 +435,29 @@ void NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
     // `NavigationRequest::CreateForSynchronousRendererCommit`).
   }
 
+  // If the renderer sends a token, it implies it issued a copy request for the
+  // pre-navigation state.
+  if (destination_token) {
+    ++g_num_copy_requests_issued_for_testing;
+  }
+
   if (!CanTraverseToPreviousEntryAfterNavigation(navigation_request)) {
+    return;
+  }
+
+  if (gfx::Animation::PrefersReducedMotion()) {
+    auto* entry = nav_controller.GetLastCommittedEntry();
+    entry->navigation_transition_data().set_cache_hit_or_miss_reason(
+        CacheHitOrMissReason::kCacheMissPrefersReducedMotion);
+    return;
+  }
+
+  if (!destination_token) {
+    return;
+  }
+
+  if (GetEntryForToken(&nav_controller, *destination_token)) {
+    // Again, can't always trust the renderer to send a non-duplicated token.
     return;
   }
 
@@ -439,15 +465,11 @@ void NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
   // screenshot's destination), instead of the destination entry of this
   // `navigation_request` (`navigation_request.GetNavigationEntry()`).
 
-  // We won't reach here if the renderer hasn't requested a CopyOutputRequest,
-  // since the token in the DidCommitSameDocNavigation message will be nullopt.
-  ++g_num_copy_requests_issued_for_testing;
-
   // `blink::SameDocNavigationScreenshotDestinationToken` is guaranteed
   // non-empty.
   nav_controller.GetLastCommittedEntry()
       ->navigation_transition_data()
-      .SetSameDocumentNavigationEntryScreenshotToken(destination_token);
+      .SetSameDocumentNavigationEntryScreenshotToken(*destination_token);
 
   CHECK(GetHostFrameSinkManager());
 
@@ -456,7 +478,7 @@ void NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
                              .copy_output_request_sequence();
 
   GetHostFrameSinkManager()->SetOnCopyOutputReadyCallback(
-      destination_token,
+      *destination_token,
       base::BindOnce(&CacheScreenshotImpl, nav_controller.GetWeakPtr(),
                      navigation_request.GetWeakPtr(),
                      nav_controller.GetLastCommittedEntry()->GetUniqueID(),

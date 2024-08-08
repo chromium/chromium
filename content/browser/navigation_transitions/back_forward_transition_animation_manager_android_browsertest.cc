@@ -56,6 +56,7 @@
 #include "ui/base/l10n/l10n_util_android.h"
 #include "ui/events/back_gesture_event.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
+#include "ui/gfx/switches.h"
 #include "ui/snapshot/snapshot.h"
 
 namespace content {
@@ -595,6 +596,11 @@ class BackForwardTransitionAnimationManagerBrowserTest
     }
     EnablePixelOutput();
     ContentBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForcePrefersNoReducedMotion);
   }
 
   void SetUpOnMainThread() override {

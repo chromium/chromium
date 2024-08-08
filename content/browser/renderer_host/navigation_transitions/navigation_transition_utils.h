@@ -52,7 +52,7 @@ class NavigationTransitionUtils {
   // process.
   static void SetSameDocumentNavigationEntryScreenshotToken(
       NavigationRequest& navigation_request,
-      const blink::SameDocNavigationScreenshotDestinationToken&
+      std::optional<blink::SameDocNavigationScreenshotDestinationToken>
           destination_token);
 
   // Used by tests to deterministically validate the memory budgeting / eviction

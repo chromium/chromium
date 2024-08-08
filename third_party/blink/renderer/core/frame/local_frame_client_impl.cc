@@ -430,9 +430,12 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
     // not history-traversable).
     // Exclude the WebView not being composited because we won't present any
     // frame if it is not being actively drawn.
+    // Exclude cases with prefers-reduced-motion. Back forward transitions are
+    // disabled in this case so no screenshots are necessary.
     bool navigation_with_screenshot = false;
     if (IsCompositedOutermostMainFrame(web_frame_) &&
-        commit_type != kWebHistoryInertCommit) {
+        commit_type != kWebHistoryInertCommit &&
+        !web_frame_->GetFrame()->GetSettings()->GetPrefersReducedMotion()) {
       navigation_with_screenshot = true;
       WebFrameWidgetImpl* frame_widget = web_frame_->FrameWidgetImpl();
       // The outermost mainframe must have a frame widget.
