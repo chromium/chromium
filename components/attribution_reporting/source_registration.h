@@ -35,7 +35,7 @@ void RecordSourceRegistrationError(mojom::SourceRegistrationError);
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   // Doesn't log metric on parsing failures.
   static base::expected<SourceRegistration, mojom::SourceRegistrationError>
-      Parse(base::Value::Dict, mojom::SourceType);
+      Parse(base::Value, mojom::SourceType);
 
   // Logs metric on parsing failures.
   static base::expected<SourceRegistration, mojom::SourceRegistrationError>

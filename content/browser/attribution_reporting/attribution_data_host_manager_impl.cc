@@ -1974,18 +1974,13 @@ void AttributionDataHostManagerImpl::HandleParsedWebSource(
       return base::unexpected(SourceRegistrationError::kInvalidJson);
     }
 
-    base::Value::Dict* dict = result->GetIfDict();
-    if (!dict) {
-      return base::unexpected(SourceRegistrationError::kRootWrongType);
-    }
-
     auto source_type = registrations.navigation_id().has_value()
                            ? SourceType::kNavigation
                            : SourceType::kEvent;
 
     ASSIGN_OR_RETURN(auto registration,
                      attribution_reporting::SourceRegistration::Parse(
-                         std::move(*dict), source_type));
+                         *std::move(result), source_type));
 
     if (auto navigation_id = registrations.navigation_id()) {
       AddNavigationSourceRegistrationToBatchMap(
@@ -2020,14 +2015,9 @@ void AttributionDataHostManagerImpl::HandleParsedWebTrigger(
       return base::unexpected(TriggerRegistrationError::kInvalidJson);
     }
 
-    base::Value::Dict* dict = result->GetIfDict();
-    if (!dict) {
-      return base::unexpected(TriggerRegistrationError::kRootWrongType);
-    }
-
     ASSIGN_OR_RETURN(
         auto registration,
-        attribution_reporting::TriggerRegistration::Parse(std::move(*dict)));
+        attribution_reporting::TriggerRegistration::Parse(*std::move(result)));
 
     return AttributionTrigger(
         std::move(pending_decode.reporting_origin), std::move(registration),

@@ -45,7 +45,7 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
   if (getenv("LPM_DUMP_NATIVE_INPUT"))
     std::cout << native_input << std::endl;
 
-  std::optional<base::Value::Dict> input = base::JSONReader::ReadDict(
+  std::optional<base::Value> input = base::JSONReader::Read(
       native_input, base::JSONParserOptions::JSON_PARSE_RFC);
   if (!input) {
     return;
