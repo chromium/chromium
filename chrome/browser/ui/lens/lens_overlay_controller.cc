@@ -349,8 +349,10 @@ void LensOverlayController::ShowUI(
     find_tab_observer_.Observe(find_tab_helper);
   }
 
-  if (auto* helper = OmniboxTabHelper::FromWebContents(tab_->GetContents())) {
-    omnibox_tab_helper_observer_.Observe(helper);
+  if (!omnibox_tab_helper_observer_.IsObserving()) {
+    if (auto* helper = OmniboxTabHelper::FromWebContents(tab_->GetContents())) {
+      omnibox_tab_helper_observer_.Observe(helper);
+    }
   }
 
   scoped_tab_modal_ui_ = tab_->ShowModalUI();
