@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -91,6 +92,8 @@ class AuthSessionRequest
   std::string scheme_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  base::WeakPtrFactory<AuthSessionRequest> weak_factory_{this};
 };
 
 #endif  // __OBJC__

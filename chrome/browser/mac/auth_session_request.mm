@@ -15,6 +15,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -198,11 +199,8 @@ std::unique_ptr<content::NavigationThrottle> AuthSessionRequest::CreateThrottle(
       break;
   }
 
-  // base::Unretained is safe because throttles are owned by the
-  // NavigationRequest, which won't outlive the WebContents, whose lifetime this
-  // is tied to.
   auto scheme_found = base::BindOnce(&AuthSessionRequest::SchemeWasNavigatedTo,
-                                     base::Unretained(this));
+                                     weak_factory_.GetWeakPtr());
 
   return std::make_unique<AuthNavigationThrottle>(handle, scheme_,
                                                   std::move(scheme_found));
