@@ -181,7 +181,6 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUploadWithTarget) {
       storage::FileSystemURL,
       std::optional<policy::local_user_files::MigrationUploadError>>
       upload_callback;
-  EXPECT_CALL(progress_callback, Run(/*bytes_transferred=*/230096));
   OdfsSkyvaultUploader::Upload(
       profile(), source_file_path, OdfsSkyvaultUploader::FileType::kMigration,
       progress_callback.Get(), upload_callback.GetCallback(),

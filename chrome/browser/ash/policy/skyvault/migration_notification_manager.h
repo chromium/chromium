@@ -6,11 +6,17 @@
 #define CHROME_BROWSER_ASH_POLICY_SKYVAULT_MIGRATION_NOTIFICATION_MANAGER_H_
 
 #include <map>
+#include <memory>
 #include <string>
+#include <vector>
 
+#include "base/callback_list.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
@@ -32,6 +38,9 @@ constexpr char kSkyVaultMigrationNotificationId[] = "skyvault-migration";
 // Shows notifications and dialogs related to SkyVault migration status.
 class MigrationNotificationManager : public KeyedService {
  public:
+  using SignInCallback = base::OnceCallback<void(base::File::Error)>;
+  using SignInCallbacks = base::OnceCallbackList<void(base::File::Error)>;
+
   explicit MigrationNotificationManager(content::BrowserContext* context);
   ~MigrationNotificationManager() override;
 
@@ -61,6 +70,12 @@ class MigrationNotificationManager : public KeyedService {
   // Shows the policy configuration error notification.
   void ShowConfigurationErrorNotification(CloudProvider provider);
 
+  // Displays a single notification prompting the user to sign in to OneDrive.
+  // Queues any subsequent sign-in requests until the user responds which
+  // executes all queued callbacks with the result of the sign-in process.
+  base::CallbackListSubscription ShowOneDriveSignInNotification(
+      SignInCallback callback);
+
   // Closes any open notification or dialog.
   void CloseAll();
 
@@ -70,8 +85,21 @@ class MigrationNotificationManager : public KeyedService {
  private:
   Profile* profile();
 
+  // Callback invoked when the user responds to the OneDrive sign-in
+  // notification.
+  // Shows a progress notification if the setup and sign in completed
+  // successfully (base::File::Error::FILE_ERROR_OK).
+  void OnSignInResponse(base::File::Error error);
+
   // Context for which this instance was created.
   raw_ptr<content::BrowserContext> context_;
+
+  // List of sign-in result callbacks, mapped to a single sign-in notification.
+  // This ensures that all callers who requested the sign-in receive the final
+  // result (success or error) once the notification is dismissed.
+  SignInCallbacks sign_in_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<MigrationNotificationManager> weak_factory_{this};
 };

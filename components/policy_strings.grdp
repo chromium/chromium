@@ -1337,4 +1337,13 @@ Additional details:
   <message name="IDS_POLICY_SKYVAULT_MIGRATION_ERROR_BUTTON" desc="The button for the notification showing that SkyVault migration completed with errors - clicking the button opens a file with the error summary.">
     Review error log
   </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_SIGN_IN_TITLE" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the download flow.">
+    File upload to Microsoft OneDrive has been paused
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_SIGN_IN_MESSAGE" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the download flow.">
+    Files can only be uploaded if you are signed in to Microsoft OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_SIGN_IN_BUTTON" desc="Label for the button that starts the sign-in flow to Microsoft OneDrive.">
+    Sign in to Microsoft OneDrive
+  </message>
 </grit-part>
