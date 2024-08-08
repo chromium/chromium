@@ -7,15 +7,11 @@ package org.chromium.chrome.browser.data_sharing;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.ParseURLStatus;
 import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
@@ -103,14 +99,9 @@ public class DataSharingTabManager {
         mTabGroupObserversList.add(observer);
         tabGroupSyncService.addObserver(observer);
 
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(mProfileSupplier.get());
-        CoreAccountInfo coreAccountInfo =
-                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-
-        dataSharingService.inviteMember(
+        dataSharingService.addMember(
                 groupToken.groupId,
-                coreAccountInfo.getEmail(),
+                groupToken.accessToken,
                 result -> {
                     if (result != PeopleGroupActionOutcome.SUCCESS) {
                         // TODO(b/354003616): Stop showing loading dialog. Show error dialog.

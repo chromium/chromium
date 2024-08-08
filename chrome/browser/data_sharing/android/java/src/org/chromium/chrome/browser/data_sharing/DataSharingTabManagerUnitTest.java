@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.data_sharing;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -38,6 +39,7 @@ public class DataSharingTabManagerUnitTest {
     private static final String GROUP_ID = "group_id";
     private static final LocalTabGroupId LOCAL_ID = new LocalTabGroupId(Token.createRandom());
     private static final Integer TAB_ID = 123;
+    private static final String ACCESS_TOKEN = "access_token";
 
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
@@ -45,6 +47,7 @@ public class DataSharingTabManagerUnitTest {
     @Mock private Profile mProfile;
 
     private DataSharingTabManager mDataSharingTabManager;
+    private SavedTabGroup mSavedTabGroup;
 
     @Before
     public void setUp() {
@@ -53,6 +56,13 @@ public class DataSharingTabManagerUnitTest {
         ObservableSupplier<Profile> profileSupplier = new ObservableSupplierImpl<Profile>(mProfile);
         mDataSharingTabManager =
                 new DataSharingTabManager(mDataSharingTabSwitcherDelegate, profileSupplier);
+
+        mSavedTabGroup = new SavedTabGroup();
+        mSavedTabGroup.collaborationId = GROUP_ID;
+        mSavedTabGroup.localId = LOCAL_ID;
+        SavedTabGroupTab savedTabGroupTab = new SavedTabGroupTab();
+        savedTabGroupTab.localId = TAB_ID;
+        mSavedTabGroup.savedTabs.add(savedTabGroupTab);
     }
 
     @Test
@@ -64,7 +74,7 @@ public class DataSharingTabManagerUnitTest {
     }
 
     @Test
-    public void testInviteFlowWithExistingTab() {
+    public void testInviteFlowWithExistingTabGroup() {
         doReturn(
                         new DataSharingService.ParseURLResult(
                                 new GroupToken(GROUP_ID, "accessToken"), ParseURLStatus.SUCCESS))
@@ -74,15 +84,24 @@ public class DataSharingTabManagerUnitTest {
         String[] tabId = new String[] {GROUP_ID};
         doReturn(tabId).when(mTabGroupSyncService).getAllGroupIds();
 
-        SavedTabGroup savedTabGroup = new SavedTabGroup();
-        savedTabGroup.collaborationId = GROUP_ID;
-        savedTabGroup.localId = LOCAL_ID;
-        SavedTabGroupTab savedTabGroupTab = new SavedTabGroupTab();
-        savedTabGroupTab.localId = TAB_ID;
-        savedTabGroup.savedTabs.add(savedTabGroupTab);
-        doReturn(savedTabGroup).when(mTabGroupSyncService).getGroup(GROUP_ID);
+        doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(GROUP_ID);
 
         mDataSharingTabManager.initiateJoinFlow(null);
         verify(mDataSharingTabSwitcherDelegate).openTabGroupWithTabId(TAB_ID);
+    }
+
+    @Test
+    public void testInviteFlowWithNewTabGroup() {
+        doReturn(
+                        new DataSharingService.ParseURLResult(
+                                new GroupToken(GROUP_ID, ACCESS_TOKEN), ParseURLStatus.SUCCESS))
+                .when(mDataSharingService)
+                .parseDataSharingURL(any());
+
+        doReturn(new String[0]).when(mTabGroupSyncService).getAllGroupIds();
+
+        mDataSharingTabManager.initiateJoinFlow(null);
+        verify(mTabGroupSyncService).addObserver(any());
+        verify(mDataSharingService).addMember(eq(GROUP_ID), eq(ACCESS_TOKEN), any());
     }
 }
