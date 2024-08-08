@@ -31,6 +31,12 @@ PlusAddressDataChange& PlusAddressDataChange::operator=(
     const PlusAddressDataChange& change) = default;
 PlusAddressDataChange::~PlusAddressDataChange() = default;
 
+std::ostream& operator<<(std::ostream& os,
+                         const PreallocatedPlusAddress& address) {
+  return os << "PreallocatedPlusAddress(plus_address=" << address.plus_address
+            << ",lifetime=" << address.lifetime << ")";
+}
+
 std::ostream& operator<<(std::ostream& os, PlusAddressRequestErrorType type) {
   return os << [&]() -> std::string_view {
     switch (type) {

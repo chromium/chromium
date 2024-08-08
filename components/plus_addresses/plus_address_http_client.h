@@ -42,15 +42,6 @@ class PlusAddressHttpClient {
                                   const std::string& plus_address,
                                   PlusAddressRequestCallback on_completed) = 0;
 
-  // A representation of a pre-allocated plus address as received from the
-  // server.
-  struct PreallocatedPlusAddress {
-    // The actual address.
-    std::string plus_address;
-    // The remaining lifetime relative to when it was requested.
-    base::TimeDelta lifetime;
-  };
-
   using PreallocatePlusAddressesResult =
       base::expected<std::vector<PreallocatedPlusAddress>,
                      PlusAddressRequestError>;

@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
@@ -19,6 +20,17 @@
 
 // A common place for PlusAddress types to be defined.
 namespace plus_addresses {
+
+// A representation of a pre-allocated plus address as received from the server.
+struct PreallocatedPlusAddress {
+  // The plus address.
+  std::string plus_address;
+  // The remaining lifetime relative to when it was requested.
+  base::TimeDelta lifetime;
+
+  friend bool operator==(const PreallocatedPlusAddress&,
+                         const PreallocatedPlusAddress&) = default;
+};
 
 struct PlusProfile {
   // When `syncer::kSyncPlusAddress` is enabled, the facet is stored as a
@@ -142,6 +154,8 @@ enum class PlusAddressNetworkRequestType {
   kMaxValue = kCreate,
 };
 
+std::ostream& operator<<(std::ostream& os,
+                         const PreallocatedPlusAddress& address);
 std::ostream& operator<<(std::ostream& os, PlusAddressRequestErrorType type);
 std::ostream& operator<<(std::ostream& os,
                          const PlusAddressRequestError& error);

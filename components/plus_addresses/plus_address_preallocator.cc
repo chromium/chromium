@@ -41,8 +41,7 @@ bool IsOutdatedOrInvalid(const base::Value& preallocated_address) {
 }
 
 // Stores `profile` in a `base::Value` that can be written to prefs.
-base::Value SeralizeAndSetEndOfLife(
-    PlusAddressHttpClient::PreallocatedPlusAddress address) {
+base::Value SeralizeAndSetEndOfLife(PreallocatedPlusAddress address) {
   return base::Value(
       base::Value::Dict()
           .Set(PlusAddressPreallocator::kEndOfLifeKey,
@@ -156,8 +155,7 @@ void PlusAddressPreallocator::OnReceivePreallocatedPlusAddresses(
 
   ScopedListPrefUpdate update(&pref_service_.get(),
                               prefs::kPreallocatedAddresses);
-  for (PlusAddressHttpClient::PreallocatedPlusAddress& address :
-       result.value()) {
+  for (PreallocatedPlusAddress& address : result.value()) {
     update->Append(SeralizeAndSetEndOfLife(std::move(address)));
   }
 

@@ -5,7 +5,10 @@
 #include "components/plus_addresses/plus_address_parsing_utils.h"
 
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
@@ -103,6 +106,46 @@ std::vector<PlusProfile> ParsePlusProfilesFromV1ProfileList(
   return profiles;
 }
 
+// Attempts to parse a string of format "[0-9]+s" into a `base::TimeDelta`.
+std::optional<base::TimeDelta> ParseLifetime(std::string* str) {
+  if (!str) {
+    return std::nullopt;
+  }
+  if (str->empty() || !str->ends_with('s')) {
+    return std::nullopt;
+  }
+
+  int64_t seconds;
+  if (!base::StringToInt64(std::string_view(*str).substr(0, str->size() - 1),
+                           &seconds)) {
+    return std::nullopt;
+  }
+  return base::Seconds(seconds);
+}
+
+// Attempts to parse a `base::Value::Dict` into to a `PreallocatedPlusAddress`.
+std::optional<PreallocatedPlusAddress> ParsePreallocatedPlusAddress(
+    base::Value::Dict dict) {
+  static constexpr std::string_view kAddressKey = "emailAddress";
+  static constexpr std::string_view kLifetimeKey = "reservationLifetime";
+
+  PreallocatedPlusAddress result;
+  if (std::string* address = dict.FindString(kAddressKey)) {
+    result.plus_address = std::move(*address);
+  } else {
+    return std::nullopt;
+  }
+
+  if (std::optional<base::TimeDelta> lifetime =
+          ParseLifetime(dict.FindString(kLifetimeKey))) {
+    result.lifetime = *lifetime;
+  } else {
+    return std::nullopt;
+  }
+
+  return std::move(result);
+}
+
 }  // namespace
 
 std::optional<PlusProfile> ParsePlusProfileFromV1Create(
@@ -144,6 +187,31 @@ std::optional<PlusAddressMap> ParsePlusAddressMapFromV1List(
   }
   // Return nullopt if the `*Profiles` key is not present.
   return std::nullopt;
+}
+
+std::optional<std::vector<PreallocatedPlusAddress>>
+ParsePreallocatedPlusAddresses(
+    data_decoder::DataDecoder::ValueOrError response) {
+  static constexpr std::string_view kAddressesKey = "emailAddresses";
+  if (!response.has_value() || !response->is_dict()) {
+    return std::nullopt;
+  }
+  base::Value::List* addresses = response->GetDict().FindList(kAddressesKey);
+  if (!addresses) {
+    return std::nullopt;
+  }
+  std::vector<PreallocatedPlusAddress> result;
+  result.reserve(addresses->size());
+  for (base::Value& entry : *addresses) {
+    if (!entry.is_dict()) {
+      continue;
+    }
+    if (std::optional<PreallocatedPlusAddress> address =
+            ParsePreallocatedPlusAddress(std::move(entry.GetDict()))) {
+      result.push_back(*std::move(address));
+    }
+  }
+  return std::move(result);
 }
 
 }  // namespace plus_addresses

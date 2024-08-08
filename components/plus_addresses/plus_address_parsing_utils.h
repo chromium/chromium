@@ -6,6 +6,7 @@
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_PARSING_UTILS_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/values.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -47,6 +48,20 @@ std::optional<PlusProfile> ParsePlusProfileFromV1Create(
 // Note: `plusProfiles` may have 0 or many profiles. The "plusProfiles" key
 // must always be present though.
 std::optional<PlusAddressMap> ParsePlusAddressMapFromV1List(
+    data_decoder::DataDecoder::ValueOrError response);
+
+// Attempts to parse `response` into a vector of `PreallocatedPlusAddress`.
+// The following schema is expected:
+// {
+//    "emailAddresses":
+//    {
+//      "plus_address": string
+//      "lifetime": string of format [0-9]s.
+//    } []
+// }
+//
+std::optional<std::vector<PreallocatedPlusAddress>>
+ParsePreallocatedPlusAddresses(
     data_decoder::DataDecoder::ValueOrError response);
 
 }  // namespace plus_addresses

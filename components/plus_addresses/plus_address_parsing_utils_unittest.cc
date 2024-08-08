@@ -7,12 +7,17 @@
 #include <optional>
 
 #include "base/json/json_reader.h"
+#include "base/types/expected.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses {
+
+using ::testing::ElementsAre;
+using ::testing::Optional;
 
 // PlusAddressParsing tests validate the ParsePlusAddressFrom* methods
 // Returns empty when the DataDecoder fails to parse the JSON.
@@ -331,6 +336,111 @@ TEST(PlusAddressParsing, FromV1List_FailsIfMissingPlusProfilesKey) {
   std::optional<PlusAddressMap> result =
       ParsePlusAddressMapFromV1List(std::move(json.value()));
   EXPECT_FALSE(result.has_value());
+}
+
+TEST(PlusAddressParsing, ParsePreallocatedPlusAddresses) {
+  std::optional<base::Value> json = base::JSONReader::Read(R"(
+  {
+    "emailAddresses": [
+      {
+        "emailAddress": "foo@foo.com",
+        "reservationLifetime": "123s"
+      },
+      {
+        "emailAddress": "foo@bar.com",
+        "reservationLifetime": "15552000s"
+      }
+    ]
+  }
+  )");
+  ASSERT_TRUE(json);
+
+  std::optional<std::vector<PreallocatedPlusAddress>> addresses =
+      ParsePreallocatedPlusAddresses(std::move(*json));
+  EXPECT_THAT(
+      addresses,
+      Optional(ElementsAre(
+          PreallocatedPlusAddress{.plus_address = "foo@foo.com",
+                                  .lifetime = base::Seconds(123)},
+          PreallocatedPlusAddress{.plus_address = "foo@bar.com",
+                                  .lifetime = base::Seconds(15552000)})));
+}
+
+TEST(PlusAddressParsing, ParsePreallocatedPlusAddressesWithInvalidJSON) {
+  EXPECT_EQ(
+      ParsePreallocatedPlusAddresses(base::unexpected("An error occurred")),
+      std::nullopt);
+}
+
+// Tests that `ParsePreallocatedPlusAddresses` ignores malformed entries.
+TEST(PlusAddressParsing, ParsePreallocatedPlusAddressesWithMalformedEntries) {
+  std::optional<base::Value> json = base::JSONReader::Read(R"(
+  {
+    "emailAddresses": [
+      {
+        "emailAddress": "foo@foo.com",
+        "reservationLifetime": "123s"
+      },
+      {
+        "emailAddress1": "foo@bar.com",
+        "reservationLifetime": "15552000s"
+      },
+      {
+        "emailAddress": "foo@bar.com",
+        "reservationLifetime1": "15552000s"
+      },
+      {
+        "emailAddress": "foo@bar.com",
+        "reservationLifetime": "15552000"
+      },
+      {
+        "emailAddress": "foo@bar.com",
+        "reservationLifetime": ""
+      },
+      {
+        "emailAddress": "foo@bar.com",
+        "reservationLifetime": "as"
+      },
+      "asd",
+      {
+        "emailAddress": "foo@goo.com",
+        "reservationLifetime": "312s"
+      }
+    ]
+  }
+  )");
+  ASSERT_TRUE(json);
+
+  std::optional<std::vector<PreallocatedPlusAddress>> addresses =
+      ParsePreallocatedPlusAddresses(std::move(*json));
+  EXPECT_THAT(addresses,
+              Optional(ElementsAre(
+                  PreallocatedPlusAddress{.plus_address = "foo@foo.com",
+                                          .lifetime = base::Seconds(123)},
+                  PreallocatedPlusAddress{.plus_address = "foo@goo.com",
+                                          .lifetime = base::Seconds(312)})));
+}
+
+// Tests that `ParsePreallocatedPlusAddresses` returns `std::nullopt` if the
+// top-level entry does not have the expected format.
+TEST(PlusAddressParsing,
+     ParsePreallocatedPlusAddressesWithMalformedTopLevelEntry) {
+  std::optional<base::Value> json = base::JSONReader::Read(R"(
+  {
+    "Addresses": [
+      {
+        "emailAddress": "foo@foo.com",
+        "reservationLifetime": "123s"
+      }
+    ],
+    "emailAddresses": "asd"
+  }
+  )");
+  ASSERT_TRUE(json);
+
+  std::optional<std::vector<PreallocatedPlusAddress>> addresses =
+      ParsePreallocatedPlusAddresses(std::move(*json));
+  EXPECT_THAT(addresses, std::nullopt);
 }
 
 }  // namespace plus_addresses
