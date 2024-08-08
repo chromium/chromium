@@ -9,7 +9,7 @@ import type {OnDeviceInternalsEventLogElement} from './event_log.js';
 export function getHtml(this: OnDeviceInternalsEventLogElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div>
+<div class="main">
   <h2>Event Logs</h2>
   <cr-button @click="${this.onEventLogsDumpClick_}">Dump</cr-button>
   <table>

@@ -9,22 +9,19 @@
  * #css_wrapper_metadata_end */
 
 h1 {
-  margin-bottom: 5px;
+  margin-bottom: 20px;
+  margin-top: 0;
+  padding-top: 40px;
   text-align: center;
 }
 
-cr-tab-box {
-  width: 100%;
+cr-tabs {
+  margin: 20px auto;
+  max-width: 800px;
 }
 
 @media (prefers-color-scheme: dark) {
   :host {
     color: var(--google-grey-200);
-  }
-
-  cr-tab-box {
-    --tabs-background-color: var(--md-background-color);
-    --tabs-border-color: var(--google-grey-300);
-    --tabs-hover-text-color: var(--google-grey-300);
   }
 }
