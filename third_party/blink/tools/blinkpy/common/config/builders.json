@@ -9,9 +9,7 @@
         "port_name": "linux",
         "specifiers": ["Linux", "Debug"],
         "steps": {
-            "webdriver_wpt_tests": {
-                "product": "chrome"
-            }
+            "webdriver_wpt_tests": {}
         }
     },
     "Mac12 Tests (dbg)": {
@@ -52,13 +50,11 @@
     },
     "linux-wpt-chromium-rel": {
         "main": "tryserver.blink",
-        "port_name": "chrome",
-        "specifiers": ["Chrome", "Release"],
+        "port_name": "linux",
+        "specifiers": ["Linux", "Release"],
         "is_try_builder": true,
         "steps": {
-            "chrome_wpt_tests": {
-                "product": "chrome"
-            }
+            "chrome_wpt_tests": {}
         }
     },
     "linux-blink-rel": {
@@ -83,9 +79,7 @@
             "not_site_per_process_blink_wpt_tests": {
                 "flag_specific": "disable-site-isolation-trials"
             },
-            "webdriver_wpt_tests": {
-                "product": "chrome"
-            }
+            "webdriver_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -243,9 +237,7 @@
         "steps": {
             "blink_web_tests": {},
             "blink_wpt_tests": {},
-            "chrome_wpt_tests": {
-                "product": "chrome"
-            },
+            "chrome_wpt_tests": {},
             "high_dpi_blink_web_tests": {
                 "flag_specific": "highdpi"
             },
@@ -263,7 +255,7 @@
             }
         },
         "is_try_builder": true,
-        "is_cq_builder":true
+        "is_cq_builder": true
     },
     "mac-rel": {
         "main": "tryserver.chromium.mac",
@@ -274,7 +266,7 @@
             "blink_wpt_tests": {}
         },
         "is_try_builder": true,
-        "is_cq_builder":true
+        "is_cq_builder": true
     },
     "win-rel": {
         "main": "tryserver.chromium.win",
@@ -285,16 +277,14 @@
             "blink_wpt_tests": {}
         },
         "is_try_builder": true,
-        "is_cq_builder":true
+        "is_cq_builder": true
     },
     "android-chrome-13-x64-wpt-android-specific": {
         "main": "tryserver.chromium.android",
         "port_name": "android",
         "specifiers": ["Android", "Release"],
         "steps": {
-            "android_blink_wpt_tests": {
-                "product": "android"
-            }
+            "android_blink_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -303,9 +293,7 @@
         "port_name": "webview",
         "specifiers": ["Webview", "Release"],
         "steps": {
-            "webview_blink_wpt_tests": {
-                "product": "webview"
-            }
+            "webview_blink_wpt_tests": {}
         },
         "is_try_builder": true
     }

@@ -69,7 +69,6 @@ def lint(host, options):
     finder = PathFinder(host.filesystem)
     # Add all extra expectation files to be linted.
     options.additional_expectations.extend([
-        finder.path_from_web_tests('ChromeTestExpectations'),
         finder.path_from_web_tests('MobileTestExpectations'),
         finder.path_from_web_tests('WebGPUExpectations'),
     ])

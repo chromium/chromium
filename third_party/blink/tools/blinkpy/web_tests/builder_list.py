@@ -157,10 +157,6 @@ class BuilderList:
         port_names = set()
         for builder_name, builder in self._builders.items():
             port_names.add(builder['port_name'])
-            for step in self.step_names_for_builder(builder_name):
-                product = self.product_for_build_step(builder_name, step)
-                if product != 'content_shell':
-                    port_names.add(product)
         return sorted(port_names)
 
     def bucket_for_builder(self, builder_name):
@@ -189,13 +185,6 @@ class BuilderList:
 
     def is_try_server_builder(self, builder_name):
         return self._builders[builder_name].get('is_try_builder', False)
-
-    def product_for_build_step(self, builder_name: str, step_name: str) -> str:
-        try:
-            steps = self._steps(builder_name)
-            return steps[step_name].get('product', 'content_shell')
-        except KeyError:
-            return 'content_shell'
 
     def has_experimental_steps(self, builder_name):
         steps = self.step_names_for_builder(builder_name)
@@ -244,13 +233,6 @@ class BuilderList:
         the version specifier for the first builder that matches, even
         if it's a try bot builder.
         """
-        # TODO(crbug.com/41484800): Remove this special logic by either:
-        #  1. Implement better way of defining port as per-suite, not
-        #     per-builder, property in `BuilderList`
-        #  2. Replace the `chrome` port with regular platform ports with
-        #     chrome-specific logic (detected via the `driver_name` option).
-        if target_port_name == 'chrome':
-            return 'Chrome'
         for _, builder_info in sorted(self._builders.items()):
             if builder_info['port_name'] == target_port_name:
                 return builder_info['specifiers'][0]

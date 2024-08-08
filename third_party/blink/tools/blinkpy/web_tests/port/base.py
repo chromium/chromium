@@ -722,6 +722,11 @@ class Port(object):
     def driver_name(self):
         if self.get_option('driver_name'):
             return self.get_option('driver_name')
+        product = self.get_option('product')
+        if product == 'chrome':
+            return self.CHROME_NAME
+        elif product == 'headless_shell':
+            return self.HEADLESS_SHELL_NAME
         return self.CONTENT_SHELL_NAME
 
     def expected_baselines_by_extension(self, test_name):

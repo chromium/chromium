@@ -43,7 +43,6 @@ from blinkpy.common.path_finder import PathFinder
 class PortFactory:
     PORT_CLASSES = (
         'android.AndroidPort',
-        'chrome.ChromePort',
         'fuchsia.FuchsiaPort',
         'ios.IOSPort',
         'linux.LinuxPort',
