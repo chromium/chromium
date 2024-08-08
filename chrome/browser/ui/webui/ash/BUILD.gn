@@ -338,9 +338,11 @@ if (is_chromeos_device) {
   group("interactive_ui_tests") {
     testonly = true
     deps = [
+      "//chrome/browser/ui/webui/ash/firmware_update_ui/integration_tests:interactive_ui_tests",
       "//chrome/browser/ui/webui/ash/settings/integration_tests:interactive_ui_tests",
       "//chrome/browser/ui/webui/ash/settings/integration_tests/device_page:interactive_ui_tests",
       "//chrome/browser/ui/webui/ash/settings/pages/device/integration_tests:interactive_ui_tests",
+      "//chrome/browser/ui/webui/ash/shortcut_customization/integration_tests:interactive_ui_tests",
     ]
   }
 }
