@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent_app_state_observer.h"
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
@@ -155,7 +156,8 @@ void SyncErrorBrowserAgent::CreateReSignInInfoBarDelegate(
   std::unique_ptr<ReSignInInfoBarDelegate> delegate =
       ReSignInInfoBarDelegate::Create(
           AuthenticationServiceFactory::GetForBrowserState(browser_state),
-          app_state, signin_presenter_provider_);
+          IdentityManagerFactory::GetForBrowserState(browser_state), app_state,
+          signin_presenter_provider_);
   if (delegate) {
     InfoBarManagerImpl::FromWebState(web_state)->AddInfoBar(
         CreateConfirmInfoBar(std::move(delegate)));
