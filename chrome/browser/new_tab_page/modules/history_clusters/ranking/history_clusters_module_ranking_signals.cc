@@ -4,7 +4,6 @@
 
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 
-#include "chrome/browser/new_tab_page/modules/history_clusters/cart/cart_processor.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_cluster_metrics.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_category_metrics.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
@@ -63,12 +62,6 @@ HistoryClustersModuleRankingSignals::HistoryClustersModuleRankingSignals(
           net::registry_controlled_domains::GetDomainAndRegistry(
               visit.normalized_url,
               net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-      for (auto cart : active_carts) {
-        if (CartProcessor::IsCartAssociatedWithVisitURL(cart,
-                                                        visit.normalized_url)) {
-          cart_tlds.insert(visit_tld);
-        }
-      }
     }
   }
 
