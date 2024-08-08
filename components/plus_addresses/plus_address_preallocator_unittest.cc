@@ -154,6 +154,17 @@ TEST_F(PlusAddressPreallocatorTest,
   EXPECT_EQ(GetPreallocatedAddressesNext(), 0);
 }
 
+// Tests that an invalid index for the next pre-allocated plus address is fixed
+// during pruning.
+TEST_F(PlusAddressPreallocatorTest,
+       PrunePreallocatedPlusAddressesFixesNextIndex) {
+  SetPreallocatedAddressesNext(-10);
+
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client());
+  EXPECT_EQ(GetPreallocatedAddressesNext(), 0);
+}
+
 // Tests that plus addresses with an end of life in the past are pruned on
 // creation of the `PlusAddressPreallocator` and the index of the next plus
 // address is in bounds.

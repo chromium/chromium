@@ -4,6 +4,7 @@
 
 #include "components/plus_addresses/plus_address_preallocator.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -104,16 +105,14 @@ bool PlusAddressPreallocator::IsRefreshingSupported(
 void PlusAddressPreallocator::PrunePreallocatedPlusAddresses() {
   ScopedListPrefUpdate update(&pref_service_.get(),
                               prefs::kPreallocatedAddresses);
-  if (!update->EraseIf(&IsOutdatedOrInvalid)) {
-    return;
-  }
+  update->EraseIf(&IsOutdatedOrInvalid);
 
   // If there were deletions, update the index of the next plus address to make
   // sure it is in bounds (if non-zero).
   const size_t remaining_plus_addresses = update->size();
-  const int old_index = GetIndexOfNextPreallocatedAddress();
-  // TODO: crbug.com/324559503 - Protect against corruption with negative
-  // values.
+  // If the disk value was corrupted to something negative, fix it rather than
+  // running into bounds check errors later on.
+  const int old_index = std::max(GetIndexOfNextPreallocatedAddress(), 0);
   pref_service_->SetInteger(
       prefs::kPreallocatedAddressesNext,
       remaining_plus_addresses
