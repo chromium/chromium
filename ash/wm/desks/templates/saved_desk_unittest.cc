@@ -959,6 +959,11 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerAligned) {
 // Tests that the focus ring of the save desk button focus ring is as shown as
 // expected.
 TEST_F(SavedDeskTest, SaveDeskButtonFocusRing) {
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    GTEST_SKIP()
+        << "Save desk buttons have been moved to the desk context menu.";
+  }
+
   // Create a test window in the current desk.
   auto test_window = CreateAppWindow();
 
@@ -2741,6 +2746,11 @@ TEST_F(SavedDeskTest, UnFocusNameChangeOnClickingLibrary) {
 
 // Tests that accessibility overrides are set as expected.
 TEST_F(SavedDeskTest, AccessibilityFocusAnnotatorInOverview) {
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    GTEST_SKIP()
+        << "Save desk buttons have been moved to the desk context menu.";
+  }
+
   auto window = CreateAppWindow(gfx::Rect(100, 100));
 
   ToggleOverview();
@@ -4650,6 +4660,11 @@ TEST_F(SavedDeskTest, NoEmptyDeskTemplate) {
 // Tests that you can't save the same desk more than once at a time by spamming
 // the save desk as template or save desk for later buttons.
 TEST_F(SavedDeskTest, SpamClickSaveDeskButtons) {
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    GTEST_SKIP()
+        << "Save desk buttons have been moved to the desk context menu.";
+  }
+
   // Add a window.
   auto test_window = CreateAppWindow();
 

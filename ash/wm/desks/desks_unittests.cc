@@ -8332,16 +8332,16 @@ TEST_P(DesksCloseAllTest, HideCombineDesksOptionWhenNoWindowsOnDesk) {
   EnterOverview();
   ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
 
-  // We need to hover over the desk preview to properly check the combine desks
-  // button's visibility.
   DeskMiniView* mini_view = GetPrimaryRootDesksBarView()->mini_views()[0];
-  const CloseButton* combine_desks_button =
-      mini_view->desk_action_view()->combine_desks_button();
-  gfx::Point desk_preview_view_center =
-      mini_view->desk_preview()->GetBoundsInScreen().CenterPoint();
   auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(desk_preview_view_center);
-  EXPECT_FALSE(combine_desks_button->GetVisible());
+  if (!features::IsSavedDeskUiRevampEnabled()) {
+    // We need to hover over the desk preview to properly check the combine
+    // desks button's visibility.
+    event_generator->MoveMouseTo(
+        mini_view->desk_preview()->GetBoundsInScreen().CenterPoint());
+    EXPECT_FALSE(
+        mini_view->desk_action_view()->combine_desks_button()->GetVisible());
+  }
 
   // We need to open the context menu to trigger its creation.
   OpenContextMenuForMiniView(0);
@@ -8352,24 +8352,33 @@ TEST_P(DesksCloseAllTest, HideCombineDesksOptionWhenNoWindowsOnDesk) {
   event_generator->ClickLeftButton();
 
   // Add a window and check to see if that causes the creation of the context
-  // option for combining desks.
+  // option for combining desks. Closing and reopening overview will invalidate
+  // the `mini_view` object, so we need to get another one.
   auto window = CreateAppWindow();
   DesksController::Get()->SendToDeskAtIndex(window.get(), 0);
   EnterOverview();
   ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
   mini_view = GetPrimaryRootDesksBarView()->mini_views()[0];
 
-  // Closing and reopening overview will invalidate the
-  // `combine_desks_button` object, so we need to get another one.
-  combine_desks_button = mini_view->desk_action_view()->combine_desks_button();
-  desk_preview_view_center =
-      mini_view->desk_preview()->GetBoundsInScreen().CenterPoint();
-  event_generator->MoveMouseTo(desk_preview_view_center);
-  EXPECT_TRUE(combine_desks_button->GetVisible());
+  if (!features::IsSavedDeskUiRevampEnabled()) {
+    event_generator->MoveMouseTo(
+        mini_view->desk_preview()->GetBoundsInScreen().CenterPoint());
+    EXPECT_TRUE(
+        mini_view->desk_action_view()->combine_desks_button()->GetVisible());
+  }
   OpenContextMenuForMiniView(0);
-  EXPECT_EQ(2u, DesksTestApi::GetContextMenuModelForDesk(
-                    DeskBarViewBase::Type::kOverview, 0)
-                    .GetItemCount());
+
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    // The saved desk is part of the context menu with this feature on, although
+    // it may be disabled.
+    EXPECT_EQ(3u, DesksTestApi::GetContextMenuModelForDesk(
+                      DeskBarViewBase::Type::kOverview, 0)
+                      .GetItemCount());
+  } else {
+    EXPECT_EQ(2u, DesksTestApi::GetContextMenuModelForDesk(
+                      DeskBarViewBase::Type::kOverview, 0)
+                      .GetItemCount());
+  }
 }
 
 // Tests that the shortcut to close all (Ctrl + Shift + W) on a desk mini view
@@ -8537,6 +8546,11 @@ TEST_P(DesksCloseAllTest, DeskPreviewHighlightShowsWhenContextMenuIsOpen) {
 // Checks that the combine desks tooltip's validity is maintained whenever the
 // user adds a desk, closes a desk, moves a desk, or changes the name of a desk.
 TEST_P(DesksCloseAllTest, CombineDesksTooltipIsUpdatedOnUserActions) {
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    GTEST_SKIP()
+        << "Save desk buttons have been moved to the desk context menu. The "
+           "associated context menu item has text so it doesn't need a tooltip";
+  }
   // Possible sources for tooltip updates.
   enum class UpdateSource {
     kAddDesk,
@@ -8655,9 +8669,7 @@ TEST_P(DesksCloseAllTest, CombineDesksTooltipIsUpdatedOnUserActions) {
       case UpdateSource::kChangeNonActiveDeskName:
         ASSERT_EQ(u"goo", mini_view_1->desk()->name());
         ASSERT_FALSE(controller->GetDeskAtIndex(1)->is_active());
-        event_generator->MoveMouseTo(
-            desk_name_view_2->GetBoundsInScreen().CenterPoint());
-        event_generator->ClickLeftButton();
+        LeftClickOn(desk_name_view_2);
         PressAndReleaseKey(ui::VKEY_G);
         PressAndReleaseKey(ui::VKEY_L);
         PressAndReleaseKey(ui::VKEY_E);
@@ -8672,6 +8684,7 @@ TEST_P(DesksCloseAllTest, CombineDesksTooltipIsUpdatedOnUserActions) {
               combine_desks_button_2->GetTooltipText());
   }
 }
+
 // Test metrics are being recorded in close all case.
 TEST_P(DesksCloseAllTest, TestMetricsRecordingWhenCloseAllWindows) {
   struct {
