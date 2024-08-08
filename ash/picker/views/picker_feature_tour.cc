@@ -22,8 +22,14 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -34,6 +40,16 @@
 
 namespace ash {
 namespace {
+
+constexpr auto kFeatureTourDialogBorderInsets =
+    gfx::Insets::TLBR(0, 32, 28, 32);
+
+constexpr int kFeatureTourDialogCornerRadius = 20;
+constexpr auto kFeatureTourDialogIllustrationCornerRadii =
+    gfx::RoundedCornersF(/*upper_left=*/kFeatureTourDialogCornerRadius,
+                         /*upper_right=*/kFeatureTourDialogCornerRadius,
+                         /*lower_right=*/0,
+                         /*lower_left=*/0);
 
 // Pref storing whether the feature tour was completed.
 constexpr char kFeatureTourCompletedPref[] =
@@ -84,6 +100,11 @@ std::unique_ptr<views::Widget> CreateWidget(
     base::RepeatingClosure completion_callback) {
   auto feature_tour_dialog =
       views::Builder<SystemDialogDelegateView>()
+          .SetBorder(views::CreatePaddedBorder(
+              std::make_unique<views::HighlightBorder>(
+                  kFeatureTourDialogCornerRadius,
+                  views::HighlightBorder::Type::kHighlightBorderOnShadow),
+              kFeatureTourDialogBorderInsets))
           .SetTitleText(GetHeadingText(editor_status))
           .SetDescription(GetBodyText(editor_status))
           .SetAcceptButtonText(l10n_util::GetStringUTF16(
@@ -93,7 +114,11 @@ std::unique_ptr<views::Widget> CreateWidget(
               IDS_PICKER_FEATURE_TOUR_LEARN_MORE_BUTTON_LABEL))
           .SetCancelCallback(std::move(learn_more_callback))
           .SetTopContentView(
-              views::Builder<views::ImageView>().SetImage(GetIllustration()))
+              views::Builder<views::ImageView>()
+                  .SetBackground(views::CreateThemedRoundedRectBackground(
+                      cros_tokens::kCrosSysIlloColor12,
+                      kFeatureTourDialogIllustrationCornerRadii))
+                  .SetImage(GetIllustration()))
           .SetModalType(ui::ModalType::MODAL_TYPE_SYSTEM)
           .Build();
 
