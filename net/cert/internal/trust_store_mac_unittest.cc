@@ -102,8 +102,6 @@ std::set<std::string> ParseFindCertificateOutputToDerCerts(std::string output) {
 
 const char* TrustImplTypeToString(TrustStoreMac::TrustImplType t) {
   switch (t) {
-    case TrustStoreMac::TrustImplType::kSimple:
-      return "Simple";
     case TrustStoreMac::TrustImplType::kDomainCacheFullCerts:
       return "DomainCacheFullCerts";
     case TrustStoreMac::TrustImplType::kKeychainCacheFullCerts:
@@ -390,8 +388,7 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
 INSTANTIATE_TEST_SUITE_P(
     Impl,
     TrustStoreMacImplTest,
-    testing::Values(TrustStoreMac::TrustImplType::kSimple,
-                    TrustStoreMac::TrustImplType::kDomainCacheFullCerts,
+    testing::Values(TrustStoreMac::TrustImplType::kDomainCacheFullCerts,
                     TrustStoreMac::TrustImplType::kKeychainCacheFullCerts),
     [](const testing::TestParamInfo<TrustStoreMacImplTest::ParamType>& info) {
       return TrustImplTypeToString(info.param);

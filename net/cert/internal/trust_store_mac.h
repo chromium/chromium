@@ -27,10 +27,9 @@ class NET_EXPORT TrustStoreMac : public PlatformTrustStore {
   // NOTE: When updating this enum, also update ParamToTrustImplType in
   // system_trust_store.cc
   enum class TrustImplType {
-    // Values 1 and 3 were used for implementation strategies that have since
-    // been removed.
+    // Values 1, 2, and 3 were used for implementation strategies that have
+    // since been removed.
     kUnknown = 0,
-    kSimple = 2,
     kDomainCacheFullCerts = 4,
     kKeychainCacheFullCerts = 5,
   };
@@ -63,7 +62,6 @@ class NET_EXPORT TrustStoreMac : public PlatformTrustStore {
   class TrustImpl;
   class TrustImplDomainCacheFullCerts;
   class TrustImplKeychainCacheFullCerts;
-  class TrustImplNoCache;
 
   // Finds certificates in the OS keychains whose Subject matches |name_data|.
   // The result is an array of CRYPTO_BUFFERs containing the DER certificate
