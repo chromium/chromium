@@ -26,6 +26,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.List;
 import java.util.Objects;
@@ -77,6 +78,22 @@ public class TabUiUtils {
                         }
                     };
             actionConfirmationManager.processDeleteGroupAttempt(onResult);
+        }
+    }
+
+    /**
+     * Update the tab group color.
+     *
+     * @param filter The {@link TabGroupModelFilter} to act on.
+     * @param rootId The root id of the interacting tab group.
+     * @param newGroupColor The new group color being assigned to the tab group.
+     */
+    public static void updateTabGroupColor(
+            TabGroupModelFilter filter, int rootId, @TabGroupColorId int newGroupColor) {
+        int curGroupColor = filter.getTabGroupColor(rootId);
+        boolean didChangeColor = curGroupColor != newGroupColor;
+        if (didChangeColor) {
+            filter.setTabGroupColor(rootId, newGroupColor);
         }
     }
 

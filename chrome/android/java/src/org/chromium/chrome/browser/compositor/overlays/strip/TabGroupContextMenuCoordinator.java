@@ -14,20 +14,22 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.textfield.TextInputEditText;
 
-import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerType;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataTextInputLayout;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.listmenu.ListSectionDividerProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -41,17 +43,21 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordinator {
     private TabGroupVisualDataTextInputLayout mTabGroupTextInputLayout;
     private ColorPickerCoordinator mColorPickerCoordinator;
+    private TabGroupModelFilter mTabGroupModelFilter;
+    private int mGroupRootId;
     private Context mContext;
     private static final String TAG = "TabGroupContextMenu";
 
     /**
      * @param onItemClicked A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
+     * @param tabGroupModelFilter The {@link TabGroupModelFilter} to act on.
      * @param isTabGroupSyncEnabled Whether tab group sync is enabled.
      */
     public TabGroupContextMenuCoordinator(
             OnItemClickedCallback onItemClicked,
             Supplier<TabModel> tabModelSupplier,
+            TabGroupModelFilter tabGroupModelFilter,
             boolean isTabGroupSyncEnabled) {
         super(
                 R.layout.tab_strip_group_menu_layout,
@@ -61,14 +67,23 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 /* identityManager= */ null,
                 /* tabGroupSyncService= */ null,
                 /* dataSharingService= */ null);
+        mTabGroupModelFilter = tabGroupModelFilter;
     }
 
     // TODO(crbug.com/357878838): Pass the activity through constructor and make it a class
     // variable and try to test the real `createAndShowMenu` method and remove the `mIsInTesting`
     // variable.
-    protected void showMenu(View anchorView, int tabId, @NonNull Activity activity) {
+    /**
+     * Show the context menu of the tab group.
+     *
+     * @param anchorView The anchor {@link View} of the context menu.
+     * @param rootId The root id of the interacting tab group.
+     * @param activity The current activity.
+     */
+    protected void showMenu(View anchorView, int rootId, @NonNull Activity activity) {
         if (!BuildConfig.IS_FOR_TEST) {
-            createAndShowMenu(anchorView, tabId, activity);
+            mGroupRootId = rootId;
+            createAndShowMenu(anchorView, rootId, activity);
         }
     }
 
@@ -106,14 +121,15 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         ColorPickerType.TAB_GROUP,
                         isIncognito,
                         ColorPickerLayoutType.DYNAMIC,
-                        // TODO(crbug.com/354257045): Implement onColorItemClickedListener to
-                        // update tab group color.
-                        () -> {
-                            Log.d(TAG, "Color icon clicked.");
-                        });
+                        this::updateTabGroupColor);
         mColorPickerCoordinator
                 .getContainerView()
                 .setPadding(horizontalPadding, 0, horizontalPadding, 0);
+
+        // The color picker should select the current color of the tab group when it is displayed.
+        @TabGroupColorId
+        int curGroupColor = mTabGroupModelFilter.getTabGroupColorWithFallback(mGroupRootId);
+        mColorPickerCoordinator.setSelectedColorItem(curGroupColor);
     }
 
     @Override
@@ -185,6 +201,11 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     @Override
     protected @DimenRes int getMenuWidth() {
         return R.dimen.tab_strip_group_context_menu_max_width;
+    }
+
+    private void updateTabGroupColor() {
+        @TabGroupColorId int newColor = mColorPickerCoordinator.getSelectedColorSupplier().get();
+        TabUiUtils.updateTabGroupColor(mTabGroupModelFilter, mGroupRootId, newColor);
     }
 
     protected TabGroupVisualDataTextInputLayout getTabGroupTextInputLayoutForTesting() {

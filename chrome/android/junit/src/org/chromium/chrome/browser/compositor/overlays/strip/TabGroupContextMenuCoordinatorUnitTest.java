@@ -28,6 +28,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator.OnItemClickedCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataTextInputLayout;
@@ -55,6 +56,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Mock private View mMenuView;
     @Mock private OnItemClickedCallback mOnItemClickedCallback;
     @Mock private Supplier<TabModel> mTabModelSupplier;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
 
     @Before
@@ -66,6 +68,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 new TabGroupContextMenuCoordinator(
                         mOnItemClickedCallback,
                         mTabModelSupplier,
+                        mTabGroupModelFilter,
                         /* shouldShowDeleteGroup= */ true);
     }
 
