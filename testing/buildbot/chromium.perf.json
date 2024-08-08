@@ -2128,8 +2128,8 @@
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
-            "gpu": "8086:1616",
-            "os": "Windows-10",
+            "gpu": "8086:1616-20.19.15.5171",
+            "os": "Windows-10-19045",
             "pool": "chrome.tests.perf",
             "synthetic_product_name": "HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)"
           },

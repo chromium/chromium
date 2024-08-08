@@ -809,9 +809,9 @@ BUILDERS = {
             # version ever changes or becomes inconsistent. It is important
             # that bots are homogeneous. See crbug.com/988045 for history.
             'os':
-            'Windows-10',
+            'Windows-10-19045',
             'gpu':
-            '8086:1616',
+            '8086:1616-20.19.15.5171',
             'synthetic_product_name':
             'HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)'
         },
