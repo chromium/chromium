@@ -43,6 +43,7 @@ struct SinglePerkDiscoveryPayload {
   std::string id;
   std::string title;
   std::string subtitle;
+  std::optional<std::string> additional_text;
   std::string icon_url;
   Content content;
 

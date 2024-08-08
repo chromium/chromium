@@ -83,6 +83,9 @@ SinglePerkDiscoveryPayload::SinglePerkDiscoveryPayload(
         *oobe_content->FindStringByDottedPath("illustration.height");
     content.illustration = perk_illustration;
   }
+  if (perk_data.FindString("additionalText")) {
+    additional_text = *perk_data.FindString("additionalText");
+  }
 }
 
 SinglePerkDiscoveryPayload::~SinglePerkDiscoveryPayload() = default;
@@ -92,6 +95,7 @@ SinglePerkDiscoveryPayload::SinglePerkDiscoveryPayload(
     : id(perk_data.id),
       title(perk_data.title),
       subtitle(perk_data.subtitle),
+      additional_text(perk_data.additional_text),
       icon_url(perk_data.icon_url),
       content(perk_data.content),
       primary_button(perk_data.primary_button.Clone()),

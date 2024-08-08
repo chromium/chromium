@@ -15,6 +15,9 @@ found in the LICENSE file.
     border-radius: 16px;
     overflow: hidden;
   }
+  p {
+    margin-top: 0px;
+  }
 </style>
 <oobe-loading-dialog id="progressDialog" for-step="loading"
     title-key="perksLoading" role="dialog">
@@ -39,7 +42,12 @@ found in the LICENSE file.
     [[getCurrentPerkTitle(currentPerk)]]
   </h1>
   <div slot="subtitle">
-    [[getCurrentPerkSubtitle(currentPerk)]]
+    <p>
+      [[getCurrentPerkSubtitle(currentPerk)]]
+    </p>
+    <p>
+      [[getCurrentPerkAdditionalText(currentPerk)]]
+    </p>
   </div>
   <div slot="content" aria-hidden="true"
         class="flex layout vertical center center-justified">

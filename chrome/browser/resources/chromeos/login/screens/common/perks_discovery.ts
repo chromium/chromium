@@ -44,6 +44,7 @@ interface PerkData {
   title: string;
   subtitle: string;
   iconUrl: string;
+  additionalText: string;
   illustrationUrl: string;
   illustrationWidth: string;
   illustrationHeight: string;
@@ -288,6 +289,20 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
     }
     assert(currentPerk >= 0 && currentPerk < this.perksList.length);
     return this.perksList[currentPerk].subtitle;
+  }
+
+  /**
+   * Returns the additional description of the perk.
+   */
+  private getCurrentPerkAdditionalText(currentPerk: number): string {
+    if (currentPerk === -1) {
+      return '';
+    }
+    assert(currentPerk >= 0 && currentPerk < this.perksList.length);
+    if (!this.perksList[currentPerk].additionalText) {
+      return '';
+    }
+    return this.perksList[currentPerk].additionalText;
   }
 
   /**
