@@ -49,8 +49,9 @@ void ProgramCache::Clear() {
 bool ProgramCache::HasSuccessfullyCompiledShader(
     const std::string& shader_signature) const {
   std::string sha(kHashLength, '\0');
-  ComputeShaderHash(shader_signature,
-                    base::as_writable_byte_span<kHashLength>(sha));
+  ComputeShaderHash(
+      shader_signature,
+      base::as_writable_byte_span(sha).to_fixed_extent<kHashLength>().value());
   return base::Contains(compiled_shaders_, sha);
 }
 

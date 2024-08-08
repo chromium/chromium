@@ -16,6 +16,7 @@
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <span>
 #include <type_traits>
 #include <utility>
@@ -246,6 +247,7 @@ constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r);
 // - byte_span_from_cstring() function.
 // - byte_span_with_nul_from_cstring() function.
 // - split_at() method.
+// - to_fixed_extent() method.
 // - operator==() comparator function.
 // - operator<=>() comparator function.
 // - operator<<() printing function.
@@ -1038,6 +1040,15 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
     return UNSAFE_BUFFERS({data() + offset, new_extent});
   }
 
+  // Convert a dynamic-extent span to a fixed-extent span. Returns a
+  // `span<T, Extent>` iff `size() == Extent`; otherwise, returns
+  // `std::nullopt`.
+  template <size_t Extent>
+  constexpr std::optional<span<T, Extent>> to_fixed_extent() const {
+    return size() == Extent ? std::optional(span<T, Extent>(*this))
+                            : std::nullopt;
+  }
+
   // Splits a span into two at the given `offset`, returning two spans that
   // cover the full range of the original span.
   //
@@ -1679,41 +1690,16 @@ constexpr span<const uint8_t, N> byte_span_with_nul_from_cstring(
 // to convert std::string or string-objects holding chars, or std::vector
 // or vector-like objects holding other scalar types, prior to passing them
 // into an API that requires byte spans.
-template <typename T>
-  requires requires(const T& arg) {
-    requires !std::is_array_v<std::remove_reference_t<T>>;
-    make_span(arg);
-  }
-constexpr span<const uint8_t> as_byte_span(const T& arg) {
+template <int&... ExplicitArgumentBarrier, typename Spannable>
+  requires requires(const Spannable& arg) { make_span(arg); }
+constexpr auto as_byte_span(const Spannable& arg) {
   return as_bytes(make_span(arg));
 }
 
-// This overload for arrays preserves the compile-time size N of the array in
-// the span type signature span<uint8_t, N>.
-template <typename T, size_t N>
+template <int&... ExplicitArgumentBarrier, typename T, size_t N>
 constexpr span<const uint8_t, N * sizeof(T)> as_byte_span(
     const T (&arr ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
-  return as_bytes(make_span<N>(arr));
-}
-
-// This overload adds a compile-time size that must be explicitly given,
-// checking that the size is correct at runtime. The template argument `N` is
-// the number of _bytes_ in the input range, not the number of elements.
-//
-// This is sugar for `base::span<const uint8_t, N>(base::as_byte_span(x))`.
-//
-// Example:
-// ```
-// std::string foo = "hello";
-// base::span<const uint8_t, 5> s = base::as_byte_span<5>(foo);
-// ```
-template <size_t N, typename T>
-  requires requires(const T& arg) {
-    requires !std::is_array_v<std::remove_reference_t<T>>;
-    make_span(arg);
-  }
-constexpr span<const uint8_t, N> as_byte_span(const T& arg) {
-  return span<const uint8_t, N>(as_byte_span(arg));
+  return as_bytes(make_span(arr));
 }
 
 // Convenience function for converting an object which is itself convertible
@@ -1721,50 +1707,27 @@ constexpr span<const uint8_t, N> as_byte_span(const T& arg) {
 // to convert std::string or string-objects holding chars, or std::vector
 // or vector-like objects holding other scalar types, prior to passing them
 // into an API that requires mutable byte spans.
-template <typename T>
-  requires requires(T&& arg) {
-    requires !std::is_array_v<std::remove_reference_t<T>>;
+template <int&... ExplicitArgumentBarrier, typename Spannable>
+  requires requires(Spannable&& arg) {
     make_span(arg);
     requires !std::is_const_v<typename decltype(make_span(arg))::element_type>;
   }
-constexpr span<uint8_t> as_writable_byte_span(T&& arg) {
-  return as_writable_bytes(make_span(arg));
+constexpr auto as_writable_byte_span(Spannable&& arg) {
+  return as_writable_bytes(make_span(std::forward<Spannable>(arg)));
 }
 
 // This overload for arrays preserves the compile-time size N of the array in
 // the span type signature span<uint8_t, N>.
-template <typename T, size_t N>
-  requires(!std::is_const_v<T>)
+template <int&... ExplicitArgumentBarrier, typename T, size_t N>
 constexpr span<uint8_t, N * sizeof(T)> as_writable_byte_span(
     T (&arr ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
-  return as_writable_bytes(make_span<N>(arr));
-}
-template <typename T, size_t N>
-  requires(!std::is_const_v<T>)
-constexpr span<uint8_t, N * sizeof(T)> as_writable_byte_span(
-    T (&&arr ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
-  return as_writable_bytes(make_span<N>(arr));
+  return as_writable_bytes(make_span(arr));
 }
 
-// This overload adds a compile-time size that must be explicitly given,
-// checking that the size is correct at runtime. The template argument `N` is
-// the number of _bytes_ in the input range, not the number of elements.
-//
-// This is sugar for `base::span<const uint8_t, N>(base::as_byte_span(x))`.
-//
-// Example:
-// ```
-// std::string foo = "hello";
-// base::span<const uint8_t, 5> s = base::as_writable_byte_span<5>(foo);
-// ```
-template <size_t N, typename T>
-  requires requires(T&& arg) {
-    requires !std::is_array_v<std::remove_reference_t<T>>;
-    make_span(arg);
-    requires !std::is_const_v<typename decltype(make_span(arg))::element_type>;
-  }
-constexpr span<uint8_t, N> as_writable_byte_span(T&& arg) {
-  return span<uint8_t, N>(as_writable_byte_span(arg));
+template <int&... ExplicitArgumentBarrier, typename T, size_t N>
+constexpr span<uint8_t, N * sizeof(T)> as_writable_byte_span(
+    T (&&arr ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
+  return as_writable_bytes(make_span(arr));
 }
 
 namespace internal {

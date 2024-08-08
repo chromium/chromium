@@ -461,81 +461,91 @@ void MemoryProgramCache::LoadProgram(const std::string& key,
                                      const std::string& program) {
   std::unique_ptr<GpuProgramProto> proto(
       GpuProgramProto::default_instance().New());
-  if (proto->ParseFromString(program)) {
-    AttributeMap vertex_attribs;
-    UniformMap vertex_uniforms;
-    VaryingMap vertex_varyings;
-    OutputVariableList vertex_output_variables;
-    InterfaceBlockMap vertex_interface_blocks;
-    for (int i = 0; i < proto->vertex_shader().attribs_size(); i++) {
-      RetrieveShaderAttributeInfo(proto->vertex_shader().attribs(i),
-                                  &vertex_attribs);
-    }
-    for (int i = 0; i < proto->vertex_shader().uniforms_size(); i++) {
-      RetrieveShaderUniformInfo(proto->vertex_shader().uniforms(i),
-                                &vertex_uniforms);
-    }
-    for (int i = 0; i < proto->vertex_shader().varyings_size(); i++) {
-      RetrieveShaderVaryingInfo(proto->vertex_shader().varyings(i),
-                                &vertex_varyings);
-    }
-    for (int i = 0; i < proto->vertex_shader().output_variables_size(); i++) {
-      RetrieveShaderOutputVariableInfo(
-          proto->vertex_shader().output_variables(i), &vertex_output_variables);
-    }
-    for (int i = 0; i < proto->vertex_shader().interface_blocks_size(); i++) {
-      RetrieveShaderInterfaceBlockInfo(
-          proto->vertex_shader().interface_blocks(i), &vertex_interface_blocks);
-    }
-
-    AttributeMap fragment_attribs;
-    UniformMap fragment_uniforms;
-    VaryingMap fragment_varyings;
-    OutputVariableList fragment_output_variables;
-    InterfaceBlockMap fragment_interface_blocks;
-    for (int i = 0; i < proto->fragment_shader().attribs_size(); i++) {
-      RetrieveShaderAttributeInfo(proto->fragment_shader().attribs(i),
-                                  &fragment_attribs);
-    }
-    for (int i = 0; i < proto->fragment_shader().uniforms_size(); i++) {
-      RetrieveShaderUniformInfo(proto->fragment_shader().uniforms(i),
-                                &fragment_uniforms);
-    }
-    for (int i = 0; i < proto->fragment_shader().varyings_size(); i++) {
-      RetrieveShaderVaryingInfo(proto->fragment_shader().varyings(i),
-                                &fragment_varyings);
-    }
-    for (int i = 0; i < proto->fragment_shader().output_variables_size(); i++) {
-      RetrieveShaderOutputVariableInfo(
-          proto->fragment_shader().output_variables(i),
-          &fragment_output_variables);
-    }
-    for (int i = 0; i < proto->fragment_shader().interface_blocks_size(); i++) {
-      RetrieveShaderInterfaceBlockInfo(
-          proto->fragment_shader().interface_blocks(i),
-          &fragment_interface_blocks);
-    }
-
-    std::vector<uint8_t> binary(proto->program().length());
-    memcpy(binary.data(), proto->program().c_str(), proto->program().length());
-
-    store_.Put(proto->sha(),
-               new ProgramCacheValue(
-                   proto->format(), std::move(binary),
-                   proto->has_program_is_compressed() &&
-                       proto->program_is_compressed(),
-                   proto->program_decompressed_length(), proto->sha(),
-                   base::as_byte_span<ProgramCache::kHashLength>(
-                       proto->vertex_shader().sha()),
-                   vertex_attribs, vertex_uniforms, vertex_varyings,
-                   vertex_output_variables, vertex_interface_blocks,
-                   base::as_byte_span<ProgramCache::kHashLength>(
-                       proto->fragment_shader().sha()),
-                   fragment_attribs, fragment_uniforms, fragment_varyings,
-                   fragment_output_variables, fragment_interface_blocks, this));
-  } else {
+  if (!proto->ParseFromString(program)) {
     DVLOG(2) << "Failed to parse proto file.";
+    return;
   }
+
+  AttributeMap vertex_attribs;
+  UniformMap vertex_uniforms;
+  VaryingMap vertex_varyings;
+  OutputVariableList vertex_output_variables;
+  InterfaceBlockMap vertex_interface_blocks;
+  for (int i = 0; i < proto->vertex_shader().attribs_size(); i++) {
+    RetrieveShaderAttributeInfo(proto->vertex_shader().attribs(i),
+                                &vertex_attribs);
+  }
+  for (int i = 0; i < proto->vertex_shader().uniforms_size(); i++) {
+    RetrieveShaderUniformInfo(proto->vertex_shader().uniforms(i),
+                              &vertex_uniforms);
+  }
+  for (int i = 0; i < proto->vertex_shader().varyings_size(); i++) {
+    RetrieveShaderVaryingInfo(proto->vertex_shader().varyings(i),
+                              &vertex_varyings);
+  }
+  for (int i = 0; i < proto->vertex_shader().output_variables_size(); i++) {
+    RetrieveShaderOutputVariableInfo(proto->vertex_shader().output_variables(i),
+                                     &vertex_output_variables);
+  }
+  for (int i = 0; i < proto->vertex_shader().interface_blocks_size(); i++) {
+    RetrieveShaderInterfaceBlockInfo(proto->vertex_shader().interface_blocks(i),
+                                     &vertex_interface_blocks);
+  }
+
+  AttributeMap fragment_attribs;
+  UniformMap fragment_uniforms;
+  VaryingMap fragment_varyings;
+  OutputVariableList fragment_output_variables;
+  InterfaceBlockMap fragment_interface_blocks;
+  for (int i = 0; i < proto->fragment_shader().attribs_size(); i++) {
+    RetrieveShaderAttributeInfo(proto->fragment_shader().attribs(i),
+                                &fragment_attribs);
+  }
+  for (int i = 0; i < proto->fragment_shader().uniforms_size(); i++) {
+    RetrieveShaderUniformInfo(proto->fragment_shader().uniforms(i),
+                              &fragment_uniforms);
+  }
+  for (int i = 0; i < proto->fragment_shader().varyings_size(); i++) {
+    RetrieveShaderVaryingInfo(proto->fragment_shader().varyings(i),
+                              &fragment_varyings);
+  }
+  for (int i = 0; i < proto->fragment_shader().output_variables_size(); i++) {
+    RetrieveShaderOutputVariableInfo(
+        proto->fragment_shader().output_variables(i),
+        &fragment_output_variables);
+  }
+  for (int i = 0; i < proto->fragment_shader().interface_blocks_size(); i++) {
+    RetrieveShaderInterfaceBlockInfo(
+        proto->fragment_shader().interface_blocks(i),
+        &fragment_interface_blocks);
+  }
+
+  std::vector<uint8_t> binary(proto->program().length());
+  memcpy(binary.data(), proto->program().c_str(), proto->program().length());
+
+  auto vertex_shader_sha = base::as_byte_span(proto->vertex_shader().sha())
+                               .to_fixed_extent<kHashLength>();
+  auto fragment_shader_sha = base::as_byte_span(proto->fragment_shader().sha())
+                                 .to_fixed_extent<kHashLength>();
+  if (!vertex_shader_sha.has_value()) {
+    DVLOG(2) << "Ill-formed vertex shader hash";
+    return;
+  }
+  if (!fragment_shader_sha.has_value()) {
+    DVLOG(2) << "Ill-formed fragment shader hash";
+    return;
+  }
+  store_.Put(
+      proto->sha(),
+      new ProgramCacheValue(
+          proto->format(), std::move(binary),
+          proto->has_program_is_compressed() && proto->program_is_compressed(),
+          proto->program_decompressed_length(), proto->sha(),
+          vertex_shader_sha.value(), vertex_attribs, vertex_uniforms,
+          vertex_varyings, vertex_output_variables, vertex_interface_blocks,
+          fragment_shader_sha.value(), fragment_attribs, fragment_uniforms,
+          fragment_varyings, fragment_output_variables,
+          fragment_interface_blocks, this));
 }
 
 size_t MemoryProgramCache::Trim(size_t limit) {
