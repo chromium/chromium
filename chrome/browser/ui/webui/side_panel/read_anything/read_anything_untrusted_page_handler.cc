@@ -560,10 +560,12 @@ void ReadAnythingUntrustedPageHandler::OnImageDataDownloaded(
     const GURL& image_url,
     const std::vector<SkBitmap>& bitmaps,
     const std::vector<gfx::Size>& sizes) {
-  // Since we are allowing use of the cache the status code should never be bad.
-  CHECK(network::IsSuccessfulStatus(http_status_code) || http_status_code == 0);
+
+  bool download_was_successful =
+      network::IsSuccessfulStatus(http_status_code) || http_status_code == 0;
+
   // There should be at least one image.
-  if (!bitmaps.empty()) {
+  if (download_was_successful && !bitmaps.empty()) {
     const auto& bitmap = bitmaps[0];
     page_->OnImageDataDownloaded(target_tree_id, node_id, bitmap);
   } else {
