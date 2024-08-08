@@ -41,7 +41,7 @@ namespace ash {
 
 AuthPanelDebugView::AuthPanelDebugView(const AccountId& account_id,
                                        bool use_legacy_authpanel) {
-  //  ModalType::SYSTEM is used to get a semi-transparent background behind the
+  //  ModalType::kSystem is used to get a semi-transparent background behind the
   //  local authentication request view, when it is used directly on a widget.
   //  The overlay consumes all the inputs from the user, so that they can only
   //  interact with the local authentication request view while it is visible.

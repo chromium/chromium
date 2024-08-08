@@ -170,7 +170,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
       default_accessible_title_(request.accessible_title.empty()
                                     ? request.title
                                     : request.accessible_title) {
-  // ModalType::SYSTEM is used to get a semi-transparent background behind the
+  // ModalType::kSystem is used to get a semi-transparent background behind the
   // pin request view, when it is used directly on a widget. The overlay
   // consumes all the inputs from the user, so that they can only interact with
   // the pin request view while it is visible.

@@ -88,7 +88,8 @@ void SystemModalContainerLayoutManager::OnWindowAddedToLayout(
   DCHECK(container_->GetId() != kShellWindowId_LockSystemModalContainer ||
          Shell::Get()->session_controller()->IsUserSessionBlocked());
   // Since this is for SystemModal, there is no good reason to add windows
-  // other than ModalType::NONE or ModalType::SYSTEM. DCHECK to avoid mistakes.
+  // other than ModalType::kNone or ModalType::kSystem. DCHECK to avoid
+  // mistakes.
   DCHECK_NE(GetModalType(child), ui::mojom::ModalType::kChild);
   DCHECK_NE(GetModalType(child), ui::mojom::ModalType::kWindow);
 

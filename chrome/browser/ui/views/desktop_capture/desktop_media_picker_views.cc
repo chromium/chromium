@@ -640,8 +640,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         constrained_window::ShowWebModalDialogViews(this, params.web_contents);
   } else {
 #if BUILDFLAG(IS_MAC)
-    // On Mac, ModalType::CHILD with a null parent isn't allowed - fall back to
-    // ModalType::WINDOW.
+    // On Mac, ModalType::kChild with a null parent isn't allowed - fall back to
+    // ModalType::kWindow.
     SetModalType(ui::mojom::ModalType::kWindow);
 #endif
     widget = CreateDialogWidget(this, params.context, nullptr);
