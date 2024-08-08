@@ -21,6 +21,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
@@ -195,6 +196,7 @@ public class BrowsingDataTest {
     @Test
     @SmallTest
     @Restriction({GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15})
+    @RequiresRestart("crbug.com/358427311")
     public void testLocalAndAccountPasswordsDeleted() throws Exception {
         // Set up a syncing user with one password in each store.
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
