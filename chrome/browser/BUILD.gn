@@ -2061,6 +2061,7 @@ static_library("browser") {
     "//components/enterprise/common/proto:extensions_workflow_events_proto",
     "//components/enterprise/common/proto:legacy_tech_events_proto",
     "//components/enterprise/content",
+    "//components/enterprise/device_trust",
     "//components/error_page/common",
     "//components/error_page/content/browser",
     "//components/facilitated_payments/core/features",
@@ -6589,6 +6590,7 @@ static_library("browser") {
       "//components/device_signals/core/browser",
       "//components/device_signals/core/common",
       "//components/enterprise/core",
+      "//components/enterprise/device_trust",
       "//components/policy/proto:proto",
       "//services/data_decoder/public/cpp",
     ]

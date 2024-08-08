@@ -9617,8 +9617,8 @@ test("unit_tests") {
       "//components/device_signals/core/common",
       "//components/device_signals/core/common:features",
       "//components/device_signals/core/common:unit_tests",
-      "//components/enterprise/connectors",
       "//components/enterprise/connectors/core",
+      "//components/enterprise/device_trust",
       "//services/data_decoder/public/cpp:test_support",
     ]
   }

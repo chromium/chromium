@@ -16,7 +16,7 @@
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
-#include "components/enterprise/connectors/device_trust/prefs.h"
+#include "components/enterprise/device_trust/prefs.h"
 #include "components/prefs/pref_service.h"
 
 using enterprise_connectors::kUserContextAwareAccessSignalsAllowlistPref;

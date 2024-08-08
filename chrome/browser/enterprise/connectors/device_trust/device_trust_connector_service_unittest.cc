@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/values.h"
-#include "components/enterprise/connectors/device_trust/prefs.h"
+#include "components/enterprise/device_trust/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

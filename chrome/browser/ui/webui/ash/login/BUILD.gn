@@ -285,7 +285,7 @@ static_library("login") {
     "//chromeos/strings",
     "//chromeos/version",
     "//components/content_settings/core/common",
-    "//components/enterprise/connectors",
+    "//components/enterprise/device_trust",
     "//components/onc",
     "//components/policy/core/browser",
     "//components/policy/core/common:common_constants",

@@ -6,8 +6,6 @@ import("//components/enterprise/buildflags/buildflags.gni")
 
 source_set("connectors") {
   sources = [
-    "device_trust/prefs.cc",
-    "device_trust/prefs.h",
     "service_provider_config.cc",
     "service_provider_config.h",
   ]

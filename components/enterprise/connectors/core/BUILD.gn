@@ -29,6 +29,7 @@ source_set("core") {
     "//build:blink_buildflags",
     "//components/enterprise/buildflags",
     "//components/enterprise/connectors",
+    "//components/enterprise/device_trust",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",
