@@ -691,13 +691,11 @@ void EventReportValidator::ValidateThreatInfo(
                 expected_threat_info.matched_url_navigation_rule()
                     .matched_url_category());
 
-  std::optional<bool> expect_watermarking;
   if (expected_threat_info.matched_url_navigation_rule()
           .has_watermark_message()) {
-    expect_watermarking = true;
+    ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyHasWatermarking,
+                  std::optional<bool>(true));
   }
-  ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyHasWatermarking,
-                expect_watermarking);
 }
 
 void EventReportValidator::ValidateFilenameMappedAttributes(
