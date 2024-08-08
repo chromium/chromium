@@ -234,5 +234,17 @@ suite('NewTabPageModulesCalendarTest', () => {
               `NewTabPage.${moduleName}.UserAction`,
               CalendarAction.SEE_MORE_CLICKED));
     });
+
+    test('shown events count', async () => {
+      const moduleName = 'GoogleCalendar';
+      const numEvents = 3;
+      element.events = createEvents(numEvents);
+      element.moduleName = moduleName;
+      await microtasksFinished();
+
+      // Assert.
+      assertEquals(
+          1, metrics.count(`NewTabPage.${moduleName}.ShownEvents`, numEvents));
+    });
   });
 });

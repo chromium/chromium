@@ -56,6 +56,8 @@ export class CalendarElement extends CrLitElement {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('events')) {
+      chrome.metricsPrivate.recordSmallCount(
+          `NewTabPage.${this.moduleName}.ShownEvents`, this.events.length);
       this.expandedEventIndex_ = this.computeExpandedEventIndex_();
       if (this.expandedEventIndex_ !== -1) {
         this.sortEvents_();

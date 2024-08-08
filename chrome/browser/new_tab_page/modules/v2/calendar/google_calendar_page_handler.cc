@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -217,6 +218,8 @@ void GoogleCalendarPageHandler::OnRequestComplete(
   size_t max_events =
       static_cast<size_t>(ntp_features::kNtpCalendarModuleMaxEventsParam.Get());
   if (response_code == google_apis::ApiErrorCode::HTTP_SUCCESS) {
+    base::UmaHistogramCounts100("NewTabPage.GoogleCalendar.RequestResult",
+                                events->items().size());
     for (const auto& event : events->items()) {
       // If the result is already at max length, stop.
       if (result.size() == max_events) {
