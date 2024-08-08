@@ -68,6 +68,26 @@ std::unique_ptr<blink::WebCoalescedInputEvent> ScaleEvent(
       std::vector<std::unique_ptr<WebInputEvent>>(), latency_info);
 }
 
+ChromeLatencyInfo::InputType GetInputTypeForLatencyInfo(
+    const WebInputEvent& input_event) {
+  switch (input_event.GetType()) {
+    case WebInputEvent::Type::kGestureScrollBegin:
+      return ChromeLatencyInfo::InputType::GESTURE_SCROLL_BEGIN;
+    case WebInputEvent::Type::kGestureScrollEnd:
+      return ChromeLatencyInfo::InputType::GESTURE_SCROLL_END;
+    case WebInputEvent::Type::kGestureScrollUpdate:
+      return ChromeLatencyInfo::InputType::GESTURE_SCROLL_UPDATE;
+    case WebInputEvent::Type::kGestureTap:
+      return ChromeLatencyInfo::InputType::GESTURE_TAP;
+    case WebInputEvent::Type::kGestureTapCancel:
+      return ChromeLatencyInfo::InputType::GESTURE_TAP_CANCEL;
+    case WebInputEvent::Type::kTouchMove:
+      return ChromeLatencyInfo::InputType::TOUCH_MOVED;
+    default:
+      return ChromeLatencyInfo::InputType::UNSPECIFIED_OR_OTHER;
+  }
+}
+
 }  // namespace
 
 InputRouterImpl::InputRouterImpl(
@@ -575,11 +595,13 @@ void InputRouterImpl::FilterAndSendWebInputEvent(
   TRACE_EVENT1("input", "InputRouterImpl::FilterAndSendWebInputEvent", "type",
                WebInputEvent::GetName(input_event.GetType()));
   TRACE_EVENT("input,benchmark,devtools.timeline,latencyInfo",
-              "LatencyInfo.Flow", [&latency_info](perfetto::EventContext ctx) {
+              "LatencyInfo.Flow",
+              [&latency_info, &input_event](perfetto::EventContext ctx) {
                 ChromeLatencyInfo* info =
                     ctx.event()->set_chrome_latency_info();
                 info->set_trace_id(latency_info.trace_id());
                 info->set_step(ChromeLatencyInfo::STEP_SEND_INPUT_EVENT_UI);
+                info->set_input_type(GetInputTypeForLatencyInfo(input_event));
 
                 tracing::FillFlowEvent(ctx,
                                        perfetto::protos::pbzero::TrackEvent::
