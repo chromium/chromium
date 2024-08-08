@@ -7310,8 +7310,7 @@ TEST_F(BidderWorkletTest, SendReportToLongUrl) {
   channel->ExpectNoMoreConsoleEvents();
 }
 
-// Trying to "enforce" permission policy on contributeToHistogramOnEvent.
-// Currently this produces no report and a warning (plus a metric).
+// Turn enforcement of permission policy on contributeToHistogramOnEvent on.
 TEST_F(BidderWorkletTest, ContributeToHistogramOnEventPermissionEnforced) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -7347,19 +7346,12 @@ TEST_F(BidderWorkletTest, ContributeToHistogramOnEventPermissionEnforced) {
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       /*expected_reporting_latency_timeout=*/false,
-      /*expected_errors=*/{}, run_loop.QuitClosure());
+      /*expected_errors=*/
+      {"https://url.test/:12 Uncaught TypeError: The \"private-aggregation\" "
+       "Permissions Policy denied the method contributeToHistogramOnEvent on "
+       "privateAggregation."},
+      run_loop.QuitClosure());
   run_loop.Run();
-
-  const char kWarning[] =
-      "The \\\"private-aggregation\\\" Permissions Policy denied "
-      "contributeToHistogramOnEvent. Ignoring for backwards compatibility but "
-      "this will eventually throw an exception.";
-
-  channel->WaitForAndValidateConsoleMessage(
-      "warning", /*json_args=*/
-      base::StrCat({"[{\"type\":\"string\", \"value\":\"", kWarning, "\"}]"}),
-      /*stack_trace_size=*/1, /*function=*/"reportWin",
-      interest_group_bidding_url_, /*line_number=*/11);
 
   channel->ExpectNoMoreConsoleEvents();
   histogram_tester.ExpectUniqueSample(
@@ -7423,8 +7415,8 @@ TEST_F(BidderWorkletTest, ContributeToHistogramOnEventPermissionNotEnforced) {
   const char kWarning[] =
       "privateAggregation.contributeToHistogramOnEvent called without "
       "appropriate \\\"private-aggregation\\\" Permissions Policy approval; "
-      "accepting for backwards compatibility but this will be shortly "
-      "ignored and eventually will throw an exception";
+      "accepting for backwards compatibility but this will be shortly throwing "
+      "an exception";
 
   channel->WaitForAndValidateConsoleMessage(
       "warning", /*json_args=*/

@@ -545,19 +545,17 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
       bindings->private_aggregation_permissions_policy_allowed_);
   if (!bindings->private_aggregation_permissions_policy_allowed_) {
     if (bindings->enforce_permission_policy_for_on_event_) {
-      // TODO(https://crbug.com/346766790) Actually throw the exception when
-      // people are aware of the issue.
-      bindings->v8_logger_->LogConsoleWarning(
-          "The \"private-aggregation\" Permissions Policy denied "
-          "contributeToHistogramOnEvent. Ignoring for backwards "
-          "compatibility but this will eventually throw an exception.");
+      isolate->ThrowException(
+          v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
+              "The \"private-aggregation\" Permissions Policy denied the "
+              "method contributeToHistogramOnEvent on privateAggregation")));
       return;
     } else {
       bindings->v8_logger_->LogConsoleWarning(
           "privateAggregation.contributeToHistogramOnEvent called without "
           "appropriate \"private-aggregation\" Permissions Policy approval; "
           "accepting for backwards compatibility but this will be shortly "
-          "ignored and eventually will throw an exception");
+          "throwing an exception");
     }
   }
 
@@ -654,8 +652,7 @@ void PrivateAggregationBindings::EnableDebugMode(
     isolate->ThrowException(
         v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
             "The \"private-aggregation\" Permissions Policy denied the method "
-            "on "
-            "privateAggregation")));
+            "on privateAggregation")));
     return;
   }
 
