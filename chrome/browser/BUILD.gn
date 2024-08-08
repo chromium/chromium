@@ -1828,6 +1828,13 @@ static_library("browser") {
     # TODO(crbug.com/40228447): break this dep when favicon is in its own target
     "//chrome/browser/share",
     "//chrome/browser/ui",
+
+    # TODO(358041220): There is a circular_dependency of `cookie_controls:impl` module
+    # with "//chrome/browser" due to the inclusion of //c/b/policy/profile_policy_connector.h
+    # from cookie_controls_service.cc. When the respective //c/b/policy directory gets
+    # modularized, `cookie_controls:impl` can depend on it directly, and the circular dependency
+    # be removed.
+    "//chrome/browser/ui/cookie_controls:impl",
     "//chrome/browser/ui/omnibox:impl",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/top_level_storage_access_api:permissions",
@@ -1960,6 +1967,8 @@ static_library("browser") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/color:mixers",
+    "//chrome/browser/ui/cookie_controls",
+    "//chrome/browser/ui/cookie_controls:impl",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/omnibox:impl",
     "//chrome/browser/ui/tabs",

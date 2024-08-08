@@ -1,0 +1,53 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("cookie_controls") {
+  sources = [
+    "cookie_controls_service.h",
+    "cookie_controls_service_factory.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common",
+    "//components/keyed_service/core",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "cookie_controls_service.cc",
+    "cookie_controls_service_factory.cc",
+  ]
+
+  deps = [
+    ":cookie_controls",
+    "//components/policy:generated",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/common",
+    "//components/prefs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "cookie_controls_controller_unittest.cc",
+    "cookie_controls_service_unittest.cc",
+  ]
+  deps = [
+    ":cookie_controls",
+    "//chrome/browser/fingerprinting_protection",
+    "//chrome/test:test_support",
+    "//components/content_settings/browser",
+    "//components/content_settings/browser/ui",
+    "//components/fingerprinting_protection_filter/browser",
+    "//components/privacy_sandbox:features",
+    "//components/site_engagement/content",
+    "//components/ukm:test_support",
+  ]
+}
