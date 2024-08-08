@@ -192,6 +192,7 @@ component("modules") {
 
   deps = [
     ":make_modules_generated",
+    "//build:android_buildflags",
     "//cc",
     "//components/webrtc:thread_wrapper",
     "//gin",
