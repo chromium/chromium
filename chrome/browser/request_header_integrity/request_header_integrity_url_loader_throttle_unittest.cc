@@ -13,6 +13,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/request_header_integrity/internal/google_header_names.h"
 #include "chrome/test/base/scoped_channel_override.h"
 #endif
 
@@ -66,6 +67,8 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSite) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_ANDROID)
 TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSiteWithBranding) {
+  ASSERT_NE(CHANNEL_NAME_HEADER_NAME, "X-Placeholder-1");
+
   chrome::ScopedChannelOverride override(
       chrome::ScopedChannelOverride::Channel::kStable);
   network::ResourceRequest request;
@@ -75,6 +78,7 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSiteWithBranding) {
   bool ignored;
   throttle().WillStartRequest(&request, &ignored);
   EXPECT_EQ(1u, request.headers.GetHeaderVector().size());
+  EXPECT_TRUE(request.headers.HasHeader(CHANNEL_NAME_HEADER_NAME));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
         // !BUILDFLAG(IS_ANDROID)

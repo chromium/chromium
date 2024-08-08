@@ -20,6 +20,10 @@ source_set("request_header_integrity") {
     "request_header_integrity_url_loader_throttle.h",
   ]
 
+  if (is_chrome_branded) {
+    sources += [ "internal/google_header_names.h" ]
+  }
+
   configs += [ ":header_name_defines" ]
 
   deps = [
@@ -46,6 +50,7 @@ source_set("unit_tests") {
   ]
 
   if (is_chrome_branded) {
+    sources += [ "internal/google_header_names.h" ]
     deps += [ "//chrome/test:test_support" ]
   }
 }

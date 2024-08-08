@@ -13,6 +13,10 @@
 #include "components/google/core/common/google_util.h"
 #include "services/network/public/cpp/resource_request.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/request_header_integrity/internal/google_header_names.h"
+#endif
+
 #if !defined(CHANNEL_NAME_HEADER_NAME)
 #define CHANNEL_NAME_HEADER_NAME "X-Placeholder-1"
 #endif
