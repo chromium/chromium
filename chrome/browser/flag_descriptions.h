@@ -4152,9 +4152,6 @@ extern const char kCrosComponentsDescription[];
 extern const char kLacrosAvailabilityIgnoreName[];
 extern const char kLacrosAvailabilityIgnoreDescription[];
 
-extern const char kLacrosOnlyName[];
-extern const char kLacrosOnlyDescription[];
-
 extern const char kLacrosStabilityName[];
 extern const char kLacrosStabilityDescription[];
 

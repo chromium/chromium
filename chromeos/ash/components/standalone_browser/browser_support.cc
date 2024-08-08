@@ -136,8 +136,7 @@ bool IsEnabledInternal(const user_manager::User* user,
       return true;
   }
 
-  if (base::FeatureList::IsEnabled(features::kLacrosOnly) ||
-      IsLacrosEnabledForTesting()) {
+  if (IsLacrosEnabledForTesting()) {
     return true;
   }
 

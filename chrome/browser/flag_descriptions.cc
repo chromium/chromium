@@ -7174,13 +7174,6 @@ const char kLacrosAvailabilityIgnoreDescription[] =
     "accounts. Instead, Lacros availability will be controlled by experiment "
     "and/or user flags for such accounts.";
 
-const char kLacrosOnlyName[] = "Lacros is the only browser";
-const char kLacrosOnlyDescription[] =
-    "Use Lacros-chrome as the only web browser on ChromeOS. "
-    "Please note that the first restart can take some time to setup "
-    "lacros-chrome. Please DO NOT attempt to turn off the device during "
-    "the restart.";
-
 const char kLacrosStabilityName[] = "Lacros stability";
 const char kLacrosStabilityDescription[] = "Lacros update channel.";
 

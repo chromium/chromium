@@ -126,35 +126,6 @@ class BrowserUtilTest : public testing::Test {
       fake_user_manager_;
 };
 
-// TODO(b/354842935): Remove this test when removing `features::kLacrosOnly`.
-TEST_F(BrowserUtilTest, LacrosEnabledByFlag) {
-  const user_manager::User* const user = AddRegularUser("user@test.com");
-  ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForUser(
-      local_state(), user->username_hash(),
-      ash::standalone_browser::migrator_util::MigrationMode::kMove);
-
-  {
-    // Lacros is initially disabled.
-    EXPECT_FALSE(browser_util::IsLacrosEnabled());
-  }
-
-  {
-    // Disabling the flag disables Lacros.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        ash::standalone_browser::features::kLacrosOnly);
-    EXPECT_FALSE(browser_util::IsLacrosEnabled());
-  }
-
-  {
-    // Enabling the flag enables Lacros.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        ash::standalone_browser::features::kLacrosOnly);
-    EXPECT_TRUE(browser_util::IsLacrosEnabled());
-  }
-}
-
 TEST_F(BrowserUtilTest, LacrosDisallowedByCommandLineFlag) {
   base::test::ScopedCommandLine cmd_line;
   cmd_line.GetProcessCommandLine()->AppendSwitch(
@@ -752,17 +723,6 @@ TEST_F(BrowserUtilTest, LacrosGoogleRolloutOnly) {
   EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
       user,
       ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit));
-}
-
-// Lacros Only flag is hidden in guest sessions
-TEST_F(BrowserUtilTest, HidingLacrosFlagsForAllGuestUsers) {
-  const User* user = fake_user_manager_->AddGuestUser();
-  fake_user_manager_->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                                   /*browser_restart=*/false,
-                                   /*is_child=*/false);
-  ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
-      policy::PolicyMap(), false, false);
-  EXPECT_FALSE(browser_util::IsLacrosOnlyFlagAllowed());
 }
 
 }  // namespace crosapi
