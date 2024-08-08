@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon.pb.h"
 #include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,7 +26,7 @@ TEST(TachyonRegistrarTest, SuccessfulRegistration) {
   base::test::TaskEnvironment task_env;
   base::test::TestFuture<bool> test_future;
   FakeTachyonAuthedClient authed_client;
-  TachyonRegistrar registrar(&authed_client);
+  TachyonRegistrar registrar(&authed_client, TRAFFIC_ANNOTATION_FOR_TESTS);
 
   registrar.Register(kDeviceId, test_future.GetCallback());
   SignInGaiaResponse signin_response;
@@ -42,7 +43,7 @@ TEST(TachyonRegistrarTest, FailedRegistration) {
   base::test::TaskEnvironment task_env;
   base::test::TestFuture<bool> test_future;
   FakeTachyonAuthedClient authed_client;
-  TachyonRegistrar registrar(&authed_client);
+  TachyonRegistrar registrar(&authed_client, TRAFFIC_ANNOTATION_FOR_TESTS);
 
   registrar.Register(kDeviceId, test_future.GetCallback());
   authed_client.ExecuteResponseCallback(base::unexpected(

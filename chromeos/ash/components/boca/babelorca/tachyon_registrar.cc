@@ -26,30 +26,15 @@
 namespace ash::babelorca {
 namespace {
 
-// TODO(b/356929723): Fill the annotation tag fields before launch.
-const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("babelorca_tachyon_registrar", R"(
-        semantics {
-          sender: ""
-          description:
-            ""
-          trigger:
-            ""
-          data: ""
-          destination: GOOGLE_OWNED_SERVICE
-          }
-          policy {
-            cookies_allowed: NO
-            setting:
-              ""
-            }
-          })");
 constexpr int kMaxRetries = 3;
 
 }  // namespace
 
-TachyonRegistrar::TachyonRegistrar(TachyonAuthedClient* authed_client)
-    : authed_client_(authed_client) {}
+TachyonRegistrar::TachyonRegistrar(
+    TachyonAuthedClient* authed_client,
+    const net::NetworkTrafficAnnotationTag& network_annotation_tag)
+    : authed_client_(authed_client),
+      network_annotation_tag_(network_annotation_tag) {}
 
 TachyonRegistrar::~TachyonRegistrar() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -78,7 +63,7 @@ void TachyonRegistrar::Register(const std::string& device_id,
           base::BindOnce(&TachyonRegistrar::OnResponse,
                          weak_ptr_factory.GetWeakPtr(), std::move(success_cb)));
   authed_client_->StartAuthedRequest(
-      kTrafficAnnotation, std::move(signin_request), kSigninGaiaUrl,
+      network_annotation_tag_.get(), std::move(signin_request), kSigninGaiaUrl,
       kMaxRetries, std::move(response_callback_wrapper));
 }
 

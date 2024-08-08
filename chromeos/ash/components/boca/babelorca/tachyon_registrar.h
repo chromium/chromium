@@ -11,11 +11,16 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/babelorca/response_callback_wrapper.h"
+
+namespace net {
+struct NetworkTrafficAnnotationTag;
+}  // namespace net
 
 namespace ash::babelorca {
 
@@ -26,7 +31,9 @@ class TachyonAuthedClient;
 // tachyon requests.
 class TachyonRegistrar {
  public:
-  explicit TachyonRegistrar(TachyonAuthedClient* authed_client);
+  TachyonRegistrar(
+      TachyonAuthedClient* authed_client,
+      const net::NetworkTrafficAnnotationTag& network_annotation_tag);
 
   TachyonRegistrar(const TachyonRegistrar&) = delete;
   TachyonRegistrar& operator=(const TachyonRegistrar&) = delete;
@@ -49,6 +56,7 @@ class TachyonRegistrar {
   SEQUENCE_CHECKER(sequence_checker_);
 
   raw_ptr<TachyonAuthedClient> authed_client_;
+  const raw_ref<const net::NetworkTrafficAnnotationTag> network_annotation_tag_;
   std::optional<std::string> tachyon_token_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
