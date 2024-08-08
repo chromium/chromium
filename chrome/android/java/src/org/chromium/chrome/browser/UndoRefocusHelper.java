@@ -62,7 +62,9 @@ public class UndoRefocusHelper {
     public void destroy() {
         mTabModelSelectorTabModelObserver.destroy();
         mLayoutManagerObservableSupplier.removeObserver(mLayoutManagerSupplierCallback);
-        mLayoutManager.removeObserver(mLayoutStateObserver);
+        if (mLayoutManager != null) {
+            mLayoutManager.removeObserver(mLayoutStateObserver);
+        }
     }
 
     private void observeTabModel() {
