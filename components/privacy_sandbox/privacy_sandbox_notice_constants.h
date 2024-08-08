@@ -21,23 +21,10 @@ inline constexpr char kTopicsConsentModalClankBrApp[] =
 inline constexpr char kTopicsConsentModalClankCCT[] =
     "TopicsConsentModalClankCCT";
 
-// Reminder notice names.
-inline constexpr char kTrackingProtectionSilentReminderClank[] =
-    "TrackingProtectionSilentReminderClankBrApp";
-inline constexpr char kTrackingProtectionReminderClank[] =
-    "TrackingProtectionReminderClankBrApp";
-inline constexpr char kTrackingProtectionSilentReminderDesktopIPH[] =
-    "TrackingProtectionSilentReminderDesktopIPH";
-inline constexpr char kTrackingProtectionReminderDesktopIPH[] =
-    "TrackingProtectionReminderDesktopIPH";
-
 inline constexpr auto kPrivacySandboxNoticeNames =
-    base::MakeFixedFlatSet<std::string_view>(
-        {kTopicsConsentModal, kTopicsConsentModalClankBrApp,
-         kTopicsConsentModalClankCCT, kTrackingProtectionSilentReminderClank,
-         kTrackingProtectionReminderClank,
-         kTrackingProtectionSilentReminderDesktopIPH,
-         kTrackingProtectionReminderDesktopIPH});
+    base::MakeFixedFlatSet<std::string_view>({kTopicsConsentModal,
+                                              kTopicsConsentModalClankBrApp,
+                                              kTopicsConsentModalClankCCT});
 
 }  // namespace privacy_sandbox
 
