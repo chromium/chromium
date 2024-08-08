@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, ManifestWithFailingIcons) {
       webapps::InstallResultCode::kIconDownloadingFailed, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallWebsiteAsShortcut) {
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallWebsite) {
   WebAppInstaller installer(profile());
   SetManifestResponse(AddIconToManifest(R"({
     "name": "Example App",
@@ -488,9 +488,12 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallWebsiteAsShortcut) {
         EXPECT_EQ(update.WindowMode(), apps::WindowMode::kBrowser);
       });
   ASSERT_TRUE(found);
+
+  EXPECT_TRUE(web_app::WebAppProvider::GetForWebApps(profile())
+                  ->registrar_unsafe()
+                  .IsDiyApp(app_id));
 }
 
-// Verify that the app is set to open in a window in App Service.
 IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
                        InstallWebsiteWithOpenInWindowOverride) {
   WebAppInstaller installer(profile());
@@ -522,6 +525,10 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
         EXPECT_EQ(update.WindowMode(), apps::WindowMode::kWindow);
       });
   ASSERT_TRUE(found);
+
+  EXPECT_TRUE(web_app::WebAppProvider::GetForWebApps(profile())
+                  ->registrar_unsafe()
+                  .IsDiyApp(app_id));
 }
 
 }  // namespace apps

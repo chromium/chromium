@@ -70,6 +70,7 @@ InstallAppFromVerifiedManifestCommand::InstallAppFromVerifiedManifestCommand(
     GURL verified_manifest_url,
     std::string verified_manifest_contents,
     webapps::AppId expected_id,
+    bool is_diy_app,
     std::optional<WebAppInstallParams> install_params,
     OnceInstallCallback callback)
     : WebAppCommand<SharedWebContentsLock,
@@ -87,6 +88,7 @@ InstallAppFromVerifiedManifestCommand::InstallAppFromVerifiedManifestCommand(
       verified_manifest_url_(std::move(verified_manifest_url)),
       verified_manifest_contents_(std::move(verified_manifest_contents)),
       expected_id_(std::move(expected_id)),
+      is_diy_app_(is_diy_app),
       install_params_(std::move(install_params)) {
   if (install_params_) {
     // Not every `install_params` option has an effect, check that unused params
@@ -168,6 +170,7 @@ void InstallAppFromVerifiedManifestCommand::OnManifestParsed(
   web_app_info_ =
       std::make_unique<WebAppInstallInfo>(manifest->id, manifest->start_url);
   web_app_info_->user_display_mode = mojom::UserDisplayMode::kStandalone;
+  web_app_info_->is_diy_app = is_diy_app_;
 
   UpdateWebAppInfoFromManifest(*manifest, web_app_info_.get());
 

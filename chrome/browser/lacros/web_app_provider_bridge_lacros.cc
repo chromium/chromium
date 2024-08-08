@@ -272,6 +272,7 @@ void WebAppProviderBridgeLacros::InstallWebAppFromVerifiedManifestImpl(
           install_info->document_url, install_info->verified_manifest_url,
           install_info->verified_manifest_contents,
           install_info->expected_app_id,
+          /*is_diy_app=*/false,
           /*install_params=*/std::nullopt, std::move(callback)));
 }
 

@@ -88,13 +88,14 @@ class InstallAppFromVerifiedManifestCommandTest : public WebAppBrowserTestBase {
       webapps::AppId expected_id = "",
       webapps::WebappInstallSource install_source =
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      bool is_diy_app = false,
       std::optional<WebAppInstallParams> params = std::nullopt) {
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         result;
     provider().command_manager().ScheduleCommand(
         std::make_unique<InstallAppFromVerifiedManifestCommand>(
             install_source, document_url, manifest_url, manifest, expected_id,
-            std::move(params), result.GetCallback()));
+            is_diy_app, std::move(params), result.GetCallback()));
     return result.Take();
   }
 };
@@ -623,9 +624,10 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
   WebAppInstallParams params;
   params.user_display_mode = mojom::UserDisplayMode::kBrowser;
 
-  auto [result_id, result_code] = InstallAndAwaitResult(
-      kDocumentUrl, kManifestUrl, manifest, expected_id,
-      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, params);
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, manifest, expected_id,
+                            webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                            /*is_diy_app=*/false, params);
 
   EXPECT_EQ(
       provider().registrar_unsafe().GetAppById(result_id)->user_display_mode(),
@@ -645,15 +647,31 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
   WebAppInstallParams params;
   params.additional_search_terms = {"chocolate", "vanilla", "strawberry"};
 
-  auto [result_id, result_code] = InstallAndAwaitResult(
-      kDocumentUrl, kManifestUrl, manifest, expected_id,
-      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, params);
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, manifest, expected_id,
+                            webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                            /*is_diy_app=*/false, params);
 
   EXPECT_THAT(provider()
                   .registrar_unsafe()
                   .GetAppById(result_id)
                   ->additional_search_terms(),
               testing::ElementsAre("chocolate", "vanilla", "strawberry"));
+}
+
+IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
+                       InstallAsDiyApp) {
+  const GURL kDocumentUrl("https://www.app.com/");
+  const GURL kManifestUrl("https://www.app.com/manifest.json");
+  std::string manifest = GetBasicManifest();
+  webapps::AppId expected_id =
+      GenerateAppId(/*manifest_id=*/std::nullopt, kDocumentUrl);
+
+  auto [result_id, result_code] = InstallAndAwaitResult(
+      kDocumentUrl, kManifestUrl, manifest, expected_id,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, /*is_diy_app=*/true);
+
+  EXPECT_TRUE(provider().registrar_unsafe().IsDiyApp(result_id));
 }
 
 }  // namespace web_app
