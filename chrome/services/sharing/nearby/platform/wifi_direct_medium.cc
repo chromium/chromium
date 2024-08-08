@@ -390,12 +390,10 @@ void WifiDirectMedium::ConnectGroup(WifiDirectCredentials* credentials,
   auto credentials_ptr = ash::wifi_direct::mojom::WifiCredentials::New();
   credentials_ptr->ssid = credentials->GetSSID();
   credentials_ptr->passphrase = credentials->GetPassword();
-  std::optional<uint32_t> frequency = credentials->GetFrequency();
-  if (frequency <= 0) {
-    frequency = std::nullopt;
-  }
+  int frequency = credentials->GetFrequency();
   wifi_direct_manager_->ConnectToWifiDirectGroup(
-      std::move(credentials_ptr), frequency,
+      std::move(credentials_ptr),
+      frequency > 0 ? std::optional(frequency) : std::nullopt,
       base::BindOnce(&WifiDirectMedium::OnGroupConnected,
                      base::Unretained(this), waitable_event));
 }

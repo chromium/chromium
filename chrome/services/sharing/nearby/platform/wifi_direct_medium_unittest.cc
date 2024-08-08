@@ -429,7 +429,7 @@ TEST_F(WifiDirectMediumTest,
         WifiDirectCredentials credentials;
         credentials.SetSSID(kTestSSID);
         credentials.SetPassword(kTestPassword);
-        credentials.SetFrequency(0);
+        credentials.SetFrequency(-1);
         EXPECT_TRUE(medium->ConnectWifiDirect(&credentials));
       },
       medium()));
