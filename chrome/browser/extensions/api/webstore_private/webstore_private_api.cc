@@ -271,6 +271,8 @@ ConvertExtensionInstallStatusForAPI(ExtensionInstallStatus status) {
     case kDeprecatedManifestVersion:
       return api::webstore_private::ExtensionInstallStatus::
           kDeprecatedManifestVersion;
+    case kCorrupted:
+      return api::webstore_private::ExtensionInstallStatus::kCorrupted;
   }
   return api::webstore_private::ExtensionInstallStatus::kNone;
 }

@@ -198,7 +198,9 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
   }
 
   if (registry->disabled_extensions().Contains(extension_id)) {
-    return kDisabled;
+    bool is_corrupted = ExtensionPrefs::Get(profile)->HasDisableReason(
+        extension_id, disable_reason::DISABLE_CORRUPTED);
+    return is_corrupted ? kCorrupted : kDisabled;
   }
 
   return kInstallable;

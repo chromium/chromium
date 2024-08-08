@@ -600,6 +600,16 @@ TEST_F(ExtensionInstallStatusTest,
                 PermissionSet(), /*manifest_version=*/3));
 }
 
+// If an existing, installed extension is disabled due to corruption, then
+// GetWebstoreExtensionInstallStatus() should return kCorrupted.
+TEST_F(ExtensionInstallStatusTest, ExtensionCorrupted) {
+  ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
+  ExtensionPrefs::Get(profile())->AddDisableReason(
+      kExtensionId, extensions::disable_reason::DISABLE_CORRUPTED);
+  EXPECT_EQ(ExtensionInstallStatus::kCorrupted,
+            GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
+}
+
 class SupervisedUserExtensionInstallStatusTest
     : public ExtensionInstallStatusTest {
  public:

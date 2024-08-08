@@ -268,6 +268,17 @@ TEST_F(WebstorePrivateGetExtensionStatusTest,
   VerifyResponse(ExtensionInstallStatus::kInstallable, *response);
 }
 
+TEST_F(WebstorePrivateGetExtensionStatusTest, ExtensionCorrupted) {
+  ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
+  ExtensionPrefs::Get(profile())->SetExtensionDisabled(
+      kExtensionId, disable_reason::DISABLE_CORRUPTED);
+  auto function =
+      base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
+  std::optional<base::Value> response = RunFunctionAndReturnValue(
+      function.get(), GenerateArgs(kExtensionId, kExtensionManifest));
+  VerifyResponse(ExtensionInstallStatus::kCorrupted, *response);
+}
+
 class SupervisedUserWebstorePrivateGetExtensionStatusTest
     : public WebstorePrivateGetExtensionStatusTest {
  public:
