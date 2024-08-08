@@ -9,6 +9,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CalendarEvent} from '../../../google_calendar.mojom-webui.js';
 import {I18nMixinLit} from '../../../i18n_setup.js';
+import {WindowProxy} from '../../../window_proxy.js';
 
 import {getCss} from './calendar_event.css.js';
 import {getHtml} from './calendar_event.html.js';
@@ -119,7 +120,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
     // Start time of event in milliseconds since Windows epoch.
     const startTime = toJsTimestamp(this.event.startTime);
     // Current time in milliseconds since Windows epoch.
-    const now = Date.now().valueOf();
+    const now = WindowProxy.getInstance().now().valueOf();
 
     const minutesUntilMeeting =
         Math.round((startTime - now) / kMillisecondsInMinute);
@@ -140,13 +141,14 @@ export class CalendarEventElement extends CalendarEventElementBase {
     recordCalendarAction(CalendarAction.ATTACHMENT_CLICKED, this.moduleName);
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number(currentTarget.dataset['index']);
-    window.location.href = this.event.attachments[index]!.resourceUrl.url;
+    WindowProxy.getInstance().navigate(
+        this.event.attachments[index]!.resourceUrl.url);
   }
 
   protected openVideoConference_() {
     recordCalendarAction(
         CalendarAction.CONFERENCE_CALL_CLICKED, this.moduleName);
-    window.location.href = this.event.conferenceUrl!.url;
+    WindowProxy.getInstance().navigate(this.event.conferenceUrl!.url);
   }
 
   protected recordHeaderClick_() {
