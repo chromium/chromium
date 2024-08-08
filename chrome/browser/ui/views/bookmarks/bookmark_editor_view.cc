@@ -91,6 +91,14 @@ BookmarkEditorView::BookmarkEditorView(
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kControl));
   Init();
+
+  // TODO(crbug.com/40863584):  We need this View to have a role before setting
+  // its name, but if we set it to dialog, we'll wind up with a dialog (this
+  // view) inside of a dialog (RootView). Note that both views also share the
+  // same accessible name. In the meantime, give it a generic role.
+  GetViewAccessibility().SetRole(ax::mojom::Role::kPane);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF8(IDS_BOOKMARK_EDITOR_TITLE));
 }
 
 BookmarkEditorView::~BookmarkEditorView() {
@@ -141,20 +149,6 @@ void BookmarkEditorView::ContentsChanged(views::Textfield* sender,
 bool BookmarkEditorView::HandleKeyEvent(views::Textfield* sender,
                                         const ui::KeyEvent& key_event) {
     return false;
-}
-
-void BookmarkEditorView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::DialogDelegateView::GetAccessibleNodeData(node_data);
-
-  // TODO(crbug.com/40863584): Currently DialogDelegateView does not override
-  // GetAccessibleNodeData, thus the call above accomplishes nothing. We need
-  // this View to have a role before setting its name, but if we set it to
-  // dialog, we'll wind up with a dialog (this view) inside of a dialog
-  // (RootView). Note that both views also share the same accessible name.
-  // In the meantime, give it a generic role.
-  node_data->role = ax::mojom::Role::kPane;
-  node_data->SetNameChecked(
-      l10n_util::GetStringUTF8(IDS_BOOKMARK_EDITOR_TITLE));
 }
 
 bool BookmarkEditorView::IsCommandIdChecked(int command_id) const {

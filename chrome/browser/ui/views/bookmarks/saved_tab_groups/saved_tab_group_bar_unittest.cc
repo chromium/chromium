@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -25,6 +26,7 @@
 #include "components/saved_tab_groups/types.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_utils.h"
 
 namespace tab_groups {
@@ -717,6 +719,15 @@ TEST_P(SavedTabGroupBarUnitTest, OnlyShowEverthingButtonForV2) {
 
   // Everything button is visible.
   EXPECT_TRUE(saved_tab_group_bar()->children()[1]->GetVisible());
+}
+
+TEST_P(SavedTabGroupBarUnitTest, AccessibleProperties) {
+  ui::AXNodeData data;
+
+  saved_tab_group_bar()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kToolbar, data.role);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ACCNAME_SAVED_TAB_GROUPS),
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
 INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,

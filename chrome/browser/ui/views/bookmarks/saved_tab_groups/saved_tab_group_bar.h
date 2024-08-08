@@ -64,9 +64,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   content::PageNavigator* page_navigator() { return page_navigator_; }
   views::View* overflow_button() { return overflow_button_; }
 
-  // views::AccessiblePaneView
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   // views::View
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;

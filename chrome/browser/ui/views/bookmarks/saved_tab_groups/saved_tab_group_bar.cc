@@ -233,6 +233,10 @@ SavedTabGroupBar::SavedTabGroupBar(
   }
 
   ReorderChildView(overflow_button_, children().size());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ACCNAME_SAVED_TAB_GROUPS));
 }
 
 SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
@@ -262,12 +266,6 @@ void SavedTabGroupBar::ShowEverythingMenu() {
   everything_menu_ = std::make_unique<STGEverythingMenu>(
       overflow_button_->button_controller(), browser_);
   everything_menu_->RunMenu();
-}
-
-void SavedTabGroupBar::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kToolbar;
-  node_data->SetNameChecked(
-      l10n_util::GetStringUTF16(IDS_ACCNAME_SAVED_TAB_GROUPS));
 }
 
 std::optional<size_t> SavedTabGroupBar::GetIndexOfGroup(
