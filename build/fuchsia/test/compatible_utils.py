@@ -35,6 +35,13 @@ def running_unattended() -> bool:
     return 'SWARMING_SERVER' in os.environ
 
 
+def force_running_unattended() -> None:
+    """Treats everything as running non-interactively."""
+    if not running_unattended():
+        os.environ['SWARMING_SERVER'] = '1'
+        assert running_unattended()
+
+
 def get_host_arch() -> str:
     """Retrieve CPU architecture of the host machine. """
     host_arch = platform.machine()

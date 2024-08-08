@@ -94,7 +94,8 @@ def run_tests(package_deps: List[str],
        Note:
          All the packages in tests will always be included, and it's expected
          that the far files sharing the same name as the package in TestCase
-         except for the suffix. E.g. test1.far is the far file of test1.cm.
+         except for the suffix. E.g. test1.far is the far file of
+         fuchsia-pkg://fuchsia.com/test1#meta/some.cm.
 
          Duplicated packages in either package_deps or tests are allowed as long
          as they are targeting the same file; otherwise the test run would
@@ -102,7 +103,7 @@ def run_tests(package_deps: List[str],
 
          Far fils in the package_deps can be either absolute paths or relative
          paths starting from --out-dir.
-  """
+    """
     # The 'bundled-tests' is a place holder and has no specific meaning; the
     # run_test._get_test_runner is overridden.
     sys.argv.append('bundled-tests')

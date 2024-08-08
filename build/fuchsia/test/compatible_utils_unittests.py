@@ -161,5 +161,14 @@ class CompatibleUtilsTest(unittest.TestCase):
         self.assertIsNotNone(compatible_utils.get_ssh_keys())
 
 
+    def test_force_running_unattended(self) -> None:
+        """Test |force_running_unattended|."""
+        if compatible_utils.running_unattended():
+            del os.environ['SWARMING_SERVER']
+        self.assertFalse(compatible_utils.running_unattended())
+        compatible_utils.force_running_unattended()
+        self.assertTrue(compatible_utils.running_unattended())
+
+
 if __name__ == '__main__':
     unittest.main()
