@@ -125,17 +125,24 @@ class RatioBootstrapEstimator {
   // first digit after the decimal point.
   //
   // Confidence level is typically a number like 0.95 (95% CI) or 0.99.
+  //
+  // If compute_geometric_mean is set to true, you will get an extra
+  // estimate at the end, estimating the geometric mean between all the
+  // other ratios.
   std::vector<Estimate> ComputeRatioEstimates(
       const std::vector<std::vector<Sample>>& data,
       unsigned num_resamples,
-      double confidence_level);
+      double confidence_level,
+      bool compute_geometric_mean);
 
   // Pulled out for unit testing only.
   static double InverseNormalCDF(double p);
 
  private:
-  static double EstimateRatioExcept(
-      const std::vector<RatioBootstrapEstimator::Sample>& x,
+  static double EstimateRatioExcept(const std::vector<Sample>& x,
+                                    int skip_index);
+  static double EstimateGeometricMeanExcept(
+      const std::vector<std::vector<Sample>>& x,
       int skip_index);
 
   // mt19937 isn't a great PRNG (for one, it has huge state), but

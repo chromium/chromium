@@ -157,11 +157,23 @@ double RatioBootstrapEstimator::EstimateRatioExcept(
   return before / after;
 }
 
+// Similar, for the geometric mean across all the data sets.
+double RatioBootstrapEstimator::EstimateGeometricMeanExcept(
+    const vector<vector<RatioBootstrapEstimator::Sample>>& x,
+    int skip_index) {
+  double geometric_mean = 1.0;
+  for (const auto& samples : x) {
+    geometric_mean *= EstimateRatioExcept(samples, skip_index);
+  }
+  return pow(geometric_mean, 1.0 / x.size());
+}
+
 vector<RatioBootstrapEstimator::Estimate>
 RatioBootstrapEstimator::ComputeRatioEstimates(
     const vector<vector<RatioBootstrapEstimator::Sample>>& data,
     unsigned num_resamples,
-    double confidence_level) {
+    double confidence_level,
+    bool compute_geometric_mean) {
   if (data.empty() || num_resamples < 10 || confidence_level <= 0.0 ||
       confidence_level >= 1.0) {
     return {};
@@ -177,12 +189,16 @@ RatioBootstrapEstimator::ComputeRatioEstimates(
   unique_ptr<double[]> before(new double[num_dimensions]);
   unique_ptr<double[]> after(new double[num_dimensions]);
   unique_ptr<double[]> all_estimates(
-      new double[num_dimensions * num_resamples]);
+      new double[(num_dimensions + compute_geometric_mean) * num_resamples]);
 
   // Do our bootstrap resampling. Note that we can sample independently
   // from the numerator and denumerator (which the R packages cannot do);
   // this makes sense, because they are not pairs. This allows us to sometimes
   // get slightly narrower confidence intervals.
+  //
+  // When computing the geometric mean, we could perhaps consider doing
+  // similar independent sampling across the various data sets, but we
+  // currently don't do so.
   for (unsigned i = 0; i < num_resamples; ++i) {
     for (unsigned d = 0; d < num_dimensions; ++d) {
       before[d] = 0.0;
@@ -200,21 +216,32 @@ RatioBootstrapEstimator::ComputeRatioEstimates(
         after[d] += data[d][index2].after;
       }
     }
+    double geometric_mean = 1.0;
     for (unsigned d = 0; d < num_dimensions; ++d) {
-      all_estimates[d * num_resamples + i] = before[d] / after[d];
+      double ratio = before[d] / after[d];
+      all_estimates[d * num_resamples + i] = ratio;
+      geometric_mean *= ratio;
+    }
+    if (compute_geometric_mean) {
+      all_estimates[num_dimensions * num_resamples + i] =
+          pow(geometric_mean, 1.0 / num_dimensions);
     }
   }
 
   // Make our point estimates.
   vector<Estimate> result;
-  for (unsigned d = 0; d < num_dimensions; ++d) {
+  for (unsigned d = 0; d < num_dimensions + compute_geometric_mean; ++d) {
+    bool is_geometric_mean = (d == num_dimensions);
+
     double* estimates = &all_estimates[d * num_resamples];
 
     // FindCDF() and others expect sorted data.
     sort(estimates, estimates + num_resamples);
 
     // Make our point estimate.
-    double point_estimate = EstimateRatioExcept(data[d], -1);
+    double point_estimate = is_geometric_mean
+                                ? EstimateGeometricMeanExcept(data, -1)
+                                : EstimateRatioExcept(data[d], -1);
 
     // Compute bias correction, Eq. (2.9).
     double z0 =
@@ -228,10 +255,21 @@ RatioBootstrapEstimator::ComputeRatioEstimates(
     // completely insigificant in practice.
     double sum_d_squared = 0.0;
     double sum_d_cubed = 0.0;
-    for (unsigned i = 0; i < data[d].size(); ++i) {
-      double dd = point_estimate - EstimateRatioExcept(data[d], i);
-      sum_d_squared += dd * dd;
-      sum_d_cubed += dd * dd * dd;
+    if (is_geometric_mean) {
+      // NOTE: If there are differing numbers of samples in the different
+      // data series, this will be ever so slightly off, but the effect
+      // should hopefully be small.
+      for (unsigned i = 0; i < num_observations; ++i) {
+        double dd = point_estimate - EstimateGeometricMeanExcept(data, i);
+        sum_d_squared += dd * dd;
+        sum_d_cubed += dd * dd * dd;
+      }
+    } else {
+      for (unsigned i = 0; i < data[d].size(); ++i) {
+        double dd = point_estimate - EstimateRatioExcept(data[d], i);
+        sum_d_squared += dd * dd;
+        sum_d_cubed += dd * dd * dd;
+      }
     }
     double a = sum_d_cubed /
                (6.0 * sqrt(sum_d_squared * sum_d_squared * sum_d_squared));

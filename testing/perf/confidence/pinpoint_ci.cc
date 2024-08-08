@@ -151,7 +151,8 @@ int main(int argc, char** argv) {
   RatioBootstrapEstimator estimator(base::RandUint64());
   constexpr int kNumRuns = 2000;
   vector<RatioBootstrapEstimator::Estimate> estimates =
-      estimator.ComputeRatioEstimates(data, kNumRuns, confidence_level);
+      estimator.ComputeRatioEstimates(data, kNumRuns, confidence_level,
+                                      /*compute_geometric_mean=*/false);
 
   // Sort by name, then print. (We assume all names are ASCII.)
   unsigned data_index = 0;
