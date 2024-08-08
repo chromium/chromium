@@ -131,7 +131,7 @@ public class PopupPTTest {
 
     @Test
     @MediumTest
-    public void testAbusiveGesturePopupBlocked() {
+    public void test030AbusiveGesturePopupBlocked() {
         MockSafeBrowsingApiHandler.addMockResponse(
                 sActivityTestRule.getTestServer().getURL(PopupOnClickPageStation.PATH),
                 MockSafeBrowsingApiHandler.ABUSIVE_EXPERIENCE_VIOLATION_CODE);
