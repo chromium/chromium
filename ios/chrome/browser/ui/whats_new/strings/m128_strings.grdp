@@ -85,7 +85,7 @@
 <message name="IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_SCREENSHOT_TEXT_1" desc="Text in image displaying: Hide for the feature: CustomizableOverflowMenu in What's New. [iOS only]">
         Hide
 </message>
-<message name="IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_SCREENSHOT_TEXT_2" desc="Text in image displaying: Customization for the feature: CustomizableOverflowMenu in What's New. [iOS only]">
-        Customization
+<message name="IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_SCREENSHOT_TEXT_2" desc="Text in image displaying: Customize for the feature: CustomizableOverflowMenu in What's New. [iOS only]">
+        Customize
 </message>
 </grit-part>

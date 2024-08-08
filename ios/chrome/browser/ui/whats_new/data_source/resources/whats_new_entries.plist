@@ -99,7 +99,7 @@
 			<dict>
 				<key>Hide</key>
 				<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_SCREENSHOT_TEXT_1</string>
-				<key>Customization</key>
+				<key>Customize</key>
 				<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_SCREENSHOT_TEXT_2</string>
 			</dict>
 			<key>IconImageName</key>
