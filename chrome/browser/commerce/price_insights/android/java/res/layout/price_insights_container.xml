@@ -14,17 +14,20 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    android:paddingTop="@dimen/price_insights_top_padding"
     android:paddingBottom="@dimen/price_insights_bottom_padding"
     android:paddingStart="@dimen/price_insights_general_padding"
     android:paddingEnd="@dimen/price_insights_general_padding"
     android:background="@drawable/price_insights_sheet_background">
+
+    <!-- The handle bar section -->
+    <include layout="@layout/bottom_sheet_handlebar"/>
 
     <!-- Price tracking section -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height= "wrap_content"
         android:orientation="horizontal"
+        android:layout_marginTop="@dimen/price_insights_content_top_margin"
         android:padding="@dimen/price_insights_general_padding"
         android:background="@drawable/price_insights_sheet_top_corner_background">
         <!-- Price tracking title and description -->
