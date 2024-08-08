@@ -8,6 +8,7 @@
 #include <iosfwd>
 #include <map>
 #include <optional>
+#include <ostream>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -35,6 +36,7 @@ struct PlusProfile {
   PlusProfile& operator=(const PlusProfile&) = default;
   PlusProfile& operator=(PlusProfile&&) = default;
   ~PlusProfile();
+
   friend bool operator==(const PlusProfile&, const PlusProfile&) = default;
 
   std::string profile_id;
@@ -62,6 +64,8 @@ enum class PlusAddressRequestErrorType {
   // The request could not be fulfilled because the user signed out and the
   // network request was cancelled.
   kUserSignedOut = 5,
+  // The plus address was requested for an invalid, e.g. opaque, origin.
+  kInvalidOrigin = 6
 };
 
 class PlusAddressRequestError {

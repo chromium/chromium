@@ -4,11 +4,15 @@
 
 #include "components/plus_addresses/plus_address_preallocator.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check_deref.h"
 #include "base/json/values_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_allocator.h"
 #include "components/plus_addresses/plus_address_http_client.h"
@@ -28,8 +32,11 @@ bool IsOutdatedOrInvalid(const base::Value& preallocated_address) {
   if (!preallocated_address.is_dict()) {
     return true;
   }
-  return base::ValueToTime(preallocated_address.GetDict().Find(
-                               PlusAddressPreallocator::kEndOfLifeKey))
+  const base::Value::Dict& dict = preallocated_address.GetDict();
+  if (!dict.FindString(PlusAddressPreallocator::kPlusAddressKey)) {
+    return true;
+  }
+  return base::ValueToTime(dict.Find(PlusAddressPreallocator::kEndOfLifeKey))
              .value_or(base::Time()) <= base::Time::Now();
 }
 
@@ -42,6 +49,13 @@ base::Value SeralizeAndSetEndOfLife(
                base::TimeToValue(base::Time::Now() + address.lifetime))
           .Set(PlusAddressPreallocator::kPlusAddressKey,
                std::move(address.plus_address)));
+}
+
+// Returns the plus address from its `base::Value` representation. Assumes that
+// `preallocated_address` has a valid format.
+const std::string& GetPlusAddress(const base::Value& preallocated_address) {
+  return *preallocated_address.GetDict().FindString(
+      PlusAddressPreallocator::kPlusAddressKey);
 }
 
 }  // namespace
@@ -72,8 +86,15 @@ void PlusAddressPreallocator::AllocatePlusAddress(
     const url::Origin& origin,
     AllocationMode mode,
     PlusAddressRequestCallback callback) {
-  std::move(callback).Run(base::unexpected(PlusAddressRequestError(
-      PlusAddressRequestErrorType::kRequestNotSupportedError)));
+  auto facet = affiliations::FacetURI::FromPotentiallyInvalidSpec(
+      origin.GetURL().spec());
+  if (!facet.is_valid()) {
+    std::move(callback).Run(base::unexpected(
+        PlusAddressRequestError(PlusAddressRequestErrorType::kInvalidOrigin)));
+    return;
+  }
+  requests_.emplace(std::move(callback), std::move(facet));
+  ProcessAllocationRequests();
 }
 
 bool PlusAddressPreallocator::IsRefreshingSupported(
@@ -91,7 +112,9 @@ void PlusAddressPreallocator::PrunePreallocatedPlusAddresses() {
   // If there were deletions, update the index of the next plus address to make
   // sure it is in bounds (if non-zero).
   const size_t remaining_plus_addresses = update->size();
-  int old_index = pref_service_->GetInteger(prefs::kPreallocatedAddressesNext);
+  const int old_index = GetIndexOfNextPreallocatedAddress();
+  // TODO: crbug.com/324559503 - Protect against corruption with negative
+  // values.
   pref_service_->SetInteger(
       prefs::kPreallocatedAddressesNext,
       remaining_plus_addresses
@@ -110,8 +133,7 @@ void PlusAddressPreallocator::MaybeRequestNewPreallocatedPlusAddresses() {
     return;
   }
 
-  if (static_cast<int>(
-          pref_service_->GetList(prefs::kPreallocatedAddresses).size()) >=
+  if (static_cast<int>(GetPreallocatedAddresses().size()) >=
       features::kPlusAddressPreallocationMinimumSize.Get()) {
     return;
   }
@@ -139,8 +161,62 @@ void PlusAddressPreallocator::OnReceivePreallocatedPlusAddresses(
     update->Append(SeralizeAndSetEndOfLife(std::move(address)));
   }
 
-  // TODO: crbug.com/324559503 - Check whether there are any pending allocation
-  // requests and handle them.
+  ProcessAllocationRequests();
 }
+
+void PlusAddressPreallocator::ProcessAllocationRequests() {
+  while (!requests_.empty()) {
+    std::optional<std::string> next_address = GetNextPreallocatedPlusAddress();
+    if (!next_address) {
+      break;
+    }
+    Request request = std::move(requests_.front());
+    requests_.pop();
+    // TODO: crbug.com/324559503 - Make `profile_id` take `std::nullopt`.
+    std::move(request.callback)
+        .Run(PlusProfile(/*profile_id=*/"0",
+                         /*facet=*/std::move(request.facet),
+                         /*plus_address=*/std::move(next_address).value(),
+                         /*is_confirmed=*/false));
+  }
+  // We may have dipped below the minimum size of the pre-allocated plus address
+  // pool that we want to keep around. If so, request new ones.
+  MaybeRequestNewPreallocatedPlusAddresses();
+}
+
+std::optional<std::string>
+PlusAddressPreallocator::GetNextPreallocatedPlusAddress() {
+  PrunePreallocatedPlusAddresses();
+  const base::Value::List& preallocated_addresses = GetPreallocatedAddresses();
+  const int index = GetIndexOfNextPreallocatedAddress();
+  if (index >= static_cast<int>(preallocated_addresses.size())) {
+    return std::nullopt;
+  }
+  // Increment the index and return the address.
+  pref_service_->SetInteger(
+      prefs::kPreallocatedAddressesNext,
+      (index + 1) % static_cast<int>(preallocated_addresses.size()));
+  return GetPlusAddress(preallocated_addresses[index]);
+}
+
+const base::Value::List& PlusAddressPreallocator::GetPreallocatedAddresses()
+    const {
+  return pref_service_->GetList(prefs::kPreallocatedAddresses);
+}
+
+int PlusAddressPreallocator::GetIndexOfNextPreallocatedAddress() const {
+  return pref_service_->GetInteger(prefs::kPreallocatedAddressesNext);
+}
+
+PlusAddressPreallocator::Request::Request(PlusAddressRequestCallback callback,
+                                          affiliations::FacetURI facet)
+    : callback(std::move(callback)), facet(std::move(facet)) {}
+
+PlusAddressPreallocator::Request::Request(Request&&) = default;
+
+PlusAddressPreallocator::Request& PlusAddressPreallocator::Request::operator=(
+    Request&&) = default;
+
+PlusAddressPreallocator::Request::~Request() = default;
 
 }  // namespace plus_addresses

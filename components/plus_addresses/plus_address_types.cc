@@ -46,6 +46,8 @@ std::ostream& operator<<(std::ostream& os, PlusAddressRequestErrorType type) {
         return "MaxRefreshesReached";
       case PlusAddressRequestErrorType::kUserSignedOut:
         return "UserSignedOut";
+      case PlusAddressRequestErrorType::kInvalidOrigin:
+        return "InvalidOrigin";
     }
   }();
 }

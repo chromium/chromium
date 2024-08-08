@@ -5,11 +5,16 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_PREALLOCATOR_H_
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_PREALLOCATOR_H_
 
+#include <optional>
+#include <string>
 #include <string_view>
 
+#include "base/containers/queue.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/values.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/plus_addresses/plus_address_allocator.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -64,6 +69,21 @@ class PlusAddressPreallocator : public PlusAddressAllocator {
   void OnReceivePreallocatedPlusAddresses(
       PlusAddressHttpClient::PreallocatePlusAddressesResult result);
 
+  // Attempts to process the pending `requests_`. If there are not enough
+  // pre-allocated addresses, it will request more and resume processing once
+  // the request for more pre-allocated addresses has finished.
+  void ProcessAllocationRequests();
+
+  // Returns the next available pre-allocated plus address or `std::nullopt` if
+  // there is none. It does not attempt to pre-allocate more.
+  std::optional<std::string> GetNextPreallocatedPlusAddress();
+
+  // Returns the pre-allocated plus addresses from pref-storage.
+  const base::Value::List& GetPreallocatedAddresses() const;
+
+  // Returns the index of the next pre-allocated plus address from pref-storage.
+  int GetIndexOfNextPreallocatedAddress() const;
+
   // Owned by the `Profile` that (indirectly) owns `this`.
   const raw_ref<PrefService> pref_service_;
 
@@ -77,6 +97,21 @@ class PlusAddressPreallocator : public PlusAddressAllocator {
 
   // Whether a request for more pre-allocated plus addresses is ongoing.
   bool is_server_request_ongoing_ = false;
+
+  // A helper class to keep track of the arguments that were passed when
+  // requesting a plus address allocation.
+  struct Request final {
+    Request(PlusAddressRequestCallback callback, affiliations::FacetURI facet);
+    Request(Request&&);
+    Request& operator=(Request&&);
+    ~Request();
+
+    PlusAddressRequestCallback callback;
+    affiliations::FacetURI facet;
+  };
+  // The pre-allocation requests that have not yet been completed because there
+  // are no pre-allocated plus addresses available. Handled in FIFO order.
+  base::queue<Request> requests_;
 
   base::WeakPtrFactory<PlusAddressPreallocator> weak_ptr_factory_{this};
 };
