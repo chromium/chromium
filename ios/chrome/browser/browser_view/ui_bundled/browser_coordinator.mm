@@ -74,7 +74,7 @@
 #import "ios/chrome/browser/download/ui_bundled/pass_kit_coordinator.h"
 #import "ios/chrome/browser/download/ui_bundled/safari_download_coordinator.h"
 #import "ios/chrome/browser/download/ui_bundled/vcard_coordinator.h"
-#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_coordinator.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_util.h"
 #import "ios/chrome/browser/find_bar/ui_bundled/find_bar_controller_ios.h"
@@ -593,7 +593,7 @@ enum class ToolbarKind {
   std::unique_ptr<WebUsageEnablerBrowserAgentObserverBridge>
       _webUsageEnablerObserver;
   ContextualSheetCoordinator* _contextualSheetCoordinator;
-  DriveFilePickerCoordinator* _driveFilePickerCoordinator;
+  RootDriveFilePickerCoordinator* _driveFilePickerCoordinator;
 
   // The coordinator for the new Delete Browsing Data screen, also called Quick
   // Delete.
@@ -2258,7 +2258,7 @@ enum class ToolbarKind {
     return;
   }
   // Start the coordinator.
-  _driveFilePickerCoordinator = [[DriveFilePickerCoordinator alloc]
+  _driveFilePickerCoordinator = [[RootDriveFilePickerCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
                         webState:activeWebState];

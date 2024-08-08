@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_coordinator.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h"
 
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -14,14 +15,16 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 
-@interface DriveFilePickerCoordinator () <
-    UIAdaptivePresentationControllerDelegate>
+@interface RootDriveFilePickerCoordinator () <
+    UIAdaptivePresentationControllerDelegate,
+    DriveFilePickerMediatorDelegate>
 
 @end
 
-@implementation DriveFilePickerCoordinator {
+@implementation RootDriveFilePickerCoordinator {
   DriveFilePickerNavigationController* _navigationController;
   DriveFilePickerMediator* _mediator;
+  DriveFilePickerTableViewController* _viewController;
   // WebState for which the Drive file picker is presented.
   base::WeakPtr<web::WebState> _webState;
 }
@@ -38,10 +41,9 @@
 }
 
 - (void)start {
-  DriveFilePickerTableViewController* rootViewController =
-      [[DriveFilePickerTableViewController alloc] init];
+  _viewController = [[DriveFilePickerTableViewController alloc] init];
   _navigationController = [[DriveFilePickerNavigationController alloc]
-      initWithRootViewController:rootViewController];
+      initWithRootViewController:_viewController];
   _mediator =
       [[DriveFilePickerMediator alloc] initWithWebState:_webState.get()];
 
@@ -60,8 +62,8 @@
 
   id<DriveFilePickerCommands> driveFilePickerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
-  rootViewController.driveFilePickerHandler = driveFilePickerHandler;
-  rootViewController.mutator = _mediator;
+  _viewController.driveFilePickerHandler = driveFilePickerHandler;
+  _viewController.mutator = _mediator;
   _navigationController.driveFilePickerHandler = driveFilePickerHandler;
 
   [self.baseViewController presentViewController:_navigationController
@@ -72,11 +74,15 @@
 - (void)stop {
   [_mediator disconnect];
   _mediator = nil;
-
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:nil];
   _navigationController = nil;
+  _viewController = nil;
+  for (ChromeCoordinator* coordinator in self.childCoordinators) {
+    [coordinator stop];
+  }
+  [self.childCoordinators removeAllObjects];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -89,6 +95,22 @@
   id<DriveFilePickerCommands> driveFilePickerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
   [driveFilePickerHandler hideDriveFilePicker];
+}
+
+#pragma mark - DriveFilePickerMediatorDelegate
+
+- (void)browseDriveFolderWithMediator:
+            (DriveFilePickerMediator*)driveFilePickerMediator
+                          driveFolder:(NSString*)driveFolder {
+  // TODO(crbug.com/344812548): Start the `BrowseDriveFilePickerCoordinator` and
+  // add it as child coordinator.
+}
+
+- (void)searchDriveFolderWithMediator:
+            (DriveFilePickerMediator*)driveFilePickerMediator
+                          driveFolder:(NSString*)driveFolder {
+  // TODO(crbug.com/344812548): Start the `SearchDriveFilePickerCoordinator` and
+  // add it as child coordinator.
 }
 
 @end

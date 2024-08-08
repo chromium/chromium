@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_DRIVE_FILE_PICKER_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_DRIVE_FILE_PICKER_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_ROOT_DRIVE_FILE_PICKER_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_ROOT_DRIVE_FILE_PICKER_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
@@ -12,7 +12,7 @@ class WebState;
 }
 
 // Coordinator of the Drive file picker.
-@interface DriveFilePickerCoordinator : ChromeCoordinator
+@interface RootDriveFilePickerCoordinator : ChromeCoordinator
 
 // Creates a coordinator that uses `viewController`, `browser` and `webState`.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -24,4 +24,4 @@ class WebState;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_DRIVE_FILE_PICKER_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_ROOT_DRIVE_FILE_PICKER_COORDINATOR_H_
