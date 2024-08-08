@@ -4,7 +4,6 @@
 
 package com.android.webview.chromium;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.android_webview.common.Lifetime;
@@ -21,9 +20,5 @@ public interface PrefetchCallback {
 
     void onPrefetchDeterminedHead();
 
-    void onPrefetchStartFailure(@Nullable String failureMessage);
-
     void onPrefetchFailure(@Nullable String failureMessage);
-
-    void onException(@NonNull Exception exception);
 }

@@ -4,7 +4,6 @@
 
 package org.chromium.support_lib_boundary;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /** Boundary interface for PrefetchCallback. */
@@ -17,9 +16,5 @@ public interface PrefetchCallbackBoundaryInterface {
 
     void onPrefetchDeterminedHead();
 
-    void onPrefetchStartFailure(@Nullable String failureMessage);
-
     void onPrefetchFailure(@Nullable String failureMessage);
-
-    void onException(@NonNull Exception exception);
 }

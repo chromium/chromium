@@ -103,18 +103,8 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
                     }
 
                     @Override
-                    public void onPrefetchStartFailure(String failureMessage) {
-                        prefetchCallback.onPrefetchStartFailure(failureMessage);
-                    }
-
-                    @Override
                     public void onPrefetchFailure(String failureMessage) {
                         prefetchCallback.onPrefetchFailure(failureMessage);
-                    }
-
-                    @Override
-                    public void onException(Exception exception) {
-                        prefetchCallback.onException(exception);
                     }
                 },
                 callbackExecutor);
