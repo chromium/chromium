@@ -20,10 +20,10 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 
-using testing::Contains;
-using testing::ElementsAre;
-using testing::Eq;
-using testing::StartsWith;
+using ::testing::Contains;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::StartsWith;
 
 namespace blink {
 
