@@ -448,7 +448,7 @@ void ViewAccessibility::SetName(std::u16string name,
       data_.role = data.role;
     }
 
-    data_.SetName(name);
+    data_.SetNameChecked(name);
   }
 
   view_->OnAccessibleNameChanged(name);
