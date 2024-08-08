@@ -337,6 +337,7 @@ void ManagePasswordsState::OpenPasswordDetailsBubble(
 
 void ManagePasswordsState::ClearData() {
   form_manager_.reset();
+  clear_selected_password();
   local_credentials_forms_.clear();
   credentials_callback_.Reset();
   unsynced_credentials_.clear();
