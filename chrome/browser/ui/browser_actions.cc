@@ -454,6 +454,19 @@ void BrowserActions::InitializeBrowserActions() {
               !sharing_hub::SharingIsDisabledByPolicy(browser->profile()))
           .Build());
 
+  root_action_item_->AddChild(
+      ChromeMenuAction(base::BindRepeating(
+                           [](Browser* browser, actions::ActionItem* item,
+                              actions::ActionInvocationContext context) {
+                             // TODO(b/323962377): Add functionality.
+                           },
+                           base::Unretained(browser)),
+                       kActionRouteMedia, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
+                       IDS_MEDIA_ROUTER_ICON_TOOLTIP_TEXT,
+                       kCastChromeRefreshIcon)
+          .SetEnabled(chrome::CanRouteMedia(browser))
+          .Build());
+
   AddListeners();
 }
 

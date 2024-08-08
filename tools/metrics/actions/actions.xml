@@ -45045,6 +45045,7 @@ should be able to be added at any place in this file.
   <suffix name="HomeButton" label="Home button"/>
   <suffix name="MediaButton" label="Media button"/>
   <suffix name="NewTabButton" label="New tab button for thumbnail tab strip"/>
+  <suffix name="PinnedCastButton" label="Pinned cast button"/>
   <suffix name="PinnedClearBrowsingDataButton"
       label="Pinned clear browsing data button"/>
   <suffix name="PinnedCopyLinkButton" label="Pinned copy link button"/>

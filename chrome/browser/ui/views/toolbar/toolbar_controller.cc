@@ -295,6 +295,7 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
           {kActionNewIncognitoWindow, "PinnedNewIncognitoWindowButton"},
           {kActionPrint, "PinnedPrintButton"},
           {kActionQrCodeGenerator, "PinnedQrCodeGeneratorButton"},
+          {kActionRouteMedia, "PinnedCastButton"},
           {kActionSendTabToSelf, "PinnedSendTabToSelfButton"},
           {kActionShowAddressesBubbleOrPage,
            "PinnedShowAddressesBubbleOrPageButton"},
