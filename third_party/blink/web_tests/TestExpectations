@@ -2589,6 +2589,15 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win11-arm64 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/compute-explicit-name-direct.tentative.html [ Failure ]
+[ Win11-arm64 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/compute-explicit-name-nested-vt-names.tentative.html [ Failure ]
+[ Win11-arm64 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/nearest-nested.tentative.html [ Failure ]
+[ Win11-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/compute-explicit-name-nested-vt-names.tentative.html [ Failure ]
+[ Win11-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/compute-explicit-name-self.tentative.html [ Failure ]
+[ Win11-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nested-group-in-pseudo-basic.tentative.html [ Failure ]
+[ Win11-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/normal-goes-up.tentative.html [ Failure ]
+[ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/matmul.https.any.html?gpu [ Crash ]
+[ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/matmul.https.any.html?gpu [ Crash ]
 crbug.com/358159989 external/wpt/css/css-images/conic-gradient-angle-negative.html [ Failure ]
 crbug.com/358159989 external/wpt/css/css-images/conic-gradient-angle.html [ Failure ]
 crbug.com/358159989 external/wpt/css/css-images/conic-gradient-center.html [ Failure ]
