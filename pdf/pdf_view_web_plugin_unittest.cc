@@ -357,7 +357,7 @@ class PdfViewWebPluginWithoutInitializeTest
   }
 
   void SetUpPlugin(std::string_view document_url,
-                   const blink::WebPluginParams& params) {
+                   blink::WebPluginParams params) {
     auto client = std::make_unique<NiceMock<FakePdfViewWebPluginClient>>();
     client_ptr_ = client.get();
 
@@ -388,7 +388,7 @@ class PdfViewWebPluginWithoutInitializeTest
             std::move(client),
             mojo::AssociatedRemote<pdf::mojom::PdfHost>(
                 pdf_receiver_.BindNewEndpointAndPassDedicatedRemote()),
-            params));
+            std::move(params)));
   }
 
   void SetUpPluginWithUrl(const std::string& url) {
@@ -396,7 +396,7 @@ class PdfViewWebPluginWithoutInitializeTest
     AddToPluginParams("src", url, params);
     SetUpPluginParams(params);
 
-    SetUpPlugin(url, params);
+    SetUpPlugin(url, std::move(params));
   }
 
   // Allows derived classes to customize plugin parameters within

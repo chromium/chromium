@@ -302,13 +302,13 @@ PdfViewWebPlugin::Client::CreateAccessibilityDataHandler(
 PdfViewWebPlugin::PdfViewWebPlugin(
     std::unique_ptr<Client> client,
     mojo::AssociatedRemote<pdf::mojom::PdfHost> pdf_host,
-    const blink::WebPluginParams& params)
+    blink::WebPluginParams params)
     : client_(std::move(client)),
       pdf_host_(std::move(pdf_host)),
 #if BUILDFLAG(ENABLE_PDF_INK2)
       ink_module_(MaybeCreatePdfInkModule(*this)),
 #endif
-      initial_params_(params) {
+      initial_params_(std::move(params)) {
   DCHECK(pdf_host_);
   pdf_host_->SetListener(listener_receiver_.BindNewPipeAndPassRemote());
 }

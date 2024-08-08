@@ -240,7 +240,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 
   PdfViewWebPlugin(std::unique_ptr<Client> client,
                    mojo::AssociatedRemote<pdf::mojom::PdfHost> pdf_host,
-                   const blink::WebPluginParams& params);
+                   blink::WebPluginParams params);
   PdfViewWebPlugin(const PdfViewWebPlugin& other) = delete;
   PdfViewWebPlugin& operator=(const PdfViewWebPlugin& other) = delete;
 
