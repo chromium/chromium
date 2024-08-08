@@ -1746,6 +1746,16 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.MagicStack.Module.Click.PriceTrackingPromo" units="index"
+    expires_after="2025-08-06">
+  <owner>davidjm@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the rank index of the Price Tracking Promo module when a user taps
+    on it.
+  </summary>
+</histogram>
+
 <histogram name="IOS.MagicStack.Module.Click.SafetyCheck" units="index"
     expires_after="2025-01-26">
   <owner>thegreenfrog@chromium.org</owner>

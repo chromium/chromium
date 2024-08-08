@@ -80,7 +80,9 @@ const float kMaxModuleEngagementIndex = 50;
           kMaxModuleEngagementIndex);
       break;
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
-      // TODO(crbug.com/357829366) Add histogram for PriceTrackingPromo
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementPriceTrackingPromoIndexHistogram, index,
+          kMaxModuleEngagementIndex);
       break;
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
