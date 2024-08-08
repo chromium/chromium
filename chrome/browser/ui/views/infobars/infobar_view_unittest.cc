@@ -5,8 +5,11 @@
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
@@ -76,6 +79,10 @@ class InfoBarViewTest : public BrowserWithTestWindowTest {
     return params;
   }
 
+  InfoBarContainerView* info_bar_container_view() {
+    return infobar_container_view_;
+  }
+
   // Detaches |infobar_container_view_| from infobar_manager(), so that newly-
   // created infobars will not be placed in a container.  This can be used to
   // simulate creating an infobar in a background tab.
@@ -93,4 +100,24 @@ TEST_F(InfoBarViewTest, AlertAccessibleEvent) {
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
   TestInfoBarDelegate::Create(infobar_manager());
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
+}
+
+TEST_F(InfoBarViewTest, AccessibleProperties) {
+  // InfoBarView accessible properties test.
+  InfoBarView* view = TestInfoBarDelegate::Create(infobar_manager());
+  ui::AXNodeData data;
+
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kAlertDialog, data.role);
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ACCNAME_INFOBAR),
+            data.GetStringAttribute(ax::mojom::StringAttribute::kName));
+
+  // InfoBarContainerView accessible properties test.
+  auto* container = info_bar_container_view();
+
+  data = ui::AXNodeData();
+  container->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kGroup, data.role);
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ACCNAME_INFOBAR_CONTAINER),
+            data.GetStringAttribute(ax::mojom::StringAttribute::kName));
 }

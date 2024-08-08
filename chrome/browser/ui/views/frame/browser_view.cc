@@ -1025,6 +1025,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   WebUIContentsPreloadManager::GetInstance()->WarmupForBrowser(browser_.get());
 
   browser_->GetFeatures().InitPostBrowserViewConstruction(this);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kClient);
 }
 
 void BrowserView::ToggleCompactModeUI() {
@@ -4526,10 +4528,6 @@ void BrowserView::PaintChildren(const views::PaintInfo& paint_info) {
     startup_metric_utils::GetBrowser().RecordBrowserWindowFirstPaint(
         base::TimeTicks::Now());
   }
-}
-
-void BrowserView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kClient;
 }
 
 void BrowserView::OnThemeChanged() {

@@ -48,6 +48,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/gfx/scrollbar_size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/webview/webview.h"
@@ -607,6 +608,13 @@ TEST_F(BrowserViewTest, RotatePaneFocusFromView) {
   // the focus.
   EXPECT_FALSE(browser_view()->RotatePaneFocusFromView(nullptr, true, false));
   EXPECT_EQ(ok_button, focus_manager->GetStoredFocusView());
+}
+
+TEST_F(BrowserViewTest, AccessibleProperties) {
+  ui::AXNodeData data;
+
+  browser_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kClient);
 }
 
 //  Macs do not have fullscreen policy.

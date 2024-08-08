@@ -139,6 +139,7 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/button_drag_utils.h"
@@ -223,6 +224,7 @@ LocationBarView::LocationBarView(Browser* browser,
       AppShimRegistry::Get()->RegisterAppChangedCallback(base::BindRepeating(
           &LocationBarView::OnAppShimChanged, base::Unretained(this)));
 #endif
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
 }
 
 LocationBarView::~LocationBarView() = default;
@@ -587,10 +589,6 @@ void LocationBarView::OnDidChangeFocus(views::View* before, views::View* now) {
 
 bool LocationBarView::HasFocus() const {
   return omnibox_view_ && omnibox_view_->model()->has_focus();
-}
-
-void LocationBarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kGroup;
 }
 
 gfx::Size LocationBarView::GetMinimumSize() const {

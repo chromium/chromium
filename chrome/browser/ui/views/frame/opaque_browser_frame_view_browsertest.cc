@@ -259,6 +259,18 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, Fullscreen) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, AccessibleProperties) {
+  if (!InstallAndLaunchWebApp()) {
+    return;
+  }
+
+  ui::AXNodeData data;
+
+  opaque_browser_frame_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kPane);
+}
+
 #if BUILDFLAG(IS_WIN)
 class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     : public InProcessBrowserTest {

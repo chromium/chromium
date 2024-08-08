@@ -82,9 +82,6 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   // TabIconViewModel:
   bool ShouldTabIconViewAnimate() const override;
   ui::ImageModel GetFaviconForTabIconView() override;

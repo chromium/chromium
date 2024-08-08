@@ -50,6 +50,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_utils.h"
 
 class LocationBarViewBrowserTest : public InProcessBrowserTest {
@@ -238,6 +239,14 @@ IN_PROC_BROWSER_TEST_F(TouchLocationBarViewBrowserTest,
   // |omnibox_view_views|.
   EXPECT_EQ(omnibox_view_views->bounds().right(),
             ime_inline_autocomplete_view->x());
+}
+
+IN_PROC_BROWSER_TEST_F(TouchLocationBarViewBrowserTest, AccessibleProperties) {
+  auto* view = GetLocationBarView();
+  ui::AXNodeData data;
+
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kGroup);
 }
 
 class SecurityIndicatorTest : public InProcessBrowserTest {
