@@ -47,35 +47,30 @@ class NoBackendProgramCache : public ProgramCache {
                              std::map<std::string, GLint>* attrib_map,
                              const std::vector<std::string>& varyings,
                              GLenum buffer_mode) {
-    uint8_t a_sha[kHashLength];
-    uint8_t b_sha[kHashLength];
+    Hash a_sha;
+    Hash b_sha;
     ComputeShaderHash(shader1, a_sha);
     ComputeShaderHash(shader2, b_sha);
 
-    uint8_t sha[kHashLength];
-    ComputeProgramHash(a_sha,
-                       b_sha,
-                       attrib_map,
-                       varyings,
-                       buffer_mode,
-                       sha);
-    CompiledShaderCacheSuccess(std::string(base::as_string_view(a_sha)));
-    CompiledShaderCacheSuccess(std::string(base::as_string_view(b_sha)));
-    LinkedProgramCacheSuccess(std::string(base::as_string_view(sha)));
+    Hash program_sha;
+    ComputeProgramHash(a_sha, b_sha, attrib_map, varyings, buffer_mode,
+                       program_sha);
+    CompiledShaderCacheSuccess(a_sha);
+    CompiledShaderCacheSuccess(b_sha);
+    LinkedProgramCacheSuccess(program_sha);
   }
 
-  void ComputeShaderHash(const std::string& shader,
-                         base::span<uint8_t, kHashLength> result) const {
+  void ComputeShaderHash(const std::string& shader, Hash& result) const {
     ProgramCache::ComputeShaderHash(shader, result);
   }
 
   void ComputeProgramHash(
-      base::span<const uint8_t, kHashLength> hashed_shader_0,
-      base::span<const uint8_t, kHashLength> hashed_shader_1,
+      HashView hashed_shader_0,
+      HashView hashed_shader_1,
       const LocationMap* bind_attrib_location_map,
       const std::vector<std::string>& transform_feedback_varyings,
       GLenum transform_feedback_buffer_mode,
-      base::span<uint8_t, kHashLength> result) const {
+      Hash& result) const {
     ProgramCache::ComputeProgramHash(hashed_shader_0,
                                      hashed_shader_1,
                                      bind_attrib_location_map,
@@ -84,9 +79,9 @@ class NoBackendProgramCache : public ProgramCache {
                                      result);
   }
 
-  void Evict(const std::string& program_hash,
-             const std::string& shader_0_hash,
-             const std::string& shader_1_hash) {
+  void Evict(const Hash& program_hash,
+             const Hash& shader_0_hash,
+             const Hash& shader_1_hash) {
     ProgramCache::Evict(program_hash, shader_0_hash, shader_1_hash);
   }
 
@@ -150,16 +145,15 @@ TEST_F(ProgramCacheTest, StatusEviction) {
   const std::string shader1 = "abcd1234";
   const std::string shader2 = "abcda sda b1~#4 bbbbb1234";
   cache_->SaySuccessfullyCached(shader1, shader2, nullptr, varyings_, GL_NONE);
-  uint8_t a_sha[ProgramCache::kHashLength];
-  uint8_t b_sha[ProgramCache::kHashLength];
+  ProgramCache::Hash a_sha;
+  ProgramCache::Hash b_sha;
   cache_->ComputeShaderHash(shader1, a_sha);
   cache_->ComputeShaderHash(shader2, b_sha);
 
-  uint8_t sha[ProgramCache::kHashLength];
-  cache_->ComputeProgramHash(a_sha, b_sha, nullptr, varyings_, GL_NONE, sha);
-  cache_->Evict(std::string(base::as_string_view(sha)),
-                std::string(base::as_string_view(a_sha)),
-                std::string(base::as_string_view(b_sha)));
+  ProgramCache::Hash program_sha;
+  cache_->ComputeProgramHash(a_sha, b_sha, nullptr, varyings_, GL_NONE,
+                             program_sha);
+  cache_->Evict(program_sha, a_sha, b_sha);
   EXPECT_EQ(ProgramCache::LINK_UNKNOWN,
             cache_->GetLinkedProgramStatus(shader1, shader2, nullptr, varyings_,
                                            GL_NONE));
@@ -172,18 +166,17 @@ TEST_F(ProgramCacheTest, EvictionWithReusedShader) {
   cache_->SaySuccessfullyCached(shader1, shader2, nullptr, varyings_, GL_NONE);
   cache_->SaySuccessfullyCached(shader1, shader3, nullptr, varyings_, GL_NONE);
 
-  uint8_t a_sha[ProgramCache::kHashLength];
-  uint8_t b_sha[ProgramCache::kHashLength];
-  uint8_t c_sha[ProgramCache::kHashLength];
+  ProgramCache::Hash a_sha;
+  ProgramCache::Hash b_sha;
+  ProgramCache::Hash c_sha;
   cache_->ComputeShaderHash(shader1, a_sha);
   cache_->ComputeShaderHash(shader2, b_sha);
   cache_->ComputeShaderHash(shader3, c_sha);
 
-  uint8_t sha[ProgramCache::kHashLength];
-  cache_->ComputeProgramHash(a_sha, b_sha, nullptr, varyings_, GL_NONE, sha);
-  cache_->Evict(std::string(base::as_string_view(sha)),
-                std::string(base::as_string_view(a_sha)),
-                std::string(base::as_string_view(b_sha)));
+  ProgramCache::Hash program_sha;
+  cache_->ComputeProgramHash(a_sha, b_sha, nullptr, varyings_, GL_NONE,
+                             program_sha);
+  cache_->Evict(program_sha, a_sha, b_sha);
   EXPECT_EQ(ProgramCache::LINK_UNKNOWN,
             cache_->GetLinkedProgramStatus(shader1, shader2, nullptr, varyings_,
                                            GL_NONE));
@@ -191,10 +184,9 @@ TEST_F(ProgramCacheTest, EvictionWithReusedShader) {
             cache_->GetLinkedProgramStatus(shader1, shader3, nullptr, varyings_,
                                            GL_NONE));
 
-  cache_->ComputeProgramHash(a_sha, c_sha, nullptr, varyings_, GL_NONE, sha);
-  cache_->Evict(std::string(base::as_string_view(sha)),
-                std::string(base::as_string_view(a_sha)),
-                std::string(base::as_string_view(c_sha)));
+  cache_->ComputeProgramHash(a_sha, c_sha, nullptr, varyings_, GL_NONE,
+                             program_sha);
+  cache_->Evict(program_sha, a_sha, c_sha);
   EXPECT_EQ(ProgramCache::LINK_UNKNOWN,
             cache_->GetLinkedProgramStatus(shader1, shader2, nullptr, varyings_,
                                            GL_NONE));
