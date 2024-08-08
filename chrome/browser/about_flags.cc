@@ -11659,8 +11659,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if !BUILDFLAG(IS_ANDROID)
     {"web-authentication-enclave-authenticator",
      flag_descriptions::kWebAuthnEnclaveAuthenticatorName,
-     flag_descriptions::kWebAuthnEnclaveAuthenticatorDescription,
-     kOsMac | kOsWin | kOsLinux,
+     flag_descriptions::kWebAuthnEnclaveAuthenticatorDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(device::kWebAuthnEnclaveAuthenticator,
                                     kWebAuthnEnclaveAuthenticatorVariations,
                                     "WebAuthenticationEnclaveAuthenticator")},
