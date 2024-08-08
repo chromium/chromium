@@ -1569,6 +1569,8 @@ crbug.com/936891 fast/scrolling/document-level-touchmove-event-listener-passive-
 
 crbug.com/1107923 inspector-protocol/debugger/wasm-streaming-url.js [ Failure Pass Timeout ]
 
+crbug.com/350730710 inspector-protocol/css/css-get-position-try.js [ Failure Skip ]
+
 # Will be re-enabled and rebaselined once we remove the '--enable-file-cookies' flag.
 crbug.com/470482 fast/cookies/local-file-can-set-cookies.html [ Crash Failure Pass Timeout ]
 
