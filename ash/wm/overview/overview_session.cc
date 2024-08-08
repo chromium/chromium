@@ -1598,6 +1598,11 @@ void OverviewSession::OnSnapGroupRemoving(SnapGroup* snap_group,
 
   for (aura::Window* window : {window1, window2}) {
     CHECK(window);
+    if (GetOverviewItemForWindow(window)) {
+      base::debug::DumpWithoutCrashing();
+      continue;
+    }
+
     overview_grid->AddItemInMruOrder(window, /*reposition=*/false,
                                      /*animate=*/true, /*restack=*/true,
                                      /*use_spawn_animation=*/true);
