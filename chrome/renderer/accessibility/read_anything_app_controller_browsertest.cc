@@ -542,10 +542,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
                                                          current_nodes);
   }
 
-  void MovePositionToPreviousGranularity() {
-    return controller_->read_aloud_model_.MovePositionToPreviousGranularity();
-  }
-
   void ProcessDisplayNodes(const std::vector<ui::AXNodeID>& content_node_ids) {
     controller_->model_.Reset(content_node_ids);
     controller_->model_.ComputeDisplayNodeIdsForDistilledTree();
@@ -4066,8 +4062,7 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(GetHighlightStartIndex(static_text1.id, segment1_length), -1);
 
   // Move to segment 2.
-  MovePositionToNextGranularity();
-  node_ids = GetCurrentText();
+  node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ((int)node_ids.size(), 1);
 
   // For the second segment, the boundary index will have reset for the new
@@ -4083,8 +4078,7 @@ TEST_F(ReadAnythingAppControllerTest,
             -1);
 
   // Move to segment 3.
-  MovePositionToNextGranularity();
-  node_ids = GetCurrentText();
+  node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ((int)node_ids.size(), 1);
 
   // For the third segment, the boundary index will have reset for the new
@@ -4104,8 +4098,7 @@ TEST_F(ReadAnythingAppControllerTest,
       -1);
 
   // Move to segment 4.
-  MovePositionToNextGranularity();
-  node_ids = GetCurrentText();
+  node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ((int)node_ids.size(), 2);
   EXPECT_EQ((int)node_ids[0], static_text1.id);
   EXPECT_EQ((int)node_ids[1], static_text2.id);
@@ -4226,8 +4219,7 @@ TEST_F(ReadAnythingAppControllerTest,
             ui::kInvalidAXNodeID);
 
   // Move to the next granularity.
-  MovePositionToNextGranularity();
-  node_ids = GetCurrentText();
+  node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ((int)node_ids.size(), 2);
 
   // Spot check that indices in sentence 2 map to the second node id.
@@ -4270,8 +4262,7 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ((int)node_ids.size(), 2);
 
   // Move forward.
-  MovePositionToNextGranularity();
-  node_ids = GetCurrentText();
+  node_ids = MoveToNextGranularityAndGetText();
   EXPECT_EQ((int)node_ids.size(), 1);
 
   // Spot check that indices 0->sentence3.length() map to the third node id.
@@ -4281,8 +4272,7 @@ TEST_F(ReadAnythingAppControllerTest,
             static_text3.id);
 
   // Move backwards.
-  MovePositionToPreviousGranularity();
-  node_ids = GetCurrentText();
+  node_ids = MoveToPreviousGranularityAndGetText();
   EXPECT_EQ((int)node_ids.size(), 2);
 
   // Spot check that indices in sentence 1 map to the first node id.
