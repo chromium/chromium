@@ -118,9 +118,9 @@ void TabGroupLocalUpdateObserver::WebStateListDidChange(
       const TabGroup* group =
           web_state_list->GetGroupOfWebStateAt(replace.index());
       if (group) {
-        RemoveLocalWebStateFromSyncedGroup(replace.replaced_web_state(), group);
         AddLocalWebStateToSyncedGroup(replace.inserted_web_state(),
                                       web_state_list);
+        RemoveLocalWebStateFromSyncedGroup(replace.replaced_web_state(), group);
       }
     } break;
     case WebStateListChange::Type::kInsert: {
