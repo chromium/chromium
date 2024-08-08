@@ -265,6 +265,8 @@
        URLLoadingBrowserAgent:UrlLoadingBrowserAgent::FromBrowser(
                                   self.browser)];
   _mostVisitedTilesMediator.contentSuggestionsDelegate = self.delegate;
+  _mostVisitedTilesMediator.contentSuggestionsMetricsRecorder =
+      self.contentSuggestionsMetricsRecorder;
   _mostVisitedTilesMediator.actionFactory = [[BrowserActionFactory alloc]
       initWithBrowser:self.browser
              scenario:kMenuScenarioHistogramMostVisitedEntry];
