@@ -30,6 +30,9 @@
 #import "components/reading_list/core/dual_reading_list_model.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/saved_tab_groups/tab_group_sync_service.h"
+#import "components/send_tab_to_self/features.h"
+#import "components/sharing_message/sharing_message_bridge.h"
+#import "components/sharing_message/sharing_message_model_type_controller.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/report_unrecoverable_error.h"
@@ -65,6 +68,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/sharing_message/model/ios_sharing_message_bridge_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
@@ -217,6 +221,21 @@ IOSChromeSyncClient::CreateDataTypeControllers(
         /*delegate_for_transport_mode=*/
         std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
             delegate)));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+    syncer::DataTypeControllerDelegate* sharing_message_delegate =
+        IOSSharingMessageBridgeFactory::GetForBrowserState(browser_state_)
+            ->GetControllerDelegate()
+            .get();
+    controllers.push_back(std::make_unique<SharingMessageModelTypeController>(
+        /*delegate_for_full_sync_mode=*/
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+            sharing_message_delegate),
+        /*delegate_for_transport_mode=*/
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+            sharing_message_delegate)));
   }
 
   return controllers;

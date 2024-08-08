@@ -149,6 +149,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/sharing_message/model",
+    "//ios/chrome/browser/sharing_message/model:sharing_message_bridge_factory",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/signin/model:trusted_vault_factory",

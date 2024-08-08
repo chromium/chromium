@@ -66,6 +66,7 @@ source_set("browser_prefs") {
     "//components/segmentation_platform/embedder/default_model:default_model",
     "//components/segmentation_platform/public",
     "//components/sessions",
+    "//components/sharing_message",
     "//components/signin/public/identity_manager",
     "//components/strings",
     "//components/supervised_user/core/browser",

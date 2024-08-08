@@ -4,6 +4,7 @@
 
 #include "components/sharing_message/sharing_fcm_sender.h"
 
+#include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -213,6 +214,7 @@ void SharingFCMSender::DoSendMessageToVapidTarget(
   web_push_message.urgency = WebPushMessage::Urgency::kHigh;
   web_push_message.payload = std::move(message);
 
+  CHECK(web_push_sender_);
   web_push_sender_->SendMessage(
       fcm_token, vapid_key, std::move(web_push_message),
       base::BindOnce(&SharingFCMSender::OnMessageSentToVapidTarget,
