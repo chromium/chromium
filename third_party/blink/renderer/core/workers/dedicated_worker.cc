@@ -25,6 +25,7 @@
 #include "third_party/blink/public/platform/web_fetch_client_settings_object.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_structured_serialize_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
@@ -46,6 +47,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/script_type_names.h"
+#include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_messaging_proxy.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_classic_script_loader.h"
@@ -193,6 +195,63 @@ void DedicatedWorker::postMessage(ScriptState* script_state,
             std::move(context), GetExecutionContext(), trace_id);
       },
       perfetto::Flow::Global(trace_id));  // SchedulePostMessage
+}
+
+void DedicatedWorker::PostCustomEvent(
+    TaskType task_type,
+    ScriptState* script_state,
+    CrossThreadFunction<Event*(ScriptState*, CustomEventMessage)>
+        event_factory_callback,
+    CrossThreadFunction<Event*(ScriptState*)> event_factory_error_callback,
+    const ScriptValue& message,
+    HeapVector<ScriptValue>& transfer,
+    ExceptionState& exception_state) {
+  CHECK(!GetExecutionContext() || GetExecutionContext()->IsContextThread());
+  if (!GetExecutionContext()) {
+    return;
+  }
+
+  StructuredSerializeOptions* options = StructuredSerializeOptions::Create();
+  if (!transfer.empty()) {
+    options->setTransfer(transfer);
+  }
+  CustomEventMessage transferable_message;
+  Transferables transferables;
+
+  if (!message.IsEmpty()) {
+    scoped_refptr<SerializedScriptValue> serialized_message =
+        PostMessageHelper::SerializeMessageByMove(
+            script_state->GetIsolate(), message, options, transferables,
+            exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    CHECK(serialized_message);
+    transferable_message.message = serialized_message;
+  }
+  // Disentangle the port in preparation for sending it to the remote context.
+  transferable_message.ports = MessagePort::DisentanglePorts(
+      ExecutionContext::From(script_state), transferables.message_ports,
+      exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  transferable_message.sender_stack_trace_id =
+      ThreadDebugger::From(script_state->GetIsolate())
+          ->StoreCurrentStackTrace("Worker.PostCustomEvent");
+  uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
+  transferable_message.trace_id = trace_id;
+  context_proxy_->PostCustomEventToWorkerGlobalScope(
+      task_type, std::move(event_factory_callback),
+      std::move(event_factory_error_callback), std::move(transferable_message));
+  TRACE_EVENT_INSTANT(
+      "devtools.timeline", "SchedulePostCustomEvent", "data",
+      [&](perfetto::TracedValue context) {
+        inspector_schedule_post_message_event::Data(
+            std::move(context), GetExecutionContext(), trace_id);
+      },
+      perfetto::Flow::Global(trace_id));  // SchedulePostCustomEvent
 }
 
 // https://html.spec.whatwg.org/C/#worker-processing-model

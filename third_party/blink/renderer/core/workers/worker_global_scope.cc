@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/css/font_face_set_worker.h"
 #include "third_party/blink/renderer/core/css/offscreen_font_selector.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -64,6 +65,7 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script_url.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
+#include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/installed_scripts_manager.h"
 #include "third_party/blink/renderer/core/workers/worker_classic_script_loader.h"
@@ -73,6 +75,7 @@
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
@@ -605,6 +608,44 @@ void WorkerGlobalScope::ReceiveMessage(BlinkTransferableMessage message) {
 
   if (debugger)
     debugger->ExternalAsyncTaskFinished(message.sender_stack_trace_id);
+}
+
+Event* WorkerGlobalScope::ReceiveCustomEventInternal(
+    CrossThreadFunction<Event*(ScriptState*, CustomEventMessage)>
+        event_factory_callback,
+    CrossThreadFunction<Event*(ScriptState* script_state)>
+        event_factory_error_callback,
+    CustomEventMessage message) {
+  if (!message.message || message.message->CanDeserializeIn(this)) {
+    return event_factory_callback.Run(ScriptController()->GetScriptState(),
+                                      std::move(message));
+  } else if (event_factory_error_callback) {
+    return event_factory_error_callback.Run(
+        ScriptController()->GetScriptState());
+  }
+  return nullptr;
+}
+
+void WorkerGlobalScope::ReceiveCustomEvent(
+    CrossThreadFunction<Event*(ScriptState*, CustomEventMessage)>
+        event_factory_callback,
+    CrossThreadFunction<Event*(ScriptState* script_state)>
+        event_factory_error_callback,
+    CustomEventMessage message) {
+  CHECK(!IsContextPaused());
+  auto* debugger = WorkerThreadDebugger::From(GetThread()->GetIsolate());
+  if (debugger) {
+    debugger->ExternalAsyncTaskStarted(message.sender_stack_trace_id);
+  }
+  Event* event = ReceiveCustomEventInternal(
+      std::move(event_factory_callback),
+      std::move(event_factory_error_callback), std::move(message));
+  if (event) {
+    DispatchEvent(*event);
+  }
+  if (debugger) {
+    debugger->ExternalAsyncTaskFinished(message.sender_stack_trace_id);
+  }
 }
 
 WorkerGlobalScope::WorkerGlobalScope(
