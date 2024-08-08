@@ -9,7 +9,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/common.h"
-#include "components/enterprise/connectors/service_provider_config.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/url_matcher/url_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

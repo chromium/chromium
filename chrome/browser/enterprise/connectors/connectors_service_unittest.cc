@@ -22,7 +22,7 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
-#include "components/enterprise/connectors/service_provider_config.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/policy/core/common/policy_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"

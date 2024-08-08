@@ -895,7 +895,6 @@ source_set("extensions") {
     "//components/embedder_support:browser_util",
     "//components/enterprise",
     "//components/enterprise/buildflags",
-    "//components/enterprise/connectors",
     "//components/enterprise/connectors/core",
     "//components/favicon/content",
     "//components/feedback",

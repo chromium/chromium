@@ -6608,10 +6608,7 @@ static_library("browser") {
     # Use this scope to migrate files/deps from
     # `enterprise_cloud_content_analysis` condiitions that now need to be
     # compiled on Android.
-    deps += [
-      "//components/enterprise/connectors",
-      "//components/enterprise/connectors/core",
-    ]
+    deps += [ "//components/enterprise/connectors/core" ]
   }
 
   if (enterprise_cloud_content_analysis) {
@@ -7240,7 +7237,6 @@ static_library("browser") {
       "enterprise/data_protection/print_utils.cc",
       "enterprise/data_protection/print_utils.h",
     ]
-    deps += [ "//components/enterprise/connectors" ]
   }
 
   if (enable_captive_portal_detection) {

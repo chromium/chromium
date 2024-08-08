@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/common.h"
-#include "components/enterprise/connectors/service_provider_config.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/enterprise/device_trust/prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 

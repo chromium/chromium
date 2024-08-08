@@ -20,6 +20,8 @@ source_set("core") {
     "reporting_constants.h",
     "reporting_service_settings.cc",
     "reporting_service_settings.h",
+    "service_provider_config.cc",
+    "service_provider_config.h",
   ]
 
   public_deps = [ "//components/enterprise/common/proto:connectors_proto" ]
@@ -28,7 +30,6 @@ source_set("core") {
     "//base",
     "//build:blink_buildflags",
     "//components/enterprise/buildflags",
-    "//components/enterprise/connectors",
     "//components/enterprise/device_trust",
     "//components/policy/core/browser",
     "//components/policy/core/common",
@@ -54,13 +55,13 @@ source_set("unit_tests") {
     "connectors_service_base_unittest.cc",
     "enterprise_connectors_policy_handler_unittest.cc",
     "reporting_service_settings_unittest.cc",
+    "service_provider_config_unittest.cc",
   ]
 
   public_deps = [ ":core" ]
 
   deps = [
     "//base",
-    "//components/enterprise/connectors",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",

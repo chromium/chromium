@@ -6,7 +6,7 @@
 
 #include "base/values.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
-#include "components/enterprise/connectors/service_provider_config.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"

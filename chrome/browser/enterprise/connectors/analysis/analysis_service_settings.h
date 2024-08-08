@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
-#include "components/enterprise/connectors/service_provider_config.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/url_matcher/url_matcher.h"
 
 namespace storage {

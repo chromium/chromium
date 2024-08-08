@@ -33,7 +33,7 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
-#include "components/enterprise/connectors/service_provider_config.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"

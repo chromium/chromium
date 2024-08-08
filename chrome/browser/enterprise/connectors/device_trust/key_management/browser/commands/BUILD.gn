@@ -144,7 +144,6 @@ source_set("unit_tests") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
       "//components/enterprise:test_support",
       "//components/enterprise/client_certificates/core:test_support",
-      "//components/enterprise/connectors",
       "//components/prefs:test_support",
       "//services/network:test_support",
     ]

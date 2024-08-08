@@ -4146,7 +4146,6 @@ if (!is_android) {
           "//chrome/browser/enterprise/connectors/analysis:features",
           "//chrome/browser/enterprise/connectors/test:test_support",
           "//components/enterprise/buildflags",
-          "//components/enterprise/connectors",
           "//components/enterprise/connectors/core",
         ]
       }
@@ -4160,7 +4159,6 @@ if (!is_android) {
           "//components/device_signals/core/common",
           "//components/device_signals/core/common:features",
           "//components/device_signals/test:test_support",
-          "//components/enterprise/connectors",
           "//components/enterprise/connectors/core",
         ]
       }
@@ -9581,7 +9579,6 @@ test("unit_tests") {
     ]
     deps += [
       "../browser/enterprise/connectors/test:test_support",
-      "//components/enterprise/connectors:unit_tests",
       "//components/enterprise/connectors/core:unit_tests",
     ]
     if (is_chromeos) {

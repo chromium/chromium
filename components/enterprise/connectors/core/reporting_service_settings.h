@@ -14,7 +14,7 @@
 #include "base/values.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
-#include "components/enterprise/connectors/service_provider_config.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 
 namespace enterprise_connectors {
 

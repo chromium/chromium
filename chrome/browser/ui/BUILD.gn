@@ -2786,7 +2786,6 @@ static_library("ui") {
       "//components/content_relationship_verification",
       "//components/desks_storage",
       "//components/endpoint_fetcher",
-      "//components/enterprise/connectors",
       "//components/enterprise/connectors/core",
       "//components/exo",
       "//components/login",
