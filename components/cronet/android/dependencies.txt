@@ -8,10 +8,6 @@
 //build/android
 //build/config
 //build/config/compiler
-//build/rust
-//build/rust/chromium_prelude
-//build/rust/std
-//build/rust/std/rules
 //build/win
 //buildtools/third_party/libc++
 //buildtools/third_party/libc++abi
@@ -34,6 +30,7 @@
 //net/third_party/quiche
 //net/traffic_annotation
 //third_party/abseil-cpp
+//third_party/android_build_tools
 //third_party/android_deps
 //third_party/android_sdk
 //third_party/androidx
@@ -54,7 +51,6 @@
 //third_party/metrics_proto
 //third_party/modp_b64
 //third_party/protobuf
-//third_party/rust
 //third_party/zlib
 //third_party/zstd
 //tools/android/errorprone_plugin

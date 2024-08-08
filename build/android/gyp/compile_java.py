@@ -42,7 +42,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'InvalidLink',
     'InvalidInlineTag',
     'EmptyBlockTag',
-    'PublicConstructorForAbstractClass',
     'InvalidBlockTag',
     'StaticAssignmentInConstructor',
     'MutablePublicArray',
@@ -191,6 +190,66 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'UnicodeEscape',
     # Nice to have.
     'AlreadyChecked',
+    # A lot of existing violations. e.g. Should return List and not ArrayList
+    'NonApiType',
+    # Nice to have.
+    'LongDoubleConversion',
+    # Nice to have.
+    'ReturnAtTheEndOfVoidFunction',
+    # Nice to have.
+    'NarrowCalculation',
+    # Nice to have.
+    'Finalize',
+    # Nice to have.
+    'NotJavadoc',
+    # Nice to have.
+    'NullablePrimitive',
+    # Nice to have.
+    'DirectInvocationOnMock',
+    # Nice to have.
+    'EmptyTopLevelDeclaration',
+    # Nice to have.
+    'StringCharset',
+    # Nice to have.
+    'UnnecessaryStringBuilder',
+    # Nice to have.
+    'JUnitIncompatibleType',
+    # Nice to have.
+    'MockNotUsedInProduction',
+    # Nice to have.
+    'ImpossibleNullComparison',
+    # Nice to have.
+    'UnusedTypeParameter',
+    # Nice to have.
+    'EnumOrdinal',
+    # Nice to have.
+    'NullableOptional',
+    # Nice to have.
+    'SelfAssertion',
+    # Nice to have.
+    'IgnoredPureGetter',
+    # Nice to have.
+    'UnnecessaryLongToIntConversion',
+    # Nice to have.
+    'StringCaseLocaleUsage',
+    # Nice to have.
+    'InlineTrivialConstant',
+    # Nice to have.
+    'VoidUsed',
+    # Nice to have.
+    'SuperCallToObjectMethod',
+    # Nice to have.
+    'JUnit4TestNotRun',
+    # Nice to have.
+    'StaticAssignmentOfThrowable',
+    # Nice to have.
+    'SuperCallToObjectMethod',
+    # Nice to have.
+    'ComparisonOutOfRange',
+    # Nice to have.
+    'ExtendsObject',
+    # Nice to have
+    'AddressSelection',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns
@@ -205,7 +264,6 @@ ERRORPRONE_WARNINGS_TO_ENABLE = [
     'MultiVariableDeclaration',
     'RedundantOverride',
     'StaticQualifiedUsingExpression',
-    'StringEquality',
     'TimeUnitMismatch',
     'UnnecessaryStaticImport',
     'UseBinds',

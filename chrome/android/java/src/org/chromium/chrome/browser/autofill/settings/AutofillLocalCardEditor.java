@@ -180,6 +180,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
         ResettersForTesting.register(() -> sObserverForTest = null);
     }
 
+    @SuppressWarnings("DuplicateDateFormatField") // There's probably a bug here...
     void addSpinnerAdapters() {
         ArrayAdapter<CharSequence> adapter =
                 new ArrayAdapter<CharSequence>(getActivity(), android.R.layout.simple_spinner_item);

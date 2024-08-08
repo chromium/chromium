@@ -108,6 +108,7 @@ public class ThreadUtils {
         }
     }
 
+    @SuppressWarnings("StaticAssignmentOfThrowable")
     public static void clearUiThreadForTesting() {
         sWillOverride = false;
         PostTask.resetUiThreadForTesting(); // IN-TEST
@@ -115,6 +116,7 @@ public class ThreadUtils {
         sUiThreadInitializer = null;
     }
 
+    @SuppressWarnings("StaticAssignmentOfThrowable")
     public static void setUiThread(Looper looper) {
         assert looper != null;
         synchronized (sLock) {
