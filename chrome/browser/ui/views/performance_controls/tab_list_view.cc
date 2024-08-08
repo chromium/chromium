@@ -14,6 +14,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/flex_layout.h"
@@ -34,6 +35,8 @@ TabListView::TabListView(TabListModel* tab_list_model)
         base::BindOnce(&TabListView::RemoveRow, base::Unretained(this),
                        context)));
   }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
 }
 
 TabListView::~TabListView() = default;
@@ -50,7 +53,6 @@ void TabListView::RemoveRow(resource_attribution::PageContext context,
 }
 
 void TabListView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kListBox;
   node_data->SetNameChecked(l10n_util::GetPluralStringFUTF16(
       IDS_PERFORMANCE_INTERVENTION_TAB_LIST_ACCNAME, tab_list_model_->count()));
 }

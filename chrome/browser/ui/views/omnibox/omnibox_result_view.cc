@@ -284,6 +284,7 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
 
   mouse_enter_exit_handler_.ObserveMouseEnterExitOn(this);
 
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
   UpdateAccessibilitySelectedState();
 }
 
@@ -628,8 +629,6 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // ax::mojom::IntAttribute::kPosInSet/SET_SIZE and providing it via text as
   // well would result in duplicate announcements.
 
-  node_data->role = ax::mojom::Role::kListBoxOption;
-
   const auto* autocomplete_controller =
       popup_view_->controller()->autocomplete_controller();
 
@@ -682,7 +681,7 @@ void OmniboxResultView::EmitTextChangedAccessiblityEvent() {
   // these items is updated as the value of omnibox changes. The displayed text
   // for a given item is exposed to screen readers as the item's name/label.
   ui::AXNodeData node_data;
-  GetAccessibleNodeData(&node_data);
+  GetViewAccessibility().GetAccessibleNodeData(&node_data);
   std::u16string current_name =
       node_data.GetString16Attribute(ax::mojom::StringAttribute::kName);
   if (accessible_name_ != current_name) {

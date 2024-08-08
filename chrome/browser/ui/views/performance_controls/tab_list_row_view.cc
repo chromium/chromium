@@ -93,10 +93,11 @@ class TextContainer : public views::View {
         AddChildView(CreateLabel(title, views::style::STYLE_BODY_4_MEDIUM));
 
     SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
+
+    GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kListBoxOption;
     if (tab_list_model_->count() > 1) {
       node_data->SetNameChecked(title_->GetText());
     } else {

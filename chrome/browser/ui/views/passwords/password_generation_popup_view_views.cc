@@ -300,7 +300,10 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
   METADATA_HEADER(GeneratedPasswordBox, views::View)
 
  public:
-  GeneratedPasswordBox() = default;
+  GeneratedPasswordBox() {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
+  }
+
   ~GeneratedPasswordBox() override = default;
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
@@ -308,7 +311,6 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
       return;
     }
 
-    node_data->role = ax::mojom::Role::kListBoxOption;
     node_data->SetNameChecked(base::JoinString(
         {controller_->SuggestedText(), controller_->password()}, u" "));
     const std::u16string help_text = l10n_util::GetStringFUTF16(

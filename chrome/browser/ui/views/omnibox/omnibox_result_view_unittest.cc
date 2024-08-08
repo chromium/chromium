@@ -267,7 +267,7 @@ TEST_F(OmniboxResultViewTest, MouseEnterAndExitSetsHoveredAccessibleState) {
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kHovered));
 }
 
-TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
+TEST_F(OmniboxResultViewTest, AccessibleProperties) {
   // Check accessibility of result.
   std::u16string match_url = u"https://google.com";
   AutocompleteMatch match(nullptr, 500, false,
@@ -280,7 +280,8 @@ TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
   match.allowed_to_be_default_match = true;
   result_view()->SetMatch(match);
   ui::AXNodeData result_node_data;
-  result_view()->GetAccessibleNodeData(&result_node_data);
+  result_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &result_node_data);
   EXPECT_EQ(result_node_data.role, ax::mojom::Role::kListBoxOption);
   // TODO(tommycli) Find a way to test this.
   // EXPECT_EQ(

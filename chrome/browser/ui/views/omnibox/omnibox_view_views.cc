@@ -196,6 +196,9 @@ OmniboxViewViews::OmniboxViewViews(std::unique_ptr<OmniboxClient> client,
   // effect over the entire location bar.
   RemoveHoverEffect();
 
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTextField);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF8(IDS_ACCNAME_LOCATION));
   // Sometimes there are additional ignored views, such as a View representing
   // the cursor, inside the address bar's text field. These should always be
   // ignored by accessibility since a plain text field should always be a leaf
@@ -1287,8 +1290,6 @@ bool OmniboxViewViews::SkipDefaultKeyEventProcessing(
 
 void OmniboxViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Textfield::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kTextField;
-  node_data->SetNameChecked(l10n_util::GetStringUTF8(IDS_ACCNAME_LOCATION));
   node_data->AddStringAttribute(ax::mojom::StringAttribute::kAutoComplete,
                                 "both");
 // Expose keyboard shortcut where it makes sense.

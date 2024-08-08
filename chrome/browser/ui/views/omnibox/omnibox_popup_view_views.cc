@@ -181,6 +181,7 @@ OmniboxPopupViewViews::OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
   UpdateExpandedCollapsedAccessibleState();
   UpdateAccessibleActiveDescendantForInvokingView();
 }
@@ -611,7 +612,6 @@ void OmniboxPopupViewViews::SetSuggestionGroupVisibility(
 }
 
 void OmniboxPopupViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kListBox;
   if (!IsOpen()) {
     node_data->AddState(ax::mojom::State::kInvisible);
   }
