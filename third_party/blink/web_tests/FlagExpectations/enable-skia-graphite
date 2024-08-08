@@ -44,6 +44,9 @@ crbug.com/40937352 external/wpt/css/css-color/parsing/color-valid-relative-color
 crbug.com/40937352 external/wpt/css/css-color/parsing/color-computed-relative-color.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+virtual/threaded/external/wpt/css/css-view-transitions/nested/contain-direct.tentative.html [ Failure ]
+virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/contain-on-self.tentative.html [ Failure ]
+virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nearest-ignores-nearest-name.tentative.html [ Failure ]
 crbug.com/358192562 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/compute-explicit-name-direct.tentative.html [ Failure ]
 crbug.com/358192562 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/compute-explicit-name-nested-vt-names.tentative.html [ Failure ]
 crbug.com/358192562 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/nearest-nested.tentative.html [ Failure ]

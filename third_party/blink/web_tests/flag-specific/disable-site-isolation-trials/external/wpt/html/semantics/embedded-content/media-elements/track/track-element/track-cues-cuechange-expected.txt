@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] TextTrack's cues are indexed and updated in order during video playback
-  assert_equals: expected 3 but got 0
-Harness: the test ran to completion.
-

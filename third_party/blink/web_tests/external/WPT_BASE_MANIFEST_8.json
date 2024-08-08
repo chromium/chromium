@@ -297368,10 +297368,6 @@
      "545f0bec6d9822e7862fc4010fb8d52d3dc4b768",
      []
     ],
-    "idb-binary-key-detached-expected.txt": [
-     "a5ea97e69ddc4152a1b429e244d0ea3cbfc14a2a",
-     []
-    ],
     "idb-binary-key-roundtrip-expected.txt": [
      "3c11fd4d135b6a5a44a7e3877efcb001ed7b3186",
      []
@@ -418243,7 +418239,7 @@
      ]
     ],
     "ready-state-destroyed-execution-context.html": [
-     "6b2677fae799bf296e7ee992d36eed1a5668fc84",
+     "362d0ed8200086dc09cad0a369f02d224dc269e6",
      [
       null,
       {}
@@ -496050,7 +496046,7 @@
       ]
      ],
      "Range-isPointInRange-shadowdom.tentative.html": [
-      "a90ddcf584785d0b3c2fd2ecba0a9479ba8567c5",
+      "e6768693ff1c5f4ba4204337822e9f49a4208526",
       [
        null,
        {}
@@ -591071,6 +591067,15 @@
          {}
         ]
        ],
+       "object-image-click.sub.html": [
+        "ba8f1ecd9d7df356a3cf2e3624a4001fdf878356",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "object-image-display-none-loading.html": [
         "de95aef4363f0f23c40653820659183319f6a70c",
         [
@@ -643154,7 +643159,7 @@
     "tentative": {
      "yield": {
       "yield-abort.any.js": [
-       "e96694f5abf41b4ffbb5452ebb46b003cb9f4a30",
+       "94a8b2cb2b8f842bff780e3d169f148b6dc78136",
        [
         "scheduler/tentative/yield/yield-abort.any.html",
         {}
@@ -643165,7 +643170,7 @@
        ]
       ],
       "yield-inherit-across-promises.any.js": [
-       "eaa0125a78409b44f4d5c5b321cd74a8144a4f06",
+       "8530bd4e1042ad42546b3c0ef543e501b7594112",
        [
         "scheduler/tentative/yield/yield-inherit-across-promises.any.html",
         {}
@@ -643176,14 +643181,14 @@
        ]
       ],
       "yield-priority-idle-callbacks.html": [
-       "d47e8c5eba2ed6eca2df695e93a4f1bb7a324b0b",
+       "cb5233c81138b7bb5ca00182dd191a3c37d39df0",
        [
         null,
         {}
        ]
       ],
       "yield-priority-posttask.any.js": [
-       "5e40eba29b3295b8f7be17eaf9892cb265fc7034",
+       "5704a4f7e667442291e7e936b306c083a9e4d8d0",
        [
         "scheduler/tentative/yield/yield-priority-posttask.any.html",
         {}
@@ -643194,7 +643199,7 @@
        ]
       ],
       "yield-priority-timers.any.js": [
-       "ff5a3d4b33545d1c6cb36e6f890e03936a095efd",
+       "189b2ee012840ca85e62d1df9588a76e988cad1f",
        [
         "scheduler/tentative/yield/yield-priority-timers.any.html",
         {}
@@ -643894,7 +643899,7 @@
       ]
      ],
      "pseudo-on-scroller.html": [
-      "8dd49ce4d8a913a54caef1ff8145cbaa187af550",
+      "bdeb140a041e27e04d81c40e1cfc88f033f1a250",
       [
        null,
        {}
@@ -645628,7 +645633,7 @@
     ],
     "shadow-dom": {
      "select-later-become-slotted-content.tentative.html": [
-      "f38105dd0bb32e609bb67c5c625f435e87ef3ebc",
+      "d44930479d4d7c1aee1de804c66865e9aefd8afe",
       [
        null,
        {}
@@ -650326,7 +650331,7 @@
      ]
     ],
     "selection-collapse-and-extend.tentative.html": [
-     "36cc036b3849f867fdcf7e9b9e1c2e3e25ddc53c",
+     "3d0bc5009d5ff06043a17364d06061f2c17ae375",
      [
       null,
       {}
@@ -650342,14 +650347,14 @@
      ]
     ],
     "selection-getComposedRanges-collapsed.tentative.html": [
-     "6af01fd8e0f2a3d070986aab3ac5986f95162328",
+     "99ab82eb39cf44ac19cc32b42bd50eb1eef1b93a",
      [
       null,
       {}
      ]
     ],
     "selection-getComposedRanges.tentative.html": [
-     "9d5fa7616272503bd959df1844e5dac98e6dae67",
+     "a69188a62ee9210cc53138f6c29d901b75f1bac6",
      [
       null,
       {}
@@ -684917,6 +684922,13 @@
       }
      ]
     ],
+    "video-encoder-canvasImageSource.https.html": [
+     "0585dcd878350dd918bd0e22dd2bf32e97e86e6e",
+     [
+      null,
+      {}
+     ]
+    ],
     "video-encoder-config.https.any.js": [
      "d61958919d78b9e246a7021fa9c19242cb6d7538",
      [
@@ -705479,6 +705491,49 @@
           "../resources/utils_validation.js"
          ]
         ]
+       }
+      ]
+     ],
+     "destroyContext.https.any.js": [
+      "9aa3dbf6753e8035e05a29770c5b05db3e4f6bbe",
+      [
+       "webnn/validation_tests/destroyContext.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "title",
+          "validation tests for WebNN API MLContext::destroy()"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/validation_tests/destroyContext.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "title",
+          "validation tests for WebNN API MLContext::destroy()"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ]
+        ],
+        "timeout": "long"
        }
       ]
      ],
@@ -747319,6 +747374,13 @@
           {}
          ]
         ],
+        "key_tentative.py": [
+         "1f7053c24997e1d604246bd086e72dbe182d575f",
+         [
+          null,
+          {}
+         ]
+        ],
         "pointer.py": [
          "6109450a23c1d49215a2cc4ef8547789d568eb79",
          [
@@ -749602,10 +749664,12 @@
       },
       "perform_actions": {
        "invalid.py": [
-        "f000477376e7ccded56168f2e9f3d373cbd675aa",
+        "d83285abbe070d9da645cfda36d18fa7540ab887",
         [
          null,
-         {}
+         {
+          "timeout": "long"
+         }
         ]
        ],
        "key.py": [
@@ -749640,6 +749704,13 @@
        ],
        "key_special_keys.py": [
         "c55f3a113ebf76428bfaab208634a029c87b28e0",
+        [
+         null,
+         {}
+        ]
+       ],
+       "key_tentative.py": [
+        "62f380da0ec05a6e16c9cc255f6a006cf3e7a6a5",
         [
          null,
          {}
