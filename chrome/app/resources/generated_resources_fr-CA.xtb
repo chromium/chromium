@@ -3520,7 +3520,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3518866566087677312">Ajouter aux favoris les éléments sur lesquels vous souhaitez revenir plus tard</translation>
 <translation id="3519564332031442870">Service dorsal d'impression</translation>
 <translation id="3519938335881974273">Enregistrer la page sous…</translation>
-<translation id="3520824492621090923">Confirmer l'inscription d'appareil Kiosk et d'affichage?</translation>
+<translation id="3520824492621090923">Confirmer l'inscription d'appareil kiosque et d'affichage?</translation>
 <translation id="3521388823983121502">Impossible de continuer avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3521405806571557477">Supprimer les données enregistrées pour <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Modifier la taille du disque</translation>
@@ -4533,7 +4533,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="424963718355121712">Les applications doivent être diffusées de l'hôte sur lequel elles ont un effet</translation>
 <translation id="4250229828105606438">Saisie d'écran</translation>
 <translation id="4250680216510889253">Non</translation>
-<translation id="4251377547188244181">Inscription d'appareil Kiosk et d'affichage</translation>
+<translation id="4251377547188244181">Inscription d'appareil kiosque et d'affichage</translation>
 <translation id="4252828488489674554">Faites un clic droit sur le nom du groupe d'onglets pour le modifier ou cliquez sur celui-ci pour le réduire</translation>
 <translation id="4252899949534773101">Le Bluetooth est désactivé</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Partage du contenu de l'onglet</translation>
@@ -6063,7 +6063,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Lien}one{# lien}other{# liens}}</translation>
 <translation id="5394529681046491727">Wi-Fi direct</translation>
 <translation id="5395498824851198390">Police par défaut</translation>
-<translation id="5397378439569041789">Inscrire l'appareil kiosk ou d'affichage</translation>
+<translation id="5397378439569041789">Inscrire l'appareil kiosque ou d'affichage</translation>
 <translation id="5397794290049113714">Vous</translation>
 <translation id="5398062879200420134">⌥+Pointer</translation>
 <translation id="5398497406011404839">Favoris masqués</translation>
@@ -8572,7 +8572,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7257666756905341374">Accéder aux données que vous copiez et collez</translation>
 <translation id="7258192266780953209">Transformations</translation>
 <translation id="7258225044283673131">L'application ne répond pas. Sélectionnez « Forcer la fermeture » pour fermer l'application.</translation>
-<translation id="7260186537988033909">Inscription d'appareil Kiosk et d'affichage terminée</translation>
+<translation id="7260186537988033909">Inscription d'appareil kiosque et d'affichage terminée</translation>
 <translation id="7261612856573623172">Paramètres vocaux de synthèse vocale du système</translation>
 <translation id="7262004276116528033">Le service de connexion est hébergé par <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Toujours utiliser l'application <ph name="APP" /> pour ouvrir les liens Web pris en charge?</translation>

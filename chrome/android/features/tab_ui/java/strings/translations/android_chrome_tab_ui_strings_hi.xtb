@@ -13,7 +13,7 @@
 <translation id="1486715732399361704">आपको अपने सभी टैब ग्रुप, यहां दिख सकते हैं</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> मिनट पहले बनाया गया}one{<ph name="NUM_MINS_MANY" /> मिनट पहले बनाया गया}other{<ph name="NUM_MINS_MANY" /> मिनट पहले बनाया गया}}</translation>
 <translation id="1499635324672558517">क्या सभी गुप्त टैब बंद करने हैं?</translation>
-<translation id="1501480321619201731">समूह मिटाएं</translation>
+<translation id="1501480321619201731">ग्रुप मिटाएं</translation>
 <translation id="1555130319947370107">नीला</translation>
 <translation id="161042844686301425">स्यान</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> टैब ग्रुप में शामिल किए गए</translation>

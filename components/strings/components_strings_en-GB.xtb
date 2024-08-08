@@ -1268,7 +1268,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3381668585148405088">Verify your purchase</translation>
 <translation id="3383566085871012386">Current precedence order</translation>
 <translation id="3384522979010096022">Your organisation doesn’t allow you to view this site</translation>
-<translation id="3387261909427947069">Payment Methods</translation>
+<translation id="3387261909427947069">Payment methods</translation>
 <translation id="3391030046425686457">Delivery address</translation>
 <translation id="3391482648489541560">file editing</translation>
 <translation id="3392028486601120379">The URL pattern '<ph name="URL_PATTERN" />' has a path specified. Paths are not supported for this key; please remove the path and try again, e.g. *://example.com/ =&gt; *://example.com".</translation>
@@ -1827,7 +1827,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4390472908992056574">Brim</translation>
-<translation id="4397059608630092079">Always Verify When Using Autofill</translation>
+<translation id="4397059608630092079">Always verify when using autofill</translation>
 <translation id="4397978002248035985">Opens a pop-up to verify on your bank's website</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406896451731180161">search results</translation>

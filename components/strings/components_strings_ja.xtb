@@ -1816,7 +1816,7 @@
 <translation id="4358461427845829800">お支払い方法を管理...</translation>
 <translation id="4359160567981085931">偽のサイトでパスワードを入力しました。Chrome を使って不正利用への対策ができます。パスワードを変更し、Google にアカウントの状況を通知するには、[アカウントを保護] をクリックしてください。</translation>
 <translation id="4363222835916186793">この商品のアラートをオフにしました</translation>
-<translation id="4363729811203340554">このデバイスを共有している場合、自動入力を使用したお支払いのたびに確認を求められることがあります</translation>
+<translation id="4363729811203340554">このデバイスを共有している場合、自動入力を使用したお支払いのたびに確認を求めるようにすることができます</translation>
 <translation id="4366943895537458493">プレート</translation>
 <translation id="437040971055499437">セキュリティ イベントの発生</translation>
 <translation id="4371591986692297148">無効</translation>
@@ -3154,7 +3154,7 @@
 <translation id="6973988895180423160">3.5x5 インチ（L 判）</translation>
 <translation id="6978121630131642226">検索エンジン</translation>
 <translation id="6978236010531171013">このまま共有</translation>
-<translation id="6978722349058177832">このデバイスを共有している場合、自動入力を使用したお支払いのたびに確認を求められることがあります</translation>
+<translation id="6978722349058177832">このデバイスを共有している場合、自動入力を使用したお支払いのたびに確認を求めるようにすることができます</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
 <translation id="6979440798594660689">ミュート（デフォルト）</translation>
 <translation id="6984270784814146224">ラベルのない画像です。Google AI を使用してテキストを抽出しています</translation>
