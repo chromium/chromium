@@ -247,9 +247,10 @@ std::vector<uint8_t> NtlmClient::GenerateAuthenticateMessage(
     uint8_t v2_hash[kNtlmHashLen];
     GenerateNtlmHashV2(domain, username, password, v2_hash);
     v2_proof_input = GenerateProofInputV2(timestamp, client_challenge);
-    GenerateNtlmProofV2(v2_hash, server_challenge,
-                        base::make_span<kProofInputLenV2>(v2_proof_input),
-                        updated_target_info, v2_proof);
+    GenerateNtlmProofV2(
+        v2_hash, server_challenge,
+        *base::span(v2_proof_input).to_fixed_extent<kProofInputLenV2>(),
+        updated_target_info, v2_proof);
     GenerateSessionBaseKeyV2(v2_hash, v2_proof, v2_session_key);
   } else {
     if (!ParseChallengeMessage(server_challenge_message, &challenge_flags,
