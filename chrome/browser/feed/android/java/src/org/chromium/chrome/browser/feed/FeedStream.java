@@ -597,7 +597,7 @@ public class FeedStream implements Stream {
         @Override
         public void resetInfoCardStates(int type) {
             assert ThreadUtils.runningOnUiThread();
-            resetInfoCardStates(type);
+            mBridge.resetInfoCardStates(type);
         }
 
         @Override
