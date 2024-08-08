@@ -2212,7 +2212,17 @@ TEST_F(ReadAnythingAppControllerTest, OnLinkClicked_DistillationInProgress) {
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
-TEST_F(ReadAnythingAppControllerTest, ScrollToTargetNode_ScrollsIfGoogleDocs) {
+// TODO(crbug.com/358251460): Flaky on Linux MSAN ASAN.
+#if BUILDFLAG(IS_LINUX) && \
+    (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER))
+#define MAYBE_ScrollToTargetNode_ScrollsIfGoogleDocs \
+  DISABLED_ScrollToTargetNode_ScrollsIfGoogleDocs
+#else
+#define MAYBE_ScrollToTargetNode_ScrollsIfGoogleDocs \
+  ScrollToTargetNode_ScrollsIfGoogleDocs
+#endif
+TEST_F(ReadAnythingAppControllerTest,
+       MAYBE_ScrollToTargetNode_ScrollsIfGoogleDocs) {
   ui::AXNodeData root;
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
@@ -2241,8 +2251,17 @@ TEST_F(ReadAnythingAppControllerTest, ScrollToTargetNode_ScrollsIfGoogleDocs) {
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
+// TODO(crbug.com/358251460): Flaky on Linux MSAN ASAN.
+#if BUILDFLAG(IS_LINUX) && \
+    (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER))
+#define MAYBE_ScrollToTargetNode_DoesNotScrollIfNotGoogleDocs \
+  DISABLED_ScrollToTargetNode_DoesNotScrollIfNotGoogleDocs
+#else
+#define MAYBE_ScrollToTargetNode_DoesNotScrollIfNotGoogleDocs \
+  ScrollToTargetNode_DoesNotScrollIfNotGoogleDocs
+#endif
 TEST_F(ReadAnythingAppControllerTest,
-       ScrollToTargetNode_DoesNotScrollIfNotGoogleDocs) {
+       MAYBE_ScrollToTargetNode_DoesNotScrollIfNotGoogleDocs) {
   ui::AXNodeData root;
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
