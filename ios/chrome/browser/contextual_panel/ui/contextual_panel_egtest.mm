@@ -143,4 +143,22 @@
       performAction:grey_tap()];
 }
 
+// Tests that closing the last tab with the panel open doesn't crash.
+- (void)testCloseLastTabWithPanelOpen {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   @"ContextualPanelEntrypointImageViewAXID")]
+      performAction:grey_tap()];
+
+  // Check that the contextual panel opened up.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(@"PanelContentViewAXID")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Close the tab.
+  [ChromeEarlGrey closeTabAtIndex:0];
+}
+
 @end

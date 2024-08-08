@@ -35,6 +35,9 @@
 
   // The child modulators owned by this coordinator.
   NSMutableArray<PanelBlockModulator*>* _modulators;
+
+  // The contextual panel tab helper to use for this panel.
+  ContextualPanelTabHelper* _contextualPanelTabHelper;
 }
 
 - (void)start {
@@ -52,11 +55,11 @@
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
 
-  ContextualPanelTabHelper* contextualPanelTabHelper =
+  _contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(activeWebState);
 
   std::vector<base::WeakPtr<ContextualPanelItemConfiguration>> configurations =
-      contextualPanelTabHelper->GetCurrentCachedConfigurations();
+      _contextualPanelTabHelper->GetCurrentCachedConfigurations();
 
   NSMutableArray<PanelBlockData*>* panelBlocks = [[NSMutableArray alloc] init];
   for (base::WeakPtr<ContextualPanelItemConfiguration> configuration :
@@ -120,20 +123,10 @@
   _viewController = nil;
 }
 
-// Convenience method for getting the tab helper for the current active web
-// state.
-- (ContextualPanelTabHelper*)contextualPanelTabHelper {
-  web::WebState* activeWebState =
-      self.browser->GetWebStateList()->GetActiveWebState();
-
-  return ContextualPanelTabHelper::FromWebState(activeWebState);
-}
-
 #pragma mark - PanelContentViewControllerMetricsDelegate
 
 - (NSString*)entrypointInfoBlockName {
-  auto entrypointConfig =
-      [self contextualPanelTabHelper]->GetFirstCachedConfig();
+  auto entrypointConfig = _contextualPanelTabHelper->GetFirstCachedConfig();
 
   if (!entrypointConfig) {
     return nil;
@@ -144,7 +137,7 @@
 }
 
 - (BOOL)wasLoudEntrypoint {
-  return [self contextualPanelTabHelper]->WasLoudMomentEntrypointShown();
+  return _contextualPanelTabHelper->WasLoudMomentEntrypointShown();
 }
 
 @end
