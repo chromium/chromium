@@ -759,6 +759,7 @@ group("browser_tests") {
   if (is_chromeos_ash) {
     deps += [
       # Browser tests from subdirectories.
+      "//chrome/browser/chromeos/extensions/action_handlers:browser_tests",
       "//chrome/browser/chromeos/mahi:browser_tests",
       "//chrome/browser/chromeos/network:browser_tests",
       "//chrome/browser/chromeos/smart_reader:browser_tests",
