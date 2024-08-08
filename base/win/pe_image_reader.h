@@ -39,11 +39,11 @@ class BASE_EXPORT PeImageReader {
   // |certificate_data_size| bytes). |context| is the value provided by the
   // caller to EnumCertificates(). Implementations must return true to continue
   // the enumeration, or false to abort.
-  using EnumCertificatesCallback = bool (*)(uint16_t revision,
-                                            uint16_t certificate_type,
-                                            const uint8_t* certificate_data,
-                                            size_t certificate_data_size,
-                                            void* context);
+  using EnumCertificatesCallback =
+      bool (*)(uint16_t revision,
+               uint16_t certificate_type,
+               base::span<const uint8_t> certificate_data,
+               void* context);
 
   PeImageReader();
 

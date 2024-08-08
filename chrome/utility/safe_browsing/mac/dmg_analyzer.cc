@@ -83,7 +83,7 @@ bool MachOFeatureExtractor::ExtractFeatures(
     return false;
 
   if (!bfe_->ExtractImageFeaturesFromData(
-          buffer_.data(), buffer_.size(), 0, result->mutable_image_headers(),
+          buffer_, 0, result->mutable_image_headers(),
           result->mutable_signature()->mutable_signed_data())) {
     return false;
   }

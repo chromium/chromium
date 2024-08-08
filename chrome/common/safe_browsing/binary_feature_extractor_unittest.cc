@@ -36,8 +36,7 @@ class MockBinaryFeatureExtractor : public BinaryFeatureExtractor {
  public:
   MOCK_METHOD(bool,
               ExtractImageFeaturesFromData,
-              (const uint8_t*,
-               size_t,
+              (base::span<const uint8_t>,
                ExtractHeadersOption,
                ClientDownloadRequest_ImageHeaders*,
                google::protobuf::RepeatedPtrField<std::string>*));
@@ -141,9 +140,9 @@ TEST_F(BinaryFeatureExtractorTest, CanRemoveFileDuringExecution) {
 
   scoped_refptr<MockBinaryFeatureExtractor> mock_extractor(
       new MockBinaryFeatureExtractor());
-  EXPECT_CALL(*mock_extractor, ExtractImageFeaturesFromData(_, _, _, _, _))
+  EXPECT_CALL(*mock_extractor, ExtractImageFeaturesFromData(_, _, _, _))
       .WillOnce(
-          [&](const uint8_t* data, size_t data_size,
+          [&](base::span<const uint8_t> data,
               BinaryFeatureExtractor::ExtractHeadersOption options,
               ClientDownloadRequest_ImageHeaders* image_headers,
               google::protobuf::RepeatedPtrField<std::string>* signed_data) {

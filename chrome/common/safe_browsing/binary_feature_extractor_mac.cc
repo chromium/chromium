@@ -13,13 +13,15 @@
 namespace safe_browsing {
 
 bool BinaryFeatureExtractor::ExtractImageFeaturesFromData(
-    const uint8_t* data, size_t data_size,
+    base::span<const uint8_t> data,
     ExtractHeadersOption options,
     ClientDownloadRequest_ImageHeaders* image_headers,
     google::protobuf::RepeatedPtrField<std::string>* signed_data) {
   MachOImageReader image_reader;
-  if (!image_reader.Initialize(data, data_size))
+  // TODO(crbug.com/356368033): MachOImageReader should also take a span.
+  if (!image_reader.Initialize(data.data(), data.size())) {
     return false;
+  }
 
   // If the image is fat, get all its MachO images. Otherwise, just scan
   // the thin image.

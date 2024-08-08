@@ -17,8 +17,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   google::protobuf::RepeatedPtrField<std::string> signed_data;
   safe_browsing::ClientDownloadRequest_ImageHeaders image_headers;
+  // SAFETY: Libfuzzer guarantees `data` has size `size`.
   extractor->ExtractImageFeaturesFromData(
-      data, size, safe_browsing::BinaryFeatureExtractor::kDefaultOptions,
-      &image_headers, &signed_data);
+      UNSAFE_BUFFERS(base::span(data, size)),
+      safe_browsing::BinaryFeatureExtractor::kDefaultOptions, &image_headers,
+      &signed_data);
   return 0;
 }
