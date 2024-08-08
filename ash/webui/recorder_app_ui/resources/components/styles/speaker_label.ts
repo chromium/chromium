@@ -6,8 +6,11 @@ import {css} from 'chrome://resources/mwc/lit/index.js';
 
 /**
  * Maximum number of the speaker colors before the color starts cycling.
+ *
+ * Note that the number of SPEECH_SPEAKER_COLOR_ entries in TimelineSegmentKind
+ * in recording_data_manager.ts should be keep in sync with this.
  */
-const MAX_SPEAKER_COLORS = 5;
+export const MAX_SPEAKER_COLORS = 5;
 
 export const SPEAKER_LABEL_COLORS = css`
   /* Color tokens for different number of speakers. */

@@ -120,6 +120,19 @@ export function lazyInit<T>(fn: () => T): () => T {
 }
 
 /**
+ * Cache async function return value so the function would only be called once.
+ */
+export function asyncLazyInit<T>(fn: () => Promise<T>): () => Promise<T> {
+  let val: T|typeof UNINITIALIZED = UNINITIALIZED;
+  return async () => {
+    if (val === UNINITIALIZED) {
+      val = await fn();
+    }
+    return val;
+  };
+}
+
+/**
  * Cache function return value so the function would only be called when the
  * input changes.
  *
