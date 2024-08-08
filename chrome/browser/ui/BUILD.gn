@@ -3150,6 +3150,7 @@ static_library("ui") {
       "//chrome/browser/chromeos/arc",
       "//chrome/browser/chromeos/container_app",
       "//chrome/browser/chromeos/cros_apps",
+      "//chrome/browser/chromeos/mahi",
       "//chrome/browser/chromeos/network",
       "//chrome/browser/chromeos/platform_keys",
       "//chrome/browser/chromeos/upload_office_to_cloud",

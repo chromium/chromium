@@ -20,6 +20,7 @@ source_set("mahi") {
   deps = [
     "//base",
     "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos/mahi",
     "//chrome/browser/ui/chromeos/magic_boost",
     "//chrome/browser/ui/chromeos/magic_boost:magic_boost_constants",
     "//chrome/browser/ui/chromeos/read_write_cards",

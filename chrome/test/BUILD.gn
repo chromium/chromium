@@ -4583,7 +4583,6 @@ if (!is_android) {
         "../browser/apps/app_service/webapk/webapk_policy_browsertest.cc",
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.cc",
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.h",
-        "../browser/chromeos/mahi/mahi_web_contents_manager_browsertest.cc",
         "../browser/chromeos/printing/print_preview/print_preview_webcontents_manager_browsertest.cc",
         "../browser/chromeos/reporting/websites/website_events_observer_ash_browsertest.cc",
         "../browser/chromeos/reporting/websites/website_usage_telemetry_sampler_ash_browsertest.cc",
@@ -5341,7 +5340,6 @@ if (is_chromeos_lacros) {
       "../browser/chromeos/extensions/odfs_config_private/odfs_config_private_api_browsertest.cc",
       "../browser/chromeos/extensions/wallpaper_apitest.cc",
       "../browser/chromeos/extensions/wm/wm_desks_private_apitest_lacros.cc",
-      "../browser/chromeos/mahi/mahi_web_contents_manager_browsertest.cc",
       "../browser/chromeos/policy/dlp/dlp_files_controller_lacros_browsertest.cc",
       "../browser/chromeos/printing/print_preview/print_preview_webcontents_manager_browsertest.cc",
       "../browser/chromeos/reporting/network/network_bandwidth_sampler_lacros_browsertest.cc",
@@ -6952,6 +6950,8 @@ test("unit_tests") {
     sources += [ "../browser/device_reauth/chromeos/device_authenticator_chromeos_unittest.cc" ]
 
     deps += [
+      "//chrome/browser/chromeos/mahi",
+      "//chrome/browser/chromeos/mahi/test:test_support",
       "//chrome/browser/chromeos/office_web_app:office_web_app",
       "//chromeos/components/kiosk:test_support",
       "//chromeos/components/mgs:test_support",
