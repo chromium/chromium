@@ -542,7 +542,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   post_user_entry_draw_timer_.Stop();
 
   model_.SetActiveTreeId(tree_id);
-  model_.set_ukm_source_id(ukm_source_id);
+  model_.SetUkmSourceId(ukm_source_id);
   model_.set_is_pdf(is_pdf);
   // Delete all pending updates on the formerly active AXTree.
   // TODO(crbug.com/40802192): If distillation is in progress, cancel the
@@ -563,10 +563,10 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
 }
 
 void ReadAnythingAppController::RecordNumSelections() {
-  ukm::builders::Accessibility_ReadAnything_EmptyState(model_.ukm_source_id())
-      .SetTotalNumSelections(model_.num_selections())
+  ukm::builders::Accessibility_ReadAnything_EmptyState(model_.UkmSourceId())
+      .SetTotalNumSelections(model_.NumSelections())
       .Record(ukm_recorder_.get());
-  model_.set_num_selections(0);
+  model_.SetNumSelections(0);
 }
 
 void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
@@ -618,8 +618,8 @@ void ReadAnythingAppController::Distill() {
                         : tree_lang);
   }
   CHECK(serializer.SerializeChanges(tree->root(), &snapshot));
-  model_.SetDistillationInProgress(true);
-  distiller_->Distill(*tree, snapshot, model_.ukm_source_id());
+  model_.set_distillation_in_progress(true);
+  distiller_->Distill(*tree, snapshot, model_.UkmSourceId());
 }
 
 void ReadAnythingAppController::OnAXTreeDistilled(
@@ -629,7 +629,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   // re-distill once speech pauses.
   if (read_aloud_model_.speech_playing()) {
     model_.set_requires_distillation(true);
-    model_.SetDistillationInProgress(false);
+    model_.set_distillation_in_progress(false);
     return;
   }
   // Reset state, including the current side panel selection so we can update

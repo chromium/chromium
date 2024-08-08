@@ -568,12 +568,12 @@ void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
     // TODO(crbug.com/40802192): If distillation is in progress, cancel the
     // distillation request.
     active_tree_id_ = ui::AXTreeIDUnknown();
-    set_ukm_source_id(ukm::kInvalidSourceId);
+    SetUkmSourceId(ukm::kInvalidSourceId);
   }
   EraseTree(tree_id);
 }
 
-const ukm::SourceId& ReadAnythingAppModel::ukm_source_id() {
+const ukm::SourceId& ReadAnythingAppModel::UkmSourceId() {
   if (base::Contains(tree_infos_, active_tree_id_)) {
     ReadAnythingAppModel::AXTreeInfo* tree_info =
         tree_infos_.at(active_tree_id_).get();
@@ -584,8 +584,7 @@ const ukm::SourceId& ReadAnythingAppModel::ukm_source_id() {
   return ukm::kInvalidSourceId;
 }
 
-void ReadAnythingAppModel::set_ukm_source_id(
-    const ukm::SourceId ukm_source_id) {
+void ReadAnythingAppModel::SetUkmSourceId(const ukm::SourceId ukm_source_id) {
   if (!base::Contains(tree_infos_, active_tree_id_)) {
     return;
   }
@@ -601,7 +600,7 @@ void ReadAnythingAppModel::set_ukm_source_id(
   }
 }
 
-int32_t ReadAnythingAppModel::num_selections() {
+int32_t ReadAnythingAppModel::NumSelections() {
   if (base::Contains(tree_infos_, active_tree_id_)) {
     ReadAnythingAppModel::AXTreeInfo* tree_info =
         tree_infos_.at(active_tree_id_).get();
@@ -612,8 +611,7 @@ int32_t ReadAnythingAppModel::num_selections() {
   return 0;
 }
 
-void ReadAnythingAppModel::set_num_selections(
-    const int32_t& num_selections) {
+void ReadAnythingAppModel::SetNumSelections(const int32_t& num_selections) {
   if (!base::Contains(tree_infos_, active_tree_id_)) {
     return;
   }

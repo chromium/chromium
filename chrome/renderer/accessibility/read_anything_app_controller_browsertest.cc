@@ -254,8 +254,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   // distillation finishes and pending updates are unserialized in
   // OnAXTreeDistilled. Thus we need to be able to set distillation progress
   // independent of OnAXTreeDistilled.
-  void SetDistillationInProgress(bool in_progress) {
-    controller_->model_.SetDistillationInProgress(in_progress);
+  void set_distillation_in_progress(bool in_progress) {
+    controller_->model_.set_distillation_in_progress(in_progress);
   }
 
   void OnSpeechPlayingStateChanged(bool is_speech_active) {
@@ -1603,7 +1603,7 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ("", GetTextContent(4));
 
   // Send three updates while distilling.
-  SetDistillationInProgress(true);
+  set_distillation_in_progress(true);
   SendBatchUpdates();
 
   // The updates shouldn't be applied yet.
@@ -1614,7 +1614,7 @@ TEST_F(ReadAnythingAppControllerTest,
   // OnAXTreeDistilled would unserialize the pending updates. Since a11y events
   // happen asynchronously, they can come between the time distillation finishes
   // and pending updates are unserialized.
-  SetDistillationInProgress(false);
+  set_distillation_in_progress(false);
   ui::AXNodeData final_node = test::TextNode(/* id= */ 2, u"Final update");
   SendUpdateWithNodes({final_node});
 
@@ -1910,7 +1910,7 @@ TEST_F(ReadAnythingAppControllerTest,
   // immediately after distilling.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   OnAXTreeDistilled({1});
-  SetDistillationInProgress(true);
+  set_distillation_in_progress(true);
   AccessibilityEventReceived({updates[2]});
   Mock::VerifyAndClearExpectations(distiller_);
 }

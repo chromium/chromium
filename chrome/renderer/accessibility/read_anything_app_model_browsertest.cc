@@ -48,8 +48,8 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     test::SetUpdateTreeID(update, tree_id_);
   }
 
-  void SetDistillationInProgress(bool distillation) {
-    model_->SetDistillationInProgress(distillation);
+  void set_distillation_in_progress(bool distillation) {
+    model_->set_distillation_in_progress(distillation);
   }
 
   void SetLastExpandedNodeId(ui::AXNodeID id) {
@@ -472,14 +472,14 @@ TEST_F(ReadAnythingAppModelTest,
 
   // Send update 1. Since distillation is in progress, this will not be
   // unserialized yet.
-  SetDistillationInProgress(true);
+  set_distillation_in_progress(true);
   AccessibilityEventReceived({updates[1]});
   EXPECT_EQ(1u, GetNumPendingUpdates(tree_id_));
 
   // Ensure that there are no crashes after an accessibility event is received
   // immediately after unserializing.
   UnserializePendingUpdates(tree_id_);
-  SetDistillationInProgress(true);
+  set_distillation_in_progress(true);
   AccessibilityEventReceived({updates[2]});
   EXPECT_EQ(1u, GetNumPendingUpdates(tree_id_));
   ASSERT_FALSE(AreAllPendingUpdatesEmpty());
@@ -496,7 +496,7 @@ TEST_F(ReadAnythingAppModelTest, OnTreeErased_ClearsPendingUpdates) {
 
   // Send update 1. Since distillation is in progress, this will not be
   // unserialized yet.
-  SetDistillationInProgress(true);
+  set_distillation_in_progress(true);
   AccessibilityEventReceived({updates[1]});
   EXPECT_EQ(1u, GetNumPendingUpdates(tree_id_));
 
@@ -517,7 +517,7 @@ TEST_F(ReadAnythingAppModelTest,
 
   // Send update 1. Since distillation is in progress, this will not be
   // unserialized yet.
-  SetDistillationInProgress(true);
+  set_distillation_in_progress(true);
   AccessibilityEventReceived({updates[1]});
   EXPECT_EQ(1u, GetNumPendingUpdates(tree_id_));
 
@@ -566,7 +566,7 @@ TEST_F(ReadAnythingAppModelTest, ClearPendingUpdates_DeletesPendingUpdates) {
 
   AccessibilityEventReceived({updates[0]});
   EXPECT_EQ(0u, GetNumPendingUpdates(tree_id_));
-  SetDistillationInProgress(true);
+  set_distillation_in_progress(true);
   AccessibilityEventReceived({updates[1]});
   EXPECT_EQ(1u, GetNumPendingUpdates(tree_id_));
   AccessibilityEventReceived({updates[2]});
@@ -595,7 +595,7 @@ TEST_F(ReadAnythingAppModelTest, ChangeActiveTreeWithPendingUpdates_UnknownID) {
   AccessibilityEventReceived({updates[0]});
   EXPECT_EQ(0u, GetNumPendingUpdates(tree_id_));
   ASSERT_TRUE(AreAllPendingUpdatesEmpty());
-  SetDistillationInProgress(true);
+  set_distillation_in_progress(true);
   AccessibilityEventReceived(tree_id_, {updates[1], updates[2]});
   EXPECT_EQ(2u, GetNumPendingUpdates(tree_id_));
 
@@ -768,7 +768,7 @@ TEST_F(ReadAnythingAppModelTest, Reset_ResetsState) {
 
   AccessibilityEventReceived({update});
   ProcessDisplayNodes({3, 4});
-  SetDistillationInProgress(true);
+  set_distillation_in_progress(true);
 
   // Assert initial state before resetting.
   ASSERT_TRUE(DistillationInProgress());

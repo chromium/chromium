@@ -162,14 +162,14 @@ class ReadAnythingAppModel {
   const ui::AXTreeID& active_tree_id() const { return active_tree_id_; }
   void SetActiveTreeId(const ui::AXTreeID& active_tree_id);
 
-  void SetDistillationInProgress(bool distillation) {
+  void set_distillation_in_progress(bool distillation) {
     distillation_in_progress_ = distillation;
   }
 
-  const ukm::SourceId& ukm_source_id();
-  void set_ukm_source_id(const ukm::SourceId ukm_source_id);
-  int32_t num_selections();
-  void set_num_selections(const int32_t& num_selections);
+  const ukm::SourceId& UkmSourceId();
+  void SetUkmSourceId(const ukm::SourceId ukm_source_id);
+  int32_t NumSelections();
+  void SetNumSelections(const int32_t& num_selections);
 
   void AddUrlInformationForTreeId(const ui::AXTreeID& tree_id);
   bool IsDocs() const;
