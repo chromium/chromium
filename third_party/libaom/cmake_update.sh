@@ -99,7 +99,6 @@ EOF
 # $1 - File to modify.
 function convert_to_windows() {
   sed -i.bak \
-    -e 's/\(#define[[:space:]]INLINE[[:space:]]*\)inline/\1 __inline/' \
     -e 's/\(#define[[:space:]]HAVE_PTHREAD_H[[:space:]]*\)1/\1 0/' \
     -e 's/\(#define[[:space:]]HAVE_UNISTD_H[[:space:]]*\)1/\1 0/' \
     -e 's/\(#define[[:space:]]CONFIG_GCC[[:space:]]*\)1/\1 0/' \

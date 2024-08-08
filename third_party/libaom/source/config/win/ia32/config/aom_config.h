@@ -94,6 +94,6 @@
 #define HAVE_UNISTD_H  0
 #define HAVE_VSX 0
 #define HAVE_WXWIDGETS 0
-#define INLINE  __inline
+#define INLINE inline
 #define STATIC_LINK_JXL 0
 #endif  // AOM_CONFIG_H_
