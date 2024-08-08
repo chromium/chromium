@@ -429,6 +429,81 @@ static Node getDataChangeNode(const std::string& lhs_replacement,
   return data_node;
 }
 
+// Gets the array size as written in the source code (if possible), otherwise
+// relies on the compile time value as seen in the ConstantArrayType.
+// Returns an empty string in case of error.
+std::string getArraySize(const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::ASTContext& ast_context = *result.Context;
+  const auto& lang_opts = ast_context.getLangOpts();
+
+  const auto* type_loc =
+      result.Nodes.getNodeAs<clang::TypeLoc>("array_type_loc");
+
+  auto array_type_loc = type_loc->getAs<clang::ArrayTypeLoc>();
+
+  // This is the case for arrays where the size expression is omitted. Example:
+  // int a[] = {1,2,3,4};
+  // For such cases, we rely on getting the compile-time size from the
+  // ConstantArrayType below.
+  if (array_type_loc.getLBracketLoc() != array_type_loc.getRBracketLoc()) {
+    auto source_range =
+        clang::SourceRange(array_type_loc.getLBracketLoc().getLocWithOffset(1),
+                           array_type_loc.getRBracketLoc());
+    auto size_text = clang::Lexer::getSourceText(
+                         clang::CharSourceRange::getCharRange(source_range),
+                         source_manager, lang_opts)
+                         .str();
+    if (!size_text.empty()) {
+      return size_text;
+    }
+  }
+  auto* array_type = result.Nodes.getNodeAs<clang::ArrayType>("array_type");
+  if (const clang::ConstantArrayType* type =
+          clang::dyn_cast<clang::ConstantArrayType>(array_type)) {
+    return std::to_string(*type->getSize().getRawData());
+  }
+  assert(false && "Unable to determine array size.");
+}
+
+// Creates a replacement node for c-style arrays on which we invoke operator[].
+// These arrays are rewritten to std::array<Type, Size>.
+Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::ASTContext& ast_context = *result.Context;
+
+  auto* array_type_loc =
+      result.Nodes.getNodeAs<clang::TypeLoc>("array_type_loc");
+  auto* array_type = result.Nodes.getNodeAs<clang::ArrayType>("array_type");
+  auto* array_variable =
+      result.Nodes.getNodeAs<clang::VarDecl>("array_variable");
+
+  auto element_type = array_type->getElementType();
+
+  clang::PrintingPolicy printing_policy(ast_context.getLangOpts());
+  printing_policy.SuppressScope = 1;
+  printing_policy.PrintCanonicalTypes = 1;
+  std::string element_type_as_string =
+      element_type.getAsString(printing_policy);
+
+  std::string array_size_as_string = getArraySize(result);
+  std::string replacement_text =
+      llvm::formatv("std::array<{0},{1}>{2}", element_type_as_string,
+                    array_size_as_string, array_variable->getNameAsString());
+
+  clang::SourceRange replacement_range = {
+      array_type_loc->getSourceRange().getBegin(),
+      array_type_loc->getSourceRange().getEnd().getLocWithOffset(1)};
+
+  auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
+      replacement_range, replacement_text, source_manager, "<array>");
+  Node n;
+  n.replacement = replacement_and_include_pair.first;
+  n.include_directive = replacement_and_include_pair.second;
+  n.size_info_available = true;
+  return n;
+}
+
 // Called when the Match registered for it was successfully found in the AST.
 // The matches registered represent two categories:
 //   1- An adjacency relationship
@@ -477,6 +552,10 @@ class PotentialNodes : public MatchFinder::MatchCallback {
     if (result.Nodes.getNodeAs<clang::Expr>(
             "passing_a_buffer_to_third_party_function")) {
       return getNodeFromCallToExternalFunction(result);
+    }
+
+    if (result.Nodes.getNodeAs<clang::VarDecl>("array_variable")) {
+      return getNodeFromArrayType(result);
     }
     assert(false);
   }
@@ -849,7 +928,7 @@ class Spanifier {
 
     // Expressions used to decide the pointer is used as a buffer include:
     // expr[n], expr++, ++expr, expr + n, expr += n
-    auto buffer_usage_expr = traverse(
+    auto buffer_expr1 = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
         expr(ignoringParenCasts(anyOf(
                  arraySubscriptExpr(hasLHS(lhs_expr_variations)),
@@ -863,7 +942,18 @@ class Spanifier {
                                            hasOperatorName("++")),
                                      hasArgument(0, lhs_expr_variations)))))
             .bind("buffer_expr"));
-    match_finder_.addMatcher(buffer_usage_expr, &potential_nodes_);
+    match_finder_.addMatcher(buffer_expr1, &potential_nodes_);
+
+    auto buffer_expr2 = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource,
+        expr(ignoringParenCasts(arraySubscriptExpr(hasLHS(declRefExpr(to(
+                 varDecl(hasType(arrayType().bind("array_type")),
+                         hasTypeLoc(
+                             loc(qualType(anything())).bind("array_type_loc")),
+                         unless(exclusions))
+                     .bind("array_variable")))))))
+            .bind("buffer_expr"));
+    match_finder_.addMatcher(buffer_expr2, &potential_nodes_);
 
     auto deref_expression = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
