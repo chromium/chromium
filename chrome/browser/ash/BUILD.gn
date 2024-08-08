@@ -2596,6 +2596,21 @@ static_library("device_policy_remover_generated") {
   public_deps = [ ":device_policy_remover_generate" ]
 }
 
+# Entry point of fuzzer test build.
+# All fuzzer test rules should be linked from here.
+# If missing, specifically if the BUILD.gn contains only the fuzzer_test
+# target, the BUILD.gn file may not be read.
+group("fuzzers") {
+  testonly = true
+
+  deps = [
+    "//chrome/browser/ash/extensions/file_manager:create_fnmatch_query_fuzzer",
+    "//chrome/browser/ash/extensions/file_manager:search_by_pattern_fuzzer",
+    "//chrome/browser/ash/printing:zeroconf_printer_detector_fuzzer",
+    "//chrome/browser/ash/smb_client:smb_url_fuzzer",
+  ]
+}
+
 if (use_fuzzing_engine_with_lpm) {
   fuzzer_test("policy_fuzzer") {
     sources = [ "policy/fuzzer/policy_fuzzer.cc" ]
