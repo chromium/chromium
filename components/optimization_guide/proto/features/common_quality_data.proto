@@ -555,3 +555,98 @@ enum AXStringListAttribute {
   AX_SLA_ARIANOTIFICATIONANNOUNCEMENTS = 2;
   AX_SLA_ARIANOTIFICATIONIDS = 3;
 }
+
+message PageContext {
+  // The URL of the page that the form is on.
+  string url = 1;
+
+  // The title of the page that the form is on.
+  string title = 2;
+
+  // The AX tree representation of the page.
+  AXTreeUpdate ax_tree_data = 3;
+}
+
+message FormData {
+  // The name by which autofill knows this form. This is generally either the
+  // name attribute or the id_attribute value, which-ever is non-empty with
+  // priority given to the name_attribute.
+  string form_name = 1;
+
+  // The fields contained in this form.
+  repeated FormFieldData fields = 2;
+}
+
+// Matches FormControlType in mojo by one off for an unknown value.
+// https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/common/mojom/autofill_types.mojom;l=17;drc=105770df485ace262780d95126bb60b1a16ec340;bpv=1;bpt=1
+enum FormControlType {
+  FORM_CONTROL_TYPE_UNSPECIFIED = 0;
+  FORM_CONTROL_TYPE_CONTENT_EDITABLE = 1;
+  FORM_CONTROL_TYPE_INPUT_CHECKBOX = 2;
+  FORM_CONTROL_TYPE_INPUT_EMAIL = 3;
+  FORM_CONTROL_TYPE_INPUT_MONTH = 4;
+  FORM_CONTROL_TYPE_INPUT_NUMBER = 5;
+  FORM_CONTROL_TYPE_INPUT_PASSWORD = 6;
+  FORM_CONTROL_TYPE_INPUT_RADIO = 7;
+  FORM_CONTROL_TYPE_INPUT_SEARCH = 8;
+  FORM_CONTROL_TYPE_INPUT_TELEPHONE = 9;
+  FORM_CONTROL_TYPE_INPUT_TEXT = 10;
+  FORM_CONTROL_TYPE_INPUT_URL = 11;
+  FORM_CONTROL_TYPE_SELECT_ONE = 12;
+  FORM_CONTROL_TYPE_SELECT_MULTIPLE = 13;
+  FORM_CONTROL_TYPE_SELECT_LIST = 14;
+  FORM_CONTROL_TYPE_TEXT_AREA = 15;
+}
+
+// Represents an option in a select field. See below for example.
+//
+// HTML                                      | value  | text
+// ------------------------------------------+--------+------
+// <option value=Foo label=Bar>Baz</option>  | "Foo"  | "Bar"
+// <option value=Foo>Bar</option>            | "Foo"  | "Bar"
+// <option label=Bar>Foo</option>            | "Foo"  | "Bar"
+// <option>Foo</option>                      | "Foo"  | "Foo"
+// <option value=Foo></option>               | "Foo"  | ""
+// <option label=Bar></option>               | ""     | "Bar"
+message SelectOption {
+  string value = 1;
+  string text = 2;
+}
+
+message FormFieldData {
+  // The name for the field.
+  string field_name = 1;
+
+  // The label for the field.
+  string field_label = 2;
+
+  // The value of the field.
+  string field_value = 3;
+
+  // Whether the field is visible.
+  bool is_visible = 4;
+
+  // Whether the field is focusable.
+  bool is_focusable = 5;
+
+  // The type of control for this form field.
+  FormControlType form_control_type = 6;
+
+  // The options for a select field, if applicable.
+  repeated SelectOption select_options = 7;
+
+  // The placeholder text for the field.
+  string placeholder = 8;
+}
+
+message UserAnnotationsEntry {
+  // The row ID of this entry from the user annotations database. This is
+  // immutable except when retrieving the row from the database.
+  int64 entry_id = 1;
+
+  // The key for this entry. Not necessarily unique.
+  string key = 2;
+
+  // The value for this entry.
+  string value = 3;
+}
