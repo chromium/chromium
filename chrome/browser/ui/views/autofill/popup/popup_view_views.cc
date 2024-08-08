@@ -1222,7 +1222,7 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup(bool prefer_prev_arrow_side) {
       GetPreferredPopupSides(
           /*is_root_popup=*/!parent_, prefer_prev_arrow_side,
           /*prev_arrow=*/border ? border->arrow() : BubbleBorder::Arrow::NONE);
-  popup_bounds = GetOptionalPositionAndPlaceArrowOnPopup(
+  popup_bounds = GetOptimalPositionAndPlaceArrowOnPopup(
       element_bounds, content_area_bounds, preferred_size,
       preferred_popup_sides);
 

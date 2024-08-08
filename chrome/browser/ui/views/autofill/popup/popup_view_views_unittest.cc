@@ -136,7 +136,7 @@ Suggestion CreateSuggestionWithChildren(
 
 class TestPopupViewViews : public PopupViewViews {
  public:
-  using GetOptionalPositionAndPlaceArrowOnPopupOverride =
+  using GetOptimalPositionAndPlaceArrowOnPopupOverride =
       base::RepeatingCallback<gfx::Rect(
           const gfx::Rect&,
           const gfx::Rect&,
@@ -147,30 +147,30 @@ class TestPopupViewViews : public PopupViewViews {
   ~TestPopupViewViews() override = default;
 
   void set_get_optional_position_and_place_arrow_on_popup_override(
-      GetOptionalPositionAndPlaceArrowOnPopupOverride callback) {
-    get_optional_position_and_place_arrow_on_popup_override_ =
+      GetOptimalPositionAndPlaceArrowOnPopupOverride callback) {
+    get_optimal_position_and_place_arrow_on_popup_override_ =
         std::move(callback);
   }
 
  protected:
-  gfx::Rect GetOptionalPositionAndPlaceArrowOnPopup(
+  gfx::Rect GetOptimalPositionAndPlaceArrowOnPopup(
       const gfx::Rect& element_bounds,
       const gfx::Rect& max_bounds_for_popup,
       const gfx::Size& preferred_size,
       base::span<const views::BubbleArrowSide> preferred_popup_sides) override {
-    if (get_optional_position_and_place_arrow_on_popup_override_) {
-      return get_optional_position_and_place_arrow_on_popup_override_.Run(
+    if (get_optimal_position_and_place_arrow_on_popup_override_) {
+      return get_optimal_position_and_place_arrow_on_popup_override_.Run(
           element_bounds, max_bounds_for_popup, preferred_size,
           preferred_popup_sides);
     }
-    return PopupViewViews::GetOptionalPositionAndPlaceArrowOnPopup(
+    return PopupViewViews::GetOptimalPositionAndPlaceArrowOnPopup(
         element_bounds, max_bounds_for_popup, preferred_size,
         preferred_popup_sides);
   }
 
  private:
-  GetOptionalPositionAndPlaceArrowOnPopupOverride
-      get_optional_position_and_place_arrow_on_popup_override_;
+  GetOptimalPositionAndPlaceArrowOnPopupOverride
+      get_optimal_position_and_place_arrow_on_popup_override_;
 };
 
 }  // namespace
@@ -1178,7 +1178,7 @@ TEST_F(PopupViewViewsTest,
       {SuggestionType::kAddressEntry, SuggestionType::kAddressEntry});
 
   MockFunction<TestPopupViewViews::
-                   GetOptionalPositionAndPlaceArrowOnPopupOverride::RunType>
+                   GetOptimalPositionAndPlaceArrowOnPopupOverride::RunType>
       mock_position_calculator;
   view().set_get_optional_position_and_place_arrow_on_popup_override(
       base::BindLambdaForTesting(mock_position_calculator.AsStdFunction()));

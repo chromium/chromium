@@ -454,7 +454,7 @@ gfx::Rect PopupBaseView::GetTopWindowBounds() const {
   return gfx::Rect();
 }
 
-gfx::Rect PopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
+gfx::Rect PopupBaseView::GetOptimalPositionAndPlaceArrowOnPopup(
     const gfx::Rect& element_bounds,
     const gfx::Rect& max_bounds_for_popup,
     const gfx::Size& preferred_size,
@@ -541,7 +541,7 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
     return false;
   }
 
-  gfx::Rect popup_bounds = GetOptionalPositionAndPlaceArrowOnPopup(
+  gfx::Rect popup_bounds = GetOptimalPositionAndPlaceArrowOnPopup(
       element_bounds, max_bounds_for_popup, preferred_size,
       kDefaultPreferredPopupSides);
 
