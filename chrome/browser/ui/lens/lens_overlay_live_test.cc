@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_permission_utils.h"
@@ -116,6 +117,7 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
     // Because we are taking a screenshot of a live page, we need to enable
     // pixel output in tests.
     command_line->AppendSwitch(::switches::kEnablePixelOutputInTests);
+    command_line->AppendSwitchASCII(::switches::kWindowSize, "1920,1080");
   }
 
   SidePanelCoordinator* side_panel_coordinator() {
