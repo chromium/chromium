@@ -4651,12 +4651,6 @@ if (!is_android) {
         "../browser/ui/views/web_apps/web_app_ash_interactive_ui_test.cc",
         "../browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder_browsertest.cc",
         "../browser/ui/webui/ash/add_supervision/add_supervision_ui_browsertest.cc",
-        "../browser/ui/webui/ash/settings/integration_tests/os_settings_auto_screen_lock_browsertest.cc",
-        "../browser/ui/webui/ash/settings/integration_tests/os_settings_lock_screen_authentication_browsertest.cc",
-        "../browser/ui/webui/ash/settings/integration_tests/os_settings_notification_settings_browsertest.cc",
-        "../browser/ui/webui/ash/settings/integration_tests/os_settings_password_setup_browsertest.cc",
-        "../browser/ui/webui/ash/settings/integration_tests/os_settings_pin_setup_browsertest.cc",
-        "../browser/ui/webui/ash/settings/integration_tests/os_settings_recovery_browsertest.cc",
         "../browser/ui/webui/nearby_share/nearby_share_dialog_ui_browsertest.cc",
         "../browser/ui/webui/signin/ash/inline_login_dialog_browsertest.cc",
         "../browser/ui/webui/signin/ash/inline_login_handler_impl_browsertest.cc",
@@ -11292,8 +11286,6 @@ if (!is_android && !is_chromeos_device) {
       if (is_chromeos_ash) {
         sources += [
           "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc",
-          "../browser/ui/webui/ash/settings/integration_tests/device_page/device_settings_interactive_uitest.cc",
-          "../browser/ui/webui/ash/settings/integration_tests/privacy_hub_interactive_uitest.cc",
           "../browser/ui/webui/print_preview/print_preview_chromeos_interactive_uitest.cc",
           "//ash/drag_drop/drag_drop_interactive_uitest.cc",
         ]

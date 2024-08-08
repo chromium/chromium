@@ -316,6 +316,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/ash/manage_mirrorsync:browser_tests",
     "//chrome/browser/ui/webui/ash/office_fallback:browser_tests",
     "//chrome/browser/ui/webui/ash/parent_access:browser_tests",
+    "//chrome/browser/ui/webui/ash/settings/integration_tests:browser_tests",
     "//chrome/browser/ui/webui/ash/settings/pages/a11y:browser_tests",
     "//chrome/browser/ui/webui/ash/settings/pages/apps:browser_tests",
     "//chrome/browser/ui/webui/ash/settings/pages/files:browser_tests",
@@ -336,6 +337,10 @@ if (is_chromeos_device) {
 } else {
   group("interactive_ui_tests") {
     testonly = true
-    deps = [ "//chrome/browser/ui/webui/ash/settings/pages/device/integration_tests:interactive_ui_tests" ]
+    deps = [
+      "//chrome/browser/ui/webui/ash/settings/integration_tests:interactive_ui_tests",
+      "//chrome/browser/ui/webui/ash/settings/integration_tests/device_page:interactive_ui_tests",
+      "//chrome/browser/ui/webui/ash/settings/pages/device/integration_tests:interactive_ui_tests",
+    ]
   }
 }
