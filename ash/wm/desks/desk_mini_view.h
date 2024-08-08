@@ -229,10 +229,6 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // tapped using touch gestures.
   bool force_show_desk_buttons_ = false;
 
-  // Prevents `desk_action_view_` from becoming visible while `context_menu_` is
-  // open.
-  bool is_context_menu_open_ = false;
-
   // When the DeskNameView is focused, we select all its text. However, if it is
   // focused via a mouse press event, on mouse release will clear the selection.
   // Therefore, we defer selecting all text until we receive that mouse release.

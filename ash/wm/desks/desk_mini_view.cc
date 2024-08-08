@@ -299,6 +299,15 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
     if (owner_bar_->IsDraggingDesk()) {
       return false;
     }
+
+    // Hide the action view if the context menu is shown, unless one of its
+    // children has focus. Otherwise, we may reach a state where nothing has
+    // focus, and spoken feedback will not work properly. See
+    // http://b/356456321,
+    if (context_menu_ && !desk_action_view_->ChildHasFocus()) {
+      return false;
+    }
+
     if (force_show_desk_buttons_) {
       return true;
     }
@@ -331,7 +340,7 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
   }
   auto* close_all_button = desk_action_view_->close_all_button();
   close_all_button->SetVisible(close_all_button->CanShow());
-  desk_action_view_->SetVisible(visible && !is_context_menu_open_);
+  desk_action_view_->SetVisible(visible);
 
   // Only show the shortcut view on the first 8 desks in the desk button desk
   // bar. Update the shortcut label to show the desk number for the shortcut.
@@ -490,13 +499,11 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
     return;
   }
 
-  is_context_menu_open_ = true;
   base::UmaHistogramBoolean(
       owner_bar_->type() == DeskBarViewBase::Type::kDeskButton
           ? kDeskButtonDeskBarOpenContextMenuHistogramName
           : kOverviewDeskBarOpenContextMenuHistogramName,
       true);
-  UpdateDeskButtonVisibility();
 
   desk_preview_->SetHighlightOverlayVisibility(true);
 
@@ -511,6 +518,9 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
                          ? desk_preview_->GetBoundsInScreen().bottom_right()
                          : desk_preview_->GetBoundsInScreen().bottom_left()),
       source);
+
+  // Visibility can be affected by the presence of a context menu.
+  UpdateDeskButtonVisibility();
 }
 
 void DeskMiniView::MaybeCloseContextMenu() {
@@ -820,7 +830,7 @@ void DeskMiniView::OnViewBlurred(views::View* observed_view) {
 }
 
 void DeskMiniView::OnContextMenuClosed() {
-  is_context_menu_open_ = false;
+  context_menu_.reset();
 
   // This mini view's desk may have been destroyed already. In that case, we are
   // about to be destroyed and can't call functions that need a valid `desk_`.
