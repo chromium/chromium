@@ -115,8 +115,8 @@ named_mojo_ipc_server::EndpointOptions CreateServerEndpointOptions(
       .message_pipe_id =
           named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection,
 #if BUILDFLAG(IS_WIN)
-      // Allow read access from local system account only.
-      .security_descriptor = L"D:(A;;0x1200a9;;;SY)",
+      // Allow access from local system account only.
+      .security_descriptor = L"D:(A;;GA;;;SY)",
 #endif
   };
 }
