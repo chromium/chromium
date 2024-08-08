@@ -1,1 +1,27 @@
-<html><body><progress value=70 max=100></progress><small><progress value=70 max=100 dir="rtl"></progress></small></body></html>
+<!DOCTYPE html>
+<html><body>
+<style>
+div {
+  display: inline-block;
+  inline-size: 10em;
+  padding: 8px;
+  border: 2px solid gray;
+}
+</style>
+<div>
+<progress value=70 max=100></progress><small><progress value=70 max=100 dir="rtl"></progress></small>
+</div>
+<div style="writing-mode:vertical-lr;">
+vertical-lr:<progress value=70 max=100></progress><small><progress value=70 max=100 dir="rtl"></progress></small>
+</div>
+<div style="writing-mode:vertical-rl;">
+vertical-rl:<progress value=70 max=100></progress><small><progress value=70 max=100 dir="rtl"></progress></small>
+</div>
+<div style="writing-mode:sideways-lr;">
+sideways-lr:<progress value=70 max=100></progress><small><progress value=70 max=100 dir="rtl"></progress></small>
+</div>
+<div style="writing-mode:sideways-rl;">
+sideways-rl:<progress value=70 max=100></progress><small><progress value=70 max=100 dir="rtl"></progress></small>
+</div>
+
+</body></html>

@@ -169,13 +169,11 @@ DirectionFlippingScope::DirectionFlippingScope(
     const LayoutObject& layout_object,
     const PaintInfo& paint_info,
     const gfx::Rect& rect)
-    : needs_horizontal_flipping_(
-          IsHorizontalWritingMode(layout_object.StyleRef().GetWritingMode()) &&
-          !layout_object.StyleRef().IsLeftToRightDirection()),
-      needs_vertical_flipping_(
-          !IsHorizontalWritingMode(layout_object.StyleRef().GetWritingMode()) &&
-          layout_object.StyleRef().IsLeftToRightDirection()),
-      paint_info_(paint_info) {
+    : paint_info_(paint_info) {
+  PhysicalDirection inline_end =
+      layout_object.StyleRef().GetWritingDirection().InlineEnd();
+  needs_horizontal_flipping_ = inline_end == PhysicalDirection::kLeft;
+  needs_vertical_flipping_ = inline_end == PhysicalDirection::kUp;
   if (needs_horizontal_flipping_) {
     paint_info_.context.Save();
     paint_info_.context.Translate(2 * rect.x() + rect.width(), 0);
@@ -198,14 +196,12 @@ gfx::Rect DeterminateProgressValueRectFor(const LayoutProgress& layout_progress,
                                           const gfx::Rect& rect) {
   int dx = rect.width();
   int dy = rect.height();
-  int y = rect.y();
   if (IsHorizontalWritingMode(layout_progress.StyleRef().GetWritingMode())) {
     dx *= layout_progress.GetPosition();
   } else {
     dy *= layout_progress.GetPosition();
-    y += rect.height() - dy;
   }
-  return gfx::Rect(rect.x(), y, dx, dy);
+  return gfx::Rect(rect.x(), rect.y(), dx, dy);
 }
 
 gfx::Rect IndeterminateProgressValueRectFor(
