@@ -169,6 +169,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.DirectRenderer.DrawnRectAssignmentType"
+    enum="RenderPassDrawRectAssign" expires_after="2025-03-01">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Records update type to the drawn rect for every draw to each non root
+    renderpass.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.DirectRenderer.OverlayProcessingUs"
     units="microseconds" expires_after="2025-01-05">
   <owner>khaslett@chromium.org</owner>

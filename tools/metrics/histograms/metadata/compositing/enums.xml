@@ -208,6 +208,19 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="RenderPassDrawRectAssign">
+  <int value="0" label="New Output rect">
+    Initializing a drawn rect with an output rect for the first time.
+  </int>
+  <int value="1" label="Reassignment">
+    Reassigning a different output rect to an existing non empty drawn rect.
+  </int>
+  <int value="2" label="No Assignment">No changes to drawn rect.</int>
+  <int value="3" label="Full Damage">
+    Assignment to drawn rect is equal to the damage.
+  </int>
+</enum>
+
 <enum name="ToggleFrameRateCase">
   <int value="0" label="No video"/>
   <int value="1" label="Frame rate toggling supported by the platfrom"/>
