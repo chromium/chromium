@@ -62,6 +62,7 @@ static_library("session") {
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/u2f",
     "//chrome/browser/google",
     "//chrome/browser/scalable_iph:scalable_iph_factory",
     "//chrome/browser/screen_ai:screen_ai_dlc_installer",

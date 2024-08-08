@@ -77,8 +77,6 @@ static_library("ash") {
     "tpm_firmware_update.h",
     "tpm_firmware_update_notification.cc",
     "tpm_firmware_update_notification.h",
-    "u2f_notification.cc",
-    "u2f_notification.h",
     "url_handler.cc",
     "url_handler.h",
     "window_throttle_observer_base.cc",
