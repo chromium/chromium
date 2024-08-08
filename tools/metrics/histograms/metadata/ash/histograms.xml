@@ -6223,6 +6223,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Overview.DeskCount" units="units"
+    expires_after="2025-02-07">
+  <owner>esum@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    The number of desks open when entering overview mode. Recorded each time
+    overview mode is entered. This does not take into account the user creating
+    new desks while in overview mode afterwards.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Overview.EndAction" enum="OverviewEndAction"
     expires_after="2025-01-05">
   <owner>minch@chromium.org</owner>

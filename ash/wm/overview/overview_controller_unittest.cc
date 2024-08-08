@@ -845,6 +845,21 @@ TEST_F(OverviewControllerTest, FrameThrottling) {
   frame_throttling_controller->RemoveArcObserver(&observer);
 }
 
+// Tests that Ash.Overview.DeskCount metric is recorded.
+TEST_F(OverviewControllerTest, RecordsDeskCountMetric) {
+  base::HistogramTester histogram_tester;
+  EnterOverview();
+  ExitOverview();
+  histogram_tester.ExpectUniqueSample("Ash.Overview.DeskCount", 1, 1);
+
+  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  ASSERT_EQ(2u, DesksController::Get()->desks().size());
+  EnterOverview();
+  ExitOverview();
+  histogram_tester.ExpectBucketCount("Ash.Overview.DeskCount", 1, 1);
+  histogram_tester.ExpectBucketCount("Ash.Overview.DeskCount", 2, 1);
+}
+
 class OverviewEnterFromWallpaperTest : public OverviewControllerTest {
  public:
   OverviewEnterFromWallpaperTest() {

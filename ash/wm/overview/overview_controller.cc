@@ -30,6 +30,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
@@ -480,6 +481,9 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
         kEnterOverviewPresentationHistogram, "",
         kEnterExitPresentationMaxLatency);
     presentation_time_recorder->RequestNext();
+
+    base::UmaHistogramCounts100("Ash.Overview.DeskCount",
+                                DesksController::Get()->desks().size());
 
     if (auto* active_window = window_util::GetActiveWindow(); active_window) {
       auto* active_widget =
