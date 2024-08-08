@@ -212,10 +212,6 @@ class SystemWebAppDelegate {
   // considered part of this System App.
   virtual bool IsUrlInSystemAppScope(const GURL& url) const;
 
-  // Whether it is preferred to resolve background color from the manifest,
-  // as opposed to resolving background color from web contents.
-  virtual bool PreferManifestBackgroundColor() const;
-
   // Whether theme color should be inferred from ChromeOS system theme. If
   // true, theme_color is the first available from:
   //   1. System theme color (if kJelly is on).

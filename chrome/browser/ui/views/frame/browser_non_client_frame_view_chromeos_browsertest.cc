@@ -1616,7 +1616,6 @@ class BrowserNonClientFrameViewAshThemeChangeTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<
           std::tuple<ThemeChangeTestMode,
-                     /*prefer_manifest_background_color=*/bool,
                      /*should_animate_theme_changes=*/bool>> {
  public:
   BrowserNonClientFrameViewAshThemeChangeTest() {
@@ -1630,8 +1629,6 @@ class BrowserNonClientFrameViewAshThemeChangeTest
                 /*dark_mode_background_color=*/SK_ColorBLACK);
         auto* delegate = static_cast<ash::UnittestingSystemAppDelegate*>(
             system_web_app_installation_->GetDelegate());
-        delegate->SetPreferManifestBackgroundColor(
-            PreferManifestBackgroundColor());
         delegate->SetShouldAnimateThemeChanges(ShouldAnimateThemeChanges());
         // When system colored SWAs were introduced for Jelly,
         // `UseSystemThemeColor()` overrode other styling information in the
@@ -1650,13 +1647,9 @@ class BrowserNonClientFrameViewAshThemeChangeTest
     return std::get<0>(GetParam());
   }
 
-  // Returns whether the web app under test prefers manifest background colors
-  // over web contents background colors.
-  bool PreferManifestBackgroundColor() const { return std::get<1>(GetParam()); }
-
   // Returns whether theme changes should be animated for the web app under test
   // given test parameterization.
-  bool ShouldAnimateThemeChanges() const { return std::get<2>(GetParam()); }
+  bool ShouldAnimateThemeChanges() const { return std::get<1>(GetParam()); }
 
   // Toggles the color mode, triggering propagation of theme change events.
   void ToggleColorMode() {
@@ -1711,15 +1704,12 @@ INSTANTIATE_TEST_SUITE_P(
     BrowserNonClientFrameViewAshThemeChangeTest,
     testing::Combine(testing::Values(ThemeChangeTestMode::kSWA,
                                      ThemeChangeTestMode::kNonSWA),
-                     /*prefer_manifest_background_color=*/testing::Bool(),
                      /*should_animate_theme_changes=*/testing::Bool()),
     [](const testing::TestParamInfo<
         std::tuple<ThemeChangeTestMode,
-                   /*prefer_manifest_background_color=*/bool,
                    /*should_animate_theme_changes=*/bool>>& info) {
       ThemeChangeTestMode test_mode = std::get<0>(info.param);
-      bool prefer_manifest_background_color = std::get<1>(info.param);
-      bool should_animate_theme_changes = std::get<2>(info.param);
+      bool should_animate_theme_changes = std::get<1>(info.param);
 
       std::stringstream name;
       switch (test_mode) {
@@ -1731,9 +1721,6 @@ INSTANTIATE_TEST_SUITE_P(
           break;
       }
 
-      if (prefer_manifest_background_color) {
-        name << "_PreferManifestBackgroundColor";
-      }
       if (should_animate_theme_changes) {
         name << "_ShouldAnimateThemeChanges";
       }
@@ -1745,7 +1732,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshThemeChangeTest,
                        ThemeChange) {
   // Skip test parameterizations for non-system web apps that don't make sense.
   if (GetThemeChangeTestMode() == ThemeChangeTestMode::kNonSWA &&
-      (PreferManifestBackgroundColor() || ShouldAnimateThemeChanges())) {
+      ShouldAnimateThemeChanges()) {
     GTEST_SKIP();
   }
 
@@ -1783,13 +1770,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshThemeChangeTest,
   ToggleColorMode();
   EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
             browser->app_controller()->GetBackgroundColor().value());
-  if (PreferManifestBackgroundColor()) {
-    EXPECT_NE(contents_web_view->GetBackground()->get_color(),
-              web_contents->GetBackgroundColor().value());
-  } else {
-    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
-              web_contents->GetBackgroundColor().value());
-  }
+  EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+            web_contents->GetBackgroundColor().value());
 
   // If theme changes should be animated, the layer associated with the
   // `contents_web_view` native view should be immediately hidden.

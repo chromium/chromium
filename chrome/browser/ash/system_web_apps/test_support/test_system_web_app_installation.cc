@@ -200,9 +200,6 @@ bool UnittestingSystemAppDelegate::IsUrlInSystemAppScope(
     const GURL& url) const {
   return url == url_in_system_app_scope_;
 }
-bool UnittestingSystemAppDelegate::PreferManifestBackgroundColor() const {
-  return prefer_manifest_background_color_;
-}
 bool UnittestingSystemAppDelegate::UseSystemThemeColor() const {
   return use_system_theme_color_;
 }
@@ -283,10 +280,6 @@ void UnittestingSystemAppDelegate::SetIsAppEnabled(bool value) {
 }
 void UnittestingSystemAppDelegate::SetUrlInSystemAppScope(const GURL& url) {
   url_in_system_app_scope_ = url;
-}
-void UnittestingSystemAppDelegate::SetPreferManifestBackgroundColor(
-    bool value) {
-  prefer_manifest_background_color_ = value;
 }
 void UnittestingSystemAppDelegate::SetUseSystemThemeColor(bool value) {
   use_system_theme_color_ = value;
