@@ -85,6 +85,7 @@ source_set("password_details_ui") {
     "//base",
     "//components/affiliations/core/browser:affiliations",
     "//components/autofill/core/common",
+    "//components/crash/core/common:crash_key",
     "//components/device_reauth",
     "//components/password_manager/core/browser:browser",
     "//components/password_manager/core/common",
