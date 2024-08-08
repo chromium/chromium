@@ -339,8 +339,13 @@ public class AccountPickerBottomSheetMediator
         if (viewState == ViewState.COLLAPSED_ACCOUNT_LIST) {
             launchDeviceLockIfNeededAndSignIn();
         } else if (viewState == ViewState.SIGNIN_GENERAL_ERROR) {
-            // User already accepted account management and is re-trying login.
-            signInAfterCheckingManagement();
+            if (mAcceptedAccountManagement) {
+                // User already accepted account management and is re-trying login, so the
+                // management status check & confirmation sheet can be skipped.
+                signInAfterCheckingManagement();
+            } else {
+                launchDeviceLockIfNeededAndSignIn();
+            }
         } else if (viewState == ViewState.NO_ACCOUNTS) {
             addAccount();
         } else if (viewState == ViewState.SIGNIN_AUTH_ERROR) {
@@ -377,6 +382,14 @@ public class AccountPickerBottomSheetMediator
                 AccountUtils.findCoreAccountInfoByEmail(
                         mAccountManagerFacade.getCoreAccountInfos().getResult(),
                         mSelectedAccountEmail);
+        // If the account is not available or disappears right after the user adds it, the sign-in
+        // can't be done and a general error view with retry button is shown.
+        if (accountInfo == null) {
+            mModel.set(
+                    AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_GENERAL_ERROR);
+            return;
+        }
+
         mAccountPickerDelegate.isAccountManaged(
                 accountInfo,
                 (Boolean isAccountManaged) -> {
@@ -420,7 +433,11 @@ public class AccountPickerBottomSheetMediator
                 AccountUtils.findCoreAccountInfoByEmail(
                         mAccountManagerFacade.getCoreAccountInfos().getResult(),
                         mSelectedAccountEmail);
+        // If the account is not available or disappears right after the user adds it, the sign-in
+        // can't be done and a general error view with retry button is shown.
         if (accountInfo == null) {
+            mModel.set(
+                    AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_GENERAL_ERROR);
             return;
         }
         mAccountPickerDelegate.signIn(accountInfo, this);
