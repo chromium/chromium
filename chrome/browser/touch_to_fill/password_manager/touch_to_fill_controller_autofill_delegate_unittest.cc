@@ -374,8 +374,9 @@ TEST_F(TouchToFillControllerAutofillTest, FillingShowsAccessLossWarning) {
           form_to_fill()->password_element_renderer_id,
           TouchToFillControllerAutofillDelegate::ShowHybridOption(false)),
       /*cred_man_delegate=*/nullptr, /*frame_driver=*/nullptr);
-  ON_CALL(*mock_access_loss_warning_bridge(), ShouldShowAccessLossNoticeSheet())
-      .WillByDefault(testing::Return(true));
+  EXPECT_CALL(*mock_access_loss_warning_bridge(),
+              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs()))
+      .WillRepeatedly(testing::Return(true));
 
   EXPECT_CALL(*last_mock_filler(),
               FillUsernameAndPassword(std::u16string(u"alice"),

@@ -311,15 +311,21 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
 
   // Do not trigger autosubmission if the password migration warning is being
   // shown because it interrupts the nomal workflow.
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  PrefService* prefs = profile->GetPrefs();
   filler_->UpdateTriggerSubmission(
       ShouldTriggerSubmission() &&
-      !local_password_migration::ShouldShowWarning(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext())) &&
-      !access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet());
+      !local_password_migration::ShouldShowWarning(profile) &&
+      !access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(prefs));
   filler_->FillUsernameAndPassword(credential.username(),
                                    credential.password());
-  ShowPasswordMigrationWarningIfNeeded();
-  access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet();
+  if (access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(prefs)) {
+    access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet();
+  } else {
+    // TODO: crbug.com/340437382 - Deprecate the migration warning sheet.
+    ShowPasswordMigrationWarningIfNeeded();
+  }
 
   if (ShouldTriggerSubmission()) {
     password_client_->StartSubmissionTrackingAfterTouchToFill(

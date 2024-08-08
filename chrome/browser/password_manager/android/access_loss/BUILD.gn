@@ -35,6 +35,7 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/password_manager/android:utils",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
@@ -52,7 +53,9 @@ source_set("public") {
   deps = [
     ":jni_headers",
     "//base",
+    "//chrome/browser/password_manager/android:utils",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/prefs:prefs",
   ]
 }
 
@@ -61,11 +64,26 @@ source_set("test_support") {
 
   deps = [
     ":public",
+    "//components/prefs:prefs",
     "//testing/gmock",
   ]
 
   sources = [
     "mock_password_access_loss_warning_bridge.cc",
     "mock_password_access_loss_warning_bridge.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "password_access_loss_warning_bridge_impl_unittest.cc" ]
+  deps = [
+    ":public",
+    "//base/test:test_support",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/password_store:password_store_impl",
+    "//components/password_manager/core/common:common",
+    "//components/prefs:prefs",
+    "//components/prefs:test_support",
   ]
 }

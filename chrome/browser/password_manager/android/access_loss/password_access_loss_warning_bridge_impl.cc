@@ -4,9 +4,11 @@
 
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
 
+#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
 #include "chrome/browser/password_manager/android/access_loss/jni_headers/PasswordAccessLossWarningBridge_jni.h"
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 
 PasswordAccessLossWarningBridgeImpl::PasswordAccessLossWarningBridgeImpl() =
@@ -15,16 +17,26 @@ PasswordAccessLossWarningBridgeImpl::PasswordAccessLossWarningBridgeImpl() =
 PasswordAccessLossWarningBridgeImpl::~PasswordAccessLossWarningBridgeImpl() =
     default;
 
+bool PasswordAccessLossWarningBridgeImpl::ShouldShowAccessLossNoticeSheet(
+    PrefService* pref_service) {
+  // TODO: crbug.com/357063741 - Check all the criteria for showing the sheet.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::
+              kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)) {
+    return false;
+  }
+
+  if (password_manager_android_util::GetPasswordAccessLossWarningType(
+          pref_service) ==
+      password_manager_android_util::PasswordAccessLossWarningType::kNone) {
+    return false;
+  }
+  return true;
+}
+
 void PasswordAccessLossWarningBridgeImpl::MaybeShowAccessLossNoticeSheet() {
   JNIEnv* env = base::android::AttachCurrentThread();
   jni_zero::ScopedJavaLocalRef<jobject> java_bridge =
       Java_PasswordAccessLossWarningBridge_create(env);
   Java_PasswordAccessLossWarningBridge_show(env, java_bridge);
-}
-
-bool PasswordAccessLossWarningBridgeImpl::ShouldShowAccessLossNoticeSheet() {
-  // TODO: crbug.com/357063741 - Check all the criteria for showing the sheet.
-  return base::FeatureList::IsEnabled(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning);
 }

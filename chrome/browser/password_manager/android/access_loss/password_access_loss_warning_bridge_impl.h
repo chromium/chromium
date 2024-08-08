@@ -19,8 +19,8 @@ class PasswordAccessLossWarningBridgeImpl
       const PasswordAccessLossWarningBridgeImpl&) = delete;
   ~PasswordAccessLossWarningBridgeImpl() override;
 
+  bool ShouldShowAccessLossNoticeSheet(PrefService* pref_service) override;
   void MaybeShowAccessLossNoticeSheet() override;
-  bool ShouldShowAccessLossNoticeSheet() override;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ACCESS_LOSS_PASSWORD_ACCESS_LOSS_WARNING_BRIDGE_IMPL_H_
