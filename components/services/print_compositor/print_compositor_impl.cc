@@ -184,8 +184,6 @@ void PrintCompositorImpl::CompositePage(
     const ContentToFrameMap& subframe_content_map,
     mojom::PrintCompositor::CompositePageCallback callback) {
   TRACE_EVENT0("print", "PrintCompositorImpl::CompositePage");
-  if (docinfo_)
-    docinfo_->pages_provided++;
   // This function is always called to composite a page to PDF.
   HandleCompositionRequest(
       frame_guid, std::move(serialized_content), subframe_content_map,

@@ -191,7 +191,6 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
 
     mojom::PrintCompositor::DocumentType document_type;
     CompositePagesCallback callback;
-    bool is_concurrent_doc_composition = false;
   };
 
   // Stores the concurrent document composition information.
@@ -202,7 +201,6 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
     SkDynamicMemoryWStream compositor_stream;
     sk_sp<SkDocument> doc;
     mojom::PrintCompositor::DocumentType document_type;
-    uint32_t pages_provided = 0;
     uint32_t pages_written = 0;
     uint32_t page_count = 0;
     FinishDocumentCompositionCallback callback;
