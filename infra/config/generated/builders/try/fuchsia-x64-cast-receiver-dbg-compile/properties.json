@@ -42,7 +42,8 @@
           "project": "chromium"
         }
       ],
-      "is_compile_only": true
+      "is_compile_only": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/try/fuchsia-x64-cast-receiver-dbg-compile/targets"
     }
   },
   "$build/flakiness": {

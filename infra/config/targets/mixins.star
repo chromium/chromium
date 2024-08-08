@@ -619,6 +619,7 @@ targets.mixin(
 
 targets.mixin(
     name = "fuchsia-persistent-emulator",
+    generate_pyl_entry = False,
     args = [
         "--everlasting",
     ],
@@ -636,6 +637,7 @@ targets.mixin(
 
 targets.mixin(
     name = "upload_inv_extended_properties",
+    generate_pyl_entry = False,
     resultdb = targets.resultdb(
         enable = True,
         inv_extended_properties_dir = "${ISOLATED_OUTDIR}/invocations",

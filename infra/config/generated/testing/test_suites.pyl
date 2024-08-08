@@ -1608,9 +1608,6 @@
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
         ],
-        'remove_mixins': [
-          'upload_inv_extended_properties',
-        ],
         'args': [
           '--num-retries=3',
         ],
@@ -1629,9 +1626,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
-        ],
-        'remove_mixins': [
-          'upload_inv_extended_properties',
         ],
         'args': [
           '--num-retries=3',
@@ -2218,21 +2212,8 @@
       'zlib_unittests': {},
     },
 
-    'fuchsia_facility_gtests': {
-      'aura_unittests': {},
-      'blink_common_unittests': {},
-      'courgette_unittests': {},
-      'crypto_unittests': {},
-      'filesystem_service_unittests': {},
-      'web_engine_integration_tests': {},
-      'web_engine_unittests': {},
-    },
-
     'fuchsia_sizes_tests': {
       'fuchsia_sizes': {
-        'remove_mixins': [
-          'upload_inv_extended_properties',
-        ],
         'args': [
           '--sizes-path',
           'tools/fuchsia/size_tests/fyi_sizes_smoketest.json',
@@ -3259,18 +3240,12 @@
           'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
-        'remove_mixins': [
-          'upload_inv_extended_properties',
-        ],
       },
       'hardware_accelerated_feature_tests': {
         'telemetry_test_name': 'hardware_accelerated_feature',
         'mixins': [
           'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
-        ],
-        'remove_mixins': [
-          'upload_inv_extended_properties',
         ],
       },
       'pixel_skia_gold_passthrough_test': {
@@ -3364,9 +3339,6 @@
           'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
-        'remove_mixins': [
-          'upload_inv_extended_properties',
-        ],
         'args': [
           '--extra-browser-args=--use-cmd-decoder=validating',
         ],
@@ -3377,9 +3349,6 @@
           'has_native_resultdb_integration',
           'skia_gold_test',
           'gpu_integration_test_common_args',
-        ],
-        'remove_mixins': [
-          'upload_inv_extended_properties',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -3397,18 +3366,12 @@
           'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
         ],
-        'remove_mixins': [
-          'upload_inv_extended_properties',
-        ],
       },
       'hardware_accelerated_feature_tests': {
         'telemetry_test_name': 'hardware_accelerated_feature',
         'mixins': [
           'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
-        ],
-        'remove_mixins': [
-          'upload_inv_extended_properties',
         ],
       },
       'pixel_skia_gold_validating_test': {
@@ -3417,9 +3380,6 @@
           'has_native_resultdb_integration',
           'skia_gold_test',
           'gpu_integration_test_common_args',
-        ],
-        'remove_mixins': [
-          'upload_inv_extended_properties',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -3436,9 +3396,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'gpu_integration_test_common_args',
-        ],
-        'remove_mixins': [
-          'upload_inv_extended_properties',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -6271,10 +6228,6 @@
       'gpu_angle_unit_gtests',
       'gpu_common_gtests_passthrough',
       'gpu_desktop_specific_gtests',
-    ],
-
-    'gpu_fuchsia_telemetry_tests': [
-      'gpu_validating_telemetry_tests',
     ],
 
     'gpu_fyi_android_gtests': [

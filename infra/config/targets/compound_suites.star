@@ -787,13 +787,6 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "gpu_fuchsia_telemetry_tests",
-    basic_suites = [
-        "gpu_validating_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "gpu_fyi_android_gtests",
     basic_suites = [
         "gpu_angle_unit_gtests",

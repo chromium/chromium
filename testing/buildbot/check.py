@@ -32,6 +32,8 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
 
     # These targets are used by builders setting their tests in starlark
     'android_lint',
+    'cast_test_lists',
+    'telemetry_gpu_integration_test_fuchsia',
 
     # These targets are listed only in build-side recipes.
     'captured_sites_interactive_tests',

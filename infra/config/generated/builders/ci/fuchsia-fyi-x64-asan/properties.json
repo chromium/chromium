@@ -48,7 +48,8 @@
           "builder": "fuchsia-fyi-x64-asan",
           "group": "tryserver.chromium.fuchsia"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/fuchsia-fyi-x64-asan/targets"
     }
   },
   "$build/reclient": {

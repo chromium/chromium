@@ -49,7 +49,8 @@
           "builder": "fuchsia-fyi-arm64-dbg",
           "group": "tryserver.chromium.fuchsia"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/fuchsia-fyi-arm64-dbg/targets"
     }
   },
   "$build/reclient": {

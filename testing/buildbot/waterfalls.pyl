@@ -13,6 +13,8 @@
   # builders' declarations in //infra/config/subprojects/ci/<builder-group>.star
   #   chromium
   #   chromium.accessibility
+  #   chromium.fuchsia
+  #   chromium.fuchsia.fyi
   {
     'name': 'chrome',
     'mixins': ['chrome-tester-service-account'],
@@ -3337,122 +3339,6 @@
         'additional_compile_targets': ['chrome/enterprise_companion:all'],
       },
     }
-  },
-  {
-    # The following builders in this group have been migrated to set their
-    # targets in the builders' declarations in
-    # //infra/config/subprojects/ci/chromium.android.star
-    #   fuchsia-x64-cast-receiver-rel
-    'name': 'chromium.fuchsia',
-    'mixins': [
-        'chromium-tester-service-account',
-        'upload_inv_extended_properties',
-    ],
-    'machines': {
-      'fuchsia-arm64-cast-receiver-rel': {
-        'additional_compile_targets': [
-          'all',
-          'cast_test_lists',
-        ],
-        'browser_config': 'web-engine-shell',
-        'os_type': 'fuchsia',
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
-          'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
-        },
-        'mixins': [
-          'arm64',
-          'docker',
-          'linux-jammy-or-focal',
-        ],
-      },
-      'fuchsia-x64-cast-receiver-dbg': {
-        'additional_compile_targets': [
-          'all',
-          'cast_test_lists',
-        ],
-        'browser_config': 'web-engine-shell',
-        'os_type': 'fuchsia',
-        'mixins': [
-          'isolate_profile_data',
-          'linux-jammy',
-        ],
-        'swarming': {
-          'dimensions': {
-            'kvm': '1',
-          },
-        },
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
-          'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'fuchsia_isolated_scripts',
-        },
-      },
-    },
-  },
-  {
-    'name': 'chromium.fuchsia.fyi',
-    'mixins': [
-        'chromium-tester-service-account',
-        'upload_inv_extended_properties',
-    ],
-    'machines': {
-      'fuchsia-fyi-arm64-dbg': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'browser_config': 'web-engine-shell',
-        'os_type': 'fuchsia',
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
-          'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'fuchsia_isolated_scripts',
-        },
-        'mixins': [
-          'arm64',
-          'docker',
-          'linux-jammy-or-focal',
-        ],
-      },
-      'fuchsia-fyi-x64-asan': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'swarming': {
-          'dimensions': {
-            'kvm': '1',
-          },
-        },
-        'browser_config': 'web-engine-shell',
-        'os_type': 'fuchsia',
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
-          'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'fuchsia_isolated_scripts',
-        },
-      },
-      'fuchsia-fyi-x64-dbg-persistent-emulator' : {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'browser_config': 'web-engine-shell',
-        'os_type': 'fuchsia',
-        'mixins': [
-          'fuchsia-persistent-emulator',
-          'linux-focal',
-        ],
-        'swarming': {
-          'dimensions': {
-            'kvm': '1',
-            'pool': 'chromium.tests.fuchsia',
-          },
-        },
-        'test_suites': {
-          'gtest_tests': 'fuchsia_facility_gtests',
-        },
-      },
-    },
   },
   {
     'name': 'chromium.fyi',

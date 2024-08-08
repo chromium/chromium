@@ -42,7 +42,8 @@
           "builder": "fuchsia-fyi-x64-asan",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/fuchsia-fyi-x64-asan/targets"
     }
   },
   "$build/reclient": {

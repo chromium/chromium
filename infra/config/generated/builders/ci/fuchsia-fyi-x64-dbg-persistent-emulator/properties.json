@@ -47,7 +47,8 @@
           "builder": "fuchsia-fyi-x64-dbg-persistent-emulator",
           "group": "tryserver.chromium.fuchsia"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/fuchsia-fyi-x64-dbg-persistent-emulator/targets"
     }
   },
   "$build/reclient": {

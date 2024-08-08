@@ -455,19 +455,6 @@
       '--device-spec=virtual_device_large',
     ],
   },
-  'fuchsia-persistent-emulator': {
-    'args': [
-      '--everlasting',
-    ],
-    'swarming': {
-      'named_caches': [
-        {
-          'name': 'fuchsia_emulator_cache',
-          'path': '.fuchsia_emulator/fuchsia-everlasting-emulator',
-        },
-      ],
-    },
-  },
   'gce': {
     'swarming': {
       'dimensions': {
@@ -1300,12 +1287,6 @@
       'dimensions': {
         'pool': 'chromium.win.uac',
       },
-    },
-  },
-  'upload_inv_extended_properties': {
-    'resultdb': {
-      'enable': True,
-      'inv_extended_properties_dir': '${ISOLATED_OUTDIR}/invocations',
     },
   },
   'vaapi_unittest_args': {
