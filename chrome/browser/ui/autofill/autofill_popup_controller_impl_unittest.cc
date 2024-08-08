@@ -621,15 +621,20 @@ TEST_F(AutofillPopupControllerImplTest,
 }
 
 TEST_F(AutofillPopupControllerImplTest,
-       SuggestionFiltration_FooterSuggestionsAreNotFiltratable) {
+       SuggestionFiltration_StaticSuggestionsAreNotFilteredOut) {
   using enum SuggestionType;
+
+  Suggestion footer_suggestion1 = Suggestion(kSeparator);
+  footer_suggestion1.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  Suggestion footer_suggestion2 = Suggestion(kUndoOrClear);
+  footer_suggestion2.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
 
   AutofillPopupController& controller = client().popup_controller(manager());
   ShowSuggestions(manager(), {
                                  Suggestion(u"abc", kAddressEntry),
                                  Suggestion(u"abx", kAddressEntry),
-                                 Suggestion(kSeparator),
-                                 Suggestion(kUndoOrClear),
+                                 std::move(footer_suggestion1),
+                                 std::move(footer_suggestion2),
                              });
 
   controller.SetFilter(AutofillPopupController::SuggestionFilter(u"ab"));

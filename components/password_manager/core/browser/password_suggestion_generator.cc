@@ -137,7 +137,9 @@ void MaybeAppendManagePasswordsEntry(std::vector<Suggestion>* suggestions) {
   // Add a separator before the manage option unless there are no suggestions
   // yet.
   if (!suggestions->empty()) {
-    suggestions->emplace_back(SuggestionType::kSeparator);
+    Suggestion separator(SuggestionType::kSeparator);
+    separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+    suggestions->push_back(std::move(separator));
   }
 
   Suggestion suggestion(
@@ -149,6 +151,7 @@ void MaybeAppendManagePasswordsEntry(std::vector<Suggestion>* suggestions) {
       SuggestionType::kAllSavedPasswordsEntry);
   // The UI code will pick up an icon from the resources based on the string.
   suggestion.trailing_icon = Suggestion::Icon::kGooglePasswordManager;
+  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   suggestions->emplace_back(std::move(suggestion));
 }
 

@@ -160,6 +160,20 @@ struct Suggestion {
     kIban,
   };
 
+  // This enum is used to control filtration of suggestions (see it's used in
+  // the `PopupViewViews` search bar and `AutofillPopupControllerImpl` where
+  // the logic is implemented) by explicitly marking special suggestions at
+  // creation.
+  enum class FiltrationPolicy {
+    // Suggestions, that are normally filtered. The match is highlighted on
+    // the UI and those that don't match are removed from the list.
+    kFilterable,
+
+    // Suggestions, that are excluded from filtration by always staying in
+    // in the list (basically, these suggestions ignore filter).
+    kStatic,
+  };
+
   // TODO(crbug.com/335194240): Consolidate expected param types for these
   // constructors. Some expect UTF16 strings and others UTF8, while internally
   // we only use UTF16. The ones expecting UTF8 are only used by tests and could
@@ -314,6 +328,12 @@ struct Suggestion {
   // Whether the user is able to preview the suggestion by hovering on it or
   // accept it by clicking on it.
   bool is_acceptable = true;
+
+  // How the suggestion should be handled by the filtration logic, see the enum
+  // values doc for details.
+  // Now used for filtering manually triggered password suggestions only and
+  // has no effect on other suggestions.
+  FiltrationPolicy filtration_policy = FiltrationPolicy::kFilterable;
 
   // If true, the user will see the suggestion in a "disabled and grayed-out"
   // form. This field should be true only when `is_acceptable` is false  which
