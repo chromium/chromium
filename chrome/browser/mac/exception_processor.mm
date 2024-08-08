@@ -20,64 +20,10 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/crash/core/common/crash_key.h"
 
 namespace chrome {
-
-// Maximum number of known named exceptions we'll support.  There is
-// no central registration, but I only find about 75 possibilities in
-// the system frameworks, and many of them are probably not
-// interesting to track in aggregate (those relating to distributed
-// objects, for instance).
-constexpr size_t kKnownNSExceptionCount = 25;
-
-const size_t kUnknownNSException = kKnownNSExceptionCount;
-
-size_t BinForException(NSException* exception) {
-  // A list of common known exceptions.  The list position will
-  // determine where they live in the histogram, so never move them
-  // around, only add to the end.
-  NSString* const kKnownNSExceptionNames[] = {
-    // Grab-bag exception, not very common.  CFArray (or other
-    // container) mutated while being enumerated is one case seen in
-    // production.
-    NSGenericException,
-
-    // Out-of-range on NSString or NSArray.  Quite common.
-    NSRangeException,
-
-    // Invalid arg to method, unrecognized selector.  Quite common.
-    NSInvalidArgumentException,
-
-    // malloc() returned null in object creation, I think.  Turns out
-    // to be very uncommon in production, because of the OOM killer.
-    NSMallocException,
-
-    // This contains things like windowserver errors, trying to draw
-    // views which aren't in windows, unable to read nib files.  By
-    // far the most common exception seen on the crash server.
-    NSInternalInconsistencyException,
-  };
-
-  // Make sure our array hasn't outgrown our abilities to track it.
-  static_assert(std::size(kKnownNSExceptionNames) < kKnownNSExceptionCount,
-                "Cannot track more exceptions");
-
-  NSString* name = [exception name];
-  for (size_t i = 0; i < std::size(kKnownNSExceptionNames); ++i) {
-    if (name == kKnownNSExceptionNames[i]) {
-      return i;
-    }
-  }
-  return kUnknownNSException;
-}
-
-void RecordExceptionWithUma(NSException* exception) {
-  UMA_HISTOGRAM_ENUMERATION("OSX.NSException",
-      BinForException(exception), kUnknownNSException);
-}
 
 static objc_exception_preprocessor g_next_preprocessor = nullptr;
 
@@ -104,9 +50,6 @@ NOINLINE static void TERMINATING_FROM_UNCAUGHT_NSEXCEPTION(id exception) {
 
 static id ObjcExceptionPreprocessor(id exception) {
   static bool seen_first_exception = false;
-
-  // Record UMA and crash keys about the exception.
-  RecordExceptionWithUma(exception);
 
   static crash_reporter::CrashKeyString<256> firstexception("firstexception");
   static crash_reporter::CrashKeyString<256> lastexception("lastexception");

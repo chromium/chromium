@@ -9,69 +9,10 @@
 #include <sys/wait.h>
 
 #include "base/mac/os_crash_dumps.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome {
-
-// Generate an NSException with the given name.
-NSException* ExceptionNamed(NSString* name) {
-  return [NSException exceptionWithName:name
-                                 reason:@"No reason given"
-                               userInfo:nil];
-}
-
-// Helper to keep binning expectations readable.
-size_t BinForExceptionNamed(NSString* name) {
-  return BinForException(ExceptionNamed(name));
-}
-
-TEST(ExceptionProcessorTest, ExceptionBinning) {
-  // These exceptions must be in this order.
-  EXPECT_EQ(BinForExceptionNamed(NSGenericException), 0U);
-  EXPECT_EQ(BinForExceptionNamed(NSRangeException), 1U);
-  EXPECT_EQ(BinForExceptionNamed(NSInvalidArgumentException), 2U);
-  EXPECT_EQ(BinForExceptionNamed(NSMallocException), 3U);
-
-  // Random other exceptions map to |kUnknownNSException|.
-  EXPECT_EQ(BinForExceptionNamed(@"CustomName"), kUnknownNSException);
-  EXPECT_EQ(BinForExceptionNamed(@"Custom Name"), kUnknownNSException);
-  EXPECT_EQ(BinForExceptionNamed(@""), kUnknownNSException);
-  EXPECT_EQ(BinForException(nil), kUnknownNSException);
-}
-
-TEST(ExceptionProcessorTest, RecordException) {
-  base::HistogramTester tester;
-
-  // Record some known exceptions.
-  RecordExceptionWithUma(ExceptionNamed(NSGenericException));
-  RecordExceptionWithUma(ExceptionNamed(NSGenericException));
-  RecordExceptionWithUma(ExceptionNamed(NSGenericException));
-  RecordExceptionWithUma(ExceptionNamed(NSGenericException));
-  RecordExceptionWithUma(ExceptionNamed(NSRangeException));
-  RecordExceptionWithUma(ExceptionNamed(NSInvalidArgumentException));
-  RecordExceptionWithUma(ExceptionNamed(NSInvalidArgumentException));
-  RecordExceptionWithUma(ExceptionNamed(NSInvalidArgumentException));
-  RecordExceptionWithUma(ExceptionNamed(NSMallocException));
-  RecordExceptionWithUma(ExceptionNamed(NSMallocException));
-
-  // Record some unknown exceptions.
-  RecordExceptionWithUma(ExceptionNamed(@"CustomName"));
-  RecordExceptionWithUma(ExceptionNamed(@"Custom Name"));
-  RecordExceptionWithUma(ExceptionNamed(@""));
-  RecordExceptionWithUma(nil);
-
-  // We should have exactly the right number of exceptions.
-  const char kHistogramName[] = "OSX.NSException";
-  tester.ExpectBucketCount(kHistogramName, 0, 4);
-  tester.ExpectBucketCount(kHistogramName, 1, 1);
-  tester.ExpectBucketCount(kHistogramName, 2, 3);
-  tester.ExpectBucketCount(kHistogramName, 3, 2);
-
-  // The unknown exceptions should end up in the overflow bucket.
-  tester.ExpectBucketCount(kHistogramName, kUnknownNSException, 4);
-}
 
 void RaiseExceptionInRunLoop() {
   CFRunLoopRef run_loop = CFRunLoopGetCurrent();
