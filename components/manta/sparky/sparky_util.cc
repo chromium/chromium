@@ -279,12 +279,10 @@ void AddFilesData(base::span<const FileData> files_data,
     file_proto->set_name(file.name);
     file_proto->set_path(file.path);
     file_proto->set_date_modified(file.date_modified);
+    file_proto->set_size_in_bytes(file.size_in_bytes);
     if (file.bytes.has_value()) {
       file_proto->set_serialized_bytes(
           std::string(file.bytes->begin(), file.bytes->end()));
-    }
-    if (file.size_in_bytes) {
-      file_proto->set_size_in_bytes(file.size_in_bytes);
     }
     if (!file.summary.empty()) {
       file_proto->set_summary(file.summary);

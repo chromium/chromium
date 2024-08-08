@@ -393,19 +393,13 @@ TEST_F(SparkyUtilTest, AddDialog) {
   ASSERT_EQ(dialog_proto.at(5).action_size(), 4);
 }
 
-// TODO(b/357134635) - Reenable this test.
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
-#define MAYBE_AddFilesData DISABLED_AddFilesData
-#else
-#define MAYBE_AddFilesData AddFilesData
-#endif
-TEST_F(SparkyUtilTest, MAYBE_AddFilesData) {
+TEST_F(SparkyUtilTest, AddFilesData) {
   std::vector<manta::FileData> files_data;
   auto file_1 = FileData("path1", "name1", "2024");
   file_1.summary = "file 1 summary";
   file_1.bytes =
       std::make_optional(std::vector<uint8_t>({2, 4, 6, 7, 4, 7, 2, 8}));
-  file_1.size_in_bytes = 8;
+  file_1.size_in_bytes = 8L;
 
   files_data.emplace_back(file_1);
   files_data.emplace_back("path2", "name2", "2023");
