@@ -263,6 +263,8 @@ InteractiveAshTest::OpenAddBuiltInVpnDialog(
       WaitForElementEnabled(element_id,
                             ash::settings::AddConnectionsExpandButton()),
       ClickElement(element_id, ash::settings::AddConnectionsExpandButton()),
+      WaitForElementExpanded(element_id,
+                             ash::settings::AddConnectionsExpandButton()),
       WaitForElementEnabled(element_id, ash::settings::AddBuiltInVpnRow()),
       ClickElement(element_id, ash::settings::AddBuiltInVpnRow()));
 }
@@ -376,7 +378,7 @@ InteractiveAshTest::WaitForWindowWithTitle(aura::Env* env,
 ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementExists(
     const ui::ElementIdentifier& element_id,
-    const DeepQuery& query) {
+    const WebContentsInteractionTestUtil::DeepQuery& query) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
   StateChange element_exists;
   element_exists.event = kElementExists;
@@ -387,7 +389,7 @@ InteractiveAshTest::WaitForElementExists(
 ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementDoesNotExist(
     const ui::ElementIdentifier& element_id,
-    const DeepQuery& query) {
+    const WebContentsInteractionTestUtil::DeepQuery& query) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementDoesNotExist);
   StateChange does_not_exist;
   does_not_exist.type = StateChange::Type::kDoesNotExist;
@@ -453,6 +455,20 @@ InteractiveAshTest::WaitForElementUnchecked(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementExpanded(
+    const ui::ElementIdentifier& element_id,
+    WebContentsInteractionTestUtil::DeepQuery element) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExpanded);
+
+  WebContentsInteractionTestUtil::StateChange state_change;
+  state_change.event = kElementExpanded;
+  state_change.where = element;
+  state_change.type = StateChange::Type::kExistsAndConditionTrue;
+  state_change.test_function = "(el) => { return el.expanded; }";
+  return WaitForStateChange(element_id, state_change);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementOpened(
     const ui::ElementIdentifier& element_id,
     WebContentsInteractionTestUtil::DeepQuery element) {
@@ -483,7 +499,7 @@ InteractiveAshTest::WaitForElementUnopened(
 ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementFocused(
     const ui::ElementIdentifier& element_id,
-    const DeepQuery& query) {
+    const WebContentsInteractionTestUtil::DeepQuery& query) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementFocused);
   StateChange element_focused;
   element_focused.event = kElementFocused;
@@ -590,7 +606,7 @@ InteractiveAshTest::ClearInputFieldValue(
 ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementToRender(
     const ui::ElementIdentifier& element_id,
-    const DeepQuery& query) {
+    const WebContentsInteractionTestUtil::DeepQuery& query) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementRenders);
   StateChange element_renders;
   element_renders.event = kElementRenders;
@@ -602,8 +618,9 @@ InteractiveAshTest::WaitForElementToRender(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
-InteractiveAshTest::ClickElement(const ui::ElementIdentifier& element_id,
-                                 const DeepQuery& query) {
+InteractiveAshTest::ClickElement(
+    const ui::ElementIdentifier& element_id,
+    const WebContentsInteractionTestUtil::DeepQuery& query) {
   return Steps(MoveMouseTo(element_id, query), ClickMouse());
 }
 
@@ -622,7 +639,7 @@ InteractiveAshTest::ClickAnyElementTextContains(
 ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::SelectDropdownElementOption(
     const ui::ElementIdentifier& element_id,
-    const DeepQuery& query,
+    const WebContentsInteractionTestUtil::DeepQuery& query,
     const std::string& option) {
   return Steps(
       WaitForElementExists(element_id, query),
@@ -688,6 +705,17 @@ InteractiveAshTest::SendTextAsKeyEvents(const ui::ElementIdentifier& element_id,
                            modifiers, ui::Accelerator::KeyState::PRESSED)));
   }
   return steps;
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::ClearInputAndEnterText(
+    const ui::ElementIdentifier& element_id,
+    const WebContentsInteractionTestUtil::DeepQuery& query,
+    const std::string& text) {
+  return Steps(WaitForElementExists(element_id, query),
+               ClearInputFieldValue(element_id, query),
+               ClickElement(element_id, query),
+               SendTextAsKeyEvents(element_id, text));
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep

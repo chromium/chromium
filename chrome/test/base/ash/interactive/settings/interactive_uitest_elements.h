@@ -217,6 +217,31 @@ WebContentsInteractionTestUtil::DeepQuery CellularDetailsConfigurableSection();
 // The proxy section row in cellular network details subpage.
 WebContentsInteractionTestUtil::DeepQuery CellularDetailsProxySection();
 
+// Elements related to SIM lock that are found within the advanced section of
+// the details page of a cellular network, or the dialog shown to unlock a
+// locked SIM either using a PIN or a PUK.
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockToggle();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockChangePinButton();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockDialogs();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockEnterPinDialogButton();
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockEnterPinDialogSubtext();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockEnterPinDialogPin();
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockChangePinDialogButton();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockChangePinDialogNew();
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockChangePinDialogNewConfirm();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockChangePinDialogOld();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockUnlockPinDialogDone();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockUnlockPinDialogPin();
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockUnlockPukDialogButton();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockUnlockPukDialogPin();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockUnlockPukDialogPuk();
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockUnlockPukDialogPinConfirm();
+
 // The cellular networks subpage menu rename button.
 WebContentsInteractionTestUtil::DeepQuery CellularSubpageMenuRenameButton();
 

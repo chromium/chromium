@@ -152,13 +152,14 @@ class InteractiveAshTest
   // instrumented WebUI identified by `element_id`.
   ui::test::internal::InteractiveTestPrivate::MultiStep WaitForElementExists(
       const ui::ElementIdentifier& element_id,
-      const DeepQuery& query);
+      const WebContentsInteractionTestUtil::DeepQuery& query);
 
   // Waits for an element identified by `query` to not exist in the DOM of an
   // instrumented WebUI identified by `element_id`.
   ui::test::internal::InteractiveTestPrivate::MultiStep
-  WaitForElementDoesNotExist(const ui::ElementIdentifier& element_id,
-                             const DeepQuery& query);
+  WaitForElementDoesNotExist(
+      const ui::ElementIdentifier& element_id,
+      const WebContentsInteractionTestUtil::DeepQuery& query);
 
   // Waits for an element identified by `query` to both exist in the DOM of an
   // instrumented WebUI identified by `element_id` and be enabled.
@@ -185,6 +186,12 @@ class InteractiveAshTest
       WebContentsInteractionTestUtil::DeepQuery query);
 
   // Waits for an element identified by `query` to both exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and be expanded.
+  InteractiveTestApi::MultiStep WaitForElementExpanded(
+      const ui::ElementIdentifier& element_id,
+      WebContentsInteractionTestUtil::DeepQuery query);
+
+  // Waits for an element identified by `query` to both exist in the DOM of an
   // instrumented WebUI identified by `element_id` and be opened.
   InteractiveTestApi::MultiStep WaitForElementOpened(
       const ui::ElementIdentifier& element_id,
@@ -200,7 +207,7 @@ class InteractiveAshTest
   // instrumented WebUI identified by `element_id` and be focused.
   ui::test::internal::InteractiveTestPrivate::MultiStep WaitForElementFocused(
       const ui::ElementIdentifier& element_id,
-      const DeepQuery& query);
+      const WebContentsInteractionTestUtil::DeepQuery& query);
 
   // Waits for an element identified by `query` to both exist in the DOM of an
   // instrumented WebUI identified by `element_id` and have its text, or the
@@ -254,14 +261,15 @@ class InteractiveAshTest
   // `element_bounds.IsEmpty()` flakes.
   ui::test::internal::InteractiveTestPrivate::MultiStep WaitForElementToRender(
       const ui::ElementIdentifier& element_id,
-      const DeepQuery& query);
+      const WebContentsInteractionTestUtil::DeepQuery& query);
 
   // Clicks on an element in the DOM. `element_id` is the identifier
-  // of the WebContents to query. `query` is a DeepQuery path to the
-  // element to start with, it can be {} to query the entire page.
+  // of the WebContents to query. `query` is a
+  // WebContentsInteractionTestUtil::DeepQuery path to the element to start
+  // with, it can be {} to query the entire page.
   ui::test::internal::InteractiveTestPrivate::MultiStep ClickElement(
       const ui::ElementIdentifier& element_id,
-      const DeepQuery& query);
+      const WebContentsInteractionTestUtil::DeepQuery& query);
 
   // This function is similar to `ClickElement()` except it supports non-unique
   // elements. For more info see `FindElementWithTextAndDoAction()`.
@@ -277,9 +285,10 @@ class InteractiveAshTest
   // element to be a drop-down and will directly update the selected option
   // index to match the first option matching `option`.
   ui::test::internal::InteractiveTestPrivate::MultiStep
-  SelectDropdownElementOption(const ui::ElementIdentifier& element_id,
-                              const DeepQuery& query,
-                              const std::string& option);
+  SelectDropdownElementOption(
+      const ui::ElementIdentifier& element_id,
+      const WebContentsInteractionTestUtil::DeepQuery& query,
+      const std::string& option);
 
   // Sends an instrumented WebUI identified by `element_id` the key presses
   // needed to input the provided text `text`. This function can handle ASCII
@@ -288,6 +297,15 @@ class InteractiveAshTest
   // this function.
   ui::test::internal::InteractiveTestPrivate::MultiStep SendTextAsKeyEvents(
       const ui::ElementIdentifier& element_id,
+      const std::string& text);
+
+  // Waits for an element identified by `query` to exist in the DOM of an
+  // instrumented WebUI identified by `element_id`, which is expected to be a
+  // text input field, clears the existing input, clicks the element, and sends
+  // the key events needed to type `text`.
+  ui::test::internal::InteractiveTestPrivate::MultiStep ClearInputAndEnterText(
+      const ui::ElementIdentifier& element_id,
+      const WebContentsInteractionTestUtil::DeepQuery& query,
       const std::string& text);
 
  private:

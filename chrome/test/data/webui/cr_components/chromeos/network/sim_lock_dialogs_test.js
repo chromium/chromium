@@ -130,7 +130,7 @@ suite('NetworkSimLockDialogsTest', function() {
     await flushAsync();
     assertEquals(
         simLockDialog.i18n('networkSimErrorInvalidPinPlural', 3),
-        unlockPinDialog.querySelector('.pinEntrySubtext').textContent.trim());
+        unlockPinDialog.querySelector('.dialogSubtext').textContent.trim());
 
     // Set SIM to PIN locked state with single retry left.
     simLockDialog.deviceState = {
@@ -142,7 +142,7 @@ suite('NetworkSimLockDialogsTest', function() {
     await flushAsync();
     assertEquals(
         simLockDialog.i18n('networkSimErrorInvalidPin', 1),
-        unlockPinDialog.querySelector('.pinEntrySubtext').textContent.trim());
+        unlockPinDialog.querySelector('.dialogSubtext').textContent.trim());
   });
 
   test(
@@ -339,7 +339,7 @@ suite('NetworkSimLockDialogsTest', function() {
 
     await flushAsync();
     let error =
-        enterPinDialog.querySelector('.pinEntrySubtext').textContent.trim();
+        enterPinDialog.querySelector('.dialogSubtext').textContent.trim();
     assertEquals(
         error, simLockDialog.i18n('networkSimErrorIncorrectPinPlural', 2));
 
@@ -350,7 +350,7 @@ suite('NetworkSimLockDialogsTest', function() {
     simLockDialog.deviceState = {...deviceState};
     await flushAsync();
 
-    error = enterPinDialog.querySelector('.pinEntrySubtext').textContent.trim();
+    error = enterPinDialog.querySelector('.dialogSubtext').textContent.trim();
     assertEquals(error, simLockDialog.i18n('networkSimEnterPinSubtext'));
   });
 });
