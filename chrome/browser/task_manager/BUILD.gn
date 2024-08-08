@@ -94,9 +94,9 @@ source_set("task_manager") {
     public_deps += [
       "//ash/components/arc/mojom",
       "//ash/components/arc/session:connection_holder",
-      "//chrome/browser/ash:primitives",
       "//chrome/browser/ash/arc/process",
       "//chromeos/ash/components/dbus/concierge",
+      "//chromeos/ash/components/process_snapshot",
       "//chromeos/crosapi/mojom",
       "//components/arc",
     ]

@@ -282,7 +282,6 @@ static_library("ash") {
   ]
 
   public_deps = [
-    ":primitives",
     "//ash",
     "//ash/app_list",
     "//ash/components/arc",
@@ -1343,15 +1342,6 @@ static_library("ash") {
   }
 }
 
-# The core requirement for the target "primitives" is that it cannot depend on
-# any targets in //chrome/browser.
-source_set("primitives") {
-  public = [ "process_snapshot_server.h" ]
-  sources = [ "process_snapshot_server.cc" ]
-  public_deps = [ "//base" ]
-  deps = [ "//content/public/browser" ]
-}
-
 copy("mojo_service_manager_policy") {
   sources = [ "net/network_health/network_health_service_policy.json" ]
   outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
@@ -1589,7 +1579,6 @@ source_set("unit_tests") {
     "locale_change_guard_unittest.cc",
     "note_taking/note_taking_helper_unittest.cc",
     "preferences_unittest.cc",
-    "process_snapshot_server_unittest.cc",
     "proxy_config_service_impl_unittest.cc",
     "report_controller_initializer_unittest.cc",
     "scheduler_configuration_manager_unittest.cc",

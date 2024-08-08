@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_PROCESS_SNAPSHOT_SERVER_H_
-#define CHROME_BROWSER_ASH_PROCESS_SNAPSHOT_SERVER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_PROCESS_SNAPSHOT_PROCESS_SNAPSHOT_SERVER_H_
+#define CHROMEOS_ASH_COMPONENTS_PROCESS_SNAPSHOT_PROCESS_SNAPSHOT_SERVER_H_
 
+#include "base/component_export.h"
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -30,7 +31,8 @@ namespace ash {
 // providers (for VM/Crostini and ARC++ tasks). Consider moving this server
 // outside chrome/browser/chromeos/ so that other non-chrome-os clients can use
 // it.
-class ProcessSnapshotServer {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PROCESS_SNAPSHOT)
+    ProcessSnapshotServer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -112,4 +114,4 @@ class ProcessSnapshotServer {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_PROCESS_SNAPSHOT_SERVER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_PROCESS_SNAPSHOT_PROCESS_SNAPSHOT_SERVER_H_

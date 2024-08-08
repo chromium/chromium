@@ -16,7 +16,7 @@ static_library("process") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ash:primitives",
+    "//chromeos/ash/components/process_snapshot",
   ]
 
   deps = [

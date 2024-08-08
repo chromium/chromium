@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/process_snapshot_server.h"
+#include "chromeos/ash/components/process_snapshot/process_snapshot_server.h"
 
 #include <algorithm>
 
