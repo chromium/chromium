@@ -51,8 +51,6 @@ public class QuickDeleteController {
     private final @NonNull LayoutManager mLayoutManager;
     private final @NonNull Profile mProfile;
     private final @NonNull TabModel mTabModel;
-    // Null when declutter is disabled.
-    private final @Nullable TabModel mArchivedTabModel;
     private final QuickDeleteBridge mQuickDeleteBridge;
     private final QuickDeleteMediator mQuickDeleteMediator;
     private final PropertyModel mPropertyModel;
@@ -86,7 +84,6 @@ public class QuickDeleteController {
         mLayoutManager = layoutManager;
 
         mTabModel = tabModelSelector.getModel(/* incognito= */ false);
-        mArchivedTabModel = archivedTabModelSelector.getModel(/* incognito= */ false);
         mDeleteRegularTabsFilter =
                 new QuickDeleteTabsFilter(
                         (TabGroupModelFilter)
