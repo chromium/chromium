@@ -97,7 +97,7 @@ std::optional<bool> ImageServiceConsentHelper::GetConsentStatus() {
     return false;
   }
 
-  // If upload of the given ModelType is disabled (or inactive due to an
+  // If upload of the given DataType is disabled (or inactive due to an
   // error), then consent must be assumed to be NOT given.
   // Note that the "INITIALIZING" state is good enough: It means the data
   // type is enabled in principle, Sync just hasn't fully finished

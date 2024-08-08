@@ -85,7 +85,7 @@ MOCK_PROTOFILE_CONTENTS = ('\n'
 
 # Format string used as the contents of a mock data_type.cc
 # in order to test presubmit parsing of the DataTypeInfoMap in that file.
-MOCK_MODELTYPE_CONTENTS =('\n'
+MOCK_DATATYPE_CONTENTS =('\n'
   'const DataTypeInfo kDataTypeInfoMap[] = {\n'
   '// Some comment \n'
   '{APP_SETTINGS, "APP_SETTING", "app_settings", "App settings",\n'
@@ -191,13 +191,13 @@ class DataTypeInfoChangeTest(unittest.TestCase):
     mock_input_api.files = files
     return PRESUBMIT.CheckChangeOnCommit(mock_input_api, MockOutputApi())
 
-  def _testChange(self, modeltype_literal):
+  def _testChange(self, datatype_literal):
     files = [
       MockFile(os.path.abspath('./protocol/entity_specifics.proto'),
         MOCK_PROTOFILE_CONTENTS),
       MockFile(os.path.abspath('./protocol/proto_visitors.h'), ''),
       MockFile(os.path.abspath('./base/data_type.cc'),
-        MOCK_MODELTYPE_CONTENTS % (modeltype_literal))
+        MOCK_DATATYPE_CONTENTS % (datatype_literal))
     ]
     return self._testChangeWithFiles(files)
 

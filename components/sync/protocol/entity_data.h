@@ -62,7 +62,7 @@ struct EntityData {
   // Entity name, used mostly for Debug purposes.
   std::string name;
 
-  // Model type specific sync data.
+  // Data type specific sync data.
   sync_pb::EntitySpecifics specifics;
 
   // Entity creation and modification timestamps.

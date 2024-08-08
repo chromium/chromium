@@ -158,7 +158,7 @@ ExtensionSyncService::MergeDataAndStartSyncing(
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
   CHECK(sync_processor.get());
   LOG_IF(FATAL, type != syncer::EXTENSIONS && type != syncer::APPS)
-      << "Got " << type << " ModelType";
+      << "Got " << type << " DataType";
 
   SyncBundle* bundle = GetSyncBundle(type);
   bundle->StartSyncing(std::move(sync_processor));

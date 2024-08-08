@@ -174,7 +174,7 @@ class StatefulChangeProcessor : public syncer::FakeSyncChangeProcessor {
   const syncer::SyncDataList& data() const { return data_; }
 
  private:
-  // The expected ModelType of changes that this processor will see.
+  // The expected DataType of changes that this processor will see.
   const syncer::DataType expected_type_;
   syncer::SyncDataList data_;
 };

@@ -1105,8 +1105,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.InvalidationPerModelType" enum="SyncDataTypes"
     expires_after="M135">
-<!-- expires-never: For monitoring FCM based invalidations. -->
-
   <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>

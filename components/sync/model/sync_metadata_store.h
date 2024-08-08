@@ -25,7 +25,7 @@ namespace syncer {
 // instance of SyncMetadataStoreChangeList, passing a pointer to their
 // SyncMetadataStore to its constructor. Implementations of SyncMetadataStore
 // methods should support add/update/delete operations in the
-// model-type-specific sync metadata storage.
+// data-type-specific sync metadata storage.
 class SyncMetadataStore {
  public:
   SyncMetadataStore() = default;
