@@ -193,7 +193,7 @@ pub fn readme_file_from_package<'a>(
 
 // Allowed licenses, in the format they are specified in Cargo.toml files from
 // crates.io, and the format to write to README.chromium.
-static ALLOWED_LICENSES: [(&str, &str); 20] = [
+static ALLOWED_LICENSES: [(&str, &str); 21] = [
     // ("Cargo.toml string", "License for README.chromium")
     ("Apache-2.0", "Apache 2.0"),
     ("MIT OR Apache-2.0", "Apache 2.0"),
@@ -218,6 +218,7 @@ static ALLOWED_LICENSES: [(&str, &str); 20] = [
         "Apache 2.0 AND Unicode License Agreement - Data Files and Software (2016)",
     ),
     ("Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT", "Apache 2.0"),
+    ("BSD-2-Clause OR Apache-2.0 OR MIT", "Apache 2.0"),
 ];
 
 static EXPECTED_LICENSE_FILE: [(&str, &str); 20] = [
