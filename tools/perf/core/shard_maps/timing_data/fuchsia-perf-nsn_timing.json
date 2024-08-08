@@ -1,6 +1,10 @@
 [
     {
-        "duration": "485.0",
+        "duration": "483.0",
         "name": "speedometer2/Speedometer2"
+    },
+    {
+        "duration": "704.0",
+        "name": "speedometer3/Speedometer3"
     }
 ]

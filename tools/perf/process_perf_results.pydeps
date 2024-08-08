@@ -632,7 +632,6 @@ page_sets/desktop_ui/js_utils.py
 page_sets/desktop_ui/multitab_story.py
 page_sets/desktop_ui/new_tab_page_story.py
 page_sets/desktop_ui/omnibox_story.py
-page_sets/desktop_ui/side_search_story.py
 page_sets/desktop_ui/story_tags.py
 page_sets/desktop_ui/tab_search_story.py
 page_sets/desktop_ui/ui_devtools_utils.py

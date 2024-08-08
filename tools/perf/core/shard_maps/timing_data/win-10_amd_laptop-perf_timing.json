@@ -4,15 +4,15 @@
         "name": "jetstream2/JetStream2"
     },
     {
-        "duration": "38.0",
+        "duration": "37.0",
         "name": "octane/Octane"
     },
     {
-        "duration": "32.0",
+        "duration": "31.0",
         "name": "speedometer2/Speedometer2"
     },
     {
-        "duration": "39.0",
+        "duration": "37.0",
         "name": "speedometer3/Speedometer3"
     }
 ]
