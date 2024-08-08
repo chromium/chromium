@@ -961,8 +961,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
                   ->GetController()
                   .GetNavigationEntryScreenshotCache()
                   ->RemoveScreenshot(red_entry));
-  red_entry->navigation_transition_data().set_main_frame_background_color(
-      SkColors::kMagenta);
 
   std::vector<GestureType> expected;
   expected.push_back(GestureType::kStart);
@@ -978,7 +976,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   ASSERT_EQ(children.size(), 2U);
   auto* fallback_screenshot =
       static_cast<cc::slim::SolidColorLayer*>(children[0].get());
-  ASSERT_EQ(fallback_screenshot->background_color(), SkColors::kMagenta);
+  auto expected_bg_color = web_contents()
+                               ->GetDelegate()
+                               ->GetBackForwardTransitionFallbackUXConfig()
+                               .background_color;
+  ASSERT_EQ(fallback_screenshot->background_color(), expected_bg_color);
 
   // Manually trigger the back navigation.
   TestFrameNavigationObserver back_navigation(web_contents());

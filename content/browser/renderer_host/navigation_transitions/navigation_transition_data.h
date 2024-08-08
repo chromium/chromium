@@ -87,14 +87,6 @@ class NavigationTransitionData {
   }
   bool is_copied_from_embedder() const { return is_copied_from_embedder_; }
 
-  void set_main_frame_background_color(
-      const std::optional<SkColor4f>& main_frame_background_color) {
-    main_frame_background_color_ = main_frame_background_color;
-  }
-  const std::optional<SkColor4f>& main_frame_background_color() const {
-    return main_frame_background_color_;
-  }
-
   void set_cache_hit_or_miss_reason(
       std::optional<CacheHitOrMissReason> cache_hit_or_miss_reason) {
     cache_hit_or_miss_reason_ = cache_hit_or_miss_reason;
@@ -113,9 +105,6 @@ class NavigationTransitionData {
  private:
   // Whether this screenshot is supplied by the embedder.
   bool is_copied_from_embedder_ = false;
-
-  // Used to compose a fallback screenshot when no valid screenshot available.
-  std::optional<SkColor4f> main_frame_background_color_;
 
   // Used to map a screenshot for the last frame of this navigation entry
   // captured in Viz and sent back to the browser process. The token is set when

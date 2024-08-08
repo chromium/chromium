@@ -361,12 +361,12 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   //
   // If `screenshot_` is supplied by the embedder.
   const bool is_copied_from_embedder_;
-  // The background color of the destination page. Used to compose a fallback
-  // screenshot when no screenshot is available in the destination entry.
-  const SkColor4f main_frame_background_color_;
   // The current transition is using a fallback screenshot of page's background
   // color.
   const bool use_fallback_screenshot_;
+  // Color information to compose a fallback screenshot.
+  const BackForwardTransitionAnimationManager::FallbackUXConfig
+      fallback_ux_config_;
 
   // Tracks various state of the navigation request associated with this
   // gesture. Only set if the navigation request is successfully created.

@@ -21,6 +21,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "ui/android/window_android.h"
 #include "ui/events/back_gesture_event.h"
 
@@ -41,15 +42,6 @@ void ResetTransformForLayer(cc::slim::Layer* layer) {
   auto transform = layer->transform();
   transform.MakeIdentity();
   layer->SetTransform(transform);
-}
-
-SkColor4f GetBackgroundColor(const std::optional<SkColor4f>& background_color) {
-  // The default background color if the CSS has not computed one.
-  static constexpr SkColor4f kDefaultBackgoundColor = SkColors::kWhite;
-  if (!background_color || !background_color->isOpaque()) {
-    return kDefaultBackgoundColor;
-  }
-  return *background_color;
 }
 
 //========================== Fitted animation timeline =========================
@@ -212,11 +204,12 @@ BackForwardTransitionAnimator::BackForwardTransitionAnimator(
       animation_manager_(animation_manager),
       is_copied_from_embedder_(destination_entry->navigation_transition_data()
                                    .is_copied_from_embedder()),
-      main_frame_background_color_(
-          GetBackgroundColor(destination_entry->navigation_transition_data()
-                                 .main_frame_background_color())),
       use_fallback_screenshot_(!destination_entry->GetUserData(
           NavigationEntryScreenshot::kUserDataKey)),
+      fallback_ux_config_(animation_manager_->web_contents_view_android()
+                              ->web_contents()
+                              ->GetDelegate()
+                              ->GetBackForwardTransitionFallbackUXConfig()),
       physics_model_(GetViewportWidthPx(),
                      web_contents_view_android->GetNativeView()->GetDipScale()),
       latest_progress_gesture_(gesture) {
@@ -1095,7 +1088,7 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview() {
     // background color.
     // TODO(crbug/40260440): Implement the UX's spec using the favicon.
     auto screenshot_layer = cc::slim::SolidColorLayer::Create();
-    screenshot_layer->SetBackgroundColor(main_frame_background_color_);
+    screenshot_layer->SetBackgroundColor(fallback_ux_config_.background_color);
     screenshot_layer_ = std::move(screenshot_layer);
   } else {
     ui_resource_id_ = CreateUIResource(screenshot_.get());
