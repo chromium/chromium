@@ -2037,13 +2037,15 @@ void PdfViewWebPlugin::StrokeFinished() {
 }
 
 int PdfViewWebPlugin::VisiblePageIndexFromPoint(const gfx::PointF& point) {
-  gfx::Point rounded_point = gfx::ToRoundedPoint(point);
   for (int i = 0; i < engine_->GetNumberOfPages(); ++i) {
     if (!IsPageVisible(i)) {
       continue;
     }
-    auto rect = engine_->GetPageContentsRect(i);
-    if (!rect.Contains(rounded_point)) {
+
+    // Explicitly construct a gfx::RectF from gfx::Rect, so the Contains() call
+    // below works with `point`, which has float values.
+    gfx::RectF rect(engine_->GetPageContentsRect(i));
+    if (!rect.Contains(point)) {
       continue;
     }
     return i;
