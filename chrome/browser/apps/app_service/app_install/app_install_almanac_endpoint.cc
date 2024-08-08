@@ -141,6 +141,7 @@ std::optional<AppInstallData> ParseAppInstallResponseProto(
     if (!web_app_data.proxied_manifest_url.is_valid()) {
       return std::nullopt;
     }
+    web_app_data.open_as_window = instance.web_extras().open_as_window();
   } else if (result.package_id.package_type() == PackageType::kGeForceNow) {
     result.app_type_data.emplace<GeForceNowAppInstallData>();
   } else if (result.package_id.package_type() == PackageType::kBorealis) {
