@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
@@ -252,7 +253,7 @@ class GPU_EXPORT SyncPointClientState
       LOCKS_EXCLUDED(fence_sync_lock_);
 
   // Sync point manager is guaranteed to exist in the lifetime of the client.
-  raw_ptr<SyncPointManager> sync_point_manager_ = nullptr;
+  const raw_ptr<SyncPointManager> sync_point_manager_;
 
   // Global order data where releases will originate from.
   const scoped_refptr<SyncPointOrderData> order_data_;
@@ -263,6 +264,8 @@ class GPU_EXPORT SyncPointClientState
 
   // Protects fence_sync_release_, fence_callback_queue_.
   base::Lock fence_sync_lock_;
+
+  base::AtomicFlag destroyed_;
 
   // Current fence sync release that has been signaled.
   uint64_t fence_sync_release_ GUARDED_BY(fence_sync_lock_) = 0;
