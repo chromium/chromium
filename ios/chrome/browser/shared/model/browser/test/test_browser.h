@@ -42,7 +42,10 @@ class TestBrowser final : public Browser {
 
   // Browser.
   Type type() const override;
+  // TODO(crbug.com/358301380): After all usage has changed to GetProfile(),
+  // remove this method.
   ChromeBrowserState* GetBrowserState() final;
+  ChromeBrowserState* GetProfile() final;
   WebStateList* GetWebStateList() final;
   CommandDispatcher* GetCommandDispatcher() final;
   SceneState* GetSceneState() final;
