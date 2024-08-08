@@ -454,6 +454,7 @@ public class PersonalDataManagerTest {
                         .setLocality("Montreal", VerificationStatus.USER_VERIFIED)
                         .setDependentLocality("", VerificationStatus.NO_STATUS)
                         .setPostalCode("H3B 2Y5", VerificationStatus.SERVER_PARSED)
+                        .setSortingCode("", VerificationStatus.NO_STATUS)
                         .setCountryCode("Canada", VerificationStatus.USER_VERIFIED)
                         .setPhoneNumber("", VerificationStatus.NO_STATUS)
                         .setEmailAddress(/* email= */ "", VerificationStatus.NO_STATUS)
@@ -507,6 +508,7 @@ public class PersonalDataManagerTest {
                         .setLocality("Mahina")
                         .setDependentLocality("Orofara")
                         .setPostalCode("98709")
+                        .setSortingCode("CEDEX 98703")
                         .setCountryCode("French Polynesia")
                         .setPhoneNumber("44.71.53")
                         .setEmailAddress("john@acme.inc")
@@ -521,6 +523,7 @@ public class PersonalDataManagerTest {
         Assert.assertEquals("Mahina", storedProfile1.getLocality());
         Assert.assertEquals("Orofara", storedProfile1.getDependentLocality());
         Assert.assertEquals("98709", storedProfile1.getPostalCode());
+        Assert.assertEquals("CEDEX 98703", storedProfile1.getSortingCode());
         Assert.assertEquals("44.71.53", storedProfile1.getPhoneNumber());
         Assert.assertEquals("john@acme.inc", storedProfile1.getEmailAddress());
 

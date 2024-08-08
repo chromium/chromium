@@ -155,6 +155,8 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STATE))));
   specifics->set_address_home_zip(data_util::TruncateUTF8(
       base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_ZIP))));
+  specifics->set_address_home_sorting_code(data_util::TruncateUTF8(
+      base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_SORTING_CODE))));
   specifics->set_address_home_dependent_locality(data_util::TruncateUTF8(
       base::UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY))));
   specifics->set_address_home_country(data_util::TruncateUTF8(
@@ -237,6 +239,9 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   specifics->set_address_home_zip_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_ZIP)));
+  specifics->set_address_home_sorting_code_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_SORTING_CODE)));
   specifics->set_address_home_dependent_locality_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_DEPENDENT_LOCALITY)));
@@ -457,6 +462,12 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
       ADDRESS_HOME_ZIP, base::UTF8ToUTF16(specifics.address_home_zip()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_zip_status()));
+
+  profile->SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_SORTING_CODE,
+      base::UTF8ToUTF16(specifics.address_home_sorting_code()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.address_home_sorting_code_status()));
 
   profile->SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_DEPENDENT_LOCALITY,
