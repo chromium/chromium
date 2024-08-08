@@ -5250,7 +5250,8 @@ class SharedStorageExtensionBrowserTest
 
     test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), background_js);
 
-    extension_ = LoadExtension(test_dir.UnpackedPath());
+    extension_ = LoadExtension(test_dir.UnpackedPath(),
+                               {.wait_for_registration_stored = true});
     return extension_;
   }
 
@@ -5517,7 +5518,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SharedStorageExtensionBrowserTest,
-    SmaeOrigin_ExtensionAddsRequestHeader_CORSRetainsRequestHeader_NoResponseHeader_Success) {
+    SameOrigin_ExtensionAddsRequestHeader_CORSRetainsRequestHeader_NoResponseHeader_Success) {
   net::test_server::ControllableHttpResponse response(https_server(),
                                                       kModulePath);
   ASSERT_TRUE(https_server()->Start());
