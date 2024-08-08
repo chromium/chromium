@@ -550,10 +550,6 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 08/2023.
-const char kDriveFsBulkPinningMaxQueueSize[] =
-    "drivefs.bulk_pinning.max_queue_size";
-
 // Deprecated 09/2023.
 const char kPrivacySandboxM1Unrestricted[] = "privacy_sandbox.m1.unrestricted";
 #if BUILDFLAG(IS_WIN)
@@ -1138,9 +1134,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
-
-  // Deprecated 08/2023.
-  registry->RegisterIntegerPref(kDriveFsBulkPinningMaxQueueSize, 0);
 
   // Deprecated 09/2023.
   registry->RegisterBooleanPref(kPrivacySandboxM1Unrestricted, false);
@@ -2384,16 +2377,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   MigrateDefaultBrowserLastDeclinedPref(profile_prefs);
 #endif
-
-  // Added 08/2023.
-  invalidation::InvalidatorRegistrarWithMemory::ClearDeprecatedPrefs(
-      profile_prefs);
-  invalidation::PerUserTopicSubscriptionManager::ClearDeprecatedPrefs(
-      profile_prefs);
-  invalidation::FCMInvalidationService::ClearDeprecatedPrefs(profile_prefs);
-
-  // Added 08/2023.
-  profile_prefs->ClearPref(kDriveFsBulkPinningMaxQueueSize);
 
   // Added 09/2023.
   profile_prefs->ClearPref(kPrivacySandboxM1Unrestricted);

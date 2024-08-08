@@ -114,15 +114,6 @@
 
 namespace {
 
-// Deprecated 01/2023.
-const char* kTrialGroupMICeAndDefaultBrowserVersionPrefName =
-    "fre_refactoring_mice_and_default_browser.trial_version";
-
-// Deprecated 07/2023.
-const char kUnifiedConsentMigrationState[] = "unified_consent.migration_state";
-// Deprecated 07/2023.
-const char kNewTabPageFieldTrialPref[] = "new_tab_page.trial_version";
-
 // Deprecated 09/2023.
 const char kObsoleteIosSettingsPromoAlreadySeen[] =
     "ios.settings.promo_already_seen";
@@ -557,9 +548,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kAutofillBrandingKeyboardAccessoriesTapped,
                                 false);
 
-  registry->RegisterIntegerPref(kTrialGroupMICeAndDefaultBrowserVersionPrefName,
-                                -1);
-
   registry->RegisterIntegerPref(
       prefs::kIosCredentialProviderPromoLastActionTaken, -1);
 
@@ -850,9 +838,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Register pref used to determine if OS Lockdown Mode is enabled.
   registry->RegisterBooleanPref(prefs::kOSLockdownModeEnabled, false);
 
-  // Deprecated 07/2023.
-  registry->RegisterIntegerPref(kUnifiedConsentMigrationState, 0);
-
   // Register pref used to detect addresses in web page
   registry->RegisterBooleanPref(prefs::kDetectAddressesEnabled, true);
   registry->RegisterBooleanPref(prefs::kDetectAddressesAccepted, false);
@@ -1019,9 +1004,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
 // This method should be periodically pruned of year+ old migrations.
 void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
-  // Added 01/2023
-  prefs->ClearPref(kTrialGroupMICeAndDefaultBrowserVersionPrefName);
-
   // Added 10/2023.
   prefs->ClearPref(kAutofillBrandingKeyboardAccessoriesTapped);
 
@@ -1069,15 +1051,6 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
                                       PrefService* prefs) {
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
-
-  // Added 07/2023.
-  prefs->ClearPref(kUnifiedConsentMigrationState);
-  syncer::SyncPrefs::MigrateAutofillWalletImportEnabledPref(prefs);
-
-  // Added 07/2023.
-  if (prefs->HasPrefPath(kNewTabPageFieldTrialPref)) {
-    prefs->ClearPref(kNewTabPageFieldTrialPref);
-  }
 
   // Added 08/2023.
   invalidation::InvalidatorRegistrarWithMemory::ClearDeprecatedPrefs(prefs);
