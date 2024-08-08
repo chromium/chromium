@@ -355,7 +355,7 @@
 <translation id="2435457462613246316">Паказаць пароль</translation>
 <translation id="243878895369688216">Адкрывалася ўчора</translation>
 <translation id="2440978926514840421">Файл GIF запісаны</translation>
-<translation id="2441427462554639370">Запіс закончыўся з-за крытычна малога аб'ёму вольнага месца ў сховішчы</translation>
+<translation id="2441427462554639370">Запіс закончыўся з-за крытычна малога аб’ёму вольнага месца ў сховішчы</translation>
 <translation id="2449089818483227734">Нізкі зарад акумулятара</translation>
 <translation id="2450205753526923158">Рэжым здымка экрана</translation>
 <translation id="2455994958736234930">Дадаць www. і .com у адрасны радок і адкрыць вэб-сайт</translation>
@@ -499,7 +499,7 @@
 <translation id="3017079585324758401">Фон</translation>
 <translation id="3018135054368884502">Пераматаць медыязмесціва ўперад</translation>
 <translation id="3033545621352269033">Уключана</translation>
-<translation id="3033912566804961911">Аб'яднаць са сталом "<ph name="DESK_NAME" />"</translation>
+<translation id="3033912566804961911">Аб’яднаць са сталом "<ph name="DESK_NAME" />"</translation>
 <translation id="3036649622769666520">Адкрыццё файлаў</translation>
 <translation id="3038571455154067151">Каб увайсці, увядзіце бацькоўскі код доступу Family Link</translation>
 <translation id="3039939407102840004">Узровень зараду акумулятара пяра – <ph name="PERCENTAGE" />%.</translation>
@@ -1410,7 +1410,7 @@
 <translation id="642644398083277086">Выдаліць усе апавяшчэнні</translation>
 <translation id="643147933154517414">Усё гатова</translation>
 <translation id="6431865393913628856">Запіс экрана</translation>
-<translation id="643593192654616063">Аб'ём сховішча, якое выкарыстоўваецца: <ph name="STORAGE_IN_USE_SIZE" />. Агульны аб'ём сховішча: <ph name="STORAGE_TOTAL_SIZE" />.</translation>
+<translation id="643593192654616063">Аб’ём сховішча, якое выкарыстоўваецца: <ph name="STORAGE_IN_USE_SIZE" />. Агульны аб’ём сховішча: <ph name="STORAGE_TOTAL_SIZE" />.</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">цэнтральны працэсар</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, падзей: <ph name="NUMBER" /></translation>
@@ -1460,7 +1460,7 @@
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />, знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="6612802754306526077">Выбраны рэжым запісу экрана</translation>
 <translation id="6612889377159412215">падзадача</translation>
-<translation id="6613765291890844037">Выкарыстоўваецца сховішча: <ph name="STORAGE_IN_USE_SIZE" /> | Агульны аб'ём сховішча: <ph name="STORAGE_TOTAL_SIZE" /></translation>
+<translation id="6613765291890844037">Выкарыстоўваецца сховішча: <ph name="STORAGE_IN_USE_SIZE" /> | Агульны аб’ём сховішча: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Экран прыватнасці ўключаны</translation>
 <translation id="6622679827379792051">Наладзіць прагляд праграм з тэлефона</translation>
 <translation id="6624493541160101248">Бягучы працоўны стол: <ph name="DESK_NAME" />. Працоўны стол <ph name="DESK_INDEX" /> з <ph name="DESK_COUNT" />.</translation>
