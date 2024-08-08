@@ -84,8 +84,10 @@ const timelineSegmentSchema = z.tuple([
 
 type TimelineSegment = Infer<typeof timelineSegmentSchema>;
 
+const TIMELINE_SEGMENT_VERSION = 1;
+
 const vesionedTimelineSegmentsSchema = z.object({
-  version: z.literal(0),
+  version: z.literal(TIMELINE_SEGMENT_VERSION),
   segments: z.array(timelineSegmentSchema),
 });
 
@@ -302,6 +304,79 @@ function overlaySegments(
   return ret;
 }
 
+// Note that this is not an exact upper limit of the number of segments
+// returned from `simplifySegments`, and The current heuristic result in at
+// most `2 * SIMPLIFY_SEGMENT_RESOLUTION - 1` segments.
+const SIMPLIFY_SEGMENT_RESOLUTION = 512;
+
+/**
+ * Simplifies the segments by merging the shorter segments, so the total number
+ * of segments are at most constant regardless of the recording length.
+ *
+ * The herustic to achieve this is:
+ * * Define `threshold` to be `max(total length / SIMPLIFY_SEGMENT_RESOLUTION, 1
+ *   second)`.
+ * * Segments longer than the `threshold` are preserved as is.
+ * * Consecutive segments shorter than `threshold` are merge together,
+ *   until it's longer than the `threshold`. The new kind will be the most
+ *   frequent kind in the range.
+ *
+ * Note that this doesn't guarantee that all returned segments are longer than
+ * `threshold`, as there might be some segments shorter than `threshold` left
+ * between longer segments.
+ */
+function simplifySegments(segments: TimelineSegment[]): TimelineSegment[] {
+  const totalLength =
+    segments.map(([length]) => length).reduce((a, b) => a + b, 0);
+  const threshold = Math.max(
+    totalLength / SIMPLIFY_SEGMENT_RESOLUTION,
+    SAMPLE_RATE,
+  );
+
+  const ret: TimelineSegment[] = [];
+  let currentGroup: TimelineSegment[] = [];
+  let currentGroupLength = 0;
+
+  function endCurrentGroup() {
+    if (currentGroup.length === 0) {
+      return;
+    }
+    const kindLengths = new Map<TimelineSegmentKind, number>();
+    for (const [length, kind] of currentGroup) {
+      kindLengths.set(kind, (kindLengths.get(kind) ?? 0) + length);
+    }
+    let kind: TimelineSegmentKind|null = null;
+    let maxLength = 0;
+    for (const [k, length] of kindLengths.entries()) {
+      if (length >= maxLength) {
+        maxLength = length;
+        kind = k;
+      }
+    }
+    ret.push([currentGroupLength, assertExists(kind)]);
+    currentGroup = [];
+    currentGroupLength = 0;
+  }
+
+  function push(segment: TimelineSegment) {
+    currentGroup.push(segment);
+    currentGroupLength += segment[0];
+  }
+
+  for (const segment of segments) {
+    const [length] = segment;
+    if (length >= threshold) {
+      endCurrentGroup();
+    }
+    push(segment);
+    if (currentGroupLength >= threshold) {
+      endCurrentGroup();
+    }
+  }
+  endCurrentGroup();
+  return ret;
+}
+
 function calculateTimelineSegments(
   powers: number[],
   transcription: Transcription|null,
@@ -309,11 +384,11 @@ function calculateTimelineSegments(
   const powerSegments = calculatePowerSegments(powers);
   const speechSegments = calculateSpeechSegments(transcription);
 
-  const segments = overlaySegments(powerSegments, speechSegments);
-  // TODO(pihsun): Heuristic to "simplify" the segments so the result segment
-  // count is constant, and very small segments aren't shown.
+  const segments = simplifySegments(
+    overlaySegments(powerSegments, speechSegments),
+  );
   return {
-    version: 0,
+    version: TIMELINE_SEGMENT_VERSION,
     segments,
   };
 }
