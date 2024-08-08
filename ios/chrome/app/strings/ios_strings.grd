@@ -263,6 +263,12 @@
       <message name="IDS_IOS_ADVANCED_SIGNIN_SETTINGS_CANCEL_SYNC_ALERT_MESSAGE" desc="Alert title to ask if the user really wants to cancel sign-in and sync.">
         Cancel Sync? You can turn on sync anytime in Settings.
       </message>
+      <message name="IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES" desc="Title for the switch item in password manager settings that can be toggled allowing users to automatically upgrade their passwords to passkeys. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [iOS only]">
+        Allow Automatic Passkey Upgrades
+      </message>
+      <message name="IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES_SUBTITLE" desc="Subtitle for the switch item in password manager settings that can be toggled allowing users to automatically upgrade their passwords to passkeys. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [iOS only]">
+        Allow websites and apps to automatically upgrade existing accounts to use passkeys when available
+      </message>
       <message name="IDS_IOS_APPLICATION_SHORTCUT_INCOGNITOSEARCH_TITLE" desc="Message when opening a New Incognito Search from springboard force touch static shortcuts. [Length: unlimited] [iOS only]." meaning="3D Touch entry to create a new Incognito tab.">
        Incognito Search
       </message>

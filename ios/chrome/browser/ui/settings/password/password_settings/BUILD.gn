@@ -59,6 +59,7 @@ source_set("password_settings_ui") {
   deps = [
     ":password_settings_constants",
     "//components/strings",
+    "//components/sync/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
