@@ -8,6 +8,7 @@ import './loading_state.js';
 import './new_column_selector.js';
 import './product_selector.js';
 import './table.js';
+import './horizontal_carousel.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';

@@ -1,6 +1,7 @@
 <style include="cr-icons cr-hidden-style">
   :host {
     --column-width: 220px;
+    --last-column-overflow-x: visible;
     --table-gap: 8px;
   }
 
@@ -18,7 +19,12 @@
   .col {
     display: grid;
     grid-template-rows: subgrid;
+    scroll-snap-align: start;
     width: var(--column-width);
+  }
+
+  .col:last-of-type {
+    overflow-x: var(--last-column-overflow-x);
   }
 
   .col[is-dragging] {
