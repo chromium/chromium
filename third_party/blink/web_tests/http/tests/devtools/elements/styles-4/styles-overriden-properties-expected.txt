@@ -1,5 +1,7 @@
 Tests that overriding shorthands within rule are visible.
 
+error: Unknown VE context:,-x
+error: Unknown VE context:,-x
 [expanded] 
 element.style { ()
 
