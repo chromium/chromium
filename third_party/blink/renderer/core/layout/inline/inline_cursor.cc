@@ -319,13 +319,16 @@ bool InlineCursorPosition::HasSoftWrapToNextLine() const {
 }
 
 bool InlineCursorPosition::IsInlineLeaf() const {
-  if (IsHiddenForPaint())
+  if (IsHiddenForPaint()) {
     return false;
-  if (IsText())
+  }
+  if (IsText()) {
     return !IsLayoutGeneratedText();
-  if (!IsAtomicInline())
-    return false;
-  return !IsListMarker();
+  }
+  if (IsAtomicInline()) {
+    return !IsListMarker();
+  }
+  return false;
 }
 
 bool InlineCursorPosition::IsPartOfCulledInlineBox(
