@@ -1721,6 +1721,40 @@ TEST_F(PickerViewTest, BoundsAboveAnchorForAnchorNearBottomRightOfScreen) {
   EXPECT_EQ(view->GetBoundsInScreen().bottom(), anchor_bounds.y());
 }
 
+TEST_F(PickerViewTest, BoundsLeftAlignedBelowSelectionNearTopOfScreen) {
+  FakePickerViewDelegate delegate({
+      .mode = PickerModeType::kHasSelection,
+  });
+  const gfx::Rect screen_work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  const gfx::Rect anchor_bounds(20, 20, 100, 20);
+
+  auto widget = PickerWidget::Create(&delegate, anchor_bounds);
+  widget->Show();
+
+  const PickerView* view = GetPickerViewFromWidget(*widget);
+  EXPECT_TRUE(screen_work_area.Contains(view->GetBoundsInScreen()));
+  EXPECT_EQ(view->GetBoundsInScreen().x(), anchor_bounds.x());
+  EXPECT_GE(view->GetBoundsInScreen().y(), anchor_bounds.bottom());
+}
+
+TEST_F(PickerViewTest, BoundsLeftAlignedAboveSelectionNearBottomOfScreen) {
+  FakePickerViewDelegate delegate({
+      .mode = PickerModeType::kHasSelection,
+  });
+  const gfx::Rect screen_work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  const gfx::Rect anchor_bounds(20, screen_work_area.bottom() - 30, 100, 20);
+
+  auto widget = PickerWidget::Create(&delegate, anchor_bounds);
+  widget->Show();
+
+  const PickerView* view = GetPickerViewFromWidget(*widget);
+  EXPECT_TRUE(screen_work_area.Contains(view->GetBoundsInScreen()));
+  EXPECT_EQ(view->GetBoundsInScreen().x(), anchor_bounds.x());
+  EXPECT_LE(view->GetBoundsInScreen().bottom(), anchor_bounds.y());
+}
+
 TEST_F(PickerViewTest, BoundsOnScreenForEmptyAnchorBounds) {
   FakePickerViewDelegate delegate;
   auto widget = PickerWidget::Create(&delegate, gfx::Rect());

@@ -104,10 +104,11 @@ std::unique_ptr<views::BubbleBorder> CreateBorder() {
 // top of the Picker view to the center of the search field, which we use to try
 // to vertically align the search field with the center of the anchor bounds.
 // `anchor_bounds` and returned bounds should be in screen coordinates.
-gfx::Rect GetPickerViewBounds(const gfx::Rect& anchor_bounds,
-                              PickerLayoutType layout_type,
-                              const gfx::Size& picker_view_size,
-                              int picker_view_search_field_vertical_offset) {
+gfx::Rect GetPickerViewBoundsWithoutSelectedText(
+    const gfx::Rect& anchor_bounds,
+    PickerLayoutType layout_type,
+    const gfx::Size& picker_view_size,
+    int picker_view_search_field_vertical_offset) {
   gfx::Rect screen_work_area = display::Screen::GetScreen()
                                    ->GetDisplayMatching(anchor_bounds)
                                    .work_area();
@@ -142,6 +143,38 @@ gfx::Rect GetPickerViewBounds(const gfx::Rect& anchor_bounds,
   // Adjust if necessary to keep the whole Picker view onscreen. Note that the
   // non client area of the Picker, e.g. the shadows, are allowed to be
   // offscreen.
+  picker_view_bounds.AdjustToFit(screen_work_area);
+  return picker_view_bounds;
+}
+
+// Gets the preferred Picker view bounds in the case that there is selected
+// text. We try to left align the Picker view above or below `anchor_bounds`,
+// while taking into account `layout_type`, `picker_view_size` and available
+// space on the screen. `anchor_bounds` and returned bounds should be in screen
+// coordinates.
+gfx::Rect GetPickerViewBoundsWithSelectedText(
+    const gfx::Rect& anchor_bounds,
+    PickerLayoutType layout_type,
+    const gfx::Size& picker_view_size) {
+  gfx::Rect screen_work_area = display::Screen::GetScreen()
+                                   ->GetDisplayMatching(anchor_bounds)
+                                   .work_area();
+  screen_work_area.Inset(kPaddingFromScreenEdge);
+  gfx::Rect picker_view_bounds(picker_view_size);
+  switch (layout_type) {
+    case PickerLayoutType::kMainResultsBelowSearchField:
+      // Left aligned below the anchor.
+      picker_view_bounds.set_origin(
+          gfx::Point(anchor_bounds.x(), anchor_bounds.bottom()));
+      break;
+    case PickerLayoutType::kMainResultsAboveSearchField:
+      // Left aligned above the anchor.
+      picker_view_bounds.set_origin(gfx::Point(
+          anchor_bounds.x(), anchor_bounds.y() - picker_view_size.height()));
+      break;
+  }
+
+  // Adjust if necessary to keep the whole Picker view onscreen.
   picker_view_bounds.AdjustToFit(screen_work_area);
   return picker_view_bounds;
 }
@@ -506,9 +539,13 @@ void PickerView::OnPreviewBubbleVisibilityChanged(bool visible) {
 
 gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
                                       PickerLayoutType layout_type) {
-  return GetPickerViewBounds(anchor_bounds, layout_type, size(),
-                             search_field_view_->bounds().CenterPoint().y() +
-                                 main_container_view_->bounds().y());
+  return delegate_->GetMode() == PickerModeType::kHasSelection
+             ? GetPickerViewBoundsWithSelectedText(anchor_bounds, layout_type,
+                                                   size())
+             : GetPickerViewBoundsWithoutSelectedText(
+                   anchor_bounds, layout_type, size(),
+                   search_field_view_->bounds().CenterPoint().y() +
+                       main_container_view_->bounds().y());
 }
 
 void PickerView::UpdateSearchQueryAndActivePage(std::u16string query) {
