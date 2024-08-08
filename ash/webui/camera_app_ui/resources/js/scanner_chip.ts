@@ -6,7 +6,6 @@ import {assert, assertExists, checkEnumVariant} from './assert.js';
 import {showPreviewOCRToast} from './custom_effect.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
-import {Flag} from './flag.js';
 import {I18nString} from './i18n_string.js';
 import {
   BarcodeContentType,
@@ -453,7 +452,7 @@ export function showBarcodeContent(content: string): void {
   function setupChip() {
     let chipMethods: ChipMethods|null = null;
     const wifiConfig = parseWifi(content);
-    if (loadTimeData.getChromeFlag(Flag.AUTO_QR) && wifiConfig !== null) {
+    if (wifiConfig !== null) {
       chipMethods = showWifi(wifiConfig);
     } else if (isSafeUrl(content)) {
       sendBarcodeDetectedEvent({contentType: BarcodeContentType.URL});

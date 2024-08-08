@@ -90,7 +90,6 @@ class RequestHandler:
             "textdirection": "ltr",
             "video_capture_disallowed": False,
             "timeLapse": True,
-            "auto_qr": True,
             "digital_zoom": True,
             "preview_ocr": True,
             "super_res": True,

@@ -6417,11 +6417,6 @@ const char kCrostiniVirtualKeyboardSupportName[] =
 const char kCrostiniVirtualKeyboardSupportDescription[] =
     "Experimental support for the Virtual Keyboard on Crostini.";
 
-const char kCameraAppAutoQRDetectionName[] =
-    "Camera App Auto QR Code Detection";
-const char kCameraAppAutoQRDetectionDescription[] =
-    "Enable this flag to detect QR code in Camera app Photo mode.";
-
 const char kCameraAppCrosEventsName[] = "Camera App Cros Events";
 const char kCameraAppCrosEventsDescription[] =
     "Enable this flag to send camera app metrics through CrOS Events.";
