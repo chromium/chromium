@@ -3003,7 +3003,6 @@ static_library("browser") {
       "keyboard_accessory/android/address_accessory_controller_impl.h",
       "keyboard_accessory/android/affiliated_plus_profiles_cache.cc",
       "keyboard_accessory/android/affiliated_plus_profiles_cache.h",
-      "keyboard_accessory/android/affiliated_plus_profiles_provider.h",
       "keyboard_accessory/android/manual_filling_controller_impl.cc",
       "keyboard_accessory/android/manual_filling_controller_impl.h",
       "keyboard_accessory/android/password_accessory_controller_impl.cc",

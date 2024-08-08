@@ -17,6 +17,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/android/affiliated_plus_profiles_provider.h"
+#include "chrome/browser/keyboard_accessory/test_utils/android/mock_affiliated_plus_profiles_provider.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -98,24 +99,6 @@ class MockAutofillDriver : public TestContentAutofillDriver {
                const FieldGlobalId&,
                const std::u16string&),
               (override));
-};
-
-class MockAffiliatedPlusProfilesProvider
-    : public AffiliatedPlusProfilesProvider {
- public:
-  using AffiliatedPlusProfilesProvider::AffiliatedPlusProfilesProvider;
-  MOCK_METHOD(base::span<const plus_addresses::PlusProfile>,
-              GetAffiliatedPlusProfiles,
-              (),
-              (const override));
-  MOCK_METHOD(void, AddObserver, (Observer*), (override));
-  MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
-  base::WeakPtr<MockAffiliatedPlusProfilesProvider> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
- private:
-  base::WeakPtrFactory<MockAffiliatedPlusProfilesProvider> weak_factory_{this};
 };
 
 }  // namespace

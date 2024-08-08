@@ -11,6 +11,7 @@ static_library("public") {
     "accessory_sheet_data.h",
     "accessory_sheet_enums.h",
     "address_accessory_controller.h",
+    "affiliated_plus_profiles_provider.h",
     "manual_filling_controller.h",
     "password_accessory_controller.h",
     "payment_method_accessory_controller.h",
