@@ -3682,42 +3682,14 @@ class CSSMathExpressionNodeParser {
       // expression whose basis is 'any', set basis_is_any to true.
     }
 
-    CSSMathExpressionNode* calculation = nullptr;
-    if (css_parsing_utils::ConsumeCommaIncludingWhitespace(tokens)) {
-      state.allow_size_keyword = !basis_is_any;
-      calculation = ParseValueExpression(tokens, state);
-      if (!calculation) {
-        return nullptr;
-      }
-    } else {
-      // Handle the 1-argument form of calc-size().  Based on the discussion
-      // in https://github.com/w3c/csswg-drafts/issues/10259 , eagerly convert
-      // it to the two-argument form.
-      bool argument_is_basis;
-      if (basis->IsKeywordLiteral()) {
-        CHECK(To<CSSMathExpressionKeywordLiteral>(basis)->GetContext() ==
-              CSSMathExpressionKeywordLiteral::Context::kCalcSize);
-        if (basis_is_any) {
-          return nullptr;
-        }
-        argument_is_basis = true;
-      } else {
-        argument_is_basis =
-            basis->IsOperation() &&
-            To<CSSMathExpressionOperation>(basis)->OperatorType() ==
-                CSSMathOperator::kCalcSize;
-      }
+    if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(tokens)) {
+      return nullptr;
+    }
 
-      if (argument_is_basis) {
-        calculation = CSSMathExpressionKeywordLiteral::Create(
-            CSSValueID::kSize,
-            CSSMathExpressionKeywordLiteral::Context::kCalcSize);
-      } else {
-        std::swap(basis, calculation);
-        basis = CSSMathExpressionKeywordLiteral::Create(
-            CSSValueID::kAny,
-            CSSMathExpressionKeywordLiteral::Context::kCalcSize);
-      }
+    state.allow_size_keyword = !basis_is_any;
+    CSSMathExpressionNode* calculation = ParseValueExpression(tokens, state);
+    if (!calculation) {
+      return nullptr;
     }
 
     return CSSMathExpressionOperation::CreateCalcSizeOperation(basis,
