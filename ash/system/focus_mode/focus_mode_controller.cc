@@ -49,6 +49,8 @@ FocusModeController* g_instance = nullptr;
 // The default Focus Mode session duration.
 constexpr base::TimeDelta kDefaultSessionDuration = base::Minutes(25);
 
+constexpr base::TimeDelta kSessionEndSoundDelay = base::Milliseconds(200);
+
 bool IsQuietModeOnSetByFocusMode() {
   auto* message_center = message_center::MessageCenter::Get();
   return message_center->IsQuietMode() &&
@@ -608,6 +610,16 @@ void FocusModeController::OnTimerTick() {
       } else {
         current_session_->set_persistent_ending();
       }
+
+      // Play sounds effect after 200ms delay.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, base::BindOnce([]() {
+            if (Shell::HasInstance()) {
+              Shell::Get()->system_sounds_delegate()->Play(
+                  Sound::kFocusModeEndingMoment);
+            }
+          }),
+          kSessionEndSoundDelay);
 
       for (auto& observer : observers_) {
         observer.OnFocusModeChanged(/*in_focus_session=*/false);

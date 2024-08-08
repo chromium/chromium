@@ -34,6 +34,12 @@ void SystemSoundsDelegateImpl::Init() {
       static_cast<int>(ash::Sound::kNoChargeLowBattery),
       bundle.GetRawDataResource(IDR_SOUND_NO_CHARGE_LOW_BATTERY_FLAC),
       media::AudioCodec::kFLAC);
+
+  // Initialize sounds used for Focus mode.
+  manager->Initialize(
+      static_cast<int>(ash::Sound::kFocusModeEndingMoment),
+      bundle.GetRawDataResource(IDR_SOUND_FOCUS_MODE_ENDING_MOMENT_FLAC),
+      media::AudioCodec::kFLAC);
 }
 
 void SystemSoundsDelegateImpl::Play(ash::Sound sound_key) {

@@ -30,6 +30,8 @@ enum class Sound {
   kChargeLowBattery,
   // Sound key for low battery when the device isn't charging.
   kNoChargeLowBattery,
+  // Sound key for the Focus mode notifying the ending moment.
+  kFocusModeEndingMoment,
 };
 
 }  // namespace ash
