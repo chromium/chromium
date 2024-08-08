@@ -194,6 +194,11 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   };
 
   // Stores the concurrent document composition information.
+  //
+  // While PrintCompositorImpl is creating a document for every page it is
+  // compositing, it can reuse the same page info to concurrently create the
+  // full document with all pages. Only used when PrepareToCompositeDocument()
+  // gets called.
   struct DocumentInfo {
     explicit DocumentInfo(mojom::PrintCompositor::DocumentType document_type);
     ~DocumentInfo();
@@ -263,7 +268,7 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   TypefaceDeserializationContext typefaces_;
 
   std::vector<std::unique_ptr<RequestInfo>> requests_;
-  std::unique_ptr<DocumentInfo> docinfo_;
+  std::unique_ptr<DocumentInfo> doc_info_;
 
   // If present, the accessibility tree for the document needed to
   // export a tagged (accessible) PDF.
