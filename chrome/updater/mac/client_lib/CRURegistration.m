@@ -212,7 +212,7 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
 }
 
 - (instancetype)initWithAppId:(NSString*)appId
-         existenceCheckerPath:(nonnull NSString*)xcPath
+         existenceCheckerPath:(NSString*)xcPath
                   targetQueue:(dispatch_queue_t)targetQueue {
   if (self = [super init]) {
     _appId = appId;
@@ -226,7 +226,7 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
 }
 
 - (instancetype)initWithAppId:(NSString*)appId
-         existenceCheckerPath:(nonnull NSString*)xcPath
+         existenceCheckerPath:(NSString*)xcPath
                           qos:(dispatch_qos_class_t)qos {
   return [self initWithAppId:appId
         existenceCheckerPath:xcPath
@@ -234,10 +234,21 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
 }
 
 - (instancetype)initWithAppId:(NSString*)appId
-         existenceCheckerPath:(nonnull NSString*)xcPath {
+         existenceCheckerPath:(NSString*)xcPath {
   return [self initWithAppId:appId
         existenceCheckerPath:xcPath
                          qos:QOS_CLASS_UTILITY];
+}
+
+/**
+ * newKSAdminItem constructs a CRURegistrationWorkItem that will invoke ksadmin.
+ */
+- (CRURegistrationWorkItem*)newKSAdminItem {
+  CRURegistrationWorkItem* ret = [[CRURegistrationWorkItem alloc] init];
+  ret.binPathCallback = ^{
+    return [self syncFindBestKSAdmin];
+  };
+  return ret;
 }
 
 - (void)fetchTagWithReply:(void (^)(NSString* _Nullable,
@@ -245,11 +256,7 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
   if (!reply) {
     return;
   }
-  CRURegistrationWorkItem* fetchTagItem =
-      [[CRURegistrationWorkItem alloc] init];
-  fetchTagItem.binPathCallback = ^{
-    return [self syncFindBestKSAdmin];
-  };
+  CRURegistrationWorkItem* fetchTagItem = [self newKSAdminItem];
   fetchTagItem.args = @[
     @"--print-tag",
     @"--productid",
@@ -282,6 +289,53 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
         });
       };
   [self addWorkItems:@[ fetchTagItem ]];
+}
+
+- (void)registerVersion:(NSString*)version
+                  reply:(void (^_Nullable)(NSError*))reply {
+  NSAssert(version, @"nil version provided to registerVersion for app %@.",
+           _appId);
+  if (!version) {
+    if (reply) {
+      NSString* localAppId = _appId;
+      dispatch_async(_parentQueue, ^{
+        reply([NSError
+            errorWithDomain:CRURegistrationErrorDomain
+                       code:CRURegistrationErrorInvalidArgument
+                   userInfo:@{
+                     NSDebugDescriptionErrorKey :
+                         [NSString stringWithFormat:
+                                       @"CRURegistration's registerVersion for "
+                                       @"app %@ was called with nil version.",
+                                       localAppId],
+                   }]);
+      });
+    }
+    return;
+  }
+
+  CRURegistrationWorkItem* registerItem = [self newKSAdminItem];
+  registerItem.args = @[
+    @"--register",
+    @"--productid",
+    _appId,
+    @"--version",
+    version,
+    @"--xcpath",
+    _existenceCheckerPath,
+  ];
+  registerItem.resultCallback =
+      ^(NSString* gotStdout, NSString* gotStderr, NSError* gotFailure) {
+        dispatch_async(self->_parentQueue, ^{
+          if (reply) {
+            reply([self wrapError:gotFailure
+                       withStdout:gotStdout
+                        andStderr:gotStderr]);
+          }
+        });
+      };
+
+  [self addWorkItems:@[ registerItem ]];
 }
 
 #pragma mark - CRURegistration private methods

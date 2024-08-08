@@ -36,6 +36,20 @@ void ExpectCRURegistrationFetchesTag(const std::string& app_id,
                                      const base::FilePath& xc_path,
                                      const std::string& tag);
 
+// Create a CRURegistration and expect it to successfully register the specified
+// app for updates. CRURegistration is always used in-process as the current
+// user; it never elevates.
+void ExpectCRURegistrationRegisters(const std::string& app_id,
+                                    const base::FilePath& xc_path,
+                                    const std::string& version_str);
+
+// Create a CRURegistration and expect it to fail to register the specified
+// app for updates. CRURegistration is always used in-process as the current
+// user; it never elevates.
+void ExpectCRURegistrationCannotRegister(const std::string& app_id,
+                                         const base::FilePath& xc_path,
+                                         const std::string& version_str);
+
 }  // namespace updater::test
 
 #endif  // CHROME_UPDATER_TEST_INTEGRATION_TESTS_MAC_H_

@@ -594,36 +594,65 @@ void ExpectCRURegistrationFindsKSAdmin(UpdaterScope scope) {
   }
 }
 
+/**
+ * InvokeCRURegistrationAndWait creates a CRURegistration and a semaphore, hands
+ * them off to a test-specific block, and waits for the semaphore to signal
+ * or times out after ten seconds. It returns whether the semaphore was
+ * successfully signaled. This factors out the common logic for converting
+ * CRURegistration's asynchronous operations to something functionally
+ * synchronous for test purposes. The test thread blocks while waiting.
+ *
+ * The `impl` block is responsible for invoking the (asynchronous) method
+ * under test on the provided `CRURegistration` and providing a reply block
+ * to it that stores results from CRURegistration, then signals the semaphore.
+ *
+ * Mishandling the semaphore in `impl`, or ignoring a `false` result from this
+ * function and subsequently attempting to access fields `impl` set up the
+ * CRURegistration reply block to write to, will cause a data race, which is
+ * undefined behavior in C.
+ */
+[[nodiscard]] bool InvokeCRURegistrationAndWait(
+    const std::string& app_id,
+    const base::FilePath& xc_path,
+    void (^impl)(CRURegistration*, dispatch_semaphore_t)) {
+  if (!impl) {
+    ADD_FAILURE() << "test issue - no impl provided";
+    return false;
+  }
+  NSString* ns_xc_path = base::apple::FilePathToNSString(xc_path);
+  if (!ns_xc_path) {
+    ADD_FAILURE() << "test issue - xc_path was not valid";
+    return false;
+  }
+  CRURegistration* registration =
+      [[CRURegistration alloc] initWithAppId:base::SysUTF8ToNSString(app_id)
+                        existenceCheckerPath:ns_xc_path];
+
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  impl(registration, semaphore);
+
+  dispatch_time_t limit = dispatch_time(DISPATCH_TIME_NOW, 10L * NSEC_PER_SEC);
+  return !dispatch_semaphore_wait(semaphore, limit);
+}
+
 void ExpectCRURegistrationCannotFetchTag(const std::string& app_id,
                                          const base::FilePath& xc_path) {
   @autoreleasepool {
-    NSString* ns_xc_path = base::apple::FilePathToNSString(xc_path);
-    ASSERT_TRUE(ns_xc_path) << "test issue - xc_path was not valid";
-    CRURegistration* registration =
-        [[CRURegistration alloc] initWithAppId:base::SysUTF8ToNSString(app_id)
-                          existenceCheckerPath:ns_xc_path];
-
-    NSConditionLock* result_lock =
-        [[NSConditionLock alloc] initWithCondition:0];
     __block NSString* got_tag = nil;
     __block NSError* got_error = nil;
 
-    [registration fetchTagWithReply:^(NSString* tag, NSError* error) {
-      [result_lock lock];
-      got_tag = tag;
-      got_error = error;
-      [result_lock unlockWithCondition:1];
-    }];
-
-    ASSERT_TRUE([result_lock
-        lockWhenCondition:1
-               beforeDate:[NSDate dateWithTimeIntervalSinceNow:10.0]]);
-    absl::Cleanup result_unlocker = ^{
-      [result_lock unlock];
-    };
+    ASSERT_TRUE(InvokeCRURegistrationAndWait(
+        app_id, xc_path,
+        ^(CRURegistration* registration, dispatch_semaphore_t semaphore) {
+          [registration fetchTagWithReply:^(NSString* tag, NSError* error) {
+            got_tag = tag;
+            got_error = error;
+            dispatch_semaphore_signal(semaphore);
+          }];
+        }));
 
     EXPECT_FALSE(got_tag) << base::SysNSStringToUTF8(got_tag);
-    ASSERT_TRUE(got_error);
+    EXPECT_TRUE(got_error);
   }
 }
 
@@ -631,34 +660,62 @@ void ExpectCRURegistrationFetchesTag(const std::string& app_id,
                                      const base::FilePath& xc_path,
                                      const std::string& want_tag) {
   @autoreleasepool {
-    NSString* ns_xc_path = base::apple::FilePathToNSString(xc_path);
-    ASSERT_TRUE(ns_xc_path) << "test issue - xc_path was not valid";
-    CRURegistration* registration =
-        [[CRURegistration alloc] initWithAppId:base::SysUTF8ToNSString(app_id)
-                          existenceCheckerPath:ns_xc_path];
-
-    NSConditionLock* result_lock =
-        [[NSConditionLock alloc] initWithCondition:0];
     __block NSString* got_tag = nil;
     __block NSError* got_error = nil;
 
-    [registration fetchTagWithReply:^(NSString* tag, NSError* error) {
-      [result_lock lock];
-      got_tag = tag;
-      got_error = error;
-      [result_lock unlockWithCondition:1];
-    }];
-
-    ASSERT_TRUE([result_lock
-        lockWhenCondition:1
-               beforeDate:[NSDate dateWithTimeIntervalSinceNow:10.0]]);
-    absl::Cleanup result_unlocker = ^{
-      [result_lock unlock];
-    };
+    ASSERT_TRUE(InvokeCRURegistrationAndWait(
+        app_id, xc_path,
+        ^(CRURegistration* registration, dispatch_semaphore_t semaphore) {
+          [registration fetchTagWithReply:^(NSString* tag, NSError* error) {
+            got_tag = tag;
+            got_error = error;
+            dispatch_semaphore_signal(semaphore);
+          }];
+        }));
 
     EXPECT_FALSE(got_error) << base::SysNSStringToUTF8([got_error description]);
     ASSERT_TRUE(got_tag);
     EXPECT_EQ(want_tag, base::SysNSStringToUTF8(got_tag));
+  }
+}
+
+void ExpectCRURegistrationRegisters(const std::string& app_id,
+                                    const base::FilePath& xc_path,
+                                    const std::string& version_str) {
+  @autoreleasepool {
+    __block NSError* got_error = nil;
+
+    ASSERT_TRUE(InvokeCRURegistrationAndWait(
+        app_id, xc_path,
+        ^(CRURegistration* registration, dispatch_semaphore_t semaphore) {
+          [registration registerVersion:base::SysUTF8ToNSString(version_str)
+                                  reply:^(NSError* error) {
+                                    got_error = error;
+                                    dispatch_semaphore_signal(semaphore);
+                                  }];
+        }));
+
+    EXPECT_FALSE(got_error) << base::SysNSStringToUTF8([got_error description]);
+  }
+}
+
+void ExpectCRURegistrationCannotRegister(const std::string& app_id,
+                                         const base::FilePath& xc_path,
+                                         const std::string& version_str) {
+  @autoreleasepool {
+    __block NSError* got_error = nil;
+
+    ASSERT_TRUE(InvokeCRURegistrationAndWait(
+        app_id, xc_path,
+        ^(CRURegistration* registration, dispatch_semaphore_t semaphore) {
+          [registration registerVersion:base::SysUTF8ToNSString(version_str)
+                                  reply:^(NSError* error) {
+                                    got_error = error;
+                                    dispatch_semaphore_signal(semaphore);
+                                  }];
+        }));
+
+    EXPECT_TRUE(got_error);
   }
 }
 

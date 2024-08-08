@@ -65,6 +65,19 @@ typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
      * CRUStdoutKey.
      */
     CRURegistrationErrorTaskFailed = 3,
+
+    /**
+     * Parameters for a CRURegistration operation were invalid. Details about
+     * the invalid parameters are available in the error's `userInfo` dict
+     * under `NSDebugDescriptionErrorKey`.
+     *
+     * Invalid arguments may also show up as `CRURegistrationErrorTaskFailed`,
+     * if they are detected by the underlying helper binary instead of
+     * `CRURegistration` itself. Whenever `CRURegistration` replies with this
+     * error, it also fails an NSAssert so the issue can be discovered
+     * in debug builds while the faulty call is still on the stack.
+     */
+    CRURegistrationErrorInvalidArgument = 4,
 };
 
 /**
@@ -130,9 +143,27 @@ typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
          existenceCheckerPath:(NSString*)xcPath;
 
 /**
- * CRURegistration cannot be initialized without an app ID.
+ * CRURegistration cannot be initialized without an app ID and existence
+ * checker path.
  */
 - (instancetype)init NS_UNAVAILABLE;
+
+/**
+ * Asynchronously register the app for updates, owned by the current user.
+ *
+ * If the app is already registered for the current user, this updates the
+ * registration.
+ *
+ * When registration has completed, `reply` will be dispatched to the target
+ * queue. If registration succeeds, the `NSError*` argument will be nil.
+ * If it does not, the `NSError*` argument to `reply` will contain a
+ * descriptive error.
+ *
+ * `reply` may be nil if the application is not interested in the result of
+ * registration.
+ */
+- (void)registerVersion:(NSString*)version
+                  reply:(void (^_Nullable)(NSError* _Nullable))reply;
 
 /**
  * Asynchronously retrieve the tag for the registered app.
@@ -140,8 +171,8 @@ typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
  * `reply` will be dispatched to the target queue when tag reading has completed
  * or failed. If the tag can be read successfully, it will be passed as the
  * NSString* argument of the reply block and the NSError* argument will be nil.
- * If the tag cannot be read, the NSString* will be nil while the NSError*
- * will contain a descriptive error.
+ * If the tag cannot be read, the NSString* will be nil while the NSError* will
+ * contain a descriptive error.
  *
  * If the tag is empty, the NSString* argument will be the empty string (and
  * there is no error). If no app with the provided ID is registered or the

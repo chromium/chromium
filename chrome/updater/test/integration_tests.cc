@@ -2893,6 +2893,70 @@ TEST_F(IntegrationTest, KSAdminTaggedApp) {
 }
 
 #if !defined(ADDRESS_SANITIZER)
+
+TEST_F(IntegrationTestUserInSystem, CRURegistrationRegistersApp) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(InstallUserUpdater());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(ExpectUserUpdaterInstalled());
+  base::ScopedTempFile xc_file;
+  ASSERT_TRUE(xc_file.Create());
+
+  ExpectCRURegistrationRegisters("test", xc_file.path(), "0.0.0.1");
+  ExpectUserAppVersion("test", base::Version({0, 0, 0, 1}));
+  ExpectNotRegistered("test");
+
+  ExpectUserUninstallPing(test_server_.get());
+  ASSERT_NO_FATAL_FAILURE(UninstallUserUpdater());
+  ExpectUninstallPing(test_server_.get());
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTestUserInSystem, CRURegistrationUpdatesVersion) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(InstallUserUpdater());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(ExpectUserUpdaterInstalled());
+  base::ScopedTempFile xc_file;
+  ASSERT_TRUE(xc_file.Create());
+
+  InstallUserApp("test", base::Version({0, 0, 0, 1}));
+  ExpectCRURegistrationRegisters("test", xc_file.path(), "0.0.0.2");
+  ExpectUserAppVersion("test", base::Version({0, 0, 0, 2}));
+  ExpectNotRegistered("test");
+
+  ExpectUserUninstallPing(test_server_.get());
+  ASSERT_NO_FATAL_FAILURE(UninstallUserUpdater());
+  ExpectUninstallPing(test_server_.get());
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTestUserInSystem, CRURegistrationCannotRegisterMissingAppID) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(InstallUserUpdater());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(ExpectUserUpdaterInstalled());
+  base::ScopedTempFile xc_file;
+  ASSERT_TRUE(xc_file.Create());
+
+  ExpectCRURegistrationCannotRegister("", xc_file.path(), "0.0.0.1");
+
+  ExpectUserUninstallPing(test_server_.get());
+  ASSERT_NO_FATAL_FAILURE(UninstallUserUpdater());
+  ExpectUninstallPing(test_server_.get());
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTestUserInSystem, CRURegistrationNeedsUpdater) {
+  base::ScopedTempFile xc_file;
+  ASSERT_TRUE(xc_file.Create());
+
+  ExpectCRURegistrationCannotRegister("test", xc_file.path(), "0.0.0.1");
+}
+
 class IntegrationTestKSAdminUserInSystem : public IntegrationTestUserInSystem {
  protected:
   void ExpectUserKSAdminFetchTag(bool elevate,
