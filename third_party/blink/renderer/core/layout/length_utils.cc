@@ -33,7 +33,8 @@ LayoutUnit ResolveInlineLengthInternal(
     const Length& original_length,
     const Length* auto_length,
     LayoutUnit override_available_size,
-    LayoutUnit unresolvable_length_result) {
+    LayoutUnit unresolvable_length_result,
+    CalcSizeKeywordBehavior calc_size_keyword_behavior) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
 
   CHECK(!original_length.IsAuto() || auto_length);
@@ -70,12 +71,15 @@ LayoutUnit ResolveInlineLengthInternal(
       }
       LayoutUnit value = MinimumValueForLength(
           *length, percentage_resolution_size,
-          {.intrinsic_evaluator = [&](const Length& length_to_evaluate) {
-            return ResolveInlineLengthInternal(
-                constraint_space, style, border_padding, min_max_sizes_func,
-                length_to_evaluate, auto_length, override_available_size,
-                unresolvable_length_result);
-          }});
+          {.intrinsic_evaluator =
+               [&](const Length& length_to_evaluate) {
+                 return ResolveInlineLengthInternal(
+                     constraint_space, style, border_padding,
+                     min_max_sizes_func, length_to_evaluate, auto_length,
+                     override_available_size, unresolvable_length_result,
+                     calc_size_keyword_behavior);
+               },
+           .calc_size_keyword_behavior = calc_size_keyword_behavior});
 
       if (style.BoxSizing() == EBoxSizing::kBorderBox)
         value = std::max(border_padding.InlineSum(), value);
@@ -99,11 +103,11 @@ LayoutUnit ResolveInlineLengthInternal(
         return unresolvable_length_result;
       }
       DCHECK_GE(available_size, LayoutUnit());
+
       const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
-      const LayoutUnit fill_available =
-          (available_size - margins.InlineSum()).ClampNegativeToZero();
       return min_max_sizes_func(SizeType::kContent)
-          .sizes.ShrinkToFit(fill_available);
+          .sizes.ShrinkToFit(
+              (available_size - margins.InlineSum()).ClampNegativeToZero());
     }
     case Length::kAuto:
     case Length::kNone:
@@ -300,7 +304,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
     WritingMode parent_writing_mode,
     const BlockNode& child,
     const ConstraintSpace& space,
-    MinMaxSizesFunctionRef min_max_sizes_func) {
+    MinMaxSizesFunctionRef original_min_max_sizes_func) {
   const auto& style = child.Style();
   const auto border_padding =
       ComputeBorders(space, child) + ComputePadding(space, style);
@@ -317,35 +321,64 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
     if (block_size == kIndefiniteSize ||
         style.LogicalMinHeight().HasContentOrIntrinsic() ||
         style.LogicalMaxHeight().HasContentOrIntrinsic() || child.IsTable()) {
-      return min_max_sizes_func(SizeType::kContent);
+      return original_min_max_sizes_func(SizeType::kContent);
     }
 
     return {{block_size, block_size}, /* depends_on_block_constraints */ false};
   }
 
-  MinMaxSizesResult result;
+  // Capture the min/max sizes function so we can access if it depends on block
+  // constraints.
+  std::optional<MinMaxSizesResult> captured_min_max_sizes_result;
+  auto min_max_sizes_func = [&](SizeType type) {
+    if (!captured_min_max_sizes_result) {
+      captured_min_max_sizes_result = original_min_max_sizes_func(type);
+    }
+    return *captured_min_max_sizes_result;
+  };
 
-  // TODO(https://crbug.com/40339056): These parts need to be merged
-  // together to handle calc-size() correctly.
-  const auto& inline_size = style.LogicalWidth();
-  if (inline_size.HasAuto() || inline_size.HasPercent() ||
-      inline_size.IsFillAvailable() || inline_size.IsFitContent()) {
-    result = min_max_sizes_func(SizeType::kContent);
-  } else {
-    const LayoutUnit size = ResolveMainInlineLength(
-        space, style, border_padding, min_max_sizes_func, inline_size,
-        /* auto_length */ nullptr);
-    // This child's contribution size is not dependent on the available size, so
-    // it's considered definite. Return this size for both min and max.
-    result = {{size, size}, /* depends_on_block_constraints */ false};
+  DCHECK_EQ(space.AvailableSize().inline_size, kIndefiniteSize);
+
+  // First attempt to resolve the main-length, if we can't resolve (e.g. a
+  // percentage, or similar) it'll return a kIndefiniteSize.
+  const Length& main_length = style.LogicalWidth();
+  const LayoutUnit extent =
+      ResolveMainInlineLength(space, style, border_padding, min_max_sizes_func,
+                              main_length, &Length::FitContent());
+
+  // If we successfully resolved our main size, just use that as the
+  // contribution, otherwise invoke the callback.
+  MinMaxSizes sizes = (extent == kIndefiniteSize)
+                          ? min_max_sizes_func(SizeType::kContent).sizes
+                          : MinMaxSizes{extent, extent};
+
+  // If we have calc-size() with a sizing-keyword of auto/fit-content/stretch
+  // we need to perform an additional step. Treat the sizing-keyword as auto,
+  // then resolve auto as both min-content, and max-content.
+  if (main_length.IsCalculated() &&
+      (main_length.HasAuto() || main_length.HasFitContent() ||
+       main_length.HasStretch())) {
+    sizes.min_size = ResolveMainInlineLength(
+        space, style, border_padding, min_max_sizes_func, main_length,
+        /* auto_length */ &Length::MinContent(),
+        /* override_available_size */ kIndefiniteSize,
+        CalcSizeKeywordBehavior::kAsAuto);
+    sizes.max_size = ResolveMainInlineLength(
+        space, style, border_padding, min_max_sizes_func, main_length,
+        /* auto_length */ &Length::MaxContent(),
+        /* override_available_size */ kIndefiniteSize,
+        CalcSizeKeywordBehavior::kAsAuto);
   }
 
   const MinMaxSizes min_max_sizes = ComputeMinMaxInlineSizes(
       space, child, border_padding, min_max_sizes_func);
+  sizes.Constrain(min_max_sizes.max_size);
+  sizes.Encompass(min_max_sizes.min_size);
 
-  result.sizes.Constrain(min_max_sizes.max_size);
-  result.sizes.Encompass(min_max_sizes.min_size);
-  return result;
+  return {sizes,
+          captured_min_max_sizes_result
+              ? captured_min_max_sizes_result->depends_on_block_constraints
+              : false};
 }
 
 MinMaxSizesResult ComputeMinAndMaxContentContribution(

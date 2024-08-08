@@ -42,6 +42,10 @@ class String;
 
 namespace blink {
 
+// When calcuating the min/max content-contribution we sometimes need to coerce
+// a fit-content/stretch basis to auto.
+enum class CalcSizeKeywordBehavior { kAsSpecified, kAsAuto };
+
 struct PixelsAndPercent {
   DISALLOW_NEW();
   explicit PixelsAndPercent(float pixels)
@@ -372,6 +376,8 @@ class PLATFORM_EXPORT Length {
    public:
     std::optional<float> size_keyword_basis = std::nullopt;
     std::optional<IntrinsicLengthEvaluator> intrinsic_evaluator = std::nullopt;
+    CalcSizeKeywordBehavior calc_size_keyword_behavior =
+        CalcSizeKeywordBehavior::kAsSpecified;
   };
 
   float NonNanCalculatedValue(float max_value, const EvaluationInput&) const;

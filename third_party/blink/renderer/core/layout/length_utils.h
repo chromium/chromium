@@ -79,7 +79,8 @@ ResolveInlineLengthInternal(const ConstraintSpace&,
                             const Length&,
                             const Length* auto_length,
                             LayoutUnit override_available_size,
-                            LayoutUnit unresolvable_length_result);
+                            LayoutUnit unresolvable_length_result,
+                            CalcSizeKeywordBehavior calc_size_keyword_behavior);
 
 // Same as ResolveInlineLengthInternal, except here |intrinsic_size| roughly
 // plays the part of |MinMaxSizes|.
@@ -105,7 +106,7 @@ inline LayoutUnit ResolveMinInlineLength(
   return ResolveInlineLengthInternal(
       constraint_space, style, border_padding, min_max_sizes_func, length,
       /* auto_length */ &Length::Auto(), override_available_size,
-      border_padding.InlineSum());
+      border_padding.InlineSum(), CalcSizeKeywordBehavior::kAsSpecified);
 }
 
 // Used for resolving max inline lengths, (|ComputedStyle::MaxLogicalWidth|).
@@ -120,7 +121,8 @@ inline LayoutUnit ResolveMaxInlineLength(
   // this LayoutUnit::Max that we pass to ResolveInlineLengthInternal.
   return ResolveInlineLengthInternal(
       constraint_space, style, border_padding, min_max_sizes_func, length,
-      /* auto_length */ nullptr, override_available_size, LayoutUnit::Max());
+      /* auto_length */ nullptr, override_available_size, LayoutUnit::Max(),
+      CalcSizeKeywordBehavior::kAsSpecified);
 }
 
 // Used for resolving main inline lengths, (|ComputedStyle::LogicalWidth|).
@@ -131,10 +133,13 @@ inline LayoutUnit ResolveMainInlineLength(
     MinMaxSizesFunctionRef min_max_sizes_func,
     const Length& length,
     const Length* auto_length,
-    LayoutUnit override_available_size = kIndefiniteSize) {
+    LayoutUnit override_available_size = kIndefiniteSize,
+    CalcSizeKeywordBehavior calc_size_keyword_behavior =
+        CalcSizeKeywordBehavior::kAsSpecified) {
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
                                      min_max_sizes_func, length, auto_length,
-                                     override_available_size, kIndefiniteSize);
+                                     override_available_size, kIndefiniteSize,
+                                     calc_size_keyword_behavior);
 }
 
 // Used for resolving min block lengths, (|ComputedStyle::MinLogicalHeight|).
