@@ -499,7 +499,7 @@ void MahiManagerImpl::SetMediaAppPDFFocused() {
       /*page_id=*/media_app_client_id_,
       GURL{base::StrCat({"file:///media-app/", file_name.value()})},
       /*title=*/base::UTF8ToUTF16(file_name.value()), gfx::ImageSkia(),
-      /*distillable=*/true);
+      /*distillable=*/true, /*is_incognito=*/false);
 
   // To avoid refresh banner flicker. This could happen when a new PDF file is
   // opened from file picker dialog in media app.
@@ -662,13 +662,15 @@ void MahiManagerImpl::OnGetPageContentForSummary(
 
   // Add page content to the cache.
   // TODO(b:338140794): consider adding the QA to the cache.
-  cache_manager_->AddCacheForUrl(
-      request_page_info->url.spec(),
-      MahiCacheManager::MahiData(
-          request_page_info->url.spec(), request_page_info->title,
-          current_panel_content_->page_content,
-          request_page_info->favicon_image, /*summary=*/std::nullopt,
-          /*previous_qa=*/{}));
+  if (!request_page_info->is_incognito) {
+    cache_manager_->AddCacheForUrl(
+        request_page_info->url.spec(),
+        MahiCacheManager::MahiData(
+            request_page_info->url.spec(), request_page_info->title,
+            current_panel_content_->page_content,
+            request_page_info->favicon_image, /*summary=*/std::nullopt,
+            /*previous_qa=*/{}));
+  }
 
   CHECK(mahi_provider_);
   mahi_provider_->Summarize(
@@ -697,13 +699,16 @@ void MahiManagerImpl::OnGetPageContentForQA(
   // Add page content to the cache. The summary would be the summary that
   // is already in the cache (if any).
   // TODO(b:338140794): consider adding the QA to the cache.
-  cache_manager_->AddCacheForUrl(
-      request_page_info->url.spec(),
-      MahiCacheManager::MahiData(
-          request_page_info->url.spec(), request_page_info->title,
-          current_panel_content_->page_content,
-          request_page_info->favicon_image,
-          cache_manager_->GetSummaryForUrl(request_page_info->url.spec()), {}));
+  if (!request_page_info->is_incognito) {
+    cache_manager_->AddCacheForUrl(
+        request_page_info->url.spec(),
+        MahiCacheManager::MahiData(
+            request_page_info->url.spec(), request_page_info->title,
+            current_panel_content_->page_content,
+            request_page_info->favicon_image,
+            cache_manager_->GetSummaryForUrl(request_page_info->url.spec()),
+            {}));
+  }
 
   mahi_provider_->QuestionAndAnswer(
       base::UTF16ToUTF8(current_panel_content_->page_content),

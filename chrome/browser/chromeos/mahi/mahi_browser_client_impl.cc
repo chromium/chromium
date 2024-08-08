@@ -100,7 +100,8 @@ void MahiBrowserClientImpl::OnFocusedPageChanged(
       /*page_id=*/web_content_state.page_id,
       /*url=*/web_content_state.url, /*title=*/web_content_state.title,
       /*favicon_image=*/web_content_state.favicon.DeepCopy(),
-      /*is_distillable=*/std::nullopt);
+      /*is_distillable=*/std::nullopt,
+      /*is_incognito=*/web_content_state.is_incognito);
   if (web_content_state.is_distillable.has_value()) {
     page_info->IsDistillable = web_content_state.is_distillable.value();
   }
