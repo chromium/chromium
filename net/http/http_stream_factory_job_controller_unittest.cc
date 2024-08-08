@@ -722,6 +722,7 @@ class JobControllerReconsiderProxyAfterErrorTest
             /*socket_performance_watcher=*/nullptr,
             ConnectionEndpointMetadata(),
             /*report_ecn=*/true,
+            /*enable_origin_frame=*/true,
             NetLogWithSource::Make(NetLogSourceType::NONE)));
 
     quic::test::NoopQpackStreamSenderDelegate

@@ -261,6 +261,15 @@ base::Value::Dict NetLogAcceptChFrameReceivedParams(
       .Set("accept_ch", entry.value);
 }
 
+base::Value::Dict NetLogReceivedOrigins(
+    const std::set<url::SchemeHostPort>& received_origins) {
+  base::Value::List origins;
+  for (const auto& origin : received_origins) {
+    origins.Append(origin.Serialize());
+  }
+  return base::Value::Dict().Set("origins", std::move(origins));
+}
+
 // Histogram for recording the different reasons that a QUIC session is unable
 // to complete the handshake.
 enum HandshakeFailureReason {
@@ -940,6 +949,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
     const ConnectionEndpointMetadata& metadata,
     bool report_ecn,
+    bool enable_origin_frame,
     const NetLogWithSource& net_log)
     : quic::QuicSpdyClientSessionBase(connection,
                                       /*visitor=*/nullptr,
@@ -972,6 +982,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       ssl_config_service_(ssl_config_service),
       server_info_(std::move(server_info)),
       report_ecn_(report_ecn),
+      enable_origin_frame_(enable_origin_frame),
       task_runner_(task_runner),
       net_log_(NetLogWithSource::Make(net_log.net_log(),
                                       NetLogSourceType::QUIC_SESSION)),
@@ -1177,6 +1188,33 @@ void QuicChromiumClientSession::OnAcceptChFrameReceivedViaAlps(
                       [&] { return NetLogAcceptChFrameReceivedParams(entry); });
   }
   LogAcceptChFrameReceivedHistogram(has_valid_entry, has_invalid_entry);
+}
+
+void QuicChromiumClientSession::OnOriginFrame(const quic::OriginFrame& frame) {
+  if (!enable_origin_frame_) {
+    return;
+  }
+  // The max size of an origin in ASCII serializaion can be 64kB. Choose a
+  // relatively small limit on total number of received origins.
+  static constexpr uint32_t kMaxOriginCount = 20;
+  for (const std::string& origin_str : frame.origins) {
+    if (received_origins_.size() >= kMaxOriginCount) {
+      return;
+    }
+    GURL url(base::StrCat({origin_str, "/"}));
+    if (!url.is_valid() || url.path() != "/") {
+      continue;
+    }
+    url::SchemeHostPort origin(url);
+    if (!origin.IsValid()) {
+      continue;
+    }
+    received_origins_.insert(origin);
+  }
+  net_log_.AddEvent(NetLogEventType::QUIC_SESSION_ORIGIN_FRAME_RECEIVED,
+                    [&] { return NetLogReceivedOrigins(received_origins_); });
+  base::UmaHistogramCounts100("Net.QuicSession.NumReceivedOrigins",
+                              received_origins_.size());
 }
 
 void QuicChromiumClientSession::AddHandle(Handle* handle) {

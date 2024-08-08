@@ -474,6 +474,17 @@ bool DelayMainJobWithAvailableSpdySession(
       "true");
 }
 
+bool IsOriginFrameEnabled(const VariationParameters& quic_trial_params) {
+  return base::EqualsCaseInsensitiveASCII(
+      GetVariationParam(quic_trial_params, "enable_origin_frame"), "true");
+}
+
+bool IsDnsSkippedWithOriginFrame(const VariationParameters& quic_trial_params) {
+  return base::EqualsCaseInsensitiveASCII(
+      GetVariationParam(quic_trial_params, "skip_dns_with_origin_frame"),
+      "true");
+}
+
 void SetQuicFlags(const VariationParameters& quic_trial_params) {
   std::string flags_list =
       GetVariationParam(quic_trial_params, "set_quic_flags");
@@ -688,6 +699,9 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
       quic_params->delay_main_job_with_available_spdy_session = true;
     }
     quic_params->report_ecn = ShouldQuicReportEcn(quic_trial_params);
+    quic_params->enable_origin_frame = IsOriginFrameEnabled(quic_trial_params);
+    quic_params->skip_dns_with_origin_frame =
+        IsDnsSkippedWithOriginFrame(quic_trial_params);
     SetQuicFlags(quic_trial_params);
   }
 

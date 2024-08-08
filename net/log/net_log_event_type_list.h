@@ -1934,6 +1934,23 @@ EVENT_TYPE(QUIC_SESSION_POOL_PLATFORM_NOTIFICATION)
 
 EVENT_TYPE(QUIC_SESSION_POOL_ON_IP_ADDRESS_CHANGED)
 
+// This event is emitted when a session request ends up using an existing
+// session with the same IP after DNS resolution.
+EVENT_TYPE(QUIC_SESSION_POOL_MATCHING_IP_SESSION_FOUND)
+
+// This event is emitted when a session request ends up using an existing
+// session with different IP after DNS resolution. This scenario occurs when the
+// existing session receives an ORIGIN frame, and the received origins encompass
+// the request's destination.
+EVENT_TYPE(QUIC_SESSION_POOL_POOLED_WITH_DIFFERENT_IP_SESSION)
+
+// This event is emitted when a session request can use an existing session but
+// not due to IP mismatch.
+EVENT_TYPE(QUIC_SESSION_POOL_CAN_POOL_BUT_DIFFERENT_IP)
+
+// This event is emitted when a session request cannot use an existing session.
+EVENT_TYPE(QUIC_SESSION_POOL_CANNOT_POOL_WITH_EXISTING_SESSIONS)
+
 //   {
 //     "net_error": <Net error code for the closure>,
 //     "quic_error": <quic::QuicErrorCode in the frame>,
@@ -2616,6 +2633,11 @@ EVENT_TYPE(QUIC_SESSION_ATTEMPTING_TO_PROCESS_UNDECRYPTABLE_PACKET)
 //   "reason": <the reason the key update was triggered>
 // }
 EVENT_TYPE(QUIC_SESSION_KEY_UPDATE)
+
+// Session received an ORIGIN frame
+// {
+//   "origins" : <list of received origins>
+EVENT_TYPE(QUIC_SESSION_ORIGIN_FRAME_RECEIVED)
 
 // ------------------------------------------------------------------------
 // QuicHttpStream

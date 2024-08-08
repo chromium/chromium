@@ -665,12 +665,13 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                                const quic::QuicServerId& server_id,
                                bool was_session_active);
 
-  // Insert the given alias `key` in the AliasSet for the given `session` in
-  // the map `session_aliases_`, and add the given `dns_aliases` for
-  // `key.session_key()` in `dns_aliases_by_session_key_`.
-  void MapSessionToAliasKey(QuicChromiumClientSession* session,
-                            QuicSessionAliasKey key,
-                            std::set<std::string> dns_aliases);
+  // Insert the session to `active_sessions_`, and insert the given alias `key`
+  // in the AliasSet for the given `session` in the map `session_aliases_`, and
+  // add the given `dns_aliases` for `key.session_key()` in
+  // `dns_aliases_by_session_key_`.
+  void ActivateAndMapSessionToAliasKey(QuicChromiumClientSession* session,
+                                       QuicSessionAliasKey key,
+                                       std::set<std::string> dns_aliases);
 
   // For all alias keys for `session` in `session_aliases_`, erase the
   // corresponding DNS aliases in `dns_aliases_by_session_key_`. Then erase
@@ -829,6 +830,10 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // If true, sessions created by this pool will read ECN marks from QUIC
   // sockets and send them to the peer.
   const bool report_ecn_;
+
+  // If true, skip DNS resolution for a hostname if the ORIGIN frame received on
+  // an active session encompasses that hostname.
+  const bool skip_dns_with_origin_frame_;
 
   quic::DeterministicConnectionIdGenerator connection_id_generator_{
       quic::kQuicDefaultConnectionIdLength};

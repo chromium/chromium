@@ -2197,6 +2197,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="0" label="MATCHING_IP_SESSION_FOUND"/>
   <int value="1" label="CAN_POOL_BUT_DIFFERENT_IP"/>
   <int value="2" label="CANNOT_POOL_WITH_EXISTING_SESSIONS"/>
+  <int value="3" label="POOLED_WITH_DIFFERENT_IP_SESSION"/>
 </enum>
 
 <enum name="QuicHandshakeFailureReason">

@@ -197,7 +197,8 @@ class QuicChromiumClientSessionTest
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
-        /*report_ecn=*/true, NetLogWithSource::Make(NetLogSourceType::NONE));
+        /*report_ecn=*/true, /*enable_origin_frame=*/true,
+        NetLogWithSource::Make(NetLogSourceType::NONE));
     if (connectivity_monitor_) {
       connectivity_monitor_->SetInitialDefaultNetwork(default_network_);
       session_->AddConnectivityObserver(connectivity_monitor_.get());
@@ -2268,6 +2269,55 @@ TEST_P(QuicChromiumClientSessionTest, ReportsReceivedEcn) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_quic_data.AllReadDataConsumed());
   EXPECT_TRUE(mock_quic_data.AllWriteDataConsumed());
+}
+
+TEST_P(QuicChromiumClientSessionTest, OnOriginFrame) {
+  const std::string kExampleOrigin1 = "https://www.example.com";
+  const std::string kExampleOrigin2 = "https://www.example.com:443";
+  const std::string kExampleOrigin3 = "https://www.example.com:8443";
+  const std::string kExampleOrigin4 = "http://www.example.com:8080";
+  const std::string kInvalidOrigin1 = "https://www.example.com/";
+  const std::string kInvalidOrigin2 = "www.example.com";
+
+  GURL url1(base::StrCat({kExampleOrigin1, "/"}));
+  url::SchemeHostPort origin1(url1);
+  ASSERT_TRUE(origin1.IsValid());
+  GURL url2(base::StrCat({kExampleOrigin2, "/"}));
+  url::SchemeHostPort origin2(url2);
+  ASSERT_TRUE(origin2.IsValid());
+  GURL url3(base::StrCat({kExampleOrigin3, "/"}));
+  url::SchemeHostPort origin3(url3);
+  ASSERT_TRUE(origin3.IsValid());
+  GURL url4(base::StrCat({kExampleOrigin4, "/"}));
+  url::SchemeHostPort origin4(url4);
+  ASSERT_TRUE(origin4.IsValid());
+
+  quic::OriginFrame frame;
+
+  Initialize();
+
+  ASSERT_TRUE(session_->received_origins().empty());
+
+  frame.origins.push_back(kExampleOrigin1);
+  session_->OnOriginFrame(frame);
+  EXPECT_EQ(1u, session_->received_origins().size());
+  EXPECT_TRUE(session_->received_origins().count(origin1));
+  EXPECT_TRUE(session_->received_origins().count(origin2));
+  EXPECT_FALSE(session_->received_origins().count(origin3));
+  EXPECT_FALSE(session_->received_origins().count(origin4));
+
+  frame.origins.push_back(kExampleOrigin2);
+  frame.origins.push_back(kInvalidOrigin1);
+  frame.origins.push_back(kInvalidOrigin2);
+  frame.origins.push_back(kExampleOrigin3);
+  frame.origins.push_back(kExampleOrigin4);
+  session_->OnOriginFrame(frame);
+  EXPECT_EQ(3u, session_->received_origins().size());
+
+  EXPECT_TRUE(session_->received_origins().count(origin1));
+  EXPECT_TRUE(session_->received_origins().count(origin2));
+  EXPECT_TRUE(session_->received_origins().count(origin3));
+  EXPECT_TRUE(session_->received_origins().count(origin4));
 }
 
 }  // namespace

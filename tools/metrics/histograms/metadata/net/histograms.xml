@@ -3697,6 +3697,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.NumReceivedOrigins" units="origins"
+    expires_after="2025-02-11">
+  <owner>fayang@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The number of origins in received ORIGIN frames. This is recorded for each
+    received ORIGIN frame. If multiple ORIGIN frames are received over the
+    duration of a connection, this count is recorded for each frame.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.NumStreamsWaitingToWriteOnIdleTimeout"
     units="streams" expires_after="2024-12-08">
   <owner>renjietang@chromium.org</owner>
