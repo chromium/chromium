@@ -1565,38 +1565,39 @@ TEST_F(AggregatableReportTest, AggregationCoordinator_SetInReport) {
 TEST(AggregatableReportPayloadLengthTest, With20Contributions) {
   // NOTE: These expectations are inscrutable when they fail due to
   // `StrictNumeric`, unless we include base/numerics/ostream_operators.h.
-  EXPECT_EQ(AggregatableReport::ComputeTeeBasedPayloadLengthInBytes(
+  EXPECT_EQ(AggregatableReport::ComputeTeeBasedPayloadLengthInBytesForTesting(
                 /*num_contributions=*/20u,
                 /*filtering_id_max_bytes=*/std::nullopt),
             747);
-  EXPECT_EQ(AggregatableReport::ComputeTeeBasedPayloadLengthInBytes(
+  EXPECT_EQ(AggregatableReport::ComputeTeeBasedPayloadLengthInBytesForTesting(
                 /*num_contributions=*/20u,
                 /*filtering_id_max_bytes=*/std::nullopt),
             747);
-  EXPECT_EQ(AggregatableReport::ComputeTeeBasedPayloadLengthInBytes(
+  EXPECT_EQ(AggregatableReport::ComputeTeeBasedPayloadLengthInBytesForTesting(
                 /*num_contributions=*/20u, /*filtering_id_max_bytes=*/1u),
             847);
 }
 
 TEST(AggregatableReportPayloadLengthTest, With100Contributions) {
-  EXPECT_EQ(AggregatableReport::ComputeTeeBasedPayloadLengthInBytes(
+  EXPECT_EQ(AggregatableReport::ComputeTeeBasedPayloadLengthInBytesForTesting(
                 /*num_contributions=*/100u,
                 /*filtering_id_max_bytes=*/std::nullopt),
             3628);
-  EXPECT_EQ(AggregatableReport::ComputeTeeBasedPayloadLengthInBytes(
+  EXPECT_EQ(AggregatableReport::ComputeTeeBasedPayloadLengthInBytesForTesting(
                 /*num_contributions=*/100u, /*filtering_id_max_bytes=*/1u),
             4128);
 }
 
 TEST(AggregatableReportPayloadLengthTest, OutOfRange) {
-  EXPECT_FALSE(AggregatableReport::ComputeTeeBasedPayloadLengthInBytes(
-                   /*num_contributions=*/std::numeric_limits<size_t>::max(),
-                   /*filtering_id_max_bytes=*/1u)
-                   .has_value());
+  EXPECT_FALSE(
+      AggregatableReport::ComputeTeeBasedPayloadLengthInBytesForTesting(
+          /*num_contributions=*/std::numeric_limits<size_t>::max(),
+          /*filtering_id_max_bytes=*/1u)
+          .has_value());
   if constexpr (std::numeric_limits<size_t>::max() >
                 std::numeric_limits<uint32_t>::max()) {
     EXPECT_FALSE(
-        AggregatableReport::ComputeTeeBasedPayloadLengthInBytes(
+        AggregatableReport::ComputeTeeBasedPayloadLengthInBytesForTesting(
             // It's critical to convert the max `uint32_t` value to size_t
             // before adding one to avoid an unwanted integer overflow.
             /*num_contributions=*/size_t{std::numeric_limits<uint32_t>::max()} +
@@ -1628,7 +1629,7 @@ TEST(AggregatableReportPayloadLengthTest, PredictionMatchesReality) {
                            : "nullopt"));
 
       const std::optional<size_t> predicted_length =
-          AggregatableReport::ComputeTeeBasedPayloadLengthInBytes(
+          AggregatableReport::ComputeTeeBasedPayloadLengthInBytesForTesting(
               num_contributions, filtering_id_max_bytes);
       ASSERT_TRUE(predicted_length.has_value());
 
