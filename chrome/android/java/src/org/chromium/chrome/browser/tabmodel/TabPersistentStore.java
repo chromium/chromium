@@ -1366,7 +1366,13 @@ public class TabPersistentStore {
         final int count = stream.readInt();
         final int incognitoCount = skipIncognitoCount ? -1 : stream.readInt();
         final int incognitoActiveIndex = stream.readInt();
-        final int standardActiveIndex = stream.readInt();
+        int standardActiveIndex = stream.readInt();
+        if (standardActiveIndex < incognitoCount) {
+            // See https://crbug.com/354041918. This is equal to the original standard active index
+            // + incognitoCount. If there are not standard tabs, that would be -1 + incognitoCount,
+            // which unexpectedly maps to the last incognito tab. Adjust here.
+            standardActiveIndex = TabModel.INVALID_TAB_INDEX;
+        }
         if (count < 0 || incognitoActiveIndex >= count || standardActiveIndex >= count) {
             throw new IOException();
         }
