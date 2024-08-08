@@ -349,6 +349,10 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
   cell.subtitleLabel.text = itemData.creationText;
   NSUInteger numberOfTabs = itemData.numberOfTabs;
   cell.faviconsGrid.numberOfTabs = numberOfTabs;
+  cell.faviconsGrid.favicon1 = nil;
+  cell.faviconsGrid.favicon2 = nil;
+  cell.faviconsGrid.favicon3 = nil;
+  cell.faviconsGrid.favicon4 = nil;
   UIImage* fallbackImage = DefaultSymbolWithPointSize(kGlobeAmericasSymbol, 16);
   if (numberOfTabs >= 1) {
     cell.faviconsGrid.favicon1 = fallbackImage;
