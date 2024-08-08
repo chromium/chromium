@@ -35,7 +35,7 @@
 				<StringProperty
 					Name="DiffAlgorithm"
 					DisplayName="Differential Algorithm"
-					Description="Differential algorithm to use when generating differential patch. Possible values - {BSDIFF|COURGETTE}."
+					Description="Differential algorithm to use when generating differential patch. Possible values - {BSDIFF|ZUCCHINI}."
 					Switch="--diff_algorithm=&quot;[value]&quot;"
 				/>
 			</Properties>
