@@ -4,6 +4,8 @@
 
 #include "media/renderers/win/media_engine_notify_impl.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "media/base/win/mf_helpers.h"
 
 namespace media {
@@ -13,6 +15,19 @@ namespace {
 #define ENUM_TO_STRING(enum) \
   case enum:                 \
     return #enum
+
+std::string MediaEngineErrorToString(MF_MEDIA_ENGINE_ERR error) {
+  switch (error) {
+    ENUM_TO_STRING(MF_MEDIA_ENGINE_ERR_NOERROR);
+    ENUM_TO_STRING(MF_MEDIA_ENGINE_ERR_ABORTED);
+    ENUM_TO_STRING(MF_MEDIA_ENGINE_ERR_NETWORK);
+    ENUM_TO_STRING(MF_MEDIA_ENGINE_ERR_DECODE);
+    ENUM_TO_STRING(MF_MEDIA_ENGINE_ERR_ENCRYPTED);
+    ENUM_TO_STRING(MF_MEDIA_ENGINE_ERR_SRC_NOT_SUPPORTED);
+    default:
+      return "Unknown MF_MEDIA_ENGINE_ERR";
+  }
+}
 
 std::string MediaEngineEventToString(MF_MEDIA_ENGINE_EVENT event) {
   switch (event) {
@@ -132,6 +147,13 @@ HRESULT MediaEngineNotifyImpl::EventNotify(DWORD event_code,
       MF_MEDIA_ENGINE_ERR error = static_cast<MF_MEDIA_ENGINE_ERR>(param1);
       HRESULT hr = param2;
       LOG(ERROR) << __func__ << ": error=" << error << ", hr=" << PrintHr(hr);
+
+      // Report the HRESULT corresponding to certain MF_MEDIA_ENGINE_ERR
+      // TODO(b/315860185): Remove this after the investigation is done.
+      base::UmaHistogramSparse(
+          base::StrCat({"Media.MediaFoundation.MediaEngineError.",
+                        MediaEngineErrorToString(error), ".Hresult"}),
+          hr);
       error_cb_.Run(MediaEngineErrorToPipelineStatus(error), hr);
       break;
     }
