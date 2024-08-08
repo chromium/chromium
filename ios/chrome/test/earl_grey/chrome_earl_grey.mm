@@ -1338,8 +1338,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   std::string errorMessage;
   auto jsonValue = deserializer.Deserialize(&errorCode, &errorMessage);
   NSString* message = [NSString
-      stringWithFormat:@"JSON parsing failed: code=%d, message=%@", errorCode,
-                       base::SysUTF8ToNSString(errorMessage)];
+      stringWithFormat:
+          @"JSON parsing failed: code=%d, message=%@, jsonRepresentation=%@",
+          errorCode, base::SysUTF8ToNSString(errorMessage),
+          base::SysUTF8ToNSString(jsonRepresentation)];
   EG_TEST_HELPER_ASSERT_TRUE(jsonValue, message);
 
   return jsonValue ? std::move(*jsonValue) : base::Value();
