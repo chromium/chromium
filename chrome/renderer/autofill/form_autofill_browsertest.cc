@@ -618,9 +618,8 @@ class FormAutofillTest : public test::AutofillRendererTest {
         // non-empty value.
         {FormControlType::kSelectOne, "select-nonempty", "CA", true, "TX",
          "TX"},
-        // Select fields should not be previewed if no suggestion is passed from
-        // autofill profile.
-        {FormControlType::kSelectOne, "select-unchanged", "CA", false, "", ""},
+        // Select fields should be previewed even if no suggestion is passed.
+        {FormControlType::kSelectOne, "select-unchanged", "CA", true, "", ""},
         // Select fields that are not focusable should always be filled.
         {FormControlType::kSelectOne, "select-displaynone", "CA", true, "CA",
          "CA"},
@@ -2934,7 +2933,7 @@ TEST_F(FormAutofillTest, FillFormForUnownedNonASCIIForm) {
   TestFillForm(html.c_str(), true, nullptr);
 }
 
-TEST_F(FormAutofillTest, PreviewForm) {
+TEST_F(FormAutofillTest, PreviewFormX) {
   TestPreviewForm(kFormHtml, false, nullptr);
 }
 
