@@ -24,6 +24,9 @@ namespace {
 
 constexpr size_t kMaxDownloadBytes = 20 * 1024;
 
+// Max number of retries for fetching the configuration.
+constexpr int kMaxRetries = 3;
+
 SoundscapesDownloader::Urls ProductionConfiguration(const std::string& locale) {
   SoundscapesDownloader::Urls configuration;
   configuration.locale = locale;
@@ -91,6 +94,10 @@ class SoundscapesDownloaderImpl : public SoundscapesDownloader {
     network::SimpleURLLoader::BodyAsStringCallback handler =
         base::BindOnce(&SoundscapesDownloaderImpl::HandleConfigurationString,
                        weak_factory_.GetWeakPtr(), std::move(callback));
+    const int retry_mode = network::SimpleURLLoader::RETRY_ON_5XX |
+                           network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+                           network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED;
+    pending_request_->SetRetryOptions(kMaxRetries, retry_mode);
     pending_request_->DownloadToString(url_loader_factory_.get(),
                                        std::move(handler), kMaxDownloadBytes);
   }
@@ -113,7 +120,7 @@ class SoundscapesDownloaderImpl : public SoundscapesDownloader {
     std::unique_ptr<network::SimpleURLLoader> request =
         std::move(pending_request_);
 
-    if (!response_body) {
+    if (!response_body || response_body->empty()) {
       std::move(callback).Run(std::nullopt);
       return;
     }
