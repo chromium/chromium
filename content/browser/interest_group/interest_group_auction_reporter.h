@@ -191,6 +191,8 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
     std::optional<uint32_t> bidding_signals_data_version;
 
+    std::optional<std::string> selected_buyer_and_seller_reporting_id;
+
     // The metadata associated with the winning ad, to be made available to the
     // interest group in future auctions in the `prevWins` field.
     std::string ad_metadata;

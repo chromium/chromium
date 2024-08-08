@@ -91,8 +91,10 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
 
   void ReportWin(
       bool is_for_additional_bid,
-      mojom::ReportingIdField reporting_id_field,
-      const std::string& reporting_id,
+      const std::optional<std::string>& interest_group_name_reporting_id,
+      const std::optional<std::string>& buyer_reporting_id,
+      const std::optional<std::string>& buyer_and_seller_reporting_id,
+      const std::optional<std::string>& selected_buyer_and_seller_reporting_id,
       const std::optional<std::string>& auction_signals_json,
       const std::optional<std::string>& per_buyer_signals_json,
       const std::optional<GURL>& direct_from_seller_per_buyer_signals,

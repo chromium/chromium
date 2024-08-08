@@ -171,6 +171,7 @@ enum ReportingIdField {
   kInterestGroupName = 1,
   kBuyerReportingId = 2,
   kBuyerAndSellerReportingId = 3,
+  kSelectedBuyerAndSellerReportingId = 4,
 };
 
 // Represents the time between BidderWorklet::BeginGenerateBid and each of the
@@ -491,12 +492,21 @@ interface BidderWorklet {
   //  `is_for_additional_bid` If true, this will call reportAdditionalBidWin()
   //  rather than reportWin().
   //
-  // `reporting_id_field` Describes which kind of ad campaign identification
-  //  signal has been provided to ReportWin(), corresponding to either the
-  //  interest group name or a field on the registered ad itself.
+  // `interest_group_name_reporting_id` Optional string value that when
+  //  contains value, represents the ad campaign identification signal that
+  //  has been provided to ReportWin().
   //
-  // `reporting_id` The string value of the field described by
-  //  `reporting_id_field`.
+  // `buyer_reporting_id` Optional string value that when
+  //  contains value, represents the ad campaign identification signal that
+  //  has been provided to ReportWin().
+  //
+  // `buyer_and_seller_reporting_id` Optional string value that when
+  //  contains value, represents the ad campaign identification signal that
+  //  has been provided to ReportWin().
+  //
+  // `selected_buyer_and_seller_reporting_id` Optional string
+  // value that when contains value, represents the selected ad campaign
+  // identification signal that has been provided to ReportWin().
   //
   // `auction_signals_json` The JSON representation of the auction signals for
   //  the auction, if specified by the publisher page and provided to bidder
@@ -622,8 +632,10 @@ interface BidderWorklet {
   //  Includes errors from failing to load the worklet script.
   ReportWin(
       bool is_for_additional_bid,
-      ReportingIdField reporting_id_field,
-      string reporting_id,
+      string? interest_group_name_reporting_id,
+      string? buyer_reporting_id,
+      string? buyer_and_seller_reporting_id,
+      string? selected_buyer_and_seller_reporting_id,
       string? auction_signals_json,
       string? per_buyer_signals_json,
       url.mojom.Url? direct_from_seller_per_buyer_signals,
