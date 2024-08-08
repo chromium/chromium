@@ -10049,11 +10049,15 @@ function scoreAd(
                   budget_denied_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
-            ASSERT_EQ(request.payload_contents().contributions.size(), 2u);
-            EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
-            EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
-            EXPECT_EQ(request.payload_contents().contributions[1].bucket, 3);
-            EXPECT_EQ(request.payload_contents().contributions[1].value, 4);
+            EXPECT_THAT(
+                request.payload_contents().contributions,
+                testing::UnorderedElementsAre(
+                    blink::mojom::AggregatableReportHistogramContribution(
+                        /*bucket=*/1, /*value=*/2,
+                        /*filtering_id=*/std::nullopt),
+                    blink::mojom::AggregatableReportHistogramContribution(
+                        /*bucket=*/3, /*value=*/4,
+                        /*filtering_id=*/std::nullopt)));
             EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
             EXPECT_EQ(budget_key.api(),
                       PrivateAggregationBudgetKey::Api::kProtectedAudience);
@@ -13539,14 +13543,18 @@ function reportResult(auctionConfig, browserSignals) {
                   budget_denied_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
-            ASSERT_EQ(request.payload_contents().contributions.size(), 3u);
-            EXPECT_EQ(request.payload_contents().contributions[0].bucket,
-                      absl::MakeUint128(1, 0));
-            EXPECT_EQ(request.payload_contents().contributions[0].value, 10);
-            EXPECT_EQ(request.payload_contents().contributions[1].bucket, 1);
-            EXPECT_EQ(request.payload_contents().contributions[1].value, 11);
-            EXPECT_EQ(request.payload_contents().contributions[2].bucket, 100);
-            EXPECT_EQ(request.payload_contents().contributions[2].value, 1000);
+            EXPECT_THAT(
+                request.payload_contents().contributions,
+                testing::UnorderedElementsAre(
+                    blink::mojom::AggregatableReportHistogramContribution(
+                        /*bucket=*/absl::MakeUint128(1, 0), /*value=*/10,
+                        /*filtering_id=*/std::nullopt),
+                    blink::mojom::AggregatableReportHistogramContribution(
+                        /*bucket=*/1, /*value=*/11,
+                        /*filtering_id=*/std::nullopt),
+                    blink::mojom::AggregatableReportHistogramContribution(
+                        /*bucket=*/100, /*value=*/1000,
+                        /*filtering_id=*/std::nullopt)));
             EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
             run_loop.Quit();
           }));
@@ -13670,14 +13678,18 @@ TEST_F(AdAuctionServiceImplBAndATest,
                   budget_denied_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
-            ASSERT_EQ(request.payload_contents().contributions.size(), 3u);
-            EXPECT_EQ(request.payload_contents().contributions[0].bucket,
-                      absl::MakeUint128(1, 0));
-            EXPECT_EQ(request.payload_contents().contributions[0].value, 10);
-            EXPECT_EQ(request.payload_contents().contributions[1].bucket, 1);
-            EXPECT_EQ(request.payload_contents().contributions[1].value, 11);
-            EXPECT_EQ(request.payload_contents().contributions[2].bucket, 2);
-            EXPECT_EQ(request.payload_contents().contributions[2].value, 20);
+            EXPECT_THAT(
+                request.payload_contents().contributions,
+                testing::UnorderedElementsAre(
+                    blink::mojom::AggregatableReportHistogramContribution(
+                        /*bucket=*/absl::MakeUint128(1, 0), /*value=*/10,
+                        /*filtering_id=*/std::nullopt),
+                    blink::mojom::AggregatableReportHistogramContribution(
+                        /*bucket=*/1, /*value=*/11,
+                        /*filtering_id=*/std::nullopt),
+                    blink::mojom::AggregatableReportHistogramContribution(
+                        /*bucket=*/2, /*value=*/20,
+                        /*filtering_id=*/std::nullopt)));
             EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
             run_loop.Quit();
           }));
@@ -13742,14 +13754,18 @@ function reportResult(auctionConfig, browserSignals) {
                   budget_denied_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
-            ASSERT_EQ(request.payload_contents().contributions.size(), 3u);
-            EXPECT_EQ(request.payload_contents().contributions[0].bucket,
-                      absl::MakeUint128(1, 0));
-            EXPECT_EQ(request.payload_contents().contributions[0].value, 10);
-            EXPECT_EQ(request.payload_contents().contributions[1].bucket, 1);
-            EXPECT_EQ(request.payload_contents().contributions[1].value, 11);
-            EXPECT_EQ(request.payload_contents().contributions[2].bucket, 100);
-            EXPECT_EQ(request.payload_contents().contributions[2].value, 1000);
+            EXPECT_THAT(
+                request.payload_contents().contributions,
+                testing::UnorderedElementsAre(
+                    blink::mojom::AggregatableReportHistogramContribution(
+                        /*bucket=*/absl::MakeUint128(1, 0), /*value=*/10,
+                        /*filtering_id=*/std::nullopt),
+                    blink::mojom::AggregatableReportHistogramContribution(
+                        /*bucket=*/1, /*value=*/11,
+                        /*filtering_id=*/std::nullopt),
+                    blink::mojom::AggregatableReportHistogramContribution(
+                        /*bucket=*/100, /*value=*/1000,
+                        /*filtering_id=*/std::nullopt)));
             EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
             run_loop2.Quit();
           });
