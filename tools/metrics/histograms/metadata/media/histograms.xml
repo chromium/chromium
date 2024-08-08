@@ -7532,6 +7532,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MediaRouter.Discovery.LocalNetworkAccessPermissionGranted"
+    enum="Boolean" expires_after="2025-02-10">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Whether the local network access permission is granted when the local
+    discovery starts. Recorded once per browser session. Recorded on macOS 15 or
+    later.
+  </summary>
+</histogram>
+
 <histogram name="MediaRouter.Icon.Click.Location"
     enum="MediaRouterDialogActivationLocation" expires_after="2025-01-01">
   <owner>takumif@chromium.org</owner>

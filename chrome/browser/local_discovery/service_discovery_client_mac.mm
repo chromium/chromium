@@ -9,10 +9,10 @@
 
 #include "chrome/browser/local_discovery/service_discovery_client_mac.h"
 
-#import <Foundation/Foundation.h>
-#import <Network/Network.h>
-#import <arpa/inet.h>
-#import <net/if_dl.h>
+#include <Foundation/Foundation.h>
+#include <Network/Network.h>
+#include <arpa/inet.h>
+#include <net/if_dl.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -20,9 +20,10 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
+#include "base/mac/mac_util.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
-#import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/local_discovery/service_discovery_client_mac_util.h"
@@ -81,7 +82,8 @@ const NSTimeInterval kResolveTimeout = 10.0;
 void SetUpServiceBrowser(
     nw_browser_t browser,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    ServiceWatcher::UpdatedCallback services_update_callback) {
+    ServiceWatcher::UpdatedCallback services_update_callback,
+    base::RepeatingCallback<void(bool)> metrics_callback) {
   nw_browser_set_queue(browser, dispatch_get_main_queue());
 
   nw_browser_set_browse_results_changed_handler(
@@ -120,6 +122,11 @@ void SetUpServiceBrowser(
         }
       });
 
+  // Local Network Permission is available on macOS 15 or later.
+  if (base::mac::MacOSMajorVersion() < 15) {
+    return;
+  }
+
   nw_browser_set_state_changed_handler(
       browser, ^(nw_browser_state_t state, nw_error_t error) {
         if (nw_error_get_error_code(error) == kDNSServiceErr_PolicyDenied) {
@@ -128,6 +135,9 @@ void SetUpServiceBrowser(
               base::BindOnce(
                   services_update_callback,
                   ServiceWatcher::UpdateType::UPDATE_PERMISSION_REJECTED, ""));
+          metrics_callback.Run(/*permission_granted*/ false);
+        } else {
+          metrics_callback.Run(/*permission_granted*/ true);
         }
       });
 }
@@ -266,6 +276,8 @@ void ServiceWatcherImplMac::Start() {
     SetUpServiceBrowser(
         nw_browser_, base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::BindRepeating(&ServiceWatcherImplMac::OnServicesUpdate,
+                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&ServiceWatcherImplMac::RecordPermissionState,
                             weak_factory_.GetWeakPtr()));
   } else {
     browser_ = [[NetServiceBrowser alloc]
@@ -307,6 +319,17 @@ void ServiceWatcherImplMac::OnServicesUpdate(ServiceWatcher::UpdateType update,
   VLOG(1) << "ServiceWatcherImplMac::OnServicesUpdate: "
           << service + "." + service_type_;
   callback_.Run(update, service + "." + service_type_);
+}
+
+void ServiceWatcherImplMac::RecordPermissionState(bool permission_granted) {
+  static bool permission_state_recorded_ = false;
+  if (permission_state_recorded_) {
+    return;
+  }
+  base::UmaHistogramBoolean(
+      "MediaRouter.Discovery.LocalNetworkAccessPermissionGranted",
+      permission_granted);
+  permission_state_recorded_ = true;
 }
 
 // Service Resolver ////////////////////////////////////////////////////////////

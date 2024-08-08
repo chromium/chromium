@@ -71,6 +71,7 @@ class ServiceWatcherImplMac : public ServiceWatcher {
 
   void OnServicesUpdate(ServiceWatcher::UpdateType update,
                         const std::string& service);
+  void RecordPermissionState(bool permission_granted);
 
  private:
   void Start() override;

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/local_discovery/service_discovery_client_mac.h"
 #include "chrome/browser/local_discovery/service_discovery_client_mac_util.h"
@@ -236,6 +237,20 @@ TEST_F(ServiceDiscoveryClientMacTest, ResolveInvalidServiceName) {
 
   EXPECT_EQ(1, num_resolves_);
   EXPECT_EQ(ServiceResolver::STATUS_KNOWN_NONEXISTENT, last_status_);
+}
+
+TEST_F(ServiceDiscoveryClientMacTest, RecordPermissionStateMetrics) {
+  base::HistogramTester histograms;
+  auto watcher_impl = std::make_unique<ServiceWatcherImplMac>(
+      "service_type", base::DoNothing(),
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+
+  watcher_impl->RecordPermissionState(/*permission_granted*/ false);
+  histograms.ExpectUniqueSample(
+      "MediaRouter.Discovery.LocalNetworkAccessPermissionGranted", false, 1);
+  watcher_impl->RecordPermissionState(/*permission_granted*/ false);
+  histograms.ExpectUniqueSample(
+      "MediaRouter.Discovery.LocalNetworkAccessPermissionGranted", false, 1);
 }
 
 }  // namespace local_discovery
