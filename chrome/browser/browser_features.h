@@ -40,6 +40,12 @@ BASE_DECLARE_FEATURE(kDevToolsFreestylerDogfood);
 extern const base::FeatureParam<std::string> kDevToolsFreestylerDogfoodModelId;
 extern const base::FeatureParam<double> kDevToolsFreestylerDogfoodTemperature;
 
+BASE_DECLARE_FEATURE(kDevToolsExplainThisResourceDogfood);
+extern const base::FeatureParam<std::string>
+    kDevToolsExplainThisResourceDogfoodModelId;
+extern const base::FeatureParam<double>
+    kDevToolsExplainThisResourceDogfoodTemperature;
+
 BASE_DECLARE_FEATURE(kDevToolsSharedProcessInfobar);
 BASE_DECLARE_FEATURE(kDevToolsTabTarget);
 BASE_DECLARE_FEATURE(kDevToolsVeLogging);

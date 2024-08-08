@@ -1576,6 +1576,19 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   response_dict.Set("devToolsFreestylerDogfood",
                     std::move(freestyler_dogfood_dict));
 
+  base::Value::Dict explain_this_resource_dogfood_dict;
+  explain_this_resource_dogfood_dict.Set(
+      "enabled", base::FeatureList::IsEnabled(
+                     ::features::kDevToolsExplainThisResourceDogfood));
+  explain_this_resource_dogfood_dict.Set(
+      "aidaModelId",
+      features::kDevToolsExplainThisResourceDogfoodModelId.Get());
+  explain_this_resource_dogfood_dict.Set(
+      "aidaTemperature",
+      features::kDevToolsExplainThisResourceDogfoodTemperature.Get());
+  response_dict.Set("devToolsExplainThisResourceDogfood",
+                    std::move(explain_this_resource_dogfood_dict));
+
   base::Value::Dict ve_logging_dict;
   ve_logging_dict.Set(
       "enabled", base::FeatureList::IsEnabled(::features::kDevToolsVeLogging));

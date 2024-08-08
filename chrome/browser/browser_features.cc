@@ -102,6 +102,18 @@ const base::FeatureParam<std::string> kDevToolsFreestylerDogfoodModelId{
 const base::FeatureParam<double> kDevToolsFreestylerDogfoodTemperature{
     &kDevToolsFreestylerDogfood, "aida_temperature", /*default_value=*/0};
 
+// Whether the DevTools resource explainer assistant is enabled.
+BASE_FEATURE(kDevToolsExplainThisResourceDogfood,
+             "DevToolsExplainThisResourceDogfood",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string>
+    kDevToolsExplainThisResourceDogfoodModelId{
+        &kDevToolsExplainThisResourceDogfood, "aida_model_id",
+        /*default_value=*/""};
+const base::FeatureParam<double> kDevToolsExplainThisResourceDogfoodTemperature{
+    &kDevToolsExplainThisResourceDogfood, "aida_temperature",
+    /*default_value=*/0};
+
 // Whether an infobar is shown when the process is shared.
 BASE_FEATURE(kDevToolsSharedProcessInfobar,
              "DevToolsSharedProcessInfobar",
