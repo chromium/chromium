@@ -55,7 +55,8 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   };
 
   struct SearchRequestData {
-    std::u16string text;
+    std::u16string primary_text;
+    std::u16string secondary_text;
     ui::ImageModel icon;
 
     bool operator==(const SearchRequestData&) const;
@@ -230,7 +231,8 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
       std::u16string_view secondary_text,
       ui::ImageModel icon,
       TextData::Source source = TextData::Source::kUnknown);
-  static PickerSearchResult SearchRequest(std::u16string_view text,
+  static PickerSearchResult SearchRequest(std::u16string_view primary_text,
+                                          std::u16string_view secondary_text,
                                           ui::ImageModel icon);
   static PickerSearchResult Emoji(std::u16string_view emoji,
                                   std::u16string name = u"");

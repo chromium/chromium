@@ -407,7 +407,7 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
   } else if (const PickerSearchResult::SearchRequestData* search_request_data =
                  std::get_if<PickerSearchResult::SearchRequestData>(
                      &result.data())) {
-    UpdateSearchQueryAndActivePage(search_request_data->text);
+    UpdateSearchQueryAndActivePage(search_request_data->primary_text);
   } else if (const PickerSearchResult::EditorData* editor_data =
                  std::get_if<PickerSearchResult::EditorData>(&result.data())) {
     delegate_->ShowEditor(

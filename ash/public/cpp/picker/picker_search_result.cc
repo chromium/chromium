@@ -170,10 +170,14 @@ PickerSearchResult PickerSearchResult::Text(std::u16string_view primary_text,
                                      std::move(icon), source));
 }
 
-PickerSearchResult PickerSearchResult::SearchRequest(std::u16string_view text,
-                                                     ui::ImageModel icon) {
+PickerSearchResult PickerSearchResult::SearchRequest(
+    std::u16string_view primary_text,
+    std::u16string_view secondary_text,
+    ui::ImageModel icon) {
   return PickerSearchResult(
-      SearchRequestData{.text = std::u16string(text), .icon = std::move(icon)});
+      SearchRequestData{.primary_text = std::u16string(primary_text),
+                        .secondary_text = std::u16string(secondary_text),
+                        .icon = std::move(icon)});
 }
 
 PickerSearchResult PickerSearchResult::Emoji(std::u16string_view emoji,

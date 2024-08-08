@@ -37,8 +37,12 @@ std::optional<PickerSearchResult> PickerMathSearch(std::u16string_view query) {
 std::vector<PickerSearchResult> PickerMathExamples() {
   std::vector<PickerSearchResult> results;
   for (const auto& query : kMathExamples) {
+    std::optional<std::string> result =
+        fend_core::evaluate(base::UTF16ToUTF8(query));
+    CHECK(result.has_value());
+
     results.push_back(PickerSearchResult::SearchRequest(
-        query,
+        query, base::UTF8ToUTF16(*result),
         ui::ImageModel::FromVectorIcon(
             kPickerUnitsMathsIcon, cros_tokens::kCrosSysOnSurface, kIconSize)));
   }

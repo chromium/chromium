@@ -184,7 +184,8 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
           [&](const PickerSearchResult::SearchRequestData& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
-            item_view->SetPrimaryText(data.text);
+            item_view->SetPrimaryText(data.primary_text);
+            item_view->SetSecondaryText(data.secondary_text);
             item_view->SetLeadingIcon(data.icon);
             return item_view;
           },
