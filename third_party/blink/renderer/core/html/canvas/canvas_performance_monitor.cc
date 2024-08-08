@@ -16,7 +16,6 @@ namespace {
 
 using base::TimeTicks;
 using blink::CanvasRenderingContext;
-using blink::CanvasResourceProvider;
 
 const char* const kHostTypeName_Canvas = ".Canvas";
 const char* const kHostTypeName_OffscreenCanvas = ".OffscreenCanvas";

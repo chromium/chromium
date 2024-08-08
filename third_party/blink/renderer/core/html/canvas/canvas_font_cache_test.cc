@@ -15,8 +15,6 @@
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
-using testing::Mock;
-
 namespace blink {
 
 class CanvasFontCacheTest : public PageTestBase {

@@ -23,7 +23,6 @@
 using testing::Contains;
 using testing::ElementsAre;
 using testing::Eq;
-using testing::IsSupersetOf;
 using testing::StartsWith;
 
 namespace blink {
