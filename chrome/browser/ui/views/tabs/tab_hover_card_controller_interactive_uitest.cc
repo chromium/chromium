@@ -117,7 +117,7 @@ class TabHoverCardInteractiveUiTest
 
   auto HoverTabAt(int index) {
 #if BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/40249296): Fix for mac
+    // TODO(crbug.com/358199067): Fix for mac
     return Steps(Do(base::BindLambdaForTesting(
         [=, this]() { SimulateHoverTab(browser(), index); })));
 #else
@@ -133,7 +133,7 @@ class TabHoverCardInteractiveUiTest
 
   auto UnhoverTab() {
 #if BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/40249296): Fix for mac
+    // TODO(crbug.com/358199067): Fix for mac
     return Steps(Do(base::BindLambdaForTesting([=, this]() {
       TabStrip* const tab_strip = GetTabStrip(browser());
       HoverCardDestroyedWaiter waiter(tab_strip);
@@ -204,7 +204,6 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
   WaitForHoverCardVisible(tab_strip);
 }
 
-// TODO(crbug.com/40118199): test may be flaky on Linux and/or ChromeOS.
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        HoverCardVisibleOnTabCloseButtonFocusAfterTabFocus) {
   TabStrip* const tab_strip = GetTabStrip(browser());
@@ -293,7 +292,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(IsHoverCardVisible(tab_strip));
 }
 
-// TODO(crbug.com/40118199): test may be flaky on Windows.
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        InactiveWindowStaysInactiveOnHover) {
   resource_coordinator::GetTabLifecycleUnitSource()
