@@ -87,7 +87,9 @@ const base::FeatureParam<int>
         "preconnect_start_delay_on_mouse_hover_ms", 100};
 const base::FeatureParam<bool> kPrerenderNewTabPageOnMousePressedTrigger{
     &features::kNewTabPageTriggerForPrerender2,
-    "prerender_new_tab_page_on_mouse_pressed_trigger", false};
+    "prerender_new_tab_page_on_mouse_pressed_trigger", true};
+// The hover trigger is not enabled as we're aware that this negatively
+// affects other navigations like Omnibox search.
 const base::FeatureParam<bool> kPrerenderNewTabPageOnMouseHoverTrigger{
     &features::kNewTabPageTriggerForPrerender2,
     "prerender_new_tab_page_on_mouse_hover_trigger", false};
