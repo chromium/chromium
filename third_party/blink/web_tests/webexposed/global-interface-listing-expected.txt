@@ -7916,6 +7916,9 @@ interface RTCRtpReceiver
     method getSynchronizationSources
     setter jitterBufferTarget
     setter playoutDelayHint
+interface RTCRtpScriptTransform
+    attribute @@toStringTag
+    method constructor
 interface RTCRtpSendResult
     attribute @@toStringTag
     getter sent

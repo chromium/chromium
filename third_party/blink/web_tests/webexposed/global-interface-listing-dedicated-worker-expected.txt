@@ -1738,6 +1738,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter remoteSendTimestamp
 [Worker]     method acks
 [Worker]     method constructor
+[Worker] interface RTCRtpScriptTransformer : EventTarget
+[Worker]     attribute @@toStringTag
+[Worker]     getter options
+[Worker]     method constructor
 [Worker] interface RTCRtpSendResult
 [Worker]     attribute @@toStringTag
 [Worker]     getter sent
@@ -1752,6 +1756,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter ackId
 [Worker]     getter size
 [Worker]     getter time
+[Worker]     method constructor
+[Worker] interface RTCTransformEvent : Event
+[Worker]     attribute @@toStringTag
+[Worker]     getter transformer
 [Worker]     method constructor
 [Worker] interface ReadableByteStreamController
 [Worker]     attribute @@toStringTag
@@ -4001,6 +4009,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter name
 [Worker]     getter onmessage
 [Worker]     getter onmessageerror
+[Worker]     getter onrtctransform
 [Worker]     method cancelAnimationFrame
 [Worker]     method close
 [Worker]     method gc
@@ -4013,6 +4022,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter name
 [Worker]     setter onmessage
 [Worker]     setter onmessageerror
+[Worker]     setter onrtctransform
 PASS successfullyParsed is true
 
 TEST COMPLETE
