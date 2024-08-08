@@ -21224,7 +21224,8 @@
                 "android",
                 "linux",
                 "mac",
-                "windows"
+                "windows",
+                "chromeos"
             ],
             "experiments": [
                 {
