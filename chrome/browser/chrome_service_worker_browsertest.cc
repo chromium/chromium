@@ -25,6 +25,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/page_load_metrics/observers/service_worker_page_load_metrics_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -448,6 +449,78 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCountUKM) {
       entries[0], ukm::builders::ServiceWorker_OnLoad::kImageFallbackName, 0);
   test_recorder.ExpectEntryMetric(
       entries[0], ukm::builders::ServiceWorker_OnLoad::kImageHandledName, 0);
+}
+
+// TODO(crbug.com/355104619): The test is flaky. Re-enable it.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_StaticRoutingAPISubresourceHistogramTest \
+  DISABLED_StaticRoutingAPISubresourceHistogramTest
+#else
+#define MAYBE_StaticRoutingAPISubresourceHistogramTest \
+  StaticRoutingAPISubresourceHistogramTest
+#endif
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
+                       MAYBE_StaticRoutingAPISubresourceHistogramTest) {
+  base::HistogramTester histogram_tester;
+  WriteFile(FILE_PATH_LITERAL("scope/fallback.css"), "");
+  WriteFile(FILE_PATH_LITERAL("scope/nofallback.css"), "");
+  WriteFile(FILE_PATH_LITERAL("scope/subresources.html"),
+            "<link href='./fallback.css' rel='stylesheet'>"
+            "<link href='./nofallback.css' rel='stylesheet'>");
+  WriteFile(FILE_PATH_LITERAL("sw.js"),
+            R"( this.onactivate = function(event) {
+                  event.waitUntil(self.clients.claim());
+                };
+                this.addEventListener('install', e => {
+                  e.addRoutes([{
+                    condition: {
+                      urlPattern: new URLPattern()
+                    },
+                    source: 'fetch-event',
+                  },
+                  ]);
+                });
+                this.onfetch = function(event) {
+                  if (event.request.url.endsWith('/fallback.css')) {
+                    return;
+                  }
+                  event.respondWith(fetch(event.request));
+                };)");
+
+  WriteFile(FILE_PATH_LITERAL("test.html"), kInstallAndWaitForActivatedPage);
+
+  InitializeServer();
+
+  {
+    // The message "READY" will be sent when the service worker is activated.
+    const std::u16string expected_title = u"READY";
+    content::TitleWatcher title_watcher(
+        browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/test.html")));
+    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+  }
+
+  {
+    // Navigate to the service worker controlled page.
+    content::TestFrameNavigationObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/scope/subresources.html")));
+    observer.WaitForCommit();
+  }
+
+  {
+    // Navigate away to record metrics.
+    content::TestFrameNavigationObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+    observer.WaitForCommit();
+  }
+
+  histogram_tester.ExpectTotalCount(
+      internal::kHistogramServiceWorkerSubresourceTotalRouterEvaluationTime, 1);
 }
 
 // TODO(crbug.com/40882270): The test is flaky. Re-enable it.

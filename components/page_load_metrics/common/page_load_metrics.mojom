@@ -433,6 +433,10 @@ struct ServiceWorkerSubresourceLoadMetrics {
   // `RouterSourceEnum.race-network-and-fetch-handler` in ServiceWorker Static
   // Routing API, from navigation start till onload event.
   uint32 matched_race_network_and_fetch_router_source_count = 0;
+
+  // Total router evaluation time of ServiceWorker Static Routing API for
+  // sub-resources.
+  mojo_base.mojom.TimeDelta total_router_evaluation_time_for_subresources;
 };
 
 // Enumeration of distinct cache types.

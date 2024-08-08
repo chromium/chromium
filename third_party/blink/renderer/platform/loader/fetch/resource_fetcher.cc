@@ -3355,6 +3355,9 @@ void ResourceFetcher::UpdateServiceWorkerSubresourceMetrics(
     return;
   }
 
+  metrics.total_router_evaluation_time_for_subresources +=
+      router_info->RouterEvaluationTime();
+
   switch (*router_info->MatchedSourceType()) {
     case network::mojom::ServiceWorkerRouterSourceType::kCache:
       metrics.matched_cache_router_source_count++;

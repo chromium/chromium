@@ -1323,6 +1323,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.RouterEvaluator.SubresourceTotalEvaluationTime"
+    units="microseconds" expires_after="2024-12-08">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Total time spent for the router evaluation to handle a request for the
+    subresources. Recorded when the service worker has associated routing info
+    at the end of each page load or when the page is navigated away, the browser
+    is closed, or on Android when the browser is backgrounded.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.SharedWorkerScript.IsBlob" enum="Boolean"
     expires_after="2024-11-17">
   <owner>yyanagisawa@chromium.org</owner>

@@ -4,6 +4,8 @@
 
 #include "components/page_load_metrics/common/page_load_metrics_mojom_traits.h"
 
+#include "mojo/public/cpp/base/time_mojom_traits.h"
+
 namespace mojo {
 
 // static
@@ -63,6 +65,10 @@ bool StructTraits<
       data.matched_network_router_source_count();
   out->matched_race_network_and_fetch_router_source_count =
       data.matched_race_network_and_fetch_router_source_count();
+  if (!data.ReadTotalRouterEvaluationTimeForSubresources(
+          &out->total_router_evaluation_time_for_subresources)) {
+    return false;
+  }
   return true;
 }
 
