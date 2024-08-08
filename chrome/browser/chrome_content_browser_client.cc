@@ -786,6 +786,11 @@
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/feed/feed_service_factory.h"
+#include "components/feed/feed_feature_list.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 using blink::mojom::EffectiveConnectionType;
 using blink::web_pref::WebPreferences;
 using content::BrowserThread;
@@ -3090,6 +3095,13 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                                     switches::kChangeStackGuardOnForkEnabled);
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
+  // Communicating to renderer for starting the reader for web feed.
+  if (feed::IsWebFeedEnabledForLocale(feed::FeedServiceFactory::GetCountry())) {
+    command_line->AppendSwitch(feed::switches::kEnableRssLinkReader);
+  }
+#endif
 }
 
 std::string

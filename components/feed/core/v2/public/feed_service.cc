@@ -161,9 +161,7 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   }
   bool IsOffline() override { return net::NetworkChangeNotifier::IsOffline(); }
 
-  std::string GetCountry() override {
-    return country_codes::GetCurrentCountryCode();
-  }
+  std::string GetCountry() override { return service_delegate_->GetCountry(); }
 
   DisplayMetrics GetDisplayMetrics() override {
     return service_delegate_->GetDisplayMetrics();

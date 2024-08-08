@@ -33,7 +33,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "components/variations/service/variations_service.h"
 #include "url/android/gurl_android.h"
 #include "url/origin.h"
 
@@ -231,10 +231,7 @@ static jboolean JNI_WebFeedBridge_IsCormorantEnabledForLocale(JNIEnv* env) {
 }
 
 static jboolean JNI_WebFeedBridge_IsWebFeedEnabled(JNIEnv* env) {
-  return l10n_util::GetLanguage(g_browser_process->GetApplicationLocale()) ==
-             "en" &&
-         feed::IsWebFeedEnabledForLocale(
-             country_codes::GetCurrentCountryCode());
+  return feed::IsWebFeedEnabledForLocale(FeedServiceFactory::GetCountry());
 }
 
 static void JNI_WebFeedBridge_FollowWebFeedById(
