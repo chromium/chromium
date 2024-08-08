@@ -78,7 +78,10 @@
 +chrome/browser/win/
 +chrome/utility/safe_browsing/
 -chromecast/
--chromeos/
+-chromeos/ash/components/memory/userspace_swap/
+-chromeos/ash/components/system/
+-chromeos/ash/services/libassistant/
+-chromeos/components/kcer/kcer_nss
 -clank/
 -codelabs/
 -components/allocation_recorder/
