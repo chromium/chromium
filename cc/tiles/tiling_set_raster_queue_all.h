@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/notreached.h"
 #include "cc/cc_export.h"
@@ -146,8 +147,7 @@ class CC_EXPORT TilingSetRasterQueueAll {
   class TilingIterator {
    public:
     TilingIterator();
-    explicit TilingIterator(PictureLayerTiling* tiling,
-                            TilingData* tiling_data);
+    TilingIterator(PictureLayerTiling* tiling, TilingData* tiling_data);
     ~TilingIterator();
 
     bool done() const { return !current_tile_.tile(); }
@@ -219,7 +219,7 @@ class CC_EXPORT TilingSetRasterQueueAll {
   // The max number of stages is 6: 1 low res, 3 high res, and 2 active non
   // ideal pending high res.
   absl::InlinedVector<IterationStage, 6> stages_;
-  TilingIterator iterators_[NUM_ITERATORS];
+  std::optional<TilingIterator> iterators_[NUM_ITERATORS];
   bool is_drawing_layer_ = false;
 };
 

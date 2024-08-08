@@ -97,13 +97,19 @@ TilingSetRasterQueueAll::TilingSetRasterQueueAll(
   // Make the tiling iterators.
   if (low_res_tiling) {
     MakeTilingIterator(LOW_RES, low_res_tiling);
+  } else if (!features::IsCCSlimmingEnabled()) {
+    iterators_[LOW_RES].emplace();
   }
   if (high_res_tiling) {
     MakeTilingIterator(HIGH_RES, high_res_tiling);
+  } else if (!features::IsCCSlimmingEnabled()) {
+    iterators_[HIGH_RES].emplace();
   }
   if (active_non_ideal_pending_high_res_tiling) {
     MakeTilingIterator(ACTIVE_NON_IDEAL_PENDING_HIGH_RES,
                        active_non_ideal_pending_high_res_tiling);
+  } else if (!features::IsCCSlimmingEnabled()) {
+    iterators_[ACTIVE_NON_IDEAL_PENDING_HIGH_RES].emplace();
   }
 
   // Set up the stages.
@@ -131,16 +137,18 @@ TilingSetRasterQueueAll::TilingSetRasterQueueAll(
 
   IteratorType index = stages_[current_stage_].iterator_type;
   TilePriority::PriorityBin tile_type = stages_[current_stage_].tile_type;
-  if (iterators_[index].done() || iterators_[index].type() != tile_type)
+  if (!iterators_[index] || iterators_[index]->done() ||
+      iterators_[index]->type() != tile_type) {
     AdvanceToNextStage();
+  }
 }
 
 TilingSetRasterQueueAll::~TilingSetRasterQueueAll() = default;
 
 void TilingSetRasterQueueAll::MakeTilingIterator(IteratorType type,
                                                  PictureLayerTiling* tiling) {
-  iterators_[type] = TilingIterator(tiling, &tiling->tiling_data_);
-  if (iterators_[type].done()) {
+  iterators_[type].emplace(tiling, &tiling->tiling_data_);
+  if (iterators_[type]->done()) {
     tiling->set_all_tiles_done(true);
     // If we've marked the tiling as done, make sure we're actually done.
     tiling->VerifyNoTileNeedsRaster();
@@ -156,22 +164,26 @@ void TilingSetRasterQueueAll::Pop() {
   TilePriority::PriorityBin tile_type = stages_[current_stage_].tile_type;
 
   // First advance the iterator.
-  DCHECK(!iterators_[index].done());
-  DCHECK(iterators_[index].type() == tile_type);
-  ++iterators_[index];
+  DCHECK(iterators_[index]);
+  DCHECK(!iterators_[index]->done());
+  DCHECK(iterators_[index]->type() == tile_type);
+  ++(*iterators_[index]);
 
-  if (iterators_[index].done() || iterators_[index].type() != tile_type)
+  if (!iterators_[index] || iterators_[index]->done() ||
+      iterators_[index]->type() != tile_type) {
     AdvanceToNextStage();
+  }
 }
 
 const PrioritizedTile& TilingSetRasterQueueAll::Top() const {
   DCHECK(!IsEmpty());
 
   IteratorType index = stages_[current_stage_].iterator_type;
-  DCHECK(!iterators_[index].done());
-  DCHECK(iterators_[index].type() == stages_[current_stage_].tile_type);
+  DCHECK(iterators_[index]);
+  DCHECK(!iterators_[index]->done());
+  DCHECK(iterators_[index]->type() == stages_[current_stage_].tile_type);
 
-  return *iterators_[index];
+  return **iterators_[index];
 }
 
 void TilingSetRasterQueueAll::AdvanceToNextStage() {
@@ -181,8 +193,10 @@ void TilingSetRasterQueueAll::AdvanceToNextStage() {
     IteratorType index = stages_[current_stage_].iterator_type;
     TilePriority::PriorityBin tile_type = stages_[current_stage_].tile_type;
 
-    if (!iterators_[index].done() && iterators_[index].type() == tile_type)
+    if (iterators_[index] && !iterators_[index]->done() &&
+        iterators_[index]->type() == tile_type) {
       break;
+    }
     ++current_stage_;
   }
 }
