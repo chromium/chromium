@@ -124,5 +124,13 @@
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CLIENT_CERTIFICATES_FROM_EXTENSION" desc="Title of section for client certificates imported from an extension.">
       From extensions
     </message>
+
+    <!-- Subpage -->
+    <message name="IDS_CERTIFICATE_MANAGER_V2_SUBPAGE_BACK_BUTTON_ARIA_LABEL" desc="Text read by screen readers when focusing on the back button. If the back button is activated, it will navigate to the previous page. This text will only be announced by screen readers and will not be visible in the UI.">
+      <ph name="SUBPAGE_TITLE">$1<ex>Installed by your Administrator</ex></ph> subpage back button
+    </message>
+    <message name="IDS_CERTIFICATE_MANAGER_V2_SUBPAGE_BACK_BUTTON_ARIA_ROLE_DESCRIPTION" desc="Description read by screen readers when focusing on the back button. Indicates to the user that activating the back button will cause the settings page to navigate away from the currently displaying subpage to the parent page. This text will only be announced by screen readers and will not be visible in the UI.">
+      Click to navigate away from <ph name="SUBPAGE_TITLE">$1<ex>Installed by your Administrator</ex> subpage</ph>.
+    </message>
   </if>
 </grit-part>

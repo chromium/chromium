@@ -18,6 +18,8 @@
 
 <div id="header" class="cr-row first">
   <cr-icon-button id="backButton" class="icon-arrow-back"
+      aria-label$="[[i18n('certificateManagerV2SubpageBackButtonAriaLabel', subpageTitle)]]"
+      aria-roledescription$="[[i18n('certificateManagerV2SubpageBackButtonAriaRoleDescription',subpageTitle)]]"
       on-click="onBackButtonClick_">
   </cr-icon-button>
   <h2>[[subpageTitle]]</h2>

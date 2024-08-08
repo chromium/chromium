@@ -104,6 +104,10 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_VIEW_LINK},
       {"certificateManagerV2Platform",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM},
+      {"certificateManagerV2SubpageBackButtonAriaLabel",
+       IDS_CERTIFICATE_MANAGER_V2_SUBPAGE_BACK_BUTTON_ARIA_LABEL},
+      {"certificateManagerV2SubpageBackButtonAriaRoleDescription",
+       IDS_CERTIFICATE_MANAGER_V2_SUBPAGE_BACK_BUTTON_ARIA_ROLE_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
