@@ -1176,6 +1176,9 @@ void InProcessBrowserTest::StartUniqueAshChrome(
   all_enabled_features.insert(all_enabled_features.end(),
                               enabled_features.begin(),
                               enabled_features.end());
+  // During the Lacros sunset process, LacrosOnly feature flag is retired before
+  // Lacros itself is retired b/354842935.
+  ash_cmdline.AppendSwitch("enable-lacros-for-testing");
   ash_cmdline.AppendSwitchASCII(switches::kEnableFeatures,
                                 base::JoinString(all_enabled_features, ","));
   ash_cmdline.AppendSwitchASCII(switches::kDisableFeatures,
