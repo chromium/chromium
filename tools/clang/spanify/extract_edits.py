@@ -47,6 +47,10 @@ https://docs.google.com/document/d/1hUPe21CDdbT6_YFHl03KWlcZqhNIPBAfC-5N5DDY2OE/
 
 import sys
 
+import resource
+from os.path import expanduser
+
+
 class Node:
     # Mapping in between the replacement directive and the node.
     key_to_node = dict()
@@ -72,6 +76,10 @@ class Node:
         # See SizeInfoAvailable(...) for more details.
         self.size_info_available = size_info_available
         self.size_info_step = False
+
+        # Changes associated with the node. The whole connected component are
+        # sharing the same set. See DFS(...) for more details.
+        self.changes = None
 
     def __eq__(self, other):
         if isinstance(other, Node):
@@ -127,6 +135,7 @@ def DFS(node: Node, changes: set):
     if (node.visited):
         return
     node.visited = True
+    node.changes = changes
 
     if not node.replacement.endswith('<empty>'):
         changes.add(node.replacement)
@@ -204,10 +213,8 @@ def main():
         if node.is_buffer == '1':
             SizeInfoAvailable(node)
 
-    # Collect the changes to apply. We start from buffer nodes whose size
-    # info is available and explore the graph in depth-first search.
-    changes = set()
-
+    # Collect the changes to apply. Starting from buffers nodes whose size info
+    # could be determined.
     for node in Node.all():
 
         # We only want to rewrite components connected to a buffer node.
@@ -219,6 +226,9 @@ def main():
         if node.size_info_available != '1':
             continue
 
+        # Collect the changes to apply. We start from buffer nodes whose size
+        # info is available and explore the graph in depth-first search.
+        changes = set()
         DFS(node, changes)
 
     # Iterate over the deref_nodes and then check if their only neighbor was
@@ -228,7 +238,7 @@ def main():
         if node.is_deref_node == '1':
             neighbor = list(node.neighbors)[0]
             if neighbor.visited:
-                changes.add(node.replacement)
+                neighbor.changes.add(node.replacement)
 
     # At the edge in between rewritten and non-rewritten nodes, we need
     # to add a call to `.data()` to access the pointer from the span:
@@ -255,10 +265,35 @@ def main():
         if neighbor.visited:
             # In this case, rhs was rewritten, and lhs was not, we need to add
             # the corresponding `.data()`
-            changes.add(node.replacement)
+            neighbor.changes.add(node.replacement)
 
-    for text in changes:
-        print(text)
+    # Emit the changes:
+    # - ~/scratch/patches.txt: A summary of each atomic change.
+    # - ~/scratch/patch_<patch_index>: Write each atomic change.
+    # - stdout: Print a bundle of all the changes. This is usually piped to
+    #           "./tools/clang/scripts/apply_edits.py" to apply the changes.
+
+    summary_filename = expanduser('~/scratch/patches.txt')
+    summary_file = open(summary_filename, 'w')
+
+    change_index = 0
+    for node in Node.all():
+        if node.changes is None or len(node.changes) == 0:
+            continue
+
+        for text in node.changes:
+            print(text)
+
+        summary_file.write(f'patch_{change_index}: {len(node.changes)}\n')
+
+        with open(expanduser(f'~/scratch/patch_{change_index}.txt'), 'w') as f:
+            f.write('\n'.join(node.changes))
+        node.changes.clear()
+
+        change_index += 1
+
+    summary_file.close()
+
     return 0
 
 if __name__ == '__main__':
