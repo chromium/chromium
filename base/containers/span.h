@@ -162,28 +162,31 @@ constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r);
 //     char str_buffer[100];
 //     SafeSNPrintf(str_buffer, "Pi ~= %lf", 3.14);
 //
-// Dynamic vs Fixed size spans
-// ---------------------------
+// Dynamic-extent spans vs fixed-extent spans
+// ------------------------------------------
 //
-// Normally spans have a dynamic size, which is represented as a type as
-// `span<T>`. However it is possible to encode the size of the span into the
-// type as a second parameter such as `span<T, N>`. When working with fixed-size
-// spans, the compiler will check the size of operations and prevent compilation
-// when an invalid size is used for an operation such as assignment or
-// `copy_from()`. However operations that produce a new span will make a
-// dynamic-sized span by default. See below for how to prevent that.
+// A `span<T>` has a dynamic extent—the size of the sequence of objects it
+// refers to is only known at runtime. It is also possible to create a span with
+// a fixed size at compile time by specifying the second template parameter,
+// e.g. `span<int, 6>` is a span of 6 elements. Operations on a fixed-extent
+// span will fail to compile if an index or size would lead to an out-of-bounds
+// access.
 //
-// Fixed-size spans implicitly convert to a dynamic-size span, throwing away the
-// compile-time size information from the type signature. So most code should
-// work with dynamic-sized `span<T>` types and not worry about the existence of
-// fixed-size spans.
+// A fixed-extent span implicitly converts to a dynamic-extent span (e.g.
+// `span<int, 6>` is implicitly convertible to `span<int>`), so most code that
+// operates on spans of arbitrary length can just accept a `span<T>`: there is
+// no need to add an additional overload for specially handling the `span<T, N>`
+// case.
 //
-// It is possible to convert from a dynamic-size to a fixed-size span (or to
-// move from a fixed-size span to another fixed-size span) but it requires
-// writing an the size explicitly in the code. Methods like `first` can be
-// passed a size as a template argument, such as `first<N>()` to generate a
-// fixed-size span. And the `make_span` function can be given a compile-time
-// size in a similar way with `make_span<N>()`.
+// There are several ways to go from a dynamic-extent span to a fixed-extent
+// span:
+// - Use the convenience `to_fixed_extent<N>()` method. This returns
+//   `std::nullopt` if `size() != N`.
+// - Use `first<N>()`, `last<N>()`, or `subspan<Index, N>()` to create a
+//   subsequence of the original span. These methods will `CHECK()` at runtime
+//   if the requested subsequence would lead to an out-of-bounds access.
+// - Explicitly construct `span<T, N>` from `span<T>`: this will `CHECK()` at
+//   runtime if the input span's `size()` is not exactly `N`.
 //
 // Spans with "const" and pointers
 // -------------------------------
