@@ -363,6 +363,20 @@ void WaylandToplevelWindow::Deactivate() {
   WaylandWindow::Deactivate();
 }
 
+void WaylandToplevelWindow::SetWindowIcons(const gfx::ImageSkia& window_icon,
+                                           const gfx::ImageSkia& app_icon) {
+  if (!shell_toplevel_) {
+    return;
+  }
+  // Let the app icon take precedence over the window icon.
+  if (!app_icon.isNull()) {
+    shell_toplevel_->SetIcon(app_icon);
+  } else {
+    shell_toplevel_->SetIcon(window_icon);
+  }
+  root_surface()->Commit(/*flush=*/true);
+}
+
 void WaylandToplevelWindow::SizeConstraintsChanged() {
   // Size constraints only make sense for normal windows.
   if (!shell_toplevel_)

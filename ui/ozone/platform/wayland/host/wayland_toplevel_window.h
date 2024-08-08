@@ -126,6 +126,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   void Restore() override;
   void Activate() override;
   void Deactivate() override;
+  void SetWindowIcons(const gfx::ImageSkia& window_icon,
+                      const gfx::ImageSkia& app_icon) override;
   void SizeConstraintsChanged() override;
   // `SetZOrderLevel()` must be called on `z_order_` in
   // `SetUpShellIntegration()`.

@@ -6,6 +6,7 @@
 
 #include <aura-shell-client-protocol.h>
 #include <xdg-decoration-unstable-v1-client-protocol.h>
+#include <xdg-toplevel-icon-v1-client-protocol.h>
 
 #include <optional>
 
@@ -15,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/image/image_skia_rep_default.h"
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
@@ -25,6 +27,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
+#include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
@@ -104,8 +107,9 @@ bool XDGToplevelWrapperImpl::Initialize() {
     return false;
   }
 
-  if (!xdg_surface_wrapper_)
+  if (!xdg_surface_wrapper_) {
     return false;
+  }
 
   xdg_toplevel_.reset(
       xdg_surface_get_toplevel(xdg_surface_wrapper_->xdg_surface()));
@@ -233,9 +237,10 @@ void XDGToplevelWrapperImpl::SetMinimized() {
 
 void XDGToplevelWrapperImpl::SurfaceMove(WaylandConnection* connection) {
   DCHECK(xdg_toplevel_);
-  if (auto serial = GetSerialForMoveResize(connection))
+  if (auto serial = GetSerialForMoveResize(connection)) {
     xdg_toplevel_move(xdg_toplevel_.get(), connection->seat()->wl_object(),
                       serial->value);
+  }
 }
 
 void XDGToplevelWrapperImpl::SurfaceResize(WaylandConnection* connection,
@@ -261,8 +266,9 @@ void XDGToplevelWrapperImpl::SetTitle(const std::u16string& title) {
   // length of the string so it would fit the message with some margin.
   const size_t kMaxLengh = 4000;
   auto short_title = base::UTF16ToUTF8(title);
-  if (short_title.size() > kMaxLengh)
+  if (short_title.size() > kMaxLengh) {
     short_title.resize(kMaxLengh);
+  }
   xdg_toplevel_set_title(xdg_toplevel_.get(), short_title.c_str());
 }
 
@@ -470,8 +476,9 @@ void XDGToplevelWrapperImpl::OnConfigureOcclusionState(
 
 void XDGToplevelWrapperImpl::SetTopLevelDecorationMode(
     DecorationMode requested_mode) {
-  if (!zxdg_toplevel_decoration_ || requested_mode == decoration_mode_)
+  if (!zxdg_toplevel_decoration_ || requested_mode == decoration_mode_) {
     return;
+  }
 
   zxdg_toplevel_decoration_v1_set_mode(zxdg_toplevel_decoration_.get(),
                                        ToInt32(requested_mode));
@@ -767,6 +774,44 @@ void XDGToplevelWrapperImpl::ShowSnapPreview(
 void XDGToplevelWrapperImpl::AckRotateFocus(uint32_t serial, uint32_t handled) {
   zaura_toplevel_ack_rotate_focus(aura_toplevel_.get(), serial, handled);
   connection_->Flush();
+}
+
+void XDGToplevelWrapperImpl::SetIcon(const gfx::ImageSkia& icon) {
+  auto* manager = connection_->toplevel_icon_manager_v1();
+  if (!manager) {
+    return;
+  }
+
+  if (icon.isNull()) {
+    xdg_toplevel_icon_manager_v1_set_icon(manager, xdg_toplevel_.get(),
+                                          nullptr);
+    return;
+  }
+
+  std::vector<std::pair<WaylandShmBuffer, float>> buffers;
+  auto* xdg_icon = xdg_toplevel_icon_manager_v1_create_icon(manager);
+  for (const auto& rep : icon.image_reps()) {
+    const auto& bitmap = rep.GetBitmap();
+    gfx::Size image_size = gfx::SkISizeToSize(bitmap.dimensions());
+    if (image_size.IsEmpty() || image_size.width() != image_size.height()) {
+      // The toplevel icon protocol requires square icons.
+      continue;
+    }
+
+    WaylandShmBuffer buffer(connection_->buffer_factory(), image_size);
+    if (!buffer.IsValid()) {
+      LOG(ERROR) << "Failed to create SHM buffer for icon Bitmap.";
+      return;
+    }
+
+    wl::DrawBitmap(bitmap, &buffer);
+    buffers.emplace_back(std::move(buffer), rep.scale());
+  }
+  for (const auto& [buffer, scale] : buffers) {
+    xdg_toplevel_icon_v1_add_buffer(xdg_icon, buffer.get(), scale);
+  }
+  xdg_toplevel_icon_manager_v1_set_icon(manager, xdg_toplevel_.get(), xdg_icon);
+  xdg_toplevel_icon_v1_destroy(xdg_icon);
 }
 
 XDGToplevelWrapperImpl* XDGToplevelWrapperImpl::AsXDGToplevelWrapper() {

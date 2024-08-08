@@ -81,6 +81,7 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void SetPersistable(bool persistable) const override;
   void SetShape(std::unique_ptr<ShapeRects> shape_rects) override;
   void AckRotateFocus(uint32_t serial, uint32_t handled) override;
+  void SetIcon(const gfx::ImageSkia& icon) override;
 
   XDGToplevelWrapperImpl* AsXDGToplevelWrapper() override;
 
