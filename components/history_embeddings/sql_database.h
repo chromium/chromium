@@ -80,9 +80,20 @@ class SqlDatabase : public VectorDatabase {
  private:
   // Initializes the database, if it's not already initialized. Returns true if
   // the initialization was successful (or already succeeded in the past).
-  bool LazyInit();
+  // If `force_init_for_deletion` is true, then some initialization requirements
+  // are bypassed. In that case, embeddings are not guaranteed to be compatible
+  // if the model version changes, so the database should be closed as soon as
+  // deletion completes; then a normal full initialization can be done later
+  // for typical data usage.
+  bool LazyInit(bool force_init_for_deletion = false);
   // Helper function for LazyInit(). Should only be called by LazyInit().
-  sql::InitStatus InitInternal(const base::FilePath& storage_dir);
+  sql::InitStatus InitInternal(const base::FilePath& storage_dir,
+                               bool force_init_for_deletion);
+  // Close the database and reset lazy init status so that LazyInit will work as
+  // normal with full initialization the next time it's called.  This doesn't
+  // need to be called proactively unless `LazyInit` was called with
+  // `force_init_for_deletion` set to true; see `LazyInit` comment.
+  void Close();
 
   // Callback for database errors.
   void DatabaseErrorCallback(int extended_error, sql::Statement* statement);

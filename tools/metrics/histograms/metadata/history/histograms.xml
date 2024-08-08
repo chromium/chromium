@@ -1813,6 +1813,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.DatabaseInitialized" enum="Boolean"
+    expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    When the HistoryEmbeddings database is opened, this histogram is logged to
+    indicate whether initialization succeeded.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Embedder.CacheHit" enum="Boolean"
     expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>

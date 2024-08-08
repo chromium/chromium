@@ -93,17 +93,28 @@ void SqlDatabase::SetEmbedderMetadata(EmbedderMetadata embedder_metadata,
   encryptor_.emplace(std::move(encryptor));
 }
 
-bool SqlDatabase::LazyInit() {
-  // TODO(b/325524013): Decide on a number of retries for initialization.
-  // TODO(b/325524013): Add metrics around lazy initialization success rate.
+bool SqlDatabase::LazyInit(bool force_init_for_deletion) {
+  // Only use `force_init_for_deletion` if normal full initialization fails
+  // and a deletion request is being applied. Never use if normal init succeeds.
+  CHECK(!force_init_for_deletion || !db_init_status_.has_value());
+
   if (!db_init_status_.has_value()) {
-    db_init_status_ = InitInternal(storage_dir_);
+    // Don't attempt initialization until ready, unless forced for the
+    // data deletion flow.
+    if (!embedder_metadata_ && !force_init_for_deletion) {
+      return false;
+    }
+
+    db_init_status_ = InitInternal(storage_dir_, force_init_for_deletion);
+    base::UmaHistogramBoolean("History.Embeddings.DatabaseInitialized",
+                              *db_init_status_ == sql::InitStatus::INIT_OK);
   }
 
   return *db_init_status_ == sql::InitStatus::INIT_OK;
 }
 
-sql::InitStatus SqlDatabase::InitInternal(const base::FilePath& storage_dir) {
+sql::InitStatus SqlDatabase::InitInternal(const base::FilePath& storage_dir,
+                                          bool force_init_for_deletion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   db_.set_histogram_tag("HistoryEmbeddings");
@@ -112,8 +123,7 @@ sql::InitStatus SqlDatabase::InitInternal(const base::FilePath& storage_dir) {
       &SqlDatabase::DatabaseErrorCallback, base::Unretained(this)));
 
   base::FilePath db_file_path = storage_dir.Append(kHistoryEmbeddingsName);
-
-  if (!db_.Open(db_file_path) || !embedder_metadata_) {
+  if (!db_.Open(db_file_path)) {
     return sql::InitStatus::INIT_FAILURE;
   }
 
@@ -151,22 +161,33 @@ sql::InitStatus SqlDatabase::InitInternal(const base::FilePath& storage_dir) {
     return sql::INIT_FAILURE;
   }
 
-  constexpr char kKeyModelVersion[] = "model_version";
-  int model_version = 0;
-  meta_table.GetValue(kKeyModelVersion, &model_version);
-  if (model_version != embedder_metadata_->model_version ||
-      kDeleteEmbeddings.Get()) {
-    // Old version embeddings can't be used with new model. Simply delete them
-    // all and set new version. Passages can be used for reconstruction later.
-    constexpr char kSqlDeleteFromEmbeddings[] = "DELETE FROM embeddings;";
-    if (!db_.Execute(kSqlDeleteFromEmbeddings) ||
-        !meta_table.SetValue(kKeyModelVersion,
-                             embedder_metadata_->model_version)) {
-      return sql::InitStatus::INIT_FAILURE;
+  // It's possible to get here without `embedder_metadata_` if forcing for
+  // data deletion. In that case, don't check or change meta table.
+  if (embedder_metadata_.has_value()) {
+    constexpr char kKeyModelVersion[] = "model_version";
+    int model_version = 0;
+    meta_table.GetValue(kKeyModelVersion, &model_version);
+    if (model_version != embedder_metadata_->model_version ||
+        kDeleteEmbeddings.Get()) {
+      // Old version embeddings can't be used with new model. Simply delete them
+      // all and set new version. Passages can be used for reconstruction later.
+      constexpr char kSqlDeleteFromEmbeddings[] = "DELETE FROM embeddings;";
+      if (!db_.Execute(kSqlDeleteFromEmbeddings) ||
+          !meta_table.SetValue(kKeyModelVersion,
+                               embedder_metadata_->model_version)) {
+        return sql::InitStatus::INIT_FAILURE;
+      }
     }
   }
 
   return sql::InitStatus::INIT_OK;
+}
+
+void SqlDatabase::Close() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  db_.Close();
+  db_.reset_error_callback();
+  db_init_status_.reset();
 }
 
 bool SqlDatabase::InsertOrReplacePassages(const UrlPassages& url_passages) {
@@ -453,8 +474,14 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
 bool SqlDatabase::DeleteDataForUrlId(history::URLID url_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  bool close = false;
   if (!LazyInit()) {
-    return false;
+    // Database isn't fully initialized. Attempt to force open it just for
+    // deletion, and then close so it can be initialized normally later.
+    if (!LazyInit(true)) {
+      return false;
+    }
+    close = true;
   }
 
   bool delete_passages_success = false;
@@ -478,14 +505,24 @@ bool SqlDatabase::DeleteDataForUrlId(history::URLID url_id) {
     delete_embeddings_success = statement.Run();
   }
 
+  if (close) {
+    Close();
+  }
+
   return delete_passages_success && delete_embeddings_success;
 }
 
 bool SqlDatabase::DeleteDataForVisitId(history::VisitID visit_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  bool close = false;
   if (!LazyInit()) {
-    return false;
+    // Database isn't fully initialized. Attempt to force open it just for
+    // deletion, and then close so it can be initialized normally later.
+    if (!LazyInit(true)) {
+      return false;
+    }
+    close = true;
   }
 
   bool delete_passages_success = false;
@@ -509,20 +546,34 @@ bool SqlDatabase::DeleteDataForVisitId(history::VisitID visit_id) {
     delete_embeddings_success = statement.Run();
   }
 
+  if (close) {
+    Close();
+  }
+
   return delete_passages_success && delete_embeddings_success;
 }
 
 bool SqlDatabase::DeleteAllData(bool delete_passages, bool delete_embeddings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  bool close = false;
   if (!LazyInit()) {
-    return false;
+    // Database isn't fully initialized. Attempt to force open it just for
+    // deletion, and then close so it can be initialized normally later.
+    if (!LazyInit(true)) {
+      return false;
+    }
+    close = true;
   }
 
   bool delete_passages_success =
       !delete_passages || db_.Execute("DELETE FROM passages;");
   bool delete_embeddings_success =
       !delete_embeddings || db_.Execute("DELETE FROM embeddings;");
+
+  if (close) {
+    Close();
+  }
 
   return delete_passages_success && delete_embeddings_success;
 }

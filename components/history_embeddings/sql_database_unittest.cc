@@ -344,6 +344,54 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteAllData) {
   EXPECT_EQ(GetEmbeddingCount(sql_database.get()), 0U);
 }
 
+TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteDataWithoutEmbedderMetadata) {
+  UrlPassagesEmbeddings url_data(1, 10, base::Time::Now());
+  url_data.url_passages.passages.add_passages("fake passage 1");
+  url_data.url_embeddings.embeddings.emplace_back(
+      std::vector<float>(kEmbeddingsSize, 1.0f));
+
+  {
+    auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+
+    // Adding data is expected to fail because the database can't initialize
+    // fully without embedder metadata.
+    ASSERT_FALSE(sql_database->AddUrlData(url_data));
+
+    // With metadata set, now adding the data succeeds.
+    sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
+                                      GetEncryptorInstance());
+    ASSERT_TRUE(sql_database->AddUrlData(url_data));
+
+    // Don't delete yet. That would succeed as normal. Close with data resident.
+    EXPECT_TRUE(sql_database->GetPassages(1));
+  }
+  {
+    // Initialize database again, to see that we can still get it only when
+    // metadata is provided.
+    auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+    EXPECT_FALSE(sql_database->GetPassages(1));
+    sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
+                                      GetEncryptorInstance());
+    EXPECT_TRUE(sql_database->GetPassages(1));
+    EXPECT_EQ(GetEmbeddingCount(sql_database.get()), 1U);
+    // Again deletion would work as normal here.
+  }
+  {
+    // Initialize database again, with no embedder metadata.
+    auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+    EXPECT_FALSE(sql_database->GetPassages(1));
+
+    // Deletion succeeds even with no metadata provided.
+    EXPECT_TRUE(sql_database->DeleteAllData(true, true));
+
+    // Now there's no data to retrieve, even after metadata is provided.
+    sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
+                                      GetEncryptorInstance());
+    EXPECT_FALSE(sql_database->GetPassages(1));
+    EXPECT_EQ(GetEmbeddingCount(sql_database.get()), 0U);
+  }
+}
+
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, GetUrlData) {
   auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
   sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
