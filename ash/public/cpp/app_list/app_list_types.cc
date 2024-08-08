@@ -485,6 +485,8 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
     // Launcher.
     case kKeyboardShortcutLauncher:
       return &kKsLauncherIcon;
+    case kKeyboardShortcutLauncherRefresh:
+      return &kCampbellHeroIcon;
     // Search.
     case kKeyboardShortcutSearch:
       return &kKsSearchIcon;

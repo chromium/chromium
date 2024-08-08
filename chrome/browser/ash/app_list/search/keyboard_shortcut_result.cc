@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/i18n/rtl.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -124,6 +125,7 @@ std::optional<int> GetStringIdForIconCode(IconCode icon_code) {
     case ash::SearchResultTextItem::kKeyboardShortcutSnapshot:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_PRINT_SCREEN;
     case ash::SearchResultTextItem::kKeyboardShortcutLauncher:
+    case ash::SearchResultTextItem::kKeyboardShortcutLauncherRefresh:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_LAUNCHER;
     case ash::SearchResultTextItem::kKeyboardShortcutSearch:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_SEARCH;
@@ -220,11 +222,17 @@ std::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
       // The search and launcher are the same. The icon we display is dependent
       // on a best-attempt heuristic on whether the chromebook internal keyboard
       // is a launcher or magnifier icon.
-      return ash::Shell::Get()
-                     ->keyboard_capability()
-                     ->HasLauncherButtonOnAnyKeyboard()
-                 ? IconCode::kKeyboardShortcutLauncher
-                 : IconCode::kKeyboardShortcutSearch;
+      switch (ash::Shell::Get()->keyboard_capability()->GetMetaKeyToDisplay()) {
+        case ui::mojom::MetaKey::kSearch:
+          return IconCode::kKeyboardShortcutSearch;
+        case ui::mojom::MetaKey::kLauncher:
+          return IconCode::kKeyboardShortcutLauncher;
+        case ui::mojom::MetaKey::kLauncherRefresh:
+          return IconCode::kKeyboardShortcutLauncherRefresh;
+        case ui::mojom::MetaKey::kExternalMeta:
+        case ui::mojom::MetaKey::kCommand:
+          NOTREACHED_NORETURN();
+      }
     case (KeyboardCode::VKEY_MEDIA_LAUNCH_APP2):
       return IconCode::kKeyboardShortcutCalculator;
     case (KeyboardCode::VKEY_ALL_APPLICATIONS):

@@ -676,6 +676,7 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kKeyboardShortcutSettings,
     kKeyboardShortcutSnapshot,
     kKeyboardShortcutLauncher,
+    kKeyboardShortcutLauncherRefresh,
     kKeyboardShortcutSearch,
     kKeyboardShortcutPower,
     kKeyboardShortcutKeyboardBacklightToggle,
