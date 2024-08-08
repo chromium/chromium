@@ -43,7 +43,19 @@ std::set<base::FilePath> RetrieveAllInstalledIsolatedWebAppsPaths(
         continue;
       }
 
-      isolated_web_apps_paths.insert(owned_bundle->GetPath(profile.GetPath()));
+      isolated_web_apps_paths.insert(
+          owned_bundle->GetPath(profile.GetPath()).DirName());
+
+      if (const auto& pending_update_info =
+              isolation_data->pending_update_info()) {
+        const auto* pending_update_location =
+            absl::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
+                &pending_update_info->location.variant());
+        if (pending_update_location) {
+          isolated_web_apps_paths.insert(
+              pending_update_location->GetPath(profile.GetPath()).DirName());
+        }
+      }
     }
   }
   return isolated_web_apps_paths;
@@ -67,8 +79,9 @@ std::set<base::FilePath> RetrieveAllIsolatedWebAppsDirectories(
 }
 
 bool DeleteOrphanedIsolatedWebApps(std::vector<base::FilePath> paths) {
-  return base::ranges::all_of(
-      paths, [](const base::FilePath& path) { return base::DeleteFile(path); });
+  return base::ranges::all_of(paths, [](const base::FilePath& path) {
+    return base::DeletePathRecursively(path);
+  });
 }
 
 base::expected<CleanupOrphanedIsolatedWebAppsCommandSuccess,
@@ -200,6 +213,7 @@ void CleanupOrphanedIsolatedWebAppsCommand::
   base::ranges::set_difference(isolated_web_apps_directories,
                                installed_isolated_web_apps_paths,
                                std::back_inserter(directories_to_delete));
+
   number_of_deleted_directories_ = directories_to_delete.size();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,

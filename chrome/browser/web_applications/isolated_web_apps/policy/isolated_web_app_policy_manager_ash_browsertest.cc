@@ -582,10 +582,13 @@ class CleanupOrphanedBundlesTest
   void SimulateOrphanedBundle(Profile* profile,
                               const std::string& bundle_directory) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(base::CreateDirectory(CHECK_DEREF(profile)
-                                          .GetPath()
-                                          .Append(kIwaDirName)
-                                          .Append(bundle_directory)));
+    auto base_path = CHECK_DEREF(profile)
+                         .GetPath()
+                         .Append(kIwaDirName)
+                         .Append(bundle_directory);
+    ASSERT_TRUE(base::CreateDirectory(base_path));
+    ASSERT_TRUE(
+        base::WriteFile(base_path.Append("main.swbn"), "Sample content"));
   }
 
   bool CheckBundleDirectoryExists(Profile* profile,

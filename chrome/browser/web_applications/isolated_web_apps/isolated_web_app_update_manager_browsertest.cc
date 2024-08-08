@@ -8,8 +8,11 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/check_deref.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -106,6 +109,14 @@ constexpr std::string_view kServiceWorkerScript = R"(
     }));
   });
 )";
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void CheckBundleExists(Profile* profile, const base::FilePath& directory) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(base::DirectoryExists(
+      CHECK_DEREF(profile).GetPath().Append(kIwaDirName).Append(directory)));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class ServiceWorkerVersionStartedRunningWaiter
     : public content::ServiceWorkerContextObserver {
@@ -351,6 +362,68 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   title_watcher.AlsoWaitForTitle(u"3.0.4");
   EXPECT_THAT(title_watcher.WaitAndGetTitle(), Eq(u"7.0.6"));
 }
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
+                       PendingUpdateDoesNotGetCleanedUp) {
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::Value::List().Append(
+          update_server_mixin_.CreateForceInstallPolicyEntry(
+              GetWebBundleId())));
+
+  SessionStartupPref pref(SessionStartupPref::LAST);
+  SessionStartupPref::SetStartupPref(profile(), pref);
+
+  profile()->GetPrefs()->CommitPendingWrite();
+
+  web_app::WebAppTestInstallObserver(browser()->profile())
+      .BeginListeningAndWait({GetAppId()});
+
+  // Open the app to prevent the update from being applied.
+  OpenApp(GetAppId());
+  EXPECT_THAT(provider().ui_manager().GetNumWindowsForApp(GetAppId()), Eq(1ul));
+
+  AddUpdate();
+  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+
+  ASSERT_TRUE(base::test::RunUntil([this]() {
+    const WebApp* app = GetIsolatedWebApp(GetAppId());
+    return app->isolation_data()->pending_update_info().has_value();
+  }));
+
+  const auto& isolation_data = GetIsolatedWebApp(GetAppId())->isolation_data();
+  const auto& app_location =
+      base::FilePath(absl::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
+                         &isolation_data->location.variant())
+                         ->dir_name_ascii());
+  const auto& app_update_location = base::FilePath(
+      absl::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
+          &isolation_data->pending_update_info()->location.variant())
+          ->dir_name_ascii());
+
+  // Check that both IWA directories (currently running instance and the update)
+  // are there.
+  CheckBundleExists(profile(), app_location);
+  CheckBundleExists(profile(), app_update_location);
+
+  // Run the cleanup while both bundles are there.
+  base::test::TestFuture<
+      base::expected<CleanupOrphanedIsolatedWebAppsCommandSuccess,
+                     CleanupOrphanedIsolatedWebAppsCommandError>>
+      future;
+  provider().scheduler().CleanupOrphanedIsolatedApps(future.GetCallback());
+  const bool command_successful =
+      future
+          .Get<base::expected<CleanupOrphanedIsolatedWebAppsCommandSuccess,
+                              CleanupOrphanedIsolatedWebAppsCommandError>>()
+          .has_value();
+  ASSERT_TRUE(command_successful);
+
+  // Neither of the bundles should be deleted.
+  CheckBundleExists(profile(), app_location);
+  CheckBundleExists(profile(), app_update_location);
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
