@@ -10,6 +10,8 @@
 #import "base/memory/ptr_util.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -32,7 +34,10 @@ namespace {
 
 class ReSignInInfoBarDelegateTest : public PlatformTest {
  public:
-  void SetUpMainChromeBrowserStateNotSignedIn() {
+  ReSignInInfoBarDelegateTest() {
+    OCMStub([mock_app_state_ initStage]).andDo(^(NSInvocation* invocation) {
+      [invocation setReturnValue:&init_stage_];
+    });
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -43,9 +48,12 @@ class ReSignInInfoBarDelegateTest : public PlatformTest {
         std::make_unique<FakeAuthenticationServiceDelegate>());
   }
 
-  void SetUpMainChromeBrowserStateWithSignedInUser() {
-    SetUpMainChromeBrowserStateNotSignedIn();
+  ~ReSignInInfoBarDelegateTest() override {
+    EXPECT_OCMOCK_VERIFY((id)signin_presenter_);
+    EXPECT_OCMOCK_VERIFY((id)mock_app_state_);
+  }
 
+  void SetUpMainChromeBrowserStateWithSignedInUser() {
     id<SystemIdentity> chrome_identity = [FakeSystemIdentity fakeIdentity1];
     FakeSystemIdentityManager* system_identity_manager =
         FakeSystemIdentityManager::FromSystemIdentityManager(
@@ -67,21 +75,27 @@ class ReSignInInfoBarDelegateTest : public PlatformTest {
     return signin_presenter_;
   }
 
+  AppState* mock_app_state() { return mock_app_state_; }
+
+  void set_init_stage(InitStage init_stage) { init_stage_ = init_stage; }
+
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   OCMockObject<SigninPresenter>* signin_presenter_ =
       OCMProtocolMock(@protocol(SigninPresenter));
+  // SceneState only weakly holds AppState, so keep it alive here.
+  AppState* mock_app_state_ = OCMStrictClassMock([AppState class]);
+  InitStage init_stage_ = InitStageFinal;
 };
 
 TEST_F(ReSignInInfoBarDelegateTest, TestCreateWhenNotPrompting) {
   // User is not signed in, but the "prompt" flag is not set.
-  SetUpMainChromeBrowserStateNotSignedIn();
   authentication_service()->ResetReauthPromptForSignInAndSync();
   std::unique_ptr<ReSignInInfoBarDelegate> infobar_delegate =
       ReSignInInfoBarDelegate::Create(authentication_service(),
-                                      signin_presenter());
+                                      mock_app_state(), signin_presenter());
   // Infobar delegate should not be created.
   EXPECT_FALSE(infobar_delegate);
   EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
@@ -89,11 +103,10 @@ TEST_F(ReSignInInfoBarDelegateTest, TestCreateWhenNotPrompting) {
 
 TEST_F(ReSignInInfoBarDelegateTest, TestCreateWhenNotSignedIn) {
   // User is not signed in, but the "prompt" flag is set.
-  SetUpMainChromeBrowserStateNotSignedIn();
   authentication_service()->SetReauthPromptForSignInAndSync();
   std::unique_ptr<ReSignInInfoBarDelegate> infobar_delegate =
       ReSignInInfoBarDelegate::Create(authentication_service(),
-                                      signin_presenter());
+                                      mock_app_state(), signin_presenter());
   // Infobar delegate should be created.
   EXPECT_TRUE(infobar_delegate);
   EXPECT_TRUE(authentication_service()->ShouldReauthPromptForSignInAndSync());
@@ -105,7 +118,7 @@ TEST_F(ReSignInInfoBarDelegateTest, TestCreateWhenAlreadySignedIn) {
   authentication_service()->SetReauthPromptForSignInAndSync();
   std::unique_ptr<ReSignInInfoBarDelegate> infobar_delegate =
       ReSignInInfoBarDelegate::Create(authentication_service(),
-                                      signin_presenter());
+                                      mock_app_state(), signin_presenter());
   // Infobar delegate should not be created.
   EXPECT_FALSE(infobar_delegate);
   EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
@@ -113,22 +126,20 @@ TEST_F(ReSignInInfoBarDelegateTest, TestCreateWhenAlreadySignedIn) {
 
 TEST_F(ReSignInInfoBarDelegateTest, TestCreateWhenIncognito) {
   // Tab is incognito, and the "prompt" flag is set.
-  SetUpMainChromeBrowserStateNotSignedIn();
   authentication_service()->SetReauthPromptForSignInAndSync();
   std::unique_ptr<ReSignInInfoBarDelegate> infobar_delegate =
       ReSignInInfoBarDelegate::Create(/*authentication_service=*/nullptr,
-                                      signin_presenter());
+                                      mock_app_state(), signin_presenter());
   // Infobar delegate should not be created.
   EXPECT_FALSE(infobar_delegate);
   EXPECT_TRUE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }
 
 TEST_F(ReSignInInfoBarDelegateTest, TestMessages) {
-  SetUpMainChromeBrowserStateNotSignedIn();
   authentication_service()->SetReauthPromptForSignInAndSync();
   std::unique_ptr<ReSignInInfoBarDelegate> delegate =
       ReSignInInfoBarDelegate::Create(authentication_service(),
-                                      signin_presenter());
+                                      mock_app_state(), signin_presenter());
   EXPECT_EQ(ConfirmInfoBarDelegate::BUTTON_OK, delegate->GetButtons());
   std::u16string message_text = delegate->GetMessageText();
   EXPECT_GT(message_text.length(), 0U);
@@ -138,7 +149,6 @@ TEST_F(ReSignInInfoBarDelegateTest, TestMessages) {
 }
 
 TEST_F(ReSignInInfoBarDelegateTest, TestAccept) {
-  SetUpMainChromeBrowserStateNotSignedIn();
   authentication_service()->SetReauthPromptForSignInAndSync();
 
   [[signin_presenter() expect]
@@ -151,22 +161,31 @@ TEST_F(ReSignInInfoBarDelegateTest, TestAccept) {
 
   std::unique_ptr<ReSignInInfoBarDelegate> delegate =
       ReSignInInfoBarDelegate::Create(authentication_service(),
-                                      signin_presenter());
+                                      mock_app_state(), signin_presenter());
   EXPECT_TRUE(delegate->Accept());
   EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }
 
 TEST_F(ReSignInInfoBarDelegateTest, TestInfoBarDismissed) {
-  SetUpMainChromeBrowserStateNotSignedIn();
   authentication_service()->SetReauthPromptForSignInAndSync();
 
   [[signin_presenter() reject] showSignin:[OCMArg any]];
 
   std::unique_ptr<ReSignInInfoBarDelegate> delegate =
       ReSignInInfoBarDelegate::Create(authentication_service(),
-                                      signin_presenter());
+                                      mock_app_state(), signin_presenter());
   delegate->InfoBarDismissed();
   EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
+}
+
+// Tests that no delegate is returned when the app state is not InitStageFinal.
+TEST_F(ReSignInInfoBarDelegateTest, TestAppStateBeforeStageFinal) {
+  set_init_stage(InitStageChoiceScreen);
+  std::unique_ptr<ReSignInInfoBarDelegate> infobar_delegate =
+      ReSignInInfoBarDelegate::Create(authentication_service(),
+                                      mock_app_state(), signin_presenter());
+  // Infobar delegate should not be created.
+  EXPECT_FALSE(infobar_delegate);
 }
 
 }  // namespace

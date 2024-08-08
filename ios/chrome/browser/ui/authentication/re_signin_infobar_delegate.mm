@@ -14,6 +14,8 @@
 #import "components/infobars/core/infobar_manager.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -26,7 +28,12 @@
 // static
 std::unique_ptr<ReSignInInfoBarDelegate> ReSignInInfoBarDelegate::Create(
     AuthenticationService* authentication_service,
+    AppState* app_state,
     id<SigninPresenter> signin_presenter) {
+  if (app_state.initStage != InitStageFinal) {
+    return nullptr;
+  }
+
   if (!authentication_service) {
     // Do not show the infobar on incognito.
     return nullptr;
