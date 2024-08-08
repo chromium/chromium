@@ -11,6 +11,9 @@ import {assertCheckboxMenuButton, createMockPdfPluginForTest, enterFullscreenWit
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
+const controller = PluginController.getInstance();
+const mockPlugin = createMockPdfPluginForTest();
+controller.setPluginForTesting(mockPlugin);
 
 function getUndoRedoModifier() {
   return isMac ? 'meta' : 'ctrl';
@@ -72,10 +75,6 @@ chrome.test.runTests([
   async function testToggleAnnotationModeSendsMessage() {
     chrome.test.assertFalse(viewerToolbar.annotationMode);
 
-    const controller = PluginController.getInstance();
-    const mockPlugin = createMockPdfPluginForTest();
-    controller.setPluginForTesting(mockPlugin);
-
     viewerToolbar.toggleAnnotation();
     chrome.test.assertTrue(viewerToolbar.annotationMode);
 
@@ -124,9 +123,7 @@ chrome.test.runTests([
   },
   // Test the behavior of the undo and redo buttons.
   function testUndoRedo() {
-    const controller = PluginController.getInstance();
-    const mockPlugin = createMockPdfPluginForTest();
-    controller.setPluginForTesting(mockPlugin);
+    mockPlugin.clearMessages();
 
     const undoButton =
         getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo');
@@ -184,16 +181,14 @@ chrome.test.runTests([
   // Test that the undo and redo buttons are disabled when a text form field is
   // focused.
   function testUndoRedoButtonsDisabledOnFormFieldFocus() {
+    mockPlugin.clearMessages();
+
     chrome.test.assertTrue(viewerToolbar.annotationMode);
 
     // Exit annotation mode, since form fields can only be focused outside of
     // annotation mode.
     viewerToolbar.toggleAnnotation();
     chrome.test.assertFalse(viewerToolbar.annotationMode);
-
-    const controller = PluginController.getInstance();
-    const mockPlugin = createMockPdfPluginForTest();
-    controller.setPluginForTesting(mockPlugin);
 
     const undoButton =
         getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo');
@@ -239,15 +234,13 @@ chrome.test.runTests([
   },
   // Test the behavior of the undo redo keyboard shortcuts.
   function testUndoRedoKeyboardShortcuts() {
+    mockPlugin.clearMessages();
+
     chrome.test.assertFalse(viewerToolbar.annotationMode);
 
     // Enable annotation mode.
     viewerToolbar.toggleAnnotation();
     chrome.test.assertTrue(viewerToolbar.annotationMode);
-
-    const controller = PluginController.getInstance();
-    const mockPlugin = createMockPdfPluginForTest();
-    controller.setPluginForTesting(mockPlugin);
 
     finishInkStroke(controller);
 
@@ -269,11 +262,9 @@ chrome.test.runTests([
   // Test that the undo and redo keyboard shortcuts are disabled when a text
   // form field is focused.
   function testUndoRedoShortcutsDisabledOnFormFieldFocus() {
-    chrome.test.assertTrue(viewerToolbar.annotationMode);
+    mockPlugin.clearMessages();
 
-    const controller = PluginController.getInstance();
-    const mockPlugin = createMockPdfPluginForTest();
-    controller.setPluginForTesting(mockPlugin);
+    chrome.test.assertTrue(viewerToolbar.annotationMode);
 
     // Draw two strokes and undo, so that both undo and redo buttons are
     // enabled.
