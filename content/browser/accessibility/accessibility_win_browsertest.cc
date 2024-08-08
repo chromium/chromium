@@ -4395,11 +4395,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestIAccessibleAction) {
       image_action->get_localizedName(2, localized_name.Receive()));
   EXPECT_EQ(nullptr, localized_name.Get());
 
-  LONG n_key_bindings = -1;
-  BSTR* key_bindings[n_actions];
+  LONG n_key_bindings = 0;
+  BSTR* key_bindings = nullptr;
   EXPECT_HRESULT_SUCCEEDED(
-      image_action->get_keyBinding(0, 100, key_bindings, &n_key_bindings));
+      image_action->get_keyBinding(0, 100, &key_bindings, &n_key_bindings));
   EXPECT_EQ(0, n_key_bindings);
+  EXPECT_EQ(nullptr, key_bindings);
 
   base::win::ScopedVariant childid_self(CHILDID_SELF);
   base::win::ScopedBstr image_name;
