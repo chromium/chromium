@@ -227,10 +227,17 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
   EXPECT_TRUE(IsHoverCardVisible(tab_strip));
 }
 
+// TODO(crbug.com/325104668): Re-enable this test on Windows
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ThumbnailNotVisibileOnActiveTabs \
+  DISABLED_ThumbnailNotVisibileOnActiveTabs
+#else
+#define MAYBE_ThumbnailNotVisibileOnActiveTabs ThumbnailNotVisibileOnActiveTabs
+#endif
+
 // Verify hover card thumbnail is not visible on active tabs.
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
-                       // TODO(crbug.com/325104668): Re-enable this test
-                       DISABLED_ThumbnailNotVisibileOnActiveTabs) {
+                       MAYBE_ThumbnailNotVisibileOnActiveTabs) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   Tab* const tab = tab_strip->tab_at(0);
   tab_strip->GetFocusManager()->SetFocusedView(tab);
