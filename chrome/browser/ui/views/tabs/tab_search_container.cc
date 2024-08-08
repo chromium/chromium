@@ -112,7 +112,11 @@ TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
   SetLayoutManager(std::make_unique<views::FlexLayout>());
 }
 
-TabSearchContainer::~TabSearchContainer() = default;
+TabSearchContainer::~TabSearchContainer() {
+  if (scoped_tab_strip_modal_ui_) {
+    scoped_tab_strip_modal_ui_.reset();
+  }
+}
 
 void TabSearchContainer::ShowTabOrganization() {
   if (locked_expansion_view_->IsMouseHovered()) {

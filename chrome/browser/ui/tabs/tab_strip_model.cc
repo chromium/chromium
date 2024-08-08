@@ -938,6 +938,10 @@ std::unique_ptr<ScopedTabStripModalUI> TabStripModel::ShowModalUI() {
   return std::make_unique<ScopedTabStripModalUIImpl>(this);
 }
 
+void TabStripModel::ForceShowingModalUIForTesting(bool showing) {
+  showing_modal_ui_ = showing;
+}
+
 void TabStripModel::AddWebContents(
     std::unique_ptr<WebContents> contents,
     int index,
