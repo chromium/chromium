@@ -107,8 +107,6 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   TabGridPage _lastActivePage;
   // Whether this screen is selected in the TabGrid.
   BOOL _selectedGrid;
-  // The mode of the TabGrid.
-  TabGridMode _currentMode;
   // Feature engagement tracker for notifying promo events.
   feature_engagement::Tracker* _engagementTracker;
 }
@@ -124,6 +122,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 @property(nonatomic, assign) FaviconLoader* faviconLoader;
 @property(nonatomic, assign) syncer::SyncService* syncService;
 @property(nonatomic, assign) BrowserList* browserList;
+// The mode of the TabGrid.
+@property(nonatomic, assign) TabGridMode currentMode;
 @end
 
 @implementation RecentTabsMediator
@@ -204,6 +204,17 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
 - (void)configureConsumer {
   [self refreshSessionsView];
+}
+
+#pragma mark - Accessors
+
+- (void)setCurrentMode:(TabGridMode)currentMode {
+  if (_currentMode == currentMode) {
+    return;
+  }
+  _currentMode = currentMode;
+  [self configureToolbarsButtons];
+  [self.gridConsumer setPageMode:currentMode];
 }
 
 #pragma mark - SyncedSessionsObserver
@@ -356,7 +367,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] initWithPage:TabGridPageRemoteTabs];
-  toolbarsConfiguration.mode = _currentMode;
+  toolbarsConfiguration.mode = self.currentMode;
   toolbarsConfiguration.doneButton = tabsInOtherGrid;
   toolbarsConfiguration.searchButton = YES;
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
@@ -391,8 +402,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 - (void)switchToMode:(TabGridMode)mode {
   CHECK(mode == TabGridModeNormal || mode == TabGridModeSearch)
       << "remote tabs should only support normal and search modes.";
-  _currentMode = mode;
-  [self configureToolbarsButtons];
+  self.currentMode = mode;
 }
 
 #pragma mark - TabGridToolbarsGridDelegate
@@ -414,13 +424,13 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 }
 
 - (void)searchButtonTapped:(id)sender {
-  [self.gridConsumer setPageMode:TabGridModeSearch];
   base::RecordAction(base::UserMetricsAction("MobileTabGridSearchTabs"));
+  self.currentMode = TabGridModeSearch;
 }
 
 - (void)cancelSearchButtonTapped:(id)sender {
   base::RecordAction(base::UserMetricsAction("MobileTabGridCancelSearchTabs"));
-  [self.gridConsumer setPageMode:TabGridModeNormal];
+  self.currentMode = TabGridModeNormal;
 }
 
 - (void)closeSelectedTabs:(id)sender {
