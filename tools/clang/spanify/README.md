@@ -43,6 +43,29 @@ and you can build it again incrementally using:
   ./tools/clang/spanify/tests/run_all_tests.py
 ```
 
+### Troubleshooting
+
+You will need to have the `python` binary reachable from your path to run the
+tests. You can route `python3` to just `python` with the following install.
+
+```bash
+sudo apt install python-is-python3
+```
+
+Finally you need to have a version of libstdc++ installed. If you see errors
+like:
+```bash
+Failed to process deref-expr-actual.cc
+tools/clang/spanify/tests/deref-expr-actual.cc:4:10: fatal error: 'vector' file not found
+    4 | #include <vector>
+      |          ^~~~~~~~
+1 error generated.
+```
+
+You can install libstdc++ as follows:
+```bash
+sudo apt install libstdc++-14-dev
+```
 
 ## Using the tool
 
