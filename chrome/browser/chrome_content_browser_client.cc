@@ -1487,14 +1487,19 @@ MaybeCreateVisitedLinkNavigationThrottleFor(
 ChromeContentBrowserClient::PopupNavigationDelegateFactory
     g_popup_navigation_delegate_factory = &CreatePopupNavigationDelegate;
 
-bool DetermineIfDevtoolsUserForProcessPerSite() {
+#if !BUILDFLAG(IS_ANDROID)
+bool DetermineIfDevToolsUserForProcessPerSite() {
+  // Only count uses of DevTools from within the last week.
+  constexpr base::TimeDelta kDevToolsUserActivityWindow = base::Days(7);
+  auto now = base::Time::Now();
   bool is_devtools_user = false;
   if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
     std::vector<Profile*> profiles = profile_manager->GetLoadedProfiles();
     for (auto* profile : profiles) {
-      if (profile->GetPrefs()->HasPrefPath(
-              prefs::kDevToolsSyncedPreferencesSyncDisabled) ||
-          profile->GetPrefs()->HasPrefPath(prefs::kDevToolsPreferences)) {
+      base::Time last_open_time = base::Time::FromDeltaSinceWindowsEpoch(
+          base::Milliseconds(profile->GetPrefs()->GetInt64(
+              prefs::kDevToolsLastOpenTimestamp)));
+      if (now - last_open_time < kDevToolsUserActivityWindow) {
         is_devtools_user = true;
         break;
       }
@@ -1505,6 +1510,7 @@ bool DetermineIfDevtoolsUserForProcessPerSite() {
       is_devtools_user);
   return is_devtools_user;
 }
+#endif
 
 net::handles::NetworkHandle GetBoundNetworkFromRenderFrameHost(
     content::RenderFrameHost* frame) {
@@ -2090,12 +2096,14 @@ bool ChromeContentBrowserClient::ShouldUseProcessPerSite(
 
 bool ChromeContentBrowserClient::ShouldAllowProcessPerSiteForMultipleMainFrames(
     content::BrowserContext* browser_context) {
-  static bool is_devtools_user = DetermineIfDevtoolsUserForProcessPerSite();
+#if !BUILDFLAG(IS_ANDROID)
+  static bool is_devtools_user = DetermineIfDevToolsUserForProcessPerSite();
 
   if (is_devtools_user && base::FeatureList::IsEnabled(
                               features::kProcessPerSiteSkipDevtoolsUsers)) {
     return false;
   }
+#endif
   // Skip enterprise users.
   if (base::FeatureList::IsEnabled(
           features::kProcessPerSiteSkipEnterpriseUsers)) {

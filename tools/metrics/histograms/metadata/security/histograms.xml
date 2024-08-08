@@ -943,7 +943,7 @@ chromium-metrics-reviews@google.com.
   <owner>dtapuska@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
-    Whether any profile exists with devtools preferences and
+    Whether any profile exists with devtools last opened time within 7 days and
     ProcessPerSiteWithMainFrameThreshold feature will be opted out because of
     this. This is logged once per browser process launch.
   </summary>
