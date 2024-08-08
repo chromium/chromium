@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/app_mode/fake_kiosk_controller.h"
 
 #include <optional>
-#include <string>
 #include <vector>
 
 #include "ash/public/cpp/login_accelerators.h"
@@ -13,6 +12,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
+#include "content/public/browser/web_contents.h"
 
 namespace ash {
 
@@ -48,6 +48,9 @@ void FakeKioskController::RemoveProfileLoadFailedObserver(
 bool FakeKioskController::HandleAccelerator(LoginAcceleratorAction action) {
   return false;
 }
+
+void FakeKioskController::OnGuestAdded(
+    content::WebContents* guest_web_contents) {}
 
 KioskSystemSession* FakeKioskController::GetKioskSystemSession() {
   return nullptr;

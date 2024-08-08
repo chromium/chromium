@@ -231,6 +231,14 @@ bool KioskControllerImpl::HandleAccelerator(LoginAcceleratorAction action) {
   return launch_controller_ && launch_controller_->HandleAccelerator(action);
 }
 
+void KioskControllerImpl::OnGuestAdded(
+    content::WebContents* guest_web_contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (system_session_.has_value()) {
+    system_session_->OnGuestAdded(guest_web_contents);
+  }
+}
+
 KioskSystemSession* KioskControllerImpl::GetKioskSystemSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

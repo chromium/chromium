@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "content/public/browser/web_contents.h"
 
 class Profile;
 
@@ -64,6 +65,9 @@ class KioskController {
       KioskProfileLoadFailedObserver* observer) = 0;
 
   virtual bool HandleAccelerator(LoginAcceleratorAction action) = 0;
+
+  // Notify Kiosk that a new guest web content was added.
+  virtual void OnGuestAdded(content::WebContents* guest_web_contents) = 0;
 
   // Returns the `KioskSystemSession`. Can be `nullptr` if called outside a
   // Kiosk session, or before `InitializeSystemSession`.
