@@ -100,7 +100,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             MaybeCreateForWebContents(tab.GetContents());
 
     if (!profile->IsIncognitoProfile()) {
-      commerce_ui_tab_helper_ = CreateCommerceUiTabHelper(&tab, profile);
+      commerce_ui_tab_helper_ =
+          CreateCommerceUiTabHelper(tab.GetContents(), profile);
     }
   }
   fedcm_account_selection_view_controller_ =
@@ -137,10 +138,11 @@ std::unique_ptr<LensOverlayController> TabFeatures::CreateLensController(
 }
 
 std::unique_ptr<commerce::CommerceUiTabHelper>
-TabFeatures::CreateCommerceUiTabHelper(TabInterface* tab, Profile* profile) {
+TabFeatures::CreateCommerceUiTabHelper(content::WebContents* web_contents,
+                                       Profile* profile) {
   // TODO(crbug.com/40863325): Consider using the in-memory cache instead.
   return std::make_unique<commerce::CommerceUiTabHelper>(
-      tab->GetContents(),
+      web_contents,
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
       BookmarkModelFactory::GetForBrowserContext(profile),
       ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())
@@ -158,8 +160,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
           new_contents, side_panel_registry_.get());
 
   if (commerce_ui_tab_helper_) {
+    commerce_ui_tab_helper_.reset();
     commerce_ui_tab_helper_ = CreateCommerceUiTabHelper(
-        tab, Profile::FromBrowserContext(new_contents->GetBrowserContext()));
+        new_contents,
+        Profile::FromBrowserContext(new_contents->GetBrowserContext()));
   }
   if (user_annotations_web_contents_observer_) {
     user_annotations_web_contents_observer_ =
