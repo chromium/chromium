@@ -114,6 +114,20 @@ suite('<facegaze-actions-card>', () => {
                     .actions_enabled.value);
   });
 
+  test('actions disables controls if feature is disabled', async () => {
+    await initPage();
+
+    faceGazeActionsCard.disabled = true;
+    await flushTasks();
+
+    const addButton = getAddButton();
+    assertTrue(addButton.disabled);
+
+    faceGazeActionsCard.disabled = false;
+    await flushTasks();
+    assertFalse(addButton.disabled);
+  });
+
   test('actions initializes command pairs from prefs', async () => {
     prefElement = document.createElement('settings-prefs');
     document.body.appendChild(prefElement);

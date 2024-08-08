@@ -39,6 +39,8 @@ export interface FaceGazeActionsCardElement {
 export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   static readonly FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME =
       'commandPairs_' as const;
+  disabled: boolean;
+
   private showAddActionDialog_: boolean;
   private leftClickGestures_: FacialGesture[] = [];
   private dialogPageToShow_: AddDialogPage;
@@ -58,6 +60,10 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
 
   static get properties() {
     return {
+      disabled: {
+        type: Boolean,
+      },
+
       commandPairs_: {
         type: Array,
         value: () => [],

@@ -1319,6 +1319,11 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestOverscrollFeatureEnabled,
 }
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestFaceGazeEnabled,
+                       OsA11yPageFaceGazeSubpage) {
+  RunSettingsTest("os_a11y_page/facegaze_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestFaceGazeEnabled,
                        OsA11yPageFaceGazeCursorCard) {
   RunSettingsTest("os_a11y_page/facegaze_cursor_card_test.js");
 }

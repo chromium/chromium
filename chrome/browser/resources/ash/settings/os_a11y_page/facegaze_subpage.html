@@ -15,6 +15,16 @@
 </style>
 
 <div class="background">
+  <settings-card>
+    <settings-toggle-button
+        id="faceGazeToggle"
+        label="[[toggleLabel_]]"
+        pref="{{prefs.settings.a11y.face_gaze.enabled}}">
+    </settings-toggle-button>
+  </settings-card>
   <facegaze-cursor-card prefs="{{prefs}}"></facegaze-cursor-card>
-  <facegaze-actions-card prefs="{{prefs}}"></facegaze-actions-card>
+  <facegaze-actions-card
+      disabled="[[!prefs.settings.a11y.face_gaze.enabled.value]]"
+      prefs="{{prefs}}">
+  </facegaze-actions-card>
 </div>
