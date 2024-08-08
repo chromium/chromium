@@ -532,6 +532,12 @@ void ServiceWorkerTaskQueue::RegisterServiceWorker(
   }
   option.scope = extension.url();
 
+  if (reason == RegistrationReason::RE_REGISTER_ON_TIMEOUT) {
+    ++worker_reregistration_attempts_[context_id.token];
+  } else {
+    worker_reregistration_attempts_[context_id.token] = 0;
+  }
+
   content::ServiceWorkerContext* service_worker_context =
       GetServiceWorkerContext(extension.id());
   service_worker_context->RegisterServiceWorker(
@@ -563,6 +569,9 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
   pending_tasks_map_.erase(context_id);
   worker_state_map_.erase(context_id);
   worker_registered_.erase(context_id);
+  // If an extension/worker is unloaded/disabled before the registration
+  // callback then we might still have this record to delete.
+  worker_reregistration_attempts_.erase(context_id.token);
 
   // Erase any registrations that might still have been pending being fully
   // stored.
@@ -645,6 +654,13 @@ bool ServiceWorkerTaskQueue::HasPendingTasks(
   return tasks ? !tasks->empty() : false;
 }
 
+bool ServiceWorkerTaskQueue::ShouldRetryRegistrationRequest(
+    base::UnguessableToken activation_token) {
+  auto iter = worker_reregistration_attempts_.find(activation_token);
+  CHECK(iter != worker_reregistration_attempts_.end());
+  return iter->second < 3;
+}
+
 void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     const SequencedContextId& context_id,
     RegistrationReason reason,
@@ -652,7 +668,7 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     blink::ServiceWorkerStatusCode status_code) {
   const bool success = status_code == blink::ServiceWorkerStatusCode::kOk;
   base::UmaHistogramBoolean(
-      "Extensions.ServiceWorkerBackground.WorkerRegistrationState", success);
+      "Extensions.ServiceWorkerBackground.WorkerRegistrationState2", success);
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
   const ExtensionId& extension_id = context_id.extension_id;
@@ -677,13 +693,13 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
 
   if (reason == RegistrationReason::RE_REGISTER_ON_STATE_MISMATCH) {
     base::UmaHistogramBoolean(
-        "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated",
+        "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated2",
         success);
     if (!success) {
       // TODO(crbug.com/346732739): Create a test for this if it is feasible.
       base::UmaHistogramEnumeration(
           "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated_"
-          "FailStatus",
+          "FailStatus2",
           status_code);
     }
     if (g_test_observer) {
@@ -691,9 +707,39 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     }
   }
 
+  // If the registration failed due to timeout then retry registration.
+  if (status_code == blink::ServiceWorkerStatusCode::kErrorTimeout &&
+      ShouldRetryRegistrationRequest(context_id.token)) {
+    // TODO(jlulejian): Consider doing this with a post task with delay and/or
+    // with net::BackoffEntry to give more opportunity for the (hopefully
+    // intermittent) timeout to resolve.
+    ServiceWorkerTaskQueue::RegisterServiceWorker(
+        RegistrationReason::RE_REGISTER_ON_TIMEOUT, context_id, *extension);
+    return;
+  }
+
+  // We aren't retrying anymore so record success and emit metrics.
+  if (reason == RegistrationReason::RE_REGISTER_ON_TIMEOUT) {
+    if (success) {
+      base::UmaHistogramBoolean(
+          "Extensions.ServiceWorkerBackground."
+          "WorkerRegistrationRetryAttemptsResult",
+          true);
+    } else {
+      // We've exhausted all retry attempts or hit a status code on retry other
+      // than blink::ServiceWorkerStatusCode::kErrorTimeout that we will not
+      // retry.
+      base::UmaHistogramBoolean(
+          "Extensions.ServiceWorkerBackground."
+          "WorkerRegistrationRetryAttemptsResult",
+          false);
+    }
+    worker_reregistration_attempts_.erase(context_id.token);
+  }
+
   if (!success) {
     base::UmaHistogramEnumeration(
-        "Extensions.ServiceWorkerBackground.Registration_FailStatus",
+        "Extensions.ServiceWorkerBackground.Registration_FailStatus2",
         status_code);
     std::string msg = base::StringPrintf(
         "Service worker registration failed. Status code: %d",

@@ -2679,9 +2679,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTestWithEarlyReadyMesssage,
 
   EXPECT_TRUE(WaitForRegistrationMismatchMitigation());
   EXPECT_EQ(
-      1, histogram_tester().GetBucketCount(
-             "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated",
-             true));
+      1,
+      histogram_tester().GetBucketCount(
+          "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated2",
+          true));
 }
 
 // Tests that an extension's service worker can't be used to relax the extension

@@ -4558,7 +4558,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
-    name="Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated"
+    name="Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated2"
     enum="Boolean" expires_after="2025-03-25">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -4567,13 +4567,13 @@ This is emitted for two scenarios when a worker may be unregistered:
     missing registration issue succeeded. The attempt is performed during
     extension load.
 
-    Note: this histogram expired between 2023-08 and 2024-04, it will be missing
-    data between those dates.
+    Note: incremented Aug, 2024 due to the implementation of worker registration
+    retries which could increase the number of emits of this metric.
   </summary>
 </histogram>
 
 <histogram
-    name="Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated_FailStatus"
+    name="Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated_FailStatus2"
     enum="ServiceWorkerStatusCode" expires_after="2025-01-15">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -4585,6 +4585,9 @@ This is emitted for two scenarios when a worker may be unregistered:
 
     Emitted when
     Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated is false.
+
+    Note: incremented Aug, 2024 due to the implementation of worker registration
+    retries which could increase the number of emits of this metric.
   </summary>
 </histogram>
 
@@ -4718,13 +4721,34 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.ServiceWorkerBackground.WorkerRegistrationState"
+<histogram
+    name="Extensions.ServiceWorkerBackground.WorkerRegistrationRetryAttemptsResult"
+    enum="Boolean" expires_after="2025-02-06">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    When an extension requests that its service worker be registered with the
+    content layer it can fail due to
+    blink::ServiceWorkerStatusCode::kErrorTimeout. When this happens we retry
+    multiple times to try to make the registration succeed.
+
+    Emits true if the retry results in a successful registration. Emits false if
+    either all retry attempts have been exhausted without success or a retry
+    resulted in a status code that is not
+    blink::ServiceWorkerStatusCode::kErrorTimeout.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ServiceWorkerBackground.WorkerRegistrationState2"
     enum="Boolean" expires_after="2024-12-15">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Tracks whether background service worker registration succeeded or not. It
     is emitted whenever an extension is enabled (including updates).
+
+    Note: incremented Aug, 2024 due to the implementation of worker registration
+    retries which will likely increase the number of emits of this metric.
   </summary>
 </histogram>
 

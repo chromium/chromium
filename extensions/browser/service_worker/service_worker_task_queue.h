@@ -298,6 +298,7 @@ class ServiceWorkerTaskQueue
   enum class RegistrationReason {
     REGISTER_ON_EXTENSION_LOAD,
     RE_REGISTER_ON_STATE_MISMATCH,
+    RE_REGISTER_ON_TIMEOUT,
   };
 
   void RegisterServiceWorker(RegistrationReason reason,
@@ -305,6 +306,12 @@ class ServiceWorkerTaskQueue
                              const Extension& extension);
 
   void RunTasksAfterStartWorker(const SequencedContextId& context_id);
+
+  // Checks if the `activation_token` has any more worker registration retries
+  // left. Retries are only performed on registration timeout and up to 3 times
+  // before silently failing. CHECK()s if called before a worker registration is
+  // attempted.
+  bool ShouldRetryRegistrationRequest(base::UnguessableToken activation_token);
 
   void DidRegisterServiceWorker(const SequencedContextId& context_id,
                                 RegistrationReason reason,
@@ -414,6 +421,10 @@ class ServiceWorkerTaskQueue
 
   // Current activation tokens for each activated extensions.
   std::map<ExtensionId, base::UnguessableToken> activation_tokens_;
+
+  // The number of times that a worker registration request has been retried
+  // for an activation token.
+  std::map<base::UnguessableToken, int> worker_reregistration_attempts_;
 
   // A set of pending service worker registrations. These are registrations that
   // succeeded in the first step (triggering `DidRegisterServiceWorker`), but
