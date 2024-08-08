@@ -81,9 +81,6 @@ const base::FeatureParam<bool>
         &kPrivacySandboxSettings4, "suppress-dialog-for-external-app-launches",
         true};
 
-const base::FeatureParam<bool> kPrivacySandboxSettings4CloseAllPrompts{
-    &kPrivacySandboxSettings4, "close-all-prompts", true};
-
 BASE_FEATURE(kOverridePrivacySandboxSettingsLocalTesting,
              "OverridePrivacySandboxSettingsLocalTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);

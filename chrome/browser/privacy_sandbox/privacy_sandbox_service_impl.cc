@@ -1313,10 +1313,6 @@ void PrivacySandboxServiceImpl::RecordUpdatedTopicsConsent(
 
 #if !BUILDFLAG(IS_ANDROID)
 void PrivacySandboxServiceImpl::MaybeCloseOpenPrompts() {
-  if (!privacy_sandbox::kPrivacySandboxSettings4CloseAllPrompts.Get()) {
-    return;
-  }
-
   // Take a copy to avoid concurrent modification issues as widgets close and
   // remove themselves from the map synchronously. The map will typically have
   // at most a few elements, so this is cheap.
