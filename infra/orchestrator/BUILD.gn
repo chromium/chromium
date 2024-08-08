@@ -32,6 +32,9 @@ group("orchestrator_all") {
     # Used if the orchestrator needs to run recipe_module.chromium.get_version()
     # to get the Chrome milestone being tested.
     "//chrome/VERSION",
+
+    # Test specs the Orchestrator needs to trigger swarming tests
+    "//testing/buildbot/*.json",
   ]
 
   # Orchestrator will run this script to curl for the coverage tool, which
