@@ -38,7 +38,9 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupColorChangeActionType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -46,6 +48,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -215,6 +218,10 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* onModelTokenChange= */ null,
                             /* allowDragAndDrop= */ true);
             mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
+            mTabListCoordinator.registerItemType(
+                    UiType.MESSAGE,
+                    new LayoutViewBuilder(R.layout.tab_grid_message_card_item),
+                    MessageCardViewBinder::bind);
 
             mTabListOnScrollListener
                     .getYOffsetNonZeroSupplier()
@@ -526,5 +533,20 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     @Override
     public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressChangedSupplier;
+    }
+
+    @Override
+    public void addMessageCardItem(int position, PropertyModel messageCardModel) {
+        mTabListCoordinator.addSpecialListItem(position, UiType.MESSAGE, messageCardModel);
+    }
+
+    @Override
+    public void removeMessageCardItem(@MessageType int messageType) {
+        mTabListCoordinator.removeSpecialListItem(UiType.MESSAGE, messageType);
+    }
+
+    @Override
+    public boolean messageCardExists(@MessageType int messageType) {
+        return mTabListCoordinator.specialItemExists(messageType);
     }
 }

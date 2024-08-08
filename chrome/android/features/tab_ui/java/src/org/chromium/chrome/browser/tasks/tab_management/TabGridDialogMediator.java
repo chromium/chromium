@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
@@ -121,6 +122,29 @@ public class TabGridDialogMediator
 
         /** A supplier that returns if the dialog is currently showing or animating. */
         ObservableSupplier<Boolean> getShowingOrAnimationSupplier();
+
+        /**
+         * Adds a message card to the UI.
+         *
+         * @param index The index to insert the card at.
+         * @param messageCardModel The {@link PropertyModel} using {@link MessageCardViewProperties}
+         *     keys.
+         */
+        void addMessageCardItem(int position, PropertyModel messageCardModel);
+
+        /**
+         * Removes a message card from the UI.
+         *
+         * @param messageType The type of message to remove.
+         */
+        void removeMessageCardItem(@MessageType int messageType);
+
+        /**
+         * Checks whether a message card exists.
+         *
+         * @param messageType The type of message to look for.
+         */
+        boolean messageCardExists(@MessageType int messageType);
     }
 
     /**
@@ -168,6 +192,7 @@ public class TabGridDialogMediator
     private int mCurrentTabId = Tab.INVALID_TAB_ID;
     private boolean mIsUpdatingTitle;
     private String mCurrentGroupModifiedTitle;
+    private @Nullable CollaborationActivityMessageCardViewModel mCollaborationActivityPropertyModel;
 
     TabGridDialogMediator(
             Activity activity,
@@ -498,6 +523,7 @@ public class TabGridDialogMediator
     // @TabGridDialogView.VisibilityListener
     @Override
     public void finishedHidingDialogView() {
+        removeCollaborationActivityMessageCard();
         mDialogController.resetWithListOfTabs(null);
         mDialogController.postHiding();
         // Purge the bitmap reference in the animation.
@@ -506,6 +532,8 @@ public class TabGridDialogMediator
     }
 
     void onReset(@Nullable List<Tab> tabs) {
+        removeCollaborationActivityMessageCard();
+
         TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
         if (tabs == null) {
             mCurrentTabId = Tab.INVALID_TAB_ID;
@@ -901,13 +929,17 @@ public class TabGridDialogMediator
         return view -> {
             // TODO(b/325082444): Ask data sharing service about if the tab group is shared.
             mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
+            // TODO(crbug.com/348731400): Trigger this when IS_TAB_GROUP_SHARED becomes true then
+            // observe for changes to any of the tab count events we care about.
+            showOrUpdateCollaborationActivityMessageCard();
             showShareBottomSheet();
 
             // TODO(b/325082444): This is used for prototyping purposes for now, should be removed
             // and called from Data Sharing service.
             new DataSharingNotificationManager(mActivity)
                     .showNotification(
-                            mActivity.getResources()
+                            mActivity
+                                    .getResources()
                                     .getString(R.string.data_sharing_origin_fallback));
         };
     }
@@ -1114,5 +1146,43 @@ public class TabGridDialogMediator
 
     Runnable getScrimClickRunnableForTesting() {
         return mScrimClickRunnable;
+    }
+
+    private void removeCollaborationActivityMessageCard() {
+        mDialogController.removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
+        mCollaborationActivityPropertyModel = null;
+    }
+
+    // TODO(crbug.com/348731400): Remove visible for testing annotation once this can be triggered
+    // via an update event.
+    @VisibleForTesting
+    void showOrUpdateCollaborationActivityMessageCard() {
+        if (!mModel.get(TabGridDialogProperties.IS_TAB_GROUP_SHARED)) {
+            assert mCollaborationActivityPropertyModel == null;
+            return;
+        }
+
+        // TODO(crbug.com/348731400): Fetch these numbers from the activity backend.
+        int tabsAdded = 1;
+        int tabsChanged = 2;
+        int tabsClosed = 3;
+        if (tabsAdded == 0 && tabsChanged == 0 && tabsClosed == 0) {
+            removeCollaborationActivityMessageCard();
+            return;
+        }
+
+        if (mCollaborationActivityPropertyModel == null) {
+            // TODO(crbug.com/348731400): Provide real action and dismiss handlers.
+            mCollaborationActivityPropertyModel =
+                    new CollaborationActivityMessageCardViewModel(
+                            mActivity, () -> {}, (unused) -> {});
+        }
+        mCollaborationActivityPropertyModel.updateDescriptionText(
+                mActivity, tabsAdded, tabsChanged, tabsClosed);
+
+        if (!mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY)) {
+            mDialogController.addMessageCardItem(
+                    /* position= */ 0, mCollaborationActivityPropertyModel.getPropertyModel());
+        }
     }
 }

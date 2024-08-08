@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -1095,6 +1096,7 @@ public class TabGridDialogMediatorUnitTest {
 
         mMediator.onReset(null);
 
+        verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
         verifyNoMoreInteractions(mDialogController);
     }
 
@@ -1102,6 +1104,7 @@ public class TabGridDialogMediatorUnitTest {
     public void finishedHiding() {
         mMediator.finishedHidingDialogView();
 
+        verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
         verify(mDialogController).resetWithListOfTabs(null);
         verify(mDialogController).postHiding();
     }
@@ -1118,6 +1121,7 @@ public class TabGridDialogMediatorUnitTest {
         mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, COLOR_2);
 
         mMediator.onReset(tabGroup);
+        verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
         mMediator.setSelectedTabGroupColor(COLOR_3);
 
         // Assert that the color has changed both in the property model and the model filter.
@@ -1620,6 +1624,24 @@ public class TabGridDialogMediatorUnitTest {
 
         verify(mTabGroupModelFilter).removeObserver(mTabModelObserverCaptor.capture());
         assertFalse(mCurrentTabModelFilterSupplier.hasObservers());
+    }
+
+    @Test
+    public void testShowOrUpdateCollaborationActivityMessageCard() {
+        mMediator.showOrUpdateCollaborationActivityMessageCard();
+        verify(mDialogController, never()).addMessageCardItem(/* position= */ eq(0), any());
+
+        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
+        when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
+                .thenReturn(true);
+
+        mMediator.showOrUpdateCollaborationActivityMessageCard();
+        verify(mDialogController, never()).addMessageCardItem(/* position= */ eq(0), any());
+
+        when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
+                .thenReturn(false);
+        mMediator.showOrUpdateCollaborationActivityMessageCard();
+        verify(mDialogController).addMessageCardItem(/* position= */ eq(0), any());
     }
 
     private Tab prepareTab(int id, String title) {
