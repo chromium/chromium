@@ -29,7 +29,7 @@ class WebIdlSchemaTest(unittest.TestCase):
 
   def testFunctionReturnTypes(self):
     schema = self.idl_basics
-    # Test primitive types.
+    # Test basic types.
     self.assertEqual(
         None,
         getReturns(schema, 'returnsVoid'),
@@ -46,6 +46,10 @@ class WebIdlSchemaTest(unittest.TestCase):
         {'name': 'returnsLong', 'type': 'integer'},
         getReturns(schema, 'returnsLong'),
     )
+    self.assertEqual(
+        {'name': 'returnsDOMString', 'type': 'string'},
+        getReturns(schema, 'returnsDOMString'),
+    )
 
   # TODO(crbug.com/340297705): This will eventually be relaxed when adding
   # support for shared types to the new parser.
@@ -59,8 +63,10 @@ class WebIdlSchemaTest(unittest.TestCase):
     )
 
   def testMissingAttributeOnBrowser(self):
-    expected_error_regex = 'The Browser interface should have exactly one'
-    'attribute for the name the API will be exposed under in .*'
+    expected_error_regex = (
+        'The Browser interface should have exactly one '
+        'attribute for the name the API will be exposed under in .*'
+    )
     self.assertRaisesRegex(
         Exception,
         expected_error_regex,

@@ -10,6 +10,7 @@ interface TestWebIdl {
   static boolean returnsBoolean();
   static double returnsDouble();
   static long returnsLong();
+  static DOMString returnsDOMString();
 };
 
 partial interface Browser {

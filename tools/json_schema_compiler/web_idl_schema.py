@@ -92,9 +92,9 @@ class Type:
 
   def process(self) -> dict:
     properties = self.additional_properties
-    primitive_type = self.node.GetOneOf('PrimitiveType')
-    if primitive_type:
-      name = primitive_type.GetName()
+    basic_type = self.node.GetOneOf('PrimitiveType', 'StringType')
+    if basic_type:
+      name = basic_type.GetName()
       if name == 'void':
         # If it's a void return, we bail early.
         return None
@@ -105,14 +105,16 @@ class Type:
         properties['type'] = 'number'
       elif name == 'long':
         properties['type'] = 'integer'
+      elif name == 'DOMString':
+        properties['type'] = 'string'
       else:
         raise Exception(
             'Unknown PrimitiveType "%s" on node "%s" in %s(%s)'
             % (
                 name,
                 self.node.GetName(),
-                primitive_type.GetProperty('FILENAME'),
-                primitive_type.GetProperty('LINENO'),
+                basic_type.GetProperty('FILENAME'),
+                basic_type.GetProperty('LINENO'),
             )
         )
 
