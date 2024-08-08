@@ -2031,22 +2031,13 @@ void Shell::OnFirstSessionStarted() {
       std::make_unique<AppListFeatureUsageMetrics>();
 }
 
-void Shell::OnSessionStateChanged(session_manager::SessionState state) {
-  const bool is_session_active = state == session_manager::SessionState::ACTIVE;
-  // Initialize the |shelf_window_watcher_| when a session becomes active.
-  // Shelf itself is initialized in RootWindowController.
-  if (is_session_active && !shelf_window_watcher_) {
-    shelf_window_watcher_ =
-        std::make_unique<ShelfWindowWatcher>(shelf_controller()->model());
-  }
-
+void Shell::OnFirstSessionReady() {
   // Initialize the fwupd (firmware updater) DBus client only when the user
   // session is active. Since the fwupd service is only relevant during an
   // active user session, this prevents a bug in which the service would start
   // up earlier than expected and causes a delay during boot.
   // See b/250002264 for more details.
-  if (is_session_active && !FwupdClient::Get() &&
-      !firmware_update_notification_controller_ &&
+  if (!FwupdClient::Get() && !firmware_update_notification_controller_ &&
       !features::IsBlockFwupdClientEnabled()) {
     chromeos::InitializeDBusClient<FwupdClient>(dbus_bus_.get());
     firmware_update_manager_ = std::make_unique<FirmwareUpdateManager>();
@@ -2058,6 +2049,16 @@ void Shell::OnSessionStateChanged(session_manager::SessionState state) {
             message_center::MessageCenter::Get());
     firmware_update_manager_->RequestAllUpdates(
         FirmwareUpdateManager::Source::kStartup);
+  }
+}
+
+void Shell::OnSessionStateChanged(session_manager::SessionState state) {
+  const bool is_session_active = state == session_manager::SessionState::ACTIVE;
+  // Initialize the |shelf_window_watcher_| when a session becomes active.
+  // Shelf itself is initialized in RootWindowController.
+  if (is_session_active && !shelf_window_watcher_) {
+    shelf_window_watcher_ =
+        std::make_unique<ShelfWindowWatcher>(shelf_controller()->model());
   }
 
   // Disable drag-and-drop during OOBE and GAIA login screens by only enabling

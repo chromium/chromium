@@ -995,6 +995,7 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   // SessionObserver:
   void OnFirstSessionStarted() override;
+  void OnFirstSessionReady() override;
   void OnSessionStateChanged(session_manager::SessionState state) override;
   void OnLoginStatusChanged(LoginStatus login_status) override;
   void OnLockStateChanged(bool locked) override;
