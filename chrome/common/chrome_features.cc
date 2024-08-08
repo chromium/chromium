@@ -1300,6 +1300,12 @@ BASE_FEATURE(kProcessPerSiteSkipDevtoolsUsers,
              "ProcessPerSiteSkipDevtoolsUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// The default behavior to opt enterprise users out of
+// kProcessPerSiteUpToMainFrameThreshold.
+BASE_FEATURE(kProcessPerSiteSkipEnterpriseUsers,
+             "ProcessPerSiteSkipEnterpriseUsers",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables the SkyVault (cloud-first) changes, some of which are also controlled
 // by policies: removing local storage, saving downloads and screen captures to

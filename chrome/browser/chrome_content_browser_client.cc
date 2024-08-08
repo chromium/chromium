@@ -2092,10 +2092,23 @@ bool ChromeContentBrowserClient::ShouldAllowProcessPerSiteForMultipleMainFrames(
     content::BrowserContext* browser_context) {
   static bool is_devtools_user = DetermineIfDevtoolsUserForProcessPerSite();
 
-  // TODO(dtapuska): Implement enterprise policy support here.
   if (is_devtools_user && base::FeatureList::IsEnabled(
                               features::kProcessPerSiteSkipDevtoolsUsers)) {
     return false;
+  }
+  // Skip enterprise users.
+  if (base::FeatureList::IsEnabled(
+          features::kProcessPerSiteSkipEnterpriseUsers)) {
+    Profile* profile = Profile::FromBrowserContext(browser_context);
+    if (!profile) {
+      return false;
+    }
+    auto* management_service =
+        policy::ManagementServiceFactory::GetForProfile(profile);
+    if (policy::ManagementServiceFactory::GetForPlatform()->IsManaged() &&
+        management_service && management_service->IsManaged()) {
+      return false;
+    }
   }
   return true;
 }
