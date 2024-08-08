@@ -258,9 +258,45 @@ class GraphBuilderTflite final {
 
   enum class GruGateType { kUpdate, kReset, kNew };
 
+  // The common attributes between gru and lstm.
+  struct RecurrentNetworkBase {
+    STACK_ALLOCATED();
+
+   public:
+    RecurrentNetworkBase(
+        base::span<const int32_t> input_dimensions,
+        ::tflite::TensorType input_tensor_type,
+        int32_t input_tensor_index,
+        int32_t weight_tensor_index,
+        int32_t recurrent_weight_tensor_index,
+        std::optional<int32_t> bias_tensor_index,
+        std::optional<int32_t> recurrent_bias_tensor_index,
+        int32_t hidden_state_tensor_index,
+        int32_t hidden_size,
+        base::span<const mojom::RecurrentNetworkActivation> activations);
+    ~RecurrentNetworkBase();
+
+    RecurrentNetworkBase(const RecurrentNetworkBase&) = delete;
+    RecurrentNetworkBase& operator=(const RecurrentNetworkBase&) = delete;
+
+    RecurrentNetworkBase(RecurrentNetworkBase&&) = delete;
+    RecurrentNetworkBase& operator=(RecurrentNetworkBase&&) = delete;
+
+    base::span<const int32_t> input_dimensions;
+    const ::tflite::TensorType input_tensor_type;
+    const int32_t input_tensor_index;
+    const int32_t weight_tensor_index;
+    const int32_t recurrent_weight_tensor_index;
+    const std::optional<int32_t> bias_tensor_index;
+    const std::optional<int32_t> recurrent_bias_tensor_index;
+    const int32_t hidden_state_tensor_index;
+    const int32_t hidden_size;
+    const base::span<const mojom::RecurrentNetworkActivation> activations;
+  };
+
   // The struct maps to mojom::GruCell to use tflite tensor index instead of
   // the operand id in mojom definition.
-  struct GruCellOperation {
+  struct GruCellOperation : public RecurrentNetworkBase {
     STACK_ALLOCATED();
 
    public:
@@ -280,25 +316,9 @@ class GraphBuilderTflite final {
         base::span<const mojom::RecurrentNetworkActivation> activations);
     ~GruCellOperation();
 
-    GruCellOperation(const GruCellOperation&) = delete;
-    GruCellOperation& operator=(const GruCellOperation&) = delete;
-
-    GruCellOperation(GruCellOperation&&) = delete;
-    GruCellOperation& operator=(GruCellOperation&&) = delete;
-
-    base::span<const int32_t> input_dimensions;
-    const ::tflite::TensorType input_tensor_type;
-    const int32_t input_tensor_index;
     const int32_t output_tensor_index;
-    const int32_t weight_tensor_index;
-    const int32_t recurrent_weight_tensor_index;
-    const std::optional<int32_t> bias_tensor_index;
-    const std::optional<int32_t> recurrent_bias_tensor_index;
-    const int32_t hidden_state_tensor_index;
-    const int32_t hidden_size;
     const bool reset_after;
     const mojom::GruWeightLayout layout;
-    const base::span<const mojom::RecurrentNetworkActivation> activations;
   };
 
   // A helper function for serializing update, reset and new gate, the argument
@@ -312,6 +332,47 @@ class GraphBuilderTflite final {
   // used to emulate gru operation.
   base::expected<OperatorOffset, std::string> SerializeGruCellOperation(
       const GruCellOperation& gru_cell);
+
+  enum class LstmGateType { kInput, kForget, kCell, kOutput };
+
+  // The struct maps to mojom::LstmCell to use tflite tensor index instead of
+  // the operand id in mojom definition.
+  struct LstmCellOperation : public RecurrentNetworkBase {
+    STACK_ALLOCATED();
+
+   public:
+    LstmCellOperation(
+        base::span<const int32_t> input_dimensions,
+        ::tflite::TensorType input_tensor_type,
+        int32_t input_tensor_index,
+        base::span<const int32_t> output_tensor_indices,
+        int32_t weight_tensor_index,
+        int32_t recurrent_weight_tensor_index,
+        std::optional<int32_t> bias_tensor_index,
+        std::optional<int32_t> recurrent_bias_tensor_index,
+        int32_t hidden_state_tensor_index,
+        int32_t hidden_size,
+        int32_t cell_state_tensor_index,
+        std::optional<int32_t> peephole_weight_tensor_index,
+        mojom::LstmWeightLayout layout,
+        base::span<const mojom::RecurrentNetworkActivation> activations);
+    ~LstmCellOperation();
+
+    base::span<const int32_t> output_tensor_indices;
+    const int32_t cell_state_tensor_index;
+    std::optional<int32_t> peephole_weight_tensor_index;
+    const mojom::LstmWeightLayout layout;
+  };
+
+  // A helper function for serializing input, forget, cell and output gate.
+  base::expected<int32_t, std::string> SerializeLstmGate(
+      const LstmCellOperation& lstm_cell,
+      LstmGateType type);
+
+  // This function is called by `SerializeLstmCell` to serialize WebNN lstmCell
+  // or used to emulate lstm operation.
+  base::expected<OperatorOffset, std::string> SerializeLstmCellOperation(
+      const LstmCellOperation& lstm_cell);
 
   // Serialize a sub graph (slice appending squeeze operation) for gru.
   base::expected<int32_t, std::string> SerializeSubGraphSliceSqueeze(
@@ -360,6 +421,8 @@ class GraphBuilderTflite final {
   OperatorOffset SerializeLinear(const mojom::Linear& linear);
   OperatorOffset SerializeLogicalNot(
       const mojom::ElementWiseUnary& logical_not);
+  base::expected<OperatorOffset, std::string> SerializeLstmCell(
+      const mojom::LstmCell& lstm_cell);
   OperatorOffset SerializeMatmul(const mojom::Matmul& matmul);
   base::expected<OperatorOffset, std::string> SerializePad(
       const mojom::Pad& pad);

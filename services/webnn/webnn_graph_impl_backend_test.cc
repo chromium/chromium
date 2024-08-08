@@ -399,6 +399,7 @@ void WebNNGraphImplBackendTest::SetUp() {
       "BuildAndComputeConcatWithConstants",
       "BuildAndComputeSingleOperatorGruCell",
       "BuildAndComputeSingleOperatorGru",
+      "BuildAndComputeSingleOperatorLstmCell",
   });
   if (!kSupportedTests.contains(current_test_name)) {
     GTEST_SKIP() << "Skipping test because the operator is not yet supported.";
@@ -2714,6 +2715,12 @@ struct LstmCellAttributes {
 // are completed.
 // Test building and computing a graph with single operator lstmCell.
 TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstmCell) {
+  std::vector<float> expected_output0 = {150, 150, 810, 810};
+  std::vector<float> expected_output1 = {30, 30, 90, 90};
+#if BUILDFLAG(IS_CHROMEOS)
+  SetComputeResult(base::flat_map<std::string, std::vector<float>>(
+      {{"output0", expected_output0}, {"output1", expected_output1}}));
+#endif
   uint32_t batch_size = 2;
   uint32_t input_size = 2;
   uint32_t hidden_size = 2;
@@ -2768,9 +2775,9 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstmCell) {
 
   ASSERT_EQ(named_outputs.size(), 2u);
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output0"])),
-            std::vector<float>({150, 150, 810, 810}));
+            expected_output0);
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output1"])),
-            std::vector<float>({30, 30, 90, 90}));
+            expected_output1);
 }
 
 template <typename T>
