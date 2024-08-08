@@ -75,8 +75,7 @@ void HelpAppNotificationController::MaybeShowReleaseNotesNotification() {
   }
   if (base::FeatureList::IsEnabled(
           features::kHelpAppOpensInsteadOfReleaseNotesNotification)) {
-    chrome::LaunchReleaseNotes(
-        profile_, apps::LaunchSource::kFromReleaseNotesNotification);
+    chrome::LaunchReleaseNotes(profile_, apps::LaunchSource::kFromOsLogin);
     release_notes_storage.MarkNotificationShown();
     return;
   }

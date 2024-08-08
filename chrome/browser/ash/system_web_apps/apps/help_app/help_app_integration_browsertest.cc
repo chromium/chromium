@@ -539,16 +539,14 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());
     EXPECT_EQ(expected_trusted_frame_url,
               GetActiveWebContents()->GetVisibleURL());
-    histogram_tester.ExpectUniqueSample(
-        "Discover.Overall.AppLaunched",
-        apps::LaunchSource::kFromReleaseNotesNotification, 1);
+    histogram_tester.ExpectUniqueSample("Discover.Overall.AppLaunched",
+                                        apps::LaunchSource::kFromOsLogin, 1);
   }
 #else
   // We just have the original browser. No new app opens.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-  histogram_tester.ExpectUniqueSample(
-      "Discover.Overall.AppLaunched",
-      apps::LaunchSource::kFromReleaseNotesNotification, 0);
+  histogram_tester.ExpectUniqueSample("Discover.Overall.AppLaunched",
+                                      apps::LaunchSource::kFromOsLogin, 0);
 #endif
 }
 
