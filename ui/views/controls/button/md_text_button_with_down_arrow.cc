@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/controls/md_text_button_with_down_arrow.h"
+#include "ui/views/controls/button/md_text_button_with_down_arrow.h"
 
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include <utility>
+
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_utils.h"
@@ -12,6 +13,7 @@
 #include "ui/views/border.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/vector_icons.h"
+#include "ui/views/controls/button/md_text_button.h"
 
 namespace views {
 

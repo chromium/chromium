@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_PIN_OPTIONS_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_PIN_OPTIONS_BUTTON_H_
 
-#include "chrome/browser/ui/views/controls/md_text_button_with_down_arrow.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/views/controls/button/md_text_button_with_down_arrow.h"
 
 namespace views {
 class MenuRunner;

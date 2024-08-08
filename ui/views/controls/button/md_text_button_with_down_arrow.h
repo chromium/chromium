@@ -1,9 +1,9 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_CONTROLS_MD_TEXT_BUTTON_WITH_DOWN_ARROW_H_
-#define CHROME_BROWSER_UI_VIEWS_CONTROLS_MD_TEXT_BUTTON_WITH_DOWN_ARROW_H_
+#ifndef UI_VIEWS_CONTROLS_BUTTON_MD_TEXT_BUTTON_WITH_DOWN_ARROW_H_
+#define UI_VIEWS_CONTROLS_BUTTON_MD_TEXT_BUTTON_WITH_DOWN_ARROW_H_
 
 #include <string>
 
@@ -14,7 +14,7 @@ namespace views {
 
 // The material design themed text button with a drop arrow displayed on the
 // right side.
-class MdTextButtonWithDownArrow : public MdTextButton {
+class VIEWS_EXPORT MdTextButtonWithDownArrow : public MdTextButton {
   METADATA_HEADER(MdTextButtonWithDownArrow, MdTextButton)
 
  public:
@@ -36,4 +36,4 @@ class MdTextButtonWithDownArrow : public MdTextButton {
 
 }  // namespace views
 
-#endif  // CHROME_BROWSER_UI_VIEWS_CONTROLS_MD_TEXT_BUTTON_WITH_DOWN_ARROW_H_
+#endif  // UI_VIEWS_CONTROLS_BUTTON_MD_TEXT_BUTTON_WITH_DOWN_ARROW_H_

@@ -4329,8 +4329,6 @@ static_library("ui") {
       "views/content_setting_site_row_view.h",
       "views/controls/hover_button.cc",
       "views/controls/hover_button.h",
-      "views/controls/md_text_button_with_down_arrow.cc",
-      "views/controls/md_text_button_with_down_arrow.h",
       "views/controls/page_switcher_view.cc",
       "views/controls/page_switcher_view.h",
       "views/controls/rich_controls_container_view.cc",
