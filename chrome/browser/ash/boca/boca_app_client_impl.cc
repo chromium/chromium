@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/boca/boca_app_client_impl.h"
 
-#include "ash/webui/boca_ui/boca_app_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"

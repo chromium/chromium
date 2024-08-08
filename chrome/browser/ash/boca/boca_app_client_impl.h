@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_BOCA_BOCA_APP_CLIENT_IMPL_H_
 #define CHROME_BROWSER_ASH_BOCA_BOCA_APP_CLIENT_IMPL_H_
 
-#include "ash/webui/boca_ui/boca_app_client.h"
 #include "base/observer_list.h"
+#include "chromeos/ash/components/boca/boca_app_client.h"
 
 namespace network {
 class SharedURLLoaderFactory;

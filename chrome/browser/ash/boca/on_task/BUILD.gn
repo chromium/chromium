@@ -13,11 +13,11 @@ static_library("on_task") {
   ]
 
   deps = [
-    "//ash/webui/boca_ui",
     "//base",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/on_task",
     "//content/public/browser",
   ]

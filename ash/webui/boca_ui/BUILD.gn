@@ -14,8 +14,6 @@ assert(is_chromeos_ash, "Boca App is ash-chrome only")
 
 static_library("boca_ui") {
   sources = [
-    "boca_app_client.cc",
-    "boca_app_client.h",
     "boca_app_page_handler.cc",
     "boca_app_page_handler.h",
     "boca_ui.cc",
@@ -37,6 +35,7 @@ static_library("boca_ui") {
     "//ash/webui/resources:boca_app_bundle_resources",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//base",
+    "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/proto",
     "//components/app_constants",
     "//components/app_restore",

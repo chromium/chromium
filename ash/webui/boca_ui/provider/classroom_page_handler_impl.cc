@@ -4,9 +4,9 @@
 
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
 
-#include "ash/webui/boca_ui/boca_app_client.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/ash/components/boca/boca_app_client.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/classroom/classroom_api_courses_response_types.h"

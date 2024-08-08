@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_BOCA_UI_BOCA_APP_CLIENT_H_
-#define ASH_WEBUI_BOCA_UI_BOCA_APP_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_APP_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_APP_CLIENT_H_
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -72,4 +72,4 @@ class BocaAppClient {
 
 }  // namespace ash
 
-#endif  // ASH_WEBUI_BOCA_UI_BOCA_APP_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_APP_CLIENT_H_
