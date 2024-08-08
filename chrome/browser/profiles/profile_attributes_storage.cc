@@ -208,8 +208,9 @@ profile_metrics::UnconsentedPrimaryAccountType GetUnconsentedPrimaryAccountType(
     ProfileAttributesEntry* entry) {
   if (entry->GetSigninState() == SigninState::kNotSignedIn)
     return profile_metrics::UnconsentedPrimaryAccountType::kSignedOut;
-  if (entry->IsChild())
+  if (entry->IsSupervised()) {
     return profile_metrics::UnconsentedPrimaryAccountType::kChild;
+  }
   // TODO(crbug.com/40121889): Replace this check by
   // !entry->GetHostedDomain().has_value() in M84 (once the attributes storage
   // gets reasonably well populated).

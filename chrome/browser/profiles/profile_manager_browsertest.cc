@@ -1012,7 +1012,7 @@ IN_PROC_BROWSER_TEST_P(ChildProfileTransitionBrowserTest, PRE_Transition) {
   // Check stored profile attributes.
   const ProfileAttributesEntry* entry = GetProfileAttributesEntry(profile);
   ASSERT_NE(entry, nullptr);
-  EXPECT_EQ(is_child_profile_expected, entry->IsChild());
+  EXPECT_EQ(is_child_profile_expected, entry->IsSupervised());
 }
 
 IN_PROC_BROWSER_TEST_P(ChildProfileTransitionBrowserTest, Transition) {
@@ -1029,6 +1029,6 @@ IN_PROC_BROWSER_TEST_P(ChildProfileTransitionBrowserTest, Transition) {
   // Check stored profile attributes.
   const ProfileAttributesEntry* entry = GetProfileAttributesEntry(profile);
   ASSERT_NE(entry, nullptr);
-  EXPECT_EQ(is_child_profile_expected, entry->IsChild());
+  EXPECT_EQ(is_child_profile_expected, entry->IsSupervised());
 }
 #endif
