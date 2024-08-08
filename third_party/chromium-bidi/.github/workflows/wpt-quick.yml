@@ -118,7 +118,7 @@ jobs:
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
-          HEADLESS: ${{ matrix.head!='headful' }}
+          CHROMEDRIVER_LOG_NAME: 'chromedriver-interop'
           THIS_CHUNK: ${{ matrix.this_chunk }}
           TOTAL_CHUNKS: ${{ matrix.total_chunks }}
           UPDATE_EXPECTATIONS: false

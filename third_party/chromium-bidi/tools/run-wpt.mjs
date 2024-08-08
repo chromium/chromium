@@ -95,6 +95,11 @@ const FAIL_NO_TEST = process.env.FAIL_NO_TEST || 'true';
 // Whether to start the server in headless or headful mode.
 const HEADLESS = process.env.HEADLESS || 'true';
 
+// A special name for the logs to remove overriding no
+// Don't provide extension`.log`
+const CHROMEDRIVER_LOG_NAME =
+  process.env.CHROMEDRIVER_LOG_NAME || 'chromedriver';
+
 // The path to the WPT manifest file.
 const MANIFEST = process.env.MANIFEST || 'MANIFEST.json';
 
@@ -201,10 +206,9 @@ if (RUN_TESTS === 'true') {
       mkdirSync(join('logs'));
     }
 
-    const chromeDriverLogs = join(
-      'logs',
-      HEADLESS === 'true' ? 'chromedriver-headless.log' : 'chromedriver.log'
-    );
+    const headlessSuffix = HEADLESS === 'true' ? '-headless' : '';
+    const chromeDriverLogName = `${CHROMEDRIVER_LOG_NAME}${headlessSuffix}.log`;
+    const chromeDriverLogs = join('logs', chromeDriverLogName);
 
     log('Using chromedriver with mapper...');
     wptRunArgs.push(
