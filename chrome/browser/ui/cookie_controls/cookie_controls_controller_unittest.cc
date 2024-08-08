@@ -1529,7 +1529,37 @@ TEST_F(CookieControlsUserBypassTest, SubresourceBlocked) {
           kEnableFingerprintingProtectionFilter);
   CreateFingerprintingProtectionWebContentsHelper(
       web_contents(), /*pref_service=*/nullptr,
-      /*tracking_protection_settings=*/nullptr);
+      /*tracking_protection_settings=*/nullptr, /*is_incognito=*/false);
+
+  NavigateAndCommit(GURL("https://example.com"));
+  fingerprinting_protection_filter::FingerprintingProtectionWebContentsHelper::
+      FromWebContents(web_contents())
+          ->NotifyOnBlockedResources();
+
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(
+                  /*controls_visible=*/true, /*protections_on=*/true,
+                  CookieControlsEnforcement::kNoEnforcement,
+                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration(),
+                  GetThirdPartyCookiesFeatureForEnforcement(
+                      CookieControlsEnforcement::kNoEnforcement,
+                      BlockingStatus::kBlocked)));
+
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
+                           /*icon_visible=*/true, /*protections_on=*/true,
+                           CookieBlocking3pcdStatus::kNotIn3pcd,
+                           /*should_highlight=*/false));
+  cookie_controls()->Update(web_contents());
+}
+
+TEST_F(CookieControlsUserBypassTest, SubresourceBlockedInIncognito) {
+  base::test::ScopedFeatureList fingerprinting_protection_feature_list;
+  fingerprinting_protection_feature_list.InitAndEnableFeature(
+      fingerprinting_protection_filter::features::
+          kEnableFingerprintingProtectionFilterInIncognito);
+  CreateFingerprintingProtectionWebContentsHelper(
+      web_contents(), /*pref_service=*/nullptr,
+      /*tracking_protection_settings=*/nullptr, /*is_incognito=*/true);
 
   NavigateAndCommit(GURL("https://example.com"));
   fingerprinting_protection_filter::FingerprintingProtectionWebContentsHelper::

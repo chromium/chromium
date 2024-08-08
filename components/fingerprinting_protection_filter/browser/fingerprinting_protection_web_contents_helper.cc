@@ -81,9 +81,9 @@ void FingerprintingProtectionWebContentsHelper::CreateForWebContents(
     content::WebContents* web_contents,
     PrefService* pref_service,
     privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
-    VerifiedRulesetDealer::Handle* dealer_handle) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnableFingerprintingProtectionFilter)) {
+    VerifiedRulesetDealer::Handle* dealer_handle,
+    bool is_incognito) {
+  if (!features::IsFingerprintingProtectionEnabledForIncognitoState(is_incognito)) {
     return;
   }
 

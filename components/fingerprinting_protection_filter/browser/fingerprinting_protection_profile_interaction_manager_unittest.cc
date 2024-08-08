@@ -98,15 +98,15 @@ const OnPageActivationComputedTestCase kTestCases[] = {
     {
         .test_name = "FPFEnabled_UserOptOut_NoException",
         .is_fp_user_pref_enabled = false,
-        .expected_level_output = ActivationLevel::kDisabled,
-        .expected_decision = ActivationDecision::ACTIVATION_CONDITIONS_NOT_MET,
+        .expected_level_output = ActivationLevel::kEnabled,
+        .expected_decision = ActivationDecision::ACTIVATED,
     },
     {
         .test_name = "FPFEnabled_UserOptOut_Exception",
         .is_fp_user_pref_enabled = false,
         .site_has_tp_exception = true,
         .expected_level_output = ActivationLevel::kDisabled,
-        .expected_decision = ActivationDecision::ACTIVATION_CONDITIONS_NOT_MET,
+        .expected_decision = ActivationDecision::URL_ALLOWLISTED,
     },
     {
         .test_name = "FPFDisabled_UserOptOut_NoException",

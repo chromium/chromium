@@ -14,12 +14,13 @@
 void CreateFingerprintingProtectionWebContentsHelper(
     content::WebContents* web_contents,
     PrefService* pref_service,
-    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings) {
+    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
+    bool is_incognito) {
   subresource_filter::RulesetService* ruleset_service =
       g_browser_process->fingerprinting_protection_ruleset_service();
   subresource_filter::VerifiedRulesetDealer::Handle* dealer =
       ruleset_service ? ruleset_service->GetRulesetDealer() : nullptr;
   fingerprinting_protection_filter::FingerprintingProtectionWebContentsHelper::
       CreateForWebContents(web_contents, pref_service,
-                           tracking_protection_settings, dealer);
+                           tracking_protection_settings, dealer, is_incognito);
 }

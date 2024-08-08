@@ -1159,8 +1159,8 @@ subresource_filter::RulesetService*
 BrowserProcessImpl::fingerprinting_protection_ruleset_service() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!created_fingerprinting_protection_ruleset_service_ &&
-      base::FeatureList::IsEnabled(fingerprinting_protection_filter::features::
-                                       kEnableFingerprintingProtectionFilter)) {
+      fingerprinting_protection_filter::features::
+          IsFingerprintingProtectionFeatureEnabled()) {
     CreateFingerprintingProtectionRulesetService();
   }
   return fingerprinting_protection_ruleset_service_.get();

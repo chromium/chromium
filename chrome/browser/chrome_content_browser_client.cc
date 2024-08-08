@@ -5453,8 +5453,8 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
     throttle_manager->MaybeAppendNavigationThrottles(handle, &throttles);
   }
 
-  if (base::FeatureList::IsEnabled(fingerprinting_protection_filter::features::
-                                       kEnableFingerprintingProtectionFilter)) {
+  if (fingerprinting_protection_filter::features::
+          IsFingerprintingProtectionFeatureEnabled()) {
     if (auto* throttle_manager = fingerprinting_protection_filter::
             ThrottleManager::FromNavigationHandle(*handle)) {
       throttle_manager->MaybeAppendNavigationThrottles(handle, &throttles);

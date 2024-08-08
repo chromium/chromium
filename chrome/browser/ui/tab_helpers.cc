@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -414,12 +415,13 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   FileSystemAccessPermissionRequestManager::CreateForWebContents(web_contents);
   FileSystemAccessTabHelper::CreateForWebContents(web_contents);
   FindBarState::ConfigureWebContents(web_contents);
-  if (base::FeatureList::IsEnabled(fingerprinting_protection_filter::features::
-                                       kEnableFingerprintingProtectionFilter)) {
+  if (fingerprinting_protection_filter::features::
+          IsFingerprintingProtectionFeatureEnabled()) {
     // TODO(https://crbug.com/40280666): Move this to TabFeatures.
     CreateFingerprintingProtectionWebContentsHelper(
         web_contents, profile->GetPrefs(),
-        TrackingProtectionSettingsFactory::GetForProfile(profile));
+        TrackingProtectionSettingsFactory::GetForProfile(profile),
+        profile->IsIncognitoProfile());
   }
   download::DownloadNavigationObserver::CreateForWebContents(
       web_contents,

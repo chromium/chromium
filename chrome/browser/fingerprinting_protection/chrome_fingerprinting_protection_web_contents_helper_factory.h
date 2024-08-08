@@ -21,6 +21,7 @@ class TrackingProtectionSettings;
 void CreateFingerprintingProtectionWebContentsHelper(
     content::WebContents* web_contents,
     PrefService* pref_service,
-    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings);
+    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
+    bool is_incognito);
 
 #endif  // CHROME_BROWSER_FINGERPRINTING_PROTECTION_CHROME_FINGERPRINTING_PROTECTION_WEB_CONTENTS_HELPER_FACTORY_H_

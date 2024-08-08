@@ -94,8 +94,7 @@ ThrottleManager::~ThrottleManager() {
 std::unique_ptr<ThrottleManager> ThrottleManager::CreateForNewPage(
     VerifiedRulesetDealer::Handle* dealer_handle,
     FingerprintingProtectionWebContentsHelper& web_contents_helper) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnableFingerprintingProtectionFilter)) {
+  if (!features::IsFingerprintingProtectionFeatureEnabled()) {
     return nullptr;
   }
 
