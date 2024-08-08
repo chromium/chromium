@@ -18,6 +18,7 @@ mojom("compositing") {
     "display_private.mojom",
     "external_begin_frame_controller.mojom",
     "frame_sink_manager.mojom",
+    "frame_sink_manager_test_api.mojom",  # test helpers
     "frame_sink_video_capture.mojom",
     "frame_sinks_metrics_recorder.mojom",  # test helpers
     "layered_window_updater.mojom",

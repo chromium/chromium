@@ -45,6 +45,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/viz/privileged/mojom/compositing/features.mojom-features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/view_android.h"
@@ -1670,6 +1671,7 @@ class SameDocNavigationEntryScreenshotBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {viz::mojom::EnableVizTestApis, {}},
         {blink::features::kBackForwardTransitions, {}},
         {blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
          {}}};
@@ -1690,8 +1692,9 @@ class SameDocNavigationEntryScreenshotBrowserTest
     WaitForCopyableViewInWebContents(web_contents());
 
     mojo::ScopedAllowSyncCallForTesting allowed_for_testing;
-    GetHostFrameSinkManager()->SetSameDocNavigationScreenshotSizeForTesting(
-        GetScaledViewportSize());
+    GetHostFrameSinkManager()
+        ->GetFrameSinkManagerTestApi()
+        .SetSameDocNavigationScreenshotSize(GetScaledViewportSize());
   }
 
   gfx::Rect GetCompareRegion() { return gfx::Rect(GetScaledViewportSize()); }

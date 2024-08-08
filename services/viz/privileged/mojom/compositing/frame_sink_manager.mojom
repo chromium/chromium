@@ -11,6 +11,7 @@ import "services/viz/privileged/mojom/compositing/display_private.mojom";
 import "services/viz/privileged/mojom/compositing/external_begin_frame_controller.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom";
 import "services/viz/privileged/mojom/compositing/renderer_settings.mojom";
+import "services/viz/privileged/mojom/compositing/frame_sink_manager_test_api.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom";
 import "services/viz/public/mojom/compositing/compositor_frame_sink.mojom";
 import "services/viz/public/mojom/compositing/copy_output_request.mojom";
@@ -203,15 +204,10 @@ interface FrameSinkManager {
   CreateMetricsRecorderForTest(
     pending_receiver<FrameSinksMetricsRecorder> receiver);
 
-  // Returns true if there are any unclaimed ViewTransition resources. For
-  // testing only.
-  [Sync]
-  HasUnclaimedViewTransitionResourcesForTest() => (bool has_resources);
-
-  // Customizes the CopyOutputRequest's result size during tests.
-  [Sync]
-  SetSameDocNavigationScreenshotSizeForTesting(
-    gfx.mojom.Size result_size) => ();
+  // Initializes FrameSinkManagerTestApi.
+  [RuntimeFeature=EnableVizTestApis]
+  EnableFrameSinkManagerTestApi(
+    pending_receiver<FrameSinkManagerTestApi> receiver);
 };
 
 // The FrameSinkManagerClient interface is implemented by the Display

@@ -34,6 +34,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_manager_test_api.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom.h"
 #include "services/viz/public/mojom/compositing/frame_sink_bundle.mojom.h"
 
@@ -255,13 +256,10 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   void UpdateDebugRendererSettings(const DebugRendererSettings& debug_settings);
 
   mojom::FrameSinksMetricsRecorder& GetFrameSinksMetricsRecorderForTest();
+  mojom::FrameSinkManagerTestApi& GetFrameSinkManagerTestApi();
 
   void ClearUnclaimedViewTransitionResources(
       const blink::ViewTransitionToken& transition_token);
-  bool HasUnclaimedViewTransitionResourcesForTest();
-
-  void SetSameDocNavigationScreenshotSizeForTesting(
-      const gfx::Size& result_size);
 
   const DebugRendererSettings& debug_renderer_settings() const {
     return debug_renderer_settings_;
@@ -357,6 +355,7 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   mojo::Receiver<mojom::FrameSinkManagerClient>
       frame_sink_manager_client_receiver_{this};
   mojo::Remote<mojom::FrameSinksMetricsRecorder> metrics_recorder_remote_;
+  mojo::Remote<mojom::FrameSinkManagerTestApi> test_api_remote_;
 
   // Per CompositorFrameSink data.
   std::unordered_map<FrameSinkId, FrameSinkData, FrameSinkIdHash>

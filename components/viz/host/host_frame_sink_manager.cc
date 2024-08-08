@@ -21,6 +21,7 @@
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/renderer_settings_creation.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_manager_test_api.mojom-forward.h"
 #include "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom.h"
 #include "services/viz/privileged/mojom/compositing/renderer_settings.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
@@ -532,22 +533,24 @@ HostFrameSinkManager::GetFrameSinksMetricsRecorderForTest() {
   return *metrics_recorder_remote_.get();
 }
 
+mojom::FrameSinkManagerTestApi&
+HostFrameSinkManager::GetFrameSinkManagerTestApi() {
+  if (test_api_remote_) {
+    return *test_api_remote_.get();
+  }
+
+  CHECK(frame_sink_manager_);
+  mojo::PendingRemote<mojom::FrameSinkManagerTestApi> test_api_recorder;
+  frame_sink_manager_->EnableFrameSinkManagerTestApi(  // IN-TEST
+      test_api_recorder.InitWithNewPipeAndPassReceiver());
+  test_api_remote_.Bind(std::move(test_api_recorder));
+
+  return *test_api_remote_.get();
+}
+
 void HostFrameSinkManager::ClearUnclaimedViewTransitionResources(
     const blink::ViewTransitionToken& transition_token) {
   frame_sink_manager_->ClearUnclaimedViewTransitionResources(transition_token);
-}
-
-bool HostFrameSinkManager::HasUnclaimedViewTransitionResourcesForTest() {
-  bool has_resources = false;
-  frame_sink_manager_->HasUnclaimedViewTransitionResourcesForTest(
-      &has_resources);
-  return has_resources;
-}
-
-void HostFrameSinkManager::SetSameDocNavigationScreenshotSizeForTesting(
-    const gfx::Size& result_size) {
-  frame_sink_manager_->SetSameDocNavigationScreenshotSizeForTesting(  // IN-TEST
-      result_size);
 }
 
 HostFrameSinkManager::FrameSinkData::FrameSinkData() = default;

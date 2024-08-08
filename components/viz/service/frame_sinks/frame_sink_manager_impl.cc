@@ -989,6 +989,18 @@ void FrameSinkManagerImpl::StopOverdrawTracking(
   std::move(callback).Run(std::move(data));
 }
 
+void FrameSinkManagerImpl::HasUnclaimedViewTransitionResources(
+    HasUnclaimedViewTransitionResourcesCallback callback) {
+  std::move(callback).Run(!transition_token_to_animation_manager_.empty());
+}
+
+void FrameSinkManagerImpl::SetSameDocNavigationScreenshotSize(
+    const gfx::Size& result_size,
+    SetSameDocNavigationScreenshotSizeCallback callback) {
+  copy_output_request_result_size_for_testing_ = result_size;
+  std::move(callback).Run();
+}
+
 void FrameSinkManagerImpl::ClearUnclaimedViewTransitionResources(
     const blink::ViewTransitionToken& transition_token) {
   transition_token_to_animation_manager_.erase(transition_token);
@@ -1000,16 +1012,10 @@ void FrameSinkManagerImpl::CreateMetricsRecorderForTest(
   metrics_receiver_.Bind(std::move(receiver));
 }
 
-void FrameSinkManagerImpl::HasUnclaimedViewTransitionResourcesForTest(
-    HasUnclaimedViewTransitionResourcesForTestCallback callback) {
-  std::move(callback).Run(!transition_token_to_animation_manager_.empty());
-}
-
-void FrameSinkManagerImpl::SetSameDocNavigationScreenshotSizeForTesting(
-    const gfx::Size& result_size,
-    SetSameDocNavigationScreenshotSizeForTestingCallback callback) {
-  copy_output_request_result_size_for_testing_ = result_size;
-  std::move(callback).Run();
+void FrameSinkManagerImpl::EnableFrameSinkManagerTestApi(
+    mojo::PendingReceiver<mojom::FrameSinkManagerTestApi> receiver) {
+  CHECK(!test_api_receiver_.is_bound());
+  test_api_receiver_.Bind(std::move(receiver));
 }
 
 }  // namespace viz

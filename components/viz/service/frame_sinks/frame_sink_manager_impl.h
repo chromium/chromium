@@ -46,6 +46,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_manager_test_api.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom.h"
 #include "services/viz/public/mojom/compositing/video_detector_observer.mojom.h"
@@ -70,6 +71,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       public FrameSinkVideoCapturerManager,
       public mojom::FrameSinkManager,
       public mojom::FrameSinksMetricsRecorder,
+      public mojom::FrameSinkManagerTestApi,
       public HitTestAggregatorDelegate,
       public SurfaceManagerDelegate {
  public:
@@ -178,11 +180,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void CreateMetricsRecorderForTest(
       mojo::PendingReceiver<mojom::FrameSinksMetricsRecorder> receiver)
       override;
-  void HasUnclaimedViewTransitionResourcesForTest(
-      HasUnclaimedViewTransitionResourcesForTestCallback callback) override;
-  void SetSameDocNavigationScreenshotSizeForTesting(
-      const gfx::Size& result_size,
-      SetSameDocNavigationScreenshotSizeForTestingCallback callback) override;
+  void EnableFrameSinkManagerTestApi(
+      mojo::PendingReceiver<mojom::FrameSinkManagerTestApi> receiver) override;
 
   // mojom::FrameSinksMetricsTracker implementation:
   void StartFrameCounting(base::TimeTicks start_time,
@@ -192,6 +191,13 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
                              base::TimeDelta bucket_size) override;
   void StopOverdrawTracking(const FrameSinkId& root_frame_sink_id,
                             StopOverdrawTrackingCallback callback) override;
+
+  // mojom::FrameSinkManagerTestApi implementation:
+  void HasUnclaimedViewTransitionResources(
+      HasUnclaimedViewTransitionResourcesCallback callback) override;
+  void SetSameDocNavigationScreenshotSize(
+      const gfx::Size& result_size,
+      SetSameDocNavigationScreenshotSizeCallback callback) override;
 
   void DestroyFrameSinkBundle(const FrameSinkBundleId& id);
 
@@ -522,6 +528,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   mojo::Receiver<mojom::FrameSinkManager> frame_sink_manager_receiver_{this};
   mojo::Receiver<mojom::FrameSinksMetricsRecorder> metrics_receiver_{this};
+  mojo::Receiver<mojom::FrameSinkManagerTestApi> test_api_receiver_{this};
 
   base::ObserverList<FrameSinkObserver>::Unchecked observer_list_;
 

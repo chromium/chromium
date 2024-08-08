@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_manager_test_api.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom.h"
 
 namespace viz {
@@ -86,11 +87,9 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
   void CreateMetricsRecorderForTest(
       mojo::PendingReceiver<mojom::FrameSinksMetricsRecorder> receiver)
       override {}
-  void HasUnclaimedViewTransitionResourcesForTest(
-      HasUnclaimedViewTransitionResourcesForTestCallback callback) override {}
-  void SetSameDocNavigationScreenshotSizeForTesting(
-      const gfx::Size& result_size,
-      SetSameDocNavigationScreenshotSizeForTestingCallback callback) override {}
+  void EnableFrameSinkManagerTestApi(
+      mojo::PendingReceiver<mojom::FrameSinkManagerTestApi> receiver) override {
+  }
 
   mojo::Receiver<mojom::FrameSinkManager> receiver_{this};
   mojo::Remote<mojom::FrameSinkManagerClient> client_;
