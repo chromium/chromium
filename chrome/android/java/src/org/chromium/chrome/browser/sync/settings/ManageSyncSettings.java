@@ -681,10 +681,15 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             // error.
             closeDialogIfOpen(FRAGMENT_CUSTOM_PASSPHRASE);
             closeDialogIfOpen(FRAGMENT_ENTER_PASSPHRASE);
-            setEncryptionErrorSummary(
-                    mSyncService.isEncryptEverythingEnabled()
-                            ? R.string.sync_error_card_title
-                            : R.string.password_sync_error_summary);
+            if (shouldReplaceSyncSettingsWithAccountSettings()) {
+                // Show the same text as the error card button.
+                setEncryptionErrorSummary(R.string.identity_error_card_button_verify);
+            } else {
+                setEncryptionErrorSummary(
+                        mSyncService.isEncryptEverythingEnabled()
+                                ? R.string.sync_error_card_title
+                                : R.string.password_sync_error_summary);
+            }
             return;
         }
 

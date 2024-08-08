@@ -377,8 +377,13 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         ManageSyncSettings fragment = startManageSyncPreferences();
         onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
 
-        // Mimic the user tapping on Encryption.
         Preference encryption = fragment.findPreference(ManageSyncSettings.PREF_ENCRYPTION);
+
+        // Check text summary.
+        String expectedSummary = fragment.getString(R.string.identity_error_card_button_verify);
+        Assert.assertEquals(encryption.getSummary().toString(), expectedSummary);
+
+        // Mimic the user tapping on Encryption.
         clickPreference(encryption);
 
         CriteriaHelper.pollUiThread(() -> backend.isSuccess());
