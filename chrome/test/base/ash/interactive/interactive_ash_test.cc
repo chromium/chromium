@@ -543,14 +543,14 @@ ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementDisplayNone(
     const ui::ElementIdentifier& element_id,
     WebContentsInteractionTestUtil::DeepQuery element) {
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementHasAttribute);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementHasDisplayNone);
 
   WebContentsInteractionTestUtil::StateChange state_change;
-  state_change.event = kElementHasAttribute;
+  state_change.event = kElementHasDisplayNone;
   state_change.where = element;
   state_change.type = StateChange::Type::kExistsAndConditionTrue;
   state_change.test_function =
-      base::StringPrintf("(el) => { return el.style.display === 'none'; }");
+      "(el) => { return el.style.display === 'none'; }";
   return WaitForStateChange(element_id, state_change);
 }
 

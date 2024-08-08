@@ -715,6 +715,8 @@ void FakeHermesEuiccClient::CreateCellularService(
   service_test->SetServiceProperty(
       service_path, shill::kActivationStateProperty,
       base::Value(shill::kActivationStateActivated));
+  service_test->SetServiceProperty(service_path, shill::kAutoConnectProperty,
+                                   base::Value(true));
   service_test->SetServiceProperty(service_path, shill::kConnectableProperty,
                                    base::Value(false));
   service_test->SetServiceProperty(service_path, shill::kVisibleProperty,
