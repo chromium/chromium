@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 
 import argparse
+import concurrent.futures
 import copy
 import datetime
 import difflib
@@ -1456,24 +1457,25 @@ class Auditor:
     """
     safe_list = self._get_safe_list()
 
-    logger.info("Getting list of files from git.")
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+      # TODO(nicolaso): Move FileFilter and `git ls-files` logic to
+      # extractor.py, or maybe a separate file?
+      logger.info("Getting list of files from git.")
+      files_future = executor.submit(self.file_filter.get_source_files,
+                                     safe_list, "")
 
-    # TODO(nicolaso): Both get_source_files() and GetCompDBFiles() take a
-    # couple seconds. They have no dependency on each other, so doing them both
-    # in parallel may save up to ~2-3 seconds (or not, depending on how much
-    # the two would fight for disk IO).
+      # Skip compdb generation while testing to speed up tests.
+      if self.file_filter.git_file_for_testing is not None:
+        compdb_files_future = None
+      else:
+        logger.info("Generating compile_commands.json")
+        tools = NetworkTrafficAnnotationTools(str(build_path))
+        compdb_files_future = executor.submit(tools.GetCompDBFiles,
+                                              not skip_compdb)
 
-    # TODO(nicolaso): Move FileFilter and `git ls-files` logic to extractor.py,
-    # or maybe a separate file?
-    files = self.file_filter.get_source_files(safe_list, "")
-
-    # Skip compdb generation while testing to speed up tests.
-    if self.file_filter.git_file_for_testing is not None:
-      compdb_files = None
-    else:
-      logger.info("Generating compile_commands.json")
-      tools = NetworkTrafficAnnotationTools(str(build_path))
-      compdb_files = tools.GetCompDBFiles(not skip_compdb)
+      files = files_future.result()
+      compdb_files = compdb_files_future.result(
+      ) if compdb_files_future else None
 
     suffixes = '/'.join(self.file_filter.accepted_suffixes)
     if path_filters:
