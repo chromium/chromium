@@ -102,9 +102,6 @@ Domain SpotlightDomainFromString(NSString* domain) {
   } else if ([domain hasPrefix:kSpotlightOpenTabsPrefix]) {
     return DOMAIN_OPEN_TABS;
   }
-  // On normal flow, it is not possible to reach this point. When testing the
-  // app, it may be possible though if the app is downgraded.
-  DUMP_WILL_BE_NOTREACHED();
   return DOMAIN_UNKNOWN;
 }
 
