@@ -134,6 +134,12 @@ class StructuredLogAdapter(logging.Handler):
 
 
 class WPTAdapter:
+    PORT_NAME_BY_PRODUCT = {
+        'android_webview': 'webview',
+        'chrome': 'chrome',
+        'chrome_android': 'android',
+    }
+
     def __init__(self, product, port, options, paths):
         self.product = product
         self.port = port
@@ -162,9 +168,16 @@ class WPTAdapter:
         cls._ensure_value(options, 'no_virtual_tests', options.product
                           != 'headless_shell')
 
-        if options.product in {'android_webview', 'chrome_android'}:
-            port_name = options.product
-        port = host.port_factory.get(port_name, options)
+        if options.product in cls.PORT_NAME_BY_PRODUCT:
+            port = host.port_factory.get(
+                cls.PORT_NAME_BY_PRODUCT[options.product], options)
+        else:
+            port = host.port_factory.get(port_name, options)
+
+        if options.product == 'headless_shell':
+            port.set_option_default('driver_name', port.HEADLESS_SHELL_NAME)
+        elif options.product == 'chrome':
+            port.set_option_default('driver_name', port.CHROME_NAME)
         product = make_product(port, options)
         return WPTAdapter(product, port, options, tests)
 
@@ -772,6 +785,12 @@ def main(argv) -> int:
     exit_code = exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
     try:
         adapter = WPTAdapter.from_args(host, argv)
+        if adapter.product.name == 'chrome' and not host.platform.is_linux():
+            logger.error(
+                '`run_wpt_tests.py --product=chrome` does not yet support '
+                'non-Linux platforms; follow https://crbug.com/1512219 for '
+                'status.')
+            return exit_code
         if (adapter.product.name == 'chrome_ios'
                 and adapter.options.xcode_build_version):
             _install_xcode(adapter.options.xcode_build_version)

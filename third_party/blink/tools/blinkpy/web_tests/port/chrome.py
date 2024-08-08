@@ -26,16 +26,20 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from blinkpy.web_tests.port import linux, chrome
+from blinkpy.web_tests.port import linux
 
 
-class WebviewPort(linux.LinuxPort):
-    port_name = 'webview'
+class ChromePort(linux.LinuxPort):
+    """ChromePort is essentially same to LinuxPort except that it
+    defines an additional directory for Chrome specific baselines
+    and a test expectation tag for Chrome.
+    """
+    port_name = 'chrome'
 
-    SUPPORTED_VERSIONS = ('webview', )
+    SUPPORTED_VERSIONS = ('chrome', )
     FALLBACK_PATHS = {}
-    FALLBACK_PATHS['webview'] = (
-        ["webview"] + chrome.ChromePort.latest_platform_fallback_path())
+    FALLBACK_PATHS['chrome'] = (
+        ['linux-chrome'] + linux.LinuxPort.latest_platform_fallback_path())
 
     def configuration_specifier_macros(self):
         return {self.port_name: list(self.SUPPORTED_VERSIONS)}
@@ -47,25 +51,12 @@ class WebviewPort(linux.LinuxPort):
         the --additional-expectations flag is passed; those aren't included
         here.
         """
-        return list(
-            filter(None, [
-                self.path_to_generic_test_expectations_file(),
-                self._filesystem.join(self.web_tests_dir(), 'NeverFixTests'),
-                self._filesystem.join(self.web_tests_dir(),
-                                      'MobileTestExpectations'),
-                self._filesystem.join(self.web_tests_dir(),
-                                      'StaleTestExpectations'),
-                self._filesystem.join(self.web_tests_dir(), 'SlowTests')
-            ]))
-
-    def default_child_processes(self):
-        # Test against a single device by default to avoid timeouts
-        return 1
-
-    def default_smoke_test_only(self):
-        # Test against selected set of tests by default to avoid timeouts
-        return True
-
-    def path_to_smoke_tests_file(self):
-        return self._filesystem.join(self.web_tests_dir(), 'TestLists',
-                                     'android.filter')
+        return filter(None, [
+            self.path_to_generic_test_expectations_file(),
+            self._filesystem.join(self.web_tests_dir(), 'NeverFixTests'),
+            self._filesystem.join(self.web_tests_dir(),
+                                  'ChromeTestExpectations'),
+            self._filesystem.join(self.web_tests_dir(),
+                                  'StaleTestExpectations'),
+            self._filesystem.join(self.web_tests_dir(), 'SlowTests')
+        ])

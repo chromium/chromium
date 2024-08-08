@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac11 Mac11-arm64 Mac12 Mac12-arm64 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Win Win10.20h2 Win11 Win11-arm64 iOS17-simulator ]
+ # tags: [ Android Chrome Fuchsia Linux Mac Mac11 Mac11-arm64 Mac12 Mac12-arm64 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Win Win10.20h2 Win11 Win11-arm64 iOS17-simulator ]
 # tags: [ Release Debug ]
 # results: [ Skip Pass ]
 
@@ -2032,10 +2032,51 @@ crbug.com/1476305 external/wpt/subapps/* [ Skip ]
 # can be problematic on debug builds.
 crbug.com/1197087 [ Debug ] external/wpt/web-animations/interfaces/Animation/finished.html [ Skip ]
 
+# only run WPTs that can not run in content_shell in the new headless mode. This includes webdriver tests
+# and some roles related accessibility tests.
+[ Chrome ] * [ Skip ]
+[ Chrome ] external/wpt/webdriver/tests/* [ Pass ]
+[ Chrome ] wpt_internal/infrastructure/fail-before-timeout.html [ Pass ]
+[ Chrome ] wpt_internal/infrastructure/fail-with-nonexistent-subtest.html [ Pass ]
+
 # At the moment, no plans to run wdspec tests for anything other than Chrome on
 # Linux due to resource constraints.
 [ Mac ] external/wpt/webdriver/tests/* [ Skip ]
 [ Win ] external/wpt/webdriver/tests/* [ Skip ]
+
+# get_computed_role not implemented in vendored testdriver
+crbug.com/1517744 external/wpt/dpub-aam/role/roles.html [ Skip ]
+crbug.com/1517744 external/wpt/graphics-aria/graphics-roles.html [ Skip ]
+crbug.com/1517744 external/wpt/html-aam/fragile/area-role.html [ Skip ]
+crbug.com/1517744 external/wpt/html-aam/names.html [ Skip ]
+crbug.com/1517744 external/wpt/html-aam/roles-contextual.html [ Skip ]
+crbug.com/1517744 external/wpt/html-aam/roles-dynamic-switch.tentative.window.html [ Skip ]
+crbug.com/1517744 external/wpt/html-aam/roles-generic.html [ Skip ]
+crbug.com/1517744 external/wpt/html-aam/roles.html [ Skip ]
+crbug.com/1517744 external/wpt/html-aam/roles.tentative.html [ Skip ]
+crbug.com/1517744 external/wpt/html-aam/table-roles.html [ Skip ]
+crbug.com/1517744 external/wpt/svg-aam/name/comp_host_language_label.html [ Skip ]
+crbug.com/1517744 external/wpt/svg-aam/role/roles-generic.html [ Skip ]
+crbug.com/1517744 external/wpt/svg-aam/role/roles.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/abstract-roles.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/basic.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/button-roles.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/contextual-roles.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/fallback-roles.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/form-roles.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/generic-roles.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/grid-roles.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/invalid-roles.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/list-roles.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/listbox-roles.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/menu-roles.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/region-roles.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/role_none_conflict_resolution.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/roles.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/synonym-roles.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/tab-roles.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/table-roles.html [ Skip ]
+crbug.com/1517744 external/wpt/wai-aria/role/tree-roles.html [ Skip ]
 
 # WebNN GPU backend is supported on Win11 by default.
 crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/arg_min_max.https.any.html?gpu [ Skip ]

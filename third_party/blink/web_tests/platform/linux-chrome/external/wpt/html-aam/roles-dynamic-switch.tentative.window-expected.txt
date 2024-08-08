@@ -12,4 +12,3 @@ This is a testharness.js-based test.
 [FAIL] Connected <input type=checkbox switch>: adding type attribute
   assert_equals: expected "switch" but got "checkbox"
 Harness: the test ran to completion.
-

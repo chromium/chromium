@@ -1137,6 +1137,10 @@ if (use_blink && !is_cronet_build) {
       } else {
         args += [ "--timeout-multiplier=1" ]
       }
+      data = [
+        "//third_party/blink/web_tests/platform/linux-chrome/",
+        "//third_party/blink/web_tests/ChromeTestExpectations",
+      ]
       data_deps = [
         ":blink_web_tests_expectations",
         ":blink_web_tests_support_data",
