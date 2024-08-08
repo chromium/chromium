@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -19,6 +20,10 @@
 namespace request_header_integrity {
 
 namespace {
+
+BASE_FEATURE(kRequestHeaderIntegrity,
+             "RequestHeaderIntegrity",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Returns extended, stable, beta, dev, or canary if a channel is available,
 // otherwise the empty string.
@@ -59,6 +64,11 @@ void RequestHeaderIntegrityURLLoaderThrottle::WillStartRequest(
   if (!channel_name.empty()) {
     request->headers.SetHeader(CHANNEL_NAME_HEADER_NAME, channel_name);
   }
+}
+
+// static
+bool RequestHeaderIntegrityURLLoaderThrottle::IsFeatureEnabled() {
+  return base::FeatureList::IsEnabled(kRequestHeaderIntegrity);
 }
 
 }  // namespace request_header_integrity

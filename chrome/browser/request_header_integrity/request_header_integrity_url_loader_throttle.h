@@ -23,6 +23,8 @@ class RequestHeaderIntegrityURLLoaderThrottle
   // blink::URLLoaderThrottle:
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
+
+  static bool IsFeatureEnabled();
 };
 
 }  // namespace request_header_integrity

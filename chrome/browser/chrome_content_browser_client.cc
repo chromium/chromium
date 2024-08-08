@@ -6099,9 +6099,12 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
 #endif
 
 #if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
-  result.push_back(
-      std::make_unique<
-          request_header_integrity::RequestHeaderIntegrityURLLoaderThrottle>());
+  if (request_header_integrity::RequestHeaderIntegrityURLLoaderThrottle::
+          IsFeatureEnabled()) {
+    result.push_back(
+        std::make_unique<request_header_integrity::
+                             RequestHeaderIntegrityURLLoaderThrottle>());
+  }
 #endif
 
   if (chrome_navigation_ui_data &&
