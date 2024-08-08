@@ -165,6 +165,12 @@ public class CustomTabsConnection {
     private static final String ON_RESIZED_CALLBACK = "onResized";
     private static final String ON_RESIZED_SIZE_EXTRA = "size";
 
+    @VisibleForTesting
+    static final String IS_EPHEMERAL_BROWSING_SUPPORTED = "isEphemeralBrowsingSupported";
+
+    @VisibleForTesting
+    static final String EPHEMERAL_BROWSING_SUPPORTED_KEY = "ephemeralBrowsingSupported";
+
     @VisibleForTesting static final String ON_ACTIVITY_LAYOUT_CALLBACK = "onActivityLayout";
     @VisibleForTesting static final String ON_ACTIVITY_LAYOUT_LEFT_EXTRA = "left";
     @VisibleForTesting static final String ON_ACTIVITY_LAYOUT_TOP_EXTRA = "top";
@@ -766,6 +772,13 @@ public class CustomTabsConnection {
      * @return The result {@link Bundle}, or null.
      */
     public @Nullable Bundle extraCommand(String commandName, Bundle args) {
+        if (commandName.equals(IS_EPHEMERAL_BROWSING_SUPPORTED)) {
+            var bundle = new Bundle();
+            bundle.putBoolean(
+                    EPHEMERAL_BROWSING_SUPPORTED_KEY,
+                    ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EPHEMERAL_MODE));
+            return bundle;
+        }
         return null;
     }
 
