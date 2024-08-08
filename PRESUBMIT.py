@@ -2076,8 +2076,8 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         pattern=r'UNSAFE_BUFFERS(',
         explanation=
         ('Do not use UNSAFE_BUFFERS() to write new unsafe code. As a last '
-         'resort, use only after contacting security@chromium.org to perform '
-         'a formal safety review.',
+         'resort, use only after contacting memory-safety-dev@chromium.org '
+         'to perform a formal safety review.',
         ),
         treat_as_error=False,
     ),
