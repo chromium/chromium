@@ -173,6 +173,14 @@ class SupervisedUserService : public KeyedService,
                            BlockedMatureSitesRecordedInBlockSafeSitesBucket);
   FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
                            BlockedMatureSitesRecordedInBlockSafeSitesBucket);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
+                           ClassificationIsFasterThanHttp);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
+                           ClassificationIsSlowerThanHttp);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
+                           ShortCircuitsSynchronousBlock);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
+                           HandlesLateAsynchronousBlock);
 
   // Method used in testing to set the given test_filter as the url_filter_
   void SetURLFilterForTesting(

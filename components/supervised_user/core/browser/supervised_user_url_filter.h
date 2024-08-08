@@ -170,10 +170,10 @@ class SupervisedUserURLFilter {
   // Returns true if |callback| was called synchronously. If
   // |skip_manual_parent_filter| is set to true, it only uses the asynchronous
   // safe search checks.
-  bool GetFilteringBehaviorForURLWithAsyncChecks(
+  virtual bool GetFilteringBehaviorForURLWithAsyncChecks(
       const GURL& url,
       FilteringBehaviorCallback callback,
-      bool skip_manual_parent_filter = false);
+      bool skip_manual_parent_filter);
 
   // Like |GetFilteringBehaviorForURLWithAsyncChecks| but used for subframes.
   bool GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
