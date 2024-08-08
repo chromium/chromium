@@ -162,9 +162,10 @@ if (target_environment == "device" && ios_enable_code_signing) {
         ios_code_signing_identity_description,
       ]
     }
-    ios_code_signing_identity = exec_script("find_signing_identity.py",
-                                            find_signing_identity_args,
-                                            "trim string")
+    ios_code_signing_identity =
+        exec_script("//build/config/apple/find_signing_identity.py",
+                    find_signing_identity_args,
+                    "trim string")
   }
 }
 

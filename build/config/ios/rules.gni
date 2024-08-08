@@ -1391,7 +1391,7 @@ template("ios_framework_bundle") {
                                "public_deps",
                                "testonly",
                              ])
-      script = "//build/config/ios/write_framework_hmap.py"
+      script = "//build/config/apple/write_framework_hmap.py"
       outputs = [ _header_map_filename ]
 
       # The header map generation only wants the list of headers, not all of
@@ -1416,7 +1416,7 @@ template("ios_framework_bundle") {
     _create_module_map_target = _target_name + "_module_map"
     action(_create_module_map_target) {
       visibility = [ ":$_framework_headers_target" ]
-      script = "//build/config/ios/write_framework_modulemap.py"
+      script = "//build/config/apple/write_framework_modulemap.py"
       outputs = [ "$_framework_contents_dir/Modules/module.modulemap" ]
       args = [
         _output_name,
