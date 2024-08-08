@@ -3003,8 +3003,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.V4GetHash.CountOfPrefixes" units="prefixes"
-    expires_after="2024-09-15">
-  <owner>vakh@chromium.org</owner>
+    expires_after="2025-03-15">
+  <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The number of prefixes included in a full hash request sent to the Google
