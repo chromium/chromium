@@ -653,7 +653,7 @@ class OrderfileGenerator:
           self._compiler.webview_installer_path)
       files = self._profiler.CollectWebViewStartupProfile(
           self._compiler.webview_apk_path)
-    elif self._options.profile_speedometer:
+    elif self._options.arch == 'arm64':
       files = self._profiler.CollectSpeedometerProfile(
           self._compiler.chrome_apk_path)
     else:
@@ -1165,10 +1165,6 @@ def CreateArgumentParser():
                       default=False,
                       help='Use the webview startup benchmark profiles to '
                       'generate the orderfile.')
-  parser.add_argument('--profile-speedometer',
-                      action='store_true',
-                      default=False,
-                      help='Use speedometer 3 to generate the orderfile.')
   parser.add_argument('--manual-symbol-offsets',
                       default=None,
                       type=str,

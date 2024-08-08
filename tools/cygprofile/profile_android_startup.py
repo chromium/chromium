@@ -256,6 +256,9 @@ class AndroidProfileTool:
     """
     logging.info('Running Speedometer 3 profile')
     profile_benchmark = 'orderfile_generation.speedometer3'
+    if self._debug:
+      logging.info('Using reduced debugging profile')
+      profile_benchmark = 'orderfile_generation.speedometer3_debugging'
     self._SetUpDeviceFolders()
     cmd = [
         'tools/perf/run_benchmark', '--device', self._device.serial,

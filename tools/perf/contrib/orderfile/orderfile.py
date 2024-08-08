@@ -334,7 +334,18 @@ class OrderfileWebViewDebugging(OrderfileWebViewStartup):
 class OrderfileSpeedometer3(speedometer3.Speedometer3):
   enable_systrace = True
   take_memory_measurement = True
+  options = {'pageset_repeat': 5}
 
   @classmethod
   def Name(cls):
     return 'orderfile_generation.speedometer3'
+
+
+@benchmark.Owner(emails=['rasikan@google.com'])
+class OrderfileSpeedometer3Debugging(OrderfileSpeedometer3):
+  iteration_count = 1
+  options = {'pageset_repeat': 1}
+
+  @classmethod
+  def Name(cls):
+    return 'orderfile_generation.speedometer3_debugging'
