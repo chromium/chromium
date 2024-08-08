@@ -204,19 +204,9 @@ BASE_FEATURE(kPsDualWritePrefsToNoticeStorage,
              "PsDualWritePrefsToNoticeStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTrackingProtectionReminder,
-             "TrackingProtectionReminder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kTrackingProtectionIsSilentReminder{
-    &kTrackingProtectionReminder, "is-silent-reminder", false};
-
 BASE_FEATURE(kPrivateStateTokensDevUI,
              "PrivateStateTokensDevUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<base::TimeDelta> kTrackingProtectionReminderDelay{
-    &kTrackingProtectionReminder, "reminder-delay", base::TimeDelta::Max()};
 
 BASE_FEATURE(kTrackingProtectionSentimentSurvey,
              "TrackingProtectionSentimentSurvey",

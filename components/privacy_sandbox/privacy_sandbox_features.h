@@ -237,19 +237,6 @@ BASE_DECLARE_FEATURE(kPsDualWritePrefsToNoticeStorage);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<bool> kPsRedesignAdPrivacyPageEnableToggles;
 
-// Enables IPH reminders for tracking protection features.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kTrackingProtectionReminder);
-
-// Defines if the reminder should be silent.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<bool> kTrackingProtectionIsSilentReminder;
-
-// Defines the required delay after onboarding to see a reminder.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<base::TimeDelta>
-    kTrackingProtectionReminderDelay;
-
 // Enables tracking protection HaTS surveys.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionSentimentSurvey);
