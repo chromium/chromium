@@ -75,8 +75,7 @@ class SafeBrowsingQueryManager
                        const SafeBrowsingQueryManager::Query& query,
                        const SafeBrowsingQueryManager::Result& result,
                        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
-                           performed_check,
-                       bool is_async_check);
+                           performed_check);
 
     QueryData(const QueryData&);
     QueryData& operator=(const QueryData&);
@@ -90,8 +89,6 @@ class SafeBrowsingQueryManager
     const SafeBrowsingQueryManager::Result& result;
     // The PerformedCheck for a query.
     safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check;
-    // Whether the result comes from a sync or async check.
-    bool is_async_check;
   };
 
   // Observer class for the query manager.
@@ -112,11 +109,7 @@ class SafeBrowsingQueryManager
         const SafeBrowsingQueryManager::QueryData& query_data) {}
 
     virtual void SafeBrowsingAsyncQueryFinished(
-        SafeBrowsingQueryManager* manager,
-        const SafeBrowsingQueryManager::Query& query,
-        const SafeBrowsingQueryManager::Result& result,
-        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
-            performed_check) {}
+        const SafeBrowsingQueryManager::QueryData& query_data) {}
 
     // Called when `manager` is about to be destroyed.
     virtual void SafeBrowsingQueryManagerDestroyed(

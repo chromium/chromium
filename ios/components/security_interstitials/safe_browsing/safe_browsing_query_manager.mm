@@ -200,10 +200,9 @@ void SafeBrowsingQueryManager::UrlCheckFinished(
 
     for (auto& observer : observers_) {
       const QueryData& query_data =
-          QueryData(this, query, result, performed_check, is_async_check);
+          QueryData(this, query, result, performed_check);
       if (is_async_check) {
-        observer.SafeBrowsingAsyncQueryFinished(this, query, result,
-                                                performed_check);
+        observer.SafeBrowsingAsyncQueryFinished(query_data);
       } else {
         observer.SafeBrowsingSyncQueryFinished(query_data);
       }
@@ -261,13 +260,11 @@ SafeBrowsingQueryManager::QueryData::QueryData(
     SafeBrowsingQueryManager* manager,
     const SafeBrowsingQueryManager::Query& query,
     const SafeBrowsingQueryManager::Result& result,
-    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-    bool is_async_check)
+    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check)
     : manager(manager),
       query(query),
       result(result),
-      performed_check(performed_check),
-      is_async_check(is_async_check) {}
+      performed_check(performed_check) {}
 
 SafeBrowsingQueryManager::QueryData::QueryData(const QueryData&) = default;
 
