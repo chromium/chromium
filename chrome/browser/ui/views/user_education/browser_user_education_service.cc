@@ -721,7 +721,7 @@ void MaybeRegisterChromeFeaturePromos(
                          "defaulted to saved for the first time.")));
 
     registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForCustomAction(
+        FeaturePromoSpecification::CreateForCustomAction(
             feature_engagement::kIPHTabGroupsSaveV2IntroFeature,
             kToolbarAppMenuButtonElementId,
             IDS_WILDCARD,  // Replaced by caller with the correct IDS string.
@@ -798,18 +798,6 @@ void MaybeRegisterChromeFeaturePromos(
           .SetMetadata(
               120, "boujane@google.com",
               "Privacy standbox tracking protection onboarding notice.")));
-
-  // kIPHTrackingProtectionReminderFeature:
-  registry.RegisterFeature(std::move(std::move(
-      FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::kIPHTrackingProtectionReminderFeature,
-          kCookieControlsIconElementId, IDS_TRACKING_PROTECTION_REMINDER_LABEL,
-          IDS_TRACKING_PROTECTION_REMINDER_A11Y_LABEL,
-          FeaturePromoSpecification::AcceleratorInfo())
-          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetMetadata(
-              120, "boujane@google.com",
-              "Privacy standbox tracking protection reminder notice."))));
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   // kIPHWebUITabStripFeature:

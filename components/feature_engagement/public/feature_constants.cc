@@ -176,9 +176,6 @@ BASE_FEATURE(kIPHTabSearchFeature,
 BASE_FEATURE(kIPHTrackingProtectionOnboardingFeature,
              "IPH_TrackingProtectionOnboarding",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHTrackingProtectionReminderFeature,
-             "IPH_TrackingProtectionReminder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHWebUITabStripFeature,
              "IPH_WebUITabStrip",
              base::FEATURE_DISABLED_BY_DEFAULT);
