@@ -34,9 +34,11 @@ namespace WTF {
 template <typename T>
 class StringBuffer;
 class PartitionAllocator;
+// TODO(crbug.com/355003172): The default value of checked_iter should be true.
 template <typename T,
           wtf_size_t inlineCapacity = 0,
-          typename Allocator = PartitionAllocator>
+          typename Allocator = PartitionAllocator,
+          bool checked_iter = false>
 class Vector;
 
 class AtomicString;
