@@ -1426,6 +1426,47 @@ IN_PROC_BROWSER_TEST_P(
                 supervised_user::SupervisionMixin::SignInMode::kSupervised);
 }
 
+IN_PROC_BROWSER_TEST_P(
+    SupervisedUserNavigationThrottleOnlyEnabledForSupervisedUsers,
+    CheckSameDocumentNavigationAgainstClassifyUrlRPC) {
+  kids_management_api_mock().RestrictSubsequentClassifyUrl();
+
+  // Only supervised users should call the backend
+  if (GetSignInMode() ==
+      supervised_user::SupervisionMixin::SignInMode::kSupervised) {
+    // TODO(b/358283493): Explain why throttles check the URL twice.
+    EXPECT_CALL(kids_management_api_mock().classify_url_mock(),
+                ClassifyUrl(testing::_))
+        .Times(::testing::AtLeast(1));
+  } else {
+    EXPECT_CALL(kids_management_api_mock().classify_url_mock(),
+                ClassifyUrl(testing::_))
+        .Times(0);
+  }
+
+  GURL url = embedded_test_server()->GetURL(kExampleHost2,
+                                            "/supervised_user/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Only supervised users should experience the
+  // interstitial
+  EXPECT_EQ(IsInterstitialBeingShownInMainFrame(browser()),
+            GetSignInMode() ==
+                supervised_user::SupervisionMixin::SignInMode::kSupervised);
+
+  // Simulate a same document navigation by navigating to #test.
+  GURL::Replacements replace_ref;
+  replace_ref.SetRefStr("test");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           url.ReplaceComponents(replace_ref)));
+
+  // Only supervised users should experience the
+  // interstitial
+  EXPECT_EQ(IsInterstitialBeingShownInMainFrame(browser()),
+            GetSignInMode() ==
+                supervised_user::SupervisionMixin::SignInMode::kSupervised);
+}
+
 class SupervisedUserNavigationThrottleFencedFramesTest
     : public SupervisedUserNavigationThrottleTestBase,
       public testing::WithParamInterface<ThrottleTestParam::FeatureStatus> {
