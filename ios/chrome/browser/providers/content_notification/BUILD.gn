@@ -5,6 +5,7 @@
 source_set("chromium_content_notification_service") {
   sources = [ "chromium_content_notification_service.mm" ]
   deps = [
+    "//ios/chrome/browser/content_notification/model:content_notification_service",
     "//ios/public/provider/chrome/browser/content_notification:content_notification_api",
     "//url:url",
   ]

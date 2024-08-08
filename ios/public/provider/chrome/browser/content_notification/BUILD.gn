@@ -4,6 +4,4 @@
 
 source_set("content_notification_api") {
   sources = [ "content_notification_api.h" ]
-
-  deps = [ "//ios/chrome/browser/content_notification/model:content_notification_service" ]
 }

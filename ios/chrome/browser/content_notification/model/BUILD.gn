@@ -4,6 +4,8 @@
 
 source_set("content_notification_service") {
   sources = [
+    "content_notification_configuration.h",
+    "content_notification_configuration.mm",
     "content_notification_service.h",
     "content_notification_service.mm",
   ]
