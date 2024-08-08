@@ -24,7 +24,6 @@
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/url_matcher/url_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -701,7 +700,7 @@ WebFilterType SupervisedUserURLFilter::GetWebFilterType() const {
     return WebFilterType::kCertainSites;
   }
 
-  return user_prefs_.get().GetBoolean(prefs::kSupervisedUserSafeSites)
+  return supervised_user::IsSafeSitesEnabled(user_prefs_.get())
              ? WebFilterType::kTryToBlockMatureSites
              : WebFilterType::kAllowAllSites;
 }

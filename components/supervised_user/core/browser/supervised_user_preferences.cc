@@ -174,6 +174,11 @@ bool IsChildAccountStatusKnown(const PrefService& pref_service) {
   return pref_service.GetBoolean(prefs::kChildAccountStatusKnown);
 }
 
+bool IsSafeSitesEnabled(const PrefService& pref_service) {
+  return supervised_user::IsSubjectToParentalControls(pref_service) &&
+         pref_service.GetBoolean(prefs::kSupervisedUserSafeSites);
+}
+
 bool IsSubjectToParentalControls(const PrefService& pref_service) {
   return pref_service.GetString(prefs::kSupervisedUserId) == kChildAccountSUID;
 }
