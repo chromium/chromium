@@ -136,28 +136,38 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
     }
   }
 
+  // Elements that have position absolute/fixed or display: contents will not
+  // be sorted in reading-flow order. They should be visited at the end of
+  // the reading flow elements, in DOM order.
+  bool ShouldBeAtEndOfReadingFlow(const Element& element) {
+    if (LayoutObject* layout = element.GetLayoutObject()) {
+      return layout->IsFixedPositioned() || layout->IsAbsolutePositioned();
+    }
+    return element.HasDisplayContentsStyle();
+  }
+
   void SetReadingFlowInfo(Element& reading_flow_container) {
     DCHECK(reading_flow_container.GetLayoutBox());
     DCHECK(!reading_flow_container_);
     reading_flow_container_ = reading_flow_container;
     auto* children = MakeGarbageCollected<HeapVector<Member<Element>>>(
         reading_flow_container_->GetLayoutBox()->ReadingFlowElements());
-    // Layout box only includes elements with layout object. We need to add
-    // display: contents elements to the reading flow order separately.
+    // Layout box only includes elements that are in the reading flow
+    // container's layout. If a child is not in the sorted ReadingFlowElements,
+    // we add them after in DOM order.
     HeapVector<Member<Element>> to_visit;
     to_visit.push_back(reading_flow_container_);
     wtf_size_t i = 0;
     while (i < to_visit.size()) {
-      // We are visiting all children instead of descendants because we are only
-      // interested in display: contents elements that are between the reading
-      // flow container and its items. A display: contents element should be
-      // included in the reading flow if its parent is a reading flow container
-      // or a display: contents part of the reading flow.
       for (Element& child : ElementTraversal::ChildrenOf(*to_visit[i])) {
-        if (child.HasDisplayContentsStyle()) {
-          DCHECK(!children->Contains(child));
+        if (!children->Contains(child)) {
+          DCHECK(ShouldBeAtEndOfReadingFlow(child));
           children->push_back(child);
-          to_visit.push_back(child);
+          // TODO(dizhangg): this is a temporary logic since we are planning
+          // to make any child display: contents its own focus scope owner.
+          if (child.HasDisplayContentsStyle()) {
+            to_visit.push_back(child);
+          }
         }
       }
       ++i;
@@ -186,15 +196,6 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
       reading_flow_next_elements_.insert(prev_element, nullptr);
       reading_flow_last_element_ = prev_element;
     }
-  }
-
-  bool IsReadingFlowItemOrDisplayContents(const Element& element) {
-    if (element.HasDisplayContentsStyle()) {
-      return true;
-    }
-    return element.GetLayoutBox() &&
-           element.GetLayoutBox()->Parent() ==
-               reading_flow_container_->GetLayoutBox();
   }
 
   const Element* NextReadingFlowItem(const Element* next_in_dom_order) {
@@ -237,7 +238,7 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
   const Element* Next(const Element& current) {
     const Element* dom_next = NextInDomOrder(current);
     if (reading_flow_container_ &&
-        (!dom_next || IsReadingFlowItemOrDisplayContents(*dom_next))) {
+        (!dom_next || reading_flow_next_elements_.Contains(dom_next))) {
       return NextReadingFlowItem(dom_next);
     }
     return dom_next;
@@ -293,7 +294,7 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
   // 2. Else, use the DOM tree order.
   const Element* Previous(const Element& current) {
     return reading_flow_container_ &&
-                   IsReadingFlowItemOrDisplayContents(current)
+                   reading_flow_previous_elements_.Contains(&current)
                ? PreviousReadingFlowItem(current)
                : PreviousInDomOrder(current);
   }

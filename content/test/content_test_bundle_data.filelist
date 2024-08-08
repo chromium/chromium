@@ -2007,6 +2007,8 @@ data/accessibility/css/reading-flow-display-contents-shadow-host.html
 data/accessibility/css/reading-flow-display-contents-uniform-siblings-expected-blink.txt
 data/accessibility/css/reading-flow-display-contents-uniform-siblings.html
 data/accessibility/css/reading-flow-expected-blink.txt
+data/accessibility/css/reading-flow-out-of-flow-position-expected-blink.txt
+data/accessibility/css/reading-flow-out-of-flow-position.html
 data/accessibility/css/reading-flow-pseudo-elements-expected-blink.txt
 data/accessibility/css/reading-flow-pseudo-elements.html
 data/accessibility/css/reading-flow-shadow-dom-slot-expected-blink.txt
