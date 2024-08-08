@@ -297,8 +297,9 @@ void ServiceWorkerHost::BindAIManager(
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
   auto* process = GetProcessHost();
   if (process) {
-    GetContentClient()->browser()->BindAIManager(process->GetBrowserContext(),
-                                                 std::move(receiver));
+    GetContentClient()->browser()->BindAIManager(
+        process->GetBrowserContext(),
+        static_cast<base::SupportsUserData*>(this), std::move(receiver));
   }
 }
 

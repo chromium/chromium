@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/supports_user_data.h"
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -1119,10 +1120,11 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 #endif
 
   if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
-    map->Add<blink::mojom::AIManager>(
-        base::BindRepeating(&ContentBrowserClient::BindAIManager,
-                            base::Unretained(GetContentClient()->browser()),
-                            host->GetBrowserContext()));
+    map->Add<blink::mojom::AIManager>(base::BindRepeating(
+        &ContentBrowserClient::BindAIManager,
+        base::Unretained(GetContentClient()->browser()),
+        host->GetBrowserContext(),
+        base::Unretained(static_cast<RenderFrameHost*>(host))));
   }
 }
 
@@ -1385,10 +1387,11 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
       host));
 
   if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
-    map->Add<blink::mojom::AIManager>(
-        base::BindRepeating(&ContentBrowserClient::BindAIManager,
-                            base::Unretained(GetContentClient()->browser()),
-                            host->GetProcessHost()->GetBrowserContext()));
+    map->Add<blink::mojom::AIManager>(base::BindRepeating(
+        &ContentBrowserClient::BindAIManager,
+        base::Unretained(GetContentClient()->browser()),
+        host->GetProcessHost()->GetBrowserContext(),
+        base::Unretained(static_cast<base::SupportsUserData*>(host))));
   }
 }
 
@@ -1463,10 +1466,11 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
         &SharedWorkerHost::BindPressureService, base::Unretained(host)));
   }
   if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
-    map->Add<blink::mojom::AIManager>(
-        base::BindRepeating(&ContentBrowserClient::BindAIManager,
-                            base::Unretained(GetContentClient()->browser()),
-                            host->GetProcessHost()->GetBrowserContext()));
+    map->Add<blink::mojom::AIManager>(base::BindRepeating(
+        &ContentBrowserClient::BindAIManager,
+        base::Unretained(GetContentClient()->browser()),
+        host->GetProcessHost()->GetBrowserContext(),
+        base::Unretained(static_cast<base::SupportsUserData*>(host))));
   }
 
   // RenderProcessHost binders

@@ -5,29 +5,39 @@
 #include "chrome/browser/ai/ai_manager_keyed_service.h"
 
 #include <memory>
+#include <variant>
 
+#include "base/containers/flat_set.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/supports_user_data.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ai/ai_text_session.h"
+#include "chrome/browser/ai/ai_text_session_document_user_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_service_log.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 namespace {
+
+const char kAITestSessionSetSupportsUserDataKey[] = "ai_text_session_set";
 
 // Checks if the model path configured via command line is valid.
 bool IsModelPathValid(const std::string& model_path_str) {
@@ -98,6 +108,19 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
 
 }  // namespace
 
+AIManagerKeyedService::AITextSessionSet::AITextSessionSet() = default;
+AIManagerKeyedService::AITextSessionSet::~AITextSessionSet() = default;
+
+void AIManagerKeyedService::AITextSessionSet::AddSession(
+    std::unique_ptr<AITextSession> session) {
+  sessions_.insert(std::move(session));
+}
+
+void AIManagerKeyedService::AITextSessionSet::RemoveSession(
+    AITextSession* session) {
+  sessions_.erase(session);
+}
+
 AIManagerKeyedService::AIManagerKeyedService(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {}
@@ -105,8 +128,9 @@ AIManagerKeyedService::AIManagerKeyedService(
 AIManagerKeyedService::~AIManagerKeyedService() {}
 
 void AIManagerKeyedService::AddReceiver(
-    mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
-  receivers_.Add(this, std::move(receiver));
+    mojo::PendingReceiver<blink::mojom::AIManager> receiver,
+    ReceiverContext context) {
+  receivers_.Add(this, std::move(receiver), context);
 }
 
 void AIManagerKeyedService::CanCreateTextSession(
@@ -127,7 +151,51 @@ void AIManagerKeyedService::CanCreateTextSession(
   CanOptimizationGuideKeyedServiceCreateGenericSession(std::move(callback));
 }
 
+AIManagerKeyedService::AITextSessionSet*
+AIManagerKeyedService::GetSessionsFromContext(base::SupportsUserData* context) {
+  if (!context->GetUserData(kAITestSessionSetSupportsUserDataKey)) {
+    context->SetUserData(kAITestSessionSetSupportsUserDataKey,
+                         std::make_unique<AITextSessionSet>());
+  }
+
+  return static_cast<AITextSessionSet*>(
+      context->GetUserData(kAITestSessionSetSupportsUserDataKey));
+}
+
+void AIManagerKeyedService::AddSession(std::unique_ptr<AITextSession> session,
+                                       ReceiverContext context) {
+  // For document, the session should be wrapped as a `DocumentUserData`.
+  if (std::holds_alternative<content::RenderFrameHost*>(context)) {
+    AITextSessionDocumentUserData::CreateForCurrentDocument(
+        std::get<content::RenderFrameHost*>(context), std::move(session));
+    return;
+  }
+
+  // For workers, the session will be stored in the `AITextSessionSet` that's
+  // attached as a `SupportsUserData::Data`.
+  CHECK(std::holds_alternative<base::SupportsUserData*>(context));
+  AITextSessionSet* sessions =
+      GetSessionsFromContext(std::get<base::SupportsUserData*>(context));
+  session->SetDisconnectHandler(base::BindOnce(
+      [](AITextSessionSet* sessions, AITextSession* session) {
+        // Removes the `session` from the `AITextSessionSet` if the
+        // connection is gone before the `SupportsUserData` is destroyed.
+        // The `AITextSessionSet` is stored as the context of the receiver
+        // for `blink::mojom::AIManager`, and the `AITextSession`s are owned
+        // by it.
+        // At this point the `sessions` should not be destroyed, otherwise it
+        // will also destroy all the sessions in the set, and prevent this
+        // `disconnect_handler` from execution, because the receiver of the
+        // connection is owned by the `AITextSession`.
+        CHECK(sessions && session);
+        sessions->RemoveSession(session);
+      },
+      sessions));
+  sessions->AddSession(std::move(session));
+}
+
 std::unique_ptr<AITextSession> AIManagerKeyedService::CreateTextSessionInternal(
+    mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
     const blink::mojom::AITextSessionSamplingParamsPtr& sampling_params,
     const std::optional<const AITextSession::Context>& context) {
   CHECK(browser_context_);
@@ -156,7 +224,7 @@ std::unique_ptr<AITextSession> AIManagerKeyedService::CreateTextSessionInternal(
 
   return std::make_unique<AITextSession>(
       std::move(session), config_params.sampling_params,
-      browser_context_->GetWeakPtr(), context);
+      browser_context_->GetWeakPtr(), std::move(receiver), context);
 }
 
 void AIManagerKeyedService::CreateTextSession(
@@ -165,7 +233,7 @@ void AIManagerKeyedService::CreateTextSession(
     const std::optional<std::string>& system_prompt,
     CreateTextSessionCallback callback) {
   std::unique_ptr<AITextSession> session =
-      CreateTextSessionInternal(sampling_params);
+      CreateTextSessionInternal(std::move(receiver), sampling_params);
   if (!session) {
     // TODO(crbug.com/343325183): probably we should consider returning an error
     // enum and throw a clear exception from the blink side.
@@ -173,22 +241,15 @@ void AIManagerKeyedService::CreateTextSession(
     return;
   }
 
-  // TODO(crbug.com/356809696): instead of using `mojo::MakeSelfOwnedReceiver`,
-  // the session's lifetime should be associated with either the host of the
-  // document or worker.
-  if (!system_prompt.has_value()) {
-    // The new `AITextSession` shares the same lifetime with the `receiver`.
-    mojo::MakeSelfOwnedReceiver(std::move(session), std::move(receiver));
+  if (system_prompt.has_value()) {
+    // If the system prompt is provided, we need to set the system prompt and
+    // invoke the callback after it.
+    session->SetSystemPrompt(system_prompt.value(), std::move(callback));
+  } else {
     std::move(callback).Run(true);
-    return;
   }
 
-  // If the system prompt is provided, we need to set the system prompt and
-  // invoke the callback after it.
-  static_cast<AITextSession*>(
-      mojo::MakeSelfOwnedReceiver(std::move(session), std::move(receiver))
-          ->impl())
-      ->SetSystemPrompt(system_prompt.value(), std::move(callback));
+  AddSession(std::move(session), receivers_.current_context());
 }
 
 void AIManagerKeyedService::GetTextModelInfo(
@@ -210,8 +271,8 @@ void AIManagerKeyedService::
   // If the `OptimizationGuideKeyedService` cannot be retrieved, return false.
   if (!service) {
     std::move(callback).Run(
-        /*result=*/blink::mojom::ModelAvailabilityCheckResult::
-            kNoServiceNotRunning);
+        /*result=*/
+        blink::mojom::ModelAvailabilityCheckResult::kNoServiceNotRunning);
     return;
   }
 
@@ -239,13 +300,13 @@ void AIManagerKeyedService::CreateTextSessionForCloning(
     const AITextSession::Context& context,
     base::OnceCallback<void(bool)> callback) {
   std::unique_ptr<AITextSession> session =
-      CreateTextSessionInternal(sampling_params, context);
+      CreateTextSessionInternal(std::move(receiver), sampling_params, context);
   if (!session) {
     std::move(callback).Run(false);
     return;
   }
 
-  mojo::MakeSelfOwnedReceiver(std::move(session), std::move(receiver));
+  AddSession(std::move(session), receivers_.current_context());
   std::move(callback).Run(true);
 }
 
