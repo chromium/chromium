@@ -474,8 +474,13 @@ PageContainerLayoutAlgorithm::EdgeMarginNodePreferredSize(
   if (main_axis_is_inline_for_child) {
     main_axis_is_auto = child.Style().LogicalWidth().IsAuto();
     if (main_axis_is_auto) {
-      minmax =
-          ComputeMinAndMaxContentContributionForSelf(child, child_space).sizes;
+      ConstraintSpaceBuilder intrinsic_space_builder(
+          GetConstraintSpace(), child.Style().GetWritingDirection(),
+          /*is_new_fc=*/true);
+      intrinsic_space_builder.SetCacheSlot(LayoutResultCacheSlot::kMeasure);
+      minmax = ComputeMinAndMaxContentContributionForSelf(
+                   child, intrinsic_space_builder.ToConstraintSpace())
+                   .sizes;
     } else {
       BoxStrut border_padding = ComputeBorders(child_space, child) +
                                 ComputePadding(child_space, child.Style());
