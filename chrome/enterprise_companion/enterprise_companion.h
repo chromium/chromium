@@ -18,6 +18,8 @@ extern const char kLoggingModuleSwitch[];
 extern const char kCrashHandlerSwitch[];
 // Crash the program for testing purposes.
 extern const char kCrashMeSwitch[];
+// Install the application.
+extern const char kInstallSwitch[];
 
 #if BUILDFLAG(IS_MAC)
 // Runs the network worker.

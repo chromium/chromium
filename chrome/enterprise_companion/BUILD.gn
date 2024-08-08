@@ -118,6 +118,7 @@ source_set("base") {
     ]
   } else if (is_win) {
     sources += [ "installer_win.cc" ]
+    deps += [ "//chrome/installer/util:work_item" ]
   }
 }
 
@@ -189,6 +190,7 @@ test("enterprise_companion_integration_tests") {
     ":base",
     ":branding_header",
     ":installer_paths",
+    ":version_header",
     "//base",
     "//base/test:test_support",
     "//chrome/updater:constants_test",
@@ -200,6 +202,11 @@ test("enterprise_companion_integration_tests") {
   if (is_mac && host_os == "mac") {
     sources += [ "test/integration_tests_mac.cc" ]
     data_deps = [ "//chrome/enterprise_companion/mac:enterprise_companion_installer_unsigned" ]
+  }
+
+  if (is_win) {
+    sources += [ "test/integration_tests_win.cc" ]
+    data_deps = [ ":enterprise_companion_test" ]
   }
 }
 
@@ -252,6 +259,21 @@ if (!is_official_build) {
     if (is_win) {
       configs += [ "//build/config/win:windowed" ]
     }
+  }
+}
+
+# Enterprise Companion application used by integration tests. Eventually, this
+# should be linked against test constants.
+executable("enterprise_companion_test") {
+  testonly = true
+  sources = [ "main.cc" ]
+  deps = [
+    ":base",
+    "//chrome/updater:constants_prod",
+  ]
+
+  if (is_win) {
+    configs += [ "//build/config/win:windowed" ]
   }
 }
 

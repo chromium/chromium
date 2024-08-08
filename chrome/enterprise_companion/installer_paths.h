@@ -32,6 +32,16 @@ std::optional<base::FilePath> FindExistingInstall();
 base::FilePath GetKSAdminPath();
 #endif
 
+#if BUILDFLAG(IS_WIN)
+// Returns the path to the install directory used by other builds of this
+// application. That is, for 32-bit builds this returns the 64-bit install
+// directory and vice versa:
+// * 32-bit process on 32-bit host: nullopt
+// * 32-bit process on 64-bit host: C:\Program Files\...
+// * 64-bit process on 64-bit host: C:\Program Files (x86)\...
+std::optional<base::FilePath> GetInstallDirectoryForAlternateArch();
+#endif
+
 }  // namespace enterprise_companion
 
 #endif  // CHROME_ENTERPRISE_COMPANION_INSTALLER_PATHS_H_

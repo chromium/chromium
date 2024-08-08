@@ -11,6 +11,8 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/win/windows_version.h"
+#include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 
 namespace enterprise_companion {
@@ -55,6 +57,23 @@ std::optional<base::FilePath> FindExistingInstall() {
   }
   x86_install = x86_install->AppendASCII(kExecutableName);
   return base::PathExists(*x86_install) ? x86_install : std::nullopt;
+}
+
+std::optional<base::FilePath> GetInstallDirectoryForAlternateArch() {
+#if defined(ARCH_CPU_32_BITS)
+  if (base::win::OSInfo::GetInstance()->IsWowDisabled()) {
+    // 32-on-32 bit has no alternate install directories.
+    return {};
+  } else {
+    // Emulated 32-bit competes with 64-bit installations in C:\Program Files.
+    return GetInstallDirectoryForKey(base::DIR_PROGRAM_FILES6432);
+  }
+#elif defined(ARCH_CPU_64_BITS)
+  // 64-bit competes with 32-bit installations in C:\Program Files (x86).
+  return GetInstallDirectoryForKey(base::DIR_PROGRAM_FILESX86);
+#else
+#error CPU architecture is unknown.
+#endif
 }
 
 }  // namespace enterprise_companion

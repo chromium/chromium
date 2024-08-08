@@ -5,7 +5,18 @@
 #ifndef CHROME_ENTERPRISE_COMPANION_INSTALLER_H_
 #define CHROME_ENTERPRISE_COMPANION_INSTALLER_H_
 
+#include "build/build_config.h"
+
 namespace enterprise_companion {
+
+#if BUILDFLAG(IS_WIN)
+// The registry key in which the companion app's updater registration is stored.
+extern const wchar_t kAppRegKey[];
+// The registry value under `kAppRegKey` which stores the application's version.
+extern const wchar_t kRegValuePV[];
+// The registry value under `kAppRegKey` which stores the application's name.
+extern const wchar_t kRegValueName[];
+#endif
 
 // Install the Chrome Enterprise Companion App.
 bool Install();
