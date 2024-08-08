@@ -51,6 +51,8 @@ GURL BuildTextOnlySearchURL(
 
 GURL BuildLensSearchURL(
     std::optional<std::string> text_query,
+    std::optional<GURL> page_url,
+    std::optional<std::string> page_title,
     std::unique_ptr<lens::LensOverlayRequestId> request_id,
     lens::LensOverlayClusterInfo cluster_info,
     std::map<std::string, std::string> additional_search_query_params,

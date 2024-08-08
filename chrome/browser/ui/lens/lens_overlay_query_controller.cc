@@ -662,9 +662,10 @@ void LensOverlayQueryController::
   // Generate and send the Lens search url.
   lens::proto::LensOverlayUrlResponse lens_overlay_url_response;
   lens_overlay_url_response.set_url(
-      lens::BuildLensSearchURL(
-          query_text, request_id_generator_->GetNextRequestId(), cluster_info,
-          additional_search_query_params, invocation_source_, use_dark_mode_)
+      lens::BuildLensSearchURL(query_text, page_url_, page_title_,
+                               request_id_generator_->GetNextRequestId(),
+                               cluster_info, additional_search_query_params,
+                               invocation_source_, use_dark_mode_)
           .spec());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(url_callback_, lens_overlay_url_response));

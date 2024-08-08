@@ -159,7 +159,11 @@ constexpr base::FeatureParam<int> kLensOverlayClusterInfoLifetimeSeconds{
 
 constexpr base::FeatureParam<bool>
     kUseSearchContextForTextOnlyLensOverlayRequests{
-        &kLensOverlay, "use-search-context-for-text-only-requests", false};
+        &kLensOverlay, "use-search-context-for-text-only-requests", true};
+
+constexpr base::FeatureParam<bool>
+    kUseSearchContextForMultimodalLensOverlayRequests{
+        &kLensOverlay, "use-search-context-for-multimodal-requests", true};
 
 constexpr base::FeatureParam<int> kLensOverlayTapRegionHeight{
     &kLensOverlay, "tap-region-height", 300};
@@ -420,6 +424,10 @@ int GetLensOverlayClusterInfoLifetimeSeconds() {
 
 bool UseSearchContextForTextOnlyLensOverlayRequests() {
   return kUseSearchContextForTextOnlyLensOverlayRequests.Get();
+}
+
+bool UseSearchContextForMultimodalLensOverlayRequests() {
+  return kUseSearchContextForMultimodalLensOverlayRequests.Get();
 }
 
 int GetLensOverlayVerticalTextMargin() {

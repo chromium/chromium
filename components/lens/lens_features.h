@@ -320,6 +320,11 @@ extern int GetLensOverlayClusterInfoLifetimeSeconds();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseSearchContextForTextOnlyLensOverlayRequests();
 
+// Returns whether to include the search context with text-only Lens Overlay
+// requests.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseSearchContextForMultimodalLensOverlayRequests();
+
 // Returns the margin in pixels to add to the top and bottom of word bounding
 // boxes.
 COMPONENT_EXPORT(LENS_FEATURES)
