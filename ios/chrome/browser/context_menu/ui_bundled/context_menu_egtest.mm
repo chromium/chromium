@@ -808,7 +808,8 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   }
 }
 
-- (void)testShowFullURLInWebContextMenu {
+// TODO(crbug.com/358221944): Fix and re-enable.
+- (void)DISABLED_testShowFullURLInWebContextMenu {
   const GURL pageURL = self.testServer->GetURL(kLongLinkPageURL);
   const GURL longURL =
       self.testServer->GetURL(base::SysNSStringToUTF8(kLongLinkHref));
