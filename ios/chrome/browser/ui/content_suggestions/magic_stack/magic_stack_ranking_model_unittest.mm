@@ -277,12 +277,14 @@ class MagicStackRankingModelTest : public PlatformTest {
         featureEngagementTracker:(feature_engagement::Tracker*)tracker
                      authService:authentication_service];
     _setUpListMediator = [[FakeSetUpListMediator alloc]
-          initWithPrefService:GetBrowserState()->GetPrefs()
-                  syncService:syncService
-              identityManager:identityManager
-        authenticationService:authenticationService
-                   sceneState:scene_state_
-        isDefaultSearchEngine:NO];
+                   initWithPrefService:GetBrowserState()->GetPrefs()
+                           syncService:syncService
+                       identityManager:identityManager
+                 authenticationService:authenticationService
+                            sceneState:scene_state_
+                 isDefaultSearchEngine:NO
+                   segmentationService:nullptr
+        deviceSwitcherResultDispatcher:nullptr];
     _setUpListMediator.shouldShowSetUpList = YES;
     _parcelTrackingMediator = [[FakeParcelTrackingMediator alloc]
         initWithShoppingService:shopping_service_.get()

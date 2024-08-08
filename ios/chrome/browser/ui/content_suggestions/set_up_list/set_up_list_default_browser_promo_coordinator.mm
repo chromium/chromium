@@ -175,7 +175,9 @@ using base::UserMetricsAction;
   _transparentView = nil;
   _viewController = [[DefaultBrowserScreenViewController alloc] init];
   _viewController.delegate = self;
-  _mediator.consumer = _viewController;
+  if (IsSegmentedDefaultBrowserPromoEnabled()) {
+    _mediator.consumer = _viewController;
+  }
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];

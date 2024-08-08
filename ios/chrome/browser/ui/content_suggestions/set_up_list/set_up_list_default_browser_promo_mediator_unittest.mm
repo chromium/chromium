@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_mediator.h"
 
 #import "base/test/gmock_callback_support.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
@@ -23,6 +24,7 @@
 #import "ui/base/l10n/l10n_util.h"
 
 using base::test::RunOnceCallback;
+using base::test::ScopedFeatureList;
 using l10n_util::GetNSString;
 using syncer::FakeDeviceInfoTracker;
 using testing::_;
@@ -39,6 +41,7 @@ class SetUpListDefaultBrowserPromoMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
+    scoped_feature_list_.InitAndEnableFeature(kSegmentedDefaultBrowserPromo);
     DeviceSwitcherResultDispatcher::RegisterProfilePrefs(prefs_->registry());
     device_info_tracker_ = std::make_unique<FakeDeviceInfoTracker>();
     consumer_mock_ =
@@ -83,6 +86,7 @@ class SetUpListDefaultBrowserPromoMediatorTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<FakeDeviceInfoTracker> device_info_tracker_;
   NiceMock<MockSegmentationPlatformService> segmentation_platform_service_;

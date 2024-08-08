@@ -79,7 +79,8 @@ struct ViewConfig {
 }
 
 - (instancetype)initWithData:(SetUpListItemViewData*)data {
-  if (self = [super init]) {
+  self = [super init];
+  if (self) {
     _type = data.type;
     _complete = data.complete;
 

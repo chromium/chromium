@@ -29,6 +29,8 @@ source_set("set_up_list") {
     "//components/password_manager/core/common:features",
     "//components/prefs",
     "//components/prefs/ios",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
     "//components/sync/base:features",

@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmented_default_browser_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/crossfade_label.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -217,7 +218,9 @@ NSAttributedString* Strikethrough(NSString* text) {
       return l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
     case SetUpListItemType::kDefaultBrowser:
       return l10n_util::GetNSString(
-          IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SEE_MORE_DESCRIPTION);
+          IsSegmentedDefaultBrowserPromoEnabled()
+              ? [self defaultBrowserDescriptionForSegment:_data.userSegment]
+              : IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SEE_MORE_DESCRIPTION);
     case SetUpListItemType::kAutofill:
       return l10n_util::GetNSString(
           IDS_IOS_SET_UP_LIST_AUTOFILL_SEE_MORE_DESCRIPTION);
@@ -230,6 +233,19 @@ NSAttributedString* Strikethrough(NSString* text) {
     case SetUpListItemType::kAllSet:
     case SetUpListItemType::kFollow:
       NOTREACHED_NORETURN();
+  }
+}
+
+- (int)defaultBrowserDescriptionForSegment:
+    (segmentation_platform::DefaultBrowserUserSegment)segment {
+  switch (segment) {
+    case segmentation_platform::DefaultBrowserUserSegment::kDesktopUser:
+    case segmentation_platform::DefaultBrowserUserSegment::kAndroidSwitcher:
+      return IDS_IOS_SET_UP_LIST_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_SHORT_DESCRIPTION;
+    case segmentation_platform::DefaultBrowserUserSegment::kShopper:
+      return IDS_IOS_SET_UP_LIST_SEGMENTED_DEFAULT_BROWSER_SHOPPER_SHORT_DESCRIPTION;
+    case segmentation_platform::DefaultBrowserUserSegment::kDefault:
+      return IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION;
   }
 }
 

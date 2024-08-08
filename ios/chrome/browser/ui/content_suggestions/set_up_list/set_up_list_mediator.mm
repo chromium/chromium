@@ -11,6 +11,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_service.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
+#import "components/segmentation_platform/public/constants.h"
+#import "components/segmentation_platform/public/result.h"
+#import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
@@ -22,6 +27,7 @@
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmented_default_browser_utils.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -36,6 +42,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 
 using credential_provider_promo::IOSCredentialProviderPromoAction;
 
@@ -113,14 +121,29 @@ bool DefaultBrowserPromoCompleted() {
   SceneState* _sceneState;
   SetUpListConsumerList* _consumers;
   NSArray<SetUpListConfig*>* _setUpListConfigs;
+  // Components for retrieving user segmentation information from the
+  // Segmentation Platform.
+  raw_ptr<segmentation_platform::SegmentationPlatformService>
+      _segmentationService;
+  raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>
+      _deviceSwitcherResultDispatcher;
+  // User segment retrieved by the Segmentation Platform.
+  segmentation_platform::DefaultBrowserUserSegment _userSegment;
 }
+
+#pragma mark - Public
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
                         syncService:(syncer::SyncService*)syncService
                     identityManager:(signin::IdentityManager*)identityManager
               authenticationService:(AuthenticationService*)authService
                          sceneState:(SceneState*)sceneState
-              isDefaultSearchEngine:(BOOL)isDefaultSearchEngine {
+              isDefaultSearchEngine:(BOOL)isDefaultSearchEngine
+                segmentationService:
+                    (segmentation_platform::SegmentationPlatformService*)
+                        segmentationService
+     deviceSwitcherResultDispatcher:
+         (segmentation_platform::DeviceSwitcherResultDispatcher*)dispatcher {
   self = [super init];
   if (self) {
     _prefService = prefService;
@@ -175,6 +198,10 @@ bool DefaultBrowserPromoCompleted() {
     _sceneState = sceneState;
     [_sceneState addObserver:self];
 
+    if (IsSegmentedDefaultBrowserPromoEnabled()) {
+      _segmentationService = segmentationService;
+      _deviceSwitcherResultDispatcher = dispatcher;
+    }
     BOOL isContentNotificationEnabled =
         IsContentNotificationExperimentEnabled() &&
         IsContentNotificationSetUpListEnabled(
@@ -195,6 +222,8 @@ bool DefaultBrowserPromoCompleted() {
 }
 
 - (void)disconnect {
+  _segmentationService = nullptr;
+  _deviceSwitcherResultDispatcher = nullptr;
   _authenticationService = nullptr;
   _authServiceObserverBridge.reset();
   _syncObserverBridge.reset();
@@ -226,6 +255,9 @@ bool DefaultBrowserPromoCompleted() {
     SetUpListItemViewData* item =
         [[SetUpListItemViewData alloc] initWithType:model.type
                                            complete:model.complete];
+    if (IsSegmentedDefaultBrowserPromoEnabled()) {
+      [item setUserSegment:_userSegment];
+    }
     [allItems addObject:item];
   }
   return allItems;
@@ -305,6 +337,30 @@ bool DefaultBrowserPromoCompleted() {
     [self.contentSuggestionsMetricsRecorder recordSetUpListShown];
   }
   return _setUpListConfigs;
+}
+
+- (void)retrieveUserSegment {
+  CHECK(_segmentationService);
+  CHECK(_deviceSwitcherResultDispatcher);
+  segmentation_platform::PredictionOptions options =
+      segmentation_platform::PredictionOptions::ForCached();
+
+  segmentation_platform::ClassificationResult deviceSwitcherResult =
+      _deviceSwitcherResultDispatcher->GetCachedClassificationResult();
+
+  __weak __typeof(self) weakSelf = self;
+  auto classificationResultCallback = base::BindOnce(
+      [](__typeof(self) strongSelf,
+         segmentation_platform::ClassificationResult deviceSwitcherResult,
+
+         const segmentation_platform::ClassificationResult& shopperResult) {
+        [strongSelf didReceiveShopperSegmentationResult:shopperResult
+                                   deviceSwitcherResult:deviceSwitcherResult];
+      },
+      weakSelf, deviceSwitcherResult);
+  _segmentationService->GetClassificationResult(
+      segmentation_platform::kShoppingUserSegmentationKey, options, nullptr,
+      std::move(classificationResultCallback));
 }
 
 #pragma mark - SetUpListDelegate
@@ -423,6 +479,7 @@ bool DefaultBrowserPromoCompleted() {
 
 - (NSArray<SetUpListItemViewData*>*)setUpListItems {
   NSMutableArray<SetUpListItemViewData*>* items = [[NSMutableArray alloc] init];
+
   // Add items that are not complete yet.
   for (SetUpListItem* model in _setUpList.items) {
     if (model.complete) {
@@ -431,8 +488,13 @@ bool DefaultBrowserPromoCompleted() {
     SetUpListItemViewData* item =
         [[SetUpListItemViewData alloc] initWithType:model.type
                                            complete:model.complete];
+
+    if (IsSegmentedDefaultBrowserPromoEnabled()) {
+      [item setUserSegment:_userSegment];
+    }
     [items addObject:item];
   }
+
   // Add items that are complete to the end.
   for (SetUpListItem* model in _setUpList.items) {
     if (!model.complete) {
@@ -441,6 +503,10 @@ bool DefaultBrowserPromoCompleted() {
     SetUpListItemViewData* item =
         [[SetUpListItemViewData alloc] initWithType:model.type
                                            complete:model.complete];
+
+    if (IsSegmentedDefaultBrowserPromoEnabled()) {
+      [item setUserSegment:_userSegment];
+    }
     [items addObject:item];
   }
   return items;
@@ -498,6 +564,17 @@ bool DefaultBrowserPromoCompleted() {
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   return push_notification_settings::IsMobileNotificationsEnabledForAnyClient(
       base::SysNSStringToUTF8(identity.gaiaID), _prefService);
+}
+
+// Sets user's highest priority segment retrieved from the Segmentation
+// Platform.
+- (void)didReceiveShopperSegmentationResult:
+            (const segmentation_platform::ClassificationResult&)shopperResult
+                       deviceSwitcherResult:
+                           (const segmentation_platform::ClassificationResult&)
+                               deviceSwitcherResult {
+  _userSegment =
+      GetDefaultBrowserUserSegment(&deviceSwitcherResult, &shopperResult);
 }
 
 @end

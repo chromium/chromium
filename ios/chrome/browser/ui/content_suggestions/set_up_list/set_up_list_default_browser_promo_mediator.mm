@@ -36,8 +36,6 @@
                      dispatcher {
   self = [super init];
   if (self) {
-    CHECK(segmentationService);
-    CHECK(dispatcher);
     _segmentationService = segmentationService;
     _deviceSwitcherResultDispatcher = dispatcher;
   }
@@ -61,6 +59,8 @@
 
 // Retrieves user segmentation data from the Segmentation Platform.
 - (void)retrieveUserSegmentWithCompletion:(ProceduralBlock)completion {
+  CHECK(_segmentationService);
+  CHECK(_deviceSwitcherResultDispatcher);
   segmentation_platform::PredictionOptions options =
       segmentation_platform::PredictionOptions::ForCached();
   segmentation_platform::ClassificationResult deviceSwitcherResult =

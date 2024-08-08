@@ -19,9 +19,14 @@ class PrefService;
 @class SetUpListItem;
 @class SetUpListItemViewData;
 
+namespace segmentation_platform {
+class DeviceSwitcherResultDispatcher;
+class SegmentationPlatformService;
+}  // namespace segmentation_platform
+
 namespace signin {
 class IdentityManager;
-}
+}  // namespace signin
 
 namespace syncer {
 class SyncService;
@@ -55,17 +60,39 @@ class SyncService;
 // module.
 @interface SetUpListMediator : NSObject
 
-// Default initializer.
+// Receiver for Set Up List actions.
+@property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
+    commandHandler;
+
+// Audience used to communicate Set Up List events.
+@property(nonatomic, weak) id<SetUpListMediatorAudience> audience;
+
+// Delegate used to communicate Content Suggestions events to the delegate.
+@property(nonatomic, weak) id<ContentSuggestionsDelegate> delegate;
+
+// Recorder for content suggestions metrics.
+@property(nonatomic, weak)
+    ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
+
+// Initializer with optional `segmentationService` and
+// `deviceSwitcherResultDispatcher` used for personalizing messaging in the Set
+// Up List Default Browser item.
 - (instancetype)initWithPrefService:(PrefService*)prefService
                         syncService:(syncer::SyncService*)syncService
                     identityManager:(signin::IdentityManager*)identityManager
               authenticationService:(AuthenticationService*)authService
                          sceneState:(SceneState*)sceneState
               isDefaultSearchEngine:(BOOL)isDefaultSearchEngine
+                segmentationService:
+                    (segmentation_platform::SegmentationPlatformService*)
+                        segmentationService
+     deviceSwitcherResultDispatcher:
+         (segmentation_platform::DeviceSwitcherResultDispatcher*)dispatcher
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Disconnects this mediator.
 - (void)disconnect;
 
 // Returns YES if the conditions are right to display the Set Up List.
@@ -87,19 +114,8 @@ class SyncService;
 // Indicates to the mediator to disable SetUpList entirely.
 - (void)disableModule;
 
-// Receiver for Set Up List actions.
-@property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
-    commandHandler;
-
-// Audience used to communicate Set Up List events.
-@property(nonatomic, weak) id<SetUpListMediatorAudience> audience;
-
-// Delegate used to communicate Content Suggestions events to the delegate.
-@property(nonatomic, weak) id<ContentSuggestionsDelegate> delegate;
-
-// Recorder for content suggestions metrics.
-@property(nonatomic, weak)
-    ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
+// Retrieves user segmentation data from the Segmentation Platform.
+- (void)retrieveUserSegment;
 
 @end
 

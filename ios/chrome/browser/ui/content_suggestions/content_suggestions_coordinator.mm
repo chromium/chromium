@@ -202,6 +202,7 @@
   TabResumptionMediator* _tabResumptionMediator;
 
   MagicStackCollectionViewController* _magicStackCollectionView;
+
   segmentation_platform::SegmentationPlatformService* _segmentationService;
   segmentation_platform::DeviceSwitcherResultDispatcher*
       _deviceSwitcherResultDispatcher;
@@ -217,11 +218,13 @@
   _started = YES;
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
+
   _segmentationService = segmentation_platform::
       SegmentationPlatformServiceFactory::GetForBrowserState(browserState);
   _deviceSwitcherResultDispatcher =
       segmentation_platform::SegmentationPlatformServiceFactory::
           GetDispatcherForBrowserState(browserState);
+
   self.authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
 
@@ -230,10 +233,13 @@
 
   favicon::LargeIconService* largeIconService =
       IOSChromeLargeIconServiceFactory::GetForBrowserState(browserState);
+
   LargeIconCache* cache =
       IOSChromeLargeIconCacheFactory::GetForBrowserState(browserState);
+
   std::unique_ptr<ntp_tiles::MostVisitedSites> mostVisitedFactory =
       IOSMostVisitedSitesFactory::NewForBrowserState(browserState);
+
   ReadingListModel* readingListModel =
       ReadingListModelFactory::GetForBrowserState(browserState);
 
@@ -291,30 +297,6 @@
   [moduleMediators addObject:_shortcutsMediator];
   self.contentSuggestionsMediator.shortcutsMediator = _shortcutsMediator;
 
-  BOOL isSetupListEnabled = set_up_list_utils::IsSetUpListActive(
-      GetApplicationContext()->GetLocalState(), prefs);
-  if (isSetupListEnabled) {
-    const TemplateURL* defaultSearchURLTemplate =
-        ios::TemplateURLServiceFactory::GetForBrowserState(browserState)
-            ->GetDefaultSearchProvider();
-    BOOL isDefaultSearchEngine = defaultSearchURLTemplate &&
-                                 defaultSearchURLTemplate->prepopulate_id() ==
-                                     TemplateURLPrepopulateData::google.id;
-    _setUpListMediator = [[SetUpListMediator alloc]
-          initWithPrefService:prefs
-                  syncService:syncService
-              identityManager:identityManager
-        authenticationService:authenticationService
-                   sceneState:self.browser->GetSceneState()
-        isDefaultSearchEngine:isDefaultSearchEngine];
-    _setUpListMediator.commandHandler = self;
-    _setUpListMediator.contentSuggestionsMetricsRecorder =
-        self.contentSuggestionsMetricsRecorder;
-    _setUpListMediator.delegate = self.delegate;
-    self.contentSuggestionsMediator.setUpListMediator = _setUpListMediator;
-    [moduleMediators addObject:_setUpListMediator];
-  }
-
   if (IsTabResumptionEnabled()) {
     _tabResumptionMediator = [[TabResumptionMediator alloc]
         initWithLocalState:GetApplicationContext()->GetLocalState()
@@ -352,7 +334,44 @@
     _safetyCheckMediator.presentationAudience = self;
     [moduleMediators addObject:_safetyCheckMediator];
   }
-
+  if (!ShouldPutMostVisitedSitesInMagicStack()) {
+    ContentSuggestionsViewController* viewController =
+        [[ContentSuggestionsViewController alloc] init];
+    viewController.audience = self;
+    viewController.urlLoadingBrowserAgent =
+        UrlLoadingBrowserAgent::FromBrowser(self.browser);
+    viewController.contentSuggestionsMetricsRecorder =
+        self.contentSuggestionsMetricsRecorder;
+    self.contentSuggestionsViewController = viewController;
+  }
+  BOOL isSetupListEnabled = set_up_list_utils::IsSetUpListActive(
+      GetApplicationContext()->GetLocalState(), prefs);
+  if (isSetupListEnabled) {
+    const TemplateURL* defaultSearchURLTemplate =
+        ios::TemplateURLServiceFactory::GetForBrowserState(browserState)
+            ->GetDefaultSearchProvider();
+    BOOL isDefaultSearchEngine = defaultSearchURLTemplate &&
+                                 defaultSearchURLTemplate->prepopulate_id() ==
+                                     TemplateURLPrepopulateData::google.id;
+    _setUpListMediator = [[SetUpListMediator alloc]
+                   initWithPrefService:prefs
+                           syncService:syncService
+                       identityManager:identityManager
+                 authenticationService:authenticationService
+                            sceneState:self.browser->GetSceneState()
+                 isDefaultSearchEngine:isDefaultSearchEngine
+                   segmentationService:_segmentationService
+        deviceSwitcherResultDispatcher:_deviceSwitcherResultDispatcher];
+    if (IsSegmentedDefaultBrowserPromoEnabled()) {
+      [_setUpListMediator retrieveUserSegment];
+    }
+    _setUpListMediator.commandHandler = self;
+    _setUpListMediator.contentSuggestionsMetricsRecorder =
+        self.contentSuggestionsMetricsRecorder;
+    _setUpListMediator.delegate = self.delegate;
+    self.contentSuggestionsMediator.setUpListMediator = _setUpListMediator;
+    [moduleMediators addObject:_setUpListMediator];
+  }
   _magicStackRankingModel = [[MagicStackRankingModel alloc]
       initWithSegmentationService:_segmentationService
                       prefService:prefs
@@ -364,17 +383,6 @@
       _magicStackRankingModel;
   _magicStackRankingModel.delegate = self.contentSuggestionsMediator;
   _magicStackRankingModel.homeStartDataSource = self.homeStartDataSource;
-
-  if (!ShouldPutMostVisitedSitesInMagicStack()) {
-    ContentSuggestionsViewController* viewController =
-        [[ContentSuggestionsViewController alloc] init];
-    viewController.audience = self;
-    viewController.urlLoadingBrowserAgent =
-        UrlLoadingBrowserAgent::FromBrowser(self.browser);
-    viewController.contentSuggestionsMetricsRecorder =
-        self.contentSuggestionsMetricsRecorder;
-    self.contentSuggestionsViewController = viewController;
-  }
 
   _magicStackCollectionView = [[MagicStackCollectionViewController alloc] init];
   _magicStackCollectionView.audience = self;
