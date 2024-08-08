@@ -293,6 +293,14 @@ CGFloat GPayIconTopAnchorOffset() {
     self.accessibilityLabel =
         [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
                                    self.cardLabel.attributedText.string];
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    if (ShouldShowGPayIcon(self.card.recordType)) {
+      self.accessibilityLabel =
+          [NSString stringWithFormat:@"%@, %@", self.accessibilityLabel,
+                                     l10n_util::GetNSString(
+                                         IDS_IOS_AUTOFILL_WALLET_SERVER_NAME)];
+    }
+#endif
   }
 }
 
