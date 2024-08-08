@@ -23,8 +23,6 @@ source_set("ml") {
     "on_device_model_executor.cc",
     "on_device_model_internal.cc",
     "session_accessor.cc",
-    "ts_model.cc",
-    "ts_model.h",
     "utils.cc",
   ]
 

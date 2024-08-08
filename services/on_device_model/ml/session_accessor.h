@@ -22,6 +22,7 @@ class SessionAccessor {
  public:
   using Ptr = std::unique_ptr<SessionAccessor, base::OnTaskRunnerDeleter>;
 
+  static Ptr Empty();
   static Ptr Create(scoped_refptr<base::SequencedTaskRunner> task_runner,
                     ChromeMLModel model,
                     base::File adaptation_data = base::File());

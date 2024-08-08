@@ -19,7 +19,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/session_accessor.h"
-#include "services/on_device_model/ml/ts_model.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/on_device_model.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -63,8 +62,9 @@ class OnDeviceModelExecutor : public on_device_model::OnDeviceModel {
 
   const raw_ref<const ChromeML> chrome_ml_;
 
+  base::MemoryMappedFile ts_data_;
+  base::MemoryMappedFile ts_sp_model_;
   scoped_refptr<LanguageDetector> language_detector_;
-  std::unique_ptr<TsModel> ts_model_;
 
   // TODO(b/323572952): Allow disposing of adaptation weights.
   std::vector<std::unique_ptr<base::MemoryMappedFile>> adaptation_data_;
