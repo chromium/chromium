@@ -178,13 +178,6 @@ BASE_FEATURE(kCanvasOopRasterization,
 );
 #endif
 
-// Enables the use of out of process rasterization for canvas even when GPU tile
-// rasterization is disabled. CanvasOopRasterization is still required to be
-// enabled to use OOP-C path with this flag.
-BASE_FEATURE(kCanvasOopWithoutGpuTileRaster,
-             "CanvasOopWithoutGpuTileRaster",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the use of MSAA in skia on Ice Lake and later intel architectures.
 BASE_FEATURE(kEnableMSAAOnNewIntelGPUs,
              "EnableMSAAOnNewIntelGPUs",
