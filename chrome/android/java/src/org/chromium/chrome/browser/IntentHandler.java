@@ -361,9 +361,9 @@ public class IntentHandler {
     public static final String EXTRA_OPEN_NEW_INCOGNITO_TAB =
             "com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB";
 
-    /** Intent extra to open an ephemeral custom tab without incognito branding. */
-    public static final String EXTRA_OPEN_NEW_EPHEMERAL_TAB =
-            "com.google.android.apps.chrome.EXTRA_OPEN_NEW_EPHEMERAL_TAB";
+    /** Intent extra to enable ephemeral browsing within the Custom Tab. */
+    public static final String EXTRA_ENABLE_EPHEMERAL_BROWSING =
+            "androidx.browser.customtabs.extra.ENABLE_EPHEMERAL_BROWSING";
 
     /** Scheme used by web pages to start up Chrome without an explicit Intent. */
     public static final String GOOGLECHROME_SCHEME = "googlechrome";
@@ -1487,7 +1487,7 @@ public class IntentHandler {
                 || IntentUtils.safeGetBoolean(extras, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
                 || IntentUtils.safeGetBoolean(
                         extras, EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false)
-                || IntentUtils.safeGetBoolean(extras, EXTRA_OPEN_NEW_EPHEMERAL_TAB, false);
+                || IntentUtils.safeGetBoolean(extras, EXTRA_ENABLE_EPHEMERAL_BROWSING, false);
     }
 
     @NativeMethods

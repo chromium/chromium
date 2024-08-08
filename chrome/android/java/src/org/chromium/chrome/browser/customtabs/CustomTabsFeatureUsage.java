@@ -73,7 +73,7 @@ public class CustomTabsFeatureUsage {
         CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
         CustomTabsFeature.EXTRA_ENABLE_PAGE_INSIGHTS_HUB,
         CustomTabsFeature.EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE,
-        CustomTabsFeature.EXTRA_OPEN_NEW_EPHEMERAL_TAB,
+        CustomTabsFeature.EXTRA_ENABLE_EPHEMERAL_BROWSING,
         CustomTabsFeature.EXTRA_ENABLE_GOOGLE_BOTTOM_BAR,
         CustomTabsFeature.EXTRA_GOOGLE_BOTTOM_BAR_BUTTONS,
         CustomTabsFeature.EXTRA_NETWORK,
@@ -138,7 +138,7 @@ public class CustomTabsFeatureUsage {
         int EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION = 52;
         int EXTRA_ENABLE_PAGE_INSIGHTS_HUB = 53;
         int EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE = 54;
-        int EXTRA_OPEN_NEW_EPHEMERAL_TAB = 55;
+        int EXTRA_ENABLE_EPHEMERAL_BROWSING = 55;
         int EXTRA_ENABLE_GOOGLE_BOTTOM_BAR = 56;
         int EXTRA_GOOGLE_BOTTOM_BAR_BUTTONS = 57;
         int EXTRA_NETWORK = 58;

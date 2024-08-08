@@ -714,7 +714,7 @@ public class CustomTabActivityAppMenuTest {
 
         Intent intent = new CustomTabsIntent.Builder(session).build().intent;
         // Set up an OTR custom tab to trigger "Open in Chrome Incognito".
-        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_EPHEMERAL_TAB, true);
+        intent.putExtra(IntentHandler.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
         intent.setData(Uri.parse(mTestPage));
         intent.setComponent(
                 new ComponentName(

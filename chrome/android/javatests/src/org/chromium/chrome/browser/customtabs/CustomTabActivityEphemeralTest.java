@@ -132,7 +132,7 @@ public class CustomTabActivityEphemeralTest {
 
     private Intent createEphemeralCustomTabIntent() {
         return createMinimalCustomTabIntent(ApplicationProvider.getApplicationContext(), mTestPage)
-                .putExtra(IntentHandler.EXTRA_OPEN_NEW_EPHEMERAL_TAB, true);
+                .putExtra(IntentHandler.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
     }
 
     private static int getThemeColor(CustomTabActivity activity) {
