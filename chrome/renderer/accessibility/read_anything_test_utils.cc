@@ -77,4 +77,25 @@ ui::AXNodeData SuperscriptNode(int id, std::u16string text_content) {
   return node;
 }
 
+std::vector<ui::AXTreeUpdate> CreateSimpleUpdateList(std::vector<int> child_ids,
+                                                     ui::AXTreeID tree_id) {
+  std::vector<ui::AXTreeUpdate> updates;
+  for (int i = 0; i < 3; i++) {
+    int id = i + 5;
+    child_ids.push_back(id);
+
+    ui::AXTreeUpdate update;
+    SetUpdateTreeID(&update, tree_id);
+    ui::AXNodeData root;
+    root.id = 1;
+    root.child_ids = child_ids;
+
+    ui::AXNodeData node = test::TextNodeWithTextFromId(id);
+    update.root_id = root.id;
+    update.nodes = {root, node};
+    updates.push_back(update);
+  }
+  return updates;
+}
+
 }  // namespace test

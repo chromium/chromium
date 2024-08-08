@@ -12,6 +12,7 @@
 #include "chrome/renderer/accessibility/read_anything_node_utils.h"
 #include "chrome/renderer/accessibility/read_anything_test_utils.h"
 #include "chrome/test/base/chrome_render_view_test.h"
+#include "read_anything_test_utils.h"
 #include "services/strings/grit/services_strings.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event.h"
@@ -221,6 +222,27 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   }
 
   void set_is_pdf(bool is_pdf) { return model_->set_is_pdf(is_pdf); }
+
+  std::vector<int> SendSimpleUpdateAndGetChildIds() {
+    // Set the name of each node to be its id.
+    ui::AXTreeUpdate initial_update;
+    SetUpdateTreeID(&initial_update);
+    initial_update.root_id = 1;
+    initial_update.nodes.resize(3);
+    std::vector<int> child_ids;
+    for (int i = 0; i < 3; i++) {
+      int id = i + 2;
+      child_ids.push_back(id);
+      initial_update.nodes[i] = test::TextNodeWithTextFromId(id);
+    }
+    AccessibilityEventReceived({initial_update});
+    return child_ids;
+  }
+
+  std::vector<ui::AXTreeUpdate> CreateSimpleUpdateList(
+      std::vector<int> child_ids) {
+    return test::CreateSimpleUpdateList(child_ids, tree_id_);
+  }
 
   ui::AXTreeID tree_id_;
 
@@ -440,35 +462,8 @@ TEST_F(ReadAnythingAppModelTest,
 
 TEST_F(ReadAnythingAppModelTest,
        AddPendingUpdatesAfterUnserializingOnSameTree_DoesNotCrash) {
-  // Set the name of each node to be its id.
-  ui::AXTreeUpdate initial_update;
-  SetUpdateTreeID(&initial_update);
-  initial_update.root_id = 1;
-  initial_update.nodes.resize(3);
-  std::vector<int> child_ids;
-  for (int i = 0; i < 3; i++) {
-    int id = i + 2;
-    child_ids.push_back(id);
-    initial_update.nodes[i] = test::TextNodeWithTextFromId(id);
-  }
-  AccessibilityEventReceived({initial_update});
-
-  std::vector<ui::AXTreeUpdate> updates;
-  for (int i = 0; i < 3; i++) {
-    int id = i + 5;
-    child_ids.push_back(id);
-
-    ui::AXTreeUpdate update;
-    SetUpdateTreeID(&update);
-    update.root_id = 1;
-    ui::AXNodeData root;
-    root.id = 1;
-    root.child_ids = child_ids;
-
-    ui::AXNodeData node = test::TextNodeWithTextFromId(id);
-    update.nodes = {root, node};
-    updates.push_back(update);
-  }
+  std::vector<int> child_ids = SendSimpleUpdateAndGetChildIds();
+  std::vector<ui::AXTreeUpdate> updates = CreateSimpleUpdateList(child_ids);
 
   // Send update 0, which starts distillation.
   AccessibilityEventReceived({updates[0]});
@@ -491,35 +486,8 @@ TEST_F(ReadAnythingAppModelTest,
 }
 
 TEST_F(ReadAnythingAppModelTest, OnTreeErased_ClearsPendingUpdates) {
-  // Set the name of each node to be its id.
-  ui::AXTreeUpdate initial_update;
-  SetUpdateTreeID(&initial_update);
-  initial_update.root_id = 1;
-  initial_update.nodes.resize(3);
-  std::vector<int> child_ids;
-  for (int i = 0; i < 3; i++) {
-    int id = i + 2;
-    child_ids.push_back(id);
-    initial_update.nodes[i] = test::TextNodeWithTextFromId(id);
-  }
-  AccessibilityEventReceived({initial_update});
-
-  std::vector<ui::AXTreeUpdate> updates;
-  for (int i = 0; i < 3; i++) {
-    int id = i + 5;
-    child_ids.push_back(id);
-
-    ui::AXTreeUpdate update;
-    SetUpdateTreeID(&update);
-    ui::AXNodeData root;
-    root.id = 1;
-    root.child_ids = child_ids;
-
-    ui::AXNodeData node = test::TextNodeWithTextFromId(id);
-    update.root_id = root.id;
-    update.nodes = {root, node};
-    updates.push_back(update);
-  }
+  std::vector<int> child_ids = SendSimpleUpdateAndGetChildIds();
+  std::vector<ui::AXTreeUpdate> updates = CreateSimpleUpdateList(child_ids);
 
   // Send update 0, which starts distillation.
   AccessibilityEventReceived({updates[0]});
@@ -539,35 +507,8 @@ TEST_F(ReadAnythingAppModelTest, OnTreeErased_ClearsPendingUpdates) {
 
 TEST_F(ReadAnythingAppModelTest,
        DistillationInProgress_TreeUpdateReceivedOnActiveTree) {
-  // Set the name of each node to be its id.
-  ui::AXTreeUpdate initial_update;
-  SetUpdateTreeID(&initial_update);
-  initial_update.root_id = 1;
-  initial_update.nodes.resize(3);
-  std::vector<int> child_ids;
-  for (int i = 0; i < 3; i++) {
-    int id = i + 2;
-    child_ids.push_back(id);
-    initial_update.nodes[i] = test::TextNodeWithTextFromId(id);
-  }
-  AccessibilityEventReceived({initial_update});
-
-  std::vector<ui::AXTreeUpdate> updates;
-  for (int i = 0; i < 3; i++) {
-    int id = i + 5;
-    child_ids.push_back(id);
-
-    ui::AXTreeUpdate update;
-    SetUpdateTreeID(&update);
-    ui::AXNodeData root;
-    root.id = 1;
-    root.child_ids = child_ids;
-
-    ui::AXNodeData node = test::TextNodeWithTextFromId(id);
-    update.root_id = root.id;
-    update.nodes = {root, node};
-    updates.push_back(update);
-  }
+  std::vector<int> child_ids = SendSimpleUpdateAndGetChildIds();
+  std::vector<ui::AXTreeUpdate> updates = CreateSimpleUpdateList(child_ids);
 
   // Send update 0, which starts distillation.
   AccessibilityEventReceived({updates[0]});
@@ -592,35 +533,8 @@ TEST_F(ReadAnythingAppModelTest,
 }
 
 TEST_F(ReadAnythingAppModelTest, SpeechPlaying_TreeUpdateReceivedOnActiveTree) {
-  // Set the name of each node to be its id.
-  ui::AXTreeUpdate initial_update;
-  SetUpdateTreeID(&initial_update);
-  initial_update.root_id = 1;
-  initial_update.nodes.resize(3);
-  std::vector<int> child_ids;
-  for (int i = 0; i < 3; i++) {
-    int id = i + 2;
-    child_ids.push_back(id);
-    initial_update.nodes[i] = test::TextNodeWithTextFromId(id);
-  }
-  AccessibilityEventReceived({initial_update});
-
-  std::vector<ui::AXTreeUpdate> updates;
-  for (int i = 0; i < 3; i++) {
-    int id = i + 5;
-    child_ids.push_back(id);
-
-    ui::AXTreeUpdate update;
-    SetUpdateTreeID(&update);
-    ui::AXNodeData root;
-    root.id = 1;
-    root.child_ids = child_ids;
-
-    ui::AXNodeData node = test::TextNodeWithTextFromId(id);
-    update.root_id = root.id;
-    update.nodes = {root, node};
-    updates.push_back(update);
-  }
+  std::vector<int> child_ids = SendSimpleUpdateAndGetChildIds();
+  std::vector<ui::AXTreeUpdate> updates = CreateSimpleUpdateList(child_ids);
 
   // Send update 0, which starts distillation.
   AccessibilityEventReceived({updates[0]});
@@ -647,23 +561,8 @@ TEST_F(ReadAnythingAppModelTest, ClearPendingUpdates_DeletesPendingUpdates) {
   EXPECT_EQ(0u, GetNumPendingUpdates(tree_id_));
 
   // Create a couple of updates which add additional nodes to the tree.
-  std::vector<ui::AXTreeUpdate> updates;
   std::vector<int> child_ids = {2, 3, 4};
-  for (int i = 0; i < 3; i++) {
-    int id = i + 5;
-    child_ids.push_back(id);
-
-    ui::AXTreeUpdate update;
-    SetUpdateTreeID(&update);
-    ui::AXNodeData root;
-    root.id = 1;
-    root.child_ids = child_ids;
-
-    ui::AXNodeData node = test::TextNodeWithTextFromId(id);
-    update.root_id = root.id;
-    update.nodes = {root, node};
-    updates.push_back(update);
-  }
+  std::vector<ui::AXTreeUpdate> updates = CreateSimpleUpdateList(child_ids);
 
   AccessibilityEventReceived({updates[0]});
   EXPECT_EQ(0u, GetNumPendingUpdates(tree_id_));
@@ -683,24 +582,8 @@ TEST_F(ReadAnythingAppModelTest, ChangeActiveTreeWithPendingUpdates_UnknownID) {
   ASSERT_TRUE(AreAllPendingUpdatesEmpty());
 
   // Create a couple of updates which add additional nodes to the tree.
-  std::vector<ui::AXTreeUpdate> updates;
-  std::vector<ui::AXEvent> events;
   std::vector<int> child_ids = {2, 3, 4};
-  for (int i = 0; i < 2; i++) {
-    int id = i + 5;
-    child_ids.push_back(id);
-
-    ui::AXTreeUpdate update;
-    SetUpdateTreeID(&update);
-    ui::AXNodeData root;
-    root.id = 1;
-    root.child_ids = child_ids;
-
-    ui::AXNodeData node = test::TextNodeWithTextFromId(id);
-    update.root_id = root.id;
-    update.nodes = {root, node};
-    updates.push_back(update);
-  }
+  std::vector<ui::AXTreeUpdate> updates = CreateSimpleUpdateList(child_ids);
 
   // Create an update which has no tree id.
   ui::AXTreeUpdate update;

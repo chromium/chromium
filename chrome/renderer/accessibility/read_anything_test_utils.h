@@ -15,6 +15,9 @@ namespace test {
 void SetUpdateTreeID(ui::AXTreeUpdate* update, ui::AXTreeID tree_id);
 std::unique_ptr<ui::AXTreeUpdate> CreateInitialUpdate();
 
+std::vector<ui::AXTreeUpdate> CreateSimpleUpdateList(std::vector<int> child_ids,
+                                                     ui::AXTreeID tree_id);
+
 // Helpers for creating AXNodeData objects to be used in testing.
 ui::AXNodeData TextNode(int id, std::u16string text_content);
 ui::AXNodeData TextNode(int id);
