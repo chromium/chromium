@@ -36,6 +36,26 @@ DefaultBrowserUserSegment GetDefaultBrowserUserSegment(
     const ClassificationResult* device_switcher_result,
     const ClassificationResult* shopper_result);
 
+// Utility function that returns the First Run Experience Default Browser promo
+// title's string ID for a specified user segment.
+int GetFirstRunDefaultBrowserScreenTitleStringID(
+    DefaultBrowserUserSegment segment);
+
+// Utility function that returns the First Run Experience Default Browser promo
+// subtitle's string ID for a specified user segment.
+int GetFirstRunDefaultBrowserScreenSubtitleStringID(
+    DefaultBrowserUserSegment segment);
+
+// Utility function that returns the Default Browser Recurring Video promo
+// title's string ID for a specified user segment.
+int GetDefaultBrowserGenericPromoTitleStringID(
+    DefaultBrowserUserSegment segment);
+
+// Utility function that returns Set Up List Default Browser item description's
+// string ID for a specified user segment.
+int GetSetUpListDefaultBrowserDescriptionStringID(
+    DefaultBrowserUserSegment segment);
+
 }  // namespace segmentation_platform
 
 #endif  // IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_MODEL_SEGMENTED_DEFAULT_BROWSER_UTILS_H_

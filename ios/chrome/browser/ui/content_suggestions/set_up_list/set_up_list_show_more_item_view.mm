@@ -219,7 +219,7 @@ NSAttributedString* Strikethrough(NSString* text) {
     case SetUpListItemType::kDefaultBrowser:
       return l10n_util::GetNSString(
           IsSegmentedDefaultBrowserPromoEnabled()
-              ? [self defaultBrowserDescriptionForSegment:_data.userSegment]
+              ? GetSetUpListDefaultBrowserDescriptionStringID(_data.userSegment)
               : IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SEE_MORE_DESCRIPTION);
     case SetUpListItemType::kAutofill:
       return l10n_util::GetNSString(
@@ -233,19 +233,6 @@ NSAttributedString* Strikethrough(NSString* text) {
     case SetUpListItemType::kAllSet:
     case SetUpListItemType::kFollow:
       NOTREACHED_NORETURN();
-  }
-}
-
-- (int)defaultBrowserDescriptionForSegment:
-    (segmentation_platform::DefaultBrowserUserSegment)segment {
-  switch (segment) {
-    case segmentation_platform::DefaultBrowserUserSegment::kDesktopUser:
-    case segmentation_platform::DefaultBrowserUserSegment::kAndroidSwitcher:
-      return IDS_IOS_SET_UP_LIST_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_SHORT_DESCRIPTION;
-    case segmentation_platform::DefaultBrowserUserSegment::kShopper:
-      return IDS_IOS_SET_UP_LIST_SEGMENTED_DEFAULT_BROWSER_SHOPPER_SHORT_DESCRIPTION;
-    case segmentation_platform::DefaultBrowserUserSegment::kDefault:
-      return IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION;
   }
 }
 

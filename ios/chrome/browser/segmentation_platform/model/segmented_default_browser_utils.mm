@@ -7,6 +7,9 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/shopping_user_model.h"
 #import "components/segmentation_platform/public/constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 
 namespace segmentation_platform {
 
@@ -42,6 +45,73 @@ DefaultBrowserUserSegment GetDefaultBrowserUserSegment(
     }
   }
   return DefaultBrowserUserSegment::kDefault;
+}
+
+int GetFirstRunDefaultBrowserScreenTitleStringID(
+    DefaultBrowserUserSegment segment) {
+  switch (segment) {
+    case DefaultBrowserUserSegment::kDesktopUser:
+    case DefaultBrowserUserSegment::kAndroidSwitcher:
+      return UseIPadTailoredStringForDefaultBrowserPromo()
+                 ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPAD
+                 : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPHONE;
+    case DefaultBrowserUserSegment::kShopper:
+      return IDS_IOS_SEGMENTED_DEFAULT_BROWSER_SCREEN_SHOPPER_TITLE;
+    case DefaultBrowserUserSegment::kDefault:
+      return UseIPadTailoredStringForDefaultBrowserPromo()
+                 ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
+                 : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE;
+  }
+  NOTREACHED_NORETURN();
+}
+
+int GetFirstRunDefaultBrowserScreenSubtitleStringID(
+    DefaultBrowserUserSegment segment) {
+  switch (segment) {
+    case DefaultBrowserUserSegment::kDesktopUser:
+      return UseIPadTailoredStringForDefaultBrowserPromo()
+                 ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPAD
+                 : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPHONE;
+    case DefaultBrowserUserSegment::kAndroidSwitcher:
+      return UseIPadTailoredStringForDefaultBrowserPromo()
+                 ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPAD
+                 : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPHONE;
+    case DefaultBrowserUserSegment::kShopper:
+      return IDS_IOS_SEGMENTED_DEFAULT_BROWSER_SCREEN_SHOPPER_SUBTITLE;
+    case DefaultBrowserUserSegment::kDefault:
+      return UseIPadTailoredStringForDefaultBrowserPromo()
+                 ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD
+                 : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE;
+  }
+  NOTREACHED_NORETURN();
+}
+
+int GetDefaultBrowserGenericPromoTitleStringID(
+    DefaultBrowserUserSegment segment) {
+  switch (segment) {
+    case DefaultBrowserUserSegment::kDesktopUser:
+    case DefaultBrowserUserSegment::kAndroidSwitcher:
+      return IDS_IOS_SEGMENTED_DEFAULT_BROWSER_VIDEO_PROMO_DEVICE_SWITCHER_TITLE;
+    case DefaultBrowserUserSegment::kShopper:
+      return IDS_IOS_SEGMENTED_DEFAULT_BROWSER_VIDEO_PROMO_SHOPPER_TITLE;
+    case DefaultBrowserUserSegment::kDefault:
+      return IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TITLE_TEXT;
+  }
+  NOTREACHED_NORETURN();
+}
+
+int GetSetUpListDefaultBrowserDescriptionStringID(
+    DefaultBrowserUserSegment segment) {
+  switch (segment) {
+    case DefaultBrowserUserSegment::kDesktopUser:
+    case DefaultBrowserUserSegment::kAndroidSwitcher:
+      return IDS_IOS_SET_UP_LIST_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_SHORT_DESCRIPTION;
+    case DefaultBrowserUserSegment::kShopper:
+      return IDS_IOS_SET_UP_LIST_SEGMENTED_DEFAULT_BROWSER_SHOPPER_SHORT_DESCRIPTION;
+    case DefaultBrowserUserSegment::kDefault:
+      return IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION;
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace segmentation_platform

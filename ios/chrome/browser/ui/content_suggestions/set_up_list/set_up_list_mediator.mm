@@ -42,8 +42,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
-#import "ios/chrome/grit/ios_branded_strings.h"
-#import "ios/chrome/grit/ios_strings.h"
 
 using credential_provider_promo::IOSCredentialProviderPromoAction;
 

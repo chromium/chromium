@@ -94,7 +94,7 @@ struct ViewConfig {
               : IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_SHORT_DESCRIPTION;
       int defaultBrowserString =
           IsSegmentedDefaultBrowserPromoEnabled()
-              ? [self defaultBrowserDescriptionForSegment:data.userSegment]
+              ? GetSetUpListDefaultBrowserDescriptionStringID(data.userSegment)
               : IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION;
       _config = {
           YES,
@@ -115,7 +115,7 @@ struct ViewConfig {
               : IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION;
       int defaultBrowserString =
           IsSegmentedDefaultBrowserPromoEnabled()
-              ? [self defaultBrowserDescriptionForSegment:data.userSegment]
+              ? GetSetUpListDefaultBrowserDescriptionStringID(data.userSegment)
               : IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_MAGIC_STACK_DESCRIPTION;
       _config = {
           NO,
@@ -137,7 +137,7 @@ struct ViewConfig {
               : IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION;
       int defaultBrowserString =
           IsSegmentedDefaultBrowserPromoEnabled()
-              ? [self defaultBrowserDescriptionForSegment:data.userSegment]
+              ? GetSetUpListDefaultBrowserDescriptionStringID(data.userSegment)
               : IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_DESCRIPTION;
       _config = {
           NO,
@@ -416,21 +416,6 @@ struct ViewConfig {
       return set_up_list::kAllSetItemID;
     case SetUpListItemType::kFollow:
       return set_up_list::kFollowItemID;
-  }
-}
-
-// Returns string ID for Set Up List Default Browser Item description, based on
-// user segment.
-- (int)defaultBrowserDescriptionForSegment:
-    (segmentation_platform::DefaultBrowserUserSegment)segment {
-  switch (segment) {
-    case segmentation_platform::DefaultBrowserUserSegment::kDesktopUser:
-    case segmentation_platform::DefaultBrowserUserSegment::kAndroidSwitcher:
-      return IDS_IOS_SET_UP_LIST_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_SHORT_DESCRIPTION;
-    case segmentation_platform::DefaultBrowserUserSegment::kShopper:
-      return IDS_IOS_SET_UP_LIST_SEGMENTED_DEFAULT_BROWSER_SHOPPER_SHORT_DESCRIPTION;
-    case segmentation_platform::DefaultBrowserUserSegment::kDefault:
-      return IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION;
   }
 }
 

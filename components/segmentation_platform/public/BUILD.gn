@@ -90,6 +90,7 @@ source_set("test_support") {
 
   sources = [
     "testing/mock_database_client.h",
+    "testing/mock_device_switcher_result_dispatcher.h",
     "testing/mock_field_trial_register.h",
     "testing/mock_segmentation_platform_service.h",
   ]
@@ -97,6 +98,7 @@ source_set("test_support") {
   deps = [
     ":public",
     "//base",
+    "//components/segmentation_platform/embedder/default_model",
     "//testing/gmock",
     "//testing/gtest",
   ]
