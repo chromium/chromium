@@ -338,6 +338,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
     result_view->SetMatch(match);
     // Set visibility of the result view based on whether the group is hidden.
     result_view->SetVisible(!group_hidden && !row_hidden);
+    result_view->UpdateAccessibilityProperties();
 
     const SkBitmap* bitmap = model()->GetPopupRichSuggestionBitmap(i);
     if (bitmap) {

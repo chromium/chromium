@@ -290,9 +290,11 @@ TEST_F(OmniboxResultViewTest, AccessibleProperties) {
   EXPECT_EQ(
       result_node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
       int{kTestResultViewIndex} + 1);
-  // TODO(accessibility) Find a way to test this.
-  // EXPECT_EQ(result_node_data.GetIntAttribute(
-  //   ax::mojom::IntAttribute::kSetSize), 1);
+
+  int result_size = static_cast<int>(
+      popup_view()->controller()->autocomplete_controller()->result().size());
+  EXPECT_EQ(result_size, result_node_data.GetIntAttribute(
+                             ax::mojom::IntAttribute::kSetSize));
 
   // Check accessibility of list box.
   ui::AXNodeData popup_node_data;

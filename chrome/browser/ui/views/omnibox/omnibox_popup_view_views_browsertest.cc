@@ -418,6 +418,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   EXPECT_EQ(ax_node_data_omnibox.GetIntAttribute(
                 ax::mojom::IntAttribute::kActivedescendantId),
             selected_result_view->GetViewAccessibility().GetUniqueId());
+
+  ui::AXNodeData result_node_data;
+  selected_result_view->GetViewAccessibility().GetAccessibleNodeData(
+      &result_node_data);
+  int result_size = static_cast<int>(
+      controller()->autocomplete_controller()->result().size());
+  EXPECT_EQ(result_size, result_node_data.GetIntAttribute(
+                             ax::mojom::IntAttribute::kSetSize));
   histogram_tester.ExpectUniqueSample("Omnibox.Views.PopupFirstPaint", 1, 0);
 }
 

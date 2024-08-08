@@ -286,6 +286,7 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
   UpdateAccessibilitySelectedState();
+  GetViewAccessibility().SetPosInSet(model_index_ + 1);
 }
 
 OmniboxResultView::~OmniboxResultView() {}
@@ -660,11 +661,6 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     }
     node_data->SetName(label);
   }
-
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
-                             model_index_ + 1);
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize,
-                             autocomplete_controller->result().size());
 }
 
 void OmniboxResultView::OnThemeChanged() {
@@ -688,6 +684,11 @@ void OmniboxResultView::EmitTextChangedAccessiblityEvent() {
     NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
     accessible_name_ = current_name;
   }
+}
+
+void OmniboxResultView::UpdateAccessibilityProperties() {
+  GetViewAccessibility().SetSetSize(
+      popup_view_->controller()->autocomplete_controller()->result().size());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

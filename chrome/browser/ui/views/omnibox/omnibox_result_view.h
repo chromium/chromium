@@ -87,6 +87,8 @@ class OmniboxResultView : public views::View {
   // Helper to emit accessibility events (may only emit if conditions are met).
   void EmitTextChangedAccessiblityEvent();
 
+  void UpdateAccessibilityProperties();
+
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -126,7 +128,7 @@ class OmniboxResultView : public views::View {
   const raw_ptr<OmniboxPopupViewViews> popup_view_;
 
   // This result's model index.
-  size_t model_index_;
+  const size_t model_index_;
 
   // The data this class is built to display (the "Omnibox Result").
   AutocompleteMatch match_;
