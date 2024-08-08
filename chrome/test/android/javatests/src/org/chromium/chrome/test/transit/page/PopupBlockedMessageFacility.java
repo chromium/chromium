@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import static androidx.test.espresso.action.ViewActions.click;
-
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.test.transit.MessageFacility;
@@ -48,6 +46,6 @@ public class PopupBlockedMessageFacility<HostStationT extends WebPageStation>
                         .withIsOpeningTabs(1)
                         .withIsSelectingTabs(1)
                         .build();
-        return mHostStation.travelToSync(popupPage, () -> ALWAYS_SHOW_BUTTON.perform(click()));
+        return mHostStation.travelToSync(popupPage, ALWAYS_SHOW_BUTTON::click);
     }
 }

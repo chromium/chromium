@@ -6,7 +6,6 @@ package org.chromium.base.test.transit;
 
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 
@@ -395,9 +394,7 @@ public abstract class ScrollableFacility<HostStationT extends Station>
         }
 
         return mHostStation.swapFacilitySync(
-                List.of(this, itemOnScreenFacility),
-                destination,
-                () -> item.getViewSpec().perform(click()));
+                List.of(this, itemOnScreenFacility), destination, item.getViewSpec()::click);
     }
 
     private <DestinationStationT extends Station> DestinationStationT travelToStation(
@@ -411,7 +408,7 @@ public abstract class ScrollableFacility<HostStationT extends Station>
             throw new RuntimeException(e);
         }
 
-        return mHostStation.travelToSync(destination, () -> item.getViewSpec().perform(click()));
+        return mHostStation.travelToSync(destination, item.getViewSpec()::click);
     }
 
     /** Get all {@link Item}s declared in this {@link ScrollableFacility}. */

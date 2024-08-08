@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit.dom_distiller;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -70,15 +69,15 @@ public class ReaderModePreferencesDialog extends CarryOn {
     }
 
     public void pickColorLight(Condition condition) {
-        Condition.runAndWaitFor(() -> TEXT_COLOR_LIGHT.perform(click()), condition);
+        Condition.runAndWaitFor(TEXT_COLOR_LIGHT::click, condition);
     }
 
     public void pickColorDark(Condition condition) {
-        Condition.runAndWaitFor(() -> TEXT_COLOR_DARK.perform(click()), condition);
+        Condition.runAndWaitFor(TEXT_COLOR_DARK::click, condition);
     }
 
     public void pickColorSepia(Condition condition) {
-        Condition.runAndWaitFor(() -> TEXT_COLOR_SEPIA.perform(click()), condition);
+        Condition.runAndWaitFor(TEXT_COLOR_SEPIA::click, condition);
     }
 
     public void setFontSizeSliderToMin(Condition condition) {

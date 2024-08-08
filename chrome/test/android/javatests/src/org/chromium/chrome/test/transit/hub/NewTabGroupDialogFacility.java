@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit.hub;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
@@ -132,14 +131,12 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
         return mHostStation.swapFacilitySync(
                 this,
                 new NewTabGroupDialogFacility(mTabIdsToGroup, mTitle, newColor),
-                () -> colorPickerIconSpec(newColor, /* selected= */ false).perform(click()));
+                colorPickerIconSpec(newColor, /* selected= */ false)::click);
     }
 
     /** Press "Done" to confirm the tab group name and color. */
     public TabSwitcherGroupCardFacility pressDone() {
         return mHostStation.swapFacilitySync(
-                this,
-                new TabSwitcherGroupCardFacility(mTabIdsToGroup, mTitle),
-                () -> DONE_BUTTON.perform(click()));
+                this, new TabSwitcherGroupCardFacility(mTabIdsToGroup, mTitle), DONE_BUTTON::click);
     }
 }

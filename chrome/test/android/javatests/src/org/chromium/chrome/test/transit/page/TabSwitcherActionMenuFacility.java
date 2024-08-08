@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -125,7 +124,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                 destination,
                 Transition.conditionOption(
                         createTabCountChangedCondition(mHostStation.isIncognito(), -1)),
-                () -> CLOSE_TAB_MENU_ITEM.perform(click()));
+                CLOSE_TAB_MENU_ITEM::click);
     }
 
     /** Select the "New tab" menu option to open a new Tab. */
@@ -139,7 +138,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                 destination,
                 Transition.conditionOption(
                         createTabCountChangedCondition(/* incognito= */ false, +1)),
-                () -> NEW_TAB_MENU_ITEM.perform(click()));
+                NEW_TAB_MENU_ITEM::click);
     }
 
     /** Select the "New Incognito tab" menu option to open a new incognito Tab. */
@@ -153,7 +152,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                 destination,
                 Transition.conditionOption(
                         createTabCountChangedCondition(/* incognito= */ true, +1)),
-                () -> NEW_INCOGNITO_TAB_MENU_ITEM.perform(click()));
+                NEW_INCOGNITO_TAB_MENU_ITEM::click);
     }
 
     private Condition createTabCountChangedCondition(boolean incognito, int change) {

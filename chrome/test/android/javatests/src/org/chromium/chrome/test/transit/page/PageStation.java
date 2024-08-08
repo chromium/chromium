@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
@@ -319,8 +318,7 @@ public class PageStation extends Station {
     public PageAppMenuFacility<PageStation> openGenericAppMenu() {
         recheckActiveConditions();
 
-        return enterFacilitySync(
-                new PageAppMenuFacility<PageStation>(), () -> MENU_BUTTON.perform(click()));
+        return enterFacilitySync(new PageAppMenuFacility<PageStation>(), MENU_BUTTON::click);
     }
 
     /** Opens the tab switcher by pressing the toolbar tab switcher button. */
@@ -328,7 +326,7 @@ public class PageStation extends Station {
         assert !mIncognito;
         return travelToSync(
                 RegularTabSwitcherStation.from(getActivity().getTabModelSelector()),
-                () -> TAB_SWITCHER_BUTTON.perform(click()));
+                TAB_SWITCHER_BUTTON::click);
     }
 
     /** Opens the incognito tab switcher by pressing the toolbar tab switcher button. */
@@ -336,7 +334,7 @@ public class PageStation extends Station {
         assert mIncognito;
         return travelToSync(
                 IncognitoTabSwitcherStation.from(getActivity().getTabModelSelector()),
-                () -> TAB_SWITCHER_BUTTON.perform(click()));
+                TAB_SWITCHER_BUTTON::click);
     }
 
     /** Loads a |url| in the same tab and waits to transition. */

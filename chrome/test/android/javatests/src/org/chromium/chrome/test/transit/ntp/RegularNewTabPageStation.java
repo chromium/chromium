@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit.ntp;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
@@ -48,8 +47,7 @@ public class RegularNewTabPageStation extends PageStation {
 
     /** Opens the app menu by pressing the toolbar "..." button */
     public RegularNewTabPageAppMenuFacility openAppMenu() {
-        return enterFacilitySync(
-                new RegularNewTabPageAppMenuFacility(), () -> MENU_BUTTON.perform(click()));
+        return enterFacilitySync(new RegularNewTabPageAppMenuFacility(), MENU_BUTTON::click);
     }
 
     /**

@@ -100,8 +100,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
         recheckActiveConditions();
 
         return enterFacilitySync(
-                new TabSwitcherAppMenuFacility(mIsIncognito),
-                () -> HUB_MENU_BUTTON.perform(click()));
+                new TabSwitcherAppMenuFacility(mIsIncognito), HUB_MENU_BUTTON::click);
     }
 
     /**
@@ -187,7 +186,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
                         .withIsSelectingTabs(1)
                         .build();
 
-        return travelToSync(page, () -> getNewTabButtonViewSpec().perform(click()));
+        return travelToSync(page, getNewTabButtonViewSpec()::click);
     }
 
     private ViewSpec getNewTabButtonViewSpec() {

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit.ntp;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -38,7 +37,6 @@ public class IncognitoNewTabPageStation extends PageStation {
 
     /** Opens the app menu by pressing the toolbar "..." button */
     public IncognitoNewTabPageAppMenuFacility openAppMenu() {
-        return enterFacilitySync(
-                new IncognitoNewTabPageAppMenuFacility(), () -> MENU_BUTTON.perform(click()));
+        return enterFacilitySync(new IncognitoNewTabPageAppMenuFacility(), MENU_BUTTON::click);
     }
 }

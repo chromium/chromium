@@ -98,7 +98,6 @@ public class TabSwitcherListEditorFacility extends Facility<TabSwitcherStation> 
     /** Open the app menu, which looks different while selecting tabs. */
     public TabListEditorAppMenu openAppMenuWithEditor() {
         return mHostStation.enterFacilitySync(
-                new TabListEditorAppMenu(this),
-                () -> HubBaseStation.HUB_MENU_BUTTON.perform(click()));
+                new TabListEditorAppMenu(this), HubBaseStation.HUB_MENU_BUTTON::click);
     }
 }

@@ -15,6 +15,7 @@ import androidx.test.espresso.Espresso;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.action.ViewActions;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
@@ -64,6 +65,11 @@ public class ViewSpec {
     /** Perform an Espresso ViewAction on a displayed View that matches this ViewSpec's Matcher. */
     public ViewInteraction perform(ViewAction action) {
         return onView().perform(action);
+    }
+
+    /** Perform an Espresso click() on a displayed View that matches this ViewSpec's Matcher. */
+    public ViewInteraction click() {
+        return onView().perform(ViewActions.click());
     }
 
     /**

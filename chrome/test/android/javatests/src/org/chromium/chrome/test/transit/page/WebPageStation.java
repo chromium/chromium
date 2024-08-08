@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
@@ -54,15 +53,13 @@ public class WebPageStation extends PageStation {
     /** Opens the web page app menu by pressing the toolbar "..." button */
     public RegularWebPageAppMenuFacility openRegularTabAppMenu() {
         assert !mIncognito;
-        return enterFacilitySync(
-                new RegularWebPageAppMenuFacility(), () -> MENU_BUTTON.perform(click()));
+        return enterFacilitySync(new RegularWebPageAppMenuFacility(), MENU_BUTTON::click);
     }
 
     /** Opens the web page app menu by pressing the toolbar "..." button */
     public IncognitoWebPageAppMenuFacility openIncognitoTabAppMenu() {
         assert mIncognito;
-        return enterFacilitySync(
-                new IncognitoWebPageAppMenuFacility(), () -> MENU_BUTTON.perform(click()));
+        return enterFacilitySync(new IncognitoWebPageAppMenuFacility(), MENU_BUTTON::click);
     }
 
     private static class WebContentsPresentCondition extends ConditionWithResult<WebContents> {
