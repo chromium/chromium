@@ -38,5 +38,5 @@
     [RuntimeEnabled=CoepReflection]
         readonly attribute DOMString crossOriginEmbedderPolicy;
 
-    [RaisesException, CallWith=ScriptState] any structuredClone(any value, optional StructuredSerializeOptions options = {});
+    [RaisesException, CallWith=ScriptState, MeasureAs=StructuredCloneMethod] any structuredClone(any value, optional StructuredSerializeOptions options = {});
 };

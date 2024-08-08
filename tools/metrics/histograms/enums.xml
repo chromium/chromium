@@ -10734,6 +10734,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5058" label="SharedStorageWriteFromSellerScoreAd"/>
   <int value="5059" label="SharedStorageWriteFromSellerReportResult"/>
   <int value="5060" label="CSSInsetAreaProperty"/>
+  <int value="5061" label="StructuredCloneMethod"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
@@ -34025,6 +34026,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="96" label="AriaAttributeReflection"/>
   <int value="97" label="AnchorPositioning"/>
   <int value="98" label="ImageSet"/>
+  <int value="99" label="StructuredClone"/>
 </enum>
 
 <enum name="WebFontCacheHit">
