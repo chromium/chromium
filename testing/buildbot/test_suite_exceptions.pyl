@@ -5510,7 +5510,7 @@
       },
     },
   },
-  'webview_instrumentation_test_apk': {
+  'webview_instrumentation_test_apk_multiple_process_mode': {
     'remove_from': [
       # This test frequently fails on Android, https://crbug.com/824959
       # matching android builders, the test fails on these.
@@ -5578,7 +5578,7 @@
         'swarming': {
           # Shard number is increased for longer test execution time and added
           # local coverage data merging time.
-          'shards': 36,
+          'shards': 24,
         },
       },
       # If you change this, make similar changes in android-x86-code-coverage below
@@ -5587,7 +5587,7 @@
           '--use-persistent-shell',
         ],
         'swarming': {
-          'shards': 27,
+          'shards': 15,
         },
       },
       'android-pie-arm64-rel': {
@@ -5596,7 +5596,7 @@
         ],
         'ci_only': True, # crbug/1368281
         'swarming': {
-          'shards': 9,
+          'shards': 6,
         },
       },
       'android-pie-x86-rel': {
@@ -5604,7 +5604,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter',
         ],
         'swarming': {
-          'shards': 13, # crbug.com/1294924
+          'shards': 8, # crbug.com/1294924
         },
       },
       'android-tablet-14-arm64-fyi-rel': {
@@ -5618,7 +5618,7 @@
           '--use-persistent-shell',
         ],
         'swarming': {
-          'shards': 27,
+          'shards': 18,
         },
       },
     },
@@ -5644,6 +5644,57 @@
           # Shard number is increased for longer test execution time and added
           # local coverage data merging time.
           'shards': 30,
+        },
+      },
+    }
+  },
+  'webview_instrumentation_test_apk_single_process_mode': {
+    'modifications': {
+      'android-code-coverage-native': {
+        'args': [
+          '--use-persistent-shell',
+        ],
+        'swarming': {
+          # Shard number is increased for longer test execution time and added
+          # local coverage data merging time.
+          'shards': 12,
+        },
+      },
+      # If you change this, make similar changes in android-x86-code-coverage below
+      'android-oreo-x86-rel': {
+        # This builder is mirrored by CQ builder. Only multiple process tests run in CQ.
+        'ci_only': True,
+        'args': [
+          '--use-persistent-shell',
+        ],
+        'swarming': {
+          'shards': 9,
+        },
+      },
+      'android-pie-arm64-rel': {
+        'args': [
+          '--use-persistent-shell',
+        ],
+        'ci_only': True, # crbug/1368281
+        'swarming': {
+          'shards': 3,
+        },
+      },
+     'android-pie-x86-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter',
+        ],
+        'swarming': {
+          'shards': 5, # crbug.com/1294924
+        },
+      },
+      # Keep this same as android-oreo-x86-rel above
+      'android-x86-code-coverage': {
+        'args': [
+          '--use-persistent-shell',
+        ],
+        'swarming': {
+          'shards': 9,
         },
       },
     }

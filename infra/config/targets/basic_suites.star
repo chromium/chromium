@@ -100,9 +100,9 @@ targets.legacy_basic_suite(
                 shards = 20,
             ),
         ),
-        "webview_instrumentation_test_apk": targets.legacy_test_config(
+        "webview_instrumentation_test_apk_multiple_process_mode": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 9,
+                shards = 6,
             ),
         ),
     },
@@ -130,9 +130,9 @@ targets.legacy_basic_suite(
             ),
         ),
         "viz_unittests": targets.legacy_test_config(),
-        "webview_instrumentation_test_apk": targets.legacy_test_config(
+        "webview_instrumentation_test_apk_multiple_process_mode": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 7,
+                shards = 5,
             ),
         ),
     },
@@ -179,9 +179,9 @@ targets.legacy_basic_suite(
         "gl_unittests": targets.legacy_test_config(),
         "mojo_test_apk": targets.legacy_test_config(),
         "ui_android_unittests": targets.legacy_test_config(),
-        "webview_instrumentation_test_apk": targets.legacy_test_config(
+        "webview_instrumentation_test_apk_multiple_process_mode": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 7,
+                shards = 5,
             ),
         ),
     },
@@ -196,9 +196,14 @@ targets.legacy_basic_suite(
             ),
         ),
         "mojo_test_apk": targets.legacy_test_config(),
-        "webview_instrumentation_test_apk": targets.legacy_test_config(
+        "webview_instrumentation_test_apk_multiple_process_mode": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 7,
+                shards = 5,
+            ),
+        ),
+        "webview_instrumentation_test_apk_single_process_mode": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 3,
             ),
         ),
     },
@@ -5320,6 +5325,18 @@ targets.legacy_basic_suite(
             ],
             swarming = targets.swarming(
                 shards = 2,
+            ),
+        ),
+    },
+)
+
+# This target is only to run on Android versions <= Android Q (10).
+targets.legacy_basic_suite(
+    name = "webview_instrumentation_test_apk_single_process_mode_gtests",
+    tests = {
+        "webview_instrumentation_test_apk_single_process_mode": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 3,
             ),
         ),
     },

@@ -2747,6 +2747,23 @@ targets.tests.gtest_test(
     name = "webview_instrumentation_test_apk",
 )
 
+# This target is only to run on Android versions <= Android Q (10).
+targets.tests.gtest_test(
+    name = "webview_instrumentation_test_apk_single_process_mode",
+    args = [
+        "--webview-process-mode=single",
+    ],
+    binary = "webview_instrumentation_test_apk",
+)
+
+targets.tests.gtest_test(
+    name = "webview_instrumentation_test_apk_multiple_process_mode",
+    args = [
+        "--webview-process-mode=multiple",
+    ],
+    binary = "webview_instrumentation_test_apk",
+)
+
 targets.tests.gtest_test(
     name = "webview_instrumentation_test_apk_mutations",
     args = [

@@ -46,6 +46,7 @@ targets.legacy_compound_suite(
         "linux_flavor_specific_chromium_gtests",
         "vr_android_specific_chromium_tests",
         "vr_platform_specific_chromium_gtests",
+        "webview_instrumentation_test_apk_single_process_mode_gtests",
     ],
 )
 
@@ -64,6 +65,7 @@ targets.legacy_compound_suite(
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
         "webview_cts_tests_gtest",
         "webview_ui_instrumentation_tests",
+        "webview_instrumentation_test_apk_single_process_mode_gtests",
     ],
 )
 
@@ -94,6 +96,7 @@ targets.legacy_compound_suite(
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
         "webview_cts_tests_gtest",
         "webview_ui_instrumentation_tests",
+        "webview_instrumentation_test_apk_single_process_mode_gtests",
     ],
 )
 
@@ -114,6 +117,7 @@ targets.legacy_compound_suite(
         # "vr_android_specific_chromium_tests",
         # "vr_platform_specific_chromium_gtests",
         "webview_64_cts_tests_gtest",
+        "webview_instrumentation_test_apk_single_process_mode_gtests",
         "webview_ui_instrumentation_tests",
     ],
 )
@@ -206,6 +210,7 @@ targets.legacy_compound_suite(
         "linux_flavor_specific_chromium_gtests",
         "vr_android_specific_chromium_tests",
         "vr_platform_specific_chromium_gtests",
+        "webview_instrumentation_test_apk_single_process_mode_gtests",
     ],
 )
 

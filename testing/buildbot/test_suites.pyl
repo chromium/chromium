@@ -97,9 +97,13 @@
           'shards': 20,
         },
       },
-      'webview_instrumentation_test_apk': {
+      'webview_instrumentation_test_apk_multiple_process_mode': {
+        'test': 'webview_instrumentation_test_apk',
+        'args': [
+          '--webview-process-mode=multiple',
+        ],
         'swarming': {
-          'shards': 9,
+          'shards': 6,
         },
       },
     },
@@ -123,9 +127,13 @@
         },
       },
       'viz_unittests': {},
-      'webview_instrumentation_test_apk': {
+      'webview_instrumentation_test_apk_multiple_process_mode': {
+        'test': 'webview_instrumentation_test_apk',
+        'args': [
+          '--webview-process-mode=multiple',
+        ],
         'swarming': {
-          'shards': 7,
+          'shards': 5,
         },
       },
     },
@@ -163,9 +171,13 @@
       'gl_unittests': {},
       'mojo_test_apk': {},
       'ui_android_unittests': {},
-      'webview_instrumentation_test_apk': {
+      'webview_instrumentation_test_apk_multiple_process_mode': {
+        'test': 'webview_instrumentation_test_apk',
+        'args': [
+          '--webview-process-mode=multiple',
+        ],
         'swarming': {
-          'shards': 7,
+          'shards': 5,
         },
       },
     },
@@ -177,9 +189,22 @@
         },
       },
       'mojo_test_apk': {},
-      'webview_instrumentation_test_apk': {
+      'webview_instrumentation_test_apk_multiple_process_mode': {
+        'test': 'webview_instrumentation_test_apk',
+        'args': [
+          '--webview-process-mode=multiple',
+        ],
         'swarming': {
-          'shards': 7,
+          'shards': 5,
+        },
+      },
+      'webview_instrumentation_test_apk_single_process_mode': {
+        'test': 'webview_instrumentation_test_apk',
+        'args': [
+          '--webview-process-mode=single',
+        ],
+        'swarming': {
+          'shards': 3,
         },
       },
     },
@@ -5513,6 +5538,18 @@
       },
     },
 
+    'webview_instrumentation_test_apk_single_process_mode_gtests': {
+      'webview_instrumentation_test_apk_single_process_mode': {
+        'test': 'webview_instrumentation_test_apk',
+        'args': [
+          '--webview-process-mode=single',
+        ],
+        'swarming': {
+          'shards': 3,
+        },
+      },
+    },
+
     'webview_trichrome_64_cts_field_trial_tests': {
       'webview_trichrome_64_cts_tests': {
         'mixins': [
@@ -5739,6 +5776,7 @@
       'linux_flavor_specific_chromium_gtests',
       'vr_android_specific_chromium_tests',
       'vr_platform_specific_chromium_gtests',
+      'webview_instrumentation_test_apk_single_process_mode_gtests',
     ],
 
     'android_oreo_emulator_gtests': [
@@ -5753,6 +5791,7 @@
       'linux_flavor_specific_chromium_gtests',
       'system_webview_shell_instrumentation_tests',
       'webview_cts_tests_gtest',
+      'webview_instrumentation_test_apk_single_process_mode_gtests',
       'webview_ui_instrumentation_tests',
     ],
 
@@ -5774,6 +5813,7 @@
       'linux_flavor_specific_chromium_gtests',
       'system_webview_shell_instrumentation_tests',
       'webview_cts_tests_gtest',
+      'webview_instrumentation_test_apk_single_process_mode_gtests',
       'webview_ui_instrumentation_tests',
     ],
 
@@ -5784,6 +5824,7 @@
       'chrome_public_tests',
       'system_webview_shell_instrumentation_tests',
       'webview_64_cts_tests_gtest',
+      'webview_instrumentation_test_apk_single_process_mode_gtests',
       'webview_ui_instrumentation_tests',
     ],
 
@@ -5849,6 +5890,7 @@
       'linux_flavor_specific_chromium_gtests',
       'vr_android_specific_chromium_tests',
       'vr_platform_specific_chromium_gtests',
+      'webview_instrumentation_test_apk_single_process_mode_gtests',
     ],
 
     'chromium_dbg_isolated_scripts': [
