@@ -5471,7 +5471,6 @@ crbug.com/1316144 external/wpt/css/cssom-view/scrollIntoView-fixed.html [ Crash 
 
 
 # Selectlist flakes
-crbug.com/1253971 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-parts-structure.tentative.html [ Crash Timeout ]
 crbug.com/1394524 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-form-state-restore.tentative.html [ Failure Pass Timeout ]
 
 # StylableSelect
