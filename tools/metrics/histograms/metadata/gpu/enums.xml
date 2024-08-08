@@ -396,12 +396,6 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="ANGLE Metal NULL"/>
 </enum>
 
-<enum name="FormatPixmapSupport">
-  <int value="0" label="No format with Native Pixmaps"/>
-  <int value="1" label="NV12 format with Native Pixmaps"/>
-  <int value="2" label="YV12 format with Native Pixmaps"/>
-</enum>
-
 <enum name="GLImplementation">
   <int value="0" label="kGLImplementationNone"/>
   <int value="1" label="kGLImplementationDesktopGL"/>
