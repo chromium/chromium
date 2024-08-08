@@ -1,0 +1,25 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+# For this component iOS is explicitly not supported.
+if (use_blink) {
+  source_set("renderer") {
+    sources = [
+      "unverified_ruleset_dealer.cc",
+      "unverified_ruleset_dealer.h",
+    ]
+    public_deps = [
+      "//components/fingerprinting_protection_filter/mojom",
+      "//components/subresource_filter/core/common",
+      "//content/public/renderer",
+      "//mojo/public/cpp/bindings",
+    ]
+    deps = [
+      "//base",
+      "//third_party/blink/public:blink",
+    ]
+  }
+}

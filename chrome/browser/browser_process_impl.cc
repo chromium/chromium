@@ -1495,7 +1495,8 @@ void BrowserProcessImpl::CreateFingerprintingProtectionRulesetService() {
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
 
-  // TODO(https://crbug.com/347304498): Use FP publisher when implemented.
+  // TODO(https://crbug.com/347304498): Use FP publisher once
+  // UnverifiedRulesetDealer is used.
   fingerprinting_protection_ruleset_service_ =
       subresource_filter::RulesetService::Create(
           fingerprinting_protection_filter::

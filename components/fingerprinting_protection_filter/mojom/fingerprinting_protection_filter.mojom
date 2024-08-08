@@ -1,0 +1,16 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module fingerprinting_protection_filter.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+
+// Receiver on the renderer for Fingerprinting Protection rulesets (such as
+// a ruleset dealer).
+interface FingerprintingProtectionRulesetObserver {
+  // Sends a read-only mode file handle with the ruleset data to a renderer
+  // process, containing the filtering rules to be consulted for all
+  // subsequent document loads that have filtering activated.
+  SetRulesetForProcess(mojo_base.mojom.File ruleset_file);
+};
