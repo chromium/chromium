@@ -342,6 +342,7 @@ class CaptionBubbleLabel : public views::Label {
     GetViewAccessibility().SetRole(ax::mojom::Role::kDocument);
     GetViewAccessibility().SetName(
         std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    GetViewAccessibility().SetReadOnly(true);
 #if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
     ax_mode_observer_ =
         std::make_unique<CaptionBubbleLabelAXModeObserver>(this);
@@ -351,22 +352,6 @@ class CaptionBubbleLabel : public views::Label {
   ~CaptionBubbleLabel() override = default;
   CaptionBubbleLabel(const CaptionBubbleLabel&) = delete;
   CaptionBubbleLabel& operator=(const CaptionBubbleLabel&) = delete;
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    // Views are not supposed to be documents (see
-    // `ViewAccessibility::IsValidRoleForViews` for more information) but we
-    // make an exception here. The CaptionBubbleLabel is designed to be
-    // interacted with by a braille display in virtual buffer mode. In order to
-    // activate the virtual buffer in NVDA, we set the CaptionBubbleLabel to be
-    // a readonly document.
-    node_data->role = ax::mojom::Role::kDocument;
-    node_data->SetRestriction(ax::mojom::Restriction::kReadOnly);
-#if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
-    // Focusable nodes generally must have a name, but the purpose of focusing
-    // this document is to let the user read the static text nodes inside.
-    node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
-#endif
-  }
 
   void SetText(const std::u16string& text) override {
     views::Label::SetText(text);
@@ -582,6 +567,7 @@ CaptionBubble::CaptionBubble(PrefService* profile_prefs,
                           base::Unretained(this)),
       tick_clock_);
   inactivity_timer_->Stop();
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
 }
 
 CaptionBubble::~CaptionBubble() {
@@ -942,7 +928,6 @@ void CaptionBubble::OnLiveTranslateTargetLanguageChanged() {
 }
 
 void CaptionBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kDialog;
   node_data->SetNameChecked(title_->GetText());
 }
 

@@ -432,6 +432,7 @@ ShellSurfaceBase::ShellSurfaceBase(Surface* surface,
   SetCanFullscreen(ash::desks_util::IsDeskContainerId(container_));
   SetCanResize(true);
   SetShowTitle(false);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kClient);
 }
 
 ShellSurfaceBase::~ShellSurfaceBase() {
@@ -1564,10 +1565,6 @@ gfx::Size ShellSurfaceBase::GetMaximumSize() const {
     maximum_size.SetToMax(requested_minimum_size_);
   }
   return maximum_size;
-}
-
-void ShellSurfaceBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kClient;
 }
 
 views::FocusTraversable* ShellSurfaceBase::GetFocusTraversable() {

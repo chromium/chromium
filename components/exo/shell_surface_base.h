@@ -315,7 +315,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // ShellSurfaceBase::GetWidget()->GetXxxSize.
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::FocusTraversable* GetFocusTraversable() override;
 
   // aura::WindowObserver:

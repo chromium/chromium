@@ -3628,6 +3628,14 @@ TEST_F(ShellSurfaceTest, OverlayOverlapsFrame) {
   }
 }
 
+TEST_F(ShellSurfaceTest, AccessibleProperties) {
+  auto shell_surface = test::ShellSurfaceBuilder({100, 100})
+                           .SetFrame(SurfaceFrameType::NORMAL)
+                           .BuildShellSurface();
+  EXPECT_EQ(shell_surface->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kClient);
+}
+
 TEST_F(ShellSurfaceTest, OverlayCanResize) {
   auto shell_surface = test::ShellSurfaceBuilder({100, 100})
                            .SetFrame(SurfaceFrameType::NORMAL)

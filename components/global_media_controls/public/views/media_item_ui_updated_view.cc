@@ -295,6 +295,12 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   UpdateTimestampLabelsVisibility();
 
   item_->SetView(this);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
+  UpdateAccessibleName();
+  title_label_changed_callback_ = title_label_->AddTextChangedCallback(
+      base::BindRepeating(&MediaItemUIUpdatedView::UpdateAccessibleName,
+                          base::Unretained(this)));
 }
 
 MediaItemUIUpdatedView::~MediaItemUIUpdatedView() {
@@ -323,14 +329,12 @@ void MediaItemUIUpdatedView::AddedToWidget() {
   }
 }
 
-void MediaItemUIUpdatedView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kListItem;
+void MediaItemUIUpdatedView::UpdateAccessibleName() {
   if (title_label_->GetText().empty()) {
-    node_data->SetNameChecked(l10n_util::GetStringUTF8(
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF8(
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
   } else {
-    node_data->SetNameChecked(title_label_->GetText());
+    GetViewAccessibility().SetName(title_label_->GetText());
   }
 }
 

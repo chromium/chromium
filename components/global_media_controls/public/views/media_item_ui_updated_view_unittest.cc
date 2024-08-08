@@ -10,6 +10,8 @@
 #include "components/global_media_controls/public/test/mock_media_item_ui_observer.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
 #include "components/media_message_center/mock_media_notification_item.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -119,6 +121,14 @@ class MediaItemUIUpdatedViewTest : public views::ViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
   base::HistogramTester histogram_tester_;
 };
+
+TEST_F(MediaItemUIUpdatedViewTest, AccessibleProperties) {
+  EXPECT_EQ(view()->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kListItem);
+  EXPECT_EQ(view()->GetViewAccessibility().GetCachedName(),
+            l10n_util::GetStringUTF16(
+                IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
+}
 
 TEST_F(MediaItemUIUpdatedViewTest, ProgressRowCheck) {
   // Check that progress position can be updated.
