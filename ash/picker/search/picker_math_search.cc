@@ -17,7 +17,8 @@ namespace ash {
 namespace {
 constexpr int kIconSize = 20;
 constexpr std::u16string_view kMathExamples[] = {
-    u"1 + 1", u"1/6 + 3/4", u"7^3", u"sqrt 1024", u"12 ft in m",
+    u"1/6 + 3/4",
+    u"12 ft in m",
 };
 }  // namespace
 
