@@ -78,8 +78,18 @@ class FeaturedSearchProvider : public AutocompleteProvider {
   void AddFeaturedEnterpriseSearchIPHMatch();
 
   bool ShouldShowHistoryEmbeddingsSettingsPromoIphMatch() const;
-
   void AddHistoryEmbeddingsSettingsPromoIphMatch();
+
+  bool ShouldShowHistoryEmbeddingsDisclaimerIphMatch() const;
+  void AddHistoryEmbeddingsDisclaimerIphMatch();
+
+  bool ShouldShowHistoryScopePromoIphMatch(
+      const AutocompleteInput& input) const;
+  void AddHistoryScopePromoIphMatch();
+
+  bool ShouldShowHistoryEmbeddingsScopePromoIphMatch(
+      const AutocompleteInput& input) const;
+  void AddHistoryEmbeddingsScopePromoIphMatch();
 
   raw_ptr<AutocompleteProviderClient> client_;
   raw_ptr<TemplateURLService> template_url_service_;

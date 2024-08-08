@@ -94,19 +94,18 @@ inline constexpr char kZeroSuggestCachedResults[] = "zerosuggest.cachedresults";
 inline constexpr char kZeroSuggestCachedResultsWithURL[] =
     "zerosuggest.cachedresults_with_url";
 
-// Boolean that specifies whether to show the "Type @gemini to Chat with Gemini"
-// IPH suggestion at the bottom of the Omnibox in ZPS. This is true until a
-// user deletes (presses the X button on) the suggestion.
+// Booleans that specify whether to show the various IPH suggestion at the
+// bottom of the Omnibox. These is true until a user deletes (presses the X
+// button on) the suggestion.
 inline constexpr char kShowGeminiIPH[] = "omnibox.show_gemini_iph";
-
-// Boolean that specifies whether to show the featured Enterprise search IPH
-// suggestion at the bottom of the Omnibox in ZPS. This is true until a user
-// deletes (presses the X button on) the suggestion.
 inline constexpr char kShowFeaturedEnterpriseSiteSearchIPHPrefName[] =
     "omnibox.show_featured_enterprise_search_iph";
-
 inline constexpr char kShowHistoryEmbeddingsSettingsPromo[] =
     "omnibox.show_history_embeddings_settings_promo";
+inline constexpr char kShowHistoryScopePromo[] =
+    "omnibox.show_history_scope_promo";
+inline constexpr char kShowHistoryEmbeddingsScopePromo[] =
+    "omnibox.show_history_embeddings_scope_promo";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

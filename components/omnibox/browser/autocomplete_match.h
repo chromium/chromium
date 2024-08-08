@@ -93,9 +93,19 @@ struct RichAutocompletionParams {
 
 enum class IphType {
   kNone,
+  // '@gemini' promo; shown in zero state.
   kGemini,
+  // Featured search promo; shown in zero state.
   kFeaturedEnterpriseSearch,
+  // Embeddings' setting promo when embeddings are disabled; shown in '@history'
+  // scope.
   kHistoryEmbeddingsSettingsPromo,
+  // Disclaimer when embeddings are enabled; shown in '@history' scope.
+  kHistoryEmbeddingsDisclaimer,
+  // '@history' promo when embeddings are disabled; shown in zero state.
+  kHistoryScopePromo,
+  // '@history' promo when embeddings are enabled; shown in zero state.
+  kHistoryEmbeddingsScopePromo,
 };
 
 enum class FeedbackType {

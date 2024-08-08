@@ -605,6 +605,12 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
           return omnibox::kEnterpriseIcon;
         case IphType::kHistoryEmbeddingsSettingsPromo:
           return omnibox::kSparkIcon;
+        case IphType::kHistoryEmbeddingsDisclaimer:
+          return empty_icon;
+        case IphType::kHistoryScopePromo:
+          return vector_icons::kHistoryChromeRefreshIcon;
+        case IphType::kHistoryEmbeddingsScopePromo:
+          return omnibox::kSparkIcon;
       }
 
     case Type::SEARCH_SUGGEST_TAIL:

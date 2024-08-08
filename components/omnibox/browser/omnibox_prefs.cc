@@ -57,6 +57,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       omnibox::kShowFeaturedEnterpriseSiteSearchIPHPrefName, true);
   registry->RegisterBooleanPref(omnibox::kShowHistoryEmbeddingsSettingsPromo,
                                 true);
+  registry->RegisterBooleanPref(omnibox::kShowHistoryScopePromo, true);
+  registry->RegisterBooleanPref(omnibox::kShowHistoryEmbeddingsScopePromo,
+                                true);
 }
 
 SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(
