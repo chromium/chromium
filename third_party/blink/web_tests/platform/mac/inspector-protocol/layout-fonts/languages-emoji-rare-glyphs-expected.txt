@@ -23,9 +23,15 @@
 "Geeza Pro" : 71,
 "Times" : 14
 
-🌱🌲🌳🌴🌵🌷🌸🌹🌺🌻🌼💐🌾🌿🍀🍁🍂🍃🍄🌰☺️😀👪
-#emoji:
-"Apple Color Emoji" : 23
+🌱🌲🌳🌴🌵🌷🌸🌹🌺🌻🌼💐🌾🌿🍀🍁🍂🍃🍄🌰☺️😀👪♐☔☃️™️
+#emoji_emoji:
+"Apple Color Emoji" : 26,
+"Times" : 2
+
+☔︎♐︎☺☺︎☃☃︎☯︎☯™™︎00︎
+#text_emoji:
+"Apple Color Emoji" : 13,
+"Times" : 6
 
 𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏
 #egyptian_hieroglyphs:

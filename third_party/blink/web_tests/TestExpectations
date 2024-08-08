@@ -7233,7 +7233,6 @@ crbug.com/626703 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_ap
 [ Mac15 ] external/wpt/css/css-overflow/scrollbar-gutter-002.html [ Failure ]  # Reftest image failure
 [ Mac15 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-lr-002.html [ Failure ]  # Reftest image failure
 [ Mac15 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-rl-002.html [ Failure ]  # Reftest image failure
-[ Mac15 ] inspector-protocol/layout-fonts/languages-emoji-rare-glyphs.js [ Failure ]
 [ Mac15 ] svg/text/text-selection-intro-05-t.svg [ Failure ]
 [ Mac15 ] svg/W3C-SVG-1.1-SE/text-intro-05-t.svg [ Failure ]
 [ Mac15 ] virtual/disable-raster-inducing-scroll/scrollbars/hidden-scrollbars-invisible.html [ Failure ]  # Reftest image failure

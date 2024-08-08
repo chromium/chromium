@@ -22,10 +22,15 @@
 #arabic_pangram:
 "Times New Roman" : 85
 
-🌱🌲🌳🌴🌵🌷🌸🌹🌺🌻🌼💐🌾🌿🍀🍁🍂🍃🍄🌰☺️😀👪
-#emoji:
-"Segoe UI Emoji" : 22,
-"Times New Roman" : 2
+🌱🌲🌳🌴🌵🌷🌸🌹🌺🌻🌼💐🌾🌿🍀🍁🍂🍃🍄🌰☺️😀👪♐☔☃️™️
+#emoji_emoji:
+"Segoe UI Emoji" : 26,
+"Times New Roman" : 4
+
+☔︎♐︎☺☺︎☃☃︎☯︎☯™™︎00︎
+#text_emoji:
+"Segoe UI Symbol" : 10,
+"Times New Roman" : 9
 
 𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏
 #egyptian_hieroglyphs:
