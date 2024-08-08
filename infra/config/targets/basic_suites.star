@@ -4551,7 +4551,6 @@ targets.legacy_basic_suite(
     tests = {
         "optimization_guide_browser_tests": targets.legacy_test_config(),
         "optimization_guide_components_unittests": targets.legacy_test_config(),
-        "optimization_guide_unittests": targets.legacy_test_config(),
     },
 )
 

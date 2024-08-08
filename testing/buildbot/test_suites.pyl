@@ -4704,7 +4704,6 @@
           '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
         ],
       },
-      'optimization_guide_unittests': {},
     },
 
     'optimization_guide_gpu_gtests': {
