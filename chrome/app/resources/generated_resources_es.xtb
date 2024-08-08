@@ -6131,6 +6131,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5435779377906857208">Permitir siempre que <ph name="HOST" /> acceda a tu ubicación</translation>
 <translation id="5436492226391861498">Esperando túnel proxy...</translation>
 <translation id="5436510242972373446">Buscar <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616">Ahora, la ventana <ph name="WINDOW_SIDE" /> tiene un ancho del <ph name="WINDOW_SIZE_PERCENT" /> y el panel <ph name="PANE_SIDE" /> tiene un ancho del <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5440425659852470030">Cerrar panel lateral</translation>
 <translation id="544083962418256601">Crear accesos directos...</translation>
 <translation id="5441133529460183413">Aplicación web instalada desde el navegador Chrome</translation>
@@ -8534,6 +8535,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 sitio en el grupo de <ph name="FPS_OWNER" />}other{{MEMBERS} sitios en el grupo de <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Usar Windows Hello al rellenar contraseñas</translation>
 <translation id="7225179976675429563">Falta el tipo de red.</translation>
+<translation id="7227235818314667565">Administrar uso compartido</translation>
 <translation id="7227458944009118910">Las aplicaciones que se indican abajo también pueden procesar enlaces de protocolo. Otras aplicaciones pedirán permiso.</translation>
 <translation id="7228056665272655255">Para configurar la huella digital, pídele a tu hijo/a que toque el sensor de huellas digitales, que está en la esquina superior derecha del teclado. Los datos de la huella digital de tu hijo/a se almacenan de forma segura y nunca salen de este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Bloqueo de pantalla e inicio de sesión</translation>
@@ -8582,6 +8584,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7258192266780953209">Transformaciones</translation>
 <translation id="7258225044283673131">La aplicación no responde. Selecciona "Forzar cierre" para cerrar la aplicación.</translation>
 <translation id="7260186537988033909">Registro de dispositivo de kiosco y señalización completado</translation>
+<translation id="7261217796641151584">Compartir grupo</translation>
 <translation id="7261612856573623172">Nombre de la conversión de texto a voz del sistema</translation>
 <translation id="7262004276116528033">Este servicio de inicio de sesión está alojado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">¿Usar siempre la aplicación <ph name="APP" /> para abrir enlaces web compatibles?</translation>
@@ -10519,6 +10522,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8656888282555543604">Habilitar registro de braille</translation>
 <translation id="8657393004602556571">¿Quieres descartar los comentarios?</translation>
 <translation id="8657542881463614516">Usar un gesto de deslizar para desplazarse entre páginas</translation>
+<translation id="865936634714975126">Añade un parámetro de consulta a la URL para seleccionar tipos al cargar la página. Ejemplo: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Contactos de <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Ventana movida hacia abajo</translation>
 <translation id="8661290697478713397">Abrir enlace en una ventana de incó&amp;gnito</translation>
@@ -11410,7 +11414,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" />: grabación de la cámara y el micrófono</translation>
 <translation id="984275831282074731">Métodos de pago</translation>
 <translation id="984705303330760860">Añadir idiomas al corrector ortográfico</translation>
-<translation id="98515147261107953">Horizontal</translation>
+<translation id="98515147261107953">Paisaje</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">General</translation>
 <translation id="987475089238841621">Los paquetes de idioma se usan para la función Subtítulos automáticos y se almacenan en tu dispositivo</translation>

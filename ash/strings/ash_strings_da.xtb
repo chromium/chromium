@@ -1447,6 +1447,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="6068258534237496331">Indstillinger for videoopkald</translation>
 <translation id="6073451960410192870">Stop optagelse</translation>
 <translation id="6074087755403037157">Betakanal</translation>
+<translation id="6091929401758362855">Playliste: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Deaktiveret af administratoren</translation>
 <translation id="6095008505822982596">Talehastighed</translation>
 <translation id="6095425951508823973">Tilføj forbindelse via <ph name="PROVIDER" /></translation>
@@ -2244,7 +2245,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="899350903320462459">Lås enheden op som <ph name="LOGIN_ID" /> for at udføre notifikationshandlingen</translation>
 <translation id="8993733019280019776">Taler du nu? Din mikrofon er slukket. Vælg mikrofonen for at tænde den.</translation>
 <translation id="9000771174482730261">ADMINISTRER LAGERPLADS</translation>
-<translation id="9002204506712855687">Se de nyeste funktioner</translation>
 <translation id="9005984960510803406">Åbn Crosh Window</translation>
 <translation id="9017320285115481645">Angiv forældreadgangskoden til Family Link.</translation>
 <translation id="9024331582947483881">fuld skærm</translation>

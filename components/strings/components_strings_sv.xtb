@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Ändra lösenordet</translation>
 <translation id="1089599132348386324">Du kan ändra detta när som helst i inställningarna för Chrome.</translation>
 <translation id="1090629319939036170">VR-meny</translation>
-<translation id="1091543275053148479">Webbinformation, bland annat historik och lösenord, kan visas och hanteras</translation>
 <translation id="1091779689406092804">skärmbilder</translation>
 <translation id="1094777233105318927">Information om webbläsaren, operativsystemet, enheten, installerad mjukvara och filer</translation>
 <translation id="1096545575934602868">Fältet får ha högst <ph name="MAX_ITEMS_LIMIT" /> poster. Alla poster utöver detta antal ignoreras.</translation>
@@ -957,7 +956,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2770159525358613612">Testa att ladda upp filerna igen</translation>
 <translation id="277133753123645258">Fraktalternativ</translation>
 <translation id="2773388851563527404">Chrome begränsar de flesta webbplatser från att använda tredjepartscookies. Tredjepartscookies är dock tillåtna på den här webbplatsen eftersom den förlitar sig på dem för att tillhandahålla grundläggande tjänster. Öppna inställningarna för att <ph name="LINK" />.</translation>
-<translation id="2774077118134906782">Organisationen hanterar din webbläsare</translation>
 <translation id="277499241957683684">Enhetsregister saknas</translation>
 <translation id="2775884851269838147">Första utskriftssidan</translation>
 <translation id="2781185443919227679">Stränder och öar</translation>
@@ -2807,6 +2805,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6300452962057769623">{0,plural, =0{Enheten startas om nu}=1{Om 1 sekund startas enheten om}other{Om # sekunder startas enheten om}}</translation>
 <translation id="6301104306974789820">Få aviseringar om prisbevakning</translation>
 <translation id="6302546952464230349">Via information om <ph name="PERMISSION_NAME" /> behörighet</translation>
+<translation id="6302661287897119265">Filtrera</translation>
 <translation id="6304398603974202180">Mjukvara för multimedia</translation>
 <translation id="6305205051461490394"><ph name="URL" /> kan inte nås.</translation>
 <translation id="6306713302480826305">Adressen raderas från den här enheten och dina andra inloggade enheter</translation>
@@ -3713,7 +3712,6 @@ Mer information.
 <translation id="7967636097426665267">Kommunikationsutrustning</translation>
 <translation id="79682505114836835"><ph name="VALUE" /> är ett ogiltigt hexadecimalt värde för en färg.</translation>
 <translation id="7968982339740310781">Visa information</translation>
-<translation id="7971972534124227314">För enhetssäkerhet kan operativsystem, webbläsarinformation och installerad mjukvara visas</translation>
 <translation id="7976214039405368314">För många begäranden</translation>
 <translation id="7977538094055660992">Utmatningsenhet</translation>
 <translation id="7979595116210197019">Mat, tillredning och servering</translation>
@@ -4075,7 +4073,6 @@ Mer information:
 <translation id="865032292777205197">rörelsesensorer</translation>
 <translation id="865255447216708819">Film för baksidestryck</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" /> hanterar din profil</translation>
 <translation id="8662463432865928030">Kommersiella fastigheter</translation>
 <translation id="8663226718884576429">Beställningsöversikt, <ph name="TOTAL_LABEL" />, mer information</translation>
 <translation id="8663909737634214500">Optisk skiva</translation>
@@ -4307,7 +4304,6 @@ Mer information:
 <translation id="9103872766612412690">På <ph name="SITE" /> används normalt kryptering (SSL) för att skydda din information. När Chromium försökte ansluta till <ph name="SITE" /> den här gången skickade webbplatsen tillbaka ovanliga och felaktiga uppgifter. Sådant kan hända när en angripare utger sig för att vara <ph name="SITE" /> eller när anslutningen har avbrutits av en wifi-inloggningsskärm. Din information är fortfarande säker eftersom Chromium avbröt anslutningen innan någon data utbyttes.</translation>
 <translation id="9107467864910557787">Din webbläsare hanteras av <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Administratören har angett en princip som inaktiverar skärmdelning med <ph name="APPLICATION_TITLE" /> när konfidentiellt innehåll visas på skärmen</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" /> hanterar din webbläsare</translation>
 <translation id="9114524666733003316">Kortet kontrolleras …</translation>
 <translation id="9114581008513152754">Den här webbläsaren hanteras inte av ett företag eller en organisation. Aktiviteter på den här enheten kan hanteras utanför Chrome. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Mer om annonser i Chrome</translation>

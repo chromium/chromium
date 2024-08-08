@@ -2660,6 +2660,7 @@
 <translation id="2853121255651601031">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2855243985454069333">ਸਿੰਕ ਕੀਤੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਇਤਿਹਾਸ ਮਿਟਾਉਂਦਾ ਹੈ</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
+<translation id="28559674945112027">ਸਟ੍ਰਿਕਟ ਮੋਡ</translation>
 <translation id="2856776373509145513">ਨਵਾਂ ਕੰਟੇਨਰ ਬਣਾਓ</translation>
 <translation id="2856907950922663165">ਕੀ URL ਇਨਕ੍ਰਿਪਸ਼ਨ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="2859741939921354763">ਪਾਸਵਰਡਾਂ ਨੂੰ <ph name="BRAND" /> ਵਿੱਚ ਆਯਾਤ ਕਰੋ</translation>
@@ -6148,6 +6149,7 @@
 <translation id="5435779377906857208"><ph name="HOST" /> ਨੂੰ ਹਮੇਸ਼ਾਂ ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿਓ</translation>
 <translation id="5436492226391861498">ਪ੍ਰੌਕਸੀ ਟਨਲ ਨੂੰ ਉਡੀਕ ਰਿਹਾ ਹੈ...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> ਖੋਜੋ:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> ਵਿੰਡੋ ਹੁਣ <ph name="WINDOW_SIZE_PERCENT" /> ਚੌੜੀ, <ph name="PANE_SIDE" /> ਪੇਨ ਹੁਣ <ph name="PANE_SIZE_PERCENT" /> ਚੌੜਾ।</translation>
 <translation id="5440425659852470030">ਸਾਈਡ ਪੈਨਲ ਬੰਦ ਕਰੋ</translation>
 <translation id="544083962418256601">ਸ਼ੌਰਟਕਟਸ ਬਣਾਓ...</translation>
 <translation id="5441133529460183413">Chrome ਬ੍ਰਾਊਜ਼ਰ ਤੋਂ ਵੈੱਬ ਐਪ ਸਥਾਪਤ ਕੀਤੀ ਗਈ</translation>
@@ -6415,6 +6417,7 @@
 <translation id="5623282979409330487">ਇਹ ਸਾਈਟ ਤੁਹਾਡੇ ਗਤੀਸ਼ੀਲਤਾ ਸੈਂਸਰਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰ ਰਹੀ ਹੈ।</translation>
 <translation id="5623842676595125836">ਲੌਗ</translation>
 <translation id="5624120631404540903">ਪਾਸਵਰਡ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
+<translation id="5624959475330585145">ਅਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ</translation>
 <translation id="5625225435499354052">Google Pay ਵਿੱਚ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="5626134646977739690">ਨਾਮ:</translation>
 <translation id="5627832140542566187">ਡਿਸਪਲੇ ਦਿਸ਼ਾਮਾਨ</translation>
@@ -8553,6 +8556,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" /> ਦੇ ਗਰੁੱਪ ਵਿੱਚ 1 ਸਾਈਟ}one{<ph name="FPS_OWNER" /> ਦੇ ਗਰੁੱਪ ਵਿੱਚ {MEMBERS} ਸਾਈਟ}other{<ph name="FPS_OWNER" /> ਦੇ ਗਰੁੱਪ ਵਿੱਚ {MEMBERS} ਸਾਈਟਾਂ}}</translation>
 <translation id="7225082563376899794">ਪਾਸਵਰਡ ਭਰਨ ਦੌਰਾਨ Windows Hello ਵਰਤੋ</translation>
 <translation id="7225179976675429563">ਨੈੱਟਵਰਕ ਪ੍ਰਕਾਰ ਲੁਪਤ</translation>
+<translation id="7227235818314667565">ਸਾਂਝਾਕਰਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="7227458944009118910">ਹੇਠਾਂ ਸੂਚੀਬੱਧ ਐਪਾਂ ਵੀ ਪ੍ਰੋਟੋਕੋਲ ਲਿੰਕਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੀਆਂ ਹਨ। ਹੋਰ ਐਪਾਂ ਵੀ ਇਜਾਜ਼ਤ ਮੰਗਣਗੀਆਂ।</translation>
 <translation id="7228056665272655255">ਫਿੰਗਰਪ੍ਰਿੰਟ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ, ਆਪਣੇ ਬੱਚੇ ਨੂੰ ਕੀ-ਬੋਰਡ ਦੇ ਸਿਖਰਲੇ ਸੱਜੇ ਕੋਨੇ 'ਤੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੈਂਸਰ 'ਤੇ ਸਪਰਸ਼ ਕਰਨ ਲਈ ਕਹੋ। ਤੁਹਾਡੇ ਬੱਚੇ ਦਾ ਫਿੰਗਰਪ੍ਰਿੰਟ ਡਾਟਾ ਸੁਰੱਖਿਅਤ ਤਰੀਕੇ ਨਾਲ ਸਟੋਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਕਦੇ ਵੀ ਇਸ <ph name="DEVICE_TYPE" /> ਤੋਂ ਬਾਹਰ ਨਹੀਂ ਜਾਂਦਾ।</translation>
 <translation id="7228523857728654909">ਸਕ੍ਰੀਨ ਲਾਕ ਅਤੇ ਸਾਈਨ-ਇਨ</translation>
@@ -8601,6 +8605,7 @@
 <translation id="7258192266780953209">ਰੁਪਾਂਤਰਣ</translation>
 <translation id="7258225044283673131">ਇਹ ਐਪਲੀਕੇਸ਼ਨ ਪ੍ਰਤੀਕਿਰਿਆ ਨਹੀਂ ਦੇ ਰਹੀ ਹੈ। ਐਪ ਬੰਦ ਕਰਨ ਲਈ "ਜ਼ਬਰਦਸਤੀ ਬੰਦ ਕਰੋ" ਨੂੰ ਚੁਣੋ।</translation>
 <translation id="7260186537988033909">ਕਿਓਸਕ ਅਤੇ ਸਾਈਨੇਜ ਡੀਵਾਈਸ ਨੂੰ ਦਰਜ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਹੋਈ</translation>
+<translation id="7261217796641151584">ਗਰੁੱਪ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="7261612856573623172">ਸਿਸਟਮ ਦੀ ਲਿਖਤ ਤੋਂ ਬੋਲੀ ਅਵਾਜ਼</translation>
 <translation id="7262004276116528033">ਇਹ ਸਾਈਨ-ਇਨ ਸੇਵਾ <ph name="SAML_DOMAIN" /> ਵੱਲੋਂ ਹੋਸਟ ਕੀਤੀ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="7264695323040866038">ਕੀ ਹਮੇਸ਼ਾਂ ਸਮਰਥਿਤ ਵੈੱਬ ਲਿੰਕਾਂ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ <ph name="APP" /> ਐਪ ਦੀ ਵਰਤੋਂ ਕਰਨੀ ਹੈ?</translation>
@@ -9648,6 +9653,7 @@
 <translation id="8008356846765065031">ਇੰਟਰਨੈੱਟ ਡਿਸਕਨੈਕਟ ਹੋਇਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ।</translation>
 <translation id="8008704580256716350">ਸ਼ੱਕੀ ਫ਼ਾਈਲ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8009225694047762179">ਪਾਸਵਰਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="8010081455002666927">ਸਵੈ-ਪਤਾ ਲਗਾਓ</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' ਨੂੰ ਲਿਜਾਇਆ ਗਿਆ।</translation>
 <translation id="8012188750847319132">ਕੈਪਸ ਲਾਕ</translation>
 <translation id="8012463809859447963">ਇੰਸਟੈਂਟ ਹੌਟਸਪੌਟ ਸੰਬੰਧੀ ਵੇਰਵੇ</translation>
@@ -10536,6 +10542,7 @@
 <translation id="8656888282555543604">ਬ੍ਰੇਲ ਲੌਗਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="8657393004602556571">ਕੀ ਤੁਸੀਂ ਵਿਚਾਰ ਨੂੰ ਬਰਖਾਸਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="8657542881463614516">ਪੰਨਿਆਂ ਵਿਚਕਾਰ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਸਵਾਈਪ ਇਸ਼ਾਰਾ ਵਰਤੋ</translation>
+<translation id="865936634714975126">ਪੰਨਾ ਲੋਡ ਹੋਣ 'ਤੇ ਕਿਸਮ ਦੀ ਚੋਣ ਕਰਨ ਲਈ URL ਵਿੱਚ ਪੁੱਛਗਿੱਛ ਸੰਬੰਧੀ ਪੈਰਾਮੀਟਰ ਸ਼ਾਮਲ ਕਰੋ। ਉਦਾਹਰਨ: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> ਸੰਪਰਕ</translation>
 <translation id="8659609431223166673">ਵਿੰਡੋ ਨੂੰ ਹੇਠਾਂ ਵੱਲ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="8661290697478713397">ਗੁਮ&amp;ਨਾਮ window ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
@@ -11050,6 +11057,7 @@
 <translation id="9009707268312089299">Windows ਤੋਂ ਆਯਾਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="9009708085379296446">ਕੀ ਤੁਸੀਂ ਇਹ ਪੰਨਾ ਬਦਲਣਾ ਸੀ?</translation>
 <translation id="9010845741772269259">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="901087299639956505">ਸੰਤੁਲਿਤ ਮੋਡ</translation>
 <translation id="9011163749350026987">ਹਮੇਸ਼ਾਂ ਚਿੰਨ੍ਹ ਦਿਖਾਓ</translation>
 <translation id="9011262023858991985">ਇਸ ਟੈਬ ਨੂੰ ਕਾਸਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="9011393886518328654">ਰਿਲੀਜ਼ ਨੋਟ-ਕਥਨ</translation>

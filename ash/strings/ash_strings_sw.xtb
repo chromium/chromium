@@ -104,6 +104,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Bonyeza <ph name="LAUNCHER_KEY_NAME" /> pamoja na g wakati wowote</translation>
 <translation id="1306549533752902673">PROGRAMU ZINAZOPENDEKEZWA</translation>
+<translation id="1310396869741602366">Badilisha toni</translation>
 <translation id="1312604459020188865">Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Onyesha rafu kila wakati</translation>
 <translation id="132346741904777634">Onyesho la kukagua kamera limelinganishwa kwenye kona ya juu kushoto. Linakinzana na mfumo wa kiolesura uliopo.</translation>
@@ -234,6 +235,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1768366657309696705">Mikato ya kibodi ya <ph name="LAUNCHER_KEY_NAME" /> + Kitone imebadilika. Ili utumie kitufe cha Insert, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Imehamishiwa kwenye safu mlalo ya <ph name="ROW_NUMBER" />, safu wima ya <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Sogeza kulia</translation>
+<translation id="17722141032474077">Ukokotoaji</translation>
 <translation id="1774796056689732716">Kalenda, <ph name="CURRENT_MONTH_YEAR" />, kwa sasa umechagua <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Weka mipangilio ya kuangalia picha, maudhui na arifa za hivi karibuni za simu yako</translation>
 <translation id="1787955149152357925">Yamezimwa</translation>
@@ -375,6 +377,7 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="2392659840443812875">Hakuna mtandao pepe unaopatikana. Hakikisha kuwa kifaa chako kiko karibu na umewasha Bluetooth.</translation>
 <translation id="2397416548179033562">Onyesha Menyu ya Chrome</translation>
 <translation id="240006516586367791">Vidhibiti vya maudhui</translation>
+<translation id="240155812475001919">Hati ya Google</translation>
 <translation id="2402411679569069051">Ili ufungue Chromebook yako, tumia alama yako ya kidole au ufungue simu yako</translation>
 <translation id="240545663114741956">Bonyeza <ph name="ACCELERATOR" /> mara mbili ili uondoke kwenye akaunti.</translation>
 <translation id="2405664212338326887">Haijaunganishwa</translation>
@@ -575,6 +578,7 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Aina ya kazi ya darasani</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3130793786899299931">Badilisha urefu</translation>
 <translation id="3134486240968249588">Mambo machache ya kukumbuka</translation>
 <translation id="3139188263101386725">Tumia njia ya mkato iliyosasishwa</translation>
 <translation id="3139942575505304791">Eneokazi la 1</translation>
@@ -585,6 +589,7 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="316086887565479535">Programu ambazo haziwezi kutumika katika kiolezo</translation>
 <translation id="3160929076476941240">Saa 2</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> inarejesha toleo la awali kwenye <ph name="DEVICE_TYPE" /> yako. Mipangilio ya kifaa chako itawekwa upya na data yote itafutwa.</translation>
+<translation id="316798519864381606">Slaidi za Google</translation>
 <translation id="3171170659304083361">Mipangilio ya mbinu za kuingiza data</translation>
 <translation id="3176221688814061633">Chromebook yako au kifaa chako chenye Bluetooth kinatumia toleo la zamani la Bluetooth. Washa kipengele cha Ubora Thabiti wa Bluetooth au utumie maikrofoni ya ndani ili upate ubora wa sauti unaofaa.</translation>
 <translation id="3181441307743005334">Shughuli ya kuzima kisha uwashe inaweza kuchukua muda</translation>
@@ -900,6 +905,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="425364040945105958">Hakuna SIM</translation>
 <translation id="4261870227682513959">Onyesha mipangilio ya arifa. Umezima arifa</translation>
 <translation id="4264977415328155183">, imekunjwa</translation>
+<translation id="4265259722091164182">Kila Neno Lianze kwa Herufi Kubwa</translation>
 <translation id="4269883910223712419">Msimamizi wa kifaa hiki ana uwezo wa:</translation>
 <translation id="4274537685965975248">Mikato ya kibodi ya Ctrl + Alt + Kishale cha Chini imebadilika. Ili utumie kitufe cha End, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na Kishale cha Kulia.</translation>
 <translation id="4275283744500212192">Fungua chaguo za muundo wa dirisha</translation>
@@ -909,6 +915,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4283888303416325161">Weka nenosiri kwa ajili ya usalama zaidi</translation>
 <translation id="4285498937028063278">Banua</translation>
 <translation id="428715201724021596">Inaunganisha kwenye wasifu. Hatua hii inaweza kuchukua dakika kadhaa.</translation>
+<translation id="4287250812980588583">Kidirisha cha Chrome</translation>
 <translation id="4294319844246081198">Habari za asubuhi <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Futa arifa zote <ph name="COUNT" /></translation>
 <translation id="4300272766492248925">Fungua programu</translation>
@@ -985,6 +992,7 @@ Kifaa 1 kimeunganishwa.</translation>
 <translation id="4544483149666270818">Chagua dirisha ili urekodi</translation>
 <translation id="4545950850562423083">Hifadhi ukurasa wa sasa uwe alamisho</translation>
 <translation id="4548482551627849548">Sogeza dirisha linalotumika kwenye eneokazi la upande wa kushoto</translation>
+<translation id="4549853322523631092">Hakuna matokeo yaliyopatikana.</translation>
 <translation id="4552748006424994716">Ili uepuke mwangwi, unaweza kusikiliza sauti yako kwenye maikrofoni ukitumia kipokea sauti cha kichwani chenye waya.</translation>
 <translation id="4560576029703263363">Imewashwa</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1022,6 +1030,7 @@ Kifaa 1 kimeunganishwa.</translation>
 <translation id="4667099493359681081">Inapakua <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Kiokoa Betri kimewashwa</translation>
 <translation id="4673427585974421255">Usizime</translation>
+<translation id="4677040906536311086">Jedwali la Google</translation>
 <translation id="468293128311738995">Programu zilizo kwenye simu yako</translation>
 <translation id="4690510401873698237">Rafu iko upande wa chini</translation>
 <translation id="4696813013609194136">Fungua kifaa ukitumia msimbo wa mzazi</translation>
@@ -1224,6 +1233,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="5331975486040154427">Kifaa cha USB-C (mlango wa upande wa kushoto nyuma)</translation>
 <translation id="533282197239610265">Onyesha vifaa vinavyotuma maudhui</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Kulia)</translation>
+<translation id="5346119650615956459">GIF</translation>
 <translation id="5352250171825660495">Mandhari meusi yamewashwa</translation>
 <translation id="5354804064646502504">Huenda ukatozwa gharama za data.
 Hakuna vifaa vilivyounganishwa.</translation>
@@ -1446,6 +1456,8 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="6068258534237496331">Vidhibiti vya Simu za Video</translation>
 <translation id="6073451960410192870">Acha kurekodi</translation>
 <translation id="6074087755403037157">Kituo cha Beta</translation>
+<translation id="6075098173600599596">Badilisha ukubwa wa herufi</translation>
+<translation id="6091929401758362855">Orodha: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Imezimwa na msimamizi</translation>
 <translation id="6095008505822982596">Kasi ya kutamka</translation>
 <translation id="6095425951508823973">Weka muunganisho na <ph name="PROVIDER" /></translation>
@@ -1503,6 +1515,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="6249795363855770621">Imeshindwa kutia alama kuwa limekamilika. Jaribu tena ukiwa mtandaoni.</translation>
 <translation id="6254629735336163724">Inatumia skrini ya mlalo pekee</translation>
 <translation id="6259254695169772643">Tumia stylus yako kuchagua</translation>
+<translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Inaanza kutumia...</translation>
 <translation id="6274202259872570803">Kionyesha skrini</translation>
 <translation id="6276708887952587684">Tazama chanzo cha ukurasa</translation>
@@ -1573,6 +1586,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="6537924328260219877">Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />, Betri ya Simu <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Inakagua kipakuliwa <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Tuma kwenye <ph name="RECEIVER_NAME" /></translation>
+<translation id="6542891623636520977">Emoji, GIF na nyinginezo</translation>
 <translation id="6555373427270923730">Andika anwani ya wavuti kwenye sehemu ya anwani, kisha ubonyeze <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Imesakinishwa hivi karibuni</translation>
@@ -1670,6 +1684,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6874854809828346832">Onyesha maelezo ya mtandao pepe. Umewasha mtandao pepe.</translation>
 <translation id="6878400149835617132">Njia ya mkato imezimwa</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{Programu 1}other{Programu #}}</translation>
+<translation id="6879454869409141992">Washa Caps Lock</translation>
 <translation id="6883768636838842873">Njia ya mikato ya kibodi, vidokezo vya kutumia kifaa na zaidi</translation>
 <translation id="6884665277231944629">Rudi kwenye tarehe ya leo</translation>
 <translation id="6886172995547742638">Huenda <ph name="DEVICE_TYPE" /> yako ikafanya kazi polepole. Tumia adapta ya nishati ya USB-C ya Wati <ph name="PREFERRED_MINIMUM_POWER" /> au zaidi.</translation>
@@ -1894,6 +1909,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7725108879223146004">Onyesha maelezo ya mtandao pepe. Mtandao pepe unazimwa.</translation>
 <translation id="7726391492136714301">Angalia arifa na programu za simu yako</translation>
 <translation id="7727952505535211425">Fungua tovuti kwenye sehemu ya anwani katika kichupo kipya</translation>
+<translation id="7728657226117099693">Zima Caps Lock</translation>
 <translation id="7742327441377685481">Hakuna arifa</translation>
 <translation id="774736258792760908">Unapowasha kipengele cha Nisaidie kuandika na cha Nisaidie kusoma, maandishi unayoweka na maudhui ya hati hutumwa kwa seva za Google AI ili kutayarisha mapendekezo ya kuandika, mihtasari, kujibu maswali na kuboresha bidhaa, hatua inayosimamiwa na <ph name="LINK_TO_SERVICE_TERMS" />. Usijumuishe taarifa zozote binafsi, nyeti au za siri.</translation>
 <translation id="7748275671948949022">Angazia kitufe cha Kifungua programu kwenye rafu</translation>
@@ -1968,6 +1984,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7946681191253332687">Masasisho ya kina ya usalama yanapatikana</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> inataka kutumia <ph name="DEVICE_NAME" /> yako</translation>
 <translation id="7951630946012935453">Fifisha kibodi</translation>
+<translation id="7953176344218790168">HERUFI KUBWA</translation>
 <translation id="7953994493035617347">Ungependa kuthibitisha ubora mwingine?</translation>
 <translation id="795958884516058160">Kikuzaji cha skrini Nzima kimewashwa. Bonyeza <ph name="ACCELERATOR" /> tena ili ukizime.</translation>
 <translation id="7962583092928373823">Ficha mapendekezo yote ya Kalenda ya Google</translation>
@@ -2150,6 +2167,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8649597172973390955">Rafu inaonyeshwa kila wakati</translation>
 <translation id="8652175077544655965">Funga mipangilio</translation>
 <translation id="8653151467777939995">Onyesha mipangilio ya arifa. Umewasha arifa</translation>
+<translation id="8657066291275741003">herufi ndogo</translation>
 <translation id="8660331759611631213">Kipeo cha pili cha 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Bonyeza enter ili upige picha sehemu ya skrini</translation>
@@ -2244,7 +2262,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="899350903320462459">Fungua kifaa kwa kuingia katika akaunti ukitumia <ph name="LOGIN_ID" /> ili utekeleze kitendo cha arifa</translation>
 <translation id="8993733019280019776">Je, unazungumza? Maikrofoni yako imezimwa. Chagua maikrofoni ili uiwashe.</translation>
 <translation id="9000771174482730261">DHIBITI NAFASI YA HIFADHI</translation>
-<translation id="9002204506712855687">Gundua vipengele vipya zaidi</translation>
 <translation id="9005984960510803406">Fungua dirisha la Crosh</translation>
 <translation id="9017320285115481645">Weka msimbo wa kufikia wa mzazi katika Family Link.</translation>
 <translation id="9024331582947483881">skrini nzima</translation>

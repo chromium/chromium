@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">Начар сигнал</translation>
 <translation id="1300115153046603471">APN түрү – default жана <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">Түзүлгөн күнү</translation>
 <translation id="1308754910631152188">Жаңырууда (<ph name="PERCENTAGE_VALUE" />% аткарылды)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> мүнөт</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> тармагы жок</translation>
@@ -505,6 +506,7 @@
 <translation id="3708186454126126312">Буга чейин туташкан түзмөктөр</translation>
 <translation id="3715651196924935218">Калкымадан чыгуу</translation>
 <translation id="3716250181321371108">Башкаруу элементин түзүү</translation>
+<translation id="3716830479327464973">Уруксат берсеңиз, Диктофон аудио жаздырууларды төмөнкүлөр үчүн талдайт:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> сын-пикир)</translation>
 <translation id="3748026146096797577">Интернет жок</translation>
 <translation id="3749289110408117711">Файлдын аталышы</translation>
@@ -531,6 +533,7 @@
 <translation id="3869314628814282185">тюль</translation>
 <translation id="387301095347517405">Батарея толук кубатталган циклдердин саны</translation>
 <translation id="3877066159641251281">Котормону угуу</translation>
+<translation id="3880601782712134623">Ар кандай үндөрдү автоматтык түрдө айырмалап, ар бирин Маектеш 1 жана Маектеш 2 деп белгилеп коёт</translation>
 <translation id="3885327323343477505">Көшөгөнү өзгөртүү</translation>
 <translation id="3889914174935857450">Дайын-даректерди баштапкы абалга келтирүү</translation>
 <translation id="3897092660631435901">Меню</translation>
@@ -756,6 +759,7 @@
 <translation id="5049856988445523908">SIM карта кулпуланды (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Топтун аталышы:</translation>
 <translation id="5051044138948155788">Бир эле бет бар. Ушуну менен скандап баштоо экранына өтөсүз.</translation>
+<translation id="5078711626843651677">Маектештер белгиленип бүткөнгө чейин үндөрдүн үлгүлөрү убактылуу түзмөктө сакталат. Муну каалаган убакта Параметрлерден өчүрө аласыз.</translation>
 <translation id="5078983345702708852">футуристтик</translation>
 <translation id="5087864757604726239">артка</translation>
 <translation id="5088172560898466307">Сервер түйүнүнүн аталышы</translation>
@@ -1106,6 +1110,7 @@
 <translation id="6905163627763043954">Сынап көрүү</translation>
 <translation id="6905724422583748843">Төмөнкүгө кайтуу: <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Сканердин капкагы ачык. Капкагын жаап, кайра аракет кылыңыз.</translation>
+<translation id="6910845598686542904">Аудио жаздыруудагы үндөрдүн үлгүлөрүн талдоо</translation>
 <translation id="6911383237894364323">Медиа серверлерине туташпай жатат</translation>
 <translation id="6930242544192836755">Узактыгы</translation>
 <translation id="6930597342185648547">Фон тууралуу</translation>
@@ -1571,6 +1576,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Пикириңизди билдириңиз</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> багыты үчүн баскыч жок. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">Ар бир маектеш качан жана эмне дегенин транскрипцияда чагылдыруу үчүн жаздыруудагы үндөрдү салыштыруу</translation>
 <translation id="952992212772159698">Жандырылган эмес</translation>
 <translation id="95718197892796296">чопо</translation>
 <translation id="960719561871045870">Оператордун коду</translation>

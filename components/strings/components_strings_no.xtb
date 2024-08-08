@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Endre passord</translation>
 <translation id="1089599132348386324">Du kan når som helst ombestemme deg i Chrome-innstillingene.</translation>
 <translation id="1090629319939036170">VR-meny</translation>
-<translation id="1091543275053148479">Nettlesingsdata, inkludert logg og passord, kan ses og administreres</translation>
 <translation id="1091779689406092804">skjermbilder</translation>
 <translation id="1094777233105318927">Informasjon om nettleser, OS, enhet, installert programvare og filer.</translation>
 <translation id="1096545575934602868">Dette feltet skal ikke ha mer enn <ph name="MAX_ITEMS_LIMIT" /> oppføringer. Oppføringer utover dette blir forkastet.</translation>
@@ -957,7 +956,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2770159525358613612">Prøv å laste opp filene på nytt</translation>
 <translation id="277133753123645258">Leveringsmetode</translation>
 <translation id="2773388851563527404">Chrome begrenser de fleste nettsteder fra å bruke informasjonskapsler fra tredjeparter. Men informasjonskapsler fra tredjeparter er tillatt på dette nettstedet fordi det trenger dem for å kunne levere grunnleggende tjenester. Gå til innstillingene for å <ph name="LINK" />.</translation>
-<translation id="2774077118134906782">Organisasjonen din administrerer nettleseren</translation>
 <translation id="277499241957683684">Manglende enhetsoppføring</translation>
 <translation id="2775884851269838147">Første utskriftsside</translation>
 <translation id="2781185443919227679">Strender og øyer</translation>
@@ -2807,6 +2805,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6300452962057769623">{0,plural, =0{Enheten startes på nytt nå}=1{Enheten startes på nytt om 1 sekund}other{Enheten startes på nytt om # sekunder}}</translation>
 <translation id="6301104306974789820">Få varsler om prissporing</translation>
 <translation id="6302546952464230349">Vis detaljer om tillatelsen for <ph name="PERMISSION_NAME" /></translation>
+<translation id="6302661287897119265">Filter</translation>
 <translation id="6304398603974202180">Multimedieprogramvare</translation>
 <translation id="6305205051461490394"><ph name="URL" /> er ikke tilgjengelig.</translation>
 <translation id="6306713302480826305">Denne adressen slettes fra denne og de andre påloggede enhetene dine</translation>
@@ -3712,7 +3711,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7967636097426665267">Kommunikasjonsutstyr</translation>
 <translation id="79682505114836835">Verdien «<ph name="VALUE" />» er en ugyldig heksadesimal fargekode.</translation>
 <translation id="7968982339740310781">Se detaljer</translation>
-<translation id="7971972534124227314">Av hensyn til enhetssikkerheten kan OS-et, nettleserinformasjon og installert programvare være synlig</translation>
 <translation id="7976214039405368314">For mange forespørsler</translation>
 <translation id="7977538094055660992">Utskriftsenhet</translation>
 <translation id="7979595116210197019">Mattjenester</translation>
@@ -4073,7 +4071,6 @@ Mer informasjon:
 <translation id="865032292777205197">bevegelsessensorer</translation>
 <translation id="865255447216708819">Film med trykk på baksiden</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" /> administrerer profilen din</translation>
 <translation id="8662463432865928030">Næringseiendommer</translation>
 <translation id="8663226718884576429">Bestillingssammendrag, <ph name="TOTAL_LABEL" />, mer informasjon</translation>
 <translation id="8663909737634214500">Optisk disk</translation>
@@ -4305,7 +4302,6 @@ Mer informasjon:
 <translation id="9103872766612412690"><ph name="SITE" /> bruker vanligvis kryptering for å beskytte informasjonen din. Da Chromium prøvde å koble til <ph name="SITE" /> denne gangen, sendte nettstedet tilbake uvanlig og feil legitimasjon. Dette kan skje hvis en angriper prøver å utgi seg for å være <ph name="SITE" />, eller hvis en Wifi-påloggingsskjerm har avbrutt tilkoblingen. Informasjonen din er likevel sikker fordi Chromium stoppet tilkoblingen før det ble utvekslet noen data.</translation>
 <translation id="9107467864910557787">Nettleseren administreres av <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">En administratorregel deaktiverer skjermdeling med <ph name="APPLICATION_TITLE" /> når konfidensielt innhold er synlig</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" /> administrerer nettleseren din</translation>
 <translation id="9114524666733003316">Bekrefter kortet …</translation>
 <translation id="9114581008513152754">Denne nettleseren administreres ikke av et selskap eller en annen organisasjon. Aktiviteten på denne enheten kan bli administrert utenfor Chrome. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Mer om annonser i Chrome</translation>

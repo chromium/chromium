@@ -6148,6 +6148,7 @@
 <translation id="5435779377906857208">Секогаш дозволувај <ph name="HOST" /> да пристапува до локацијата</translation>
 <translation id="5436492226391861498">Се чека прокси тунел…</translation>
 <translation id="5436510242972373446">Барај <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616">Прозорецот <ph name="WINDOW_SIDE" /> отсега широк <ph name="WINDOW_SIZE_PERCENT" />, окното <ph name="PANE_SIDE" /> отсега широко <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5440425659852470030">Затвори ја страничната табла</translation>
 <translation id="544083962418256601">Направи кратенки...</translation>
 <translation id="5441133529460183413">Веб-апликација се инсталираше преку прелистувачот Chrome</translation>
@@ -8552,6 +8553,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 сајт во групата на <ph name="FPS_OWNER" />}one{{MEMBERS} сајт во групата на <ph name="FPS_OWNER" />}other{{MEMBERS} сајтови во групата на <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Користи Windows Hello при пополнувањето лозинки</translation>
 <translation id="7225179976675429563">Недостасува тип мрежа</translation>
+<translation id="7227235818314667565">Управувајте со споделувањето</translation>
 <translation id="7227458944009118910">Апликациите наведени подолу може да ракуваат и со линкови за протоколи. Другите апликации ќе побараат дозвола.</translation>
 <translation id="7228056665272655255">За да поставите отпечаток, детето треба да го допре сензорот за отпечатоци најгоре десно на тастатурата. Податоците за отпечатокот на детето безбедно се складираат и никогаш не го напуштаат <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Заклучување на екранот и најавување</translation>
@@ -8600,6 +8602,7 @@
 <translation id="7258192266780953209">Трансформации</translation>
 <translation id="7258225044283673131">Апликацијата не одговара. Изберете „Затвори присилно“ за да ја затворите.</translation>
 <translation id="7260186537988033909">Регистрацијата на киоск и уред за сигнализација е завршена</translation>
+<translation id="7261217796641151584">Споделете ја групата</translation>
 <translation id="7261612856573623172">Глас на системот за „Од текст во говор“</translation>
 <translation id="7262004276116528033">Хост на услугата за најавување е <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Секогаш да се користи апликацијата <ph name="APP" /> за отворање поддржани веб-линкови?</translation>
@@ -10539,6 +10542,7 @@
 <translation id="8656888282555543604">Овозможи евидентирање Брајово писмо</translation>
 <translation id="8657393004602556571">Дали сакате да ги откажете повратните информации?</translation>
 <translation id="8657542881463614516">Користете движење со повлекување за да се движите низ страниците</translation>
+<translation id="865936634714975126">Додајте параметар на барање во URL-адресата за да ги изберете типовите вчитувања на страницата. Пример: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Контакти за <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Прозорецот е преместен надолу</translation>
 <translation id="8661290697478713397">Отвори ја врската во инко&amp;гнито прозорец</translation>

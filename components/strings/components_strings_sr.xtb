@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Промена лозинке</translation>
 <translation id="1089599132348386324">Можете да се предомислите у сваком тренутку у подешавањима Chrome-а.</translation>
 <translation id="1090629319939036170">ВР мени</translation>
-<translation id="1091543275053148479">Подаци прегледања, укључујући историју и лозинке, могу да се виде и да се њима управља</translation>
 <translation id="1091779689406092804">снимке екрана</translation>
 <translation id="1094777233105318927">Информације о прегледачу, ОС-у, уређају, инсталираном софтверу и фајловима</translation>
 <translation id="1096545575934602868">Ово поље не сме да има више од <ph name="MAX_ITEMS_LIMIT" /> уноса. Сви додатни уноси ће бити одбачени.</translation>
@@ -457,6 +456,7 @@
 <translation id="180757923930449935">(емулација 64-битне верзије)</translation>
 <translation id="180991881384371158">CVC је на полеђини картице. То су последње 3 цифре у горњем десном углу оквира за потпис.</translation>
 <translation id="1810391395243432441">Заштитите лозинке помоћу закључавања екрана</translation>
+<translation id="1810597570737826742">{count,plural, =1{{position}. од {count} додатне адресе}one{{position}. од {count} додатне адресе}few{{position}. од {count} додатне адресе}other{{position}. од {count} додатних адреса}}</translation>
 <translation id="1812527064848182527">водоравно</translation>
 <translation id="1812975699435941848">Здравствено образовање и медицинска обука</translation>
 <translation id="1816436748874040213">Може да тражи да скролује и зумира дељене картице</translation>
@@ -957,7 +957,6 @@
 <translation id="2770159525358613612">Пробајте да поново отпремите фајлове</translation>
 <translation id="277133753123645258">Начин слања</translation>
 <translation id="2773388851563527404">Chrome спречава већину сајтова да користе колачиће треће стране. Међутим, колачићи треће стране су дозвољени на овом сајту зато што се Chrome ослања на њих да би пружао основне услуге. Посетите Подешавања да бисте <ph name="LINK" />.</translation>
-<translation id="2774077118134906782">Организација управља прегледачем</translation>
 <translation id="277499241957683684">Недостаје евиденција уређаја</translation>
 <translation id="2775884851269838147">Прва страница за штампање</translation>
 <translation id="2781185443919227679">Плаже и острва</translation>
@@ -1509,6 +1508,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" />x<ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Култни и инди филмови</translation>
 <translation id="3793574014653384240">Број недавних отказивања и разлози</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> спречава Chrome да успостави безбедну везу</translation>
 <translation id="3799805948399000906">Фонт је затражен</translation>
 <translation id="3801265110651850478">Шаљи захтев „Не прати“ уз саобраћај прегледања</translation>
 <translation id="380329542618494757">Име</translation>
@@ -2703,6 +2703,7 @@
 <translation id="6106989379647458772">Веб-страница на адреси <ph name="PAGE" /> можда привремено не функционише или је трајно премештена на нову веб-адресу.</translation>
 <translation id="6107012941649240045">Издато за</translation>
 <translation id="6107924765192360631">Почните са неколико речи или првом радном верзијом да бисте добили предлоге за писање.</translation>
+<translation id="6108580855199168381">Детаљи сертификата</translation>
 <translation id="6108702513636120202">Ваш претраживач у Chromium-у</translation>
 <translation id="6108849843016142864">Гмизавци и водоземци</translation>
 <translation id="610911394827799129">Google налог може да има друге облике историје прегледања на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -2806,6 +2807,7 @@
 <translation id="6300452962057769623">{0,plural, =0{Уређај ће се рестартовати}=1{Уређај ће се рестартовати за 1 секунду}one{Уређај ће се рестартовати за # секунду}few{Уређај ће се рестартовати за # секунде}other{Уређај ће се рестартовати за # секунди}}</translation>
 <translation id="6301104306974789820">Добијајте обавештења о праћењу цена</translation>
 <translation id="6302546952464230349">Прикажи детаље дозволе <ph name="PERMISSION_NAME" /></translation>
+<translation id="6302661287897119265">Филтрирај</translation>
 <translation id="6304398603974202180">Мултимедијални софтвер</translation>
 <translation id="6305205051461490394">URL <ph name="URL" /> није доступан.</translation>
 <translation id="6306713302480826305">Ова адреса ће бити избрисана са овог и других уређаја на којима сте пријављени</translation>
@@ -3472,6 +3474,14 @@
 <translation id="7535087603100972091">Вредност</translation>
 <translation id="753556296624075801">Омогућава Google</translation>
 <translation id="7537536606612762813">Обавезно</translation>
+<translation id="7541586907443866208">Нападачи ће моћи да виде и промене све податке које сте разменили са овим сајтом.
+    &lt;ul&gt;
+
+    &lt;li&gt;Ако тренутно користите јавну мрежу, као што је WiFi на аеродрому или у хотелу, размислите о томе да пробате поново када се повежете на поуздану мрежу (нпр. код куће или на послу).&lt;/li&gt;
+    &lt;li&gt;Ако знате власника сајта, затражите од њега да реши овај проблем.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више о овом упозорењу<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">Онемогућено је аутоматско попуњавање кредитне картице зато што овај образац не користи безбедну везу.</translation>
 <translation id="7543525346216957623">Питај родитеља</translation>
 <translation id="7546409722674205727">Покреће се <ph name="APP_NAME" /></translation>
@@ -3712,7 +3722,6 @@
 <translation id="7967636097426665267">Комуникациона опрема</translation>
 <translation id="79682505114836835">Вредност <ph name="VALUE" /> је неважећа хексадецимална боја.</translation>
 <translation id="7968982339740310781">Прикажи детаље</translation>
-<translation id="7971972534124227314">ОС, информације о прегледачу и инсталирани софтвер могу да буду видљиви због безбедности уређаја</translation>
 <translation id="7976214039405368314">Превише је захтева</translation>
 <translation id="7977538094055660992">Излазни уређај</translation>
 <translation id="7979595116210197019">Припрема и достава хране</translation>
@@ -4074,7 +4083,6 @@
 <translation id="865032292777205197">сензори за покрет</translation>
 <translation id="865255447216708819">Филм за штампање на задњој страни</translation>
 <translation id="8654126188050905496">55×91 mm</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" /> управља вашим профилом</translation>
 <translation id="8662463432865928030">Комерцијални објекти</translation>
 <translation id="8663226718884576429">Резиме поруџбине, <ph name="TOTAL_LABEL" />, још детаља</translation>
 <translation id="8663909737634214500">Оптички диск</translation>
@@ -4306,7 +4314,6 @@
 <translation id="9103872766612412690"><ph name="SITE" /> обично користи шифровање да би заштитио информације. Када је Chromium овог пута покушао да се повеже са <ph name="SITE" />, веб-сајт је вратио необичне и нетачне акредитиве. Или нападач покушава да се представи као <ph name="SITE" /> или је екран за WiFi пријављивање прекинуо везу. Информације су и даље безбедне зато што је Chromium прекинуо везу пре него што су размењени било какви подаци.</translation>
 <translation id="9107467864910557787">Прегледачем управља <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Смернице за администраторе онемогућавају дељење садржаја екрана са апликацијом <ph name="APPLICATION_TITLE" /> када је видљив поверљиви садржај</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" /> управља прегледачем</translation>
 <translation id="9114524666733003316">Картица се потврђује...</translation>
 <translation id="9114581008513152754">Овим прегледачем не управља компанија нити друга организација. Активностима на овом уређају се можда управља ван Chrome-а. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Више о огласима у Chrome-у</translation>

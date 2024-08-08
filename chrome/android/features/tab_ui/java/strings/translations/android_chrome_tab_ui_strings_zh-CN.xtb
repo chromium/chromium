@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">离开</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{创建时间：<ph name="NUM_HOURS_ONE" /> 小时前}other{创建时间：<ph name="NUM_HOURS_MANY" /> 小时前}}</translation>
 <translation id="2801787514987684416">查看商店信息？</translation>
+<translation id="2894757982205307093">在组内添加新标签页</translation>
 <translation id="2928243913527329289">Google | 关于此商店</translation>
 <translation id="2977480621796371840">从组中移除</translation>
 <translation id="29919168204617356">系统会自动关闭闲置标签页。您随时可以在“历史记录”中找到它们。</translation>

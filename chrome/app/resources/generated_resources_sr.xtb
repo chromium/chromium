@@ -1205,6 +1205,7 @@
 <translation id="184183613002882946">Не, остани на 1 прекидачу</translation>
 <translation id="184273675144259287">Замените Linux апликације и датотеке претходном резервном копијом</translation>
 <translation id="1842766183094193446">Желите ли стварно да омогућите режим демонстрације?</translation>
+<translation id="1843048149176045210">Копирај линк за преузимање</translation>
 <translation id="1845060436536902492">ChromeVox, читач екрана у ChromeOS Flex-у, првенствено користе слепе или слабовиде особе за читање текста приказаног на екрану помоћу синтетизатора говора или Брајевог екрана. Притисните тастер за размак да бисте укључили ChromeVox. Када се ChromeVox активира, кренућете у кратак обилазак.</translation>
 <translation id="1845727111305721124">Дозвољено им је да пуштају звук</translation>
 <translation id="1846308012215045257">Кликните и задржите тастер Control да бисте покренули <ph name="PLUGIN_NAME" /></translation>
@@ -2642,6 +2643,7 @@
 <translation id="2853121255651601031">Лозинка је сачувана</translation>
 <translation id="2855243985454069333">Брише историју са свих синхронизованих уређаја</translation>
 <translation id="2855812646048059450">Пријавите се на <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Строги режим</translation>
 <translation id="2856776373509145513">Направите нови контејнер</translation>
 <translation id="2856907950922663165">Желите да искључите шифровање URL-ова?</translation>
 <translation id="2859741939921354763">Увезите лозинке у <ph name="BRAND" /></translation>
@@ -3160,6 +3162,7 @@
 <translation id="3251714896659475029">Дозволите да <ph name="SUPERVISED_USER_NAME" /> приступа Google помоћнику помоћу фразе „Хеј Google“</translation>
 <translation id="3251759466064201842">&lt;Није део сертификата&gt;</translation>
 <translation id="325238099842880997">Подесите основна правила у дигиталном свету да бисте помогли деци да се играју, истражују и обављају школске задатке код куће</translation>
+<translation id="3253083398453405334">Светло на екрану трепери када примате обавештења</translation>
 <translation id="3253225298092156258">Није доступно</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Ослободите простор у <ph name="CLOUD_PROVIDER" /> да бисте копирали овај фајл}one{Ослободите простор у <ph name="CLOUD_PROVIDER" /> да бисте копирали ове фајлове}few{Ослободите простор у <ph name="CLOUD_PROVIDER" /> да бисте копирали ове фајлове}other{Ослободите простор у <ph name="CLOUD_PROVIDER" /> да бисте копирали ове фајлове}}</translation>
 <translation id="3253448572569133955">Непознат налог</translation>
@@ -3656,6 +3659,7 @@
 <translation id="3621202678540785336">Улаз</translation>
 <translation id="3621807901162200696">Помозите нам да побољшамо функције и учинак Chrome ОС-а</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{апликација}one{# апликација}few{# апликације}other{# апликација}}</translation>
+<translation id="3622820753353315928">Боја треперења екрана</translation>
 <translation id="362333465072914957">Чека се да CA изда сертификат</translation>
 <translation id="3623598555687153298">Овим бришете <ph name="TOTAL_USAGE" /> података које чувају приказани сајтови</translation>
 <translation id="3624567683873126087">Откључајте уређај и пријавите се на Google налог</translation>
@@ -6399,6 +6403,7 @@
 <translation id="5623282979409330487">Овај сајт приступа сензорима за покрет.</translation>
 <translation id="5623842676595125836">Евиденција</translation>
 <translation id="5624120631404540903">Управљај лозинкама</translation>
+<translation id="5624959475330585145">Питај пре коришћења небезбедних веза</translation>
 <translation id="5625225435499354052">Измените у Google Pay-у</translation>
 <translation id="5626134646977739690">Име:</translation>
 <translation id="5627832140542566187">Положај приказа</translation>
@@ -7160,6 +7165,7 @@
 <translation id="6197128521826316819">Направи QR кôд за ову страницу</translation>
 <translation id="6198223452299275399">Листај странице</translation>
 <translation id="6198252989419008588">Промени PIN</translation>
+<translation id="61988015556954366">Треперење екрана</translation>
 <translation id="6200047250927636406">Одбаци фајл</translation>
 <translation id="6200151268994853226">Управљајте додатком</translation>
 <translation id="6201608810045805374">Желите да уклоните овај налог?</translation>
@@ -7517,6 +7523,7 @@
 <translation id="6468773105221177474">Фајлова: <ph name="FILE_COUNT" /></translation>
 <translation id="6469557521904094793">Укључи мобилну мрежу</translation>
 <translation id="6469702164109431067">Лозинке и приступни кодови</translation>
+<translation id="6470120577693311302">Треперућа обавештења</translation>
 <translation id="6470823736074966819">Искључите звук обавештења</translation>
 <translation id="6472893788822429178">Прикажи дугме Почетак</translation>
 <translation id="6473315466413288899">Изаберите опцију</translation>
@@ -7953,6 +7960,7 @@
 <translation id="6790820461102226165">Додај особу...</translation>
 <translation id="6793610798874309813">PIN може да садржи 4 или више знакова</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> је копиран у привремену меморију</translation>
 <translation id="6794511157503068">Ако је приступни кључ за апликацију <ph name="APP_NAME" /> на USB безбедносном кључу, уметните га и додирните одмах</translation>
 <translation id="679486139907144816">Да бисте се пријавили на овај сајт помоћу приступног кључа, треба да укључите Windows Hello у подешавањима. Затим се вратите на овај сајт и пробајте поново.</translation>
 <translation id="6795371939514004514">Аутоматско скенирање вам омогућава да се аутоматски крећете кроз ставке на екрану. Када је ставка истакнута, притисните Изабери да бисте је активирали.</translation>
@@ -9637,6 +9645,7 @@
 <translation id="8008356846765065031">Веза са интернетом је прекинута. Проверите интернет везу.</translation>
 <translation id="8008704580256716350">Сумњив фајл је блокиран</translation>
 <translation id="8009225694047762179">Управљај лозинкама</translation>
+<translation id="8010081455002666927">Аутоматско откривање</translation>
 <translation id="8011372169388649948">Обележивач <ph name="BOOKMARK_TITLE" /> је премештен.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Детаљи о инстант хотспоту</translation>
@@ -11042,6 +11051,7 @@
 <translation id="9009707268312089299">Увезено из Windows-а</translation>
 <translation id="9009708085379296446">Да ли сте желели да промените ову страницу?</translation>
 <translation id="9010845741772269259">Додајте начине плаћања</translation>
+<translation id="901087299639956505">Уравнотежени режим</translation>
 <translation id="9011163749350026987">Увек приказуј икону</translation>
 <translation id="9011262023858991985">Пребацивање ове картице</translation>
 <translation id="9011393886518328654">Напомене о верзији</translation>

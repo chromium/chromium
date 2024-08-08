@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">Signal de faible intensité</translation>
 <translation id="1300115153046603471">Le type d'APN est "par défaut" et "<ph name="ATTACH" />".</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">Date de création</translation>
 <translation id="1308754910631152188">Mise à jour (effectuée à <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutes</translation>
 <translation id="1310380015393971138">Aucun réseau <ph name="NETWORK_NAME" /> disponible</translation>
@@ -505,6 +506,7 @@
 <translation id="3708186454126126312">Connectés précédemment</translation>
 <translation id="3715651196924935218">Quitter la superposition</translation>
 <translation id="3716250181321371108">Créer une commande</translation>
+<translation id="3716830479327464973">Si vous accordez cette autorisation, l'Enregistreur analysera vos enregistrements audio pour :</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> avis)</translation>
 <translation id="3748026146096797577">Non connecté</translation>
 <translation id="3749289110408117711">Nom du fichier</translation>
@@ -531,6 +533,7 @@
 <translation id="3869314628814282185">tulle</translation>
 <translation id="387301095347517405">Nombre de cycles de charge complets effectués sur votre batterie</translation>
 <translation id="3877066159641251281">Écouter la traduction</translation>
+<translation id="3880601782712134623">détecter automatiquement les différentes voix et attribuer un identifiant générique (par exemple, Intervenant 1 et Intervenant 2) à chaque intervenant ;</translation>
 <translation id="3885327323343477505">Modifier l'économiseur d'écran</translation>
 <translation id="3889914174935857450">Date de réinitialisation</translation>
 <translation id="3897092660631435901">Menu</translation>
@@ -756,6 +759,7 @@
 <translation id="5049856988445523908">SIM bloquée (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nom du groupe</translation>
 <translation id="5051044138948155788">C'est la seule page. Vous allez revenir à l'écran où commencer à scanner.</translation>
+<translation id="5078711626843651677">Les empreintes vocales sont stockées temporairement sur l'appareil jusqu'à ce que l'attribution d'identifiants aux intervenants soit terminée. Vous pouvez désactiver cette option à tout moment dans les paramètres.</translation>
 <translation id="5078983345702708852">futuriste</translation>
 <translation id="5087864757604726239">retour</translation>
 <translation id="5088172560898466307">Nom d'hôte du serveur</translation>
@@ -1106,6 +1110,7 @@
 <translation id="6905163627763043954">Essayer</translation>
 <translation id="6905724422583748843">Revenir à <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Le capot du scanner est ouvert. Refermez-le, puis réessayez.</translation>
+<translation id="6910845598686542904">créer des empreintes vocales des voix détectées dans l'enregistrement ;</translation>
 <translation id="6911383237894364323">Impossible de se connecter aux serveurs multimédias</translation>
 <translation id="6930242544192836755">Durée</translation>
 <translation id="6930597342185648547">À propos de l'arrière-plan</translation>
@@ -1571,6 +1576,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="950520315903467048">Touche manquante pour <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" />.</translation>
+<translation id="951780398843003443">comparer les voix sur l'ensemble de l'enregistrement pour que la transcription reflète ce que dit chaque intervenant, et quand.</translation>
 <translation id="952992212772159698">Désactivé</translation>
 <translation id="95718197892796296">argile</translation>
 <translation id="960719561871045870">Code de l'opérateur</translation>

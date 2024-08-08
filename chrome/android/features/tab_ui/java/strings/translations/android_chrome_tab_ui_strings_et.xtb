@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">Lahku</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Loodud <ph name="NUM_HOURS_ONE" /> tund tagasi}other{Loodud <ph name="NUM_HOURS_MANY" /> tundi tagasi}}</translation>
 <translation id="2801787514987684416">Kas kuvada poe teave?</translation>
+<translation id="2894757982205307093">Uus vaheleht grupis</translation>
 <translation id="2928243913527329289">Google | Teave selle poe kohta</translation>
 <translation id="2977480621796371840">Grupist eemaldamine</translation>
 <translation id="29919168204617356">Inaktiivsed vahelehed suletakse automaatselt. Leiate need alati jaotisest Ajalugu.</translation>

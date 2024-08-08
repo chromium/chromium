@@ -1711,7 +1711,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8993760627012879038">Ouvrir un nouvel onglet en mode de nav. privée</translation>
 <translation id="8996847606757455498">Choisir un autre fournisseur</translation>
 <translation id="8998289560386111590">Non accessible sur votre appareil</translation>
-<translation id="8998729206196772491">Vous vous connectez avec un compte géré par <ph name="MANAGED_DOMAIN" />, et son administrateur pourra contrôler vos données Google Chrome. Celles-ci seront définitivement liées à votre compte. En vous déconnectant de Chrome, vous supprimerez vos données sur cet appareil, mais celles-ci resteront stockées dans votre compte Google.</translation>
 <translation id="8998837250940831980">Impossible de réduire l'onglet. Réessayez plus tard.</translation>
 <translation id="9001604755921395912">Ouvrir navig. privée Chrome</translation>
 <translation id="9007002441981613214">Résoudre le problème relatif aux mots de passe enregistrés</translation>

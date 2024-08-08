@@ -2638,6 +2638,7 @@
 <translation id="2853121255651601031">パスワードが保存されました</translation>
 <translation id="2855243985454069333">同期しているすべてのデバイスから履歴を削除します</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> でログイン</translation>
+<translation id="28559674945112027">厳格モード</translation>
 <translation id="2856776373509145513">新しいコンテナの作成</translation>
 <translation id="2856907950922663165">URL の暗号化をオフにしますか？</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> にパスワードをインポート</translation>
@@ -6387,6 +6388,7 @@
 <translation id="5623282979409330487">このサイトはモーション センサーにアクセスしています。</translation>
 <translation id="5623842676595125836">ログ</translation>
 <translation id="5624120631404540903">パスワードを管理</translation>
+<translation id="5624959475330585145">安全でない接続を使用する前に確認する</translation>
 <translation id="5625225435499354052">Google Pay で編集</translation>
 <translation id="5626134646977739690">名前:</translation>
 <translation id="5627832140542566187">ディスプレイの向き</translation>
@@ -9617,6 +9619,7 @@
 <translation id="8008356846765065031">インターネットが切断されました。インターネット接続を確認してください。</translation>
 <translation id="8008704580256716350">不審なファイルをブロックしました</translation>
 <translation id="8009225694047762179">パスワードを管理</translation>
+<translation id="8010081455002666927">自動検出</translation>
 <translation id="8011372169388649948">「<ph name="BOOKMARK_TITLE" />」を移動しました。</translation>
 <translation id="8012188750847319132">CapsLock</translation>
 <translation id="8012463809859447963">インスタント アクセス ポイントの詳細</translation>
@@ -11020,6 +11023,7 @@
 <translation id="9009707268312089299">Windows からインポート</translation>
 <translation id="9009708085379296446">このページを変更するつもりでしたか？</translation>
 <translation id="9010845741772269259">お支払い方法を追加</translation>
+<translation id="901087299639956505">バランスモード</translation>
 <translation id="9011163749350026987">アイコンを常に表示</translation>
 <translation id="9011262023858991985">このタブをキャストしています</translation>
 <translation id="9011393886518328654">リリースノート</translation>

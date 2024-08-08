@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Parolni o‘zgartirish</translation>
 <translation id="1089599132348386324">Fikringiz oʻzgarsa, buni istalgan vaqt Chrome sozlamalari orqali oʻzgartirish mumkin.</translation>
 <translation id="1090629319939036170">VR menyu</translation>
-<translation id="1091543275053148479">Brauzer maʼlumotlari, jumladan tarix va parollar ham koʻrinadi va boshqariladi</translation>
 <translation id="1091779689406092804">skrinshotlar</translation>
 <translation id="1094777233105318927">Brauzer, OT, qurilma, oʻrnatilgan dasturlar va fayllar haqidagi axborot</translation>
 <translation id="1096545575934602868">Bu maydonchadagi elementlar soni <ph name="MAX_ITEMS_LIMIT" /> yozuvdan oshmasligi kerak. Barcha ortiqchasi rad etiladi.</translation>
@@ -956,7 +955,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2770159525358613612">Fayllarni qaytadan yuklang</translation>
 <translation id="277133753123645258">Yetkazib berish usuli</translation>
 <translation id="2773388851563527404">Chrome koʻplab saytlarni tashqi cookie fayllardan foydalanishini cheklaydi. Lekin bu saytda tashqi cookie fayllarga ruxsat berilgan, chunki u asosiy xizmatlarni taqdim etishda ularga tayanadi. <ph name="LINK" /> uchun sozlamalarni oching.</translation>
-<translation id="2774077118134906782">Brauzeringiz tashkilotingiz boshqaruvida</translation>
 <translation id="277499241957683684">Qurilma ro‘yhatdan o‘tkazilmagan</translation>
 <translation id="2775884851269838147">Birinchi bosma sahifa</translation>
 <translation id="2781185443919227679">Sohillar va orollar</translation>
@@ -2801,6 +2799,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6300452962057769623">{0,plural, =0{Qurilmangiz hozir qayta ishga tushadi}=1{Qurilmangiz 1 soniyadan keyin qayta ishga tushadi}other{Qurilmangiz # soniyadan keyin qayta ishga tushadi}}</translation>
 <translation id="6301104306974789820">Kuzatiladigan narxlar boʻyicha bildirishnomalar olish</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> ruxsat tafsilotlarini ochish</translation>
+<translation id="6302661287897119265">Filtr</translation>
 <translation id="6304398603974202180">Multimediya dasturlari</translation>
 <translation id="6305205051461490394"><ph name="URL" /> bilan aloqa o‘rnatib bo‘lmadi.</translation>
 <translation id="6306713302480826305">Bu manzil shu va tizimga kirgan qurilmalaringizdan oʻchirib tashlanadi</translation>
@@ -3707,7 +3706,6 @@ Batafsil axborot:
 <translation id="7967636097426665267">Aloqa texnikasi</translation>
 <translation id="79682505114836835">“<ph name="VALUE" />” qiymati hex formati uchun yaroqsiz.</translation>
 <translation id="7968982339740310781">Tafsilotlarni ko‘rish</translation>
-<translation id="7971972534124227314">Qurilma xavfsizligi uchun OT, brauzer axboroti va oʻrnatilgan dasturlar koʻrinishi mumkin</translation>
 <translation id="7976214039405368314">Limitdan oshib ketdi</translation>
 <translation id="7977538094055660992">Chiqarish qurilmasi</translation>
 <translation id="7979595116210197019">Taom xizmati</translation>
@@ -4068,7 +4066,6 @@ Batafsil axborot:
 <translation id="865032292777205197">harakat sensorlari</translation>
 <translation id="865255447216708819">Teskari bosib chiqarish uchun film</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8654650417264805416">Profilingiz <ph name="MANAGER" /> boshqaruvida</translation>
 <translation id="8662463432865928030">Tijoriy koʻchmas mulk</translation>
 <translation id="8663226718884576429">Buyurtma axboroti, <ph name="TOTAL_LABEL" />, Batafsil</translation>
 <translation id="8663909737634214500">Optik disk</translation>
@@ -4300,7 +4297,6 @@ Batafsil axborot:
 <translation id="9103872766612412690"><ph name="SITE" /> sayti ma’lumotlaringizni himoyalash uchun shifrlashdan foydalanadi, lekin hozir Chromium <ph name="SITE" /> saytiga ulanish uchun uringanda, ushbu sayt shubhali va noto‘g‘ri tasdiqlash ma’lumotlarini qaytarmoqda. Bunday holat zararli sayt o‘zini <ph name="SITE" /> o‘rnida ko‘rsatayotganda yoki Wi-Fi ulanishi uzilib qolganda yuz berishi mumkin. Shaxsiy ma’lumotlaringizga hech qanday xavf tug‘ilgani yo‘q, chunki Chromium aloqani ma’lumotlar almashinuvidan oldin uzib qo‘ydi.</translation>
 <translation id="9107467864910557787">Brauzeringiz <ph name="MANAGER" /> tomonidan boshqariladi</translation>
 <translation id="91108059142052966">Maxfiy axborotlar koʻrinib turganda administrator ekran namoyishini <ph name="APPLICATION_TITLE" /> uchun taqiqlagan</translation>
-<translation id="9114074357712665317">Brauzeringiz <ph name="MANAGER" /> boshqaruvida</translation>
 <translation id="9114524666733003316">Karta tasdiqlanmoqda...</translation>
 <translation id="9114581008513152754">Bu brauzer kompaniya yoki tashkilot boshqaruvida emas. Bu qurilmadagi amallar Chromedan tashqarida boshqarilishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Chrome ichidagi reklamalar haqida batafsil</translation>

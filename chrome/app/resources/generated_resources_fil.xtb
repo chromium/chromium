@@ -2658,6 +2658,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2853121255651601031">Na-save ang Password</translation>
 <translation id="2855243985454069333">Dine-delete ang history sa lahat ng naka-sync na device</translation>
 <translation id="2855812646048059450">Mag-sign in sa pamamagitan ng <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Strict mode</translation>
 <translation id="2856776373509145513">Gumawa ng bagong container</translation>
 <translation id="2856907950922663165">I-off ang pag-encrypt ng URL?</translation>
 <translation id="2859741939921354763">Mag-import ng mga password sa <ph name="BRAND" /></translation>
@@ -6148,6 +6149,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5435779377906857208">Laging payagan ang <ph name="HOST" /> na i-access ang iyong lokasyon</translation>
 <translation id="5436492226391861498">Naghihintay para sa proxy tunnel...</translation>
 <translation id="5436510242972373446">Hanapan ang <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIZE_PERCENT" /> na ang lapad ngayon ng <ph name="WINDOW_SIDE" /> window, at <ph name="PANE_SIZE_PERCENT" /> na ang lapad ngayon ng <ph name="PANE_SIDE" /> pane.</translation>
 <translation id="5440425659852470030">Isara ang Panel sa Gilid</translation>
 <translation id="544083962418256601">Lumikha ng mga shortcut...</translation>
 <translation id="5441133529460183413">Na-install ang Web App mula sa Chrome browser</translation>
@@ -6415,6 +6417,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5623282979409330487">Ina-access ng site na ito ang iyong mga sensor ng paggalaw.</translation>
 <translation id="5623842676595125836">Log</translation>
 <translation id="5624120631404540903">Pamahalaan ang mga password</translation>
+<translation id="5624959475330585145">Magtanong bago gumamit ng mga hindi secure na koneksyon</translation>
 <translation id="5625225435499354052">I-edit sa Google Pay</translation>
 <translation id="5626134646977739690">Pangalan:</translation>
 <translation id="5627832140542566187">Oryentasyon ng display</translation>
@@ -8553,6 +8556,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 site sa grupo ng <ph name="FPS_OWNER" />}one{{MEMBERS} site sa grupo ng <ph name="FPS_OWNER" />}other{{MEMBERS} na site sa grupo ng <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Gamitin ang Windows Hello kapag pinupunan ang mga password</translation>
 <translation id="7225179976675429563">Nawawala ang uri ng network</translation>
+<translation id="7227235818314667565">Pamahalaan ang Pag-share</translation>
 <translation id="7227458944009118910">Puwede ring mangasiwa ng mga link ng protocol ang mga app na nakalista sa ibaba. Hihingi ng pahintulot ang iba pang app.</translation>
 <translation id="7228056665272655255">Para i-set up ang fingerprint, ipapindot sa iyong anak ang sensor para sa fingerprint sa kanang sulok sa itaas ng keyboard. Secure na sino-store ang data ng fingerprint ng iyong anak at hindi ito kailanman lalabas sa <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="7228523857728654909">Lock ng screen at pag-sign in</translation>
@@ -8601,6 +8605,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7258192266780953209">Mga Pagbabago</translation>
 <translation id="7258225044283673131">Hindi tumutugon ang application. Piliin ang "Puwersahang isara" para isara ang app.</translation>
 <translation id="7260186537988033909">Tapos na ang pag-enroll ng kiosk at signage device</translation>
+<translation id="7261217796641151584">I-share ang Grupo</translation>
 <translation id="7261612856573623172">Text-to-Speech voice ng system</translation>
 <translation id="7262004276116528033">Hino-host ng <ph name="SAML_DOMAIN" /> ang serbisyo sa pag-sign in</translation>
 <translation id="7264695323040866038">Palaging gamitin ang <ph name="APP" /> app para buksan ang mga sinusuportahang link ng web?</translation>
@@ -9649,6 +9654,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8008356846765065031">Nadiskonekta ang Internet. Pakisuri ang iyong koneksyon sa internet.</translation>
 <translation id="8008704580256716350">Na-block ang kahina-hinalang file</translation>
 <translation id="8009225694047762179">Pamahalaan ang Mga Password</translation>
+<translation id="8010081455002666927">I-autodetect</translation>
 <translation id="8011372169388649948">Inilipat ang '<ph name="BOOKMARK_TITLE" />.'</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Mga detalye ng instant hotspot</translation>
@@ -10539,6 +10545,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8656888282555543604">I-enable ang pag-log ng braille</translation>
 <translation id="8657393004602556571">Gusto mo bang i-discard ang feedback?</translation>
 <translation id="8657542881463614516">Gumamit ng galaw na pag-swipe para mag-navigate sa mga page</translation>
+<translation id="865936634714975126">Magdagdag ng query param sa URL para pumili ng mga uri sa pag-load ng page. Halimbawa: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Mga contact sa <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Inilipat ang window pababa</translation>
 <translation id="8661290697478713397">Buksan ang link sa Inco&amp;gnito Window</translation>
@@ -11054,6 +11061,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="9009707268312089299">In-import mula sa Windows</translation>
 <translation id="9009708085379296446">Gusto mo bang baguhin ang page na ito?</translation>
 <translation id="9010845741772269259">Magdagdag ng mga paraan ng pagbabayad</translation>
+<translation id="901087299639956505">Balanced mode</translation>
 <translation id="9011163749350026987">Palaging ipakita ang icon</translation>
 <translation id="9011262023858991985">Kina-cast ang tab na ito</translation>
 <translation id="9011393886518328654">Mga tala sa pag-release</translation>

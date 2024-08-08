@@ -2656,6 +2656,7 @@
 <translation id="2853121255651601031">पासवर्ड सेव्ह केला</translation>
 <translation id="2855243985454069333">सर्व सिंक केलेल्या डिव्हाइसवरून इतिहास हटवते</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> वापरून साइन इन करा</translation>
+<translation id="28559674945112027">कठोर मोड</translation>
 <translation id="2856776373509145513">नवीन कंटेनर तयार करा</translation>
 <translation id="2856907950922663165">URL एन्क्रिप्शन बंद करायचे आहे का?</translation>
 <translation id="2859741939921354763">पासवर्ड <ph name="BRAND" /> वर इंपोर्ट करा</translation>
@@ -6412,6 +6413,7 @@
 <translation id="5623282979409330487">ही साइट तुमचा मोशन सेन्सर ॲक्सेस करत आहे.</translation>
 <translation id="5623842676595125836">लॉग</translation>
 <translation id="5624120631404540903">पासवर्ड व्यवस्थापित करा</translation>
+<translation id="5624959475330585145">असुरक्षित कनेक्शन वापरण्यापूर्वी विचारा</translation>
 <translation id="5625225435499354052">Google Pay मध्ये संपादित करा</translation>
 <translation id="5626134646977739690">नाव:</translation>
 <translation id="5627832140542566187">डिस्प्ले ओरिएंटेशन</translation>
@@ -9647,6 +9649,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8008356846765065031">इंटरनेट डिस्कनेक्ट झाले. कृपया तुमचे इंटरनेट कनेक्शन तपासा.</translation>
 <translation id="8008704580256716350">संशयास्पद फाइल ब्लॉक केली आहे</translation>
 <translation id="8009225694047762179">पासवर्ड व्यवस्थापित करा</translation>
+<translation id="8010081455002666927">ऑटो-डिटेक्ट करा</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' हलवले.</translation>
 <translation id="8012188750847319132">कॅप्स लॉक</translation>
 <translation id="8012463809859447963">इंस्टंट हॉटस्पॉटचे तपशील</translation>
@@ -11051,6 +11054,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9009707268312089299">Windows मधून इंपोर्ट केलेली</translation>
 <translation id="9009708085379296446">तुम्हाला हे पेज बदलायचे होते का?</translation>
 <translation id="9010845741772269259">पेमेंट पद्धती जोडा</translation>
+<translation id="901087299639956505">संतुलित मोड</translation>
 <translation id="9011163749350026987">आयकन नेहमी दाखवा</translation>
 <translation id="9011262023858991985">हा टॅब कास्ट करत आहे</translation>
 <translation id="9011393886518328654">माहितीपत्रक</translation>

@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">Lítill sendistyrkur</translation>
 <translation id="1300115153046603471">Aðgangsstaður er af gerðinni „sjálfgefið“ og „<ph name="ATTACH" />“.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">Búið til</translation>
 <translation id="1308754910631152188">Uppfærir (<ph name="PERCENTAGE_VALUE" />% lokið)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> mínútur</translation>
 <translation id="1310380015393971138">Ekkert <ph name="NETWORK_NAME" /> netkerfi er tiltækt</translation>
@@ -505,6 +506,7 @@
 <translation id="3708186454126126312">Áður tengt</translation>
 <translation id="3715651196924935218">Hætta að nota fljótandi stillingu</translation>
 <translation id="3716250181321371108">Búa til stýringu</translation>
+<translation id="3716830479327464973">Ef þú leyfir þetta mun Upptökutækið greina hljóðupptökurnar þínar til að:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> umsagnir)</translation>
 <translation id="3748026146096797577">Ótengt</translation>
 <translation id="3749289110408117711">Skráarheiti</translation>
@@ -531,6 +533,7 @@
 <translation id="3869314628814282185">tjulli</translation>
 <translation id="387301095347517405">Fjöldi skipta sem rafhlaðan hefur tæmst og verið fullhlaðin aftur</translation>
 <translation id="3877066159641251281">Hlusta á þýðingu</translation>
+<translation id="3880601782712134623">Greina sjálfkrafa aðskildar raddir og merkja hvern mælanda með sjálfgefnu merki, t.d. Mælandi 1 og Mælandi 2</translation>
 <translation id="3885327323343477505">Breyta skjávara</translation>
 <translation id="3889914174935857450">Endurstilla dagsetningu</translation>
 <translation id="3897092660631435901">Valmynd</translation>
@@ -756,6 +759,7 @@
 <translation id="5049856988445523908">SIM læst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Heiti hóps</translation>
 <translation id="5051044138948155788">Þetta er eina síðan. Þetta opnar upphafsskjá skönnunar.</translation>
+<translation id="5078711626843651677">Raddlíkön eru vistuð tímabundið í tækinu þar til búið er að merkja mælendur. Þú getur slökkt á þessu hvenær sem er í stillingunum.</translation>
 <translation id="5078983345702708852">framúrstefnuleg</translation>
 <translation id="5087864757604726239">til baka</translation>
 <translation id="5088172560898466307">Hýsilheiti þjóns</translation>
@@ -1106,6 +1110,7 @@
 <translation id="6905163627763043954">Prófa</translation>
 <translation id="6905724422583748843">Til baka í <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Lokið á skannanum er opið. Lokaðu skannanum og reyndu aftur.</translation>
+<translation id="6910845598686542904">Búa til líkan úr röddunum sem greinast í upptökunni</translation>
 <translation id="6911383237894364323">Ekki er hægt að tengjast efnisþjónum</translation>
 <translation id="6930242544192836755">Tímalengd</translation>
 <translation id="6930597342185648547">Um bakgrunn</translation>
@@ -1571,6 +1576,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
 <translation id="950520315903467048">Lykil vantar fyrir „<ph name="DIRECTION" />“. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">Bera saman raddir á allri upptökunni til að textauppskriftin endurspegli hvað hver mælandi segir og hvenær</translation>
 <translation id="952992212772159698">Ekki virkjuð</translation>
 <translation id="95718197892796296">leir</translation>
 <translation id="960719561871045870">Kóði símafyrirtækis</translation>

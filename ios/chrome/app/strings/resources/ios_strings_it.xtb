@@ -406,6 +406,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2975121486251958312">Disponibile solo la modalità in incognito</translation>
 <translation id="2982481275546140226">Cancella dati</translation>
 <translation id="298306318844797842">Aggiungi il metodo di pagamento…</translation>
+<translation id="2984370252102312100">Apri schede e gruppi di schede</translation>
 <translation id="2989805286512600854">Apri in un'altra scheda</translation>
 <translation id="300455800299409273">Nascondi "Continua con questa scheda"</translation>
 <translation id="3010025794097054078">Proteggiti da violazioni dei dati, siti web non sicuri e altro ancora.</translation>
@@ -890,6 +891,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5415289094036440596">Le passkey non possono essere condivise</translation>
 <translation id="5416022985862681400">Ultimi 7 giorni</translation>
 <translation id="5416455648658732408">Sposta in gruppo di schede</translation>
+<translation id="5419613306346207284">Gruppi di schede da tutti i dispositivi</translation>
 <translation id="5423269318075950257">Monitora prezzo</translation>
 <translation id="5431252637281434233">Il tuo account verrà disconnesso</translation>
 <translation id="543338862236136125">Modifica password</translation>
@@ -1024,7 +1026,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6042308850641462728">Altro</translation>
 <translation id="6045460247888249350">Aggiungi titolo</translation>
-<translation id="6051432659151380973">I gruppi di schede vengono salvati automaticamente</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controlla notizie e attività qui</translation>
 <translation id="6064824697233747382">La tua organizzazione richiede di disattivare la sincronizzazione.</translation>
@@ -1257,6 +1258,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7069695992271320873">Rimuovi l'account da questo dispositivo</translation>
 <translation id="7080806333218412752">Invia gli URL a Navigazione sicura per verificarli. Invia anche piccoli esempi di pagine, download, attività delle estensioni e informazioni di sistema per contribuire al rilevamento di nuove minacce. Quando hai effettuato l'accesso, collega temporaneamente questi dati al tuo Account Google per proteggerti nelle app Google.</translation>
 <translation id="7082853213442715471">Quando è attiva questa modalità, alcune tecnologie web sono bloccate e per questo motivo alcuni siti web potrebbero caricarsi più lentamente o non funzionare correttamente.</translation>
+<translation id="7084872401503983471">Apri <ph name="GROUP_TITLE" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7095110968493193530">Su Gestore delle password di Google per l'account <ph name="EMAIL" /></translation>
 <translation id="7101580180124131336">Ora vedrai contenuti di e relativi a <ph name="CHANNEL_NAME" /> in Stai seguendo.</translation>
 <translation id="7102005569666697658">Download in corso… <ph name="FILE_SIZE" /></translation>
@@ -1277,7 +1279,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7192050974311852563">Avvia logging</translation>
 <translation id="7203585745079012652">Pronuncia le risposte</translation>
 <translation id="7210568419880432164">Attiva le notifiche…</translation>
-<translation id="7211038039686180558">I gruppi di schede vengono automaticamente salvati e aggiornati su tutti i dispositivi su cui è stato eseguito l'accesso</translation>
 <translation id="721597782417389033">Nickname carta non valido</translation>
 <translation id="7221173315674413369">Esplora nuove funzionalità e suggerimenti nella sezione Novità</translation>
 <translation id="7223102419539744003">Chiudi scheda</translation>

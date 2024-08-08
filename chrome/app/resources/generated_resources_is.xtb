@@ -6148,6 +6148,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5435779377906857208">Veita <ph name="HOST" /> alltaf aðgang að staðsetningunni þinni</translation>
 <translation id="5436492226391861498">Bíður eftir proxy-gögnum...</translation>
 <translation id="5436510242972373446">Leita á <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> gluggi er núna <ph name="WINDOW_SIZE_PERCENT" /> á breidd, <ph name="PANE_SIDE" /> svæði er núna <ph name="PANE_SIZE_PERCENT" /> á breidd.</translation>
 <translation id="5440425659852470030">Loka hliðarglugga</translation>
 <translation id="544083962418256601">Búa til flýtileiðir...</translation>
 <translation id="5441133529460183413">Vefforrit sótt í Chrome vafra</translation>
@@ -8552,6 +8553,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 vefsvæði í hóp <ph name="FPS_OWNER" />}one{{MEMBERS} vefsvæði í hóp <ph name="FPS_OWNER" />}other{{MEMBERS} vefsvæði í hóp <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Nota Windows Hello við útfyllingu aðgangsorða</translation>
 <translation id="7225179976675429563">Tegund nets vantar</translation>
+<translation id="7227235818314667565">Stjórna samnýtingu</translation>
 <translation id="7227458944009118910">Forrit á eftirfarandi lista geta einnig unnið úr tenglum samskiptareglu. Önnur forrit munu biðja um heimild.</translation>
 <translation id="7228056665272655255">Til að skrá fingrafar skaltu láta barnið snerta fingrafaralesarann efst í hægra horni lyklaborðsins. Fingrafaragögn barnsins eru í öruggri geymslu og fara aldrei út fyrir þetta <ph name="DEVICE_TYPE" />-tæki.</translation>
 <translation id="7228523857728654909">Skjálás og innskráning</translation>
@@ -8600,6 +8602,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7258192266780953209">Umbreytingar</translation>
 <translation id="7258225044283673131">Forritið svarar ekki. Veldu „Þvinga fram lokun“ til að loka forritinu.</translation>
 <translation id="7260186537988033909">Skráningu tækis í sjálfsala- og merkingastillingu lokið</translation>
+<translation id="7261217796641151584">Deila hópi</translation>
 <translation id="7261612856573623172">Rödd talgervils kerfis</translation>
 <translation id="7262004276116528033">Þessi innskráningarþjónusta er hýst af <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Alltaf nota <ph name="APP" /> forritið til að opna studda veftengla?</translation>
@@ -10536,6 +10539,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8656888282555543604">Kveikja á skráningu blindraleturs</translation>
 <translation id="8657393004602556571">Viltu hætta við ábendingarnar?</translation>
 <translation id="8657542881463614516">Notaðu strokhreyfingu til að fletta á milli síðna</translation>
+<translation id="865936634714975126">Bættu fyrirspurnarbreytu við vefslóðina til að velja gerðir þegar síðu er hlaðið. Dæmi: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Tengiliðir í „<ph name="FEATURE_NAME" />“</translation>
 <translation id="8659609431223166673">Gluggi færðist niður</translation>
 <translation id="8661290697478713397">Opna ten&amp;gil í huliðsglugga</translation>

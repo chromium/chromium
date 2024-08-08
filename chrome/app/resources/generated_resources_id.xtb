@@ -2657,6 +2657,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2853121255651601031">Sandi Sudah Disimpan</translation>
 <translation id="2855243985454069333">Menghapus histori dari semua perangkat yang disinkronkan</translation>
 <translation id="2855812646048059450">Login dengan <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Mode ketat</translation>
 <translation id="2856776373509145513">Buat penampung baru</translation>
 <translation id="2856907950922663165">Nonaktifkan enkripsi URL?</translation>
 <translation id="2859741939921354763">Impor sandi ke <ph name="BRAND" /></translation>
@@ -6415,6 +6416,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5623282979409330487">Situs ini sedang mengakses sensor gerakan.</translation>
 <translation id="5623842676595125836">Log</translation>
 <translation id="5624120631404540903">Kelola sandi</translation>
+<translation id="5624959475330585145">Tanyakan sebelum menggunakan koneksi yang tidak aman</translation>
 <translation id="5625225435499354052">Edit di Google Pay</translation>
 <translation id="5626134646977739690">Nama:</translation>
 <translation id="5627832140542566187">Orientasi tampilan</translation>
@@ -9648,6 +9650,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8008356846765065031">Internet terputus. Periksa koneksi internet Anda.</translation>
 <translation id="8008704580256716350">File mencurigakan diblokir</translation>
 <translation id="8009225694047762179">Kelola Kata sandi</translation>
+<translation id="8010081455002666927">Deteksi otomatis</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' dipindahkan.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Detail hotspot instan</translation>
@@ -11051,6 +11054,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="9009707268312089299">Diimpor dari Windows</translation>
 <translation id="9009708085379296446">Apakah maksud Anda ingin mengubah halaman ini?</translation>
 <translation id="9010845741772269259">Tambahkan metode pembayaran</translation>
+<translation id="901087299639956505">Mode seimbang</translation>
 <translation id="9011163749350026987">Selalu tampilkan ikon</translation>
 <translation id="9011262023858991985">Mentransmisikan tab ini</translation>
 <translation id="9011393886518328654">Catatan rilis</translation>

@@ -1457,6 +1457,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6073451960410192870">Atura la gravació</translation>
 <translation id="6074087755403037157">Canal Beta</translation>
 <translation id="6075098173600599596">Canvia l'ús de les majúscules</translation>
+<translation id="6091929401758362855">Llista de reproducció: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Desactivat per l'administrador</translation>
 <translation id="6095008505822982596">Velocitat de parla</translation>
 <translation id="6095425951508823973">Afegeix una connexió amb <ph name="PROVIDER" /></translation>
@@ -2260,7 +2261,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="899350903320462459">Desbloqueja el dispositiu com a <ph name="LOGIN_ID" /> per dur a terme l'acció que indica la notificació</translation>
 <translation id="8993733019280019776">Estàs parlant? El teu micròfon està desactivat. Selecciona'l per activar-lo.</translation>
 <translation id="9000771174482730261">GESTIONA L'EMMAGATZEMATGE</translation>
-<translation id="9002204506712855687">Explora les funcions més recents</translation>
 <translation id="9005984960510803406">Obre la finestra de Crosh</translation>
 <translation id="9017320285115481645">Introdueix el codi d'accés parental de Family Link.</translation>
 <translation id="9024331582947483881">pantalla completa</translation>

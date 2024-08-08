@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">ਕਮਜ਼ੋਰ ਸਿਗਨਲ</translation>
 <translation id="1300115153046603471">APN ਦੀ ਕਿਸਮ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਅਤੇ <ph name="ATTACH" /> 'ਤੇ ਸੈੱਟ ਹੈ।</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">ਬਣਾਉਣ ਦੀ ਤਾਰੀਖ</translation>
 <translation id="1308754910631152188">ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ (<ph name="PERCENTAGE_VALUE" />% ਪੂਰਾ ਹੋ ਗਿਆ)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> ਮਿੰਟ</translation>
 <translation id="1310380015393971138">ਕੋਈ <ph name="NETWORK_NAME" /> ਨੈੱਟਵਰਕ ਉਪਲਬਧ ਨਹੀਂ</translation>
@@ -505,6 +506,7 @@
 <translation id="3708186454126126312">ਪਹਿਲਾਂ ਤੋਂ ਕਨੈਕਟ ਕੀਤੇ</translation>
 <translation id="3715651196924935218">ਫ਼ਲੋਟ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਆਓ</translation>
 <translation id="3716250181321371108">ਕੰਟਰੋਲ ਬਣਾਓ</translation>
+<translation id="3716830479327464973">ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਹਿਮਤ ਹੋਣ 'ਤੇ, Recorder ਇਨ੍ਹਾਂ ਚੀਜ਼ਾਂ ਲਈ ਤੁਹਾਡੀਆਂ ਆਡੀਓ ਰਿਕਾਰਡਿੰਗਾਂ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕਰੇਗੀ:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ਸਮੀਖਿਆਵਾਂ)</translation>
 <translation id="3748026146096797577">ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="3749289110408117711">ਫਾਈਲ ਨਾਮ</translation>
@@ -531,6 +533,7 @@
 <translation id="3869314628814282185">ਟਯੂਲ</translation>
 <translation id="387301095347517405">ਤੁਹਾਡੀ ਬੈਟਰੀ ਵੱਲੋਂ ਚਾਰਜ ਹੋਣ ਦੇ ਚੱਕਰ ਨੂੰ ਪੂਰਾ ਕੀਤੇ ਜਾਣ ਦੀ ਗਿਣਤੀ</translation>
 <translation id="3877066159641251281">ਅਨੁਵਾਦ ਨੂੰ ਸੁਣੋ</translation>
+<translation id="3880601782712134623">ਵਿਲੱਖਣ ਅਵਾਜ਼ਾਂ ਦਾ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪਤਾ ਲਗਾਉਂਦੀ ਹੈ ਅਤੇ ਹਰੇਕ ਸਪੀਕਰ ਨੂੰ ਸਪੀਕਰ 1 ਅਤੇ ਸਪੀਕਰ 2 ਵਰਗੇ ਆਮ ਲੇਬਲ ਦਿੰਦੀ ਹੈ</translation>
 <translation id="3885327323343477505">ਸਕ੍ਰੀਨ ਸੇਵਰ ਬਦਲੋ</translation>
 <translation id="3889914174935857450">ਤਾਰੀਖ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="3897092660631435901">ਮੀਨੂ</translation>
@@ -634,6 +637,7 @@
 <translation id="4422041425070339732">ਹੇਠਾਂ ਤੀਰ</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ਬੰਦ ਹੈ</translation>
+<translation id="4428840632568803690">ਸਪੀਕਰ <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos ਟਿਕਟ ਦੀ ਮਿਆਦ ਜਲਦ ਹੀ ਮੁੱਕ ਜਾਵੇਗੀ</translation>
 <translation id="4431821876790500265">ਰਿਪੋਰਟ ਦੇਖੋ</translation>
 <translation id="4443192710976771874">ਲਾਲ</translation>
@@ -756,6 +760,7 @@
 <translation id="5049856988445523908">ਸਿਮ ਲਾਕ ਕੀਤਾ ਗਿਆ (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ਗਰੁੱਪ ਦਾ ਨਾਮ</translation>
 <translation id="5051044138948155788">ਸਿਰਫ਼ ਇਹੀ ਪੰਨਾ ਹੈ। ਇਹ ਤੁਹਾਨੂੰ ਸਕੈਨਿੰਗ ਸ਼ੁਰੂ ਕਰਨ ਵਾਲੀ ਸਕ੍ਰੀਨ 'ਤੇ ਲੈ ਜਾਵੇਗਾ।</translation>
+<translation id="5078711626843651677">ਅਵਾਜ਼ੀ ਮਾਡਲ ਉਦੋਂ ਤੱਕ ਕੁਝ ਸਮੇਂ ਲਈ ਡੀਵਾਈਸ 'ਤੇ ਸਟੋਰ ਕੀਤੇ ਜਾਂਦੇ ਹਨ, ਜਦੋਂ ਤੱਕ ਸਪੀਕਰ ਲੇਬਲਬੱਧ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਨਹੀਂ ਹੋ ਜਾਂਦੀ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਿਸੇ ਵੀ ਵੇਲੇ ਇਸਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5078983345702708852">ਫਿਊਚਰਿਸਟਿਕ</translation>
 <translation id="5087864757604726239">ਪਿੱਛੇ</translation>
 <translation id="5088172560898466307">ਸਰਵਰ ਹੋਸਟਨਾਮ</translation>
@@ -1109,6 +1114,7 @@
 <translation id="6905163627763043954">ਇਸਨੂੰ ਅਜ਼ਮਾਓ</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="6910312834584889076">ਸਕੈਨਰ ਦਾ ਕਵਰ ਖੁੱਲ੍ਹਾ ਹੈ। ਕਵਰ ਬੰਦ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="6910845598686542904">ਰਿਕਾਰਡਿੰਗ ਵਿੱਚ ਪਤਾ ਲਗਾਈਆਂ ਗਈਆਂ ਅਵਾਜਾਂ ਦੇ ਮਾਡਲਾਂ ਦੀ ਗਣਨਾ ਕਰਦੀ ਹੈ</translation>
 <translation id="6911383237894364323">ਮੀਡੀਆ ਸਰਵਰਾਂ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="6930242544192836755">ਮਿਆਦ</translation>
 <translation id="6930597342185648547">ਬੈਕਗ੍ਰਾਊਂਡ ਬਾਰੇ</translation>
@@ -1293,6 +1299,7 @@
 <translation id="7802764839223122985">ਕੁੰਜੀ ਮੌਜੂਦ ਨਹੀਂ ਹੈ। <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
 <translation id="7805768142964895445">ਸਥਿਤੀ</translation>
+<translation id="7811024689617730980">1 ਤੋਂ 31 ਤਾਰੀਖ ਦੀ ਰੇਂਜ ਵਿੱਚ ਕੋਈ ਸਵੈ ਰੀਸੈੱਟ ਕਰਨ ਵਾਲਾ ਦਿਨ ਚੁਣੋ, ਜਿਸ ਵਿੱਚ ਇਹ ਸ਼ਾਮਲ ਹੈ</translation>
 <translation id="7813073042185856802">ਪਹਾੜ</translation>
 <translation id="7819857487979277519">PSK (WPA ਜਾਂ RSN)</translation>
 <translation id="7824219488248240180">ਪੋਸਟ-ਪ੍ਰਭਾਵਵਾਦੀ</translation>
@@ -1574,6 +1581,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">ਪ੍ਰਤੀਕਰਮ ਭੇਜੋ</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> ਲਈ ਕੁੰਜੀ ਮੌਜੂਦ ਨਹੀਂ ਹੈ। <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">ਸਾਰੀ ਰਿਕਾਰਡਿੰਗ ਵਿੱਚ ਅਵਾਜ਼ਾਂ ਦੀ ਤੁਲਨਾ ਕਰਦੀ ਹੈ, ਤਾਂ ਜੋ ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਇਹ ਦਰਸਾ ਸਕੇ ਕਿ ਹਰੇਕ ਸਪੀਕਰ ਨੇ ਕੀ ਅਤੇ ਕਦੋਂ ਕਿਹਾ ਹੈ</translation>
 <translation id="952992212772159698">ਸਕਿਰਿਆ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="95718197892796296">ਕਲੇ</translation>
 <translation id="960719561871045870">ਓਪਰੇਟਰ ਕੋਡ</translation>

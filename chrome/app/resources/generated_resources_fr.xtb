@@ -6131,6 +6131,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5435779377906857208">Toujours autoriser l'accès à votre position pour <ph name="HOST" /></translation>
 <translation id="5436492226391861498">En attente du tunnel proxy...</translation>
 <translation id="5436510242972373446">Rechercher sur <ph name="SITE_NAME" /> :</translation>
+<translation id="5438014818441491616">La fenêtre de <ph name="WINDOW_SIDE" /> a désormais une largeur de <ph name="WINDOW_SIZE_PERCENT" />, et le volet de <ph name="PANE_SIDE" /> a désormais une largeur de <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5440425659852470030">Fermer le panneau latéral</translation>
 <translation id="544083962418256601">Créer des raccourcis…</translation>
 <translation id="5441133529460183413">Appli Web installée depuis le navigateur Chrome</translation>
@@ -8537,6 +8538,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 site dans le groupe de <ph name="FPS_OWNER" />}one{{MEMBERS} site dans le groupe de <ph name="FPS_OWNER" />}other{{MEMBERS} sites dans le groupe de <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Utiliser Windows Hello pour saisir les mots de passe</translation>
 <translation id="7225179976675429563">Type de réseau manquant.</translation>
+<translation id="7227235818314667565">Gérer le partage</translation>
 <translation id="7227458944009118910">Les applis listées ci-dessous peuvent aussi gérer les liens de protocole. D'autres demanderont l'autorisation.</translation>
 <translation id="7228056665272655255">Pour configurer l'empreinte de votre enfant, demandez-lui d'appuyer sur le lecteur d'empreinte digitale en haut à droite du clavier. Les données liées à son empreinte sont stockées de façon sécurisée et ne quittent jamais ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Verrouillage de l'écran et connexion</translation>
@@ -8585,6 +8587,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7258192266780953209">Transformations</translation>
 <translation id="7258225044283673131">L'application ne répond pas. Sélectionnez "Forcer la fermeture" pour la fermer.</translation>
 <translation id="7260186537988033909">Enregistrement de l'appareil avec Kiosk &amp; Signage terminé</translation>
+<translation id="7261217796641151584">Partager le groupe</translation>
 <translation id="7261612856573623172">Voix de la synthèse vocale du système</translation>
 <translation id="7262004276116528033">Ce service de connexion est hébergé par <ph name="SAML_DOMAIN" />.</translation>
 <translation id="7264695323040866038">Toujours utiliser l'appli <ph name="APP" /> pour ouvrir les liens Web compatibles ?</translation>
@@ -10522,6 +10525,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8656888282555543604">Activer la journalisation des caractères braille</translation>
 <translation id="8657393004602556571">Voulez-vous supprimer les commentaires ?</translation>
 <translation id="8657542881463614516">Balayer l'écran pour changer de page</translation>
+<translation id="865936634714975126">Ajoutez un paramètre de requête dans l'URL pour sélectionner des types lors du chargement de page. Exemple : chrome://device-log/?types=Bluetooth,USB.</translation>
 <translation id="8659608856364348875">Contacts pour le <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Fenêtre déplacée vers le bas</translation>
 <translation id="8661290697478713397">Ouvrir le lien dans la fenêtre de navi&amp;gation privée</translation>

@@ -1712,7 +1712,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8993760627012879038">Öppna en ny flik i inkognitoläge</translation>
 <translation id="8996847606757455498">Välj en annan leverantör</translation>
 <translation id="8998289560386111590">Inte tillgängligt på din enhet</translation>
-<translation id="8998729206196772491">Du håller på att logga in med ett konto som hanteras av <ph name="MANAGED_DOMAIN" />, vilket ger administratören kontroll över data i Chrome. Din data kopplas permanent till det här kontot. Om du loggar ut från Chrome raderas all din data från enheten, men den lagras fortfarande i Google-kontot.</translation>
 <translation id="8998837250940831980">Det gick inte att minimera fliken. Försök igen senare.</translation>
 <translation id="9001604755921395912">Öppna i Chrome-inkognitoflik</translation>
 <translation id="9007002441981613214">Åtgärda problem med sparade lösenord</translation>

@@ -2644,6 +2644,7 @@
 <translation id="2853121255651601031">პაროლი შენახულია</translation>
 <translation id="2855243985454069333">ისტორიის წაშლა ყველა სინქრონიზებული მოწყობილობიდან</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" />-ით შესვლა</translation>
+<translation id="28559674945112027">მკაცრი რეჟიმი</translation>
 <translation id="2856776373509145513">შექმენით ახალი კონტეინერი</translation>
 <translation id="2856907950922663165">გსურთ, გამორთოთ URL-ების დაშიფვრა?</translation>
 <translation id="2859741939921354763">შეასრულეთ პაროლების იმპორტირება <ph name="BRAND" />-ში</translation>
@@ -6402,6 +6403,7 @@
 <translation id="5623282979409330487">ამ საიტს აქვს წვდომა მოძრაობის სენსორებზე.</translation>
 <translation id="5623842676595125836">ჟურნალი</translation>
 <translation id="5624120631404540903">პაროლების მართვა</translation>
+<translation id="5624959475330585145">მკითხე დაუცველი კავშირის გამოყენებამდე</translation>
 <translation id="5625225435499354052">Google Pay-ში რედაქტირება</translation>
 <translation id="5626134646977739690">სახელი:</translation>
 <translation id="5627832140542566187">ჩვენების ორიენტაცია</translation>
@@ -9634,6 +9636,7 @@
 <translation id="8008356846765065031">ინტერნეტი გაითიშა. შეამოწმეთ ინტერნეტ-კავშირი.</translation>
 <translation id="8008704580256716350">საეჭვო ფაილი დაიბლოკა</translation>
 <translation id="8009225694047762179">პაროლების მართვა</translation>
+<translation id="8010081455002666927">ავტომატური ამოცნობა</translation>
 <translation id="8011372169388649948">„<ph name="BOOKMARK_TITLE" />“ გადატანილია.</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8012463809859447963">მყისიერი უსადენო ქსელის დეტალები</translation>
@@ -11036,6 +11039,7 @@
 <translation id="9009707268312089299">დაიმპორტებულია Windows-იდან</translation>
 <translation id="9009708085379296446">ამ გვერდის შეცვლა გსურდათ?</translation>
 <translation id="9010845741772269259">გადახდის მეთოდების დამატება</translation>
+<translation id="901087299639956505">დაბალანსებული რეჟიმი</translation>
 <translation id="9011163749350026987">ხატულის ყოველთვის ჩვენება</translation>
 <translation id="9011262023858991985">ტრანსლირდება ეს ჩანართი</translation>
 <translation id="9011393886518328654">გამოცემის შესახებ შეტყობინება</translation>

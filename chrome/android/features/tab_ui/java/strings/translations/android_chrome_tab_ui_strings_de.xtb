@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">Verlassen</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Vor <ph name="NUM_HOURS_ONE" /> Stunde erstellt}other{Vor <ph name="NUM_HOURS_MANY" /> Stunden erstellt}}</translation>
 <translation id="2801787514987684416">Geschäftsinformationen anzeigen?</translation>
+<translation id="2894757982205307093">Neuer Tab in Gruppe</translation>
 <translation id="2928243913527329289">Google | Informationen zu diesem Händler</translation>
 <translation id="2977480621796371840">Aus Gruppe entfernen</translation>
 <translation id="29919168204617356">Inaktive Tabs werden automatisch geschlossen. Du kannst sie jederzeit im Verlauf finden.</translation>

@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">비밀번호 변경</translation>
 <translation id="1089599132348386324">언제든지 Chrome 설정에서 선택을 변경할 수 있습니다.</translation>
 <translation id="1090629319939036170">VR 메뉴</translation>
-<translation id="1091543275053148479">방문 기록, 비밀번호 등 인터넷 사용 기록을 확인하고 관리할 수 있습니다.</translation>
 <translation id="1091779689406092804">스크린샷</translation>
 <translation id="1094777233105318927">브라우저, OS, 기기, 설치된 소프트웨어, 파일에 관한 정보</translation>
 <translation id="1096545575934602868">입력란에 항목이 <ph name="MAX_ITEMS_LIMIT" />개 넘게 있으면 안 됩니다. 추가되는 모든 항목은 삭제됩니다.</translation>
@@ -957,7 +956,6 @@
 <translation id="2770159525358613612">파일을 다시 업로드해 보세요.</translation>
 <translation id="277133753123645258">배송 방법</translation>
 <translation id="2773388851563527404">Chrome은 대부분의 사이트에서 서드 파티 쿠키를 사용하지 못하도록 제한합니다. 하지만 이 사이트에서는 서드 파티 쿠키를 사용하여 기본 서비스를 제공하기 때문에 서드 파티 쿠키가 허용됩니다. <ph name="LINK" />하려면 설정으로 이동하세요.</translation>
-<translation id="2774077118134906782">조직에서 브라우저를 관리합니다</translation>
 <translation id="277499241957683684">기기 기록 없음</translation>
 <translation id="2775884851269838147">첫 인쇄 페이지</translation>
 <translation id="2781185443919227679">해변 및 섬</translation>
@@ -1509,6 +1507,7 @@
 <translation id="3792100426446126328"><ph name="NAME" />(<ph name="WIDTH" />x<ph name="HEIGHT" />인치)</translation>
 <translation id="3792826587784915501">컬트 및 독립 영화</translation>
 <translation id="3793574014653384240">최근 발생한 비정상 종료의 횟수 및 원인</translation>
+<translation id="3796417399166194741"><ph name="SITE" />에서 Chrome이 보안 연결을 설정하지 못하도록 방해합니다.</translation>
 <translation id="3799805948399000906">글꼴 요청됨</translation>
 <translation id="3801265110651850478">탐색 트래픽과 함께 ‘추적 안함’ 요청 전송</translation>
 <translation id="380329542618494757">이름</translation>
@@ -2703,6 +2702,7 @@
 <translation id="6106989379647458772"><ph name="PAGE" />의 웹페이지가 일시적으로 다운되었거나 새 웹 주소로 완전히 이동했을 수 있습니다.</translation>
 <translation id="6107012941649240045">발급 대상</translation>
 <translation id="6107924765192360631">몇 단어 또는 첫 번째 초안으로 시작하면 추천 단어를 받을 수 있습니다.</translation>
+<translation id="6108580855199168381">인증서 세부정보</translation>
 <translation id="6108702513636120202">Chromium의 검색엔진</translation>
 <translation id="6108849843016142864">파충류 및 양서류</translation>
 <translation id="610911394827799129">Google 계정의 내 활동(<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />)에는 인터넷 방문 기록이 다른 형식으로 남아 있을 수도 있습니다</translation>
@@ -2807,6 +2807,7 @@
 <translation id="6300452962057769623">{0,plural, =0{지금 기기가 다시 시작됩니다}=1{1초 후에 기기가 다시 시작됩니다}other{#초 후에 기기가 다시 시작됩니다}}</translation>
 <translation id="6301104306974789820">가격 추적 알림 받기</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> 권한 세부정보 표시</translation>
+<translation id="6302661287897119265">필터</translation>
 <translation id="6304398603974202180">멀티미디어 소프트웨어</translation>
 <translation id="6305205051461490394"><ph name="URL" />에 연결할 수 없습니다.</translation>
 <translation id="6306713302480826305">이 기기와 다른 로그인된 기기에서 주소가 삭제됩니다.</translation>
@@ -3472,6 +3473,12 @@
 <translation id="7535087603100972091">값</translation>
 <translation id="753556296624075801">Google 제공</translation>
 <translation id="7537536606612762813">필수</translation>
+<translation id="7541586907443866208">공격자가 사용자와 이 사이트 간에 전송되는 모든 데이터를 보고 변경할 수 있습니다.
+    &lt;ul&gt;
+    &lt;li&gt;현재 공용 네트워크(예: 공항 또는 호텔 Wi-Fi)를 사용 중이라면 신뢰할 수 있는 네트워크(예: 집 또는 직장)에 연결된 상태에서 다시 시도해 보세요.&lt;/li&gt;
+    &lt;li&gt;사이트 소유자를 알고 있다면 이 문제를 해결해 달라고 요청하세요.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 관해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">양식에 보안 연결이 사용되지 않아 신용카드 자동 채우기가 사용 중지되었습니다.</translation>
 <translation id="7543525346216957623">부모님께 물어보세요</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> 시작</translation>
@@ -3712,7 +3719,6 @@
 <translation id="7967636097426665267">통신장비</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" 값은 유효하지 않은 16진수 색상입니다.</translation>
 <translation id="7968982339740310781">세부정보 보기</translation>
-<translation id="7971972534124227314">기기 보안을 위해 OS, 브라우저 정보, 설치된 소프트웨어가 표시될 수 있습니다</translation>
 <translation id="7976214039405368314">요청 횟수가 너무 많음</translation>
 <translation id="7977538094055660992">출력 기기</translation>
 <translation id="7979595116210197019">푸드 서비스</translation>
@@ -4073,7 +4079,6 @@
 <translation id="865032292777205197">움직임 감지 센서</translation>
 <translation id="865255447216708819">후면 인쇄 필름</translation>
 <translation id="8654126188050905496">55x91mm</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" />에서 프로필을 관리합니다</translation>
 <translation id="8662463432865928030">상업용 부동산</translation>
 <translation id="8663226718884576429">주문 요약, <ph name="TOTAL_LABEL" />, 세부정보 더보기</translation>
 <translation id="8663909737634214500">광학 디스크</translation>
@@ -4305,7 +4310,6 @@
 <translation id="9103872766612412690"><ph name="SITE" />에서는 사용자 정보를 보호하기 위해 일반적으로 암호화를 사용합니다. 이번에 Chromium에서 <ph name="SITE" />에 연결을 시도했을 때 웹사이트에서 비정상적이고 잘못된 사용자 인증 정보를 반환했습니다. 이는 공격자가 <ph name="SITE" />인 것처럼 가장하려고 하거나 Wi-Fi 로그인 화면이 연결을 방해했기 때문일 수 있습니다. 데이터 교환이 발생하기 전에 Chromium에서 연결을 중단했으므로 사용자 정보는 안전합니다.</translation>
 <translation id="9107467864910557787">내 브라우저는 <ph name="MANAGER" />에서 관리합니다</translation>
 <translation id="91108059142052966">관리자 정책에 따라 기밀 콘텐츠가 보일 때 <ph name="APPLICATION_TITLE" />과(와)의 화면 공유가 중지됩니다.</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" />에서 브라우저를 관리합니다</translation>
 <translation id="9114524666733003316">카드 확인 중...</translation>
 <translation id="9114581008513152754">이 브라우저는 회사 또는 다른 조직에서 관리하지 않습니다. 이 기기의 활동은 Chrome 외부에서도 관리할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Chrome 광고에 관해 자세히 알아보기</translation>

@@ -564,6 +564,7 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">მენიუს გაშლა</translation>
 <translation id="3087734570205094154">ქვედა საზღვარი</translation>
+<translation id="3090214513075567547">კონტექსტური მენიუს გახსნა</translation>
 <translation id="3090989381251959936">გადაირთოს <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">აკლია</translation>
 <translation id="3095995014811312755">ვერსია</translation>
@@ -2261,7 +2262,6 @@
 <translation id="899350903320462459">შეტყობინების ქმედების შესასრულებლად განბლოკეთ მოწყობილობა <ph name="LOGIN_ID" />-ის სახელით</translation>
 <translation id="8993733019280019776">ლაპარაკობთ? თქვენი მიკროფონი გამორთულია. აირჩიეთ მიკროფონი ჩასართავად.</translation>
 <translation id="9000771174482730261">მეხსიერების მართვა</translation>
-<translation id="9002204506712855687">გაეცანით უახლეს ფუნქციებს</translation>
 <translation id="9005984960510803406">Crosh ფანჯრის გახსნა</translation>
 <translation id="9017320285115481645">შეიყვანეთ Family Link-ის წვდომის კოდი მშობლებისთვის.</translation>
 <translation id="9024331582947483881">მთელ ეკრანზე</translation>

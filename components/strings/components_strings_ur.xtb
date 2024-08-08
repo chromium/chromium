@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">پاس ورڈ تبدیل کریں</translation>
 <translation id="1089599132348386324">‏آپ Chrome کی ترتیبات میں کسی بھی وقت اپنا ارادہ بدل سکتے ہیں۔</translation>
 <translation id="1090629319939036170">‏VR مینو</translation>
-<translation id="1091543275053148479">سرگزشت اور پاس ورڈز سمیت براؤزنگ ڈیٹا کو دیکھا اور منظم کیا جا سکتا ہے</translation>
 <translation id="1091779689406092804">اسکرین شاٹس</translation>
 <translation id="1094777233105318927">‏آپ کے براؤزر، OS، آلے، انسٹال کردہ سافٹ ویئر اور فائلز سے متعلق معلومات پڑھیں</translation>
 <translation id="1096545575934602868">اس فیلڈ میں <ph name="MAX_ITEMS_LIMIT" /> سے زیادہ اندراجات نہیں ہونے چاہئیں۔ سبھی مزید اندراجات مسترد کر دیے جائیں گے۔</translation>
@@ -957,7 +956,6 @@
 <translation id="2770159525358613612">اپنی فائلز کو دوبارہ اپ لوڈ کرنے کی کوشش کریں</translation>
 <translation id="277133753123645258">ترسیل کا طریقہ</translation>
 <translation id="2773388851563527404">‏Chrome زیادہ تر سائٹس کو فریق ثالث کی کوکیز استعمال کرنے سے روکتا ہے۔ لیکن اس سائٹ پر فریق ثالث کوکیز کی اجازت ہے کیونکہ یہ بنیادی سروسز فراہم کرنے کے لیے ان پر انحصار کرتی ہے۔ <ph name="LINK" /> کی ترتیبات ملاحظہ کریں۔</translation>
-<translation id="2774077118134906782">آپ کی تنظیم آپ کے براؤزر کا نظم کر رہی ہے</translation>
 <translation id="277499241957683684">آلہ کا غائب ریکارڈ</translation>
 <translation id="2775884851269838147">پہلا پرنٹ صفحہ</translation>
 <translation id="2781185443919227679">سواحل اور جزائر</translation>
@@ -1510,6 +1508,7 @@
 <translation id="3792100426446126328">‏<ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> انچ)</translation>
 <translation id="3792826587784915501">مخصوص پسند کی اور انڈی فلمیں</translation>
 <translation id="3793574014653384240">حال ہی میں ہونے والے کریشز کی تعداد اور اسباب</translation>
+<translation id="3796417399166194741">‏<ph name="SITE" /> Chrome کو محفوظ کنکشن قائم کرنے سے روک رہی ہے</translation>
 <translation id="3799805948399000906">فونٹ کی درخواست کی گئی</translation>
 <translation id="3801265110651850478">‏اپنے براؤزنگ ٹریفک کے ساتھ ایک "Do Not Track" درخواست بھیجیں</translation>
 <translation id="380329542618494757">نام</translation>
@@ -2704,6 +2703,7 @@
 <translation id="6106989379647458772">ممکن ہے <ph name="PAGE" /> پر موجود ویب صفحہ عارضی طور پر ڈاؤن ہو یا ممکن ہے یہ مستقل طور پر ایک نئے ویب پتہ پر منتقل ہوگیا ہو۔</translation>
 <translation id="6107012941649240045">جاری کردہ بنام</translation>
 <translation id="6107924765192360631">تحریری تجاویز حاصل کرنے کے لیے صرف چند الفاظ یا پہلے مسودے کے ساتھ شروع کریں۔</translation>
+<translation id="6108580855199168381">سرٹیفیکیٹ کی تفصیلات</translation>
 <translation id="6108702513636120202">‏Chromium میں آپ کا سرچ انجن</translation>
 <translation id="6108849843016142864">خزندے اور جل تھلیے</translation>
 <translation id="610911394827799129">‏ممکن ہے کہ ‎<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں</translation>
@@ -2809,6 +2809,7 @@
 <translation id="6300452962057769623">{0,plural, =0{آپ کا آلہ ابھی ری اسٹارٹ ہوگا}=1{آپ کا آلہ 1 سیکنڈ میں ری اسٹارٹ ہوگا}other{آپ کا آلہ # سیکنڈ میں ری اسٹارٹ ہوگا}}</translation>
 <translation id="6301104306974789820">قیمت کی ٹریکنگ سے متعلق اطلاعات حاصل کریں</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> اجازت کی تفصیلات دکھائیں</translation>
+<translation id="6302661287897119265">فلٹر کریں</translation>
 <translation id="6304398603974202180">ملٹی میڈیا سافٹ ویئر</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ناقابل رسائی ہے۔</translation>
 <translation id="6306713302480826305">یہ پتہ آپ کے اس اور دیگر سائن ان کردہ آلات سے حذف کر دیا جائے گا</translation>
@@ -3475,6 +3476,12 @@
 <translation id="7535087603100972091">قدر</translation>
 <translation id="753556296624075801">‏Google کے ذریعے تقویت یافتہ</translation>
 <translation id="7537536606612762813">لازمی</translation>
+<translation id="7541586907443866208">‏حملہ آور آپ اور اس سائٹ کے درمیان بھیجے گئے کسی بھی ڈیٹا کو دیکھ اور تبدیل کر سکیں گے۔
+    &lt;ul&gt;
+    &lt;li&gt;اگر آپ فی الحال کسی عوامی نیٹ ورک پر ہیں، جیسے کہ ہوائی اڈے یا ہوٹل کا WiFi، جب آپ کسی بھروسہ مند نیٹ ورک سے منسلک ہوں تو دوبارہ کوشش کرنے پر غور کریں (مثلاً، گھر پر یا دفتر میں)۔&lt;/li&gt;
+    &lt;li&gt;اگر آپ سائٹ کے مالک کو جانتے ہیں تو اس سے سائٹ کو ٹھیک کرنے کو کہیں۔&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">خودکار کریڈٹ کارڈ فلنگ کو غیر فعال کر دیا گیا ہے کیونکہ یہ فارم ایک محفوظ کنکشن استعمال نہیں کرتا ہے۔</translation>
 <translation id="7543525346216957623">اپنے والدین سے پوچھیں</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> کی شروعات</translation>
@@ -3715,7 +3722,6 @@
 <translation id="7967636097426665267">مواصلاتی ساز و سامان</translation>
 <translation id="79682505114836835">قدر "<ph name="VALUE" />" ایک غلط ہیکس رنگ ہے۔</translation>
 <translation id="7968982339740310781">تفصیلات دیکھیں</translation>
-<translation id="7971972534124227314">‏آلہ کی حفاظت کے لیے، OS، براؤزر کی معلومات اور انسٹال کردہ سافٹ ویئر دکھائی دے سکتے ہیں</translation>
 <translation id="7976214039405368314">بہت زیادہ درخواستیں</translation>
 <translation id="7977538094055660992">آؤٹ پٹ آلہ</translation>
 <translation id="7979595116210197019">غذائی سروس</translation>
@@ -4076,7 +4082,6 @@
 <translation id="865032292777205197">موشن سینسرز</translation>
 <translation id="865255447216708819">بیک پرنٹ فلم</translation>
 <translation id="8654126188050905496">‏‎55 x 91 ملی میٹر</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" /> آپ کی پروفائل کا نظم کر رہا ہے</translation>
 <translation id="8662463432865928030">تجارتی پراپرٹیز</translation>
 <translation id="8663226718884576429">آرڈر کا خلاصہ، <ph name="TOTAL_LABEL" />، مزید تفصیلات</translation>
 <translation id="8663909737634214500">آپٹیکل ڈسک</translation>
@@ -4309,7 +4314,6 @@
 نے خلاف معمول اور غلط اسناد واپس بھیجے۔ یہ اس وقت ہو سکتا ہے جب کوئی حملہ آور <ph name="SITE" /> بننے کا بھیس بنا رہا ہو یا ایک Wi-Fi سائن ان اسکرین نے کنکشن میں خلل ڈالا ہو۔ آپ کی معلومات اب بھی محفوظ ہے کیونکہ Chromium نے کسی ڈیٹا کا تبادلہ ہونے سے پہلے کنکشن روک دیا۔</translation>
 <translation id="9107467864910557787">آپ کا براؤزر <ph name="MANAGER" /> کے زیر انتظام ہے</translation>
 <translation id="91108059142052966">رازدارانہ مواد کے مرئی ہونے پر منتظم کی پالیسی <ph name="APPLICATION_TITLE" /> کے ساتھ اسکرین کے اشتراک کو غیر فعال کرتی ہے</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" /> آپ کے براؤزر کا نظم کر رہا ہے</translation>
 <translation id="9114524666733003316">کارڈ کی توثیق کی جا رہی ہے…</translation>
 <translation id="9114581008513152754">‏یہ براؤزر کسی کمپنی یا دوسری تنظیم کے زیر انتظام نہیں ہے۔ اس آلے پر ہونے والی سرگرمی کا Chrome سے باہر نظم کیا جا سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">‏Chrome میں اشتہارات کے بارے میں مزید</translation>

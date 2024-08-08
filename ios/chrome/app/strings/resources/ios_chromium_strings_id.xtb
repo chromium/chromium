@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">Untuk menonaktifkan Mode Kunci Total di Chromium, nonaktifkan di iPhone Anda.</translation>
 <translation id="159029779861043703">Chromium menjaga keamanan data sensitif Anda dengan Face ID.</translation>
 <translation id="1591119736686995611">Membuka Petak Tab Chromium.</translation>
+<translation id="16001233025397167">Pemeriksaan Keamanan melindungi Anda dari pelanggaran data, situs yang tidak aman, dan lainnya. Menerima notifikasi terkait masalah privasi atau keamanan apa pun yang dideteksi oleh Chromium untuk Anda.</translation>
 <translation id="1611584326765829247">Izinkan Chromium membantu Anda melacak paket</translation>
 <translation id="1617663976202781617">Data dari sinkronisasi Chromium</translation>
 <translation id="1647558790457890304">Setelan Chromium</translation>
@@ -56,6 +57,7 @@
 <translation id="2426113998523353159">Organisasi mengharuskan Anda login untuk menggunakan Chromium.</translation>
 <translation id="2450140762465183767">Anda sekarang dapat menggunakan Chromium kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
 <translation id="2478931088402984578">Pilih <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2497941343438581585">Rasakan Kecanggihan Chromium Shopping</translation>
 <translation id="252374538254180121">Setel Chromium sebagai Browser Default</translation>
 <translation id="2574528844022712255">Lihat Bookmark Chromium</translation>
 <translation id="2590893390871230428">Sinkronkan Data Chromium Anda</translation>
@@ -103,6 +105,7 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chromiu
 <translation id="3855938650519180865">Yang Baru di Chromium</translation>
 <translation id="3886689467633467988">Login ke situs ini dan Chromium untuk mendapatkan bookmark Anda dan lainnya di semua perangkat.</translation>
 <translation id="3904484643286601695">Anda dapat memperbarui pilihan kapan saja di Setelan Chromium.</translation>
+<translation id="3983291422281996849">Setel Chromium sebagai browser default agar mudah memantau harga dan mendapatkan analisis harga untuk barang yang ingin Anda beli.</translation>
 <translation id="4005283307739974863">Membuka dan Menjalankan Pemeriksaan Keamanan di Chromium.</translation>
 <translation id="4043291146360695975">Sandi hanya disimpan ke Pengelola Sandi di perangkat ini.</translation>
 <translation id="4099085513035183040">Tidak didukung di Chromium Beta</translation>
@@ -133,6 +136,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun 
 <translation id="4736424910885271643">Akun Anda dikelola oleh <ph name="HOSTED_DOMAIN" />, sehingga data Chromium Anda akan dihapus dari perangkat ini</translation>
 <translation id="4790638144988730920">Tetap gunakan data Chromium di Akun Google Anda.</translation>
 <translation id="4828317641996116749">Chromium tidak dapat memeriksa semua sandi. Coba lagi nanti.</translation>
+<translation id="4904452304169763785">Notifikasi terkait masalah privasi atau keamanan apa pun yang dideteksi oleh Chromium untuk Anda.</translation>
 <translation id="4962295957157529683">Selesaikan yang Anda kerjakan di jendela Chromium lain yang terbuka.</translation>
 <translation id="4985291216379576555">Offline, Chromium tidak dapat memeriksa update</translation>
 <translation id="4996471330284142407">Tingkatkan produktivitas dengan Chromium yang lebih praktis, aman, dan cepat.</translation>
@@ -176,6 +180,7 @@ Hal-hal yang perlu dipertimbangkan:
   • Jika Chromium mengalami error, detail tentang error tersebut dapat menyertakan beberapa info pribadi.
 
   • Jika Anda menyinkronkan histori ke Akun Google Anda, metrik juga dapat menyertakan info tentang URL yang Anda buka.<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">Menerima notifikasi terkait masalah privasi atau keamanan apa pun yang otomatis dideteksi oleh Chromium untuk Anda.</translation>
 <translation id="5945387852661427312">Anda masuk dengan akun yang dikelola oleh <ph name="DOMAIN" /> dan memberikan kontrol data Chromium kepada administrator. Data Anda akan terikat dengan akun ini secara permanen. Bila Anda keluar dari Chromium, data akan dihapus dari perangkat ini, namun tetap disimpan di Akun Google.</translation>
 <translation id="5951593919357934226">Dapatkan manfaat optimal dari Chromium.</translation>
 <translation id="5983312940147103417">Buat Chromium Menjadi Lebih Baik</translation>

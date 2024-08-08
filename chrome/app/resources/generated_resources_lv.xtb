@@ -6133,6 +6133,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5435779377906857208">Vienmēr atļaut vietnei <ph name="HOST" /> piekļūt jūsu atrašanās vietas datiem</translation>
 <translation id="5436492226391861498">Gaida starpniekservera tuneli...</translation>
 <translation id="5436510242972373446">Meklēt <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> loga platums tagad ir <ph name="WINDOW_SIZE_PERCENT" />, <ph name="PANE_SIDE" /> rūts platums tagad ir <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5440425659852470030">Aizvērt sānu paneli</translation>
 <translation id="544083962418256601">Izveidot saīsnes...</translation>
 <translation id="5441133529460183413">Tīmekļa lietotne, kas instalēta no pārlūka Chrome</translation>
@@ -8537,6 +8538,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="722408235435815623">{MEMBERS,plural, =1{Viena vietne <ph name="FPS_OWNER" /> grupā}zero{{MEMBERS} vietņu <ph name="FPS_OWNER" /> grupā}one{{MEMBERS} vietne <ph name="FPS_OWNER" /> grupā}other{{MEMBERS} vietnes <ph name="FPS_OWNER" /> grupā}}</translation>
 <translation id="7225082563376899794">Aizpildot paroles, izmantot Windows Hello</translation>
 <translation id="7225179976675429563">Nav norādīts tīkla veids</translation>
+<translation id="7227235818314667565">Pārvaldīt kopīgošanu</translation>
 <translation id="7227458944009118910">Tālāk norādītās lietotnes var apstrādāt arī protokolu saites. Citas lietotnes lūgs atļauju.</translation>
 <translation id="7228056665272655255">Lai iestatītu pirksta nospiedumu, bērnam ir jāpieskaras pirksta nospieduma sensoram tastatūras augšējā labajā stūrī. Bērna pirksta nospieduma dati tiek glabāti drošībā un vienmēr atrodas tikai šajā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="7228523857728654909">Ekrāna bloķēšana un pierakstīšanās</translation>
@@ -8585,6 +8587,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7258192266780953209">Pārveidošana</translation>
 <translation id="7258225044283673131">Šī lietojumprogramma nereaģē. Lai aizvērtu lietotni, atlasiet vienumu “Aizvērt piespiedu kārtā”.</translation>
 <translation id="7260186537988033909">Kioska un digitālā ceļrāža ierīces reģistrācija pabeigta</translation>
+<translation id="7261217796641151584">Kopīgot grupu</translation>
 <translation id="7261612856573623172">Sistēmas Teksta pārvēršanas runā iestatījumi</translation>
 <translation id="7262004276116528033">Šo pierakstīšanās pakalpojumu nodrošina <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Vai vienmēr izmantot lietotni <ph name="APP" />, lai atvērtu atbalstītās tīmekļa saites?</translation>
@@ -10521,6 +10524,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8656888282555543604">Iespējot Braila raksta reģistrēšanu</translation>
 <translation id="8657393004602556571">Vai vēlaties atmest atsauksmes?</translation>
 <translation id="8657542881463614516">Izmantojiet vilkšanas žestu, lai pārietu uz citām lapām</translation>
+<translation id="865936634714975126">Pievienojiet vietrādim URL vaicājuma parametru, lai, ielādējot lapu, atlasītu veidus. Piemērs: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Kontaktpersonas funkcijā <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Logs ir pārvietots uz leju</translation>
 <translation id="8661290697478713397">Atvērt saiti inko&amp;gnito režīma logā</translation>

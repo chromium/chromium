@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">Išeiti</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Sukurta prieš <ph name="NUM_HOURS_ONE" /> valandą}one{Sukurta prieš <ph name="NUM_HOURS_MANY" /> valandą}few{Sukurta prieš <ph name="NUM_HOURS_MANY" /> valandas}many{Sukurta prieš <ph name="NUM_HOURS_MANY" /> valandos}other{Sukurta prieš <ph name="NUM_HOURS_MANY" /> valandų}}</translation>
 <translation id="2801787514987684416">Peržiūrėti parduotuvės informaciją?</translation>
+<translation id="2894757982205307093">Naujas skirtukas grupėje</translation>
 <translation id="2928243913527329289">„Google“ | Apie šią parduotuvę</translation>
 <translation id="2977480621796371840">Pašalinti iš grupės</translation>
 <translation id="29919168204617356">Neaktyvūs skirtukai bus automatiškai uždaryti. Juos visada rasite skiltyje „Istorija“.</translation>

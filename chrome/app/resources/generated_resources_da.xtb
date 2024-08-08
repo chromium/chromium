@@ -6149,6 +6149,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5435779377906857208">Tillad altid, at <ph name="HOST" /> kan få adgang til din lokation</translation>
 <translation id="5436492226391861498">Venter på proxytunnel...</translation>
 <translation id="5436510242972373446">Søg på <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616">Vinduet i <ph name="WINDOW_SIDE" /> side er nu <ph name="WINDOW_SIZE_PERCENT" /> i bredden, og ruden i <ph name="PANE_SIDE" /> side er nu <ph name="PANE_SIZE_PERCENT" /> i bredden.</translation>
 <translation id="5440425659852470030">Luk sidepanelet</translation>
 <translation id="544083962418256601">Opret genveje...</translation>
 <translation id="5441133529460183413">Webapp installeret via Chrome-browseren</translation>
@@ -8555,6 +8556,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 website i gruppen tilhørende <ph name="FPS_OWNER" />}one{{MEMBERS} website i gruppen tilhørende <ph name="FPS_OWNER" />}other{{MEMBERS} websites i gruppen tilhørende <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Brug Windows Hello til at udfylde adgangskoder</translation>
 <translation id="7225179976675429563">Netværkstype mangler</translation>
+<translation id="7227235818314667565">Administrer deling</translation>
 <translation id="7227458944009118910">De apps, der er angivet nedenfor, kan også håndtere protokollinks. Andre apps beder om tilladelse.</translation>
 <translation id="7228056665272655255">Du kan konfigurere et fingeraftryk ved at få dit barn til at sætte fingeren på fingeraftrykssensoren øverst til højre på tastaturet. Dit barns fingeraftryksdata gemmes sikkert og forlader aldrig denne <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Skærmlås og login</translation>
@@ -8603,6 +8605,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7258192266780953209">Transformationer</translation>
 <translation id="7258225044283673131">Appen svarer ikke. Vælg "Tving til at lukke" for at lukke appen.</translation>
 <translation id="7260186537988033909">Terminal- og signeringsenheden er tilmeldt</translation>
+<translation id="7261217796641151584">Del gruppe</translation>
 <translation id="7261612856573623172">Systemstemme for oplæsning</translation>
 <translation id="7262004276116528033">Denne logintjeneste hostes af <ph name="SAML_DOMAIN" />.</translation>
 <translation id="7264695323040866038">Vil du altid bruge appen <ph name="APP" /> til at åbne understøttede weblinks?</translation>
@@ -10540,6 +10543,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8656888282555543604">Aktivér logning af braille</translation>
 <translation id="8657393004602556571">Vil du slette denne feedback?</translation>
 <translation id="8657542881463614516">Brug en strygebevægelse til at navigere mellem sider</translation>
+<translation id="865936634714975126">Tilføj en forespørgselsparameter i webadressen for at vælge typer ved sideindlæsning. Eksempel: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Kontakter for <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Vinduet blev flyttet nedad</translation>
 <translation id="8661290697478713397">Åbn link i inko&amp;gnitovindue</translation>

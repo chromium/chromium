@@ -564,6 +564,7 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">ਮੀਨੂ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="3087734570205094154">ਹੇਠਲਾ</translation>
+<translation id="3090214513075567547">ਸੰਦਰਭੀ ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">ਨਿਯਤ ਤਾਰੀਖ ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
 <translation id="3095995014811312755">ਰੂਪ</translation>
@@ -1458,6 +1459,7 @@
 <translation id="6073451960410192870">ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰੋ</translation>
 <translation id="6074087755403037157">ਬੀਟਾ ਚੈਨਲ</translation>
 <translation id="6075098173600599596">ਅੱਖਰਾਂ ਨੂੰ ਵੱਡਾ ਜਾਂ ਛੋਟਾ ਕਰੋ</translation>
+<translation id="6091929401758362855">ਪਲੇਲਿਸਟ: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6095008505822982596">ਬੋਲਣ ਦੀ ਗਤੀ</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> ਰਾਹੀਂ ਕਨੈਕਸ਼ਨ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -2261,7 +2263,6 @@
 <translation id="899350903320462459">ਸੂਚਨਾ 'ਤੇ ਕਾਰਵਾਈ ਕਰਨ ਲਈ <ph name="LOGIN_ID" /> ਵਜੋਂ ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="8993733019280019776">ਕੀ ਤੁਸੀਂ ਕੁਝ ਬੋਲ ਰਹੇ ਹੋ? ਤੁਹਾਡਾ ਮਾਈਕ ਬੰਦ ਹੈ। ਮਾਈਕ ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ, ਉਸ ਨੂੰ ਚੁਣੋ।</translation>
 <translation id="9000771174482730261">ਸਟੋਰੇਜ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
-<translation id="9002204506712855687">ਨਵੀਨਤਮ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਪੜਚੋਲ ਕਰੋ</translation>
 <translation id="9005984960510803406">Crosh ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
 <translation id="9017320285115481645">Family Link ਦਾ ਮਾਂ-ਪਿਓ ਪਹੁੰਚ ਕੋਡ ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="9024331582947483881">ਫੁਲ ਸਕ੍ਰੀਨ</translation>

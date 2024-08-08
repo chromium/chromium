@@ -564,6 +564,7 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">ขยายเมนู</translation>
 <translation id="3087734570205094154">ด้านล่าง</translation>
+<translation id="3090214513075567547">เปิดเมนูตามบริบท</translation>
 <translation id="3090989381251959936">เปิด/ปิด <ph name="FEATURE_NAME" /> <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">ไม่มี</translation>
 <translation id="3095995014811312755">รุ่น</translation>
@@ -2256,7 +2257,6 @@
 <translation id="899350903320462459">ปลดล็อกอุปกรณ์โดยใช้ <ph name="LOGIN_ID" /> เพื่อดำเนินการแจ้งเตือน</translation>
 <translation id="8993733019280019776">คุณพูดอยู่ใช่ไหม ดูเหมือนว่าไมค์จะปิดอยู่ โปรดเลือกไมโครโฟนเพื่อเปิด</translation>
 <translation id="9000771174482730261">จัดการพื้นที่เก็บข้อมูล</translation>
-<translation id="9002204506712855687">สำรวจฟีเจอร์ล่าสุด</translation>
 <translation id="9005984960510803406">เปิดหน้าต่าง Crosh</translation>
 <translation id="9017320285115481645">ป้อนรหัสการเข้าถึง Family Link ของผู้ปกครอง</translation>
 <translation id="9024331582947483881">เต็มหน้าจอ</translation>

@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">အောက်ညွှန်မြား</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ပိတ်ထားသည်</translation>
+<translation id="4428840632568803690">ပြောသူ <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos လက်မှတ်သည် မကြာမီ သက်တမ်းကုန်ပါတော့မည်</translation>
 <translation id="4431821876790500265">အစီရင်ခံစာကို ကြည့်ရန်</translation>
 <translation id="4443192710976771874">အနီရောင်</translation>
@@ -818,6 +819,7 @@
 <translation id="5332948983412042822">ယခု အသစ်တစ်ခု ရွေးရန်</translation>
 <translation id="5333530671332546086">အမျိုးအမည်မသိ စာမျက်နှာအခြေအနေ</translation>
 <translation id="5335373365677455232">ပန်းရောင်</translation>
+<translation id="5344619683981067131">ရွေးထားသောစာသားကို အကြံပြုချက်ဖြင့် အစားထိုးနေသည်</translation>
 <translation id="5346687412805619883">အိမ်တွင်းသုံးကွန်ရက်</translation>
 <translation id="5358174242040570474">တစ်ခုခုမှားသွားသည်။ နောက်ခံကို ထပ်မံရွေးချယ်ကြည့်ပါ သို့မဟုတ် အက်ပ်ကို ပြန်ဖွင့်ပါ။</translation>
 <translation id="5372659122375744710">WiFi ကွန်ရက်က မလုံခြုံပါ</translation>
@@ -869,6 +871,7 @@
 <translation id="5662240986744577912">အချက်အလက်ကာကွယ်ရေးဖန်သားပြင် ခလုတ်</translation>
 <translation id="5669267381087807207">အစပြုနေသည်</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">ပြုလုပ်လိုသော နောက်ခံကို ဖော်ပြပါ</translation>
 <translation id="5680504961595602662"><ph name="SURREAL_SUBJECT" /> ဖြင့် အိပ်မက်ဆန်သည့် <ph name="SURREAL_LANDSCAPE" /></translation>
 <translation id="5685478548317291523">ချယ်ရီသီး</translation>
 <translation id="5691511426247308406">မိသားစု</translation>
@@ -1102,6 +1105,7 @@
 <translation id="680983167891198932">ကီး</translation>
 <translation id="6816797338148849397">သင်ရွေးထားသည့်အရာနှင့် သက်ဆိုင်သည့် အချက်အလက်များ ရနိုင်သည်။ ဝင်ကြည့်ရန် အပေါ်ညွှန်မြား အသုံးပြုပါ။</translation>
 <translation id="6853312040151791195">အားလျော့နှုန်း</translation>
+<translation id="6862416241246624313">အကြံပြုချက် ပို့ပြီးပြီ</translation>
 <translation id="6866732840889595464">ဒေစီပန်း</translation>
 <translation id="6871256179359663621">ခရမ်းဖျော့</translation>
 <translation id="6889786074662672253">ပြန်စနေစဉ် ဤပြင်ပစက်ပစ္စည်းကို ပလတ်မဖြုတ်ပါနှင့် (သို့) သင့်ကွန်ပျူတာကို အပြီးမပိတ်ပါနှင့်။ ဤဝင်းဒိုးကို ချုံ့နိုင်သည်။ မိနစ်အနည်းငယ်ကြာနိုင်ပြီး ဤအချိန်အတွင်း သင်၏ပြင်ပစက်ပစ္စည်း အလုပ်လုပ်နိုင်မည်မဟုတ်ပါ။</translation>
@@ -1295,6 +1299,7 @@
 <translation id="7802764839223122985">ကီးမရှိပါ။ <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">မလိုပါ</translation>
 <translation id="7805768142964895445">အခြေအနေ</translation>
+<translation id="7811024689617730980">၁ ရက်မှ ၃၁ ရက်အထိ ပါဝင်သော အလိုအလျောက် ပြင်ဆင်သတ်မှတ်သည့်ရက် ရွေးရန်</translation>
 <translation id="7813073042185856802">တောင်</translation>
 <translation id="7819857487979277519">PSK (WPA သို့မဟုတ် RSN)</translation>
 <translation id="7824219488248240180">ပို့စ်-အင်ပရက်ရှင်နစ်</translation>

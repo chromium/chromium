@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">ลูกศรลง</translation>
 <translation id="4425149324548788773">ไดรฟ์ของฉัน</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ปิดอยู่</translation>
+<translation id="4428840632568803690">ลำโพง <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">ตั๋ว Kerberos กำลังจะหมดอายุ</translation>
 <translation id="4431821876790500265">ดูรายงาน</translation>
 <translation id="4443192710976771874">แดง</translation>
@@ -1298,6 +1299,7 @@
 <translation id="7802764839223122985">ไม่มีคีย์ <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">ไม่ ขอบคุณ</translation>
 <translation id="7805768142964895445">สถานะ</translation>
+<translation id="7811024689617730980">เลือกวันที่รีเซ็ตอัตโนมัติโดยเริ่มตั้งแต่ 1 ถึง 31 (รวม 2 ตัวเลขนี้ด้วย)</translation>
 <translation id="7813073042185856802">ภูเขา</translation>
 <translation id="7819857487979277519">PSK (WPA หรือ RSN)</translation>
 <translation id="7824219488248240180">โพสต์อิมเพรสชันนิสม์</translation>

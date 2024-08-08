@@ -564,6 +564,7 @@ Broj povezanih uređaja je <ph name="DEVICECOUNT" />.</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Proširi meni</translation>
 <translation id="3087734570205094154">Dno</translation>
+<translation id="3090214513075567547">Otvori kontekstualni meni</translation>
 <translation id="3090989381251959936">Uključite/isključite funkciju <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Rok je istekao</translation>
 <translation id="3095995014811312755">verzija</translation>
@@ -2263,7 +2264,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="899350903320462459">Otključajte uređaj pomoću ID-a prijavljivanja <ph name="LOGIN_ID" /> da biste dobili obaveštenje</translation>
 <translation id="8993733019280019776">Da li pričate? Mikrofon je isključen. Izaberite mikrofon da biste ga uključili.</translation>
 <translation id="9000771174482730261">UPRAVLJAJTE MEMORIJSKIM PROSTOROM</translation>
-<translation id="9002204506712855687">Istražite najnovije funkcije</translation>
 <translation id="9005984960510803406">Otvorite Crosh prozor</translation>
 <translation id="9017320285115481645">Unesite pristupni kôd roditelja za Family Link.</translation>
 <translation id="9024331582947483881">ceo ekran</translation>

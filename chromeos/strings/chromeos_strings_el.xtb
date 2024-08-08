@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">κάτω βέλος</translation>
 <translation id="4425149324548788773">Το Drive μου</translation>
 <translation id="4428374560396076622">Το δίκτυο <ph name="NETWORK_NAME" /> είναι εκτός λειτουργίας.</translation>
+<translation id="4428840632568803690">Ομιλητής <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Το εισιτήριο Kerberos θα λήξει σύντομα</translation>
 <translation id="4431821876790500265">Προβολή αναφοράς</translation>
 <translation id="4443192710976771874">κόκκινο</translation>
@@ -818,6 +819,7 @@
 <translation id="5332948983412042822">Επιλέξτε έναν νέο τώρα</translation>
 <translation id="5333530671332546086">Άγνωστη κατάσταση πύλης</translation>
 <translation id="5335373365677455232">ροζ</translation>
+<translation id="5344619683981067131">Αντικατάσταση του επιλεγμένου κειμένου με την πρόταση</translation>
 <translation id="5346687412805619883">Τοπικό δίκτυο</translation>
 <translation id="5358174242040570474">Κάτι δεν πήγε καλά. Δοκιμάστε να επιλέξετε ξανά μια ταπετσαρία ή να επαναλάβετε το άνοιγμα της εφαρμογής.</translation>
 <translation id="5372659122375744710">Το δίκτυο Wi-Fi δεν είναι ασφαλές.</translation>
@@ -869,6 +871,7 @@
 <translation id="5662240986744577912">εναλλαγή οθόνης απορρήτου</translation>
 <translation id="5669267381087807207">Ενεργοπ.</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">Περιγράψτε την ταπετσαρία που θέλετε να δημιουργήσετε</translation>
 <translation id="5680504961595602662">Σουρεαλιστική απεικόνιση <ph name="SURREAL_LANDSCAPE" /> με <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">κεράσια</translation>
 <translation id="5691511426247308406">Οικογένεια</translation>
@@ -1102,6 +1105,7 @@
 <translation id="680983167891198932">Κλειδί</translation>
 <translation id="6816797338148849397">Πληροφορίες που σχετίζονται με τη διαθέσιμη επιλογή σας. Χρησιμοποιήστε το πλήκτρο πάνω βέλους για πρόσβαση.</translation>
 <translation id="6853312040151791195">Ρυθμός εκφόρτισης</translation>
+<translation id="6862416241246624313">Τα σχόλια υποβλήθηκαν</translation>
 <translation id="6866732840889595464">μαργαρίτα</translation>
 <translation id="6871256179359663621">ανοιχτό μοβ</translation>
 <translation id="6889786074662672253">Κατά την επανεκκίνηση, μην αποσυνδέσετε αυτή την εξωτερική συσκευή και μην τερματίσετε τη λειτουργία του υπολογιστή. Μπορείτε να ελαχιστοποιήσετε αυτό το παράθυρο. Μπορεί να χρειαστούν λίγα λεπτά και η εξωτερική συσκευή σας μπορεί να μην λειτουργεί αυτό το διάστημα.</translation>
@@ -1295,6 +1299,7 @@
 <translation id="7802764839223122985">Το πλήκτρο λείπει. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
 <translation id="7805768142964895445">Κατάσταση</translation>
+<translation id="7811024689617730980">Επιλέξτε μια ημέρα για την αυτόματη επαναφορά, από 1 μέχρι και 31</translation>
 <translation id="7813073042185856802">βουνό</translation>
 <translation id="7819857487979277519">PSK (WPA ή RSN)</translation>
 <translation id="7824219488248240180">μεταϊμπρεσιονισμού</translation>

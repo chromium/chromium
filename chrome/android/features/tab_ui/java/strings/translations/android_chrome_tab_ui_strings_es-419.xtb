@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">Abandonar</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Se creó hace <ph name="NUM_HOURS_ONE" /> hora}other{Se creó hace <ph name="NUM_HOURS_MANY" /> horas}}</translation>
 <translation id="2801787514987684416">¿Deseas ver información de la tienda?</translation>
+<translation id="2894757982205307093">Nueva pestaña en el grupo</translation>
 <translation id="2928243913527329289">Google | Acerca de esta tienda</translation>
 <translation id="2977480621796371840">Quitar del grupo</translation>
 <translation id="29919168204617356">Las pestañas inactivas se cerrarán automáticamente. Puedes encontrarlas en el Historial en cualquier momento.</translation>

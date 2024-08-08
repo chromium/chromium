@@ -408,6 +408,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2975121486251958312">Dostępny jest tylko tryb incognito</translation>
 <translation id="2982481275546140226">Wyczyść dane</translation>
 <translation id="298306318844797842">Dodaj formę płatności…</translation>
+<translation id="2984370252102312100">Otwarte karty i grupy kart</translation>
 <translation id="2989805286512600854">Otwórz w nowej karcie</translation>
 <translation id="300455800299409273">Ukryj opcję „Kontynuuj na tej karcie”</translation>
 <translation id="3010025794097054078">Chroń się przed naruszeniami bezpieczeństwa danych, niebezpiecznymi stronami internetowymi i innymi zagrożeniami.</translation>
@@ -896,6 +897,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5415289094036440596">Nie można udostępniać kluczy dostępu</translation>
 <translation id="5416022985862681400">Ostatnie 7 dni</translation>
 <translation id="5416455648658732408">Przenieś do grupy kart</translation>
+<translation id="5419613306346207284">Grupy kart ze wszystkich urządzeń</translation>
 <translation id="5423269318075950257">Śledź cenę</translation>
 <translation id="5431252637281434233">Nastąpi wylogowanie</translation>
 <translation id="543338862236136125">Edytuj hasło</translation>
@@ -1032,7 +1034,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6042308850641462728">Więcej</translation>
 <translation id="6045460247888249350">Dodaj tytuł</translation>
-<translation id="6051432659151380973">Twoje grupy kart są automatycznie zapisywane</translation>
 <translation id="605721222689873409">RR</translation>
 <translation id="6059830886158432458">Tutaj możesz zarządzać wyświetlanymi wiadomościami i aktywnością</translation>
 <translation id="6064824697233747382">Twoja organizacja wymaga wyłączenia synchronizacji.</translation>
@@ -1266,6 +1267,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7069695992271320873">Usuń z tego urządzenia</translation>
 <translation id="7080806333218412752">Wysyłaj adresy URL do sprawdzenia przez usługę Bezpieczne przeglądanie. Funkcja wysyła też małe próbki stron, pobieranych plików, aktywności rozszerzeń i informacji o systemie, by pomóc w wykrywaniu nowych zagrożeń. Tymczasowo łączy te dane z Twoim kontem Google, gdy się na nie zalogujesz, by chronić Cię we wszystkich aplikacjach Google.</translation>
 <translation id="7082853213442715471">Gdy jest włączony, niektóre technologie internetowe są blokowane, przez co niektóre strony mogą się ładować wolniej lub nie działać prawidłowo.</translation>
+<translation id="7084872401503983471">Otwórz: <ph name="GROUP_TITLE" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7095110968493193530">W Menedżerze haseł Google w przypadku konta <ph name="EMAIL" /></translation>
 <translation id="7101580180124131336">W sekcji Obserwujesz zobaczysz teraz treści pochodzące z witryny <ph name="CHANNEL_NAME" /> oraz treści na jej temat.</translation>
 <translation id="7102005569666697658">Pobieram… <ph name="FILE_SIZE" /></translation>
@@ -1286,7 +1288,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7192050974311852563">Uruchom rejestrowanie</translation>
 <translation id="7203585745079012652">Odczytuj odpowiedzi</translation>
 <translation id="7210568419880432164">Włącz powiadomienia…</translation>
-<translation id="7211038039686180558">Grupy kart automatycznie zapisują się i aktualizują na wszystkich urządzeniach, na których się logujesz</translation>
 <translation id="721597782417389033">Nieprawidłowa nazwa karty</translation>
 <translation id="7221173315674413369">Poznaj nowe funkcje i wskazówki przedstawione na stronie Nowe funkcje</translation>
 <translation id="7223102419539744003">Zamknij kartę</translation>

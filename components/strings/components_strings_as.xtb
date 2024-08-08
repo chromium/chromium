@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">পাছৱৰ্ড সলনি কৰক</translation>
 <translation id="1089599132348386324">আপুনি যিকোনো সময়তে Chromeৰ ছেটিঙত নিজৰ সিদ্ধান্ত সলনি কৰিব পাৰে।</translation>
 <translation id="1090629319939036170">VR মেনু</translation>
-<translation id="1091543275053148479">ইতিহাস আৰু পাছৱৰ্ডসমূহকে ধৰি ব্ৰাউজিঙৰ ডেটা চাব আৰু পৰিচালনা কৰিব পাৰি</translation>
 <translation id="1091779689406092804">স্ক্ৰীনশ্বট</translation>
 <translation id="1094777233105318927">আপোনাৰ ব্ৰাউজাৰ, OS, ডিভাইচ, ইনষ্টল কৰি থোৱা ছফ্টৱেৰ আৰু ফাইলৰ বিষয়ে তথ্য</translation>
 <translation id="1096545575934602868">এই ক্ষেত্ৰটোত <ph name="MAX_ITEMS_LIMIT" />টাতকৈ অধিক প্ৰবিষ্টি থাকিব নালাগে। ইয়াৰ পাছৰ সকলো প্ৰবিষ্টি বাতিল কৰা হ’ব।</translation>
@@ -957,7 +956,6 @@
 <translation id="2770159525358613612">আপোনাৰ ফাইলসমূহ পুনৰ আপল’ড কৰি চাওক</translation>
 <translation id="277133753123645258">শ্বিপিঙৰ পদ্ধতি</translation>
 <translation id="2773388851563527404">Chromeএ বেছিভাগ ছাইটক তৃতীয় পক্ষৰ কুকিৰ ব্যৱহাৰ কৰাত সীমাবদ্ধতা আৰোপ কৰে। কিন্তু এই ছাইটটোত তৃতীয় পক্ষৰ কুকিৰ অনুমতি দিয়া হৈছে, কাৰণ এইটোৱে প্ৰাথমিক সেৱা প্ৰদান কৰিবলৈ সেইবোৰৰ ওপৰত নিৰ্ভৰ কৰে। <ph name="LINK" />ৰ বাবে ছেটিঙলৈ যাওক।</translation>
-<translation id="2774077118134906782">আপোনাৰ প্ৰতিষ্ঠানে আপোনাৰ ব্ৰাউজাৰ পৰিচালনা কৰি আছে</translation>
 <translation id="277499241957683684">ডিভাইচৰ কোনো ৰেকৰ্ড নাই</translation>
 <translation id="2775884851269838147">প্ৰথম প্ৰিণ্টৰ পৃষ্ঠা</translation>
 <translation id="2781185443919227679">সমুদ্ৰতীৰ আৰু দ্বীপ</translation>
@@ -1936,6 +1934,7 @@
 <translation id="4652440160515225514">আপোনাৰ প্ৰতিষ্ঠানে এই ছাইটটো অৱৰোধ কৰিছে কাৰণ ই এটা নীতি উলংঘন কৰিছে।</translation>
 <translation id="4658638640878098064">ওপৰৰ বাওঁফালে ষ্টে'পল কৰক</translation>
 <translation id="4661556981531699496">পোহনীয়া জন্তু আৰু জীৱ-জন্তু</translation>
+<translation id="4661868874067696603">ক্ৰয় কৰাৰ অধিক বিকল্প সন্ধান কৰক</translation>
 <translation id="4663373278480897665">কেমেৰা ব্যৱহাৰৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="466561305373967878">ব’ৰ্ড গে’ম</translation>
 <translation id="4668929960204016307">,</translation>
@@ -2424,6 +2423,7 @@
 <translation id="5559311991468302423">ঠিকনা মচক</translation>
 <translation id="5560088892362098740">ম্যাদ উকলাৰ তাৰিখ</translation>
 <translation id="55635442646131152">নথিৰ ৰূপৰেখা</translation>
+<translation id="5563589142503817291">আপোনাৰ অৱস্থান ব্যৱহাৰ কৰিবলৈ, <ph name="LINK" />ত Chromeক এক্সেছ দিয়ক।</translation>
 <translation id="5565613213060953222">ইনক’গনিট’ টেব খোলক</translation>
 <translation id="5565735124758917034">সক্ৰিয়</translation>
 <translation id="5569030697349375295">হিচাপৰক্ষণ আৰু বিত্তীয় ছফ্টৱেৰ</translation>
@@ -2800,6 +2800,7 @@
 <translation id="6300452962057769623">{0,plural, =0{আপোনাৰ ডিভাইচটো এতিয়াই ৰিষ্টাৰ্ট হ'ব}=1{আপোনাৰ ডিভাইচটো ১ ছেকেণ্ডত ৰিষ্টাৰ্ট হ'ব}one{আপোনাৰ ডিভাইচটো # ছেকেণ্ডত ৰিষ্টাৰ্ট হ'ব}other{আপোনাৰ ডিভাইচটো # ছেকেণ্ডত ৰিষ্টাৰ্ট হ'ব}}</translation>
 <translation id="6301104306974789820">মূল্য ট্ৰেকিঙৰ জাননী পাওক</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> অনুমতিৰ সবিশেষ দেখুৱাওক</translation>
+<translation id="6302661287897119265">ফিল্টাৰ</translation>
 <translation id="6304398603974202180">মাল্টিমিডিয়া ছফ্টৱেৰ</translation>
 <translation id="6305205051461490394"><ph name="URL" />ত উপনীত হ’ব নোৱাৰি৷</translation>
 <translation id="6306713302480826305">এই ঠিকনাটো এইটো আৰু আপোনাৰ অন্য ছাইন-ইন কৰা ডিভাইচসমূহৰ পৰা মচি পেলোৱা হ’ব</translation>
@@ -2904,6 +2905,7 @@
 <translation id="6458606150257356946">তথাপি পে’ষ্ট কৰক</translation>
 <translation id="6464094930452079790">প্ৰতিচ্ছবি</translation>
 <translation id="6465306955648956876">পাছৱৰ্ড পৰিচালনা কৰক...</translation>
+<translation id="646789491285795429">আপুনি ইতিমধ্যে এই প্ৰ’ডাক্টটো ট্ৰেক কৰি আছে</translation>
 <translation id="6468485451923838994">ফ’ণ্ট</translation>
 <translation id="647261751007945333">ডিভাইচৰ নীতি</translation>
 <translation id="6472874020827012601">ফেব্ৰিক (মেট)</translation>
@@ -3705,7 +3707,6 @@
 <translation id="7967636097426665267">যোগাযোগ সম্পৰ্কীয় সা-সৰঞ্জাম</translation>
 <translation id="79682505114836835">মান "<ph name="VALUE" />" এটা অমান্য হেক্স ৰং।</translation>
 <translation id="7968982339740310781">সবিশেষ চাওক</translation>
-<translation id="7971972534124227314">ডিভাইচৰ সুৰক্ষাৰ বাবে, OS, ব্ৰাউজিঙৰ তথ্য আৰু ইনষ্টল কৰি থোৱা ছফ্টৱেৰ দৃশ্যমান হ’ব পাৰে</translation>
 <translation id="7976214039405368314">অতি বেছিসংখ্যক অনুৰোধ</translation>
 <translation id="7977538094055660992">আউটপুট ডিভাইচ</translation>
 <translation id="7979595116210197019">খাদ্য সম্পর্কীয় সেৱা</translation>
@@ -4066,7 +4067,6 @@
 <translation id="865032292777205197">ম'শ্বন ছেন্সৰ</translation>
 <translation id="865255447216708819">বেক প্ৰিণ্ট ফিল্ম</translation>
 <translation id="8654126188050905496">৫৫ x ৯১ মি.মি.</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" />এ আপোনাৰ প্ৰ’ফাইল পৰিচালনা কৰি আছে</translation>
 <translation id="8662463432865928030">বাণিজ্যিক সম্পত্তি</translation>
 <translation id="8663226718884576429">অৰ্ডাৰৰ সাৰাংশ, <ph name="TOTAL_LABEL" />, অধিক বিৱৰণ</translation>
 <translation id="8663909737634214500">অপ্টিকেল ডিস্ক</translation>
@@ -4298,7 +4298,6 @@
 <translation id="9103872766612412690">আপোনাৰ তথ্য সুৰক্ষিত কৰিবলৈ <ph name="SITE" />এ সচৰাচৰতে এনক্ৰিপশ্বন ব্যৱহাৰ কৰে৷ Chromiumএ <ph name="SITE" />ৰ সৈতে সংযোগ কৰিবলৈ চেষ্টা কৰোঁতে ৱেবছাইটটোৱে সচৰাচৰতে ব্যৱহাৰ নোহোৱা আৰু অশুদ্ধ ক্ৰেডেনশ্বিয়েল পঠিয়াইছে৷ কোনো আক্ৰমণকাৰীয়ে <ph name="SITE" />ৰ ভেশ ধৰিলে বা কোনো ৱাই-ফাই ছাইন ইন স্ক্ৰীণে সংযোগত বাধা প্ৰদান কৰিলে এনে হ’ব পাৰে৷ আপোনাৰ ডেটা এতিয়াও সুৰক্ষিত হৈ আছে কিয়নো Chromiumএ কোনো ডেটা আদান-প্ৰদান হোৱাৰ পূৰ্বেই সংযোগ বন্ধ কৰিছে৷</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" />এ আপোনাৰ ব্ৰাউজাৰটো পৰিচালনা কৰে</translation>
 <translation id="91108059142052966">প্ৰশাসকৰ নীতিয়ে গোপনীয় সমল দৃশ্যমান হৈ থাকোঁতে <ph name="APPLICATION_TITLE" />ৰ সৈতে স্ক্ৰীন শ্বেয়াৰ কৰাৰ সুবিধাটো অক্ষম কৰে</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" />এ আপোনাৰ ব্ৰাউজাৰ পৰিচালনা কৰি আছে</translation>
 <translation id="9114524666733003316">কার্ড নিশ্চিত কৰি থকা হৈছে...</translation>
 <translation id="9114581008513152754">এই ব্ৰাউজাৰটো কোনো কোম্পানী অথবা অন্য প্ৰতিষ্ঠানৰ দ্বাৰা পৰিচালিত। এই ডিভাইচটোৰ কাৰ্যকলাপ Chromeৰ বাহিৰত পৰিচালনা কৰা হৈ থাকিব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Chromeত বিজ্ঞাপনৰ বিষয়ে অধিক</translation>

@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Criado há <ph name="NUM_HOURS_ONE" /> hora}other{Criado há <ph name="NUM_HOURS_MANY" /> horas}}</translation>
 <translation id="2801787514987684416">Quer ver informações sobre a loja?</translation>
+<translation id="2894757982205307093">Novo separador no grupo</translation>
 <translation id="2928243913527329289">Google | Acerca desta loja</translation>
 <translation id="2977480621796371840">Remover do grupo</translation>
 <translation id="29919168204617356">Os separadores inativos são fechados automaticamente. Pode sempre encontrá-los no Histórico.</translation>

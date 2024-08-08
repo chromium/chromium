@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">Para desactivar o modo de bloqueo en Chromium, desactívao no teu iPhone.</translation>
 <translation id="159029779861043703">Chromium protexe os teus datos confidenciais con Face ID.</translation>
 <translation id="1591119736686995611">Abre a grade de pestanas de Chromium.</translation>
+<translation id="16001233025397167">Comprobación de seguranza protéxete contra as violacións da seguranza dos datos, os sitios web que non sexan seguros e moito máis. Recibe alertas sobre calquera problema de privacidade ou seguranza que detecte Chromium.</translation>
 <translation id="1611584326765829247">Permitir que Chromium che axude a facer un seguimento dos teus paquetes</translation>
 <translation id="1617663976202781617">Datos da sincronización de Chromium</translation>
 <translation id="1647558790457890304">Configuración de Chromium</translation>
@@ -56,6 +57,7 @@
 <translation id="2426113998523353159">A túa organización esixe que inicies para usar Chromium.</translation>
 <translation id="2450140762465183767">Xa podes utilizar Chromium sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
 <translation id="2478931088402984578">Selecciona <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2497941343438581585">Desfruta de todo o potencial de Chromium Shopping</translation>
 <translation id="252374538254180121">Definir Chromium como navegador predeterminado</translation>
 <translation id="2574528844022712255">Abre os marcadores de Chromium</translation>
 <translation id="2590893390871230428">Sincronizar os teus datos de Chromium</translation>
@@ -103,6 +105,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="3855938650519180865">Novidades de Chromium</translation>
 <translation id="3886689467633467988">Inicia sesión neste sitio e en Chromium para acceder aos teus marcadores e a máis contido en todos os teus dispositivos.</translation>
 <translation id="3904484643286601695">Podes modificar a túa selección en calquera momento na configuración de Chromium.</translation>
+<translation id="3983291422281996849">Define Chromium como o navegador predeterminado para seguir facilmente os prezos e obter estatísticas relacionadas con eles dos produtos que queiras comprar.</translation>
 <translation id="4005283307739974863">Abre e executa Comprobación de seguranza en Chromium.</translation>
 <translation id="4043291146360695975">Os contrasinais gárdanse no xestor de contrasinais só neste dispositivo.</translation>
 <translation id="4099085513035183040">Non compatible na versión beta de Chromium</translation>
@@ -133,6 +136,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> xestiona a túa conta, polo que se borrarán os teus datos de Chromium deste dispositivo</translation>
 <translation id="4790638144988730920">Sigue usando os datos de Chromium na túa Conta de Google.</translation>
 <translation id="4828317641996116749">Chromium non puido comprobar todos os contrasinais. Téntao de novo máis tarde.</translation>
+<translation id="4904452304169763785">Recibe alertas sobre calquera problema de privacidade ou seguranza que detecte Chromium.</translation>
 <translation id="4962295957157529683">Acaba o que estabas facendo na outra ventá de Chromium que tiñas aberta.</translation>
 <translation id="4985291216379576555">Non tes conexión. Chromium non puido buscar actualizacións</translation>
 <translation id="4996471330284142407">Realiza máis tarefas cunha versión de Chromium sinxela, segura e máis rápida que nunca.</translation>
@@ -176,6 +180,7 @@ Cuestións que debes ter en conta:
   • Se se produce algún fallo en Chromium, entre os datos do erro podería incluírse algunha información persoal.
 
   • Se sincronizas o historial coa túa Conta de Google, pode que as métricas tamén conteñan información sobre os URL que visites.<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">Recibe alertas sobre calquera problema de privacidade ou seguranza que detecte Chromium automaticamente.</translation>
 <translation id="5945387852661427312">Estás iniciando sesión cunha conta xestionada por <ph name="DOMAIN" /> e proporcionándolle ao seu administrador o control dos teus datos de Chromium, que quedarán ligados permanentemente a esta conta. Se pechas sesión en Chromium, eliminaranse os teus datos deste dispositivo, pero seguirán almacenados na túa conta de Google.</translation>
 <translation id="5951593919357934226">Tira o máximo proveito de Chromium.</translation>
 <translation id="5983312940147103417">Mellora Chromium</translation>

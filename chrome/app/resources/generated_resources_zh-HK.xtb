@@ -2656,6 +2656,7 @@
 <translation id="2853121255651601031">密碼已儲存</translation>
 <translation id="2855243985454069333">從所有已同步的裝置刪除記錄</translation>
 <translation id="2855812646048059450">使用 <ph name="CREDENTIAL_PROVIDER" /> 帳戶登入</translation>
+<translation id="28559674945112027">嚴格模式</translation>
 <translation id="2856776373509145513">建立新容器</translation>
 <translation id="2856907950922663165">要關閉網址加密功能嗎？</translation>
 <translation id="2859741939921354763">將密碼匯入「<ph name="BRAND" />」</translation>
@@ -6401,6 +6402,7 @@
 <translation id="5623282979409330487">此網站正在存取您的動作感應器。</translation>
 <translation id="5623842676595125836">記錄</translation>
 <translation id="5624120631404540903">管理密碼</translation>
+<translation id="5624959475330585145">在使用不安全的連線前先詢問</translation>
 <translation id="5625225435499354052">在 Google Pay 中編輯</translation>
 <translation id="5626134646977739690">名稱：</translation>
 <translation id="5627832140542566187">顯示方向</translation>
@@ -9633,6 +9635,7 @@
 <translation id="8008356846765065031">網絡連線已中斷，請檢查您的互聯網連線。</translation>
 <translation id="8008704580256716350">已封鎖可疑的檔案</translation>
 <translation id="8009225694047762179">管理密碼</translation>
+<translation id="8010081455002666927">自動偵測</translation>
 <translation id="8011372169388649948">郁咗 <ph name="BOOKMARK_TITLE" />。</translation>
 <translation id="8012188750847319132">大寫鎖定鍵</translation>
 <translation id="8012463809859447963">即時熱點詳情</translation>
@@ -11034,6 +11037,7 @@
 <translation id="9009707268312089299">從 Windows 匯入</translation>
 <translation id="9009708085379296446">您要變更此頁面嗎？</translation>
 <translation id="9010845741772269259">新增付款方法</translation>
+<translation id="901087299639956505">平衡模式</translation>
 <translation id="9011163749350026987">一律顯示圖示</translation>
 <translation id="9011262023858991985">正在投放此分頁</translation>
 <translation id="9011393886518328654">版本說明</translation>

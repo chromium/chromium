@@ -561,6 +561,7 @@
 <translation id="3077734595579995578">ауысу</translation>
 <translation id="3081696990447829002">Мәзірді жаю</translation>
 <translation id="3087734570205094154">Астына</translation>
+<translation id="3090214513075567547">Контекстік мәзірді ашу</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> функциясын қосу немесе өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Жоқ</translation>
 <translation id="3095995014811312755">нұсқа</translation>
@@ -2244,7 +2245,6 @@
 <translation id="899350903320462459">Хабарландыруда ұсынылған әрекетті орындау үшін <ph name="LOGIN_ID" /> арқылы құрылғының құлпын ашыңыз</translation>
 <translation id="8993733019280019776">Сөйлеп жатырсыз ба? Микрофоныңыз өшірулі. Қосу үшін оны таңдаңыз.</translation>
 <translation id="9000771174482730261">ЖАДТЫ БАСҚАРУ</translation>
-<translation id="9002204506712855687">Соңғы функциялармен танысыңыз.</translation>
 <translation id="9005984960510803406">Crosh терезесін ашу</translation>
 <translation id="9017320285115481645">Family Link ата-ананың рұқсат кодын енгізіңіз.</translation>
 <translation id="9024331582947483881">толық экран</translation>

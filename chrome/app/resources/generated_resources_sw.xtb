@@ -6142,6 +6142,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5435779377906857208">Ruhusu <ph name="HOST" /> kila wakati ifikie maelezo ya mahali ulipo</translation>
 <translation id="5436492226391861498">Inasubiri handaki la proksi...</translation>
 <translation id="5436510242972373446">Tafuta <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616">Dirisha la <ph name="WINDOW_SIDE" /> sasa ni lina upana wa <ph name="WINDOW_SIZE_PERCENT" />, kijisehemu cha <ph name="PANE_SIDE" /> sasa ni kina upana wa <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5440425659852470030">Funga Kidirisha cha Pembeni</translation>
 <translation id="544083962418256601">Unda njia mikato...</translation>
 <translation id="5441133529460183413">Programu ya wavuti imesakinishwa kwenye kivinjari cha Chrome</translation>
@@ -8545,6 +8546,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="722408235435815623">{MEMBERS,plural, =1{Tovuti 1 ipo katika kikundi cha <ph name="FPS_OWNER" />}other{Tovuti {MEMBERS} zipo katika kikundi cha <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Tumia Windows Hello unapojaza manenosiri</translation>
 <translation id="7225179976675429563">Aina ya mtandao inakosekana</translation>
+<translation id="7227235818314667565">Dhibiti Ufikiaji</translation>
 <translation id="7227458944009118910">Programu zilizoorodheshwa hapo chini zinaweza kudhibiti viungo vya itifaki pia. Programu zingine zitaomba ruhusa.</translation>
 <translation id="7228056665272655255">Ili uweke mipangilio ya alama bainifu, weka kidole cha mtoto wako kwenye kitambuzi cha alama ya kidole katika kona ya juu kulia mwa kibodi yako. Data ya alama ya kidole ya mtoto wako inahifadhiwa kwa usalama na itasalia kwenye <ph name="DEVICE_TYPE" /> hii.</translation>
 <translation id="7228523857728654909">Kufunga programu na kuingia katika akaunti</translation>
@@ -8593,6 +8595,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7258192266780953209">Ugeuzaji</translation>
 <translation id="7258225044283673131">Programu haifanyi kazi. Chagua "Lazimisha kufunga" ili ufunge programu.</translation>
 <translation id="7260186537988033909">Uandikishaji wa kifaa cha skrini ya kuonyesha matangazo na mabango ya dijitali umekamilika</translation>
+<translation id="7261217796641151584">Ruhusu Ufikiaji wa Kikundi</translation>
 <translation id="7261612856573623172">Sauti ya mfumo wa Ubadilishaji wa Maandishi kwenda Usemi</translation>
 <translation id="7262004276116528033">Huduma hii ya kuingia katika akaunti inatolewa na <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Je, ungependa kutumia programu ya <ph name="APP" /> kila wakati kufungua viungo vya wavuti vinavyotumika?</translation>
@@ -10531,6 +10534,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8656888282555543604">Washa kumbukumbu za nukta nundu</translation>
 <translation id="8657393004602556571">Ungependa kuondoa maoni?</translation>
 <translation id="8657542881463614516">Tumia mguso wa kutelezesha kidole ili usogeze kati ya kurasa</translation>
+<translation id="865936634714975126">Weka kigezo cha hoja kwenye URL ili uchague aina kwenye upakiaji wa ukurasa. Mfano: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Anwani za <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Dirisha limesogezwa chini</translation>
 <translation id="8661290697478713397">Fungua Kiungo katika Dirisha &amp;Fiche</translation>

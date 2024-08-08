@@ -2643,6 +2643,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2853121255651601031">Gardouse o contrasinal</translation>
 <translation id="2855243985454069333">Elimina o historial de todos os dispositivos sincronizados</translation>
 <translation id="2855812646048059450">Iniciar sesión con <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Modo estrito</translation>
 <translation id="2856776373509145513">Crear un contedor novo</translation>
 <translation id="2856907950922663165">Queres desactivar a encriptación dos URL?</translation>
 <translation id="2859741939921354763">Importa os contrasinais a <ph name="BRAND" /></translation>
@@ -6402,6 +6403,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5623282979409330487">Este sitio accede aos teus sensores de movemento.</translation>
 <translation id="5623842676595125836">Rexistro</translation>
 <translation id="5624120631404540903">Xestionar contrasinais</translation>
+<translation id="5624959475330585145">Preguntar antes de usar conexións pouco seguras</translation>
 <translation id="5625225435499354052">Editar en Google Pay</translation>
 <translation id="5626134646977739690">Nome:</translation>
 <translation id="5627832140542566187">Orientación da pantalla</translation>
@@ -9634,6 +9636,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8008356846765065031">Desconectouse Internet. Comproba a conexión.</translation>
 <translation id="8008704580256716350">Bloqueouse un ficheiro sospeitoso</translation>
 <translation id="8009225694047762179">Xestionar contrasinais</translation>
+<translation id="8010081455002666927">Detectar automaticamente</translation>
 <translation id="8011372169388649948">Moveuse "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="8012188750847319132">bloqueo de maiúsculas</translation>
 <translation id="8012463809859447963">Detalles da zona wifi instantánea</translation>
@@ -11036,6 +11039,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="9009707268312089299">Importados de Windows</translation>
 <translation id="9009708085379296446">Querías cambiar esta páxina?</translation>
 <translation id="9010845741772269259">Engadir métodos de pago</translation>
+<translation id="901087299639956505">Modo equilibrado</translation>
 <translation id="9011163749350026987">Mostrar sempre a icona</translation>
 <translation id="9011262023858991985">Emitindo esta pestana</translation>
 <translation id="9011393886518328654">Notas da versión</translation>

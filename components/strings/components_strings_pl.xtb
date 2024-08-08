@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Zmień hasło</translation>
 <translation id="1089599132348386324">W każdej chwili możesz zmienić swój wybór w ustawieniach Chrome.</translation>
 <translation id="1090629319939036170">Menu VR</translation>
-<translation id="1091543275053148479">Dane przeglądania, w tym historia i hasła, są widoczne i można nimi zarządzać</translation>
 <translation id="1091779689406092804">zrzutów ekranu</translation>
 <translation id="1094777233105318927">Informacje o przeglądarce, systemie operacyjnym, urządzeniu, zainstalowanym oprogramowaniu i plikach</translation>
 <translation id="1096545575934602868">Maksymalna liczba wpisów w tym polu to <ph name="MAX_ITEMS_LIMIT" />. Kolejne wpisy zostaną odrzucone.</translation>
@@ -457,6 +456,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="180757923930449935">(emulacja wersji 64-bitowej)</translation>
 <translation id="180991881384371158">Kod CVC znajduje się na odwrocie karty. To ostatnie 3 cyfry w prawym górnym rogu pola podpisu.</translation>
 <translation id="1810391395243432441">Chroń hasła za pomocą blokady ekranu</translation>
+<translation id="1810597570737826742">{count,plural, =1{{position} z {count} adresu z plusem}few{{position} z {count} adresów z plusem}many{{position} z {count} adresów z plusem}other{{position} z {count} adresu z plusem}}</translation>
 <translation id="1812527064848182527">orientacja pozioma</translation>
 <translation id="1812975699435941848">Edukacja zdrowotna i szkolenia medyczne</translation>
 <translation id="1816436748874040213">Może prosić o przewijanie i powiększanie udostępnionych kart</translation>
@@ -957,7 +957,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2770159525358613612">Spróbuj ponownie przesłać pliki</translation>
 <translation id="277133753123645258">Metoda wysyłki</translation>
 <translation id="2773388851563527404">Chrome ogranicza większości witryn możliwość używania plików cookie innych firm. Pliki cookie innych firm są jednak dozwolone w tej witrynie, ponieważ są one w niej niezbędne do świadczenia podstawowych usług. Otwórz ustawienia, aby <ph name="LINK" />.</translation>
-<translation id="2774077118134906782">Twoją przeglądarką zarządza organizacja</translation>
 <translation id="277499241957683684">Brak rekordu urządzenia</translation>
 <translation id="2775884851269838147">Pierwsza strona wydruku</translation>
 <translation id="2781185443919227679">Plaże i wyspy</translation>
@@ -2809,6 +2808,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Twoje urządzenie uruchomi się ponownie teraz}=1{Twoje urządzenie uruchomi się ponownie za 1 sekundę}few{Twoje urządzenie uruchomi się ponownie za # sekundy}many{Twoje urządzenie uruchomi się ponownie za # sekund}other{Twoje urządzenie uruchomi się ponownie za # sekundy}}</translation>
 <translation id="6301104306974789820">Otrzymuj powiadomienia ze śledzenia cen</translation>
 <translation id="6302546952464230349">Wyświetl szczegóły uprawnień: <ph name="PERMISSION_NAME" /></translation>
+<translation id="6302661287897119265">Filtr</translation>
 <translation id="6304398603974202180">Oprogramowanie multimedialne</translation>
 <translation id="6305205051461490394">Strona <ph name="URL" /> jest nieosiągalna.</translation>
 <translation id="6306713302480826305">Ten adres zostanie usunięty z tego urządzenia i innych urządzeń, na których się logujesz</translation>
@@ -3721,7 +3721,6 @@ Dodatkowe informacje:
 <translation id="7967636097426665267">Sprzęt komunikacyjny</translation>
 <translation id="79682505114836835">Wartość „<ph name="VALUE" />” jest nieprawidłowym kodem szesnastkowym koloru.</translation>
 <translation id="7968982339740310781">Wyświetl szczegóły</translation>
-<translation id="7971972534124227314">Ze względu na bezpieczeństwo urządzenia mogą być widoczne informacje o systemie operacyjnym, przeglądarce i zainstalowanym oprogramowaniu</translation>
 <translation id="7976214039405368314">Zbyt wiele żądań</translation>
 <translation id="7977538094055660992">Urządzenie wyjściowe</translation>
 <translation id="7979595116210197019">Branża żywieniowa</translation>
@@ -4082,7 +4081,6 @@ Dodatkowe informacje:
 <translation id="865032292777205197">czujniki ruchu</translation>
 <translation id="865255447216708819">Folia Back Print</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8654650417264805416">Twoim profilem zarządza <ph name="MANAGER" /></translation>
 <translation id="8662463432865928030">Nieruchomości komercyjne</translation>
 <translation id="8663226718884576429">Podsumowanie zamówienia, <ph name="TOTAL_LABEL" />, Szczegółowe informacje</translation>
 <translation id="8663909737634214500">Dysk optyczny</translation>
@@ -4314,7 +4312,6 @@ Dodatkowe informacje:
 <translation id="9103872766612412690"><ph name="SITE" /> zazwyczaj używa szyfrowania do ochrony Twoich informacji. Gdy tym razem przeglądarka Chromium próbowała połączyć się ze stroną <ph name="SITE" />, odesłała ona nietypowe i nieprawidłowe dane logowania. Może się tak zdarzyć, gdy pod stronę <ph name="SITE" /> podszywa się osoba atakująca albo gdy ekran logowania do sieci Wi-Fi przerwie połączenie. Twoje informacje są nadal bezpieczne, bo połączenie w Chromium zakończyło się przed wymianą jakichkolwiek danych.</translation>
 <translation id="9107467864910557787">Twoją przeglądarką zarządza <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Zgodnie z polityką administratora udostępnianie ekranu w aplikacji <ph name="APPLICATION_TITLE" /> zostanie wyłączone, gdy wyświetlą się treści poufne</translation>
-<translation id="9114074357712665317">Twoją przeglądarką zarządza <ph name="MANAGER" /></translation>
 <translation id="9114524666733003316">Sprawdzam kartę…</translation>
 <translation id="9114581008513152754">Ta przeglądarka nie jest zarządzana przez firmę ani inną organizację. Aktywność na tym urządzeniu może być zarządzana poza Chrome. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Więcej informacji o reklamach w Chrome</translation>

@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">стрелица надоле</translation>
 <translation id="4425149324548788773">Мој диск</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> мрежа је искључена</translation>
+<translation id="4428840632568803690">Говорник <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos тикет ускоро истиче</translation>
 <translation id="4431821876790500265">Прикажи извештај</translation>
 <translation id="4443192710976771874">црвене</translation>
@@ -1298,6 +1299,7 @@
 <translation id="7802764839223122985">Тастер недостаје. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Не, хвала</translation>
 <translation id="7805768142964895445">Статус</translation>
+<translation id="7811024689617730980">Изаберите дан аутоматског ресетовања у опсегу од 1 до 31, укључујући обе крајње вредности</translation>
 <translation id="7813073042185856802">планина</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7824219488248240180">постимпресионизам</translation>

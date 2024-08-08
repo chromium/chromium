@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Alterar palavra-passe</translation>
 <translation id="1089599132348386324">Pode mudar de ideias em qualquer altura nas definições do Chrome.</translation>
 <translation id="1090629319939036170">Menu de RV</translation>
-<translation id="1091543275053148479">Os dados de navegação, incluindo o histórico e as palavras-passe, podem ser vistos e geridos</translation>
 <translation id="1091779689406092804">capturas de ecrã</translation>
 <translation id="1094777233105318927">Informações sobre o seu navegador, SO, dispositivo, software instalado e ficheiros</translation>
 <translation id="1096545575934602868">Este campo não deve ter mais de <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as restantes entradas serão rejeitadas.</translation>
@@ -457,6 +456,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">O seu Código de Segurança/CVC encontra-se no verso do cartão. São os últimos 3 dígitos na parte superior direita da caixa da assinatura.</translation>
 <translation id="1810391395243432441">Proteja as palavras-passe com o bloqueio de ecrã</translation>
+<translation id="1810597570737826742">{count,plural, =1{{position} de {count} endereço adicional}other{{position} de {count} endereços adicionais}}</translation>
 <translation id="1812527064848182527">paisagem</translation>
 <translation id="1812975699435941848">Educação na área da saúde e formação médica</translation>
 <translation id="1816436748874040213">Pode pedir para deslocar e fazer zoom nos separadores partilhados</translation>
@@ -957,7 +957,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2770159525358613612">Tente carregar os ficheiros novamente</translation>
 <translation id="277133753123645258">Método de envio</translation>
 <translation id="2773388851563527404">Na maioria dos sites, o Chrome limita a utilização de cookies de terceiros. Porém, os cookies de terceiros são permitidos neste site porque dependem deles para disponibilizar serviços básicos. Aceda às definições para <ph name="LINK" />.</translation>
-<translation id="2774077118134906782">A sua organização está a gerir o seu navegador</translation>
 <translation id="277499241957683684">Registo do dispositivo em falta</translation>
 <translation id="2775884851269838147">Primeira página de impressão</translation>
 <translation id="2781185443919227679">Praias e ilhas</translation>
@@ -2809,6 +2808,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6300452962057769623">{0,plural, =0{O seu dispositivo será reiniciado agora}=1{O seu dispositivo será reiniciado dentro de 1 segundo}other{O seu dispositivo será reiniciado dentro de # segundos}}</translation>
 <translation id="6301104306974789820">Receba notificações de monitorização de preços</translation>
 <translation id="6302546952464230349">Mostrar detalhes da autorização <ph name="PERMISSION_NAME" /></translation>
+<translation id="6302661287897119265">Filtrar</translation>
 <translation id="6304398603974202180">Software multimédia</translation>
 <translation id="6305205051461490394"><ph name="URL" /> está inacessível.</translation>
 <translation id="6306713302480826305">Esta morada vai ser apagada deste e de outros dispositivos com sessão iniciada</translation>
@@ -3721,7 +3721,6 @@ Detalhes adicionais:
 <translation id="7967636097426665267">Equipamento de comunicações</translation>
 <translation id="79682505114836835">O valor "<ph name="VALUE" />" é uma cor hexadecimal inválida.</translation>
 <translation id="7968982339740310781">Ver detalhes</translation>
-<translation id="7971972534124227314">Por motivos de segurança do dispositivo, o SO, as informações do navegador e o software instalado podem estar visíveis</translation>
 <translation id="7976214039405368314">Demasiados pedidos</translation>
 <translation id="7977538094055660992">Dispositivo de saída</translation>
 <translation id="7979595116210197019">Serviço de catering</translation>
@@ -4083,7 +4082,6 @@ Detalhes adicionais:
 <translation id="865032292777205197">sensores de movimento</translation>
 <translation id="865255447216708819">Filme de impressão retro</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8654650417264805416">A <ph name="MANAGER" /> está a gerir o seu perfil</translation>
 <translation id="8662463432865928030">Propriedades comerciais</translation>
 <translation id="8663226718884576429">Resumo da encomenda, <ph name="TOTAL_LABEL" />, mais detalhes</translation>
 <translation id="8663909737634214500">Disco ótico</translation>
@@ -4315,7 +4313,6 @@ Detalhes adicionais:
 <translation id="9103872766612412690">Normalmente, o site <ph name="SITE" /> utiliza a encriptação para proteger as suas informações. Quando o Chromium tentou estabelecer ligação a <ph name="SITE" /> desta vez, o Website devolveu credenciais invulgares e incorretas. Isto pode acontecer quando um utilizador mal intencionado tenta simular ser <ph name="SITE" /> ou quando um ecrã de início de sessão Wi-Fi interrompe a ligação. As suas informações continuam seguras porque o Chromium interrompeu a ligação antes de qualquer troca de dados.</translation>
 <translation id="9107467864910557787">O navegador é gerido por <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">A política do administrador desativa a partilha de ecrã com <ph name="APPLICATION_TITLE" /> quando existe conteúdo confidencial visível.</translation>
-<translation id="9114074357712665317">A <ph name="MANAGER" /> está a gerir o seu navegador</translation>
 <translation id="9114524666733003316">A confirmar o cartão…</translation>
 <translation id="9114581008513152754">Este navegador não é gerido por uma empresa ou outra entidade. A atividade neste dispositivo pode ser gerida fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Mais sobre os anúncios no Chrome</translation>

@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Wachtwoord wijzigen</translation>
 <translation id="1089599132348386324">Je kunt dit op elk moment wijzigen via de Chrome-instellingen.</translation>
 <translation id="1090629319939036170">VR-menu</translation>
-<translation id="1091543275053148479">Browsegegevens, waaronder geschiedenis en wachtwoorden, kunnen worden bekeken en beheerd</translation>
 <translation id="1091779689406092804">screenshots</translation>
 <translation id="1094777233105318927">Informatie over je browser, OS, apparaat, geïnstalleerde software en bestanden</translation>
 <translation id="1096545575934602868">Dit veld mag niet meer dan <ph name="MAX_ITEMS_LIMIT" /> items bevatten. Verdere items worden verwijderd.</translation>
@@ -957,7 +956,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2770159525358613612">Probeer je bestanden opnieuw te uploaden</translation>
 <translation id="277133753123645258">Verzendmethode</translation>
 <translation id="2773388851563527404">Chrome beperkt het gebruik van cookies van derden voor de meeste sites. Cookies van derden zijn wel toegestaan op deze site omdat ze nodig zijn om basisservices te kunnen leveren. Ga naar Instellingen om <ph name="LINK" />.</translation>
-<translation id="2774077118134906782">Je organisatie beheert je browser</translation>
 <translation id="277499241957683684">Apparaatrecord ontbreekt</translation>
 <translation id="2775884851269838147">Eerste afdrukpagina</translation>
 <translation id="2781185443919227679">Stranden en eilanden</translation>
@@ -2803,6 +2801,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Je apparaat wordt nu opnieuw opgestart}=1{Je apparaat wordt over 1 seconde opnieuw opgestart}other{Je apparaat wordt over # seconden opnieuw opgestart}}</translation>
 <translation id="6301104306974789820">Meldingen voor volgen van prijzen krijgen</translation>
 <translation id="6302546952464230349">Informatie over het recht <ph name="PERMISSION_NAME" /> tonen</translation>
+<translation id="6302661287897119265">Filteren</translation>
 <translation id="6304398603974202180">Multimediasoftware</translation>
 <translation id="6305205051461490394"><ph name="URL" /> is niet bereikbaar.</translation>
 <translation id="6306713302480826305">Dit adres wordt verwijderd van dit apparaat en je andere ingelogde apparaten</translation>
@@ -3715,7 +3714,6 @@ Aanvullende informatie:
 <translation id="7967636097426665267">Communicatieapparatuur</translation>
 <translation id="79682505114836835">De waarde <ph name="VALUE" /> is een ongeldige hexadecimale kleur.</translation>
 <translation id="7968982339740310781">Details bekijken</translation>
-<translation id="7971972534124227314">Voor apparaatveiligheid kunnen het OS, browsergegevens en geïnstalleerde software zichtbaar zijn</translation>
 <translation id="7976214039405368314">Te veel verzoeken</translation>
 <translation id="7977538094055660992">Uitvoerapparaat</translation>
 <translation id="7979595116210197019">Cateringbranche</translation>
@@ -4076,7 +4074,6 @@ Aanvullende informatie:
 <translation id="865032292777205197">bewegingssensoren</translation>
 <translation id="865255447216708819">Terugdrukfilm</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" /> beheert je profiel</translation>
 <translation id="8662463432865928030">Commercieel vastgoed</translation>
 <translation id="8663226718884576429">Besteloverzicht, <ph name="TOTAL_LABEL" />, meer informatie</translation>
 <translation id="8663909737634214500">Optische schijf</translation>
@@ -4308,7 +4305,6 @@ Aanvullende informatie:
 <translation id="9103872766612412690"><ph name="SITE" /> gebruikt gewoonlijk versleuteling om je gegevens te beschermen. Toen Chromium deze keer probeerde verbinding te maken met <ph name="SITE" />, retourneerde de website ongewone en onjuiste inloggegevens. Dit gebeurt wanneer een aanvaller probeert zich als <ph name="SITE" /> voor te doen of wanneer een wifi-inlogscherm de verbinding heeft verbroken. Je gegevens zijn nog steeds beveiligd omdat Chromium de verbinding heeft beëindigd voordat er gegevens konden worden uitgewisseld.</translation>
 <translation id="9107467864910557787">Je browser wordt beheerd door <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Op basis van het beheerdersbeleid wordt scherm delen met <ph name="APPLICATION_TITLE" /> uitgezet als er vertrouwelijke content zichtbaar is</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" /> beheert je browser</translation>
 <translation id="9114524666733003316">Creditcard bevestigen...</translation>
 <translation id="9114581008513152754">Deze browser wordt niet beheerd door een bedrijf of andere organisatie. Activiteit op dit apparaat kan buiten Chrome worden beheerd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Meer informatie over advertenties in Chrome</translation>

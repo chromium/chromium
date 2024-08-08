@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">나가기</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" />시간 전 생성됨}other{<ph name="NUM_HOURS_MANY" />시간 전 생성됨}}</translation>
 <translation id="2801787514987684416">스토어 정보를 확인하시겠습니까?</translation>
+<translation id="2894757982205307093">그룹에 새 탭 추가</translation>
 <translation id="2928243913527329289">Google | 매장 정보</translation>
 <translation id="2977480621796371840">그룹에서 삭제</translation>
 <translation id="29919168204617356">비활성 탭이 자동으로 닫힙니다. 방문 기록에서 언제든지 비활성 탭을 확인할 수 있습니다.</translation>

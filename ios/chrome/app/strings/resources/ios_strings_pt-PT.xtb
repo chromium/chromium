@@ -408,6 +408,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2975121486251958312">Só está disponível o Modo de navegação anónima</translation>
 <translation id="2982481275546140226">Limpar dados</translation>
 <translation id="298306318844797842">Adicionar método de pagamento…</translation>
+<translation id="2984370252102312100">Separadores e grupos de separadores abertos</translation>
 <translation id="2989805286512600854">Abrir num Novo Separador</translation>
 <translation id="300455800299409273">Oculte a opção "Continuar com este separador"</translation>
 <translation id="3010025794097054078">Proteja-se contra violações de dados, Websites inseguros e muito mais.</translation>
@@ -896,6 +897,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5415289094036440596">Não é possível partilhar as chaves de acesso</translation>
 <translation id="5416022985862681400">Últimos 7 dias</translation>
 <translation id="5416455648658732408">Mover para grupo de separadores</translation>
+<translation id="5419613306346207284">Grupos de separadores de todos os dispositivos</translation>
 <translation id="5423269318075950257">Monitorize o preço</translation>
 <translation id="5431252637281434233">A sua sessão vai ser terminada</translation>
 <translation id="543338862236136125">Editar palavra-passe</translation>
@@ -1032,7 +1034,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6042308850641462728">Mais</translation>
 <translation id="6045460247888249350">Adicione um título</translation>
-<translation id="6051432659151380973">Os seus grupos de separadores são guardados automaticamente</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controle as suas notícias e atividade aqui.</translation>
 <translation id="6064824697233747382">A sua entidade requer que desative a sincronização.</translation>
@@ -1266,6 +1267,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7069695992271320873">Remover deste dispositivo</translation>
 <translation id="7080806333218412752">Envia URLs para a Navegação segura para os verificar. Envia também um pequeno exemplo de páginas, transferências, atividade de extensões e informações do sistema para ajudar a detetar novas ameaças. Associa temporariamente estes dados à sua Conta Google quando tiver sessão iniciada, para garantir a sua proteção nas apps Google.</translation>
 <translation id="7082853213442715471">Quando está ativado, determinadas tecnologias Web são bloqueadas, o que pode fazer com que alguns Websites sejam carregados mais lentamente ou não funcionem corretamente.</translation>
+<translation id="7084872401503983471">Abrir <ph name="GROUP_TITLE" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7095110968493193530">Para o Gestor de Palavras-passe da Google da conta <ph name="EMAIL" /></translation>
 <translation id="7101580180124131336">Vai ver conteúdo de e sobre o canal <ph name="CHANNEL_NAME" /> no separador A seguir.</translation>
 <translation id="7102005569666697658">A transferir… <ph name="FILE_SIZE" /></translation>
@@ -1286,7 +1288,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7192050974311852563">Iniciar registo</translation>
 <translation id="7203585745079012652">Ouvir Respostas</translation>
 <translation id="7210568419880432164">Ativar notificações…</translation>
-<translation id="7211038039686180558">Os seus grupos de separadores são guardados e atualizados automaticamente em todos os dispositivos com sessão iniciada</translation>
 <translation id="721597782417389033">Alcunha do cartão inválido</translation>
 <translation id="7221173315674413369">Explore novas funcionalidades e sugestões em Novidades</translation>
 <translation id="7223102419539744003">Fechar separador</translation>

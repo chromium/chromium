@@ -319,6 +319,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2534155362429831547">Ezabatu dira <ph name="NUMBER_OF_ITEMS" /> elementu</translation>
 <translation id="2536728043171574184">Orriaren konexiorik gabeko kopia ikusten ari zara</translation>
 <translation id="2546283357679194313">Cookieak eta webguneetako datuak</translation>
+<translation id="2547843573592965873">Profilaren blokeoak autoan babestuta mantentzen du informazioa, pasahitzak, ordainketak eta Google-ko kontuan gordetako beste datu batzuk barne.</translation>
 <translation id="254973855621628293">Gailu honetan gordetako pasahitzak</translation>
 <translation id="2560519950693256002">Duela gutxi egiaztatu dira <ph name="USERNAME" /> kontuan gordetako pasahitzak</translation>
 <translation id="2567385386134582609">IRUDIA</translation>
@@ -1711,7 +1712,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8993760627012879038">Ireki beste fitxa bat ezkutuko moduan</translation>
 <translation id="8996847606757455498">Aukeratu beste hornitzaile bat</translation>
 <translation id="8998289560386111590">Ez dago erabilgarri zure gailuan</translation>
-<translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> domeinuak kudeatutako kontu batekin hastera zoaz saioa, eta, ondorioz, domeinu horretako administratzaileari emango diozu Chrome datuen kontrola. Datuak betiko lotuko zaizkio kontu honi. Chrome-ko saioa amaitzen baduzu, gailuko datuak ezabatu egingo dira, baina Google-ko kontuan izango dituzu gordeta.</translation>
 <translation id="8998837250940831980">Ezin izan da minimizatu fitxa. Saiatu berriro geroago.</translation>
 <translation id="9001604755921395912">Ireki Chrome-ko ezkutuko moduko fitxan</translation>
 <translation id="9007002441981613214">Konpondu gordetako pasahitzen arazoa</translation>

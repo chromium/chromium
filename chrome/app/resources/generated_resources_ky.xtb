@@ -6147,6 +6147,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5435779377906857208"><ph name="HOST" /> түйүнүнө жайгашкан жериңизди көрүүгө ар дайым уруксат берилсин</translation>
 <translation id="5436492226391861498">Прокси туннели күтүлүүдө…</translation>
 <translation id="5436510242972373446">Издөө <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> терезесинин эни <ph name="WINDOW_SIZE_PERCENT" />, ал эми <ph name="PANE_SIDE" /> тактасынын эни <ph name="PANE_SIZE_PERCENT" /> болуп калды.</translation>
 <translation id="5440425659852470030">Капталдагы тилкени жабуу</translation>
 <translation id="544083962418256601">Кыска жолдорду түзүү…</translation>
 <translation id="5441133529460183413">Chrome cерепчисинен орнотулган веб колдонмо</translation>
@@ -8549,6 +8550,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" /> тобунда 1 сайт бар}other{<ph name="FPS_OWNER" /> тобунда {MEMBERS} сайт бар}}</translation>
 <translation id="7225082563376899794">Сырсөздөрдү толтурууда Windows Hello функциясын колдонуу</translation>
 <translation id="7225179976675429563">Тармактын түрү жок</translation>
+<translation id="7227235818314667565">Бөлүшүүнү тескөө</translation>
 <translation id="7227458944009118910">Төмөндөгү колдонмолор протоколдун шилтемелерин да иштете алышат. Башка колдонмолор уруксат сурашат.</translation>
 <translation id="7228056665272655255">Манжа изин коюу үчүн балаңыз баскычтоптун жогорку оң жагындагы манжа изинин сенсоруна тийип коюшу керек. Балаңыздын манжасынын изи <ph name="DEVICE_TYPE" /> түзмөгүндө коопсуз сакталат.</translation>
 <translation id="7228523857728654909">Экранды кулпулоо жана аккаунтка кирүү</translation>
@@ -8597,6 +8599,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7258192266780953209">Трансформациялар</translation>
 <translation id="7258225044283673131">Колдонмо жооп бербей жатат. Аны жабуу үчүн "Мажбурлап токтотуу" баскычын басыңыз.</translation>
 <translation id="7260186537988033909">Киоск жана белгилөөчү түзмөк катталды</translation>
+<translation id="7261217796641151584">Топту бөлүшүү</translation>
 <translation id="7261612856573623172">Кеп синтезаторунун үн параметрлери</translation>
 <translation id="7262004276116528033">Кирүү кызматы <ph name="SAML_DOMAIN" /> доменинде жайгашкан</translation>
 <translation id="7264695323040866038">Колдоого алынган Интернеттеги шилтемелерди ар дайым <ph name="APP" /> колдонмосу менен ачасызбы?</translation>
@@ -10533,6 +10536,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8656888282555543604">Брайль алфавитинин журналын иштетүү</translation>
 <translation id="8657393004602556571">Пикирди өчүрөсүзбү?</translation>
 <translation id="8657542881463614516">Барактан баракка өтүү үчүн серпүү жаңсоосун колдонуңуз</translation>
+<translation id="865936634714975126">Бетти жүктөө түрлөрүн тандоо үчүн URL'де сурамдын параметрин кошуңуз. Мисалы: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> байланыш</translation>
 <translation id="8659609431223166673">Терезе ылдый жылдырылды</translation>
 <translation id="8661290697478713397">Шилтемени жашыр&amp;уун терезеде ачуу</translation>

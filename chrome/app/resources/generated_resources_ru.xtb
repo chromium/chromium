@@ -2646,6 +2646,7 @@
 <translation id="2853121255651601031">Пароль сохранен</translation>
 <translation id="2855243985454069333">История будет удалена со всех синхронизируемых устройств</translation>
 <translation id="2855812646048059450">Войти с аккаунтом <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Строгий режим</translation>
 <translation id="2856776373509145513">Создайте контейнер</translation>
 <translation id="2856907950922663165">Отключить шифрование URL?</translation>
 <translation id="2859741939921354763">Импортировать пароли в <ph name="BRAND" /></translation>
@@ -6135,6 +6136,7 @@
 <translation id="5435779377906857208">Сообщать сайту <ph name="HOST" />, где я нахожусь</translation>
 <translation id="5436492226391861498">Ожидание создания туннеля прокси...</translation>
 <translation id="5436510242972373446">Искать на <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> окно, ширина – <ph name="WINDOW_SIZE_PERCENT" />, <ph name="PANE_SIDE" /> панель, ширина – <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5440425659852470030">Закрыть боковую панель</translation>
 <translation id="544083962418256601">Создать ярлык…</translation>
 <translation id="5441133529460183413">Веб-приложение установлено через браузер Chrome</translation>
@@ -6402,6 +6404,7 @@
 <translation id="5623282979409330487">У этого сайта есть доступ к датчикам движения.</translation>
 <translation id="5623842676595125836">Журнал</translation>
 <translation id="5624120631404540903">Настройки паролей</translation>
+<translation id="5624959475330585145">Запрашивать разрешение на использование незащищенного подключения</translation>
 <translation id="5625225435499354052">Редактировать в Google Pay</translation>
 <translation id="5626134646977739690">Имя:</translation>
 <translation id="5627832140542566187">Ориентация дисплея</translation>
@@ -8544,6 +8547,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 сайт из группы <ph name="FPS_OWNER" />}one{{MEMBERS} сайт из группы <ph name="FPS_OWNER" />}few{{MEMBERS} сайта из группы <ph name="FPS_OWNER" />}many{{MEMBERS} сайтов из группы <ph name="FPS_OWNER" />}other{{MEMBERS} сайта из группы <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Использовать Windows Hello при заполнении паролей</translation>
 <translation id="7225179976675429563">Не указан тип сети</translation>
+<translation id="7227235818314667565">Общий доступ</translation>
 <translation id="7227458944009118910">Указанные ниже приложения могут использоваться для обработки специальных ссылок. Другие приложения будут запрашивать разрешение.</translation>
 <translation id="7228056665272655255">Чтобы настроить разблокировку по отпечатку, попросите ребенка приложить палец к сканеру отпечатков в правом верхнем углу клавиатуры. Данные отпечатков пальцев ребенка надежно защищены и хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Блокировка экрана и вход</translation>
@@ -8592,6 +8596,7 @@
 <translation id="7258192266780953209">Преобразование</translation>
 <translation id="7258225044283673131">Приложение не отвечает. Чтобы выйти из него, нажмите "Закрыть принудительно".</translation>
 <translation id="7260186537988033909">Регистрация устройства в режиме киоска или цифровой вывески завершена</translation>
+<translation id="7261217796641151584">Открыть доступ</translation>
 <translation id="7261612856573623172">Голос для озвучивания текста по умолчанию</translation>
 <translation id="7262004276116528033">Сервис входа размещен в домене <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Всегда открывать поддерживаемые ссылки в приложении "<ph name="APP" />"?</translation>
@@ -9639,6 +9644,7 @@
 <translation id="8008356846765065031">Не удалось установить соединение. Проверьте подключение к Интернету.</translation>
 <translation id="8008704580256716350">Подозрительный файл заблокирован</translation>
 <translation id="8009225694047762179">Управление паролями</translation>
+<translation id="8010081455002666927">Автоопределение</translation>
 <translation id="8011372169388649948">Закладка "<ph name="BOOKMARK_TITLE" />" перемещена.</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8012463809859447963">Сведения о мгновенной точке доступа</translation>
@@ -10528,6 +10534,7 @@
 <translation id="8656888282555543604">Включить ведение журнала для шрифта Брайля</translation>
 <translation id="8657393004602556571">Не отправлять отзыв?</translation>
 <translation id="8657542881463614516">Перемещаться между страницами пролистыванием</translation>
+<translation id="865936634714975126">Добавьте в URL параметр запроса, чтобы задать типы при загрузке страницы, например: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Контакты (<ph name="FEATURE_NAME" />)</translation>
 <translation id="8659609431223166673">Окно перемещено вниз</translation>
 <translation id="8661290697478713397">Открыть ссылку в режиме инкогнито</translation>
@@ -11044,6 +11051,7 @@
 <translation id="9009707268312089299">Импортированные из Windows</translation>
 <translation id="9009708085379296446">Вы хотели изменить эту страницу?</translation>
 <translation id="9010845741772269259">Добавить способы оплаты</translation>
+<translation id="901087299639956505">Сбалансированный режим</translation>
 <translation id="9011163749350026987">Всегда показывать значок</translation>
 <translation id="9011262023858991985">Эта вкладка транслируется</translation>
 <translation id="9011393886518328654">Примечания к выпуску</translation>

@@ -2641,6 +2641,7 @@
 <translation id="2853121255651601031">Құпия сөз сақталды</translation>
 <translation id="2855243985454069333">Тарихты барлық синхрондалған құрылғыдан жояды.</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> арқылы кіру</translation>
+<translation id="28559674945112027">Қатаң режим</translation>
 <translation id="2856776373509145513">Жаңа контейнер жасау</translation>
 <translation id="2856907950922663165">URL шифрлауын өшіру қажет пе?</translation>
 <translation id="2859741939921354763">Құпия сөздерді <ph name="BRAND" /> қолданбасына импорттау</translation>
@@ -6393,6 +6394,7 @@
 <translation id="5623282979409330487">Бұл сайт қозғалыс датчиктерін пайдаланып жатыр.</translation>
 <translation id="5623842676595125836">Журнал</translation>
 <translation id="5624120631404540903">Құпия сөздерді басқару</translation>
+<translation id="5624959475330585145">Қауіпті байланыстарды пайдалану алдында рұқсат сұрау</translation>
 <translation id="5625225435499354052">Google Pay-де өзгерту</translation>
 <translation id="5626134646977739690">Аты:</translation>
 <translation id="5627832140542566187">Дисплей бағдары</translation>
@@ -9624,6 +9626,7 @@
 <translation id="8008356846765065031">Интернет өшірілген. Интернет байланысын тексеріңіз.</translation>
 <translation id="8008704580256716350">Күмәнді файл блокталды.</translation>
 <translation id="8009225694047762179">Құпия сөздерді басқару</translation>
+<translation id="8010081455002666927">Автоанықтау</translation>
 <translation id="8011372169388649948">"<ph name="BOOKMARK_TITLE" />" бетбелгісі жылжытылды.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Лезде қосылатын хотспот мәліметтері</translation>
@@ -11026,6 +11029,7 @@
 <translation id="9009707268312089299">Windows-дан импортталған</translation>
 <translation id="9009708085379296446">Осы бетті өзгерткіңіз келді ме?</translation>
 <translation id="9010845741772269259">Төлеу әдістерін қосу</translation>
+<translation id="901087299639956505">Теңдестірілген режим</translation>
 <translation id="9011163749350026987">Белгішені әрқашан көрсету</translation>
 <translation id="9011262023858991985">Бұл қойынды трансляциялануда</translation>
 <translation id="9011393886518328654">Шығарылым туралы ескертпелер</translation>

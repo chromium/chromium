@@ -319,6 +319,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> item dihapus</translation>
 <translation id="2536728043171574184">Melihat salinan offline halaman ini</translation>
 <translation id="2546283357679194313">Cookie dan data situs</translation>
+<translation id="2547843573592965873">Kunci profil Anda menjaga keamanan info Anda di mobil, termasuk sandi, pembayaran, dan lainnya yang disimpan di Akun Google Anda.</translation>
 <translation id="254973855621628293">Sandi disimpan ke perangkat ini</translation>
 <translation id="2560519950693256002">Sandi yang disimpan ke <ph name="USERNAME" /> baru saja diperiksa</translation>
 <translation id="2567385386134582609">GAMBAR</translation>
@@ -1711,7 +1712,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8993760627012879038">Membuka tab baru dalam mode Samaran</translation>
 <translation id="8996847606757455498">Pilih penyedia lain</translation>
 <translation id="8998289560386111590">Tidak tersedia di perangkat Anda</translation>
-<translation id="8998729206196772491">Anda akan login dengan akun yang dikelola oleh <ph name="MANAGED_DOMAIN" /> dan memberikan kontrol data Chrome kepada administratornya. Data akan terikat dengan akun ini secara permanen. Bila Anda logout dari Chrome, data akan dihapus dari perangkat ini, tetapi data tetap tersimpan di Akun Google.</translation>
 <translation id="8998837250940831980">Tidak dapat memperkecil tab. Coba lagi nanti.</translation>
 <translation id="9001604755921395912">Buka di tab Chrome Samaran</translation>
 <translation id="9007002441981613214">Memperbaiki masalah terkait sandi tersimpan</translation>

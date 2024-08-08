@@ -2644,6 +2644,7 @@
 <translation id="2853121255651601031">บันทึกรหัสผ่านแล้ว</translation>
 <translation id="2855243985454069333">ลบประวัติการเข้าชมจากอุปกรณ์ที่ซิงค์ทั้งหมด</translation>
 <translation id="2855812646048059450">ลงชื่อเข้าใช้ด้วย <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">โหมดจำกัด</translation>
 <translation id="2856776373509145513">สร้างคอนเทนเนอร์ใหม่</translation>
 <translation id="2856907950922663165">ปิดการเข้ารหัส URL ใช่ไหม</translation>
 <translation id="2859741939921354763">นำเข้ารหัสผ่านไปยัง<ph name="BRAND" /></translation>
@@ -6396,6 +6397,7 @@
 <translation id="5623282979409330487">เว็บไซต์นี้เข้าถึงเซ็นเซอร์ตรวจจับการเคลื่อนไหวอยู่</translation>
 <translation id="5623842676595125836">บันทึก</translation>
 <translation id="5624120631404540903">จัดการรหัสผ่าน</translation>
+<translation id="5624959475330585145">ถามก่อนใช้การเชื่อมต่อที่ไม่ปลอดภัย</translation>
 <translation id="5625225435499354052">แก้ไขใน Google Pay</translation>
 <translation id="5626134646977739690">ชื่อ:</translation>
 <translation id="5627832140542566187">การวางแนวจอแสดงผล</translation>
@@ -9628,6 +9630,7 @@
 <translation id="8008356846765065031">อินเทอร์เน็ตถูกตัด โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="8008704580256716350">บล็อกไฟล์ที่น่าสงสัยแล้ว</translation>
 <translation id="8009225694047762179">จัดการรหัสผ่าน</translation>
+<translation id="8010081455002666927">ตรวจหาอัตโนมัติ</translation>
 <translation id="8011372169388649948">ย้าย '<ph name="BOOKMARK_TITLE" />' แล้ว</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8012463809859447963">รายละเอียดฮอตสปอตด่วน</translation>
@@ -11031,6 +11034,7 @@
 <translation id="9009707268312089299">นำเข้าจาก Windows</translation>
 <translation id="9009708085379296446">คุณต้องการเปลี่ยนแปลงหน้านี้ใช่ไหม</translation>
 <translation id="9010845741772269259">เพิ่มวิธีการชำระเงิน</translation>
+<translation id="901087299639956505">โหมดสมดุล</translation>
 <translation id="9011163749350026987">แสดงไอคอนเสมอ</translation>
 <translation id="9011262023858991985">กำลังแคสต์แท็บนี้</translation>
 <translation id="9011393886518328654">บันทึกประจำรุ่น</translation>

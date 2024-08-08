@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">שינוי סיסמה</translation>
 <translation id="1089599132348386324">‏יש לך אפשרות לשנות את הבחירה בכל שלב בהגדרות של Chrome.</translation>
 <translation id="1090629319939036170">‏תפריט VR</translation>
-<translation id="1091543275053148479">אפשר לראות ולנהל את נתוני הגלישה, כולל ההיסטוריה והסיסמאות</translation>
 <translation id="1091779689406092804">צילומי מסך</translation>
 <translation id="1094777233105318927">מידע על הדפדפן, מערכת ההפעלה, המכשיר, התוכנות שהותקנו והקבצים</translation>
 <translation id="1096545575934602868">השדה הזה יכול לכלול עד <ph name="MAX_ITEMS_LIMIT" /> רשומות. כל הרשומות הנוספות יימחקו.</translation>
@@ -957,7 +956,6 @@
 <translation id="2770159525358613612">רוצה לנסות שוב להעלות את הקבצים?</translation>
 <translation id="277133753123645258">שיטת משלוח</translation>
 <translation id="2773388851563527404">‏Chrome מגביל את השימוש בקובצי Cookie של צד שלישי ברוב האתרים. עם זאת, קובצי Cookie של צד שלישי מותרים באתר הזה כי הוא מסתמך עליהם לאספקת שירותים בסיסיים. אפשר <ph name="LINK" /> בהגדרות.</translation>
-<translation id="2774077118134906782">הארגון שלך מנהל את הדפדפן שלך</translation>
 <translation id="277499241957683684">חסרה רשומת מכשיר</translation>
 <translation id="2775884851269838147">דף מודפס ראשון</translation>
 <translation id="2781185443919227679">חופים ואיים</translation>
@@ -2810,6 +2808,7 @@ Del</translation>
 <translation id="6300452962057769623">{0,plural, =0{המכשיר יופעל מחדש עכשיו}=1{המכשיר יופעל מחדש בתוך שנייה}one{המכשיר יופעל מחדש בתוך # שניות}two{המכשיר יופעל מחדש בתוך # שניות}other{המכשיר יופעל מחדש בתוך # שניות}}</translation>
 <translation id="6301104306974789820">קבלת התראות לגבי מעקב אחר מחירים</translation>
 <translation id="6302546952464230349">הצגת פרטי ההרשאה <ph name="PERMISSION_NAME" /></translation>
+<translation id="6302661287897119265">פילטר</translation>
 <translation id="6304398603974202180">תוכנות מולטימדיה</translation>
 <translation id="6305205051461490394">לא ניתן לגשת אל <ph name="URL" />.</translation>
 <translation id="6306713302480826305">הכתובת הזו תימחק מהמכשיר הזה ומשאר המכשירים שמחוברים לחשבון</translation>
@@ -3598,7 +3597,7 @@ Del</translation>
 <translation id="7724603315864178912">חיתוך</translation>
 <translation id="7730057435797792985">מיון</translation>
 <translation id="7734285854693414638">‏יצירה מהירה של טופס חדש ב-Google Forms</translation>
-<translation id="773466115871691567">ברצוני לקבל תרגום תמיד דפים ב<ph name="SOURCE_LANGUAGE" /></translation>
+<translation id="773466115871691567">תמיד לתרגם דפים ב<ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="7736959720849233795">העתקת הכתובת של הקישור</translation>
 <translation id="7740996059027112821">רגילה</translation>
 <translation id="77424286611022110">באתר הזה מוצגות מודעות מפריעות או מטעות. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
@@ -3715,7 +3714,6 @@ Del</translation>
 <translation id="7967636097426665267">ציוד תקשורת</translation>
 <translation id="79682505114836835">הערך "<ph name="VALUE" />" הוא צבע הקסדצימלי לא חוקי.</translation>
 <translation id="7968982339740310781">הצגת פרטים</translation>
-<translation id="7971972534124227314">כדי לשמור על בטיחות המכשיר, ייתכן שיוצגו פרטי מערכת ההפעלה, פרטי הדפדפן והתוכנות שהותקנו</translation>
 <translation id="7976214039405368314">יותר מדי בקשות</translation>
 <translation id="7977538094055660992">מכשיר פלט</translation>
 <translation id="7979595116210197019">שירות מזון</translation>
@@ -4076,7 +4074,6 @@ Del</translation>
 <translation id="865032292777205197">חיישני תנועה</translation>
 <translation id="865255447216708819">Back Print Film</translation>
 <translation id="8654126188050905496">‏55x91 מ"מ</translation>
-<translation id="8654650417264805416">הפרופיל שלך מנוהל על ידי <ph name="MANAGER" /></translation>
 <translation id="8662463432865928030">נכסים מסחריים</translation>
 <translation id="8663226718884576429">סיכום הזמנה, <ph name="TOTAL_LABEL" />, פרטים נוספים</translation>
 <translation id="8663909737634214500">Optical Disc</translation>
@@ -4308,7 +4305,6 @@ Del</translation>
 <translation id="9103872766612412690">‏האתר <ph name="SITE" /> משתמש בדרך כלל בהצפנה כדי להגן על המידע שלך. כאשר Chromium ניסה הפעם להתחבר ל-<ph name="SITE" />, האתר שלח חזרה אישורים חריגים ושגויים. ייתכן שתוקף מנסה להתחזות לאתר <ph name="SITE" />, או שמסך כניסה ל-Wi-Fi הפריע לחיבור. המידע שלך עדיין מאובטח מכיוון ש-Chromium הפסיק את החיבור לפני חילופי הנתונים.</translation>
 <translation id="9107467864910557787">הדפדפן שלך מנוהל על ידי <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">בהתאם למדיניות מנהל המערכת, שיתוף המסך באמצעות <ph name="APPLICATION_TITLE" /> מושבת כשמוצג תוכן סודי</translation>
-<translation id="9114074357712665317">הדפדפן שלך מנוהל על ידי <ph name="MANAGER" /></translation>
 <translation id="9114524666733003316">אישור הכרטיס מתבצע...</translation>
 <translation id="9114581008513152754">‏הדפדפן הזה לא מנוהל על ידי חברה או ארגון אחר. ייתכן שהפעילות במכשיר הזה מנוהלת מחוץ ל-Chrome. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">‏מידע נוסף על מודעות ב-Chrome</translation>

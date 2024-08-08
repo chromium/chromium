@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">更改密码</translation>
 <translation id="1089599132348386324">如果您改变了想法，可随时在 Chrome 设置中做出更改。</translation>
 <translation id="1090629319939036170">VR 菜单</translation>
-<translation id="1091543275053148479">管理员可以查看和管理浏览数据，包括历史记录和密码</translation>
 <translation id="1091779689406092804">屏幕截图</translation>
 <translation id="1094777233105318927">您的浏览器、操作系统、设备、已安装的软件以及文件的相关信息</translation>
 <translation id="1096545575934602868">此字段最多仅能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目，超出的条目会被舍弃。</translation>
@@ -957,7 +956,6 @@
 <translation id="2770159525358613612">尝试重新上传文件</translation>
 <translation id="277133753123645258">送货方式</translation>
 <translation id="2773388851563527404">Chrome 会限制大多数网站使用第三方 Cookie。不过，该网站允许使用第三方 Cookie，因为它依赖这些 Cookie 来提供基本服务。访问“设置”可<ph name="LINK" />。</translation>
-<translation id="2774077118134906782">您的组织正在管理您的浏览器</translation>
 <translation id="277499241957683684">缺少设备记录</translation>
 <translation id="2775884851269838147">最先打印的页面</translation>
 <translation id="2781185443919227679">海滩与岛屿</translation>
@@ -2802,6 +2800,7 @@
 <translation id="6300452962057769623">{0,plural, =0{您的设备将立即重启}=1{您的设备将在 1 秒后重启}other{您的设备将在 # 秒后重启}}</translation>
 <translation id="6301104306974789820">接收价格跟踪通知</translation>
 <translation id="6302546952464230349">显示<ph name="PERMISSION_NAME" />权限详情</translation>
+<translation id="6302661287897119265">滤镜</translation>
 <translation id="6304398603974202180">多媒体软件</translation>
 <translation id="6305205051461490394">无法访问 <ph name="URL" />。</translation>
 <translation id="6306713302480826305">系统将从这部设备以及您已登录的其他设备中删除此地址</translation>
@@ -3708,7 +3707,6 @@
 <translation id="7967636097426665267">通信设备</translation>
 <translation id="79682505114836835">值“<ph name="VALUE" />”是无效的十六进制颜色。</translation>
 <translation id="7968982339740310781">查看详情</translation>
-<translation id="7971972534124227314">为了保障设备安全，操作系统、浏览器信息及安装的软件均可能对管理员可见</translation>
 <translation id="7976214039405368314">请求次数过多</translation>
 <translation id="7977538094055660992">输出设备</translation>
 <translation id="7979595116210197019">餐饮服务</translation>
@@ -4070,7 +4068,6 @@
 <translation id="865032292777205197">移动传感器</translation>
 <translation id="865255447216708819">背面印刷薄膜</translation>
 <translation id="8654126188050905496">55 x 91 毫米</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" />正在管理您的资料</translation>
 <translation id="8662463432865928030">商用房地产</translation>
 <translation id="8663226718884576429">订单摘要，<ph name="TOTAL_LABEL" />，更多详情</translation>
 <translation id="8663909737634214500">光盘</translation>
@@ -4302,7 +4299,6 @@
 <translation id="9103872766612412690"><ph name="SITE" /> 通常会使用加密技术来保护您的信息。Chromium 此次尝试连接到 <ph name="SITE" /> 时，此网站发回了异常的错误凭据。这可能是因为有攻击者在试图冒充 <ph name="SITE" />，或 Wi-Fi 登录屏幕中断了此次连接。请放心，您的信息仍然是安全的，因为 Chromium 尚未进行任何数据交换便停止了连接。</translation>
 <translation id="9107467864910557787">您的浏览器由 <ph name="MANAGER" /> 管理</translation>
 <translation id="91108059142052966">管理员政策禁止在屏幕显示机密内容时与<ph name="APPLICATION_TITLE" />共享屏幕</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" />正在管理您的浏览器</translation>
 <translation id="9114524666733003316">正在确认信用卡…</translation>
 <translation id="9114581008513152754">此浏览器并未由某个公司或其他组织管理。此设备上的活动可能在接受 Chrome 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">详细了解 Chrome 中的广告</translation>

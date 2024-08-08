@@ -319,6 +319,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elementos eliminados</translation>
 <translation id="2536728043171574184">Visualización dunha copia sen conexión desta páxina</translation>
 <translation id="2546283357679194313">Cookies e datos dos sitios</translation>
+<translation id="2547843573592965873">O bloqueo do perfil protexe a túa información no coche, como os contrasinais, os pagos e outros datos que teñas gardados na Conta de Google.</translation>
 <translation id="254973855621628293">Contrasinais gardados neste dispositivo</translation>
 <translation id="2560519950693256002">Hai pouco comprobáronse os contrasinais gardados en <ph name="USERNAME" /></translation>
 <translation id="2567385386134582609">IMAXE</translation>
@@ -1711,7 +1712,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8993760627012879038">Abrir unha nova pestana no modo de incógnito</translation>
 <translation id="8996847606757455498">Escoller outro provedor</translation>
 <translation id="8998289560386111590">Non está dispoñible no teu dispositivo</translation>
-<translation id="8998729206196772491">Estás iniciando sesión cunha conta xestionada por <ph name="MANAGED_DOMAIN" /> e proporcionándolle ao seu administrador o control dos teus datos de Chrome, que quedarán ligados permanentemente a esta conta. Se pechas sesión en Chrome, eliminaranse os teus datos deste dispositivo, pero seguirán almacenados na túa conta de Google.</translation>
 <translation id="8998837250940831980">Non se puido minimizar a pestana. Téntao de novo máis tarde.</translation>
 <translation id="9001604755921395912">Abrir en incógnito en Chrome</translation>
 <translation id="9007002441981613214">Soluciona o problema cos contrasinais gardados</translation>

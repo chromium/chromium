@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">Iziet</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Izveidots pirms <ph name="NUM_HOURS_ONE" /> stundas}zero{Izveidota pirms <ph name="NUM_HOURS_MANY" /> stundām}one{Izveidota pirms <ph name="NUM_HOURS_MANY" /> stundas}other{Izveidota pirms <ph name="NUM_HOURS_MANY" /> stundām}}</translation>
 <translation id="2801787514987684416">Vai skatīt veikala informāciju?</translation>
+<translation id="2894757982205307093">Jauna cilne grupā</translation>
 <translation id="2928243913527329289">Google | Par šo veikalu</translation>
 <translation id="2977480621796371840">Noņemt no grupas</translation>
 <translation id="29919168204617356">Neaktīvās cilnes tiks automātiski aizvērtas. Varat jebkurā laikā tās atrast vēsturē.</translation>

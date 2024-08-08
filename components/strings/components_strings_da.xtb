@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Skift adgangskode</translation>
 <translation id="1089599132348386324">Du kan til enhver tid ombestemme dig og fravælge dette i Chrome-indstillingerne.</translation>
 <translation id="1090629319939036170">VR-menu</translation>
-<translation id="1091543275053148479">Browserdata, bl.a. historik og adgangskoder, kan ses og administreres</translation>
 <translation id="1091779689406092804">screenshots</translation>
 <translation id="1094777233105318927">Oplysninger om browseren, operativsystemet, enheden, installeret software og filer</translation>
 <translation id="1096545575934602868">Dette felt må ikke have mere end <ph name="MAX_ITEMS_LIMIT" /> poster. Alle yderligere poster kasseres.</translation>
@@ -957,7 +956,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2770159525358613612">Prøv at uploade dine filer igen</translation>
 <translation id="277133753123645258">Forsendelsesmetode</translation>
 <translation id="2773388851563527404">Chrome begrænser de fleste websites fra at bruge tredjepartscookies. Tredjepartscookies er dog tilladt på dette website, fordi det er afhængigt af, at de leverer grundlæggende tjenester. Gå til indstillingerne for <ph name="LINK" />.</translation>
-<translation id="2774077118134906782">Din organisation administrerer din browser</translation>
 <translation id="277499241957683684">Manglende enhedsregistrering</translation>
 <translation id="2775884851269838147">Første udskriftsside</translation>
 <translation id="2781185443919227679">Strande og øer</translation>
@@ -1941,6 +1939,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4652440160515225514">Din organisation har blokeret dette website, fordi det overtræder en politik.</translation>
 <translation id="4658638640878098064">Hæftning øverst til venstre</translation>
 <translation id="4661556981531699496">Kæledyr og andre dyr</translation>
+<translation id="4661868874067696603">Søg efter flere købsmuligheder</translation>
 <translation id="4663373278480897665">Der er givet adgang til kameraet</translation>
 <translation id="466561305373967878">Brætspil</translation>
 <translation id="4668929960204016307">,</translation>
@@ -2429,6 +2428,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5559311991468302423">Slet adresse</translation>
 <translation id="5560088892362098740">Udløbsdato</translation>
 <translation id="55635442646131152">Indholdsfortegnelse</translation>
+<translation id="5563589142503817291">Giv Chrome adgang i <ph name="LINK" /> for at bruge lokationen.</translation>
 <translation id="5565613213060953222">Åbn inkognitofane</translation>
 <translation id="5565735124758917034">Aktiv</translation>
 <translation id="5569030697349375295">Regnskabs- og økonomisoftware</translation>
@@ -2807,6 +2807,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6300452962057769623">{0,plural, =0{Din enhed genstarter nu}=1{Din enhed genstarter om 1 sekund}one{Din enhed genstarter om # sekund}other{Din enhed genstarter om # sekunder}}</translation>
 <translation id="6301104306974789820">Få notifikationer om prisovervågning</translation>
 <translation id="6302546952464230349">Vis oplysninger om tilladelsen <ph name="PERMISSION_NAME" /></translation>
+<translation id="6302661287897119265">Filtrér</translation>
 <translation id="6304398603974202180">Multimediesoftware</translation>
 <translation id="6305205051461490394"><ph name="URL" /> kan ikke nås.</translation>
 <translation id="6306713302480826305">Denne adresse slettes fra denne enhed og de øvrige enheder, du er logget ind på</translation>
@@ -2911,6 +2912,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6458606150257356946">Indsæt alligevel</translation>
 <translation id="6464094930452079790">billeder</translation>
 <translation id="6465306955648956876">Administrer adgangskoder...</translation>
+<translation id="646789491285795429">Du holder allerede øje med dette produkt</translation>
 <translation id="6468485451923838994">Skrifttyper</translation>
 <translation id="647261751007945333">Enhedspolitikker</translation>
 <translation id="6472874020827012601">Stof (mat)</translation>
@@ -3720,7 +3722,6 @@ Yderligere oplysninger:
 <translation id="7967636097426665267">Kommunikationsudstyr</translation>
 <translation id="79682505114836835">Værdien "<ph name="VALUE" />" er en ugyldig hex-farve.</translation>
 <translation id="7968982339740310781">Se oplysninger</translation>
-<translation id="7971972534124227314">Af hensyn til enhedens sikkerhed kan oplysninger om OS, browser og installeret software være synlige</translation>
 <translation id="7976214039405368314">For mange anmodninger</translation>
 <translation id="7977538094055660992">Outputenhed</translation>
 <translation id="7979595116210197019">Fødevareindustri</translation>
@@ -4082,7 +4083,6 @@ Yderligere oplysninger:
 <translation id="865032292777205197">bevægelsessensorer</translation>
 <translation id="865255447216708819">Film til baggrundsbelysning</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" /> administrerer din profil</translation>
 <translation id="8662463432865928030">Erhvervsejendomme</translation>
 <translation id="8663226718884576429">Ordreoversigt, <ph name="TOTAL_LABEL" />, flere oplysninger</translation>
 <translation id="8663909737634214500">Optisk disk</translation>
@@ -4314,7 +4314,6 @@ Yderligere oplysninger:
 <translation id="9103872766612412690"><ph name="SITE" /> bruger normalt kryptering til at beskytte dine oplysninger. Da Chromium forsøgte at oprette forbindelse til <ph name="SITE" /> denne gang, returnerede websitet usædvanlige og forkerte loginoplysninger. Dette kan skyldes, at en hacker forsøger at udgive sig for at være <ph name="SITE" />, eller at en Wi-Fi-loginskærm har forstyrret forbindelsen. Dine oplysninger er stadig sikre, idet Chromium afbrød forbindelsen, inden der blev udvekslet data.</translation>
 <translation id="9107467864910557787">Din browser administreres af <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Administratorpolitikken deaktiverer skærmdeling med <ph name="APPLICATION_TITLE" />, når fortroligt indhold er synligt</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" /> administrerer din browser</translation>
 <translation id="9114524666733003316">Bekræfter kort...</translation>
 <translation id="9114581008513152754">Denne browser administreres ikke af en virksomhed eller en anden organisation. Aktivitet på denne enhed administreres muligvis uden for Chrome. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Mere om annoncer i Chrome</translation>

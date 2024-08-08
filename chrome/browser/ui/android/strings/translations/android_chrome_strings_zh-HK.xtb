@@ -319,6 +319,7 @@
 <translation id="2534155362429831547">已刪除 <ph name="NUMBER_OF_ITEMS" /> 個項目</translation>
 <translation id="2536728043171574184">正在瀏覽此網頁的離線版本</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
+<translation id="2547843573592965873">個人檔案鎖定功能可確保你在車上的資料安全，包括儲存在 Google 帳戶的密碼、付款資料等。</translation>
 <translation id="254973855621628293">密碼已儲存至此裝置</translation>
 <translation id="2560519950693256002">最近檢查過的密碼已儲存至 <ph name="USERNAME" /></translation>
 <translation id="2567385386134582609">圖片</translation>
@@ -1711,7 +1712,6 @@
 <translation id="8993760627012879038">在無痕模式中開啟新分頁</translation>
 <translation id="8996847606757455498">選擇其他供應商</translation>
 <translation id="8998289560386111590">此功能無法在您的裝置上使用</translation>
-<translation id="8998729206196772491">您即將登入由 <ph name="MANAGED_DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chrome 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chrome，系統將刪除此裝置上的資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
 <translation id="8998837250940831980">無法將分頁縮到最小，請稍後再試。</translation>
 <translation id="9001604755921395912">在 Chrome 無痕式分頁中開啟</translation>
 <translation id="9007002441981613214">修正已儲存密碼的問題</translation>

@@ -6131,6 +6131,7 @@
 <translation id="5435779377906857208">Թույլատրել <ph name="HOST" /> կայքին օգտագործել ձեր տեղադրության մասին տվյալները</translation>
 <translation id="5436492226391861498">Պրոքսիի ուղու ստեղծման սպասում…</translation>
 <translation id="5436510242972373446">Որոնել <ph name="SITE_NAME" />-ը՝</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> պատուհանի լայնությունն այժմ <ph name="WINDOW_SIZE_PERCENT" /> է, <ph name="PANE_SIDE" /> փեղկինը՝ <ph name="PANE_SIZE_PERCENT" />։</translation>
 <translation id="5440425659852470030">Փակել կողային վահանակը</translation>
 <translation id="544083962418256601">Ստեղծել դյուրանցումներ…</translation>
 <translation id="5441133529460183413">Վեբ հավելվածը տեղադրվել է Chrome դիտարկիչից</translation>
@@ -8532,6 +8533,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 կայք <ph name="FPS_OWNER" />-ի խմբում}one{{MEMBERS} կայք <ph name="FPS_OWNER" />-ի խմբում}other{{MEMBERS} կայք <ph name="FPS_OWNER" />-ի խմբում}}</translation>
 <translation id="7225082563376899794">Լրացնել գաղտնաբառերը Windows Hello-ի միջոցով</translation>
 <translation id="7225179976675429563">Ցանցի տեսակը նշված չէ</translation>
+<translation id="7227235818314667565">Կառավարել հասանելիության պարամետրերը</translation>
 <translation id="7227458944009118910">Ստորև նշված հավելվածները կարող են մշակել նաև հաղորդակարգի հղումներ։ Մյուս հավելվածները կխնդրեն թույլտվություն։</translation>
 <translation id="7228056665272655255">Մատնահետքը կարգավորելու համար ձեր երեխան պետք է հպի մատնահետքերի սկաներին, որը ստեղնաշարի վերևի աջ անկյունում է։ Երեխայի մատնահետքի տվյալները ապահով պահվում են այս <ph name="DEVICE_TYPE" /> սարքում և երբեք չեն փոխանցվում այլ անձանց։</translation>
 <translation id="7228523857728654909">Էկրանի կողպում և մուտք</translation>
@@ -8580,6 +8582,7 @@
 <translation id="7258192266780953209">Փոխակերպումներ</translation>
 <translation id="7258225044283673131">Հավելվածը չի արձագանքում: Ընտրեք «Ստիպողաբար փակել» տարբերակը:</translation>
 <translation id="7260186537988033909">Սարքն այժմ գրանցված է կրպակի և ցուցանակի ռեժիմում</translation>
+<translation id="7261217796641151584">Կիսվել խմբով</translation>
 <translation id="7261612856573623172">Տեքստի հնչեցման ձայնը</translation>
 <translation id="7262004276116528033">Մուտքի ծառայությունը տրամադրում է <ph name="SAML_DOMAIN" />-ը</translation>
 <translation id="7264695323040866038">Բացե՞լ աջակցվող հղումները միշտ <ph name="APP" /> հավելվածում</translation>
@@ -10515,6 +10518,7 @@
 <translation id="8656888282555543604">Միացնել բրայլյան գրերի գրանցումը</translation>
 <translation id="8657393004602556571">Չուղարկե՞լ կարծիքը։</translation>
 <translation id="8657542881463614516">Օգտագործեք մատը սահեցնելու ժեստը՝ մի էջից մյուսին անցնելու համար</translation>
+<translation id="865936634714975126">Էջի բեռնման տեսակներն ընտրելու համար URL-ում ավելացրեք հարցման պարամետր։ Օրինակ՝ chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Կոնտակտները, որոնք օգտագործում են «<ph name="FEATURE_NAME" />» գործառույթը</translation>
 <translation id="8659609431223166673">Պատուհանը տեղափոխվեց ներքև</translation>
 <translation id="8661290697478713397">Բացել հղումը ինկոգ&amp;նիտո պատուհանով</translation>

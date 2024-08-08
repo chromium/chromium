@@ -561,6 +561,7 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">মেনুটি বড় করুন</translation>
 <translation id="3087734570205094154">নিচে</translation>
+<translation id="3090214513075567547">কন্টেক্সট মেনু খুলুন</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">পাওয়া যাচ্ছে না</translation>
 <translation id="3095995014811312755">সংস্করণ</translation>
@@ -1446,6 +1447,7 @@
 <translation id="6068258534237496331">ভিডিও কল কন্ট্রোল</translation>
 <translation id="6073451960410192870">রেকর্ডিং বন্ধ করুন</translation>
 <translation id="6074087755403037157">বিটা চ্যানেল</translation>
+<translation id="6091929401758362855">প্লেলিস্ট: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">অ্যাডমিন এটি বন্ধ করেছেন</translation>
 <translation id="6095008505822982596">স্পিচ রেট</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" />-এর মাধ্যমে কানেকশন যোগ করুন</translation>
@@ -2244,7 +2246,6 @@
 <translation id="899350903320462459">বিজ্ঞপ্তি সম্পর্কিত অ্যাকশনের জন্য <ph name="LOGIN_ID" /> হিসেবে ডিভাইস আনলক করুন</translation>
 <translation id="8993733019280019776">আপনি কি কথা বলছেন? আপনার মাইক বন্ধ করা আছে। মাইকটি বেছে নিয়ে সেটি চালু করুন।</translation>
 <translation id="9000771174482730261">স্টোরেজ ম্যানেজ করুন</translation>
-<translation id="9002204506712855687">লেটেস্ট ফিচার সম্পর্কে এক্সপ্লোর করুন</translation>
 <translation id="9005984960510803406">ক্রস উইন্ডো খুলুন</translation>
 <translation id="9017320285115481645">Family Link-এর অভিভাবকীয় অ্যাক্সেস কোডটি লিখুন।</translation>
 <translation id="9024331582947483881">পূর্ণ স্ক্রিন</translation>

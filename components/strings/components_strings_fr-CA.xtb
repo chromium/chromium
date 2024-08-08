@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Modifier le mot de passe</translation>
 <translation id="1089599132348386324">Vous pouvez changer d'avis en tout temps dans les paramètres de Chrome.</translation>
 <translation id="1090629319939036170">Menu RV</translation>
-<translation id="1091543275053148479">Les données de navigation, y compris l'historique et les mots de passe, peuvent être consultées et gérées</translation>
 <translation id="1091779689406092804">captures d'écran</translation>
 <translation id="1094777233105318927">Renseignements à propos de votre navigateur, de votre système d'exploitation, de votre appareil, des logiciels installés et des fichiers</translation>
 <translation id="1096545575934602868">Ce champ ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées. Toutes les entrées supplémentaires seront supprimées.</translation>
@@ -957,7 +956,6 @@
 <translation id="2770159525358613612">Réessayez de téléverser vos fichiers</translation>
 <translation id="277133753123645258">Mode de livraison</translation>
 <translation id="2773388851563527404">Chrome empêche la plupart des sites d'utiliser des témoins tiers. Toutefois, les témoins tiers sont autorisés sur ce site parce qu'il en dépend pour fournir des services de base. Accédez aux paramètres pour <ph name="LINK" />.</translation>
-<translation id="2774077118134906782">Votre organisation gère votre navigateur</translation>
 <translation id="277499241957683684">Enregistrement d'appareil manquant.</translation>
 <translation id="2775884851269838147">Première page imprimée</translation>
 <translation id="2781185443919227679">Plages et îles</translation>
@@ -2807,6 +2805,7 @@
 <translation id="6300452962057769623">{0,plural, =0{Votre appareil va redémarrer maintenant}=1{Votre appareil va redémarrer dans 1 seconde}one{Votre appareil va redémarrer dans # seconde}other{Votre appareil va redémarrer dans # secondes}}</translation>
 <translation id="6301104306974789820">Recevoir les notifications de suivi de prix</translation>
 <translation id="6302546952464230349">Afficher les détails de l'autorisation <ph name="PERMISSION_NAME" /></translation>
+<translation id="6302661287897119265">Filtrer</translation>
 <translation id="6304398603974202180">Logiciels multimédias</translation>
 <translation id="6305205051461490394">Impossible d'accéder à <ph name="URL" />.</translation>
 <translation id="6306713302480826305">Cette adresse sera supprimée de cet appareil et des autres appareils sur lesquels vous êtes connecté</translation>
@@ -3713,7 +3712,6 @@ Détails supplémentaires :
 <translation id="7967636097426665267">Équipement de télécommunication</translation>
 <translation id="79682505114836835">La couleur hexadécimale « <ph name="VALUE" /> » est incorrecte.</translation>
 <translation id="7968982339740310781">Afficher les détails</translation>
-<translation id="7971972534124227314">Pour des raisons de sécurité de l'appareil, le système d'exploitation, les informations du navigateur et les logiciels installés peuvent être visibles</translation>
 <translation id="7976214039405368314">Trop de demandes</translation>
 <translation id="7977538094055660992">Appareil de sortie</translation>
 <translation id="7979595116210197019">Service alimentaire</translation>
@@ -4074,7 +4072,6 @@ Détails supplémentaires :
 <translation id="865032292777205197">Capteurs de mouvements</translation>
 <translation id="865255447216708819">Film d'impression arrière</translation>
 <translation id="8654126188050905496">55 mm x 91 mm</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" /> gère votre profil</translation>
 <translation id="8662463432865928030">Propriétés commerciales</translation>
 <translation id="8663226718884576429">Résumé de la commande, <ph name="TOTAL_LABEL" />, plus de détails</translation>
 <translation id="8663909737634214500">Disque optique</translation>
@@ -4306,7 +4303,6 @@ Détails supplémentaires :
 <translation id="9103872766612412690">Un chiffrement est normalement utilisé sur le site <ph name="SITE" /> pour protéger vos données personnelles. Lors de la dernière tentative de connexion de Chromium au site <ph name="SITE" />, des identifiants inhabituels et incorrects ont été retournés. Cela peut arriver lorsqu'un individu malveillant tente de se faire passer pour <ph name="SITE" /> ou qu'un écran de connexion Wi-Fi a interrompu la connexion. Vos données restent sécurisées, car Chromium a interrompu la connexion avant l'échange des données.</translation>
 <translation id="9107467864910557787">Votre navigateur est géré par <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">La politique définie par l'administrateur désactive le partage d'écran avec <ph name="APPLICATION_TITLE" /> lorsque le contenu affiché est confidentiel</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" /> gère votre navigateur</translation>
 <translation id="9114524666733003316">Confirmation de la carte en cours…</translation>
 <translation id="9114581008513152754">Ce navigateur n'est pas géré par une entreprise ou une organisation. L'activité sur cet appareil peut être gérée à l'extérieur de Chrome. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">En savoir plus sur les annonces dans Chrome</translation>

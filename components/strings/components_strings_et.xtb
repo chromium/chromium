@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Parooli muutmine</translation>
 <translation id="1089599132348386324">Chrome'i seadetes saate oma valikuid alati muuta.</translation>
 <translation id="1090629319939036170">VR-menüü</translation>
-<translation id="1091543275053148479">Sirvimisandmeid, sealhulgas ajalugu ja paroole, saab näha ja hallata</translation>
 <translation id="1091779689406092804">ekraanipildid</translation>
 <translation id="1094777233105318927">Teave teie brauseri, OS-i, seadme, installitud tarkvara ja failide kohta</translation>
 <translation id="1096545575934602868">Sellel väljal ei tohi olla üle <ph name="MAX_ITEMS_LIMIT" /> kirje. Kõigist ülejäänud kirjetest loobutakse.</translation>
@@ -957,7 +956,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2770159525358613612">Proovige oma failid uuesti üles laadida</translation>
 <translation id="277133753123645258">Tarneviis</translation>
 <translation id="2773388851563527404">Chrome piirab enamikul saitidel kolmanda osapoole küpsisefailide kasutamist. Kolmanda osapoole küpsisefailid on sellel saidil siiski lubatud, kuna need sõltuvad nende pakutavatest põhiteenustest. Avage seaded, et <ph name="LINK" />.</translation>
-<translation id="2774077118134906782">Teie organisatsioon haldab teie brauserit</translation>
 <translation id="277499241957683684">Seadme kirje puudub</translation>
 <translation id="2775884851269838147">Esimesena prinditav leht</translation>
 <translation id="2781185443919227679">Rannad ja saared</translation>
@@ -1940,6 +1938,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4652440160515225514">Teie organisatsioon on selle saidi blokeerinud, sest see rikub eeskirju.</translation>
 <translation id="4658638640878098064">Kirjaklamber vasakul ülal</translation>
 <translation id="4661556981531699496">Lemmikloomad ja loomad</translation>
+<translation id="4661868874067696603">Otsige rohkem ostuvõimalusi</translation>
 <translation id="4663373278480897665">Kaamera on lubatud</translation>
 <translation id="466561305373967878">Lauamängud</translation>
 <translation id="4668929960204016307">,</translation>
@@ -2428,6 +2427,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5559311991468302423">Kustuta aadress</translation>
 <translation id="5560088892362098740">Aegumiskuupäev</translation>
 <translation id="55635442646131152">Dokumendi liigendus</translation>
+<translation id="5563589142503817291">Asukoha kasutamiseks andke Chrome'ile juurdepääs jaotises <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Ava inkognito vaheleht</translation>
 <translation id="5565735124758917034">Aktiivne</translation>
 <translation id="5569030697349375295">Raamatupidamis- ja finantstarkvara</translation>
@@ -2805,6 +2805,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6300452962057769623">{0,plural, =0{Teie seade taaskäivitub kohe}=1{Teie seade taaskäivitub 1 sekundi pärast}other{Teie seade taaskäivitub # sekundi pärast}}</translation>
 <translation id="6301104306974789820">Hankige hinna jälgimise teavitusi</translation>
 <translation id="6302546952464230349">Kuva loa <ph name="PERMISSION_NAME" /> üksikasjad</translation>
+<translation id="6302661287897119265">Filter</translation>
 <translation id="6304398603974202180">Multimeediatarkvara</translation>
 <translation id="6305205051461490394">URL-iga <ph name="URL" /> ei saa ühendust.</translation>
 <translation id="6306713302480826305">See aadress kustutatakse sellest ja muudest seadmetest, kus olete sisse logitud</translation>
@@ -2909,6 +2910,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6458606150257356946">Kleebi ikkagi</translation>
 <translation id="6464094930452079790">pildid</translation>
 <translation id="6465306955648956876">Halda paroole …</translation>
+<translation id="646789491285795429">Jälgite juba seda toodet</translation>
 <translation id="6468485451923838994">Fondid</translation>
 <translation id="647261751007945333">Seadme reeglid</translation>
 <translation id="6472874020827012601">Kangas (matt)</translation>
@@ -3710,7 +3712,6 @@ Lisateave:
 <translation id="7967636097426665267">Kommunikatsiooniseadmed</translation>
 <translation id="79682505114836835">Väärtus „<ph name="VALUE" />“ on sobimatu kuueteistkümnendsüsteemis värvikood.</translation>
 <translation id="7968982339740310781">Kuva üksikasjad</translation>
-<translation id="7971972534124227314">Seadmeohutuse tagamiseks võivad OS, brauseri teave ja installitud tarkvara olla nähtavad</translation>
 <translation id="7976214039405368314">Liiga palju päringuid</translation>
 <translation id="7977538094055660992">Väljundseade</translation>
 <translation id="7979595116210197019">Toiduvalmistamistööstus</translation>
@@ -4071,7 +4072,6 @@ Lisateave:
 <translation id="865032292777205197">liikumisandurid</translation>
 <translation id="865255447216708819">Läbivalgustatav kile</translation>
 <translation id="8654126188050905496">55 × 91 mm</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" /> haldab teie profiili</translation>
 <translation id="8662463432865928030">Äripinnad</translation>
 <translation id="8663226718884576429">Tellimuse kokkuvõte, <ph name="TOTAL_LABEL" />, rohkem üksikasju</translation>
 <translation id="8663909737634214500">Optiline andmekandja</translation>
@@ -4303,7 +4303,6 @@ Lisateave:
 <translation id="9103872766612412690">Sait <ph name="SITE" /> kasutab teie teabe kaitsmiseks tavaliselt krüpteerimist. Kui Chromium püüdis seekord saidiga <ph name="SITE" /> ühendust luua, tagastas veebisait ebatavalised ja valed mandaadid. See võib juhtuda siis, kui ründaja proovib teeselda, et on sait <ph name="SITE" />, või WiFi sisselogimisekraan on ühenduse katkestanud. Teie teave on endiselt kaitstud, sest Chromium peatas ühenduse enne andmevahetust.</translation>
 <translation id="9107467864910557787">Teie brauserit haldab <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Administraatori eeskirjad keelavad ekraanikuva jagamise rakendusega <ph name="APPLICATION_TITLE" />, kui konfidentsiaalne sisu on nähtaval</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" /> haldab teie brauserit</translation>
 <translation id="9114524666733003316">Kaardi kinnitamine …</translation>
 <translation id="9114581008513152754">Seda brauserit ei halda ettevõte ega muu organisatsioon. Selle seadme tegevusi võidakse hallata ka väljaspool Chrome'i. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Lisateave reklaamide kohta Chrome'is</translation>

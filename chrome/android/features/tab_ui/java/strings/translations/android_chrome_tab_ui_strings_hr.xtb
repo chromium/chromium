@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">Napusti</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Izrađeno prije <ph name="NUM_HOURS_ONE" /> sat}one{Izrađeno prije <ph name="NUM_HOURS_MANY" /> sat}few{Izrađeno prije <ph name="NUM_HOURS_MANY" /> sata}other{Izrađeno prije <ph name="NUM_HOURS_MANY" /> sati}}</translation>
 <translation id="2801787514987684416">Pogledati podatke o trgovini?</translation>
+<translation id="2894757982205307093">Nova kartica u grupi</translation>
 <translation id="2928243913527329289">Google | O ovoj trgovini</translation>
 <translation id="2977480621796371840">Ukloni iz grupe</translation>
 <translation id="29919168204617356">Neaktivne kartice automatski će se zatvoriti. Uvijek ih možete pronaći u povijesti.</translation>

@@ -104,6 +104,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Pwyswch <ph name="LAUNCHER_KEY_NAME" /> + g unrhyw bryd</translation>
 <translation id="1306549533752902673">APIAU A ARGYMHELLIR</translation>
+<translation id="1310396869741602366">Newid tôn</translation>
 <translation id="1312604459020188865">Cryfder Signal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Dangos y silff bob amser</translation>
 <translation id="132346741904777634">Mae'r camera wedi'i snapio i'r gornel chwith uchaf. Gwrthdaro ag arwyneb y system.</translation>
@@ -234,6 +235,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1768366657309696705">Mae'r llwybr byr bysellfwrdd <ph name="LAUNCHER_KEY_NAME" /> + Period wedi newid. I ddefnyddio'r fysell Insert, pwyswch y fysell <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Symudwyd i res <ph name="ROW_NUMBER" />, colofn <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Sgrolio i'r dde</translation>
+<translation id="17722141032474077">Cyfrifiadau</translation>
 <translation id="1774796056689732716">Calendr, <ph name="CURRENT_MONTH_YEAR" />, mae <ph name="DATE" /> wedi'i ddewis ar hyn o bryd.</translation>
 <translation id="178347895271755507">Gosod gweld lluniau, cyfryngau a hysbysiadau diweddar eich ffôn</translation>
 <translation id="1787955149152357925">Diffodd</translation>
@@ -375,6 +377,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="2392659840443812875">Dim poethfan ar gael. Sicrhewch fod eich dyfais gerllaw a bod Bluetooth wedi'i droi ymlaen.</translation>
 <translation id="2397416548179033562">Dangos dewislen Chrome</translation>
 <translation id="240006516586367791">Rheolaethau cyfryngau</translation>
+<translation id="240155812475001919">Dogfen Google</translation>
 <translation id="2402411679569069051">I ddatgloi eich Chromebook, defnyddiwch eich olion bysedd neu datglowch eich ffôn</translation>
 <translation id="240545663114741956">Pwyswch <ph name="ACCELERATOR" /> ddwywaith i allgofnodi.</translation>
 <translation id="2405664212338326887">Ni chysylltir</translation>
@@ -575,6 +578,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Math o waith dosbarth</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3130793786899299931">Newid hyd</translation>
 <translation id="3134486240968249588">Ychydig o bethau i'w cadw mewn cof</translation>
 <translation id="3139188263101386725">Defnyddiwch y llwybr byr wedi'i ddiweddaru</translation>
 <translation id="3139942575505304791">Desg 1</translation>
@@ -585,6 +589,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="316086887565479535">Apiau heb eu cefnogi mewn templed</translation>
 <translation id="3160929076476941240">2a</translation>
 <translation id="316356270129335934">Mae <ph name="MANAGER" /> yn rholio eich <ph name="DEVICE_TYPE" /> yn ôl. Bydd eich dyfais yn ailosod a bydd eich data yn cael eu dileu.</translation>
+<translation id="316798519864381606">Sleid Google</translation>
 <translation id="3171170659304083361">Gosodiadau dulliau mewnbynnu</translation>
 <translation id="3176221688814061633">Mae eich dyfais Chromebook neu Bluetooth yn defnyddio fersiwn hŷn o Bluetooth. Trowch y Cydraniad Swper Bluetooth ymlaen neu defnyddiwch feicroffon mewnol i gael gwell ansawdd sain.</translation>
 <translation id="3181441307743005334">Mae'n bosib y bydd ailgychwyn yn cymryd peth amser</translation>
@@ -900,6 +905,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="425364040945105958">Dim SIM</translation>
 <translation id="4261870227682513959">Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd</translation>
 <translation id="4264977415328155183">, wedi'i grebachu</translation>
+<translation id="4265259722091164182">Maint Llythrennau Teitl</translation>
 <translation id="4269883910223712419">Gall gweinyddwr y ddyfais hon:</translation>
 <translation id="4274537685965975248">Mae'r llwybr byr bysellfwrdd Ctrl + Alt + Saeth i lawr wedi newid. I ddefnyddio'r fysell End, pwysywch y fysell <ph name="LAUNCHER_KEY_NAME" /> + Saeth dde.</translation>
 <translation id="4275283744500212192">Agor yr opsiynau cynllun ffenestr</translation>
@@ -909,6 +915,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4283888303416325161">Rhowch gyfrinair i gael rhagor o ddiogelwch</translation>
 <translation id="4285498937028063278">Dad-binio</translation>
 <translation id="428715201724021596">Wrthi'n cysylltu â'r proffil. Gallai hyn gymryd ychydig funudau.</translation>
+<translation id="4287250812980588583">Ffenestr Chrome</translation>
 <translation id="4294319844246081198">Bore da <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Clirio'r holl <ph name="COUNT" /> hysbysiad</translation>
 <translation id="4300272766492248925">Agor yr ap</translation>
@@ -985,6 +992,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="4544483149666270818">Dewiswch ffenestr i'w recordio</translation>
 <translation id="4545950850562423083">Cadw'r dudalen bresennol fel nod tudalen</translation>
 <translation id="4548482551627849548">Symud y ffenestr weithredol i'r ddesg ar y chwith</translation>
+<translation id="4549853322523631092">Ni chanfuwyd unrhyw ganlyniadau.</translation>
 <translation id="4552748006424994716">Er mwyn osgoi atsain, dim ond gyda chlustffon â gwifrau y gallwch chi wrando ar eich meicroffon.</translation>
 <translation id="4560576029703263363">Ymlaen</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1022,6 +1030,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="4667099493359681081">Wrthi'n lawrlwytho <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Mae'r modd Arbed Batri wedi'i droi ymlaen</translation>
 <translation id="4673427585974421255">Cadw ymlaen</translation>
+<translation id="4677040906536311086">Dalen Google</translation>
 <translation id="468293128311738995">Apiau o'ch ffôn</translation>
 <translation id="4690510401873698237">Silff ar y gwaelod</translation>
 <translation id="4696813013609194136">Datgloi'r ddyfais gyda chod rhiant</translation>
@@ -1224,6 +1233,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="5331975486040154427">Dyfais USB-C (porth chwith ar y cefn)</translation>
 <translation id="533282197239610265">Dangos dyfeisiau castio</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Dde)</translation>
+<translation id="5346119650615956459">GIF</translation>
 <translation id="5352250171825660495">Mae'r thema dywyll ymlaen</translation>
 <translation id="5354804064646502504">Gall hyn arwain at gost data.
 Dim dyfeisiau yn gysylltiedig.</translation>
@@ -1446,6 +1456,8 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="6068258534237496331">Rheolyddion Galwadau Fideo</translation>
 <translation id="6073451960410192870">Stopio recordio</translation>
 <translation id="6074087755403037157">Sianel Beta</translation>
+<translation id="6075098173600599596">Newid priflythrennu</translation>
+<translation id="6091929401758362855">Rhestr chwarae: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Analluogwyd gan y gweinyddwr</translation>
 <translation id="6095008505822982596">Cyfradd lleferydd</translation>
 <translation id="6095425951508823973">Ychwanegu cysylltiad â <ph name="PROVIDER" /></translation>
@@ -1503,6 +1515,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="6249795363855770621">Methu â marcio fel wedi'i chwblhau. Rhowch gynnig arall arni pan fyddwch ar-lein.</translation>
 <translation id="6254629735336163724">Wedi'i gloi i lorweddol</translation>
 <translation id="6259254695169772643">Defnyddiwch eich pwyntil i ddewis</translation>
+<translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Wrthi'n gweithredu...</translation>
 <translation id="6274202259872570803">Sgrinlediad</translation>
 <translation id="6276708887952587684">Gweld ffynhonnell y dudalen</translation>
@@ -1573,6 +1586,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="6537924328260219877">Cryfder Signal <ph name="SIGNAL_STRENGTH" />, Batri'r Ffôn <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Wrthi'n sganio'r lawrlwythiad <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Wrthi'n castio i <ph name="RECEIVER_NAME" /></translation>
+<translation id="6542891623636520977">Emoji, GIF, a rhagor</translation>
 <translation id="6555373427270923730">Teipiwch gyfeiriad gwe yn y bar cyfeiriad, yna pwyswch <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Gosodiad newydd</translation>
@@ -1670,6 +1684,7 @@ Gosodiad newydd</translation>
 <translation id="6874854809828346832">Dangos manylion y boethfan. Mae'r boethfan wedi'i throi ymlaen</translation>
 <translation id="6878400149835617132">Mae'r llwybr byr wedi'i ddiffodd</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ap}zero{# ap}two{# ap}few{# ap}many{# ap}other{# ap}}</translation>
+<translation id="6879454869409141992">Troi clo CAPS ymlaen</translation>
 <translation id="6883768636838842873">Llwybrau byr allweddol, awgrymiadau ar gyfer defnyddio'r ddyfais, a mwy</translation>
 <translation id="6884665277231944629">Mynd yn ôl i heddiw</translation>
 <translation id="6886172995547742638">Mae'n bosib y bydd eich <ph name="DEVICE_TYPE" /> yn profi perfformiad is. Defnyddiwch addasydd pŵer USB-C ardystiedig <ph name="PREFERRED_MINIMUM_POWER" />W neu uwch.</translation>
@@ -1770,6 +1785,7 @@ Gosodiad newydd</translation>
 <translation id="7312210124139670355">Mae eich gweinyddwr yn ailosod eich eSIM. Gallai hyn gymryd ychydig funudau.</translation>
 <translation id="7312761820869643657">Diweddaru dyfais i fersiwn flaenorol</translation>
 <translation id="7313193732017069507">Ehangu'r camera</translation>
+<translation id="73289266812733869">Heb ei ddewis</translation>
 <translation id="7330397557116570022">Ewch i faes testun i ddefnyddio Arddweud</translation>
 <translation id="7331646370422660166">alt + saeth i lawr</translation>
 <translation id="7337660433630200387">+10 munud</translation>
@@ -1892,6 +1908,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7725108879223146004">Dangos manylion y boethfan. Mae'r boethfan yn diffodd.</translation>
 <translation id="7726391492136714301">Gweld hysbysiadau ac apiau eich ffôn</translation>
 <translation id="7727952505535211425">Agor y wefan yn y bar cyfeiriad mewn tab newydd</translation>
+<translation id="7728657226117099693">Diffodd clo CAPS</translation>
 <translation id="7742327441377685481">Dim hysbysiadau</translation>
 <translation id="774736258792760908">Pan fyddwch yn troi Helpu fi i ysgrifennu a Helpu fi i ddarllen ymlaen, anfonir y testun mewnbwn a chynnwys y ddogfen at weinyddion Google AI i gynhyrchu awgrymiadau ysgrifennu, cynhyrchu crynodebau, ateb cwestiynau, a gwella'r cynnyrch, yn amodol ar <ph name="LINK_TO_SERVICE_TERMS" />. Peidiwch â chynnwys unrhyw beth personol, sensitif neu gyfrinachol.</translation>
 <translation id="7748275671948949022">Amlygu'r botwm Lansiwr ar y silff</translation>
@@ -1966,6 +1983,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7946681191253332687">Mae diweddariadau diogelwch estynedig ar gael</translation>
 <translation id="7947798320695032612">Mae <ph name="APP_NAME" /> am ddefnyddio eich <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Bysellfwrdd pylu</translation>
+<translation id="7953176344218790168">PRIF LYTHRENNAU</translation>
 <translation id="7953994493035617347">Cadarnhau'r eglurdeb newydd?</translation>
 <translation id="795958884516058160">Mae'r Chwyddwydr sgrîn lawn wedi'i alluogi. Pwyswch <ph name="ACCELERATOR" /> eto i'w doglo.</translation>
 <translation id="7962583092928373823">Cuddio holl awgrymiadau Google Calendar</translation>
@@ -2148,6 +2166,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8649597172973390955">Silff yn cael ei dangos bob amser</translation>
 <translation id="8652175077544655965">Cau'r gosodiadau</translation>
 <translation id="8653151467777939995">Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u troi ymlaen</translation>
+<translation id="8657066291275741003">llythrennau bach</translation>
 <translation id="8660331759611631213">Isradd 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Pwyswch Enter i dynnu sgrinlun rhannol</translation>
@@ -2242,7 +2261,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="899350903320462459">Datglowch y ddyfais fel <ph name="LOGIN_ID" /> i gyflawni'r weithred hysbysu</translation>
 <translation id="8993733019280019776">Ydych chi'n siarad? Mae eich meic wedi'i ddiffodd. Dewiswch y meic i'w droi ymlaen.</translation>
 <translation id="9000771174482730261">RHEOLI'R STORFA</translation>
-<translation id="9002204506712855687">Archwilio'r nodweddion diweddaraf</translation>
 <translation id="9005984960510803406">Agor ffenestr Crosh</translation>
 <translation id="9017320285115481645">Rhowch god mynediad rhiant Family Link.</translation>
 <translation id="9024331582947483881">sgrîn lawn</translation>

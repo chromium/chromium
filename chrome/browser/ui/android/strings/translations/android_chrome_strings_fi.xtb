@@ -319,6 +319,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> kohdetta poistettu</translation>
 <translation id="2536728043171574184">Näkyvissä on sivun offline-versio.</translation>
 <translation id="2546283357679194313">Evästeet ja sivustotiedot</translation>
+<translation id="2547843573592965873">Profiililukko pitää tietosi (esim. synkronoidut salasanat ja maksut) suojattuina autossa tallentamalla ne Google-tilille.</translation>
 <translation id="254973855621628293">Tälle laitteelle tallennetut salasanat</translation>
 <translation id="2560519950693256002">Äskettäin tarkistetut salasanat on tallennettu tänne: <ph name="USERNAME" /></translation>
 <translation id="2567385386134582609">KUVA</translation>
@@ -1711,7 +1712,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8993760627012879038">Avaa uusi välilehti incognito-tilassa</translation>
 <translation id="8996847606757455498">Valitse toinen palvelu</translation>
 <translation id="8998289560386111590">Ei saatavilla laitteellasi</translation>
-<translation id="8998729206196772491">Olet kirjautumassa sisään verkkotunnuksen <ph name="MANAGED_DOMAIN" /> hallinnoimalla tilillä ja antamassa sen järjestelmänvalvojalle oikeuden hallita Chrome-tietojasi. Tietosi liitetään pysyvästi tähän tiliin. Chromesta uloskirjautuminen poistaa tietosi tältä laitteelta, mutta ne säilyvät Google-tililläsi.</translation>
 <translation id="8998837250940831980">Välilehden pienentäminen epäonnistui. Yritä myöhemmin uudelleen.</translation>
 <translation id="9001604755921395912">Avaa incognito-välilehdellä</translation>
 <translation id="9007002441981613214">Tallennettuja salasanoja koskevan ongelman korjaaminen</translation>

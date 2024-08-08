@@ -2642,6 +2642,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2853121255651601031">Şifre Kaydedildi</translation>
 <translation id="2855243985454069333">Geçmişi, tüm senkronize edilen cihazlardan siler</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> ile oturum açın</translation>
+<translation id="28559674945112027">Yüksek düzey modu</translation>
 <translation id="2856776373509145513">Yeni bir kapsayıcı oluşturun</translation>
 <translation id="2856907950922663165">URL şifrelemesi kapatılsın mı?</translation>
 <translation id="2859741939921354763">Şifreleri <ph name="BRAND" /> hizmetine aktarın</translation>
@@ -6398,6 +6399,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5623282979409330487">Bu site, hareket sensörlerinize erişiyor.</translation>
 <translation id="5623842676595125836">Günlük</translation>
 <translation id="5624120631404540903">Şifreleri yönet</translation>
+<translation id="5624959475330585145">Güvensiz bağlantıları kullanmadan önce sor</translation>
 <translation id="5625225435499354052">Google Pay'de düzenle</translation>
 <translation id="5626134646977739690">Adı:</translation>
 <translation id="5627832140542566187">Ekran yönü</translation>
@@ -9631,6 +9633,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8008356846765065031">İnternet bağlantısı kesildi. Lütfen İnternet bağlantınızı kontrol edin.</translation>
 <translation id="8008704580256716350">Şüpheli dosya engellendi</translation>
 <translation id="8009225694047762179">Şifreleri Yönet</translation>
+<translation id="8010081455002666927">Otomatik algıla</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' taşındı.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Anlık bağlantı noktası ayrıntıları</translation>
@@ -11034,6 +11037,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="9009707268312089299">Windows'dan içe aktarıldı</translation>
 <translation id="9009708085379296446">Bu sayfayı değiştirmek mi istediniz?</translation>
 <translation id="9010845741772269259">Ödeme yöntemleri ekleme</translation>
+<translation id="901087299639956505">Dengeli mod</translation>
 <translation id="9011163749350026987">Her zaman simgeyi göster</translation>
 <translation id="9011262023858991985">Bu sekme yayınlanıyor</translation>
 <translation id="9011393886518328654">Sürüm notları</translation>

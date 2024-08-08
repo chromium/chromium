@@ -564,6 +564,7 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Прошири мени</translation>
 <translation id="3087734570205094154">Дно</translation>
+<translation id="3090214513075567547">Отвори контекстуални мени</translation>
 <translation id="3090989381251959936">Укључите/искључите функцију <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Рок је истекао</translation>
 <translation id="3095995014811312755">верзија</translation>
@@ -2263,7 +2264,6 @@
 <translation id="899350903320462459">Откључајте уређај помоћу ИД-а пријављивања <ph name="LOGIN_ID" /> да бисте добили обавештење</translation>
 <translation id="8993733019280019776">Да ли причате? Микрофон је искључен. Изаберите микрофон да бисте га укључили.</translation>
 <translation id="9000771174482730261">УПРАВЉАЈТЕ МЕМОРИЈСКИМ ПРОСТОРОМ</translation>
-<translation id="9002204506712855687">Истражите најновије функције</translation>
 <translation id="9005984960510803406">Отворите Crosh прозор</translation>
 <translation id="9017320285115481645">Унесите приступни кôд родитеља за Family Link.</translation>
 <translation id="9024331582947483881">цео екран</translation>

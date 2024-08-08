@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Canvia la contrasenya</translation>
 <translation id="1089599132348386324">Si canvies d'opinió, pots modificar la configuració de Chrome en qualsevol moment.</translation>
 <translation id="1090629319939036170">Menú de RV</translation>
-<translation id="1091543275053148479">Les dades de navegació, inclosos l'historial i les contrasenyes, es poden consultar i gestionar</translation>
 <translation id="1091779689406092804">captures de pantalla</translation>
 <translation id="1094777233105318927">Informació sobre el navegador, el sistema operatiu, el dispositiu, el programari instal·lat i els fitxers</translation>
 <translation id="1096545575934602868">Aquest camp no pot tenir més de <ph name="MAX_ITEMS_LIMIT" /> entrades. Es descartaran totes les entrades restants.</translation>
@@ -957,7 +956,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2770159525358613612">Prova de tornar a penjar els fitxers</translation>
 <translation id="277133753123645258">Mètode d'enviament</translation>
 <translation id="2773388851563527404">Chrome limita la majoria de llocs web perquè no utilitzin galetes de tercers. Tanmateix, les galetes de tercers es permeten en aquest lloc web perquè en depèn per proporcionar serveis bàsics. Ves a la configuració per <ph name="LINK" />.</translation>
-<translation id="2774077118134906782">La teva organització gestiona el teu navegador</translation>
 <translation id="277499241957683684">Falta el registre del dispositiu</translation>
 <translation id="2775884851269838147">Primera pàgina d'impressió</translation>
 <translation id="2781185443919227679">Platges i illes</translation>
@@ -1940,6 +1938,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4652440160515225514">La teva organització ha bloquejat aquest lloc web perquè infringeix una política.</translation>
 <translation id="4658638640878098064">Grapat a la part superior esquerra</translation>
 <translation id="4661556981531699496">Animals de companyia i altres animals</translation>
+<translation id="4661868874067696603">Cerca més opcions de compra</translation>
 <translation id="4663373278480897665">La càmera es pot utilitzar</translation>
 <translation id="466561305373967878">Jocs de taula</translation>
 <translation id="4668929960204016307">,</translation>
@@ -2428,6 +2427,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5559311991468302423">Suprimeix l'adreça</translation>
 <translation id="5560088892362098740">Data de caducitat</translation>
 <translation id="55635442646131152">Esquema del document</translation>
+<translation id="5563589142503817291">Per poder utilitzar la teva ubicació, dona accés a Chrome a la <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Obre una pestanya d'incògnit</translation>
 <translation id="5565735124758917034">Actiu</translation>
 <translation id="5569030697349375295">Programari de finances i comptabilitat</translation>
@@ -2805,6 +2805,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6300452962057769623">{0,plural, =0{El dispositiu es reiniciarà ara}=1{El dispositiu es reiniciarà d'aquí a 1 segon}other{El dispositiu es reiniciarà d'aquí a # segons}}</translation>
 <translation id="6301104306974789820">Rep notificacions de seguiment de preus</translation>
 <translation id="6302546952464230349">Mostra els detalls del permís <ph name="PERMISSION_NAME" /></translation>
+<translation id="6302661287897119265">Filtre</translation>
 <translation id="6304398603974202180">Programari multimèdia</translation>
 <translation id="6305205051461490394">No es pot accedir a <ph name="URL" />.</translation>
 <translation id="6306713302480826305">Aquesta adreça se suprimirà d'aquest dispositiu i dels altres en què tinguis la sessió iniciada</translation>
@@ -2909,6 +2910,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6458606150257356946">Enganxa igualment</translation>
 <translation id="6464094930452079790">imatges</translation>
 <translation id="6465306955648956876">Gestiona les contrasenyes...</translation>
+<translation id="646789491285795429">Ja estàs fent el seguiment d'aquest producte</translation>
 <translation id="6468485451923838994">Fonts</translation>
 <translation id="647261751007945333">Polítiques de dispositius</translation>
 <translation id="6472874020827012601">Tela (mat)</translation>
@@ -3710,7 +3712,6 @@ Detalls addicionals:
 <translation id="7967636097426665267">Equipament de comunicació</translation>
 <translation id="79682505114836835">El valor "<ph name="VALUE" />" no és un color hexadecimal vàlid.</translation>
 <translation id="7968982339740310781">Mostra els detalls</translation>
-<translation id="7971972534124227314">Per motius de seguretat del dispositiu, pot ser que el SO, la informació del navegador i el programari instal·lat es puguin veure</translation>
 <translation id="7976214039405368314">Hi ha massa sol·licituds</translation>
 <translation id="7977538094055660992">Dispositiu de sortida</translation>
 <translation id="7979595116210197019">Serveis alimentaris</translation>
@@ -4071,7 +4072,6 @@ Detalls addicionals:
 <translation id="865032292777205197">sensors de moviment</translation>
 <translation id="865255447216708819">Pel·lícula d'impressió posterior</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" /> gestiona el teu perfil</translation>
 <translation id="8662463432865928030">Propietats comercials</translation>
 <translation id="8663226718884576429">Resum de la comanda, <ph name="TOTAL_LABEL" />, més detalls</translation>
 <translation id="8663909737634214500">Disc òptic</translation>
@@ -4303,7 +4303,6 @@ Detalls addicionals:
 <translation id="9103872766612412690"><ph name="SITE" /> utilitza normalment l'encriptació per protegir la vostra informació. En aquesta ocasió, quan Chromium ha provat de connectar-se a <ph name="SITE" />, el lloc web ha enviat credencials poc comunes i incorrectes. Pot ser que un atacant estigui provant de fer-se passar per <ph name="SITE" /> o que una pantalla d'inici de sessió a la xarxa Wi-Fi hagi interromput la connexió. En qualsevol cas, la vostra informació continua estant segura, perquè Chromium ha aturat la connexió abans no s'intercanviés cap dada.</translation>
 <translation id="9107467864910557787">El navegador està gestionat per <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">La política de l'administrador desactiva la compartició de pantalla amb <ph name="APPLICATION_TITLE" /> quan es mostra contingut confidencial</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" /> gestiona el teu navegador</translation>
 <translation id="9114524666733003316">S'està confirmant la targeta...</translation>
 <translation id="9114581008513152754">Cap empresa ni cap altra organització no gestiona aquest navegador. És possible que l'activitat d'aquest dispositiu es gestioni fora de Chrome. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Més informació sobre els anuncis a Chrome</translation>

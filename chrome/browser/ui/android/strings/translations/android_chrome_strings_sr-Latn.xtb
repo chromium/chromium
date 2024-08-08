@@ -319,6 +319,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2534155362429831547">Izbrisanih stavki: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2536728043171574184">Pregledate oflajn kopiju ove stranice</translation>
 <translation id="2546283357679194313">Kolačići i podaci o sajtovima</translation>
+<translation id="2547843573592965873">Zaključavanje profila štiti podatke u automobilu, uključujući lozinke, plaćanja i drugo sačuvano na Google nalogu.</translation>
 <translation id="254973855621628293">Lozinke su sačuvane na ovom uređaju</translation>
 <translation id="2560519950693256002">Nedavno proverene lozinke su sačuvane na <ph name="USERNAME" /></translation>
 <translation id="2567385386134582609">SLIKA</translation>
@@ -1711,7 +1712,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8993760627012879038">Otvaranje nove kartice u režimu bez arhiviranja</translation>
 <translation id="8996847606757455498">Odaberite drugog dobavljača</translation>
 <translation id="8998289560386111590">Nije dostupno na vašem uređaju</translation>
-<translation id="8998729206196772491">Prijavljujete se pomoću naloga kojim upravlja <ph name="MANAGED_DOMAIN" /> i dajete njegovom administratoru kontrolu nad svojim Chrome podacima. Podaci će postati trajno povezani sa tim nalogom. Odjavljivanjem iz Chrome-a ćete izbrisati podatke sa ovog uređaja, ali će oni ostati sačuvani na Google nalogu.</translation>
 <translation id="8998837250940831980">Umanjivanje kartice nije uspelo. Probajte ponovo kasnije.</translation>
 <translation id="9001604755921395912">Chrome kartica bez arhiviranja</translation>
 <translation id="9007002441981613214">Rešite problem sa sačuvanim lozinkama</translation>

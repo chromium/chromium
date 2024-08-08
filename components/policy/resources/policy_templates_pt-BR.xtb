@@ -441,6 +441,17 @@ Se a política for definida como "Desativada" ou não for definida, as configura
       Se a política for definida como "Forçada" (2), o seletor de perfil não poderá ser suprimido pelos usuários. Ele será exibido mesmo quando houver apenas um perfil disponível.</translation>
 <translation id="1339174690935954950">Impedir que os usuários enviem feedback</translation>
 <translation id="1340053691042184658">Impedir logins em navegação como visitante</translation>
+<translation id="134154550994512097">Esta política controla se os usuários podem ativar o modo somente HTTPS (Sempre usar conexões seguras) nas Configurações. O HTTPS-Only Mode faz upgrade de todas as navegações para HTTPS.
+      Se esta configuração for deixada sem definição ou for permitida, os usuários poderão ativar o modo somente HTTPS.
+      Se ela não for permitida, os usuários não poderão ativar esse modo.
+      Se esta configuração for definida como "force_enabled", o modo somente HTTPS será ativado no modo estrito e não poderá ser desativado pelos usuários.
+      Se ela for definida como "force_balanced_enabled", o modo somente HTTPS será ativado no modo equilibrado e não poderá ser desativado pelos usuários.
+      A partir da versão M112, é possível usar force_enabled. A partir da versão M129, é possível usar force_balanced_enabled.
+      Se você definir essa política para um valor que não é compatível com a versão do Chrome que a recebe, o navegador vai usar a configuração permitida por padrão.
+
+A política <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separada
+pode ser usada para evitar que determinados nomes de host ou padrões de nome de host sejam
+atualizados para HTTPS por esse recurso.</translation>
 <translation id="1342918903685430097">Configura a versão mínima permitida do <ph name="PRODUCT_OS_NAME" /> para o dispositivo.</translation>
 <translation id="1343128241903870688">Desativar relatórios de informações de apps do dispositivo</translation>
 <translation id="1347198119056266798">Esta política está obsoleta. Use <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> e <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Esta política será ignorada se as políticas <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> ou <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (obsoleta) estiverem definidas.
@@ -2711,6 +2722,9 @@ A política <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> t
 <translation id="2973972555495515337">Se a política for ativada, os aplicativos da Web de terceiros vão poder usar a <ph name="DESK_API_NAME" /> para salvar e compartilhar espaços de trabalho do <ph name="PRODUCT_OS_NAME" />. Se ela for desativada, o usuário não vai poder salvar e compartilhar dados de espaços de trabalho pela <ph name="DESK_API_NAME" />. Se a política for deixada sem definição, o comportamento será o mesmo que o desativado. A política só será aplicada em dispositivos registrados.</translation>
 <translation id="2976033779241323433">Ativar o teclado virtual de toque com base na heurística padrão do sistema</translation>
 <translation id="2976429807269247880">Configurações de comportamento de cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado</translation>
+<translation id="2977576137210520963">Se a política for definida, você vai especificar a lista de URLs com padrões que correspondam à origem de segurança do URL solicitante. Quando houver correspondência de padrão, o acesso a dispositivos de captura de áudio será permitido sem um comando.
+
+      Para ver informações detalhadas sobre os padrões de <ph name="URL_LABEL" /> válidos, acesse https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. No entanto, o padrão "*", que corresponde a qualquer URL, não é compatível com esta política.</translation>
 <translation id="2979696534869541158">Forçar implementação antiga</translation>
 <translation id="2985927503455169394">Usa o modo padrão da experiência de integração do Assistente</translation>
 <translation id="2987155890997901449">Ativar ARC</translation>
@@ -6870,6 +6884,7 @@ Se for definida como <ph name="BR_UNDER_USER_CONTROL" />, os usuários vão rece
 
 Após a configuração inicial, será possível ativar ou desativar o recurso de backup e restauração.</translation>
 <translation id="6169768162756928771">Configurações do gerenciamento de identidade de usuários GAIA</translation>
+<translation id="6170316094401732532">Não restringir a configuração do modo somente HTTPS</translation>
 <translation id="6172110090237528457">Configura o protetor de tela do dispositivo para a tela de login.
 
 Se a política for definida como "true", o dispositivo <ph name="PRODUCT_OS_NAME" /> vai mostrar um protetor na tela de login quando estiver inativo.
@@ -7636,6 +7651,9 @@ Observação: reiniciar o dispositivo ou sair da conta faz com que o cache seja 
 
           Esta política não vai ter efeito se for ativada, deixada vazia ou não for definida.</translation>
 <translation id="6583249367505445969">Desativar a barra de favoritos</translation>
+<translation id="6583473893541367102">Se a política for definida, você vai especificar a lista de URLs com padrões que correspondam à origem de segurança do URL solicitante. Quando houver correspondência de padrão, o acesso a dispositivos de captura de vídeo será permitido sem um comando.
+
+      Para informações detalhadas sobre os padrões de <ph name="URL_LABEL" /> válidos, acesse https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. No entanto, o padrão "*", que corresponde a qualquer URL, não é compatível com esta política.</translation>
 <translation id="6584122839583172231">As configurações F12 usam o atalho que contém as teclas modificadoras Ctrl e Shift</translation>
 <translation id="6584541828182430328">Desativar a exibição de alertas de tela cheia</translation>
 <translation id="658537215958747575">Permitir que origens qualificadas usem a API Direct Sockets</translation>
@@ -9117,6 +9135,7 @@ Quando ela for deixada sem definição, o renderizador de PDF será escolhido pe
       Observação: veja uma lista com as variáveis que podem ser usadas: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables (link em inglês).</translation>
 <translation id="7719808201797990069">Exceções ao padrão de URL para descarte de guias</translation>
 <translation id="7721944091689270995">ID do usuário do <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="7725010277314676939">Forçar a ativação do modo somente HTTPS no modo estrito</translation>
 <translation id="7728486978686128364">Não usar letra maiúscula para os métodos de solicitação, exceto em DELETE/GET/HEAD/OPTIONS/POST/PUT</translation>
 <translation id="7731026922044991970">Reverter para o comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado para os cookies em todos os sites</translation>
 <translation id="7732907212083471072">Políticas removidas</translation>
@@ -11059,6 +11078,7 @@ Para mais informações sobre contextos seguros, acesse https://www.w3.org/TR/se
 
       Ela é uma medida temporária e será removida em versões futuras do <ph name="PRODUCT_NAME" />. Após a remoção da política, o <ph name="PRODUCT_NAME" /> sempre poderá consultar outros tipos de DNS.</translation>
 <translation id="9167719789236691545">Desativar o Drive no app Arquivos do <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="9172648973829444124">Forçar a ativação do modo somente HTTPS no modo equilibrado</translation>
 <translation id="9172911925443428317">Não permitir que a promoção de avaliação da App Store seja mostrada</translation>
 <translation id="9173133289347070466">Pesquisas do <ph name="PRODUCT_NAME" /> no produto coletam feedback de usuários sobre o navegador. As respostas das pesquisas não estão associadas a contas de usuário.
 Se a política for ativada ou deixada sem definição, as pesquisas no produto poderão ser mostradas aos usuários.
@@ -11070,6 +11090,7 @@ A política não terá efeito se a <ph name="METRICS_REPORTING_ENABLED_POLICY_NA
 <translation id="9180108183162961002">Permitir logins em navegação como visitante</translation>
 <translation id="9185963199234034321">Ativar o alto contraste na tela de login e permitir que o usuário o desative temporariamente</translation>
 <translation id="9187743794267626640">Desativa a montagem de armazenamento externo</translation>
+<translation id="9189737595688383533">Não permitir que os usuários ativem o modo somente HTTPS</translation>
 <translation id="9190022798664427644">Ativar áudio mono</translation>
 <translation id="9190456586252617675">Esta política controla o modo da experiência de integração do Assistente.
 

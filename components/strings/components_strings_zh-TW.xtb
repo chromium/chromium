@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">變更密碼</translation>
 <translation id="1089599132348386324">你隨時可以前往 Chrome 設定調整。</translation>
 <translation id="1090629319939036170">VR 選單</translation>
-<translation id="1091543275053148479">可查看及管理瀏覽資料，包括歷史記錄和密碼</translation>
 <translation id="1091779689406092804">螢幕截圖</translation>
 <translation id="1094777233105318927">瀏覽器、作業系統、裝置、已安裝軟體和檔案的相關資訊</translation>
 <translation id="1096545575934602868">這個欄位最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，其餘將會捨棄。</translation>
@@ -956,7 +955,6 @@
 <translation id="2770159525358613612">再次嘗試上傳檔案</translation>
 <translation id="277133753123645258">運送方式</translation>
 <translation id="2773388851563527404">Chrome 會限制大多數網站使用第三方 Cookie，但允許這個網站使用第三方 Cookie，因為這個網站需要使用 Cookie 才能提供基本服務。前往「<ph name="LINK" />」設定頁面。</translation>
-<translation id="2774077118134906782">瀏覽器是由貴機構管理</translation>
 <translation id="277499241957683684">沒有裝置記錄</translation>
 <translation id="2775884851269838147">首刷頁面</translation>
 <translation id="2781185443919227679">海灘與島嶼</translation>
@@ -2805,6 +2803,7 @@
 <translation id="6300452962057769623">{0,plural, =0{裝置會立即重新啟動}=1{裝置將於 1 秒後重新啟動}other{裝置將於 # 秒後重新啟動}}</translation>
 <translation id="6301104306974789820">接收價格追蹤通知</translation>
 <translation id="6302546952464230349">顯示<ph name="PERMISSION_NAME" />權限詳細資料</translation>
+<translation id="6302661287897119265">濾鏡</translation>
 <translation id="6304398603974202180">多媒體軟體</translation>
 <translation id="6305205051461490394">無法連上 <ph name="URL" />。</translation>
 <translation id="6306713302480826305">這個地址將從這部裝置和其他已登入的裝置中刪除</translation>
@@ -3711,7 +3710,6 @@
 <translation id="7967636097426665267">通訊設備</translation>
 <translation id="79682505114836835">「<ph name="VALUE" />」是無效的十六進位顏色值。</translation>
 <translation id="7968982339740310781">查看詳細資料</translation>
-<translation id="7971972534124227314">為確保裝置安全，系統可能會顯示 OS、瀏覽器資訊和已安裝的軟體</translation>
 <translation id="7976214039405368314">要求數量過多</translation>
 <translation id="7977538094055660992">輸出裝置</translation>
 <translation id="7979595116210197019">餐飲服務</translation>
@@ -4072,7 +4070,6 @@
 <translation id="865032292777205197">動作感應器</translation>
 <translation id="865255447216708819">背面印刷膜</translation>
 <translation id="8654126188050905496">55 x 91 公釐</translation>
-<translation id="8654650417264805416">設定檔是由「<ph name="MANAGER" />」管理</translation>
 <translation id="8662463432865928030">商用房地產</translation>
 <translation id="8663226718884576429">訂單摘要：<ph name="TOTAL_LABEL" />，更多詳細資料</translation>
 <translation id="8663909737634214500">光碟</translation>
@@ -4304,7 +4301,6 @@
 <translation id="9103872766612412690"><ph name="SITE" /> 通常使用加密方式保護您的資訊。但 Chromium 這次嘗試連線到 <ph name="SITE" /> 時，該網站傳回了異常且錯誤的憑證。這可能是因為有攻擊者企圖偽裝成 <ph name="SITE" />，或是受到 Wi-Fi 登入畫面影響而造成連線中斷。不過請放心，Chromium 已及時停止連線，並未傳輸任何資料，因此您的資訊仍然安全無虞。</translation>
 <translation id="9107467864910557787">你的瀏覽器是由 <ph name="MANAGER" /> 管理</translation>
 <translation id="91108059142052966">當畫面上出現機密內容，系統管理員政策就會停用與「<ph name="APPLICATION_TITLE" />」分享螢幕畫面的功能</translation>
-<translation id="9114074357712665317">瀏覽器是由「<ph name="MANAGER" />」管理</translation>
 <translation id="9114524666733003316">正在驗證信用卡...</translation>
 <translation id="9114581008513152754">這個瀏覽器未受到任何公司或其他機構管理。這部裝置上的活動可透過 Chrome 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">進一步瞭解 Chrome 中的廣告</translation>

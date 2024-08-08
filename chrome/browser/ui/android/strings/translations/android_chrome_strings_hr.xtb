@@ -319,6 +319,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2534155362429831547">Broj izbrisanih stavki: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2536728043171574184">Prikaz izvanmrežne kopije stranice</translation>
 <translation id="2546283357679194313">Kolačići i podaci o web-lokacijama</translation>
+<translation id="2547843573592965873">Zaključavanje profila štiti vaše podatke u automobilu, uključujući zaporke, plaćanja i drugo spremljeno na vašem Google računu.</translation>
 <translation id="254973855621628293">Zaporke su spremljene na ovaj uređaj</translation>
 <translation id="2560519950693256002">Nedavno provjerene zaporke spremljene su na račun <ph name="USERNAME" /></translation>
 <translation id="2567385386134582609">SLIKA</translation>
@@ -1711,7 +1712,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8993760627012879038">Otvaranje nove kartice u anonimnom načinu</translation>
 <translation id="8996847606757455498">Odaberi drugog davatelja usluga</translation>
 <translation id="8998289560386111590">Nije dostupno na vašem uređaju</translation>
-<translation id="8998729206196772491">Prijavljujete se računom kojim upravlja <ph name="MANAGED_DOMAIN" /> i njegovom administratoru dajete kontrolu nad svojim podacima u Chromeu. Vaši će se podaci trajno povezati s tim računom. Ako se odjavite iz Chromea, vaši će se podaci izbrisati s ovog uređaja, no ostat će pohranjeni na vašem Google računu.</translation>
 <translation id="8998837250940831980">Nije moguće minimizirati karticu. Pokušajte ponovo kasnije.</translation>
 <translation id="9001604755921395912">Otvori u anonimnoj Chrome kartici</translation>
 <translation id="9007002441981613214">Rješavanje problema sa spremljenim zaporkama</translation>

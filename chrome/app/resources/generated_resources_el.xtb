@@ -2657,6 +2657,7 @@
 <translation id="2853121255651601031">Ο κωδικός πρόσβασης αποθηκεύτηκε</translation>
 <translation id="2855243985454069333">Διαγράφει το ιστορικό από όλες τις συγχρονισμένες συσκευές</translation>
 <translation id="2855812646048059450">Σύνδεση με <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Αυστηρή λειτουργία</translation>
 <translation id="2856776373509145513">Δημιουργήστε ένα νέο κοντέινερ</translation>
 <translation id="2856907950922663165">Να απενεργοποιηθεί η κρυπτογράφηση URL;</translation>
 <translation id="2859741939921354763">Εισαγωγή κωδικών πρόσβασης στο <ph name="BRAND" /></translation>
@@ -6416,6 +6417,7 @@
 <translation id="5623282979409330487">Αυτός ο ιστότοπος έχει πρόσβαση στους αισθητήρες κίνησης.</translation>
 <translation id="5623842676595125836">Αρχείο καταγραφής</translation>
 <translation id="5624120631404540903">Διαχείριση κωδικών πρόσβασης</translation>
+<translation id="5624959475330585145">Ερώτηση πριν από τη χρήση μη ασφαλών συνδέσεων</translation>
 <translation id="5625225435499354052">Επεξεργασία στο Google Pay</translation>
 <translation id="5626134646977739690">Όνομα:</translation>
 <translation id="5627832140542566187">Προσανατολισμός οθόνης</translation>
@@ -9650,6 +9652,7 @@
 <translation id="8008356846765065031">Η σύνδεση στο διαδίκτυο διακόπηκε. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο.</translation>
 <translation id="8008704580256716350">Αποκλείστηκε ύποπτο αρχείο</translation>
 <translation id="8009225694047762179">Διαχείριση Κωδικός πρόσβασης</translation>
+<translation id="8010081455002666927">Αυτόματος εντοπισμός</translation>
 <translation id="8011372169388649948">Ο σελιδοδείκτης <ph name="BOOKMARK_TITLE" /> μετακινήθηκε.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Λεπτομέρειες άμεσου σημείου πρόσβασης Wi-Fi</translation>
@@ -11051,6 +11054,7 @@
 <translation id="9009707268312089299">Εισαγωγή από Windows</translation>
 <translation id="9009708085379296446">Θέλατε να αλλάξετε αυτήν τη σελίδα;</translation>
 <translation id="9010845741772269259">Προσθήκη τρόπων πληρωμής</translation>
+<translation id="901087299639956505">Εξισορροπημένη λειτουργία</translation>
 <translation id="9011163749350026987">Να εμφανίζεται πάντα το εικονίδιο</translation>
 <translation id="9011262023858991985">Μετάδοση αυτής της καρτέλας</translation>
 <translation id="9011393886518328654">Σημειώσεις έκδοσης</translation>

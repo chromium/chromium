@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">หากต้องการปิดใช้โหมดปิดล็อกใน Chromium ให้ปิดโหมดนี้ใน iPhone ของคุณ</translation>
 <translation id="159029779861043703">Chromium ช่วยรักษาข้อมูลที่ละเอียดอ่อนของคุณให้ปลอดภัยด้วย Face ID</translation>
 <translation id="1591119736686995611">เปิดตารางกริดของแท็บ Chromium</translation>
+<translation id="16001233025397167">การตรวจสอบความปลอดภัยช่วยให้คุณปลอดภัยจากการละเมิดข้อมูล เว็บไซต์ที่ไม่ปลอดภัย และอื่นๆ รับการแจ้งเตือนเกี่ยวกับปัญหาความเป็นส่วนตัวหรือความปลอดภัยที่ Chromium ตรวจหาให้คุณ</translation>
 <translation id="1611584326765829247">ให้ Chromium ช่วยคุณติดตามพัสดุ</translation>
 <translation id="1617663976202781617">ข้อมูลจากการซิงค์ Chromium</translation>
 <translation id="1647558790457890304">การตั้งค่า Chromium</translation>
@@ -56,6 +57,7 @@
 <translation id="2426113998523353159">องค์กรกำหนดให้คุณต้องลงชื่อเพื่อเข้าใช้ Chromium</translation>
 <translation id="2450140762465183767">ตอนนี้คุณจะใช้ Chromium ทุกครั้งที่แตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="2478931088402984578">เลือก <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2497941343438581585">สัมผัสประสิทธิภาพของ Chromium Shopping</translation>
 <translation id="252374538254180121">ตั้งค่า Chromium เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="2574528844022712255">ดูบุ๊กมาร์ก Chromium</translation>
 <translation id="2590893390871230428">ซิงค์ข้อมูล Chromium</translation>
@@ -103,6 +105,7 @@
 <translation id="3855938650519180865">มีอะไรใหม่ใน Chromium</translation>
 <translation id="3886689467633467988">ลงชื่อเข้าใช้เว็บไซต์นี้และ Chromium เพื่อรับบุ๊กมาร์กและอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="3904484643286601695">คุณอัปเดตสิ่งที่เลือกไว้ได้ทุกเมื่อในการตั้งค่า Chromium</translation>
+<translation id="3983291422281996849">ตั้ง Chromium เป็นเบราว์เซอร์เริ่มต้นเพื่อติดตามราคาและรับข้อมูลเชิงลึกด้านราคาของสิ่งที่คุณต้องการซื้อได้อย่างง่ายดาย</translation>
 <translation id="4005283307739974863">เปิดและเรียกใช้การตรวจสอบความปลอดภัยใน Chromium</translation>
 <translation id="4043291146360695975">รหัสผ่านจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="4099085513035183040">ไม่รองรับใน Chromium เบต้า</translation>
@@ -133,6 +136,7 @@
 <translation id="4736424910885271643">บัญชีของคุณจัดการโดย <ph name="HOSTED_DOMAIN" /> ระบบจึงจะล้างข้อมูล Chromium จากอุปกรณ์นี้</translation>
 <translation id="4790638144988730920">ใช้ข้อมูล Chromium ในบัญชี Google ต่อไป</translation>
 <translation id="4828317641996116749">Chromium ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งภายหลัง</translation>
+<translation id="4904452304169763785">การแจ้งเตือนเกี่ยวกับปัญหาความเป็นส่วนตัวหรือความปลอดภัยที่ Chromium ตรวจหาให้คุณ</translation>
 <translation id="4962295957157529683">ทำสิ่งที่กำลังทำในหน้าต่าง Chromium ที่เปิดอยู่อีกหน้าต่างหนึ่งให้เสร็จสิ้น</translation>
 <translation id="4985291216379576555">ออฟไลน์อยู่ Chromium ตรวจหาอัปเดตไม่ได้</translation>
 <translation id="4996471330284142407">ทำสิ่งต่างๆ ได้มากขึ้นด้วย Chromium ที่ใช้งานง่าย ปลอดภัย และรวดเร็วกว่าที่เคย</translation>
@@ -176,6 +180,7 @@
   • หาก Chromium ขัดข้อง รายละเอียดเกี่ยวกับข้อขัดข้องอาจรวมข้อมูลส่วนบุคคลบางอย่าง
 
   • หากคุณซิงค์ประวัติการเข้าชมกับบัญชี Google เมตริกอาจรวมข้อมูลเกี่ยวกับ URL ที่คุณเข้าชมด้วย<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">รับการแจ้งเตือนเกี่ยวกับปัญหาความเป็นส่วนตัวหรือความปลอดภัยที่ Chromium ตรวจหาให้คุณโดยอัตโนมัติ</translation>
 <translation id="5945387852661427312">คุณกำลังลงชื่อเข้าใช้ด้วยบัญชีที่จัดการโดย <ph name="DOMAIN" /> และทำให้ผู้ดูแลระบบของโดเมนควบคุมข้อมูล Chromium ของคุณได้ ข้อมูลของคุณจะโยงกับบัญชีนี้อย่างถาวร การออกจากระบบ Chromium จะลบข้อมูลของคุณจากอุปกรณ์เครื่องนี้ แต่ข้อมูลจะยังจัดเก็บอยู่ในบัญชี Google</translation>
 <translation id="5951593919357934226">รับประโยชน์สูงสุดจาก Chromium</translation>
 <translation id="5983312940147103417">ปรับปรุง Chromium ให้ดีขึ้น</translation>

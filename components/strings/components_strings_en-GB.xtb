@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Change Password</translation>
 <translation id="1089599132348386324">You can change your mind at any time in Chrome settings.</translation>
 <translation id="1090629319939036170">VR Menu</translation>
-<translation id="1091543275053148479">Browsing data, including history and passwords, can be seen and managed</translation>
 <translation id="1091779689406092804">screenshots</translation>
 <translation id="1094777233105318927">Information about your browser, OS, device, installed software and files</translation>
 <translation id="1096545575934602868">This field should not have more than <ph name="MAX_ITEMS_LIMIT" /> entries. All further entries will be discarded.</translation>
@@ -957,7 +956,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2770159525358613612">Try uploading your files again</translation>
 <translation id="277133753123645258">Delivery method</translation>
 <translation id="2773388851563527404">Chrome limits most sites from using third-party cookies. But third-party cookies are allowed on this site because it relies on them to provide basic services. Visit settings to <ph name="LINK" />.</translation>
-<translation id="2774077118134906782">Your organisation is managing your browser</translation>
 <translation id="277499241957683684">Missing device record</translation>
 <translation id="2775884851269838147">First print page</translation>
 <translation id="2781185443919227679">Beaches and islands</translation>
@@ -1268,7 +1266,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3381668585148405088">Verify your purchase</translation>
 <translation id="3383566085871012386">Current precedence order</translation>
 <translation id="3384522979010096022">Your organisation doesn’t allow you to view this site</translation>
-<translation id="3387261909427947069">Payment Methods</translation>
+<translation id="3387261909427947069">Payment methods</translation>
 <translation id="3391030046425686457">Delivery address</translation>
 <translation id="3391482648489541560">file editing</translation>
 <translation id="3392028486601120379">The URL pattern '<ph name="URL_PATTERN" />' has a path specified. Paths are not supported for this key; please remove the path and try again, e.g. *://example.com/ =&gt; *://example.com".</translation>
@@ -1831,7 +1829,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4390472908992056574">Brim</translation>
-<translation id="4397059608630092079">Always Verify When Using Autofill</translation>
+<translation id="4397059608630092079">Always verify when using autofill</translation>
 <translation id="4397978002248035985">Opens a pop-up to verify on your bank's website</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406896451731180161">search results</translation>
@@ -2807,6 +2805,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6300452962057769623">{0,plural, =0{Your device will restart now}=1{Your device will restart in 1 second}other{Your device will restart in # seconds}}</translation>
 <translation id="6301104306974789820">Get price tracking notifications</translation>
 <translation id="6302546952464230349">Show <ph name="PERMISSION_NAME" /> permission details</translation>
+<translation id="6302661287897119265">Filter</translation>
 <translation id="6304398603974202180">Multimedia Software</translation>
 <translation id="6305205051461490394"><ph name="URL" /> is unreachable.</translation>
 <translation id="6306713302480826305">This address will be deleted from this and your other signed-in devices</translation>
@@ -3713,7 +3712,6 @@ Additional details:
 <translation id="7967636097426665267">Communications Equipment</translation>
 <translation id="79682505114836835">Value '<ph name="VALUE" />' is an invalid hex colour.</translation>
 <translation id="7968982339740310781">View details</translation>
-<translation id="7971972534124227314">For device safety, OS, browser info and installed software may be visible</translation>
 <translation id="7976214039405368314">Too many requests</translation>
 <translation id="7977538094055660992">Output device</translation>
 <translation id="7979595116210197019">Food Service</translation>
@@ -4074,7 +4072,6 @@ Additional details:
 <translation id="865032292777205197">motion sensors</translation>
 <translation id="865255447216708819">Back-print film</translation>
 <translation id="8654126188050905496">55 mm x 91 mm</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" /> is managing your profile</translation>
 <translation id="8662463432865928030">Commercial Properties</translation>
 <translation id="8663226718884576429">Order Summary, <ph name="TOTAL_LABEL" />, More Details</translation>
 <translation id="8663909737634214500">Optical disc</translation>
@@ -4306,7 +4303,6 @@ Additional details:
 <translation id="9103872766612412690"><ph name="SITE" /> normally uses encryption to protect your information. When Chromium tried to connect to <ph name="SITE" /> this time, the website sent back unusual and incorrect credentials. This may happen when an attacker is trying to pretend to be <ph name="SITE" />, or a Wi-Fi sign-in screen has interrupted the connection. Your information is still secure because Chromium stopped the connection before any data was exchanged.</translation>
 <translation id="9107467864910557787">Your browser is managed by <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Administrator policy disables screen sharing with <ph name="APPLICATION_TITLE" /> when confidential content is visible</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" /> is managing your browser</translation>
 <translation id="9114524666733003316">Confirming card...</translation>
 <translation id="9114581008513152754">This browser is not managed by a company or other organisation. Activity on this device may be managed outside of Chrome. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">More about ads in Chrome</translation>

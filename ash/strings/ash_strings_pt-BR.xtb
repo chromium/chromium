@@ -1446,6 +1446,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="6068258534237496331">Controles de videochamada</translation>
 <translation id="6073451960410192870">Parar de gravar</translation>
 <translation id="6074087755403037157">Canal Beta</translation>
+<translation id="6091929401758362855">Playlist: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Desativada pelo administrador</translation>
 <translation id="6095008505822982596">Velocidade da fala</translation>
 <translation id="6095425951508823973">Adicionar conexão com o provedor <ph name="PROVIDER" /></translation>
@@ -2243,7 +2244,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="899350903320462459">Desbloqueie o dispositivo com a conta <ph name="LOGIN_ID" /> para executar a ação de notificação</translation>
 <translation id="8993733019280019776">Você está falando? Seu microfone está desativado. Selecione o ícone dele para ativar.</translation>
 <translation id="9000771174482730261">GERENCIE O ARMAZENAMENTO</translation>
-<translation id="9002204506712855687">Conheça os recursos mais recentes</translation>
 <translation id="9005984960510803406">Abrir janela Crosh</translation>
 <translation id="9017320285115481645">Insira o código de acesso do familiar responsável do Family Link.</translation>
 <translation id="9024331582947483881">tela cheia</translation>

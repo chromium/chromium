@@ -14,6 +14,7 @@
 <translation id="1282031177488366470">Pomozite nam da poboljšamo funkcije i performanse Chromea</translation>
 <translation id="1333745675627230582">Igrajte igru Dinosaur na Chromeu</translation>
 <translation id="1352919863522755794">Google upravitelj lozinki nije uspio provjeriti vaše lozinke. Predlažemo da provjerite internetsku vezu.</translation>
+<translation id="1380565463006545725">Iskoristite prednosti kupnje na Chromeu</translation>
 <translation id="139623527619433858">Koristite Chrome za iPad prema zadanim postavkama</translation>
 <translation id="1407843355326180937">Prijavite se na ovu web lokaciju i u Chrome da dobijete svoje oznake i još mnogo toga na svim svojim uređajima.</translation>
 <translation id="1436059927646026729">Otvori moju posljednju karticu u Chromeu</translation>
@@ -185,6 +186,7 @@ Stvari za razmatranje:
 <translation id="6272822675004864999">Da primate obavještenja od Chromea, uključite obavještenja u Postavkama iOS-a.</translation>
 <translation id="630693926528731525">Lozinka nije podijeljena. Provjerite internetsku vezu i jeste li prijavljeni u Chromeu. Nakon toga pokušajte ponovo.</translation>
 <translation id="6348855835728304880">Pristupite lozinkama u Chromeu i ostalom u drugim aplikacijama na ovom uređaju.</translation>
+<translation id="6373751563207403289">Sigurnosna provjera štiti vas od neovlaštenog pristupa podacima, nesigurnih web-lokacija i još mnogo toga. Primajte upozorenja o problemima s privatnošću ili sigurnošću koje Chrome otkrije za vas.</translation>
 <translation id="6374691158439235563">Završite postavljanje Chromea</translation>
 <translation id="6389317667633680932">Istražite nove funkcije koje će vam pomoći da iskoristite sve prednosti Chromea.</translation>
 <translation id="6412673304250309937">Provjerava URL-ove s listom nesigurnih web lokacija pohranjenih u Chromeu. Ako web lokacija pokuša ukrasti vašu lozinku, ili kada preuzimate štetan fajl, Chrome može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje.</translation>
@@ -237,6 +239,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idit
 <translation id="746684838091935575">3. Odaberite Chrome</translation>
 <translation id="7492574581995589075">Vaša organizacija je isključila mogućnost korištenja i pohranjivanja podataka Chromea na vaš Google račun. Nove oznake, lozinke i još mnogo toga će se pohranjivati samo na ovom uređaju.</translation>
 <translation id="7581063337314642333">Otvorite mrežu kartica u Chromeu</translation>
+<translation id="7642373780953416937">Primajte upozorenja o problemima s privatnošću ili sigurnošću koje Chrome automatski otkrije za vas.</translation>
 <translation id="7662994914830945754">Da vidite svoje kartice s bilo kojeg uređaja na kojem koristite Chrome, prijavite se i uključite sinhronizaciju</translation>
 <translation id="7669869107155339016">Idite u Postavke Chromea.</translation>
 <translation id="7683540977001394271">Brže pristupajte Chromeu s donje trake na početnom ekranu iPhonea.</translation>
@@ -253,6 +256,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idit
 <translation id="8006014511203279255">Koristite Chrome svaki put kada dodirnete linkove u porukama ili drugim aplikacijama.</translation>
 <translation id="8022947259858476807">Koristite Chrome prema zadanim postavkama da otvarate linkove, pretražujete iz vidžeta i automatski popunjavate lozinke u drugim aplikacijama</translation>
 <translation id="804638182476029347">Dozvolite obavještenja Chromea da dobijate obavještenja o padu cijena</translation>
+<translation id="804756029368067824">Postavite Chrome kao zadani preglednik da biste jednostavno pratili cijene i dobivali uvide u cijene artikala koje želite kupiti.</translation>
 <translation id="8065292699993359127">Otvorite URL-ove u Chromeu u anonimnom načinu rada</translation>
 <translation id="8069507567842347179">Ovaj paket se već prati u Chromeu.</translation>
 <translation id="8136856065410661948">Ovo će se koristiti za kreiranje događaja na vašem Apple Kalendaru iz Chromea i Google Objektiva.</translation>
@@ -280,6 +284,7 @@ Vaši podaci su šifrirani vašim pristupnim izrazom <ph name="TIME" />. Unesite
   2. Dodirnite Zadana aplikacija preglednika
   3. Odaberite Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8544583291890527417">Upozorenja o problemima s privatnošću ili sigurnošću koje Chrome otkrije za vas.</translation>
 <translation id="8558480467877843976">Sada možete koristiti Chrome svaki put kada pregledate ili dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="8603022514504485810">Google upravitelj lozinki nije uspio provjeriti sve lozinke. Pokušajte ponovo sutra ili <ph name="BEGIN_LINK" />provjerite lozinke na Google računu.<ph name="END_LINK" /></translation>
 <translation id="8727043961453758442">Iskoristite sve prednosti Chromea</translation>

@@ -319,6 +319,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> element silindi</translation>
 <translation id="2536728043171574184">Bu səhifənin oflayn nüsxəsinə baxılır</translation>
 <translation id="2546283357679194313">Kukilər və sayt datası</translation>
+<translation id="2547843573592965873">Profil kilidiniz Google Hesabınızda saxlanılan parol, ödəniş və s. daxil olmaqla məlumatlarınızı avtomobildə təhlükəsiz saxlayır.</translation>
 <translation id="254973855621628293">Parollar bu cihazda yadda saxlandı</translation>
 <translation id="2560519950693256002">Bu yaxınlarda <ph name="USERNAME" /> hesabında saxlanılan parollar yoxlanıldı</translation>
 <translation id="2567385386134582609">ŞƏKİL</translation>
@@ -1709,7 +1710,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8993760627012879038">Incognito rejimində yeni panel açın</translation>
 <translation id="8996847606757455498">Başqa provayder seçin</translation>
 <translation id="8998289560386111590">Cihazınızda əlçatan deyil</translation>
-<translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> tərəfindən idarə olunan hesab ilə daxil olursunuz və onun administratoruna Chrome datanız üzərində nəzarəti verirsiniz. Datanız həmişəlik bu hesab ilə əlaqələndiriləcək. Chrome'dan çıxmaq datanızı bu cihazdan siləcək, lakin data Google Hesabında qalacaq.</translation>
 <translation id="8998837250940831980">Tab kiçildilmədi. Sonra cəhd edin.</translation>
 <translation id="9001604755921395912">Anonim Chrome tabında açın</translation>
 <translation id="9007002441981613214">Yadda saxlanan parollarla bağlı problemi həll edin</translation>

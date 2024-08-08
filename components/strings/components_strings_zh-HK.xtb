@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">變更密碼</translation>
 <translation id="1089599132348386324">如果你改變主意，可隨時在 Chrome 設定中更改。</translation>
 <translation id="1090629319939036170">VR 選單</translation>
-<translation id="1091543275053148479">管理員可以查看和管理瀏覽資料 (包括記錄和密碼)</translation>
 <translation id="1091779689406092804">螢幕截圖</translation>
 <translation id="1094777233105318927">瀏覽器、OS、裝置、已安裝的軟件和檔案的相關資料</translation>
 <translation id="1096545575934602868">此欄位只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，其餘所有項目將會捨棄。</translation>
@@ -957,7 +956,6 @@
 <translation id="2770159525358613612">嘗試再次上載檔案</translation>
 <translation id="277133753123645258">運送方式</translation>
 <translation id="2773388851563527404">Chrome 會限制大部分網站使用第三方 Cookie。不過，由於此網站需要使用 Cookie 才能提供基本服務，因此系統允許在此網站使用第三方 Cookie。前往設定即可<ph name="LINK" />。</translation>
-<translation id="2774077118134906782">你的瀏覽器由機構管理</translation>
 <translation id="277499241957683684">沒有裝置記錄</translation>
 <translation id="2775884851269838147">第一列印頁</translation>
 <translation id="2781185443919227679">海灘和島嶼</translation>
@@ -1508,6 +1506,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> 吋)</translation>
 <translation id="3792826587784915501">另類和獨立電影</translation>
 <translation id="3793574014653384240">最近發生的當機次數和原因</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> 無法與 Chrome 建立安全連線</translation>
 <translation id="3799805948399000906">要求的字型</translation>
 <translation id="3801265110651850478">將「不追蹤」要求與瀏覽流量一併傳送</translation>
 <translation id="380329542618494757">名稱</translation>
@@ -2702,6 +2701,7 @@
 <translation id="6106989379647458772"><ph name="PAGE" /> 的網頁可能暫時無法使用，或被永久移至新網址。</translation>
 <translation id="6107012941649240045">核發對象</translation>
 <translation id="6107924765192360631">只要輸入幾個字詞或初稿，就能取得撰寫建議。</translation>
+<translation id="6108580855199168381">證書詳情</translation>
 <translation id="6108702513636120202">你在 Chromium 中的搜尋引擎</translation>
 <translation id="6108849843016142864">爬蟲類和兩棲類</translation>
 <translation id="610911394827799129">您的 Google 帳戶在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄</translation>
@@ -2806,6 +2806,7 @@
 <translation id="6300452962057769623">{0,plural, =0{裝置會立即重新啟動}=1{裝置將於 1 秒後重新啟動}other{裝置將於 # 秒後重新啟動}}</translation>
 <translation id="6301104306974789820">接收價格追蹤通知</translation>
 <translation id="6302546952464230349">顯示<ph name="PERMISSION_NAME" />權限詳情</translation>
+<translation id="6302661287897119265">濾鏡</translation>
 <translation id="6304398603974202180">多媒體軟件</translation>
 <translation id="6305205051461490394">無法存取 <ph name="URL" />。</translation>
 <translation id="6306713302480826305">此地址將從此裝置和其他已登入的裝置中刪除</translation>
@@ -3472,6 +3473,12 @@
 <translation id="7535087603100972091">值</translation>
 <translation id="753556296624075801">由 Google 提供技術</translation>
 <translation id="7537536606612762813">強制</translation>
+<translation id="7541586907443866208">攻擊者將可查看及變更你與此網站之間傳送的任何資料。
+    &lt;ul&gt;
+    &lt;li&gt;如果你目前使用機場或酒店 Wi-Fi 等公共網絡，建議你在連線至受信任的網絡 (例如住宅或公司) 後再試一次。&lt;/li&gt;
+    &lt;li&gt;如果你認識網站擁有者，可以請對方修正問題。&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">由於這個表格並未採用加密連線方式，因此信用卡自動填入功能已停用。</translation>
 <translation id="7543525346216957623">請徵求家長同意</translation>
 <translation id="7546409722674205727">正在啟動「<ph name="APP_NAME" />」</translation>
@@ -3712,7 +3719,6 @@
 <translation id="7967636097426665267">通訊設備</translation>
 <translation id="79682505114836835">「<ph name="VALUE" />」是無效的十六進制顏色值。</translation>
 <translation id="7968982339740310781">檢視詳情</translation>
-<translation id="7971972534124227314">為保障裝置安全，管理員或可查看作業系統、瀏覽器資料和已安裝的軟件</translation>
 <translation id="7976214039405368314">要求數量過多</translation>
 <translation id="7977538094055660992">輸出裝置</translation>
 <translation id="7979595116210197019">食品服務</translation>
@@ -4073,7 +4079,6 @@
 <translation id="865032292777205197">動作感應器</translation>
 <translation id="865255447216708819">背面印刷薄膜</translation>
 <translation id="8654126188050905496">55 x 91 毫米</translation>
-<translation id="8654650417264805416">你的設定檔由「<ph name="MANAGER" />」管理</translation>
 <translation id="8662463432865928030">商用物業</translation>
 <translation id="8663226718884576429">訂單摘要、<ph name="TOTAL_LABEL" /> 及更多詳情</translation>
 <translation id="8663909737634214500">光碟</translation>
@@ -4305,7 +4310,6 @@
 <translation id="9103872766612412690"><ph name="SITE" /> 通常會透過加密方式保護您的資料。Chromium 這次嘗試連線至 <ph name="SITE" /> 時，該網站傳回異常且錯誤的憑證。這可能是因為有攻擊者試圖偽裝成 <ph name="SITE" />，或 Wi-Fi 登入畫面導致連線中斷。請放心，Chromium 未有交換任何資料並已終止連線，所以您的資料仍然安全。</translation>
 <translation id="9107467864910557787">您的瀏覽器由 <ph name="MANAGER" /> 管理</translation>
 <translation id="91108059142052966">當畫面上出現機密內容，管理員政策就會停用與「<ph name="APPLICATION_TITLE" />」分享螢幕畫面的功能</translation>
-<translation id="9114074357712665317">你的瀏覽器由「<ph name="MANAGER" />」管理</translation>
 <translation id="9114524666733003316">正在驗證信用卡…</translation>
 <translation id="9114581008513152754">此瀏覽器未受任何公司或其他機構管理。此裝置上的活動可透過 Chrome 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">進一步瞭解 Chrome 中的廣告</translation>

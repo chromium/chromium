@@ -14,7 +14,7 @@
 <translation id="1486715732399361704">आपको अपने सभी टैब ग्रुप, यहां दिख सकते हैं</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> मिनट पहले बनाया गया}one{<ph name="NUM_MINS_MANY" /> मिनट पहले बनाया गया}other{<ph name="NUM_MINS_MANY" /> मिनट पहले बनाया गया}}</translation>
 <translation id="1499635324672558517">क्या सभी गुप्त टैब बंद करने हैं?</translation>
-<translation id="1501480321619201731">समूह मिटाएं</translation>
+<translation id="1501480321619201731">ग्रुप मिटाएं</translation>
 <translation id="1555130319947370107">नीला</translation>
 <translation id="161042844686301425">स्यान</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> टैब ग्रुप में शामिल किए गए</translation>
@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">छोड़ें</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> घंटे पहले बनाया गया}one{<ph name="NUM_HOURS_MANY" /> घंटे पहले बनाया गया}other{<ph name="NUM_HOURS_MANY" /> घंटे पहले बनाया गया}}</translation>
 <translation id="2801787514987684416">क्या आप स्टोर की जानकारी देखना चाहते हैं?</translation>
+<translation id="2894757982205307093">ग्रुप में नया टैब जोड़ें</translation>
 <translation id="2928243913527329289">Google | इस स्टोर के बारे में जानकारी</translation>
 <translation id="2977480621796371840">समूह से हटाएं</translation>
 <translation id="29919168204617356">इनऐक्टिव टैब अपने-आप बंद हो जाएंगे. इन्हें इतिहास वाले सेक्शन में कभी भी देखा जा सकेगा.</translation>

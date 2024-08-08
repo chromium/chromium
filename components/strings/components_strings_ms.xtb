@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Tukar Kata Laluan</translation>
 <translation id="1089599132348386324">Anda boleh mengubah fikiran anda pada bila-bila masa dalam tetapan Chrome.</translation>
 <translation id="1090629319939036170">Menu VR</translation>
-<translation id="1091543275053148479">Data semakan imbas, termasuk sejarah dan kata laluan boleh dilihat serta diurus</translation>
 <translation id="1091779689406092804">tangkapan skrin</translation>
 <translation id="1094777233105318927">Maklumat tentang penyemak imbas, OS, peranti, perisian yang dipasang dan fail anda</translation>
 <translation id="1096545575934602868">Medan ini tidak boleh mengandungi lebih daripada <ph name="MAX_ITEMS_LIMIT" /> entri. Semua entri selebihnya akan dibuang.</translation>
@@ -957,7 +956,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2770159525358613612">Cuba muat naik semula fail anda</translation>
 <translation id="277133753123645258">Kaedah penghantaran</translation>
 <translation id="2773388851563527404">Chrome mengehadkan kebanyakan laman daripada menggunakan kuki pihak ketiga. Namun, kuki pihak ketiga dibenarkan pada laman ini kerana kuki tersebut bergantung pada Chrome untuk memberikan perkhidmatan asas. Lawati tetapan untuk <ph name="LINK" />.</translation>
-<translation id="2774077118134906782">Organisasi anda mengurus penyemak imbas anda</translation>
 <translation id="277499241957683684">Tiada rekod peranti</translation>
 <translation id="2775884851269838147">Cetakan halaman pertama</translation>
 <translation id="2781185443919227679">Pantai &amp; Pulau</translation>
@@ -2810,6 +2808,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6300452962057769623">{0,plural, =0{Peranti anda akan dimulakan semula sekarang}=1{Peranti anda akan dimulakan semula dalam masa 1 saat}other{Peranti anda akan dimulakan semula dalam masa # saat}}</translation>
 <translation id="6301104306974789820">Dapatkan pemberitahuan penjejakan harga</translation>
 <translation id="6302546952464230349">Paparkan butiran kebenaran <ph name="PERMISSION_NAME" /></translation>
+<translation id="6302661287897119265">Tapis</translation>
 <translation id="6304398603974202180">Perisian Multimedia</translation>
 <translation id="6305205051461490394"><ph name="URL" /> tidak dapat dicapai.</translation>
 <translation id="6306713302480826305">Alamat ini akan dipadamkan daripada peranti ini dan peranti log masuk anda yang lain</translation>
@@ -3722,7 +3721,6 @@ Butiran tambahan:
 <translation id="7967636097426665267">Peralatan Komunikasi</translation>
 <translation id="79682505114836835">Nilai "<ph name="VALUE" />" ialah warna perenambelasan yang tidak sah.</translation>
 <translation id="7968982339740310781">Lihat butiran</translation>
-<translation id="7971972534124227314">Untuk keselamatan peranti, OS, maklumat penyemak imbas dan perisian yang dipasang mungkin kelihatan</translation>
 <translation id="7976214039405368314">Terlalu banyak permintaan</translation>
 <translation id="7977538094055660992">Peranti output</translation>
 <translation id="7979595116210197019">Perkhidmatan Makanan</translation>
@@ -4084,7 +4082,6 @@ Butiran tambahan:
 <translation id="865032292777205197">penderia gerakan</translation>
 <translation id="865255447216708819">Saput Cetakan Belakang</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" /> mengurus profil anda</translation>
 <translation id="8662463432865928030">Hartanah Komersial</translation>
 <translation id="8663226718884576429">Ringkasan Pesanan, <ph name="TOTAL_LABEL" />, Butiran Lanjut</translation>
 <translation id="8663909737634214500">Cakera Optik</translation>
@@ -4316,7 +4313,6 @@ Butiran tambahan:
 <translation id="9103872766612412690"><ph name="SITE" /> biasanya menggunakan penyulitan untuk melindungi maklumat anda. Apabila Chromium cuba menyambung ke <ph name="SITE" /> pada kali ini, laman web tersebut mengembalikan bukti kelayakan yang luar biasa dan salah. Hal ini boleh berlaku apabila penyerang sedang cuba menyamar sebagai <ph name="SITE" /> atau skrin log masuk Wi-Fi telah memutuskan sambungan. Maklumat anda masih selamat kerana Chromium menghentikan sambungan sebelum sebarang pertukaran data berlaku.</translation>
 <translation id="9107467864910557787">Penyemak imbas anda diurus oleh <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Dasar pentadbir melumpuhkan perkongsian skrin dengan <ph name="APPLICATION_TITLE" /> apabila kandungan sulit kelihatan</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" /> mengurus penyemak imbas anda</translation>
 <translation id="9114524666733003316">Mengesahkan kad...</translation>
 <translation id="9114581008513152754">Penyemak imbas ini tidak diurus oleh syarikat atau organisasi lain. Aktiviti pada peranti ini mungkin diurus di luar Chrome. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Lebih lanjut tentang iklan dalam Chrome</translation>

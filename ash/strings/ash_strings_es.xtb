@@ -1458,6 +1458,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6073451960410192870">Detener grabación</translation>
 <translation id="6074087755403037157">Canal Beta</translation>
 <translation id="6075098173600599596">Cambiar uso de mayúsculas</translation>
+<translation id="6091929401758362855">Lista de reproducción: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Inhabilitado por el administrador</translation>
 <translation id="6095008505822982596">Velocidad de voz</translation>
 <translation id="6095425951508823973">Añadir conexión con <ph name="PROVIDER" /></translation>
@@ -2261,7 +2262,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="899350903320462459">Desbloquea el dispositivo como <ph name="LOGIN_ID" /> para hacer lo que indica la notificación</translation>
 <translation id="8993733019280019776">¿Estás hablando? Tu micrófono está desactivado. Selecciona el micrófono para activarlo.</translation>
 <translation id="9000771174482730261">GESTIONAR ALMACENAMIENTO</translation>
-<translation id="9002204506712855687">Descubre las últimas funciones</translation>
 <translation id="9005984960510803406">Abrir Crosh Window</translation>
 <translation id="9017320285115481645">Introduce el código de acceso parental de Family Link.</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
@@ -2336,7 +2336,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="974545358917229949">Se muestran <ph name="RESULT_COUNT" /> resultados de <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Sin fecha de entrega</translation>
 <translation id="98120814841227350">Ir al final del documento</translation>
-<translation id="98515147261107953">Horizontal</translation>
+<translation id="98515147261107953">Paisaje</translation>
 <translation id="987589956647469042">Datos móviles activados</translation>
 <translation id="989374776391122812">Controles de cámara y audio</translation>
 <translation id="990277280839877440">La ventana <ph name="WINDOW_TITILE" /> se ha cerrado.</translation>

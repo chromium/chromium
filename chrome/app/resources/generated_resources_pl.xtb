@@ -1204,6 +1204,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="184183613002882946">Nie, pozostaw 1 przełącznik</translation>
 <translation id="184273675144259287">Zastąp obecne aplikacje i pliki Linuksa ich poprzednią kopią zapasową</translation>
 <translation id="1842766183094193446">Czy na pewno chcesz włączyć tryb demonstracyjny?</translation>
+<translation id="1843048149176045210">Skopiuj link pobierania</translation>
 <translation id="1845060436536902492">ChromeVox, czytnik ekranu w ChromeOS Flex, służy przede wszystkim osobom niewidomym i niedowidzącym do czytania tekstu na ekranie za pomocą syntezatora mowy lub monitora brajlowskiego. Aby go włączyć, naciśnij spację. Gdy ChromeVox zostanie aktywowany, włączy się krótka prezentacja.</translation>
 <translation id="1845727111305721124">Zezwolono na odtwarzanie dźwięku</translation>
 <translation id="1846308012215045257">Naciśnij klawisz Control i kliknij, by uruchomić wtyczkę <ph name="PLUGIN_NAME" /></translation>
@@ -3145,6 +3146,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3251714896659475029">Pozwól użytkownikowi <ph name="SUPERVISED_USER_NAME" /> na przywoływanie Asystenta Google za pomocą „OK Google”</translation>
 <translation id="3251759466064201842">&lt;brak w certyfikacie&gt;</translation>
 <translation id="325238099842880997">Ustaw zasady korzystania z urządzeń cyfrowych, które pomogą dzieciom podczas zabawy, przeglądania treści i nauki w domu</translation>
+<translation id="3253083398453405334">Wyświetlaj błyski na ekranie, gdy otrzymasz powiadomienie</translation>
 <translation id="3253225298092156258">Niedostępna</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Zwolnij miejsce w usłudze <ph name="CLOUD_PROVIDER" />, aby skopiować ten plik}few{Zwolnij miejsce w usłudze <ph name="CLOUD_PROVIDER" />, aby skopiować te pliki}many{Zwolnij miejsce w usłudze <ph name="CLOUD_PROVIDER" />, aby skopiować te pliki}other{Zwolnij miejsce w usłudze <ph name="CLOUD_PROVIDER" />, aby skopiować te pliki}}</translation>
 <translation id="3253448572569133955">Nieznane konto</translation>
@@ -3639,6 +3641,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3621202678540785336">Urządzenie wejściowe</translation>
 <translation id="3621807901162200696">Pomóż w ulepszaniu funkcji i działania Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikację}few{# aplikacje}many{# aplikacji}other{# aplikacji}}</translation>
+<translation id="3622820753353315928">Kolor błysku na ekranie</translation>
 <translation id="362333465072914957">Czekam na wygenerowanie certyfikatu CA</translation>
 <translation id="3623598555687153298">Spowoduje to usunięcie <ph name="TOTAL_USAGE" /> danych zapisanych przez wyświetlone strony</translation>
 <translation id="3624567683873126087">Odblokuj urządzenie i zaloguj się na konto Google</translation>
@@ -7142,6 +7145,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6197128521826316819">Utwórz kod QR powiązany z tą stroną</translation>
 <translation id="6198223452299275399">Przechodzenie między stronami za pomocą przesuwania palcem</translation>
 <translation id="6198252989419008588">Zmień kod PIN</translation>
+<translation id="61988015556954366">Błysk na ekranie</translation>
 <translation id="6200047250927636406">Odrzuć plik</translation>
 <translation id="6200151268994853226">Zarządzaj rozszerzeniem</translation>
 <translation id="6201608810045805374">Usunąć to konto?</translation>
@@ -7499,6 +7503,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6468773105221177474">Pliki: <ph name="FILE_COUNT" /></translation>
 <translation id="6469557521904094793">Włącz sieć komórkową</translation>
 <translation id="6469702164109431067">Hasła i klucze dostępu</translation>
+<translation id="6470120577693311302">Powiadomienia świetlne</translation>
 <translation id="6470823736074966819">Ignoruj powiadomienia</translation>
 <translation id="6472893788822429178">Pokaż przycisk strony głównej</translation>
 <translation id="6473315466413288899">Wybierz opcję</translation>
@@ -7935,6 +7940,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6790820461102226165">Dodaj osobę...</translation>
 <translation id="6793610798874309813">Kod PIN musi mieć co najmniej 4 znaki</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> skopiowano do schowka</translation>
 <translation id="6794511157503068">Jeśli klucz dostępu aplikacji <ph name="APP_NAME" /> jest podłączony do klucza bezpieczeństwa USB, włóż go teraz i dotknij</translation>
 <translation id="679486139907144816">Aby zalogować się na tej stronie przy użyciu klucza, musisz włączyć w ustawieniach Windows Hello. Następnie wróć na tę stronę i spróbuj ponownie.</translation>
 <translation id="6795371939514004514">Automatyczne skanowanie pozwala przechodzić między elementami na ekranie automatycznie. Gdy element zostanie podświetlony, kliknij „Wybierz”, aby go aktywować.</translation>

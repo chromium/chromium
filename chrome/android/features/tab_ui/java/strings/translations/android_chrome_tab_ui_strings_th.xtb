@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">ออก</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{สร้างเมื่อ <ph name="NUM_HOURS_ONE" /> ชั่วโมงที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_HOURS_MANY" /> ชั่วโมงที่ผ่านมา}}</translation>
 <translation id="2801787514987684416">ดูข้อมูลร้านค้าไหม</translation>
+<translation id="2894757982205307093">แท็บใหม่ในกลุ่ม</translation>
 <translation id="2928243913527329289">Google | เกี่ยวกับร้านนี้</translation>
 <translation id="2977480621796371840">นำออกจากกลุ่ม</translation>
 <translation id="29919168204617356">แท็บที่ไม่ได้ใช้งานจะปิดโดยอัตโนมัติ คุณดูแท็บเหล่านี้ได้ในประวัติการเข้าชมเสมอ</translation>

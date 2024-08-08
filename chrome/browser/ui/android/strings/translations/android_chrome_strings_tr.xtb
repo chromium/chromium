@@ -319,6 +319,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> öğe silindi</translation>
 <translation id="2536728043171574184">Bu sayfanın çevrimdışı bir kopyası görüntüleniyor</translation>
 <translation id="2546283357679194313">Çerezler ve site verileri</translation>
+<translation id="2547843573592965873">Profil kilidiniz sayesinde şifreler, ödemeler ve diğer öğeler de dahil olmak üzere bilgileriniz Google Hesabınıza kaydedilerek arabada güvenli bir şekilde saklanır.</translation>
 <translation id="254973855621628293">Bu cihaza kaydedilen şifreler.</translation>
 <translation id="2560519950693256002">Son kontrol edilen şifreler <ph name="USERNAME" /> hesabına kaydedildi</translation>
 <translation id="2567385386134582609">IMAGE</translation>
@@ -1711,7 +1712,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8993760627012879038">Gizli modda yeni bir sekme açar</translation>
 <translation id="8996847606757455498">Başka bir sağlayıcı seçin:</translation>
 <translation id="8998289560386111590">Cihazınızda kullanılamıyor</translation>
-<translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> tarafından yönetilen bir hesapla oturum açıyorsunuz ve yöneticiye tüm Chrome verileriniz üzerinde denetim olanağı veriyorsunuz. Verileriniz kalıcı olarak bu hesaba bağlanacaktır. Chrome'da oturumu kapattığınızda verileriniz bu cihazdan silinir, ancak Google Hesabınızda kalmaya devam eder.</translation>
 <translation id="8998837250940831980">Sekme küçültülemedi. Daha sonra tekrar deneyin.</translation>
 <translation id="9001604755921395912">Gizli Chrome sekmesinde aç</translation>
 <translation id="9007002441981613214">Kayıtlı şifrelerdeki sorunu düzeltin</translation>

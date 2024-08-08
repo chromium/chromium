@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">Wyjdź</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Utworzono <ph name="NUM_HOURS_ONE" /> godzinę temu}few{Utworzono <ph name="NUM_HOURS_MANY" /> godziny temu}many{Utworzono <ph name="NUM_HOURS_MANY" /> godzin temu}other{Utworzono <ph name="NUM_HOURS_MANY" /> godziny temu}}</translation>
 <translation id="2801787514987684416">Wyświetlić informacje o sklepie?</translation>
+<translation id="2894757982205307093">Nowa karta w grupie</translation>
 <translation id="2928243913527329289">Google | Informacje o tym sklepie</translation>
 <translation id="2977480621796371840">Usuń z grupy</translation>
 <translation id="29919168204617356">Nieaktywne karty zostaną automatycznie zamknięte. Zawsze możesz je znaleźć w historii.</translation>

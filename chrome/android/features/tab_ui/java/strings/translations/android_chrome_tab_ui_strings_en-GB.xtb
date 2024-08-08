@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">Leave</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Created <ph name="NUM_HOURS_ONE" /> hour ago}other{Created <ph name="NUM_HOURS_MANY" /> hours ago}}</translation>
 <translation id="2801787514987684416">View shop info?</translation>
+<translation id="2894757982205307093">New tab in group</translation>
 <translation id="2928243913527329289">Google | About this store</translation>
 <translation id="2977480621796371840">Remove from group</translation>
 <translation id="29919168204617356">Inactive tabs will automatically be closed. You can always find them in history.</translation>

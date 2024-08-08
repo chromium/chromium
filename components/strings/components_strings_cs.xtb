@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Změnit heslo</translation>
 <translation id="1089599132348386324">V nastavení Chromu můžete předvolby kdykoli upravit.</translation>
 <translation id="1090629319939036170">Nabídka VR</translation>
-<translation id="1091543275053148479">Údaje o prohlížení, včetně historie a hesel, mohou být viditelné a mohou být spravovány</translation>
 <translation id="1091779689406092804">snímky obrazovky</translation>
 <translation id="1094777233105318927">Informace o prohlížeči, operačním systému, zařízení, nainstalovaném softwaru a souborech</translation>
 <translation id="1096545575934602868">Toto pole nesmí mít více než <ph name="MAX_ITEMS_LIMIT" /> položek. Všechny další položky budou zahozeny.</translation>
@@ -957,7 +956,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2770159525358613612">Zkuste soubory nahrát znovu</translation>
 <translation id="277133753123645258">Způsob dopravy</translation>
 <translation id="2773388851563527404">Chrome většině webů omezuje používání souborů cookie třetích stran. Na tomto webu jsou však soubory cookie třetích stran povoleny, protože je potřebuje k poskytování základních služeb. Pokud chcete <ph name="LINK" />, přejděte do nastavení.</translation>
-<translation id="2774077118134906782">Váš prohlížeč spravuje vaše organizace</translation>
 <translation id="277499241957683684">Chybějící záznam zařízení</translation>
 <translation id="2775884851269838147">První tisková stránka</translation>
 <translation id="2781185443919227679">Pláže a ostrovy</translation>
@@ -2802,6 +2800,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Zařízení se teď restartuje}=1{Zařízení se za 1 sekundu restartuje}few{Zařízení se za # sekundy restartuje}many{Zařízení se za # sekundy restartuje}other{Zařízení se za # sekund restartuje}}</translation>
 <translation id="6301104306974789820">Dostávat oznámení o sledování cen</translation>
 <translation id="6302546952464230349">Zobrazit podrobnosti oprávnění <ph name="PERMISSION_NAME" /></translation>
+<translation id="6302661287897119265">Filtr</translation>
 <translation id="6304398603974202180">Multimediální software</translation>
 <translation id="6305205051461490394">Web <ph name="URL" /> není dostupný.</translation>
 <translation id="6306713302480826305">Tato adresa bude smazána z tohoto i z vašich dalších přihlášených zařízení</translation>
@@ -3707,7 +3706,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7967636097426665267">Komunikační vybavení</translation>
 <translation id="79682505114836835">„<ph name="VALUE" />“ není platná hexadecimální hodnota barvy.</translation>
 <translation id="7968982339740310781">Zobrazit podrobnosti</translation>
-<translation id="7971972534124227314">Kvůli bezpečnosti zařízení mohou být viditelné informace o operačním systému, prohlížeči a nainstalovaném softwaru</translation>
 <translation id="7976214039405368314">Příliš mnoho požadavků</translation>
 <translation id="7977538094055660992">Výstupní zařízení</translation>
 <translation id="7979595116210197019">Kulinářský průmysl</translation>
@@ -4069,7 +4067,6 @@ Další podrobnosti:
 <translation id="865032292777205197">senzory pohybu</translation>
 <translation id="865255447216708819">Rubotisková folie</translation>
 <translation id="8654126188050905496">55 × 91 mm</translation>
-<translation id="8654650417264805416">Váš profil spravuje organizace <ph name="MANAGER" /></translation>
 <translation id="8662463432865928030">Komerční nemovitosti</translation>
 <translation id="8663226718884576429">Shrnutí objednávky, <ph name="TOTAL_LABEL" />, další podrobnosti</translation>
 <translation id="8663909737634214500">Optický disk</translation>
@@ -4301,7 +4298,6 @@ Další podrobnosti:
 <translation id="9103872766612412690">Web <ph name="SITE" /> vaše informace běžně chrání šifrováním. Když se prohlížeč Chromium k webu <ph name="SITE" /> pokusil připojit tentokrát, web vrátil neobvyklé a nesprávné identifikační údaje. K tomuto problému může dojít, pokud se za web <ph name="SITE" /> pokouší vydávat nějaký útočník nebo pokud bylo připojení přerušeno přihlašovací obrazovkou sítě Wi-Fi. Vaše informace jsou i nadále v bezpečí, protože prohlížeč Chromium připojení přerušil dříve, než došlo k odeslání jakýchkoliv dat.</translation>
 <translation id="9107467864910557787">Prohlížeč je spravován doménou <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Zásada administrátora zakazuje sdílení obrazovky s aplikací <ph name="APPLICATION_TITLE" />, když je viditelný důvěrný obsah</translation>
-<translation id="9114074357712665317">Váš prohlížeč spravuje organizace <ph name="MANAGER" /></translation>
 <translation id="9114524666733003316">Ověřování karty...</translation>
 <translation id="9114581008513152754">Tento prohlížeč není spravován administrátorem ani jinou organizací. Aktivita na tomto zařízení může být spravována mimo Chrome. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Další informace o reklamách v Chromu</translation>

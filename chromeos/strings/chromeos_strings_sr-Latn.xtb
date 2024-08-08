@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">strelica nadole</translation>
 <translation id="4425149324548788773">Moj disk</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> mreža je isključena</translation>
+<translation id="4428840632568803690">Govornik <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos tiket uskoro ističe</translation>
 <translation id="4431821876790500265">Prikaži izveštaj</translation>
 <translation id="4443192710976771874">crvene</translation>
@@ -1298,6 +1299,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="7802764839223122985">Taster nedostaje. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7811024689617730980">Izaberite dan automatskog resetovanja u opsegu od 1 do 31, uključujući obe krajnje vrednosti</translation>
 <translation id="7813073042185856802">planina</translation>
 <translation id="7819857487979277519">PSK (WPA ili RSN)</translation>
 <translation id="7824219488248240180">postimpresionizam</translation>

@@ -319,6 +319,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2534155362429831547">Elemente șterse: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2536728043171574184">Se afișează o versiune offline a acestei pagini</translation>
 <translation id="2546283357679194313">Cookie-uri și date privind site-ul</translation>
+<translation id="2547843573592965873">Blocarea profilului îți menține informațiile în siguranță în mașină, inclusiv parolele, plățile și multe alte lucruri salvate în Contul Google.</translation>
 <translation id="254973855621628293">Parolele s-au salvat pe acest dispozitiv</translation>
 <translation id="2560519950693256002">Parolele salvate în <ph name="USERNAME" /> au fost verificate recent</translation>
 <translation id="2567385386134582609">IMAGINE</translation>
@@ -1711,7 +1712,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8993760627012879038">Deschide o filă nouă în modul incognito</translation>
 <translation id="8996847606757455498">Alege alt furnizor</translation>
 <translation id="8998289560386111590">Nu este disponibil pe dispozitivul tău</translation>
-<translation id="8998729206196772491">Te conectezi cu un cont gestionat de <ph name="MANAGED_DOMAIN" /> și acorzi administratorului acestuia controlul asupra datelor Chrome. Datele vor fi asociate definitiv acestui cont. Dacă te deconectezi de la Chrome, datele se vor șterge de pe acest dispozitiv, dar vor rămâne stocate în Contul Google.</translation>
 <translation id="8998837250940831980">Nu s-a putut minimiza fila. Încearcă din nou mai târziu.</translation>
 <translation id="9001604755921395912">Deschide într-o filă Chrome incognito</translation>
 <translation id="9007002441981613214">Remediază problema legată de parolele salvate</translation>

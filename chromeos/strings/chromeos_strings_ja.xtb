@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">下矢印</translation>
 <translation id="4425149324548788773">マイドライブ</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> はオフになっています</translation>
+<translation id="4428840632568803690">スピーカー <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos チケットはまもなく有効期限が切れます</translation>
 <translation id="4431821876790500265">レポートを表示</translation>
 <translation id="4443192710976771874">赤色</translation>
@@ -818,6 +819,7 @@
 <translation id="5332948983412042822">新しいパスワードを今すぐ選択してください</translation>
 <translation id="5333530671332546086">ポータルの状態が不明です</translation>
 <translation id="5335373365677455232">ピンク</translation>
+<translation id="5344619683981067131">選択したテキストを候補に置き換えています</translation>
 <translation id="5346687412805619883">ローカル ネットワーク</translation>
 <translation id="5358174242040570474">エラーが発生しました。壁紙を選択しなおすか、アプリをもう一度開いてみてください。</translation>
 <translation id="5372659122375744710">Wi-Fi ネットワークが保護されていません</translation>
@@ -869,6 +871,7 @@
 <translation id="5662240986744577912">プライバシー スクリーンを切り替える</translation>
 <translation id="5669267381087807207">有効化中</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">どのような壁紙を作成するか説明してください</translation>
 <translation id="5680504961595602662"><ph name="SURREAL_SUBJECT" />を使ったシュールな<ph name="SURREAL_LANDSCAPE" /></translation>
 <translation id="5685478548317291523">サクランボ</translation>
 <translation id="5691511426247308406">ファミリー</translation>
@@ -1102,6 +1105,7 @@
 <translation id="680983167891198932">キー</translation>
 <translation id="6816797338148849397">選択した項目に関連する情報があります。上矢印キーでアクセスできます。</translation>
 <translation id="6853312040151791195">放電率</translation>
+<translation id="6862416241246624313">フィードバックを送信しました</translation>
 <translation id="6866732840889595464">デイジー</translation>
 <translation id="6871256179359663621">ライトパープル</translation>
 <translation id="6889786074662672253">再起動中、この外部デバイスを電源から外したり、パソコンをシャットダウンしたりしないでください。このウィンドウは最小化できます。この処理には数分かかることがあります。その間、外部デバイスは動作しない可能性があります。</translation>
@@ -1295,6 +1299,7 @@
 <translation id="7802764839223122985">キーが設定されていません。<ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">キャンセル</translation>
 <translation id="7805768142964895445">ステータス</translation>
+<translation id="7811024689617730980">自動リセットの日付として 1～31 のうちいずれかを選択します</translation>
 <translation id="7813073042185856802">山</translation>
 <translation id="7819857487979277519">PSK（WPA または RSN）</translation>
 <translation id="7824219488248240180">後期印象派</translation>

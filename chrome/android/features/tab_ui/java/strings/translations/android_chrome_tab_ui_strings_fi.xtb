@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">Poistu</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Luotu <ph name="NUM_HOURS_ONE" /> tunti sitten}other{Luotu <ph name="NUM_HOURS_MANY" /> tuntia sitten}}</translation>
 <translation id="2801787514987684416">Näytetäänkö kaupan tiedot?</translation>
+<translation id="2894757982205307093">Uusi välilehti ryhmässä</translation>
 <translation id="2928243913527329289">Google | Tietoja tästä kaupasta</translation>
 <translation id="2977480621796371840">Poista ryhmästä</translation>
 <translation id="29919168204617356">Ei-aktiiviset välilehdet suljetaan automaattisesti. Löydät ne milloin tahansa historiasta.</translation>

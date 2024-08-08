@@ -6130,6 +6130,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5435779377906857208">Permet sempre que <ph name="HOST" /> accedeixi a la meva ubicació</translation>
 <translation id="5436492226391861498">S'està esperant un túnel de servidor intermediari...</translation>
 <translation id="5436510242972373446">Cerca <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616">Ara, la finestra <ph name="WINDOW_SIDE" /> té una amplada d'un <ph name="WINDOW_SIZE_PERCENT" /> i la subfinestra <ph name="PANE_SIDE" /> una amplada d'un <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5440425659852470030">Tanca el tauler lateral</translation>
 <translation id="544083962418256601">Crea dreceres...</translation>
 <translation id="5441133529460183413">L'aplicació web s'ha instal·lat des del navegador Chrome</translation>
@@ -8531,6 +8532,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 lloc web al grup de <ph name="FPS_OWNER" />}other{{MEMBERS} llocs web al grup de <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Utilitza Windows Hello en emplenar les contrasenyes</translation>
 <translation id="7225179976675429563">Falta el tipus de xarxa</translation>
+<translation id="7227235818314667565">Gestiona la compartició</translation>
 <translation id="7227458944009118910">Les aplicacions que s'enumeren a continuació també poden gestionar enllaços de protocol. Les altres aplicacions et demanaran permís.</translation>
 <translation id="7228056665272655255">Per configurar una empremta digital, fes que el teu fill o filla toqui el sensor d'empremtes digitals que hi ha a l'extrem superior dret del teclat. Les dades de la seva empremta digital s'emmagatzemen de manera segura i no surten mai del <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Bloqueig de pantalla i inici de sessió</translation>
@@ -8579,6 +8581,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7258192266780953209">Transformacions</translation>
 <translation id="7258225044283673131">L'aplicació no respon. Selecciona "Força el tancament" per tancar l'aplicació.</translation>
 <translation id="7260186537988033909">S'ha completat la inscripció del dispositiu de quiosc i de cartelleria</translation>
+<translation id="7261217796641151584">Comparteix el grup</translation>
 <translation id="7261612856573623172">Veu del text a parla del sistema</translation>
 <translation id="7262004276116528033">Aquest servei d'inici de sessió s'allotja a <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Vols utilitzar sempre l'aplicació <ph name="APP" /> per obrir els enllaços web admesos?</translation>
@@ -10517,6 +10520,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8656888282555543604">Activa el registre de braille</translation>
 <translation id="8657393004602556571">Vols descartar els suggeriments?</translation>
 <translation id="8657542881463614516">Utilitza el gest de lliscar per navegar entre les pàgines</translation>
+<translation id="865936634714975126">Afegeix un paràmetre de consulta a l'URL per seleccionar els tipus en carregar la pàgina. Exemple: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Contactes de <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">La finestra s'ha mogut cap avall</translation>
 <translation id="8661290697478713397">Obre l'enllaç en una finestra d'incò&amp;gnit</translation>

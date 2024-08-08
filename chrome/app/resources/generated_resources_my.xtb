@@ -2656,6 +2656,7 @@
 <translation id="2853121255651601031">စကားဝှက်ကို သိမ်းဆည်းပြီးပါပြီ</translation>
 <translation id="2855243985454069333">စင့်ခ်လုပ်ထားသော စက်အားလုံးမှ မှတ်တမ်းကို ဖျက်သည်</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> ဖြင့် လက်မှတ်ထိုးဝင်ရန်</translation>
+<translation id="28559674945112027">တင်းကျပ်မုဒ်</translation>
 <translation id="2856776373509145513">ကွန်တိန်နာအသစ် ပြုလုပ်ခြင်း</translation>
 <translation id="2856907950922663165">URL အသွင်ဝှက်ခြင်းကို ပိတ်မလား။</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> သို့ စကားဝှက်များ ထည့်သွင်းရန်</translation>
@@ -6414,6 +6415,7 @@
 <translation id="5623282979409330487">ဤဝဘ်ဆိုက်က သင့်လှုပ်ရှားမှု အာရုံခံစနစ်များကို ဝင်သုံးနေသည်။</translation>
 <translation id="5623842676595125836">မှတ်တမ်း</translation>
 <translation id="5624120631404540903">စကားဝှက်များကို စီမံကွပ်ကဲရန်</translation>
+<translation id="5624959475330585145">မလုံခြုံသော ချိတ်ဆက်မှုများ မသုံးမီ တောင်းဆိုခြင်း</translation>
 <translation id="5625225435499354052">Google Pay တွင် တည်းဖြတ်ရန်</translation>
 <translation id="5626134646977739690">အမည်:</translation>
 <translation id="5627832140542566187">ဖန်သားပြင်ပြသမှု အနေအထား</translation>
@@ -9644,6 +9646,7 @@
 <translation id="8008356846765065031">အင်တာနက် ချိတ်ဆက်မှုဖြုတ်လိုက်ပါပြီ။ ကျေးဇူးပြု၍ သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ။</translation>
 <translation id="8008704580256716350">သံသယဖြစ်ဖွယ်ဖိုင်ကို ပိတ်ထားသည်</translation>
 <translation id="8009225694047762179">စကားဝှက်များကို စီမံခြင်း</translation>
+<translation id="8010081455002666927">အလိုအလျောက်ရှာရန်</translation>
 <translation id="8011372169388649948">‘<ph name="BOOKMARK_TITLE" />’ ကို ရွှေ့ထားသည်။</translation>
 <translation id="8012188750847319132">စာလုံးကြီးခလုတ်</translation>
 <translation id="8012463809859447963">တစ်မုဟုတ် ဟော့စပေါ့ အသေးစိတ်</translation>
@@ -11046,6 +11049,7 @@
 <translation id="9009707268312089299">Windows မှ ထည့်သွင်းထားသည်များ</translation>
 <translation id="9009708085379296446">ဤစာမျက်နှာကို ပြောင်းလိုသလား။</translation>
 <translation id="9010845741772269259">ငွေပေးချေနည်းလမ်းများ ထည့်ရန်</translation>
+<translation id="901087299639956505">မျှတမုဒ်</translation>
 <translation id="9011163749350026987">သင်္ကေတကို အမြဲပြပါ</translation>
 <translation id="9011262023858991985">ဤတဘ်ကို ကာစ်လုပ်နေသည်</translation>
 <translation id="9011393886518328654">ထုတ်ပြန်မှု မှတ်ချက်များ</translation>

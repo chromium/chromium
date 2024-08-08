@@ -1458,6 +1458,7 @@
 <translation id="6073451960410192870">रिकॉर्डिंग बंद करें</translation>
 <translation id="6074087755403037157">बीटा चैनल</translation>
 <translation id="6075098173600599596">कैपिटलाइज़ेशन बदलें</translation>
+<translation id="6091929401758362855">प्लेलिस्ट: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">एडमिन ने बंद किया है</translation>
 <translation id="6095008505822982596">बोलने की दर</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> के साथ कनेक्ट करें</translation>
@@ -2261,7 +2262,6 @@
 <translation id="899350903320462459">सूचना से जुड़ी कार्रवाई करने के लिए डिवाइस को <ph name="LOGIN_ID" /> के तौर पर अनलॉक करें</translation>
 <translation id="8993733019280019776">क्या आपने कुछ कहा? आपका माइक बंद है. माइक चालू करने के लिए उसे चुनें.</translation>
 <translation id="9000771174482730261">डिवाइस का स्टोरेज मैनेज करें</translation>
-<translation id="9002204506712855687">नई सुविधाओं के बारे में जानें</translation>
 <translation id="9005984960510803406">Crosh विंडो खोलें</translation>
 <translation id="9017320285115481645">Family Link का अभिभावक ऐक्सेस कोड डालें.</translation>
 <translation id="9024331582947483881">फ़ुल स्क्रीन</translation>

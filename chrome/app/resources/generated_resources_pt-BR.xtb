@@ -6148,6 +6148,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5435779377906857208">Sempre permitir que <ph name="HOST" /> acesse sua localização</translation>
 <translation id="5436492226391861498">Esperando pelo túnel de proxy...</translation>
 <translation id="5436510242972373446">Pesquisar em <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616">A janela <ph name="WINDOW_SIDE" /> agora tem <ph name="WINDOW_SIZE_PERCENT" /> de largura e o painel <ph name="PANE_SIDE" /> tem <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5440425659852470030">Feche o painel lateral</translation>
 <translation id="544083962418256601">Criar atalhos...</translation>
 <translation id="5441133529460183413">App da Web instalado pelo navegador Chrome</translation>
@@ -8554,6 +8555,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 site no grupo de <ph name="FPS_OWNER" />}one{{MEMBERS} site no grupo de <ph name="FPS_OWNER" />}other{{MEMBERS} sites no grupo de <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Usar o Windows Hello ao preencher senhas</translation>
 <translation id="7225179976675429563">Tipo de rede ausente</translation>
+<translation id="7227235818314667565">Gerenciar compartilhamento</translation>
 <translation id="7227458944009118910">Os apps listados abaixo também podem processar links de protocolo. Outros apps solicitarão permissão.</translation>
 <translation id="7228056665272655255">Para configurar a impressão digital, peça para a criança tocar no sensor no canto superior direito do teclado. Os dados de impressão digital dela são armazenados de forma segura e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Bloqueio de tela e login</translation>
@@ -8602,6 +8604,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7258192266780953209">Transformações</translation>
 <translation id="7258225044283673131">O aplicativo não está respondendo. Selecione "Forçar fechamento" para fechar o app.</translation>
 <translation id="7260186537988033909">O registro do dispositivo com quiosque e sinalização foi concluído</translation>
+<translation id="7261217796641151584">Compartilhar grupo</translation>
 <translation id="7261612856573623172">Voz do sistema da conversão de texto em voz</translation>
 <translation id="7262004276116528033">Este serviço de login é hospedado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Sempre usar o app <ph name="APP" /> para abrir links da Web com suporte?</translation>
@@ -10539,6 +10542,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8656888282555543604">Ativar registro de braille</translation>
 <translation id="8657393004602556571">Quer descartar o feedback?</translation>
 <translation id="8657542881463614516">Use um gesto de deslizar para navegar entre as páginas</translation>
+<translation id="865936634714975126">Adicione um parâmetro de consulta ao URL para selecionar tipos no carregamento da página. Exemplo: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Contatos do <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Janela movida para baixo</translation>
 <translation id="8661290697478713397">Abrir link na janela &amp;anônima</translation>

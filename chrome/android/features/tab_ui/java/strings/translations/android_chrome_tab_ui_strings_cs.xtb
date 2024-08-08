@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">Odejít</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Vytvořeno před <ph name="NUM_HOURS_ONE" /> hodinou}few{Vytvořeno před <ph name="NUM_HOURS_MANY" /> hodinami}many{Vytvořeno před <ph name="NUM_HOURS_MANY" /> hodiny}other{Vytvořeno před <ph name="NUM_HOURS_MANY" /> hodinami}}</translation>
 <translation id="2801787514987684416">Zobrazit informace o obchodu?</translation>
+<translation id="2894757982205307093">Nová karta ve skupině</translation>
 <translation id="2928243913527329289">Google | Informace o obchodu</translation>
 <translation id="2977480621796371840">Odebrat ze skupiny</translation>
 <translation id="29919168204617356">Neaktivní karty se automaticky zavřou. Vždy je najdete v historii.</translation>

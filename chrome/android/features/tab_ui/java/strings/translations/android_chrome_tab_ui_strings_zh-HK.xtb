@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">離開</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> 小時前建立}other{<ph name="NUM_HOURS_MANY" /> 小時前建立}}</translation>
 <translation id="2801787514987684416">要查看商店資料嗎？</translation>
+<translation id="2894757982205307093">在群組中新增分頁</translation>
 <translation id="2928243913527329289">Google | 關於此商店</translation>
 <translation id="2977480621796371840">從群組中移除</translation>
 <translation id="29919168204617356">閒置分頁將會自動關閉。你可以隨時在「記錄」中查看。</translation>

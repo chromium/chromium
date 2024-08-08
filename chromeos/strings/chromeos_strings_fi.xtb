@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">nuoli alas</translation>
 <translation id="4425149324548788773">Oma Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ei ole päällä</translation>
+<translation id="4428840632568803690">Puhuja <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos-tukipyyntö vanhenee pian</translation>
 <translation id="4431821876790500265">Katso raportti</translation>
 <translation id="4443192710976771874">punainen</translation>
@@ -851,7 +852,7 @@
 <translation id="5559898619118303662">Vaihda tummaan teemaan automaattisesti, kun aurinko laskee</translation>
 <translation id="556042886152191864">Painike</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" />: <ph name="TERRAIN_COLOR" /> eri sävyissä</translation>
-<translation id="5572169899491758844">Aloita haku</translation>
+<translation id="5572169899491758844">Scan</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skannaa uudelleen</translation>
 <translation id="5583640892426849032">Askelpalautin</translation>
@@ -1295,6 +1296,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7802764839223122985">Näppäin puuttuu. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Ei kiitos</translation>
 <translation id="7805768142964895445">Tila</translation>
+<translation id="7811024689617730980">Valitse automaattisen nollauksen päivä (1–31)</translation>
 <translation id="7813073042185856802">vuori</translation>
 <translation id="7819857487979277519">PSK (WPA tai RSN)</translation>
 <translation id="7824219488248240180">postimpressionismi</translation>

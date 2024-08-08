@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">יציאה</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{נוצרה לפני שעה (<ph name="NUM_HOURS_ONE" />)}one{נוצרה לפני <ph name="NUM_HOURS_MANY" /> שעות}two{נוצרה לפני שעתיים (<ph name="NUM_HOURS_MANY" />)}other{נוצרה לפני <ph name="NUM_HOURS_MANY" /> שעות}}</translation>
 <translation id="2801787514987684416">להציג את פרטי החנות?</translation>
+<translation id="2894757982205307093">כרטיסייה חדשה בקבוצה</translation>
 <translation id="2928243913527329289">‏Google | מידע על החנות הזו</translation>
 <translation id="2977480621796371840">הסרה מהקבוצה</translation>
 <translation id="29919168204617356">הכרטיסיות הלא פעילות ייסגרו אוטומטית. תמיד אפשר למצוא אותן בהיסטוריה.</translation>

@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">Esci</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Creato <ph name="NUM_HOURS_ONE" /> ora fa}other{Creato <ph name="NUM_HOURS_MANY" /> ore fa}}</translation>
 <translation id="2801787514987684416">Vuoi visualizzare le informazioni sul negozio?</translation>
+<translation id="2894757982205307093">Nuova scheda nel gruppo</translation>
 <translation id="2928243913527329289">Google | Informazioni su questo negozio</translation>
 <translation id="2977480621796371840">Rimuovi dal gruppo</translation>
 <translation id="29919168204617356">Le schede non attive verranno chiuse automaticamente. Puoi trovarle nella cronologia in qualsiasi momento.</translation>

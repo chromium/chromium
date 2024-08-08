@@ -14,6 +14,7 @@
 <translation id="1282031177488366470">Chrome'un Özelliklerini ve Performansını İyileştirmeye Yardımcı Olun</translation>
 <translation id="1333745675627230582">Chrome Dinozor Oyununu Oyna</translation>
 <translation id="1352919863522755794">Google Şifre Yöneticisi, şifrelerinizi kontrol edemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
+<translation id="1380565463006545725">Chrome Alışveriş'in gücünden yararlanın</translation>
 <translation id="139623527619433858">iPad'de varsayılan olarak Chrome'u kullanın</translation>
 <translation id="1407843355326180937">Yer işaretlerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için bu sitede ve Chrome'da oturum açın.</translation>
 <translation id="1436059927646026729">Chrome'daki en son sekmemi aç</translation>
@@ -185,6 +186,7 @@ Dikkate alınması gereken noktalar:
 <translation id="6272822675004864999">Chrome'dan bildirim almak için iOS ayarlarınızdan bildirimleri açın.</translation>
 <translation id="630693926528731525">Şifreniz paylaşılamadı. İnternet bağlantınızı kontrol edin ve Chrome'da oturum açtığınızdan emin olun. Daha sonra tekrar deneyin.</translation>
 <translation id="6348855835728304880">Bu cihazdaki diğer uygulamalardan Chrome şifrelerinize ve daha fazlasına erişin.</translation>
+<translation id="6373751563207403289">Güvenlik Kontrolü; veri ihlallerine, güvenli olmayan web sitelerine ve diğer tehditlere karşı güvende olmanızı sağlar. Chrome'un sizin için tespit ettiği tüm gizlilik veya güvenlik sorunlarıyla ilgili uyarılar alabilirsiniz.</translation>
 <translation id="6374691158439235563">Chrome Kurulumunu Tamamlayın</translation>
 <translation id="6389317667633680932">Chrome'dan en iyi şekilde yararlanmanıza yardımcı olacak yeni özellikleri keşfedin.</translation>
 <translation id="6412673304250309937">URL'leri, Chrome'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder. Chrome, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
@@ -237,6 +239,7 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="746684838091935575">3. Chrome'u seçin</translation>
 <translation id="7492574581995589075">Kuruluşunuz, Chrome verilerini Google Hesabınızda kullanma ve kaydetme özelliğini devre dışı bıraktı. Yeni yer işaretleri, şifreler ve diğer öğeler yalnızca bu cihaza kaydedilecek.</translation>
 <translation id="7581063337314642333">Chrome'daki Sekme Izgarasına Git</translation>
+<translation id="7642373780953416937">Chrome'un sizin için otomatik olarak tespit ettiği tüm gizlilik veya güvenlik sorunlarıyla ilgili uyarılar alabilirsiniz.</translation>
 <translation id="7662994914830945754">Chrome kullandığınız her yerde sekmelerinizi görmek için oturum açın ve senkronizasyonu etkinleştirin</translation>
 <translation id="7669869107155339016">Chrome Ayarlarına gidin.</translation>
 <translation id="7683540977001394271">iPhone'unuzun ana ekran yuvasından Chrome'a daha hızlı erişin.</translation>
@@ -253,6 +256,7 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="8006014511203279255">Mesajlardaki veya diğer uygulamalardaki bağlantılara her dokunduğunuzda Chrome'u kullanın.</translation>
 <translation id="8022947259858476807">Bağlantıları açmak, widget'lardan arama yapmak ve diğer uygulamalarda şifreleri otomatik doldurmak için varsayılan olarak Chrome'u kullanın</translation>
 <translation id="804638182476029347">Fiyat düşüşü uyarıları almak için Chrome bildirimlerine izin verin</translation>
+<translation id="804756029368067824">Fiyatları kolayca takip etmek ve satın almak istediğiniz ürünlerin fiyat analizlerini almak için Chrome'u varsayılan tarayıcınız olarak ayarlayın.</translation>
 <translation id="8065292699993359127">URL'leri Chrome'da Gizli modda aç</translation>
 <translation id="8069507567842347179">Bu kargo halihazırda Chrome'da takip ediliyor.</translation>
 <translation id="8136856065410661948">Bu bilgiler, Chrome ve Google Lens'ten alınan etkinlikleri Apple Takvim'de oluşturmak için kullanılır.</translation>
@@ -280,6 +284,7 @@ Verileriniz <ph name="TIME" /> tarihinde parolanızla şifrelendi. Chrome verile
   2. Varsayılan Tarayıcı Uygulaması'na dokunun
   3. Chrome'u seçin.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8544583291890527417">Chrome'un sizin için tespit ettiği tüm gizlilik veya güvenlik sorunlarıyla ilgili uyarılar.</translation>
 <translation id="8558480467877843976">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara göz attığınızda veya dokunduğunuzda Chrome'u kullanabilirsiniz.</translation>
 <translation id="8603022514504485810">Google Şifre Yöneticisi, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin veya <ph name="BEGIN_LINK" />Google Hesabınızdaki şifreleri kontrol edin<ph name="END_LINK" />.</translation>
 <translation id="8727043961453758442">Chrome'dan en iyi şekilde yararlanın</translation>

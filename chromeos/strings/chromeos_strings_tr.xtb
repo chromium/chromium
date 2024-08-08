@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">aşağı ok</translation>
 <translation id="4425149324548788773">Drive'ım</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> kapalı</translation>
+<translation id="4428840632568803690">Hoparlör <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos biletinin süresi yakında doluyor</translation>
 <translation id="4431821876790500265">Raporu göster</translation>
 <translation id="4443192710976771874">kırmızı</translation>
@@ -818,6 +819,7 @@
 <translation id="5332948983412042822">Yeni bir tane seçin</translation>
 <translation id="5333530671332546086">Bilinmeyen portal durumu</translation>
 <translation id="5335373365677455232">pembe</translation>
+<translation id="5344619683981067131">Seçili metin öneriyle değiştiriliyor</translation>
 <translation id="5346687412805619883">Yerel Ağ</translation>
 <translation id="5358174242040570474">Bir sorun oldu. Tekrar bir duvar kağıdı seçmeyi deneyin veya uygulamayı yeniden açın.</translation>
 <translation id="5372659122375744710">Kablosuz ağ güvenli değil</translation>
@@ -869,6 +871,7 @@
 <translation id="5662240986744577912">gizlilik ekranını aç/kapat</translation>
 <translation id="5669267381087807207">Etkinleştiriliyor</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">Oluşturmak istediğiniz duvar kağıdını açıklayın</translation>
 <translation id="5680504961595602662"><ph name="SURREAL_SUBJECT" /> içeren gerçeküstü bir <ph name="SURREAL_LANDSCAPE" /></translation>
 <translation id="5685478548317291523">kirazlar</translation>
 <translation id="5691511426247308406">Aile</translation>
@@ -1102,6 +1105,7 @@
 <translation id="680983167891198932">Anahtar</translation>
 <translation id="6816797338148849397">Seçiminizle ilgili bilgi mevcut. Erişmek için yukarı ok tuşunu kullanın.</translation>
 <translation id="6853312040151791195">Şarjın boşalma hızı</translation>
+<translation id="6862416241246624313">Geri bildirim gönderildi</translation>
 <translation id="6866732840889595464">papatya</translation>
 <translation id="6871256179359663621">açık mor</translation>
 <translation id="6889786074662672253">Yeniden başlatılırken bu harici cihazı çıkarmayın ya da bilgisayarınızı kapatmayın. Bu pencereyi simge durumuna küçültebilirsiniz. Güncelleme birkaç dakika sürebilir ve bu süre boyunca harici cihazınız çalışmayabilir.</translation>
@@ -1295,6 +1299,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="7802764839223122985">Tuş eksik. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
 <translation id="7805768142964895445">Durum</translation>
+<translation id="7811024689617730980">1-31 arası (1 ve 31 dahil) bir otomatik sıfırlama günü seçin</translation>
 <translation id="7813073042185856802">dağ</translation>
 <translation id="7819857487979277519">PSK (WPA veya RSN)</translation>
 <translation id="7824219488248240180">post empresyonist</translation>

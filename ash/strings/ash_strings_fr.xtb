@@ -1446,6 +1446,7 @@ Aucun appareil connecté.</translation>
 <translation id="6068258534237496331">Commandes d'appel vidéo</translation>
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
 <translation id="6074087755403037157">Version bêta</translation>
+<translation id="6091929401758362855">Playlist : <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Désactivé par l'administrateur</translation>
 <translation id="6095008505822982596">Débit</translation>
 <translation id="6095425951508823973">Ajouter une connexion à <ph name="PROVIDER" /></translation>
@@ -2243,7 +2244,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="899350903320462459">Déverrouiller l'appareil en tant que <ph name="LOGIN_ID" /> pour effectuer l'action de notification</translation>
 <translation id="8993733019280019776">Vous parlez ? Le micro est désactivé. Sélectionnez-le pour l'activer.</translation>
 <translation id="9000771174482730261">GÉRER L'ESPACE DE STOCKAGE</translation>
-<translation id="9002204506712855687">Découvrez les dernières fonctionnalités</translation>
 <translation id="9005984960510803406">Ouvrir une fenêtre Crosh</translation>
 <translation id="9017320285115481645">Saisissez le code d'accès parental Family Link.</translation>
 <translation id="9024331582947483881">plein écran</translation>

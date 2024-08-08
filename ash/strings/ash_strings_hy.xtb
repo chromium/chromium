@@ -104,6 +104,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Ցանկացած ժամանակ սեղմեք <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1306549533752902673">ԱՌԱՋԱՐԿՎՈՂ ՀԱՎԵԼՎԱԾՆԵՐ</translation>
+<translation id="1310396869741602366">Փոխել ոճը</translation>
 <translation id="1312604459020188865">Ազդանշանի հզորությունը՝ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Միշտ ցուցադրել դարակը</translation>
 <translation id="132346741904777634">Տեսախցիկի պատկերն ամրացված է վերևի ձախ անկյունում, քանի որ ծածկում էր համակարգի միջերեսի տարրերը։</translation>
@@ -234,6 +235,7 @@
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + ․ (միջակետ) ստեղնային դյուրանցումը փոփոխվել է։ Insert ստեղնն օգտագործելու համար սեղմեք <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace։</translation>
 <translation id="1770726142253415363">Տեղափոխվեց տող <ph name="ROW_NUMBER" />, սյունակ <ph name="COLUMN_NUMBER" />։</translation>
 <translation id="1771761307086386028">Ոլորել աջ</translation>
+<translation id="17722141032474077">Հաշվարկներ</translation>
 <translation id="1774796056689732716">Օրացույց, <ph name="CURRENT_MONTH_YEAR" />, այժմ ընտրված է՝ <ph name="DATE" />։</translation>
 <translation id="178347895271755507">Կարգավորել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի և ծանուցումների դիտումը</translation>
 <translation id="1787955149152357925">Անջատված է</translation>
@@ -375,6 +377,7 @@
 <translation id="2392659840443812875">Հասանելի թեժ կետ չկա։ Համոզվեք, որ ձեր սարքը մոտակայքում է, և որ Bluetooth-ը միացված է։</translation>
 <translation id="2397416548179033562">Ցույց տալ Chrome-ի ընտրացանկը</translation>
 <translation id="240006516586367791">Մեդիա կարգավորումներ</translation>
+<translation id="240155812475001919">Google փաստաթուղթ</translation>
 <translation id="2402411679569069051">Ապակողպեք ձեր Chromebook-ը մատնահետքի կամ հեռախոսն ապակողպելու միջոցով</translation>
 <translation id="240545663114741956">Երկու անգամ սեղմեք <ph name="ACCELERATOR" />՝ դուրս գալու համար։</translation>
 <translation id="2405664212338326887">Միացված չէ</translation>
@@ -575,6 +578,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Դասարանային աշխատանքի տեսակ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3130793786899299931">Փոխել երկարությունը</translation>
 <translation id="3134486240968249588">Մի քանի բան, որ պետք է հիշել</translation>
 <translation id="3139188263101386725">Օգտագործեք թարմացված դյուրանցումը</translation>
 <translation id="3139942575505304791">Աշխատասեղան 1</translation>
@@ -585,6 +589,7 @@
 <translation id="316086887565479535">Ձևանմուշում առկա են չաջակցվող հավելվածներ</translation>
 <translation id="3160929076476941240">2 ժ</translation>
 <translation id="316356270129335934">Համաձայն կառավարչի (<ph name="MANAGER" />) պահանջի՝ ձեր <ph name="DEVICE_TYPE" /> սարքում վերականգնվում է օպերացիոն համակարգի նախորդ տարբերակը։ Սարքը կվերակայվի, և բոլոր տվյալները կջնջվեն։</translation>
+<translation id="316798519864381606">Google Սլայդների ֆայլ</translation>
 <translation id="3171170659304083361">Ներածման մեթոդների կարգավորումներ</translation>
 <translation id="3176221688814061633">Ձեր Chromebook-ը կամ Bluetooth սարքն օգտագործում է Bluetooth-ի ավելի հին տարբերակ։ Միացրեք Bluetooth Super Resolution-ը կամ օգտագործեք ներքին խոսափողը, որպեսզի ձայնի որակն ավելի լավը լինի։</translation>
 <translation id="3181441307743005334">Վերագործարկման համար կարող է որոշ ժամանակ պահանջվել</translation>
@@ -900,6 +905,7 @@
 <translation id="425364040945105958">SIM քարտ չկա</translation>
 <translation id="4261870227682513959">Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումներն անջատված են:</translation>
 <translation id="4264977415328155183">, ծալված է</translation>
+<translation id="4265259722091164182">Անվանման Տառաշար</translation>
 <translation id="4269883910223712419">Այս սարքի ադմինիստրատորը կարող է՝</translation>
 <translation id="4274537685965975248">«Ctrl + Alt + վար սլաք» ստեղնային դյուրանցումը փոփոխվել է։ End ստեղնի գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + աջ սլաք» ստեղնային դյուրանցումը։</translation>
 <translation id="4275283744500212192">Բացել պատուհանի դասավորության ընտրանքները</translation>
@@ -909,6 +915,7 @@
 <translation id="4283888303416325161">Անվտանգության նկատառումներից ելնելով՝ մուտքագրեք գաղտնաբառը</translation>
 <translation id="4285498937028063278">Ապամրացնել</translation>
 <translation id="428715201724021596">Միանում է պրոֆիլին։ Դա կարող է մի քանի րոպե տևել։</translation>
+<translation id="4287250812980588583">Chrome-ի պատուհան</translation>
 <translation id="4294319844246081198">Բարի լույս, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Մաքրել բոլոր <ph name="COUNT" /> ծանուցումները</translation>
 <translation id="4300272766492248925">Բացել հավելվածը</translation>
@@ -985,6 +992,7 @@
 <translation id="4544483149666270818">Ընտրեք պատուհանը՝ տեսագրելու համար</translation>
 <translation id="4545950850562423083">Պահել ընթացիկ էջը որպես էջանիշ</translation>
 <translation id="4548482551627849548">Ակտիվ պատուհանը տեղափոխել ձախ աշխատասեղան</translation>
+<translation id="4549853322523631092">Ոչինչ չի գտնվել։</translation>
 <translation id="4552748006424994716">Արձագանքից խուսափելու համար խոսափողի ձայնը լսեք միայն լարով միացվող ականջակալով։</translation>
 <translation id="4560576029703263363">Միացված է</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1022,6 +1030,7 @@
 <translation id="4667099493359681081">Ներբեռնում՝ <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Մարտկոցի տնտեսումը միացավ</translation>
 <translation id="4673427585974421255">Ոչ</translation>
+<translation id="4677040906536311086">Google աղյուսակ</translation>
 <translation id="468293128311738995">Հավելվածներ ձեր հեռախոսից</translation>
 <translation id="4690510401873698237">Դարակը ներքևում է</translation>
 <translation id="4696813013609194136">Մուտքագրեք ծնողի մուտքի կոդը</translation>
@@ -1224,6 +1233,7 @@
 <translation id="5331975486040154427">USB-C սարք (հետևի ձախակողմյան միացք)</translation>
 <translation id="533282197239610265">Ցուցադրել հեռարձակման սարքերը</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (աջ)</translation>
+<translation id="5346119650615956459">GIF պատկերներ</translation>
 <translation id="5352250171825660495">Մուգ թեման միացված է</translation>
 <translation id="5354804064646502504">Տվյալների փոխանցման համար կարող է գումար գանձվել։
 Միացած սարքեր չկան։</translation>
@@ -1446,6 +1456,8 @@
 <translation id="6068258534237496331">Տեսազանգերի կարգավորումներ</translation>
 <translation id="6073451960410192870">Դադարեցնել տեսագրումը</translation>
 <translation id="6074087755403037157">Բետա կապուղի</translation>
+<translation id="6075098173600599596">Փոխել գլխատառացումը</translation>
+<translation id="6091929401758362855">Երգացանկ՝ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Անջատվել է ադմինիստրատորի կողմից</translation>
 <translation id="6095008505822982596">Խոսքի արագությունը</translation>
 <translation id="6095425951508823973">Ավելացնել միացում <ph name="PROVIDER" />-ի օգնությամբ</translation>
@@ -1503,6 +1515,7 @@
 <translation id="6249795363855770621">Չհաջողվեց նշել որպես կատարված։ Միացեք ինտերնետին և նորից փորձեք։</translation>
 <translation id="6254629735336163724">Միայն հորիզոնական</translation>
 <translation id="6259254695169772643">Ընտրելու համար օգտագործեք ստիլուսը</translation>
+<translation id="6260038345397266744"><ph name="TITLE" />։ <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />` ակտիվացում…</translation>
 <translation id="6274202259872570803">Սքրինքաստ</translation>
 <translation id="6276708887952587684">Դիտել էջի կոդը</translation>
@@ -1573,6 +1586,7 @@
 <translation id="6537924328260219877">Ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Ներբեռնումը դադարեցված է, <ph name="FILENAME" /> ֆայլը ստուգվում է</translation>
 <translation id="6542521951477560771">Հեռարձակում «<ph name="RECEIVER_NAME" />» սարքին</translation>
+<translation id="6542891623636520977">Էմոջիներ, GIF պատկերներ և այլն</translation>
 <translation id="6555373427270923730">Հասցեագոտում մուտքագրեք վեբ հասցեն, ապա սեղմեք <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Նոր տեղադրում</translation>
@@ -1670,6 +1684,7 @@
 <translation id="6874854809828346832">Ցույց տալ թեժ կետի մանրամասները։ Թեժ կետը միացված է։</translation>
 <translation id="6878400149835617132">Դյուրանցումն անջատված է</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 հավելված}one{# հավելված}other{# հավելված}}</translation>
+<translation id="6879454869409141992">Միացնել Caps Lock-ը</translation>
 <translation id="6883768636838842873">Ստեղների դյուրանցումներ, սարքի օգտագործման հետ կապված խորհուրդներ և այլն</translation>
 <translation id="6884665277231944629">Վերադառնալ այսօրվա ամսաթվին</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> սարքի արդյունավետությունը կարող է նվազել։ Օգտագործեք հավաստագրված <ph name="PREFERRED_MINIMUM_POWER" />Վ կամ ավելի բարձր USB-C սնուցման ադապտեր։</translation>
@@ -1893,6 +1908,7 @@
 <translation id="7725108879223146004">Ցույց տալ թեժ կետի մանրամասները։ Թեժ կետն անջատվում է։</translation>
 <translation id="7726391492136714301">Դիտել հեռախոսի ծանուցումները և հավելվածները</translation>
 <translation id="7727952505535211425">Բացել կայքը հասցեագոտում՝ նոր ներդիրում</translation>
+<translation id="7728657226117099693">Անջատել Caps Lock-ը</translation>
 <translation id="7742327441377685481">Ծանուցումներ չկան</translation>
 <translation id="774736258792760908">Երբ միացնում եք Տեքստագրիչ և «Օգնիր ինձ կարդալ» գործառույթները, մուտքագրված տեքստը և փաստաթղթի բովանդակությունը ուղարկվում են Google AI-ի սերվերներ՝ ամփոփագրեր և գրելու առաջարկներ ստեղծելու, հարցերին պատասխանելու և պրոդուկտը բարելավելու համար՝ համաձայն <ph name="LINK_TO_SERVICE_TERMS" />։ Մի՛ ներառեք անձնական, զգայուն կամ կոնֆիդենցիալ տեղեկություններ։</translation>
 <translation id="7748275671948949022">Առանձնացնել գործարկիչի կոճակը դարակում</translation>
@@ -1967,6 +1983,7 @@
 <translation id="7946681191253332687">Անվտանգության ընդլայնված թարմացումները հասանելի են</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> հավելվածն ուզում է օգտագործել ձեր <ph name="DEVICE_NAME" />ը</translation>
 <translation id="7951630946012935453">Նվազեցնել ստեղնաշարի հետնալույսի պայծառությունը</translation>
+<translation id="7953176344218790168">ՄԵԾԱՏԱՌ</translation>
 <translation id="7953994493035617347">Հաստատե՞լ նոր լուծաչափը</translation>
 <translation id="795958884516058160">Լիաէկրան խոշորացույցը միացված է։ Նորից սեղմեք <ph name="ACCELERATOR" />՝ այն անջատելու համար։</translation>
 <translation id="7962583092928373823">Թաքցնել Google Օրացույցի բոլոր առաջարկները</translation>
@@ -2149,6 +2166,7 @@
 <translation id="8649597172973390955">Դարակը միշտ ցուցադրված է</translation>
 <translation id="8652175077544655965">Փակել կարգավորումները</translation>
 <translation id="8653151467777939995">Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումները միացված են:</translation>
+<translation id="8657066291275741003">փոքրատառ</translation>
 <translation id="8660331759611631213">71 թվից քառակուսի արմատ</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Սեղմեք Enter՝ մասնակի սքրինշոթ անելու համար</translation>
@@ -2243,7 +2261,6 @@
 <translation id="899350903320462459">Ծանուցման հետ գործողություն կատարելու համար ապակողպեք սարքը որպես <ph name="LOGIN_ID" /></translation>
 <translation id="8993733019280019776">Դուք խոսո՞ւմ եք։ Ձեր խոսափողն անջատված է։ Ընտրեք խոսափողը՝ այն միացնելու համար։</translation>
 <translation id="9000771174482730261">ԿԱՌԱՎԱՐԵԼ ՏԱՐԱԾՔԸ</translation>
-<translation id="9002204506712855687">Ծանոթացեք վերջին գործառույթներին</translation>
 <translation id="9005984960510803406">Բացել Crosh պատուհանը</translation>
 <translation id="9017320285115481645">Մուտքագրեք Family Link-ի ծնողի մուտքի կոդը։</translation>
 <translation id="9024331582947483881">լիաէկրան</translation>

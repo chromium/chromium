@@ -6128,6 +6128,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5435779377906857208">Lejo gjithmonë që <ph name="HOST" /> të ketë qasje te vendndodhja jote</translation>
 <translation id="5436492226391861498">Po pret për tunelin ndërmjetës...</translation>
 <translation id="5436510242972373446">Kërko në <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616">Dritarja <ph name="WINDOW_SIDE" /> tani është <ph name="WINDOW_SIZE_PERCENT" /> e gjerë, paneli <ph name="PANE_SIDE" /> tani është <ph name="PANE_SIZE_PERCENT" /> i gjerë.</translation>
 <translation id="5440425659852470030">Mbyll panelin anësor</translation>
 <translation id="544083962418256601">Krijo shkurtore...</translation>
 <translation id="5441133529460183413">Aplikacioni i uebit u instalua nga shfletuesi i Chrome</translation>
@@ -8530,6 +8531,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 sajt në grupin e <ph name="FPS_OWNER" />}other{{MEMBERS} sajte në grupin e <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Përdor Windows Hello kur plotëson fjalëkalimet</translation>
 <translation id="7225179976675429563">Mungon lloji i rrjetit</translation>
+<translation id="7227235818314667565">Menaxho ndarjen</translation>
 <translation id="7227458944009118910">Aplikacionet e listuara më poshtë mund të trajtojnë edhe lidhjet e protokollit. Aplikacionet e tjera do të kërkojnë leje.</translation>
 <translation id="7228056665272655255">Për të konfiguruar gjurmën e gishtit, vëre fëmijën tënd të prekë sensorin e gjurmës së gishtit në këndin lart djathtas të tastierës. Të dhënat e gjurmës së gishtit të fëmijës tënd ruhen në mënyrë të sigurt dhe nuk largohen kurrë nga kjo pajisje <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7228523857728654909">Kyçja e ekranit dhe identifikimi</translation>
@@ -8578,6 +8580,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7258192266780953209">Transformimet</translation>
 <translation id="7258225044283673131">Aplikacioni nuk përgjigjet. Zgjidh "Ndalo me forcë" për ta mbyllur aplikacionin.</translation>
 <translation id="7260186537988033909">Regjistrimi i kioskës dhe i pajisjes sinjalizuese përfundoi</translation>
+<translation id="7261217796641151584">Ndaj grupin</translation>
 <translation id="7261612856573623172">Zëri i sistemit për "Tekstin në ligjërim"</translation>
 <translation id="7262004276116528033">Ky shërbim identifikimi strehohet nga <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Të përdoret gjithmonë aplikacioni <ph name="APP" /> për të hapur lidhjet e mbështetura të uebit?</translation>
@@ -10513,6 +10516,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8656888282555543604">Aktivizo regjistrimin për breil</translation>
 <translation id="8657393004602556571">Dëshiron të heqësh komentin?</translation>
 <translation id="8657542881463614516">Përdor një gjest të rrëshqitjes së shpejt për të naviguar mes faqeve</translation>
+<translation id="865936634714975126">Shto një parametër të kërkesës në URL për të zgjedhur llojet pas ngarkimit të faqes. Shembull: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Kontaktet e "<ph name="FEATURE_NAME" />"</translation>
 <translation id="8659609431223166673">Dritarja u zhvendos poshtë</translation>
 <translation id="8661290697478713397">Hape lidhjen në një dritare të fshe&amp;htë</translation>

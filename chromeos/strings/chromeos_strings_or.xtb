@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">ଦୁର୍ବଳ ସିଗ୍‌‌‌‌‌‌‌ନାଲ୍</translation>
 <translation id="1300115153046603471">APN ପ୍ରକାର ଡିଫଲ୍ଟ ଏବଂ <ph name="ATTACH" /> ଅଟେ।</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">ତିଆରି କରାଯାଇଥିବା ତାରିଖ</translation>
 <translation id="1308754910631152188">ଅପଡେଟ କରାଯାଉଛି (<ph name="PERCENTAGE_VALUE" />% ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> ମିନିଟ</translation>
 <translation id="1310380015393971138">କୌଣସି <ph name="NETWORK_NAME" /> ନେଟୱାର୍କ ଉପଲବ୍ଧ ନାହିଁ</translation>
@@ -505,6 +506,7 @@
 <translation id="3708186454126126312">ପୂର୍ବରୁ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="3715651196924935218">ଫ୍ଲୋଟରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="3716250181321371108">ନିୟନ୍ତ୍ରଣ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="3716830479327464973">ଆପଣ ଏହାକୁ ଅନୁମତି ଦେଲେ, Recorder ଏସବୁ ପାଇଁ ଆପଣଙ୍କ ଅଡିଓ ରେକର୍ଡିଂଗୁଡ଼ିକୁ ବିଶ୍ଳେଷଣ କରିବ:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" />ଟି ସମୀକ୍ଷା)</translation>
 <translation id="3748026146096797577">ସଂଯୁକ୍ତ ହୋଇନାହିଁ</translation>
 <translation id="3749289110408117711">ଫାଇଲ୍ ନାମ</translation>
@@ -531,6 +533,7 @@
 <translation id="3869314628814282185">ଟ୍ୟୁଲ</translation>
 <translation id="387301095347517405">ଆପଣଙ୍କ ବ୍ୟାଟେରୀ ଯେତେ ଥର ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ଚାର୍ଜ ହୋଇଛି</translation>
 <translation id="3877066159641251281">ଅନୁବାଦକୁ ଶୁଣନ୍ତୁ</translation>
+<translation id="3880601782712134623">ସ୍ୱତନ୍ତ୍ର ଭଏସଗୁଡ଼ିକୁ ସ୍ୱତଃ ଚିହ୍ନଟ କରି ପ୍ରତ୍ୟେକ ସ୍ପିକରଙ୍କୁ ସ୍ପିକର 1 ଏବଂ ସ୍ପିକର 2 ପରି ଏକ ଜେନେରିକ ଲେବଲ ଦେବ</translation>
 <translation id="3885327323343477505">ସ୍କ୍ରିନ ସେଭର ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="3889914174935857450">ତାରିଖ ରିସେଟ କରନ୍ତୁ</translation>
 <translation id="3897092660631435901">ମେନୁ</translation>
@@ -756,6 +759,7 @@
 <translation id="5049856988445523908">SIM ଲକ୍ କରାଯାଇଛି (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ଗୋଷ୍ଠୀର ନାମ</translation>
 <translation id="5051044138948155788">ଏହା ହେଉଛି ଏକମାତ୍ର ପୃଷ୍ଠା। ଏହା ଆପଣଙ୍କୁ ସ୍କାନ୍ ଆରମ୍ଭ ହେବାର ସ୍କ୍ରିନକୁ ନେଇଯିବ।</translation>
+<translation id="5078711626843651677">ସ୍ପିକର ଲେବଲିଂ ସମ୍ପୂର୍ଣ୍ଣ ନ ହେବା ପର୍ଯ୍ୟନ୍ତ ଭଏସ ମଡେଲଗୁଡ଼ିକୁ ଅସ୍ଥାୟୀ ଭାବରେ ଡିଭାଇସରେ ଷ୍ଟୋର କରାଯାଏ। ଆପଣ ଏହାକୁ ସେଟିଂସରେ ଯେ କୌଣସି ସମୟରେ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="5078983345702708852">ଫ୍ୟୁଚରିଷ୍ଟିକ</translation>
 <translation id="5087864757604726239">ପଛକୁ</translation>
 <translation id="5088172560898466307">ସର୍ଭର୍ ହୋଷ୍ଟନାମ</translation>
@@ -1106,6 +1110,7 @@
 <translation id="6905163627763043954">ଏହାକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" />କୁ ଫେରନ୍ତୁ</translation>
 <translation id="6910312834584889076">ସ୍କାନରର କଭର୍ ଖୋଲା ଅଛି। କଭର୍ ବନ୍ଦ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="6910845598686542904">ରେକର୍ଡିଂରେ ଚିହ୍ନଟ କରାଯାଇଥିବା ଭଏସର ମଡେଲଗୁଡ଼ିକୁ ଗଣନା କରିବା</translation>
 <translation id="6911383237894364323">ମିଡିଆ ସର୍ଭରଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ଅସମର୍ଥ</translation>
 <translation id="6930242544192836755">ଅବଧି</translation>
 <translation id="6930597342185648547">ବେକଗ୍ରାଉଣ୍ଡ ବିଷୟରେ</translation>
@@ -1571,6 +1576,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> ପାଇଁ କୀ ଉପଲବ୍ଧ ନାହିଁ। <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">ସମ୍ପୂର୍ଣ୍ଣ ରେକର୍ଡିଂରେ ଭଏସଗୁଡ଼ିକୁ ତୁଳନା କରିବା ଯାହା ଫଳରେ ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ପ୍ରତ୍ୟେକ ସ୍ପିକର କଣ ଏବଂ କେତେବେଳେ କହିଲେ ତାହା ପ୍ରତିଫଳିତ କରେ</translation>
 <translation id="952992212772159698">ସକ୍ରିୟ ହୋ‍ଇନାହିଁ</translation>
 <translation id="95718197892796296">କାଦୁଅ</translation>
 <translation id="960719561871045870">ଅପରେଟର୍ କୋଡ୍</translation>

@@ -2658,6 +2658,7 @@
 <translation id="2853121255651601031">পাসওয়ার্ড সেভ করা হয়েছে</translation>
 <translation id="2855243985454069333">সিঙ্ক করা সব ডিভাইস থেকে ইতিহাস মুুছে দিন</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> দিয়ে সাইন-ইন করুন</translation>
+<translation id="28559674945112027">স্ট্রিক্ট মোড</translation>
 <translation id="2856776373509145513">নতুন একটি কন্টেনার তৈরি করুন</translation>
 <translation id="2856907950922663165">URL এনক্রিপশন বন্ধ করবেন?</translation>
 <translation id="2859741939921354763"><ph name="BRAND" />-এ গুরুত্বপূর্ণ পাসওয়ার্ড ইমপোর্ট করুন</translation>
@@ -6148,6 +6149,7 @@
 <translation id="5435779377906857208">আপনার লোকেশন অ্যাক্সেস করতে দিতে, <ph name="HOST" />-কে সবসময় অনুমতি দিন</translation>
 <translation id="5436492226391861498">প্রক্সি টানেলের জন্য প্রতীক্ষারত...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> খুঁজুন:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> উইন্ডো এখন <ph name="WINDOW_SIZE_PERCENT" /> চওড়া, <ph name="PANE_SIDE" /> প্যানেল এখন <ph name="PANE_SIZE_PERCENT" /> চওড়া।</translation>
 <translation id="5440425659852470030">সাইড প্যানেল বন্ধ করুন</translation>
 <translation id="544083962418256601">শর্টকাটগুলি তৈরি করুন...</translation>
 <translation id="5441133529460183413">Chrome ব্রাউজার থেকে ওয়েব অ্যাপ ইনস্টল করা হয়েছে</translation>
@@ -6416,6 +6418,7 @@
 <translation id="5623282979409330487">এই সাইট আপনার মোশন সেন্সর অ্যাক্সেস করছে।</translation>
 <translation id="5623842676595125836">লগ</translation>
 <translation id="5624120631404540903">পাসওয়ার্ডগুলি পরিচালনা করুন</translation>
+<translation id="5624959475330585145">অসুরক্ষিত কানেকশন ব্যবহার করার আগে জিজ্ঞেস করো</translation>
 <translation id="5625225435499354052">Google Pay-তে এডিট করুন</translation>
 <translation id="5626134646977739690">নাম:</translation>
 <translation id="5627832140542566187">ডিসপ্লে ওরিয়েন্টেশন</translation>
@@ -8554,6 +8557,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" />-এর গ্রুপে ১টি সাইট}one{<ph name="FPS_OWNER" />-এর গ্রুপে {MEMBERS}টি সাইট}other{<ph name="FPS_OWNER" />-এর গ্রুপে {MEMBERS}টি সাইট}}</translation>
 <translation id="7225082563376899794">পাসওয়ার্ড পূরণ করার সময় Windows Hello ব্যবহার করুন</translation>
 <translation id="7225179976675429563">নেটওয়ার্কের প্রকার হারিয়ে গেছে</translation>
+<translation id="7227235818314667565">শেয়ারিং ম্যানেজ করুন</translation>
 <translation id="7227458944009118910">নিচের তালিকাভুক্ত অ্যাপগুলি প্রোটোকল লিঙ্কও ম্যানেজ করতে পারবে। অন্য অ্যাপগুলির ক্ষেত্রে অনুমতি প্রয়োজন হবে।</translation>
 <translation id="7228056665272655255">ফিঙ্গারপ্রিন্ট সেট-আপ করতে, আপনার সন্তানকে কীবোর্ডের উপরের ডানদিকের কোণে থাকা ফিঙ্গারপ্রিন্ট সেন্সর টাচ করতে বলুন। আপনার সন্তানের ফিঙ্গারপ্রিন্ট ডেটা নিরাপদে সেভ করা হয় এবং সবসময় <ph name="DEVICE_TYPE" />-এ থাকে।</translation>
 <translation id="7228523857728654909">স্ক্রিন লক এবং সাইন-ইন করুন</translation>
@@ -8602,6 +8606,7 @@
 <translation id="7258192266780953209">পরিবর্তন</translation>
 <translation id="7258225044283673131">অ্যাপ্লিকেশনটি কাজ করছে না। অ্যাপটি বন্ধ করতে "জোর করে বন্ধ করুন" বিকল্পটি বেছে নিন।</translation>
 <translation id="7260186537988033909">'কিয়স্ক' ও 'সাইনেজ' মোডে ডিভাইস নথিভুক্ত করার প্রক্রিয়া সম্পূর্ণ হয়েছে</translation>
+<translation id="7261217796641151584">গ্রুপ শেয়ার করুন</translation>
 <translation id="7261612856573623172">সিস্টেম টেক্সট টু স্পিচ ভয়েস</translation>
 <translation id="7262004276116528033">এই সাইন-ইন করা পরিষেবাটি <ph name="SAML_DOMAIN" /> দ্বারা হোস্ট করা হয়</translation>
 <translation id="7264695323040866038">সমর্থিত ওয়েব লিঙ্ক খোলার জন্য সবসময় <ph name="APP" /> অ্যাপ ব্যবহার করেন?</translation>
@@ -9649,6 +9654,7 @@
 <translation id="8008356846765065031">ইন্টারনেট সংযোগ বিচ্ছিন্ন হয়েছে৷ অনুগ্রহ করে আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন৷</translation>
 <translation id="8008704580256716350">সন্দেহজনক ফাইল ব্লক করা হয়েছে</translation>
 <translation id="8009225694047762179">পাসওয়ার্ড পরিচালনা করুন</translation>
+<translation id="8010081455002666927">অটোমেটিক শনাক্ত করা</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' সরানো হয়েছে।</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8012463809859447963">ইনস্ট্যান্ট হটস্পটের বিবরণ</translation>
@@ -10538,6 +10544,7 @@
 <translation id="8656888282555543604">ব্রেইল লগ-ইন চালু করুন</translation>
 <translation id="8657393004602556571">আপনি কি মতামতটি বাতিল করতে চান?</translation>
 <translation id="8657542881463614516">একটি পৃষ্ঠা থেকে অন্য পৃষ্ঠাতে নেভিগেট করতে সোয়াইপ জেসচার ব্যবহার করুন</translation>
+<translation id="865936634714975126">পৃষ্ঠা লোড করার সময় ধরন বেছে নিতে URL-এ কোয়েরি প্যারামিটার যোগ করুন। উদাহরণ: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> সংক্রান্ত পরিচিতি</translation>
 <translation id="8659609431223166673">উইন্ডো নিচের দিকে সরানো হয়েছে</translation>
 <translation id="8661290697478713397">লিঙ্কটি ছদ্মবেশী উইন্ডোতে খুলুন</translation>
@@ -11052,6 +11059,7 @@
 <translation id="9009707268312089299">Windows থেকে ইমপোর্ট করা হয়েছে</translation>
 <translation id="9009708085379296446">আপনি কি এই পৃষ্ঠাটি পরিবর্তন করতে চান?</translation>
 <translation id="9010845741772269259">পেমেন্টের পদ্ধতি যোগ করুন</translation>
+<translation id="901087299639956505">ব্যালেন্সড মোড</translation>
 <translation id="9011163749350026987">সর্বদা আইকন দেখান</translation>
 <translation id="9011262023858991985">এই ট্যাবটি কাস্ট করা হচ্ছে</translation>
 <translation id="9011393886518328654">প্রকাশের বিবরণ</translation>

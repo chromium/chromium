@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">төмен жақ көрсеткісі</translation>
 <translation id="4425149324548788773">Менің Drive дискім</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> өшірулі</translation>
+<translation id="4428840632568803690"><ph name="SPEAKER_LABEL" />-сөйлеуші</translation>
 <translation id="4429881212383817840">Kerberos билетінің жарамдылық мерзімі жақында аяқталады</translation>
 <translation id="4431821876790500265">Есепті көру</translation>
 <translation id="4443192710976771874">қызыл</translation>
@@ -1295,6 +1296,7 @@
 <translation id="7802764839223122985">Перне жоқ. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Жоқ, рақмет</translation>
 <translation id="7805768142964895445">Күйі</translation>
+<translation id="7811024689617730980">Бастапқы қалпына автоматты түрде қайтарылатын күндер аралығын (1–31 күнді қоса алғанда) таңдаңыз.</translation>
 <translation id="7813073042185856802">тау</translation>
 <translation id="7819857487979277519">PSK (WPA немесе RSN)</translation>
 <translation id="7824219488248240180">постимпрессионизм</translation>

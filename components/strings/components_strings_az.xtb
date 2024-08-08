@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Parolu Dəyişin</translation>
 <translation id="1089599132348386324">Chrome ayarlarında fikrinizi dəyişə bilərsiniz.</translation>
 <translation id="1090629319939036170">VR menyusu</translation>
-<translation id="1091543275053148479">Tarixçə və parollar daxil olmaqla baxış datası görülə və idarə oluna bilər</translation>
 <translation id="1091779689406092804">skrinşotlar</translation>
 <translation id="1094777233105318927">Brauzer, OS, cihaz, quraşdırılmış proqram təminatı və fayllar haqqında məlumat</translation>
 <translation id="1096545575934602868">Bu sahədə maksimum <ph name="MAX_ITEMS_LIMIT" /> daxiletmə olmalıdır. Əlavə daxiletmələr silinəcək.</translation>
@@ -957,7 +956,6 @@
 <translation id="2770159525358613612">Faylları yenidən yükləyin</translation>
 <translation id="277133753123645258">Göndərmə üsulu</translation>
 <translation id="2773388851563527404">Chrome əksər saytların üçüncü tərəf kukilərindən istifadəsini məhdudlaşdırır. Lakin bu sayt kukilər vasitəsilə əsas xidmətləri təmin etdiyi üçün onlara icazə verir. <ph name="LINK" /> üçün ayarlara daxil olun.</translation>
-<translation id="2774077118134906782">Təşkilatınız brauzerinizi idarə edir</translation>
 <translation id="277499241957683684">Çatmayan cihaz qeydi</translation>
 <translation id="2775884851269838147">İlk çap səhifəsi</translation>
 <translation id="2781185443919227679">Çimərlik və Adalar</translation>
@@ -1505,6 +1503,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> düym)</translation>
 <translation id="3792826587784915501">Kult və Müstəqil Filmlər</translation>
 <translation id="3793574014653384240">Son vaxtlarda baş verən xətaların sayı və səbəbləri</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> Chrome-un güvənli bağlantı qurmasına mane olur</translation>
 <translation id="3799805948399000906">Şrift üzrə sorğu göndərildi</translation>
 <translation id="3801265110651850478">Baxış trafiki ilə birgə "İzlənilməsin" sorğusu göndərin</translation>
 <translation id="380329542618494757">Ad</translation>
@@ -1936,6 +1935,7 @@
 <translation id="4652440160515225514">Siyasəti pozduğuna görə təşkilatınız bu saytı bloklayıb.</translation>
 <translation id="4658638640878098064">Yuxarı soldan ştapel vurun</translation>
 <translation id="4661556981531699496">Ev heyvanları və Heyvanlar</translation>
+<translation id="4661868874067696603">Digər alış seçimlərini axtarın</translation>
 <translation id="4663373278480897665">Kameraya icazə verildi</translation>
 <translation id="466561305373967878">Stolüstü oyunlar</translation>
 <translation id="4668929960204016307">,</translation>
@@ -2424,6 +2424,7 @@
 <translation id="5559311991468302423">Ünvanı silin</translation>
 <translation id="5560088892362098740">Bitmə Tarixi</translation>
 <translation id="55635442646131152">Sənəd icmalı</translation>
+<translation id="5563589142503817291">Məkan istifadəsi üçün <ph name="LINK" /> bölməsində Chrome-a giriş imkanı verin.</translation>
 <translation id="5565613213060953222">Anonim tab açın</translation>
 <translation id="5565735124758917034">Aktiv</translation>
 <translation id="5569030697349375295">Mühasibat və maliyyə proqram təminatı</translation>
@@ -2697,6 +2698,7 @@
 <translation id="6106989379647458772"><ph name="PAGE" /> veb səhifəsi müvəqqəti işləməyə bilər və ya yeni veb ünvana köçürülmüş ola bilər.</translation>
 <translation id="6107012941649240045">Verildi:</translation>
 <translation id="6107924765192360631">Yazı təklifləri almaq üçün bir neçə söz və ya ilk qaralama ilə başlayın.</translation>
+<translation id="6108580855199168381">Sertifikat detalları</translation>
 <translation id="6108702513636120202">Chromium-da axtarış mexanizminiz</translation>
 <translation id="6108849843016142864">Kərtənkələ və Amfibiyalar</translation>
 <translation id="610911394827799129"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> linkində Google Hesabına məxsus axtarış tarixçəsinin başqa formaları ola bilər</translation>
@@ -2801,6 +2803,7 @@
 <translation id="6300452962057769623">{0,plural, =0{Cihazınız indi yenidən başladılacaq}=1{Cihazınız 1 saniyə ərzində yenidən başladılacaq}other{Cihazınız # saniyə ərzində yenidən başladılacaq}}</translation>
 <translation id="6301104306974789820">Qiymət izləmə bildirişləri alın</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> icazəsi detallarını göstərin</translation>
+<translation id="6302661287897119265">Filtr</translation>
 <translation id="6304398603974202180">Multimedia proqram təminatı</translation>
 <translation id="6305205051461490394"><ph name="URL" /> əlçatmazdır.</translation>
 <translation id="6306713302480826305">Bu ünvan bu və digər daxil olduğunuz cihazlardan silinəcək</translation>
@@ -2905,6 +2908,7 @@
 <translation id="6458606150257356946">İstənilən halda əlavə edin</translation>
 <translation id="6464094930452079790">şəkillər</translation>
 <translation id="6465306955648956876">Parolları İdarə edin...</translation>
+<translation id="646789491285795429">Artıq bu məhsulu izləyirsiniz</translation>
 <translation id="6468485451923838994">Şriftlər</translation>
 <translation id="647261751007945333">Cihaz siyasəti</translation>
 <translation id="6472874020827012601">Parça (mat)</translation>
@@ -3466,6 +3470,12 @@
 <translation id="7535087603100972091">Dəyər</translation>
 <translation id="753556296624075801">Google tərəfindən dəstəklənir</translation>
 <translation id="7537536606612762813">Məcburi</translation>
+<translation id="7541586907443866208">Hücumçular sizinlə bu sayt arasında göndərilən istənilən datanı görə və dəyişə biləcəklər.
+    &lt;ul&gt;
+    &lt;li&gt;Hazırda hava limanı və ya hotel wifi-ı kimi ictimai şəbəkədəsinizsə, etibarlı şəbəkəyə qoşulduğunuz zaman (məsələn, evdə və ya işdə) yenidən cəhd edin.&lt;/li&gt;
+    &lt;li&gt;Sayt sahibini tanıyırsınızsa, ondan bunu həll etməsini istəyin.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat əldə edin<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">Bu forma təhlükəsiz bağlantı istifadə etmədiyinə görə avtomatik kredit kart doldurma deaktivdir.</translation>
 <translation id="7543525346216957623">Valideyninizdən soruşun</translation>
 <translation id="7546409722674205727">Başlayır: <ph name="APP_NAME" /></translation>
@@ -3706,7 +3716,6 @@
 <translation id="7967636097426665267">Kommunikasiya avadanlığı</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" dəyəri yanlış altılıq rəngdir.</translation>
 <translation id="7968982339740310781">Detallara baxın</translation>
-<translation id="7971972534124227314">Cihazın təhlükəsizliyi üçün ƏS, brauzer məlumatı və quraşdırılmış proqram təminatı görünə bilər</translation>
 <translation id="7976214039405368314">Həddən çox sorğu var</translation>
 <translation id="7977538094055660992">Çıxış cihazı</translation>
 <translation id="7979595116210197019">Qida xidməti</translation>
@@ -4067,7 +4076,6 @@
 <translation id="865032292777205197">hərəkət sensorları</translation>
 <translation id="865255447216708819">Arxa çap plyonkası</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" /> profilinizi idarə edir</translation>
 <translation id="8662463432865928030">Kommersiya mülkləri</translation>
 <translation id="8663226718884576429">Sifarişin Yekunu, <ph name="TOTAL_LABEL" />, Daha Çox Məlumat</translation>
 <translation id="8663909737634214500">Optik disk</translation>
@@ -4299,7 +4307,6 @@
 <translation id="9103872766612412690">Məlumatınızı qorumaq üçün <ph name="SITE" /> adətən şifrələmə istifadə edir. Chromium bu dəfə <ph name="SITE" /> üzərinə qoşulmağa çalışanda sayt qeyri-adi və yanlış kredensialları qaytarmağa başladı. Bu, hücum edən özünü <ph name="SITE" /> kimi apardıqda, və ya Wi-Fi tərəfindən bağlantı kəsintisi olduqda baş verir. Məlumatınız hələ də güvənlidir, çünki Chromium datanın mübadiləsindən öncə bağlantını kəsib.</translation>
 <translation id="9107467864910557787">Brauzeriniz <ph name="MANAGER" /> tərəfindən idarə edilir</translation>
 <translation id="91108059142052966">Administrator suyasəti məxfi məzmun göründüyü zaman <ph name="APPLICATION_TITLE" /> ilə ekran paylaşımını deaktiv edir</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" /> brauzerinizi idarə edir</translation>
 <translation id="9114524666733003316">Kart təsdiqlənir...</translation>
 <translation id="9114581008513152754">Bu brauzer şirkət və ya başqa təşkilat tərəfindən idarə edilmir. Bu cihazdakı fəaliyyət Chrome'dan kənarda idarə edilə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Chrome'da reklamlar haqqında ətraflı</translation>

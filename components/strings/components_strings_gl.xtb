@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Cambiar de contrasinal</translation>
 <translation id="1089599132348386324">Podes cambiar de opinión e cambiar esta opción en calquera momento na configuración de Chrome.</translation>
 <translation id="1090629319939036170">Menú de RV</translation>
-<translation id="1091543275053148479">Os datos de navegación (incluídos o historial e os contrasinais) poden verse e xestionarse</translation>
 <translation id="1091779689406092804">capturas de pantalla</translation>
 <translation id="1094777233105318927">Información sobre o teu navegador, sistema operativo, dispositivo, software instalado e ficheiros</translation>
 <translation id="1096545575934602868">Este campo non debe ter máis de <ph name="MAX_ITEMS_LIMIT" /> entradas. Descartaranse todas as restantes.</translation>
@@ -957,7 +956,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2770159525358613612">Proba a cargar os ficheiros de novo</translation>
 <translation id="277133753123645258">Método de envío</translation>
 <translation id="2773388851563527404">Chrome evita que a maioría dos sitios usen cookies de terceiros. Así e todo, neste sitio permítese o seu uso porque son necesarias para fornecer servizos básicos. Accede á configuración para <ph name="LINK" />.</translation>
-<translation id="2774077118134906782">A túa organización xestiónache o navegador</translation>
 <translation id="277499241957683684">Non se atopa o rexistro do dispositivo</translation>
 <translation id="2775884851269838147">Primeira páxina de impresión</translation>
 <translation id="2781185443919227679">Praias e illas</translation>
@@ -1509,6 +1507,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Películas independentes e de culto</translation>
 <translation id="3793574014653384240">Número de fallos ocorridos recentemente e as súas causas</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> está impedindo que Chrome estableza unha conexión segura</translation>
 <translation id="3799805948399000906">Solicitouse a fonte</translation>
 <translation id="3801265110651850478">Enviar unha solicitude Do Not Track co teu tráfico de navegación</translation>
 <translation id="380329542618494757">Nome</translation>
@@ -2703,6 +2702,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6106989379647458772">É posible que a páxina web de <ph name="PAGE" /> estea temporalmente inactiva ou que se trasladase definitivamente a un enderezo web novo.</translation>
 <translation id="6107012941649240045">Emitido para</translation>
 <translation id="6107924765192360631">Comeza cunhas cantas palabras ou cun primeiro borrador para obter suxestións de escritura.</translation>
+<translation id="6108580855199168381">Detalles do certificado</translation>
 <translation id="6108702513636120202">O teu buscador en Chromium</translation>
 <translation id="6108849843016142864">Réptiles e anfibios</translation>
 <translation id="610911394827799129">É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>
@@ -2807,6 +2807,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6300452962057769623">{0,plural, =0{O dispositivo reiniciarase agora}=1{O dispositivo reiniciarase en 1 segundo}other{O dispositivo reiniciarase en # segundos}}</translation>
 <translation id="6301104306974789820">Obter notificacións de seguimento do prezo</translation>
 <translation id="6302546952464230349">Mostrar os detalles do permiso de <ph name="PERMISSION_NAME" /></translation>
+<translation id="6302661287897119265">Filtrar</translation>
 <translation id="6304398603974202180">Software multimedia</translation>
 <translation id="6305205051461490394">Non se pode acceder a <ph name="URL" />.</translation>
 <translation id="6306713302480826305">Este enderezo eliminarase deste dispositivo e do resto de dispositivos nos que teñas a sesión iniciada</translation>
@@ -3473,6 +3474,12 @@ Detalles adicionais:
 <translation id="7535087603100972091">Valor</translation>
 <translation id="753556296624075801">Coa tecnoloxía de Google</translation>
 <translation id="7537536606612762813">Obrigatoria</translation>
+<translation id="7541586907443866208">Os atacantes poderán ver e modificar todos os datos que se envíen entre ti e este sitio.
+    &lt;ul&gt;
+    &lt;li&gt;Se actualmente estás nunha rede pública (por exemplo, a wifi dun aeroporto ou a dun hotel), recomendámosche que o volvas tentar cando teñas conexión a unha rede de confianza, como a da casa ou a do traballo.&lt;/li&gt;
+    &lt;li&gt;Se coñeces a persoa propietaria do sitio, pídelle que arranxe o problema.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />Máis información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">A opción de autocompletado da tarxeta de crédito está desactivada porque este formulario non utiliza unha conexión segura.</translation>
 <translation id="7543525346216957623">Pregunta ao teu pai ou nai</translation>
 <translation id="7546409722674205727">Iniciando <ph name="APP_NAME" /></translation>
@@ -3713,7 +3720,6 @@ Detalles adicionais:
 <translation id="7967636097426665267">Equipos de comunicación</translation>
 <translation id="79682505114836835">O valor "<ph name="VALUE" />" é unha cor hexadecimal non válida.</translation>
 <translation id="7968982339740310781">Ver detalles</translation>
-<translation id="7971972534124227314">Por motivos de seguranza do dispositivo, o sistema operativo, a información do navegador e o software instalado poden estar visibles</translation>
 <translation id="7976214039405368314">Hai demasiadas solicitudes</translation>
 <translation id="7977538094055660992">Dispositivo de saída</translation>
 <translation id="7979595116210197019">Servizo de comida</translation>
@@ -4074,7 +4080,6 @@ Detalles adicionais:
 <translation id="865032292777205197">sensores de movemento</translation>
 <translation id="865255447216708819">Película para imprimir no dorso</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" /> xestiónache o perfil</translation>
 <translation id="8662463432865928030">Propiedades comerciais</translation>
 <translation id="8663226718884576429">Resumo do pedido, <ph name="TOTAL_LABEL" />, máis detalles</translation>
 <translation id="8663909737634214500">Disco óptico</translation>
@@ -4306,7 +4311,6 @@ Detalles adicionais:
 <translation id="9103872766612412690">Normalmente, <ph name="SITE" /> encripta a túa información para protexela. Nesta ocasión, cando Chromium tentou conectar con <ph name="SITE" />, o sitio web devolveu credenciais estrañas e incorrectas. É posible que un atacante tentase facerse pasar por <ph name="SITE" /> ou que a pantalla de inicio de sesión de wifi interrompese a conexión. Non obstante, a túa información segue a salvo porque Chromium detivo a conexión antes de intercambiar datos.</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" /> xestiona o teu navegador</translation>
 <translation id="91108059142052966">A política do administrador desactiva a pantalla compartida con <ph name="APPLICATION_TITLE" /> cando hai contido confidencial á vista</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" /> xestiónache o navegador</translation>
 <translation id="9114524666733003316">Confirmando tarxeta…</translation>
 <translation id="9114581008513152754">Ningunha compañía ou organización xestiona este navegador. A actividade deste dispositivo pódese xestionar fóra de Chrome. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Máis información sobre os anuncios en Chrome</translation>

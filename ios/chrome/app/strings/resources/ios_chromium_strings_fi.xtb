@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">Voit poistaa lukitustilan käytöstä Chromiumissa laittamalla sen pois päältä iPhonellasi.</translation>
 <translation id="159029779861043703">Chromium pitää arkaluontoiset tietosi turvassa Face ID:n avulla.</translation>
 <translation id="1591119736686995611">Avaa Chromiumin välilehtiruudukon.</translation>
+<translation id="16001233025397167">Turvatarkistus suojaa sinua esimerkiksi tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta. Saat ilmoituksia kaikista yksityisyys- tai tietoturvaongelmista, jotka Chromium havaitsee puolestasi.</translation>
 <translation id="1611584326765829247">Anna Chromiumin auttaa pakettien seuraamisessa</translation>
 <translation id="1617663976202781617">Chromiumin synkronointidata</translation>
 <translation id="1647558790457890304">Chromium-asetukset</translation>
@@ -56,6 +57,7 @@
 <translation id="2426113998523353159">Organisaatiosi edellyttää sisäänkirjautumista, jotta voit käyttää Chromiumia.</translation>
 <translation id="2450140762465183767">Voit nyt käyttää Chromiumia aina, kun napautat linkkejä viesteissä, dokumenteissa ja muissa sovelluksissa.</translation>
 <translation id="2478931088402984578">Valitse <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2497941343438581585">Hyödynnä Chromium Shoppingia</translation>
 <translation id="252374538254180121">Valitse Chromium oletusselaimeksi</translation>
 <translation id="2574528844022712255">Näytä Chromium-kirjanmerkit</translation>
 <translation id="2590893390871230428">Synkronoi Chromium-datasi</translation>
@@ -103,6 +105,7 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, niin n
 <translation id="3855938650519180865">Uutta Chromiumissa</translation>
 <translation id="3886689467633467988">Kirjaudu tälle sivustolle ja Chromiumiin, niin voit käyttää kirjanmerkkejä ja muita asetuksia kaikilla laitteillasi.</translation>
 <translation id="3904484643286601695">Voit muuttaa valintoja milloin tahansa Chromiumin asetuksista.</translation>
+<translation id="3983291422281996849">Aseta Chromium oletusselaimeksi, niin voit helposti seurata haluamiesi tuotteiden hintoja ja saada hintatilastoja.</translation>
 <translation id="4005283307739974863">Avaa ja suorittaa turvatarkistuksen Chromiumissa.</translation>
 <translation id="4043291146360695975">Salasanat tallennetaan Salasanojen ylläpitoon vain tällä laitteella.</translation>
 <translation id="4099085513035183040">Ei tueta Chromium Betassa</translation>
@@ -133,6 +136,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chromiu
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> ylläpitää tiliäsi, joten Chromium-datasi poistetaan tältä laitteelta</translation>
 <translation id="4790638144988730920">Jatka Chromium-datan käyttöä Google-tilillä.</translation>
 <translation id="4828317641996116749">Chromium ei voinut tarkistaa kaikkia salasanoja. Yritä myöhemmin uudelleen.</translation>
+<translation id="4904452304169763785">Ilmoittaa yksityisyys- tai tietoturvaongelmista, jotka Chromium havaitsee puolestasi.</translation>
 <translation id="4962295957157529683">Siirry toiseen avoimeen Chromium-ikkunaan ja viimeistele aloittamasi.</translation>
 <translation id="4985291216379576555">Chromium ei voi tarkistaa, onko päivityksiä saatavilla</translation>
 <translation id="4996471330284142407">Helppokäyttöisellä, turvallisella ja entistäkin nopeammalla Chromiumilla saat enemmän aikaan.</translation>
@@ -176,6 +180,7 @@ Huomioitavaa:
   • Chromiumin kaatumisesta kerättävät tiedot saattavat sisältää henkilökohtaisia tietoja.
 
 • Jos laitat historian synkronoinnin Google-tilille päälle, tiedot voivat koskea myös avaamiasi URL-osoitteita.<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">Saat ilmoituksia kaikista yksityisyys- tai tietoturvaongelmista, jotka Chromium havaitsee automaattisesti puolestasi.</translation>
 <translation id="5945387852661427312">Olet kirjautumassa sisään verkkotunnuksen <ph name="DOMAIN" /> hallitsemalla tilillä ja antamassa sen järjestelmänvalvojalle oikeuden hallita Chromium-tietojasi. Tietosi liitetään pysyvästi tähän tiliin. Chromiumista uloskirjautuminen poistaa tietosi tältä laitteelta, mutta ne säilyvät Google-tililläsi.</translation>
 <translation id="5951593919357934226">Paras hyöty Chromiumista.</translation>
 <translation id="5983312940147103417">Entistä parempi Chromium</translation>

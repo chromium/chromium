@@ -319,6 +319,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> (na) item ang na-delete</translation>
 <translation id="2536728043171574184">Tinitingnan ang isang offline na kopya ng page na ito</translation>
 <translation id="2546283357679194313">Cookies at data ng site</translation>
+<translation id="2547843573592965873">Pinapanatiling secure ng iyong lock ng profile ang impormasyon mo sa kotse, kasama ang mga password, pagbabayad, at iba pang naka-save sa Google Account mo.</translation>
 <translation id="254973855621628293">Mga password na naka-save sa device na ito</translation>
 <translation id="2560519950693256002">Sinuri kamakailan ang mga password na naka-save sa <ph name="USERNAME" /></translation>
 <translation id="2567385386134582609">LARAWAN</translation>
@@ -1711,7 +1712,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8993760627012879038">Magbukas ng bagong tab sa Incognito mode</translation>
 <translation id="8996847606757455498">Pumili ng ibang provider</translation>
 <translation id="8998289560386111590">Hindi available sa iyong device</translation>
-<translation id="8998729206196772491">Nagsa-sign in ka gamit ang isang account na pinamamahalaan ng <ph name="MANAGED_DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chrome. Permanenteng mauugnay ang iyong data sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chrome, ngunit mananatili itong naka-store sa iyong Google Account.</translation>
 <translation id="8998837250940831980">Hindi ma-minimize ang tab. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="9001604755921395912">Buksan sa Incognito Chrome tab</translation>
 <translation id="9007002441981613214">Ayusin ang problema sa mga naka-save na password</translation>

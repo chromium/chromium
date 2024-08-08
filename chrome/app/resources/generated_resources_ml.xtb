@@ -2641,6 +2641,7 @@
 <translation id="2853121255651601031">പാസ്‌വേഡ് സംരക്ഷിച്ചു</translation>
 <translation id="2855243985454069333">സമന്വയിപ്പിച്ച എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ചരിത്രം ഇല്ലാതാക്കുന്നു</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
+<translation id="28559674945112027">സ്ട്രിക്റ്റ് മോഡ്</translation>
 <translation id="2856776373509145513">പുതിയ കണ്ടെയ്‌നർ സൃഷ്‌ടിക്കുക</translation>
 <translation id="2856907950922663165">URL എൻക്രിപ്ഷൻ ഓഫാക്കണോ?</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> എന്നതിലേക്ക് പാസ്‌വേഡുകൾ ഇമ്പോർട്ട് ചെയ്യുക</translation>
@@ -6398,6 +6399,7 @@
 <translation id="5623282979409330487">ഈ സൈറ്റ് നിങ്ങളുടെ ചലന സെൻസറുകൾ ഉപയോഗിക്കുന്നു.</translation>
 <translation id="5623842676595125836">ലോഗ്</translation>
 <translation id="5624120631404540903">പാസ്‌വേഡുകൾ നിയന്ത്രിക്കുക</translation>
+<translation id="5624959475330585145">സുരക്ഷിതമല്ലാത്ത കണക്ഷനുകൾ ഉപയോഗിക്കുന്നതിന് മുമ്പ് ചോദിക്കൂ</translation>
 <translation id="5625225435499354052">Google Pay-യിൽ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="5626134646977739690">നാമം:</translation>
 <translation id="5627832140542566187">ഡിസ്പ്ലേ ഓറിയൻ്റേഷൻ</translation>
@@ -9632,6 +9634,7 @@
 <translation id="8008356846765065031">ഇന്റർനെറ്റ് വിച്ഛേദിച്ചു. നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുക.</translation>
 <translation id="8008704580256716350">സംശയാസ്പദമായ ഫയൽ ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="8009225694047762179">പാസ്‌വേഡുകൾ മാനേജ് ചെയ്യുക</translation>
+<translation id="8010081455002666927">സ്വയമേവ തിരിച്ചറിയുക</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' നീക്കി.</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8012463809859447963">ഇൻസ്റ്റന്റ് ഹോട്ട്‌സ്പോട്ടിന്റെ വിശദാംശങ്ങൾ</translation>
@@ -11034,6 +11037,7 @@
 <translation id="9009707268312089299">Windows-ൽ നിന്ന് ഇമ്പോർട്ട് ചെയ്തവ</translation>
 <translation id="9009708085379296446">ഈ പേജ് മാറ്റാനാണോ നിങ്ങൾ ഉദ്ദേശിച്ചത്?</translation>
 <translation id="9010845741772269259">പേയ്‌മെന്റ് രീതികൾ ചേർക്കുക</translation>
+<translation id="901087299639956505">ബാലൻസ്‌ഡ് മോഡ്</translation>
 <translation id="9011163749350026987">എല്ലായ്‌പ്പോഴും ഐക്കൺ കാണിക്കുക</translation>
 <translation id="9011262023858991985">ഈ ടാബ് കാസ്റ്റ് ചെയ്യുന്നു</translation>
 <translation id="9011393886518328654">റിലീസ് നോട്ടുകൾ</translation>

@@ -1711,7 +1711,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8993760627012879038">Open a new tab in Incognito mode</translation>
 <translation id="8996847606757455498">Choose another provider</translation>
 <translation id="8998289560386111590">Not available on your device</translation>
-<translation id="8998729206196772491">You are signing in with an account managed by <ph name="MANAGED_DOMAIN" /> and giving its administrator control over your Chrome data. Your data will become permanently tied to this account. Signing out of Chrome will delete your data from this device, but it will remain stored in your Google Account.</translation>
 <translation id="8998837250940831980">Couldn’t minimise tab. Please try again later.</translation>
 <translation id="9001604755921395912">Open in Incognito Chrome tab</translation>
 <translation id="9007002441981613214">Fix problem with saved passwords</translation>

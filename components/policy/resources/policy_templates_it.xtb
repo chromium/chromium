@@ -1961,6 +1961,7 @@ L'utente può scegliere un'immagine di Google Foto come sfondo se questo criteri
       La configurazione di <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valore 2) impedisce di applicare al browser tutte le varianti. Questa modalità potrebbe impedire agli sviluppatori di <ph name="PRODUCT_NAME" /> di fornire tempestivamente correzioni fondamentali per la sicurezza ed è pertanto sconsigliata.</translation>
 <translation id="2402537890732357732">Mostra sempre l'etichetta di gestione</translation>
 <translation id="2402547085566757554">Non usare la pagina Nuova scheda come home page</translation>
+<translation id="2405765347317553213">Impostazioni Confronta schede</translation>
 <translation id="240713331529749993">Se il criterio viene configurato, ciascuna delle origini denominate in un elenco separato da virgole viene eseguita in un processo dedicato su Android. Il processo di ogni origine denominata potrà contenere solo documenti provenienti da tale origine e i relativi sottodomini. Ad esempio, specificare https://a1.example.com/ consente https://a2.a1.example.com/ nello stesso processo, ma non https://example.com o https://b.example.com. Tieni presente che Android isola alcuni siti sensibili per impostazione predefinita a partire da <ph name="PRODUCT_NAME" /> 77 e il criterio estende questa modalità per isolare origini aggiuntive specifiche.
 
       A partire da <ph name="PRODUCT_NAME" /> 77, puoi specificare anche un intervallo di origini da isolare utilizzando un carattere jolly. Ad esempio, specificare https://[*.]corp.example.com consentirà a ogni origine al di sotto di https://corp.example.com il proprio processo dedicato, inclusi https://corp.example.com stesso, https://a1.corp.example.com e https://a2.a1.corp.example.com.
@@ -5684,6 +5685,15 @@ Gli account gestiti non sono idonei a far parte di un gruppo Famiglia o a crearl
 <translation id="5331746669335642668">La norma relativa al cloud <ph name="PRODUCT_NAME" /> esegue l'override della norma relativa alla piattaforma.</translation>
 <translation id="5334404204520035180">Controlla l'utilizzo dell'API WebPrinting</translation>
 <translation id="5334501839642146593">Non inviare mai le metriche a Google</translation>
+<translation id="5334717773960843025">Confronta schede è uno strumento basato sull'AI per confrontare le informazioni nelle schede di un utente. Ad esempio, la funzionalità può essere offerta all'utente quando sono aperte più schede con prodotti in una categoria simile.
+
+0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o a migliorare i modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output e materiali originali. Possono essere esaminati da persone al solo scopo di migliorare i modelli di AI.
+
+0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Attiva la funzionalità per gli utenti, ma non invia dati a Google per addestrare o migliorare i modelli di AI. 1 è il valore predefinito per gli account Enterprise gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+2 = Disattiva la funzionalità. 2 è il valore predefinito per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.</translation>
 <translation id="5335910979215357815">Attiva l'API Save and Share per il controllo di <ph name="PRODUCT_OS_NAME" /> di terze parti.</translation>
 <translation id="5339096331970464266">Attiva la tastiera virtuale di accessibilità</translation>
 <translation id="5340008866815063393">Attiva la generazione di report sui dati dei criteri</translation>
@@ -5985,6 +5995,15 @@ Consulta anche https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed
 <translation id="5561811616825571914">Seleziona automaticamente i certificati client per questi siti nella schermata di accesso</translation>
 <translation id="5561893881195372931">Disabilita alto contrasto</translation>
 <translation id="5563240289883266691">Attiva la generazione di report sull'utilizzo delle app Linux</translation>
+<translation id="5564424694465792000">Questo criterio consente di stabilire il comportamento di accesso del browser. Consente di specificare se l'utente può accedere a <ph name="PRODUCT_NAME" /> con il proprio account e usare i servizi correlati all'account come Sincronizzazione <ph name="PRODUCT_NAME" />.
+
+      Se il criterio viene impostato su "Disattiva accesso al browser", l'utente non potrà accedere al browser e usare i servizi basati sull'account. In questo caso, le funzionalità a livello di browser come Sincronizzazione <ph name="PRODUCT_NAME" /> non potranno essere usate e non saranno disponibili. Su <ph name="IOS_NAME" />, se il criterio viene impostato su "Disattivato" dopo che l'utente ha eseguito l'accesso, l'utente verrà scollegato immediatamente. Su altre piattaforme, l'utente verrà scollegato alla successiva esecuzione di <ph name="PRODUCT_NAME" />. Su tutte le piattaforme, i dati locali del profilo, come preferiti, password e così via, verranno mantenuti e potranno essere utilizzati. L'utente potrà comunque accedere e usare i web service di Google come Gmail.
+
+      Se il criterio viene impostato su "Attiva accesso al browser", l'utente potrà accedere al browser. Su tutte le piattaforme, tranne su <ph name="IOS_NAME" />, l'utente accederà automaticamente al browser dopo che avrà eseguito l'accesso a web service di Google come Gmail. Se viene eseguito l'accesso al browser, i dati dell'account dell'utente verranno memorizzati dal browser, ma la funzione Sincronizzazione <ph name="PRODUCT_NAME" /> non verrà attivata per impostazione predefinita; per poter utilizzare questa funzionalità, l'utente dovrà attivarla separatamente. Se questo criterio viene attivato, l'utente non potrà disattivare l'impostazione che consente l'accesso al browser. Per gestire la disponibilità della funzionalità Sincronizzazione <ph name="PRODUCT_NAME" />, usa il criterio <ph name="SYNC_POLICY_NAME" />.
+
+      Se il criterio viene impostato su "Forza accesso al browser", all'utente verrà mostrata una finestra di dialogo di selezione dell'account, da cui dovrà scegliere un account a cui accedere per usare il browser. Questa misura garantisce l'applicazione dei criteri associati all'account nell'ambito degli account gestiti. Il valore predefinito del criterio <ph name="GUEST_MODE_POLICY_NAME" /> sarà disattivato. Tieni presente che i profili esistenti a cui non viene eseguito l'accesso saranno bloccati e inaccessibili dopo l'attivazione di questo criterio. Per maggiori informazioni, leggi il seguente articolo del Centro assistenza: https://support.google.com/chrome/a/answer/7572556. Questa opzione non è supportata su <ph name="LINUX_OS_NAME" /> né su <ph name="ANDROID_NAME" />, dove, se utilizzata, verrà impostata su "Attiva accesso al browser".
+
+      Se questo criterio non viene configurato, l'utente potrà decidere se attivare o meno l'opzione di accesso al browser nelle impostazioni di <ph name="PRODUCT_NAME" /> e di usarla in base alle necessità.</translation>
 <translation id="5565178130821694365">Inserimento della password richiesto ogni due giorni (48 ore)</translation>
 <translation id="5566210228171064229">Consenti la stampa con e senza PIN</translation>
 <translation id="5569504149646180067">Consente di configurare l'accesso automatico degli utenti per gli account supportati da un provider di identità cloud Microsoft®.

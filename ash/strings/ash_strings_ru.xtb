@@ -561,6 +561,7 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Развернуть меню</translation>
 <translation id="3087734570205094154">Снизу</translation>
+<translation id="3090214513075567547">Открыть контекстное меню</translation>
 <translation id="3090989381251959936">Включить или отключить функцию "<ph name="FEATURE_NAME" />". <ph name="STATE_TEXT" />.</translation>
 <translation id="3093423061078042895">Срок сдачи пропущен</translation>
 <translation id="3095995014811312755">версия</translation>
@@ -1446,6 +1447,7 @@
 <translation id="6068258534237496331">Элементы управления видеовызовом</translation>
 <translation id="6073451960410192870">Остановить запись</translation>
 <translation id="6074087755403037157">Бета-версия</translation>
+<translation id="6091929401758362855">Плейлист "<ph name="PLAYLIST_TITLE" />"</translation>
 <translation id="6093867385179428431">Отключено администратором</translation>
 <translation id="6095008505822982596">Скорость речи</translation>
 <translation id="6095425951508823973">Добавить подключение от поставщика "<ph name="PROVIDER" />"</translation>
@@ -2243,7 +2245,6 @@
 <translation id="899350903320462459">Чтобы выполнить действие, предложенное в уведомлении, разблокируйте устройство с помощью аккаунта <ph name="LOGIN_ID" />.</translation>
 <translation id="8993733019280019776">Микрофон отключен. Выберите микрофон, чтобы включить его.</translation>
 <translation id="9000771174482730261">ОЧИСТИТЬ ХРАНИЛИЩЕ</translation>
-<translation id="9002204506712855687">Посмотрите, какие функции мы добавили</translation>
 <translation id="9005984960510803406">Открыть окно Crosh</translation>
 <translation id="9017320285115481645">Введите родительский код доступа Family Link.</translation>
 <translation id="9024331582947483881">полноэкранный режим</translation>

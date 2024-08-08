@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">Surt</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Creat fa <ph name="NUM_HOURS_ONE" /> hora}other{Creat fa <ph name="NUM_HOURS_MANY" /> hores}}</translation>
 <translation id="2801787514987684416">Vols consultar la informació de la botiga?</translation>
+<translation id="2894757982205307093">Pestanya nova al grup</translation>
 <translation id="2928243913527329289">Google | Sobre aquesta botiga</translation>
 <translation id="2977480621796371840">Suprimeix del grup</translation>
 <translation id="29919168204617356">Les pestanyes inactives es tancaran automàticament. Sempre les pots trobar a Historial.</translation>

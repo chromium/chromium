@@ -6150,6 +6150,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5435779377906857208">Caniatáu i <ph name="HOST" /> gael mynediad at eich lleoliad bob amser</translation>
 <translation id="5436492226391861498">Yn aros am dwnnel y dirprwy weinydd…</translation>
 <translation id="5436510242972373446">Chwilio <ph name="SITE_NAME" /></translation>
+<translation id="5438014818441491616">Mae'r ffenestr <ph name="WINDOW_SIDE" /> bellach yn <ph name="WINDOW_SIZE_PERCENT" /> o led, mae'r paen <ph name="PANE_SIDE" /> bellach yn <ph name="PANE_SIZE_PERCENT" /> o led.</translation>
 <translation id="5440425659852470030">Cau'r Panel Ochr</translation>
 <translation id="544083962418256601">Creu llwybrau byr...</translation>
 <translation id="5441133529460183413">Ap Gwe wedi'i osod o borwr Chrome</translation>
@@ -8560,6 +8561,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 wefan yng ngrŵp <ph name="FPS_OWNER" />}zero{{MEMBERS} gwefan yng ngrŵp <ph name="FPS_OWNER" />}two{{MEMBERS} wefan yng ngrŵp <ph name="FPS_OWNER" />}few{{MEMBERS} gwefan yng ngrŵp <ph name="FPS_OWNER" />}many{{MEMBERS} gwefan yng ngrŵp <ph name="FPS_OWNER" />}other{{MEMBERS} gwefan yng ngrŵp <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Defnyddiwch Windows Hello wrth lenwi cyfrineiriau</translation>
 <translation id="7225179976675429563">Mae math y rhwydwaith ar goll</translation>
+<translation id="7227235818314667565">Rheoli Rhannu</translation>
 <translation id="7227458944009118910">Gall yr apiau sydd wedi'u rhestru isod ymdrin â dolenni protocol hefyd. Bydd apiau eraill yn gofyn am ganiatâd.</translation>
 <translation id="7228056665272655255">I osod olion bysedd, gofynnwch i'ch plentyn gyffwrdd â'r synhwyrydd olion bysedd ar gornel dde uchaf y bysellfwrdd. Mae data olion bysedd eich plentyn yn cael eu storio'n ddiogel a byth yn gadael y <ph name="DEVICE_TYPE" /> hwn.</translation>
 <translation id="7228523857728654909">Clo sgrîn a mewngofnodi</translation>
@@ -8608,6 +8610,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7258192266780953209">Trawsnewidiadau</translation>
 <translation id="7258225044283673131">Nid yw'r ap yn ymateb. Dewiswch "Gorfodi i gau" i gau'r ap.</translation>
 <translation id="7260186537988033909">Wedi cwblhau cofrestru dyfais ciosg neu arwyddion</translation>
+<translation id="7261217796641151584">Rhannu Grŵp</translation>
 <translation id="7261612856573623172">Llais Testun i Lefarydd System</translation>
 <translation id="7262004276116528033">Mae'r gwasanaeth mewngofnodi hwn yn cael ei westeio gan <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Defnyddio'r ap <ph name="APP" /> bob amser i agor dolenni gwe a gefnogir?</translation>
@@ -10544,6 +10547,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8656888282555543604">Galluogi cofnodi braille</translation>
 <translation id="8657393004602556571">Ydych chi am gael gwared ar yr adborth?</translation>
 <translation id="8657542881463614516">Defnyddiwch ystum sweipio i lywio rhwng tudalennau</translation>
+<translation id="865936634714975126">Ychwanegu paramedr ymholiad yn yr URL i ddewis mathau ar lwyth tudalen. Enghraifft: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Cysylltiadau <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Symudodd y ffenestr i lawr</translation>
 <translation id="8661290697478713397">Agor y Ddolen mewn Ffenestr Anh&amp;ysbys</translation>

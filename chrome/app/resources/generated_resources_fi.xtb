@@ -2656,6 +2656,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2853121255651601031">Salasana tallennettu</translation>
 <translation id="2855243985454069333">Poistaa kaikkien synkronoitujen laitteiden historian</translation>
 <translation id="2855812646048059450">Kirjaudu sisään: <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Tiukka tila</translation>
 <translation id="2856776373509145513">Luo uusi säilö</translation>
 <translation id="2856907950922663165">Laitetaanko URL-salaus pois päältä?</translation>
 <translation id="2859741939921354763">Tuo salasanoja tänne: <ph name="BRAND" /></translation>
@@ -6411,6 +6412,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5623282979409330487">Tämä sivusto käyttää liiketunnistimien lukemia.</translation>
 <translation id="5623842676595125836">Loki</translation>
 <translation id="5624120631404540903">Hallitse salasanoja</translation>
+<translation id="5624959475330585145">Kysy ennen suojaamattomien yhteyksien käyttöä</translation>
 <translation id="5625225435499354052">Muokkaa Google Payssa</translation>
 <translation id="5626134646977739690">Nimi:</translation>
 <translation id="5627832140542566187">Näytön suunta</translation>
@@ -9644,6 +9646,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8008356846765065031">Internetyhteys katkaistu. Tarkista internetyhteytesi.</translation>
 <translation id="8008704580256716350">Epäilyttävä tiedosto estetty</translation>
 <translation id="8009225694047762179">Salasanojen hallinta</translation>
+<translation id="8010081455002666927">Automaattinen tunnistus</translation>
 <translation id="8011372169388649948"><ph name="BOOKMARK_TITLE" /> siirretty.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Pikahotspotin tiedot</translation>
@@ -11047,6 +11050,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="9009707268312089299">Tuotu Windowsista</translation>
 <translation id="9009708085379296446">Halusitko muuttaa tätä sivua?</translation>
 <translation id="9010845741772269259">Maksutapojen lisääminen</translation>
+<translation id="901087299639956505">Tasapainoinen tila</translation>
 <translation id="9011163749350026987">Näytä kuvake aina</translation>
 <translation id="9011262023858991985">Välilehteä striimataan</translation>
 <translation id="9011393886518328654">Julkaisutiedot</translation>

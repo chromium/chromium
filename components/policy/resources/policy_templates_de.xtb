@@ -433,6 +433,15 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
       Wenn „Erzwungen“ (2) ausgewählt ist, kann der Profil-Picker nicht durch den Nutzer unterdrückt werden. Der Profil-Picker wird auch dann angezeigt, wenn nur ein Profil verfügbar ist.</translation>
 <translation id="1339174690935954950">Verhindern, dass Nutzer Feedback geben</translation>
 <translation id="1340053691042184658">Browseranmeldungen durch Gäste verhindern</translation>
+<translation id="134154550994512097">Mit dieser Richtlinie wird festgelegt, ob Nutzer den Nur-HTTPS-Modus („Immer sichere Verbindungen verwenden“) in den Einstellungen aktivieren können. Über den Nur-HTTPS-Modus werden alle Aufrufe von Websites auf HTTPS umgestellt.
+      Wenn diese Einstellung nicht konfiguriert oder auf „Zugelassen“ festgelegt ist, dürfen Nutzer den Nur-HTTPS-Modus aktivieren.
+      Ist sie auf „Nicht zugelassen“ festgelegt, dürfen Nutzer den Nur-HTTPS-Modus nicht aktivieren.
+      Wenn diese Einstellung auf „force_enabled“ gesetzt ist, wird der Nur-HTTPS-Modus im strikten Modus aktiviert und Nutzer können ihn nicht deaktivieren.
+      Ist diese Einstellung auf „force_balanced_enabled“ gesetzt, wird der Nur-HTTPS-Modus im ausgewogenen Modus aktiviert und Nutzer können ihn nicht deaktivieren.
+      Die Option „force_enabled“ wird ab M112 unterstützt, „force_balanced_enabled“ ab M129.
+      Wird die Richtlinie auf einen Wert festgelegt, der von der Chrome-Version, die diese Richtlinie erhält, nicht unterstützt wird, wird in Chrome standardmäßig die Einstellung auf „Erlaubt“ gesetzt.
+
+Die separate Richtlinie „<ph name="HTTP_ALLOWLIST_POLICY_NAME" />“ kann verwendet werden, um bestimmte Hostnamen oder Hostnamenmuster von der Aktualisierung auf HTTPS durch diese Funktion auszuschließen.</translation>
 <translation id="1342918903685430097">Konfiguriere die für das Gerät erforderliche Mindestversion von <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1343128241903870688">Melden der App-Informationen auf Geräten deaktivieren</translation>
 <translation id="1347198119056266798">Diese Richtlinie wurde eingestellt. Verwende statt ihrer "<ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />" und "<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />". Diese Richtlinie wird ignoriert, wenn entweder die Richtlinie "<ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />", "<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />" oder die veraltete Richtlinie "<ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" />" konfiguriert ist.
@@ -2592,6 +2601,9 @@ Die Richtlinie „<ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME
 <translation id="2973972555495515337">Wenn die Richtlinie aktiviert ist, können Webanwendungen von Drittanbietern die <ph name="DESK_API_NAME" /> verwenden, um <ph name="PRODUCT_OS_NAME" />-Desktops zu speichern und freizugeben. Ist die Richtlinie deaktiviert, können Nutzer keine Desktopdaten über die <ph name="DESK_API_NAME" /> speichern und freigeben. Ist die Richtlinie nicht konfiguriert, entspricht das Verhalten der Einstellung „Deaktiviert“. Die Richtlinie wird nur auf registrierten Geräten angewendet.</translation>
 <translation id="2976033779241323433">Touch-Bildschirmtastatur basierend auf der standardmäßigen Systemheuristik aktivieren</translation>
 <translation id="2976429807269247880">Einstellungen für das Verhalten des alten „<ph name="ATTRIBUTE_SAMESITE_NAME" />“-Cookies</translation>
+<translation id="2977576137210520963">Wenn du diese Richtlinie konfigurierst, gibst du eine Liste von URLs an, deren Muster mit dem SecurityOrigin-Objekt der anfragenden URL abgeglichen werden. Bei einer Übereinstimmung wird ohne Nachfrage Zugriff auf Audioaufnahmegeräte gewährt.
+
+      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Das Muster „*“, das bei jeder URL zu einer Übereinstimmung führt, wird von dieser Richtlinie jedoch nicht unterstützt.</translation>
 <translation id="2979696534869541158">Alte Implementierung erzwingen</translation>
 <translation id="2985927503455169394">Standardmodus für das Einrichten von Assistant verwenden</translation>
 <translation id="2987155890997901449">ARC aktivieren</translation>
@@ -6600,6 +6612,7 @@ Wenn die Richtlinie auf „<ph name="BR_UNDER_USER_CONTROL" />“ festgelegt ist
 
 Nach der Ersteinrichtung können Nutzer selbst entscheiden, ob sie „Sichern und wiederherstellen“ nutzen möchten.</translation>
 <translation id="6169768162756928771">GAIA-Einstellungen zur Verwaltung der Nutzeridentität</translation>
+<translation id="6170316094401732532">Einstellung für den Nur-HTTPS-Modus von Nutzern nicht einschränken</translation>
 <translation id="6172110090237528457">Mit dieser Richtlinie wird der Bildschirmschoner auf Geräteebene für den Anmeldebildschirm konfiguriert.
 
 Wenn diese Richtlinie auf „true“ gesetzt ist, wird bei Inaktivität auf dem <ph name="PRODUCT_OS_NAME" />-Gerät ein Bildschirmschoner auf dem Anmeldebildschirm angezeigt.
@@ -7291,6 +7304,9 @@ Hinweis: Durch einen Neustart oder eine Abmeldung wird der Cache geleert.</trans
 
           Diese Richtlinie ist nicht wirksam, wenn sie aktiviert, leer gelassen oder nicht konfiguriert wird.</translation>
 <translation id="6583249367505445969">Lesezeichenleiste deaktivieren</translation>
+<translation id="6583473893541367102">Wenn du diese Richtlinie konfigurierst, gibst du eine Liste von URLs an, deren Muster mit dem SecurityOrigin-Objekt der anfragenden URL abgeglichen werden. Bei einer Übereinstimmung wird ohne Nachfrage Zugriff auf Videoaufnahmegeräte gewährt.
+
+      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Das Muster „*“, das bei jeder URL zu einer Übereinstimmung führt, wird von dieser Richtlinie jedoch nicht unterstützt.</translation>
 <translation id="6584122839583172231">In den Einstellungen von F12 wird die Tastenkombination verwendet, die den Strg- und den Umschalttaste-Modifikator enthält</translation>
 <translation id="6584541828182430328">Anzeige von Vollbild-Warnung deaktivieren</translation>
 <translation id="658537215958747575">Geeigneten Ursprüngen erlauben, Direct Sockets zu verwenden</translation>
@@ -8740,6 +8756,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird der PDF-Renderer vom Browser 
       Hinweis: Unter https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables findest du eine Liste der Variablen, die verwendet werden können.</translation>
 <translation id="7719808201797990069">URL-Muster-Ausnahmen für das Verwerfen von Tabs</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" />-Nutzer-ID</translation>
+<translation id="7725010277314676939">Aktivieren des Nur-HTTPS-Modus im strikten Modus erzwingen</translation>
 <translation id="7728486978686128364">Anfragemethoden nie groß schreiben, außer DELETE/GET/HEAD/OPTIONS/POST/PUT</translation>
 <translation id="7731026922044991970">Auf allen Websites das alte "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Verhalten für Cookies wiederherstellen</translation>
 <translation id="7732907212083471072">Entfernte Richtlinien</translation>
@@ -10625,6 +10642,7 @@ Weitere Informationen zu sicheren Kontexten findest du unter https://www.w3.org/
 
       Diese Richtlinie ist eine vorübergehende Maßnahme. Sie wird aus künftigen Versionen von <ph name="PRODUCT_NAME" /> entfernt. Nachdem sie entfernt wurde, kann <ph name="PRODUCT_NAME" /> zusätzliche DNS-Typen immer abfragen.</translation>
 <translation id="9167719789236691545">Synchronisierung zwischen Drive und der App "Dateien" von <ph name="PRODUCT_OS_NAME" /> deaktivieren</translation>
+<translation id="9172648973829444124">Aktivieren des Nur-HTTPS-Modus im ausgewogenen Modus erzwingen</translation>
 <translation id="9172911925443428317">Werbung für App Store-Bewertungen nicht zulassen</translation>
 <translation id="9173133289347070466">Mit produktinternen Umfragen für <ph name="PRODUCT_NAME" /> wird Nutzerfeedback zum Browser erfasst. Umfrageantworten sind nicht mit Nutzerkonten verknüpft.
 Ist diese Richtlinie aktiviert oder nicht konfiguriert, können Nutzern produktinterne Umfragen angezeigt werden.
@@ -10636,6 +10654,7 @@ Diese Richtlinie ist nicht wirksam, wenn „<ph name="METRICS_REPORTING_ENABLED_
 <translation id="9180108183162961002">Browseranmeldungen durch Gäste zulassen</translation>
 <translation id="9185963199234034321">Hohen Kontrast auf dem Anmeldebildschirm aktivieren und dem Nutzer erlauben, die Funktion vorübergehend zu deaktivieren</translation>
 <translation id="9187743794267626640">Bereitstellen von externem Speicher deaktivieren</translation>
+<translation id="9189737595688383533">Nutzern nicht erlauben, den Nur-HTTPS-Modus zu aktivieren</translation>
 <translation id="9190022798664427644">Mono-Audio aktivieren</translation>
 <translation id="9190456586252617675">Mit dieser Richtlinie kann der Modus für die Einrichtung von Assistant konfiguriert werden.
 

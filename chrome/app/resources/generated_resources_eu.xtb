@@ -2644,6 +2644,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2853121255651601031">Gorde da pasahitza</translation>
 <translation id="2855243985454069333">Sinkronizatuta dauden gailu guztietako historia ezabatzen du</translation>
 <translation id="2855812646048059450">Hasi saioa <ph name="CREDENTIAL_PROVIDER" /> erabilita</translation>
+<translation id="28559674945112027">Modu zorrotza</translation>
 <translation id="2856776373509145513">Sortu edukiontzi bat</translation>
 <translation id="2856907950922663165">URLak enkriptatzeko aukera desaktibatu nahi duzu?</translation>
 <translation id="2859741939921354763">Inportatu pasahitzak <ph name="BRAND" /> zerbitzura</translation>
@@ -6130,6 +6131,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5435779377906857208">Eman beti kokapena erabiltzeko baimena <ph name="HOST" /> ostalariari</translation>
 <translation id="5436492226391861498">Proxy-tunelaren zain…</translation>
 <translation id="5436510242972373446">Bilatu <ph name="SITE_NAME" /> bidez:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> leihoaren zabalera <ph name="WINDOW_SIZE_PERCENT" /> da orain, <ph name="PANE_SIDE" /> panelaren zabalera <ph name="PANE_SIZE_PERCENT" /> da orain.</translation>
 <translation id="5440425659852470030">Itxi alboko panela</translation>
 <translation id="544083962418256601">Sortu lasterbideak…</translation>
 <translation id="5441133529460183413">Chrome arakatzailetik instalatutako web-aplikazioa</translation>
@@ -6395,6 +6397,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5623282979409330487">Mugimendu-sentsoreak atzitzen ari da webgunea.</translation>
 <translation id="5623842676595125836">Erregistroa</translation>
 <translation id="5624120631404540903">Kudeatu pasahitzak</translation>
+<translation id="5624959475330585145">Galdetu konexio ez-seguruak erabili baino lehen</translation>
 <translation id="5625225435499354052">Editatu Google Pay-n</translation>
 <translation id="5626134646977739690">Izena:</translation>
 <translation id="5627832140542566187">Pantailaren orientazioa</translation>
@@ -8529,6 +8532,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 webgune <ph name="FPS_OWNER" /> domeinuaren taldean}other{{MEMBERS} webgune <ph name="FPS_OWNER" /> domeinuaren taldean}}</translation>
 <translation id="7225082563376899794">Pasahitzak betetzean, erabili Windows Hello</translation>
 <translation id="7225179976675429563">Sare mota falta da</translation>
+<translation id="7227235818314667565">Kudeatu partekatzea</translation>
 <translation id="7227458944009118910">Zerrenda honetako aplikazioek protokoloen estekak ere erabil ditzakete. Gainerako aplikazioek baimena eskatuko dute.</translation>
 <translation id="7228056665272655255">Hatz-marka konfiguratzeko, eskatu haurrari teklatuaren goiko eskuinaldeko izkinan dagoen hatz-marken sentsorea sakatzeko. Haurraren hatz-markaren datuak modu seguruan gordeko dira eta ez dira inoiz aterako <ph name="DEVICE_TYPE" /> gailutik.</translation>
 <translation id="7228523857728654909">Saio-hasiera eta pantailaren blokeoa</translation>
@@ -8577,6 +8581,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7258192266780953209">Eraldaketak</translation>
 <translation id="7258225044283673131">Aplikazioak ez du erantzuten. Ixteko, hautatu "Behartu ixtera".</translation>
 <translation id="7260186537988033909">Osatu da gailuaren erregistroa (kiosko eta seinaleztatze modua)</translation>
+<translation id="7261217796641151584">Partekatu taldea</translation>
 <translation id="7261612856573623172">Testua ahots bihurtzeko eginbiderako sistemaren ahotsa</translation>
 <translation id="7262004276116528033">Saioa hasteko zerbitzuaren ostalaria <ph name="SAML_DOMAIN" /> da</translation>
 <translation id="7264695323040866038">Beti <ph name="APP" /> aplikazioa erabili nahi duzu web-esteka bateragarriak irekitzeko?</translation>
@@ -9624,6 +9629,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8008356846765065031">Internet deskonektatuta dago. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="8008704580256716350">Fitxategi susmagarri bat blokeatu da</translation>
 <translation id="8009225694047762179">Kudeatu pasahitzak</translation>
+<translation id="8010081455002666927">Hautemate automatikoa</translation>
 <translation id="8011372169388649948">Mugitu da <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="8012188750847319132">blok maius</translation>
 <translation id="8012463809859447963">Istanteko wifi-gunearen xehetasunak</translation>
@@ -10512,6 +10518,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8656888282555543604">Gaitu braille-teklatua erregistratzeko aukera</translation>
 <translation id="8657393004602556571">Oharrak baztertu nahi dituzu?</translation>
 <translation id="8657542881463614516">Erabili hatza pasatzeko keinua orrietan zehar nabigatzeko</translation>
+<translation id="865936634714975126">Gehitu kontsulta-parametro bat URLan, orria kargatzean motak hautatzeko. Adibidea: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> eginbiderako kontaktuak</translation>
 <translation id="8659609431223166673">Leihoa beherantz eraman da</translation>
 <translation id="8661290697478713397">Ireki esteka &amp;ezkutuko moduko leihoan</translation>
@@ -11025,6 +11032,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="9009707268312089299">Windows-etik inportatutakoak</translation>
 <translation id="9009708085379296446">Aldaketak egin nahi zenizkion orriari?</translation>
 <translation id="9010845741772269259">Gehitu ordainketa-metodoak</translation>
+<translation id="901087299639956505">Modu orekatua</translation>
 <translation id="9011163749350026987">Erakutsi beti ikonoa</translation>
 <translation id="9011262023858991985">Fitxa hau igortzen</translation>
 <translation id="9011393886518328654">Bertsioaren oharrak</translation>

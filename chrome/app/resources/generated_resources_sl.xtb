@@ -2660,6 +2660,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2853121255651601031">Geslo je shranjeno</translation>
 <translation id="2855243985454069333">Izbriše zgodovino iz vseh sinhroniziranih naprav</translation>
 <translation id="2855812646048059450">Prijava s ponudnikom <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Strogi način</translation>
 <translation id="2856776373509145513">Ustvarjanje novega vsebnika</translation>
 <translation id="2856907950922663165">Želite izklopiti šifriranje URL-jev?</translation>
 <translation id="2859741939921354763">Uvoz gesel v izdelek <ph name="BRAND" /></translation>
@@ -6420,6 +6421,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5623282979409330487">To spletno mesto dostopa do tipal gibanja.</translation>
 <translation id="5623842676595125836">Dnevnik</translation>
 <translation id="5624120631404540903">Upravljanje gesel</translation>
+<translation id="5624959475330585145">Vprašaj pred uporabo povezav, ki niso varne</translation>
 <translation id="5625225435499354052">Uredi v Googlu Pay</translation>
 <translation id="5626134646977739690">Ime:</translation>
 <translation id="5627832140542566187">Postavitev zaslona</translation>
@@ -9660,6 +9662,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8008356846765065031">Internetna povezava je prekinjena. Preverite povezavo.</translation>
 <translation id="8008704580256716350">Sumljiva datoteka je blokirana</translation>
 <translation id="8009225694047762179">Upravljanje gesel</translation>
+<translation id="8010081455002666927">Samodejno zaznavanje</translation>
 <translation id="8011372169388649948">Premaknjeno: »<ph name="BOOKMARK_TITLE" />«.</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8012463809859447963">Podrobnosti takojšnje dostopne točke</translation>
@@ -11066,6 +11069,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="9009707268312089299">Uvoženo iz sistema Windows</translation>
 <translation id="9009708085379296446">Ali ste nameravali spremeniti to stran?</translation>
 <translation id="9010845741772269259">Dodajanje plačilnih sredstev</translation>
+<translation id="901087299639956505">Uravnoteženi način</translation>
 <translation id="9011163749350026987">Vedno pokaži ikono</translation>
 <translation id="9011262023858991985">Predvajanje tega zavihka</translation>
 <translation id="9011393886518328654">Opombe ob izdaji</translation>

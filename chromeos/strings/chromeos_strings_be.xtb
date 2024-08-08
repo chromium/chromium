@@ -95,7 +95,7 @@
 <translation id="1449035143498573192">Адкрыць у Google Пошуку</translation>
 <translation id="1451536289672181509">Гэта клавіятура.</translation>
 <translation id="1452939186874918380">парасоны</translation>
-<translation id="1459693405370120464">Надвор'е</translation>
+<translation id="1459693405370120464">Надвор’е</translation>
 <translation id="1463084054301832672">катэдж</translation>
 <translation id="1468664791493211953">Прапановы</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> кіруе гэтай прыладай і можа адсочваць вашы дзеянні.</translation>
@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">стрэлка ўніз</translation>
 <translation id="4425149324548788773">Мой Дыск</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" />: выключана</translation>
+<translation id="4428840632568803690">Суразмоўнік <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Дзеянне білета Kerberos хутка скончыцца</translation>
 <translation id="4431821876790500265">Паглядзець справаздачу</translation>
 <translation id="4443192710976771874">чырвоны</translation>
@@ -1293,6 +1294,7 @@
 <translation id="7802764839223122985">Клавіша не ўказана. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Не, дзякуй</translation>
 <translation id="7805768142964895445">Стан</translation>
+<translation id="7811024689617730980">Выберыце дзень ад 1 да 31 уключна, у які будзе выкананы аўтаматычны скід</translation>
 <translation id="7813073042185856802">гара</translation>
 <translation id="7819857487979277519">PSK (WPA або RSN)</translation>
 <translation id="7824219488248240180">постімпрэсіянізм</translation>

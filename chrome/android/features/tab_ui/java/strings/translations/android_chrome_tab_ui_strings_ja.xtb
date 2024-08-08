@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> 時間前に作成}other{<ph name="NUM_HOURS_MANY" /> 時間前に作成}}</translation>
 <translation id="2801787514987684416">ストア情報を表示しますか？</translation>
+<translation id="2894757982205307093">グループにタブを追加</translation>
 <translation id="2928243913527329289">Google | このショップについて</translation>
 <translation id="2977480621796371840">グループから削除</translation>
 <translation id="29919168204617356">アクティブでないタブは自動的に閉じられます。閉じたタブは履歴でいつでも見つけることができます。</translation>

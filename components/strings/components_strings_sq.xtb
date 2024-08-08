@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Ndrysho fjalëkalimin</translation>
 <translation id="1089599132348386324">Mund të ndërrosh mendje në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="1090629319939036170">Menyja e VR-së</translation>
-<translation id="1091543275053148479">Të dhënat e shfletimit, duke përfshirë historikun dhe fjalëkalimet, mund të shihen dhe të menaxhohen</translation>
 <translation id="1091779689406092804">pamjet e ekranit</translation>
 <translation id="1094777233105318927">Informacionet për shfletuesin, sistemin operativ, pajisjen, softuerët e instaluar dhe skedarët</translation>
 <translation id="1096545575934602868">Kjo fushë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> regjistrime. Të gjitha regjistrimet e mëtejshme do të refuzohen.</translation>
@@ -957,7 +956,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2770159525358613612">Provo t'i ngarkosh përsëri skedarët e tu</translation>
 <translation id="277133753123645258">Mënyra e dërgimit</translation>
 <translation id="2773388851563527404">Chrome i kufizon shumicën e sajteve që të mos përdorin kuki të palëve të treta. Por kukit e palëve të treta lejohen në këtë sajt sepse ai mbështetet tek ato për të ofruar shërbimet bazë. Vizito cilësimet <ph name="LINK" />.</translation>
-<translation id="2774077118134906782">Organizata jote po menaxhon shfletuesin tënd</translation>
 <translation id="277499241957683684">Mungon një regjistrim i pajisjes</translation>
 <translation id="2775884851269838147">Faqja e parë e printimit</translation>
 <translation id="2781185443919227679">Plazhe dhe ishuj</translation>
@@ -1940,6 +1938,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4652440160515225514">Organizata jote e ka bllokuar këtë sajt sepse ai shkel një politikë.</translation>
 <translation id="4658638640878098064">Kapje me tel lart majtas</translation>
 <translation id="4661556981531699496">Kafshë shtëpiake dhe kafshë të tjera</translation>
+<translation id="4661868874067696603">Kërko për opsione të tjera për të blerë</translation>
 <translation id="4663373278480897665">Kamera lejohet</translation>
 <translation id="466561305373967878">Lojëra tavoline</translation>
 <translation id="4668929960204016307">,</translation>
@@ -2428,6 +2427,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5559311991468302423">Fshi adresën</translation>
 <translation id="5560088892362098740">Data e skadimit</translation>
 <translation id="55635442646131152">Konturi i dokumentit</translation>
+<translation id="5563589142503817291">Për të përdorur vendndodhjen, jepi qasje Chrome te <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Hap skedën "e fshehtë"</translation>
 <translation id="5565735124758917034">Aktiv</translation>
 <translation id="5569030697349375295">Softuerë për kontabilitetin dhe financën</translation>
@@ -2804,6 +2804,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6300452962057769623">{0,plural, =0{Pajisja do të riniset tani}=1{Pajisja do të riniset pas 1 sekonde}other{Pajisja do të riniset pas # sekondash}}</translation>
 <translation id="6301104306974789820">Merr njoftime për monitorimin e çmimeve</translation>
 <translation id="6302546952464230349">Shfaq detajet e lejes (<ph name="PERMISSION_NAME" />)</translation>
+<translation id="6302661287897119265">Filtro</translation>
 <translation id="6304398603974202180">Softuerë për multimedia</translation>
 <translation id="6305205051461490394"><ph name="URL" /> është i paarritshëm.</translation>
 <translation id="6306713302480826305">Kjo adresë do të fshihet nga kjo pajisje dhe nga pajisjet e tjera ku je identifikuar</translation>
@@ -2908,6 +2909,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6458606150257356946">Ngjite gjithsesi</translation>
 <translation id="6464094930452079790">imazhet</translation>
 <translation id="6465306955648956876">Menaxho fjalëkalimet...</translation>
+<translation id="646789491285795429">Po e monitoron tashmë këtë produkt</translation>
 <translation id="6468485451923838994">Shkrimet</translation>
 <translation id="647261751007945333">Politikat e pajisjes</translation>
 <translation id="6472874020827012601">Pëlhurë (mat)</translation>
@@ -3709,7 +3711,6 @@ Detaje shtesë:
 <translation id="7967636097426665267">Pajisje komunikimi</translation>
 <translation id="79682505114836835">Vlera "<ph name="VALUE" />" është një ngjyrë hekzadecimale e pavlefshme.</translation>
 <translation id="7968982339740310781">Shiko detajet</translation>
-<translation id="7971972534124227314">Për sigurinë e pajisjes, sistemi operativ, informacionet e shfletuesit dhe softueri i instaluar mund të jenë të dukshëm</translation>
 <translation id="7976214039405368314">Ka shumë kërkesa</translation>
 <translation id="7977538094055660992">Pajisja e daljes</translation>
 <translation id="7979595116210197019">Shërbim ushqimor</translation>
@@ -4070,7 +4071,6 @@ Detaje shtesë:
 <translation id="865032292777205197">sensorët e lëvizjes</translation>
 <translation id="865255447216708819">Film i printuar prapa</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" /> po menaxhon profilin tënd</translation>
 <translation id="8662463432865928030">Prona komerciale</translation>
 <translation id="8663226718884576429">Përmbledhje e porosisë, <ph name="TOTAL_LABEL" />, detaje të tjera</translation>
 <translation id="8663909737634214500">Disk optik</translation>
@@ -4302,7 +4302,6 @@ Detaje shtesë:
 <translation id="9103872766612412690"><ph name="SITE" /> përdor zakonisht enkriptimin për mbrojtjen e informacioneve të tua. Kur Chromium u përpoq të lidhej me <ph name="SITE" /> këtë herë, uebsajti dërgoi prapa kredenciale të pazakonta dhe të pasakta. Kjo mund të ndodhë kur një sulmues pretendon se është <ph name="SITE" /> ose kur lidhja është ndërprerë nga një ekran i identifikimit të Wi-Fi. Informacionet e tua janë ende të sigurta sepse Chromium e ndaloi lidhjen përpara se të shkëmbeheshin të dhënat.</translation>
 <translation id="9107467864910557787">Shfletuesi yt menaxhohet nga <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Politika e administratorit çaktivizon ndarjen e ekranit me <ph name="APPLICATION_TITLE" /> kur përmbajtja konfidenciale është e dukshme</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" /> po menaxhon shfletuesin tënd</translation>
 <translation id="9114524666733003316">Karta po konfirmohet…</translation>
 <translation id="9114581008513152754">Ky shfletues nuk menaxhohet nga një kompani ose organizatë tjetër. Aktiviteti në këtë pajisje mund të menaxhohet jashtë Chrome. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Më shumë rreth reklamave në Chrome</translation>

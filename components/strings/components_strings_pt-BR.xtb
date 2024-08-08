@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Alterar senha</translation>
 <translation id="1089599132348386324">Você pode mudar isso quando quiser nas configurações do Chrome.</translation>
 <translation id="1090629319939036170">Menu de RV</translation>
-<translation id="1091543275053148479">Os dados de navegação, incluindo o histórico e as senhas, podem ser conferidos e gerenciados</translation>
 <translation id="1091779689406092804">capturas de tela</translation>
 <translation id="1094777233105318927">Informações sobre seu navegador, SO, dispositivo, softwares instalados e arquivos</translation>
 <translation id="1096545575934602868">Esse campo não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as outras entradas serão descartadas.</translation>
@@ -957,7 +956,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2770159525358613612">Tente fazer o upload dos arquivos de novo</translation>
 <translation id="277133753123645258">Método de envio</translation>
 <translation id="2773388851563527404">O Chrome impede que a maioria dos sites use cookies de terceiros. No entanto, cookies de terceiros são permitidos neste site porque eles são necessários para o fornecimento de serviços básicos. Acesse as configurações para <ph name="LINK" />.</translation>
-<translation id="2774077118134906782">Sua organização está gerenciando o navegador</translation>
 <translation id="277499241957683684">Registro de dispositivo não encontrado</translation>
 <translation id="2775884851269838147">Primeira página de impressão</translation>
 <translation id="2781185443919227679">Praias e ilhas</translation>
@@ -1940,6 +1938,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4652440160515225514">Sua organização bloqueou este site porque ele viola uma política.</translation>
 <translation id="4658638640878098064">Grampo na parte superior direita</translation>
 <translation id="4661556981531699496">Animais em geral e de estimação</translation>
+<translation id="4661868874067696603">Pesquise mais opções de compra</translation>
 <translation id="4663373278480897665">Câmera permitida</translation>
 <translation id="466561305373967878">Jogos de tabuleiro</translation>
 <translation id="4668929960204016307">,</translation>
@@ -2428,6 +2427,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5559311991468302423">Excluir endereço</translation>
 <translation id="5560088892362098740">Data de validade</translation>
 <translation id="55635442646131152">Visualização do documento</translation>
+<translation id="5563589142503817291">Para usar sua localização, permita o acesso ao Chrome em <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Abrir guia anônima</translation>
 <translation id="5565735124758917034">Ativo</translation>
 <translation id="5569030697349375295">Software de contabilidade e finanças</translation>
@@ -2805,6 +2805,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6300452962057769623">{0,plural, =0{Seu dispositivo será reiniciado agora}=1{Seu dispositivo será reiniciado em 1 segundo}one{Seu dispositivo será reiniciado em # segundo}other{Seu dispositivo será reiniciado em # segundos}}</translation>
 <translation id="6301104306974789820">Receber notificações de acompanhamento de preço</translation>
 <translation id="6302546952464230349">Mostrar detalhes da permissão de <ph name="PERMISSION_NAME" /></translation>
+<translation id="6302661287897119265">Filtrar</translation>
 <translation id="6304398603974202180">Software de multimídia</translation>
 <translation id="6305205051461490394">Não é possível acessar <ph name="URL" />.</translation>
 <translation id="6306713302480826305">Esse endereço vai ser excluído deste e de outros dispositivos conectados</translation>
@@ -2909,6 +2910,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6458606150257356946">Colar mesmo assim</translation>
 <translation id="6464094930452079790">imagens</translation>
 <translation id="6465306955648956876">Gerenciar senhas…</translation>
+<translation id="646789491285795429">Você já está monitorando esse produto</translation>
 <translation id="6468485451923838994">Fontes</translation>
 <translation id="647261751007945333">Políticas de dispositivos</translation>
 <translation id="6472874020827012601">Tecido (fosco)</translation>
@@ -3710,7 +3712,6 @@ Mais detalhes:
 <translation id="7967636097426665267">Equipamentos de comunicações</translation>
 <translation id="79682505114836835">O valor "<ph name="VALUE" />" é uma cor hexadecimal inválida.</translation>
 <translation id="7968982339740310781">Mais detalhes</translation>
-<translation id="7971972534124227314">Para a segurança do dispositivo, o SO, as informações do navegador e o software instalado podem ficar visíveis</translation>
 <translation id="7976214039405368314">Excesso de solicitações</translation>
 <translation id="7977538094055660992">Dispositivo de saída</translation>
 <translation id="7979595116210197019">Serviço de alimentação</translation>
@@ -4072,7 +4073,6 @@ Mais detalhes:
 <translation id="865032292777205197">sensores de movimento</translation>
 <translation id="865255447216708819">Filme com impressão traseira</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" /> está gerenciando seu perfil</translation>
 <translation id="8662463432865928030">Imóveis comerciais</translation>
 <translation id="8663226718884576429">Resumo do pedido, <ph name="TOTAL_LABEL" />, Mais detalhes</translation>
 <translation id="8663909737634214500">Disco óptico</translation>
@@ -4305,7 +4305,6 @@ Mais detalhes:
 incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser <ph name="SITE" /> ou quando uma tela de login por Wi-Fi interrompeu a conexão. Suas informações ainda estão protegidas, porque o Chromium interrompeu a conexão antes que os dados fossem trocados.</translation>
 <translation id="9107467864910557787">Seu navegador é gerenciado por <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">A política do administrador desativará o compartilhamento de tela com <ph name="APPLICATION_TITLE" /> quando houver conteúdo confidencial visível</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" /> está gerenciando o navegador</translation>
 <translation id="9114524666733003316">Confirmando cartão…</translation>
 <translation id="9114581008513152754">Este navegador não é gerenciado por uma empresa ou outra organização. A atividade deste dispositivo pode ser gerenciada fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Mais informações sobre anúncios no Chrome</translation>

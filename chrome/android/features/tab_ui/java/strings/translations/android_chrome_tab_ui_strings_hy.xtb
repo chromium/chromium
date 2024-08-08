@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">Դուրս գալ էջից</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Ստեղծվել է <ph name="NUM_HOURS_ONE" /> ժամ առաջ}one{Ստեղծվել է <ph name="NUM_HOURS_MANY" /> ժամ առաջ}other{Ստեղծվել է <ph name="NUM_HOURS_MANY" /> ժամ առաջ}}</translation>
 <translation id="2801787514987684416">Դիտե՞լ խանութի մասին տեղեկությունները։</translation>
+<translation id="2894757982205307093">Նոր ներդիր խմբում</translation>
 <translation id="2928243913527329289">Google | Այս խանութի մասին</translation>
 <translation id="2977480621796371840">Հեռացնել խմբից</translation>
 <translation id="29919168204617356">Անգործուն ներդիրներն ավտոմատ կփակվեն։ Դուք կարող եք գտնել դրանք պատմության մեջ։</translation>

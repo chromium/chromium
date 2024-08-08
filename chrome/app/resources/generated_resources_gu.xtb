@@ -2642,6 +2642,7 @@
 <translation id="2853121255651601031">પાસવર્ડ સાચવ્યો</translation>
 <translation id="2855243985454069333">સિંક કરેલા બધા ડિવાઇસમાંથી ઇતિહાસ ડિલીટ કરે છે</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> વડે સાઇન ઇન કરો</translation>
+<translation id="28559674945112027">સ્ટ્રિક્ટ મોડ</translation>
 <translation id="2856776373509145513">નવું કન્ટેનર બનાવો</translation>
 <translation id="2856907950922663165">URLને એન્ક્રિપ્ટ કરવાની સુવિધા બંધ કરીએ?</translation>
 <translation id="2859741939921354763"><ph name="BRAND" />માં પાસવર્ડ આયાત કરો</translation>
@@ -6401,6 +6402,7 @@
 <translation id="5623282979409330487">આ સાઇટ તમારા મોશન સેન્સરને ઍક્સેસ કરી રહી છે.</translation>
 <translation id="5623842676595125836">લૉગ</translation>
 <translation id="5624120631404540903">પાસવર્ડ્સનું સંચાલન કરો</translation>
+<translation id="5624959475330585145">અસુરક્ષિત કનેક્શનનો ઉપયોગ કરવા પહેલાં પૂછો</translation>
 <translation id="5625225435499354052">Google Payમાં ફેરફાર કરો</translation>
 <translation id="5626134646977739690">નામ:</translation>
 <translation id="5627832140542566187">ડિસ્પ્લેનું ઓરિએન્ટેશન</translation>
@@ -9632,6 +9634,7 @@ USB ડિવાઇસ</translation>
 <translation id="8008356846765065031">ઇન્ટરનેટ ડિસ્કનેક્ટ કર્યું. કૃપા કરીને તમારું ઇન્ટરનેટ કનેક્શન તપાસો.</translation>
 <translation id="8008704580256716350">શંકાસ્પદ ફાઇલ બ્લૉક કરવામાં આવી</translation>
 <translation id="8009225694047762179">બધા પાસવર્ડ મેનેજ કરો</translation>
+<translation id="8010081455002666927">ઑટોમેટિક રીતે ભાષા ઓળખો</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' ખસેડ્યું.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">ઇન્સ્ટન્ટ હૉટસ્પૉટ સંબંધિત વિગતો</translation>
@@ -11036,6 +11039,7 @@ USB ડિવાઇસ</translation>
 <translation id="9009707268312089299">Windowsમાંથી આયાત કરેલા</translation>
 <translation id="9009708085379296446">શું તમે આ પેજ બદલવા માગતા હતા?</translation>
 <translation id="9010845741772269259">ચુકવણી પદ્ધતિઓ ઉમેરો</translation>
+<translation id="901087299639956505">બૅલેન્સ મોડ</translation>
 <translation id="9011163749350026987">હંમેશાં આઇકન બતાવો</translation>
 <translation id="9011262023858991985">આ ટૅબને કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="9011393886518328654">રિલીઝ નોટ</translation>

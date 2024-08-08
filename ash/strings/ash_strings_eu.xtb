@@ -561,6 +561,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3077734595579995578">maius</translation>
 <translation id="3081696990447829002">Zabaldu menua</translation>
 <translation id="3087734570205094154">Behekoa</translation>
+<translation id="3090214513075567547">Ireki laster-menua</translation>
 <translation id="3090989381251959936">Aldatu <ph name="FEATURE_NAME" /> eginbidearen egoera. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Entregatu gabeak</translation>
 <translation id="3095995014811312755">bertsioa</translation>
@@ -1447,6 +1448,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="6068258534237496331">Bideodeiak kontrolatzeko aukerak</translation>
 <translation id="6073451960410192870">Utzi grabatzeari</translation>
 <translation id="6074087755403037157">Beta-kanala</translation>
+<translation id="6091929401758362855">Erreprodukzio-zerrenda: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Administratzaileak desgaitu du</translation>
 <translation id="6095008505822982596">Hizketaren abiadura</translation>
 <translation id="6095425951508823973">Gehitu <ph name="PROVIDER" /> bidezko konexioa</translation>
@@ -2244,7 +2246,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="899350903320462459">Desblokeatu gailua <ph name="LOGIN_ID" /> gisa jakinarazpen-ekintza gauzatzeko</translation>
 <translation id="8993733019280019776">Hitz egiten ari zara? Mikrofonoa desaktibatuta daukazu. Aktibatzeko, hauta ezazu.</translation>
 <translation id="9000771174482730261">KUDEATU BILTEGIA</translation>
-<translation id="9002204506712855687">Ezagutu azken eginbideak</translation>
 <translation id="9005984960510803406">Ireki Crosh leihoa</translation>
 <translation id="9017320285115481645">Idatzi Family Link-eko gurasoen sarbide-kodea.</translation>
 <translation id="9024331582947483881">pantaila osoa</translation>

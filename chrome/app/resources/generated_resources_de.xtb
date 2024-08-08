@@ -6127,6 +6127,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5435779377906857208"><ph name="HOST" /> immer Zugriff auf deinen Standort erlauben</translation>
 <translation id="5436492226391861498">Warten auf Proxy-Tunnel...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> durchsuchen:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" />-Fenster jetzt <ph name="WINDOW_SIZE_PERCENT" /> breit, <ph name="PANE_SIDE" />-Bereich jetzt <ph name="PANE_SIZE_PERCENT" /> breit.</translation>
 <translation id="5440425659852470030">Seitenleiste schließen</translation>
 <translation id="544083962418256601">Verknüpfungen erstellen...</translation>
 <translation id="5441133529460183413">Web-App wurde über Chrome installiert</translation>
@@ -8527,6 +8528,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 Website in der Gruppe von <ph name="FPS_OWNER" />}other{{MEMBERS} Websites in der Gruppe von <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Windows Hello beim Ausfüllen von Passwörtern verwenden</translation>
 <translation id="7225179976675429563">Netzwerktyp fehlt.</translation>
+<translation id="7227235818314667565">Freigaben verwalten</translation>
 <translation id="7227458944009118910">Die unten aufgeführten Apps können auch Protokolllinks verarbeiten. Für andere Apps ist eine Berechtigung erforderlich.</translation>
 <translation id="7228056665272655255">Bitte dein Kind, seinen Finger auf den Fingerabdrucksensor rechts oben an der Tastatur zu legen, um den Fingerabdruck einzurichten. Sein Fingerabdruck wird sicher gespeichert und verlässt dieses <ph name="DEVICE_TYPE" /> nie.</translation>
 <translation id="7228523857728654909">Bildschirmsperre und Anmeldung</translation>
@@ -8575,6 +8577,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7258192266780953209">Transformationen</translation>
 <translation id="7258225044283673131">Die Anwendung reagiert nicht. Wähle "Schließen erzwingen" aus, um die App zu beenden.</translation>
 <translation id="7260186537988033909">Geräteregistrierung für Kioske und digitale Beschilderung abgeschlossen</translation>
+<translation id="7261217796641151584">Gruppe teilen</translation>
 <translation id="7261612856573623172">Sprachausgabe-Stimme des Systems</translation>
 <translation id="7262004276116528033">Dieser Anmeldedienst wird von <ph name="SAML_DOMAIN" /> gehostet.</translation>
 <translation id="7264695323040866038">Immer die <ph name="APP" /> App verwenden, um unterstützte Weblinks zu öffnen?</translation>
@@ -10512,6 +10515,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8656888282555543604">Braille-Protokollierung aktivieren</translation>
 <translation id="8657393004602556571">Möchtest du das Feedback verwerfen?</translation>
 <translation id="8657542881463614516">Mit Wischgeste zwischen Seiten wechseln</translation>
+<translation id="865936634714975126">Füge der URL einen Suchparameter hinzu, um beim Seitenaufbau Typen auszuwählen. Beispiel: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" />-Kontakte</translation>
 <translation id="8659609431223166673">Fenster nach unten verschoben</translation>
 <translation id="8661290697478713397">Link in Inko&amp;gnito-Fenster öffnen</translation>

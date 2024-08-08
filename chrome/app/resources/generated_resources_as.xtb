@@ -6144,6 +6144,7 @@
 <translation id="5435779377906857208"><ph name="HOST" />ক সদায় আপোনাৰ অৱস্থান এক্সেছ কৰিবলৈ দিয়ক</translation>
 <translation id="5436492226391861498">প্ৰ’ক্সি টানেলৰ বাবে অপেক্ষা কৰি থকা হৈছে...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" />ৰ সন্ধান কৰক:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> ৱিণ্ড এতিয়া <ph name="WINDOW_SIZE_PERCENT" /> বহল, <ph name="PANE_SIDE" /> পেন এতিয়া <ph name="PANE_SIZE_PERCENT" /> বহল।</translation>
 <translation id="5440425659852470030">ছাইডৰ পেনেল বন্ধ কৰক</translation>
 <translation id="544083962418256601">শ্বৰ্টকাট সৃষ্টি কৰক...</translation>
 <translation id="5441133529460183413">Chrome ব্ৰাউজাৰৰ পৰা ৱেব এপ্‌ ইনষ্টল কৰা হৈছে</translation>
@@ -8548,6 +8549,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" />ৰ গোটত ১ টা ছাইট}one{<ph name="FPS_OWNER" />ৰ গোটত {MEMBERS} টা ছাইট}other{<ph name="FPS_OWNER" />ৰ গোটত {MEMBERS} টা ছাইট}}</translation>
 <translation id="7225082563376899794">পাছৱৰ্ড পূৰ কৰাৰ সময়ত Windows Hello ব্যৱহাৰ কৰক</translation>
 <translation id="7225179976675429563">নেটৱৰ্কৰ প্ৰকাৰ নাই</translation>
+<translation id="7227235818314667565">শ্বেয়াৰ কৰাটো পৰিচালনা কৰক</translation>
 <translation id="7227458944009118910">তলত সূচীবদ্ধ কৰা এপ্‌সমুহে প্ৰট’কলৰ লিংকো পৰিচালনা কৰিব পাৰে। অন্য এপে অনুমতি বিচাৰিব।</translation>
 <translation id="7228056665272655255">ফিংগাৰপ্ৰিণ্ট ছেট আপ কৰিবলৈ আপোনাৰ শিশুক কীব’ৰ্ডৰ একেবাৰে ওপৰৰ সোঁফালৰ কোণত থকা ফিংগাৰপ্ৰিণ্ট ছেন্সৰটো স্পৰ্শ কৰিবলৈ দিয়ক। আপোনাৰ শিশুৰ ফিংগাৰপ্ৰিণ্টৰ ডেটা সুৰক্ষিতভাৱে ষ্ট’ৰ কৰা হয় আৰু সেইখিনি সদায় এই <ph name="DEVICE_TYPE" />ত থাকে।</translation>
 <translation id="7228523857728654909">স্ক্ৰীন লক আৰু ছাইন-ইন</translation>
@@ -8596,6 +8598,7 @@
 <translation id="7258192266780953209">ৰূপান্তৰণ</translation>
 <translation id="7258225044283673131">এপ্লিকেশ্বনটোৱে সঁহাৰি দিয়া নাই। এপ্‌টো বন্ধ কৰিবলৈ "জোৰকৈ বন্ধ কৰক" সুবিধাটো বাছনি কৰক।</translation>
 <translation id="7260186537988033909">কিঅ’স্ক আৰু ছাইনেজৰ ডিভাইচৰ পঞ্জীয়ন সম্পূৰ্ণ হৈছে</translation>
+<translation id="7261217796641151584">গোট শ্বেয়াৰ কৰক</translation>
 <translation id="7261612856573623172">ছিষ্টেমৰ পাঠৰ পৰা কথনৰ কণ্ঠধ্বনি</translation>
 <translation id="7262004276116528033">এই ছাইন ইন কৰা সেৱাটো <ph name="SAML_DOMAIN" />এ হ’ষ্ট কৰিছে</translation>
 <translation id="7264695323040866038">সমৰ্থিত ৱেব লিংকসমূহ খুলিবলৈ সদায় <ph name="APP" /> এপ্‌টো ব্যৱহাৰ কৰিবনে?</translation>
@@ -10532,6 +10535,7 @@
 <translation id="8656888282555543604">ব্ৰেইল লগ ইন সক্ষম কৰক</translation>
 <translation id="8657393004602556571">আপুনি মতামতটো বাতিল কৰিব বিচাৰেনে?</translation>
 <translation id="8657542881463614516">পৃষ্ঠাসমূহৰ মাজত নেভিগে’ট কৰিবলৈ ছোৱাইপ কৰি দিয়া নিৰ্দেশ ব্যৱহাৰ কৰক</translation>
+<translation id="865936634714975126">পৃষ্ঠা ল’ডৰ প্ৰকাৰসমূহ বাছনি কৰিবলৈ URLত এটা কুৱেৰীৰ পৰম যোগ দিয়ক। যেনে: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> টা সম্পৰ্ক</translation>
 <translation id="8659609431223166673">ৱিণ্ড’খন তলফাললৈ স্থানান্তৰ কৰা হৈছে</translation>
 <translation id="8661290697478713397">লিংকটো ইনক’&amp;গনিট’ ৱিণ্ড'ত খোলক</translation>

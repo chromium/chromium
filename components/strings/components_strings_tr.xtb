@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Şifreyi Değiştir</translation>
 <translation id="1089599132348386324">Fikrinizi değiştirirseniz istediğiniz zaman Chrome ayarlarından değişiklik yapabilirsiniz.</translation>
 <translation id="1090629319939036170">VR Menüsü</translation>
-<translation id="1091543275053148479">Geçmiş ve şifreler dahil tarama verileri görülebilir ve yönetilebilir</translation>
 <translation id="1091779689406092804">ekran görüntülerini</translation>
 <translation id="1094777233105318927">Tarayıcınız, işletim sisteminiz, cihazınız, yüklü yazılımlar ve dosyalar hakkında bilgiler</translation>
 <translation id="1096545575934602868">Bu alanda en çok <ph name="MAX_ITEMS_LIMIT" /> giriş olabilir. Diğer tüm girişler silinecektir.</translation>
@@ -957,7 +956,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2770159525358613612">Dosyalarınızı tekrar yüklemeyi deneyin</translation>
 <translation id="277133753123645258">Gönderim yöntemi</translation>
 <translation id="2773388851563527404">Chrome, çoğu sitenin, üçüncü taraf çerezlerini kullanmasını sınırlandırır. Ancak temel hizmetleri sağlamadaki rolünden dolayı bu sitede üçüncü taraf çerezlerine izin verilir. <ph name="LINK" /> için ayarlara gidin.</translation>
-<translation id="2774077118134906782">Tarayıcınızı kuruluşunuz yönetiyor</translation>
 <translation id="277499241957683684">Eksik cihaz kaydı</translation>
 <translation id="2775884851269838147">İlk basılacak sayfa</translation>
 <translation id="2781185443919227679">Plaj ve Adalar</translation>
@@ -1509,6 +1507,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> inç)</translation>
 <translation id="3792826587784915501">Kült ve Bağımsız Filmler</translation>
 <translation id="3793574014653384240">Son zamanlarda meydana gelen kilitlenmelerin sayısı ve nedenleri</translation>
+<translation id="3796417399166194741"><ph name="SITE" />, Chrome'un güvenli bağlantı kurmasını engelliyor</translation>
 <translation id="3799805948399000906">Yazı tipi istendi</translation>
 <translation id="3801265110651850478">Göz atma trafiğimle birlikte bir "Do Not Track" isteği gönder</translation>
 <translation id="380329542618494757">Ad</translation>
@@ -2703,6 +2702,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6106989379647458772"><ph name="PAGE" /> adresindeki web sayfası geçici olarak kullanılamıyor veya kalıcı olarak yeni bir web adresine taşınmış olabilir.</translation>
 <translation id="6107012941649240045">Verilen:</translation>
 <translation id="6107924765192360631">Yazma önerileri almak için birkaç kelime veya ilk taslağınızı yazmanız yeterlidir.</translation>
+<translation id="6108580855199168381">Sertifika bilgileri</translation>
 <translation id="6108702513636120202">Chromium'daki Arama Motorunuz</translation>
 <translation id="6108849843016142864">Sürüngenler ve Amfibi Hayvanlar</translation>
 <translation id="610911394827799129">Google Hesabınızın <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> adresinde başka biçimlerde tarama geçmişi olabilir</translation>
@@ -2807,6 +2807,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6300452962057769623">{0,plural, =0{Cihazınız şimdi yeniden başlatılacak}=1{Cihazınız 1 saniye içinde yeniden başlatılacak}other{Cihazınız # saniye içinde yeniden başlatılacak}}</translation>
 <translation id="6301104306974789820">Fiyat takibi bildirimleri al</translation>
 <translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> izni ayrıntılarını göster</translation>
+<translation id="6302661287897119265">Filtre</translation>
 <translation id="6304398603974202180">Multimedya Yazılımları</translation>
 <translation id="6305205051461490394"><ph name="URL" /> adresine ulaşılamıyor.</translation>
 <translation id="6306713302480826305">Bu adres, bu cihazdan ve oturum açtığınız diğer cihazlardan silinecek</translation>
@@ -3473,6 +3474,12 @@ Ek ayrıntılar:
 <translation id="7535087603100972091">Değer</translation>
 <translation id="753556296624075801">Google Destekli</translation>
 <translation id="7537536606612762813">Zorunlu</translation>
+<translation id="7541586907443866208">Saldırganlar, sizinle bu site arasında gönderilen tüm verileri görebilir ve değiştirebilir.
+    &lt;ul&gt;
+    &lt;li&gt;Havaalanı veya otel kablosuz ağı gibi herkese açık bir bağlantı kullanıyorsanız güvenilir bir ağa (ör. evinizde veya iş yerinizde) bağlandığınızda tekrar deneyebilirsiniz.&lt;/li&gt;
+    &lt;li&gt;Site sahibini tanıyorsanız bu sorunu gidermesini isteyin.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />Bu uyarı hakkında daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">Bu form güvenli bağlantı kullanmadığından kredi kartı bilgilerini otomatik doldurma özelliği devre dışı bırakıldı.</translation>
 <translation id="7543525346216957623">Anne veya babanıza sorun</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> başlatılıyor</translation>
@@ -3713,7 +3720,6 @@ Ek ayrıntılar:
 <translation id="7967636097426665267">İletişim Ekipmanı</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" değeri, geçersiz bir onaltılık renk.</translation>
 <translation id="7968982339740310781">Ayrıntıları görüntüle</translation>
-<translation id="7971972534124227314">Cihaz güvenliği için işletim sistemi, tarayıcı bilgileri ve yüklü yazılımlar görülebilir</translation>
 <translation id="7976214039405368314">Çok fazla istek var</translation>
 <translation id="7977538094055660992">Çıkış cihazı</translation>
 <translation id="7979595116210197019">Gıda Hizmetleri</translation>
@@ -3980,7 +3986,7 @@ Ek ayrıntılar:
 <translation id="84561192812921051">Yöneticiniz profilinizde ve tarayıcınızda uzaktan değişiklik yapabilir, raporlama aracılığıyla tarayıcı hakkındaki bilgileri analiz edebilir ve diğer gerekli görevleri yerine getirebilir. Bu cihazdaki etkinlikler Chrome dışında da yönetilebilir.  <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Süresiz</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Devam ederek cihazınızın tam konumunun sahtekarlığı önlemek için toplanıp hesabınızın sahibiyle paylaşılmasını kabul etmiş olursunuz. Chrome'da PIX'i devre dışı bırakmak için <ph name="BEGIN_LINK1" />ödeme ayarlarınıza<ph name="END_LINK1" /> gidin.</translation>
+<translation id="8458605637341729751">Devam ederek cihazınızın tam konumunun, sahtekarlığı önleme ile ilgili amaçlar doğrultusunda hesabınızın sahibiyle paylaşılmasını kabul etmiş olursunuz. Chrome'da PIX'i devre dışı bırakmak için <ph name="BEGIN_LINK1" />ödeme ayarlarınıza<ph name="END_LINK1" /> gidin.</translation>
 <translation id="8460854335417802511">Etkinleştir</translation>
 <translation id="8461694314515752532">Senkronize edilen verileri kendi senkronizasyon parolanızla şifreleyin</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredi kartı}other{# kredi kartı}}</translation>
@@ -4075,7 +4081,6 @@ Ek ayrıntılar:
 <translation id="865032292777205197">hareket sensörleri</translation>
 <translation id="865255447216708819">Arka Baskı Filmi</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8654650417264805416">Profilinizi <ph name="MANAGER" /> yönetiyor</translation>
 <translation id="8662463432865928030">Ticari Mülkler</translation>
 <translation id="8663226718884576429">Sipariş Özeti, <ph name="TOTAL_LABEL" />, Daha Fazla Ayrıntı</translation>
 <translation id="8663909737634214500">Optik Disk</translation>
@@ -4307,7 +4312,6 @@ Ek ayrıntılar:
 <translation id="9103872766612412690"><ph name="SITE" /> normalde bilgilerinizi korumak için şifreleme kullanmaktadır. Chromium bu sefer <ph name="SITE" /> sitesine bağlanmayı denediğinde, web sitesi sıra dışı ve yanlış kimlik bilgileri döndürdü. Bir saldırgan <ph name="SITE" /> gibi davranmaya çalışıyor olabilir ya da bir Kablosuz oturum açma ekranı bağlantıyı kesmiştir. Chromium herhangi bir veri alışverişinden önce bağlantıyı durdurduğu için bilgileriniz hâlâ güvendedir.</translation>
 <translation id="9107467864910557787">Tarayıcınız <ph name="MANAGER" /> tarafından yönetiliyor</translation>
 <translation id="91108059142052966">Yönetici politikası, gizli içerik görünür haldeyken <ph name="APPLICATION_TITLE" /> ile ekran paylaşımını devre dışı bırakır</translation>
-<translation id="9114074357712665317">Tarayıcınızı <ph name="MANAGER" /> yönetiyor</translation>
 <translation id="9114524666733003316">Kart onaylanıyor...</translation>
 <translation id="9114581008513152754">Bu tarayıcı bir şirket veya başka bir kuruluş tarafından yönetilmemektedir. Bu cihazdaki etkinlikler Chrome dışında yönetilebilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Chrome'daki reklamlar hakkında daha fazla bilgi</translation>

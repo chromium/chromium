@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">Zapusti</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Ustvarjeno pred <ph name="NUM_HOURS_ONE" /> uro}one{Ustvarjeno pred <ph name="NUM_HOURS_MANY" /> uro}two{Ustvarjeno pred <ph name="NUM_HOURS_MANY" /> urama}few{Ustvarjeno pred <ph name="NUM_HOURS_MANY" /> urami}other{Ustvarjeno pred <ph name="NUM_HOURS_MANY" /> urami}}</translation>
 <translation id="2801787514987684416">Si želite ogledati podatke o trgovini?</translation>
+<translation id="2894757982205307093">Novi zavihek v skupini</translation>
 <translation id="2928243913527329289">Google | O tej trgovini</translation>
 <translation id="2977480621796371840">Odstrani iz skupine</translation>
 <translation id="29919168204617356">Neaktivni zavihki bodo samodejno zaprti. Vedno jih lahko najdete v razdelku Zgodovina.</translation>

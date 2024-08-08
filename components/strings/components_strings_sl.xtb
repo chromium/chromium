@@ -52,7 +52,6 @@
 <translation id="1089439967362294234">Spremeni geslo</translation>
 <translation id="1089599132348386324">Kadar koli si lahko premislite v nastavitvah za Chrome.</translation>
 <translation id="1090629319939036170">Meni VR</translation>
-<translation id="1091543275053148479">Podatke brskanja, vključno z zgodovino in gesli, si je mogoče ogledati in jih upravljati</translation>
 <translation id="1091779689406092804">posnetkov zaslona</translation>
 <translation id="1094777233105318927">Podatki o brskalniku, operacijskem sistemu, napravi, nameščeni programski opremi in datotekah</translation>
 <translation id="1096545575934602868">V tem polju je lahko največ toliko vnosov: <ph name="MAX_ITEMS_LIMIT" />. Vsi nadaljnji vnosi bodo zavrženi.</translation>
@@ -957,7 +956,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2770159525358613612">Poskusite znova naložiti datoteke</translation>
 <translation id="277133753123645258">Način pošiljanja</translation>
 <translation id="2773388851563527404">Chrome večini spletnih mest omejuje uporabo piškotkov tretjih oseb. Vendar so piškotki tretjih oseb dovoljeni na tem spletnem mestu, ker z njimi zagotavlja osnovne storitve. Obiščite nastavitve za <ph name="LINK" />.</translation>
-<translation id="2774077118134906782">Vaš brskalnik upravlja vaša organizacija</translation>
 <translation id="277499241957683684">Manjka zapis o napravi</translation>
 <translation id="2775884851269838147">Prva stran za tiskanje</translation>
 <translation id="2781185443919227679">Plaže in otoki</translation>
@@ -1509,6 +1507,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> palcev)</translation>
 <translation id="3792826587784915501">Kultni in neodvisni filmi</translation>
 <translation id="3793574014653384240">Številke in vzroki razširitev, do katerih je prišlo nedavno</translation>
+<translation id="3796417399166194741">Spletno mesto <ph name="SITE" /> Chromu preprečuje vzpostavitev varne povezave</translation>
 <translation id="3799805948399000906">Zahtevana pisava</translation>
 <translation id="3801265110651850478">S prometom brskanja pošlji zahtevo »Do Not Track«</translation>
 <translation id="380329542618494757">Ime</translation>
@@ -2703,6 +2702,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6106989379647458772">Spletna stran na naslovu <ph name="PAGE" /> morda začasno ni na voljo ali pa je trajno preseljena na drug spletni naslov.</translation>
 <translation id="6107012941649240045">Izdano za</translation>
 <translation id="6107924765192360631">Začnite z nekaj besedami ali prvim osnutkom, če želite dobiti predloge za pisanje.</translation>
+<translation id="6108580855199168381">Podrobnosti potrdila</translation>
 <translation id="6108702513636120202">Vaš iskalnik v Chromiumu</translation>
 <translation id="6108849843016142864">Plazilci in dvoživke</translation>
 <translation id="610911394827799129">V Google Računu so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -2807,6 +2807,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6300452962057769623">{0,plural, =0{Naprava se bo zdaj znova zagnala}=1{Naprava se bo znova zagnala čez 1 sekundo}one{Naprava se bo znova zagnala čez # sekundo}two{Naprava se bo znova zagnala čez # sekundi}few{Naprava se bo znova zagnala čez # sekunde}other{Naprava se bo znova zagnala čez # sekund}}</translation>
 <translation id="6301104306974789820">Prejemanje obvestil o spremljanju cen</translation>
 <translation id="6302546952464230349">Prikaz podrobnosti o dovoljenju »<ph name="PERMISSION_NAME" />«</translation>
+<translation id="6302661287897119265">Filter</translation>
 <translation id="6304398603974202180">Večpredstavnostna programska oprema</translation>
 <translation id="6305205051461490394">Naslov <ph name="URL" /> je nedosegljiv.</translation>
 <translation id="6306713302480826305">Ta naslov bo izbrisan iz te in drugih naprav, v katerih ste prijavljeni.</translation>
@@ -3473,6 +3474,12 @@ Dodatne podrobnosti:
 <translation id="7535087603100972091">Vrednost</translation>
 <translation id="753556296624075801">Uporablja tehnologijo Google</translation>
 <translation id="7537536606612762813">Obvezen</translation>
+<translation id="7541586907443866208">Napadalci bodo lahko videli in spremenili vse podatke, poslane med vami in tem spletnim mestom.
+    &lt;ul&gt;
+    &lt;li&gt;Če ste trenutno v javnem omrežju, na primer na letališču ali v omrežju Wi-Fi v hotelu, poskusite znova, ko boste povezani z zaupanja vrednim omrežjem (na primer doma ali v službi).&lt;/li&gt;
+    &lt;li&gt;Če poznate lastnika spletnega mesta, ga prosite, naj odpravi težavo.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />Preberite več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">Samodejno izpolnjevanje podatkov o kreditni kartici je onemogočeno, ker ta obrazec ne uporablja varne povezave.</translation>
 <translation id="7543525346216957623">Prosi starša</translation>
 <translation id="7546409722674205727">Zagon aplikacije <ph name="APP_NAME" /></translation>
@@ -3713,7 +3720,6 @@ Dodatne podrobnosti:
 <translation id="7967636097426665267">Komunikacijska oprema</translation>
 <translation id="79682505114836835">Vrednost »<ph name="VALUE" />« je neveljavna šestnajstiška barva.</translation>
 <translation id="7968982339740310781">Prikaži podrobnosti</translation>
-<translation id="7971972534124227314">Zaradi varnosti naprave so morda vidni operacijski sistem, podatki o brskalniku in nameščena programska oprema</translation>
 <translation id="7976214039405368314">Preveč zahtev.</translation>
 <translation id="7977538094055660992">Izhodna naprava</translation>
 <translation id="7979595116210197019">Gostinske storitve</translation>
@@ -4074,7 +4080,6 @@ Dodatne podrobnosti:
 <translation id="865032292777205197">tipala gibanja</translation>
 <translation id="865255447216708819">Back Print Film</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8654650417264805416"><ph name="MANAGER" /> upravlja vaš profil</translation>
 <translation id="8662463432865928030">Poslovni prostori</translation>
 <translation id="8663226718884576429">Povzetek naročila, <ph name="TOTAL_LABEL" />, več podrobnosti</translation>
 <translation id="8663909737634214500">Optical Disc</translation>
@@ -4306,7 +4311,6 @@ Dodatne podrobnosti:
 <translation id="9103872766612412690">Spletno mesto <ph name="SITE" /> za zaščito vaših podatkov običajno uporablja šifriranje. Ko se je Chromium tokrat poskusil povezati s spletnim mestom <ph name="SITE" />, je to vrnilo nenavadne in nepravilne poverilnice. Do tega lahko pride, če se napadalec lažno predstavlja za spletno mesto <ph name="SITE" /> ali če je povezavo prekinil zaslon za prijavo v omrežje Wi-Fi. Vaši podatki so še vedno varni, saj je Chromium pred izmenjavo podatkov prekinil povezavo.</translation>
 <translation id="9107467864910557787">Vaš brskalnik upravlja domena <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Pravilnik skrbnika onemogoča deljenje zaslona z aplikacijo <ph name="APPLICATION_TITLE" />, če je vidna zaupna vsebina.</translation>
-<translation id="9114074357712665317"><ph name="MANAGER" /> upravlja vaš brskalnik</translation>
 <translation id="9114524666733003316">Potrjevanje kartice …</translation>
 <translation id="9114581008513152754">Tega brskalnika ne upravlja podjetje ali druga organizacija. Dejavnost v tej napravi morda upravljajo zunaj Chroma. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Preberite več o oglasih v Chromu</translation>

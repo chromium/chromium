@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">Para i-disable ang Lockdown Mode sa Chromium, i-off ito sa iyong iPhone.</translation>
 <translation id="159029779861043703">Pinapanatiling secure ng Chromium ang iyong sensitibong data gamit ang Face ID.</translation>
 <translation id="1591119736686995611">Mabubuksan ang Tab Grid sa Chromium.</translation>
+<translation id="16001233025397167">Pinapanatili kang ligtas ng Pag-check sa Kaligtasan mula sa mga breach sa data, hindi ligtas na website, at higit pa. Makatanggap ng mga alerto sa anumang isyu sa privacy o seguridad na dine-detect ng Chromium para sa iyo.</translation>
 <translation id="1611584326765829247">Payagan ang Chromium na tulungan kang i-track ang iyong mga package</translation>
 <translation id="1617663976202781617">Data mula sa pag-sync sa Chromium</translation>
 <translation id="1647558790457890304">Mga Setting ng Chromium</translation>
@@ -56,6 +57,7 @@
 <translation id="2426113998523353159">Hinihiling sa iyo ng organisasyon mo na mag-sign in para magamit ang Chromium.</translation>
 <translation id="2450140762465183767">Magagamit mo na ngayon ang Chromium sa tuwing magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="2478931088402984578">Piliin ang <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2497941343438581585">Kunin ang Lakas ng Chromium sa Shopping</translation>
 <translation id="252374538254180121">Itakda ang Chromium bilang Default na Browser</translation>
 <translation id="2574528844022712255">Tingnan ang Mga Bookmark sa Chromium</translation>
 <translation id="2590893390871230428">I-sync ang Iyong Data sa Chromium</translation>
@@ -103,6 +105,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="3855938650519180865">Ano'ng Bago sa Chromium</translation>
 <translation id="3886689467633467988">Mag-sign in sa site na ito at sa Chromium para makuha mo ang iyong mga bookmark at higit pa sa lahat ng device mo.</translation>
 <translation id="3904484643286601695">Puwede mong i-update ang iyong mga pinili anumang oras sa Mga Setting ng Chromium.</translation>
+<translation id="3983291422281996849">Itakda ang Chromium bilang iyong default browser para madaling ma-track ang mga presyo at makakuha ng mga insight sa presyo para sa mga bagay na gusto mong bilhin.</translation>
 <translation id="4005283307739974863">Magbubukas at Magpapatakbo ng Pag-check sa Kaligtasan sa Chromium.</translation>
 <translation id="4043291146360695975">Sine-save ang mga password sa Password Manager sa device lang na ito.</translation>
 <translation id="4099085513035183040">Hindi sinusuportahan sa Chromium Beta</translation>
@@ -133,6 +136,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="4736424910885271643">Pinapamahalaan ng <ph name="HOSTED_DOMAIN" /> ang iyong account, kaya maki-clear ang data mo sa Chromium sa device na ito</translation>
 <translation id="4790638144988730920">Patuloy na gamitin ang data sa Chromium sa iyong Google Account.</translation>
 <translation id="4828317641996116749">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit sa ibang pagkakataon.</translation>
+<translation id="4904452304169763785">Mga alerto sa anumang isyu sa privacy o seguridad na dine-detect ng Chromium para sa iyo.</translation>
 <translation id="4962295957157529683">Tapusin ang ginagawa mo sa iyong iba pang nakabukas na window ng Chromium.</translation>
 <translation id="4985291216379576555">Naka-offline, hindi matingnan ng Chromium kung may mga update</translation>
 <translation id="4996471330284142407">Makagawa ng mas maraming bagay gamit ang simple, secure, at mas mabilis na ngayong Chromium.</translation>
@@ -176,6 +180,7 @@ Mga bagay na dapat isaalang-alang:
   • Kung magka-crash ang Chromium, posibleng kasama sa mga detalye tungkol sa pag-crash ang ilang personal na impormasyon.
 
   • Kung isi-sync mo ang iyong history sa Google Account mo, posibleng kasama rin sa mga sukatan ang impormasyon tungkol sa mga URL na binibisita mo.<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">Makatanggap ng mga alerto sa anumang isyu sa privacy o seguridad na awtomatikong dine-detect ng Chromium para sa iyo.</translation>
 <translation id="5945387852661427312">Nag-sign in ka gamit ang account na pinamamahalaan ng <ph name="DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chromium. Permanenteng mauugnay ang data mo sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chromium, ngunit mananatili itong naka-store sa Google Account mo.</translation>
 <translation id="5951593919357934226">Sulitin ang Chromium.</translation>
 <translation id="5983312940147103417">Pahusayin ang Chromium</translation>

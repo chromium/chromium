@@ -40,6 +40,7 @@
 <translation id="2677748264148917807">Вийти</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Створено <ph name="NUM_HOURS_ONE" /> годину тому}one{Створено <ph name="NUM_HOURS_MANY" /> годину тому}few{Створено <ph name="NUM_HOURS_MANY" /> години тому}many{Створено <ph name="NUM_HOURS_MANY" /> годин тому}other{Створено <ph name="NUM_HOURS_MANY" /> години тому}}</translation>
 <translation id="2801787514987684416">Переглянути інформацію про магазин?</translation>
+<translation id="2894757982205307093">Нова вкладка в групі</translation>
 <translation id="2928243913527329289">Google | Про цей магазин</translation>
 <translation id="2977480621796371840">Вилучити з групи</translation>
 <translation id="29919168204617356">Неактивні вкладки буде автоматично закрито. Ви завжди можете знайти їх в історії.</translation>

@@ -564,6 +564,7 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Proširivanje menija</translation>
 <translation id="3087734570205094154">Dolje</translation>
+<translation id="3090214513075567547">Otvaranje kontekstnog izbornika</translation>
 <translation id="3090989381251959936">Uključite/isključite funkciju <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Nedostaje</translation>
 <translation id="3095995014811312755">verzija</translation>
@@ -1457,7 +1458,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6073451960410192870">Zaustavi snimanje</translation>
 <translation id="6074087755403037157">Beta kanal</translation>
 <translation id="6075098173600599596">Promjena velikih i malih slova</translation>
-<translation id="6091929401758362855">Playlista: <ph name="PLAYLIST_TITLE" /></translation>
+<translation id="6091929401758362855">Plejlista: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Onemogućio administrator</translation>
 <translation id="6095008505822982596">Brzina govora</translation>
 <translation id="6095425951508823973">Dodavanje veze s pružaocem <ph name="PROVIDER" /></translation>
@@ -2261,7 +2262,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="899350903320462459">Otključajte uređaj kao <ph name="LOGIN_ID" /> da izvršite radnju obavještenja</translation>
 <translation id="8993733019280019776">Pričate li? Mikrofon je isključen. Odaberite mikrofon da ga uključite.</translation>
 <translation id="9000771174482730261">UPRAVLJAJTE POHRANOM</translation>
-<translation id="9002204506712855687">Istražite najnovije funkcije</translation>
 <translation id="9005984960510803406">Otvorite Crosh prozor</translation>
 <translation id="9017320285115481645">Unesite kôd za pristup roditelja za Family Link.</translation>
 <translation id="9024331582947483881">prikaz preko cijelog ekrana</translation>

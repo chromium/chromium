@@ -1206,6 +1206,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="184183613002882946">No, mantieni 1 sensore</translation>
 <translation id="184273675144259287">Sostituisci app e file Linux con un backup precedente</translation>
 <translation id="1842766183094193446">Vuoi attivare questa modalità demo?</translation>
+<translation id="1843048149176045210">Copia link di download</translation>
 <translation id="1845060436536902492">ChromeVox, lo screen reader su ChromeOS Flex, viene usato principalmente da persone cieche o ipovedenti per leggere il testo visualizzato sullo schermo con un sintetizzatore vocale o un display braille. Premi la barra spaziatrice per attivare ChromeVox. Quando ChromeVox verrà attivato potrai fare un rapido tour.</translation>
 <translation id="1845727111305721124">Possono riprodurre suoni</translation>
 <translation id="1846308012215045257">Premi CTRL e fai clic per eseguire <ph name="PLUGIN_NAME" /></translation>
@@ -3161,6 +3162,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3251714896659475029">Consenti a <ph name="SUPERVISED_USER_NAME" /> di accedere all'Assistente Google con "Hey Google"</translation>
 <translation id="3251759466064201842">&lt;Non parte del certificato&gt;</translation>
 <translation id="325238099842880997">Stabilisci regole di base relative all'utilizzo dei dispositivi digitali per aiutare i bambini a giocare, navigare sul Web e fare i compiti a casa</translation>
+<translation id="3253083398453405334">Fai lampeggiare lo schermo quando ricevi notifiche</translation>
 <translation id="3253225298092156258">Non disponibile</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Libera spazio in <ph name="CLOUD_PROVIDER" /> per copiare questo file}other{Libera spazio in <ph name="CLOUD_PROVIDER" /> per copiare questi file}}</translation>
 <translation id="3253448572569133955">Account sconosciuto</translation>
@@ -3657,6 +3659,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3621202678540785336">Ingresso</translation>
 <translation id="3621807901162200696">Contribuisci a migliorare le funzionalità e le prestazioni di ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{un'app}other{# app}}</translation>
+<translation id="3622820753353315928">Colore flash dello schermo</translation>
 <translation id="362333465072914957">In attesa dell'emissione del certificato da parte della CA</translation>
 <translation id="3623598555687153298">Questa operazione comporterà l'eliminazione di <ph name="TOTAL_USAGE" /> di dati memorizzati dai siti visualizzati</translation>
 <translation id="3624567683873126087">Sblocca il dispositivo e accedi all'Account Google</translation>
@@ -7158,6 +7161,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6197128521826316819">Crea codice QR per questa pagina</translation>
 <translation id="6198223452299275399">Scorri tra le pagine</translation>
 <translation id="6198252989419008588">Modifica PIN</translation>
+<translation id="61988015556954366">Flash dello schermo</translation>
 <translation id="6200047250927636406">Ignora file</translation>
 <translation id="6200151268994853226">Gestisci estensione</translation>
 <translation id="6201608810045805374">Vuoi rimuovere questo account?</translation>
@@ -7515,6 +7519,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> file</translation>
 <translation id="6469557521904094793">Attiva rete mobile</translation>
 <translation id="6469702164109431067">Password e passkey</translation>
+<translation id="6470120577693311302">Flash di notifica</translation>
 <translation id="6470823736074966819">Silenzia notifiche</translation>
 <translation id="6472893788822429178">Mostra pulsante Home</translation>
 <translation id="6473315466413288899">Seleziona un'opzione</translation>
@@ -7947,6 +7952,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6790820461102226165">Aggiungi persona...</translation>
 <translation id="6793610798874309813">Il PIN deve essere composto da almeno 4 caratteri</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395">URL <ph name="DOWNLOAD_URL" /> copiato negli appunti</translation>
 <translation id="6794511157503068">Se la tua passkey di <ph name="APP_NAME" /> si trova su un token di sicurezza USB, inserisci il token e toccalo ora</translation>
 <translation id="679486139907144816">Per accedere a questo sito con una passkey, devi attivare Windows Hello nelle impostazioni. Dopodiché, torna su questo sito e riprova.</translation>
 <translation id="6795371939514004514">La scansione automatica ti consente di spostarti da un elemento all'altro sullo schermo in modo automatico. Quando un elemento è evidenziato, premi "Seleziona" per attivarlo.</translation>

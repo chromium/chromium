@@ -694,7 +694,7 @@
 <translation id="1500297251995790841">अज्ञात डिवाइस [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500720779546450982">मुझे साइट पर भरोसा है (<ph name="SITE_URL" />)</translation>
 <translation id="1500801317528437432">ऐसे 'Chrome ऐप्स' के बारे में ज़्यादा जानें जो अब उपलब्ध नहीं हैं</translation>
-<translation id="1501480321619201731">समूह मिटाएं</translation>
+<translation id="1501480321619201731">ग्रुप मिटाएं</translation>
 <translation id="1503392482221435031">Google को इस्तेमाल के आंकड़े अपने-आप भेजता है. डिवाइस की सेटिंग में जाकर, क्रैश रिपोर्ट बनाने की सुविधा को चालू या बंद किया जा सकता है.</translation>
 <translation id="1503556098270577657">अपने Android फ़ोन का इस्तेमाल करके <ph name="USER_EMAIL" /> से साइन इन किया है</translation>
 <translation id="150411034776756821"><ph name="SITE" /> को निकालें</translation>
@@ -6145,6 +6145,7 @@
 <translation id="5435779377906857208"><ph name="HOST" /> को, हमेशा अपनी जगह की जानकारी को ऐक्सेस करने की अनुमति दें</translation>
 <translation id="5436492226391861498">प्रॉक्सी टनल का इंतज़ार किया जा रहा है...</translation>
 <translation id="5436510242972373446">खोजें <ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> विंडो अब <ph name="WINDOW_SIZE_PERCENT" /> चौड़ी है, <ph name="PANE_SIDE" /> पैनल अब <ph name="PANE_SIZE_PERCENT" /> चौड़ा है.</translation>
 <translation id="5440425659852470030">साइड पैनल बंद करें</translation>
 <translation id="544083962418256601">शॉर्टकट बनाएं...</translation>
 <translation id="5441133529460183413">Chrome ब्राउज़र से वेब ऐप्लिकेशन को इंस्टॉल किया गया</translation>
@@ -8550,6 +8551,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" /> के ग्रुप में 1 साइट}one{<ph name="FPS_OWNER" /> के ग्रुप में {MEMBERS} साइट}other{<ph name="FPS_OWNER" /> के ग्रुप में {MEMBERS} साइटें}}</translation>
 <translation id="7225082563376899794">पासवर्ड डालते समय, Windows Hello का इस्तेमाल करें</translation>
 <translation id="7225179976675429563">नेटवर्क प्रकार गुम</translation>
+<translation id="7227235818314667565">शेयर करने की प्रोसेस मैनेज करें</translation>
 <translation id="7227458944009118910">नीचे सूची में दिए गए ऐप्लिकेशन, प्रोटोकॉल लिंक भी हैंडल कर सकते हैं. अन्य ऐप्लिकेशन को अनुमति की ज़रूरत पड़ेगी.</translation>
 <translation id="7228056665272655255">फ़िंगरप्रिंट सेट अप करने के लिए, अपने बच्चे से कीबोर्ड के सबसे ऊपर दाएं कोने पर मौजूद, फ़िंगरप्रिंट सेंसर को छूने के लिए कहें. आपके बच्चे के फ़िंगरप्रिंट का डेटा सुरक्षित तरीके से सेव किया जाता है. साथ ही, यह हमेशा इस <ph name="DEVICE_TYPE" /> में ही रहता है.</translation>
 <translation id="7228523857728654909">स्क्रीन लॉक और साइन इन करें</translation>
@@ -8598,6 +8600,7 @@
 <translation id="7258192266780953209">ट्रांसफ़र्मेशन</translation>
 <translation id="7258225044283673131">ऐप्लिकेशन काम नहीं कर रहा है. ऐप्लिकेशन को बंद करने के लिए "ज़बरदस्ती बंद करें" चुनें.</translation>
 <translation id="7260186537988033909">किऑस्क और साइनेज का इस्तेमाल करके, डिवाइस का नाम दर्ज हो गया</translation>
+<translation id="7261217796641151584">ग्रुप शेयर करें</translation>
 <translation id="7261612856573623172">लिखाई को बोली में बदलने वाली सिस्टम की आवाज़</translation>
 <translation id="7262004276116528033">यह साइन इन सेवा <ph name="SAML_DOMAIN" /> की मदद से होस्‍ट की गई है</translation>
 <translation id="7264695323040866038">क्या इसके साथ काम करने वाले वेब लिंक खोलने के लिए, हमेशा <ph name="APP" /> ऐप्लिकेशन का इस्तेमाल करना है?</translation>
@@ -10533,6 +10536,7 @@
 <translation id="8656888282555543604">ब्रेल में लॉग इन करना चालू करें</translation>
 <translation id="8657393004602556571">क्या आप फ़ीडबैक (सुझाव, शिकायत या राय) को खारिज करना चाहते हैं?</translation>
 <translation id="8657542881463614516">हाथ के जेस्चर की मदद से, एक पेज से दूसरे पेज पर जाएं</translation>
+<translation id="865936634714975126">पेज लोड पर टाइप चुनने के लिए, यूआरएल में क्वेरी पैरामीटर जोड़ें. जैसे: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> के लिए संपर्कों की सूची</translation>
 <translation id="8659609431223166673">विंडो को नीचे की ओर ले जाया गया</translation>
 <translation id="8661290697478713397">लिंक को गुप्त&amp; विंडो में खोलें</translation>
@@ -11035,7 +11039,7 @@
 <translation id="8999560016882908256">सेक्शन सिंटैक्स गड़बड़ी: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">स्क्रीन पर हलचल कम करें</translation>
 <translation id="9000185763019430629">अपने <ph name="DEVICE_TYPE" /> की दाईं ओर मौजूद फ़िंगरप्रिंट सेंसर को छुएं. आपके फ़िंगरप्रिंट का डेटा सुरक्षित तरीके से सेव किया जाता है. साथ ही, यह आपके <ph name="DEVICE_TYPE" /> में ही रहता है.</translation>
-<translation id="9003031149571024583">छह में से <ph name="NUM_DIGIT" /> पिन डालें. अंतिम अंक हटाने के लिए backspace या delete का इस्तेमाल करें.</translation>
+<translation id="9003031149571024583">छह अंकों वाले पिन का <ph name="NUM_DIGIT" /> अंक डालें. पिछला अंक हटाने के लिए backspace या delete का इस्तेमाल करें.</translation>
 <translation id="9003185744423389627"><ph name="FAILURE_TIME" /> पर '<ph name="STATUS_TEXT" />' की वजह से, डिवाइस मैनेजमेंट सर्वर से कनेक्ट नहीं किया जा सका</translation>
 <translation id="90033698482696970">क्या आपको उपलब्ध ई-सिम प्रोफ़ाइलों को अपने-आप स्कैन करना है?</translation>
 <translation id="9003647077635673607">सभी वेबसाइटों पर अनुमति दें</translation>
