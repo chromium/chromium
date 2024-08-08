@@ -141,6 +141,7 @@ static_library("ash") {
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/ash/account_manager",
     "//chrome/browser/ui/webui/ash/cellular_setup",
+    "//chrome/browser/ui/webui/ash/set_time_dialog",
     "//chrome/browser/ui/webui/ash/sys_internals",
     "//chrome/common:constants",
     "//chrome/services/file_util/public/cpp",
@@ -201,6 +202,7 @@ static_library("ash") {
     "//chrome/browser/ui/webui/ash/account_manager",
     "//chrome/browser/ui/webui/ash/cellular_setup",
     "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/ui/webui/ash/set_time_dialog",
   ]
 }
 

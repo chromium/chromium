@@ -9,8 +9,8 @@
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
-#include "chrome/browser/ash/set_time_dialog.h"
 #include "chrome/browser/ash/system/timezone_util.h"
+#include "chrome/browser/ui/webui/ash/set_time_dialog/set_time_dialog.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/mojom/date_time_handler.mojom.h"
 #include "components/user_manager/user_manager.h"
 

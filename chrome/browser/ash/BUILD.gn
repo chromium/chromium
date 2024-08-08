@@ -63,8 +63,6 @@ static_library("ash") {
     "report_controller_initializer.h",
     "scheduler_configuration_manager.cc",
     "scheduler_configuration_manager.h",
-    "set_time_dialog.cc",
-    "set_time_dialog.h",
     "shortcut_mapping_pref_service.cc",
     "shortcut_mapping_pref_service.h",
     "startup_settings_cache.cc",
