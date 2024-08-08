@@ -41,7 +41,7 @@ class MirrorWindowTestApi {
   // This should be the same as the native cursor location.
   gfx::Point GetCursorHotPointLocationInRootWindow() const;
 
-  const aura::Window* GetCursorWindow() const;
+  const aura::Window* GetCursorHostWindow() const;
   gfx::Point GetCursorLocation() const;
 };
 

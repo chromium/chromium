@@ -153,7 +153,7 @@ TEST_F(AccessibilityControllerTest, ChangingCursorSizePrefChangesCursorSize) {
   // Test all possible sizes
   for (int size = 25; size <= 128; ++size) {
     prefs->SetInteger(prefs::kAccessibilityLargeCursorDipSize, size);
-    auto bounds = cursor_window_controller->GetBoundsForTest();
+    auto bounds = cursor_window_controller->GetCursorBoundsInScreenForTest();
     EXPECT_EQ(bounds.height(), size);
     EXPECT_EQ(bounds.width(), size);
   }
@@ -1317,8 +1317,10 @@ TEST_F(AccessibilityControllerTest, DisableLargeCursorDoesNotResetSize) {
 
   // Cursor compositing should be enabled and the size should be 48 dip.
   EXPECT_TRUE(cursor_window_controller->is_cursor_compositing_enabled());
-  EXPECT_EQ(cursor_window_controller->GetBoundsForTest().width(), 48);
-  EXPECT_EQ(cursor_window_controller->GetBoundsForTest().height(), 48);
+  EXPECT_EQ(cursor_window_controller->GetCursorBoundsInScreenForTest().width(),
+            48);
+  EXPECT_EQ(cursor_window_controller->GetCursorBoundsInScreenForTest().height(),
+            48);
 
   // Turning off large cursor does not reset the size to the default.
   prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, false);
@@ -1330,8 +1332,10 @@ TEST_F(AccessibilityControllerTest, DisableLargeCursorDoesNotResetSize) {
   prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, true);
   EXPECT_EQ(48, prefs->GetInteger(prefs::kAccessibilityLargeCursorDipSize));
   EXPECT_TRUE(cursor_window_controller->is_cursor_compositing_enabled());
-  EXPECT_EQ(cursor_window_controller->GetBoundsForTest().width(), 48);
-  EXPECT_EQ(cursor_window_controller->GetBoundsForTest().height(), 48);
+  EXPECT_EQ(cursor_window_controller->GetCursorBoundsInScreenForTest().width(),
+            48);
+  EXPECT_EQ(cursor_window_controller->GetCursorBoundsInScreenForTest().height(),
+            48);
 }
 
 TEST_F(AccessibilityControllerTest, ChangingCursorColorPrefChangesCursorColor) {

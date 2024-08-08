@@ -11,19 +11,16 @@
 #include "ash/fast_ink/fast_ink_view.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "ui/events/ozone/chromeos/cursor_controller.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
 
 // CursorView class can be used to display cursor images with minimal
 // latency/jank.
-class CursorView : public FastInkView,
-                   public ui::CursorController::CursorObserver {
+class CursorView : public FastInkView {
  public:
   CursorView(const CursorView&) = delete;
   CursorView& operator=(const CursorView&) = delete;
-
   ~CursorView() override;
 
   static views::UniqueWidgetPtr Create(const gfx::Point& initial_location,
@@ -34,8 +31,7 @@ class CursorView : public FastInkView,
                        const gfx::Point& cursor_hotspot);
   void SetLocation(const gfx::Point& location);
 
-  // ui::CursorController::CursorObserver overrides:
-  void OnCursorLocationChanged(const gfx::PointF& location) override;
+  const gfx::Rect& get_cursor_rect_for_test() const { return cursor_rect_; }
 
  private:
   CursorView(const gfx::Point& initial_location);
