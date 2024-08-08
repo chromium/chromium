@@ -2302,13 +2302,6 @@ if (!is_android) {
       deps += [ "//device/fido:icloud_keychain_test_support" ]
     }
 
-    if (enable_extensions) {
-      deps += [
-        "//chrome/browser/controlled_frame:test_support",
-        "//chrome/browser/web_applications/extensions",
-      ]
-    }
-
     # Runtime dependencies
     data_deps = [
       "//chrome:browser_tests_pak",
@@ -3171,26 +3164,6 @@ if (!is_android) {
       ]
     }
 
-    if (enable_extensions) {
-      sources += [
-        "../../apps/app_restore_service_browsertest.cc",
-        "../../apps/load_and_launch_browsertest.cc",
-        "../browser/apps/guest_view/app_view_browsertest.cc",
-        "../browser/apps/guest_view/web_view_browsertest.cc",
-        "../browser/apps/platform_apps/app_browsertest.cc",
-        "../browser/apps/platform_apps/app_speech_recognition_browsertest.cc",
-        "../browser/apps/platform_apps/app_window_browsertest.cc",
-        "../browser/apps/platform_apps/event_page_browsertest.cc",
-        "../browser/apps/platform_apps/platform_app_navigation_redirector_browsertest.cc",
-        "../browser/apps/platform_apps/service_worker_browsertest.cc",
-      ]
-
-      # TODO(357784804): Remove this explicit dependency on `//c/b/ui/zoom`
-      # when tests that include chrome_zoom_level_prefs.h get modularized, eg
-      # tabs_test.cc, app_browsertest.cc, host_zoom_map_browsertest.cc and ats_browsertest.cc.
-      deps += [ "//chrome/browser/ui/zoom" ]
-    }
-
     if (is_win || is_mac || is_linux || is_chromeos_ash) {
       sources += [ "../browser/ui/views/device_signals_consent/consent_dialog_browsertest.cc" ]
     }
@@ -3835,12 +3808,22 @@ if (!is_android) {
 
     if (enable_extensions) {
       sources += [
+        "../../apps/app_restore_service_browsertest.cc",
+        "../../apps/load_and_launch_browsertest.cc",
         "../browser/accessibility/embedded_a11y_extension_loader_browsertest.cc",
+        "../browser/apps/guest_view/app_view_browsertest.cc",
+        "../browser/apps/guest_view/web_view_browsertest.cc",
         "../browser/apps/platform_apps/api/browser/browser_apitest.cc",
         "../browser/apps/platform_apps/api/media_galleries/media_galleries_watch_apitest.cc",
         "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_apitest.cc",
         "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_browsertest.cc",
+        "../browser/apps/platform_apps/app_browsertest.cc",
+        "../browser/apps/platform_apps/app_speech_recognition_browsertest.cc",
+        "../browser/apps/platform_apps/app_window_browsertest.cc",
         "../browser/apps/platform_apps/audio_focus_web_contents_observer_browsertest.cc",
+        "../browser/apps/platform_apps/event_page_browsertest.cc",
+        "../browser/apps/platform_apps/platform_app_navigation_redirector_browsertest.cc",
+        "../browser/apps/platform_apps/service_worker_browsertest.cc",
         "../browser/controlled_frame/controlled_frame_apitest.cc",
         "../browser/controlled_frame/controlled_frame_dialog_browsertest.cc",
         "../browser/controlled_frame/controlled_frame_permission_request_browsertest.cc",
@@ -4090,6 +4073,7 @@ if (!is_android) {
         "../browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_test_utils.cc",
         "../browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_test_utils.h",
         "../browser/safe_browsing/extension_telemetry/extension_telemetry_service_browsertest.cc",
+        "../browser/supervised_user/desktop/supervised_user_extension_browsertest.cc",
         "../browser/supervised_user/extensions_interactive_uitest.cc",
         "../browser/ui/views/autofill/popup/custom_cursor_suppressor_browsertest.cc",
         "../browser/ui/views/web_apps/create_shortcut_confirmation_view_browsertest.cc",
@@ -4106,7 +4090,7 @@ if (!is_android) {
         ]
       }
 
-      if (is_chromeos_ash && enable_extensions) {
+      if (is_chromeos_ash) {
         deps +=
             [ "//chromeos/ash/components/network/portal_detector:test_support" ]
 
@@ -4262,9 +4246,17 @@ if (!is_android) {
       }
 
       deps += [
+        "../browser/enterprise/connectors/test:test_support",
         "//build:chromeos_buildflags",
+        "//chrome/browser/controlled_frame:test_support",
         "//chrome/browser/devtools:test_support",
         "//chrome/browser/extensions:test_support",
+
+        # TODO(357784804): Remove this explicit dependency on `//c/b/ui/zoom`
+        # when tests that include chrome_zoom_level_prefs.h get modularized, eg
+        # tabs_test.cc, app_browsertest.cc, host_zoom_map_browsertest.cc and ats_browsertest.cc.
+        "//chrome/browser/ui/zoom",
+        "//chrome/browser/web_applications/extensions",
         "//chrome/common/extensions/api",
         "//chrome/services/media_gallery_util/public/cpp:browser_tests",
         "//components/content_settings/core/test:test_support",
@@ -5255,12 +5247,6 @@ if (!is_android) {
         "../browser/enterprise/connectors/test:test_support",
         "//chrome/browser:main_extra_parts",
       ]
-    }
-
-    # Extension approvals tests for Desktop (including ChromeOS) platforms.
-    if (enable_extensions) {
-      sources += [ "../browser/supervised_user/desktop/supervised_user_extension_browsertest.cc" ]
-      deps += [ "../browser/enterprise/connectors/test:test_support" ]
     }
 
     if (enterprise_data_controls && !is_android) {
