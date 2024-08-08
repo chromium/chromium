@@ -9571,7 +9571,7 @@ void NavigationRequest::OnCookiesAccessed(
       for (const net::CookieWithAccessResult& cookie_with_access_result :
            allowed.cookie_access_result_list) {
         if (cookie_with_access_result.cookie.IsHttpOnly()) {
-          http_only_cookie_modification_count += details->count;
+          http_only_cookie_modification_count++;
         }
       }
       if (cookie_change_listener_) {

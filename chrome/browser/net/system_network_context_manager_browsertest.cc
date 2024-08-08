@@ -519,12 +519,10 @@ class CookieTracker : public content::WebContentsObserver {
   void OnCookiesAccessed(const content::CookieAccessDetails& details) {
     for (const auto& cookie_with_access_result :
          details.cookie_access_result_list) {
-      for (size_t i = 0; i < details.count; ++i) {
-        cookie_accesses_.emplace_back(details.type,
-                                      cookie_with_access_result.cookie.Name(),
-                                      cookie_with_access_result.cookie.Value(),
-                                      cookie_with_access_result.access_result);
-      }
+      cookie_accesses_.emplace_back(details.type,
+                                    cookie_with_access_result.cookie.Name(),
+                                    cookie_with_access_result.cookie.Value(),
+                                    cookie_with_access_result.access_result);
     }
 
     QuitIfReady();

@@ -506,7 +506,6 @@ void SplitCookiesIntoAllowedAndBlocked(
                                   cookie_details->url,
                                   first_party_url,
                                   {},
-                                  cookie_details->count,
                                   /* blocked_by_policy=*/false,
                                   cookie_details->is_ad_tagged,
                                   cookie_details->cookie_setting_overrides,
@@ -525,7 +524,6 @@ void SplitCookiesIntoAllowedAndBlocked(
                                   cookie_details->url,
                                   first_party_url,
                                   {},
-                                  cookie_details->count,
                                   /* blocked_by_policy=*/true,
                                   cookie_details->is_ad_tagged,
                                   cookie_details->cookie_setting_overrides,
@@ -558,9 +556,7 @@ void EmitCookieWarningsAndMetrics(
     NavigationRequest* navigation_request,
     const network::mojom::CookieAccessDetailsPtr& cookie_details) {
   ReportLegacyTechEvent(rfh, navigation_request, cookie_details);
-  for (size_t i = 0; i < cookie_details->count; ++i) {
-    EmitCookieWarningsAndMetricsOnce(rfh, cookie_details);
-  }
+  EmitCookieWarningsAndMetricsOnce(rfh, cookie_details);
 }
 
 }  // namespace content

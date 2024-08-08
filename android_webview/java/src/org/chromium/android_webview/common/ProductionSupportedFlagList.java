@@ -391,10 +391,6 @@ public final class ProductionSupportedFlagList {
                 NetworkServiceFeatures.PRIVATE_STATE_TOKENS,
                 "Enables the prototype Private State Tokens API."),
         Flag.baseFeature(
-                NetworkServiceFeatures.COOKIE_ACCESS_DETAILS_NOTIFICATION_DE_DUPING,
-                "Enables de-duplicating cookie access details that are sent to observers via"
-                        + " OnCookiesAccessed."),
-        Flag.baseFeature(
                 NetworkServiceFeatures.MASKED_DOMAIN_LIST,
                 "When enabled, the masked domain list required for IP Protection is loaded."),
         Flag.commandLine(

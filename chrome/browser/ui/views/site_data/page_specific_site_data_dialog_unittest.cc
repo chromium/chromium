@@ -113,14 +113,12 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, CookieAccessed) {
        GURL(kCurrentUrl),
        GURL(kCurrentUrl),
        {{*first_party_cookie}},
-       /* count = */ 1u,
        /* blocked_by_policy = */ false});
   content_settings->OnCookiesAccessed(
       {content::CookieAccessDetails::Type::kRead,
        GURL(kThirdPartyUrl),
        /*firstparty*/ GURL(kCurrentUrl),
        {{*third_party_cookie}},
-       /* count = */ 1u,
        /* blocked_by_policy = */ false});
 
   auto delegate =
@@ -164,7 +162,6 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
        GURL(kThirdPartyUrl),
        GURL(kThirdPartyUrl),
        {{*first_party_cookie}},
-       /* count = */ 1u,
        /* blocked_by_policy = */ false});
   content_settings->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL(kThirdPartyUrl)),
@@ -199,7 +196,6 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
        GURL(kThirdPartyUrl),
        GURL(kThirdPartyUrl),
        {{*first_party_cookie}},
-       /* count = */ 1u,
        /* blocked_by_policy = */ false});
   content_settings->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL(kThirdPartyUrl)),
@@ -253,7 +249,6 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
        GURL(kThirdPartyUrl),
        GURL(kCurrentUrl),
        {{*third_party_cookie}},
-       /* count = */ 1u,
        /* blocked_by_policy = */ false});
   content_settings->OnBrowsingDataAccessed(
       CreateThirdPartyStorageKey(GURL(kThirdPartyUrl), GURL(kCurrentUrl)),
@@ -288,7 +283,6 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
        GURL(kThirdPartyUrl),
        GURL(kCurrentUrl),
        {{*third_party_cookie}},
-       /* count = */ 1u,
        /* blocked_by_policy = */ false});
   content_settings->OnBrowsingDataAccessed(
       CreateThirdPartyStorageKey(GURL(kThirdPartyUrl), GURL(kCurrentUrl)),
@@ -347,7 +341,6 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
        GURL(kThirdPartyUrl),
        GURL(kThirdPartyUrl),
        {{*first_party_cookie}},
-       /* count = */ 1u,
        /* blocked_by_policy = */ false});
   content_settings->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL(kThirdPartyUrl)),
@@ -362,7 +355,6 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
        GURL(kThirdPartyUrl),
        GURL(kCurrentUrl),
        {{*third_party_cookie}},
-       /* count = */ 1u,
        /* blocked_by_policy = */ false});
   content_settings->OnBrowsingDataAccessed(
       CreateThirdPartyStorageKey(GURL(kThirdPartyUrl), GURL(kCurrentUrl)),
@@ -397,7 +389,6 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
        GURL(kThirdPartyUrl),
        GURL(kThirdPartyUrl),
        {{*first_party_cookie}},
-       /* count = */ 1u,
        /* blocked_by_policy = */ false});
   content_settings->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL(kThirdPartyUrl)),
@@ -414,7 +405,6 @@ TEST_F(PageSpecificSiteDataDialogUnitTest,
        GURL(kThirdPartyUrl),
        GURL(kCurrentUrl),
        {{*third_party_cookie}},
-       /* count = */ 1u,
        /* blocked_by_policy = */ false});
   content_settings->OnBrowsingDataAccessed(
       CreateThirdPartyStorageKey(GURL(kThirdPartyUrl), GURL(kCurrentUrl)),

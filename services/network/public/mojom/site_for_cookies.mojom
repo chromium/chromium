@@ -6,7 +6,6 @@ module network.mojom;
 
 import "services/network/public/mojom/schemeful_site.mojom";
 
-// LINT.IfChange(SiteForCookies)
 // Mapped to net::SiteForCookies.
 struct SiteForCookies {
   // These fields should not be used directly, but rather through the mapped
@@ -14,4 +13,3 @@ struct SiteForCookies {
   SchemefulSite site;
   bool schemefully_same;
 };
-// LINT.ThenChange(/services/network/counted_cookie_access_details_set.cc:SiteForCookies)

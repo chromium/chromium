@@ -2517,7 +2517,7 @@ void URLLoader::SetRawRequestHeadersAndNotify(
           url_request_->isolation_info().top_frame_origin().value_or(
               url::Origin()),
           url_request_->site_for_cookies(), std::move(reported_cookies),
-          devtools_request_id(), /*count=*/1, url_request_->ad_tagged(),
+          devtools_request_id(), url_request_->ad_tagged(),
           url_request_->cookie_setting_overrides()));
     }
   }
@@ -2846,7 +2846,7 @@ void URLLoader::ReportFlaggedResponseCookies(bool call_cookie_observer) {
         url_request_->isolation_info().top_frame_origin().value_or(
             url::Origin()),
         url_request_->site_for_cookies(), std::move(reported_cookies),
-        devtools_request_id(), /*count=*/1, url_request_->ad_tagged(),
+        devtools_request_id(), url_request_->ad_tagged(),
         url_request_->cookie_setting_overrides()));
     if (call_cookie_observer) {
       cookie_observer_->OnCookiesAccessed(std::move(cookie_access_details_));

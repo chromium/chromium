@@ -5988,27 +5988,6 @@
             ]
         }
     ],
-    "CookieAccessDetailsNotificationDeDuping": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240621",
-                    "enable_features": [
-                        "CookieAccessDetailsNotificationDeDuping"
-                    ]
-                }
-            ]
-        }
-    ],
     "CookieDeprecationFacilitatedTestingCookieDeprecation": [
         {
             "platforms": [

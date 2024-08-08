@@ -4683,62 +4683,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.RestrictedCookieManager.EstimatedCookieAccessDetailsSize"
-    units="bytes" expires_after="2025-01-05">
-  <owner>vollick@google.com</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>
-    The RestrictedCookieManager batches cookie access details and, every 100ms,
-    sends these batches to clients via the OnCookiesAccessed mojo message. It is
-    possible that these cookie access details batches contain duplicates so, to
-    reduce IPC cost, we can deduplicate these details (instead, we send a count
-    along with the details). This histogram records the estimated size of the
-    non-deduplicated size if deduplication is enabled.
-
-    The URLLoader also sends cookie access details via OnCookiesAccessed, but
-    the deduplication mentioned here only applies to the batched data maintained
-    by the RestrictedCookieManager.
-  </summary>
-</histogram>
-
-<histogram
-    name="Net.RestrictedCookieManager.EstimatedDeDupedCookieAccessDetailsSize"
-    units="bytes" expires_after="2025-01-05">
-  <owner>vollick@google.com</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>
-    The RestrictedCookieManager batches cookie access details and, every 100ms,
-    sends these batches to clients via the OnCookiesAccessed mojo message. It is
-    possible that these cookie access details batches contain duplicates so, to
-    reduce IPC cost, we can deduplicate these details (instead, we send a count
-    along with the details). This histogram records the estimated size of the
-    deduplicated size if deduplication is enabled.
-
-    The URLLoader also sends cookie access details via OnCookiesAccessed, but
-    the deduplication mentioned here only applies to the batched data maintained
-    by the RestrictedCookieManager.
-  </summary>
-</histogram>
-
-<histogram
-    name="Net.RestrictedCookieManager.EstimatedDeDupedCookieAccessDetailsSizeReduction"
-    units="bytes" expires_after="2025-01-05">
-  <owner>vollick@google.com</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>
-    The RestrictedCookieManager batches cookie access details and, every 100ms,
-    sends these batches to clients via the OnCookiesAccessed mojo message. It is
-    possible that these cookie access details batches contain duplicates so, to
-    reduce IPC cost, we can deduplicate these details (instead, we send a count
-    along with the details). This histogram records the estimated size reduction
-    due to deduplication if deduplication is enabled.
-
-    The URLLoader also sends cookie access details via OnCookiesAccessed, but
-    the deduplication mentioned here only applies to the batched data maintained
-    by the RestrictedCookieManager.
-  </summary>
-</histogram>
-
 <histogram name="Net.RestrictedCookieManager.GetCookiesString.Count30Seconds"
     units="IPCs" expires_after="2025-01-26">
   <owner>carlscab@google.com</owner>

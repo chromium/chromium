@@ -10,7 +10,6 @@ import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/cookie_setting_overrides.mojom";
 
-// LINT.IfChange(CookieAccessDetails)
 struct CookieAccessDetails {
   enum Type {
     kRead,
@@ -41,11 +40,6 @@ struct CookieAccessDetails {
   // that triggered the cookie change, if the read was triggered by a request.
   string? devtools_request_id;
 
-  // CookieAccessDetails may be deduplicated to reduce IPC costs. In this case,
-  // |count| refers to the number of instances that are duplicates of |this|
-  // that would have been sent (including |this|).
-  uint32 count = 1;
-
   // If the cookies are accessed by a network transfer, `is_ad_tagged` records
   // whether the request was determined to be for advertising purposes.
   bool is_ad_tagged;
@@ -53,7 +47,6 @@ struct CookieAccessDetails {
   // A set of enum values as a bitmask.
   CookieSettingOverrides cookie_setting_overrides;
 };
-// LINT.ThenChange(/services/network/counted_cookie_access_details_set.cc:CookieAccessDetails)
 
 // Cloneable interface to observe the cookie reads or writes.
 // The user of the NetworkService should create a dedicated
