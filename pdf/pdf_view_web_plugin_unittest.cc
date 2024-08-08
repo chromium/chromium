@@ -2459,8 +2459,14 @@ TEST_F(PdfViewWebPluginInkTest, VisiblePageIndexFromPoint) {
   constexpr gfx::PointF kScreenTopLeftCorner(0.0f, 0.0f);
   // Top-left corner of first page.
   constexpr gfx::PointF kPage0TopLeftCorner(10.0f, 20.0f);
+  // Just outside the top-left corner of first page.
+  constexpr gfx::PointF kPage0OutsideTopLeftCorner(10.0f, 19.938f);
   // Bottom-right corner of first page.
+  // TODO(crbug.com/358296950): This should be able to pass the test with
+  // 89.999f as the x-value.
   constexpr gfx::PointF kPage0BottomRightCorner(89.0f, 199.0f);
+  // Just outside the bottom-right corner of first page.
+  constexpr gfx::PointF kPage0OutsideBottomRightCorner(90.0f, 199.0f);
   // Gap between first and second page.
   constexpr gfx::PointF kPage0Page1Gap(50.0f, 201.0f);
   // Top of second page.
@@ -2480,7 +2486,11 @@ TEST_F(PdfViewWebPluginInkTest, VisiblePageIndexFromPoint) {
 
   EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kScreenTopLeftCorner));
   EXPECT_EQ(0, plugin_->VisiblePageIndexFromPoint(kPage0TopLeftCorner));
+  // TODO(crbug.com/358296950): Should return -1.
+  EXPECT_EQ(0, plugin_->VisiblePageIndexFromPoint(kPage0OutsideTopLeftCorner));
   EXPECT_EQ(0, plugin_->VisiblePageIndexFromPoint(kPage0BottomRightCorner));
+  EXPECT_EQ(-1,
+            plugin_->VisiblePageIndexFromPoint(kPage0OutsideBottomRightCorner));
   EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPage0Page1Gap));
   EXPECT_EQ(1, plugin_->VisiblePageIndexFromPoint(kPage1Top));
   EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPage12Middle));
@@ -2493,7 +2503,10 @@ TEST_F(PdfViewWebPluginInkTest, VisiblePageIndexFromPoint) {
 
   EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kScreenTopLeftCorner));
   EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPage0TopLeftCorner));
+  EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPage0OutsideTopLeftCorner));
   EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPage0BottomRightCorner));
+  EXPECT_EQ(-1,
+            plugin_->VisiblePageIndexFromPoint(kPage0OutsideBottomRightCorner));
   EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPage0Page1Gap));
   EXPECT_EQ(-1, plugin_->VisiblePageIndexFromPoint(kPage1Top));
   EXPECT_EQ(12, plugin_->VisiblePageIndexFromPoint(kPage12Middle));
