@@ -38,8 +38,9 @@
 using Step = AuthenticatorRequestDialogModel::Step;
 
 // static
-void ShowAuthenticatorRequestDialog(content::WebContents* web_contents,
-                                    AuthenticatorRequestDialogModel* model) {
+void ShowAuthenticatorRequestDialog(
+    content::WebContents* web_contents,
+    scoped_refptr<AuthenticatorRequestDialogModel> model) {
   // The authenticator request dialog will only be shown for common user-facing
   // WebContents, which have a |manager|. Most other sources without managers,
   // like service workers and extension background pages, do not allow WebAuthn
@@ -56,13 +57,11 @@ void ShowAuthenticatorRequestDialog(content::WebContents* web_contents,
     return;
   }
 
-  new AuthenticatorRequestDialogView(web_contents, model);
+  new AuthenticatorRequestDialogView(web_contents, std::move(model));
 }
 
 AuthenticatorRequestDialogView::~AuthenticatorRequestDialogView() {
-  if (model_) {
-    model_->observers.RemoveObserver(this);
-  }
+  model_->observers.RemoveObserver(this);
   RemoveAllChildViews();
 }
 
@@ -270,7 +269,7 @@ std::u16string AuthenticatorRequestDialogView::GetWindowTitle() const {
 
 void AuthenticatorRequestDialogView::OnModelDestroyed(
     AuthenticatorRequestDialogModel* model) {
-  model_ = nullptr;
+  NOTREACHED_NORETURN() << "The model should outlive this view.";
 }
 
 void AuthenticatorRequestDialogView::OnStepTransition() {
@@ -288,7 +287,7 @@ void AuthenticatorRequestDialogView::OnStepTransition() {
     }
     return;
   }
-  ReplaceCurrentSheetWith(CreateSheetViewForCurrentStepOf(model_));
+  ReplaceCurrentSheetWith(CreateSheetViewForCurrentStepOf(model_.get()));
   Show();
 }
 
@@ -315,7 +314,7 @@ void AuthenticatorRequestDialogView::OnVisibilityChanged(
 
 AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
     content::WebContents* web_contents,
-    AuthenticatorRequestDialogModel* model)
+    scoped_refptr<AuthenticatorRequestDialogModel> model)
     : content::WebContentsObserver(web_contents),
       model_(model),
       web_contents_hidden_(web_contents->GetVisibility() ==

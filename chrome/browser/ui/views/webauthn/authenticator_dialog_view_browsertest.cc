@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/webauthn/authenticator_request_dialog_view.h"
-
 #include <memory>
 #include <utility>
 
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_request_dialog_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_dialog_view_test_api.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
@@ -121,7 +121,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    dialog_model_ = std::make_unique<AuthenticatorRequestDialogModel>(
+    dialog_model_ = base::MakeRefCounted<AuthenticatorRequestDialogModel>(
         /*web_contents=*/nullptr);
     dialog_model_->relying_party_id = "example.com";
     dialog_controller_ = std::make_unique<AuthenticatorRequestDialogController>(
@@ -184,7 +184,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
     }
   }
 
-  std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model_;
+  scoped_refptr<AuthenticatorRequestDialogModel> dialog_model_;
   std::unique_ptr<AuthenticatorRequestDialogController> dialog_controller_;
 
  protected:

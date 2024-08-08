@@ -79,10 +79,12 @@ std::u16string PossibleResidentKeyWarning(
 
 ProfileAttributesEntry* GetProfileAttributesEntryForDialogModel(
     AuthenticatorRequestDialogModel* dialog_model) {
-  Profile* profile =
-      Profile::FromBrowserContext(
-          dialog_model->GetRenderFrameHost()->GetBrowserContext())
-          ->GetOriginalProfile();
+  content::RenderFrameHost* rfh = dialog_model->GetRenderFrameHost();
+  if (!rfh) {
+    return nullptr;
+  }
+  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext())
+                         ->GetOriginalProfile();
   return g_browser_process->profile_manager()
       ->GetProfileAttributesStorage()
       .GetProfileAttributesWithPath(profile->GetPath());

@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -66,7 +67,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     // https://crbug.com/893292.
     set_should_verify_dialog_bounds(false);
 
-    model_ = std::make_unique<AuthenticatorRequestDialogModel>(
+    model_ = base::MakeRefCounted<AuthenticatorRequestDialogModel>(
         browser()
             ->tab_strip_model()
             ->GetActiveWebContents()
@@ -375,7 +376,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
   }
 
  private:
-  std::unique_ptr<AuthenticatorRequestDialogModel> model_;
+  scoped_refptr<AuthenticatorRequestDialogModel> model_;
   std::unique_ptr<AuthenticatorRequestDialogController> controller_;
   base::RepeatingTimer timer_;
   int bio_samples_remaining_ = 5;
@@ -625,7 +626,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
     // https://crbug.com/893292.
     set_should_verify_dialog_bounds(false);
 
-    model_ = std::make_unique<AuthenticatorRequestDialogModel>(
+    model_ = base::MakeRefCounted<AuthenticatorRequestDialogModel>(
         browser()
             ->tab_strip_model()
             ->GetActiveWebContents()
@@ -815,7 +816,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
   }
 
  private:
-  std::unique_ptr<AuthenticatorRequestDialogModel> model_;
+  scoped_refptr<AuthenticatorRequestDialogModel> model_;
   std::unique_ptr<AuthenticatorRequestDialogController> controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -994,7 +995,7 @@ class AuthenticatorWindowTest : public InProcessBrowserTest {
     https_server_.StartAcceptingConnections();
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    model_ = std::make_unique<AuthenticatorRequestDialogModel>(
+    model_ = base::MakeRefCounted<AuthenticatorRequestDialogModel>(
         browser()
             ->tab_strip_model()
             ->GetActiveWebContents()
@@ -1002,7 +1003,7 @@ class AuthenticatorWindowTest : public InProcessBrowserTest {
   }
 
  protected:
-  std::unique_ptr<AuthenticatorRequestDialogModel> model_;
+  scoped_refptr<AuthenticatorRequestDialogModel> model_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 
  private:

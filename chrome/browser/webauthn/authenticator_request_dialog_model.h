@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -323,7 +324,12 @@ class Profile;
   F(kGPMReauthForPinReset)                                                     \
   F(kGPMLockedPin)
 
-struct AuthenticatorRequestDialogModel {
+// AuthenticatorRequestDialogModel holds the UI state for a WebAuthn request.
+// This class is refcounted so that its ownership can be shared between the
+// dialog view and the request delegate, which both depend on its state, and
+// don't have coupled lifetimes.
+struct AuthenticatorRequestDialogModel
+    : public base::RefCounted<AuthenticatorRequestDialogModel> {
   enum class Step {
 #define F(x) x,
     STEPS
@@ -421,7 +427,6 @@ struct AuthenticatorRequestDialogModel {
       AuthenticatorRequestDialogModel&&) = delete;
   AuthenticatorRequestDialogModel& operator=(
       const AuthenticatorRequestDialogModel&) = delete;
-  ~AuthenticatorRequestDialogModel();
 
   // This causes the events to become methods on the Model. Views and
   // Controllers call these methods to broadcast events to all observers.
@@ -445,9 +450,9 @@ struct AuthenticatorRequestDialogModel {
 
   void DisableUiOrShowLoadingDialog();
 
-  // This can return nullptr in tests.
+  // This can return nullptr in tests or if the render frame host is not live.
   content::WebContents* GetWebContents() const;
-  // This can return nullptr in tests.
+  // This can return nullptr in tests or if the render frame host is not live.
   content::RenderFrameHost* GetRenderFrameHost() const;
 
   // generation is incremented each time the request is restarted so that events
@@ -535,6 +540,9 @@ struct AuthenticatorRequestDialogModel {
 #endif  // BUILDFLAG(IS_MAC)
 
  private:
+  friend class base::RefCounted<AuthenticatorRequestDialogModel>;
+  ~AuthenticatorRequestDialogModel();
+
   Step step_ = Step::kNotStarted;
 };
 

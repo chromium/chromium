@@ -24,6 +24,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -798,7 +799,7 @@ void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
 ChromeAuthenticatorRequestDelegate::ChromeAuthenticatorRequestDelegate(
     content::RenderFrameHost* render_frame_host)
     : render_frame_host_id_(render_frame_host->GetGlobalId()),
-      dialog_model_(std::make_unique<AuthenticatorRequestDialogModel>(
+      dialog_model_(base::MakeRefCounted<AuthenticatorRequestDialogModel>(
           GetRenderFrameHost())),
       dialog_controller_(std::make_unique<AuthenticatorRequestDialogController>(
           dialog_model_.get())) {
