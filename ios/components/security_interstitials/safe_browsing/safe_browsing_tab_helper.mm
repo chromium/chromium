@@ -358,6 +358,27 @@ SafeBrowsingTabHelper::PolicyDecider::GetOldestPendingMainFrameQuery(
   return nullptr;
 }
 
+SafeBrowsingTabHelper::PolicyDecider::MainFrameUrlQuery*
+SafeBrowsingTabHelper::PolicyDecider::GetOldestPendingMainFrameQuery(
+    const SafeBrowsingQueryManager::QueryData& query_data) {
+  const GURL& url = query_data.query.url;
+  const SafeBrowsingQueryManager::Result result = query_data.result;
+  for (auto& query : pending_main_frame_redirect_chain_) {
+    if (query.url == url && !query.decision) {
+      return &query;
+    }
+  }
+
+  bool has_final_decision =
+      result.sync_check_complete && result.async_check_complete;
+  if (pending_main_frame_query_ && pending_main_frame_query_->url == url &&
+      !has_final_decision) {
+    return &pending_main_frame_query_.value();
+  }
+
+  return nullptr;
+}
+
 void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlQueryDecided(
     const GURL& url,
     web::WebStatePolicyDecider::PolicyDecision decision,
@@ -398,7 +419,7 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlSyncQueryDecided(
   const GURL& url = query_data.query.url;
   SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check =
       query_data.performed_check;
-  GetOldestPendingMainFrameQuery(url)->decision = decision;
+  GetOldestPendingMainFrameQuery(query_data)->decision = decision;
 
   // If ShouldAllowResponse() has already been called for this URL, and if
   // an overall decision for the redirect chain can be computed, invoke this

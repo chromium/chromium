@@ -125,6 +125,13 @@ class SafeBrowsingTabHelper
     // been decided, returns null.
     MainFrameUrlQuery* GetOldestPendingMainFrameQuery(const GURL& url);
 
+    // Returns the oldest query for `query_data` that has not yet received a
+    // decision taking into account if the sync, async, or both checks have been
+    // completed. If there are no queries for `query_data` or if all such
+    // queries have already been decided, returns null.
+    MainFrameUrlQuery* GetOldestPendingMainFrameQuery(
+        const SafeBrowsingQueryManager::QueryData& query_data);
+
     // Callback invoked when a main frame query for `url` has finished with
     // `decision` after performing a check of type `performed_check`.
     void OnMainFrameUrlQueryDecided(
