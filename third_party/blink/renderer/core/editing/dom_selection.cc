@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/editing/dom_selection.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_get_composed_ranges_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/range.h"
@@ -587,7 +588,7 @@ Range* DOMSelection::getRangeAt(unsigned index,
 
 // https://www.w3.org/TR/selection-api/#dom-selection-getcomposedranges
 const StaticRangeVector DOMSelection::getComposedRanges(
-    const HeapVector<Member<ShadowRoot>>& shadowRoots) const {
+    const GetComposedRangesOptions* options) const {
   StaticRangeVector ranges;
   // 1. If this is empty, return an empty array.
   if (!IsAvailable()) {
@@ -603,14 +604,14 @@ const StaticRangeVector DOMSelection::getComposedRanges(
   Node* startNode = range->composedStartContainer();
   unsigned startOffset = range->composedStartOffset();
   // 3. Rescope startNode and startOffset with listed shadow roots.
-  Rescope(startNode, startOffset, shadowRoots, /*isEnd=*/false);
+  Rescope(startNode, startOffset, options->shadowRoots(), /*isEnd=*/false);
 
   // 4. Let endNode be end node of the range associated with this, and let
   // endOffset be end offset of the range.
   Node* endNode = range->composedEndContainer();
   unsigned endOffset = range->composedEndOffset();
   // 5. Rescope endNode and endOffset with listed shadow roots.
-  Rescope(endNode, endOffset, shadowRoots, /*isEnd=*/true);
+  Rescope(endNode, endOffset, options->shadowRoots(), /*isEnd=*/true);
 
   // 6. Return an array consisting of new StaticRange whose start node is
   // startNode, start offset is startOffset, end node is endNode, and end
