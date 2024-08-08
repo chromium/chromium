@@ -542,6 +542,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.Drive.FileClick" units="index"
     expires_after="2025-07-21">
+  <owner>rtatum@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -554,6 +555,7 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: Used for Chirp monitoring. -->
 
+  <owner>rtatum@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -566,6 +568,7 @@ chromium-metrics-reviews@google.com.
     enum="ItemSuggestRequestResult" expires_after="never">
 <!-- expires-never: Used for Chirp monitoring. -->
 
+  <owner>rtatum@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
