@@ -101,12 +101,6 @@ BASE_DECLARE_FEATURE(
     kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-// Updates usages of Profile.isChild() in Profile.java to use the account
-// capability to determine if account is supervised.
-BASE_DECLARE_FEATURE(kReplaceProfileIsChildWithAccountCapabilitiesOnAndroid);
-#endif
-
 // Updates the ListFamilyMembers service to fetch family account info for
 // accounts with the relevant capability rather than just for supervised
 // accounts.

@@ -47,10 +47,6 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.GAIAServiceType;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.Tribool;
-import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -223,7 +219,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
 
     private void configureSignOutSwitch() {
         Preference signOutPreference = findPreference(PREF_SIGN_OUT);
-        if (isSupervisedUser()) {
+        if (getProfile().isChild()) {
             getPreferenceScreen().removePreference(signOutPreference);
             getPreferenceScreen().removePreference(findPreference(PREF_SIGN_OUT_DIVIDER));
         } else {
@@ -286,7 +282,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
 
     private void configureChildAccountPreferences() {
         Preference parentAccounts = findPreference(PREF_PARENT_ACCOUNT_CATEGORY);
-        if (isSupervisedUser()) {
+        if (getProfile().isChild()) {
             PrefService prefService = UserPrefs.get(getProfile());
 
             String firstParent = prefService.getString(Pref.SUPERVISED_USER_CUSTODIAN_EMAIL);
@@ -589,25 +585,6 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
         settingsLauncher.launchSettingsActivity(
                 context, AccountManagementFragment.class, arguments);
-    }
-
-    private boolean isSupervisedUser() {
-        // SEED_ACCOUNTS_REVAMP is needed for using capabilities, otherwise
-        // findExtendedAccountInfoByEmailAddress is not guaranteed to have the needed account
-        if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList
-                                .REPLACE_PROFILE_IS_CHILD_WITH_ACCOUNT_CAPABILITIES_ON_ANDROID)
-                && SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
-            assert mSignedInCoreAccountInfo != null;
-            AccountInfo accountinfo =
-                    IdentityServicesProvider.get()
-                            .getIdentityManager(getProfile())
-                            .findExtendedAccountInfoByEmailAddress(
-                                    mSignedInCoreAccountInfo.getEmail());
-            return accountinfo.getAccountCapabilities().isSubjectToParentalControls()
-                    == Tribool.TRUE;
-        }
-        return getProfile().isChild();
     }
 
     private void closeDialogIfOpen(String tag) {

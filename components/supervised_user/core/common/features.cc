@@ -157,12 +157,6 @@ BASE_FEATURE(kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kReplaceProfileIsChildWithAccountCapabilitiesOnAndroid,
-             "ReplaceProfileIsChildWithAccountCapabilitiesOnAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kFetchListFamilyMembersWithCapability,
              "FetchListFamilyMembersWithCapability",
              base::FEATURE_DISABLED_BY_DEFAULT);
