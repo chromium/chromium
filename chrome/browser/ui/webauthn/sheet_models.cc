@@ -1896,10 +1896,6 @@ AuthenticatorTrustThisComputerAssertionSheetModel::GetCancelButtonLabel()
   return l10n_util::GetStringUTF16(IDS_CANCEL);
 }
 
-void AuthenticatorTrustThisComputerAssertionSheetModel::OnCancel() {
-  dialog_model()->CancelAuthenticatorRequest();
-}
-
 bool AuthenticatorTrustThisComputerAssertionSheetModel::IsAcceptButtonVisible()
     const {
   return true;
@@ -1970,10 +1966,6 @@ std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetCancelButtonLabel()
   return l10n_util::GetStringUTF16(IDS_CANCEL);
 }
 
-void AuthenticatorCreateGpmPasskeySheetModel::OnCancel() {
-  dialog_model()->CancelAuthenticatorRequest();
-}
-
 bool AuthenticatorCreateGpmPasskeySheetModel::IsAcceptButtonVisible() const {
   return true;
 }
@@ -2018,10 +2010,6 @@ bool AuthenticatorGpmIncognitoCreateSheetModel::IsCancelButtonVisible() const {
 std::u16string AuthenticatorGpmIncognitoCreateSheetModel::GetCancelButtonLabel()
     const {
   return l10n_util::GetStringUTF16(IDS_CANCEL);
-}
-
-void AuthenticatorGpmIncognitoCreateSheetModel::OnCancel() {
-  dialog_model()->CancelAuthenticatorRequest();
 }
 
 bool AuthenticatorGpmIncognitoCreateSheetModel::IsAcceptButtonVisible() const {

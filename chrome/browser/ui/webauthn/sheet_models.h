@@ -823,7 +823,6 @@ class AuthenticatorTrustThisComputerAssertionSheetModel
   std::u16string GetStepDescription() const override;
   bool IsCancelButtonVisible() const override;
   std::u16string GetCancelButtonLabel() const override;
-  void OnCancel() override;
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   bool IsOtherMechanismButtonVisible() const override;
@@ -847,7 +846,6 @@ class AuthenticatorCreateGpmPasskeySheetModel
   std::u16string GetStepDescription() const override;
   bool IsCancelButtonVisible() const override;
   std::u16string GetCancelButtonLabel() const override;
-  void OnCancel() override;
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
@@ -869,7 +867,6 @@ class AuthenticatorGpmIncognitoCreateSheetModel
   std::u16string GetStepDescription() const override;
   bool IsCancelButtonVisible() const override;
   std::u16string GetCancelButtonLabel() const override;
-  void OnCancel() override;
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
