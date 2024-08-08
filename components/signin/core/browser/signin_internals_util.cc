@@ -15,8 +15,8 @@
 
 namespace signin_internals_util {
 
+// Preference prefixes for signin and token values.
 const char kSigninPrefPrefix[] = "google.services.signin.";
-const char kTokenPrefPrefix[] = "google.services.signin.tokens.";
 
 #define ENUM_CASE(x) case x: return (std::string(kSigninPrefPrefix) + #x)
 std::string SigninStatusFieldToString(UntimedSigninStatusField field) {
@@ -24,9 +24,6 @@ std::string SigninStatusFieldToString(UntimedSigninStatusField field) {
     ENUM_CASE(ACCOUNT_ID);
     ENUM_CASE(GAIA_ID);
     ENUM_CASE(USERNAME);
-    case UNTIMED_FIELDS_END:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
   }
 
   NOTREACHED_IN_MIGRATION();
@@ -37,6 +34,8 @@ std::string SigninStatusFieldToString(TimedSigninStatusField field) {
   switch (field) {
     ENUM_CASE(AUTHENTICATION_RESULT_RECEIVED);
     ENUM_CASE(REFRESH_TOKEN_RECEIVED);
+    ENUM_CASE(LAST_SIGNIN_ACCESS_POINT);
+    ENUM_CASE(LAST_SIGNOUT_SOURCE);
     case TIMED_FIELDS_END:
       NOTREACHED_IN_MIGRATION();
       return std::string();

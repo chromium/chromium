@@ -22,6 +22,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
+#include "components/signin/core/browser/signin_internals_util.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -112,9 +113,6 @@ std::string SigninStatusFieldToLabel(
       return "Gaia Id";
     case signin_internals_util::USERNAME:
       return "Username";
-    case signin_internals_util::UNTIMED_FIELDS_END:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
   }
   NOTREACHED_IN_MIGRATION();
   return std::string();
@@ -157,6 +155,10 @@ std::string SigninStatusFieldToLabel(
       return "Gaia Authentication Result";
     case signin_internals_util::REFRESH_TOKEN_RECEIVED:
       return "RefreshToken Received";
+    case signin_internals_util::LAST_SIGNIN_ACCESS_POINT:
+      return "Sign-in Access Point";
+    case signin_internals_util::LAST_SIGNOUT_SOURCE:
+      return "Last Sign-out Source";
     case signin_internals_util::TIMED_FIELDS_END:
       NOTREACHED_IN_MIGRATION();
       return "Error";
@@ -277,16 +279,7 @@ signin_internals_util::TimedSigninStatusField& operator++(
 
 // static
 void AboutSigninInternals::RegisterPrefs(PrefRegistrySimple* user_prefs) {
-  // TODO(rogerta): leaving untimed fields here for now because legacy
-  // profiles still have these prefs.  In three or four version from M43
-  // we can probably remove them.
-  for (signin_internals_util::UntimedSigninStatusField i =
-           signin_internals_util::UNTIMED_FIELDS_BEGIN;
-       i < signin_internals_util::UNTIMED_FIELDS_END; ++i) {
-    const std::string pref_path = SigninStatusFieldToString(i);
-    user_prefs->RegisterStringPref(pref_path, std::string());
-  }
-
+  // All TimedSigninStatusField entries are backed by prefs.
   for (signin_internals_util::TimedSigninStatusField i =
            signin_internals_util::TIMED_FIELDS_BEGIN;
        i < signin_internals_util::TIMED_FIELDS_END; ++i) {
@@ -314,14 +307,19 @@ void AboutSigninInternals::NotifyTimedSigninFieldValueChanged(
   DCHECK(field_index >= 0 &&
          field_index < signin_status_.timed_signin_fields.size());
 
-  base::Time now = base::Time::NowFromSystemTime();
-  std::string time_as_str = base::TimeFormatAsIso8601(now);
-  TimedSigninStatusValue timed_value(value, time_as_str);
+  if (value.empty()) {
+    // Clear prefs for time and value when passing the empty string as a value.
+    signin_status_.timed_signin_fields[field_index] = TimedSigninStatusValue();
+    ClearPref(client_->GetPrefs(), field);
+  } else {
+    base::Time now = base::Time::NowFromSystemTime();
+    std::string time_as_str = base::TimeFormatAsIso8601(now);
+    TimedSigninStatusValue timed_value(value, time_as_str);
+    signin_status_.timed_signin_fields[field_index] = timed_value;
 
-  signin_status_.timed_signin_fields[field_index] = timed_value;
-
-  // Also persist these values in the prefs.
-  SetPref(client_->GetPrefs(), field, value, time_as_str);
+    // Persist the values in the prefs.
+    SetPref(client_->GetPrefs(), field, value, time_as_str);
+  }
 
   // If the user is restarting a sign in process, clear the fields that are
   // to come.
@@ -504,6 +502,25 @@ void AboutSigninInternals::OnStateChanged(
 
 void AboutSigninInternals::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      NotifyTimedSigninFieldValueChanged(
+          signin_internals_util::LAST_SIGNIN_ACCESS_POINT,
+          base::ToString(event.GetSetPrimaryAccountAccessPoint().value()));
+      break;
+
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      NotifyTimedSigninFieldValueChanged(
+          signin_internals_util::LAST_SIGNIN_ACCESS_POINT, std::string());
+      NotifyTimedSigninFieldValueChanged(
+          signin_internals_util::LAST_SIGNOUT_SOURCE,
+          base::ToString(event.GetClearPrimaryAccountSource().value()));
+      break;
+  }
+
   NotifyObservers();
 }
 
@@ -614,7 +631,7 @@ std::string AboutSigninInternals::RefreshTokenEvent::GetTypeAsString() const {
 }
 
 AboutSigninInternals::SigninStatus::SigninStatus()
-    : timed_signin_fields(signin_internals_util::TIMED_FIELDS_COUNT) {}
+    : timed_signin_fields(signin_internals_util::TIMED_FIELDS_END) {}
 
 AboutSigninInternals::SigninStatus::~SigninStatus() {}
 
@@ -704,6 +721,16 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
     AddSectionEntry(basic_info, "Network calls delayed",
                     signin_client->AreNetworkCallsDelayed() ? "True" : "False");
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    const auto& last_signout_value =
+        timed_signin_fields[signin_internals_util::LAST_SIGNOUT_SOURCE -
+                            signin_internals_util::TIMED_FIELDS_BEGIN];
+    AddSectionEntry(
+        basic_info,
+        SigninStatusFieldToLabel(signin_internals_util::LAST_SIGNOUT_SOURCE),
+        last_signout_value.first, last_signout_value.second);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
     AddSection(signin_info, std::move(basic_info), "Basic Information");
   }
 
@@ -714,8 +741,12 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
     for (signin_internals_util::TimedSigninStatusField i =
              signin_internals_util::TIMED_FIELDS_BEGIN;
          i < signin_internals_util::TIMED_FIELDS_END; ++i) {
-      const std::string status_field_label = SigninStatusFieldToLabel(i);
+      // The sign-out source is logged in the basic section.
+      if (i == signin_internals_util::LAST_SIGNOUT_SOURCE) {
+        continue;
+      }
 
+      const std::string status_field_label = SigninStatusFieldToLabel(i);
       AddSectionEntry(
           detailed_info, status_field_label,
           timed_signin_fields[i - signin_internals_util::TIMED_FIELDS_BEGIN]
