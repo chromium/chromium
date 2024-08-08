@@ -462,7 +462,7 @@ public class Fido2CredentialRequestTest {
     }
 
     private static final String FIDO_OVERRIDE_COMMAND =
-            "am broadcast -a com.google.android.gms.phenotype.FLAG_OVERRIDE --es package"
+            "su root am broadcast -a com.google.android.gms.phenotype.FLAG_OVERRIDE --es package"
                     + " com.google.android.gms.fido --es user * --esa flags"
                     + " Fido2ApiKnownBrowsers__fingerprints --esa values"
                     + " %s --esa types"
