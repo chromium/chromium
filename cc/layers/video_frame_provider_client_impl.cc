@@ -99,6 +99,15 @@ bool VideoFrameProviderClientImpl::HasCurrentFrame() {
   return provider_ && provider_->HasCurrentFrame();
 }
 
+std::optional<base::TimeDelta>
+VideoFrameProviderClientImpl::GetPreferredRenderInterval() {
+  provider_lock_.AssertAcquired();
+  if (!provider_) {
+    return std::nullopt;
+  }
+  return provider_->GetPreferredRenderInterval();
+}
+
 void VideoFrameProviderClientImpl::StopUsingProvider() {
   {
     // Block the provider from shutting down until this client is done

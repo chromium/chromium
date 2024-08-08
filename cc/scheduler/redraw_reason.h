@@ -19,7 +19,8 @@ enum class RedrawReason {
   kUntracked,
   kAnimatedImage,
   kScrollbarFadeOutAnimation,
-  kMaxValue = kScrollbarFadeOutAnimation,
+  kVideoLayer,
+  kMaxValue = kVideoLayer,
 };
 
 using RedrawReasonSet = base::

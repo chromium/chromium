@@ -14,6 +14,8 @@ std::string RedrawReasonToString(RedrawReason reason) {
       return "kAnimatedImage";
     case RedrawReason::kScrollbarFadeOutAnimation:
       return "kScrollbarFadeOutAnimation";
+    case RedrawReason::kVideoLayer:
+      return "kVideoLayer";
   }
 }
 

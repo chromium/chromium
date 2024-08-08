@@ -242,6 +242,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     // main thread.
     viz::BeginFrameArgs origin_begin_main_frame_args;
     RedrawReasonSet set_needs_redraw_reasons;
+    // Preferred frame rate of VideoLayerImpl mapped to number of layers.
+    base::flat_map<base::TimeDelta, uint32_t> video_layer_preferred_intervals;
     // Indicates if there are SharedElementDrawQuads in this frame.
     bool has_shared_element_resources = false;
     // Indicates if this frame has a save directive which will add copy requests

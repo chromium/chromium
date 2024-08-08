@@ -33,6 +33,7 @@
 #include "cc/metrics/event_metrics.h"
 #include "cc/paint/discardable_image_map.h"
 #include "cc/resources/ui_resource_client.h"
+#include "cc/scheduler/redraw_reason.h"
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_host_impl.h"
@@ -177,7 +178,7 @@ class CC_EXPORT LayerTreeImpl {
 
   // Tree specific methods exposed to layer-impl tree.
   // ---------------------------------------------------------------------------
-  void SetNeedsRedraw();
+  void SetNeedsRedraw(RedrawReason reason);
 
   // Tracing methods.
   // ---------------------------------------------------------------------------

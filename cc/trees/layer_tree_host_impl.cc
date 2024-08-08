@@ -67,6 +67,7 @@
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/render_surface_impl.h"
 #include "cc/layers/surface_layer_impl.h"
+#include "cc/layers/video_layer_impl.h"
 #include "cc/layers/viewport.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/custom_metrics_recorder.h"
@@ -1388,6 +1389,10 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   bool have_missing_animated_tiles = false;
   int num_of_layers_with_videos = 0;
 
+  const bool compute_video_layer_preferred_interval =
+      !features::UseSurfaceLayerForVideo() &&
+      base::FeatureList::IsEnabled(features::kUseFrameIntervalDecider);
+
   if (settings_.enable_compositing_based_throttling)
     throttle_decider_.Prepare();
   for (EffectTreeLayerListIterator it(active_tree());
@@ -1426,6 +1431,16 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
         if (layer->may_contain_video()) {
           num_of_layers_with_videos++;
           frame->may_contain_video = true;
+        }
+        if (compute_video_layer_preferred_interval &&
+            layer->GetLayerType() == mojom::LayerType::kVideo) {
+          VideoLayerImpl* video_layer = static_cast<VideoLayerImpl*>(layer);
+          std::optional<base::TimeDelta> video_preferred_interval =
+              video_layer->GetPreferredRenderInterval();
+          if (video_preferred_interval) {
+            frame->video_layer_preferred_intervals[video_preferred_interval
+                                                       .value()]++;
+          }
         }
         layer->NotifyKnownResourceIdsBeforeAppendQuads(known_resource_ids);
         layer->AppendQuads(target_render_pass, &append_quads_data);
@@ -2854,6 +2869,16 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
       CurrentBeginFrameArgs().frame_time;
   metadata.frame_interval_inputs.has_input =
       frame_rate_estimator_.input_priority_mode();
+
+  if (!frame->video_layer_preferred_intervals.empty() &&
+      frame->set_needs_redraw_reasons.Has(RedrawReason::kVideoLayer)) {
+    for (auto& [video_interval, count] :
+         frame->video_layer_preferred_intervals) {
+      metadata.frame_interval_inputs.content_interval_info.push_back(
+          {viz::ContentFrameIntervalType::kVideo, video_interval, count - 1u});
+    }
+    frame->set_needs_redraw_reasons.Remove(RedrawReason::kVideoLayer);
+  }
 
   if (frame->set_needs_redraw_reasons.Has(RedrawReason::kAnimatedImage)) {
     std::optional<ImageAnimationController::ConsistentFrameDuration>
