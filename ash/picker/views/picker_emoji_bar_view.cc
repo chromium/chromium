@@ -24,6 +24,7 @@
 #include "ash/style/style_util.h"
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/overloaded.h"
@@ -303,17 +304,29 @@ void PickerEmojiBarView::ClearSearchResults() {
 void PickerEmojiBarView::SetSearchResults(
     std::vector<PickerSearchResult> results) {
   ClearSearchResults();
+  int item_row_width = 0;
+  // This may be slow to calculate, so only `CHECK` on debug builds.
+  DCHECK_EQ(item_row_width, item_row_->GetPreferredSize().width());
+  const int available_item_row_width = CalculateAvailableWidthForItemRow();
   for (const auto& result : results) {
     // `base::Unretained` is safe here because `this` owns the item view.
     auto item_view = CreateItemView(
         result, base::BindRepeating(&PickerEmojiBarView::SelectSearchResult,
                                     base::Unretained(this), result));
+    int new_item_row_width =
+        item_row_width + item_view->GetPreferredSize().width();
+    if (item_row_width != 0) {
+      new_item_row_width += kItemGap;
+    }
+
     // Add the item if there is enough space in the row.
-    if (item_row_->GetPreferredSize().width() + kItemGap +
-            item_view->GetPreferredSize().width() <=
-        CalculateAvailableWidthForItemRow()) {
+    if (new_item_row_width <= available_item_row_width) {
       item_row_->AddChildView(CreateEmptyCell())
           ->AddChildView(std::move(item_view));
+      item_row_width = new_item_row_width;
+
+      DCHECK_EQ(item_row_width, item_row_->GetPreferredSize().width());
+      DCHECK_EQ(available_item_row_width, CalculateAvailableWidthForItemRow());
     }
   }
 }
