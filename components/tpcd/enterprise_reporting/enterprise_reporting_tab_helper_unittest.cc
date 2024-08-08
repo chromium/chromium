@@ -10,6 +10,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/features.h"
@@ -70,7 +71,10 @@ class EnterpriseReportingTabHelperTest
   std::unique_ptr<MockNetworkContext> mock_network_context_;
 };
 
-TEST_F(EnterpriseReportingTabHelperTest, ReportingFeatureDisabled) {
+// RenderFrameHost tests
+
+TEST_F(EnterpriseReportingTabHelperTest,
+       RenderFrameHostReportingFeatureDisabled) {
   // QueueEnterpriseReport() shouldn't be called
   EXPECT_CALL(*mock_network_context(), QueueEnterpriseReport).Times(0);
 
@@ -91,15 +95,16 @@ TEST_F(EnterpriseReportingTabHelperTest, ReportingFeatureDisabled) {
   net::CookieInclusionStatus status;
   status.AddWarningReason(
       net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
-  const content::CookieAccessDetails& details = content::CookieAccessDetails(
+  content::CookieAccessDetails details(
       content::CookieAccessDetails::Type::kChange, kUrl_, kUrl_,
       {{cookie_, net::CookieAccessResult(status)}}, 1u);
 
   tab_helper->OnCookiesAccessed(main_rfh(), details);
 }
 
-TEST_F(EnterpriseReportingTabHelperTest,
-       OnCookiesAccessedWithExcludeThirdPartyBlockedWithinFirstPartySetError) {
+TEST_F(
+    EnterpriseReportingTabHelperTest,
+    RenderFrameHostOnCookiesAccessedWithExcludeThirdPartyBlockedWithinFirstPartySetError) {
   // TODO(crbug.com/352737473): Update group parameter to use endpoint from
   // subscription.
   EXPECT_CALL(
@@ -107,13 +112,13 @@ TEST_F(EnterpriseReportingTabHelperTest,
       QueueEnterpriseReport("enterprise-third-party-cookie-access-error",
                             "enterprise-third-party-cookie-access-error",
                             GURL(""), base::test::IsJson(R"json({
-            "frameUrl": "",
-             "accessUrl": "http://www.google.com/",
-             "name": "A",
-             "domain": "www.google.com",
-             "path": "/",
-             "accessOperation": "write"
-          })json")));
+                                "frameUrl": "",
+                                "accessUrl": "http://www.google.com/",
+                                "name": "A",
+                                "domain": "www.google.com",
+                                "path": "/",
+                                "accessOperation": "write"
+                            })json")));
 
   tpcd::enterprise_reporting::EnterpriseReportingTabHelper::
       CreateForWebContents(web_contents());
@@ -125,7 +130,7 @@ TEST_F(EnterpriseReportingTabHelperTest,
   status.AddExclusionReason(
       net::CookieInclusionStatus::
           EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
-  const content::CookieAccessDetails& details = content::CookieAccessDetails(
+  content::CookieAccessDetails details(
       content::CookieAccessDetails::Type::kChange, kUrl_, kUrl_,
       {{cookie_, net::CookieAccessResult(status)}}, 1u);
 
@@ -133,7 +138,7 @@ TEST_F(EnterpriseReportingTabHelperTest,
 }
 
 TEST_F(EnterpriseReportingTabHelperTest,
-       OnCookiesAccessedWithExcludeThirdPartyPhaseoutError) {
+       RenderFrameHostOnCookiesAccessedWithExcludeThirdPartyPhaseoutError) {
   // TODO(crbug.com/352737473): Update group parameter to use endpoint from
   // subscription.
   EXPECT_CALL(
@@ -141,13 +146,13 @@ TEST_F(EnterpriseReportingTabHelperTest,
       QueueEnterpriseReport("enterprise-third-party-cookie-access-error",
                             "enterprise-third-party-cookie-access-error",
                             GURL(""), base::test::IsJson(R"json({
-            "frameUrl": "",
-             "accessUrl": "http://www.google.com/",
-             "name": "A",
-             "domain": "www.google.com",
-             "path": "/",
-             "accessOperation": "write"
-          })json")));
+                                "frameUrl": "",
+                                "accessUrl": "http://www.google.com/",
+                                "name": "A",
+                                "domain": "www.google.com",
+                                "path": "/",
+                                "accessOperation": "write"
+                            })json")));
 
   tpcd::enterprise_reporting::EnterpriseReportingTabHelper::
       CreateForWebContents(web_contents());
@@ -158,7 +163,7 @@ TEST_F(EnterpriseReportingTabHelperTest,
   net::CookieInclusionStatus status;
   status.AddExclusionReason(
       net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
-  const content::CookieAccessDetails& details = content::CookieAccessDetails(
+  content::CookieAccessDetails details(
       content::CookieAccessDetails::Type::kChange, kUrl_, kUrl_,
       {{cookie_, net::CookieAccessResult(status)}}, 1u);
 
@@ -166,7 +171,7 @@ TEST_F(EnterpriseReportingTabHelperTest,
 }
 
 TEST_F(EnterpriseReportingTabHelperTest,
-       OnCookiesAccessedWithWarnThirdPartyPhaseoutWarning) {
+       RenderFrameHostOnCookiesAccessedWithWarnThirdPartyPhaseoutWarning) {
   // TODO(crbug.com/352737473): Update group parameter to use endpoint from
   // subscription.
   EXPECT_CALL(
@@ -174,13 +179,13 @@ TEST_F(EnterpriseReportingTabHelperTest,
       QueueEnterpriseReport("enterprise-third-party-cookie-access-warning",
                             "enterprise-third-party-cookie-access-warning",
                             GURL(""), base::test::IsJson(R"json({
-            "frameUrl": "",
-             "accessUrl": "http://www.google.com/",
-             "name": "A",
-             "domain": "www.google.com",
-             "path": "/",
-             "accessOperation": "read"
-          })json")));
+                                "frameUrl": "",
+                                "accessUrl": "http://www.google.com/",
+                                "name": "A",
+                                "domain": "www.google.com",
+                                "path": "/",
+                                "accessOperation": "read"
+                            })json")));
 
   tpcd::enterprise_reporting::EnterpriseReportingTabHelper::
       CreateForWebContents(web_contents());
@@ -191,7 +196,7 @@ TEST_F(EnterpriseReportingTabHelperTest,
   net::CookieInclusionStatus status;
   status.AddWarningReason(
       net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
-  const content::CookieAccessDetails& details = content::CookieAccessDetails(
+  content::CookieAccessDetails details(
       content::CookieAccessDetails::Type::kRead, kUrl_, kUrl_,
       {{cookie_, net::CookieAccessResult(status)}}, 1u);
 
@@ -199,7 +204,7 @@ TEST_F(EnterpriseReportingTabHelperTest,
 }
 
 TEST_F(EnterpriseReportingTabHelperTest,
-       OnCookiesAccessedWithoutQueueingReport) {
+       RenderFrameHostOnCookiesAccessedWithoutQueueingReport) {
   // QueueEnterpriseReport() shouldn't be called
   EXPECT_CALL(*mock_network_context(), QueueEnterpriseReport).Times(0);
 
@@ -209,11 +214,159 @@ TEST_F(EnterpriseReportingTabHelperTest,
       tpcd::enterprise_reporting::EnterpriseReportingTabHelper::FromWebContents(
           web_contents());
 
-  const content::CookieAccessDetails& details =
-      content::CookieAccessDetails(content::CookieAccessDetails::Type::kChange,
-                                   kUrl_, kUrl_, {{cookie_}}, 1u);
+  content::CookieAccessDetails details(
+      content::CookieAccessDetails::Type::kChange, kUrl_, kUrl_, {{cookie_}},
+      1u);
 
   tab_helper->OnCookiesAccessed(main_rfh(), details);
+}
+
+// NavigationHandle tests
+
+TEST_F(EnterpriseReportingTabHelperTest,
+       NavigationHandleReportingFeatureDisabled) {
+  // QueueEnterpriseReport() shouldn't be called
+  EXPECT_CALL(*mock_network_context(), QueueEnterpriseReport).Times(0);
+
+  // Disable the reporting feature.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(
+      net::features::kReportingApiEnableEnterpriseCookieIssues);
+
+  tpcd::enterprise_reporting::EnterpriseReportingTabHelper::
+      CreateForWebContents(web_contents());
+  tpcd::enterprise_reporting::EnterpriseReportingTabHelper* tab_helper =
+      tpcd::enterprise_reporting::EnterpriseReportingTabHelper::FromWebContents(
+          web_contents());
+
+  // Create a status that would cause a report to be queued if the
+  // feature was enabled, but the report won't be queued since the
+  // feature is disabled.
+  net::CookieInclusionStatus status;
+  status.AddWarningReason(
+      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+  content::CookieAccessDetails details(
+      content::CookieAccessDetails::Type::kChange, kUrl_, kUrl_,
+      {{cookie_, net::CookieAccessResult(status)}}, 1u);
+
+  content::MockNavigationHandle navigation_handle(web_contents());
+  tab_helper->OnCookiesAccessed(&navigation_handle, details);
+}
+
+TEST_F(
+    EnterpriseReportingTabHelperTest,
+    NavigationHandleOnCookiesAccessedWithExcludeThirdPartyBlockedWithinFirstPartySetError) {
+  EXPECT_CALL(*mock_network_context(),
+              QueueEnterpriseReport(
+                  "enterprise-third-party-cookie-access-error",
+                  "enterprise-third-party-cookie-access-error",
+                  GURL("http://www.google.com/"), base::test::IsJson(R"json({
+                      "frameUrl": "http://www.google.com/",
+                      "accessUrl": "http://www.google.com/",
+                      "name": "A",
+                      "domain": "www.google.com",
+                      "path": "/",
+                      "accessOperation": "write"
+                  })json")));
+
+  tpcd::enterprise_reporting::EnterpriseReportingTabHelper::
+      CreateForWebContents(web_contents());
+  tpcd::enterprise_reporting::EnterpriseReportingTabHelper* tab_helper =
+      tpcd::enterprise_reporting::EnterpriseReportingTabHelper::FromWebContents(
+          web_contents());
+
+  net::CookieInclusionStatus status;
+  status.AddExclusionReason(
+      net::CookieInclusionStatus::
+          EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
+  content::CookieAccessDetails details(
+      content::CookieAccessDetails::Type::kChange, kUrl_, kUrl_,
+      {{cookie_, net::CookieAccessResult(status)}}, 1u);
+
+  content::MockNavigationHandle navigation_handle(web_contents());
+  tab_helper->OnCookiesAccessed(&navigation_handle, details);
+}
+
+TEST_F(EnterpriseReportingTabHelperTest,
+       NavigationHandleOnCookiesAccessedWithExcludeThirdPartyPhaseoutError) {
+  EXPECT_CALL(*mock_network_context(),
+              QueueEnterpriseReport(
+                  "enterprise-third-party-cookie-access-error",
+                  "enterprise-third-party-cookie-access-error",
+                  GURL("http://www.google.com/"), base::test::IsJson(R"json({
+                      "frameUrl": "http://www.google.com/",
+                      "accessUrl": "http://www.google.com/",
+                      "name": "A",
+                      "domain": "www.google.com",
+                      "path": "/",
+                      "accessOperation": "write"
+                  })json")));
+
+  tpcd::enterprise_reporting::EnterpriseReportingTabHelper::
+      CreateForWebContents(web_contents());
+  tpcd::enterprise_reporting::EnterpriseReportingTabHelper* tab_helper =
+      tpcd::enterprise_reporting::EnterpriseReportingTabHelper::FromWebContents(
+          web_contents());
+
+  net::CookieInclusionStatus status;
+  status.AddExclusionReason(
+      net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+  content::CookieAccessDetails details(
+      content::CookieAccessDetails::Type::kChange, kUrl_, kUrl_,
+      {{cookie_, net::CookieAccessResult(status)}}, 1u);
+
+  content::MockNavigationHandle navigation_handle(web_contents());
+  tab_helper->OnCookiesAccessed(&navigation_handle, details);
+}
+
+TEST_F(EnterpriseReportingTabHelperTest,
+       NavigationHandleOnCookiesAccessedWithWarnThirdPartyPhaseoutWarning) {
+  EXPECT_CALL(*mock_network_context(),
+              QueueEnterpriseReport(
+                  "enterprise-third-party-cookie-access-warning",
+                  "enterprise-third-party-cookie-access-warning",
+                  GURL("http://www.google.com/"), base::test::IsJson(R"json({
+                      "frameUrl": "http://www.google.com/",
+                      "accessUrl": "http://www.google.com/",
+                      "name": "A",
+                      "domain": "www.google.com",
+                      "path": "/",
+                      "accessOperation": "write"
+                  })json")));
+
+  tpcd::enterprise_reporting::EnterpriseReportingTabHelper::
+      CreateForWebContents(web_contents());
+  tpcd::enterprise_reporting::EnterpriseReportingTabHelper* tab_helper =
+      tpcd::enterprise_reporting::EnterpriseReportingTabHelper::FromWebContents(
+          web_contents());
+
+  net::CookieInclusionStatus status;
+  status.AddWarningReason(
+      net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+  content::CookieAccessDetails details(
+      content::CookieAccessDetails::Type::kChange, kUrl_, kUrl_,
+      {{cookie_, net::CookieAccessResult(status)}}, 1u);
+
+  content::MockNavigationHandle navigation_handle(web_contents());
+  tab_helper->OnCookiesAccessed(&navigation_handle, details);
+}
+
+TEST_F(EnterpriseReportingTabHelperTest,
+       NavigationHandleOnCookiesAccessedWithoutQueueingReport) {
+  tpcd::enterprise_reporting::EnterpriseReportingTabHelper::
+      CreateForWebContents(web_contents());
+  tpcd::enterprise_reporting::EnterpriseReportingTabHelper* tab_helper =
+      tpcd::enterprise_reporting::EnterpriseReportingTabHelper::FromWebContents(
+          web_contents());
+
+  content::CookieAccessDetails details(
+      content::CookieAccessDetails::Type::kChange, kUrl_, kUrl_, {{cookie_}},
+      1u);
+
+  content::MockNavigationHandle navigation_handle(web_contents());
+  tab_helper->OnCookiesAccessed(&navigation_handle, details);
+  // QueueEnterpriseReport() shouldn't have been called
+  EXPECT_CALL(*mock_network_context(), QueueEnterpriseReport).Times(0);
 }
 
 }  // namespace
