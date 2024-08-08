@@ -158,8 +158,7 @@ class TestLastActiveProvider : public BirchDataProvider {
   // BirchDataProvider:
   void RequestBirchDataFetch() override {
     std::vector<BirchLastActiveItem> items;
-    items.emplace_back(u"item", GURL("http://example.com/"), base::Time(),
-                       ui::ImageModel());
+    items.emplace_back(u"item", GURL("http://example.com/"), base::Time());
     Shell::Get()->birch_model()->SetLastActiveItems(std::move(items));
   }
 };
@@ -173,7 +172,7 @@ class TestMostVisitedProvider : public BirchDataProvider {
   // BirchDataProvider:
   void RequestBirchDataFetch() override {
     std::vector<BirchMostVisitedItem> items;
-    items.emplace_back(u"item", GURL("http://example.com/"), ui::ImageModel());
+    items.emplace_back(u"item", GURL("http://example.com/"));
     Shell::Get()->birch_model()->SetMostVisitedItems(std::move(items));
   }
 };

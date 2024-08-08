@@ -491,11 +491,10 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   model->SetRecentTabItems(MakeTabItemList(/*count=*/1));
   std::vector<BirchLastActiveItem> last_active_list;
   last_active_list.emplace_back(u"active", GURL("https://yahoo.com/"),
-                                base::Time(), ui::ImageModel());
+                                base::Time());
   model->SetLastActiveItems(std::move(last_active_list));
   std::vector<BirchMostVisitedItem> most_visited_list;
-  most_visited_list.emplace_back(u"visited", GURL("https://google.com/"),
-                                 ui::ImageModel());
+  most_visited_list.emplace_back(u"visited", GURL("https://google.com/"));
   model->SetMostVisitedItems(std::move(most_visited_list));
   std::vector<BirchSelfShareItem> self_share_item_list;
   self_share_item_list.emplace_back(
@@ -549,11 +548,10 @@ TEST_F(BirchModelTest, GetAllItemsDoesNotReturnItemsWithDisabledPrefs) {
   model->SetRecentTabItems(MakeTabItemList(/*count=*/1));
   std::vector<BirchLastActiveItem> last_active_list;
   last_active_list.emplace_back(u"active", GURL("https://yahoo.com/"),
-                                base::Time(), ui::ImageModel());
+                                base::Time());
   model->SetLastActiveItems(std::move(last_active_list));
   std::vector<BirchMostVisitedItem> most_visited_list;
-  most_visited_list.emplace_back(u"visited", GURL("https://google.com/"),
-                                 ui::ImageModel());
+  most_visited_list.emplace_back(u"visited", GURL("https://google.com/"));
   model->SetMostVisitedItems(std::move(most_visited_list));
   std::vector<BirchSelfShareItem> self_share_item_list;
   self_share_item_list.emplace_back(
@@ -1041,11 +1039,10 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   model->SetRecentTabItems(MakeTabItemList(/*count=*/1));
   std::vector<BirchLastActiveItem> last_active_list;
   last_active_list.emplace_back(u"active", GURL("https://yahoo.com/"),
-                                base::Time(), ui::ImageModel());
+                                base::Time());
   model->SetLastActiveItems(std::move(last_active_list));
   std::vector<BirchMostVisitedItem> most_visited_list;
-  most_visited_list.emplace_back(u"visited", GURL("https://google.com/"),
-                                 ui::ImageModel());
+  most_visited_list.emplace_back(u"visited", GURL("https://google.com/"));
   model->SetMostVisitedItems(std::move(most_visited_list));
   std::vector<BirchSelfShareItem> self_share_item_list;
   self_share_item_list.emplace_back(
@@ -1113,11 +1110,10 @@ TEST_F(BirchModelTest, GetAllItems) {
   model->SetRecentTabItems(MakeTabItemList(/*count=*/1));
   std::vector<BirchLastActiveItem> last_active_list;
   last_active_list.emplace_back(u"active", GURL("https://yahoo.com/"),
-                                base::Time(), ui::ImageModel());
+                                base::Time());
   model->SetLastActiveItems(std::move(last_active_list));
   std::vector<BirchMostVisitedItem> most_visited_list;
-  most_visited_list.emplace_back(u"visited", GURL("https://google.com/"),
-                                 ui::ImageModel());
+  most_visited_list.emplace_back(u"visited", GURL("https://google.com/"));
   model->SetMostVisitedItems(std::move(most_visited_list));
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
 
@@ -1153,7 +1149,7 @@ TEST_F(BirchModelTest, SetItemListRecordsHistogram) {
   model->SetRecentTabItems(MakeTabItemList(/*count=*/1));
   std::vector<BirchLastActiveItem> last_active_list;
   last_active_list.emplace_back(u"active", GURL("https://yahoo.com/"),
-                                base::Time(), ui::ImageModel());
+                                base::Time());
   model->SetLastActiveItems(std::move(last_active_list));
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
   std::vector<BirchWeatherItem> weather_item_list;
@@ -1628,9 +1624,8 @@ TEST_F(BirchModelTest, DuplicateLastActiveAndRecentTabItem) {
   model->SetRecentTabItems(std::move(tab_item_list));
 
   std::vector<BirchLastActiveItem> last_active_item_list;
-  last_active_item_list.emplace_back(u"last active",
-                                     GURL("https://www.example.com/"),
-                                     base::Time(), ui::ImageModel());
+  last_active_item_list.emplace_back(
+      u"last active", GURL("https://www.example.com/"), base::Time());
   model->SetLastActiveItems(std::move(last_active_item_list));
 
   // The last active item has the higher priority and hence is shown.
@@ -1655,8 +1650,8 @@ TEST_F(BirchModelTest, DuplicateMostVisitedAndRecentTabItem) {
   model->SetRecentTabItems(std::move(tab_item_list));
 
   std::vector<BirchMostVisitedItem> most_visited_item_list;
-  most_visited_item_list.emplace_back(
-      u"most visited", GURL("https://www.example.com/"), ui::ImageModel());
+  most_visited_item_list.emplace_back(u"most visited",
+                                      GURL("https://www.example.com/"));
   model->SetMostVisitedItems(std::move(most_visited_item_list));
 
   // The most visited item has the higher priority and hence is shown.
@@ -1753,9 +1748,8 @@ TEST_F(BirchModelTest, LastActiveItemShownByTime) {
 
   // Create a last active item.
   std::vector<BirchLastActiveItem> last_active_item_list;
-  last_active_item_list.emplace_back(u"last active",
-                                     GURL("https://www.example.com/"),
-                                     base::Time(), ui::ImageModel());
+  last_active_item_list.emplace_back(
+      u"last active", GURL("https://www.example.com/"), base::Time());
   model->SetLastActiveItems(std::move(last_active_item_list));
 
   // The first time we query for items, it is shown.
@@ -1788,8 +1782,8 @@ TEST_F(BirchModelTest, MostVisitedItemShownByTime) {
 
   // Create a most visited item.
   std::vector<BirchMostVisitedItem> most_visited_item_list;
-  most_visited_item_list.emplace_back(
-      u"most visited", GURL("https://www.example.com/"), ui::ImageModel());
+  most_visited_item_list.emplace_back(u"most visited",
+                                      GURL("https://www.example.com/"));
   model->SetMostVisitedItems(std::move(most_visited_item_list));
 
   // The first time we query for items, it is shown.

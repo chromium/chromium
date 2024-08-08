@@ -535,26 +535,24 @@ TEST_F(BirchItemTest, Tab_PerformAction_Histograms) {
 
 TEST_F(BirchItemTest, LastActive_Subtitle_TwoDaysAgo) {
   BirchLastActiveItem item(u"item", GURL("http://example.com/"),
-                           base::Time::Now() - base::Days(2), ui::ImageModel());
+                           base::Time::Now() - base::Days(2));
   EXPECT_EQ(item.subtitle(), u"2 days ago · Continue browsing");
 }
 
 TEST_F(BirchItemTest, LastActive_Subtitle_Yesterday) {
   BirchLastActiveItem item(u"item", GURL("http://example.com/"),
-                           base::Time::Now() - base::Days(1), ui::ImageModel());
+                           base::Time::Now() - base::Days(1));
   EXPECT_EQ(item.subtitle(), u"Yesterday · Continue browsing");
 }
 
 TEST_F(BirchItemTest, LastActive_Subtitle_OneHourAgo) {
   BirchLastActiveItem item(u"item", GURL("http://example.com/"),
-                           base::Time::Now() - base::Hours(1),
-                           ui::ImageModel());
+                           base::Time::Now() - base::Hours(1));
   EXPECT_EQ(item.subtitle(), u"1 hr ago · Continue browsing");
 }
 
 TEST_F(BirchItemTest, LastActive_PerformAction) {
-  BirchLastActiveItem item(u"item", GURL("http://example.com/"), base::Time(),
-                           ui::ImageModel());
+  BirchLastActiveItem item(u"item", GURL("http://example.com/"), base::Time());
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_,
             GURL("http://example.com/"));
@@ -776,6 +774,44 @@ TEST_F(BirchItemIconTest, LostMedia_LoadIcon) {
   EXPECT_FALSE(future.Get<0>().IsEmpty());
   // Secondary icon is of type `kLostMediaVideoConference`.
   EXPECT_EQ(future.Get<1>(), SecondaryIconType::kLostMediaVideoConference);
+
+  auto* icon_cache = Shell::Get()->birch_model()->icon_cache();
+  EXPECT_EQ(icon_cache->size_for_test(), 1u);
+  EXPECT_FALSE(icon_cache->Get(page_url.spec()).isNull());
+}
+
+TEST_F(BirchItemIconTest, LastActive_LoadIcon) {
+  const GURL page_url = GURL("https://www.example.com/");
+  BirchLastActiveItem item(u"item", page_url, base::Time());
+
+  base::test::TestFuture<const ui::ImageModel&, SecondaryIconType> future;
+  item.LoadIcon(future.GetCallback());
+
+  // The favicon service was queried.
+  EXPECT_TRUE(stub_birch_client_.did_get_favicon_image_);
+  // The icon is not empty.
+  EXPECT_FALSE(future.Get<0>().IsEmpty());
+  // Secondary icon is of type `kNoIcon`.
+  EXPECT_EQ(future.Get<1>(), SecondaryIconType::kNoIcon);
+
+  auto* icon_cache = Shell::Get()->birch_model()->icon_cache();
+  EXPECT_EQ(icon_cache->size_for_test(), 1u);
+  EXPECT_FALSE(icon_cache->Get(page_url.spec()).isNull());
+}
+
+TEST_F(BirchItemIconTest, MostVisited_LoadIcon) {
+  const GURL page_url = GURL("https://www.example.com/");
+  BirchMostVisitedItem item(u"item", page_url);
+
+  base::test::TestFuture<const ui::ImageModel&, SecondaryIconType> future;
+  item.LoadIcon(future.GetCallback());
+
+  // The favicon service was queried.
+  EXPECT_TRUE(stub_birch_client_.did_get_favicon_image_);
+  // The icon is not empty.
+  EXPECT_FALSE(future.Get<0>().IsEmpty());
+  // Secondary icon is of type `kNoIcon`.
+  EXPECT_EQ(future.Get<1>(), SecondaryIconType::kNoIcon);
 
   auto* icon_cache = Shell::Get()->birch_model()->icon_cache();
   EXPECT_EQ(icon_cache->size_for_test(), 1u);

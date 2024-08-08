@@ -340,7 +340,7 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   // the item with the higher ranking.
   std::unordered_map<std::string, BirchLastActiveItem> url_to_last_active_item;
   for (auto& item : last_active_data_.items) {
-    url_to_last_active_item.emplace(item.url().spec(), item);
+    url_to_last_active_item.emplace(item.page_url().spec(), item);
   }
   std::erase_if(recent_tab_data_.items, [&url_to_last_active_item](
                                             const auto& recent_tab_item) {
@@ -359,7 +359,7 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   std::unordered_map<std::string, BirchMostVisitedItem>
       url_to_most_visited_item;
   for (auto& item : most_visited_data_.items) {
-    url_to_most_visited_item.emplace(item.url().spec(), item);
+    url_to_most_visited_item.emplace(item.page_url().spec(), item);
   }
   std::erase_if(recent_tab_data_.items, [&url_to_most_visited_item](
                                             const auto& recent_tab_item) {

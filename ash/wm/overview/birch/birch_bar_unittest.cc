@@ -411,7 +411,7 @@ class BirchBarTest : public AshTestBase {
     std::vector<BirchLastActiveItem> item_list;
     for (size_t i = 0; i < num; ++i) {
       item_list.emplace_back(u"last active", GURL("https://yahoo.com/"),
-                             base::Time(), ui::ImageModel());
+                             base::Time());
       item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetLastActiveItems(item_list);
@@ -421,8 +421,7 @@ class BirchBarTest : public AshTestBase {
   void SetMostVisitedItems(size_t num) {
     std::vector<BirchMostVisitedItem> item_list;
     for (size_t i = 0; i < num; ++i) {
-      item_list.emplace_back(u"most visited", GURL("https://google.com/"),
-                             ui::ImageModel());
+      item_list.emplace_back(u"most visited", GURL("https://google.com/"));
       item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetMostVisitedItems(item_list);

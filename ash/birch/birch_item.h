@@ -330,9 +330,8 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
 class ASH_EXPORT BirchLastActiveItem : public BirchItem {
  public:
   BirchLastActiveItem(const std::u16string& title,
-                      const GURL& url,
-                      base::Time last_visit,
-                      ui::ImageModel icon);
+                      const GURL& page_url,
+                      base::Time last_visit);
   BirchLastActiveItem(BirchLastActiveItem&&);
   BirchLastActiveItem(const BirchLastActiveItem&);
   BirchLastActiveItem& operator=(const BirchLastActiveItem&);
@@ -345,21 +344,18 @@ class ASH_EXPORT BirchLastActiveItem : public BirchItem {
   void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
-  const GURL& url() const { return url_; }
+  const GURL& page_url() const { return page_url_; }
 
  private:
   static std::u16string GetSubtitle(base::Time last_visit);
 
-  GURL url_;
-  ui::ImageModel icon_;
+  GURL page_url_;
 };
 
 // A birch item for a most-frequently-visited URL.
 class ASH_EXPORT BirchMostVisitedItem : public BirchItem {
  public:
-  BirchMostVisitedItem(const std::u16string& title,
-                       const GURL& url,
-                       ui::ImageModel icon);
+  BirchMostVisitedItem(const std::u16string& title, const GURL& page_url);
   BirchMostVisitedItem(BirchMostVisitedItem&&);
   BirchMostVisitedItem(const BirchMostVisitedItem&);
   BirchMostVisitedItem& operator=(const BirchMostVisitedItem&);
@@ -372,13 +368,12 @@ class ASH_EXPORT BirchMostVisitedItem : public BirchItem {
   void PerformAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
-  const GURL& url() const { return url_; }
+  const GURL& page_url() const { return page_url_; }
 
  private:
   static std::u16string GetSubtitle();
 
-  GURL url_;
-  ui::ImageModel icon_;
+  GURL page_url_;
 };
 
 // A birch item which contains tabs shared to self information.

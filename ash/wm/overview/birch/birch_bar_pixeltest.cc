@@ -97,15 +97,13 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
     case BirchItemType::kMostVisited:
       items.push_back(std::make_unique<BirchMostVisitedItem>(
           /*title=*/u"Most Visited",
-          /*url=*/kTestURL,
-          /*icon=*/kTestIcon));
+          /*url=*/kTestURL));
       break;
     case BirchItemType::kLastActive:
       items.push_back(std::make_unique<BirchLastActiveItem>(
           /*title=*/u"Last Active",
           /*url=*/kTestURL,
-          /*last_visit=*/base::Time(),
-          /*icon=*/kTestIcon));
+          /*last_visit=*/base::Time()));
       break;
     case BirchItemType::kLostMedia:
       items.push_back(std::make_unique<BirchLostMediaItem>(

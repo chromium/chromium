@@ -718,10 +718,9 @@ std::u16string BirchTabItem::GetSubtitle(const std::string& session_name,
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchLastActiveItem::BirchLastActiveItem(const std::u16string& title,
-                                         const GURL& url,
-                                         base::Time last_visit,
-                                         ui::ImageModel icon)
-    : BirchItem(title, GetSubtitle(last_visit)), url_(url), icon_(icon) {}
+                                         const GURL& page_url,
+                                         base::Time last_visit)
+    : BirchItem(title, GetSubtitle(last_visit)), page_url_(page_url) {}
 
 BirchLastActiveItem::BirchLastActiveItem(BirchLastActiveItem&&) = default;
 
@@ -742,23 +741,26 @@ BirchItemType BirchLastActiveItem::GetType() const {
 std::string BirchLastActiveItem::ToString() const {
   std::stringstream ss;
   ss << "Last active item: {ranking: " << ranking()
-     << ", Title: " << base::UTF16ToUTF8(title()) << ", URL: " << url_ << "}";
+     << ", Title: " << base::UTF16ToUTF8(title()) << ", URL: " << page_url_
+     << "}";
   return ss.str();
 }
 
 void BirchLastActiveItem::PerformAction() {
-  if (!url_.is_valid()) {
+  if (!page_url_.is_valid()) {
     LOG(ERROR) << "No valid URL for last active item";
     return;
   }
   RecordActionMetrics();
   NewWindowDelegate::GetPrimary()->OpenUrl(
-      url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      page_url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kSwitchToTab);
 }
 
 void BirchLastActiveItem::LoadIcon(LoadIconCallback callback) const {
-  std::move(callback).Run(icon_, SecondaryIconType::kNoIcon);
+  // TODO(b/354043357): Replace backup_icon with correct image model.
+  GetFaviconImage(page_url_, /*is_page_url=*/true, ui::ImageModel(),
+                  SecondaryIconType::kNoIcon, std::move(callback));
 }
 
 // static
@@ -790,9 +792,8 @@ std::u16string BirchLastActiveItem::GetSubtitle(base::Time last_visit) {
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchMostVisitedItem::BirchMostVisitedItem(const std::u16string& title,
-                                           const GURL& url,
-                                           ui::ImageModel icon)
-    : BirchItem(title, GetSubtitle()), url_(url), icon_(icon) {}
+                                           const GURL& page_url)
+    : BirchItem(title, GetSubtitle()), page_url_(page_url) {}
 
 BirchMostVisitedItem::BirchMostVisitedItem(BirchMostVisitedItem&&) = default;
 
@@ -814,23 +815,26 @@ BirchItemType BirchMostVisitedItem::GetType() const {
 std::string BirchMostVisitedItem::ToString() const {
   std::stringstream ss;
   ss << "Most Visited item: {ranking: " << ranking()
-     << ", Title: " << base::UTF16ToUTF8(title()) << ", URL: " << url_ << "}";
+     << ", Title: " << base::UTF16ToUTF8(title()) << ", Page URL: " << page_url_
+     << "}";
   return ss.str();
 }
 
 void BirchMostVisitedItem::PerformAction() {
-  if (!url_.is_valid()) {
+  if (!page_url_.is_valid()) {
     LOG(ERROR) << "No valid URL for most visited item";
     return;
   }
   RecordActionMetrics();
   NewWindowDelegate::GetPrimary()->OpenUrl(
-      url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      page_url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kSwitchToTab);
 }
 
 void BirchMostVisitedItem::LoadIcon(LoadIconCallback callback) const {
-  std::move(callback).Run(icon_, SecondaryIconType::kNoIcon);
+  // TODO(b/354043357): Replace backup_icon with correct image model.
+  GetFaviconImage(page_url_, /*is_page_url=*/true, ui::ImageModel(),
+                  SecondaryIconType::kNoIcon, std::move(callback));
 }
 
 // static
