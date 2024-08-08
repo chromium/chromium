@@ -149,8 +149,7 @@ class PlusAddressHttpClientRequests : public ::testing::Test {
 };
 
 // Ensures the request sent by Chrome matches what we intended.
-TEST_F(PlusAddressHttpClientRequests,
-       DISABLED_ReservePlusAddress_IssuesCorrectRequest) {
+TEST_F(PlusAddressHttpClientRequests, ReservePlusAddress_IssuesCorrectRequest) {
   const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
   std::string facet = origin.Serialize();
   client().ReservePlusAddress(origin, /*refresh=*/false, base::DoNothing());
@@ -183,7 +182,7 @@ TEST_F(PlusAddressHttpClientRequests,
 // Tests that the reserve request contains the expected data when the refresh
 // flag is set.
 TEST_F(PlusAddressHttpClientRequests,
-       DISABLED_ReservePlusAddress_IssuesCorrectRequestWithRefreshFlag) {
+       ReservePlusAddress_IssuesCorrectRequestWithRefreshFlag) {
   const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
   std::string facet = origin.Serialize();
   client().ReservePlusAddress(origin, /*refresh=*/true, base::DoNothing());
@@ -216,8 +215,7 @@ TEST_F(PlusAddressHttpClientRequests,
 }
 
 // Ensures the request sent by Chrome matches what we intended.
-TEST_F(PlusAddressHttpClientRequests,
-       DISABLED_ConfirmPlusAddress_IssuesCorrectRequest) {
+TEST_F(PlusAddressHttpClientRequests, ConfirmPlusAddress_IssuesCorrectRequest) {
   const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
   std::string facet = origin.Serialize();
   std::string plus_address = "plus@plus.plus";
