@@ -55,6 +55,7 @@ void OnSeaPenImageDeleted(const AccountId& account_id,
 
 void OnSeaPenImageSaved(const AccountId& account_id,
                         const uint32_t image_id,
+                        const bool preview_mode,
                         base::OnceCallback<void(bool success)> callback,
                         bool success) {
   if (!success) {
@@ -64,8 +65,8 @@ void OnSeaPenImageSaved(const AccountId& account_id,
   }
   auto* wallpaper_controller = WallpaperController::Get();
   DCHECK(wallpaper_controller);
-  wallpaper_controller->SetSeaPenWallpaper(
-      account_id, image_id, /*preview_mode=*/false, std::move(callback));
+  wallpaper_controller->SetSeaPenWallpaper(account_id, image_id, preview_mode,
+                                           std::move(callback));
 }
 
 }  // namespace
@@ -209,6 +210,7 @@ void PersonalizationAppSeaPenProviderImpl::DeleteRecentSeaPenImage(
 void PersonalizationAppSeaPenProviderImpl::OnFetchWallpaperDoneInternal(
     const SeaPenImage& sea_pen_image,
     const mojom::SeaPenQueryPtr& query,
+    const bool preview_mode,
     base::OnceCallback<void(bool success)> callback) {
   auto* sea_pen_wallpaper_manager = SeaPenWallpaperManager::GetInstance();
   DCHECK(sea_pen_wallpaper_manager);
@@ -216,7 +218,7 @@ void PersonalizationAppSeaPenProviderImpl::OnFetchWallpaperDoneInternal(
   sea_pen_wallpaper_manager->SaveSeaPenImage(
       account_id, sea_pen_image, query,
       base::BindOnce(&OnSeaPenImageSaved, account_id, sea_pen_image.id,
-                     std::move(callback)));
+                     preview_mode, std::move(callback)));
 }
 
 }  // namespace ash::personalization_app

@@ -173,7 +173,13 @@ void VcBackgroundUISeaPenProviderImpl::OnCameraEffectChanged(
 void VcBackgroundUISeaPenProviderImpl::OnFetchWallpaperDoneInternal(
     const SeaPenImage& sea_pen_image,
     const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+    const bool preview_mode,
     base::OnceCallback<void(bool success)> callback) {
+  if (preview_mode) {
+    sea_pen_receiver_.ReportBadMessage(
+        "Preview mode is only used for wallpaper");
+    return;
+  }
   const std::optional<std::string> metadata =
       base::WriteJson(SeaPenQueryToDict(query));
   if (!metadata.has_value()) {

@@ -163,12 +163,12 @@ suite('SeaPen reducers', () => {
         {image: {url: ''}, id: 456}, seaPenProvider, seaPenStore);
 
     assertDeepEquals(
-        {image: true, attribution: true},
+        {image: false, attribution: false},
         personalizationStore.data.wallpaper.loading.selected,
-        'image and attribution are loading');
-    assertTrue(
+        'image and attribution are not loading');
+    assertFalse(
         personalizationStore.data.wallpaper.seaPen.loading.currentSelected,
-        'seaPen.loading.currentSelected is true');
+        'seaPen.loading.currentSelected is false');
 
     await promise;
 
@@ -185,6 +185,8 @@ suite('SeaPen reducers', () => {
           beginLoadSelectedImageAction(),
           beginSelectSeaPenThumbnailAction({image: {url: ''}, id: 456}),
           endSelectSeaPenThumbnailAction({image: {url: ''}, id: 456}, false),
+          setFullscreenStateAction(FullscreenPreviewState.OFF),
+          setSeaPenFullscreenStateAction(FullscreenPreviewState.OFF),
           setSelectedRecentSeaPenImageAction(123),
         ],
         personalizationStore.actions,
@@ -249,6 +251,8 @@ suite('SeaPen reducers', () => {
           beginLoadSelectedImageAction(),
           beginSelectSeaPenThumbnailAction(thumbnail),
           endSelectSeaPenThumbnailAction(thumbnail, false),
+          setFullscreenStateAction(FullscreenPreviewState.OFF),
+          setSeaPenFullscreenStateAction(FullscreenPreviewState.OFF),
           setSelectedRecentSeaPenImageAction(null),
         ],
         personalizationStore.actions, 'fails selecting the thumbnail');
@@ -259,6 +263,8 @@ suite('SeaPen reducers', () => {
           null,
           loadTimeData.getString('seaPenErrorGeneric'),
           loadTimeData.getString('seaPenErrorGeneric'),
+          loadTimeData.getString('seaPenErrorGeneric'),
+          loadTimeData.getString('seaPenErrorGeneric'),
         ],
         personalizationStore.states.map(state => state.wallpaper.seaPen.error),
         'sets expected error state');
@@ -267,8 +273,9 @@ suite('SeaPen reducers', () => {
     const promise =
         selectSeaPenThumbnail(thumbnail, seaPenProvider, seaPenStore);
 
-    // Error reset to null while attempting to select again.
-    assertEquals(null, personalizationStore.data.wallpaper.seaPen.error);
+    assertEquals(
+        loadTimeData.getString('seaPenErrorGeneric'),
+        personalizationStore.data.wallpaper.seaPen.error);
 
     await promise;
 

@@ -150,7 +150,7 @@ interface SeaPenProvider {
 
     // Select a thumbnail for the current user.
     // `id` must be a valid id from a previous call to `GetSeaPenThumbnails`.
-    SelectSeaPenThumbnail(uint32 id) => (bool success);
+    SelectSeaPenThumbnail(uint32 id, bool preview_mode) => (bool success);
 
     // Gets the available previously selected SeaPen images. `ids` will be
     // empty if no thumbnails have been previously selected, or in case of disk

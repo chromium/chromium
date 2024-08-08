@@ -126,6 +126,7 @@ void PersonalizationAppSeaPenProviderBase::GetSeaPenThumbnails(
 
 void PersonalizationAppSeaPenProviderBase::SelectSeaPenThumbnail(
     uint32_t id,
+    const bool preview_mode,
     SelectSeaPenThumbnailCallback callback) {
   // Get high resolution image.
   const auto query_and_thumbnail = FindImageThumbnail(id);
@@ -137,7 +138,7 @@ void PersonalizationAppSeaPenProviderBase::SelectSeaPenThumbnail(
   // In case of CHROMEOS_VC_BACKGROUNDS, we use image stored already.
   if (feature_name_ == manta::proto::FeatureName::CHROMEOS_VC_BACKGROUNDS) {
     OnFetchWallpaperDone(
-        std::move(callback), query_and_thumbnail->first,
+        std::move(callback), query_and_thumbnail->first, /*preview_mode=*/false,
         SeaPenImage(query_and_thumbnail->second->second.jpg_bytes,
                     query_and_thumbnail->second->second.id));
     return;
@@ -153,7 +154,7 @@ void PersonalizationAppSeaPenProviderBase::SelectSeaPenThumbnail(
       base::BindOnce(
           &PersonalizationAppSeaPenProviderBase::OnFetchWallpaperDone,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-          query_and_thumbnail->first->Clone()));
+          query_and_thumbnail->first->Clone(), preview_mode));
 }
 
 void PersonalizationAppSeaPenProviderBase::SelectRecentSeaPenImage(
@@ -243,6 +244,7 @@ void PersonalizationAppSeaPenProviderBase::OnFetchThumbnailsDone(
 void PersonalizationAppSeaPenProviderBase::OnFetchWallpaperDone(
     SelectSeaPenThumbnailCallback callback,
     const mojom::SeaPenQueryPtr& query,
+    const bool preview_mode,
     std::optional<SeaPenImage> image) {
   if (!image) {
     std::move(callback).Run(/*success=*/false);
@@ -250,7 +252,8 @@ void PersonalizationAppSeaPenProviderBase::OnFetchWallpaperDone(
   }
 
   CHECK(query);
-  OnFetchWallpaperDoneInternal(*image, query, std::move(callback));
+  OnFetchWallpaperDoneInternal(*image, query, preview_mode,
+                               std::move(callback));
 }
 
 void PersonalizationAppSeaPenProviderBase::OnRecentSeaPenImageSelected(
