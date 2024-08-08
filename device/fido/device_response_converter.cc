@@ -407,14 +407,18 @@ std::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   }
 
   it = response_map.find(CBOR(0x03));
-  if (it == response_map.end() || !it->second.is_bytestring() ||
-      it->second.GetBytestring().size() != kAaguidLength) {
+  if (it == response_map.end() || !it->second.is_bytestring()) {
     return std::nullopt;
   }
 
-  AuthenticatorGetInfoResponse response(
-      std::move(protocol_versions), ctap2_versions,
-      base::make_span<kAaguidLength>(it->second.GetBytestring()));
+  auto aaguid_span =
+      base::span(it->second.GetBytestring()).to_fixed_extent<kAaguidLength>();
+  if (!aaguid_span) {
+    return std::nullopt;
+  }
+
+  AuthenticatorGetInfoResponse response(std::move(protocol_versions),
+                                        ctap2_versions, *aaguid_span);
 
   bool cred_blob_extension_seen = false;
   bool large_blob_key_extension_seen = false;

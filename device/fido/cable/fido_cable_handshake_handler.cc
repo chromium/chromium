@@ -8,6 +8,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
@@ -147,18 +148,23 @@ bool FidoCableV1HandshakeHandler::ValidateAuthenticatorHandshakeMessage(
     return false;
   }
 
-  const auto authenticator_random_nonce =
-      authenticator_hello_cbor->GetMap().find(cbor::Value(1));
-  if (authenticator_random_nonce == authenticator_hello_cbor->GetMap().end() ||
-      !authenticator_random_nonce->second.is_bytestring() ||
-      authenticator_random_nonce->second.GetBytestring().size() != 16) {
+  const auto* authenticator_random_nonce =
+      base::FindOrNull(authenticator_hello_cbor->GetMap(), cbor::Value(1));
+  if (!authenticator_random_nonce ||
+      !authenticator_random_nonce->is_bytestring()) {
+    return false;
+  }
+
+  auto sized_nonce_span =
+      base::span(authenticator_random_nonce->GetBytestring())
+          .to_fixed_extent<16>();
+  if (!sized_nonce_span) {
     return false;
   }
 
   cable_device_->SetV1EncryptionData(
-      base::make_span<32>(
-          GetEncryptionKeyAfterSuccessfulHandshake(base::make_span<16>(
-              authenticator_random_nonce->second.GetBytestring()))),
+      *base::span(GetEncryptionKeyAfterSuccessfulHandshake(*sized_nonce_span))
+           .to_fixed_extent<32>(),
       nonce_);
 
   return true;

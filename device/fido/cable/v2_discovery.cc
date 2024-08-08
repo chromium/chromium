@@ -236,14 +236,16 @@ std::vector<Discovery::UnpairedKeys> Discovery::KeysFromExtension(
       continue;
     }
 
-    if (data.v2->server_link_data.size() != kQRKeySize) {
+    auto sized_server_link_data_span =
+        base::span(data.v2->server_link_data).to_fixed_extent<kQRKeySize>();
+    if (!sized_server_link_data_span.has_value()) {
       FIDO_LOG(ERROR) << "caBLEv2 extension has incorrect length ("
                       << data.v2->server_link_data.size() << ")";
       continue;
     }
 
-    std::optional<Discovery::UnpairedKeys> keys = KeysFromQRGeneratorKey(
-        base::make_span<kQRKeySize>(data.v2->server_link_data));
+    std::optional<Discovery::UnpairedKeys> keys =
+        KeysFromQRGeneratorKey(sized_server_link_data_span.value());
     if (keys.has_value()) {
       ret.emplace_back(std::move(keys.value()));
     }
