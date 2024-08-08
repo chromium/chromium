@@ -364,6 +364,7 @@ include_rules = [
   "+components/sync_user_events",
   "+components/tab_count_metrics",
   "+components/tab_groups",
+  "+components/tpcd/enterprise_reporting",
   "+components/tracing/common",
   "+components/translate/content/android",
   "+components/translate/content/browser",

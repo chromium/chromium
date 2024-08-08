@@ -2047,6 +2047,7 @@ if (!is_android) {
       "//components/supervised_user/core/browser/proto",
       "//components/supervised_user/core/common",
       "//components/supervised_user/core/common:test_utils",
+      "//components/tpcd/enterprise_reporting:enterprise_reporting",
       "//components/tpcd/metadata/browser",
       "//components/tpcd/metadata/browser:test_support",
       "//components/tpcd/metadata/common/proto",
