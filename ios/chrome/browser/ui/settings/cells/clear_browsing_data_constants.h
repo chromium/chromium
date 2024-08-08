@@ -43,4 +43,7 @@ extern NSString* const kQuickDeleteBrowsingDataPasswordsIdentifier;
 // The accessibility identifier for autofill row on browsing data page.
 extern NSString* const kQuickDeleteBrowsingDataAutofillIdentifier;
 
+// The accessibility identifier for the footer string on the browsing data page.
+extern NSString* const kQuickDeleteBrowsingDataFooterIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_CLEAR_BROWSING_DATA_CONSTANTS_H_

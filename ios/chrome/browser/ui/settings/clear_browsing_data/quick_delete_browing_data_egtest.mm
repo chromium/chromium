@@ -4,8 +4,14 @@
 
 #import <XCTest/XCTest.h>
 
+#import "base/test/metrics/histogram_tester.h"
 #import "components/browsing_data/core/pref_names.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/base/command_line_switches.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -96,6 +102,20 @@ id<GREYMatcher> autofillCellMatcher() {
       grey_sufficientlyVisible(), nil);
 }
 
+// Matcher for sign out link in the footer.
+id<GREYMatcher> SignOutLinkMatcher() {
+  return grey_allOf(
+      // The link is within the browsing data page footer with ID
+      // `kQuickDeleteBrowsingDataFooterIdentifier`.
+      grey_ancestor(
+          grey_accessibilityID(kQuickDeleteBrowsingDataFooterIdentifier)),
+      grey_accessibilityLabel(@"sign out of Chrome"),
+      // UIKit instantiates a `UIAccessibilityLinkSubelement` for the link
+      // element in the label with attributed string.
+      grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
+      grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
+}
+
 }  // namespace
 
 // Tests the Quick Delete Browsing Data page.
@@ -107,13 +127,18 @@ id<GREYMatcher> autofillCellMatcher() {
 - (void)setUp {
   [super setUp];
   [ChromeEarlGrey resetBrowsingDataPrefs];
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
 - (void)tearDown {
   [ChromeEarlGrey resetBrowsingDataPrefs];
-  // Dismiss the quick delete bottom sheet to avoid flakiness due to UI
-  // persisting accross tests.
-  [self dismissQuickDelete];
+  // Close any open UI to avoid test flakiness.
+  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+  [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
   [super tearDown];
 }
 
@@ -143,19 +168,10 @@ id<GREYMatcher> autofillCellMatcher() {
                       quickDeleteBrowsingDataPageTitleMatcher()];
 }
 
-// Dismisses Quick Delete bottom sheet.
-- (void)dismissQuickDelete {
-  // Check that Quick Delete is presented.
-  [[EarlGrey selectElementWithMatcher:quickDeleteTitleMatcher()]
-      assertWithMatcher:grey_notNil()];
-
-  // Swipe the bottom sheet down.
-  [[EarlGrey selectElementWithMatcher:quickDeleteTitleMatcher()]
-      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
-
-  // Check that Quick Delete has been dismissed.
-  [[EarlGrey selectElementWithMatcher:quickDeleteTitleMatcher()]
-      assertWithMatcher:grey_nil()];
+- (void)signIn {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 }
 
 // Tests the cancel button dismisses the browsing data page.
@@ -377,6 +393,57 @@ id<GREYMatcher> autofillCellMatcher() {
   GREYAssertEqual(
       [ChromeEarlGrey userBooleanPref:browsing_data::prefs::kDeleteFormData],
       YES, @"Failed to save autofill pref change on confirm.");
+}
+
+// Tests the "sign out of Chrome" link in the footer.
+- (void)testSignOutFooterLink {
+  // Sign in is required to show the footer.
+  [self signIn];
+
+  // Open quick delete browsing data page.
+  [self openQuickDeleteBrowsingDataPage];
+
+  // Check that the footer is presented.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kQuickDeleteBrowsingDataFooterIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // At the beginning of the test this bucket should be empty.
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:0
+             forBucket:static_cast<int>(
+                           signin_metrics::ProfileSignout::
+                               kUserClickedSignoutFromClearBrowsingDataPage)
+          forHistogram:@"Signin.SignoutProfile"],
+      @"Signin.SignoutProfile histogram is logged at the start of the test.");
+
+  // Tap on the "sign out of Chrome" link.
+  [[EarlGrey selectElementWithMatcher:SignOutLinkMatcher()]
+      performAction:grey_tap()];
+
+  // Dismiss the sign outsnackbar, so that it can't obstruct other UI items.
+  [SigninEarlGreyUI dismissSignoutSnackbar];
+
+  // Assert that the footer is hidden.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kQuickDeleteBrowsingDataFooterIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Assert that the user is signed out.
+  [SigninEarlGrey verifySignedOut];
+
+  // Assert that the correct sign out metrics bucket is populated.
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:static_cast<int>(
+                           signin_metrics::ProfileSignout::
+                               kUserClickedSignoutFromClearBrowsingDataPage)
+          forHistogram:@"Signin.SignoutProfile"],
+      @"Signin.SignoutProfile histogram not logged.");
 }
 
 @end

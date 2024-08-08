@@ -1311,6 +1311,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DELETE_ACTION_TITLE" desc="Title of the action used to delete a selected item. Item types include, for example, a Bookmark or an History Entry. [iOS only]">
         Delete
       </message>
+      <message name="IDS_IOS_DELETE_BROWSING_DATA_BOTTOM_SHEET_FOOTER" desc="Footer message in the delete browsing data bottom sheet which informs the user they can seperately delete their search history and/or other forms of activity at the 2 links provided.">
+        <ph name="BEGIN_LINK">BEGIN_LINK</ph>Search history<ph name="END_LINK">END_LINK</ph> and <ph name="BEGIN_LINK">BEGIN_LINK</ph>other forms of activity<ph name="END_LINK">END_LINK</ph> may be saved in your Google Account.
+      </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_BUTTON" desc="Label for the option to go through with the deletion of browsing data. [iOS only]">
         Delete Data
       </message>
@@ -1320,8 +1323,8 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DELETE_BROWSING_DATA_CONFIRM" translateable="false" desc="Label for the option to confirm selection of browsing data types to be deleted. [iOS only]">
         **Confirm**
       </message>
-      <message name="IDS_IOS_DELETE_BROWSING_DATA_FOOTER" desc="Footer message in the delete browsing data bottom sheet which informs the user they can seperately delete their search history and/or other forms of activity at the 2 links provided.">
-        <ph name="BEGIN_LINK">BEGIN_LINK</ph>Search history<ph name="END_LINK">END_LINK</ph> and <ph name="BEGIN_LINK">BEGIN_LINK</ph>other forms of activity<ph name="END_LINK">END_LINK</ph> may be saved in your Google Account.
+      <message name="IDS_IOS_DELETE_BROWSING_DATA_PAGE_FOOTER" translateable="false" desc="The text is displayed in a footer in the delete browsing data page which allows selection of data types to be deleted. The link ‘sign out of Chrome’ opens a dialog where the user can confirm if they want to sign out of Chrome.">
+        **Deleting your browsing data doesn't sign you out of your Google Account. To do so, <ph name="BEGIN_LINK">BEGIN_LINK</ph>sign out of Chrome<ph name="END_LINK">END_LINK</ph>.**
       </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES" desc="Summary of the addresses to be deleted when deleting browsing data. [iOS only]">
        {COUNT, plural,

@@ -41,3 +41,6 @@ NSString* const kQuickDeleteBrowsingDataPasswordsIdentifier =
     @"QuickDeleteBrowsingDataPasswordsIdentifier";
 NSString* const kQuickDeleteBrowsingDataAutofillIdentifier =
     @"QuickDeleteBrowsingDataAutofillIdentifier";
+
+NSString* const kQuickDeleteBrowsingDataFooterIdentifier =
+    @"QuickDeleteBrowsingDataFooterIdentifier";

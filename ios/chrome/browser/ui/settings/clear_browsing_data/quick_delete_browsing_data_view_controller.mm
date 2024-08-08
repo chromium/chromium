@@ -6,9 +6,11 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_view_controller_delegate.h"
@@ -23,9 +25,16 @@ namespace {
 // Browing data type icon size.
 const CGFloat kDefaultSymbolSize = 24;
 
+// TableView's footer section height.
+constexpr CGFloat kSectionFooterHeight = 0;
+
+// The URL for signing out of Chrome from Delete Browsing Data (DBD).
+const char kDBDSignOutOfChromeURL[] = "settings://DBDSignOutOfChrome";
+
 // Section identifiers in the browsing data page table view.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierBrowsingData = kSectionIdentifierEnumZero,
+  SectionIdentifierFooter,
 };
 
 // Item identifiers in the browsing data page table view.
@@ -40,7 +49,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 }  // namespace
 
-@implementation QuickDeleteBrowsingDataViewController {
+@interface QuickDeleteBrowsingDataViewController () <
+    TableViewLinkHeaderFooterItemDelegate> {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
   browsing_data::TimePeriod _timeRange;
   NSString* _historySummary;
@@ -54,7 +64,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   BOOL _cacheSelected;
   BOOL _passwordsSelected;
   BOOL _autofillSelected;
+  BOOL _shouldShowFooter;
 }
+@end
+
+@implementation QuickDeleteBrowsingDataViewController
 
 #pragma mark - ChromeTableViewController
 
@@ -90,11 +104,13 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
            }];
 
   RegisterTableViewCell<TableViewDetailIconCell>(self.tableView);
+  RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(self.tableView);
 
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
-  [snapshot
-      appendSectionsWithIdentifiers:@[ @(SectionIdentifierBrowsingData) ]];
+  [snapshot appendSectionsWithIdentifiers:@[
+    @(SectionIdentifierBrowsingData), @(SectionIdentifierFooter)
+  ]];
   [snapshot appendItemsWithIdentifiers:@[
     @(ItemIdentifierHistory), @(ItemIdentifierTabs), @(ItemIdentifierSiteData),
     @(ItemIdentifierCache), @(ItemIdentifierPasswords),
@@ -119,6 +135,51 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [self updateSnapshotForItemIdentifier:itemIdentifier];
 }
 
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
+      [_dataSource sectionIdentifierForIndex:section].integerValue);
+  switch (sectionIdentifier) {
+    case SectionIdentifierFooter: {
+      if (!_shouldShowFooter) {
+        return nil;
+      }
+      TableViewLinkHeaderFooterView* footer =
+          DequeueTableViewHeaderFooter<TableViewLinkHeaderFooterView>(
+              tableView);
+      footer.accessibilityIdentifier = kQuickDeleteBrowsingDataFooterIdentifier;
+      footer.delegate = self;
+      footer.urls =
+          @[ [[CrURL alloc] initWithGURL:GURL(kDBDSignOutOfChromeURL)] ];
+      [footer setText:l10n_util::GetNSString(
+                          IDS_IOS_DELETE_BROWSING_DATA_PAGE_FOOTER)
+            withColor:[UIColor colorNamed:kTextSecondaryColor]];
+      return footer;
+    }
+    case SectionIdentifierBrowsingData: {
+      return nil;
+    }
+  }
+  NOTREACHED_NORETURN();
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
+      [_dataSource sectionIdentifierForIndex:section].integerValue);
+  if (sectionIdentifier == SectionIdentifierFooter && _shouldShowFooter) {
+    return UITableViewAutomaticDimension;
+  }
+  return kSectionFooterHeight;
+}
+
+#pragma mark - TableViewLinkHeaderFooterItemDelegate
+
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)url {
+  CHECK(url.gurl == kDBDSignOutOfChromeURL);
+  [_delegate signOutAndShowActionSheet];
+}
+
 #pragma mark - QuickDeleteConsumer
 
 - (void)setTimeRange:(browsing_data::TimePeriod)timeRange {
@@ -134,7 +195,17 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 - (void)setShouldShowFooter:(BOOL)shouldShowFooter {
-  // TODO(crbug.com/341107834): Store the boolean value to used for the footer.
+  if (_shouldShowFooter == shouldShowFooter) {
+    return;
+  }
+
+  _shouldShowFooter = shouldShowFooter;
+
+  // Reload the footer section.
+  NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
+      [_dataSource snapshot];
+  [snapshot reloadSectionsWithIdentifiers:@[ @(SectionIdentifierFooter) ]];
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 - (void)updateHistoryWithResult:

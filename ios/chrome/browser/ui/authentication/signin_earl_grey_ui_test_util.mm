@@ -87,6 +87,13 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
   }
 }
 
+// Returns a matcher for the sign out snackbar label.
+id<GREYMatcher> SignOutSnackbarLabelMatcher() {
+  NSString* snackbarLabel = l10n_util::GetNSString(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE);
+  return grey_accessibilityLabel(snackbarLabel);
+}
+
 }  // namespace
 
 @implementation SigninEarlGreyUI
@@ -184,10 +191,12 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
 }
 
 + (void)dismissSignoutSnackbar {
-  NSString* snackbarLabel = l10n_util::GetNSString(
-      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE);
-  // The tap checks the existence of the snackbar and also closes it.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(snackbarLabel)]
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:SignOutSnackbarLabelMatcher()
+                                  timeout:base::test::ios::
+                                              kWaitForUIElementTimeout];
+  // The tap closes the snackbar.
+  [[EarlGrey selectElementWithMatcher:SignOutSnackbarLabelMatcher()]
       performAction:grey_tap()];
 }
 

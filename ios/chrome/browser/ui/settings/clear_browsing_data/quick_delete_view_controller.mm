@@ -202,9 +202,9 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
         [[CrURL alloc]
             initWithGURL:GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL)]
       ];
-      [footer
-            setText:l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_FOOTER)
-          withColor:[UIColor colorNamed:kTextSecondaryColor]];
+      [footer setText:l10n_util::GetNSString(
+                          IDS_IOS_DELETE_BROWSING_DATA_BOTTOM_SHEET_FOOTER)
+            withColor:[UIColor colorNamed:kTextSecondaryColor]];
       return footer;
     }
     case SectionIdentifierTimeRange:

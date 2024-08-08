@@ -1065,7 +1065,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
 // recorded in the corrresponding histogram bucket.
 - (void)testOpenSearchHistoryMyActivityFooterLink {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  // Sign in is required to show to footer.
+  // Sign in is required to show the footer.
   [self signIn];
   // Open Quick Delete bottom sheet.
   [self openQuickDeleteFromThreeDotMenu];
@@ -1097,7 +1097,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
 // are recorded in the corrresponding histogram bucket.
 - (void)testOpenOtherFormsOfActivityMyActivityFooterLink {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  // Sign in is required to show to footer.
+  // Sign in is required to show the footer.
   [self signIn];
   // Open Quick Delete bottom sheet.
   [self openQuickDeleteFromThreeDotMenu];
