@@ -21,7 +21,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
-#include "components/supervised_user/core/browser/supervised_user_capabilities.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -199,7 +198,8 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
       GetSupervisedUserService()->GetURLFilter();
 
   base::Value::List* section_filter = AddSection(&section_list, "Filter");
-
+  AddSectionEntry(section_filter, "SafeSites enabled",
+                  supervised_user::IsSafeSitesEnabled(*profile->GetPrefs()));
   AddSectionEntry(
       section_filter, "Default behavior",
       FilteringBehaviorToString(filter->GetDefaultFilteringBehavior()));
@@ -225,11 +225,6 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
           TriboolToString(
               account.capabilities.is_subject_to_parental_controls()));
       AddSectionEntry(section_user, "Is valid", account.IsValid());
-      AddSectionEntry(
-          section_filter, "SafeSites enabled",
-          (account.capabilities.is_subject_to_parental_controls() ==
-           signin::Tribool::kTrue) &&
-              profile->GetPrefs()->GetBoolean(prefs::kSupervisedUserSafeSites));
     }
   }
 

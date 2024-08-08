@@ -26,6 +26,9 @@ void DisableParentalControls(PrefService& pref_service);
 
 bool IsChildAccountStatusKnown(const PrefService& pref_service);
 
+// Returns true if the safe sites preference is enabled and user is supervised.
+bool IsSafeSitesEnabled(const PrefService& pref_service);
+
 // Returns true if both the primary account is a child account subject to
 // parental controls and the platform supports Family Link supervision features.
 // TODO(b/342097235): prefs::kSupervisedUserID is being deprecated. Supervision
