@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_DRIVE_SEARCH_PROVIDER_H_
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -51,7 +52,8 @@ class DriveSearchProvider : public SearchProvider {
   std::unique_ptr<FileResult> MakeResult(const base::FilePath& path,
                                          double relevance,
                                          FileResult::Type type,
-                                         const GURL& url);
+                                         const GURL& url,
+                                         const std::optional<std::string>& id);
 
   bool should_filter_shared_files_;
   bool should_filter_directories_;
