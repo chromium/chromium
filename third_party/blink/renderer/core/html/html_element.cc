@@ -1900,8 +1900,9 @@ void HTMLElement::HidePopoverInternal(
     }
   }
 
-  if (auto* selectlist = popoverOwnerSelectListElement()) {
-    // popoverOwnerSelectListElement() is set on both the <selectlist> listbox
+  if (auto* selectlist =
+          DynamicTo<HTMLSelectListElement>(internalImplicitAnchor())) {
+    // internalImplicitAnchor() is set on both the <selectlist> listbox
     // and the <selectlist> autofill preview popover.
     if (selectlist->ListBoxPart() == this) {
       selectlist->ListboxWasClosed();
@@ -2350,15 +2351,15 @@ void HTMLElement::HoveredElementChanged(Element* old_element,
   }
 }
 
-void HTMLElement::SetPopoverOwnerSelectListElement(
-    HTMLSelectListElement* element) {
-  CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
+void HTMLElement::SetInternalImplicitAnchor(HTMLElement* element) {
+  CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled() ||
+        RuntimeEnabledFeatures::StylableSelectEnabled());
   CHECK(HasPopoverAttribute());
-  GetPopoverData()->setOwnerSelectListElement(element);
+  GetPopoverData()->setInternalImplicitAnchor(element);
 }
 
-HTMLSelectListElement* HTMLElement::popoverOwnerSelectListElement() const {
-  return GetPopoverData() ? GetPopoverData()->ownerSelectListElement()
+HTMLElement* HTMLElement::internalImplicitAnchor() const {
+  return GetPopoverData() ? GetPopoverData()->internalImplicitAnchor()
                           : nullptr;
 }
 

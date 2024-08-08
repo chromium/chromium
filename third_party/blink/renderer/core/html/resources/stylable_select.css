@@ -211,3 +211,26 @@ select:not(:-internal-list-box) option::before {
 select option:not(:checked)::before {
   visibility: hidden;
 }
+
+select:-internal-autofill-selected::select-fallback-button,
+select::-internal-select-autofill-preview[popover] {
+  background-image: none;
+  background-color: light-dark(#E8F0FE, rgba(70, 90, 126, 0.4));
+  color: FieldText;
+}
+select::-internal-select-autofill-preview[popover]:popover-open {
+  display: grid;
+  align-items: center;
+  inset-area: center;
+  height: calc(anchor-size(height) - 2px);
+  width: calc(anchor-size(width) - 2px);
+  margin: 0;
+  padding: 0;
+  border: 1px solid black;
+}
+select::-internal-select-autofill-preview-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  white-space: nowrap;
+}

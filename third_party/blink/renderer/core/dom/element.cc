@@ -10287,8 +10287,8 @@ Element* Element::ImplicitAnchorElement() const {
       DCHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
       return anchor;
     }
-    if (Element* select_list = html_element->popoverOwnerSelectListElement()) {
-      return select_list;
+    if (Element* internal_anchor = html_element->internalImplicitAnchor()) {
+      return internal_anchor;
     }
     if (const auto* datalist = DynamicTo<HTMLDataListElement>(html_element)) {
       if (auto* select = datalist->ParentSelect()) {
