@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/eye_dropper.h"
 #include "content/public/browser/fullscreen_types.h"
 #include "content/public/browser/invalidate_type.h"
@@ -811,6 +812,11 @@ class CONTENT_EXPORT WebContentsDelegate {
   // has changed. If necessary, the delegate should use this notification to
   // hold on its animation until the back forward transition has completed.
   virtual void DidBackForwardTransitionAnimationChange() {}
+
+  // Asks the embedder for the configuration used to compose a fallback UX, for
+  // navigation transitions.
+  virtual BackForwardTransitionAnimationManager::FallbackUXConfig
+  GetBackForwardTransitionFallbackUXConfig();
 #endif  // BUILDFLAG(IS_ANDROID)
 
  protected:

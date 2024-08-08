@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditorJni;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.content_public.browser.InvalidateTypes;
@@ -436,6 +437,16 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @Override
     public void didBackForwardTransitionAnimationChange() {
         mTab.handleBackForwardTransitionUiChanged();
+    }
+
+    @Override
+    public int getBackForwardTransitionFallbackUXFaviconBackgroundColor() {
+        return ChromeColors.getPrimaryBackgroundColor(mTab.getContext(), mTab.isIncognitoBranded());
+    }
+
+    @Override
+    public int getBackForwardTransitionFallbackUXPageBackgroundColor() {
+        return ChromeColors.getSurfaceColor(mTab.getContext(), R.dimen.default_elevation_3);
     }
 
     void showFramebustBlockInfobarForTesting(String url) {

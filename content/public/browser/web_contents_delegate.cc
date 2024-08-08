@@ -415,4 +415,11 @@ bool WebContentsDelegate::MaybeCopyContentAreaAsBitmap(
   return false;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+BackForwardTransitionAnimationManager::FallbackUXConfig
+WebContentsDelegate::GetBackForwardTransitionFallbackUXConfig() {
+  return BackForwardTransitionAnimationManager::FallbackUXConfig();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace content
