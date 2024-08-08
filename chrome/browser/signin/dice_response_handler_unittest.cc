@@ -10,9 +10,11 @@
 
 #include "base/check.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -109,22 +111,26 @@ class DiceTestSigninClient : public TestSigninClient, public GaiaAuthConsumer {
 };
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-class FakeRegistrationTokenHelper : public RegistrationTokenHelper {
+class MockRegistrationTokenHelper : public RegistrationTokenHelper {
  public:
-  FakeRegistrationTokenHelper()
-      : RegistrationTokenHelper(
-            fake_unexportable_key_service_,
-            base::BindRepeating(
-                [](crypto::SignatureVerifier::SignatureAlgorithm,
-                   base::span<const uint8_t>,
-                   base::Time) -> std::optional<std::string> {
-                  return std::nullopt;
-                }),
-            base::DoNothing()) {}
+  MockRegistrationTokenHelper()
+      : RegistrationTokenHelper(fake_unexportable_key_service_) {}
 
-  ~FakeRegistrationTokenHelper() override = default;
+  ~MockRegistrationTokenHelper() override = default;
 
-  void Start() override {}
+  MOCK_METHOD(void,
+              GenerateForSessionBinding,
+              (std::string_view challenge,
+               const GURL& registration_url,
+               base::OnceCallback<void(std::optional<Result>)> callback),
+              (override));
+  MOCK_METHOD(void,
+              GenerateForTokenBinding,
+              (std::string_view client_id,
+               std::string_view auth_code,
+               const GURL& registration_url,
+               base::OnceCallback<void(std::optional<Result>)> callback),
+              (override));
 
  private:
   unexportable_keys::FakeUnexportableKeyService fake_unexportable_key_service_;
@@ -241,14 +247,20 @@ class DiceResponseHandlerTest : public testing::Test,
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   void EnableRegistrationTokenHelper(std::string_view authorization_code) {
-    EXPECT_CALL(mock_registration_token_helper_factory_,
-                Run(_, authorization_code, _, _))
-        .WillOnce(Invoke([this](Unused, Unused, Unused, auto callback) {
-          binding_registration_callback_ = std::move(callback);
-          return std::make_unique<FakeRegistrationTokenHelper>();
-        }));
+    // base::Unretained(this) is safe because `this` owns
+    // `dice_response_handler_`.
     dice_response_handler_->SetRegistrationTokenHelperFactoryForTesting(
-        mock_registration_token_helper_factory_.Get());
+        base::BindRepeating(
+            &DiceResponseHandlerTest::BuildRegistrationTokenHelper,
+            base::Unretained(this), std::string(authorization_code)));
+  }
+
+  std::unique_ptr<RegistrationTokenHelper> BuildRegistrationTokenHelper(
+      std::string_view authorization_code) {
+    auto helper = std::make_unique<StrictMock<MockRegistrationTokenHelper>>();
+    EXPECT_CALL(*helper, GenerateForTokenBinding(_, authorization_code, _, _))
+        .WillOnce(MoveArg<3>(&binding_registration_callback_));
+    return helper;
   }
 
   void SimulateRegistrationTokenHelperResult(
@@ -284,9 +296,6 @@ class DiceResponseHandlerTest : public testing::Test,
   std::string auth_error_email_;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   base::test::ScopedFeatureList feature_list_;
-  StrictMock<
-      base::MockCallback<DiceResponseHandler::RegistrationTokenHelperFactory>>
-      mock_registration_token_helper_factory_;
   base::OnceCallback<void(std::optional<RegistrationTokenHelper::Result>)>
       binding_registration_callback_;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

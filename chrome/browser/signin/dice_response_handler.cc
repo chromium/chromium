@@ -93,15 +93,8 @@ enum DiceTokenFetchResult {
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 std::unique_ptr<RegistrationTokenHelper> BuildRegistrationTokenHelper(
-    unexportable_keys::UnexportableKeyService& unexportable_key_service,
-    std::string_view client_id,
-    std::string_view auth_code,
-    const GURL& registration_url,
-    base::OnceCallback<void(std::optional<RegistrationTokenHelper::Result>)>
-        callback) {
-  return RegistrationTokenHelper::CreateForTokenBinding(
-      unexportable_key_service, client_id, auth_code, registration_url,
-      std::move(callback));
+    unexportable_keys::UnexportableKeyService& unexportable_key_service) {
+  return std::make_unique<RegistrationTokenHelper>(unexportable_key_service);
 }
 
 DiceResponseHandler::RegistrationTokenHelperFactory
@@ -292,14 +285,14 @@ void DiceResponseHandler::DiceTokenFetcher::StartBindingKeyGeneration(
     const RegistrationTokenHelperFactory& registration_token_helper_factory) {
   CHECK(
       switches::IsChromeRefreshTokenBindingEnabled(signin_client_->GetPrefs()));
+  registration_token_helper_ = registration_token_helper_factory.Run();
   // `base::Unretained()` is safe because `this` owns
   // `registration_token_helper_`.
-  registration_token_helper_ = registration_token_helper_factory.Run(
+  registration_token_helper_->GenerateForTokenBinding(
       GaiaUrls::GetInstance()->oauth2_chrome_client_id(), authorization_code_,
       GURL("https://accounts.google.com/accountmanager"),
       base::BindOnce(&DiceTokenFetcher::OnRegistrationTokenGenerated,
                      base::Unretained(this)));
-  registration_token_helper_->Start();
 }
 
 void DiceResponseHandler::DiceTokenFetcher::OnRegistrationTokenGenerated(

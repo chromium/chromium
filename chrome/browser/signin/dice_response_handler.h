@@ -84,12 +84,7 @@ class DiceResponseHandler : public KeyedService {
  public:
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   using RegistrationTokenHelperFactory =
-      base::RepeatingCallback<std::unique_ptr<RegistrationTokenHelper>(
-          std::string_view client_id,
-          std::string_view auth_code,
-          const GURL& registration_url,
-          base::OnceCallback<void(
-              std::optional<RegistrationTokenHelper::Result>)> callback)>;
+      base::RepeatingCallback<std::unique_ptr<RegistrationTokenHelper>()>;
 #else
   // A fake factory type that is always used to pass a null callback.
   using RegistrationTokenHelperFactory = base::RepeatingClosure;

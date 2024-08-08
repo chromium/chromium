@@ -73,15 +73,16 @@ void BoundSessionRegistrationFetcherImpl::Start(
   CHECK(!registration_token_helper_);
   registration_duration_.emplace();  // Starts the timer.
   callback_ = std::move(callback);
+  registration_token_helper_ =
+      std::make_unique<RegistrationTokenHelper>(key_service_.get());
   // base::Unretained() is safe since `this` owns
   // `registration_token_helper_`.
-  registration_token_helper_ = RegistrationTokenHelper::CreateForSessionBinding(
-      key_service_.get(), registration_params_.challenge(),
+  registration_token_helper_->GenerateForSessionBinding(
+      registration_params_.challenge(),
       registration_params_.registration_endpoint(),
       base::BindOnce(
           &BoundSessionRegistrationFetcherImpl::OnRegistrationTokenCreated,
           base::Unretained(this), base::ElapsedTimer()));
-  registration_token_helper_->Start();
 }
 
 void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
