@@ -8,7 +8,7 @@ function wrapArgs(value, w3c) {
     w3c = true;
   }
   const nodes = [];
-  const preprocessed = preprocessResult(value, new Set(), nodes);
+  const preprocessed = preprocessResult(value, [], nodes);
   const stringified = JSON.stringify(preprocessed);
   return [JSON.parse(stringified), w3c, nodes];
 }
@@ -19,7 +19,7 @@ function unwrapResult(value) {
 
 function serialize(value) {
   const nodes = [];
-  const preprocessed = preprocessResult(value, new Set(), nodes);
+  const preprocessed = preprocessResult(value, [], nodes);
   return [JSON.stringify(preprocessed), ...nodes];
 }
 

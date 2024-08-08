@@ -131,7 +131,7 @@ function isCollection(value) {
  * Deep-clones item, given object references in seen, using cloning algorithm
  * algo. Implements "clone an object" from W3C-spec (#dfn-clone-an-object).
  * @param {*} item Object or collection to deep clone.
- * @param {!Set<*>} seen Object references that have already been seen.
+ * @param {!Array<*>} seen Object references that have already been seen.
  * @param {function(*, Array<*>) : *} algo Cloning algorithm to use to
  *     deep clone properties of item.
  * @param {!Array<*>} nodes List of serialized nodes
@@ -165,18 +165,18 @@ function cloneWithAlgorithm(item, seen, algo, nodes) {
 /**
  * Wrapper to cloneWithAlgorithm, with circular reference detection logic.
  * @param {*} item Object or collection to deep clone.
- * @param {!Set<*>} seen Object references that have already been seen.
+ * @param {!Array<*>} seen Object references that have already been seen.
  * @param {function(*, Array<*>) : *} algo Cloning algorithm to use to
  *     deep clone properties of item.
  * @param {!Array<*>} nodes List of serialized nodes
  * @return {*} Clone of item with status of cloning.
  */
 function cloneWithCircularCheck(item, seen, algo, nodes) {
-  if (seen.has(item))
+  if (seen.includes(item))
     throw newError('circular reference', StatusCode.JAVA_SCRIPT_ERROR);
-  seen.add(item);
+  seen.push(item);
   const result = cloneWithAlgorithm(item, seen, algo, nodes);
-  seen.delete(item);
+  seen.pop();
   return result;
 }
 
@@ -207,7 +207,7 @@ function serializationGuard(object) {
  * Returns deep clone of given value, replacing element references with a
  * serialized string representing that element.
  * @param {*} item Object or collection to deep clone.
- * @param {!Set<*>} seen Set of references that have already been seen.
+ * @param {!Array<*>} seen Object references that have already been seen.
  * @param {!Array<*>} nodes List of serialized nodes
  * @return {*} Clone of item with status of cloning.
  */
@@ -262,7 +262,7 @@ function preprocessResult(item, seen, nodes) {
  * Returns deserialized deep clone of given value, replacing serialized string
  * references to elements with a element reference, if found.
  * @param {*} item Object or collection to deep clone.
- * @param {!Set<*>} seen Set of references that have already been seen.
+ * @param {!Array<*>} seen Object references that have already been seen.
  * @param {!Array<*>} nodes List of referred nodes
  * @return {*} Clone of item with status of cloning.
  */
@@ -307,8 +307,7 @@ function resolveReferences(args, nodes) {
                      StatusCode.STALE_ELEMENT_REFERENCE);
     }
   }
-  const Set = window.cdc_adoQpoasnfa76pfcZLmcfl_Set || window.Set;
-  return resolveReferencesRecursive(args, new Set(), nodes);
+  return resolveReferencesRecursive(args, [], nodes);
 }
 
 /**
@@ -366,11 +365,10 @@ function callFunction(func, args, w3c, nodes) {
   try {
     const tmp = func.apply(null, unwrappedArgs);
     return Promise.resolve(tmp).then((result) => {
-      const Set = window.cdc_adoQpoasnfa76pfcZLmcfl_Set || window.Set;
       ret_nodes = [];
       const response = {
         status: 0,
-        value: preprocessResult(result, new Set(), ret_nodes)
+        value: preprocessResult(result, [], ret_nodes)
       };
       const JSON = window.cdc_adoQpoasnfa76pfcZLmcfl_JSON || window.JSON;
       return [JSON.stringify(response), ...ret_nodes];
