@@ -674,6 +674,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/test/transit/ConditionWaiter.java",
       "android/javatests/src/org/chromium/base/test/transit/ConditionWithResult.java",
       "android/javatests/src/org/chromium/base/test/transit/ConditionalState.java",
+      "android/javatests/src/org/chromium/base/test/transit/DisplayedPortion.java",
       "android/javatests/src/org/chromium/base/test/transit/Element.java",
       "android/javatests/src/org/chromium/base/test/transit/ElementFactory.java",
       "android/javatests/src/org/chromium/base/test/transit/Elements.java",
