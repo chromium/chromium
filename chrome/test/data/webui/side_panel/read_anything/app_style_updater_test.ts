@@ -21,6 +21,12 @@ suite('AppStyleUpdater', () => {
     app.style.fontSize = size + 'px';
   }
 
+  function updateStyles(styles: {[attribute: string]: string}) {
+    for (const [key, val] of Object.entries(styles)) {
+      app.style.setProperty(key, val);
+    }
+  }
+
   setup(() => {
     suppressInnocuousErrors();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -87,7 +93,7 @@ suite('AppStyleUpdater', () => {
   test('current highlight', () => {
     const expectedYellowColor = 'yellow';
     const expectedDarkColor = 'black';
-    app.updateStyles({
+    updateStyles({
       '--color-read-anything-current-read-aloud-highlight-yellow':
           expectedYellowColor,
       '--color-read-anything-current-read-aloud-highlight-dark':
@@ -161,7 +167,7 @@ suite('AppStyleUpdater', () => {
     const expectedDefaultLinkVisited = 'rgb(37, 37, 6)';
     const expectedYellowLinkVisited = 'rgb(37, 37, 37)';
     const expectedDarkLinkVisited = 'rgb(14, 14, 28)';
-    app.updateStyles({
+    updateStyles({
       '--color-sys-base-container-elevated': expectedDefaultBackground,
       '--color-read-anything-background-yellow': expectedYellowBackground,
       '--color-read-anything-background-dark': expectedDarkBackground,
@@ -265,7 +271,7 @@ suite('AppStyleUpdater', () => {
     const expectedBlueEmptyBody = 'rgb(13, 14, 15)';
     const expectedBlueLink = 'rgb(16, 17, 18)';
     const expectedBlueLinkVisited = 'rgb(19, 20, 21)';
-    app.updateStyles({
+    updateStyles({
       '--color-read-anything-background-blue': expectedBlueBackground,
       '--color-read-anything-foreground-blue': expectedBlueForeground,
       '--color-read-anything-current-read-aloud-highlight-blue':
