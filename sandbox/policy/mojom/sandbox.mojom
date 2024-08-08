@@ -152,10 +152,6 @@ enum Sandbox {
   [EnableIf=is_mac]
   kMirroring,
 
-  // The NaCl loader process.
-  [EnableIf=is_mac]
-  kNaClLoader,
-
   // Used to prime zygotes before they specialize. The process will receive a
   // new sandbox later in its lifetime.
   [EnableIf=has_zygote]

@@ -61,7 +61,6 @@ bool IsUnsandboxedSandboxType(Sandbox sandbox_type) {
     case Sandbox::kPrintCompositor:
 #if BUILDFLAG(IS_MAC)
     case Sandbox::kMirroring:
-    case Sandbox::kNaClLoader:
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
     case Sandbox::kHardwareVideoDecoding:
@@ -170,10 +169,6 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
           switches::kServiceSandboxType,
           StringFromUtilitySandboxType(sandbox_type));
       break;
-#if BUILDFLAG(IS_MAC)
-    case Sandbox::kNaClLoader:
-      break;
-#endif  // BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case Sandbox::kZygoteIntermediateSandbox:
       break;
@@ -211,11 +206,7 @@ sandbox::mojom::Sandbox SandboxTypeFromCommandLine(
 
   // NaCl tests on all platforms use the loader process.
   if (process_type == switches::kNaClLoaderProcess) {
-#if BUILDFLAG(IS_MAC)
-    return Sandbox::kNaClLoader;
-#else
     return Sandbox::kUtility;
-#endif
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -319,9 +310,6 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
       // The following are not utility processes so should not occur.
     case Sandbox::kRenderer:
     case Sandbox::kGpu:
-#if BUILDFLAG(IS_MAC)
-    case Sandbox::kNaClLoader:
-#endif  // BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case Sandbox::kZygoteIntermediateSandbox:
 #endif

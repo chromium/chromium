@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/child_process_launcher_helper.h"
+
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/mac/mach_port_rendezvous.h"
@@ -12,7 +14,6 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "content/browser/child_process_launcher.h"
-#include "content/browser/child_process_launcher_helper.h"
 #include "content/browser/child_process_launcher_helper_posix.h"
 #include "content/browser/child_process_task_port_provider_mac.h"
 #include "content/browser/sandbox_parameters_mac.h"
@@ -23,7 +24,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/mac/sandbox_compiler.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #include "sandbox/policy/features.h"
@@ -31,12 +31,6 @@
 #include "sandbox/policy/sandbox.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
-
-#if BUILDFLAG(ENABLE_PPAPI)
-#include "content/public/browser/plugin_service.h"
-#include "content/public/common/webplugininfo.h"
-#include "sandbox/policy/mojom/sandbox.mojom.h"
-#endif
 
 namespace content {
 namespace internal {
@@ -88,13 +82,6 @@ ChildProcessLauncherHelper::CreateNamedPlatformChannelOnLauncherThread() {
 
 void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {
   DCHECK(client_task_runner_->RunsTasksInCurrentSequence());
-
-#if BUILDFLAG(ENABLE_PPAPI)
-  auto sandbox_type =
-      sandbox::policy::SandboxTypeFromCommandLine(*command_line_);
-  if (sandbox_type == sandbox::mojom::Sandbox::kPpapi)
-    PluginService::GetInstance()->GetInternalPlugins(&plugins_);
-#endif
 }
 
 std::unique_ptr<PosixFileDescriptorInfo>
@@ -156,11 +143,7 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
                            : sandbox::SandboxCompiler::Target::kSource);
       compiler.SetProfile(sandbox::policy::GetSandboxProfile(sandbox_type));
       const bool sandbox_ok =
-          SetupSandboxParameters(sandbox_type, *command_line_.get(),
-#if BUILDFLAG(ENABLE_PPAPI)
-                                 plugins_,
-#endif
-                                 &compiler);
+          SetupSandboxParameters(sandbox_type, *command_line_.get(), &compiler);
 
       if (!sandbox_ok) {
         LOG(ERROR) << "Sandbox setup failed.";
