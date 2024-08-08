@@ -9,7 +9,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/json_schema_compiler/json_features.gni")
 import("//tools/json_schema_compiler/json_schema_api.gni")
 
-assert(enable_extensions)
+assert(enable_extensions || enable_desktop_android_extensions)
 
 ################################################################################
 # Public Targets

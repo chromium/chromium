@@ -11,7 +11,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/common/switches.h"
+#include "extensions/common/switches.h"  // nogncheck
 #endif
 
 namespace {

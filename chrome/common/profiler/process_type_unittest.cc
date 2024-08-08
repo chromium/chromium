@@ -12,7 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/common/switches.h"
+#include "extensions/common/switches.h"  // nogncheck
 #endif
 
 class ThreadProfilerProcessTypeTest : public ::testing::Test {
