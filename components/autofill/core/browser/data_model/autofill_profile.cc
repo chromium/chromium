@@ -722,9 +722,7 @@ bool AutofillProfile::IsStrictSupersetOf(
 }
 
 AddressCountryCode AutofillProfile::GetAddressCountryCode() const {
-  std::string country_code =
-      base::UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY));
-  return AddressCountryCode(country_code);
+  return GetAddress().GetAddressCountryCode();
 }
 
 void AutofillProfile::OverwriteDataFromForLegacySync(
