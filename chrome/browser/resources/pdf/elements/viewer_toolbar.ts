@@ -505,8 +505,14 @@ export class ViewerToolbarElement extends PolymerElement {
     this.canRedoAnnotation_ = false;
   }
 
-  private onUndoClick_() {
-    assert(this.pdfInk2Enabled);
+  /**
+   * Undo an annotation stroke, if possible.
+   */
+  undo() {
+    if (!this.canUndoAnnotation_) {
+      return;
+    }
+
     assert(this.currentStroke > 0);
     assert(this.formFieldFocus !== FormFieldFocusType.TEXT);
 
@@ -521,8 +527,14 @@ export class ViewerToolbarElement extends PolymerElement {
     }
   }
 
-  private onRedoClick_() {
-    assert(this.pdfInk2Enabled);
+  /**
+   * Redo an annotation stroke, if possible.
+   */
+  redo() {
+    if (!this.canRedoAnnotation_) {
+      return;
+    }
+
     assert(this.currentStroke < this.mostRecentStroke);
     assert(this.formFieldFocus !== FormFieldFocusType.TEXT);
 

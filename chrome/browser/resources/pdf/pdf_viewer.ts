@@ -23,6 +23,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {isMac} from 'chrome://resources/js/platform.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
 
 import type {Bookmark} from './bookmark_type.js';
@@ -30,9 +31,7 @@ import type {BrowserApi} from './browser_api.js';
 import type {Attachment, DocumentMetadata, ExtendedKeyEvent, Point} from './constants.js';
 import {FittingType, FormFieldFocusType, SaveRequestType} from './constants.js';
 import type {MessageData} from './controller.js';
-import {PluginController} from './controller.js';
-// <if expr="enable_pdf_ink2">
-import {PluginControllerEventType} from './controller.js';
+import {PluginController, PluginControllerEventType} from './controller.js';
 // </if>
 // <if expr="enable_ink">
 import type {ContentController} from './controller.js';
@@ -450,11 +449,25 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    */
   private handleToolbarKeyEvent_(e: KeyboardEvent) {
     // TODO(thestig): Should this use hasCtrlModifier() or stay as is?
-    if (e.key === '\\' && e.ctrlKey) {
-      this.$.toolbar.fitToggle();
+    if (isMac ? !e.metaKey || e.ctrlKey : !e.ctrlKey || e.metaKey) {
+      return;
     }
+
     // TODO: Add handling for additional relevant hotkeys for the new unified
     // toolbar.
+    switch (e.key) {
+      case '\\':
+        this.$.toolbar.fitToggle();
+        return;
+      // <if expr="enable_pdf_ink2">
+      case 'z':
+        this.$.toolbar.undo();
+        return;
+      case 'y':
+        this.$.toolbar.redo();
+        return;
+      // </if>
+    }
   }
 
   // <if expr="enable_ink">
