@@ -1669,6 +1669,13 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
 
       Jika <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (nilai 2) disetel, semua variasi tidak akan diterapkan ke browser di layar login. Perlu diketahui, mode ini tidak direkomendasikan karena berpotensi menyebabkan developer <ph name="PRODUCT_OS_NAME" /> tidak dapat menyediakan perbaikan keamanan penting secara tepat waktu.</translation>
 <translation id="2215746393279570703">Setelan SSO Mengambang</translation>
+<translation id="2218830243081931587">Kebijakan ini mengontrol perilaku pintasan di <ph name="PRODUCT_OS_NAME" />.
+
+Jika kebijakan ini tidak disetel atau disetel ke <ph name="NORMAL_SYSTEM_PRIORITY" />, semua pintasan sistem <ph name="PRODUCT_OS_NAME" /> akan selalu diaktifkan seperti yang diharapkan.
+
+Jika kebijakan ini disetel ke <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />, daftar pintasan tombol Peluncur yang telah ditentukan tidak akan mengaktifkan pintasan.
+
+Jika kebijakan ini disetel ke <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />, daftar pintasan tombol Peluncur yang telah ditentukan tidak akan pernah mengaktifkan pintasan saat aplikasi dalam mode layar penuh.</translation>
 <translation id="2221779615493499989">Melaporkan status jaringan pengguna di perangkat terdaftar.
 
       Jika kebijakan disetel ke salah (false), informasi tersebut tidak akan dilaporkan.
@@ -2496,6 +2503,7 @@ Kebijakan ini hanya dapat disetel sebagai kebijakan pengguna cloud.</translation
 <translation id="2847788524147474533">Kebijakan perangkat platform lebih diutamakan daripada kebijakan perangkat cloud</translation>
 <translation id="2849275596224278787">Sembunyikan opsi aksesibilitas di menu area notifikasi layar login</translation>
 <translation id="2853649500575897584">Jangan blokir titik ekstensi lama dalam Proses browser</translation>
+<translation id="2853757230661166968">Mengizinkan aplikasi mengambil dan mengganti pintasan sistem default.</translation>
 <translation id="285480231336205327">Aktifkan mode kontras tinggi</translation>
 <translation id="285627849510728211">Menetapkan konfigurasi hari mode pengisian daya baterai lanjutan</translation>
 <translation id="2856932965866813330">Mengaktifkan berbagi kredensial pengguna dengan pengguna lain</translation>
@@ -3866,6 +3874,7 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 
       Catatan: Kebijakan ini harus digunakan dengan <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />.</translation>
 <translation id="3918339829588313389">Izinkan pengguna menyetel PIN lemah</translation>
+<translation id="392227823425989489">Semua pintasan sistem akan selalu diaktifkan seperti yang diharapkan.</translation>
 <translation id="3924506460382372403">Nonaktifkan pelaporan status grafis perangkat</translation>
 <translation id="3925377537407648234">Setel faktor skala dan resolusi tampilan</translation>
 <translation id="3926681471685211524">Memeriksa penggunaan kunci RSA untuk sertifikat server yang diterbitkan oleh trust anchor lokal</translation>
@@ -8241,6 +8250,7 @@ Jika kebijakan ini disetel ke nonaktif, sandi tidak akan diingat dan semua sandi
 <translation id="7146198347561863646">Jika kebijakan disetel ke Aktif atau tidak disetel, penguncian layar saat aktif akan diizinkan untuk pengelolaan daya. Ekstensi dapat meminta penguncian layar saat aktif melalui aplikasi ARC dan API ekstensi pengelolaan daya.
 
       Jika kebijakan disetel ke Nonaktif, permintaan penguncian layar saat aktif akan diabaikan.</translation>
+<translation id="7148958378210448356">Daftar pintasan yang telah ditentukan dengan tombol peluncur tidak akan pernah menjalankan tindakan.</translation>
 <translation id="7149042336307555519"> Jenis sambungan yang diizinkan untuk digunakan update OS. Update OS berpotensi menyebabkan beban berat pada sambungan karena ukurannya dan mungkin menimbulkan biaya tambahan. Oleh karena itu, update tersebut akan dinonaktifkan secara default untuk jenis sambungan yang dianggap mahal (saat ini hanya "data seluler").
 
       Pengidentifikasi jenis sambungan yang dikenal adalah <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" />, dan <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
@@ -9430,6 +9440,7 @@ Peringatan: Sebaiknya tetap aktifkan update otomatis sehingga pengguna menerima 
 <translation id="8089200718228084417">Aktifkan pencetakan privet yang tidak digunakan lagi</translation>
 <translation id="8091982561085048989">Tanda boolean menunjukkan apakah IPP Everywhere harus digunakan untuk menyiapkan printer. Tanda ini didukung di <ph name="PRODUCT_OS_NAME" /> versi 76 dan lebih tinggi.</translation>
 <translation id="8094095107731619070">Aktifkan koreksi otomatis keyboard fisik saat pengguna mengetik</translation>
+<translation id="8099833343914898016">Daftar pintasan yang telah ditentukan dengan tombol peluncur tidak akan pernah menjalankan tindakan saat hanya dalam mode layar penuh.</translation>
 <translation id="8099880303030573137">Menunda waktu menganggur saat menggunakan daya baterai</translation>
 <translation id="8101381354936029836">Grup atom kebijakan:</translation>
 <translation id="8102854005031553638">Penampil PDF menggunakan perender AGG.</translation>

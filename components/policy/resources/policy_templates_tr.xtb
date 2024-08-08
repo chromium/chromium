@@ -1633,6 +1633,13 @@ Bu politikanın ayarlanması için <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLI
 
       <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (2 değeri) ayarlanırsa giriş ekranında tarayıcıya hiçbir varyasyonun uygulanmasına izin verilmez. Bu modun, <ph name="PRODUCT_OS_NAME" /> geliştiricilerinin kritik güvenlik düzeltmelerini zamanında sağlamalarını engelleyebileceğini ve dolayısıyla önerilmediğini lütfen unutmayın.</translation>
 <translation id="2215746393279570703">Kayan TOA ayarları</translation>
+<translation id="2218830243081931587">Bu politika, <ph name="PRODUCT_OS_NAME" /> üzerindeki kısayol davranışını kontrol eder.
+
+Bu politika ayarlanmadan bırakılır veya <ph name="NORMAL_SYSTEM_PRIORITY" /> değerine ayarlanırsa tüm <ph name="PRODUCT_OS_NAME" /> sistem kısayolları her zaman beklendiği gibi etkinleştirilir.
+
+Bu politika <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" /> değerine ayarlanırsa önceden belirlenmiş bir listedeki Başlatıcı tuşu kısayolları hiçbir zaman kısayolları etkinleştirmez.
+
+Bu politika <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" /> değerine ayarlanırsa önceden belirlenmiş bir listedeki Başlatıcı tuşu kısayolları, uygulamalar tam ekran modundayken hiçbir zaman kısayolları etkinleştirmez.</translation>
 <translation id="2221779615493499989">Kayıtlı cihazlardaki kullanıcıların ağ durumunu raporla.
 
       Bu politika yanlış değerine ayarlanırsa bilgi raporlanmaz.
@@ -2439,6 +2446,7 @@ Bu politika yalnızca bulut kullanıcı politikası olarak ayarlanabilir.</trans
 <translation id="2847788524147474533">Platform makinesi politikaları, bulut makinesi politikaları karşısında öncelikli olur</translation>
 <translation id="2849275596224278787">Giriş ekranı sistem tepsisi menüsünde erişilebilirlik seçeneklerini gizle</translation>
 <translation id="2853649500575897584">Tarayıcı işlemindeki eski uzantı noktalarını engelleme</translation>
+<translation id="2853757230661166968">Uygulamaların, varsayılan sistem kısayollarını yakalamasına ve geçersiz kılmasına olanak tanır.</translation>
 <translation id="285480231336205327">Yüksek kontrast modunu etkinleştir</translation>
 <translation id="285627849510728211">Gelişmiş pil şarj modu gün yapılandırmasını ayarla</translation>
 <translation id="2856932965866813330">Kullanıcı kimlik bilgilerinin diğer kullanıcılarla paylaşılmasını etkinleştir</translation>
@@ -3806,6 +3814,7 @@ Hem <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> hem de <ph name="HOMEPAGE_IS_NEW
 
       Not: Bu politika, <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> politikası ile birlikte kullanılmalıdır.</translation>
 <translation id="3918339829588313389">Kullanıcıların zayıf bir PIN belirlemesine izin ver</translation>
+<translation id="392227823425989489">Tüm sistem kısayolları her zaman beklendiği gibi etkinleştirilir.</translation>
 <translation id="3924506460382372403">Cihaz grafik durumu raporlamasını devre dışı bırak</translation>
 <translation id="3925377537407648234">Ekran çözünürlüğünü ve ölçek faktörünü ayarlama</translation>
 <translation id="3926681471685211524">Yerel güven çapalarının yayınladığı sunucu sertifikaları için RSA anahtarı kullanımını kontrol et</translation>
@@ -8065,6 +8074,7 @@ Bu politika devre dışı bırakılırsa şifreler hiçbir zaman hatırlanmaz ve
 <translation id="7146198347561863646">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa güç yönetimi için uyanık kalma kilitlerine izin verilir. Uzantılar, güç yönetimi uzantı API'si ve ARC uygulamaları aracılığıyla uyandırma kilitleri isteyebilir.
 
       Politika, Devre Dışı değerine ayarlanırsa uyanık kalma kilidi istekleri yok sayılır.</translation>
+<translation id="7148958378210448356">Önceden belirlenmiş bir listedeki Başlatıcı tuşu kısayolları hiçbir zaman işlem gerçekleştirmez.</translation>
 <translation id="7149042336307555519"> OS güncellemeleri için kullanılmasına izin verilen bağlantı türleri. OS güncellemeleri, boyutları nedeniyle muhtemelen bağlantı üzerine ağır yük getirir ve ek maliyete neden olabilir. Bu nedenle, pahalı kabul edilen bağlantı türleri için (şu anda yalnızca "hücresel" bağlantı) varsayılan olarak etkin değildir.
 
       Tanınan bağlantı türü tanımlayıcıları şunlardır: <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> ve <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
@@ -9255,6 +9265,7 @@ Uyarı: Kullanıcıların yazılım güncellemelerini ve kritik güvenlik düzel
 <translation id="8089200718228084417">Kullanımdan kaldırılan privet yazdırmayı etkinleştir</translation>
 <translation id="8091982561085048989">Yazıcıyı kurmak için IPP Everywhere'in kullanılıp kullanılmayacağını belirten boole flag'i. Bu işaret, <ph name="PRODUCT_OS_NAME" /> sürüm 76 ve sonrasındaki sürümlerde desteklenir.</translation>
 <translation id="8094095107731619070">Kullanıcılar yazarken fiziksel klavyede otomatik düzeltme özelliğini etkinleştir</translation>
+<translation id="8099833343914898016">Önceden belirlenmiş bir listedeki Başlatıcı tuşu kısayolları, yalnızca tam ekran modundayken hiçbir zaman işlem gerçekleştirmez.</translation>
 <translation id="8099880303030573137">Pil gücüyle çalışırken boşta kalma gecikmesi</translation>
 <translation id="8101381354936029836">Politika atom grubu:</translation>
 <translation id="8102854005031553638">PDF görüntüleyici AGG oluşturucuyu kullanır.</translation>

@@ -1611,6 +1611,13 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
 
       Si vous définissez <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> sur "2", aucune variante ne peut être appliquée au navigateur sur l'écran de connexion. Veuillez noter que ce mode n'est pas recommandé, car il est susceptible d'empêcher les développeurs <ph name="PRODUCT_OS_NAME" /> de fournir des correctifs de sécurité critiques en temps voulu.</translation>
 <translation id="2215746393279570703">Paramètres du SSO flottant</translation>
+<translation id="2218830243081931587">Cette règle contrôle le comportement des raccourcis sur <ph name="PRODUCT_OS_NAME" />.
+
+Si cette règle n'est pas configurée ou qu'elle est définie sur <ph name="NORMAL_SYSTEM_PRIORITY" />, les raccourcis système sur <ph name="PRODUCT_OS_NAME" /> s'activeront toujours comme prévu.
+
+Si cette règle est définie sur <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />, une liste de raccourcis prédéterminée avec la touche du Lanceur d'applications n'activera jamais de raccourci.
+
+Si cette règle est définie sur <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />, une liste de raccourcis prédéterminée avec la touche du Lanceur d'applications n'activera jamais de raccourci lorsqu'une appli est en plein écran.</translation>
 <translation id="2221779615493499989">Signale l'état du réseau des utilisateurs sur les appareils enregistrés.
 
       Si la règle est définie sur "False", ces infos ne seront pas transmises.
@@ -2399,6 +2406,7 @@ Cette règle ne peut être configurée que comme règle relative aux utilisateur
 <translation id="2847788524147474533">Prioriser les règles de plate-forme relatives à la machine avant celles de cloud</translation>
 <translation id="2849275596224278787">Masquer les options d'accessibilité dans le menu de la barre d'état système de l'écran de connexion</translation>
 <translation id="2853649500575897584">Ne pas bloquer les anciens points d'extension du processus du navigateur</translation>
+<translation id="2853757230661166968">Permet aux applis de prendre des captures et de remplacer les raccourcis système par défaut.</translation>
 <translation id="285480231336205327">Activer le mode Contraste élevé</translation>
 <translation id="285627849510728211">Définir le jour de recharge de la batterie en mode avancé</translation>
 <translation id="2856932965866813330">Activer le partage des identifiants de l'utilisateur avec d'autres utilisateurs</translation>
@@ -3734,6 +3742,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 
       Remarque : Cette règle doit être utilisée avec la règle "<ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />".</translation>
 <translation id="3918339829588313389">Autoriser les utilisateurs à définir un code peu sécurisé</translation>
+<translation id="392227823425989489">Tous les raccourcis système s'activeront toujours comme prévu.</translation>
 <translation id="3924506460382372403">Désactiver les rapports sur l'état de la carte graphique de l'appareil</translation>
 <translation id="3925377537407648234">Régler la résolution d'affichage et le facteur d'adaptation</translation>
 <translation id="3926681471685211524">Vérifier l'utilisation de clés RSA pour les certificats de serveur émis par les ancres de confiance locales</translation>
@@ -7901,6 +7910,7 @@ Si cette règle est désactivée, les mots de passe ne sont jamais mémorisés e
 <translation id="7146198347561863646">Si cette règle est activée ou qu'elle n'est pas configurée, les wakelocks sont autorisés pour la gestion de l'alimentation. Des extensions peuvent demander des wakelocks par le biais de l'API d'extension de gestion de l'alimentation et par les applications ARC.
 
       Si cette règle est désactivée, les demandes de wakelocks sont ignorées.</translation>
+<translation id="7148958378210448356">Une liste de raccourcis prédéterminée avec la touche du Lanceur d'applications n'effectuera jamais d'action.</translation>
 <translation id="7149042336307555519"> Types de connexion autorisés pour les mises à jour du système d'exploitation. En raison de leur taille, les mises à jour du système d'exploitation peuvent considérablement ralentir la connexion et entraînent parfois des frais supplémentaires. Elles ne sont donc pas activées par défaut pour les types de connexion jugés coûteux (actuellement, seules les connexions mobiles sont concernées).
 
       Les identifiants des types de connexion reconnus sont <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> et <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
@@ -9061,6 +9071,7 @@ Avertissement : Il est recommandé de ne pas désactiver les mises à jour auto
 <translation id="8089200718228084417">Activer l'impression Privet (obsolète)</translation>
 <translation id="8091982561085048989">Flag booléen spécifiant si IPP Everywhere doit être utilisé ou non pour configurer l'imprimante. Ce flag est compatible avec <ph name="PRODUCT_OS_NAME" /> version 76 (ou plus).</translation>
 <translation id="8094095107731619070">Activer la correction automatique lors de la saisie au clavier physique</translation>
+<translation id="8099833343914898016">Une liste de raccourcis prédéterminée avec la touche du Lanceur d'applications n'effectuera jamais d'action en plein écran uniquement.</translation>
 <translation id="8099880303030573137">Délai d'inactivité (batterie)</translation>
 <translation id="8101381354936029836">Groupe atomique de la règle :</translation>
 <translation id="8102854005031553638">La visionneuse PDF utilise le moteur de rendu AGG.</translation>

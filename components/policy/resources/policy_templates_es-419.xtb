@@ -1668,6 +1668,13 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
 
       Si estableces <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2), no podrá aplicarse ninguna variación en el navegador en la pantalla de acceso. Ten en cuenta que no se recomienda este modo porque podría impedir que los desarrolladores de <ph name="PRODUCT_OS_NAME" /> proporcionen correcciones críticas de seguridad de manera oportuna.</translation>
 <translation id="2215746393279570703">Configuración de SSO flotante</translation>
+<translation id="2218830243081931587">Esta política controla el comportamiento de las combinaciones de teclas en <ph name="PRODUCT_OS_NAME" />.
+
+Si no estableces esta política o la estableces como <ph name="NORMAL_SYSTEM_PRIORITY" />, todas las combinaciones de teclas del sistema <ph name="PRODUCT_OS_NAME" /> siempre se activarán según lo esperado.
+
+Si la estableces como <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />, una lista predeterminada de combinaciones de teclas del Selector nunca activará una combinación de teclas.
+
+Si estableces esta política como <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />, una lista predeterminada de combinaciones de teclas del Selector nunca activará una combinación de teclas mientras una app esté en pantalla completa.</translation>
 <translation id="2221779615493499989">Informa a los usuarios sobre el estado de red en dispositivos inscritos.
 
       Si estableces la política como falsa, no se informarán los eventos.
@@ -2491,6 +2498,7 @@ Esta política solo se puede establecer como política del usuario basada en la 
 <translation id="2847788524147474533">Priorizar las políticas de máquina de la plataforma sobre las políticas de máquina en la nube</translation>
 <translation id="2849275596224278787">Ocultar las opciones de accesibilidad en el menú de la bandeja del sistema de la pantalla de acceso</translation>
 <translation id="2853649500575897584">No bloquear los puntos de extensiones heredados del proceso del navegador</translation>
+<translation id="2853757230661166968">Permite que las apps capturen y anulen las combinaciones de teclas predeterminadas del sistema.</translation>
 <translation id="285480231336205327">Habilitar el modo de contraste alto</translation>
 <translation id="285627849510728211">Establecer la configuración para el modo avanzado de carga de la batería durante el día</translation>
 <translation id="2856932965866813330">Habilitar el uso compartido de credenciales de usuario con otros usuarios</translation>
@@ -3858,6 +3866,7 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
       Nota: Esta política debe utilizarse con <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />.</translation>
 <translation id="3918339829588313389">Permitir que los usuarios establezcan un PIN poco seguro</translation>
+<translation id="392227823425989489">Todas las combinaciones de teclas del sistema siempre se activarán según lo esperado.</translation>
 <translation id="3924506460382372403">Inhabilitar los informes del estado de los gráficos del dispositivo</translation>
 <translation id="3925377537407648234">Establecer la resolución de pantalla y el factor de escalas</translation>
 <translation id="3926681471685211524">Revisar el uso de la clave RSA para los certificados del servidor que emiten las anclas de confianza locales</translation>
@@ -8229,6 +8238,7 @@ Si se inhabilita esta política, las contraseñas no se recordarán nunca y se q
 <translation id="7146198347561863646">Si habilitas la política o no la estableces, se permitirán los bloqueos de activación para la administración de energía. Las extensiones pueden solicitar estos bloqueos mediante la API de extensión de administración de energía. Las apps de ARC también pueden solicitarlos.
 
       Si inhabilitas la política, se ignorarán las solicitudes de bloqueos de activación.</translation>
+<translation id="7148958378210448356">Una lista predeterminada de combinaciones de teclas con la tecla del Selector nunca realizará una acción solo en pantalla completa.</translation>
 <translation id="7149042336307555519"> Esta política controla los tipos de conexiones permitidos en las actualizaciones del SO. Es posible que el tamaño de las actualizaciones del SO sobrecargue la conexión, lo que podría generar costos adicionales para el usuario. Por lo tanto, no están habilitadas de forma predeterminada en conexiones que se consideren costosas (actualmente, solo "celular").
 
       Los identificadores de tipos de conexión son <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> y <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
@@ -9421,6 +9431,7 @@ Advertencia: Se recomienda mantener habilitadas las actualizaciones automáticas
 <translation id="8089200718228084417">Habilita la impresión Privet obsoleta</translation>
 <translation id="8091982561085048989">Función experimental booleana que indica si se debe usar IPP Everywhere para configurar la impresora. Esta función experimental es compatible con <ph name="PRODUCT_OS_NAME" /> 76 y versiones posteriores.</translation>
 <translation id="8094095107731619070">Habilitar la autocorrección en el teclado físico cuando los usuarios escriben</translation>
+<translation id="8099833343914898016">Una lista predeterminada de combinaciones de teclas con la tecla del Selector nunca realizará una acción solo en pantalla completa.</translation>
 <translation id="8099880303030573137">Demora de inactividad con batería</translation>
 <translation id="8101381354936029836">Grupo atómico de la política:</translation>
 <translation id="8102854005031553638">El lector de PDF usa un renderizador AGG</translation>

@@ -1608,6 +1608,13 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 
       Als je <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (waarde 2) instelt, mag geen van de varianten op de browser worden toegepast op het inlogscherm. Deze modus kan er potentieel voor zorgen dat <ph name="PRODUCT_OS_NAME" />-ontwikkelaars essentiële beveiligingsoplossingen niet tijdig kunnen leveren en wordt dus niet aanbevolen.</translation>
 <translation id="2215746393279570703">Instellingen voor zwevende SSO</translation>
+<translation id="2218830243081931587">Dit beleid bepaalt het gedrag van snelkoppelingen in <ph name="PRODUCT_OS_NAME" />.
+
+Als je dit beleid niet instelt of instelt op <ph name="NORMAL_SYSTEM_PRIORITY" />, worden alle <ph name="PRODUCT_OS_NAME" />-systeemsnelkoppelingen altijd geactiveerd zoals verwacht.
+
+Als je dit beleid instelt op <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />, activeert een vooraf bepaalde lijst met snelkoppelingen via de Launcher-toets nooit een snelkoppeling.
+
+Als je dit beleid instelt op <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />, activeert een vooraf bepaalde lijst met snelkoppelingen via de Launcher nooit een snelkoppeling terwijl een app op volledig scherm wordt weergegeven.</translation>
 <translation id="2221779615493499989">De netwerkstatus van gebruikers op ingeschreven apparaten rapporteren.
 
       Als je het beleid instelt op False, worden de gegevens niet gerapporteerd.
@@ -2395,6 +2402,7 @@ Dit beleid kan alleen worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="2847788524147474533">Platformapparaatbeleid krijgt voorrang op cloud-apparaatbeleid</translation>
 <translation id="2849275596224278787">Toegankelijkheidsopties verbergen in het systeemvakmenu op het inlogscherm</translation>
 <translation id="2853649500575897584">Geen verouderde extensiepunten in het browserproces blokkeren</translation>
+<translation id="2853757230661166968">Hiermee kunnen apps standaard systeemsnelkoppelingen vastleggen en overschrijven.</translation>
 <translation id="285480231336205327">Modus voor hoog contrast aanzetten</translation>
 <translation id="285627849510728211">Dagconfiguratie voor geavanceerde batterijoplaadmodus instellen</translation>
 <translation id="2856932965866813330">Delen van inloggegevens met andere gebruikers aanzetten</translation>
@@ -3727,6 +3735,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
       Opmerking: Je moet dit beleid gebruiken met <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />.</translation>
 <translation id="3918339829588313389">Toestaan dat gebruikers een zwakke pincode instellen</translation>
+<translation id="392227823425989489">Alle systeemsnelkoppelingen worden altijd geactiveerd zoals verwacht.</translation>
 <translation id="3924506460382372403">Rapportage voor grafische status van apparaat uitzetten</translation>
 <translation id="3925377537407648234">Schermresolutie en schaalfactor instellen</translation>
 <translation id="3926681471685211524">RSA-sleutelgebruik checken voor servercertificaten die zijn uitgegeven door lokale vertrouwensankers</translation>
@@ -7864,6 +7873,7 @@ Als je dit beleid niet toepast, worden wachtwoorden nooit onthouden en worden al
 <translation id="7146198347561863646">Als je het beleid toepast of niet instelt, zijn wake locks voor stroombeheer toegestaan. Extensies kunnen wake locks aanvragen via de API voor de stroombeheerextensie en via ARC-apps.
 
       Als je het beleid niet toepast, worden wake lock-verzoeken genegeerd.</translation>
+<translation id="7148958378210448356">Een vooraf bepaalde lijst met snelkoppelingen via de Launcher-toets voert nooit een actie uit.</translation>
 <translation id="7149042336307555519"> De typen verbindingen die mogen worden gebruikt voor OS-updates. Grote OS-updates kunnen belastend zijn voor de verbinding, wat kan leiden tot extra kosten. Daarom zijn ze standaard uitgezet voor verbindingstypen die als duur worden beschouwd (momenteel alleen verbindingen van het type 'mobiel').
 
       De herkende ID's voor verbindingstypen zijn <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> en <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
@@ -9025,6 +9035,7 @@ Waarschuwing: Het wordt aanbevolen automatische updates aangezet te laten, zodat
 <translation id="8089200718228084417">Verouderde Privet-afdrukken aanzetten</translation>
 <translation id="8091982561085048989">Booleaanse markering die aangeeft of IPP Everywhere moet worden gebruikt om de printer in te stellen. Deze markering wordt ondersteund in versie 76 en hoger van <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8094095107731619070">Autocorrectie op fysiek toetsenbord als gebruikers typen aanzetten</translation>
+<translation id="8099833343914898016">Een vooraf bepaalde lijst met snelkoppelingen via de Launcher-toets voert nooit een actie uit als het volledige scherm is geactiveerd.</translation>
 <translation id="8099880303030573137">Inactieve vertraging wanneer op de batterij wordt gewerkt</translation>
 <translation id="8101381354936029836">Beleid van atomische groep:</translation>
 <translation id="8102854005031553638">De pdf-viewer gebruikt het AGG-weergaveprogramma.</translation>

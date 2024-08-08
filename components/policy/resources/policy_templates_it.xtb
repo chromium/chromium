@@ -1639,6 +1639,13 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 
       Se viene impostato <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valore 2), non è possibile applicare al browser tutte le varianti nella schermata di accesso. Questa modalità potrebbe impedire agli sviluppatori di <ph name="PRODUCT_OS_NAME" /> di fornire tempestivamente correzioni fondamentali per la sicurezza ed è pertanto sconsigliata.</translation>
 <translation id="2215746393279570703">Impostazioni del servizio SSO mobile</translation>
+<translation id="2218830243081931587">Questo criterio consente di stabilire il comportamento delle scorciatoie su <ph name="PRODUCT_OS_NAME" />.
+
+Se questo criterio non viene configurato o se viene impostato su <ph name="NORMAL_SYSTEM_PRIORITY" />, tutte le scorciatoie di sistema <ph name="PRODUCT_OS_NAME" /> si attiveranno sempre come previsto.
+
+Se viene impostato su <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />, un elenco predeterminato di scorciatoie da tastiera del tasto Avvio app non attiverà mai una scorciatoia.
+
+Se viene impostato su <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />, un elenco predeterminato di scorciatoie da tastiera del tasto Avvio app non attiverà mai una scorciatoia quando un'app è in modalità a schermo intero.</translation>
 <translation id="2221779615493499989">Consente agli utenti di segnalare lo stato di rete su dispositivi registrati.
 
       Se il criterio viene impostato su Falso, le informazioni non vengono segnalate.
@@ -2427,6 +2434,7 @@ Questo criterio può essere impostato soltanto come criterio relativo agli utent
 <translation id="2847788524147474533">I criteri relativi al computer della piattaforma hanno la precedenza sui criteri relativi al cloud in ambito computer</translation>
 <translation id="2849275596224278787">Nascondi opzioni di accessibilità nel menu della barra delle applicazioni della schermata di accesso</translation>
 <translation id="2853649500575897584">Non vengono bloccati i punti di estensioni precedenti nel processo del browser</translation>
+<translation id="2853757230661166968">Consente alle applicazioni di acquisire le scorciatoie di sistema predefinite e di eseguirne l'override.</translation>
 <translation id="285480231336205327">Attiva modalità ad alto contrasto</translation>
 <translation id="285627849510728211">Imposta la configurazione giornaliera per la modalità di ricarica avanzata della batteria</translation>
 <translation id="2856932965866813330">Attiva la condivisione delle credenziali utente con altri utenti</translation>
@@ -3772,6 +3780,7 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
 
       Nota: questo criterio deve essere usato insieme al criterio <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />.</translation>
 <translation id="3918339829588313389">Consenti agli utenti di impostare un PIN inefficace</translation>
+<translation id="392227823425989489">Tutte le scorciatoie di sistema verranno sempre attivate come previsto.</translation>
 <translation id="3924506460382372403">Disattiva i report sullo stato della scheda grafica del dispositivo</translation>
 <translation id="3925377537407648234">Imposta fattore di scala e risoluzione del display</translation>
 <translation id="3926681471685211524">Controlla l'utilizzo delle chiavi RSA per i certificati server emessi da trust anchor locali</translation>
@@ -8001,6 +8010,7 @@ Se il criterio viene disattivato, le password non vengono mai memorizzate e tutt
 <translation id="7146198347561863646">Se il criterio viene impostato su Attivato o se non viene configurato, sono consentiti wakelock per la gestione dell'alimentazione. Le estensioni possono richiedere wakelock tramite l'API dell'estensione di gestione dell'alimentazione e le app ARC.
 
       Se il criterio viene impostato su Disattivato, le richieste di wakelock vengono ignorate.</translation>
+<translation id="7148958378210448356">Un elenco predeterminato di scorciatoie con il tasto Avvio app non eseguirà mai un'azione.</translation>
 <translation id="7149042336307555519"> I tipi di connessioni che è consentito utilizzare per gli aggiornamenti del sistema operativo. Gli aggiornamenti del sistema operativo potrebbero gravare sulla connessione a causa delle loro dimensioni e potrebbero comportare costi aggiuntivi. Di conseguenza, per impostazione predefinita non sono attivi per i tipi di connessione considerati costosi (attualmente solo "cellulare").
 
       Gli identificatori dei tipi di connessione riconosciuti sono <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> e <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
@@ -9164,6 +9174,7 @@ Avviso: è consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="8089200718228084417">Attiva stampa Privet deprecata</translation>
 <translation id="8091982561085048989">Un flag booleano che indica se deve essere usato o meno IPP Everywhere per configurare la stampante. Questo flag è supportato su <ph name="PRODUCT_OS_NAME" /> 76 e versioni successive.</translation>
 <translation id="8094095107731619070">Attiva la correzione automatica sulla tastiera fisica durante la digitazione da parte degli utenti</translation>
+<translation id="8099833343914898016">Un elenco predeterminato di scorciatoie con il tasto Avvio app non eseguirà mai un'azione mentre la modalità solo a schermo intero è attiva.</translation>
 <translation id="8099880303030573137">Ritardo inattività in caso di utilizzo della batteria</translation>
 <translation id="8101381354936029836">Gruppo atomico di criteri:</translation>
 <translation id="8102854005031553638">Il visualizzatore PDF utilizza il renderer AGG.</translation>

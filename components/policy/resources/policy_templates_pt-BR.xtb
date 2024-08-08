@@ -1666,6 +1666,13 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
 
       Definir <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2) impede que qualquer variação seja aplicada ao navegador na tela de login. Esse modo não é recomendado, porque pode impedir que os desenvolvedores do <ph name="PRODUCT_OS_NAME" /> forneçam correções críticas de segurança de maneira rápida.</translation>
 <translation id="2215746393279570703">Configurações de SSO flutuante</translation>
+<translation id="2218830243081931587">Esta política controla o comportamento do atalho no <ph name="PRODUCT_OS_NAME" />.
+
+Se a política for deixada sem definição ou for definida como <ph name="NORMAL_SYSTEM_PRIORITY" />, todos os atalhos do sistema <ph name="PRODUCT_OS_NAME" /> serão ativados como esperado.
+
+Se a política for definida como <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />, uma lista predeterminada de atalhos da tecla de acesso rápido nunca vai ativar um atalho.
+
+Se a política for definida como <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />, uma lista predeterminada de atalhos da tecla de acesso rápido nunca vai ativar um atalho enquanto um app estiver em tela cheia.</translation>
 <translation id="2221779615493499989">Informar o status de rede dos usuários em dispositivos registrados.
 
       Se a política for definida como falsa, as informações não serão enviadas.
@@ -2491,6 +2498,7 @@ Esta política só pode ser definida como uma política do usuário em nuvem.</t
 <translation id="2847788524147474533">As políticas do computador da plataforma têm precedência em relação às políticas do computador na nuvem</translation>
 <translation id="2849275596224278787">Ocultar opções de acessibilidade no menu da bandeja do sistema na tela de login</translation>
 <translation id="2853649500575897584">Não bloquear pontos de extensão legados no processo do navegador</translation>
+<translation id="2853757230661166968">Permite que os aplicativos capturem e substituam os atalhos padrão do sistema.</translation>
 <translation id="285480231336205327">Ativar modo de alto contraste</translation>
 <translation id="285627849510728211">Definir a configuração do dia para o modo avançado de carregamento de bateria</translation>
 <translation id="2856932965866813330">Ativa o compartilhamento de credenciais do usuário com outros usuários</translation>
@@ -3854,6 +3862,7 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 
       Observação: esta política precisa ser usada com <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />.</translation>
 <translation id="3918339829588313389">Permitir que os usuários definam um PIN fraco</translation>
+<translation id="392227823425989489">Todos os atalhos do sistema serão sempre ativados como esperado.</translation>
 <translation id="3924506460382372403">Desativar relatórios sobre o status dos gráficos do dispositivo</translation>
 <translation id="3925377537407648234">Define resolução de tela e fator de escala</translation>
 <translation id="3926681471685211524">Verificar o uso da Chave RSA em certificados de servidor emitidos por âncoras de confiança locais</translation>
@@ -8217,6 +8226,7 @@ Se esta política for desativada, as senhas nunca serão lembradas e todas as se
 <translation id="7146198347561863646">Se a política for definida como "Ativada" ou não for definida, wake locks serão permitidos para gerenciamento de energia. Extensões podem solicitar wake locks pela API da extensão de gerenciamento de energia e por apps ARC.
 
       Se a política for definida como "Desativada", as solicitações de wake locks serão ignoradas.</translation>
+<translation id="7148958378210448356">Uma lista predeterminada de atalhos com a tecla de acesso rápido nunca vai realizar uma ação.</translation>
 <translation id="7149042336307555519"> Os tipos de conexão permitidos para uso em atualizações de SO. Atualizações de SO podem gerar uma grande sobrecarga na conexão devido ao tamanho e podem incorrer em custo adicional. Portanto, elas não são, por padrão, ativadas para tipos de conexão considerados caros (atualmente apenas "celular").
 
       Os identificadores de tipo de conexão reconhecidos são <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> e <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
@@ -9412,6 +9422,7 @@ Aviso: recomendamos que você deixe as atualizações automáticas ativadas para
 <translation id="8089200718228084417">Ativar a impressão com o protocolo Privet suspenso</translation>
 <translation id="8091982561085048989">Flag booleana indicando se o IPP Everywhere deve ser usado ou não para configurar a impressora. Essa sinalização é compatível com o <ph name="PRODUCT_OS_NAME" /> 76 ou versão mais recente.</translation>
 <translation id="8094095107731619070">Ativar a correção automática do teclado físico quando os usuários digitarem</translation>
+<translation id="8099833343914898016">Uma lista predeterminada de atalhos com a tecla de acesso rápido nunca vai realizar uma ação em tela cheia.</translation>
 <translation id="8099880303030573137">Intervalo de inatividade no funcionamento com energia da bateria</translation>
 <translation id="8101381354936029836">Grupo atômico de políticas:</translation>
 <translation id="8102854005031553638">O visualizador de PDF usa o renderizador AGG.</translation>

@@ -1602,6 +1602,13 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       如果将此政策设置为 <ph name="VARIATIONS_DISABLED_OPTION_NAME" />（值为 2），则任何变体都不会在登录屏幕应用于浏览器。请注意，我们不建议您使用此模式，因为它可能会妨碍 <ph name="PRODUCT_OS_NAME" />开发者及时提供重要的安全性修复程序。</translation>
 <translation id="2215746393279570703">流动单点登录设置</translation>
+<translation id="2218830243081931587">此政策用于控制 <ph name="PRODUCT_OS_NAME" /> 上的快捷键行为。
+
+如果此政策未设置或设为 <ph name="NORMAL_SYSTEM_PRIORITY" />，所有 <ph name="PRODUCT_OS_NAME" /> 系统快捷键将始终按预期启用。
+
+如果此政策设为 <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS" />，包含启动器键的一系列预定快捷键一律不执行任何操作。
+
+如果此政策设为 <ph name="SHOULD_IGNORE_COMMON_VDI_SHORTCUTS_FULLSCREEN_ONLY" />，当应用处于全屏模式时，包含启动器键的一系列预定快捷键一律不执行任何操作。</translation>
 <translation id="2221779615493499989">报告已注册的设备上的用户网络状态。
 
       如果此政策设为 false，系统将不会报告这些信息。
@@ -2389,6 +2396,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2847788524147474533">平台设备政策的优先级高于云端设备政策</translation>
 <translation id="2849275596224278787">在登录屏幕的系统任务栏菜单中隐藏无障碍选项</translation>
 <translation id="2853649500575897584">不屏蔽浏览器进程中的旧版扩展点</translation>
+<translation id="2853757230661166968">允许应用捕获和覆盖默认系统快捷键。</translation>
 <translation id="285480231336205327">启用高反差模式</translation>
 <translation id="285627849510728211">设定日间高级电池充电模式配置</translation>
 <translation id="2856932965866813330">允许与其他用户共享用户凭据</translation>
@@ -3720,6 +3728,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       注意：此政策必须与 <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> 搭配使用。</translation>
 <translation id="3918339829588313389">允许用户设置安全系数不高的 PIN 码</translation>
+<translation id="392227823425989489">所有系统快捷键都将始终按预期启用。</translation>
 <translation id="3924506460382372403">停用设备显卡状态报告功能</translation>
 <translation id="3925377537407648234">设置显示屏分辨率和缩放比例</translation>
 <translation id="3926681471685211524">检查由本地信任锚颁发的服务器证书的 RSA 密钥用法</translation>
@@ -7859,6 +7868,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7146198347561863646">如果此政策已启用或未设置，系统就会允许使用唤醒锁定，以便进行电源管理。扩展程序可通过 Power Management Extension API 和 ARC 应用请求唤醒锁定。
 
       如果此政策已停用，唤醒锁定请求会被忽略。</translation>
+<translation id="7148958378210448356">包含启动器键的一系列预定快捷键一律不执行任何操作。</translation>
 <translation id="7149042336307555519"> 指定可使用哪些连接类型来更新操作系统。由于规模庞大，操作系统更新可能会对连接造成沉重负荷，也可能会产生额外费用。所以，在默认情况下，当用户使用较为昂贵的连接类型（目前仅包括“cellular”）时，系统不会启用操作系统更新。
 
       系统可识别的连接类型标识符包括 <ph name="CONNECTION_TYPE_ETHERNET_NAME" />、<ph name="CONNECTION_TYPE_WIFI_NAME" /> 和 <ph name="CONNECTION_TYPE_CELLULAR_NAME" />。</translation>
@@ -9008,6 +9018,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8089200718228084417">启用已弃用的 Privet 本地打印</translation>
 <translation id="8091982561085048989">一个布尔值标记，用于表明是否应该使用 IPP Everywhere 来设置打印机。<ph name="PRODUCT_OS_NAME" /> 76 版及更高版本支持该标记。</translation>
 <translation id="8094095107731619070">在用户输入内容时启用实体键盘自动更正功能</translation>
+<translation id="8099833343914898016">在仅全屏显示时，包含启动器键的一系列预定快捷键一律不执行任何操作。</translation>
 <translation id="8099880303030573137">使用电池供电时的闲置延迟时间</translation>
 <translation id="8101381354936029836">政策原子组：</translation>
 <translation id="8102854005031553638">PDF 查看器使用 AGG 渲染程序。</translation>
