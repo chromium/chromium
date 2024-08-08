@@ -327,6 +327,10 @@ void PickerEmojiBarView::SetSearchResults(
 
       DCHECK_EQ(item_row_width, item_row_->GetPreferredSize().width());
       DCHECK_EQ(available_item_row_width, CalculateAvailableWidthForItemRow());
+    } else {
+      // A narrower item after this one may fit, but we should not show it
+      // because we always want to show a contiguous prefix of `results`.
+      break;
     }
   }
 }
