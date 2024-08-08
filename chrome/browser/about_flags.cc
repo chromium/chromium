@@ -11914,6 +11914,11 @@ const FeatureEntry kFeatureEntries[] = {
          supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers)},
 #endif
 
+    {"use-frame-interval-decider",
+     flag_descriptions::kUseFrameIntervalDeciderName,
+     flag_descriptions::kUseFrameIntervalDeciderDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kUseFrameIntervalDecider)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

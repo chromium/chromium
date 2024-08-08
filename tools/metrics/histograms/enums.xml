@@ -16118,6 +16118,7 @@ from previous Chrome versions.
   <int value="-1802806823" label="TabReorganizationDivider:disabled"/>
   <int value="-1802559277" label="RunTasksByBatches:disabled"/>
   <int value="-1802502753" label="enable-manual-password-generation:enabled"/>
+  <int value="-1802237221" label="UseFrameIntervalDecider:disabled"/>
   <int value="-1801515363" label="ThreadedPreloadScanner:enabled"/>
   <int value="-1801349476" label="FloatWindow:enabled"/>
   <int value="-1799801575" label="CookieDeprecationMessages:enabled"/>
@@ -23794,6 +23795,7 @@ from previous Chrome versions.
   <int value="1449177114"
       label="EnablePasswordsAccountStorageSavingUi:enabled"/>
   <int value="1449336160" label="MainThreadCompositingPriority:disabled"/>
+  <int value="1450198190" label="UseFrameIntervalDecider:enabled"/>
   <int value="1450313630" label="RestartToGainAccessToKeychain:enabled"/>
   <int value="1450567138" label="CCTRevampedBranding:disabled"/>
   <int value="1450865360" label="webrtc-hw-encoding:enabled"/>

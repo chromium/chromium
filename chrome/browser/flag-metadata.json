@@ -9009,6 +9009,16 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-frame-interval-decider",
+    "owners": [
+      "boliu@chromium.org",
+      "jonross@chromium.org",
+      "kylechar@chromium.org",
+      "//components/viz/OWNERS"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "use-fullscreen-insets-api",
     "owners": [ "clhager@google.com"],
     "expiry_milestone": 140
