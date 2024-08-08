@@ -16,33 +16,33 @@ namespace blink {
 
 namespace {
 
-CSSValue* ConsumeFontFamily(CSSParserTokenRange& range,
+CSSValue* ConsumeFontFamily(CSSParserTokenStream& stream,
                             const CSSParserContext& context) {
-  return css_parsing_utils::ConsumeNonGenericFamilyNameList(range);
+  return css_parsing_utils::ConsumeNonGenericFamilyNameList(stream);
 }
 
-CSSValue* ConsumeBasePalette(CSSParserTokenRange& range,
+CSSValue* ConsumeBasePalette(CSSParserTokenStream& stream,
                              const CSSParserContext& context) {
   if (CSSValue* ident =
           css_parsing_utils::ConsumeIdent<CSSValueID::kLight,
-                                          CSSValueID::kDark>(range)) {
+                                          CSSValueID::kDark>(stream)) {
     return ident;
   }
 
-  return css_parsing_utils::ConsumeInteger(range, context, 0);
+  return css_parsing_utils::ConsumeInteger(stream, context, 0);
 }
 
-CSSValue* ConsumeColorOverride(CSSParserTokenRange& range,
+CSSValue* ConsumeColorOverride(CSSParserTokenStream& stream,
                                const CSSParserContext& context) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   do {
     CSSValue* color_index =
-        css_parsing_utils::ConsumeInteger(range, context, 0);
+        css_parsing_utils::ConsumeInteger(stream, context, 0);
     if (!color_index) {
       return nullptr;
     }
-    range.ConsumeWhitespace();
-    CSSValue* color = css_parsing_utils::ConsumeAbsoluteColor(range, context);
+    stream.ConsumeWhitespace();
+    CSSValue* color = css_parsing_utils::ConsumeAbsoluteColor(stream, context);
     if (!color) {
       return nullptr;
     }
@@ -53,8 +53,8 @@ CSSValue* ConsumeColorOverride(CSSParserTokenRange& range,
     }
     list->Append(*MakeGarbageCollected<CSSValuePair>(
         color_index, color, CSSValuePair::kKeepIdenticalValues));
-  } while (css_parsing_utils::ConsumeCommaIncludingWhitespace(range));
-  if (!range.AtEnd() || !list->length()) {
+  } while (css_parsing_utils::ConsumeCommaIncludingWhitespace(stream));
+  if (!stream.AtEnd() || !list->length()) {
     return nullptr;
   }
 
@@ -65,28 +65,28 @@ CSSValue* ConsumeColorOverride(CSSParserTokenRange& range,
 
 CSSValue* AtRuleDescriptorParser::ParseAtFontPaletteValuesDescriptor(
     AtRuleDescriptorID id,
-    CSSParserTokenRange& range,
+    CSSParserTokenStream& stream,
     const CSSParserContext& context) {
   CSSValue* parsed_value = nullptr;
 
   switch (id) {
     case AtRuleDescriptorID::FontFamily:
-      range.ConsumeWhitespace();
-      parsed_value = ConsumeFontFamily(range, context);
+      stream.ConsumeWhitespace();
+      parsed_value = ConsumeFontFamily(stream, context);
       break;
     case AtRuleDescriptorID::BasePalette:
-      range.ConsumeWhitespace();
-      parsed_value = ConsumeBasePalette(range, context);
+      stream.ConsumeWhitespace();
+      parsed_value = ConsumeBasePalette(stream, context);
       break;
     case AtRuleDescriptorID::OverrideColors:
-      range.ConsumeWhitespace();
-      parsed_value = ConsumeColorOverride(range, context);
+      stream.ConsumeWhitespace();
+      parsed_value = ConsumeColorOverride(stream, context);
       break;
     default:
       break;
   }
 
-  if (!parsed_value || !range.AtEnd()) {
+  if (!parsed_value || !stream.AtEnd()) {
     return nullptr;
   }
 

@@ -243,13 +243,11 @@ CORE_EXPORT CSSValue* ConsumeColorMaybeQuirky(CSSParserTokenStream&,
                                               const CSSParserContext&);
 
 // https://drafts.csswg.org/css-color-5/#typedef-color
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CORE_EXPORT CSSValue* ConsumeColor(T&, const CSSParserContext&);
+CORE_EXPORT CSSValue* ConsumeColor(CSSParserTokenStream&,
+                                   const CSSParserContext&);
 
 // https://drafts.csswg.org/css-color-5/#absolute-color
-CORE_EXPORT CSSValue* ConsumeAbsoluteColor(CSSParserTokenRange&,
+CORE_EXPORT CSSValue* ConsumeAbsoluteColor(CSSParserTokenStream&,
                                            const CSSParserContext&);
 
 CSSValue* ConsumeLineWidth(CSSParserTokenRange&,
@@ -297,11 +295,8 @@ enum class ConsumeGeneratedImagePolicy { kAllow, kForbid };
 enum class ConsumeStringUrlImagePolicy { kAllow, kForbid };
 enum class ConsumeImageSetImagePolicy { kAllow, kForbid };
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
 CSSValue* ConsumeImage(
-    T&,
+    CSSParserTokenStream&,
     const CSSParserContext&,
     const ConsumeGeneratedImagePolicy = ConsumeGeneratedImagePolicy::kAllow,
     const ConsumeStringUrlImagePolicy = ConsumeStringUrlImagePolicy::kForbid,
@@ -558,17 +553,12 @@ CSSValue* ConsumeLineHeight(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumeMathDepth(CSSParserTokenStream& stream,
                            const CSSParserContext& context);
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeFontPalette(T&, const CSSParserContext&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumePaletteMixFunction(T&, const CSSParserContext&);
+CSSValue* ConsumeFontPalette(CSSParserTokenStream&, const CSSParserContext&);
+CSSValue* ConsumePaletteMixFunction(CSSParserTokenStream&,
+                                    const CSSParserContext&);
 CSSValueList* ConsumeFontFamily(CSSParserTokenRange&);
 CSSValueList* ConsumeFontFamily(CSSParserTokenStream&);
-CSSValueList* ConsumeNonGenericFamilyNameList(CSSParserTokenRange& range);
+CSSValueList* ConsumeNonGenericFamilyNameList(CSSParserTokenStream& stream);
 CSSValue* ConsumeGenericFamily(CSSParserTokenRange&);
 CSSValue* ConsumeGenericFamily(CSSParserTokenStream&);
 template <typename T>

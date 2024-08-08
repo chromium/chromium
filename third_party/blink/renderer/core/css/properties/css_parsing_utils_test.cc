@@ -224,10 +224,10 @@ TEST(CSSParsingUtilsTest, DashedIdent) {
 
 TEST(CSSParsingUtilsTest, ConsumeAbsoluteColor) {
   auto ConsumeColorForTest = [](String css_text, auto func) {
-    auto tokens = CSSTokenizer(css_text).TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
+    CSSTokenizer tokenizer(css_text);
+    CSSParserTokenStream stream(tokenizer);
     CSSParserContext* context = MakeContext();
-    return func(range, *context);
+    return func(stream, *context);
   };
 
   struct {
@@ -253,9 +253,8 @@ TEST(CSSParsingUtilsTest, ConsumeAbsoluteColor) {
        nullptr},
   };
   for (auto& expectation : expectations) {
-    EXPECT_EQ(ConsumeColorForTest(
-                  expectation.css_text,
-                  css_parsing_utils::ConsumeColor<CSSParserTokenRange>),
+    EXPECT_EQ(ConsumeColorForTest(expectation.css_text,
+                                  css_parsing_utils::ConsumeColor),
               expectation.consume_color_expectation);
     EXPECT_EQ(ConsumeColorForTest(expectation.css_text,
                                   css_parsing_utils::ConsumeAbsoluteColor),
@@ -265,9 +264,9 @@ TEST(CSSParsingUtilsTest, ConsumeAbsoluteColor) {
 
 TEST(CSSParsingUtilsTest, InternalColorsOnlyAllowedInUaMode) {
   auto ConsumeColorForTest = [](String css_text, CSSParserMode mode) {
-    auto tokens = CSSTokenizer(css_text).TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    return css_parsing_utils::ConsumeColor(range, *MakeContext(mode));
+    CSSTokenizer tokenizer(css_text);
+    CSSParserTokenStream stream(tokenizer);
+    return css_parsing_utils::ConsumeColor(stream, *MakeContext(mode));
   };
 
   struct {
@@ -318,10 +317,10 @@ TEST(CSSParsingUtilsTest, ConsumeColorRangePreservation) {
   for (const char*& test : tests) {
     String input(test);
     SCOPED_TRACE(input);
-    Vector<CSSParserToken, 32> tokens = CSSTokenizer(input).TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    EXPECT_EQ(nullptr, css_parsing_utils::ConsumeColor(range, *MakeContext()));
-    EXPECT_EQ(test, range.Serialize());
+    CSSTokenizer tokenizer(input);
+    CSSParserTokenStream stream(tokenizer);
+    EXPECT_EQ(nullptr, css_parsing_utils::ConsumeColor(stream, *MakeContext()));
+    EXPECT_EQ(test, stream.RemainingText());
   }
 }
 

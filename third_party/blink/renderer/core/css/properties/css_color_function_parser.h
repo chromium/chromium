@@ -23,29 +23,21 @@ class CORE_EXPORT ColorFunctionParser {
   ColorFunctionParser() = default;
   // Parses the color inputs rgb(), rgba(), hsl(), hsla(), hwb(), lab(),
   // oklab(), lch(), oklch() and color(). https://www.w3.org/TR/css-color-4/
-  CSSValue* ConsumeFunctionalSyntaxColor(CSSParserTokenRange& input_range,
-                                         const CSSParserContext& context);
-  CSSValue* ConsumeFunctionalSyntaxColor(CSSParserTokenStream& input_stream,
+  CSSValue* ConsumeFunctionalSyntaxColor(CSSParserTokenStream& stream,
                                          const CSSParserContext& context);
 
   struct FunctionMetadata;
 
  private:
-  template <class T>
-    requires std::is_same_v<T, CSSParserTokenStream> ||
-             std::is_same_v<T, CSSParserTokenRange>
-  CSSValue* ConsumeFunctionalSyntaxColorInternal(
-      T& input_range,
-      const CSSParserContext& context);
-
   enum class ChannelType { kNone, kPercentage, kNumber, kRelative };
-  bool ConsumeColorSpaceAndOriginColor(CSSParserTokenRange& args,
+  bool ConsumeColorSpaceAndOriginColor(CSSParserTokenStream& stream,
                                        CSSValueID function_id,
                                        const CSSParserContext& context);
-  bool ConsumeChannel(CSSParserTokenRange& args,
+  bool ConsumeChannel(CSSParserTokenStream& stream,
                       const CSSParserContext& context,
                       int index);
-  bool ConsumeAlpha(CSSParserTokenRange& args, const CSSParserContext& context);
+  bool ConsumeAlpha(CSSParserTokenStream& stream,
+                    const CSSParserContext& context);
   bool MakePerColorSpaceAdjustments();
 
   static std::optional<double> TryResolveColorChannel(
