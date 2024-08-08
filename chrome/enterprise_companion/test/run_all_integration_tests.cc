@@ -14,9 +14,7 @@
 #if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
 #elif BUILDFLAG(IS_WIN)
-#include <windows.h>
-
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include <shlobj.h>
 #endif
 
 namespace {
@@ -25,21 +23,7 @@ bool IsUserElevated() {
 #if BUILDFLAG(IS_POSIX)
   return getuid() == 0;
 #elif BUILDFLAG(IS_WIN)
-  SID_IDENTIFIER_AUTHORITY nt_authority = SECURITY_NT_AUTHORITY;
-  PSID administrators_group = nullptr;
-  if (!::AllocateAndInitializeSid(&nt_authority, 2, SECURITY_BUILTIN_DOMAIN_RID,
-                                  DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0,
-                                  &administrators_group)) {
-    PLOG(ERROR) << "AllocateAndInitializeSid failed";
-    return false;
-  }
-  absl::Cleanup free_sid = [&] { ::FreeSid(administrators_group); };
-  BOOL is_admin = false;
-  if (!::CheckTokenMembership(NULL, administrators_group, &is_admin)) {
-    PLOG(ERROR) << "CheckTokenMembership failed";
-    return false;
-  }
-  return is_admin;
+  return ::IsUserAnAdmin();
 #endif
 }
 

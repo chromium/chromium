@@ -194,6 +194,7 @@ test("enterprise_companion_integration_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/updater:constants_test",
+    "//chrome/updater:public_sources",
     "//testing/gtest",
   ]
 
