@@ -44,10 +44,11 @@ process_version("postinstall") {
   output = "$root_out_dir/enterprise_companion_postinstall"
 }
 
-mac_pkg_installer("enterprise_companion_installer_unsigned") {
-  assert(host_os == "mac", "PKG installers can only be built on MacOS hosts.")
-  bundle_target = ":enterprise_companion_bundle"
-  bundle_identifier = mac_enterprise_companion_bundle_identifier
-  install_location = "/Library/Application Support/$enterprise_companion_company_short_name/$enterprise_companion_product_full_name/PkgStaging.app"
-  postinstall_script_target = ":postinstall"
+if (host_os == "mac") {
+  mac_pkg_installer("enterprise_companion_installer_unsigned") {
+    bundle_target = ":enterprise_companion_bundle"
+    bundle_identifier = mac_enterprise_companion_bundle_identifier
+    install_location = "/Library/Application Support/$enterprise_companion_company_short_name/$enterprise_companion_product_full_name/PkgStaging.app"
+    postinstall_script_target = ":postinstall"
+  }
 }
