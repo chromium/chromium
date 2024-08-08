@@ -938,10 +938,15 @@ void ServiceWorkerVersion::AddControllee(
   // crash.
   CHECK(!base::Contains(controllee_map_, uuid));
 
+  controllee_map_[uuid] = service_worker_client->AsWeakPtr();
+  // Even if `context_` is invalid, `controllee_map_` should have `uuid`.
+  // Otherwise, `Uncontrol()` may fail with CHECK. (crbug.com/357954498)
+  // However, if `context_` is invalid, we may not need to raise a worker to
+  // foreground priority or reset timer because this ServiceWorkerVersion is
+  // shutting down.
   if (!context_) {
     return;
   }
-  controllee_map_[uuid] = service_worker_client->AsWeakPtr();
   embedded_worker_->UpdateForegroundPriority();
   ClearTick(&no_controllees_time_);
 
