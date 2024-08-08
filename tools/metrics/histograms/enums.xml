@@ -17907,6 +17907,8 @@ from previous Chrome versions.
   <int value="-1039555838" label="GamepadExtensions:enabled"/>
   <int value="-1039219684" label="ShoppingPageTypes:disabled"/>
   <int value="-1039169415" label="LiveTranslate:enabled"/>
+  <int value="-1037975779"
+      label="ForceSupervisedUserReauthenticationForYouTube:enabled"/>
   <int value="-1037955654" label="FastPairHandshakeLongTermRefactor:disabled"/>
   <int value="-1037950113"
       label="ResamplingScrollEventsExperimentalPrediction:enabled"/>
@@ -18745,6 +18747,7 @@ from previous Chrome versions.
   <int value="-683370370" label="EnableAppDataSearch:enabled"/>
   <int value="-683306022" label="OverscrollHistoryNavigation:enabled"/>
   <int value="-683146171" label="MediaAppPdfMahi:enabled"/>
+  <int value="-683120550" label="HideGuestModeForSupervisedUsers:enabled"/>
   <int value="-682580680" label="DisableOfficeEditingComponentApp:disabled"/>
   <int value="-682440269" label="WebNotesPublish:disabled"/>
   <int value="-681881853" label="TabAndLinkDragDropAndroid:disabled"/>
@@ -20175,6 +20178,7 @@ from previous Chrome versions.
   <int value="-79327236" label="ModeSpecificPowerButton:enabled"/>
   <int value="-79015588"
       label="ExperimentalAccessibilityDictationMoreCommands:enabled"/>
+  <int value="-78986793" label="HideGuestModeForSupervisedUsers:disabled"/>
   <int value="-78721378" label="Windows11MicaTitlebar:disabled"/>
   <int value="-78308597" label="DesktopPartialTranslate:enabled"/>
   <int value="-78035185" label="custom_summary"/>
@@ -20641,6 +20645,8 @@ from previous Chrome versions.
   <int value="119185738"
       label="OmniboxUIExperimentMaxAutocompleteMatches:disabled"/>
   <int value="119309423" label="WebAssemblyThreads:disabled"/>
+  <int value="119378023"
+      label="UncredentialedFilteringFallbackForSupervisedUsers:disabled"/>
   <int value="120031435" label="MemorySavingsReportingImprovements:disabled"/>
   <int value="120097846" label="SmartLockSignInRemoved:enabled"/>
   <int value="120429808" label="disable-new-profile-management"/>
@@ -21450,6 +21456,8 @@ from previous Chrome versions.
   <int value="453427119" label="EcheSWADisableStunServer:enabled"/>
   <int value="453601558" label="SupportToolScreenshot:enabled"/>
   <int value="454106312" label="UsernameFirstFlowFilling:enabled"/>
+  <int value="454778715"
+      label="ForceSafeSearchForUnauthenticatedSupervisedUsers:disabled"/>
   <int value="455140116" label="CCTIncognitoAvailableToThirdParty:disabled"/>
   <int value="455698038"
       label="disable-gesture-requirement-for-media-playback"/>
@@ -23339,6 +23347,8 @@ from previous Chrome versions.
   <int value="1261620998" label="IntentPickerPWAPersistence:disabled"/>
   <int value="1261713150" label="ChromeHomeOptOutSnackbar:disabled"/>
   <int value="1262469513" label="GesturePropertiesDBusService:disabled"/>
+  <int value="1262747485"
+      label="ForceSupervisedUserReauthenticationForYouTube:disabled"/>
   <int value="1264183726" label="kOmniboxCR23SteadyStateIcons:enabled"/>
   <int value="1265411197" label="EdgeToEdgeBottomChin:disabled"/>
   <int value="1265457230" label="MultiZoneRgbKeyboard:disabled"/>
@@ -23946,6 +23956,8 @@ from previous Chrome versions.
   <int value="1514158607" label="NearbySharingDeviceContacts:enabled"/>
   <int value="1514409186" label="PasswordGenerationBottomSheet:disabled"/>
   <int value="1514951731" label="ReduceGpuPriorityOnBackground:disabled"/>
+  <int value="1515005753"
+      label="UncredentialedFilteringFallbackForSupervisedUsers:enabled"/>
   <int value="1515196403" label="fast-user-switching"/>
   <int value="1515334367" label="ToolbarMicIphAndroid:disabled"/>
   <int value="1515434814" label="CustomizeChromeColorExtraction:disabled"/>
@@ -24802,6 +24814,8 @@ from previous Chrome versions.
       label="EarlyDocumentSwapForBackForwardTransitions:disabled"/>
   <int value="1855524566" label="allow-insecure-websocket-from-https-origin"/>
   <int value="1855804266" label="ShoppingIconColorVariant:enabled"/>
+  <int value="1855997611"
+      label="ForceSafeSearchForUnauthenticatedSupervisedUsers:enabled"/>
   <int value="1856270952" label="AutofillAssistantProactiveHelp:disabled"/>
   <int value="1857000695" label="SendWebUIJavaScriptErrorReports:disabled"/>
   <int value="1858133486" label="UsernameFirstFlowStoreSeveralValues:enabled"/>

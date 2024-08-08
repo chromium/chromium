@@ -8501,6 +8501,31 @@ const char kEnableCertManagementV2UIDescription[] =
     "chrome://settings/certificates";
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+const char kSupervisedProfileHideGuestName[] = "Supervised Profile Hide Guest";
+const char kSupervisedProfileHideGuestDescription[] =
+    "Hides Guest Profile entry points for supervised users";
+
+const char kSupervisedProfileSafeSearchName[] = "Supervised Profile SafeSearch";
+const char kSupervisedProfileSafeSearchDescription[] =
+    "Enables SafeSearch in Google Search for supervised users in the pending "
+    "state.";
+
+const char kSupervisedProfileReauthForYouTubeName[] =
+    "Supervised Profile YouTube reauth";
+const char kSupervisedProfileReauthForYouTubeDescription[] =
+    "Ask supervised users to re-authenticate when attempting to access YouTube "
+    "in the pending state.";
+
+const char kSupervisedProfileFilteringFallbackName[] =
+    "Supervised Profile filtering fallback";
+const char kSupervisedProfileFilteringFallbackDescription[] =
+    "Applies website filters for supervised users in the pending state, if the "
+    "Family Link website filtering setting is set to block explicit sites. "
+    "If the Family Link website filtering setting is set to another value, it "
+    "is applied in the pending regardless of this flag.";
+#endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order just like the header file.

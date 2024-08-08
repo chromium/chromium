@@ -11889,6 +11889,35 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLanguageDetectionAPIDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kLanguageDetectionAPI)},
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+    {"supervised-profile-hide-guest",
+     flag_descriptions::kSupervisedProfileHideGuestName,
+     flag_descriptions::kSupervisedProfileHideGuestDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(supervised_user::kHideGuestModeForSupervisedUsers)},
+
+    {"supervised-profile-safe-search",
+     flag_descriptions::kSupervisedProfileSafeSearchName,
+     flag_descriptions::kSupervisedProfileSafeSearchDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(
+         supervised_user::kForceSafeSearchForUnauthenticatedSupervisedUsers)},
+
+    {"supervised-profile-youtube-reauth",
+     flag_descriptions::kSupervisedProfileReauthForYouTubeName,
+     flag_descriptions::kSupervisedProfileReauthForYouTubeDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(
+         supervised_user::kForceSupervisedUserReauthenticationForYouTube)},
+
+    {"supervised-profile-filtering-fallback",
+     flag_descriptions::kSupervisedProfileFilteringFallbackName,
+     flag_descriptions::kSupervisedProfileFilteringFallbackDescription,
+     kOsLinux | kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(
+         supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

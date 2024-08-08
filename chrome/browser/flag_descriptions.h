@@ -4970,6 +4970,20 @@ extern const char kEnableCertManagementV2UIName[];
 extern const char kEnableCertManagementV2UIDescription[];
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+extern const char kSupervisedProfileHideGuestName[];
+extern const char kSupervisedProfileHideGuestDescription[];
+
+extern const char kSupervisedProfileSafeSearchName[];
+extern const char kSupervisedProfileSafeSearchDescription[];
+
+extern const char kSupervisedProfileReauthForYouTubeName[];
+extern const char kSupervisedProfileReauthForYouTubeDescription[];
+
+extern const char kSupervisedProfileFilteringFallbackName[];
+extern const char kSupervisedProfileFilteringFallbackDescription[];
+#endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order. See top instructions for more.

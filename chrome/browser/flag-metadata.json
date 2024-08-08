@@ -8397,6 +8397,38 @@
     "expiry_milestone": 140
   },
   {
+    "name": "supervised-profile-filtering-fallback",
+    "owners": [
+      "ljjlee@google.com",
+      "chrome-kids-eng@google.com"
+    ],
+    "expiry_milestone": 131
+  },
+  {
+    "name": "supervised-profile-hide-guest",
+    "owners": [
+      "ljjlee@google.com",
+      "chrome-kids-eng@google.com"
+    ],
+    "expiry_milestone": 131
+  },
+  {
+    "name": "supervised-profile-safe-search",
+    "owners": [
+      "ljjlee@google.com",
+      "chrome-kids-eng@google.com"
+    ],
+    "expiry_milestone": 131
+  },
+  {
+    "name": "supervised-profile-youtube-reauth",
+    "owners": [
+      "ljjlee@google.com",
+      "chrome-kids-eng@google.com"
+    ],
+    "expiry_milestone": 131
+  },
+  {
     "name": "support-f11-and-f12-shortcuts",
     "owners": [ "michaelcheco@chromium.org", "cros-peripherals@google.com"],
     "expiry_milestone": 140
