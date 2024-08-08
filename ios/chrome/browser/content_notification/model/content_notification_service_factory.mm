@@ -5,8 +5,11 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
 
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/chrome/browser/content_notification/model/content_notification_configuration.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/public/provider/chrome/browser/content_notification/content_notification_api.h"
 
 // static
@@ -27,7 +30,9 @@ ContentNotificationServiceFactory::GetInstance() {
 ContentNotificationServiceFactory::ContentNotificationServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "ContentNotificationService",
-          BrowserStateDependencyManager::GetInstance()) {}
+          BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(AuthenticationServiceFactory::GetInstance());
+}
 
 ContentNotificationServiceFactory::~ContentNotificationServiceFactory() =
     default;
@@ -35,5 +40,13 @@ ContentNotificationServiceFactory::~ContentNotificationServiceFactory() =
 std::unique_ptr<KeyedService>
 ContentNotificationServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  return ios::provider::CreateContentNotificationService();
+  ContentNotificationConfiguration* config =
+      [[ContentNotificationConfiguration alloc] init];
+
+  config.authService = AuthenticationServiceFactory::GetForBrowserState(
+      ChromeBrowserState::FromBrowserState(context));
+
+  config.ssoService = GetApplicationContext()->GetSingleSignOnService();
+
+  return ios::provider::CreateContentNotificationService(config);
 }

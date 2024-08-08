@@ -7,5 +7,3 @@
 ContentNotificationService::ContentNotificationService() = default;
 
 ContentNotificationService::~ContentNotificationService() = default;
-
-void ContentNotificationService::Shutdown() {}

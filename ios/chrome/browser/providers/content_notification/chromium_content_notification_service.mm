@@ -28,10 +28,6 @@ class ChromiumContentNotificationService final
 
 }  // anonymous namespace
 
-std::unique_ptr<ContentNotificationService> CreateContentNotificationService() {
-  return std::make_unique<ChromiumContentNotificationService>();
-}
-
 std::unique_ptr<ContentNotificationService> CreateContentNotificationService(
     ContentNotificationConfiguration* config) {
   return std::make_unique<ChromiumContentNotificationService>();

@@ -29,10 +29,6 @@ class TestContentNotificationService final : public ContentNotificationService {
 
 }  // anonymous namespace
 
-std::unique_ptr<ContentNotificationService> CreateContentNotificationService() {
-  return std::make_unique<TestContentNotificationService>();
-}
-
 std::unique_ptr<ContentNotificationService> CreateContentNotificationService(
     ContentNotificationConfiguration* config) {
   return std::make_unique<TestContentNotificationService>();

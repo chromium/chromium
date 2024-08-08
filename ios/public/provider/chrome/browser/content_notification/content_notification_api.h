@@ -13,10 +13,6 @@ class ContentNotificationService;
 namespace ios {
 namespace provider {
 
-// Creates a new instance of ContentNotificationService.
-// DEPRECATED: use the version taking a ContentNotificationConfiguration*.
-std::unique_ptr<ContentNotificationService> CreateContentNotificationService();
-
 // Creates a new instance of ContentNotificationService using `config`.
 std::unique_ptr<ContentNotificationService> CreateContentNotificationService(
     ContentNotificationConfiguration* config);
