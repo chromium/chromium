@@ -9,7 +9,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "tracking_protection_prefs.h"
-#include "tracking_protection_reminder_service.h"
 #include "tracking_protection_survey_service.h"
 
 namespace privacy_sandbox {
@@ -47,16 +46,10 @@ void MaybeUpdateSurveyWindowStartTime(PrefService* pref_service,
 
 TrackingProtectionSurveyService::TrackingProtectionSurveyService(
     PrefService* pref_service,
-    TrackingProtectionOnboarding* onboarding_service,
-    TrackingProtectionReminderService* reminder_service)
-    : pref_service_(pref_service),
-      onboarding_service_(onboarding_service),
-      reminder_service_(reminder_service) {
+    TrackingProtectionOnboarding* onboarding_service)
+    : pref_service_(pref_service), onboarding_service_(onboarding_service) {
   if (onboarding_service_) {
     onboarding_observation_.Observe(onboarding_service_);
-  }
-  if (reminder_service_) {
-    reminder_service_observation_.Observe(reminder_service_);
   }
 }
 
@@ -84,12 +77,6 @@ void TrackingProtectionSurveyService::
           privacy_sandbox::TrackingProtectionSurveyAnchor::kOnboarding) {
     MaybeUpdateSurveyWindowStartTime(pref_service_, *onboarded_timestamp);
   }
-}
-
-void TrackingProtectionSurveyService::OnTrackingProtectionReminderStatusChanged(
-    tracking_protection::TrackingProtectionReminderStatus status) {
-  // TODO(crbug.com/345806678): Implement this. We should update the survey
-  // status on successful reminders.
 }
 
 }  // namespace privacy_sandbox

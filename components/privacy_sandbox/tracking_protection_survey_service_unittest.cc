@@ -12,10 +12,8 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
-#include "components/privacy_sandbox/tracking_protection_reminder_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tracking_protection_prefs.h"
-#include "tracking_protection_reminder_service.h"
 
 namespace privacy_sandbox {
 namespace {
@@ -23,37 +21,29 @@ namespace {
 using NoticeType = privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
 using SurfaceType = privacy_sandbox::TrackingProtectionOnboarding::SurfaceType;
 
+// TODO(crbug.com/357883287): Clean up this test class - nothing needs to be
+// tested at the moment.
 class TrackingProtectionSurveyServiceTest : public testing::Test {
  public:
   TrackingProtectionSurveyServiceTest() {
     tracking_protection::RegisterProfilePrefs(prefs()->registry());
-    // Dependency for TrackingProtectionReminderService
-    PrivacySandboxNoticeStorage::RegisterProfilePrefs(prefs()->registry());
   }
 
   void SetUp() override {
-
     feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
     onboarding_service_ = std::make_unique<TrackingProtectionOnboarding>(
         prefs(), version_info::Channel::DEV);
-    reminder_service_ = std::make_unique<TrackingProtectionReminderService>(
-        prefs(), onboarding_service());
     survey_service_ = std::make_unique<TrackingProtectionSurveyService>(
-        prefs(), onboarding_service(), reminder_service());
+        prefs(), onboarding_service());
   }
 
   void TearDown() override {
     survey_service_ = nullptr;
-    reminder_service_ = nullptr;
     onboarding_service_ = nullptr;
   }
 
   TrackingProtectionOnboarding* onboarding_service() {
     return onboarding_service_.get();
-  }
-
-  TrackingProtectionReminderService* reminder_service() {
-    return reminder_service_.get();
   }
 
   TrackingProtectionSurveyService* survey_service() {
@@ -79,16 +69,6 @@ class TrackingProtectionSurveyServiceTest : public testing::Test {
     }
   }
 
-  void CallOnboardingObserver(bool is_silent) {
-    if (is_silent) {
-      reminder_service()->OnTrackingProtectionSilentOnboardingUpdated(
-          TrackingProtectionOnboarding::SilentOnboardingStatus::kOnboarded);
-    } else {
-      reminder_service()->OnTrackingProtectionOnboardingUpdated(
-          TrackingProtectionOnboarding::OnboardingStatus::kOnboarded);
-    }
-  }
-
   std::optional<base::Time> GetOnboardedTimestamp(bool is_silent) {
     if (is_silent) {
       return onboarding_service()->GetSilentOnboardingTimestamp();
@@ -101,7 +81,6 @@ class TrackingProtectionSurveyServiceTest : public testing::Test {
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<TrackingProtectionSurveyService> survey_service_;
   std::unique_ptr<TrackingProtectionOnboarding> onboarding_service_;
-  std::unique_ptr<TrackingProtectionReminderService> reminder_service_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -126,7 +105,6 @@ TEST_P(TrackingProtectionSurveyServiceSurveyWindowStartTimeTest,
 
   // Confirm that the start time was not overwritten upon onboarding.
   ShowOnboardingNotice(/*is_silent=*/GetParam());
-  CallOnboardingObserver(/*is_silent=*/GetParam());
   EXPECT_EQ(prefs()->GetTime(prefs::kTrackingProtectionSurveyWindowStartTime),
             time_value);
 }
@@ -136,7 +114,6 @@ TEST_P(TrackingProtectionSurveyServiceSurveyWindowStartTimeTest,
   EXPECT_EQ(prefs()->GetTime(prefs::kTrackingProtectionSurveyWindowStartTime),
             base::Time());
   // Don't call `ShowOnboardingNotice` which sets the onboarding timestamp.
-  CallOnboardingObserver(/*is_silent=*/GetParam());
   EXPECT_FALSE(GetOnboardedTimestamp(/*is_silent=*/GetParam()).has_value());
   EXPECT_EQ(prefs()->GetTime(prefs::kTrackingProtectionSurveyWindowStartTime),
             base::Time());
@@ -150,7 +127,6 @@ TEST_P(TrackingProtectionSurveyServiceSurveyWindowStartTimeTest,
 
   // Confirm that the window start time was updated.
   ShowOnboardingNotice(/*is_silent=*/GetParam());
-  CallOnboardingObserver(/*is_silent=*/GetParam());
   EXPECT_EQ(prefs()->GetTime(prefs::kTrackingProtectionSurveyWindowStartTime),
             *GetOnboardedTimestamp(/*is_silent=*/GetParam()) + base::Days(28));
 }
@@ -178,7 +154,6 @@ TEST_P(TrackingProtectionSurveyServiceFullExperienceAnchorTest,
   // Confirm that the window start time was not updated since the survey is
   // anchored to the full experience.
   ShowOnboardingNotice(/*is_silent=*/GetParam());
-  CallOnboardingObserver(/*is_silent=*/GetParam());
   EXPECT_EQ(prefs()->GetTime(prefs::kTrackingProtectionSurveyWindowStartTime),
             base::Time());
 }
@@ -200,7 +175,6 @@ TEST_P(TrackingProtectionSurveyServiceFeatureDisabledTest,
   // Confirm that the window start time was not updated since the survey feature
   // was not set.
   ShowOnboardingNotice(/*is_silent=*/GetParam());
-  CallOnboardingObserver(/*is_silent=*/GetParam());
   EXPECT_EQ(prefs()->GetTime(prefs::kTrackingProtectionSurveyWindowStartTime),
             base::Time());
 }
@@ -224,7 +198,6 @@ TEST_P(TrackingProtectionSurveyServiceTimeToSurveyNotSetTest,
             base::Time());
 
   ShowOnboardingNotice(/*is_silent=*/GetParam());
-  CallOnboardingObserver(/*is_silent=*/GetParam());
   // Confirm that window start time was updated using the default value since
   // time to survey was not set.
   EXPECT_EQ(prefs()->GetTime(prefs::kTrackingProtectionSurveyWindowStartTime),

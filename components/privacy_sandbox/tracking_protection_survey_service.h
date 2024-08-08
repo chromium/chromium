@@ -10,28 +10,25 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
-#include "components/privacy_sandbox/tracking_protection_reminder_service.h"
 
 namespace privacy_sandbox {
 
 // Service to handle eligiblity for tracking protection surveys. This service
 // will not directly surface a survey since that logic is platform dependent and
 // will instead help determine if one should be shown.
-class TrackingProtectionSurveyService
-    : TrackingProtectionOnboarding::Observer,
-      TrackingProtectionReminderService::Observer,
-      public KeyedService {
+class TrackingProtectionSurveyService : TrackingProtectionOnboarding::Observer,
+                                        public KeyedService {
  public:
   explicit TrackingProtectionSurveyService(
       PrefService* pref_service,
-      TrackingProtectionOnboarding* onboarding_service,
-      TrackingProtectionReminderService* reminder_service);
+      TrackingProtectionOnboarding* onboarding_service);
   ~TrackingProtectionSurveyService() override;
   TrackingProtectionSurveyService(const TrackingProtectionSurveyService&) =
       delete;
   TrackingProtectionSurveyService& operator=(
       const TrackingProtectionSurveyService&) = delete;
 
+  // TODO(crbug.com/357883287): Remove references to onboarding.
   // From TrackingProtectionOnboarding::Observer
   void OnTrackingProtectionOnboardingUpdated(
       TrackingProtectionOnboarding::OnboardingStatus onboarding_status)
@@ -40,20 +37,13 @@ class TrackingProtectionSurveyService
       TrackingProtectionOnboarding::SilentOnboardingStatus onboarding_status)
       override;
 
-  // From TrackingProtectionReminderService::Observer
-  void OnTrackingProtectionReminderStatusChanged(
-      tracking_protection::TrackingProtectionReminderStatus status) override;
-
  private:
   raw_ptr<PrefService> pref_service_;
+  // TODO(crbug.com/357883287): Remove references to onboarding.
   raw_ptr<TrackingProtectionOnboarding> onboarding_service_;
-  raw_ptr<TrackingProtectionReminderService> reminder_service_;
   base::ScopedObservation<TrackingProtectionOnboarding,
                           TrackingProtectionOnboarding::Observer>
       onboarding_observation_{this};
-  base::ScopedObservation<TrackingProtectionReminderService,
-                          TrackingProtectionReminderService::Observer>
-      reminder_service_observation_{this};
 };
 
 }  // namespace privacy_sandbox

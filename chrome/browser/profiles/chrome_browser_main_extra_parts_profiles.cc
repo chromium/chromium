@@ -145,7 +145,6 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_reminder_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/private_network_access/private_network_device_permission_context_factory.h"
 #include "chrome/browser/profile_resetter/triggered_profile_resetter_factory.h"
@@ -491,7 +490,6 @@
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/payments/payment_request_display_manager_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_notice_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_reminder_desktop_ui_controller_factory.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
@@ -1281,10 +1279,8 @@ void ChromeBrowserMainExtraPartsProfiles::
   tpcd::trial::TopLevelTrialServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   TrackingProtectionNoticeFactory::GetInstance();
-  TrackingProtectionReminderDesktopUiControllerFactory::GetInstance();
 #endif
   TrackingProtectionOnboardingFactory::GetInstance();
-  TrackingProtectionReminderFactory::GetInstance();
   TrackingProtectionSettingsFactory::GetInstance();
   translate::TranslateRankerFactory::GetInstance();
   TranslateModelServiceFactory::GetInstance();
