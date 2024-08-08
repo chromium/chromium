@@ -500,8 +500,8 @@ const KNOWN_SCREENS: ScreenDefType[] = [
       {
         id: 'overview',
         trigger: (screen: any) => {
-          screen.setUIStep('overview');
           screen.setPerksData(createPerksData());
+          screen.setOverviewStep();
         },
       },
     ],
