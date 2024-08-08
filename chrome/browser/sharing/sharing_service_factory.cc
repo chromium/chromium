@@ -23,7 +23,9 @@
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/sharing_message/buildflags.h"
+#include "components/sharing_message/ios_push/sharing_ios_push_sender.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_device_registration.h"
 #include "components/sharing_message/sharing_device_source_sync.h"
@@ -150,6 +152,14 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   SharingFCMSender* fcm_sender_ptr = fcm_sender.get();
   sharing_message_sender->RegisterSendDelegate(
       SharingMessageSender::DelegateType::kFCM, std::move(fcm_sender));
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+    sharing_message_sender->RegisterSendDelegate(
+        SharingMessageSender::DelegateType::kIOSPush,
+        std::make_unique<sharing_message::SharingIOSPushSender>(
+            message_bridge, device_info_tracker, local_device_info_provider,
+            sync_service));
+  }
 
   auto device_source = std::make_unique<SharingDeviceSourceSync>(
       sync_service, local_device_info_provider, device_info_tracker);

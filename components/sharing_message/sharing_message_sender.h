@@ -18,14 +18,21 @@
 #include "components/sharing_message/sharing_target_device_info.h"
 
 namespace components_sharing_message {
-enum MessageType : int;
 class ResponseMessage;
 class SharingMessage;
 }  // namespace components_sharing_message
 
+namespace sharing_message {
+enum MessageType : int;
+}  // namespace sharing_message
+
 namespace syncer {
 class LocalDeviceInfoProvider;
 }  // namespace syncer
+
+namespace sync_pb {
+class UnencryptedSharingMessage;
+}  // namespace sync_pb
 
 enum class SharingChannelType;
 class SharingFCMSender;
@@ -52,13 +59,15 @@ class SharingMessageSender {
         base::TimeDelta time_to_live,
         components_sharing_message::SharingMessage message,
         SendMessageCallback callback) = 0;
+
+    virtual void DoSendUnencryptedMessageToDevice(
+        const SharingTargetDeviceInfo& device,
+        sync_pb::UnencryptedSharingMessage message,
+        SendMessageCallback callback) = 0;
   };
 
   // Delegate type used to send a message.
-  enum class DelegateType {
-    kFCM,
-    kWebRtc,
-  };
+  enum class DelegateType { kFCM, kWebRtc, kIOSPush };
 
   SharingMessageSender(
       syncer::LocalDeviceInfoProvider* local_device_info_provider,
@@ -71,6 +80,12 @@ class SharingMessageSender {
       const SharingTargetDeviceInfo& device,
       base::TimeDelta response_timeout,
       components_sharing_message::SharingMessage message,
+      DelegateType delegate_type,
+      ResponseCallback callback);
+
+  virtual base::OnceClosure SendUnencryptedMessageToDevice(
+      const SharingTargetDeviceInfo& device,
+      sync_pb::UnencryptedSharingMessage message,
       DelegateType delegate_type,
       ResponseCallback callback);
 
@@ -90,7 +105,7 @@ class SharingMessageSender {
   struct SentMessageMetadata {
     SentMessageMetadata(ResponseCallback callback,
                         base::TimeTicks timestamp,
-                        components_sharing_message::MessageType type,
+                        sharing_message::MessageType type,
                         SharingDevicePlatform receiver_device_platform,
                         int trace_id,
                         SharingChannelType channel_type,
@@ -101,7 +116,7 @@ class SharingMessageSender {
 
     ResponseCallback callback;
     base::TimeTicks timestamp;
-    components_sharing_message::MessageType type;
+    sharing_message::MessageType type;
     SharingDevicePlatform receiver_device_platform;
     int trace_id;
     SharingChannelType channel_type;
@@ -117,6 +132,13 @@ class SharingMessageSender {
       const std::string& message_guid,
       SharingSendMessageResult result,
       std::unique_ptr<components_sharing_message::ResponseMessage> response);
+
+  SendMessageDelegate* MaybeGetSendMessageDelegate(
+      const SharingTargetDeviceInfo& device,
+      sharing_message::MessageType message_type,
+      int trace_id,
+      const std::string& message_guid,
+      DelegateType delegate_type);
 
   raw_ptr<syncer::LocalDeviceInfoProvider> local_device_info_provider_;
 

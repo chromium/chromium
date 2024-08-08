@@ -41,6 +41,8 @@ std::string SharingChannelTypeToString(SharingChannelType channel_type) {
       return "Server";
     case SharingChannelType::kWebRtc:
       return "WebRTC";
+    case SharingChannelType::kIosPush:
+      return "IosPush";
   }
 }
 
@@ -115,53 +117,67 @@ std::string SharingSendMessageResultToString(SharingSendMessageResult result) {
   }
 }
 
-components_sharing_message::MessageType SharingPayloadCaseToMessageType(
+sharing_message::MessageType SharingPayloadCaseToMessageType(
     components_sharing_message::SharingMessage::PayloadCase payload_case) {
   switch (payload_case) {
     case components_sharing_message::SharingMessage::PAYLOAD_NOT_SET:
-      return components_sharing_message::UNKNOWN_MESSAGE;
+      return sharing_message::UNKNOWN_MESSAGE;
     case components_sharing_message::SharingMessage::kPingMessage:
-      return components_sharing_message::PING_MESSAGE;
+      return sharing_message::PING_MESSAGE;
     case components_sharing_message::SharingMessage::kAckMessage:
-      return components_sharing_message::ACK_MESSAGE;
+      return sharing_message::ACK_MESSAGE;
     case components_sharing_message::SharingMessage::kClickToCallMessage:
-      return components_sharing_message::CLICK_TO_CALL_MESSAGE;
+      return sharing_message::CLICK_TO_CALL_MESSAGE;
     case components_sharing_message::SharingMessage::kSharedClipboardMessage:
-      return components_sharing_message::SHARED_CLIPBOARD_MESSAGE;
+      return sharing_message::SHARED_CLIPBOARD_MESSAGE;
     case components_sharing_message::SharingMessage::kSmsFetchRequest:
-      return components_sharing_message::SMS_FETCH_REQUEST;
+      return sharing_message::SMS_FETCH_REQUEST;
     case components_sharing_message::SharingMessage::kRemoteCopyMessage:
-      return components_sharing_message::REMOTE_COPY_MESSAGE;
+      return sharing_message::REMOTE_COPY_MESSAGE;
     case components_sharing_message::SharingMessage::
         kPeerConnectionOfferMessage:
-      return components_sharing_message::PEER_CONNECTION_OFFER_MESSAGE;
+      return sharing_message::PEER_CONNECTION_OFFER_MESSAGE;
     case components_sharing_message::SharingMessage::
         kPeerConnectionIceCandidatesMessage:
-      return components_sharing_message::PEER_CONNECTION_ICE_CANDIDATES_MESSAGE;
+      return sharing_message::PEER_CONNECTION_ICE_CANDIDATES_MESSAGE;
     case components_sharing_message::SharingMessage::kDiscoveryRequest:
-      return components_sharing_message::DISCOVERY_REQUEST;
+      return sharing_message::DISCOVERY_REQUEST;
     case components_sharing_message::SharingMessage::kWebRtcSignalingFrame:
-      return components_sharing_message::WEB_RTC_SIGNALING_FRAME;
+      return sharing_message::WEB_RTC_SIGNALING_FRAME;
     case components_sharing_message::SharingMessage::
         kOptimizationGuidePushNotification:
-      return components_sharing_message::OPTIMIZATION_GUIDE_PUSH_NOTIFICATION;
+      return sharing_message::OPTIMIZATION_GUIDE_PUSH_NOTIFICATION;
   }
   // For proto3 enums unrecognized enum values are kept when parsing, and a new
   // payload case received over the network would not default to
   // PAYLOAD_NOT_SET. Explicitly return UNKNOWN_MESSAGE here to handle this
   // case.
-  return components_sharing_message::UNKNOWN_MESSAGE;
+  return sharing_message::UNKNOWN_MESSAGE;
+}
+
+sharing_message::MessageType SharingPayloadCaseToMessageType(
+    sync_pb::UnencryptedSharingMessage::PayloadCase payload_case) {
+  switch (payload_case) {
+    case sync_pb::UnencryptedSharingMessage::PAYLOAD_NOT_SET:
+      return sharing_message::UNKNOWN_MESSAGE;
+    case sync_pb::UnencryptedSharingMessage::kSendTabMessage:
+      return sharing_message::SEND_TAB_TO_SELF_PUSH_NOTIFICATION;
+  }
+  // For proto3 enums unrecognized enum values are kept when parsing, and a new
+  // payload case received over the network would not default to
+  // PAYLOAD_NOT_SET. Explicitly return UNKNOWN_MESSAGE here to handle this
+  // case.
+  return sharing_message::UNKNOWN_MESSAGE;
 }
 
 const std::string& SharingMessageTypeToString(
-    components_sharing_message::MessageType message_type) {
+    sharing_message::MessageType message_type) {
   // For proto3 enums unrecognized enum values are kept when parsing and their
   // name is an empty string. We don't want to use that as a histogram suffix.
-  if (!components_sharing_message::MessageType_IsValid(message_type)) {
-    return components_sharing_message::MessageType_Name(
-        components_sharing_message::UNKNOWN_MESSAGE);
+  if (!sharing_message::MessageType_IsValid(message_type)) {
+    return sharing_message::MessageType_Name(sharing_message::UNKNOWN_MESSAGE);
   }
-  return components_sharing_message::MessageType_Name(message_type);
+  return sharing_message::MessageType_Name(message_type);
 }
 
 int GenerateSharingTraceId() {
@@ -171,10 +187,9 @@ int GenerateSharingTraceId() {
 
 void LogSharingMessageReceived(
     components_sharing_message::SharingMessage::PayloadCase payload_case) {
-  base::UmaHistogramExactLinear(
-      "Sharing.MessageReceivedType",
-      SharingPayloadCaseToMessageType(payload_case),
-      components_sharing_message::MessageType_ARRAYSIZE);
+  base::UmaHistogramExactLinear("Sharing.MessageReceivedType",
+                                SharingPayloadCaseToMessageType(payload_case),
+                                sharing_message::MessageType_ARRAYSIZE);
 }
 
 void LogSharingDevicesToShow(SharingFeatureName feature,
@@ -240,7 +255,7 @@ void LogSharingDialogShown(SharingFeatureName feature, SharingDialogType type) {
 }
 
 void LogSendSharingMessageResult(
-    components_sharing_message::MessageType message_type,
+    sharing_message::MessageType message_type,
     SharingDevicePlatform receiving_device_platform,
     SharingChannelType channel_type,
     base::TimeDelta pulse_interval,

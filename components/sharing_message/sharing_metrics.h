@@ -7,9 +7,11 @@
 
 #include "base/time/time.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
+#include "components/sharing_message/proto/sharing_message_type.pb.h"
 #include "components/sharing_message/shared_clipboard/remote_copy_handle_message_result.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_send_message_result.h"
+#include "components/sync/protocol/unencrypted_sharing_message.pb.h"
 
 enum class SharingDeviceRegistrationResult;
 
@@ -36,13 +38,17 @@ const char kSharingUiDialog[] = "Dialog";
 std::string SharingSendMessageResultToString(SharingSendMessageResult result);
 
 // Maps PayloadCase enums to MessageType enums.
-components_sharing_message::MessageType SharingPayloadCaseToMessageType(
+sharing_message::MessageType SharingPayloadCaseToMessageType(
     components_sharing_message::SharingMessage::PayloadCase payload_case);
+
+// Maps PayloadCase enums to MessageType enums for unencrypted sharing messages.
+sharing_message::MessageType SharingPayloadCaseToMessageType(
+    sync_pb::UnencryptedSharingMessage::PayloadCase payload_case);
 
 // Maps MessageType enums to strings used as histogram suffixes. Keep in sync
 // with "SharingMessage" in histograms.xml.
 const std::string& SharingMessageTypeToString(
-    components_sharing_message::MessageType message_type);
+    sharing_message::MessageType message_type);
 
 // Generates trace ids for async traces in the "sharing" category.
 int GenerateSharingTraceId();
@@ -96,20 +102,18 @@ void LogSharingSelectedIndex(
 
 // Logs to UMA the time from receiving a SharingMessage to sending
 // back an ack.
-void LogSharingMessageHandlerTime(
-    components_sharing_message::MessageType message_type,
-    base::TimeDelta time_taken);
+void LogSharingMessageHandlerTime(sharing_message::MessageType message_type,
+                                  base::TimeDelta time_taken);
 
 // Logs to UMA the |type| of dialog shown for sharing feature.
 void LogSharingDialogShown(SharingFeatureName feature, SharingDialogType type);
 
 // Logs to UMA result of sending a SharingMessage. This should not be called for
 // sending ack messages.
-void LogSendSharingMessageResult(
-    components_sharing_message::MessageType message_type,
-    SharingDevicePlatform receiver_device_platform,
-    SharingChannelType channel_type,
-    base::TimeDelta receiver_pulse_interval,
-    SharingSendMessageResult result);
+void LogSendSharingMessageResult(sharing_message::MessageType message_type,
+                                 SharingDevicePlatform receiver_device_platform,
+                                 SharingChannelType channel_type,
+                                 base::TimeDelta receiver_pulse_interval,
+                                 SharingSendMessageResult result);
 
 #endif  // COMPONENTS_SHARING_MESSAGE_SHARING_METRICS_H_

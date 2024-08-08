@@ -26,6 +26,10 @@ namespace syncer {
 class DeviceInfoTracker;
 }  // namespace syncer
 
+namespace sharing_message {
+enum MessageType : int;
+}  // namespace sharing_message
+
 enum class SharingChannelType;
 class SharingFCMSender;
 class SharingHandlerRegistry;
@@ -85,7 +89,7 @@ class SharingFCMHandler : public gcm::GCMAppHandler {
   // Ack message sent back to the original sender of message.
   void SendAckMessage(
       std::string original_message_id,
-      components_sharing_message::MessageType original_message_type,
+      sharing_message::MessageType original_message_type,
       std::optional<components_sharing_message::FCMChannelConfiguration>
           fcm_channel,
       std::optional<components_sharing_message::ServerChannelConfiguration>
@@ -93,14 +97,13 @@ class SharingFCMHandler : public gcm::GCMAppHandler {
       SharingDevicePlatform sender_device_type,
       std::unique_ptr<components_sharing_message::ResponseMessage> response);
 
-  void OnAckMessageSent(
-      std::string original_message_id,
-      components_sharing_message::MessageType original_message_type,
-      SharingDevicePlatform sender_device_type,
-      int trace_id,
-      SharingSendMessageResult result,
-      std::optional<std::string> message_id,
-      SharingChannelType channel_type);
+  void OnAckMessageSent(std::string original_message_id,
+                        sharing_message::MessageType original_message_type,
+                        SharingDevicePlatform sender_device_type,
+                        int trace_id,
+                        SharingSendMessageResult result,
+                        std::optional<std::string> message_id,
+                        SharingChannelType channel_type);
 
   const raw_ptr<gcm::GCMDriver, AcrossTasksDanglingUntriaged> gcm_driver_;
   raw_ptr<syncer::DeviceInfoTracker, DanglingUntriaged> device_info_tracker_;

@@ -15,6 +15,7 @@
 #import "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/send_tab_to_self/features.h"
+#import "components/sharing_message/ios_push/sharing_ios_push_sender.h"
 #import "components/sharing_message/sharing_constants.h"
 #import "components/sharing_message/sharing_device_registration.h"
 #import "components/sharing_message/sharing_device_source_sync.h"
@@ -144,6 +145,12 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
       web::GetUIThreadTaskRunner({});
   auto sharing_message_sender = std::make_unique<SharingMessageSender>(
       local_device_info_provider, task_runner);
+  auto ios_push_sender =
+      std::make_unique<sharing_message::SharingIOSPushSender>(
+          message_bridge, device_info_tracker, local_device_info_provider,
+          sync_service);
+  sharing_message_sender->RegisterSendDelegate(
+      SharingMessageSender::DelegateType::kIOSPush, std::move(ios_push_sender));
 
   auto device_source = std::make_unique<SharingDeviceSourceSync>(
       sync_service, local_device_info_provider, device_info_tracker);

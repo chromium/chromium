@@ -18,6 +18,7 @@
 #include "components/sharing_message/sharing_message_sender.h"
 #include "components/sharing_message/sharing_send_message_result.h"
 #include "components/sharing_message/web_push/web_push_sender.h"
+#include "components/sync/protocol/unencrypted_sharing_message.pb.h"
 #include "components/sync_device_info/device_info.h"
 
 namespace gcm {
@@ -97,6 +98,10 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
                              base::TimeDelta time_to_live,
                              SharingMessage message,
                              SendMessageCallback callback) override;
+  void DoSendUnencryptedMessageToDevice(
+      const SharingTargetDeviceInfo& device,
+      sync_pb::UnencryptedSharingMessage message,
+      SendMessageCallback callback) override;
 
  private:
   using MessageSender = base::OnceCallback<void(std::string message,

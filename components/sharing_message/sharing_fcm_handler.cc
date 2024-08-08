@@ -11,6 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/sharing_message/features.h"
+#include "components/sharing_message/proto/sharing_message_type.pb.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_fcm_sender.h"
 #include "components/sharing_message/sharing_handler_registry.h"
@@ -102,7 +103,7 @@ void SharingFCMHandler::OnMessage(const std::string& app_id,
          components_sharing_message::SharingMessage::PAYLOAD_NOT_SET)
       << "No payload set in SharingMessage received";
 
-  components_sharing_message::MessageType message_type =
+  sharing_message::MessageType message_type =
       SharingPayloadCaseToMessageType(payload_case);
   LogSharingMessageReceived(payload_case);
 
@@ -180,7 +181,7 @@ SharingDevicePlatform SharingFCMHandler::GetSenderPlatform(
 
 void SharingFCMHandler::SendAckMessage(
     std::string original_message_id,
-    components_sharing_message::MessageType original_message_type,
+    sharing_message::MessageType original_message_type,
     std::optional<components_sharing_message::FCMChannelConfiguration>
         fcm_channel,
     std::optional<components_sharing_message::ServerChannelConfiguration>
@@ -226,7 +227,7 @@ void SharingFCMHandler::SendAckMessage(
 
 void SharingFCMHandler::OnAckMessageSent(
     std::string original_message_id,
-    components_sharing_message::MessageType original_message_type,
+    sharing_message::MessageType original_message_type,
     SharingDevicePlatform sender_device_type,
     int trace_id,
     SharingSendMessageResult result,
