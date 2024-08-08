@@ -4,29 +4,29 @@
 
 module viz.mojom;
 
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/viz/privileged/mojom/compositing/display_private.mojom";
 import "services/viz/privileged/mojom/compositing/external_begin_frame_controller.mojom";
-import "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom";
-import "services/viz/privileged/mojom/compositing/renderer_settings.mojom";
+import "services/viz/privileged/mojom/compositing/features.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sink_manager_test_api.mojom";
+import "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom";
+import "services/viz/privileged/mojom/compositing/renderer_settings.mojom";
 import "services/viz/public/mojom/compositing/compositor_frame_sink.mojom";
 import "services/viz/public/mojom/compositing/copy_output_request.mojom";
+import "services/viz/public/mojom/compositing/copy_output_result.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_bundle.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_bundle_id.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
-import "services/viz/privileged/mojom/compositing/features.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
 import "services/viz/public/mojom/compositing/surface_info.mojom";
-import "services/viz/public/mojom/hit_test/aggregated_hit_test_region.mojom";
-import "services/viz/public/mojom/compositing/copy_output_result.mojom";
 import "services/viz/public/mojom/compositing/video_detector_observer.mojom";
-import "third_party/blink/public/mojom/widget/platform_widget.mojom";
+import "services/viz/public/mojom/hit_test/aggregated_hit_test_region.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "third_party/blink/public/mojom/widget/platform_widget.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Initialization parameters for a RootCompositorFrameSink.
@@ -120,7 +120,7 @@ interface FrameSinkManager {
       pending_receiver<CompositorFrameSink> compositor_frame_sink,
       pending_remote<CompositorFrameSinkClient> compositor_frame_sink_client,
       pending_remote<blink.mojom.RenderInputRouterClient>?
-         render_input_router_client);
+          render_input_router_client);
 
   // Destroys CompositorFrameSink created by Create[Root]CompositorFrameSink().
   // This function should only be used synchronously for destroying root
@@ -132,12 +132,12 @@ interface FrameSinkManager {
   // Set up a BeginFrame relationship between two FrameSinkIds. In this case,
   // the child inherits the viz::BeginFrameSource from the parent if it doesn't
   // already have a viz::BeginFrameSource.
-  RegisterFrameSinkHierarchy(FrameSinkId parent_frame_sink_id,
-                             FrameSinkId child_frame_sink_id);
+  RegisterFrameSinkHierarchy(
+      FrameSinkId parent_frame_sink_id, FrameSinkId child_frame_sink_id);
 
   // Removes a BeginFrame relationship between two FrameSinkIds.
-  UnregisterFrameSinkHierarchy(FrameSinkId parent_frame_sink_id,
-                               FrameSinkId child_frame_sink_id);
+  UnregisterFrameSinkHierarchy(
+      FrameSinkId parent_frame_sink_id, FrameSinkId child_frame_sink_id);
 
   // Requests viz to notify |observer| whenever video activity is detected in
   // one of the clients. See viz::VideoDetector.
@@ -153,8 +153,8 @@ interface FrameSinkManager {
   // Throttles the frame sinks specified by |frame_sink_ids| and all their
   // descendant sinks to send BeginFrames at an interval of |interval|. This
   // operation clears out any previous throttling operation on any frame sinks.
-  Throttle(array<FrameSinkId> frame_sink_ids,
-           mojo_base.mojom.TimeDelta interval);
+  Throttle(
+      array<FrameSinkId> frame_sink_ids, mojo_base.mojom.TimeDelta interval);
 
   // Throttles all current and future frame sinks to send BeginFrames at an
   // interval at least as long as |interval|. Because there is a single viz
@@ -173,9 +173,9 @@ interface FrameSinkManager {
   //
   // `capture_exact_surface_id`, when set to true, makes sure the snapshot will
   // only be taken by the surface with the exact `surface_id`.
-  RequestCopyOfOutput(SurfaceId surface_id, CopyOutputRequest request,
+  RequestCopyOfOutput(SurfaceId surface_id,
+                      CopyOutputRequest request,
                       bool capture_exact_surface_id);
-
 
   // Caches the back buffer for the |root_frame_sink_id|. The back buffer is
   // keyed using |cache_id| and evicted when EvictBackBuffer with the same id is
@@ -196,18 +196,18 @@ interface FrameSinkManager {
   // CompositorFrameSink. `transition_token` identifies the navigation for which
   // the resources were cached.
   ClearUnclaimedViewTransitionResources(
-    blink.mojom.ViewTransitionToken transition_token);
+      blink.mojom.ViewTransitionToken transition_token);
 
   // Initializes FrameSinksMetricsRecorder to enable the collection of metrics
   // related to frame sinks.
   [RuntimeFeature=EnableVizTestApis]
   CreateMetricsRecorderForTest(
-    pending_receiver<FrameSinksMetricsRecorder> receiver);
+      pending_receiver<FrameSinksMetricsRecorder> receiver);
 
   // Initializes FrameSinkManagerTestApi.
   [RuntimeFeature=EnableVizTestApis]
   EnableFrameSinkManagerTestApi(
-    pending_receiver<FrameSinkManagerTestApi> receiver);
+      pending_receiver<FrameSinkManagerTestApi> receiver);
 };
 
 // The FrameSinkManagerClient interface is implemented by the Display
@@ -221,11 +221,13 @@ interface FrameSinkManagerClient {
 
   // Sends new |hit_test_data| to the client.
   OnAggregatedHitTestRegionListUpdated(
-      FrameSinkId frame_sink_id, array<AggregatedHitTestRegion> hit_test_data);
+      FrameSinkId frame_sink_id,
+      array<AggregatedHitTestRegion> hit_test_data);
 
   // Sends |frame_sink_id|, |frame_token|, and |activation_time| to the client
   // when a surface of the provided |frame_sink_id| activates.
-  OnFrameTokenChanged(FrameSinkId frame_sink_id, uint32 frame_token,
+  OnFrameTokenChanged(FrameSinkId frame_sink_id,
+                      uint32 frame_token,
                       mojo_base.mojom.TimeTicks activation_time);
 
   // Verifies that |thread_ids| do not belong to the host process. Renderer
@@ -244,7 +246,6 @@ interface FrameSinkManagerClient {
   // This is used to copy a screenshot after same-document navigation committed
   // in the renderer process.
   OnScreenshotCaptured(
-    blink.mojom.SameDocNavigationScreenshotDestinationToken destination_token,
-    CopyOutputResult copy_output_result
-  );
+      blink.mojom.SameDocNavigationScreenshotDestinationToken destination_token,
+      CopyOutputResult copy_output_result);
 };
