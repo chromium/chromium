@@ -46,11 +46,6 @@ class WebStateID;
 // active item.
 - (void)resetToAllItems;
 
-// Tells the receiver to fetch the search history results count for `searchText`
-// and provide it to the `completion` block.
-- (void)fetchSearchHistoryResultsCountForText:(NSString*)searchText
-                                   completion:(void (^)(size_t))completion;
-
 // Tells the receiver to select the item with identifier `itemID`. If there is
 // no item with that identifier, no change in selection should be made. `pinned`
 // is `YES` If the selected item is a pinned item. `isFirstActionOnTabGrid` is

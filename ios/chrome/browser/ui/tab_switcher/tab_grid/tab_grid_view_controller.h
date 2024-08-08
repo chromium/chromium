@@ -65,13 +65,6 @@ enum class TabGridPageConfiguration {
 // Opens a link when the user clicks on the in-text link.
 - (void)openLinkWithURL:(const GURL&)URL;
 
-// Asks the delegate to open history modal with results filtered by
-// `searchText`.
-- (void)showHistoryFilteredBySearchText:(NSString*)searchText;
-
-// Asks the delegate to open a new tab page with a web search for `searchText`.
-- (void)openSearchResultsPageForSearchText:(NSString*)searchText;
-
 // Asks the delegate to show the inactive tabs.
 - (void)showInactiveTabs;
 

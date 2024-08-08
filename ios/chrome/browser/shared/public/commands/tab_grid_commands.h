@@ -14,6 +14,15 @@
 // grid.
 - (void)bringGroupIntoView:(const TabGroup*)group animated:(BOOL)animated;
 
+// Shows the history searching for `text`.
+- (void)showHistoryForText:(NSString*)text;
+
+// Shows a non-incognito web page searching for `text`.
+- (void)showWebSearchForText:(NSString*)text;
+
+// Shows the recent tabs panel searching for `text`.
+- (void)showRecentTabsForText:(NSString*)text;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_TAB_GRID_COMMANDS_H_

@@ -392,11 +392,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   NOTREACHED_NORETURN();
 }
 
-- (void)fetchSearchHistoryResultsCountForText:(NSString*)searchText
-                                   completion:(void (^)(size_t))completion {
-  NOTREACHED_NORETURN();
-}
-
 - (void)selectItemWithID:(web::WebStateID)itemID
                     pinned:(BOOL)pinned
     isFirstActionOnTabGrid:(BOOL)isFirstActionOnTabGrid {

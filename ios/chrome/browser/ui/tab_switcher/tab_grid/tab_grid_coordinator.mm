@@ -84,6 +84,7 @@
 #import "ios/chrome/browser/ui/snackbar/snackbar_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_container_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_coordinator_audience.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_delegate.h"
@@ -755,6 +756,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)start {
   _modeHolder = [[TabGridModeHolder alloc] init];
 
+  [_regularBrowser->GetCommandDispatcher()
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(TabGridCommands)];
+  [_incognitoBrowser->GetCommandDispatcher()
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(TabGridCommands)];
+
   ChromeBrowserState* browser_state = self.regularBrowser->GetBrowserState();
   _mediator = [[TabGridMediator alloc]
        initWithIdentityManager:IdentityManagerFactory::GetForBrowserState(
@@ -1018,13 +1026,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       startDispatchingToTarget:[self bookmarksCoordinator]
                    forProtocol:@protocol(BookmarksCommands)];
 
-  [_regularBrowser->GetCommandDispatcher()
-      startDispatchingToTarget:self
-                   forProtocol:@protocol(TabGridCommands)];
-  [_incognitoBrowser->GetCommandDispatcher()
-      startDispatchingToTarget:self
-                   forProtocol:@protocol(TabGridCommands)];
-
   SceneState* sceneState = self.regularBrowser->GetSceneState();
   [sceneState addObserver:self];
 
@@ -1045,6 +1046,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.recentTabsContextMenuHelper = nil;
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
+  [self.incognitoBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
+  [self.regularBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [self.dispatcher stopDispatchingForProtocol:@protocol(ApplicationCommands)];
   [self.dispatcher stopDispatchingForProtocol:@protocol(SettingsCommands)];
 
@@ -1247,38 +1250,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [handler openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:URL]];
 }
 
-- (void)openSearchResultsPageForSearchText:(NSString*)searchText {
-  TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(
-          self.regularBrowser->GetBrowserState());
-
-  const TemplateURL* searchURLTemplate =
-      templateURLService->GetDefaultSearchProvider();
-  DCHECK(searchURLTemplate);
-
-  TemplateURLRef::SearchTermsArgs searchArgs(
-      base::SysNSStringToUTF16(searchText));
-
-  GURL searchURL(searchURLTemplate->url_ref().ReplaceSearchTerms(
-      searchArgs, templateURLService->search_terms_data()));
-  [self openLinkWithURL:searchURL];
-}
-
-- (void)showHistoryFilteredBySearchText:(NSString*)searchText {
-  // A history coordinator from main_controller won't work properly from the
-  // tab grid. Using a local coordinator works better and we need to set
-  // `loadStrategy` to YES to ALWAYS_NEW_FOREGROUND_TAB.
-  self.historyCoordinator = [[HistoryCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.regularBrowser];
-  self.historyCoordinator.searchTerms = searchText;
-  self.historyCoordinator.loadStrategy =
-      UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB;
-  self.historyCoordinator.presentationDelegate = self;
-  self.historyCoordinator.delegate = self;
-  [self.historyCoordinator start];
-}
-
 - (void)showInactiveTabs {
   CHECK(IsInactiveTabsEnabled());
   [self.inactiveTabsCoordinator show];
@@ -1344,7 +1315,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 #pragma mark - RecentTabsPresentationDelegate
 
 - (void)showHistoryFromRecentTabsFilteredBySearchTerms:(NSString*)searchTerms {
-  [self showHistoryFilteredBySearchText:searchTerms];
+  [self showHistoryForText:searchTerms];
 }
 
 - (void)showActiveRegularTabFromRecentTabs {
@@ -1632,6 +1603,42 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     return;
   }
   [self.baseViewController setCurrentPageAndPageControl:pageToOpen
+                                               animated:YES];
+}
+
+- (void)showHistoryForText:(NSString*)text {
+  // A history coordinator from main_controller won't work properly from the
+  // tab grid. Using a local coordinator works better and we need to set
+  // `loadStrategy` to YES to ALWAYS_NEW_FOREGROUND_TAB.
+  self.historyCoordinator = [[HistoryCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.regularBrowser];
+  self.historyCoordinator.searchTerms = text;
+  self.historyCoordinator.loadStrategy =
+      UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB;
+  self.historyCoordinator.presentationDelegate = self;
+  self.historyCoordinator.delegate = self;
+  [self.historyCoordinator start];
+}
+
+- (void)showWebSearchForText:(NSString*)text {
+  TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(
+          self.regularBrowser->GetBrowserState());
+
+  const TemplateURL* searchURLTemplate =
+      templateURLService->GetDefaultSearchProvider();
+  DCHECK(searchURLTemplate);
+
+  TemplateURLRef::SearchTermsArgs searchArgs(base::SysNSStringToUTF16(text));
+
+  GURL searchURL(searchURLTemplate->url_ref().ReplaceSearchTerms(
+      searchArgs, templateURLService->search_terms_data()));
+  [self openLinkWithURL:searchURL];
+}
+
+- (void)showRecentTabsForText:(NSString*)text {
+  [self.baseViewController setCurrentPageAndPageControl:TabGridPageRemoteTabs
                                                animated:YES];
 }
 

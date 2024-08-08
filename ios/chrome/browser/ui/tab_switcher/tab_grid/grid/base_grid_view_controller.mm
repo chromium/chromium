@@ -19,6 +19,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_data_source.h"
 #import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_item.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
@@ -1005,21 +1006,21 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     (SuggestedActionsViewController*)viewController {
   base::RecordAction(
       base::UserMetricsAction("TabsSearch.SuggestedActions.SearchHistory"));
-  [self.suggestedActionsDelegate searchHistoryForText:self.searchText];
+  [self.tabGridHandler showHistoryForText:self.searchText];
 }
 
 - (void)didSelectSearchRecentTabsInSuggestedActionsViewController:
     (SuggestedActionsViewController*)viewController {
   base::RecordAction(
       base::UserMetricsAction("TabsSearch.SuggestedActions.RecentTabs"));
-  [self.suggestedActionsDelegate searchRecentTabsForText:self.searchText];
+  [self.tabGridHandler showRecentTabsForText:self.searchText];
 }
 
 - (void)didSelectSearchWebInSuggestedActionsViewController:
     (SuggestedActionsViewController*)viewController {
   base::RecordAction(
       base::UserMetricsAction("TabsSearch.SuggestedActions.SearchOnWeb"));
-  [self.suggestedActionsDelegate searchWebForText:self.searchText];
+  [self.tabGridHandler showWebSearchForText:self.searchText];
 }
 
 #pragma mark - TabCollectionConsumer

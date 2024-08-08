@@ -115,7 +115,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                      GridViewControllerDelegate,
                                      PinnedTabsViewControllerDelegate,
                                      RecentTabsTableViewControllerUIDelegate,
-                                     SuggestedActionsDelegate,
                                      TabGroupsPanelViewControllerUIDelegate,
                                      UIGestureRecognizerDelegate,
                                      UIScrollViewAccessibilityDelegate>
@@ -533,7 +532,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     (RegularGridViewController*)regularTabsViewController {
   _regularTabsViewController = regularTabsViewController;
   _regularTabsViewController.delegate = self;
-  _regularTabsViewController.suggestedActionsDelegate = self;
   _regularTabsViewController.view.accessibilityElementsHidden =
       self.currentPage != TabGridPageRegularTabs;
 }
@@ -1554,34 +1552,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)tabGroupsPanelViewControllerDidScroll:
     (TabGroupsPanelViewController*)tabGroupsPanelViewController {
   [self updateToolbarsAppearance];
-}
-
-#pragma mark - SuggestedActionsDelegate
-
-- (void)fetchSearchHistoryResultsCountForText:(NSString*)searchText
-                                   completion:(void (^)(size_t))completion {
-  if (self.currentPage == TabGridPageIncognitoTabs) {
-    // History retrieval shouldn't be done from incognito tabs page.
-    completion(0);
-    return;
-  }
-  [self.regularGridHandler fetchSearchHistoryResultsCountForText:searchText
-                                                      completion:completion];
-}
-
-- (void)searchHistoryForText:(NSString*)searchText {
-  DCHECK(_mode == TabGridMode::kSearch);
-  [self.delegate showHistoryFilteredBySearchText:searchText];
-}
-
-- (void)searchWebForText:(NSString*)searchText {
-  DCHECK(_mode == TabGridMode::kSearch);
-  [self.delegate openSearchResultsPageForSearchText:searchText];
-}
-
-- (void)searchRecentTabsForText:(NSString*)searchText {
-  DCHECK(_mode == TabGridMode::kSearch);
-  [self setCurrentPageAndPageControl:TabGridPageRemoteTabs animated:YES];
 }
 
 #pragma mark - PinnedTabsViewControllerDelegate

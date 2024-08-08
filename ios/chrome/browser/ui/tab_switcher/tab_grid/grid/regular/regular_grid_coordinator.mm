@@ -155,6 +155,7 @@
     gridViewController.emptyStateView.accessibilityIdentifier =
         kTabGridRegularTabsEmptyStateIdentifier;
     gridViewController.theme = GridThemeLight;
+    gridViewController.suggestedActionsDelegate = _mediator;
 
     self.gridContainerViewController.containedViewController =
         gridViewController;

@@ -1204,8 +1204,11 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   [self populateConsumerItems];
 }
 
+#pragma mark - SuggestedActionsDelegate
+
 - (void)fetchSearchHistoryResultsCountForText:(NSString*)searchText
                                    completion:(void (^)(size_t))completion {
+  CHECK(!self.browserState->IsOffTheRecord());
   TabsSearchService* search_service =
       TabsSearchServiceFactory::GetForBrowserState(self.browserState);
   const std::u16string& searchTerm = base::SysNSStringToUTF16(searchText);

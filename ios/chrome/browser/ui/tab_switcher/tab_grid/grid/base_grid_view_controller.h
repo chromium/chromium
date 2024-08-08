@@ -23,6 +23,7 @@
 @protocol SuggestedActionsDelegate;
 @protocol TabContextMenuProvider;
 @protocol TabCollectionDragDropHandler;
+@protocol TabGridCommands;
 @class TabGridTransitionItem;
 class TabGroup;
 
@@ -108,7 +109,7 @@ class WebStateID;
 // The current search text to use for filtering results when the search mode is
 // active.
 @property(nonatomic, copy) NSString* searchText;
-// Delegate for search results suggested actions.
+// Delegate for search results suggested actions. Only available in regular.
 @property(nonatomic, weak) id<SuggestedActionsDelegate>
     suggestedActionsDelegate;
 // Delegate is informed of user interactions in the grid UI.
@@ -141,6 +142,8 @@ class WebStateID;
 // The default value of this property is YES.
 @property(nonatomic, assign, getter=isGridScrollsToTopEnabled)
     BOOL gridScrollsToTopEnabled;
+// Tab Grid handler.
+@property(nonatomic, weak) id<TabGridCommands> tabGridHandler;
 
 // Returns the layout of the grid for use in an animated transition.
 - (LegacyGridTransitionLayout*)transitionLayout;
