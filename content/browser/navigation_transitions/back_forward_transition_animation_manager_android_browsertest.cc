@@ -339,8 +339,10 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
         .active_page = gfx::Transform::MakeTranslation(full_width_offset, 0.f),
         .screenshot = gfx::Transform::MakeTranslation(0.f, 0.f)};
     // There won't be a old surface clone if the navigation is from a crashed
-    // page.
-    if (navigating_from_a_crashed_page_) {
+    // page or subframe.
+    bool no_old_surface_clone =
+        navigating_from_a_crashed_page_ || subframe_navigation_;
+    if (no_old_surface_clone) {
       ExpectedLayerTransforms(wcva_->web_contents(), on_invoked);
     } else {
       ExpectedLayerTransforms(wcva_->web_contents(), on_invoked,
@@ -348,7 +350,7 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
     }
 
     const auto& layers = GetChildrenLayersOfWebContentsView();
-    ASSERT_EQ(layers.size(), navigating_from_a_crashed_page_ ? 2U : 3U);
+    ASSERT_EQ(layers.size(), no_old_surface_clone ? 2U : 3U);
 
     const bool has_progress_bar = wcva_->GetNativeView()
                                       ->GetWindowAndroid()
@@ -498,6 +500,9 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
   void set_navigating_from_a_crashed_page(bool navigating_from_a_crashed_page) {
     navigating_from_a_crashed_page_ = navigating_from_a_crashed_page;
   }
+  void set_subframe_navigation(bool subframe_navigation) {
+    subframe_navigation_ = subframe_navigation;
+  }
 
  private:
   void ExpectState(State expected) const {
@@ -527,6 +532,8 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
   bool seen_first_on_animate_for_cross_fade_ = false;
 
   bool navigating_from_a_crashed_page_ = false;
+
+  bool subframe_navigation_ = false;
 
   std::optional<State> pause_on_animate_at_state_;
 
@@ -570,7 +577,9 @@ class BackForwardTransitionAnimationManagerBrowserTest
  public:
   BackForwardTransitionAnimationManagerBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {blink::features::kBackForwardTransitions, {}}};
+        {blink::features::kBackForwardTransitions, {}},
+        {blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
+         {}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
         /*disabled_features=*/{});
@@ -1811,10 +1820,7 @@ class BrowserUserActivationWaiter
   base::RunLoop run_loop_;
 };
 
-// Inject a BeforeUnload handler into the main frame. Does NOT update the user
-// activation.
-void InjectBeforeUnloadForMainFrame(WebContentsImpl* web_contents,
-                                    EvalJsOptions option) {
+void InjectBeforeUnload(ToRenderFrameHost adapter) {
   static constexpr std::string_view kScript = R"(
     window.onbeforeunload = (event) => {
       // Recommended
@@ -1824,26 +1830,33 @@ void InjectBeforeUnloadForMainFrame(WebContentsImpl* web_contents,
       event.returnValue = true;
     };
   )";
-  ASSERT_TRUE(ExecJs(web_contents, kScript, option));
+  ASSERT_TRUE(ExecJs(adapter, kScript, EXECUTE_SCRIPT_NO_USER_GESTURE));
+}
 
-  auto* main_frame =
-      static_cast<RenderFrameHostImpl*>(web_contents->GetPrimaryMainFrame());
+// Inject a BeforeUnload handler into `adapter`, and maybe set the stick user
+// activation.
+void InjectBeforeUnloadAndSetStickyUserActivation(
+    ToRenderFrameHost adapter,
+    bool set_sticky_user_activation = true) {
+  InjectBeforeUnload(adapter);
 
-  if (option == EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE) {
+  auto* frame = static_cast<RenderFrameHostImpl*>(adapter.render_frame_host());
+
+  if (!set_sticky_user_activation) {
     ASSERT_TRUE(
-        main_frame->ShouldDispatchBeforeUnload(/*check_subframes_only=*/false));
-    ASSERT_FALSE(main_frame->HasStickyUserActivation());
+        frame->ShouldDispatchBeforeUnload(/*check_subframes_only=*/false));
+    ASSERT_FALSE(frame->HasStickyUserActivation());
   } else {
     // Set the sticky user activation and let the bit propagate from renderer to
     // the browser.
     BrowserUserActivationWaiter wait_for_expected_user_activation(
-        main_frame, blink::mojom::UserActivationNotificationType::kInteraction);
-    SimulateMouseClick(web_contents, 0,
+        frame, blink::mojom::UserActivationNotificationType::kInteraction);
+    SimulateMouseClick(WebContents::FromRenderFrameHost(frame), 0,
                        blink::WebPointerProperties::Button::kLeft);
     wait_for_expected_user_activation.Wait();
-    ASSERT_TRUE(main_frame->ShouldDispatchBeforeUnload(
+    ASSERT_TRUE(frame->ShouldDispatchBeforeUnload(
         /*check_subframes_only=*/false));
-    ASSERT_TRUE(main_frame->HasStickyUserActivation());
+    ASSERT_TRUE(frame->HasStickyUserActivation());
   }
 }
 
@@ -1853,8 +1866,8 @@ void InjectBeforeUnloadForMainFrame(WebContentsImpl* web_contents,
 class BeforeUnloadDialogObserver
     : public blink::mojom::LocalFrameHostInterceptorForTesting {
  public:
-  explicit BeforeUnloadDialogObserver(RenderFrameHostImpl* main_frame)
-      : main_frame_(main_frame), impl_(receiver().SwapImplForTesting(this)) {}
+  explicit BeforeUnloadDialogObserver(RenderFrameHostImpl* frame)
+      : frame_(frame), impl_(receiver().SwapImplForTesting(this)) {}
   ~BeforeUnloadDialogObserver() override = default;
 
   // `blink::mojom::LocalFrameHostInterceptorForTesting`:
@@ -1865,10 +1878,10 @@ class BeforeUnloadDialogObserver
     CHECK(!is_reload);
     ack_ = std::move(callback);
     run_loop_.Quit();
-    // Reset immediately. `main_frame_` and `impl_` will be destroyed once
+    // Reset immediately. `frame_` and `impl_` will be destroyed once
     // `ack_` is executed with "proceed".
     std::ignore = receiver().SwapImplForTesting(impl_);
-    main_frame_ = nullptr;
+    frame_ = nullptr;
     impl_ = nullptr;
   }
 
@@ -1876,14 +1889,14 @@ class BeforeUnloadDialogObserver
 
   void RespondToDialogue(bool proceed) { std::move(ack_).Run(proceed); }
 
-  [[nodiscard]] bool shown() const { return !main_frame_; }
+  [[nodiscard]] bool shown() const { return !frame_; }
 
  private:
   mojo::AssociatedReceiver<blink::mojom::LocalFrameHost>& receiver() {
-    return main_frame_->local_frame_host_receiver_for_testing();
+    return frame_->local_frame_host_receiver_for_testing();
   }
 
-  raw_ptr<RenderFrameHostImpl> main_frame_;
+  raw_ptr<RenderFrameHostImpl> frame_;
   raw_ptr<blink::mojom::LocalFrameHost> impl_;
   base::RunLoop run_loop_;
   RunBeforeUnloadConfirmCallback ack_;
@@ -1899,8 +1912,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  InjectBeforeUnloadForMainFrame(web_contents(),
-                                 EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
+  InjectBeforeUnloadAndSetStickyUserActivation(
+      web_contents(), /*set_sticky_user_activation=*/false);
 
   std::vector<GestureType> expected;
   expected.push_back(GestureType::kStart);
@@ -1945,8 +1958,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   DisableBackForwardCacheForTesting(
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
-  InjectBeforeUnloadForMainFrame(web_contents(),
-                                 EvalJsOptions::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
+  InjectBeforeUnloadAndSetStickyUserActivation(web_contents());
 
   std::vector<GestureType> expected;
   expected.push_back(GestureType::kStart);
@@ -1992,8 +2004,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  InjectBeforeUnloadForMainFrame(web_contents(),
-                                 EvalJsOptions::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
+  InjectBeforeUnloadAndSetStickyUserActivation(web_contents());
 
   std::vector<GestureType> expected;
   expected.push_back(GestureType::kStart);
@@ -2034,8 +2045,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  InjectBeforeUnloadForMainFrame(web_contents(),
-                                 EvalJsOptions::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
+  InjectBeforeUnloadAndSetStickyUserActivation(web_contents());
 
   std::vector<GestureType> expected;
   expected.push_back(GestureType::kStart);
@@ -2080,8 +2090,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  InjectBeforeUnloadForMainFrame(web_contents(),
-                                 EvalJsOptions::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
+  InjectBeforeUnloadAndSetStickyUserActivation(web_contents());
 
   std::vector<GestureType> expected;
   expected.push_back(GestureType::kStart);
@@ -2159,8 +2168,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  InjectBeforeUnloadForMainFrame(web_contents(),
-                                 EvalJsOptions::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
+  InjectBeforeUnloadAndSetStickyUserActivation(web_contents());
 
   std::vector<GestureType> expected;
   expected.push_back(GestureType::kStart);
@@ -2761,14 +2769,7 @@ namespace {
 class BackForwardTransitionAnimationManagerBrowserTestSameDocument
     : public BackForwardTransitionAnimationManagerBrowserTest {
  public:
-  BackForwardTransitionAnimationManagerBrowserTestSameDocument() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
-         {}}};
-    scoped_feature_list_for_same_doc_.InitWithFeaturesAndParameters(
-        enabled_features,
-        /*disabled_features=*/{});
-  }
+  BackForwardTransitionAnimationManagerBrowserTestSameDocument() = default;
   ~BackForwardTransitionAnimationManagerBrowserTestSameDocument() override =
       default;
 
@@ -2827,9 +2828,6 @@ class BackForwardTransitionAnimationManagerBrowserTestSameDocument
     animation_manager->set_animator_factory_for_testing(
         std::make_unique<FactoryForTesting>());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_for_same_doc_;
 };
 
 }  // namespace
@@ -2936,6 +2934,595 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
                         .SetErrorPixelsPercentageLimit(100.0f)
                         .SetAbsErrorLimit(1);
   EXPECT_TRUE(cc::MatchesBitmap(actual_pixels, expected_pixels, comparator));
+}
+
+namespace {
+class BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions
+    : public BackForwardTransitionAnimationManagerBrowserTest {
+ public:
+  BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions() =
+      default;
+  ~BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions()
+      override = default;
+
+  void SetUpOnMainThread() override {
+    BackForwardTransitionAnimationManagerBrowserTest::SetUpOnMainThread();
+    // Load the main frame with title1.html. In all the tests the mainframe's
+    // URL should always be title1.html. No subframe navigations can change
+    // that.
+    ASSERT_TRUE(NavigateToURL(web_contents(), MainFrameURL()));
+    web_contents()->GetController().PruneAllButLastCommitted();
+    AddIFrame(RedURL());
+  }
+
+  void AddIFrame(const GURL& url) {
+    constexpr char kAddIframeScript[] = R"({
+      (()=>{
+          return new Promise((resolve) => {
+            const frame = document.createElement('iframe');
+            frame.addEventListener('load', () => {resolve();});
+            frame.src = $1;
+            document.body.appendChild(frame);
+          });
+      })();
+    })";
+    ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                       JsReplace(kAddIframeScript, url),
+                       EXECUTE_SCRIPT_NO_USER_GESTURE));
+  }
+
+  FrameTreeNode* GetIFrameFrameTreeNodeAt(size_t child_index) {
+    return web_contents()->GetPrimaryMainFrame()->child_at(child_index);
+  }
+
+  GURL MainFrameURL() const {
+    return embedded_test_server()->GetURL("/title1.html");
+  }
+};
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions,
+    SmokeTest) {
+  auto* iframe = GetIFrameFrameTreeNodeAt(0);
+  ASSERT_EQ(iframe->current_frame_host()->GetLastCommittedURL(), RedURL());
+
+  ASSERT_TRUE(
+      NavigateToURLFromRenderer(iframe->current_frame_host(), GreenURL()));
+  ASSERT_EQ(web_contents()->GetController().GetVisibleEntry()->GetURL(),
+            MainFrameURL());
+
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  GetAnimatorForTesting()->set_subframe_navigation(true);
+
+  base::test::TestFuture<void> invoke_displayed;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      invoke_displayed.GetCallback());
+  base::test::TestFuture<void> crossfade_displayed;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      crossfade_displayed.GetCallback());
+  base::test::TestFuture<void> destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.GetCallback());
+
+  TestNavigationObserver iframe_back_to_red(web_contents());
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  iframe_back_to_red.Wait();
+  ASSERT_TRUE(iframe_back_to_red.last_navigation_succeeded());
+  ASSERT_EQ(iframe_back_to_red.last_navigation_url(), RedURL());
+  ASSERT_TRUE(invoke_displayed.Wait());
+  ASSERT_TRUE(crossfade_displayed.Wait());
+  ASSERT_TRUE(destroyed.Wait());
+
+  ASSERT_EQ(iframe->current_frame_host()->GetLastCommittedURL(), RedURL());
+  ASSERT_EQ(web_contents()->GetController().GetVisibleEntry()->GetURL(),
+            MainFrameURL());
+}
+
+// Test the iframe's renderer shows a prompt for the BeforeUnload message, and
+// the user decides to proceed.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions,
+    BeforeUnload_Proceed_WithPrompt) {
+  auto* iframe = GetIFrameFrameTreeNodeAt(0);
+  ASSERT_EQ(iframe->current_frame_host()->GetLastCommittedURL(), RedURL());
+
+  // Note:
+  // - We can't use `NavigateToURLFromRendererWithoutUserGesture()`. A subframe
+  // navigation without a user gesture will make the navigation entry being
+  // skipped on the back forward UI.
+  // - `NavigateToURLFromRenderer()` will set the the sticky user activation bit
+  // on the renderer.
+  ASSERT_TRUE(
+      NavigateToURLFromRenderer(iframe->current_frame_host(), GreenURL()));
+  ASSERT_EQ(web_contents()->GetController().GetVisibleEntry()->GetURL(),
+            MainFrameURL());
+
+  InjectBeforeUnload(iframe->current_frame_host());
+  ASSERT_TRUE(iframe->current_frame_host()->HasStickyUserActivation());
+
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  GetAnimatorForTesting()->set_subframe_navigation(true);
+
+  base::test::TestFuture<void> cancel_displayed;
+  GetAnimatorForTesting()->set_on_cancel_animation_displayed(
+      cancel_displayed.GetCallback());
+  base::test::TestFuture<void> invoke_displayed;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      invoke_displayed.GetCallback());
+  base::test::TestFuture<void> crossfade_displayed;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      crossfade_displayed.GetCallback());
+  base::test::TestFuture<void> destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.GetCallback());
+
+  BeforeUnloadDialogObserver dialog_observer(iframe->current_frame_host());
+  TestNavigationObserver iframe_back_to_red(web_contents());
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  ASSERT_TRUE(cancel_displayed.Wait());
+  dialog_observer.WaitForDialog();
+  GetAnimatorForTesting()->ExpectWaitingForBeforeUnloadResponse();
+  dialog_observer.RespondToDialogue(/*proceed=*/true);
+  iframe_back_to_red.Wait();
+  ASSERT_TRUE(iframe_back_to_red.last_navigation_succeeded());
+  ASSERT_EQ(iframe_back_to_red.last_navigation_url(), RedURL());
+
+  ASSERT_TRUE(invoke_displayed.Wait());
+  ASSERT_TRUE(crossfade_displayed.Wait());
+  ASSERT_TRUE(destroyed.Wait());
+  ASSERT_TRUE(dialog_observer.shown());
+}
+
+// Test that the user cancels the navigation via the prompt, after the cancel
+// animation finishes.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions,
+    BeforeUnload_Cancel_AfterCancelAnimationFinishes) {
+  auto* iframe = GetIFrameFrameTreeNodeAt(0);
+  ASSERT_EQ(iframe->current_frame_host()->GetLastCommittedURL(), RedURL());
+
+  ASSERT_TRUE(
+      NavigateToURLFromRenderer(iframe->current_frame_host(), GreenURL()));
+  ASSERT_EQ(web_contents()->GetController().GetVisibleEntry()->GetURL(),
+            MainFrameURL());
+
+  InjectBeforeUnload(iframe->current_frame_host());
+  ASSERT_TRUE(iframe->current_frame_host()->HasStickyUserActivation());
+
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  GetAnimatorForTesting()->set_subframe_navigation(true);
+
+  bool invoke_played = false;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      base::BindLambdaForTesting([&]() { invoke_played = true; }));
+  base::test::TestFuture<void> cancel_displayed;
+  GetAnimatorForTesting()->set_on_cancel_animation_displayed(
+      cancel_displayed.GetCallback());
+  base::test::TestFuture<void> destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.GetCallback());
+
+  BeforeUnloadDialogObserver dialog_observer(iframe->current_frame_host());
+  TestNavigationObserver back_to_red(web_contents());
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  ASSERT_TRUE(cancel_displayed.Wait());
+  dialog_observer.WaitForDialog();
+  GetAnimatorForTesting()->ExpectWaitingForBeforeUnloadResponse();
+  dialog_observer.RespondToDialogue(/*proceed=*/false);
+
+  ASSERT_TRUE(destroyed.Wait());
+  ASSERT_FALSE(back_to_red.last_navigation_succeeded());
+
+  ASSERT_FALSE(invoke_played);
+  ASSERT_TRUE(dialog_observer.shown());
+  ASSERT_EQ(iframe->current_frame_host()->GetLastCommittedURL(), GreenURL());
+}
+
+// Test that the user cancels the navigation via the prompt, before the cancel
+// animation finishes.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions,
+    BeforeUnload_Cancel_BeforeCancelAnimationFinishes) {
+  auto* iframe = GetIFrameFrameTreeNodeAt(0);
+  ASSERT_EQ(iframe->current_frame_host()->GetLastCommittedURL(), RedURL());
+
+  ASSERT_TRUE(
+      NavigateToURLFromRenderer(iframe->current_frame_host(), GreenURL()));
+  ASSERT_EQ(web_contents()->GetController().GetVisibleEntry()->GetURL(),
+            MainFrameURL());
+
+  InjectBeforeUnload(iframe->current_frame_host());
+  ASSERT_TRUE(iframe->current_frame_host()->HasStickyUserActivation());
+
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  GetAnimatorForTesting()->set_subframe_navigation(true);
+
+  bool invoke_played = false;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      base::BindLambdaForTesting([&]() { invoke_played = true; }));
+  base::test::TestFuture<void> cancel_displayed;
+  GetAnimatorForTesting()->set_on_cancel_animation_displayed(
+      cancel_displayed.GetCallback());
+  base::test::TestFuture<void> destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.GetCallback());
+
+  BeforeUnloadDialogObserver dialog_observer(iframe->current_frame_host());
+  GetAnimatorForTesting()->PauseAnimationAtDisplayingCancelAnimation();
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  dialog_observer.WaitForDialog();
+  GetAnimatorForTesting()->ExpectDisplayingCancelAnimation();
+  dialog_observer.RespondToDialogue(/*proceed=*/false);
+  GetAnimatorForTesting()->UnpauseAnimation();
+
+  ASSERT_TRUE(cancel_displayed.Wait());
+  ASSERT_TRUE(destroyed.Wait());
+
+  ASSERT_FALSE(invoke_played);
+  ASSERT_TRUE(dialog_observer.shown());
+  ASSERT_EQ(iframe->current_frame_host()->GetLastCommittedURL(), GreenURL());
+}
+
+// Test that when the user has decided not leave the current page by interacting
+// with the prompt and the cancel animation is still playing, another navigation
+// commits in the main frame. We should destroy the animator when the other
+// navigation commits.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions,
+    BeforeUnload_RequestCancelledBeforeStart) {
+  auto* iframe = GetIFrameFrameTreeNodeAt(0);
+  ASSERT_EQ(iframe->current_frame_host()->GetLastCommittedURL(), RedURL());
+
+  ASSERT_TRUE(
+      NavigateToURLFromRenderer(iframe->current_frame_host(), GreenURL()));
+  ASSERT_EQ(web_contents()->GetController().GetVisibleEntry()->GetURL(),
+            MainFrameURL());
+
+  InjectBeforeUnload(iframe->current_frame_host());
+  ASSERT_TRUE(iframe->current_frame_host()->HasStickyUserActivation());
+
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  GetAnimatorForTesting()->set_subframe_navigation(true);
+
+  bool invoke_played = false;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      base::BindLambdaForTesting([&]() { invoke_played = true; }));
+  bool cancel_played = false;
+  GetAnimatorForTesting()->set_on_cancel_animation_displayed(
+      base::BindLambdaForTesting([&]() { cancel_played = true; }));
+  base::test::TestFuture<void> destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.GetCallback());
+
+  BeforeUnloadDialogObserver dialog_observer(iframe->current_frame_host());
+  TestNavigationObserver back_to_red(web_contents());
+  GetAnimatorForTesting()->set_duration_between_frames(base::Microseconds(1));
+  GetAnimatorForTesting()->PauseAnimationAtDisplayingCancelAnimation();
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  dialog_observer.WaitForDialog();
+  GetAnimatorForTesting()->ExpectDisplayingCancelAnimation();
+  // Expectation the animator will be destroyed while playing the cancel
+  // animation.
+  GetAnimatorForTesting()->SetFinishedStateToAnimationAborted();
+  dialog_observer.RespondToDialogue(/*proceed=*/false);
+  GetAnimatorForTesting()->UnpauseAnimation();
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
+  ASSERT_TRUE(destroyed.Wait());
+
+  ASSERT_FALSE(invoke_played);
+  ASSERT_FALSE(cancel_played);
+  ASSERT_TRUE(dialog_observer.shown());
+}
+
+// Test that the animator is behaving correctly, even after the renderer acks
+// the BeforeUnload message to proceed (begin) the navigation, but
+// `BeginNavigationImpl()` hits an early out so we never each
+// `DidStartNavigation()`.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions,
+    BeforeUnload_BeginNavigationImplFails) {
+  auto* iframe = GetIFrameFrameTreeNodeAt(0);
+  ASSERT_EQ(iframe->current_frame_host()->GetLastCommittedURL(), RedURL());
+
+  ASSERT_TRUE(
+      NavigateToURLFromRenderer(iframe->current_frame_host(), GreenURL()));
+  ASSERT_EQ(web_contents()->GetController().GetVisibleEntry()->GetURL(),
+            MainFrameURL());
+
+  InjectBeforeUnload(iframe->current_frame_host());
+  ASSERT_TRUE(iframe->current_frame_host()->HasStickyUserActivation());
+
+  std::vector<NavigationEntryImpl*> entries_before;
+  for (int i = 0; i < web_contents()->GetController().GetEntryCount(); ++i) {
+    entries_before.push_back(
+        web_contents()->GetController().GetEntryAtIndex(i));
+  }
+
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  GetAnimatorForTesting()->set_subframe_navigation(true);
+
+  // Fail the next `BeginNavigationImpl()`.
+  FailBeginNavigationImpl fail_begin_navigation_client;
+
+  base::test::TestFuture<void> destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.GetCallback());
+  base::test::TestFuture<void> cancel_displayed;
+  GetAnimatorForTesting()->set_on_cancel_animation_displayed(
+      cancel_displayed.GetCallback());
+
+  BeforeUnloadDialogObserver dialog_observer(iframe->current_frame_host());
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  ASSERT_TRUE(cancel_displayed.Wait());
+  dialog_observer.WaitForDialog();
+  GetAnimatorForTesting()->ExpectWaitingForBeforeUnloadResponse();
+  dialog_observer.RespondToDialogue(/*proceed=*/true);
+
+  ASSERT_TRUE(destroyed.Wait());
+
+  std::vector<NavigationEntryImpl*> entries_after;
+  for (int i = 0; i < web_contents()->GetController().GetEntryCount(); ++i) {
+    entries_after.push_back(web_contents()->GetController().GetEntryAtIndex(i));
+  }
+  ASSERT_THAT(entries_after, ::testing::ContainerEq(entries_before));
+}
+
+// If a primary main frame request is present, all subframe requests are
+// ignored. Note: this is only possible when the main frame is navigating within
+// the same document.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions,
+    OneMainFrameRequest_OneSubframeRequest) {
+  auto& controller = web_contents()->GetController();
+
+  // Navigate to the red portion of the document.
+  // [..., red*]
+  ASSERT_TRUE(NavigateToURL(web_contents(), embedded_test_server()->GetURL(
+                                                "/changing_color.html#red")));
+  WaitForCopyableViewInWebContents(web_contents());
+
+  // Reset the list of entries.
+  controller.PruneAllButLastCommitted();
+
+  // Add a blue iframe at the red portion.
+  // [red(blue)*]
+  AddIFrame(BlueURL());
+
+  // Navigate the iframe to another URL.
+  // [red(blue), red(green)*]
+  ASSERT_TRUE(NavigateToURLFromRenderer(
+      GetIFrameFrameTreeNodeAt(0)->current_frame_host(), GreenURL()));
+  WaitForCopyableViewInWebContents(web_contents());
+
+  // Navigate to the green portion of the document.
+  // [red(blue), red(green), green(green)*]
+  {
+    ScopedScreenshotCapturedObserverForTesting observer(
+        controller.GetLastCommittedEntryIndex());
+    ASSERT_TRUE(NavigateToURL(
+        web_contents(),
+        embedded_test_server()->GetURL("/changing_color.html#green")));
+    observer.Wait();
+  }
+
+  ASSERT_EQ(controller.GetEntryCount(), 3);
+  // Mark the middle entry as skipped.
+  controller.GetEntryAtIndex(1)->set_should_skip_on_back_forward_ui(true);
+
+  // Perform a back navigation from green(green) to red(blue), skipping
+  // red(green) completely.
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  base::test::TestFuture<void> invoke_displayed;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      invoke_displayed.GetCallback());
+  base::test::TestFuture<void> crossfade_displayed;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      crossfade_displayed.GetCallback());
+  base::test::TestFuture<void> destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.GetCallback());
+
+  TestNavigationManager back_to_red(
+      web_contents(),
+      embedded_test_server()->GetURL("/changing_color.html#red"));
+  TestNavigationManager iframe_to_blue(web_contents(), BlueURL());
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  ASSERT_TRUE(back_to_red.WaitForNavigationFinished());
+  ASSERT_TRUE(invoke_displayed.Wait());
+  ASSERT_TRUE(crossfade_displayed.Wait());
+  ASSERT_TRUE(destroyed.Wait());
+  ASSERT_TRUE(iframe_to_blue.WaitForNavigationFinished());
+}
+
+// The mainframe, who embeds an iframe, is doing a cross-document navigation.
+// We should animate the mainframe navigation.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions,
+    MainFrameCrossDocNav_WithIFrame) {
+  auto& controller = web_contents()->GetController();
+  // [title1&, red*]
+  {
+    ScopedScreenshotCapturedObserverForTesting observer(
+        controller.GetLastCommittedEntryIndex());
+    ASSERT_TRUE(NavigateToURL(web_contents(), RedURL()));
+    observer.Wait();
+  }
+  // [title1&, red(blue)*]
+  AddIFrame(BlueURL());
+  // [title1&, red(blue), red(green)*]
+  ASSERT_TRUE(NavigateToURLFromRenderer(
+      GetIFrameFrameTreeNodeAt(0)->current_frame_host(), GreenURL()));
+
+  ASSERT_EQ(controller.GetEntryCount(), 3);
+  controller.GetEntryAtIndex(1)->set_should_skip_on_back_forward_ui(true);
+
+  // Perform a back navigation from green(green) to title1, skipping red(blue).
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  base::test::TestFuture<void> invoke_displayed;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      invoke_displayed.GetCallback());
+  base::test::TestFuture<void> crossfade_displayed;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      crossfade_displayed.GetCallback());
+  base::test::TestFuture<void> destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.GetCallback());
+
+  TestNavigationObserver mainframe_back_to_title1(
+      web_contents(), /*expected_number_of_navigations=*/1);
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  mainframe_back_to_title1.Wait();
+  ASSERT_TRUE(mainframe_back_to_title1.last_navigation_succeeded());
+  ASSERT_EQ(mainframe_back_to_title1.last_navigation_url(), MainFrameURL());
+  ASSERT_TRUE(invoke_displayed.Wait());
+  ASSERT_TRUE(crossfade_displayed.Wait());
+  ASSERT_TRUE(destroyed.Wait());
+}
+
+// If a back navigation has more than one subframe requests and no main frame
+// requests, the animated transition will be aborted.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions,
+    MultipleSubframeRequests) {
+  auto& controller = web_contents()->GetController();
+  // Reset the list of entries.
+  controller.PruneAllButLastCommitted();
+
+  // [main(red)*]
+  auto* iframe1 = GetIFrameFrameTreeNodeAt(0);
+  ASSERT_EQ(iframe1->current_frame_host()->GetLastCommittedURL(), RedURL());
+
+  // [main(red, green)*]: the initial navigation of the iframe won't create an
+  // entry.
+  AddIFrame(GreenURL());
+  auto* iframe2 = GetIFrameFrameTreeNodeAt(1);
+  ASSERT_EQ(iframe2->current_frame_host()->GetLastCommittedURL(), GreenURL());
+
+  // [main(red, green), main(green, green)*]
+  ASSERT_TRUE(
+      NavigateToURLFromRenderer(iframe1->current_frame_host(), GreenURL()));
+  // [main(red, green), main(green, green), main(green, blue)*]
+  ASSERT_TRUE(
+      NavigateToURLFromRenderer(iframe2->current_frame_host(), BlueURL()));
+
+  ASSERT_EQ(controller.GetEntryCount(), 3);
+  controller.GetEntryAtIndex(1)->set_should_skip_on_back_forward_ui(true);
+
+  // Perform a back navigation from main(green, blue) to main(red, green),
+  // skipping main(green, green) completely. This navigation will create two
+  // subframe requests, and the animated transition will be aborted.
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  GetAnimatorForTesting()->SetFinishedStateToAnimationAborted();
+
+  bool invoke_displayed = false;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      base::BindLambdaForTesting([&]() { invoke_displayed = true; }));
+  bool crossfade_displayed = false;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      base::BindLambdaForTesting([&]() { crossfade_displayed = true; }));
+  base::test::TestFuture<void> destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.GetCallback());
+
+  TestNavigationObserver back_nav(web_contents());
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  back_nav.WaitForNavigationFinished();
+  ASSERT_TRUE(destroyed.Wait());
+  ASSERT_FALSE(invoke_displayed);
+  ASSERT_FALSE(crossfade_displayed);
+
+  ASSERT_EQ(controller.GetEntryCount(), 3);
+  ASSERT_EQ(controller.GetLastCommittedEntryIndex(), 0);
+}
+
+// The transition of a subframe navigation will be cancelled if there is a main
+// frame navigation.
+//
+// TODO(crbug/356417937): Flaky on bots. Reneable before Launch.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions,
+    DISABLED_MainframeNavCancelsSubframeTransition) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  auto* iframe = GetIFrameFrameTreeNodeAt(0);
+  ASSERT_EQ(iframe->current_frame_host()->GetLastCommittedURL(), RedURL());
+  ASSERT_TRUE(
+      NavigateToURLFromRenderer(iframe->current_frame_host(), GreenURL()));
+
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  GetAnimatorForTesting()->set_subframe_navigation(true);
+  GetAnimatorForTesting()->SetFinishedStateToAnimationAborted();
+
+  bool invoke_displayed = false;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      base::BindLambdaForTesting([&]() { invoke_displayed = true; }));
+  bool crossfade_displayed = false;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      base::BindLambdaForTesting([&]() { crossfade_displayed = true; }));
+  base::test::TestFuture<void> destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.GetCallback());
+
+  TestNavigationManager iframe_back_to_red(web_contents(), RedURL());
+  GetAnimatorForTesting()->PauseAnimationAtDisplayingInvokeAnimation();
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+  ASSERT_TRUE(iframe_back_to_red.WaitForRequestStart());
+  GetAnimatorForTesting()->ExpectDisplayingInvokeAnimation();
+
+  GURL title2 = embedded_test_server()->GetURL("/title2.html");
+  TestNavigationManager navigation_mainframe(web_contents(), title2);
+  web_contents()->GetController().LoadURL(
+      title2, Referrer{},
+      ui::PageTransitionFromInt(
+          ui::PageTransition::PAGE_TRANSITION_FROM_ADDRESS_BAR |
+          ui::PageTransition::PAGE_TRANSITION_TYPED),
+      std::string{});
+  ASSERT_TRUE(navigation_mainframe.WaitForNavigationFinished());
+  ASSERT_TRUE(destroyed.Wait());
+  ASSERT_FALSE(iframe_back_to_red.was_committed());
 }
 
 }  // namespace content

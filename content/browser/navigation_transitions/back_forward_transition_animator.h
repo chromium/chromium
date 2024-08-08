@@ -260,6 +260,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // successfully created and false otherwise. The caller should play the invoke
   // or cancel animation based on the return value.
   [[nodiscard]] bool StartNavigationAndTrackRequest();
+  [[nodiscard]] bool TrackRequest(
+      base::WeakPtr<NavigationRequest> created_request);
 
   struct ComputedAnimationValues {
     // The offset that will be applied to the live, outgoing page.
@@ -311,10 +313,19 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   const raw_ptr<BackForwardTransitionAnimationManagerAndroid>
       animation_manager_;
 
-  // Tracks the `NavigationRequest` created by the gesture back navigation of a
-  // primary main frame.
-  std::optional<int64_t>
-      primary_main_frame_navigation_request_id_of_gesture_nav_;
+  // Track the ID of the `NavigationRequest` created by the gesture back
+  // navigation in the primary main frame or in the subframe:
+  // - If a request is created in the primary main frame, we won't track any of
+  // the subframe requests (i.e., a fragment navigation in the primary main
+  // frame and cross-doc navigations in the subframes).
+  // - Else, we track the subframe request.
+  // - For any navigation with more than one subframe requests, the transition
+  // is aborted.
+  struct TrackedRequest {
+    int64_t navigation_id;
+    bool is_primary_main_frame;
+  };
+  std::optional<TrackedRequest> tracked_request_;
 
   // The unique id assigned to `screenshot_`.
   cc::UIResourceId ui_resource_id_ =
