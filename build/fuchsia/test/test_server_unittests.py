@@ -10,7 +10,7 @@ import unittest.mock as mock
 import test_server
 
 _HOST_PORT = 44444
-_HOST_PORT_PAIR = '127.0.0.1:33333'
+_TARGET_ADDR = '127.0.0.1:33333'
 _SERVER_PORT = 55555
 
 
@@ -34,7 +34,7 @@ class TestServerTest(unittest.TestCase):
         cmd_mock.stdout = str(port_pair[0])
         self._subprocess_mock.return_value = cmd_mock
 
-        forwarder = test_server.SSHPortForwarder(_HOST_PORT_PAIR)
+        forwarder = test_server.SSHPortForwarder(_TARGET_ADDR)
 
         # Unmap should raise an exception if no ports are mapped.
         with self.assertRaises(Exception):
@@ -64,7 +64,7 @@ class TestServerTest(unittest.TestCase):
         cmd_mock.returncode = 1
         self._subprocess_mock.return_value = cmd_mock
         with self.assertRaises(Exception):
-            test_server.port_forward(_HOST_PORT_PAIR, _HOST_PORT)
+            test_server.port_forward(_TARGET_ADDR, _HOST_PORT)
 
     @mock.patch('test_server.chrome_test_server_spawner.SpawningServer')
     @mock.patch('test_server.port_forward')
@@ -76,7 +76,7 @@ class TestServerTest(unittest.TestCase):
         server.Start = mock.Mock()
         server_mock.return_value = server
         with mock.patch('test_server.get_ssh_address'):
-            _, url = test_server.setup_test_server(_HOST_PORT_PAIR, 4)
+            _, url = test_server.setup_test_server(_TARGET_ADDR, 4)
         self.assertTrue(str(_HOST_PORT) in url)
 
 

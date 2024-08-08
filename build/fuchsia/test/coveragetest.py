@@ -15,13 +15,14 @@ import coverage  # pylint: disable=import-error
 # The files need to have sufficient coverages.
 COVERED_FILES = [
     'compatible_utils.py', 'deploy_to_fuchsia.py', 'flash_device.py',
-    'log_manager.py', 'publish_package.py', 'serve_repo.py', 'test_server.py'
+    'log_manager.py', 'publish_package.py', 'serve_repo.py'
 ]
 
 # The files will be tested without coverage requirements.
 TESTED_FILES = [
     'bundled_test_runner.py', 'common.py', 'ffx_emulator.py',
-    'modification_waiter.py', 'monitors.py', 'serial_boot_device.py'
+    'modification_waiter.py', 'monitors.py', 'serial_boot_device.py',
+    'test_server.py'
 ]
 
 
