@@ -404,9 +404,13 @@ _CROSSBENCH_BENCHMARKS_ALL = frozenset([
     _crossbench_jetstream2_1(),
 ])
 
-_CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP = PerfSuite([
-    _GetBenchmarkConfig('system_health.common_desktop')
+# TODO(b/338630584): Remove it when other benchmarks can be run on Android.
+_CROSSBENCH_SPEEDOMETER = frozenset([
+    _crossbench_speedometer3_0(),
 ])
+
+_CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP = PerfSuite(
+    [_GetBenchmarkConfig('system_health.common_desktop')])
 
 FUCHSIA_EXEC_ARGS = {
     'astro': None,
@@ -902,7 +906,8 @@ ANDROID_PIXEL6 = PerfPlatform('android-pixel6-perf',
                               _ANDROID_PIXEL6_BENCHMARK_CONFIGS,
                               15,
                               'android',
-                              executables=_ANDROID_PIXEL6_EXECUTABLE_CONFIGS)
+                              executables=_ANDROID_PIXEL6_EXECUTABLE_CONFIGS,
+                              crossbench=_CROSSBENCH_SPEEDOMETER)
 ANDROID_PIXEL6_PGO = PerfPlatform('android-pixel6-perf-pgo', 'Android T',
                                   _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS, 15,
                                   'android')
