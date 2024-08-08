@@ -169,6 +169,11 @@ struct Suggestion {
     // the UI and those that don't match are removed from the list.
     kFilterable,
 
+    // Suggestions, that are excluded from filtration by always disappearing
+    // from the list as soon as any filter is applied (in other words, these
+    // suggestion don't match any filter except the empty one).
+    kPresentOnlyWithoutFilter,
+
     // Suggestions, that are excluded from filtration by always staying in
     // in the list (basically, these suggestions ignore filter).
     kStatic,

@@ -70,7 +70,11 @@ SuggestionFiltrationResult FilterSuggestions(
   std::u16string filter_lowercased = base::i18n::ToLower(*filter);
   for (size_t i = 0; i < suggestions.size(); ++i) {
     const Suggestion& suggestion = suggestions[i];
-    if (suggestion.filtration_policy == Suggestion::FiltrationPolicy::kStatic) {
+    if (suggestion.filtration_policy ==
+        Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter) {
+      continue;
+    } else if (suggestion.filtration_policy ==
+               Suggestion::FiltrationPolicy::kStatic) {
       result.first.push_back(suggestion);
       result.second.emplace_back();
     } else if (size_t pos = base::i18n::ToLower(suggestion.main_text.value)

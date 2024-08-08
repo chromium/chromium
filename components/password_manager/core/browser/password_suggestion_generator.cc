@@ -10,6 +10,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -253,11 +254,13 @@ void AddViewPasswordDetailsChildSuggestion(
   suggestion.children.emplace_back(std::move(view_password_details));
 }
 
-void AppendManualFallbackSuggestions(const CredentialUIEntry& credential,
-                                     IsTriggeredOnPasswordForm on_password_form,
-                                     IsCrossDomain is_cross_origin,
-                                     bool favicon_can_be_requested_from_google,
-                                     std::vector<Suggestion>* suggestions) {
+void AppendManualFallbackSuggestions(
+    const CredentialUIEntry& credential,
+    IsTriggeredOnPasswordForm on_password_form,
+    IsCrossDomain is_cross_origin,
+    bool favicon_can_be_requested_from_google,
+    std::vector<Suggestion>* suggestions,
+    Suggestion::FiltrationPolicy filtration_policy) {
   // A separate suggestion with the same (username, password) pair is displayed
   // for every affiliated domain. For example, if the credential was saved on
   // apple.com and icloud.com, there will be 2 suggestions for both of these
@@ -282,6 +285,7 @@ void AppendManualFallbackSuggestions(const CredentialUIEntry& credential,
       suggestion.custom_icon = Suggestion::FaviconDetails(
           domain_info.url, favicon_can_be_requested_from_google);
     }
+    suggestion.filtration_policy = filtration_policy;
 
     if (!replaced) {
       AddPasswordUsernameChildSuggestion(maybe_username, suggestion);
@@ -401,10 +405,13 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
   const bool generate_sections =
       !suggested_credentials.empty() && !credentials.empty();
   if (generate_sections) {
-    suggestions.emplace_back(
+    Suggestion title(
         l10n_util::GetStringUTF16(
             IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_SUGGESTED_PASSWORDS_SECTION_TITLE),
         SuggestionType::kTitle);
+    title.filtration_policy =
+        Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter;
+    suggestions.push_back(std::move(title));
   }
 
   auto* sync_service = password_client_->GetSyncService();
@@ -425,7 +432,8 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
         (is_sync_passwords_enabled || is_from_account) && !is_passphrase_user;
     AppendManualFallbackSuggestions(
         ui_entry, on_password_form, IsCrossDomain(false),
-        favicon_can_be_requested_from_google, &suggestions);
+        favicon_can_be_requested_from_google, &suggestions,
+        Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter);
   }
 
   if (generate_sections) {
@@ -433,6 +441,8 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
         l10n_util::GetStringUTF16(
             IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_ALL_PASSWORDS_SECTION_TITLE),
         SuggestionType::kTitle);
+    suggestions.back().filtration_policy =
+        Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter;
   }
 
   // Only the "All passwords" section should be sorted alphabetically.
@@ -453,7 +463,8 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
         (is_sync_passwords_enabled || is_from_account) && !is_passphrase_user;
     AppendManualFallbackSuggestions(
         credential, on_password_form, IsCrossDomain(!has_suggested_realm),
-        favicon_can_be_requested_from_google, &suggestions);
+        favicon_can_be_requested_from_google, &suggestions,
+        Suggestion::FiltrationPolicy::kFilterable);
   }
 
   base::ranges::sort(

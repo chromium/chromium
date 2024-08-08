@@ -676,6 +676,24 @@ TEST_F(AutofillPopupControllerImplTest,
   EXPECT_TRUE(controller.HasFilteredOutSuggestions());
 }
 
+TEST_F(
+    AutofillPopupControllerImplTest,
+    SuggestionFiltration_PresentOnlyWithoutFilterSuggestionsAlwaysFilteredOut) {
+  using enum SuggestionType;
+  Suggestion suggestion1 = Suggestion(u"abcd", kAddressEntry);
+  Suggestion suggestion2 = Suggestion(u"abcd", kAddressEntry);
+  suggestion2.filtration_policy =
+      Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter;
+
+  AutofillPopupController& controller = client().popup_controller(manager());
+  ShowSuggestions(manager(), {std::move(suggestion1), std::move(suggestion2)});
+
+  ASSERT_EQ(controller.GetSuggestions().size(), 2u);
+
+  controller.SetFilter(AutofillPopupController::SuggestionFilter(u"ab"));
+  EXPECT_EQ(controller.GetSuggestions().size(), 1u);
+}
+
 TEST_F(AutofillPopupControllerImplTest, RemoveSuggestion) {
   ShowSuggestions(manager(),
                   {SuggestionType::kAddressEntry, SuggestionType::kAddressEntry,
