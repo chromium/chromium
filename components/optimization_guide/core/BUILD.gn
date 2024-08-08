@@ -314,6 +314,7 @@ static_library("core") {
     "//components/unified_consent",
     "//components/variations",
     "//components/variations/net",
+    "//google_apis/common:request_util",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
@@ -360,6 +361,7 @@ static_library("prediction") {
     "//components/prefs",
     "//components/services/unzip/public/cpp",
     "//crypto",
+    "//google_apis/common:request_util",
     "//net/traffic_annotation",
     "//services/network/public/cpp",
   ]

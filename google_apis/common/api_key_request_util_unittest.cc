@@ -59,18 +59,5 @@ TEST_F(APIKeyRequestUtilTest, AddAPIKeyToRequest_ExistingHeader) {
 }
 #endif  // DCHECK_IS_ON()
 
-TEST_F(APIKeyRequestUtilTest, HasAPIKey_HeaderNotPresent) {
-  network::ResourceRequest request;
-
-  ASSERT_FALSE(HasAPIKey(request));
-}
-
-TEST_F(APIKeyRequestUtilTest, HasAPIKey_HeaderPresent) {
-  network::ResourceRequest request;
-  request.headers.SetHeader(kApiKeyHeaderName, "test_api_key");
-
-  ASSERT_TRUE(HasAPIKey(request));
-}
-
 }  // namespace
 }  // namespace google_apis

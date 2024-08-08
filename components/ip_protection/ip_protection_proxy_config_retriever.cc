@@ -7,6 +7,7 @@
 #include "base/strings/strcat.h"
 #include "base/types/expected.h"
 #include "build/branding_buildflags.h"
+#include "google_apis/common/api_key_request_util.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
@@ -16,7 +17,6 @@
 namespace ip_protection {
 
 namespace {
-constexpr std::string_view kGoogApiKeyHeader = "X-Goog-Api-Key";
 constexpr net::NetworkTrafficAnnotationTag kGetProxyConfigTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation(
         "ip_protection_service_get_proxy_config",
@@ -108,7 +108,7 @@ void IpProtectionProxyConfigRetriever::GetProxyConfig(
         net::HttpRequestHeaders::kAuthorization,
         base::StrCat({"Bearer ", oauth_token.value()}));
   } else {
-    resource_request->headers.SetHeader(kGoogApiKeyHeader, api_key_);
+    google_apis::AddAPIKeyToRequest(*resource_request, api_key_);
   }
   int experiment_arm = net::features::kIpPrivacyDebugExperimentArm.Get();
   if (experiment_arm != 0) {

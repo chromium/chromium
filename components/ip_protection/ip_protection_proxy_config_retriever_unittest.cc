@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/ip_protection/get_proxy_config.pb.h"
+#include "google_apis/common/api_key_request_test_util.h"
 #include "net/base/features.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -20,10 +21,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ip_protection {
-
-namespace {
-constexpr std::string_view kGoogApiKeyHeader = "X-Goog-Api-Key";
-}
 
 class IpProtectionProxyConfigRetrieverTest : public testing::Test {
  protected:
@@ -64,7 +61,7 @@ TEST_F(IpProtectionProxyConfigRetrieverTest, GetProxyConfigSuccess) {
 
         EXPECT_FALSE(
             request.headers.HasHeader(net::HttpRequestHeaders::kAuthorization));
-        EXPECT_TRUE(request.headers.HasHeader(kGoogApiKeyHeader));
+        EXPECT_TRUE(google_apis::test_util::HasAPIKey(request));
         EXPECT_THAT(
             request.headers.GetHeader("Ip-Protection-Debug-Experiment-Arm"),
             testing::Optional(std::string("42")));
@@ -107,7 +104,7 @@ TEST_F(IpProtectionProxyConfigRetrieverTest,
 
         EXPECT_TRUE(
             request.headers.HasHeader(net::HttpRequestHeaders::kAuthorization));
-        EXPECT_FALSE(request.headers.HasHeader(kGoogApiKeyHeader));
+        EXPECT_FALSE(google_apis::test_util::HasAPIKey(request));
 
         auto head = network::mojom::URLResponseHead::New();
         test_url_loader_factory_.AddResponse(

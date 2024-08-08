@@ -5,6 +5,7 @@
 #include "remoting/base/protobuf_http_client.h"
 
 #include "base/strings/stringprintf.h"
+#include "google_apis/common/api_key_request_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "remoting/base/oauth_token_getter.h"
@@ -21,7 +22,6 @@
 namespace {
 
 constexpr char kAuthorizationHeaderFormat[] = "Authorization: Bearer %s";
-constexpr char kApiKeyHeaderFormat[] = "x-goog-api-key: %s";
 
 }  // namespace
 
@@ -114,8 +114,8 @@ void ProtobufHttpClient::DoExecuteRequest(
   }
 
   if (!request->config().api_key.empty()) {
-    resource_request->headers.AddHeaderFromString(base::StringPrintf(
-        kApiKeyHeaderFormat, request->config().api_key.c_str()));
+    google_apis::AddAPIKeyToRequest(*resource_request,
+                                    request->config().api_key);
   }
 
   if (request->config().provide_certificate) {

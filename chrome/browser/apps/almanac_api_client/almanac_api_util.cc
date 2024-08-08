@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "google_apis/common/api_key_request_util.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -35,8 +36,7 @@ std::unique_ptr<network::ResourceRequest> GetAlmanacResourceRequest(
   // A POST request is sent with an override to GET due to server requirements.
   resource_request->method = "POST";
   resource_request->headers.SetHeader("X-HTTP-Method-Override", "GET");
-  resource_request->headers.SetHeader("X-Goog-Api-Key",
-                                      google_apis::GetAPIKey());
+  google_apis::AddAPIKeyToRequest(*resource_request, google_apis::GetAPIKey());
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   return resource_request;
 }

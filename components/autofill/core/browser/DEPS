@@ -31,6 +31,7 @@ include_rules = [
   "+components/webdata_services",
   "+crypto/hkdf.h",
   "+crypto/random.h",
+  "+google_apis/common",
   "+google_apis/gaia",
   "+google_apis/google_api_keys.h",
   "+net",

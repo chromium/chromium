@@ -14,6 +14,7 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/prefs/pref_service.h"
+#include "google_apis/common/api_key_request_util.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -22,7 +23,6 @@
 namespace {
 
 constexpr char kAuthHeaderBearer[] = "Bearer ";
-constexpr char kApiKeyHeader[] = "X-Goog-Api-Key";
 
 optimization_guide::proto::Platform GetPlatform() {
 #if BUILDFLAG(IS_WIN)
@@ -170,7 +170,7 @@ void PopulateAuthorizationRequestHeader(
 void PopulateApiKeyRequestHeader(network::ResourceRequest* resource_request,
                                  std::string_view api_key) {
   CHECK(!api_key.empty());
-  resource_request->headers.SetHeader(kApiKeyHeader, api_key);
+  google_apis::AddAPIKeyToRequest(*resource_request, api_key);
 }
 
 bool ShouldStartModelValidator() {

@@ -9,8 +9,6 @@ static_library("common") {
   sources = [
     "api_error_codes.cc",
     "api_error_codes.h",
-    "api_key_request_util.cc",
-    "api_key_request_util.h",
     "auth_service.cc",
     "auth_service.h",
     "auth_service_interface.h",
@@ -38,10 +36,27 @@ static_library("common") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
+static_library("request_util") {
+  sources = [
+    "api_key_request_util.cc",
+    "api_key_request_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/version_info:channel",
+    "//google_apis:google_apis",
+    "//net",
+    "//services/network/public/cpp",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
 
   sources = [
+    "api_key_request_test_util.cc",
+    "api_key_request_test_util.h",
     "dummy_auth_service.cc",
     "dummy_auth_service.h",
     "test_util.cc",
@@ -50,6 +65,7 @@ source_set("test_support") {
 
   public_deps = [
     ":common",
+    ":request_util",
     "//base",
     "//base/test:test_support",
     "//google_apis:test_support",

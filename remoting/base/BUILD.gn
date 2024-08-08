@@ -137,6 +137,7 @@ source_set("base") {
     ":remoting_base_version",
     "//build:chromeos_buildflags",
     "//google_apis",
+    "//google_apis/common:request_util",
     "//remoting/proto:internal_structs",
     "//remoting/proto/remoting/v1:cloud_proto",
     "//remoting/proto/remoting/v1:directory_proto",

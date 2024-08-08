@@ -989,6 +989,7 @@ source_set("extensions") {
     "//extensions/common/api",
     "//extensions/strings",
     "//google_apis",
+    "//google_apis/common:request_util",
     "//media:media_buildflags",
     "//net",
     "//pdf:buildflags",

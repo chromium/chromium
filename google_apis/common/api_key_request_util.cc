@@ -6,14 +6,8 @@
 
 #include "base/version_info/channel.h"
 #include "google_apis/google_api_keys.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
-
-namespace {
-
-// See https://cloud.google.com/apis/docs/system-parameters
-constexpr char kApiKeyHeaderName[] = "X-Goog-Api-Key";
-
-}  // namespace
 
 namespace google_apis {
 
@@ -23,7 +17,12 @@ void AddDefaultAPIKeyToRequest(network::ResourceRequest& request,
 }
 
 void AddAPIKeyToRequest(network::ResourceRequest& request,
-                        const std::string& api_key) {
+                        std::string_view api_key) {
+  AddAPIKeyToRequest(request.headers, api_key);
+}
+
+void AddAPIKeyToRequest(net::HttpRequestHeaders& request_headers,
+                        std::string_view api_key) {
   // TODO(b/355544759): check that no Authorization header is present.
   // TODO(b/355544759): check that the API isn't present as a URL query param.
   // Don't use CHECK for validation, to make migrating to this API less risky.
@@ -31,13 +30,18 @@ void AddAPIKeyToRequest(network::ResourceRequest& request,
     DLOG(FATAL) << "API key cannot be empty.";
     return;
   }
-  DLOG_ASSERT(!HasAPIKey(request)) << "API key already present on the request.";
+  DLOG_ASSERT(!internal::HasAPIKey(request_headers))
+      << "API key already present on the request.";
 
-  request.headers.SetHeader(kApiKeyHeaderName, api_key);
+  request_headers.SetHeader(internal::kApiKeyHeaderName, api_key);
 }
 
-bool HasAPIKey(const network::ResourceRequest& request) {
-  return request.headers.HasHeader(kApiKeyHeaderName);
+namespace internal {
+
+bool HasAPIKey(const net::HttpRequestHeaders& request_headers) {
+  return request_headers.HasHeader(kApiKeyHeaderName);
 }
+
+}  // namespace internal
 
 }  // namespace google_apis
