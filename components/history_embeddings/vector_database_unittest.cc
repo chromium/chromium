@@ -56,17 +56,25 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, EmbeddingOperations) {
 
   Embedding b({2, 2, 2});
   b.Normalize();
-  EXPECT_FLOAT_EQ(a.ScoreWith("", b), 1.0f);
-  EXPECT_FLOAT_EQ(a.ScoreWith("this is an ASCII string", b), 1.0f);
-  EXPECT_FLOAT_EQ(a.ScoreWith("this is non-ASCII string and scores ∅", b),
-                  0.0f);
+  SearchInfo search_info;
+  EXPECT_FLOAT_EQ(a.ScoreWith(search_info, "", b), 1.0f);
+  EXPECT_FLOAT_EQ(a.ScoreWith(search_info, "this is an ASCII string", b), 1.0f);
+  EXPECT_EQ(search_info.skipped_nonascii_passage_count, 0u);
+  EXPECT_FLOAT_EQ(
+      a.ScoreWith(search_info, "this is non-ASCII string and scores ∅", b),
+      0.0f);
+  EXPECT_EQ(search_info.skipped_nonascii_passage_count, 1u);
 
   // Verify more similar embeddings have higher scores.
-  EXPECT_GT(DeterministicEmbedding(5).ScoreWith("", DeterministicEmbedding(4)),
-            DeterministicEmbedding(5).ScoreWith("", DeterministicEmbedding(3)));
+  EXPECT_GT(DeterministicEmbedding(5).ScoreWith(search_info, "",
+                                                DeterministicEmbedding(4)),
+            DeterministicEmbedding(5).ScoreWith(search_info, "",
+                                                DeterministicEmbedding(3)));
 
-  EXPECT_GT(DeterministicEmbedding(5).ScoreWith("", DeterministicEmbedding(6)),
-            DeterministicEmbedding(5).ScoreWith("", DeterministicEmbedding(7)));
+  EXPECT_GT(DeterministicEmbedding(5).ScoreWith(search_info, "",
+                                                DeterministicEmbedding(6)),
+            DeterministicEmbedding(5).ScoreWith(search_info, "",
+                                                DeterministicEmbedding(7)));
 }
 
 TEST(HistoryEmbeddingsVectorDatabaseTest, FindNearest) {

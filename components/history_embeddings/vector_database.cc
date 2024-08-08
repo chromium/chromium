@@ -77,7 +77,8 @@ void Embedding::Normalize() {
   }
 }
 
-float Embedding::ScoreWith(const std::string& other_passage,
+float Embedding::ScoreWith(SearchInfo& search_info,
+                           const std::string& other_passage,
                            const Embedding& other_embedding) const {
   float score = 0.0f;
   // Skip non-ASCII strings to avoid scoring problems with the model.
@@ -85,6 +86,8 @@ float Embedding::ScoreWith(const std::string& other_passage,
     for (size_t i = 0; i < data_.size(); i++) {
       score += data_[i] * other_embedding.data_[i];
     }
+  } else {
+    search_info.skipped_nonascii_passage_count++;
   }
   return score;
 }
@@ -107,15 +110,17 @@ UrlEmbeddings::UrlEmbeddings(const UrlEmbeddings&) = default;
 UrlEmbeddings& UrlEmbeddings::operator=(const UrlEmbeddings&) = default;
 bool UrlEmbeddings::operator==(const UrlEmbeddings&) const = default;
 
-float UrlEmbeddings::BestScoreWith(const Embedding& query,
+float UrlEmbeddings::BestScoreWith(SearchInfo& search_info,
+                                   const Embedding& query,
                                    const proto::PassagesValue& passages,
                                    size_t search_minimum_word_count) const {
   float best = std::numeric_limits<float>::min();
   for (size_t i = 0; i < embeddings.size(); i++) {
     const Embedding& embedding = embeddings[i];
-    float score = embedding.GetPassageWordCount() < search_minimum_word_count
-                      ? 0.0f
-                      : query.ScoreWith(passages.passages(i), embedding);
+    float score =
+        embedding.GetPassageWordCount() < search_minimum_word_count
+            ? 0.0f
+            : query.ScoreWith(search_info, passages.passages(i), embedding);
     if (score > best) {
       best = score;
     }
@@ -208,8 +213,9 @@ SearchInfo VectorDatabase::FindNearest(
     search_info.searched_embedding_count += item.embeddings.size();
 
     base::ElapsedTimer scoring_timer;
-    const float score = item.BestScoreWith(
-        query, url_data->url_passages.passages, search_minimum_word_count);
+    const float score =
+        item.BestScoreWith(search_info, query, url_data->url_passages.passages,
+                           search_minimum_word_count);
     q.emplace(item.url_id, item.visit_id, item.visit_time, score);
     while (q.size() > count) {
       q.pop();

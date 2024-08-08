@@ -566,6 +566,9 @@ std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
                              search_info.searched_url_count);
   base::UmaHistogramCounts10M("History.Embeddings.Search.EmbeddingCount",
                               search_info.searched_embedding_count);
+  base::UmaHistogramCounts10M(
+      "History.Embeddings.Search.SkippedNonAsciiPassageCount",
+      search_info.skipped_nonascii_passage_count);
   base::UmaHistogramBoolean("History.Embeddings.Search.Completed",
                             search_info.completed);
 
@@ -573,6 +576,8 @@ std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
           << elapsed.InMilliseconds()
           << " ; .UrlCount: " << search_info.searched_url_count
           << " ; .EmbeddingCount: " << search_info.searched_embedding_count
+          << " ; .SkippedNonAsciiPassageCount: "
+          << search_info.skipped_nonascii_passage_count
           << " ; .Completed: " << search_info.completed;
 
   // Populate source passages and embeddings to fill out more complete
@@ -591,7 +596,9 @@ std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
         scored_url_row.passages_embeddings.url_embeddings.embeddings.size();
     scored_url_row.scores.reserve(n);
     for (size_t i = 0; i < n; i++) {
+      SearchInfo discard_recount;
       scored_url_row.scores.push_back(query_embedding.ScoreWith(
+          discard_recount,
           scored_url_row.passages_embeddings.url_passages.passages.passages(i),
           scored_url_row.passages_embeddings.url_embeddings.embeddings[i]));
     }

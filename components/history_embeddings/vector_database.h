@@ -15,6 +15,49 @@
 
 namespace history_embeddings {
 
+struct ScoredUrl {
+  ScoredUrl(history::URLID url_id,
+            history::VisitID visit_id,
+            base::Time visit_time,
+            float score);
+  ~ScoredUrl();
+  ScoredUrl(ScoredUrl&&);
+  ScoredUrl& operator=(ScoredUrl&&);
+  ScoredUrl(const ScoredUrl&);
+  ScoredUrl& operator=(const ScoredUrl&);
+
+  // Basic data about the found URL/visit.
+  history::URLID url_id;
+  history::VisitID visit_id;
+  base::Time visit_time;
+
+  // A measure of how closely the query matched the found data.
+  float score;
+};
+
+struct SearchInfo {
+  SearchInfo();
+  SearchInfo(SearchInfo&&);
+  ~SearchInfo();
+
+  // Result of the search, the best scored URLs.
+  std::vector<ScoredUrl> scored_urls;
+
+  // The number of URLs searched to find this result.
+  size_t searched_url_count = 0u;
+
+  // The number of embeddings searched to find this result.
+  size_t searched_embedding_count = 0u;
+
+  // The number of embeddings scored zero due to having a source passage
+  // containing non-ASCII characters.
+  size_t skipped_nonascii_passage_count = 0u;
+
+  // Whether the search completed without interruption. Starting a new search
+  // may cause a search to halt, and in that case this member will be false.
+  bool completed = false;
+};
+
 struct UrlPassages {
   UrlPassages(history::URLID url_id,
               history::VisitID visit_id,
@@ -54,7 +97,8 @@ class Embedding {
   void Normalize();
 
   // Compares one embedding with another and returns a similarity measure.
-  float ScoreWith(const std::string& other_passage,
+  float ScoreWith(SearchInfo& search_info,
+                  const std::string& other_passage,
                   const Embedding& other_embedding) const;
 
   // Const accessor used for storage.
@@ -87,7 +131,8 @@ struct UrlEmbeddings {
   // Finds score of embedding nearest to query, also taking passages
   // into consideration since some should be skipped. The passages
   // correspond to the embeddings 1:1 by index.
-  float BestScoreWith(const Embedding& query,
+  float BestScoreWith(SearchInfo& search_info,
+                      const Embedding& query,
                       const proto::PassagesValue& passages,
                       size_t search_minimum_word_count) const;
 
@@ -95,45 +140,6 @@ struct UrlEmbeddings {
   history::VisitID visit_id;
   base::Time visit_time;
   std::vector<Embedding> embeddings;
-};
-
-struct ScoredUrl {
-  ScoredUrl(history::URLID url_id,
-            history::VisitID visit_id,
-            base::Time visit_time,
-            float score);
-  ~ScoredUrl();
-  ScoredUrl(ScoredUrl&&);
-  ScoredUrl& operator=(ScoredUrl&&);
-  ScoredUrl(const ScoredUrl&);
-  ScoredUrl& operator=(const ScoredUrl&);
-
-  // Basic data about the found URL/visit.
-  history::URLID url_id;
-  history::VisitID visit_id;
-  base::Time visit_time;
-
-  // A measure of how closely the query matched the found data.
-  float score;
-};
-
-struct SearchInfo {
-  SearchInfo();
-  SearchInfo(SearchInfo&&);
-  ~SearchInfo();
-
-  // Result of the search, the best scored URLs.
-  std::vector<ScoredUrl> scored_urls;
-
-  // The number of URLs searched to find this result.
-  size_t searched_url_count = 0u;
-
-  // The number of embeddings searched to find this result.
-  size_t searched_embedding_count = 0u;
-
-  // Whether the search completed without interruption. Starting a new search
-  // may cause a search to halt, and in that case this member will be false.
-  bool completed = false;
 };
 
 struct UrlPassagesEmbeddings {
