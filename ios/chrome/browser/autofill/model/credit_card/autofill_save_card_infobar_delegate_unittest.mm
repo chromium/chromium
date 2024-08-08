@@ -152,11 +152,7 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest,
                              CreditCardUploadCompletionCallbackFn,
                          base::Unretained(this));
 
-  delegate->UpdateAndAccept(
-      /*cardholder_name=*/u"",
-      /*expiration_date_month=*/u"",
-      /*expiration_date_year=*/u"",
-      /*credit_card_upload_completion_callback=*/
+  delegate->SetCreditCardUploadCompletionCallback(
       std::move(credit_card_upload_completion_callback));
 
   delegate->CreditCardUploadCompleted(
@@ -184,16 +180,37 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest,
                              CreditCardUploadCompletionCallbackFn,
                          base::Unretained(this));
 
-  delegate->UpdateAndAccept(
-      /*cardholder_name=*/u"",
-      /*expiration_date_month=*/u"",
-      /*expiration_date_year=*/u"",
-      /*credit_card_upload_completion_callback=*/
+  delegate->SetCreditCardUploadCompletionCallback(
       std::move(credit_card_upload_completion_callback));
 
   delegate->CreditCardUploadCompleted(
       /*card_saved=*/false, /*on_confirmation_closed_callback=*/std::nullopt);
   EXPECT_FALSE(card_saved_.value());
+}
+
+// Tests that CreditCardUploadCompleted() runs
+// `on_confirmation_closed_callback_` when infobar is not presenting.
+TEST_F(AutofillSaveCardInfoBarDelegateTest,
+       CreditCardUploadCompleted_InfobarNotPresenting) {
+  feature_list_.InitAndEnableFeature(
+      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
+
+  payments::PaymentsAutofillClient::UploadSaveCardPromptCallback callback =
+      base::BindOnce(
+          &AutofillSaveCardInfoBarDelegateTest::UploadSaveCardPromptCallbackFn,
+          base::Unretained(this));
+  std::unique_ptr<AutofillSaveCardInfoBarDelegateIOS> delegate =
+      CreateDelegate(std::move(callback));
+
+  delegate->SetInfobarIsPresenting(false);
+
+  delegate->CreditCardUploadCompleted(
+      /*card_saved=*/true, /*on_confirmation_closed_callback=*/base::BindOnce(
+          &AutofillSaveCardInfoBarDelegateTest::OnConfirmationClosedCallbackFn,
+          base::Unretained(this)));
+
+  EXPECT_FALSE(card_saved_.has_value());
+  EXPECT_TRUE(ran_on_confirmation_closed_callback_);
 }
 
 // Tests that `OnConfirmationClosed()` runs
