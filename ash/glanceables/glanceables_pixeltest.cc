@@ -173,7 +173,7 @@ TEST_F(GlanceablesTimeManagementPixelTest, Smoke) {
       "expanded_tasks_bottom", /*revision_number=*/1,
       GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
 
-  GetClassroomView()->SetExpandState(true);
+  GetClassroomView()->SetExpandState(true, /*expand_by_overscroll=*/false);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "expanded_classroom_top", /*revision_number=*/1,
       GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));

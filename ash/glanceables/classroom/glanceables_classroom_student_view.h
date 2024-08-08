@@ -28,7 +28,6 @@ class Label;
 namespace ash {
 
 class Combobox;
-class CounterExpandButton;
 struct GlanceablesClassroomAssignment;
 
 // This enum is used for metrics, so enum values should not be changed. New enum
@@ -62,16 +61,12 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   static void ClearUserStatePrefs(PrefService* pref_service);
 
   // GlanceablesTimeManagementBubbleView:
+  void SetExpandState(bool is_expanded, bool expand_by_overscroll) override;
   int GetCollapsedStatePreferredHeight() const override;
 
   // Invalidates any pending assignments requests. Called when the
   // glanceables bubble widget starts closing to avoid unnecessary UI updates.
   void CancelUpdates();
-
-  // Creates `this` view's own background and updates layout accordingly.
-  void CreateElevatedBackground();
-
-  void SetExpandState(bool is_expanded, bool expand_by_overscroll = false);
 
  private:
   // GlanceablesTimeManagementBubbleView:
@@ -80,9 +75,6 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   // Triggers classroom bubble resize animation to new preferred size, if an
   // animation is required.
   void AnimateResize();
-
-  // Toggles `is_expanded_` and updates the layout.
-  void ToggleExpandState();
 
   // Opens classroom url.
   void OpenUrl(const GURL& url) const;
@@ -113,7 +105,6 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   // that it can visually replace it when `combo_box_view_` is hidden.
   raw_ptr<views::Label> combobox_replacement_label_ = nullptr;
   raw_ptr<views::Label> empty_list_label_ = nullptr;
-  raw_ptr<CounterExpandButton> expand_button_ = nullptr;
 
   // Total number of assignments in the selected assignment list.
   size_t total_assignments_ = 0u;

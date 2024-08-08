@@ -50,7 +50,6 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
-#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -159,18 +158,10 @@ GlanceablesTasksView::GlanceablesTasksView(
     const ui::ListModel<api::TaskList>* task_lists)
     : GlanceablesTimeManagementBubbleView(Context::kTasks),
       shown_time_(base::Time::Now()) {
-  auto* header_container = header_view()->parent();
-  expand_button_ =
-      header_container->AddChildView(std::make_unique<GlanceablesExpandButton>(
-          IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_EXPAND_TOOLTIP,
-          IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_COLLAPSE_TOOLTIP));
-  expand_button_->SetID(base::to_underlying(
-      GlanceablesViewId::kTimeManagementBubbleExpandButton));
-  // This is only set visible when both Tasks and Classroom exist, where the
-  // elevated background is created in that case.
-  expand_button_->SetVisible(false);
-  expand_button_->SetCallback(base::BindRepeating(
-      &GlanceablesTasksView::ToggleExpandState, base::Unretained(this)));
+  expand_button()->SetExpandedStateTooltipStringId(
+      IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_EXPAND_TOOLTIP);
+  expand_button()->SetCollapsedStateTooltipStringId(
+      IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_COLLAPSE_TOOLTIP);
 
   add_new_task_button_ = content_scroll_view()->contents()->AddChildViewAt(
       std::make_unique<AddNewTaskButton>(
@@ -326,18 +317,6 @@ void GlanceablesTasksView::UpdateTaskLists(
                      active_task_list->title, ListShownContext::kInitialList));
 }
 
-void GlanceablesTasksView::CreateElevatedBackground() {
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBaseOpaque, 16.f));
-  UpdateInteriorMargin();
-
-  expand_button_->SetVisible(true);
-  expand_button_->SetExpanded(is_expanded_);
-  content_scroll_view()->SetOnOverscrollCallback(base::BindRepeating(
-      &GlanceablesTasksView::SetExpandState, base::Unretained(this),
-      /*is_expanded=*/false, /*expand_by_overscroll=*/true));
-}
-
 void GlanceablesTasksView::SetExpandState(bool is_expanded,
                                           bool expand_by_overscroll) {
   if (is_expanded_ == is_expanded) {
@@ -345,7 +324,7 @@ void GlanceablesTasksView::SetExpandState(bool is_expanded,
   }
 
   is_expanded_ = is_expanded;
-  expand_button_->SetExpanded(is_expanded);
+  expand_button()->SetExpanded(is_expanded);
 
   progress_bar()->SetVisible(is_expanded_);
   content_scroll_view()->SetVisible(is_expanded_);
@@ -373,10 +352,6 @@ void GlanceablesTasksView::SetExpandState(bool is_expanded,
 void GlanceablesTasksView::OnFooterButtonPressed() {
   ActionButtonPressed(TasksLaunchSource::kFooterButton,
                       GURL(kTasksManagementPage));
-}
-
-void GlanceablesTasksView::ToggleExpandState() {
-  SetExpandState(!is_expanded_);
 }
 
 void GlanceablesTasksView::EndResizeAnimationForTest() {
@@ -573,7 +548,7 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
   items_container_view()->SetVisible(
       !items_container_view()->children().empty());
   list_footer_view()->SetVisible(tasks->item_count() >= kMaximumTasks);
-  expand_button_->UpdateCounter(tasks->item_count());
+  expand_button()->UpdateCounter(tasks->item_count());
 
   task_list_combo_box_view_->SetTooltipText(
       l10n_util::GetStringFUTF16(IDS_GLANCEABLES_TASKS_DROPDOWN_ACCESSIBLE_NAME,
@@ -751,7 +726,7 @@ void GlanceablesTasksView::OnTaskSaved(
 
   const size_t tasks_count = items_container_view()->children().size();
   items_container_view()->SetVisible(tasks_count > 0);
-  expand_button_->UpdateCounter(tasks_count);
+  expand_button()->UpdateCounter(tasks_count);
   list_footer_view()->SetVisible(tasks_count >= kMaximumTasks);
 }
 

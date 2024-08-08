@@ -13,10 +13,12 @@
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget.h"
@@ -49,30 +51,38 @@ constexpr gfx::Tween::Type kExpandStateChangeAnimationTweenType =
 }  // namespace
 
 GlanceablesTimeManagementBubbleView::GlanceablesExpandButton::
-    GlanceablesExpandButton(int expand_tooltip_string_id,
-                            int collapse_tooltip_string_id)
-    : expand_tooltip_string_id_(expand_tooltip_string_id),
-      collapse_tooltip_string_id_(collapse_tooltip_string_id) {
-  // Base class ctor doesn't have the tooltip string information yet. Explicitly
-  // call `UpdateTooltip` to set it.
+    GlanceablesExpandButton() = default;
+GlanceablesTimeManagementBubbleView::GlanceablesExpandButton::
+    ~GlanceablesExpandButton() = default;
+
+void GlanceablesTimeManagementBubbleView::GlanceablesExpandButton::
+    SetExpandedStateTooltipStringId(int tooltip_text_id) {
+  expand_tooltip_string_id_ = tooltip_text_id;
   UpdateTooltip();
 }
 
-GlanceablesTimeManagementBubbleView::GlanceablesExpandButton::
-    ~GlanceablesExpandButton() = default;
+void GlanceablesTimeManagementBubbleView::GlanceablesExpandButton::
+    SetCollapsedStateTooltipStringId(int tooltip_text_id) {
+  collapse_tooltip_string_id_ = tooltip_text_id;
+  UpdateTooltip();
+}
 
 std::u16string GlanceablesTimeManagementBubbleView::GlanceablesExpandButton::
     GetExpandedStateTooltipText() const {
   // The tooltip tells users that clicking on the button will collapse the
   // glanceables bubble.
-  return l10n_util::GetStringUTF16(collapse_tooltip_string_id_);
+  return collapse_tooltip_string_id_ == 0
+             ? u""
+             : l10n_util::GetStringUTF16(collapse_tooltip_string_id_);
 }
 
 std::u16string GlanceablesTimeManagementBubbleView::GlanceablesExpandButton::
     GetCollapsedStateTooltipText() const {
   // The tooltip tells users that clicking on the button will expand the
   // glanceables bubble.
-  return l10n_util::GetStringUTF16(expand_tooltip_string_id_);
+  return expand_tooltip_string_id_ == 0
+             ? u""
+             : l10n_util::GetStringUTF16(expand_tooltip_string_id_);
 }
 
 BEGIN_METADATA(GlanceablesTimeManagementBubbleView, GlanceablesExpandButton)
@@ -139,6 +149,17 @@ GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
                                views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithWeight(1));
+
+  expand_button_ = header_container->AddChildView(
+      std::make_unique<GlanceablesExpandButton>());
+  expand_button_->SetID(base::to_underlying(
+      GlanceablesViewId::kTimeManagementBubbleExpandButton));
+  // This is only set visible when both Tasks and Classroom exist, where the
+  // elevated background is created in that case.
+  expand_button_->SetVisible(false);
+  expand_button_->SetCallback(base::BindRepeating(
+      &GlanceablesTimeManagementBubbleView::ToggleExpandState,
+      base::Unretained(this)));
 
   progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
@@ -289,6 +310,19 @@ void GlanceablesTimeManagementBubbleView::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void GlanceablesTimeManagementBubbleView::CreateElevatedBackground() {
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBaseOpaque, 16.f));
+  UpdateInteriorMargin();
+
+  expand_button_->SetVisible(true);
+  expand_button_->SetExpanded(is_expanded_);
+  content_scroll_view_->SetOnOverscrollCallback(base::BindRepeating(
+      &GlanceablesTimeManagementBubbleView::SetExpandState,
+      base::Unretained(this),
+      /*is_expanded=*/false, /*expand_by_overscroll=*/true));
+}
+
 void GlanceablesTimeManagementBubbleView::UpdateInteriorMargin() {
   const bool no_bottom_margin = !GetBackground() || is_expanded_;
   SetInteriorMargin(no_bottom_margin
@@ -299,6 +333,10 @@ void GlanceablesTimeManagementBubbleView::UpdateInteriorMargin() {
                                             kInteriorGlanceableBubbleMargin,
                                             kTotalInteriorMargin,
                                             kInteriorGlanceableBubbleMargin));
+}
+
+void GlanceablesTimeManagementBubbleView::ToggleExpandState() {
+  SetExpandState(!is_expanded_, /*expand_by_overscroll=*/false);
 }
 
 BEGIN_METADATA(GlanceablesTimeManagementBubbleView)

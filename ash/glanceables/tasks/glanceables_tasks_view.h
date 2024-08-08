@@ -31,7 +31,6 @@ class LabelButton;
 namespace ash {
 
 class Combobox;
-class CounterExpandButton;
 class GlanceablesTasksComboboxModel;
 class GlanceablesTaskView;
 
@@ -51,6 +50,7 @@ class ASH_EXPORT GlanceablesTasksView
       const views::SizeBounds& available_size) const override;
 
   // GlanceablesTimeManagementBubbleView:
+  void SetExpandState(bool is_expanded, bool expand_by_overscroll) override;
   int GetCollapsedStatePreferredHeight() const override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
@@ -62,10 +62,6 @@ class ASH_EXPORT GlanceablesTasksView
   // supposed to show.
   void UpdateTaskLists(const ui::ListModel<api::TaskList>* task_lists);
 
-  // Creates `this` view's own background and updates layout accordingly.
-  void CreateElevatedBackground();
-
-  void SetExpandState(bool is_expanded, bool expand_by_overscroll = false);
   void EndResizeAnimationForTest();
 
  private:
@@ -83,9 +79,6 @@ class ASH_EXPORT GlanceablesTasksView
 
   // GlanceablesTimeManagementBubbleView:
   void OnFooterButtonPressed() override;
-
-  // Toggles `is_expanded_` and updates the layout.
-  void ToggleExpandState();
 
   // Handles press behavior for `add_new_task_button_`.
   void AddNewTaskButtonPressed();
@@ -199,7 +192,6 @@ class ASH_EXPORT GlanceablesTasksView
   raw_ptr<views::Label> combobox_replacement_label_ = nullptr;
   raw_ptr<Combobox> task_list_combo_box_view_ = nullptr;
   raw_ptr<views::LabelButton> add_new_task_button_ = nullptr;
-  raw_ptr<CounterExpandButton> expand_button_ = nullptr;
 
   // An invisible view added at the last element to the task list container to
   // more easily track the offset of the bottom of the list from the target

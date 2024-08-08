@@ -65,6 +65,15 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Creates `this` view's own background and updates layout accordingly.
+  void CreateElevatedBackground();
+
+  // Updates `is_expanded_` and the view layout.
+  // `expand_by_overscroll` indicates whether the expand state change is
+  // triggered by overscroll. More information can be found in
+  // `GlanceablesContentsScrollView` class.
+  virtual void SetExpandState(bool is_expanded, bool expand_by_overscroll) = 0;
+
   // Returns the preferred height of `this` in the collapsed state. This is used
   // to calculate the available size for glanceables. This should be constant
   // after the view is laid out.
@@ -83,18 +92,19 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
   class GlanceablesExpandButton : public CounterExpandButton {
     METADATA_HEADER(GlanceablesExpandButton, CounterExpandButton)
    public:
-    GlanceablesExpandButton(int expand_tooltip_string_id,
-                            int collapse_tooltip_string_id);
+    GlanceablesExpandButton();
     ~GlanceablesExpandButton() override;
 
+    void SetExpandedStateTooltipStringId(int tooltip_text_id);
+    void SetCollapsedStateTooltipStringId(int tooltip_text_id);
     std::u16string GetExpandedStateTooltipText() const override;
     std::u16string GetCollapsedStateTooltipText() const override;
 
    private:
     // The tooltip string that tells that the button can expand the bubble.
-    const int expand_tooltip_string_id_;
+    int expand_tooltip_string_id_ = 0;
     // The tooltip string that tells that the button can collapse the bubble.
-    const int collapse_tooltip_string_id_;
+    int collapse_tooltip_string_id_ = 0;
   };
 
   // Linear animation to track time management bubble resize animation - as the
@@ -139,6 +149,7 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
                         GlanceablesErrorMessageView::ButtonActionType type);
 
   views::FlexLayoutView* header_view() { return header_view_; }
+  GlanceablesExpandButton* expand_button() { return expand_button_; }
   GlanceablesProgressBarView* progress_bar() { return progress_bar_; }
   GlanceablesContentsScrollView* content_scroll_view() {
     return content_scroll_view_;
@@ -160,8 +171,12 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
   base::ObserverList<Observer> observers_;
 
  private:
+  // Toggles `is_expanded_` and updates the layout.
+  void ToggleExpandState();
+
   // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView> header_view_ = nullptr;
+  raw_ptr<GlanceablesExpandButton> expand_button_ = nullptr;
   raw_ptr<GlanceablesProgressBarView> progress_bar_ = nullptr;
   raw_ptr<GlanceablesContentsScrollView> content_scroll_view_ = nullptr;
   raw_ptr<views::View> items_container_view_ = nullptr;

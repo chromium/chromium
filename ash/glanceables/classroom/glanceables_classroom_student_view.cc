@@ -49,7 +49,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -201,19 +200,10 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
       cros_tokens::kCrosSysOnSurface);
   combobox_replacement_label_->SetVisible(false);
 
-  auto* header_container = header_view()->parent();
-  expand_button_ =
-      header_container->AddChildView(std::make_unique<GlanceablesExpandButton>(
-          IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_EXPAND_TOOLTIP,
-          IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_COLLAPSE_TOOLTIP));
-  expand_button_->SetID(base::to_underlying(
-      GlanceablesViewId::kTimeManagementBubbleExpandButton));
-  // This is only set visible when both Tasks and Classroom exist, where the
-  // elevated background is created in that case.
-  expand_button_->SetVisible(false);
-  expand_button_->SetCallback(
-      base::BindRepeating(&GlanceablesClassroomStudentView::ToggleExpandState,
-                          base::Unretained(this)));
+  expand_button()->SetExpandedStateTooltipStringId(
+      IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_EXPAND_TOOLTIP);
+  expand_button()->SetCollapsedStateTooltipStringId(
+      IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_COLLAPSE_TOOLTIP);
 
   const auto* const typography_provider = TypographyProvider::Get();
   empty_list_label_ = content_scroll_view()->contents()->AddChildView(
@@ -274,21 +264,6 @@ void GlanceablesClassroomStudentView::CancelUpdates() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void GlanceablesClassroomStudentView::CreateElevatedBackground() {
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBaseOpaque, 16.f));
-  UpdateInteriorMargin();
-
-  list_footer_view()->SetVisible(false);
-  expand_button_->SetVisible(true);
-  expand_button_->SetExpanded(is_expanded_);
-
-  content_scroll_view()->SetOnOverscrollCallback(
-      base::BindRepeating(&GlanceablesClassroomStudentView::SetExpandState,
-                          base::Unretained(this), /*is_expanded=*/false,
-                          /*expand_by_overscroll=*/true));
-}
-
 void GlanceablesClassroomStudentView::SetExpandState(
     bool is_expanded,
     bool expand_by_overscroll) {
@@ -297,7 +272,7 @@ void GlanceablesClassroomStudentView::SetExpandState(
   }
 
   is_expanded_ = is_expanded;
-  expand_button_->SetExpanded(is_expanded);
+  expand_button()->SetExpanded(is_expanded);
 
   progress_bar()->SetVisible(is_expanded_);
   content_scroll_view()->SetVisible(is_expanded_);
@@ -320,10 +295,6 @@ void GlanceablesClassroomStudentView::SetExpandState(
   }
 
   AnimateResize();
-}
-
-void GlanceablesClassroomStudentView::ToggleExpandState() {
-  SetExpandState(!is_expanded_);
 }
 
 void GlanceablesClassroomStudentView::OnFooterButtonPressed() {
@@ -489,7 +460,7 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
                 base::Unretained(this), initial_update, assignments[i]->link)));
   }
   const size_t shown_assignments = items_container_view()->children().size();
-  expand_button_->UpdateCounter(shown_assignments);
+  expand_button()->UpdateCounter(shown_assignments);
 
   const bool is_list_empty = shown_assignments == 0;
   empty_list_label_->SetVisible(is_list_empty);
