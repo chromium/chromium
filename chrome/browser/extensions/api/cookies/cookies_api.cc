@@ -175,13 +175,9 @@ void CookiesEventRouter::OnOffTheRecordProfileCreated(Profile* off_the_record) {
   // When an off-the-record spinoff of |profile_| is created, start listening
   // for cookie changes there. The OTR receiver should never be bound, since
   // there wasn't previously an OTR profile.
-
-  // Note: this assumes OnOffTheRecordProfileCreated() would only be called for
-  // _primary_ OTR profiles (on platforms we care about). If that's not the
-  // case, we would change this to fail gracefully and check the presence of a
-  // primary OTR profile.
-  CHECK(!otr_receiver_.is_bound());
-  BindToCookieManager(&otr_receiver_, off_the_record);
+  if (!otr_receiver_.is_bound()) {
+    BindToCookieManager(&otr_receiver_, off_the_record);
+  }
 }
 
 void CookiesEventRouter::MaybeStartListening() {
