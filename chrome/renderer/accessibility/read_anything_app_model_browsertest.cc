@@ -39,7 +39,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     SetUpdateTreeID(snapshot.get());
 
     AccessibilityEventReceived({*snapshot});
-    set_active_tree_id(tree_id_);
+    SetActiveTreeId(tree_id_);
     Reset({});
   }
 
@@ -103,8 +103,8 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
         const_cast<std::vector<ui::AXEvent>&>(events), speech_playing);
   }
 
-  void set_active_tree_id(ui::AXTreeID tree_id) {
-    model_->set_active_tree_id(tree_id);
+  void SetActiveTreeId(ui::AXTreeID tree_id) {
+    model_->SetActiveTreeId(tree_id);
   }
 
   void UnserializePendingUpdates(ui::AXTreeID tree_id) {
@@ -717,7 +717,7 @@ TEST_F(ReadAnythingAppModelTest, ChangeActiveTreeWithPendingUpdates_UnknownID) {
   EXPECT_EQ(2u, GetNumPendingUpdates(tree_id_));
 
   // Switch to a new active tree. Should not crash.
-  set_active_tree_id(ui::AXTreeIDUnknown());
+  SetActiveTreeId(ui::AXTreeIDUnknown());
 }
 
 TEST_F(ReadAnythingAppModelTest, DisplayNodeIdsContains_ContentNodes) {

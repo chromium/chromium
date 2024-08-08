@@ -45,6 +45,7 @@ class MojoUkmRecorder;
 
 class AXTreeDistiller;
 class ReadAnythingAppControllerTest;
+class ReadAnythingAppControllerScreen2xDataCollectionModeTest;
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingAppController
@@ -88,6 +89,7 @@ class ReadAnythingAppController
 
  private:
   friend ReadAnythingAppControllerTest;
+  friend ReadAnythingAppControllerScreen2xDataCollectionModeTest;
 
   explicit ReadAnythingAppController(content::RenderFrame* render_frame);
   ~ReadAnythingAppController() override;

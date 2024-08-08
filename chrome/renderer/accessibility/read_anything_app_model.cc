@@ -35,6 +35,11 @@
 
 namespace {
 
+base::TimeDelta kTimeElapsedSincePageLoadForDataCollectionSeconds =
+    base::Seconds(30);
+base::TimeDelta kTimeElapsedSinceTreeChangedForDataCollectionSeconds =
+    base::Seconds(10);
+
 bool GetIsGoogleDocs(const GURL& url) {
   // A Google Docs URL is in the form of "https://docs.google.com/document*" or
   // "https://docs.sandbox.google.com/document*".
@@ -534,6 +539,10 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
     if (distillation_in_progress_ || speech_playing) {
       AddPendingUpdates(tree_id, updates);
       ProcessNonGeneratedEvents(events);
+      if (timer_since_tree_changed_for_data_collection_.IsRunning()) {
+        CHECK(features::IsDataCollectionModeForScreen2xEnabled());
+        timer_since_tree_changed_for_data_collection_.Reset();
+      }
       return;
     } else {
       // We need to unserialize old updates before we can unserialize the new
@@ -727,6 +736,23 @@ void ReadAnythingAppModel::OnSelection(ax::mojom::EventFrom event_from) {
   }
 }
 
+void ReadAnythingAppModel::SetActiveTreeId(const ui::AXTreeID& active_tree_id) {
+  active_tree_id_ = active_tree_id;
+  // If data collection mode for screen2x is enabled, begin
+  // `timer_since_page_load_for_data_collection_` from here. This is a
+  // one-shot timer which times 30 seconds from when the active AXTree changes.
+  // This is one of two timers associated with the data collection flow. When
+  // either of these timers expires, this triggers the screen2x distillation
+  // data collection flow.
+  if (features::IsDataCollectionModeForScreen2xEnabled()) {
+    timer_since_page_load_for_data_collection_.Start(
+        FROM_HERE, kTimeElapsedSincePageLoadForDataCollectionSeconds,
+        base::BindOnce(
+            &ReadAnythingAppModel::SetPageFinishedLoadingForDataCollection,
+            weak_ptr_factory_.GetWeakPtr(), true));
+  }
+}
+
 void ReadAnythingAppModel::ProcessNonGeneratedEvents(
     const std::vector<ui::AXEvent>& events) {
   // Note that this list of events may overlap with generated events in the
@@ -738,8 +764,19 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kLoadComplete:
         requires_distillation_ = true;
         page_finished_loading_ = true;
+        // If data collection mode for screen2x is enabled, begin
+        // `timer_since_tree_changed_for_data_collection_` from here. This is a
+        // repeating one-shot timer which times 10 seconds from page load and
+        // resets every time the accessibility tree changes. This is one of two
+        // timers associated with the data collection flow. When either of these
+        // timers expires, this triggers the screen2x distillation data
+        // collection flow.
         if (features::IsDataCollectionModeForScreen2xEnabled()) {
-          page_finished_loading_for_data_collection_ = true;
+          timer_since_tree_changed_for_data_collection_.Start(
+              FROM_HERE, kTimeElapsedSinceTreeChangedForDataCollectionSeconds,
+              base::BindRepeating(&ReadAnythingAppModel::
+                                      SetPageFinishedLoadingForDataCollection,
+                                  weak_ptr_factory_.GetWeakPtr(), true));
         }
 
         // TODO(accessibility): Some pages may never completely load; use a
@@ -932,6 +969,45 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
         break;
     }
+  }
+}
+
+bool ReadAnythingAppModel::ScreenAIServiceReadyForDataColletion() const {
+  CHECK(features::IsDataCollectionModeForScreen2xEnabled());
+  return ScreenAIServiceReadyForDataColletion_;
+}
+
+void ReadAnythingAppModel::SetScreenAIServiceReadyForDataColletion(bool value) {
+  CHECK(features::IsDataCollectionModeForScreen2xEnabled());
+  ScreenAIServiceReadyForDataColletion_ = value;
+  MaybeRunDataCollectionForScreen2xCallback();
+}
+
+bool ReadAnythingAppModel::PageFinishedLoadingForDataCollection() const {
+  CHECK(features::IsDataCollectionModeForScreen2xEnabled());
+  return PageFinishedLoadingForDataCollection_;
+}
+
+void ReadAnythingAppModel::SetPageFinishedLoadingForDataCollection(bool value) {
+  CHECK(features::IsDataCollectionModeForScreen2xEnabled());
+  PageFinishedLoadingForDataCollection_ = value;
+  timer_since_page_load_for_data_collection_.Stop();
+  timer_since_tree_changed_for_data_collection_.Stop();
+  MaybeRunDataCollectionForScreen2xCallback();
+}
+
+void ReadAnythingAppModel::SetDataCollectionForScreen2xCallback(
+    base::RepeatingCallback<void()> callback) {
+  CHECK(features::IsDataCollectionModeForScreen2xEnabled());
+  data_collection_for_screen2x_callback_ = std::move(callback);
+}
+
+void ReadAnythingAppModel::MaybeRunDataCollectionForScreen2xCallback() {
+  CHECK(features::IsDataCollectionModeForScreen2xEnabled());
+  if (PageFinishedLoadingForDataCollection_ &&
+      ScreenAIServiceReadyForDataColletion_) {
+    CHECK(data_collection_for_screen2x_callback_);
+    data_collection_for_screen2x_callback_.Run();
   }
 }
 

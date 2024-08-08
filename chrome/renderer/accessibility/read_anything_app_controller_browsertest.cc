@@ -556,8 +556,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   testing::StrictMock<MockReadAnythingUntrustedPageHandler> page_handler_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
- private:
-  // ReadAnythingAppController constructor and destructor are private so it's
+  // ReadAnythingAppController constructor and destructor are protected so it's
   // not accessible by std::make_unique.
   raw_ptr<ReadAnythingAppController, DanglingUntriaged> controller_ = nullptr;
 };
@@ -4493,4 +4492,179 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(GetWordLength(-5), 0);
   EXPECT_EQ(GetWordLength(sentence.length()), 0);
   EXPECT_EQ(GetWordLength(sentence.length() + 1), 0);
+}
+
+class ReadAnythingAppControllerScreen2xDataCollectionModeTest
+    : public ReadAnythingAppControllerTest {
+ public:
+  void SetUp() override {
+    base::test::ScopedFeatureList features;
+    scoped_feature_list_.InitWithFeatures(
+        {features::kDataCollectionModeForScreen2x}, {});
+    ChromeRenderViewTest::SetUp();
+
+    content::RenderFrame* render_frame =
+        content::RenderFrame::FromWebFrame(GetMainFrame());
+    controller_ = ReadAnythingAppController::Install(render_frame);
+
+    // Set distiller for testing.
+    std::unique_ptr<AXTreeDistiller> distiller =
+        std::make_unique<MockAXTreeDistiller>(render_frame);
+    controller_->distiller_ = std::move(distiller);
+    distiller_ =
+        static_cast<MockAXTreeDistiller*>(controller_->distiller_.get());
+
+    tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
+    ui::AXTreeUpdate snapshot;
+    ui::AXNodeData root;
+    root.id = 1;
+    snapshot.root_id = root.id;
+    snapshot.nodes = {root};
+    SetUpdateTreeID(&snapshot);
+    AccessibilityEventReceived({snapshot});
+    OnAXTreeDistilled({});
+  }
+
+  void SetScreenAIServiceReady() { controller_->ScreenAIServiceReady(); }
+};
+
+TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
+       DoesNotDistillImmediately) {
+  // When the AXTreeID changes, the controller usually will call
+  // distiller_->Distill(). However, with the data collection mode enabled,
+  // Distill() is not called immediately.
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+  SetScreenAIServiceReady();
+  OnActiveAXTreeIDChanged(tree_id_);
+  Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
+       DistillsAfterDelay) {
+  // When the AXTreeID changes, and 30s pass, the controller calls
+  // distiller_->Distill().
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  SetScreenAIServiceReady();
+  OnActiveAXTreeIDChanged(tree_id_);
+  task_environment_.FastForwardBy(base::Seconds(31));
+  Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
+       DistillsAfterDelayScreenAIServiceReady) {
+  // When the AXTreeID changes, and 30s pass, the controller calls
+  // distiller_->Distill() once the screenAI service is ready.
+  OnActiveAXTreeIDChanged(tree_id_);
+  task_environment_.FastForwardBy(base::Seconds(31));
+
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  SetScreenAIServiceReady();
+  Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
+       DoesNotDistillIfScreenAIServiceNotReady) {
+  // When the AXTreeID changes, and 30s pass, the controller does not call
+  // distiller_->Distill() as the screenAI service is not ready.
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+  OnActiveAXTreeIDChanged(tree_id_);
+  task_environment_.FastForwardBy(base::Seconds(31));
+  Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
+       DistillsAfterDelayWhenTreeIsStable) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData root;
+  root.id = 1;
+  ui::AXNodeData node;
+  node.id = 2;
+  root.child_ids = {node.id};
+  update.nodes = {root, node};
+  update.root_id = root.id;
+
+  // When the load complete event is received, and the tree is stable for 10s,
+  // the controller calls distiller_->Distill().
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  SetScreenAIServiceReady();
+  ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
+  OnActiveAXTreeIDChanged(tree_id_);
+  AccessibilityEventReceived({update}, {load_complete});
+  task_environment_.FastForwardBy(base::Seconds(11));
+  Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
+       DoesNotDistillAfterDelayIfTreeIsUnstable) {
+  std::vector<ui::AXTreeUpdate> updates;
+  std::vector<int> child_ids = {};
+  for (int i = 0; i < 2; i++) {
+    ui::AXTreeUpdate update;
+    SetUpdateTreeID(&update);
+    ui::AXNodeData root;
+    root.id = 1;
+    ui::AXNodeData node;
+    node.id = i + 2;
+    child_ids.push_back(node.id);
+    root.child_ids = child_ids;
+    update.nodes = {root, node};
+    update.root_id = root.id;
+    updates.push_back(update);
+  }
+
+  // When the load complete event is received, and the tree remains unstable,
+  // the controller does not call distiller_->Distill().
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+  SetScreenAIServiceReady();
+
+  ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
+  AccessibilityEventReceived({updates[0]}, {load_complete});
+  OnActiveAXTreeIDChanged(tree_id_);
+  task_environment_.FastForwardBy(base::Seconds(9));
+
+  AccessibilityEventReceived({updates[1]});
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xDataCollectionModeTest,
+       DistillsAfter30sDelayEvenIfTreeIsUnstable) {
+  std::vector<ui::AXTreeUpdate> updates;
+  std::vector<int> child_ids = {};
+  for (int i = 0; i < 4; i++) {
+    ui::AXTreeUpdate update;
+    SetUpdateTreeID(&update);
+    ui::AXNodeData root;
+    root.id = 1;
+    ui::AXNodeData node;
+    node.id = i + 2;
+    child_ids.push_back(node.id);
+    root.child_ids = child_ids;
+    update.nodes = {root, node};
+    update.root_id = root.id;
+    updates.push_back(update);
+  }
+
+  // When the load complete event is received, even if the tree remains
+  // unstable, the controller does not calls distiller_->Distill() after 30s.
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  SetScreenAIServiceReady();
+
+  ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
+  AccessibilityEventReceived({updates[0]}, {load_complete});
+  OnActiveAXTreeIDChanged(tree_id_);
+  task_environment_.FastForwardBy(base::Seconds(9));
+
+  AccessibilityEventReceived({updates[1]});
+  task_environment_.FastForwardBy(base::Seconds(9));
+
+  AccessibilityEventReceived({updates[2]});
+  task_environment_.FastForwardBy(base::Seconds(9));
+
+  AccessibilityEventReceived({updates[3]});
+  task_environment_.FastForwardBy(base::Seconds(4));
+
+  Mock::VerifyAndClearExpectations(distiller_);
 }

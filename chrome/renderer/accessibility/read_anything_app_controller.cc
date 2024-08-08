@@ -416,6 +416,10 @@ ReadAnythingAppController::ReadAnythingAppController(
   content::RenderThread::Get()->BindHostReceiver(
       factory.BindNewPipeAndPassReceiver());
   ukm_recorder_ = ukm::MojoUkmRecorder::Create(*factory);
+  if (features::IsDataCollectionModeForScreen2xEnabled()) {
+    model_.SetDataCollectionForScreen2xCallback(base::BindRepeating(
+        &ReadAnythingAppController::Distill, base::Unretained(this)));
+  }
 }
 
 ReadAnythingAppController::~ReadAnythingAppController() {
@@ -537,7 +541,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   // Cancel any running draw timers.
   post_user_entry_draw_timer_.Stop();
 
-  model_.set_active_tree_id(tree_id);
+  model_.SetActiveTreeId(tree_id);
   model_.set_ukm_source_id(ukm_source_id);
   model_.set_is_pdf(is_pdf);
   // Delete all pending updates on the formerly active AXTree.
@@ -587,8 +591,8 @@ void ReadAnythingAppController::Distill() {
   // to a local file. Distill should only be called once the page is finished
   // loading, so we have the proto representing the entire webpage.
   if (features::IsDataCollectionModeForScreen2xEnabled() &&
-      (!model_.page_finished_loading_for_data_collection() ||
-       !model_.screen_ai_service_ready_for_data_collection())) {
+      (!model_.PageFinishedLoadingForDataCollection() ||
+       !model_.ScreenAIServiceReadyForDataColletion())) {
     return;
   }
 
@@ -698,11 +702,12 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   } else {
     // Request a screenshot of the active page when no more distillations are
     // required.
-    if (model_.page_finished_loading_for_data_collection()) {
+    if (features::IsDataCollectionModeForScreen2xEnabled() &&
+        model_.PageFinishedLoadingForDataCollection()) {
       // Send a snapshot request to its browser controller using `PaintPreview`
       // to take a whole-page snapshot of the active web contents.
       page_handler_->OnSnapshotRequested();
-      model_.set_page_finished_loading_for_data_collection(false);
+      model_.SetPageFinishedLoadingForDataCollection(false);
     }
   }
 }
@@ -773,7 +778,9 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
 }
 
 void ReadAnythingAppController::ScreenAIServiceReady() {
-  model_.set_screen_ai_service_ready_for_data_collection(true);
+  if (features::IsDataCollectionModeForScreen2xEnabled()) {
+    model_.SetScreenAIServiceReadyForDataColletion(true);
+  }
   distiller_->ScreenAIServiceReady();
 }
 

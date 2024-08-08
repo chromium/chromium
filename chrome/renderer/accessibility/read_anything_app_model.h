@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/containers/contains.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
@@ -131,18 +132,16 @@ class ReadAnythingAppModel {
     return display_node_ids_.empty() && selection_node_ids_.empty();
   }
 
-  bool screen_ai_service_ready_for_data_collection() const {
-    return screen_ai_service_ready_for_data_collection_;
-  }
-  void set_screen_ai_service_ready_for_data_collection(bool value) {
-    screen_ai_service_ready_for_data_collection_ = value;
-  }
-  bool page_finished_loading_for_data_collection() const {
-    return page_finished_loading_for_data_collection_;
-  }
-  void set_page_finished_loading_for_data_collection(bool value) {
-    page_finished_loading_for_data_collection_ = value;
-  }
+  // The following methods are used for the screen2x data collection pipeline.
+  // They all have CHECKs to ensure that the DataCollectionModeForScreen2x
+  // feature flag is enabled.
+  bool ScreenAIServiceReadyForDataColletion() const;
+  void SetScreenAIServiceReadyForDataColletion(bool value);
+  bool PageFinishedLoadingForDataCollection() const;
+  void SetPageFinishedLoadingForDataCollection(bool value);
+  void SetDataCollectionForScreen2xCallback(
+      base::RepeatingCallback<void()> callback);
+
   bool page_finished_loading() const { return page_finished_loading_; }
   void set_page_finished_loading(bool value) {
     page_finished_loading_ = value;
@@ -161,9 +160,7 @@ class ReadAnythingAppModel {
   }
 
   const ui::AXTreeID& active_tree_id() const { return active_tree_id_; }
-  void set_active_tree_id(const ui::AXTreeID& active_tree_id) {
-    active_tree_id_ = active_tree_id;
-  }
+  void SetActiveTreeId(const ui::AXTreeID& active_tree_id);
 
   void SetDistillationInProgress(bool distillation) {
     distillation_in_progress_ = distillation;
@@ -272,6 +269,11 @@ class ReadAnythingAppModel {
                               size_t prev_tree_size,
                               size_t tree_size);
 
+  // Runs the data collection for screen2x pipeline, provided in the form of a
+  // callback from the ReadAnythingAppController. This should only be called
+  // when the DataCollectionModeForScreen2x feature is enabled.
+  void MaybeRunDataCollectionForScreen2xCallback();
+
   // State.
   std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>
       tree_infos_;
@@ -348,8 +350,11 @@ class ReadAnythingAppModel {
   // webpage. We record the result of the distill() call for this entire
   // webpage, so we only make the call once the webpage finished loading and
   // screen ai has loaded.
-  bool screen_ai_service_ready_for_data_collection_ = false;
-  bool page_finished_loading_for_data_collection_ = false;
+  bool ScreenAIServiceReadyForDataColletion_ = false;
+  bool PageFinishedLoadingForDataCollection_ = false;
+  base::OneShotTimer timer_since_page_load_for_data_collection_;
+  base::RetainingOneShotTimer timer_since_tree_changed_for_data_collection_;
+  base::RepeatingCallback<void()> data_collection_for_screen2x_callback_;
 
   // Whether the webpage has finished loading or not.
   bool page_finished_loading_ = false;
@@ -361,6 +366,8 @@ class ReadAnythingAppModel {
   // asynchronously from the language determination so we need to keep track of
   // that here.
   bool requires_tree_lang_ = false;
+
+  base::WeakPtrFactory<ReadAnythingAppModel> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_
