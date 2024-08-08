@@ -12,7 +12,6 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/strings/grit/components_strings.h"
@@ -47,7 +46,9 @@ class TestOfferNotificationBubbleControllerImpl
 class OfferNotificationBubbleControllerImplTest
     : public BrowserWithTestWindowTest {
  public:
-  OfferNotificationBubbleControllerImplTest() = default;
+  OfferNotificationBubbleControllerImplTest()
+      : BrowserWithTestWindowTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   OfferNotificationBubbleControllerImplTest(
       const OfferNotificationBubbleControllerImplTest&) = delete;
   OfferNotificationBubbleControllerImplTest& operator=(
@@ -141,7 +142,6 @@ class OfferNotificationBubbleControllerImplTest
     controller->coupon_service_ = coupon_service;
   }
 
-  TestAutofillClock test_clock_;
   MockCouponService mock_coupon_service_;
 
  private:
@@ -166,14 +166,15 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
       /*eligible_instrument_ids=*/{123});
   ShowBubble(offer);
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
-  test_clock_.Advance(kAutofillBubbleSurviveNavigationTime - base::Seconds(1));
+  task_environment()->FastForwardBy(kAutofillBubbleSurviveNavigationTime -
+                                    base::Seconds(1));
   controller()->ShowOfferNotificationIfApplicable(
       offer, nullptr, {.notification_has_been_shown = true});
   // Ensure the bubble is still there if
   // kOfferNotificationBubbleSurviveNavigationTime hasn't been reached yet.
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
 
-  test_clock_.Advance(base::Seconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
   controller()->ShowOfferNotificationIfApplicable(
       offer, nullptr, {.notification_has_been_shown = true});
   // Ensure new page does not have an active offer notification bubble.

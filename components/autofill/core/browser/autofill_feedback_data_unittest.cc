@@ -10,7 +10,6 @@
 #include "base/values.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -133,7 +132,8 @@ class AutofillFeedbackDataUnitTest : public testing::Test {
         std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient autofill_client_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
@@ -191,7 +191,6 @@ TEST_F(AutofillFeedbackDataUnitTest, IncludesLastAutofillEventLogEntry) {
 
 TEST_F(AutofillFeedbackDataUnitTest,
        NotIncludeLastAutofillEventIfExceedTimeLimit) {
-  TestAutofillClock clock(AutofillClock::Now());
   FormData form = CreateFeedbackTestFormData();
   const FormFieldData& field = form.fields()[0];
   browser_autofill_manager_->OnFormsSeen(
@@ -204,7 +203,7 @@ TEST_F(AutofillFeedbackDataUnitTest,
                                                              field);
 
   // Advance the clock 4 minutes should disregard the last autofill event log.
-  clock.Advance(base::Minutes(4));
+  task_environment_.FastForwardBy(base::Minutes(4));
 
   // Expected data does not contain the last_autofill_event entry.
   ASSERT_OK_AND_ASSIGN(
