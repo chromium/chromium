@@ -14,6 +14,7 @@
 #include "ash/system/bluetooth/hid_preserving_controller/disable_bluetooth_dialog_controller.h"
 #include "chromeos/constants/devicetype.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/bulleted_label_list/bulleted_label_list_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/layout_provider.h"
@@ -98,7 +99,7 @@ void DisableBluetoothDialogControllerImpl::ShowDialog(
       std::make_unique<views::BulletedLabelListView>(
           std::move(texts), views::style::TextStyle::STYLE_SECONDARY);
 
-  dialog->SetModalType(ui::MODAL_TYPE_SYSTEM);
+  dialog->SetModalType(ui::mojom::ModalType::kSystem);
   dialog->SetShowCloseButton(false);
   dialog->SetMiddleContentView(std::move(list_view));
   dialog->SetMiddleContentAlignment(views::LayoutAlignment::kStart);

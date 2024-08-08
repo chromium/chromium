@@ -30,6 +30,7 @@
 #include "content/public/common/referrer.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
@@ -144,7 +145,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
         controller->OnDialogDestroyed();
       },
       controller));
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 

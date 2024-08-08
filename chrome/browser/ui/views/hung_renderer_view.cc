@@ -38,6 +38,7 @@
 #include "content/public/common/result_codes.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -279,7 +280,7 @@ bool HungRendererDialogView::IsShowingForWebContents(WebContents* contents) {
 
 HungRendererDialogView::HungRendererDialogView(WebContents* web_contents)
     : web_contents_(web_contents) {
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kControl));
   auto info_label = std::make_unique<views::Label>(

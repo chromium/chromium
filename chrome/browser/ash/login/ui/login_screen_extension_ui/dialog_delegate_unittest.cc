@@ -19,6 +19,7 @@
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "url/url_constants.h"
 
 namespace ash {
@@ -50,7 +51,7 @@ TEST_F(DialogDelegateUnittest, Test) {
   // the test.
   DialogDelegate* delegate = new DialogDelegate(&create_options);
 
-  EXPECT_EQ(ui::MODAL_TYPE_WINDOW, delegate->GetDialogModalType());
+  EXPECT_EQ(ui::mojom::ModalType::kWindow, delegate->GetDialogModalType());
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_LOGIN_EXTENSION_UI_DIALOG_TITLE,
                                        kExtensionName16),
             delegate->GetDialogTitle());

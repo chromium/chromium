@@ -14,6 +14,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -182,7 +183,7 @@ views::Widget* CreateSubAppsInstallDialogWidget(
           .Build();
 
   auto dialog = views::BubbleDialogModelHost::CreateModal(
-      std::move(dialog_model), ui::MODAL_TYPE_WINDOW);
+      std::move(dialog_model), ui::mojom::ModalType::kWindow);
   dialog->SetOwnedByWidget(true);
 
   views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(

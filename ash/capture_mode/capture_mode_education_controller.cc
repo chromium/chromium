@@ -27,6 +27,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/table_layout.h"
@@ -145,7 +146,7 @@ std::unique_ptr<SystemDialogDelegateView> CreateDialogView() {
   // the shortcut view has already been set by the `content_view` margins.
   dialog->SetTitleMargins(gfx::Insets());
   dialog->SetAcceptButtonVisible(false);
-  dialog->SetModalType(ui::ModalType::MODAL_TYPE_SYSTEM);
+  dialog->SetModalType(ui::mojom::ModalType::kSystem);
   return dialog;
 }
 

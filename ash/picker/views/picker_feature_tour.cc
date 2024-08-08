@@ -119,7 +119,7 @@ std::unique_ptr<views::Widget> CreateWidget(
                       cros_tokens::kCrosSysIlloColor12,
                       kFeatureTourDialogIllustrationCornerRadii))
                   .SetImage(GetIllustration()))
-          .SetModalType(ui::ModalType::MODAL_TYPE_SYSTEM)
+          .SetModalType(ui::mojom::ModalType::kSystem)
           .Build();
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);

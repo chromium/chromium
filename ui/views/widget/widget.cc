@@ -28,6 +28,7 @@
 #include "ui/base/l10n/l10n_font_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/compositor/compositor.h"
@@ -1584,7 +1585,7 @@ bool Widget::IsModal() const {
   if (!widget_delegate_)
     return false;
 
-  return widget_delegate_->GetModalType() != ui::MODAL_TYPE_NONE;
+  return widget_delegate_->GetModalType() != ui::mojom::ModalType::kNone;
 }
 
 bool Widget::IsDialogBox() const {

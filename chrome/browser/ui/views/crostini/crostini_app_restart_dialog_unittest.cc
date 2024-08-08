@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -33,7 +34,7 @@ TEST_F(CrostiniAppRestartDialogTest, OnlyHasOkButton) {
 TEST_F(CrostiniAppRestartDialogTest, IsSystemModal) {
   auto widget = ShowDialog();
   EXPECT_EQ(widget->widget_delegate()->AsDialogDelegate()->GetModalType(),
-            ui::MODAL_TYPE_SYSTEM);
+            ui::mojom::ModalType::kSystem);
 }
 
 TEST_F(CrostiniAppRestartDialogTest, ContentsViewHasModalPreferredWidth) {

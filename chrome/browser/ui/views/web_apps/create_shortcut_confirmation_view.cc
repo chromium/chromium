@@ -29,6 +29,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -110,7 +111,7 @@ CreateShortcutConfirmationView::CreateShortcutConfirmationView(
           .SetButtonLabel(
               ui::DIALOG_BUTTON_OK,
               l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_BUTTON_LABEL))
-          .SetModalType(ui::MODAL_TYPE_CHILD)
+          .SetModalType(ui::mojom::ModalType::kChild)
           .SetTitle(IDS_ADD_TO_OS_LAUNCH_SURFACE_BUBBLE_TITLE)
           .SetAcceptCallback(
               base::BindOnce(&CreateShortcutConfirmationView::OnAccept,

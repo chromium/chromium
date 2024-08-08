@@ -8,13 +8,14 @@
 
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 
 namespace ui {
 
 WebDialogDelegate::WebDialogDelegate() = default;
 WebDialogDelegate::~WebDialogDelegate() = default;
 
-ModalType WebDialogDelegate::GetDialogModalType() const {
+mojom::ModalType WebDialogDelegate::GetDialogModalType() const {
   return modal_type_;
 }
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_BASE_LOCK_DIALOG_H_
 
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 
 namespace ash {
 
@@ -20,7 +21,7 @@ class BaseLockDialog : public SystemWebDialogDelegate {
   // ui::WebDialogDelegate:
   void GetDialogSize(gfx::Size* size) const override;
   void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
-  ui::ModalType GetDialogModalType() const override;
+  ui::mojom::ModalType GetDialogModalType() const override;
 
   static constexpr gfx::Size kBaseLockDialogSize = gfx::Size(768, 640);
 

@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
@@ -73,7 +74,7 @@ void CaptivePortalView::LoadingStateChanged(content::WebContents* source,
 std::unique_ptr<views::WidgetDelegate> CaptivePortalView::MakeWidgetDelegate() {
   auto delegate = SimpleWebViewDialog::MakeWidgetDelegate();
   delegate->SetCanResize(false);
-  delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
+  delegate->SetModalType(ui::mojom::ModalType::kSystem);
   delegate->SetShowTitle(true);
   delegate->SetTitle(
       l10n_util::GetStringFUTF16(IDS_LOGIN_CAPTIVE_PORTAL_WINDOW_TITLE,

@@ -130,13 +130,13 @@ std::u16string AppModalDialogViewViews::GetWindowTitle() const {
   return controller_->title();
 }
 
-ui::ModalType AppModalDialogViewViews::GetModalType() const {
+ui::mojom::ModalType AppModalDialogViewViews::GetModalType() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/40148438): Remove this hack. This works around the
   // linked bug. This dialog should be window-modal on ChromeOS as well.
-  return ui::MODAL_TYPE_SYSTEM;
+  return ui::mojom::ModalType::kSystem;
 #else
-  return ui::MODAL_TYPE_WINDOW;
+  return ui::mojom::ModalType::kWindow;
 #endif
 }
 

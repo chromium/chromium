@@ -10,6 +10,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -108,8 +109,8 @@ views::Widget* DesktopDataControlsDialog::GetWidget() {
   return contents_view_->GetWidget();
 }
 
-ui::ModalType DesktopDataControlsDialog::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
+ui::mojom::ModalType DesktopDataControlsDialog::GetModalType() const {
+  return ui::mojom::ModalType::kChild;
 }
 
 bool DesktopDataControlsDialog::ShouldShowCloseButton() const {

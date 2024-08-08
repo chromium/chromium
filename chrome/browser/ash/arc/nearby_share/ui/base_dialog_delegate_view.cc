@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/label.h"
@@ -22,7 +23,7 @@ BaseDialogDelegateView::BaseDialogDelegateView(views::View* anchor_view)
   set_margins(gfx::Insets());
   set_adjust_if_offscreen(true);
   set_close_on_deactivate(false);
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   SetAccessibleWindowRole(ax::mojom::Role::kDialog);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)

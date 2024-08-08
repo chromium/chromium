@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget.h"
@@ -187,7 +188,7 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   virtual void SetWindowIcons(const gfx::ImageSkia& window_icon,
                               const gfx::ImageSkia& app_icon) = 0;
 
-  virtual void InitModalType(ui::ModalType modal_type) = 0;
+  virtual void InitModalType(ui::mojom::ModalType modal_type) = 0;
 
   virtual void FlashFrame(bool flash_frame) = 0;
 

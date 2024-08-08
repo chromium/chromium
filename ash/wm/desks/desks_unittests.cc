@@ -134,6 +134,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -198,7 +199,7 @@ std::unique_ptr<aura::Window> CreateTransientModalChildWindow(
     aura::Window* transient_parent) {
   auto child =
       CreateTransientWindow(transient_parent, gfx::Rect(20, 30, 200, 150));
-  child->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  child->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
   ::wm::SetModalParent(child.get(), transient_parent);
   return child;
 }

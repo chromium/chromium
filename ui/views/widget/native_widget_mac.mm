@@ -24,6 +24,7 @@
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -61,8 +62,9 @@ uint64_t StyleMaskForParams(const Widget::InitParams& params) {
   // NSWindowStyleMaskFullSizeContentView ensures that calculating the modal's
   // content rect doesn't account for a nonexistent title bar.
   if (params.delegate &&
-      params.delegate->GetModalType() == ui::MODAL_TYPE_WINDOW)
+      params.delegate->GetModalType() == ui::mojom::ModalType::kWindow) {
     return NSWindowStyleMaskTitled | NSWindowStyleMaskFullSizeContentView;
+  }
 
   // TODO(tapted): Determine better masks when there are use cases for it.
   if (params.remove_standard_frame)
@@ -484,17 +486,19 @@ void NativeWidgetMac::SetWindowIcons(const gfx::ImageSkia& window_icon,
   // an icon next to the window title. See http://crbug.com/766897.
 }
 
-void NativeWidgetMac::InitModalType(ui::ModalType modal_type) {
-  if (modal_type == ui::MODAL_TYPE_NONE)
+void NativeWidgetMac::InitModalType(ui::mojom::ModalType modal_type) {
+  if (modal_type == ui::mojom::ModalType::kNone) {
     return;
+  }
 
   // System modal windows not implemented (or used) on Mac.
-  DCHECK_NE(ui::MODAL_TYPE_SYSTEM, modal_type);
+  DCHECK_NE(ui::mojom::ModalType::kSystem, modal_type);
 
   // A peculiarity of the constrained window framework is that it permits a
   // dialog of MODAL_TYPE_WINDOW to have a null parent window; falling back to
   // a non-modal window in this case.
-  DCHECK(ns_window_host_->parent() || modal_type == ui::MODAL_TYPE_WINDOW);
+  DCHECK(ns_window_host_->parent() ||
+         modal_type == ui::mojom::ModalType::kWindow);
 
   // Everything happens upon show.
 }

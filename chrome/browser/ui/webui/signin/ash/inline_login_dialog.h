@@ -16,6 +16,7 @@
 #include "components/account_manager_core/account_addition_options.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 
 class GURL;
 
@@ -57,7 +58,7 @@ class InlineLoginDialog : public SystemWebDialogDelegate,
 
   // ui::WebDialogDelegate overrides
   void GetDialogSize(gfx::Size* size) const override;
-  ui::ModalType GetDialogModalType() const override;
+  ui::mojom::ModalType GetDialogModalType() const override;
   bool ShouldShowDialogTitle() const override;
   void OnDialogShown(content::WebUI* webui) override;
   void OnDialogClosed(const std::string& json_retval) override;

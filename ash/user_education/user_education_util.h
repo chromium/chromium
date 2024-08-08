@@ -14,6 +14,7 @@
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_manager/user_type.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 
 class AccountId;
@@ -50,7 +51,7 @@ CreateExtendedProperties(HelpBubbleId help_bubble_id);
 
 // Returns extended properties for a help bubble having set `modal_type`.
 ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
-CreateExtendedProperties(ui::ModalType modal_type);
+CreateExtendedProperties(ui::mojom::ModalType modal_type);
 
 // Returns extended properties for a help bubble having set `accessible_name`.
 ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
@@ -67,7 +68,7 @@ Example usage:
 const user_education::HelpBubbleParams::ExtendedProperties
       extended_properties = CreateExtendedProperties(
           CreateExtendedProperties(HelpBubbleId::kTest),
-          CreateExtendedProperties(ui::MODAL_TYPE_SYSTEM));
+          CreateExtendedProperties(ui::mojom::ModalType::kSystem));
 */
 template <typename... Properties>
 ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
@@ -110,7 +111,7 @@ ASH_EXPORT HelpBubbleId GetHelpBubbleId(
         extended_properties);
 
 // Returns modal type from the specified `extended_properties`.
-ASH_EXPORT ui::ModalType GetHelpBubbleModalType(
+ASH_EXPORT ui::mojom::ModalType GetHelpBubbleModalType(
     const user_education::HelpBubbleParams::ExtendedProperties&
         extended_properties);
 

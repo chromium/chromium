@@ -160,9 +160,10 @@ void DesktopWindowTreeHostLinux::OnNativeWidgetCreated(
   DesktopWindowTreeHostPlatform::OnNativeWidgetCreated(params);
 }
 
-void DesktopWindowTreeHostLinux::InitModalType(ui::ModalType modal_type) {
+void DesktopWindowTreeHostLinux::InitModalType(
+    ui::mojom::ModalType modal_type) {
   switch (modal_type) {
-    case ui::MODAL_TYPE_NONE:
+    case ui::mojom::ModalType::kNone:
       break;
     default:
       // TODO(erg): Figure out under what situations |modal_type| isn't

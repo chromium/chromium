@@ -13,6 +13,7 @@
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
@@ -57,7 +58,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostLacros
  protected:
   // Overridden from DesktopWindowTreeHost:
   void OnNativeWidgetCreated(const Widget::InitParams& params) override;
-  void InitModalType(ui::ModalType modal_type) override;
+  void InitModalType(ui::mojom::ModalType modal_type) override;
 
   // PlatformWindowDelegate:
   void OnClosed() override;

@@ -14,6 +14,7 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -56,7 +57,7 @@ class DesktopMediaPicker {
     // Parent window the dialog is relative to, only used on Mac.
     gfx::NativeWindow parent = gfx::NativeWindow();
     // The modality used for showing the dialog.
-    ui::ModalType modality = ui::ModalType::MODAL_TYPE_CHILD;
+    ui::mojom::ModalType modality = ui::mojom::ModalType::kChild;
     // The name used in the dialog for what is requesting the picker to be
     // shown.
     std::u16string app_name;

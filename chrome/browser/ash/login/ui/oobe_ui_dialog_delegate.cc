@@ -37,6 +37,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -207,7 +208,9 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
   bool GetHasShelf() const { return has_shelf_; }
 
   // views::WidgetDelegateView:
-  ui::ModalType GetModalType() const override { return ui::MODAL_TYPE_WINDOW; }
+  ui::mojom::ModalType GetModalType() const override {
+    return ui::mojom::ModalType::kWindow;
+  }
 
   void Layout(PassKey) override {
     if (fullscreen_) {
@@ -252,7 +255,7 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
   set_can_close(true);
   set_can_resize(false);
   set_dialog_content_url(GURL(kGaiaURL));
-  set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+  set_dialog_modal_type(ui::mojom::ModalType::kWindow);
   set_show_dialog_title(false);
   keyboard_observer_.Observe(ChromeKeyboardControllerClient::Get());
 

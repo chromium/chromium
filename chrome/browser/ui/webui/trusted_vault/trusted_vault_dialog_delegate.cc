@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -65,7 +66,7 @@ TrustedVaultDialogDelegate::TrustedVaultDialogDelegate(
   set_allow_default_context_menu(false);
   set_can_close(true);
   set_dialog_content_url(url);
-  set_dialog_modal_type(ui::ModalType::MODAL_TYPE_NONE);
+  set_dialog_modal_type(ui::mojom::ModalType::kNone);
   set_dialog_size(kDefaultSize);
   set_show_dialog_title(false);
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(

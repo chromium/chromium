@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -35,7 +36,7 @@ ShutdownConfirmationDialog::ShutdownConfirmationDialog(
     base::OnceClosure on_cancel_callback) {
   SetTitle(l10n_util::GetStringUTF16(window_title_text_id));
   SetShowCloseButton(false);
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
+  SetModalType(ui::mojom::ModalType::kSystem);
 
   SetButtonLabel(
       ui::DIALOG_BUTTON_OK,

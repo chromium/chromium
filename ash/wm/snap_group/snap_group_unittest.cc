@@ -110,6 +110,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
@@ -3997,7 +3998,8 @@ TEST_F(SnapGroupDividerTest, DividerStackingOrderWithTransientWindow) {
 
   auto w1_transient =
       CreateTransientChildWindow(w1.get(), gfx::Rect(100, 200, 200, 200));
-  w1_transient->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  w1_transient->SetProperty(aura::client::kModalKey,
+                            ui::mojom::ModalType::kWindow);
   wm::SetModalParent(w1_transient.get(), w1.get());
   EXPECT_TRUE(window_util::IsStackedBelow(divider_window, w1_transient.get()));
 }
@@ -4017,16 +4019,17 @@ TEST_F(SnapGroupDividerTest, DividerStackingOrderWithTwoTransientWindows) {
   ASSERT_TRUE(window_util::IsStackedBelow(w1.get(), divider_window));
   ASSERT_TRUE(window_util::IsStackedBelow(w2.get(), divider_window));
 
-  // By default `w1_transient` is `MODAL_TYPE_NONE`, meaning that the associated
+  // By default `w1_transient` is `ModalType::NONE`, meaning that the associated
   // `w1` is interactable.
   std::unique_ptr<aura::Window> w1_transient(
       CreateTransientChildWindow(w1.get(), gfx::Rect(10, 20, 20, 30)));
 
   // Add transient window for `w2` and making it not interactable by setting it
-  // with the type of `ui::MODAL_TYPE_WINDOW`.
+  // with the type of `ui::mojom::ModalType::kWindow`.
   std::unique_ptr<aura::Window> w2_transient(
       CreateTransientChildWindow(w2.get(), gfx::Rect(200, 20, 20, 30)));
-  w2_transient->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  w2_transient->SetProperty(aura::client::kModalKey,
+                            ui::mojom::ModalType::kWindow);
   wm::SetModalParent(w2_transient.get(), w2.get());
 
   // The expected stacking order is as follows:
@@ -4499,7 +4502,7 @@ TEST_F(SnapGroupDividerTest, DoubleTapDividerWithTransient) {
   auto* divider_widget = divider->divider_widget();
   ASSERT_TRUE(divider_widget);
 
-  // By default transient is `MODAL_TYPE_NONE`, meaning that the associated
+  // By default transient is `ModalType::NONE`, meaning that the associated
   // window is interactable.
   std::unique_ptr<aura::Window> w1_transient(
       CreateTransientChildWindow(w1.get(), gfx::Rect(10, 20, 20, 30)));
@@ -5966,7 +5969,7 @@ TEST_F(SnapGroupOverviewTest, HideBubbleTransientInOverview) {
   EXPECT_TRUE(
       w0->GetBoundsInScreen().Contains(bubble_window0->GetBoundsInScreen()));
 
-  // By default `w1_transient` is `MODAL_TYPE_NONE`.
+  // By default `w1_transient` is `ModalType::NONE`.
   std::unique_ptr<aura::Window> w1_transient(
       CreateTransientChildWindow(w1.get(), gfx::Rect(510, 30, 50, 30)));
   wm::AddTransientChild(w1.get(), w1_transient.get());
@@ -5998,11 +6001,12 @@ TEST_F(SnapGroupOverviewTest, NoDuplicateGroupItemsWithActivatableTransient) {
   SnapTwoTestWindows(w0.get(), w1.get(), /*horizontal=*/true,
                      GetEventGenerator());
 
-  // By default `w1_transient` is `MODAL_TYPE_NONE`, meaning that the associated
+  // By default `w1_transient` is `ModalType::NONE`, meaning that the associated
   // `w1` is interactable.
   auto w1_transient =
       CreateTransientChildWindow(w1.get(), gfx::Rect(600, 200, 200, 200));
-  w1_transient->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  w1_transient->SetProperty(aura::client::kModalKey,
+                            ui::mojom::ModalType::kWindow);
   wm::SetModalParent(w1_transient.get(), w1.get());
 
   wm::ActivateWindow(w0.get());

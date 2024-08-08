@@ -75,15 +75,6 @@ enum class ButtonStyle {
   kProminent,
 };
 
-// Specifies the type of modality applied to a window. Different modal
-// treatments may be handled differently by the window manager.
-enum ModalType {
-  MODAL_TYPE_NONE = 0,    // Window is not modal.
-  MODAL_TYPE_WINDOW = 1,  // Window is modal to its transient parent.
-  MODAL_TYPE_CHILD = 2,   // Window is modal to a child of its transient parent.
-  MODAL_TYPE_SYSTEM = 3   // Window is modal to all other windows.
-};
-
 // The class of window and its overall z-order. Only the Mac provides this
 // level of z-order granularity. For other platforms, which only provide a
 // distinction between "normal" and "always on top" windows, any of the values

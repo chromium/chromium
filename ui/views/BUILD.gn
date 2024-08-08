@@ -599,6 +599,7 @@ component("views") {
     "//ui/base/emoji",
     "//ui/base/ime/init",
     "//ui/base/metadata",
+    "//ui/base/mojom:mojom",
     "//ui/compositor",
     "//ui/display",
     "//ui/events",
@@ -1145,6 +1146,7 @@ source_set("test_support") {
   public_deps = [
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/mojom:mojom",
   ]
 
   if (is_win) {
@@ -1372,6 +1374,7 @@ test("views_unittests") {
     "//ui/base/dragdrop/mojom",
     "//ui/base/emoji",
     "//ui/base/ime/init",
+    "//ui/base/mojom:mojom",
     "//ui/color",
     "//ui/color:mixers",
     "//ui/compositor:test_support",
@@ -1608,6 +1611,8 @@ source_set("views_interactive_ui_tests") {
     "//ui/resources:ui_test_pak",
     "//ui/strings",
   ]
+
+  public_deps = [ "//ui/base/mojom:mojom" ]
 
   if (is_win) {
     sources += [ "accessibility/ax_system_caret_win_interactive_uitest.cc" ]

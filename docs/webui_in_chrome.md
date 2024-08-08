@@ -358,7 +358,7 @@ do that, some small changes are needed to your code.  First, we need to add a ne
  private:
   HelloWorldDialog();
   // ui::WebDialogDelegate:
-  ui::ModalType GetDialogModalType() const override;
+  ui::mojom::ModalType GetDialogModalType() const override;
   std::u16string GetDialogTitle() const override;
   GURL GetDialogContentURL() const override;
   void GetWebUIMessageHandlers(
@@ -387,8 +387,8 @@ void HelloWorldDialog::Show() {
                         new HelloWorldDialog());
 }
 
-ui::ModalType HelloWorldDialog::GetDialogModalType() const {
-  return ui::MODAL_TYPE_NONE;
+ui::mojom::ModalType HelloWorldDialog::GetDialogModalType() const {
+  return ui::mojom::ModalType::kNone;
 }
 
 std::u16string HelloWorldDialog::GetDialogTitle() const {

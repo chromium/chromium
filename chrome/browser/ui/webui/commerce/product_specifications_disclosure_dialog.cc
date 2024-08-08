@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/view_class_properties.h"
@@ -152,7 +153,7 @@ ProductSpecificationsDisclosureDialog::ProductSpecificationsDisclosureDialog(
   set_dialog_size(kDialogSize);
   set_can_close(true);
   set_allow_default_context_menu(false);
-  set_dialog_modal_type(ui::ModalType::MODAL_TYPE_CHILD);
+  set_dialog_modal_type(ui::mojom::ModalType::kChild);
   set_dialog_args(base::WriteJson(dialog_args.ToValue()).value());
 }
 

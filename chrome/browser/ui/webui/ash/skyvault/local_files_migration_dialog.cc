@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
@@ -76,8 +77,8 @@ bool LocalFilesMigrationDialog::ShouldShowCloseButton() const {
   return false;
 }
 
-ui::ModalType LocalFilesMigrationDialog::GetDialogModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
+ui::mojom::ModalType LocalFilesMigrationDialog::GetDialogModalType() const {
+  return ui::mojom::ModalType::kWindow;
 }
 
 void LocalFilesMigrationDialog::ProcessDialogClosing(

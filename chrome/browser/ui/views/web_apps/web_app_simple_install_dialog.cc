@@ -29,6 +29,7 @@
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/view.h"
@@ -134,7 +135,7 @@ void ShowSimpleInstallDialogForWebApps(
                     views::BubbleDialogModelHost::FieldType::kControl))
             .Build();
     auto dialog = views::BubbleDialogModelHost::CreateModal(
-        std::move(dialog_model), ui::MODAL_TYPE_CHILD);
+        std::move(dialog_model), ui::mojom::ModalType::kChild);
 
     if (g_dont_close_on_deactivate) {
       dialog->set_close_on_deactivate(false);

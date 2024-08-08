@@ -9,6 +9,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -45,7 +46,7 @@ CrostiniExpiredContainerWarningView::CrostiniExpiredContainerWarningView(
   callbacks_.push_back(std::move(callback));
 
   // Make the dialog modal to force the user to make a decision.
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
+  SetModalType(ui::mojom::ModalType::kSystem);
 
   SetTitle(IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_TITLE);
   SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);

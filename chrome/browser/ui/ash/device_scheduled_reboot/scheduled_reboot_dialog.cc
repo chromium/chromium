@@ -14,6 +14,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 
 ScheduledRebootDialog::ScheduledRebootDialog(const base::Time& reboot_time,
@@ -57,7 +58,7 @@ void ScheduledRebootDialog::ShowBubble(const base::Time& reboot_time,
           .Build();
 
   auto bubble = views::BubbleDialogModelHost::CreateModal(
-      std::move(dialog_model), ui::MODAL_TYPE_SYSTEM);
+      std::move(dialog_model), ui::mojom::ModalType::kSystem);
   dialog_delegate_ = bubble.get();
   bubble->SetOwnedByWidget(true);
   constrained_window::CreateBrowserModalDialogViews(std::move(bubble),

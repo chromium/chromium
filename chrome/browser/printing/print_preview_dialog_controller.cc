@@ -37,6 +37,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -83,7 +84,7 @@ class PrintPreviewDialogDelegate : public ui::WebDialogDelegate {
 
   ~PrintPreviewDialogDelegate() override;
 
-  ui::ModalType GetDialogModalType() const override;
+  ui::mojom::ModalType GetDialogModalType() const override;
   std::u16string GetDialogTitle() const override;
   std::u16string GetAccessibleDialogTitle() const override;
   GURL GetDialogContentURL() const override;
@@ -106,10 +107,10 @@ PrintPreviewDialogDelegate::PrintPreviewDialogDelegate(WebContents* initiator)
 
 PrintPreviewDialogDelegate::~PrintPreviewDialogDelegate() = default;
 
-ui::ModalType PrintPreviewDialogDelegate::GetDialogModalType() const {
+ui::mojom::ModalType PrintPreviewDialogDelegate::GetDialogModalType() const {
   // Not used, returning dummy value.
   NOTREACHED_IN_MIGRATION();
-  return ui::MODAL_TYPE_WINDOW;
+  return ui::mojom::ModalType::kWindow;
 }
 
 std::u16string PrintPreviewDialogDelegate::GetDialogTitle() const {

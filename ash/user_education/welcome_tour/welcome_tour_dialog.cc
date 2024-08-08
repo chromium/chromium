@@ -15,6 +15,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -85,7 +86,7 @@ WelcomeTourDialog::WelcomeTourDialog(base::OnceClosure accept_callback,
               ? IDS_ASH_WELCOME_TOUR_DIALOG_DESCRIPTION_TEXT_V2
               : IDS_ASH_WELCOME_TOUR_DIALOG_DESCRIPTION_TEXT,
           product_name))
-      .SetModalType(ui::ModalType::MODAL_TYPE_SYSTEM)
+      .SetModalType(ui::mojom::ModalType::kSystem)
       .SetProperty(views::kElementIdentifierKey, kWelcomeTourDialogElementId)
       .SetTitleText(l10n_util::GetStringFUTF16(
           is_welcome_tour_v2_enabled ? IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT_V2

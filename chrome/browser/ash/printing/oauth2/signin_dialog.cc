@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "url/gurl.h"
@@ -86,8 +87,8 @@ gfx::Size SigninDialog::CalculatePreferredSize(
   return gfx::Size(800, 640);
 }
 
-ui::ModalType SigninDialog::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
+ui::mojom::ModalType SigninDialog::GetModalType() const {
+  return ui::mojom::ModalType::kWindow;
 }
 
 views::View* SigninDialog::GetInitiallyFocusedView() {

@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -39,7 +40,7 @@ DisplayChangeDialog::DisplayChangeDialog(
                                    base::Unretained(this)));
   SetCancelCallback(base::BindOnce(&DisplayChangeDialog::OnCancelButtonClicked,
                                    base::Unretained(this)));
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
+  SetModalType(ui::mojom::ModalType::kSystem);
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBorder(views::CreateEmptyBorder(

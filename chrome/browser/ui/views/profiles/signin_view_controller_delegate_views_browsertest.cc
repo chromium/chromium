@@ -12,6 +12,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/controls/webview/webview.h"
@@ -34,8 +35,8 @@ class SigninViewControllerDelegateViewsBrowserTest : public DialogBrowserTest {
         SigninViewControllerDelegateViews::CreateSyncConfirmationWebView(
             browser(), SyncConfirmationStyle::kDefaultModal,
             /*is_sync_promo=*/false),
-        browser(), ui::MODAL_TYPE_WINDOW, /*wait_for_size=*/!show_immediately,
-        false);
+        browser(), ui::mojom::ModalType::kWindow,
+        /*wait_for_size=*/!show_immediately, false);
   }
 
   // Closes the dialog and checks that the web contents were not leaked.

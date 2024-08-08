@@ -34,6 +34,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/app_display_info.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -99,7 +100,7 @@ void ShowAppInfoInNativeDialog(content::WebContents* web_contents,
       std::make_unique<AppInfoDialog>(profile, app), kDialogSize,
       std::move(close_callback));
   views::Widget* dialog_widget;
-  if (dialog->GetModalType() == ui::MODAL_TYPE_CHILD) {
+  if (dialog->GetModalType() == ui::mojom::ModalType::kChild) {
     dialog_widget =
         constrained_window::ShowWebModalDialogViews(dialog, web_contents);
   } else {

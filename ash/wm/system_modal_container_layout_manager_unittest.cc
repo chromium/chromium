@@ -27,6 +27,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
@@ -70,7 +71,8 @@ bool AllRootWindowsHaveModalBackgrounds() {
 class TestWindow : public views::WidgetDelegateView {
  public:
   explicit TestWindow(bool modal) {
-    SetModalType(modal ? ui::MODAL_TYPE_SYSTEM : ui::MODAL_TYPE_NONE);
+    SetModalType(modal ? ui::mojom::ModalType::kSystem
+                       : ui::mojom::ModalType::kNone);
     SetPreferredSize(gfx::Size(50, 50));
   }
 
@@ -839,17 +841,17 @@ TEST_F(SystemModalContainerLayoutManagerTest, UpdateModalType) {
   aura::Window* window = ShowTestWindowWithParent(modal_container, false);
   EXPECT_FALSE(Shell::IsSystemModalWindowOpen());
 
-  window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_SYSTEM);
+  window->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kSystem);
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
 
   // Setting twice should not cause error.
-  window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_SYSTEM);
+  window->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kSystem);
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
 
-  window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_NONE);
+  window->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kNone);
   EXPECT_FALSE(Shell::IsSystemModalWindowOpen());
 
-  window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_SYSTEM);
+  window->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kSystem);
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
 
   window_util::CloseWidgetForWindow(window);

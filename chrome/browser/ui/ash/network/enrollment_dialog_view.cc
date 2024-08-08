@@ -25,6 +25,7 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
@@ -53,7 +54,7 @@ class EnrollmentDialogView : public views::DialogDelegateView {
   bool Accept() override;
 
   // views::WidgetDelegate overrides
-  ui::ModalType GetModalType() const override;
+  ui::mojom::ModalType GetModalType() const override;
   void WindowClosing() override;
 
   // views::View overrides
@@ -124,8 +125,8 @@ bool EnrollmentDialogView::Accept() {
   return true;
 }
 
-ui::ModalType EnrollmentDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_SYSTEM;
+ui::mojom::ModalType EnrollmentDialogView::GetModalType() const {
+  return ui::mojom::ModalType::kSystem;
 }
 
 void EnrollmentDialogView::WindowClosing() {

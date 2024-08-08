@@ -47,43 +47,6 @@ struct EnumTraits<ui::mojom::DialogButton, ui::DialogButton> {
 };
 
 template <>
-struct EnumTraits<ui::mojom::ModalType, ui::ModalType> {
-  static ui::mojom::ModalType ToMojom(ui::ModalType modal_type) {
-    switch (modal_type) {
-      case ui::MODAL_TYPE_NONE:
-        return ui::mojom::ModalType::NONE;
-      case ui::MODAL_TYPE_WINDOW:
-        return ui::mojom::ModalType::WINDOW;
-      case ui::MODAL_TYPE_CHILD:
-        return ui::mojom::ModalType::CHILD;
-      case ui::MODAL_TYPE_SYSTEM:
-        return ui::mojom::ModalType::SYSTEM;
-      default:
-        NOTREACHED();
-    }
-  }
-
-  static bool FromMojom(ui::mojom::ModalType modal_type, ui::ModalType* out) {
-    switch (modal_type) {
-      case ui::mojom::ModalType::NONE:
-        *out = ui::MODAL_TYPE_NONE;
-        return true;
-      case ui::mojom::ModalType::WINDOW:
-        *out = ui::MODAL_TYPE_WINDOW;
-        return true;
-      case ui::mojom::ModalType::CHILD:
-        *out = ui::MODAL_TYPE_CHILD;
-        return true;
-      case ui::mojom::ModalType::SYSTEM:
-        *out = ui::MODAL_TYPE_SYSTEM;
-        return true;
-      default:
-        NOTREACHED();
-    }
-  }
-};
-
-template <>
 struct EnumTraits<ui::mojom::MenuSourceType, ui::MenuSourceType> {
   static ui::mojom::MenuSourceType ToMojom(ui::MenuSourceType modal_type) {
     switch (modal_type) {

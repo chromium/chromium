@@ -62,6 +62,7 @@
 #include "net/base/url_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -1490,8 +1491,8 @@ CloudUploadDialog::CloudUploadDialog(mojom::DialogArgsPtr args,
 
 CloudUploadDialog::~CloudUploadDialog() = default;
 
-ui::ModalType CloudUploadDialog::GetDialogModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
+ui::mojom::ModalType CloudUploadDialog::GetDialogModalType() const {
+  return ui::mojom::ModalType::kWindow;
 }
 
 bool CloudUploadDialog::ShouldCloseDialogOnEscape() const {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/borealis/borealis_disallowed_dialog.h"
+
 #include <memory>
 #include <string>
 
@@ -25,6 +26,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/label.h"
@@ -163,7 +165,7 @@ class BorealisDisallowedDialog : public DialogDelegate {
                      l10n_util::GetStringUTF16(IDS_CLOSE));
     }
     InitializeView(*behaviour, title_id);
-    SetModalType(ui::MODAL_TYPE_SYSTEM);
+    SetModalType(ui::mojom::ModalType::kSystem);
     SetOwnedByWidget(true);
     SetShowCloseButton(false);
     set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(

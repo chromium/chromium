@@ -30,6 +30,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -169,7 +170,7 @@ HatsDialog::HatsDialog(const std::string& trigger_id,
   set_dialog_content_url(GURL(std::string(kCrOSHaTSURL) + "?emitAnswers=true&" +
                               site_context + "&trigger=" + trigger_id_));
   set_dialog_frame_kind(ui::WebDialogDelegate::FrameKind::kDialog);
-  set_dialog_modal_type(ui::MODAL_TYPE_SYSTEM);
+  set_dialog_modal_type(ui::mojom::ModalType::kSystem);
   set_dialog_size(gfx::Size(kDefaultWidth, kDefaultHeight));
   set_show_close_button(true);
   set_show_dialog_title(false);

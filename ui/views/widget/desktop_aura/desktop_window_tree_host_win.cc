@@ -25,6 +25,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/win/event_creation_utils.h"
 #include "ui/base/win/win_cursor.h"
 #include "ui/compositor/compositor.h"
@@ -591,7 +592,7 @@ void DesktopWindowTreeHostWin::SetWindowIcons(const gfx::ImageSkia& window_icon,
   message_handler_->SetWindowIcons(window_icon, app_icon);
 }
 
-void DesktopWindowTreeHostWin::InitModalType(ui::ModalType modal_type) {
+void DesktopWindowTreeHostWin::InitModalType(ui::mojom::ModalType modal_type) {
   message_handler_->InitModalType(modal_type);
 }
 
@@ -1336,7 +1337,8 @@ bool DesktopWindowTreeHostWin::IsModalWindowActive() const {
     return false;
 
   const auto is_active = [](const aura::Window* child) {
-    return child->GetProperty(aura::client::kModalKey) != ui::MODAL_TYPE_NONE &&
+    return child->GetProperty(aura::client::kModalKey) !=
+               ui::mojom::ModalType::kNone &&
            child->TargetVisibility();
   };
   return base::ranges::any_of(window()->children(), is_active);

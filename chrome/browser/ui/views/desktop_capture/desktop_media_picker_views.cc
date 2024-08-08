@@ -49,6 +49,7 @@
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
@@ -639,9 +640,9 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         constrained_window::ShowWebModalDialogViews(this, params.web_contents);
   } else {
 #if BUILDFLAG(IS_MAC)
-    // On Mac, MODAL_TYPE_CHILD with a null parent isn't allowed - fall back to
-    // MODAL_TYPE_WINDOW.
-    SetModalType(ui::MODAL_TYPE_WINDOW);
+    // On Mac, ModalType::CHILD with a null parent isn't allowed - fall back to
+    // ModalType::WINDOW.
+    SetModalType(ui::mojom::ModalType::kWindow);
 #endif
     widget = CreateDialogWidget(this, params.context, nullptr);
     widget->Show();
@@ -1059,7 +1060,7 @@ void DesktopMediaPickerDialogView::OnSourceListLayoutChanged() {
   // BubbleDialogDelegateView::SizeToContents() instead of implementing sizing
   // logic in-place.
   const gfx::Size new_size = GetWidget()->GetRootView()->GetPreferredSize();
-  if (GetModalType() == ui::ModalType::MODAL_TYPE_CHILD) {
+  if (GetModalType() == ui::mojom::ModalType::kChild) {
     // For the web-modal dialog resize the dialog in place.
     // TODO(pbos): This should ideally use UpdateWebContentsModalDialogPosition
     // to keep the widget centered horizontally. As this dialog is fixed-width

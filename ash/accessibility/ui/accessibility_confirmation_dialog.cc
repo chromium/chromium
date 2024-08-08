@@ -13,6 +13,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -30,7 +31,7 @@ AccessibilityConfirmationDialog::AccessibilityConfirmationDialog(
     base::OnceClosure on_accept_callback,
     base::OnceClosure on_cancel_callback,
     base::OnceClosure on_close_callback) {
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
+  SetModalType(ui::mojom::ModalType::kSystem);
   SetTitle(window_title_text);
   SetButtonLabel(ui::DIALOG_BUTTON_OK, confirm_text);
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_text);

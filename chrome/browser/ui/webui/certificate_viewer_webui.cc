@@ -36,6 +36,7 @@
 #include "content/public/browser/web_contents.h"
 #include "net/cert/x509_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(USE_NSS_CERTS)
@@ -319,7 +320,7 @@ CertificateViewerDialog::CertificateViewerDialog(
   set_can_close(true);
   set_delete_on_close(false);
   set_dialog_args(DialogArgsForCertList(certs));
-  set_dialog_modal_type(ui::MODAL_TYPE_NONE);
+  set_dialog_modal_type(ui::mojom::ModalType::kNone);
   set_dialog_content_url(GURL(chrome::kChromeUICertificateViewerURL));
   set_dialog_size(kDefaultSize);
   set_dialog_title(l10n_util::GetStringFUTF16(

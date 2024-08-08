@@ -15,16 +15,16 @@ enum DialogButton {
 // treatments may be handled differently by the window manager.
 enum ModalType {
   // Window is not modal.
-  NONE,
+  kNone,
 
   // Window is modal to its transient parent.
-  WINDOW,
+  kWindow,
 
   // Window is modal to a child of its transient parent.
-  CHILD,
+  kChild,
 
   // Window is modal to all other windows.
-  SYSTEM
+  kSystem
 };
 
 // It's mapped to ui::MenuSourceType. Any new type here needs to be synced

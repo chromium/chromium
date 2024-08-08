@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/enterprise/data_controls/core/browser/data_controls_dialog.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -62,7 +63,7 @@ class DesktopDataControlsDialog : public DataControlsDialog,
   std::u16string GetWindowTitle() const override;
   views::View* GetContentsView() override;
   views::Widget* GetWidget() override;
-  ui::ModalType GetModalType() const override;
+  ui::mojom::ModalType GetModalType() const override;
   bool ShouldShowCloseButton() const override;
   void OnWidgetInitialized() override;
 

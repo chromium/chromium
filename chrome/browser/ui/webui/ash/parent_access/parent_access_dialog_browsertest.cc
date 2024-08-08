@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
@@ -102,7 +103,7 @@ IN_PROC_BROWSER_TEST_P(ParentAccessDialogBrowserTest, ShowDialog) {
             chrome::kChromeUIParentAccessURL);
   EXPECT_FALSE(dialog->ShouldShowDialogTitle());
   EXPECT_FALSE(dialog->ShouldShowCloseButton());
-  EXPECT_EQ(dialog->GetDialogModalType(), ui::ModalType::MODAL_TYPE_SYSTEM);
+  EXPECT_EQ(dialog->GetDialogModalType(), ui::mojom::ModalType::kSystem);
 
   // Send ESCAPE keypress.  EventGenerator requires the root window, which has
   // to be fetched from the Ash shell.

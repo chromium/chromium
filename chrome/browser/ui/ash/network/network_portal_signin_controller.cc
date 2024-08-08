@@ -31,6 +31,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
@@ -85,7 +86,7 @@ class SigninWebDialogDelegate : public ui::WebDialogDelegate {
     set_can_close(true);
     set_can_resize(false);
     set_dialog_content_url(url);
-    set_dialog_modal_type(ui::MODAL_TYPE_SYSTEM);
+    set_dialog_modal_type(ui::mojom::ModalType::kSystem);
     set_dialog_title(l10n_util::GetStringUTF16(
         IDS_CAPTIVE_PORTAL_AUTHORIZATION_DIALOG_NAME));
     set_show_dialog_title(true);

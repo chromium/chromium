@@ -281,6 +281,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/chromeos/user_activity_power_manager_notifier.h"
@@ -463,7 +464,7 @@ int Shell::GetOpenSystemModalWindowContainerId() {
       }
       for (const aura::Window* child : system_modal->children()) {
         if (child->GetProperty(aura::client::kModalKey) ==
-                ui::MODAL_TYPE_SYSTEM &&
+                ui::mojom::ModalType::kSystem &&
             child->layer()->GetTargetVisibility()) {
           return modal_window_id;
         }

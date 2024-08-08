@@ -15,6 +15,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
@@ -100,7 +101,7 @@ class VIEWS_EXPORT WidgetDelegate {
 
     // The widget's modality type. Note that MODAL_TYPE_SYSTEM does not work at
     // all on Mac.
-    ui::ModalType modal_type = ui::MODAL_TYPE_NONE;
+    ui::mojom::ModalType modal_type = ui::mojom::ModalType::kNone;
 
     // Whether to show a close button in the widget frame.
     bool show_close_button = true;
@@ -171,8 +172,8 @@ class VIEWS_EXPORT WidgetDelegate {
   virtual bool CanActivate() const;
 
   // Returns the modal type that applies to the widget. Default is
-  // ui::MODAL_TYPE_NONE (not modal).
-  virtual ui::ModalType GetModalType() const;
+  // ui::mojom::ModalType::kNone (not modal).
+  virtual ui::mojom::ModalType GetModalType() const;
 
   virtual ax::mojom::Role GetAccessibleWindowRole();
 
@@ -361,7 +362,7 @@ class VIEWS_EXPORT WidgetDelegate {
   void SetIcon(ui::ImageModel icon);
   void SetAppIcon(ui::ImageModel icon);
   void SetInitiallyFocusedView(View* initially_focused_view);
-  void SetModalType(ui::ModalType modal_type);
+  void SetModalType(ui::mojom::ModalType modal_type);
   void SetOwnedByWidget(bool delete_self);
   void SetShowCloseButton(bool show_close_button);
   void SetShowIcon(bool show_icon);

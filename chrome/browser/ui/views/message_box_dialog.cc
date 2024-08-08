@@ -22,6 +22,7 @@
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/native_widget_types.h"
@@ -197,8 +198,8 @@ chrome::MessageBoxResult MessageBoxDialog::Show(
   const bool is_modal = parent || BUILDFLAG(IS_CHROMEOS_ASH);
   views::Widget* widget = nullptr;
   if (is_modal) {
-    dialog->SetModalType(parent ? ui::MODAL_TYPE_WINDOW
-                                : ui::MODAL_TYPE_SYSTEM);
+    dialog->SetModalType(parent ? ui::mojom::ModalType::kWindow
+                                : ui::mojom::ModalType::kSystem);
     widget = constrained_window::CreateBrowserModalDialogViews(dialog, parent);
   } else {
     widget =

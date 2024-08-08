@@ -22,6 +22,7 @@
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 #include "extensions/common/api/feedback_private.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -116,8 +117,8 @@ FeedbackDialog::FeedbackDialog(
   // For other cases, set to none Modal mode so the user can navigate to
   // other windows.
   set_dialog_modal_type(info.flow == FeedbackFlow::kLogin
-                            ? ui::MODAL_TYPE_SYSTEM
-                            : ui::MODAL_TYPE_NONE);
+                            ? ui::mojom::ModalType::kSystem
+                            : ui::mojom::ModalType::kNone);
   set_dialog_size(kDefaultSize);
   set_dialog_title(l10n_util::GetStringUTF16(
       info.flow == FeedbackFlow::kSadTabCrash

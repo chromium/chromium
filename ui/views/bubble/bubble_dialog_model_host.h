@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
 
@@ -91,14 +92,14 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
                         std::unique_ptr<ui::DialogModel> model,
                         View* anchor_view,
                         BubbleBorder::Arrow arrow,
-                        ui::ModalType modal_type,
+                        ui::mojom::ModalType modal_type,
                         bool autosize);
 
   ~BubbleDialogModelHost() override;
 
   static std::unique_ptr<BubbleDialogModelHost> CreateModal(
       std::unique_ptr<ui::DialogModel> model,
-      ui::ModalType modal_type,
+      ui::mojom::ModalType modal_type,
       bool autosize = true);
 
   // BubbleDialogDelegate:

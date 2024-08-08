@@ -16,6 +16,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/widget/widget.h"
 
@@ -37,7 +38,7 @@ UpdateRecommendedMessageBox::UpdateRecommendedMessageBox() {
                  l10n_util::GetStringUTF16(IDS_RELAUNCH_AND_UPDATE));
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  l10n_util::GetStringUTF16(IDS_NOT_NOW));
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   SetOwnedByWidget(true);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \

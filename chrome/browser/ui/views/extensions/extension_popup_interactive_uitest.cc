@@ -26,6 +26,7 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_activation_waiter.h"
@@ -378,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   // Show a web dialog.
   auto web_dialog = std::make_unique<views::DialogDelegateView>();
   web_dialog->SetPreferredSize(gfx::Size(100, 100));
-  web_dialog->SetModalType(ui::MODAL_TYPE_CHILD);
+  web_dialog->SetModalType(ui::mojom::ModalType::kChild);
   web_dialog->SetCanActivate(true);
   views::Widget* web_dialog_widget =
       constrained_window::ShowWebModalDialogViews(

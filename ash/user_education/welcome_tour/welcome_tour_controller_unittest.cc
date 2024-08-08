@@ -56,6 +56,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -166,7 +167,8 @@ MATCHER_P6(BubbleStep,
          util::GetHelpBubbleId(ext_props) == help_bubble_id &&
          arg.body_text_id() == body_text_id && arg.arrow() == arrow &&
          arg.next_button_callback().is_null() != has_next_button &&
-         util::GetHelpBubbleModalType(ext_props) == ui::MODAL_TYPE_SYSTEM &&
+         util::GetHelpBubbleModalType(ext_props) ==
+             ui::mojom::ModalType::kSystem &&
          &util::GetHelpBubbleBodyIcon(ext_props)->get() == &gfx::kNoneIcon;
 }
 
@@ -189,7 +191,8 @@ MATCHER_P7(BubbleStep,
          Matches(body_text_matcher)(util::GetHelpBubbleBodyText(ext_props)) &&
          arg.next_button_callback().is_null() != has_next_button &&
          &util::GetHelpBubbleBodyIcon(ext_props)->get() == &gfx::kNoneIcon &&
-         util::GetHelpBubbleModalType(ext_props) == ui::MODAL_TYPE_SYSTEM;
+         util::GetHelpBubbleModalType(ext_props) ==
+             ui::mojom::ModalType::kSystem;
 }
 
 MATCHER_P8(BubbleStep,
@@ -214,7 +217,8 @@ MATCHER_P8(BubbleStep,
          Matches(body_text_matcher)(util::GetHelpBubbleBodyText(ext_props)) &&
          arg.next_button_callback().is_null() != has_next_button &&
          &util::GetHelpBubbleBodyIcon(ext_props)->get() == &gfx::kNoneIcon &&
-         util::GetHelpBubbleModalType(ext_props) == ui::MODAL_TYPE_SYSTEM;
+         util::GetHelpBubbleModalType(ext_props) ==
+             ui::mojom::ModalType::kSystem;
 }
 
 MATCHER_P2(HiddenStep, element_specifier, context_mode, "") {

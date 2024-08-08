@@ -33,6 +33,7 @@
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
@@ -118,7 +119,7 @@ AccountSelectionModalView::AccountSelectionModalView(
                                widget_observer,
                                std::move(url_loader_factory),
                                rp_for_display) {
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   SetOwnedByWidget(true);
   set_fixed_width(kDialogWidth);
   SetShowTitle(false);

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/root_window_controller.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
@@ -23,6 +22,7 @@
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "ui/aura/client/focus_change_observer.h"
@@ -37,6 +37,7 @@
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -105,7 +106,7 @@ class RootWindowControllerTest : public AshTestBase {
 
   views::WidgetDelegate* CreateModalWidgetDelegate() {
     auto delegate = std::make_unique<views::WidgetDelegateView>();
-    delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
+    delegate->SetModalType(ui::mojom::ModalType::kSystem);
     return delegate.release();
   }
 

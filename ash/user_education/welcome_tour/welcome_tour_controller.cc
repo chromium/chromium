@@ -48,6 +48,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/display/display.h"
@@ -74,7 +75,8 @@ user_education::HelpBubbleParams::ExtendedProperties
 CreateHelpBubbleExtendedProperties(HelpBubbleId help_bubble_id) {
   return user_education_util::CreateExtendedProperties(
       user_education_util::CreateExtendedProperties(help_bubble_id),
-      user_education_util::CreateExtendedProperties(ui::MODAL_TYPE_SYSTEM),
+      user_education_util::CreateExtendedProperties(
+          ui::mojom::ModalType::kSystem),
       user_education_util::CreateExtendedProperties(
           /*body_icon=*/gfx::kNoneIcon));
 }

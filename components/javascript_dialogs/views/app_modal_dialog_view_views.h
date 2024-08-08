@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -44,7 +45,7 @@ class AppModalDialogViewViews : public AppModalDialogView,
 
   // views::DialogDelegate:
   std::u16string GetWindowTitle() const override;
-  ui::ModalType GetModalType() const override;
+  ui::mojom::ModalType GetModalType() const override;
   views::View* GetContentsView() override;
   views::View* GetInitiallyFocusedView() override;
   views::Widget* GetWidget() override;

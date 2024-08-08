@@ -13,6 +13,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/border.h"
@@ -57,8 +58,8 @@ ConfirmSignoutDialog::~ConfirmSignoutDialog() {
   ConfirmSignoutDialog::current_instance_ = nullptr;
 }
 
-ui::ModalType ConfirmSignoutDialog::GetModalType() const {
-  return ui::ModalType::MODAL_TYPE_SYSTEM;
+ui::mojom::ModalType ConfirmSignoutDialog::GetModalType() const {
+  return ui::mojom::ModalType::kSystem;
 }
 
 std::u16string ConfirmSignoutDialog::GetWindowTitle() const {
