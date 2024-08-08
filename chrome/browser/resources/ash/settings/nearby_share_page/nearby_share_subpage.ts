@@ -565,6 +565,10 @@ export class SettingsNearbyShareSubpageElement extends
   }
 
   private setSettingsVisibilityMenu_(): void {
+    if (!this.isQuickShareV2Enabled_) {
+      return;
+    }
+
     if (this.settings == null) {
       return;
     }
