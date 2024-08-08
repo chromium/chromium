@@ -6,6 +6,12 @@ import("//build/config/ui.gni")
 import("//components/viz/viz.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
+mojom_component("features") {
+  sources = [ "features.mojom" ]
+  output_prefix = "services_viz_privileged_features_mojom"
+  macro_prefix = "SERVICES_VIZ_PRIVILEGED_FEATURES_MOJOM"
+}
+
 mojom("compositing") {
   sources = [
     "begin_frame_observer.mojom",
@@ -21,6 +27,7 @@ mojom("compositing") {
   ]
 
   public_deps = [
+    ":features",
     "//gpu/ipc/common:interfaces",
     "//gpu/ipc/common:surface_handle",
     "//media/capture/mojom:video_capture",

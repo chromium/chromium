@@ -18,6 +18,7 @@ import "services/viz/public/mojom/compositing/frame_sink_bundle.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_bundle_id.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
+import "services/viz/privileged/mojom/compositing/features.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
 import "services/viz/public/mojom/compositing/surface_info.mojom";
 import "services/viz/public/mojom/hit_test/aggregated_hit_test_region.mojom";
@@ -198,7 +199,7 @@ interface FrameSinkManager {
 
   // Initializes FrameSinksMetricsRecorder to enable the collection of metrics
   // related to frame sinks.
-  // TODO(b/356017406): Add the method behind a feature flag.
+  [RuntimeFeature=EnableVizTestApis]
   CreateMetricsRecorderForTest(
     pending_receiver<FrameSinksMetricsRecorder> receiver);
 

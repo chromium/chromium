@@ -65,6 +65,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "services/viz/privileged/mojom/compositing/features.mojom-features.h"
 #include "ui/aura/window.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
@@ -117,13 +118,14 @@ class TestSearchProvider : public app_list::SearchProvider {
 
 class AutotestPrivateApiTest : public ExtensionApiTest {
  public:
-  AutotestPrivateApiTest() = default;
+  AutotestPrivateApiTest() {
+    feature_list_.InitAndEnableFeature(viz::mojom::EnableVizTestApis);
+  }
 
   AutotestPrivateApiTest(const AutotestPrivateApiTest&) = delete;
   AutotestPrivateApiTest& operator=(const AutotestPrivateApiTest&) = delete;
 
   ~AutotestPrivateApiTest() override = default;
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTest::SetUpCommandLine(command_line);
     // Make ARC enabled for tests.
@@ -161,6 +163,7 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
   }
 
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // TODO(crbug.com/356369542): Fix flakiness on sanitizer bots.
@@ -534,8 +537,10 @@ class AutotestPrivateLacrosTest : public AutotestPrivateApiTest {
 
  protected:
   AutotestPrivateLacrosTest() {
+    auto enabled_features = ash::standalone_browser::GetFeatureRefs();
+    enabled_features.push_back(viz::mojom::EnableVizTestApis);
     feature_list_.InitWithFeatures(
-        ash::standalone_browser::GetFeatureRefs(),
+        enabled_features,
         // Disable ash extension keeplist so that the test extension will not
         // be blocked in Ash.
         {ash::features::kEnforceAshExtensionKeeplist});
