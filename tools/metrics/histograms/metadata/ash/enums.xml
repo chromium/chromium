@@ -552,6 +552,16 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="1" label="New key accelerator is used"/>
 </enum>
 
+<!-- LINT.IfChange(DeskBarVisibility) -->
+
+<enum name="DeskBarVisibility">
+  <int value="0" label="Shown in first overview frame"/>
+  <int value="1" label="Shown after first overview frame"/>
+  <int value="2" label="Not shown during overview session"/>
+</enum>
+
+<!-- LINT.ThenChange(//ash/wm/overview/overview_controller.cc:DeskBarVisibility) -->
+
 <enum name="DeskCloseType">
   <int value="0" label="Combine desks."/>
   <int value="1" label="Close all windows"/>

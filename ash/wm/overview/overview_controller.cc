@@ -61,6 +61,22 @@ constexpr base::TimeDelta kOcclusionPauseDurationForEnd =
 
 constexpr base::TimeDelta kEnterExitPresentationMaxLatency = base::Seconds(2);
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DeskBarVisibility)
+enum class DeskBarVisibility {
+  // Desk bar is shown in the first overview frame.
+  kShownImmediately = 0,
+  // Desk bar is shown after the first overview frame (usually after the
+  // enter-overview animation is complete).
+  kShownAfterFirstFrame = 1,
+  // Desk bar was never shown during the overview session.
+  kNotShown = 2,
+  kMaxValue = kNotShown,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:DeskBarVisibility)
+
 // Returns the enter/exit type that should be used if `kNormal` enter/exit type
 // was originally requested. Used in two cases:
 // 1) If the overview is expected to transition to/from the home screen, the
@@ -414,6 +430,13 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
         kEnterExitPresentationMaxLatency);
     presentation_time_recorder->RequestNext();
 
+    base::UmaHistogramEnumeration(
+        "Ash.Overview.DeskBarVisibility",
+        desk_bar_shown_immediately_
+            ? DeskBarVisibility::kShownImmediately
+            : (IsDeskBarOpen() ? DeskBarVisibility::kShownAfterFirstFrame
+                               : DeskBarVisibility::kNotShown));
+
     // Suspend occlusion tracker until the exit animation is complete.
     exit_pauser_ = PauseOcclusionTracker(occlusion_pause_duration_for_end_);
 
@@ -576,6 +599,8 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     if (start_animations_.empty())
       OnStartingAnimationComplete(/*canceled=*/false);
 
+    desk_bar_shown_immediately_ = IsDeskBarOpen();
+
     if (!last_overview_session_time_.is_null()) {
       UMA_HISTOGRAM_LONG_TIMES("Ash.Overview.TimeBetweenUse",
                                base::Time::Now() - last_overview_session_time_);
@@ -686,6 +711,12 @@ void OverviewController::ResetPauser() {
   if (overview_session_) {
     overview_session_->set_ignore_activations(ignore_activations);
   }
+}
+
+bool OverviewController::IsDeskBarOpen() const {
+  CHECK(overview_session_);
+  return overview_session_->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
+      ->desks_bar_view();
 }
 
 void OverviewController::UpdateRoundedCornersAndShadow() {
