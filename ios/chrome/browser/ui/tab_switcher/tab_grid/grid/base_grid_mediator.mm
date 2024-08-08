@@ -1408,13 +1408,15 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
         WebStateIndexAfterGridDropItemIndex(webStateList, destinationIndex);
     tab_groups::utils::MoveTabGroupToBrowser(
         tabGroupInfo.tabGroup, self.browser, destinationWebStateIndex);
+    return;
   }
-  base::UmaHistogramEnumeration(kUmaGridViewDragOrigin, DragItemOrigin::kOther);
 
   // Handle URLs from within Chrome synchronously using a local object.
   if ([dragItem.localObject isKindOfClass:[URLInfo class]]) {
     URLInfo* droppedURL = static_cast<URLInfo*>(dragItem.localObject);
     [self insertNewWebStateAtGridIndex:destinationIndex withURL:droppedURL.URL];
+    base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
+                                  DragItemOrigin::kOther);
     return;
   }
 }
