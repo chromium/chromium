@@ -119,6 +119,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   std::vector<PickerSearchResult> GetSuggestedEmoji() override;
   bool IsGifsEnabled() override;
   PickerModeType GetMode() override;
+  PickerCapsLockPosition GetCapsLockPosition() override;
 
   // views:ViewObserver:
   void OnViewIsDeleting(views::View* view) override;

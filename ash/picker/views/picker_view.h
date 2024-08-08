@@ -40,6 +40,7 @@ class NonClientFrameView;
 
 namespace ash {
 
+enum class PickerCapsLockPosition;
 enum class PickerLayoutType;
 enum class PickerPositionType;
 enum class PickerPseudoFocusDirection;
@@ -96,6 +97,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   void RequestPseudoFocus(views::View* view) override;
   void OnZeroStateViewHeightChanged() override;
   void SetCapsLockDisplayed(bool displayed) override;
+  PickerCapsLockPosition GetCapsLockPosition() override;
 
   // PickerSearchResultsViewDelegate:
   void SelectSearchResult(const PickerSearchResult& result) override;

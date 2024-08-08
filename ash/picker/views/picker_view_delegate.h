@@ -18,6 +18,7 @@
 namespace ash {
 
 enum class PickerActionType;
+enum class PickerCapsLockPosition;
 class PickerAssetFetcher;
 class PickerSearchResult;
 class PickerSearchResultsSection;
@@ -96,6 +97,8 @@ class ASH_EXPORT PickerViewDelegate {
   virtual bool IsGifsEnabled() = 0;
 
   virtual PickerModeType GetMode() = 0;
+
+  virtual PickerCapsLockPosition GetCapsLockPosition() = 0;
 };
 
 }  // namespace ash

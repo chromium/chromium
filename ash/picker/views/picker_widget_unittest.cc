@@ -9,6 +9,7 @@
 
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_action_type.h"
+#include "ash/picker/model/picker_caps_lock_position.h"
 #include "ash/picker/views/picker_preview_bubble.h"
 #include "ash/picker/views/picker_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
@@ -63,6 +64,9 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   std::vector<PickerSearchResult> GetSuggestedEmoji() override { return {}; }
   bool IsGifsEnabled() override { return true; }
   PickerModeType GetMode() override { return PickerModeType::kNoSelection; }
+  PickerCapsLockPosition GetCapsLockPosition() override {
+    return PickerCapsLockPosition::kTop;
+  }
 
  private:
   PickerSessionMetrics session_metrics_;

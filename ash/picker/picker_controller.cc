@@ -18,6 +18,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/picker/model/picker_action_type.h"
+#include "ash/picker/model/picker_caps_lock_position.h"
 #include "ash/picker/model/picker_emoji_history_model.h"
 #include "ash/picker/model/picker_emoji_suggester.h"
 #include "ash/picker/model/picker_mode_type.h"
@@ -102,6 +103,10 @@ constexpr base::TimeDelta kCapsLockStateViewDisplayTime = base::Seconds(3);
 // When spoken feedback is enabled, closing the widget after an insert is
 // delayed by this amount.
 constexpr base::TimeDelta kCloseWidgetDelay = base::Milliseconds(200);
+
+constexpr int kCapsLockMinimumTopDisplayCount = 5;
+constexpr float kCapsLockRatioThresholdForTop = 0.8;
+constexpr float kCapsLockRatioThresholdForBottom = 0.2;
 
 PickerFeatureKeyType MatchPickerFeatureKeyHash() {
   // Command line looks like:
@@ -758,6 +763,29 @@ void PickerController::OnInsertCompleted(
   if (result != PickerInsertMediaRequest::Result::kSuccess) {
     CopyMediaToClipboard(media);
   }
+}
+
+PickerCapsLockPosition PickerController::GetCapsLockPosition() {
+  PrefService* prefs = GetPrefs();
+  if (prefs == nullptr) {
+    return PickerCapsLockPosition::kTop;
+  }
+
+  int caps_lock_displayed_count =
+      prefs->GetInteger(prefs::kPickerCapsLockDislayedCountPrefName);
+  int caps_lock_selected_count =
+      prefs->GetInteger(prefs::kPickerCapsLockSelectedCountPrefName);
+  float caps_lock_selected_ratio =
+      static_cast<float>(caps_lock_selected_count) / caps_lock_displayed_count;
+
+  if (caps_lock_displayed_count < kCapsLockMinimumTopDisplayCount ||
+      caps_lock_selected_ratio >= kCapsLockRatioThresholdForTop) {
+    return PickerCapsLockPosition::kTop;
+  }
+  if (caps_lock_selected_ratio >= kCapsLockRatioThresholdForBottom) {
+    return PickerCapsLockPosition::kMiddle;
+  }
+  return PickerCapsLockPosition::kBottom;
 }
 
 }  // namespace ash

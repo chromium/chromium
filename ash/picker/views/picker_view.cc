@@ -15,6 +15,7 @@
 #include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_action_type.h"
+#include "ash/picker/model/picker_caps_lock_position.h"
 #include "ash/picker/model/picker_mode_type.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_emoji_bar_view.h"
@@ -356,6 +357,10 @@ void PickerView::RequestPseudoFocus(views::View* view) {
 
 void PickerView::OnZeroStateViewHeightChanged() {
   SetWidgetBoundsNeedsUpdate();
+}
+
+PickerCapsLockPosition PickerView::GetCapsLockPosition() {
+  return delegate_->GetCapsLockPosition();
 }
 
 void PickerView::SetCapsLockDisplayed(bool displayed) {

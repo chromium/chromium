@@ -1033,6 +1033,7 @@ component("ash") {
     "picker/metrics/picker_session_metrics.cc",
     "picker/metrics/picker_session_metrics.h",
     "picker/model/picker_action_type.h",
+    "picker/model/picker_caps_lock_position.h",
     "picker/model/picker_emoji_history_model.cc",
     "picker/model/picker_emoji_history_model.h",
     "picker/model/picker_emoji_suggester.cc",

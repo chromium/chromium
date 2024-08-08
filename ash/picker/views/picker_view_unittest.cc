@@ -13,6 +13,7 @@
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/model/picker_action_type.h"
+#include "ash/picker/model/picker_caps_lock_position.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_controller.h"
 #include "ash/picker/views/picker_category_type.h"
@@ -256,6 +257,10 @@ class FakePickerViewDelegate : public PickerViewDelegate {
 
   bool IsGifsEnabled() override { return true; }
   PickerModeType GetMode() override { return options_.mode; }
+
+  PickerCapsLockPosition GetCapsLockPosition() override {
+    return PickerCapsLockPosition::kTop;
+  }
 
   std::optional<PickerSearchResult> last_inserted_result() const {
     return last_inserted_result_;

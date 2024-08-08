@@ -13,6 +13,7 @@
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
 #include "ash/picker/mock_picker_asset_fetcher.h"
+#include "ash/picker/model/picker_caps_lock_position.h"
 #include "ash/picker/picker_test_util.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_item_view.h"
@@ -30,6 +31,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -99,10 +101,16 @@ class MockZeroStateViewDelegate : public PickerZeroStateViewDelegate {
               (const PickerSearchResult& result),
               (override));
   MOCK_METHOD(void, OnZeroStateViewHeightChanged, (), (override));
+  MOCK_METHOD(PickerCapsLockPosition, GetCapsLockPosition, (), (override));
   MOCK_METHOD(void, SetCapsLockDisplayed, (bool), (override));
 };
 
 class PickerZeroStateViewTest : public views::ViewsTestBase {
+ public:
+  PickerZeroStateViewTest()
+      : views::ViewsTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
  protected:
   MockPickerAssetFetcher asset_fetcher_;
   PickerSubmenuController submenu_controller_;
@@ -189,7 +197,7 @@ TEST_F(PickerZeroStateViewTest, ShowsSuggestedResults) {
   LeftClickOn(*item_view);
 }
 
-TEST_F(PickerZeroStateViewTest, ClickingCapsLockResultSetsCapsLockDisplayed) {
+TEST_F(PickerZeroStateViewTest, DisplayingCapsLockResultSetsCapsLockDisplayed) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
       .WillOnce(
@@ -205,14 +213,90 @@ TEST_F(PickerZeroStateViewTest, ClickingCapsLockResultSetsCapsLockDisplayed) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetFullscreen(true);
-  base::test::TestFuture<const PickerSearchResult&> future;
-  auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
+  widget->SetContentsView(std::make_unique<PickerZeroStateView>(
       &mock_delegate, kAllCategories, kPickerWidth, &asset_fetcher_,
       &submenu_controller_, &preview_controller_));
   widget->Show();
+}
+
+TEST_F(PickerZeroStateViewTest,
+       PutsCapsLockAtTheEndOfSuggestedResultsForMiddleCase) {
+  MockZeroStateViewDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, GetCapsLockPosition)
+      .WillOnce(Return(PickerCapsLockPosition::kMiddle));
+  EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
+      .WillOnce(
+          [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
+            std::move(callback).Run({PickerSearchResult::CapsLock(true),
+                                     PickerSearchResult::DriveFile(
+                                         /*id=*/std::nullopt,
+                                         /*title=*/u"test drive file",
+                                         /*url=*/GURL(), base::FilePath())});
+          });
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
+  base::test::TestFuture<const PickerSearchResult&> future;
+  auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
+      &mock_delegate,
+      std::vector<PickerCategory>{PickerCategory::kDatesTimes,
+                                  PickerCategory::kUnitsMaths},
+      kPickerWidth, &asset_fetcher_, &submenu_controller_,
+      &preview_controller_));
+  widget->Show();
+  task_environment()->AdvanceClock(base::Seconds(1));
+  task_environment()->RunUntilIdle();
+
+  EXPECT_CALL(mock_delegate,
+              SelectZeroStateResult(Property(
+                  "data", &ash::PickerSearchResult::data,
+                  VariantWith<ash::PickerSearchResult::CapsLockData>(Field(
+                      "enabled",
+                      &ash::PickerSearchResult::CapsLockData::enabled, true)))))
+      .Times(1);
 
   PickerItemView* item_view =
-      view->primary_section_view_for_testing()->item_views_for_testing()[0];
+      view->primary_section_view_for_testing()->item_views_for_testing()[1];
+  ViewDrawnWaiter().Wait(item_view);
+  LeftClickOn(*item_view);
+}
+
+TEST_F(PickerZeroStateViewTest, PutsCapsLockInMoreCategoryForBottomCase) {
+  MockZeroStateViewDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, GetCapsLockPosition)
+      .WillOnce(Return(PickerCapsLockPosition::kBottom));
+  EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
+      .WillOnce(
+          [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
+            std::move(callback).Run({PickerSearchResult::CapsLock(true),
+                                     PickerSearchResult::DriveFile(
+                                         /*id=*/std::nullopt,
+                                         /*title=*/u"test drive file",
+                                         /*url=*/GURL(), base::FilePath())});
+          });
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
+  base::test::TestFuture<const PickerSearchResult&> future;
+  auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
+      &mock_delegate,
+      std::vector<PickerCategory>{PickerCategory::kDatesTimes,
+                                  PickerCategory::kUnitsMaths},
+      kPickerWidth, &asset_fetcher_, &submenu_controller_,
+      &preview_controller_));
+  widget->Show();
+
+  EXPECT_CALL(mock_delegate,
+              SelectZeroStateResult(Property(
+                  "data", &ash::PickerSearchResult::data,
+                  VariantWith<ash::PickerSearchResult::CapsLockData>(Field(
+                      "enabled",
+                      &ash::PickerSearchResult::CapsLockData::enabled, true)))))
+      .Times(1);
+
+  PickerItemView* item_view = view->category_section_views_for_testing()
+                                  .find(PickerCategoryType::kMore)
+                                  ->second->item_views_for_testing()[2];
   ViewDrawnWaiter().Wait(item_view);
   LeftClickOn(*item_view);
 }

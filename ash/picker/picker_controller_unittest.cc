@@ -15,6 +15,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_action_type.h"
+#include "ash/picker/model/picker_caps_lock_position.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_test_util.h"
@@ -185,6 +186,8 @@ class PickerControllerTest : public AshTestBase {
   PickerController& controller() { return *controller_; }
 
   NiceMock<TestPickerClient>& client() { return *client_; }
+
+  sync_preferences::TestingPrefServiceSyncable& prefs() { return prefs_; }
 
  private:
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
@@ -903,6 +906,36 @@ TEST_F(PickerControllerTest, IsValidDuringWidgetClose) {
   controller().GetActionForResult(PickerSearchResult::Text(u"a"));
   controller().IsGifsEnabled();
   controller().GetAvailableCategories();
+}
+
+TEST_F(PickerControllerTest,
+       ReturnsCapsLockPositionTopWhenCapsLockHasNotShownEnoughTimes) {
+  prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 4);
+  prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 0);
+  EXPECT_EQ(controller().GetCapsLockPosition(), PickerCapsLockPosition::kTop);
+}
+
+TEST_F(PickerControllerTest,
+       ReturnsCapsLockPositionTopWhenCapsLockIsAlwaysUsed) {
+  prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 15);
+  prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 14);
+  EXPECT_EQ(controller().GetCapsLockPosition(), PickerCapsLockPosition::kTop);
+}
+
+TEST_F(PickerControllerTest,
+       ReturnsCapsLockPositionMiddleWhenCapsLockIsSometimesUsed) {
+  prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 15);
+  prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 7);
+  EXPECT_EQ(controller().GetCapsLockPosition(),
+            PickerCapsLockPosition::kMiddle);
+}
+
+TEST_F(PickerControllerTest,
+       ReturnsCapsLockPositionBottomWhenCapsLockIsNeverUsed) {
+  prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 15);
+  prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 0);
+  EXPECT_EQ(controller().GetCapsLockPosition(),
+            PickerCapsLockPosition::kBottom);
 }
 
 struct ActionTestCase {
