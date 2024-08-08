@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -518,7 +517,7 @@ Browser* CreateWebAppWindowFromNavigationParamsAndEnqueueLaunch(
       CreateWebAppWindowMaybeWithHomeTab(app_id, app_browser_params);
   if (should_enqueue_launch_params && navigate_params.contents_to_insert) {
     WebAppLaunchParams launch_params;
-    launch_params.started_new_navigation = false;
+    launch_params.started_new_navigation = true;
     launch_params.app_id = app_id;
     launch_params.target_url = navigate_params.url;
     WebAppTabHelper::FromWebContents(navigate_params.contents_to_insert.get())
@@ -897,23 +896,52 @@ std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
   bool comes_from_app_browser =
       params.browser && web_app::AppBrowserController::IsWebApp(params.browser);
 
-  // Shift-clicks that come from an app browser always open in a new app
-  // container.
-  // TODO(crbug.com/351775835): Support DisplayMode of kBrowser as well.
-  if (comes_from_app_browser && controlling_app_id.has_value() &&
-      params.disposition == WindowOpenDisposition::NEW_WINDOW &&
-      registrar.GetAppEffectiveDisplayMode(*controlling_app_id) !=
-          DisplayMode::kBrowser) {
-    // `should_enqueue_launch_params` is true because the existence of a
-    // `controlling_app_id` ensures that there is an app that controls
-    // params.url.
-    Browser* app_window =
-        CreateWebAppWindowFromNavigationParamsAndEnqueueLaunch(
-            *controlling_app_id, params,
-            /*should_enqueue_launch_params=*/true);
-    return std::optional<std::pair<Browser*, int>>({app_window, -1});
-  }
+  auto OpensInStandaloneExperience =
+      [&registrar](const webapps::AppId& app_id) -> bool {
+    return registrar.GetAppEffectiveDisplayMode(app_id) !=
+           DisplayMode::kBrowser;
+  };
 
+  if (comes_from_app_browser) {
+    // Shift-clicks that come from an app browser always open in a new app
+    // container.
+    // TODO(crbug.com/351775835): Support DisplayMode of kBrowser as well.
+    if (params.disposition == WindowOpenDisposition::NEW_WINDOW &&
+        controlling_app_id.has_value() &&
+        OpensInStandaloneExperience(*controlling_app_id)) {
+      // `should_enqueue_launch_params` is true because the existence of a
+      // `controlling_app_id` ensures that there is an app that controls
+      // params.url.
+      Browser* app_window =
+          CreateWebAppWindowFromNavigationParamsAndEnqueueLaunch(
+              *controlling_app_id, params,
+              /*should_enqueue_launch_params=*/true);
+      return std::optional<std::pair<Browser*, int>>({app_window, -1});
+    }
+
+    CHECK(params.browser->app_controller());
+    const webapps::AppId& current_app_id =
+        params.browser->app_controller()->app_id();
+    // Middle clicks only open in a new app window (or an existing tab of an app
+    // if the app supports tabbed mode) if there is a same scope navigation
+    // happening from an app window.
+    if (params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
+        OpensInStandaloneExperience(current_app_id) &&
+        registrar.IsUrlInAppExtendedScope(params.url, current_app_id) &&
+        registrar.CapturesLinksInScope(current_app_id)) {
+      if (!params.browser->app_controller()->ShouldHideNewTabButton()) {
+        // Apps that support tabbed mode can open a new tab in the current app
+        // browser itself.
+        return std::optional<std::pair<Browser*, int>>({params.browser, -1});
+      } else {
+        Browser* app_window =
+            CreateWebAppWindowFromNavigationParamsAndEnqueueLaunch(
+                current_app_id, params,
+                /*should_enqueue_launch_params=*/true);
+        return std::optional<std::pair<Browser*, int>>({app_window, -1});
+      }
+    }
+  }
   return std::nullopt;
 }
 

@@ -40,6 +40,8 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "url/gurl.h"
 
 namespace {
@@ -443,28 +445,31 @@ class WebAppLinkCapturingParameterizedBrowserTest
     return test_expectation;
   }
 
-  // This function runs a javascript on the `contents`, which will result in a
-  // click to `element_id` being simulated. Set `middle_click` to `true` to
-  // change from the default behavior (which is to left-click). Returns `true`
-  // if successful, but false when an error occurs (see dev console or execution
-  // log).
-  bool SimulateClickOnElement(content::WebContents* contents,
+  // This function simulates a click on the middle of an element matching
+  // `element_id` based on the type of click passed to it.
+  void SimulateClickOnElement(content::WebContents* contents,
                               std::string element_id,
                               ClickMethod click) {
-    auto GetClickProperties = [](ClickMethod click) -> std::string {
-      switch (click) {
-        case ClickMethod::kLeftClick:
-          return "{}";
-        case ClickMethod::kMiddleClick:
-          return "{ctrlKey: true}";
-        case ClickMethod::kShiftClick:
-          return "{shiftKey: true}";
-      }
-    };
-    std::string properties = GetClickProperties(click);
-    std::string js =
-        "simulateClick(\"" + element_id + "\", " + properties + ")";
-    return ExecJs(contents, js);
+    gfx::Point element_center = gfx::ToFlooredPoint(
+        content::GetCenterCoordinatesOfElementWithId(contents, element_id));
+    int modifiers = 0;
+    blink::WebMouseEvent::Button button = blink::WebMouseEvent::Button::kLeft;
+    switch (click) {
+      case ClickMethod::kLeftClick:
+        modifiers = blink::WebInputEvent::Modifiers::kNoModifiers;
+        break;
+      case ClickMethod::kMiddleClick:
+#if BUILDFLAG(IS_MAC)
+        modifiers = blink::WebInputEvent::Modifiers::kMetaKey;
+#else
+        modifiers = blink::WebInputEvent::Modifiers::kControlKey;
+#endif  // BUILDFLAG(IS_MAC)
+        break;
+      case ClickMethod::kShiftClick:
+        modifiers = blink::WebInputEvent::Modifiers::kShiftKey;
+        break;
+    }
+    content::SimulateMouseClickAt(contents, modifiers, button, element_center);
   }
 
   // This function is used during rebaselining to record (to a file) the results
@@ -616,11 +621,6 @@ class WebAppLinkCapturingParameterizedBrowserTest
     const base::CommandLine& command_line =
         *base::CommandLine::ForCurrentProcess();
     return command_line.HasSwitch("rebaseline-link-capturing-test");
-  }
-
-  Browser* ToBrowser(content::WebContents* web_contents) {
-    gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
-    return chrome::FindBrowserWithWindow(native_window);
   }
 
   Profile* profile() { return browser()->profile(); }
@@ -783,7 +783,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
     EXPECT_TRUE(message_queue.WaitForMessage(&message));
     EXPECT_EQ("\"ReadyForLinkCaptureTesting\"", message);
 
-    browser_a = ToBrowser(contents_a);
+    browser_a = chrome::FindBrowserWithTab(contents_a);
     ASSERT_TRUE(browser_a != nullptr);
     ASSERT_EQ(StartInAppWindow() ? Browser::Type::TYPE_APP
                                  : Browser::Type::TYPE_NORMAL,
@@ -802,8 +802,8 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
 
     // Perform action (launch destination page).
     WebContentsCreationMonitor monitor;
-    ASSERT_TRUE(
-        SimulateClickOnElement(contents_a, GetElementId(), GetClickMethod()));
+    SimulateClickOnElement(contents_a, GetElementId(), GetClickMethod());
+
     std::string message;
     EXPECT_TRUE(message_queue.WaitForMessage(&message));
     std::string unquoted_message;
@@ -820,7 +820,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
     ASSERT_TRUE(contents_b->GetURL().is_valid());
   }
 
-  Browser* browser_b = ToBrowser(contents_b);
+  Browser* browser_b = chrome::FindBrowserWithTab(contents_b);
   ASSERT_NE(browser_b, nullptr);
   Browser::Type browser_type_b = browser_b->type();
 

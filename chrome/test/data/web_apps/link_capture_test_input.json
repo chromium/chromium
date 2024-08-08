@@ -1090,7 +1090,7 @@
    }, {
       "click": "MIDDLE",
       "element": "BTN",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "NO_OPENER",
       "scope": "A_TO_A",
       "start": "APP",
@@ -1106,7 +1106,7 @@
    }, {
       "click": "MIDDLE",
       "element": "BTN",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "NO_OPENER",
       "scope": "A_TO_A",
       "start": "APP",
@@ -1154,7 +1154,7 @@
    }, {
       "click": "MIDDLE",
       "element": "BTN",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "NO_OPENER",
       "scope": "A_TO_A->B",
       "start": "APP",
@@ -1170,7 +1170,7 @@
    }, {
       "click": "MIDDLE",
       "element": "BTN",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "NO_OPENER",
       "scope": "A_TO_A->B",
       "start": "APP",
@@ -1346,7 +1346,7 @@
    }, {
       "click": "MIDDLE",
       "element": "BTN",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_A",
       "start": "APP",
@@ -1362,7 +1362,7 @@
    }, {
       "click": "MIDDLE",
       "element": "BTN",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_A",
       "start": "APP",
@@ -1410,7 +1410,7 @@
    }, {
       "click": "MIDDLE",
       "element": "BTN",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_A->B",
       "start": "APP",
@@ -1426,7 +1426,7 @@
    }, {
       "click": "MIDDLE",
       "element": "BTN",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_A->B",
       "start": "APP",
@@ -1602,7 +1602,7 @@
    }, {
       "click": "MIDDLE",
       "element": "LINK",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "NO_OPENER",
       "scope": "A_TO_A",
       "start": "APP",
@@ -1610,7 +1610,7 @@
    }, {
       "click": "MIDDLE",
       "element": "LINK",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "NO_OPENER",
       "scope": "A_TO_A",
       "start": "APP",
@@ -1618,7 +1618,7 @@
    }, {
       "click": "MIDDLE",
       "element": "LINK",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "NO_OPENER",
       "scope": "A_TO_A",
       "start": "APP",
@@ -1626,7 +1626,7 @@
    }, {
       "click": "MIDDLE",
       "element": "LINK",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "NO_OPENER",
       "scope": "A_TO_A",
       "start": "APP",
@@ -1666,7 +1666,7 @@
    }, {
       "click": "MIDDLE",
       "element": "LINK",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "NO_OPENER",
       "scope": "A_TO_A->B",
       "start": "APP",
@@ -1674,7 +1674,7 @@
    }, {
       "click": "MIDDLE",
       "element": "LINK",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "NO_OPENER",
       "scope": "A_TO_A->B",
       "start": "APP",
@@ -1682,7 +1682,7 @@
    }, {
       "click": "MIDDLE",
       "element": "LINK",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "NO_OPENER",
       "scope": "A_TO_A->B",
       "start": "APP",
@@ -1690,7 +1690,7 @@
    }, {
       "click": "MIDDLE",
       "element": "LINK",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "NO_OPENER",
       "scope": "A_TO_A->B",
       "start": "APP",
@@ -1858,7 +1858,7 @@
    }, {
       "click": "MIDDLE",
       "element": "LINK",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_A",
       "start": "APP",
@@ -1866,7 +1866,7 @@
    }, {
       "click": "MIDDLE",
       "element": "LINK",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_A",
       "start": "APP",
@@ -1874,7 +1874,7 @@
    }, {
       "click": "MIDDLE",
       "element": "LINK",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_A",
       "start": "APP",
@@ -1882,7 +1882,7 @@
    }, {
       "click": "MIDDLE",
       "element": "LINK",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_A",
       "start": "APP",
@@ -1922,7 +1922,7 @@
    }, {
       "click": "MIDDLE",
       "element": "LINK",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_A->B",
       "start": "APP",
@@ -1930,7 +1930,7 @@
    }, {
       "click": "MIDDLE",
       "element": "LINK",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_A->B",
       "start": "APP",
@@ -1938,7 +1938,7 @@
    }, {
       "click": "MIDDLE",
       "element": "LINK",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_A->B",
       "start": "APP",
@@ -1946,7 +1946,7 @@
    }, {
       "click": "MIDDLE",
       "element": "LINK",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_A->B",
       "start": "APP",
@@ -2114,7 +2114,7 @@
    }, {
       "click": "SHIFT",
       "element": "BTN",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "NO_OPENER",
       "scope": "A_TO_A",
       "start": "APP",
@@ -2130,7 +2130,7 @@
    }, {
       "click": "SHIFT",
       "element": "BTN",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "NO_OPENER",
       "scope": "A_TO_A",
       "start": "APP",
@@ -2146,7 +2146,7 @@
    }, {
       "click": "SHIFT",
       "element": "BTN",
-      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
       "opener": "NO_OPENER",
       "scope": "A_TO_A",
       "start": "TAB",
@@ -2162,7 +2162,7 @@
    }, {
       "click": "SHIFT",
       "element": "BTN",
-      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
       "opener": "NO_OPENER",
       "scope": "A_TO_A",
       "start": "TAB",
@@ -2242,9 +2242,73 @@
    }, {
       "click": "SHIFT",
       "element": "BTN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "APP",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
       "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
       "opener": "NO_OPENER",
       "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "BLANK"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "NO_FRAME"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B",
+      "start": "TAB",
+      "target": "SELF"
+   }, {
+      "click": "SHIFT",
+      "element": "BTN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "opener": "NO_OPENER",
+      "scope": "A_TO_B->A",
       "start": "APP",
       "target": "BLANK"
    }, {
@@ -2252,70 +2316,6 @@
       "element": "BTN",
       "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
       "opener": "NO_OPENER",
-      "scope": "A_TO_B",
-      "start": "APP",
-      "target": "FRAME"
-   }, {
-      "click": "SHIFT",
-      "element": "BTN",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
-      "opener": "NO_OPENER",
-      "scope": "A_TO_B",
-      "start": "APP",
-      "target": "NO_FRAME"
-   }, {
-      "click": "SHIFT",
-      "element": "BTN",
-      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
-      "opener": "NO_OPENER",
-      "scope": "A_TO_B",
-      "start": "APP",
-      "target": "SELF"
-   }, {
-      "click": "SHIFT",
-      "element": "BTN",
-      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
-      "opener": "NO_OPENER",
-      "scope": "A_TO_B",
-      "start": "TAB",
-      "target": "BLANK"
-   }, {
-      "click": "SHIFT",
-      "element": "BTN",
-      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
-      "opener": "NO_OPENER",
-      "scope": "A_TO_B",
-      "start": "TAB",
-      "target": "FRAME"
-   }, {
-      "click": "SHIFT",
-      "element": "BTN",
-      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
-      "opener": "NO_OPENER",
-      "scope": "A_TO_B",
-      "start": "TAB",
-      "target": "NO_FRAME"
-   }, {
-      "click": "SHIFT",
-      "element": "BTN",
-      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
-      "opener": "NO_OPENER",
-      "scope": "A_TO_B",
-      "start": "TAB",
-      "target": "SELF"
-   }, {
-      "click": "SHIFT",
-      "element": "BTN",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
-      "opener": "NO_OPENER",
-      "scope": "A_TO_B->A",
-      "start": "APP",
-      "target": "BLANK"
-   }, {
-      "click": "SHIFT",
-      "element": "BTN",
-      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
-      "opener": "NO_OPENER",
       "scope": "A_TO_B->A",
       "start": "APP",
       "target": "FRAME"
@@ -2370,7 +2370,7 @@
    }, {
       "click": "SHIFT",
       "element": "BTN",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_A",
       "start": "APP",
@@ -2386,7 +2386,7 @@
    }, {
       "click": "SHIFT",
       "element": "BTN",
-      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_A",
       "start": "APP",
@@ -2402,7 +2402,7 @@
    }, {
       "click": "SHIFT",
       "element": "BTN",
-      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_A",
       "start": "TAB",
@@ -2418,7 +2418,7 @@
    }, {
       "click": "SHIFT",
       "element": "BTN",
-      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_A",
       "start": "TAB",
@@ -2498,7 +2498,7 @@
    }, {
       "click": "SHIFT",
       "element": "BTN",
-      "expect": "TYPE_APP_POPUP OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_B",
       "start": "APP",
@@ -2506,7 +2506,7 @@
    }, {
       "click": "SHIFT",
       "element": "BTN",
-      "expect": "TYPE_APP SAME_BROWSER IN_IFRAME",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_B",
       "start": "APP",
@@ -2514,7 +2514,7 @@
    }, {
       "click": "SHIFT",
       "element": "BTN",
-      "expect": "TYPE_APP_POPUP OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_B",
       "start": "APP",
@@ -2522,7 +2522,7 @@
    }, {
       "click": "SHIFT",
       "element": "BTN",
-      "expect": "TYPE_APP SAME_BROWSER IN_MAIN",
+      "expect": "TYPE_APP OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_B",
       "start": "APP",
@@ -2530,7 +2530,7 @@
    }, {
       "click": "SHIFT",
       "element": "BTN",
-      "expect": "TYPE_POPUP OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_B",
       "start": "TAB",
@@ -2538,7 +2538,7 @@
    }, {
       "click": "SHIFT",
       "element": "BTN",
-      "expect": "TYPE_NORMAL SAME_BROWSER IN_IFRAME",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_B",
       "start": "TAB",
@@ -2546,7 +2546,7 @@
    }, {
       "click": "SHIFT",
       "element": "BTN",
-      "expect": "TYPE_POPUP OTHER_BROWSER IN_MAIN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_B",
       "start": "TAB",
@@ -2554,7 +2554,7 @@
    }, {
       "click": "SHIFT",
       "element": "BTN",
-      "expect": "TYPE_NORMAL SAME_BROWSER IN_MAIN",
+      "expect": "TYPE_NORMAL OTHER_BROWSER IN_MAIN",
       "opener": "OPENER",
       "scope": "A_TO_B",
       "start": "TAB",

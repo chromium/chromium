@@ -8,12 +8,6 @@
     let aDestinationUrl = new URL("destination.html", window.location.href).href;
     let bDestinationUrl = new URL("../scope_b/destination.html", window.location.href).href;
 
-    function simulateClick(anchor_name, properties) {
-      let evt = new MouseEvent("click", properties);
-      let target = document.getElementById(anchor_name);
-      return target.dispatchEvent(evt);
-    }
-
     function triggerNotificationForUrlOpen(url) {
       console.assert(serviceWorkerRegistration);
       console.assert(url);
