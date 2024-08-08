@@ -96,7 +96,7 @@ class MockGpuChannel : public mojom::GpuChannel {
   MOCK_METHOD5(RegisterSysmemBufferCollection,
                void(mojo::PlatformHandle,
                     mojo::PlatformHandle,
-                    gfx::BufferFormat,
+                    const viz::SharedImageFormat&,
                     gfx::BufferUsage,
                     bool));
 #endif  // BUILDFLAG(IS_FUCHSIA)

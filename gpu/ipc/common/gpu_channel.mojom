@@ -244,7 +244,7 @@ interface GpuChannel {
   [EnableIf=is_fuchsia]
   RegisterSysmemBufferCollection(
       handle<platform> service_handle, handle<platform> sysmem_token,
-      gfx.mojom.BufferFormat format, gfx.mojom.BufferUsage usage,
+      viz.mojom.SharedImageFormat format, gfx.mojom.BufferUsage usage,
       bool register_with_image_pipe);
 
   // Updates the contents of the GpuMemoryBuffer associated with the shared

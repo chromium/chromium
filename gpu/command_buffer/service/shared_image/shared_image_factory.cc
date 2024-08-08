@@ -710,17 +710,18 @@ bool SharedImageFactory::PresentSwapChain(const Mailbox& mailbox) {
 void SharedImageFactory::RegisterSysmemBufferCollection(
     zx::eventpair service_handle,
     zx::channel sysmem_token,
-    gfx::BufferFormat format,
+    const viz::SharedImageFormat& format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
   auto* vulkan_context_provider = context_state_->vk_context_provider();
   VkDevice device =
       vulkan_context_provider->GetDeviceQueue()->GetVulkanDevice();
   DCHECK(device != VK_NULL_HANDLE);
+  auto buffer_format = ToBufferFormat(format);
   vulkan_context_provider->GetVulkanImplementation()
       ->RegisterSysmemBufferCollection(
-          device, std::move(service_handle), std::move(sysmem_token), format,
-          usage, gfx::Size(), 0, register_with_image_pipe);
+          device, std::move(service_handle), std::move(sysmem_token),
+          buffer_format, usage, gfx::Size(), 0, register_with_image_pipe);
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 

@@ -612,7 +612,7 @@ void SharedImageInterfaceInProcess::PresentSwapChain(
 void SharedImageInterfaceInProcess::RegisterSysmemBufferCollection(
     zx::eventpair service_handle,
     zx::channel sysmem_token,
-    gfx::BufferFormat format,
+    const viz::SharedImageFormat& format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
   NOTREACHED_IN_MIGRATION();

@@ -376,10 +376,10 @@ void TestSharedImageInterface::PresentSwapChain(
 void TestSharedImageInterface::RegisterSysmemBufferCollection(
     zx::eventpair service_handle,
     zx::channel sysmem_token,
-    gfx::BufferFormat format,
+    const viz::SharedImageFormat& format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
-  EXPECT_EQ(format, gfx::BufferFormat::YUV_420_BIPLANAR);
+  EXPECT_EQ(format, viz::MultiPlaneFormat::kNV12);
   EXPECT_EQ(usage, gfx::BufferUsage::GPU_READ);
   zx_koid_t id = base::GetKoid(service_handle).value();
   std::unique_ptr<TestBufferCollection>& collection =
