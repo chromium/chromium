@@ -97,8 +97,6 @@ class NavigationHandler implements TouchEventObserver {
     // Total vertical pull offset for a swipe gesture.
     private float mPullOffsetY;
 
-    private float mInitialX;
-    private float mInitialY;
     private @BackGestureEventSwipeEdge int mInitiatingEdge;
 
     private boolean mBackGestureForTabHistoryInProgress;
@@ -209,9 +207,7 @@ class NavigationHandler implements TouchEventObserver {
                 triggerUi(
                         distanceX > 0
                                 ? BackGestureEventSwipeEdge.RIGHT
-                                : BackGestureEventSwipeEdge.LEFT,
-                        endX,
-                        endY);
+                                : BackGestureEventSwipeEdge.LEFT);
             }
             if (!isActive()) mState = GestureState.NONE;
         }
@@ -230,13 +226,11 @@ class NavigationHandler implements TouchEventObserver {
     }
 
     /**
-     * @see {@link HistoryNavigationCoordinator#triggerUi(int, float, float)}
+     * @see {@link HistoryNavigationCoordinator#triggerUi(int)}
      */
-    boolean triggerUi(@BackGestureEventSwipeEdge int initiatingEdge, float x, float y) {
+    boolean triggerUi(@BackGestureEventSwipeEdge int initiatingEdge) {
         if (!isValidState()) return false;
 
-        mInitialX = x;
-        mInitialY = y;
         mInitiatingEdge = initiatingEdge;
 
         boolean forward = mInitiatingEdge == BackGestureEventSwipeEdge.RIGHT;
@@ -264,8 +258,7 @@ class NavigationHandler implements TouchEventObserver {
                                 mTab, BrowserControlsState.SHOWN, /* animate= */ true);
                     }
                     mTabOnBackGestureHandler = TabOnBackGestureHandler.from(mTab);
-                    mTabOnBackGestureHandler.onBackStarted(
-                            x, y, getProgress(), mInitiatingEdge, forward);
+                    mTabOnBackGestureHandler.onBackStarted(getProgress(), mInitiatingEdge, forward);
                 }
                 BackPressMetrics.recordNavStatusOnGestureStart(
                         mTab.getWebContents().hasUncommittedNavigationInPrimaryMainFrame(),
@@ -388,28 +381,13 @@ class NavigationHandler implements TouchEventObserver {
             mModel.set(BUBBLE_OFFSET, mPullOffsetX);
         }
         if (mTabOnBackGestureHandler != null) {
-            mTabOnBackGestureHandler.onBackProgressed(
-                    getTouchX(), getTouchY(), getProgress(), mInitiatingEdge);
+            mTabOnBackGestureHandler.onBackProgressed(getProgress(), mInitiatingEdge);
         }
     }
 
     /**
-     * @return Absolute X location of the touch point of the current gesture.
-     */
-    float getTouchX() {
-        return mInitialX + mPullOffsetX;
-    }
-
-    /**
-     * @return Absolute Y location of the touch point of the current gesture.
-     */
-    float getTouchY() {
-        return mInitialY + mPullOffsetY;
-    }
-
-    /**
-     * @return {@code true} if navigation was triggered and its UI is in action, or
-     *         edge glow effect is visible.
+     * @return {@code true} if navigation was triggered and its UI is in action, or edge glow effect
+     *     is visible.
      */
     boolean isActive() {
         return mState == GestureState.DRAGGED || mState == GestureState.GLOW;

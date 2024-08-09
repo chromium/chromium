@@ -442,8 +442,6 @@ public class ToolbarManager
         public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
             if (mHandler == null) return;
             mHandler.onBackProgressed(
-                    backEvent.getTouchX(),
-                    backEvent.getTouchY(),
                     backEvent.getProgress(),
                     backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT
                             ? BackGestureEventSwipeEdge.LEFT
@@ -482,8 +480,6 @@ public class ToolbarManager
                         /* animate= */ true);
             }
             mHandler.onBackStarted(
-                    backEvent.getTouchX(),
-                    backEvent.getTouchY(),
                     backEvent.getProgress(),
                     backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT
                             ? BackGestureEventSwipeEdge.LEFT

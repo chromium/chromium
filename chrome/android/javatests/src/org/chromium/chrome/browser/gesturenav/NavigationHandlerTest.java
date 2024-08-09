@@ -384,7 +384,7 @@ public class NavigationHandlerTest {
                 () -> {
                     // Right swipe on a rendered page to initiate overscroll glow.
                     mNavigationHandler.onDown();
-                    mNavigationHandler.triggerUi(BackGestureEventSwipeEdge.RIGHT, 0, 0);
+                    mNavigationHandler.triggerUi(BackGestureEventSwipeEdge.RIGHT);
 
                     // Test that a release without preceding pull requests works
                     // without crashes.
@@ -503,7 +503,7 @@ public class NavigationHandlerTest {
         // handler action delegate) is destroyed.
         Assert.assertTrue(
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> mNavigationHandler.triggerUi(BackGestureEventSwipeEdge.LEFT, 0, 0)));
+                        () -> mNavigationHandler.triggerUi(BackGestureEventSwipeEdge.LEFT)));
 
         // Just check we're still on the same URL.
         Assert.assertEquals(
@@ -521,7 +521,7 @@ public class NavigationHandlerTest {
         // page. Make sure this won't crash after the current tab is destroyed.
         Assert.assertFalse(
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> mNavigationHandler.triggerUi(BackGestureEventSwipeEdge.LEFT, 0, 0)));
+                        () -> mNavigationHandler.triggerUi(BackGestureEventSwipeEdge.LEFT)));
     }
 
     @Test

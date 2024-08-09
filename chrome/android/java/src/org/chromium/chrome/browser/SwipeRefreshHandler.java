@@ -247,10 +247,7 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
 
     @Override
     public boolean start(
-            @OverscrollAction int type,
-            float startX,
-            float startY,
-            @BackGestureEventSwipeEdge int initiatingEdge) {
+            @OverscrollAction int type, @BackGestureEventSwipeEdge int initiatingEdge) {
         mSwipeType = type;
         if (type == OverscrollAction.PULL_TO_REFRESH) {
             if (mSwipeRefreshLayout == null) initSwipeRefreshLayout(mTab.getContext());
@@ -261,8 +258,7 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
                 mNavigationCoordinator.startGesture();
                 // Note: triggerUi returns true as long as the handler is in a valid state, i.e.
                 // even if the navigation direction doesn't have further history entries.
-                boolean navigable =
-                        mNavigationCoordinator.triggerUi(initiatingEdge, startX, startY);
+                boolean navigable = mNavigationCoordinator.triggerUi(initiatingEdge);
                 return navigable;
             }
         } else if (type == OverscrollAction.PULL_FROM_BOTTOM_EDGE) {

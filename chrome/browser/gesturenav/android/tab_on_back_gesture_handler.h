@@ -32,14 +32,10 @@ class TabOnBackGestureHandler {
   // forward: true if this gesture is supposed to forward a page, instead of
   // navigating back.
   void OnBackStarted(JNIEnv* env,
-                     float x,
-                     float y,
                      float progress,
                      /* ui::BackGestureEventSwipeEdge */ int edge,
                      bool forward);
   void OnBackProgressed(JNIEnv* env,
-                        float x,
-                        float y,
                         float progress,
                         /* ui::BackGestureEventSwipeEdge */ int edge);
   void OnBackCancelled(JNIEnv* env);

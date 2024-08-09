@@ -33,8 +33,6 @@ TabOnBackGestureHandler::TabOnBackGestureHandler(TabAndroid* tab_android)
     : tab_android_(tab_android) {}
 
 void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
-                                            float x,
-                                            float y,
                                             float progress,
                                             int edge,
                                             bool forward) {
@@ -45,7 +43,7 @@ void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
   CHECK(web_contents, base::NotFatalUntil::M123);
   AssertHasWindowAndCompositor(web_contents);
 
-  ui::BackGestureEvent back_gesture(gfx::PointF(x, y), progress);
+  ui::BackGestureEvent back_gesture(progress);
   started_edge_ = static_cast<ui::BackGestureEventSwipeEdge>(edge);
 
   web_contents->GetBackForwardTransitionAnimationManager()->OnGestureStarted(
@@ -54,8 +52,6 @@ void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
 }
 
 void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
-                                               float x,
-                                               float y,
                                                float progress,
                                                int edge) {
   CHECK(is_in_progress_, base::NotFatalUntil::M123);
@@ -71,7 +67,7 @@ void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
     LOG(ERROR) << "TabOnBackGestureHandler::OnBackProgressed " << progress;
     progress = 1.f;
   }
-  ui::BackGestureEvent back_gesture(gfx::PointF(x, y), progress);
+  ui::BackGestureEvent back_gesture(progress);
   web_contents->GetBackForwardTransitionAnimationManager()->OnGestureProgressed(
       back_gesture);
 }

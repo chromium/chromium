@@ -14,19 +14,13 @@ public interface OverscrollRefreshHandler {
      * Signals the start of an overscrolling pull.
      *
      * @param type Type of the overscroll action.
-     * @param startX X position of touch event at the beginning of overscroll.
-     * @param startY Y position of touch event at the beginning of overscroll.
      * @param initiatingEdge Whether the history gesture is being initiated from the LEFT or RIGHT
      *     edge of the screen. Only used with the HISTORY_NAVIGATION `type`. TODO(bokan): Can we
      *     make the initiatingEdge param nullable in JNI?
      * @return Whether the handler will consume the overscroll sequence.
      */
     @CalledByNative
-    public boolean start(
-            @OverscrollAction int type,
-            float startX,
-            float startY,
-            @BackGestureEventSwipeEdge int initiatingEdge);
+    public boolean start(@OverscrollAction int type, @BackGestureEventSwipeEdge int initiatingEdge);
 
     /**
      * Signals a pull update.

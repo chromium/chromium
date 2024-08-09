@@ -24,8 +24,6 @@ class OverscrollRefreshTest : public OverscrollRefreshHandler,
   // OverscrollRefreshHandler implementation.
   bool PullStart(
       OverscrollAction type,
-      float startx,
-      float starty,
       std::optional<BackGestureEventSwipeEdge> initiating_edge) override {
     started_ = true;
     return true;

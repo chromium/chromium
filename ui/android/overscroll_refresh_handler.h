@@ -27,8 +27,6 @@ class UI_ANDROID_EXPORT OverscrollRefreshHandler {
   // remaining pull updates.
   virtual bool PullStart(
       OverscrollAction type,
-      float startx,
-      float starty,
       std::optional<BackGestureEventSwipeEdge> initiating_edge);
 
   // Signals a pull update, where |x_delta| and |y_delta| are in device pixels.

@@ -6,7 +6,6 @@
 
 namespace ui {
 
-BackGestureEvent::BackGestureEvent(const gfx::PointF& location, float progress)
-    : location_(location), progress_(progress) {}
+BackGestureEvent::BackGestureEvent(float progress) : progress_(progress) {}
 
 }  // namespace ui

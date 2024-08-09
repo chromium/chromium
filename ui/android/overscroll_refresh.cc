@@ -113,10 +113,7 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior) {
 
   if (type != OverscrollAction::NONE) {
     scroll_consumption_state_ =
-        handler_->PullStart(type, scroll_begin_x_, scroll_begin_y_,
-                            overscroll_edge)
-            ? ENABLED
-            : DISABLED;
+        handler_->PullStart(type, overscroll_edge) ? ENABLED : DISABLED;
   }
 }
 

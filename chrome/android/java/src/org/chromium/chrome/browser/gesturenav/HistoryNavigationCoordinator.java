@@ -247,8 +247,8 @@ public class HistoryNavigationCoordinator
      * @return {@code true} if history navigation is possible, even if there are no further session
      *     history entries in the given direction.
      */
-    public boolean triggerUi(@BackGestureEventSwipeEdge int initiatingEdge, float x, float y) {
-        return mNavigationHandler != null && mNavigationHandler.triggerUi(initiatingEdge, x, y);
+    public boolean triggerUi(@BackGestureEventSwipeEdge int initiatingEdge) {
+        return mNavigationHandler != null && mNavigationHandler.triggerUi(initiatingEdge);
     }
 
     /**

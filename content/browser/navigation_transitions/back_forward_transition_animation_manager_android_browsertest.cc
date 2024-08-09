@@ -729,18 +729,15 @@ class BackForwardTransitionAnimationManagerBrowserTest
   }
 
   void ProgressGestureAndExpectTransformAndScrim(GestureType gesture) {
-    // TODO(bokan): The touch location isn't currently used but ideally we'd
-    // send realistic values for the location too. (Or can we remove it?)
-    const gfx::PointF touch_pt(1, 1);
     const float progress = GetProgress(gesture);
 
     if (gesture == GestureType::kStart) {
       GetAnimationManager(web_contents())
-          ->OnGestureStarted(ui::BackGestureEvent(touch_pt, progress),
-                             GetSwipeEdge(), NavType::kBackward);
+          ->OnGestureStarted(ui::BackGestureEvent(progress), GetSwipeEdge(),
+                             NavType::kBackward);
     } else {
       GetAnimationManager(web_contents())
-          ->OnGestureProgressed(ui::BackGestureEvent(touch_pt, progress));
+          ->OnGestureProgressed(ui::BackGestureEvent(progress));
     }
     ExpectLayerTransformsAndScrimForGestureProgress(gesture);
   }
