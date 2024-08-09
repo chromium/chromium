@@ -3095,7 +3095,6 @@ static_library("ui") {
       "//chrome/browser/chromeos/video_conference",
     ]
     sources += [
-      "chromeos/window_pin_util.h",
       "platform_keys_certificate_selector_chromeos.h",
       "tabs/existing_window_sub_menu_model_chromeos.cc",
       "tabs/existing_window_sub_menu_model_chromeos.h",
@@ -3155,6 +3154,7 @@ static_library("ui") {
       "//chrome/browser/chromeos/upload_office_to_cloud",
       "//chrome/browser/chromeos/video_conference",
       "//chrome/browser/metrics/structured:features",
+      "//chrome/browser/ui/chromeos",
       "//chrome/browser/ui/views/editor_menu",
       "//chrome/browser/ui/views/mahi",
       "//chromeos/components/kiosk",

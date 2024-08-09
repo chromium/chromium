@@ -606,6 +606,8 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/chromeos",
+    "//chrome/browser/ui/chromeos:test_support",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",

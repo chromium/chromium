@@ -788,8 +788,6 @@ static_library("test_support") {
       "../browser/certificate_provider/test_certificate_provider_extension.h",
       "../browser/extensions/policy_test_utils.cc",
       "../browser/extensions/policy_test_utils.h",
-      "../browser/ui/chromeos/test_util.cc",
-      "../browser/ui/chromeos/test_util.h",
       "../browser/ui/views/frame/immersive_mode_tester.cc",
       "../browser/ui/views/frame/immersive_mode_tester.h",
       "../browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.cc",
@@ -819,6 +817,7 @@ static_library("test_support") {
       "//base/test:proto_test_support",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/kcer",
+      "//chrome/browser/ui/chromeos",
       "//chromeos/components/mgs",
       "//chromeos/dbus/constants",
     ]
@@ -3399,6 +3398,8 @@ if (!is_android) {
         "//chrome/browser/chromeos:test_support",
         "//chrome/browser/chromeos/cros_apps:all_browser_tests",
         "//chrome/browser/chromeos/video_conference",
+        "//chrome/browser/ui/chromeos",
+        "//chrome/browser/ui/chromeos:test_support",
         "//chrome/browser/web_applications/app_service",
         "//chrome/browser/web_applications/app_service:test_support",
         "//chromeos/components/kcer",
@@ -5470,6 +5471,8 @@ if (is_chromeos_lacros) {
       "//chrome/browser/sync",
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui/chromeos",
+      "//chrome/browser/ui/chromeos:test_support",
       "//chrome/browser/ui/web_applications:app_service_browser_tests",
       "//chrome/browser/web_applications:app_service_browser_tests",
       "//chrome/browser/web_applications:prevent_close_test_support",
@@ -9236,7 +9239,10 @@ test("unit_tests") {
     }
 
     if (is_chromeos) {
-      deps += [ "//chromeos/dbus/missive" ]
+      deps += [
+        "//chrome/browser/ui/chromeos",
+        "//chromeos/dbus/missive",
+      ]
     }
 
     if (is_chromeos_ash) {
@@ -11373,6 +11379,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/chromeos",
         "//chrome/browser/chromeos:test_support",
         "//chrome/browser/smart_card:interactive_ui_tests",
+        "//chrome/browser/ui/chromeos:test_support",
         "//chromeos/constants",
         "//chromeos/dbus/dlp:dlp",
         "//chromeos/ui/base",

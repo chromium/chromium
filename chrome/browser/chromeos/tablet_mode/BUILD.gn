@@ -68,6 +68,8 @@ if (is_chromeos_ash) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/browser/ui/ash/system_web_apps",
+      "//chrome/browser/ui/chromeos",
+      "//chrome/browser/ui/chromeos:test_support",
       "//chrome/common",
       "//chrome/common:constants",
       "//chrome/test:test_support",
@@ -91,6 +93,7 @@ if (is_chromeos_lacros) {
     deps = [
       "//chrome/browser",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/chromeos:test_support",
       "//chrome/common",
       "//chrome/test:test_support",
       "//content/public/browser",
