@@ -31,6 +31,11 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
                 nativeFacilitatedPaymentsController);
     }
 
+    @CalledByNative
+    private void onNativeDestroyed() {
+        mNativeFacilitatedPaymentsController = 0;
+    }
+
     // FacilitatedPaymentsPaymentMethodsComponent.Delegate
     @Override
     public void onDismissed() {
