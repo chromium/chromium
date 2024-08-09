@@ -1,0 +1,24 @@
+source_set("enterprise_obfuscation") {
+  sources = [
+    "utils.cc",
+    "utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//crypto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "utils_unittest.cc" ]
+
+  deps = [
+    ":enterprise_obfuscation",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
