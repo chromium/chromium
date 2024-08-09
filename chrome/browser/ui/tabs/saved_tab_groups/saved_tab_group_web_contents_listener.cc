@@ -107,9 +107,9 @@ bool IsURLInRedirectChain(const GURL& url,
 
 SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     content::WebContents* web_contents,
-    base::Token token,
+    const LocalTabID& saved_tab_group_tab_id,
     TabGroupServiceWrapper* wrapper_service)
-    : token_(token),
+    : saved_tab_group_tab_id_(saved_tab_group_tab_id),
       web_contents_(web_contents),
       favicon_driver_(
           favicon::ContentFaviconDriver::FromWebContents(web_contents)),
@@ -123,9 +123,9 @@ SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
 SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     content::WebContents* web_contents,
     content::NavigationHandle* navigation_handle,
-    base::Token token,
+    const LocalTabID& saved_tab_group_tab_id,
     TabGroupServiceWrapper* wrapper_service)
-    : token_(token),
+    : saved_tab_group_tab_id_(saved_tab_group_tab_id),
       web_contents_(web_contents),
       favicon_driver_(
           favicon::ContentFaviconDriver::FromWebContents(web_contents)),
@@ -191,16 +191,16 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
   }
 
   std::optional<SavedTabGroup> group = saved_group();
-  SavedTabGroupTab* tab = group->GetTab(token_);
+  SavedTabGroupTab* tab = group->GetTab(saved_tab_group_tab_id_);
   CHECK(tab);
 
   wrapper_service_->SetFaviconForTab(
-      group->local_group_id().value(), token_,
+      group->local_group_id().value(), saved_tab_group_tab_id_,
       favicon::TabFaviconFromWebContents(web_contents_));
-  wrapper_service_->UpdateTab(group->local_group_id().value(), token_,
-                              web_contents_->GetTitle(),
-                              web_contents_->GetURL(), /*position=*/
-                              std::nullopt);
+  wrapper_service_->UpdateTab(
+      group->local_group_id().value(), saved_tab_group_tab_id_,
+      web_contents_->GetTitle(), web_contents_->GetURL(), /*position=*/
+      std::nullopt);
 }
 
 void SavedTabGroupWebContentsListener::DidGetUserInteraction(
@@ -216,7 +216,8 @@ void SavedTabGroupWebContentsListener::TitleWasSet(
   }
 
   std::optional<SavedTabGroup> group = saved_group();
-  wrapper_service_->UpdateTab(group->local_group_id().value(), token_,
+  wrapper_service_->UpdateTab(group->local_group_id().value(),
+                              saved_tab_group_tab_id_,
                               entry->GetTitleForDisplay(), entry->GetURL(),
                               /*position=*/std::nullopt);
 }
@@ -234,13 +235,13 @@ void SavedTabGroupWebContentsListener::OnFaviconUpdated(
   }
 
   std::optional<SavedTabGroup> group = saved_group();
-  SavedTabGroupTab* tab = group->GetTab(token_);
+  SavedTabGroupTab* tab = group->GetTab(saved_tab_group_tab_id_);
 
   wrapper_service_->SetFaviconForTab(
-      group->local_group_id().value(), token_,
+      group->local_group_id().value(), saved_tab_group_tab_id_,
       favicon::TabFaviconFromWebContents(web_contents_));
-  wrapper_service_->UpdateTab(group->local_group_id().value(), token_,
-                              tab->title(), tab->url(),
+  wrapper_service_->UpdateTab(group->local_group_id().value(),
+                              saved_tab_group_tab_id_, tab->title(), tab->url(),
                               /*position=*/std::nullopt);
 }
 
@@ -256,12 +257,11 @@ void SavedTabGroupWebContentsListener::UpdateTabRedirectChain(
   }
 }
 
-const std::optional<SavedTabGroup>
-SavedTabGroupWebContentsListener::saved_group() {
+const SavedTabGroup SavedTabGroupWebContentsListener::saved_group() {
   std::vector<SavedTabGroup> all_groups = wrapper_service_->GetAllGroups();
   auto iter = base::ranges::find_if(
       all_groups, [&](const SavedTabGroup& potential_group) {
-        return potential_group.ContainsTab(token_);
+        return potential_group.ContainsTab(saved_tab_group_tab_id_);
       });
   CHECK(iter != all_groups.end());
 

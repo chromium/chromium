@@ -75,7 +75,8 @@ void LocalTabGroupListener::ResumeTracking() {
     const SavedTabGroupWebContentsListener& listener = map_entry->second;
 
     const auto is_local_tab = [&listener](const SavedTabGroupTab& saved_tab) {
-      return saved_tab.local_tab_id().value() == listener.token();
+      return saved_tab.local_tab_id().value() ==
+             listener.saved_tab_group_tab_id();
     };
     CHECK(std::find_if(saved_tabs.begin(), saved_tabs.end(), is_local_tab) !=
           saved_tabs.end());
@@ -105,7 +106,7 @@ void LocalTabGroupListener::OnReplaceWebContents(
   CHECK(web_contents_to_tab_id_map_.find(old_web_contents) !=
         web_contents_to_tab_id_map_.end());
   base::Token local_tab_id =
-      web_contents_to_tab_id_map_.at(old_web_contents).token();
+      web_contents_to_tab_id_map_.at(old_web_contents).saved_tab_group_tab_id();
   web_contents_to_tab_id_map_.erase(old_web_contents);
 
   web_contents_to_tab_id_map_.try_emplace(new_web_contents, new_web_contents,
@@ -191,7 +192,8 @@ void LocalTabGroupListener::MoveWebContentsFromLocal(
   const SavedTabGroupWebContentsListener& web_contents_listener =
       web_contents_to_tab_id_map_.at(web_contents);
 
-  wrapper_service_->MoveTab(local_id_, web_contents_listener.token(),
+  wrapper_service_->MoveTab(local_id_,
+                            web_contents_listener.saved_tab_group_tab_id(),
                             index_in_group);
 }
 
@@ -207,7 +209,7 @@ LocalTabGroupListener::MaybeRemoveWebContentsFromLocal(
   }
 
   const base::Token tab_id =
-      web_contents_to_tab_id_map_.at(web_contents).token();
+      web_contents_to_tab_id_map_.at(web_contents).saved_tab_group_tab_id();
   const std::optional<SavedTabGroup> saved_group =
       wrapper_service_->GetGroup(saved_guid_);
   const base::Uuid tab_guid = saved_group->GetTab(tab_id)->saved_tab_guid();
@@ -266,7 +268,7 @@ LocalTabGroupListener::Liveness LocalTabGroupListener::UpdateFromSync() {
   std::unordered_map<base::Token, content::WebContents*, base::TokenHash>
       token_to_contents_map;
   for (auto& [contents, listener] : web_contents_to_tab_id_map_) {
-    token_to_contents_map[listener.token()] = contents;
+    token_to_contents_map[listener.saved_tab_group_tab_id()] = contents;
   }
 
   // Add, navigate, and reorder local tabs to match saved tabs.
@@ -353,7 +355,7 @@ void LocalTabGroupListener::RemoveLocalWebContentsNotInSavedGroup() {
   for (content::WebContents* const contents : web_contentses_in_local_group) {
     const auto& it = web_contents_to_tab_id_map_.find(contents);
     CHECK(it != web_contents_to_tab_id_map_.end());
-    if (!saved_group->ContainsTab(it->second.token())) {
+    if (!saved_group->ContainsTab(it->second.saved_tab_group_tab_id())) {
       RemoveWebContentsFromSync(contents, /*should_close_tab=*/true);
     }
   }

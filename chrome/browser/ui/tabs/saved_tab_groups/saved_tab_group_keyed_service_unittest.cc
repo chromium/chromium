@@ -876,9 +876,11 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   const SavedTabGroup* group = service()->model()->Get(group_id);
   base::Token first_tab_token =
-      web_contents_listener_map.at(tabstrip->GetWebContentsAt(0)).token();
+      web_contents_listener_map.at(tabstrip->GetWebContentsAt(0))
+          .saved_tab_group_tab_id();
   base::Token second_tab_token =
-      web_contents_listener_map.at(tabstrip->GetWebContentsAt(1)).token();
+      web_contents_listener_map.at(tabstrip->GetWebContentsAt(1))
+          .saved_tab_group_tab_id();
 
   ASSERT_EQ(2u, group->saved_tabs().size());
   EXPECT_EQ(first_tab_token, group->saved_tabs()[0].local_tab_id().value());
@@ -935,9 +937,9 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
                                       .at(group_id)
                                       .GetWebContentsTokenMapForTesting();
   base::Token web_contents_0_token =
-      web_contents_listener_map.at(web_contents_0).token();
+      web_contents_listener_map.at(web_contents_0).saved_tab_group_tab_id();
   base::Token web_contents_1_token =
-      web_contents_listener_map.at(web_contents_1).token();
+      web_contents_listener_map.at(web_contents_1).saved_tab_group_tab_id();
 
   std::unique_ptr<content::WebContents> replacement_web_contents =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
