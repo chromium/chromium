@@ -355,7 +355,6 @@ aggregate_vector_icons("ash_vector_icons") {
     "picker_emoji.icon",
     "picker_emoticon.icon",
     "picker_gif.icon",
-    "picker_local_files.icon",
     "picker_lower_case.icon",
     "picker_more_emojis.icon",
     "picker_open_tab.icon",

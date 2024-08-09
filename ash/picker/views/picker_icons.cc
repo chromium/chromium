@@ -29,7 +29,7 @@ const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
     case PickerCategory::kDriveFiles:
       return kPickerDriveFilesIcon;
     case PickerCategory::kLocalFiles:
-      return kPickerLocalFilesIcon;
+      return kFilesAppIcon;
     case PickerCategory::kDatesTimes:
       return kPickerCalendarIcon;
     case PickerCategory::kUnitsMaths:
