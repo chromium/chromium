@@ -304,8 +304,6 @@ class EnterpriseReportingBrowserTest : public policy::PolicyTest {
                                                                      "/upload");
 
     mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
-    server()->AddDefaultHandlers(
-        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
     server()->AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(server()->Start());
   }
@@ -967,9 +965,10 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingBrowserTest,
   // error
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  GURL url(server()->GetURL("a.test",
-                            "/cross_site_iframe_factory.html?a.test(b.test)"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  GURL url_a = server()->GetURL("a.test", "/iframe_blank.html");
+  GURL url_b = server()->GetURL("b.test", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url_a));
+  ASSERT_TRUE(content::NavigateIframeToURL(web_contents, "test", url_b));
   ASSERT_TRUE(
       content::ExecJs(content::ChildFrameAt(web_contents, 0),
                       "document.cookie = 'foo=bar;SameSite=None;Secure'"));
@@ -988,8 +987,6 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingBrowserTest,
   payload_response()->Send("\r\n");
   payload_response()->Done();
 
-  GURL url_b =
-      server()->GetURL("b.test", "/cross_site_iframe_factory.html?b.test()");
   base::Value::List expectedReport =
       base::test::ParseJsonList(base::StringPrintf(
           R"json(
@@ -1009,7 +1006,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingBrowserTest,
             },
           ]
         )json",
-          url_b.spec().c_str(), url_b.spec().c_str(), url.spec().c_str()));
+          url_b.spec().c_str(), url_b.spec().c_str(), url_a.spec().c_str()));
   EXPECT_EQ(expectedReport, actualReport);
 }
 
