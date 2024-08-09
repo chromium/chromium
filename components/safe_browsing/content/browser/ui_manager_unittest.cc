@@ -43,8 +43,13 @@
 using content::BrowserThread;
 
 static const char* kGoodURL = "https://www.good.com";
+static const char* kGoodIpAddress = "http://1.2.3.4/";
 static const char* kBadURL = "https://www.malware.com";
+static const char* kBadURLWithAlternateScheme = "http://www.malware.com";
 static const char* kBadURLWithPath = "https://www.malware.com/index.html";
+static const char* kIpAddress = "https://195.127.0.11/uploads";
+static const char* kIpAddressAlternatePathAndScheme =
+    "http://195.127.0.11/otherPath";
 static const char* kRedirectURL = "https://www.test1.com";
 static const char* kAnotherRedirectURL = "https://www.test2.com";
 
@@ -430,6 +435,40 @@ TEST_F(SafeBrowsingUIManagerTest, AllowlistIgnoresPath) {
   security_interstitials::UnsafeResource resource_path =
       MakeUnsafeResourceAndStartNavigation(kBadURLWithPath);
   EXPECT_TRUE(IsAllowlisted(resource_path));
+}
+
+TEST_F(SafeBrowsingUIManagerTest, AllowlistIgnoresScheme) {
+  security_interstitials::UnsafeResource resource =
+      MakeUnsafeResourceAndStartNavigation(kBadURL);
+  AddToAllowlist(resource, /*pending=*/false);
+  EXPECT_TRUE(IsAllowlisted(resource));
+
+  content::WebContentsTester::For(web_contents())->CommitPendingNavigation();
+
+  security_interstitials::UnsafeResource alternate_scheme_resource =
+      MakeUnsafeResource(kBadURLWithAlternateScheme);
+  EXPECT_TRUE(IsAllowlisted(alternate_scheme_resource));
+
+  security_interstitials::UnsafeResource good_resource =
+      MakeUnsafeResource(kGoodURL);
+  EXPECT_FALSE(IsAllowlisted(good_resource));
+}
+
+TEST_F(SafeBrowsingUIManagerTest, AllowlistIPAddress) {
+  security_interstitials::UnsafeResource resource =
+      MakeUnsafeResourceAndStartNavigation(kIpAddress);
+  AddToAllowlist(resource, /*pending=*/false);
+  EXPECT_TRUE(IsAllowlisted(resource));
+
+  content::WebContentsTester::For(web_contents())->CommitPendingNavigation();
+
+  security_interstitials::UnsafeResource alternate_unsafe_resource =
+      MakeUnsafeResource(kIpAddressAlternatePathAndScheme);
+  EXPECT_TRUE(IsAllowlisted(alternate_unsafe_resource));
+
+  security_interstitials::UnsafeResource good_resource =
+      MakeUnsafeResource(kGoodIpAddress);
+  EXPECT_FALSE(IsAllowlisted(good_resource));
 }
 
 TEST_F(SafeBrowsingUIManagerTest, AllowlistIgnoresThreatType) {
