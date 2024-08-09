@@ -879,7 +879,8 @@ public class TabGridDialogMediator
                     (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
                     mActionConfirmationManager,
                     tabId,
-                    hideTabGroups);
+                    hideTabGroups,
+                    /* didCloseCallback= */ null);
         } else if (menuId == R.id.delete_shared_group) {
             RecordUserAction.record("TabGridDialogMenu.DeleteShared");
             TabUiUtils.deleteSharedTabGroup(

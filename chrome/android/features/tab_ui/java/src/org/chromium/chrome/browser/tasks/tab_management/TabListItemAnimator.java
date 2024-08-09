@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
+import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.USE_SHRINK_CLOSE_ANIMATION;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -429,7 +430,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         }
 
         Animator animator = null;
-        if (TabUiFeatureUtilities.shouldUseListMode() || !isTabCard(holder)) {
+        if (TabUiFeatureUtilities.shouldUseListMode() || !shouldUseShrinkCloseAnimation(holder)) {
             animator = buildGenericRemoveAnimator(holder);
         } else {
             animator = buildTabRemoveAnimatorForItemAnimator(holder);
@@ -438,9 +439,12 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         return true;
     }
 
-    private static boolean isTabCard(ViewHolder holder) {
+    private static boolean shouldUseShrinkCloseAnimation(ViewHolder holder) {
         if (holder instanceof SimpleRecyclerViewAdapter.ViewHolder adapterHolder) {
-            return adapterHolder.model.get(CARD_TYPE) == TAB;
+            var model = adapterHolder.model;
+            if (model.get(CARD_TYPE) == TAB) {
+                return model.get(USE_SHRINK_CLOSE_ANIMATION);
+            }
         }
         return false;
     }
@@ -489,8 +493,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
                 ObjectAnimator.ofFloat(view, View.SCALE_X, REMOVE_PART_2_FINAL_SCALE);
         ObjectAnimator part2ScaleY =
                 ObjectAnimator.ofFloat(view, View.SCALE_Y, REMOVE_PART_2_FINAL_SCALE);
-        ObjectAnimator part2Alpha = ObjectAnimator.ofFloat(view, View.ALPHA, 1.0f, 0.0f);
-        part2ShrinkAndFade.play(part2ScaleX).with(part2ScaleY).with(part2Alpha);
+        part2ShrinkAndFade.play(part2ScaleX).with(part2ScaleY);
         part2ShrinkAndFade.setDuration(REMOVE_PART_2_DURATION);
         part2ShrinkAndFade.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
 

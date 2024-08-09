@@ -63,10 +63,11 @@ public class TabUiUtilsUnitTest {
     @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private Tab mTab;
     @Mock private Profile mProfile;
-    @Mock IdentityServicesProvider mIdentityServicesProvider;
-    @Mock IdentityManager mIdentityManager;
-    @Mock TabGroupSyncService mTabGroupSyncService;
-    @Mock DataSharingService mDataSharingService;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private DataSharingService mDataSharingService;
+    @Mock private Callback<Boolean> mDidCloseTabsCallback;
 
     private List<Tab> mTabsToClose;
 
@@ -94,23 +95,27 @@ public class TabUiUtilsUnitTest {
         boolean hideTabGroups = false;
         when(mFilter.isIncognitoBranded()).thenReturn(true);
 
-        TabUiUtils.closeTabGroup(mFilter, mActionConfirmationManager, TAB_ID, hideTabGroups);
+        TabUiUtils.closeTabGroup(
+                mFilter, mActionConfirmationManager, TAB_ID, hideTabGroups, mDidCloseTabsCallback);
 
         verify(mFilter)
                 .closeTabs(
                         TabClosureParams.closeTabs(mTabsToClose)
                                 .hideTabGroups(hideTabGroups)
                                 .build());
+        verify(mDidCloseTabsCallback).onResult(true);
     }
 
     @Test
     public void testCloseTabGroup_Hide() {
         boolean hideTabGroups = true;
 
-        TabUiUtils.closeTabGroup(mFilter, mActionConfirmationManager, TAB_ID, hideTabGroups);
+        TabUiUtils.closeTabGroup(
+                mFilter, mActionConfirmationManager, TAB_ID, hideTabGroups, mDidCloseTabsCallback);
 
         verify(mFilter)
                 .closeTabs(TabClosureParams.closeTabs(mTabsToClose).hideTabGroups(true).build());
+        verify(mDidCloseTabsCallback).onResult(true);
     }
 
     @Test
@@ -122,7 +127,8 @@ public class TabUiUtilsUnitTest {
                 .when(mActionConfirmationManager)
                 .processDeleteGroupAttempt(any());
 
-        TabUiUtils.closeTabGroup(mFilter, mActionConfirmationManager, TAB_ID, hideTabGroups);
+        TabUiUtils.closeTabGroup(
+                mFilter, mActionConfirmationManager, TAB_ID, hideTabGroups, mDidCloseTabsCallback);
 
         verify(mActionConfirmationManager).processDeleteGroupAttempt(any());
         verify(mFilter)
@@ -131,6 +137,7 @@ public class TabUiUtilsUnitTest {
                                 .allowUndo(false)
                                 .hideTabGroups(hideTabGroups)
                                 .build());
+        verify(mDidCloseTabsCallback).onResult(true);
     }
 
     @Test
@@ -142,7 +149,8 @@ public class TabUiUtilsUnitTest {
                 .when(mActionConfirmationManager)
                 .processDeleteGroupAttempt(any());
 
-        TabUiUtils.closeTabGroup(mFilter, mActionConfirmationManager, TAB_ID, hideTabGroups);
+        TabUiUtils.closeTabGroup(
+                mFilter, mActionConfirmationManager, TAB_ID, hideTabGroups, mDidCloseTabsCallback);
 
         verify(mActionConfirmationManager).processDeleteGroupAttempt(any());
         verify(mFilter)
@@ -150,6 +158,7 @@ public class TabUiUtilsUnitTest {
                         TabClosureParams.closeTabs(mTabsToClose)
                                 .hideTabGroups(hideTabGroups)
                                 .build());
+        verify(mDidCloseTabsCallback).onResult(true);
     }
 
     @Test
@@ -161,10 +170,12 @@ public class TabUiUtilsUnitTest {
                 .when(mActionConfirmationManager)
                 .processDeleteGroupAttempt(any());
 
-        TabUiUtils.closeTabGroup(mFilter, mActionConfirmationManager, TAB_ID, hideTabGroups);
+        TabUiUtils.closeTabGroup(
+                mFilter, mActionConfirmationManager, TAB_ID, hideTabGroups, mDidCloseTabsCallback);
 
         verify(mActionConfirmationManager).processDeleteGroupAttempt(any());
         verify(mFilter, never()).closeTabs(any());
+        verify(mDidCloseTabsCallback).onResult(false);
     }
 
     @Test

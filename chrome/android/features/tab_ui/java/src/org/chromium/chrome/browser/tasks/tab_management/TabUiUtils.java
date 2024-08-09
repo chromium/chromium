@@ -43,12 +43,14 @@ public class TabUiUtils {
      *     actions.
      * @param tabId The ID of one of the tabs in the tab group.
      * @param hideTabGroups Whether to hide or delete the tab group.
+     * @param didCloseCallback Run after the close confirmation to indicate if a close happened.
      */
     public static void closeTabGroup(
             TabGroupModelFilter filter,
             ActionConfirmationManager actionConfirmationManager,
             int tabId,
-            boolean hideTabGroups) {
+            boolean hideTabGroups,
+            @Nullable Callback<Boolean> didCloseCallback) {
         TabModel tabModel = filter.getTabModel();
         int rootId = tabModel.getTabById(tabId).getRootId();
         List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
@@ -56,6 +58,7 @@ public class TabUiUtils {
 
         if (hideTabGroups || isIncognito) {
             filter.closeTabs(TabClosureParams.closeTabs(tabs).hideTabGroups(hideTabGroups).build());
+            Callback.runNullSafe(didCloseCallback, true);
         } else {
             List<Integer> tabIds = tabs.stream().map(Tab::getId).collect(Collectors.toList());
 
@@ -75,6 +78,9 @@ public class TabUiUtils {
                                             .allowUndo(allowUndo)
                                             .hideTabGroups(hideTabGroups)
                                             .build());
+                            Callback.runNullSafe(didCloseCallback, true);
+                        } else {
+                            Callback.runNullSafe(didCloseCallback, false);
                         }
                     };
             actionConfirmationManager.processDeleteGroupAttempt(onResult);

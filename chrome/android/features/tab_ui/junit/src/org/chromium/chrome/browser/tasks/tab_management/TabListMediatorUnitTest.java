@@ -905,6 +905,7 @@ public class TabListMediatorUnitTest {
 
         TabClosureParams params = TabClosureParams.closeTab(mTab2).build();
         verify(mTabModel).closeTabs(params);
+        assertTrue(mModel.get(1).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));
     }
 
     @Test
@@ -923,6 +924,7 @@ public class TabListMediatorUnitTest {
 
         TabClosureParams params = TabClosureParams.closeTab(mTab2).allowUndo(false).build();
         verify(mTabModel).closeTabs(params);
+        assertTrue(mModel.get(1).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));
     }
 
     @Test
@@ -940,6 +942,7 @@ public class TabListMediatorUnitTest {
                 .onResult(ConfirmationResult.CONFIRMATION_NEGATIVE);
 
         verify(mTabModel, never()).closeTabs(any());
+        assertFalse(mModel.get(1).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));
     }
 
     @Test
@@ -4305,6 +4308,74 @@ public class TabListMediatorUnitTest {
         assertThat(setProps, hasItems(TabProperties.TAB_GRID_CLOSABLE_KEYS));
         assertThat(setProps, hasItems(TabProperties.TAB_GRID_SELECTABLE_KEYS));
         assertAllUnset(model, uniqueSelectableKeys);
+    }
+
+    @Test
+    public void testUnsetShrinkCloseAnimation_DidNotClose() {
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
+        createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
+
+        mMediator.resetWithListOfTabs(tabs, false);
+
+        mModel.get(0).model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
+        mMediator.getMaybeUnsetShrinkCloseAnimationCallback(TAB1_ID).onResult(false);
+        assertFalse(mModel.get(0).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));
+    }
+
+    @Test
+    public void testUnsetShrinkCloseAnimation_DidClose_NoModels() {
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
+        createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
+
+        mMediator.resetWithListOfTabs(tabs, false);
+
+        mModel.get(0).model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
+
+        var callback = mMediator.getMaybeUnsetShrinkCloseAnimationCallback(TAB1_ID);
+
+        mMediator.resetWithListOfTabs(null, false);
+
+        callback.onResult(true);
+
+        assertEquals(0, mModel.size());
+    }
+
+    @Test
+    public void testUnsetShrinkCloseAnimation_DidClose_Tab1Closed() {
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
+        createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
+
+        mMediator.resetWithListOfTabs(tabs, false);
+
+        mModel.get(0).model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
+        var callback = mMediator.getMaybeUnsetShrinkCloseAnimationCallback(TAB1_ID);
+
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, /* didCloseAlone= */ false);
+
+        callback.onResult(true);
+        assertFalse(mModel.get(0).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));
+    }
+
+    @Test
+    public void testUnsetShrinkCloseAnimation_DidClose_TabsClosed() {
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
+        createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
+
+        mMediator.resetWithListOfTabs(tabs, false);
+
+        mModel.get(0).model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
+        var callback = mMediator.getMaybeUnsetShrinkCloseAnimationCallback(TAB1_ID);
+
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, /* didCloseAlone= */ false);
+        mTabModelObserverCaptor.getValue().willCloseTab(newTab, /* didCloseAlone= */ false);
+
+        callback.onResult(true);
+
+        assertEquals(0, mModel.size());
     }
 
     @Test
