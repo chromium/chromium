@@ -38,8 +38,6 @@
 }
 
 .card {
-  display: flex;
-  justify-content: space-between;
   margin: 0;
   padding: var(--sp-card-padding);
   padding-inline-start: 32px;
@@ -60,8 +58,8 @@
   line-height: inherit;
 }
 
-.card-checkbox {
-  width: 16px;
+.card-checkbox::part(label-container) {
+  flex-grow: 1;
 }
 
 cr-collapse {

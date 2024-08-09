@@ -24,10 +24,10 @@ export function getHtml(this: CardsElement) {
     <hr class="sp-hr">
     ${this.modules_.map((item, index) => html`
       <div class="card" data-index="${index}" @click="${this.onCardClick_}">
-        <div class="card-name">${item.name}</div>
-        <cr-checkbox class="card-checkbox" data-index="${index}"
+        <cr-checkbox class="card-checkbox label-first" data-index="${index}"
             ?checked="${item.enabled}" ?disabled="${this.managedByPolicy_}"
             title="${item.name}" @change="${this.onCardCheckboxChange_}">
+          <div class="card-name">${item.name}</div>
         </cr-checkbox>
       </div>
     `)}
