@@ -214,7 +214,6 @@ export async function initMetrics(): Promise<void> {
  * Types of different ways to launch CCA.
  */
 export enum LaunchType {
-  ASSISTANT = 'assistant',
   DEFAULT = 'default',
 }
 
@@ -286,7 +285,6 @@ export enum RecordType {
  * Types of different ways to trigger shutter button.
  */
 export enum ShutterType {
-  ASSISTANT = 'assistant',
   KEYBOARD = 'keyboard',
   MOUSE = 'mouse',
   TOUCH = 'touch',
