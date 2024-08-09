@@ -199,9 +199,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Bookmarks.BulkAddURLsCount" units="count"
-    expires_after="2024-08-09">
+    expires_after="2025-04-01">
   <owner>nicolasmacbeth@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     The number of URLs a user has successfully added to Chrome via bulk adding
     (Siri shortcut). This count is taken after checking for possible duplicates.
@@ -3269,9 +3269,9 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.ReadingList.BulkAddURLsCount" units="count"
-    expires_after="2024-08-09">
+    expires_after="2025-04-01">
   <owner>nicolasmacbeth@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     The number of URLs a user has successfully added to Chrome Reading List via
     bulk addition (Siri Shortcut). This count is taken after checking for
