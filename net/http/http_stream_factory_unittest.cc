@@ -89,6 +89,7 @@
 #include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
@@ -292,7 +293,9 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
 
   void OnQuicBroken() override {}
 
-  void OnSwitchesToHttpStreamPool(HttpStreamKey stream_key) override {}
+  void OnSwitchesToHttpStreamPool(
+      HttpStreamKey stream_key,
+      quic::ParsedQuicVersion quic_version) override {}
 
   void WaitForStream() {
     stream_done_ = false;

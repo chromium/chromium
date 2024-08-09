@@ -855,7 +855,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
 
   if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3) &&
       proxy_info_.is_direct() && !is_websocket_) {
-    SwitchToHttpStreamPool();
+    SwitchToHttpStreamPool(quic_version);
     return OK;
   }
 
@@ -1495,7 +1495,8 @@ bool HttpStreamFactory::JobController::IsQuicAllowedForHost(
   return base::Contains(host_allowlist, lowered_host);
 }
 
-void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
+void HttpStreamFactory::JobController::SwitchToHttpStreamPool(
+    quic::ParsedQuicVersion quic_version) {
   CHECK(request_info_.socket_tag == SocketTag());
   CHECK_EQ(stream_type_, HttpStreamRequest::HTTP_STREAM);
 
@@ -1510,7 +1511,7 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
 
   if (is_preconnect_) {
     int rv = session_->http_stream_pool()->Preconnect(
-        stream_key, num_streams_,
+        stream_key, num_streams_, quic_version,
         base::BindOnce(&JobController::OnPoolPreconnectsComplete,
                        ptr_factory_.GetWeakPtr()));
     if (rv != ERR_IO_PENDING) {
@@ -1522,9 +1523,9 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&JobController::CallOnSwitchesToHttpStreamPool,
-                     ptr_factory_.GetWeakPtr(), std::move(stream_key)));
+      FROM_HERE, base::BindOnce(&JobController::CallOnSwitchesToHttpStreamPool,
+                                ptr_factory_.GetWeakPtr(),
+                                std::move(stream_key), quic_version));
 }
 
 void HttpStreamFactory::JobController::OnPoolPreconnectsComplete(int rv) {
@@ -1534,12 +1535,13 @@ void HttpStreamFactory::JobController::OnPoolPreconnectsComplete(int rv) {
 }
 
 void HttpStreamFactory::JobController::CallOnSwitchesToHttpStreamPool(
-    HttpStreamKey stream_key) {
+    HttpStreamKey stream_key,
+    quic::ParsedQuicVersion quic_version) {
   CHECK(request_);
   CHECK(delegate_);
 
   // `request_` and `delegate_` will be reset later.
-  delegate_->OnSwitchesToHttpStreamPool(std::move(stream_key));
+  delegate_->OnSwitchesToHttpStreamPool(std::move(stream_key), quic_version);
 }
 
 }  // namespace net

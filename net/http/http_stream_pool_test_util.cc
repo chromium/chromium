@@ -5,6 +5,7 @@
 #include "net/http/http_stream_pool_test_util.h"
 
 #include "net/base/completion_once_callback.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/socket_test_util.h"
@@ -27,6 +28,13 @@ IPEndPoint MakeIPEndPoint(std::string_view addr, uint16_t port = 80) {
 FakeServiceEndpointRequest::FakeServiceEndpointRequest() = default;
 
 FakeServiceEndpointRequest::~FakeServiceEndpointRequest() = default;
+
+FakeServiceEndpointRequest&
+FakeServiceEndpointRequest::CompleteStartSynchronously(int rv) {
+  start_result_ = rv;
+  endpoints_crypto_ready_ = true;
+  return *this;
+}
 
 FakeServiceEndpointRequest&
 FakeServiceEndpointRequest::CallOnServiceEndpointsUpdated() {
@@ -142,6 +150,12 @@ ServiceEndpointBuilder& ServiceEndpointBuilder::add_ip_endpoint(
     CHECK(ip_endpoint.address().IsIPv6());
     endpoint_.ipv6_endpoints.emplace_back(ip_endpoint);
   }
+  return *this;
+}
+
+ServiceEndpointBuilder& ServiceEndpointBuilder::set_alpns(
+    std::vector<std::string> alpns) {
+  endpoint_.metadata.supported_protocol_alpns = std::move(alpns);
   return *this;
 }
 

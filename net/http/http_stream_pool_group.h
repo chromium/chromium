@@ -50,6 +50,8 @@ class HttpStreamPool::Group {
 
   const SpdySessionKey& spdy_session_key() const { return spdy_session_key_; }
 
+  const QuicSessionKey& quic_session_key() const { return quic_session_key_; }
+
   HttpStreamPool* pool() { return pool_; }
   const HttpStreamPool* pool() const { return pool_; }
 
@@ -67,6 +69,8 @@ class HttpStreamPool::Group {
       RequestPriority priority,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       bool enable_ip_based_pooling,
+      bool enable_alternative_services,
+      quic::ParsedQuicVersion quic_version,
       const NetLogWithSource& net_log);
 
   // Creates idle streams or sessions for `num_streams` be opened.
@@ -74,7 +78,9 @@ class HttpStreamPool::Group {
   // `this` has enough streams/sessions for `num_streams` be opened. This means
   // that when there are two preconnect requests with `num_streams = 1`, all
   // callbacks are invoked when one stream/session is established (not two).
-  int Preconnect(size_t num_streams, CompletionOnceCallback callback);
+  int Preconnect(size_t num_streams,
+                 quic::ParsedQuicVersion quic_version,
+                 CompletionOnceCallback callback);
 
   // Creates an HttpStreamPoolHandle from `socket`. Call sites must ensure that
   // the number of active streams do not exceed the global/per-group limits.
@@ -165,6 +171,7 @@ class HttpStreamPool::Group {
   const raw_ptr<HttpStreamPool> pool_;
   const HttpStreamKey stream_key_;
   const SpdySessionKey spdy_session_key_;
+  const QuicSessionKey quic_session_key_;
   const NetLogWithSource net_log_;
 
   size_t handed_out_stream_count_ = 0;

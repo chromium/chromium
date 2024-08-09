@@ -24,13 +24,16 @@
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_handle.h"
+#include "net/http/http_stream_pool_quic_task.h"
 #include "net/log/net_log_with_source.h"
+#include "net/quic/quic_http_stream.h"
 #include "net/socket/stream_attempt.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/socket/tls_stream_attempt.h"
 #include "net/spdy/spdy_http_stream.h"
 #include "net/spdy/spdy_session.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
 
@@ -140,6 +143,8 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
+    bool enable_alternative_services,
+    quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
   auto entry = std::make_unique<RequestEntry>(this);
   std::unique_ptr<HttpStreamRequest> request =
@@ -158,11 +163,22 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
     enable_ip_based_pooling_ = enable_ip_based_pooling;
   }
 
+  if (!enable_alternative_services) {
+    enable_alternative_services_ = enable_alternative_services;
+  }
+
   MaybeChangeServiceEndpointRequestPriority();
 
-  // Check if we already have SPDY session. When found, notify the request that
-  // an HttpStream is ready. Use PostTask() since `delegate` doesn't expect the
-  // request finishes synchronously.
+  // Check if we already have SPDY/QUIC session. When found, notify the request
+  // that an HttpStream is ready. Use PostTask() since `delegate` doesn't expect
+  // the request to finish synchronously.
+  if (CanUseExistingQuicSession()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&Job::CreateQuicStreamAndNotify,
+                                  weak_ptr_factory_.GetWeakPtr()));
+    return request;
+  }
+
   if (!spdy_session_) {
     spdy_session_ =
         http_network_session()->spdy_session_pool()->FindAvailableSession(
@@ -190,15 +206,21 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
   }
 
   allowed_bad_certs_ = allowed_bad_certs;
+  quic_version_ = quic_version;
 
   StartInternal(priority);
   return request;
 }
 
 int HttpStreamPool::Job::Preconnect(size_t num_streams,
+                                    quic::ParsedQuicVersion quic_version,
                                     CompletionOnceCallback callback) {
   if (is_failing_) {
     return error_to_notify_;
+  }
+
+  if (CanUseExistingQuicSession()) {
+    return OK;
   }
 
   if (spdy_session_pool()->HasAvailableSession(spdy_session_key(),
@@ -214,6 +236,8 @@ int HttpStreamPool::Job::Preconnect(size_t num_streams,
   auto entry =
       std::make_unique<PreconnectEntry>(num_streams, std::move(callback));
   preconnects_.emplace(std::move(entry));
+
+  quic_version_ = quic_version;
 
   StartInternal(RequestPriority::IDLE);
   return ERR_IO_PENDING;
@@ -303,12 +327,20 @@ const SpdySessionKey& HttpStreamPool::Job::spdy_session_key() const {
   return group_->spdy_session_key();
 }
 
+const QuicSessionKey& HttpStreamPool::Job::quic_session_key() const {
+  return group_->quic_session_key();
+}
+
 HttpNetworkSession* HttpStreamPool::Job::http_network_session() {
   return group_->http_network_session();
 }
 
 SpdySessionPool* HttpStreamPool::Job::spdy_session_pool() {
   return http_network_session()->spdy_session_pool();
+}
+
+QuicSessionPool* HttpStreamPool::Job::quic_session_pool() {
+  return http_network_session()->quic_session_pool();
 }
 
 HttpStreamPool* HttpStreamPool::Job::pool() {
@@ -385,8 +417,27 @@ bool HttpStreamPool::Job::IsStalledByPoolLimit() {
   }
 }
 
+void HttpStreamPool::Job::OnQuicTaskComplete(int rv) {
+  CHECK(!quic_task_result_.has_value());
+  quic_task_result_ = rv;
+  quic_task_.reset();
+
+  const bool has_requests = !requests_.empty() || !notified_requests_.empty();
+
+  if (rv == OK) {
+    group_->Refresh();
+    NotifyPreconnectsComplete(OK);
+    if (has_requests) {
+      CreateQuicStreamAndNotify();
+      return;
+    }
+  }
+  MaybeComplete();
+}
+
 void HttpStreamPool::Job::StartInternal(RequestPriority priority) {
   if (service_endpoint_request_ || service_endpoint_request_finished_) {
+    MaybeAttemptQuic();
     MaybeAttemptConnection();
   } else {
     ResolveServiceEndpoint(priority);
@@ -423,11 +474,19 @@ void HttpStreamPool::Job::ProcessServiceEndpointChanges() {
     return;
   }
   MaybeCalculateSSLConfig();
+  MaybeAttemptQuic();
   MaybeAttemptConnection();
 }
 
 bool HttpStreamPool::Job::CanUseExistingSessionAfterEndpointChanges() {
   CHECK(service_endpoint_request_);
+
+  if (CanUseExistingQuicSession()) {
+    return true;
+  }
+
+  // TODO(crbug.com/346835898): Check QUIC sessions that match IP endpoints.
+
   if (spdy_session_) {
     return true;
   }
@@ -510,6 +569,19 @@ void HttpStreamPool::Job::MaybeCalculateSSLConfig() {
     std::move(callback).Run(OK);
   }
   ssl_config_waiting_callbacks_.clear();
+}
+
+void HttpStreamPool::Job::MaybeAttemptQuic() {
+  CHECK(service_endpoint_request_);
+  if (!CanUseQuic() || quic_task_result_.has_value() ||
+      !service_endpoint_request_->EndpointsCryptoReady()) {
+    return;
+  }
+
+  if (!quic_task_) {
+    quic_task_ = std::make_unique<QuicTask>(this, quic_version_);
+  }
+  quic_task_->MaybeAttempt();
 }
 
 void HttpStreamPool::Job::MaybeAttemptConnection(
@@ -885,6 +957,29 @@ void HttpStreamPool::Job::CreateSpdyStreamAndNotify() {
   // `this` may be deleted.
 }
 
+void HttpStreamPool::Job::CreateQuicStreamAndNotify() {
+  QuicChromiumClientSession* quic_session =
+      quic_session_pool()->FindExistingSession(quic_session_key(),
+                                               stream_key().destination());
+  CHECK(quic_session);
+
+  // If there are more than one remaining request, post a task to create
+  // HttpStreams for these requests.
+  if (requests_.size() > 1) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&Job::CreateQuicStreamAndNotify,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  std::set<std::string> dns_aliases =
+      quic_session->GetDnsAliasesForSessionKey(quic_session_key());
+  auto http_stream = std::make_unique<QuicHttpStream>(
+      quic_session->CreateHandle(stream_key().destination()),
+      std::move(dns_aliases));
+  NotifyStreamReady(std::move(http_stream), NextProto::kProtoQUIC);
+  // `this` may be deleted.
+}
+
 void HttpStreamPool::Job::NotifyStreamReady(std::unique_ptr<HttpStream> stream,
                                             NextProto negotiated_protocol) {
   RequestEntry* entry = ExtractFirstRequestToNotify();
@@ -1087,9 +1182,22 @@ void HttpStreamPool::Job::OnSpdyThrottleDelayPassed() {
   MaybeAttemptConnection();
 }
 
+bool HttpStreamPool::Job::CanUseQuic() {
+  return enable_alternative_services_ && UsingTls() && !RequiresHTTP11();
+}
+
+bool HttpStreamPool::Job::CanUseExistingQuicSession() {
+  return CanUseQuic() && quic_session_pool()->CanUseExistingSession(
+                             quic_session_key(), stream_key().destination());
+}
+
 void HttpStreamPool::Job::MaybeComplete() {
   if (!requests_.empty() || !notified_requests_.empty() ||
       !preconnects_.empty() || !in_flight_attempts_.empty()) {
+    return;
+  }
+
+  if (quic_task_) {
     return;
   }
 

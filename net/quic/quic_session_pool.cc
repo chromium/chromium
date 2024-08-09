@@ -563,6 +563,34 @@ bool QuicSessionPool::CanUseExistingSession(
   return FindExistingSession(session_key, destination) != nullptr;
 }
 
+QuicChromiumClientSession* QuicSessionPool::FindExistingSession(
+    const QuicSessionKey& session_key,
+    const url::SchemeHostPort& destination) const {
+  auto active_session_it = active_sessions_.find(session_key);
+  if (active_session_it != active_sessions_.end()) {
+    return active_session_it->second;
+  }
+
+  for (const auto& key_value : active_sessions_) {
+    QuicChromiumClientSession* session = key_value.second;
+    // Check received origins and "remote" (alternative service and origin have
+    // different hostnames) alt-svc for this active session.
+    if (!skip_dns_with_origin_frame_ ||
+        !session->received_origins().contains(destination)) {
+      const auto& it = all_sessions_.find(session);
+      CHECK(it != all_sessions_.end());
+      if (destination != it->second.destination()) {
+        continue;
+      }
+    }
+    if (session->CanPool(session_key.host(), session_key)) {
+      return session;
+    }
+  }
+
+  return nullptr;
+}
+
 int QuicSessionPool::RequestSession(
     const QuicSessionKey& session_key,
     url::SchemeHostPort destination,
@@ -1254,34 +1282,6 @@ quic::ParsedQuicVersion QuicSessionPool::SelectQuicVersion(
 // static
 void QuicSessionPool::LogConnectionIpPooling(bool pooled) {
   base::UmaHistogramBoolean("Net.QuicSession.ConnectionIpPooled", pooled);
-}
-
-QuicChromiumClientSession* QuicSessionPool::FindExistingSession(
-    const QuicSessionKey& session_key,
-    const url::SchemeHostPort& destination) const {
-  auto active_session_it = active_sessions_.find(session_key);
-  if (active_session_it != active_sessions_.end()) {
-    return active_session_it->second;
-  }
-
-  for (const auto& key_value : active_sessions_) {
-    QuicChromiumClientSession* session = key_value.second;
-    // Check received origins and "remote" (alternative service and origin have
-    // different hostnames) alt-svc for this active session.
-    if (!skip_dns_with_origin_frame_ ||
-        !session->received_origins().contains(destination)) {
-      const auto& it = all_sessions_.find(session);
-      CHECK(it != all_sessions_.end());
-      if (destination != it->second.destination()) {
-        continue;
-      }
-    }
-    if (session->CanPool(session_key.host(), session_key)) {
-      return session;
-    }
-  }
-
-  return nullptr;
 }
 
 bool QuicSessionPool::HasMatchingIpSession(

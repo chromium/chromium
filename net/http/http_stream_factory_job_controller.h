@@ -18,6 +18,7 @@
 #include "net/http/http_stream_request.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_config.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
 
@@ -297,14 +298,15 @@ class HttpStreamFactory::JobController
   // Call site of Start() should destroy the current HttpStreamRequest and
   // switch to the HttpStreamPool. `this` will be destroyed when `request_` is
   // destroyed.
-  void SwitchToHttpStreamPool();
+  void SwitchToHttpStreamPool(quic::ParsedQuicVersion quic_version);
 
   // Called when `this` asked the HttpStreamPool to handle a preconnect and
   // the preconnect completed. Used to notify the factory of completion.
   void OnPoolPreconnectsComplete(int rv);
 
   // Used to call HttpStreamRequest::OnSwitchesToHttpStreamPool() later.
-  void CallOnSwitchesToHttpStreamPool(HttpStreamKey stream_key);
+  void CallOnSwitchesToHttpStreamPool(HttpStreamKey stream_key,
+                                      quic::ParsedQuicVersion quic_version);
 
   const raw_ptr<HttpStreamFactory> factory_;
   const raw_ptr<HttpNetworkSession> session_;

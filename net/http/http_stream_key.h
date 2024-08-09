@@ -10,6 +10,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/quic/quic_session_key.h"
 #include "net/socket/socket_tag.h"
 #include "net/spdy/spdy_session_key.h"
 #include "url/scheme_host_port.h"
@@ -56,6 +57,8 @@ class NET_EXPORT_PRIVATE HttpStreamKey {
   base::Value::Dict ToValue() const;
 
   SpdySessionKey ToSpdySessionKey() const;
+
+  QuicSessionKey ToQuicSessionKey() const;
 
  private:
   url::SchemeHostPort destination_;

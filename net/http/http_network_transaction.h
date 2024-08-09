@@ -35,6 +35,7 @@
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/socket/connection_attempts.h"
 #include "net/ssl/ssl_config.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
 
 namespace net {
@@ -125,7 +126,9 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   void OnQuicBroken() override;
 
-  void OnSwitchesToHttpStreamPool(HttpStreamKey stream_key) override;
+  void OnSwitchesToHttpStreamPool(
+      HttpStreamKey stream_key,
+      quic::ParsedQuicVersion quic_version) override;
 
   ConnectionAttempts GetConnectionAttempts() const override;
 

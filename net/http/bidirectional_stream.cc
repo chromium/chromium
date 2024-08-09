@@ -413,7 +413,9 @@ void BidirectionalStream::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
 
 void BidirectionalStream::OnQuicBroken() {}
 
-void BidirectionalStream::OnSwitchesToHttpStreamPool(HttpStreamKey stream_key) {
+void BidirectionalStream::OnSwitchesToHttpStreamPool(
+    HttpStreamKey stream_key,
+    quic::ParsedQuicVersion quic_version) {
   NOTREACHED_NORETURN();
 }
 

@@ -321,6 +321,12 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   bool CanUseExistingSession(const QuicSessionKey& session_key,
                              const url::SchemeHostPort& destination) const;
 
+  // Returns a session for `session_key` or if the request can be pooled to an
+  // existing session to the IP address of `destination`.
+  QuicChromiumClientSession* FindExistingSession(
+      const QuicSessionKey& session_key,
+      const url::SchemeHostPort& destination) const;
+
   // Requests a QuicChromiumClientSession to |host_port_pair|, a handle for
   // which will be owned by |request|.
   // If a matching session already exists, this method will return OK.  If no
@@ -537,10 +543,6 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // Records whether an active session already exists for a given IP address
   // during connection.
   static void LogConnectionIpPooling(bool pooled);
-
-  QuicChromiumClientSession* FindExistingSession(
-      const QuicSessionKey& session_key,
-      const url::SchemeHostPort& destination) const;
 
   bool HasMatchingIpSession(const QuicSessionAliasKey& key,
                             const std::vector<IPEndPoint>& ip_endpoints,

@@ -62,6 +62,7 @@ HttpStreamPool::Group::Group(HttpStreamPool* pool,
     : pool_(pool),
       stream_key_(std::move(stream_key)),
       spdy_session_key_(std::move(spdy_session_key)),
+      quic_session_key_(stream_key_.ToQuicSessionKey()),
       net_log_(
           NetLogWithSource::Make(http_network_session()->net_log(),
                                  NetLogSourceType::HTTP_STREAM_POOL_GROUP)) {
@@ -83,6 +84,8 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
+    bool enable_alternative_services,
+    quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_GROUP_REQUEST_STREAM, [&] {
@@ -102,11 +105,13 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
       NetLogEventType::HTTP_STREAM_POOL_GROUP_REQUEST_BOUND, net_log_.source());
 
   EnsureInFlightJob();
-  return in_flight_job_->RequestStream(delegate, priority, allowed_bad_certs,
-                                       enable_ip_based_pooling, net_log);
+  return in_flight_job_->RequestStream(
+      delegate, priority, allowed_bad_certs, enable_ip_based_pooling,
+      enable_alternative_services, quic_version, net_log);
 }
 
 int HttpStreamPool::Group::Preconnect(size_t num_streams,
+                                      quic::ParsedQuicVersion quic_version,
                                       CompletionOnceCallback callback) {
   net_log_.AddEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_PRECONNECT, [&] {
     base::Value::Dict dict;
@@ -114,7 +119,8 @@ int HttpStreamPool::Group::Preconnect(size_t num_streams,
     return dict;
   });
   EnsureInFlightJob();
-  return in_flight_job_->Preconnect(num_streams, std::move(callback));
+  return in_flight_job_->Preconnect(num_streams, quic_version,
+                                    std::move(callback));
 }
 
 std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(

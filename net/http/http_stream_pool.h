@@ -19,6 +19,7 @@
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/stream_attempt.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
@@ -50,6 +51,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   class NET_EXPORT_PRIVATE Group;
   class NET_EXPORT_PRIVATE Job;
+  class NET_EXPORT_PRIVATE QuicTask;
 
   explicit HttpStreamPool(HttpNetworkSession* http_network_session,
                           bool cleanup_on_ip_address_change = true);
@@ -66,12 +68,15 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       RequestPriority priority,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       bool enable_ip_based_pooling,
+      bool enable_alternative_services,
+      quic::ParsedQuicVersion quic_version,
       const NetLogWithSource& net_log);
 
   // Requests that enough connections/sessions for `num_streams` be opened.
   // `callback` is only invoked when the return value is `ERR_IO_PENDING`.
   int Preconnect(const HttpStreamKey& stream_key,
                  size_t num_streams,
+                 quic::ParsedQuicVersion quic_version,
                  CompletionOnceCallback callback);
 
   // Increments/Decrements the total number of idle streams in this pool.

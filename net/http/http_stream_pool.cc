@@ -56,18 +56,22 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
+    bool enable_alternative_services,
+    quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
   return GetOrCreateGroup(stream_key)
       .RequestStream(delegate, priority, allowed_bad_certs,
-                     enable_ip_based_pooling, net_log);
+                     enable_ip_based_pooling, enable_alternative_services,
+                     quic_version, net_log);
 }
 
 int HttpStreamPool::Preconnect(const HttpStreamKey& stream_key,
                                size_t num_streams,
+                               quic::ParsedQuicVersion quic_version,
                                CompletionOnceCallback callback) {
   CHECK_GE(kMaxStreamSocketsPerGroup, num_streams);
   return GetOrCreateGroup(stream_key)
-      .Preconnect(num_streams, std::move(callback));
+      .Preconnect(num_streams, quic_version, std::move(callback));
 }
 
 void HttpStreamPool::IncrementTotalIdleStreamCount() {

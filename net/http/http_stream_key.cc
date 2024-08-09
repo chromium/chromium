@@ -67,4 +67,12 @@ SpdySessionKey HttpStreamKey::ToSpdySessionKey() const {
                         disable_cert_network_fetches());
 }
 
+QuicSessionKey HttpStreamKey::ToQuicSessionKey() const {
+  return QuicSessionKey(HostPortPair::FromSchemeHostPort(destination()),
+                        privacy_mode(), ProxyChain::Direct(),
+                        SessionUsage::kDestination, socket_tag(),
+                        network_anonymization_key(), secure_dns_policy(),
+                        disable_cert_network_fetches());
+}
+
 }  // namespace net

@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "net/base/completion_once_callback.h"
@@ -63,6 +64,8 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
     priority_ = priority;
     return *this;
   }
+
+  FakeServiceEndpointRequest& CompleteStartSynchronously(int rv);
 
   FakeServiceEndpointRequest& CallOnServiceEndpointsUpdated();
 
@@ -134,6 +137,8 @@ class ServiceEndpointBuilder {
   ServiceEndpointBuilder& add_v6(std::string_view addr, uint16_t port = 80);
 
   ServiceEndpointBuilder& add_ip_endpoint(IPEndPoint ip_endpoint);
+
+  ServiceEndpointBuilder& set_alpns(std::vector<std::string> alpns);
 
   ServiceEndpoint endpoint() const { return endpoint_; }
 
