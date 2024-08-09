@@ -5364,6 +5364,14 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GROUP_CREATION_PLACEHOLDER" desc="Placeholder shown in tab group creation view to indicate to the user the expected action which is to type the name of the group currently created. [iOS only]">
           Name Group
       </message>
+      <message name="IDS_IOS_TAB_GROUP_SNACKBAR_ACTION" desc="Button to access the Tab Groups panel. [iOS only]">
+        Open Tab Groups
+      </message>
+      <message name="IDS_IOS_TAB_GROUP_SNACKBAR_LABEL" desc="Explanation text informing the user about closed and saved tab groups. [iOS only]">
+         {count, plural,
+            =1 {1 Tab Group Closed and Saved}
+            other {{count} Tab Groups Closed and Saved}}
+      </message>
       <message name="IDS_IOS_TAB_GROUP_TABS_NUMBER" desc="Shown in tab group UI to display the current number of tabs in the group. [iOS only]">
         {count, plural,
         =1 {1 Tab}
