@@ -798,13 +798,7 @@ bool TemplateURLRef::ParseParameter(size_t start,
   } else if (parameter == "google:prefetchQuery") {
     replacements->push_back(Replacement(GOOGLE_PREFETCH_QUERY, start));
   } else if (parameter == "google:prefetchSource") {
-    if (base::FeatureList::IsEnabled(switches::kPrefetchParameterFix)) {
-      // Do nothing here as assistedQueryStats attentively takes over this
-      // component. See crbug.com/345275145 for details.
-      // Do not delete this branch.
-    } else {
-      replacements->push_back(Replacement(GOOGLE_PREFETCH_SOURCE, start));
-    }
+    replacements->push_back(Replacement(GOOGLE_PREFETCH_SOURCE, start));
   } else if (parameter == "google:RLZ") {
     replacements->push_back(Replacement(GOOGLE_RLZ, start));
   } else if (parameter == "google:searchClient") {
@@ -1134,9 +1128,13 @@ std::string TemplateURLRef::HandleReplacements(
         // TODO(crbug.com/345275145): Use GOOGLE_ASSISTED_QUERY_STATS which is
         // on both the server and local configuration to attach the prefetch
         // param. If this approach works well, remove the prefetchSource
-        // component.
+        // component. If the browser process is starting up,
+        // base::FeatureList::GetInstance may return null, in this case we treat
+        // it as enabled to ensure the prefetch parameter is always attached to
+        // the URL.
         bool should_attach_prefetch_param =
-            base::FeatureList::IsEnabled(switches::kPrefetchParameterFix) &&
+            (!base::FeatureList::GetInstance() ||
+             base::FeatureList::IsEnabled(switches::kPrefetchParameterFix)) &&
             !search_terms_args.prefetch_param.empty();
         if (should_attach_prefetch_param) {
           // Ensure the prefetch param is attached even if gs_lcrp is not
@@ -1278,8 +1276,12 @@ std::string TemplateURLRef::HandleReplacements(
       }
 
       case GOOGLE_PREFETCH_SOURCE: {
-        CHECK(!base::FeatureList::IsEnabled(switches::kPrefetchParameterFix));
-        if (!search_terms_args.prefetch_param.empty()) {
+        // Ignore this replacement if the fix feature flag is enabled; the
+        // parameter will be handled by `GOOGLE_ASSISTED_QUERY_STATS`. See
+        // crbug.com/345275145 for details.
+        if ((base::FeatureList::GetInstance() &&
+             !base::FeatureList::IsEnabled(switches::kPrefetchParameterFix)) &&
+            !search_terms_args.prefetch_param.empty()) {
           HandleReplacement("pf", search_terms_args.prefetch_param, replacement,
                             &url);
         }
