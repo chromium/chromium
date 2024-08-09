@@ -327,6 +327,14 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       const QuicSessionKey& session_key,
       const url::SchemeHostPort& destination) const;
 
+  // Returns true when an existing session can be used for `destination` that
+  // is resolved with `service_endpoint`.
+  bool HasMatchingIpSessionForServiceEndpoint(
+      const QuicSessionAliasKey& session_alias_key,
+      const ServiceEndpoint& service_endpoint,
+      const std::set<std::string>& dns_aliases,
+      bool use_dns_aliases);
+
   // Requests a QuicChromiumClientSession to |host_port_pair|, a handle for
   // which will be owned by |request|.
   // If a matching session already exists, this method will return OK.  If no

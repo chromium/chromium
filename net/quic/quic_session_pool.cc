@@ -591,6 +591,19 @@ QuicChromiumClientSession* QuicSessionPool::FindExistingSession(
   return nullptr;
 }
 
+bool QuicSessionPool::HasMatchingIpSessionForServiceEndpoint(
+    const QuicSessionAliasKey& session_alias_key,
+    const ServiceEndpoint& service_endpoint,
+    const std::set<std::string>& dns_aliases,
+    bool use_dns_aliases) {
+  return HasMatchingIpSession(session_alias_key,
+                              service_endpoint.ipv6_endpoints, dns_aliases,
+                              use_dns_aliases) ||
+         HasMatchingIpSession(session_alias_key,
+                              service_endpoint.ipv4_endpoints, dns_aliases,
+                              use_dns_aliases);
+}
+
 int QuicSessionPool::RequestSession(
     const QuicSessionKey& session_key,
     url::SchemeHostPort destination,

@@ -352,13 +352,6 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
     quic_context->AdvanceTime(quic::QuicTime::Delta::FromMilliseconds(20));
     session_deps_.quic_context = std::move(quic_context);
 
-    quic_client_maker_ = std::make_unique<QuicTestPacketMaker>(
-        quic_version(),
-        quic::QuicUtils::CreateRandomConnectionId(
-            session_deps_.quic_context->random_generator()),
-        session_deps_.quic_context->clock(),
-        /*host=*/std::string(kDefaultServerName), quic::Perspective::IS_CLIENT);
-
     // Load a certificate that is valid for *.example.org
     scoped_refptr<X509Certificate> test_cert(
         ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
@@ -401,11 +394,13 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
     return http_network_session_->spdy_session_pool();
   }
 
+  QuicSessionPool* quic_session_pool() {
+    return http_network_session_->quic_session_pool();
+  }
+
   quic::ParsedQuicVersion quic_version() {
     return quic::ParsedQuicVersion::RFCv1();
   }
-
-  QuicTestPacketMaker& quic_client_maker() { return *quic_client_maker_; }
 
   base::WeakPtr<SpdySession> CreateFakeSpdySession(
       const HttpStreamKey& stream_key,
@@ -428,25 +423,33 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
     return spdy_session;
   }
 
-  MockQuicData& quic_data() { return mock_data_; }
+  void AddQuicData(std::string_view host = kDefaultServerName) {
+    auto client_maker = std::make_unique<QuicTestPacketMaker>(
+        quic_version(),
+        quic::QuicUtils::CreateRandomConnectionId(
+            session_deps_.quic_context->random_generator()),
+        session_deps_.quic_context->clock(), std::string(host),
+        quic::Perspective::IS_CLIENT);
 
-  void AddQuicData() {
+    auto quic_data = std::make_unique<MockQuicData>(quic_version());
+
     int packet_number = 1;
-    quic_data().AddReadPauseForever();
-    quic_data().AddConnect(ASYNC, OK);
+    quic_data->AddReadPauseForever();
+    quic_data->AddConnect(ASYNC, OK);
     // HTTP/3 SETTINGS are always the first thing sent on a connection.
-    quic_data().AddWrite(SYNCHRONOUS,
-                         quic_client_maker().MakeInitialSettingsPacket(
-                             /*packet_number=*/packet_number++));
+    quic_data->AddWrite(SYNCHRONOUS, client_maker->MakeInitialSettingsPacket(
+                                         /*packet_number=*/packet_number++));
     // Connection close on shutdown.
-    quic_data().AddWrite(
+    quic_data->AddWrite(
         SYNCHRONOUS,
-        quic_client_maker()
-            .Packet(packet_number++)
+        client_maker->Packet(packet_number++)
             .AddConnectionCloseFrame(quic::QUIC_CONNECTION_CANCELLED,
                                      "net error", quic::NO_IETF_QUIC_ERROR)
             .Build());
-    quic_data().AddSocketDataToFactory(socket_factory());
+    quic_data->AddSocketDataToFactory(socket_factory());
+
+    quic_client_makers_.emplace_back(std::move(client_maker));
+    mock_quic_datas_.emplace_back(std::move(quic_data));
   }
 
  private:
@@ -456,9 +459,9 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
 
   SpdySessionDependencies session_deps_;
 
-  std::unique_ptr<QuicTestPacketMaker> quic_client_maker_;
   ProofVerifyDetailsChromium verify_details_;
-  MockQuicData mock_data_{quic_version()};
+  std::vector<std::unique_ptr<QuicTestPacketMaker>> quic_client_makers_;
+  std::vector<std::unique_ptr<MockQuicData>> mock_quic_datas_;
 
   std::unique_ptr<HttpNetworkSession> http_network_session_;
 };
@@ -2584,6 +2587,81 @@ TEST_F(HttpStreamPoolJobTest, QuicPreconnect) {
                .Preconnect(pool());
   RunUntilIdle();
   EXPECT_THAT(rv, IsOk());
+}
+
+// Tests that two destinations that resolve to the same IP address share the
+// same QUIC session if allowed.
+TEST_F(HttpStreamPoolJobTest, QuicMatchingIpSession) {
+  constexpr std::string_view kAltDestination = "https://alt.example.org";
+  const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
+
+  AddQuicData();
+
+  // Make TCP attempts stalled forever.
+  SequencedSocketData tcp_data;
+  tcp_data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&tcp_data);
+
+  FakeServiceEndpointRequest* endpoint_request1 = resolver()->AddFakeRequest();
+  endpoint_request1
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester1;
+  requester1.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+
+  FakeServiceEndpointRequest* endpoint_request2 = resolver()->AddFakeRequest();
+  endpoint_request2
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester2;
+  requester2.set_destination(kAltDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  ASSERT_EQ(quic_session_pool()->FindExistingSession(
+                requester1.GetStreamKey().ToQuicSessionKey(),
+                requester1.GetStreamKey().destination()),
+            quic_session_pool()->FindExistingSession(
+                requester2.GetStreamKey().ToQuicSessionKey(),
+                requester2.GetStreamKey().destination()));
+}
+
+// Tests that when disabled IP-based pooling, QUIC attempts are also disabled.
+// TODO(crbug.com/346835898): Make sure this behavior is what we actually want.
+// In production code, we currently disable both IP-based pooling and QUIC at
+// the same time.
+TEST_F(HttpStreamPoolJobTest, QuicMatchingIpSessionDisabled) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  SequencedSocketData tcp_data;
+  socket_factory()->AddSocketDataProvider(&tcp_data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_enable_ip_based_pooling(false)
+      .RequestStream(pool());
+  RunUntilIdle();
+
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  ASSERT_FALSE(pool()
+                   .GetOrCreateGroupForTesting(requester.GetStreamKey())
+                   .GetJobForTesting()
+                   ->GetQuicTaskResultForTesting()
+                   .has_value());
 }
 
 }  // namespace net

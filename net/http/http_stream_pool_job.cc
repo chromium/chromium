@@ -27,6 +27,7 @@
 #include "net/http/http_stream_pool_quic_task.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_http_stream.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/socket/stream_attempt.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/socket/tls_stream_attempt.h"
@@ -485,7 +486,23 @@ bool HttpStreamPool::Job::CanUseExistingSessionAfterEndpointChanges() {
     return true;
   }
 
-  // TODO(crbug.com/346835898): Check QUIC sessions that match IP endpoints.
+  if (enable_ip_based_pooling_) {
+    QuicSessionAliasKey quic_session_alias_key(stream_key().destination(),
+                                               quic_session_key());
+    for (const auto& endpoint :
+         service_endpoint_request_->GetEndpointResults()) {
+      if (quic_session_pool()->HasMatchingIpSessionForServiceEndpoint(
+              quic_session_alias_key, endpoint,
+              service_endpoint_request_->GetDnsAliasResults(), true)) {
+        // Use PostTask() because we could reach here from RequestStream()
+        // synchronously when the DNS resolution finishes immediately.
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(&Job::CreateQuicStreamAndNotify,
+                                      weak_ptr_factory_.GetWeakPtr()));
+        return true;
+      }
+    }
+  }
 
   if (spdy_session_) {
     return true;
@@ -1183,7 +1200,8 @@ void HttpStreamPool::Job::OnSpdyThrottleDelayPassed() {
 }
 
 bool HttpStreamPool::Job::CanUseQuic() {
-  return enable_alternative_services_ && UsingTls() && !RequiresHTTP11();
+  return enable_alternative_services_ && enable_ip_based_pooling_ &&
+         UsingTls() && !RequiresHTTP11();
 }
 
 bool HttpStreamPool::Job::CanUseExistingQuicSession() {
