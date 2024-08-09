@@ -659,6 +659,15 @@ void ViewAccessibility::SetTableColumnCount(int column_count) {
                         column_count);
 }
 
+void ViewAccessibility::ClearDescriptionAndDescriptionFrom() {
+  data_.SetDescriptionExplicitlyEmpty();
+}
+
+void ViewAccessibility::RemoveDescription() {
+  data_.RemoveStringAttribute(ax::mojom::StringAttribute::kDescription);
+  data_.RemoveIntAttribute(ax::mojom::IntAttribute::kDescriptionFrom);
+}
+
 void ViewAccessibility::SetDescription(
     const std::string& description,
     const ax::mojom::DescriptionFrom description_from) {

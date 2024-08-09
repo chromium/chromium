@@ -37,6 +37,7 @@ class UI_CHROMEOS_EXPORT AnnouncementView
   AnnouncementView();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(AnnouncementViewTest, HeaderAccessibilityProperties);
   raw_ptr<AnnouncementLabel> announcement_label_ = nullptr;
 };
 
