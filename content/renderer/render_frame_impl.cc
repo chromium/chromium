@@ -1234,9 +1234,9 @@ void LogCommitHistograms(base::TimeTicks commit_sent,
         new_page_url.SchemeIsHTTPOrHTTPS()) {
       const char* const name =
           is_main_frame
-              ? "Navigation.RendererRunLoopStartToFirstCommitNavigation."
+              ? "Navigation.RendererRunLoopStartToFirstCommitNavigation2."
                 "MainFrame"
-              : "Navigation.RendererRunLoopStartToFirstCommitNavigation."
+              : "Navigation.RendererRunLoopStartToFirstCommitNavigation2."
                 "Subframe";
       const auto trace_id = TRACE_ID_WITH_SCOPE(
           name, TRACE_ID_LOCAL(RenderThreadImpl::current()));
@@ -1245,7 +1245,7 @@ void LogCommitHistograms(base::TimeTicks commit_sent,
           new_page_url);
       TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("navigation", name,
                                                      trace_id, now);
-      base::UmaHistogramTimes(name, now - run_loop_start_time);
+      base::UmaHistogramLongTimes(name, now - run_loop_start_time);
     }
   }
 }
