@@ -5,6 +5,7 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/media/webrtc/tab_desktop_media_list_mock_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -17,18 +18,6 @@
 #include "content/public/test/browser_test_utils.h"
 
 namespace {
-
-class MockObserver : public DesktopMediaListObserver {
- public:
-  MOCK_METHOD(void, OnSourceAdded, (int index), (override));
-  MOCK_METHOD(void, OnSourceRemoved, (int index), (override));
-  MOCK_METHOD(void, OnSourceMoved, (int old_index, int new_index), (override));
-  MOCK_METHOD(void, OnSourceNameChanged, (int index), (override));
-  MOCK_METHOD(void, OnSourceThumbnailChanged, (int index), (override));
-  MOCK_METHOD(void, OnSourcePreviewChanged, (size_t index), (override));
-  MOCK_METHOD(void, OnDelegatedSourceListSelection, (), (override));
-  MOCK_METHOD(void, OnDelegatedSourceListDismissed, (), (override));
-};
 
 class TabDesktopMediaListIwaTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
@@ -69,7 +58,7 @@ class TabDesktopMediaListIwaTest
   const TabDesktopMediaList& list() const { return *list_; }
 
  private:
-  MockObserver observer_;
+  DesktopMediaListMockObserver observer_;
   std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
   std::unique_ptr<TabDesktopMediaList> list_;
 };

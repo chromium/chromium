@@ -25,6 +25,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
+#include "chrome/browser/media/webrtc/tab_desktop_media_list_mock_observer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -89,22 +90,6 @@ gfx::Image CreateGrayscaleImage(gfx::Size size, uint8_t greyscale_value) {
 
   return gfx::Image::CreateFrom1xBitmap(result);
 }
-
-class MockObserver : public DesktopMediaListObserver {
- public:
-  MOCK_METHOD1(OnSourceAdded, void(int index));
-  MOCK_METHOD1(OnSourceRemoved, void(int index));
-  MOCK_METHOD2(OnSourceMoved, void(int old_index, int new_index));
-  MOCK_METHOD1(OnSourceNameChanged, void(int index));
-  MOCK_METHOD1(OnSourceThumbnailChanged, void(int index));
-  MOCK_METHOD1(OnSourcePreviewChanged, void(size_t index));
-  MOCK_METHOD0(OnDelegatedSourceListSelection, void());
-  MOCK_METHOD0(OnDelegatedSourceListDismissed, void());
-
-  void VerifyAndClearExpectations() {
-    testing::Mock::VerifyAndClearExpectations(this);
-  }
-};
 
 ACTION_P2(CheckListSize, list, expected_list_size) {
   EXPECT_EQ(expected_list_size, list->GetSourceCount());
@@ -340,7 +325,7 @@ class TabDesktopMediaListTest : public testing::Test,
   std::unique_ptr<Browser> browser_;
 
   // Must be listed before |list_|, so it's destroyed last.
-  MockObserver observer_;
+  DesktopMediaListMockObserver observer_;
   std::unique_ptr<TabDesktopMediaList> list_;
   std::vector<raw_ptr<WebContents, VectorExperimental>>
       manually_added_web_contents_;

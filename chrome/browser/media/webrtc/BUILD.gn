@@ -264,3 +264,15 @@ source_set("webrtc") {
   }
   defines = [ "ZLIB_CONST" ]
 }
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "tab_desktop_media_list_mock_observer.cc",
+    "tab_desktop_media_list_mock_observer.h",
+  ]
+  deps = [
+    ":webrtc",
+    "//testing/gmock",
+  ]
+}
