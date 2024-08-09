@@ -5,7 +5,6 @@
 #include "components/webapps/browser/installable/installable_icon_fetcher.h"
 
 #include "base/check_is_test.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -102,8 +101,6 @@ void ProcessFaviconInBackground(
     gfx::PNGCodec::Decode(bitmap_result.bitmap_data->data(),
                           bitmap_result.bitmap_data->size(), &decoded);
   }
-
-  base::UmaHistogramCounts1000("Webapp.Install.FaviconSize", decoded.width());
 
   int min_size = GetMinimumFaviconForPrimaryIconSizeInPx();
   if (decoded.width() < min_size || decoded.height() < min_size) {
