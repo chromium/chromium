@@ -257,7 +257,7 @@ bool TouchToFillDelegateAndroidImpl::IsShowingTouchToFill() {
 // TODO(crbug.com/40233391): Create a central point for TTF hiding decision.
 void TouchToFillDelegateAndroidImpl::HideTouchToFill() {
   if (IsShowingTouchToFill()) {
-    manager_->client().HideTouchToFillCreditCard();
+    manager_->client().GetPaymentsAutofillClient()->HideTouchToFillCreditCard();
   }
 }
 

@@ -573,15 +573,6 @@ bool ChromeAutofillClient::ShowTouchToFillIban(
 #endif
 }
 
-void ChromeAutofillClient::HideTouchToFillCreditCard() {
-#if BUILDFLAG(IS_ANDROID)
-  GetPaymentsAutofillClient()->GetTouchToFillPaymentMethodController().Hide();
-#else
-  // Touch To Fill is not supported on Desktop.
-  NOTREACHED_IN_MIGRATION();
-#endif
-}
-
 void ChromeAutofillClient::ShowAutofillSuggestions(
     const PopupOpenArgs& open_args,
     base::WeakPtr<AutofillSuggestionDelegate> delegate) {

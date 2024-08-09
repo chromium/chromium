@@ -222,10 +222,6 @@ void WebViewAutofillClientIOS::ShowDeleteAddressProfileDialog(
   NOTREACHED_IN_MIGRATION();
 }
 
-void WebViewAutofillClientIOS::HideTouchToFillCreditCard() {
-  NOTREACHED_IN_MIGRATION();
-}
-
 void WebViewAutofillClientIOS::ShowAutofillSuggestions(
     const AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<AutofillSuggestionDelegate> delegate) {

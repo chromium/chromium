@@ -219,4 +219,6 @@ bool PaymentsAutofillClient::ShowTouchToFillCreditCard(
   return false;
 }
 
+void PaymentsAutofillClient::HideTouchToFillCreditCard() {}
+
 }  // namespace autofill::payments

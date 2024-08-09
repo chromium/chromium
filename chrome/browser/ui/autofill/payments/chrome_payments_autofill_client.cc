@@ -807,6 +807,15 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillCreditCard(
 #endif
 }
 
+void ChromePaymentsAutofillClient::HideTouchToFillCreditCard() {
+#if BUILDFLAG(IS_ANDROID)
+  touch_to_fill_payment_method_controller_.Hide();
+#else
+  // Touch To Fill is not supported on Desktop.
+  NOTREACHED_IN_MIGRATION();
+#endif
+}
+
 #if BUILDFLAG(IS_ANDROID)
 AutofillSnackbarControllerImpl&
 ChromePaymentsAutofillClient::GetAutofillSnackbarController() {

@@ -306,10 +306,6 @@ void ChromeAutofillClientIOS::ShowDeleteAddressProfileDialog(
   NOTREACHED_NORETURN();
 }
 
-void ChromeAutofillClientIOS::HideTouchToFillCreditCard() {
-  NOTREACHED_IN_MIGRATION();
-}
-
 void ChromeAutofillClientIOS::ShowAutofillSuggestions(
     const AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<AutofillSuggestionDelegate> delegate) {

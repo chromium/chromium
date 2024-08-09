@@ -467,6 +467,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest,
       base::span<const Suggestion> suggestions);
+
+  // Hides the Touch To Fill surface for filling credit card information
+  // if one is currently shown. Should be called only if the feature is
+  // supported by the platform.
+  virtual void HideTouchToFillCreditCard();
 };
 
 }  // namespace payments

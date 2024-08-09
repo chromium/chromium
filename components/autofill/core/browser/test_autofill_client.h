@@ -300,8 +300,6 @@ class TestAutofillClientTemplate : public T {
     return false;
   }
 
-  void HideTouchToFillCreditCard() override {}
-
   void ShowAutofillSuggestions(
       const AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override {
