@@ -173,6 +173,8 @@ Combobox::Combobox(ui::ComboboxModel* model) {
                                                 GetCornerRadius());
 
   GetViewAccessibility().SetProperties(ax::mojom::Role::kComboBoxSelect);
+
+  UpdateAccessibleValue();
   UpdateExpandedCollapsedAccessibleState();
   UpdateAccessibleDefaultActionVerb();
 }
@@ -205,6 +207,8 @@ void Combobox::SetSelectedIndex(std::optional<size_t> index) {
     content_size_ = GetContentSize();
     OnPropertyChanged(&selected_index_, kPropertyEffectsPreferredSizeChanged);
   }
+
+  UpdateAccessibleValue();
 }
 
 base::CallbackListSubscription Combobox::AddSelectedIndexChangedCallback(
@@ -500,14 +504,6 @@ void Combobox::OnBlur() {
   SchedulePaint();
 }
 
-void Combobox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-
-  if (selected_index_.has_value()) {
-    node_data->SetValue(model_->GetItemAt(selected_index_.value()));
-  }
-}
-
 bool Combobox::HandleAccessibleAction(const ui::AXActionData& action_data) {
   // The action handling in View would generate a mouse event and send it to
   // |this|. However, mouse events for Combobox are handled by |arrow_button_|,
@@ -718,7 +714,6 @@ void Combobox::MenuSelectionAt(size_t index) {
 }
 
 void Combobox::OnPerformAction() {
-  NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
   SchedulePaint();
 
   if (callback_)
@@ -798,6 +793,14 @@ void Combobox::UpdateExpandedCollapsedAccessibleState() const {
     GetViewAccessibility().SetIsExpanded();
   } else {
     GetViewAccessibility().SetIsCollapsed();
+  }
+}
+
+void Combobox::UpdateAccessibleValue() const {
+  if (model_->GetItemCount() > 0 && selected_index_.has_value()) {
+    GetViewAccessibility().SetValue(model_->GetItemAt(selected_index_.value()));
+  } else {
+    GetViewAccessibility().RemoveValue();
   }
 }
 
