@@ -257,7 +257,9 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        TextView buttonText = mView.getContentView().findViewById(R.id.touch_to_fill_button_title);
+        TextView buttonText =
+                mView.getContentView()
+                        .findViewById(R.id.facilitated_payments_continue_button_title);
         assertThat(buttonText.getText(), is("Continue"));
     }
 
