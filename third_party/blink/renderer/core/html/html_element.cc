@@ -88,6 +88,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_listbox_element.h"
 #include "third_party/blink/renderer/core/html/forms/labels_node_list.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
@@ -3250,6 +3251,17 @@ bool HTMLElement::IsValidElement() {
 
 bool HTMLElement::IsLabelable() const {
   return IsFormAssociatedCustomElement();
+}
+
+bool HTMLElement::HasActiveLabel() const {
+  for (const Element* active_element :
+       GetDocument().UserActionElements().ActiveElements()) {
+    const HTMLLabelElement* label = DynamicTo<HTMLLabelElement>(active_element);
+    if (label && label->control() == this) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void HTMLElement::FinishParsingChildren() {

@@ -267,7 +267,13 @@ void HTMLButtonElement::DispatchBlurEvent(
     Element* new_focused_element,
     mojom::blink::FocusType type,
     InputDeviceCapabilities* source_capabilities) {
-  SetActive(false);
+  // The button might be the control element of a label
+  // that is in :active state. In that case the control should
+  // remain :active to avoid crbug.com/40934455.
+  if (!RuntimeEnabledFeatures::KeepActiveIfLabelActiveEnabled() ||
+      !HasActiveLabel()) {
+    SetActive(false);
+  }
   HTMLFormControlElement::DispatchBlurEvent(new_focused_element, type,
                                             source_capabilities);
 }

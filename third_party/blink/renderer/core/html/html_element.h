@@ -190,6 +190,7 @@ class CORE_EXPORT HTMLElement : public Element {
   virtual bool IsLabelable() const;
   // |labels| IDL attribute implementation for IsLabelable()==true elements.
   LabelsNodeList* labels();
+  bool HasActiveLabel() const;
 
   // https://html.spec.whatwg.org/C/#interactive-content
   virtual bool IsInteractiveContent() const;

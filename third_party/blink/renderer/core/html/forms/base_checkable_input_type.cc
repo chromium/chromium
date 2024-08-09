@@ -122,7 +122,14 @@ bool BaseCheckableInputType::IsCheckable() {
 }
 
 void BaseCheckableInputType::HandleBlurEvent() {
-  GetElement().SetActive(false);
+  // The input might be the control element of a label
+  // that is in :active state. In that case the control should
+  // remain :active to avoid crbug.com/40934455.
+  HTMLInputElement& element = GetElement();
+  if (!RuntimeEnabledFeatures::KeepActiveIfLabelActiveEnabled() ||
+      !element.HasActiveLabel()) {
+    element.SetActive(false);
+  }
 }
 
 }  // namespace blink
