@@ -23,5 +23,6 @@ bool ContextualPanelItemConfiguration::CanShowLargeEntrypoint() {
 bool ContextualPanelItemConfiguration::CanShowEntrypointIPH() {
   return iph_feature && !iph_text.empty() && !iph_title.empty() &&
          !iph_image_name.empty() && !iph_entrypoint_used_event_name.empty() &&
+         !iph_entrypoint_explicitly_dismissed.empty() &&
          relevance >= high_relevance;
 }

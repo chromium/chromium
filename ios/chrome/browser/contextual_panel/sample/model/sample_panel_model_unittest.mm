@@ -63,6 +63,8 @@ TEST_F(SamplePanelModelTest, TestFetchConfiguration) {
 #endif
   EXPECT_EQ("ios_contextual_panel_sample_model_entrypoint_used",
             config->iph_entrypoint_used_event_name);
+  EXPECT_EQ("ios_contextual_panel_sample_model_entrypoint_explicitly_dismissed",
+            config->iph_entrypoint_explicitly_dismissed);
   EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelSampleModelFeature,
             config->iph_feature);
   EXPECT_EQ(ContextualPanelItemConfiguration::high_relevance,

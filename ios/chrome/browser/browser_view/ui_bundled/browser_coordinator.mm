@@ -1568,11 +1568,16 @@ enum class ToolbarKind {
 }
 
 // TODO(crbug.com/343734676): Add metrics per dismissal reason type.
-- (void)contextualPanelEntrypointIPHDidDismissWithFeature:
-            (const base::Feature&)feature
-                                          dismissalReason:
-                                              (IPHDismissalReasonType)
-                                                  IPHDismissalReasonType {
+- (void)contextualPanelEntrypointIPHDidDismissWithConfig:
+            (base::WeakPtr<ContextualPanelItemConfiguration>)config
+                                         dismissalReason:
+                                             (IPHDismissalReasonType)
+                                                 IPHDismissalReasonType {
+  ContextualPanelItemConfiguration* config_ptr = config.get();
+  if (!config_ptr) {
+    return;
+  }
+
   [HandlerForProtocol(self.dispatcher, ContextualPanelEntrypointCommands)
       contextualPanelEntrypointIPHWasDismissed];
 
@@ -1584,12 +1589,20 @@ enum class ToolbarKind {
     return;
   }
 
-  engagementTracker->Dismissed(feature);
+  engagementTracker->Dismissed(*config_ptr->iph_feature);
   _contextualPanelEntrypointHelpPresenter = nil;
 
   if (IPHDismissalReasonType == IPHDismissalReasonType::kTappedAnchorView ||
       IPHDismissalReasonType == IPHDismissalReasonType::kTappedIPH) {
     [self openContextualSheet];
+    return;
+  }
+
+  if (IPHDismissalReasonType ==
+          IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView ||
+      IPHDismissalReasonType == IPHDismissalReasonType::kTappedClose) {
+    engagementTracker->NotifyEvent(
+        config_ptr->iph_entrypoint_explicitly_dismissed);
   }
 }
 
@@ -2115,16 +2128,9 @@ enum class ToolbarKind {
   CallbackWithIPHDismissalReasonType dismissalCallback =
       ^(IPHDismissalReasonType IPHDismissalReasonType,
         feature_engagement::Tracker::SnoozeAction snoozeAction) {
-        ContextualPanelItemConfiguration* config_ptr = config.get();
-        if (!config_ptr) {
-          return;
-        }
-
-        [weakSelf
-            contextualPanelEntrypointIPHDidDismissWithFeature:*config_ptr
-                                                                   ->iph_feature
-                                              dismissalReason:
-                                                  IPHDismissalReasonType];
+        [weakSelf contextualPanelEntrypointIPHDidDismissWithConfig:config
+                                                   dismissalReason:
+                                                       IPHDismissalReasonType];
       };
 
   UIImage* image =

@@ -1795,9 +1795,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 #if BUILDFLAG(IS_IOS)
   if (kIPHiOSContextualPanelPriceInsightsFeature.name == feature->name) {
     // The contextual panel's price insights entrypoint IPH config to control
-    // the impressions of the IPH for this infoblock. Shows the IPH 2 times
-    // every 6 months (max 1 per day), for a maximum of 4 times lifetime. Stops
-    // showing the IPH if the entrypoint was used.
+    // the impressions of the IPH for this infoblock. Shows the IPH 3 times
+    // every 6 months (max 1 per day), for a maximum of 6 times lifetime. Stops
+    // showing the IPH if the entrypoint was used, or explicitly dismissed
+    // twice.
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
@@ -1807,15 +1808,20 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
             kIOSContextualPanelPriceInsightsEntrypointUsed,
         Comparator(LESS_THAN, 1), feature_engagement::kMaxStoragePeriod,
         feature_engagement::kMaxStoragePeriod);
+    config->used = EventConfig(
+        feature_engagement::events::
+            kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed,
+        Comparator(LESS_THAN, 2), feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod);
     config->trigger = EventConfig(
         "ios_contextual_panel_price_insights_entrypoint_iph_trigger",
-        Comparator(LESS_THAN, 2), 182, feature_engagement::kMaxStoragePeriod);
+        Comparator(LESS_THAN, 3), 182, feature_engagement::kMaxStoragePeriod);
     config->event_configs.insert(EventConfig(
         "ios_contextual_panel_price_insights_entrypoint_iph_trigger",
         Comparator(LESS_THAN, 1), 1, feature_engagement::kMaxStoragePeriod));
     config->event_configs.insert(EventConfig(
         "ios_contextual_panel_price_insights_entrypoint_iph_trigger",
-        Comparator(LESS_THAN, 4), feature_engagement::kMaxStoragePeriod,
+        Comparator(LESS_THAN, 6), feature_engagement::kMaxStoragePeriod,
         feature_engagement::kMaxStoragePeriod));
 
     // This IPH is blocked by the overflow menu's price tracking IPH
@@ -1841,8 +1847,8 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   if (kIPHiOSContextualPanelSampleModelFeature.name == feature->name) {
     // The contextual panel's sample model entrypoint IPH config to control the
     // impressions of the IPH for this infoblock. Shows the IPH up to 3 times
-    // per day if the user doesn't interact with the entrypoint, and is
-    // blocking/blocked to/by all other IPHs.
+    // per day if the user doesn't interact with the entrypoint or explicitly
+    // dismiss it, and is blocking/blocked to/by all other IPHs.
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
@@ -1854,6 +1860,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->trigger =
         EventConfig("ios_contextual_panel_sample_model_entrypoint_iph_trigger",
                     Comparator(LESS_THAN, 3), 1, 1);
+    config->event_configs.insert(EventConfig(
+        "ios_contextual_panel_sample_model_entrypoint_explicitly_dismissed",
+        Comparator(LESS_THAN, 1), 1, 1));
     return config;
   }
 

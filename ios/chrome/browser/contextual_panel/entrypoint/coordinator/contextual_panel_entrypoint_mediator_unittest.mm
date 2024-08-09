@@ -413,7 +413,9 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
       std::make_unique<SamplePanelItemConfiguration>();
   configuration->relevance = ContextualPanelItemConfiguration::high_relevance;
   configuration->entrypoint_message = "test";
-  configuration->iph_entrypoint_used_event_name = "testEvent";
+  configuration->iph_entrypoint_used_event_name = "testUsedEvent";
+  configuration->iph_entrypoint_explicitly_dismissed =
+      "testExplicitlyDismissedEvent";
   configuration->iph_feature =
       &feature_engagement::kIPHiOSContextualPanelSampleModelFeature;
   configuration->iph_text = "test_text";

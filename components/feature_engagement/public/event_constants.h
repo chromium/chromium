@@ -296,6 +296,11 @@ extern const char kIOSContextualPanelSampleModelEntrypointUsed[];
 // price insights infoblock.
 extern const char kIOSContextualPanelPriceInsightsEntrypointUsed[];
 
+// The user has explicitly dismissed the Price Insights branded Contextual Panel
+// entrypoint in-product help.
+extern const char
+    kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

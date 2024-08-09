@@ -46,6 +46,8 @@ void SamplePanelModel::FetchConfigurationForWebState(
       &feature_engagement::kIPHiOSContextualPanelSampleModelFeature;
   item_configuration->iph_entrypoint_used_event_name =
       feature_engagement::events::kIOSContextualPanelSampleModelEntrypointUsed;
+  item_configuration->iph_entrypoint_explicitly_dismissed =
+      "ios_contextual_panel_sample_model_entrypoint_explicitly_dismissed";
   item_configuration->image_type =
       ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol;
   item_configuration->relevance =
