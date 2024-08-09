@@ -26,6 +26,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 
@@ -93,6 +94,12 @@ void LensPermissionBubbleController::RequestPermission(
   // Show a tab-modal dialog and keep a reference to its widget.
   dialog_widget_ = constrained_window::ShowWebModal(
       CreateLensPermissionDialogModel(), web_contents);
+  // Clip layers to root layer bounds so that they don't render outside of the
+  // dialog boundary when the dialog is small.
+  // TODO(crbug.com/358379367): this should live in the framework and should
+  // clip to the window opaque area. Currently child layers will bleed into the
+  // window shadow area.
+  dialog_widget_->GetLayer()->SetMasksToBounds(true);
 }
 
 std::unique_ptr<ui::DialogModel>
