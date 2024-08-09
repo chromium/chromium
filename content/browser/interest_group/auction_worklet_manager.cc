@@ -449,8 +449,9 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned(
             /*thread_index=*/i));
 
         if (std::optional<base::ProcessId> maybe_pid =
-                worklet_debugs_.back()->GetPid(base::BindOnce(
-                    &WorkletOwner::OnThreadReady, base::Unretained(this)))) {
+                worklet_debugs_.back()->GetPid(
+                    base::BindOnce(&WorkletOwner::OnThreadReady,
+                                   weak_ptr_factory_.GetWeakPtr()))) {
           OnThreadReady(*maybe_pid);
         }
 
@@ -499,8 +500,9 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned(
             /*thread_index=*/i));
 
         if (std::optional<base::ProcessId> maybe_pid =
-                worklet_debugs_.back()->GetPid(base::BindOnce(
-                    &WorkletOwner::OnThreadReady, base::Unretained(this)))) {
+                worklet_debugs_.back()->GetPid(
+                    base::BindOnce(&WorkletOwner::OnThreadReady,
+                                   weak_ptr_factory_.GetWeakPtr()))) {
           OnThreadReady(*maybe_pid);
         }
 
