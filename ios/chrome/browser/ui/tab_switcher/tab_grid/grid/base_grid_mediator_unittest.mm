@@ -1131,6 +1131,7 @@ TEST_P(BaseGridMediatorTest, DropCrossBrowserTabGroup) {
 
   const TabGroup* other_tab_group =
       other_browser->GetWebStateList()->GetGroupOfWebStateAt(0);
+  tab_groups::TabGroupId tab_group_id = other_tab_group->tab_group_id();
 
   id local_object =
       [[TabGroupInfo alloc] initWithTabGroup:other_tab_group
@@ -1144,7 +1145,8 @@ TEST_P(BaseGridMediatorTest, DropCrossBrowserTabGroup) {
   [mediator_ dropItem:drag_item toIndex:2 fromSameCollection:NO];
 
   EXPECT_EQ(nullptr, web_state_list->GetGroupOfWebStateAt(2));
-  EXPECT_EQ(other_tab_group, web_state_list->GetGroupOfWebStateAt(3));
+  EXPECT_EQ(tab_group_id,
+            web_state_list->GetGroupOfWebStateAt(3)->tab_group_id());
   ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOtherBrowser);
 }
 
