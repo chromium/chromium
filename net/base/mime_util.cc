@@ -232,6 +232,7 @@ static const MimeInfo kSecondaryMappings[] = {
     {"text/calendar", "ics"},
     {"text/html", "ehtml"},
     {"text/plain", "txt,text"},
+    {"text/vtt", "vtt"},
     {"text/x-sh", "sh"},
     {"text/xml", "xsl,xbl,xslt"},
     {"video/mpeg", "mpeg,mpg"},
