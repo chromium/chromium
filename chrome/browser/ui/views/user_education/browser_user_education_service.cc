@@ -919,6 +919,8 @@ void MaybeRegisterChromeFeaturePromos(
           .SetCustomActionDismissText(IDS_PROMO_DISMISS_BUTTON)
           .SetBubbleTitleText(IDS_DISCARD_RING_PROMO_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          // See: crbug.com/358451018
+          .OverrideFocusOnShow(false)
           .SetMetadata(126, "agale@chromium.org",
                        "Triggered when a tab is discarded.")));
 
