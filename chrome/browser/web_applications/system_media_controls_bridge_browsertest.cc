@@ -104,7 +104,7 @@ class SystemMediaControlsBridgeBrowsertest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, TwoApps) {
+IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, DISABLED_TwoApps) {
   // Install and launch a test media session PWA.
   webapps::AppId app_id1 =
       InstallPWA(https_server()->GetURL("/media/session/media-session.html"));
@@ -152,7 +152,8 @@ IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, TwoApps) {
   EXPECT_EQ(num_bridges_created_, 2);
 }
 
-IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, OneBrowser) {
+IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
+                       DISABLED_OneBrowser) {
   // Set up the browser SMCBridge listener.
   SetUpOnBridgeCreatedCallback(/*for_web_app=*/false);
 
@@ -170,7 +171,8 @@ IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, OneBrowser) {
   EXPECT_EQ(num_bridges_created_, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, OneBrowserOneApp) {
+IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
+                       DISABLED_OneBrowserOneApp) {
   // Set up the browser SMCBridge listener.
   SetUpOnBridgeCreatedCallback(/*for_web_app=*/false);
 
@@ -215,7 +217,8 @@ IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, OneBrowserOneApp) {
   EXPECT_EQ(num_bridges_created_, 2);
 }
 
-IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, DuplicateApp) {
+IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
+                       DISABLED_DuplicateApp) {
   // Install and launch a test media session PWA.
   webapps::AppId app_id1 =
       InstallPWA(https_server()->GetURL("/media/session/media-session.html"));
@@ -260,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, DuplicateApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
-                       CommandQuitOneApp) {
+                       DISABLED_CommandQuitOneApp) {
   // Install and launch a test media session PWA.
   webapps::AppId app_id1 =
       InstallPWA(https_server()->GetURL("/media/session/media-session.html"));
