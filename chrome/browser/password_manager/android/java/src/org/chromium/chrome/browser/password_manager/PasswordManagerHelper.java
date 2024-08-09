@@ -20,6 +20,7 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ApiException;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
+import org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossExportDialogFragment;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
@@ -172,7 +174,8 @@ public class PasswordManagerHelper {
                             context,
                             modalDialogManagerSupplier.get(),
                             warningType,
-                            PasswordManagerHelper::launchGmsUpdate);
+                            PasswordManagerHelper::launchGmsUpdate,
+                            this::launchExportFlow);
             return;
         }
 
@@ -440,6 +443,15 @@ public class PasswordManagerHelper {
             // updating GMS Core, either don't offer the option at all or indicate why the update
             // button didn't work.
         }
+    }
+
+    private void launchExportFlow(Context context) {
+        FragmentActivity activity = (FragmentActivity) ContextUtils.activityFromContext(context);
+        assert activity != null : "Context is expected to be a fragment activity";
+
+        PasswordAccessLossExportDialogFragment fragment =
+                new PasswordAccessLossExportDialogFragment();
+        fragment.show(activity.getSupportFragmentManager(), null);
     }
 
     @VisibleForTesting

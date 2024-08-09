@@ -192,6 +192,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/password_manager/settings/ExportFlowInterface.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/ExportWarningDialogFragment.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/NonCancelableProgressBar.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossExportDialogFragment.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessReauthenticationHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordListObserver.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordManagerHandler.java",
@@ -241,6 +242,7 @@ robolectric_binary("password_manager_junit_tests") {
   testonly = true
 
   sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossExportDialogFragmentTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/ConfirmationDialogHelperTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/FakeCredentialManagerLauncherTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/FakePasswordManagerBackendSupportHelperTest.java",
@@ -295,6 +297,7 @@ robolectric_binary("password_manager_junit_tests") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/test/android:test_support_java",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/prefs/android:java",
     "//components/signin/public/android:java",
@@ -307,6 +310,7 @@ robolectric_binary("password_manager_junit_tests") {
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_fragment_fragment_testing_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
@@ -323,6 +327,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_key_error.xml",
     "java/res/drawable/ic_vpn_key_blue.xml",
     "java/res/layout/confirmation_dialog_view.xml",
+    "java/res/layout/password_access_loss_export_dialog_view.xml",
     "java/res/layout/passwords_error_dialog.xml",
     "java/res/layout/passwords_progress_dialog.xml",
   ]

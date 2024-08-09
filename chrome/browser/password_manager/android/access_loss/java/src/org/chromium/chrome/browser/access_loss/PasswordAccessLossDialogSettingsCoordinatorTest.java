@@ -36,6 +36,7 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
             new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
 
     @Mock private Callback<Context> mLaunchGmsCoreUpdate;
+    @Mock private Callback<Context> mLaunchExportFlow;
 
     @Before
     public void setUp() {
@@ -48,7 +49,8 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
                 ContextUtils.getApplicationContext(),
                 mModalDialogManager,
                 PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED,
-                mLaunchGmsCoreUpdate);
+                mLaunchGmsCoreUpdate,
+                mLaunchExportFlow);
         PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
         Assert.assertNotNull(mDialogModel);
 
@@ -62,7 +64,8 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
                 ContextUtils.getApplicationContext(),
                 mModalDialogManager,
                 PasswordAccessLossWarningType.NO_UPM,
-                mLaunchGmsCoreUpdate);
+                mLaunchGmsCoreUpdate,
+                mLaunchExportFlow);
         PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
         Assert.assertNotNull(mDialogModel);
 
@@ -77,12 +80,45 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
                 ContextUtils.getApplicationContext(),
                 mModalDialogManager,
                 PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM,
-                mLaunchGmsCoreUpdate);
+                mLaunchGmsCoreUpdate,
+                mLaunchExportFlow);
         PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
         Assert.assertNotNull(mDialogModel);
 
         mModalDialogManager.clickPositiveButton();
         verify(mLaunchGmsCoreUpdate).onResult(any());
+        Assert.assertNull(mModalDialogManager.getShownDialogModel());
+    }
+
+    @Test
+    public void launchesExportFlowWhenNoGmsCore() {
+        mCoordinator.showPasswordAccessLossDialog(
+                ContextUtils.getApplicationContext(),
+                mModalDialogManager,
+                PasswordAccessLossWarningType.NO_GMS_CORE,
+                mLaunchGmsCoreUpdate,
+                mLaunchExportFlow);
+        PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
+        Assert.assertNotNull(mDialogModel);
+
+        mModalDialogManager.clickPositiveButton();
+        verify(mLaunchExportFlow).onResult(any());
+        Assert.assertNull(mModalDialogManager.getShownDialogModel());
+    }
+
+    @Test
+    public void launchesExportFlowWhenMigrationFailed() {
+        mCoordinator.showPasswordAccessLossDialog(
+                ContextUtils.getApplicationContext(),
+                mModalDialogManager,
+                PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED,
+                mLaunchGmsCoreUpdate,
+                mLaunchExportFlow);
+        PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
+        Assert.assertNotNull(mDialogModel);
+
+        mModalDialogManager.clickPositiveButton();
+        verify(mLaunchExportFlow).onResult(any());
         Assert.assertNull(mModalDialogManager.getShownDialogModel());
     }
 }

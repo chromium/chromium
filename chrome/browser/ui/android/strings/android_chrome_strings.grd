@@ -925,6 +925,15 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_ACCESS_LOSS_NO_GMS_POSITIVE_BUTTON_TEXT" desc="If the user has no Google Play services installed on the phone, they see the modal dialog warning them that passwords will stop working soon and proposing them to export their paswords before that. This string is the agreement button text in the warning.">
         Export passwords
       </message>
+      <message name="IDS_ACCESS_LOSS_EXPORT_DIALOG_TITLE" desc="The title of the modal dialog proposing the user to export their passwords from Chrome and remove them from Chrome's database (to later import them in Google Play Services).">
+        First, export and delete the passwords from Chrome
+      </message>
+      <message name="IDS_ACCESS_LOSS_EXPORT_DIALOG_MESSAGE" desc="The message of the modal dialog proposing the user to export their passwords from Chrome and remove them from Chrome's database (to later import them in Google Play Services).">
+        Your passwords will be downloaded as a CSV file. They will be visible to anyone who can access the file, including apps. Exported passwords will be deleted from Chrome.
+      </message>
+      <message name="IDS_ACCESS_LOSS_EXPORT_DIALOG_POSITIVE_BUTTON_TEXT" desc="The text on the button, confirming the user's agreement to export passwords and remove them from Chrome's database.">
+        Export and delete
+      </message>
 
       <!-- Lock Screen Fragment -->
       <message name="IDS_LOCKSCREEN_DESCRIPTION_COPY" desc="When a user attempts to copy a password for a particular website into clipboard in Chrome's settings, Chrome launches a lock screen to verify the user's identity and displays the following explanation.">
