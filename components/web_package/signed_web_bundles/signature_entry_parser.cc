@@ -173,14 +173,6 @@ void SignatureStackEntryParser::EvaluateSignatureEntry(
   auto [signature_type, public_key_bytes] = GetSignatureType(attributes_map_);
   switch (signature_type) {
     case SignatureType::kEd25519: {
-      if (signature_bytes.size() != ED25519_SIGNATURE_LEN) {
-        RunErrorCallback(base::StringPrintf(
-            "The signature does not have the correct length, "
-            "expected %u bytes.",
-            ED25519_SIGNATURE_LEN));
-        return;
-      }
-
       ASSIGN_OR_RETURN(auto public_key,
                        Ed25519PublicKey::Create(public_key_bytes),
                        &SignatureStackEntryParser::RunErrorCallback, this);

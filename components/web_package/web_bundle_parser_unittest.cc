@@ -961,15 +961,13 @@ TEST_F(WebBundleParserTest, SignedBundleWrongSignatureLength) {
                               kInvalidSignatureLength}}});
   TestDataSource data_source(bundle_and_keys.bundle);
 
-  EXPECT_THAT(
-      ParseSignedBundleIntegrityBlock(&data_source),
-      ErrorIs(Pointee(AllOf(
-          Field(&mojom::BundleIntegrityBlockParseError::type,
-                Eq(mojom::BundleParseErrorType::kFormatError)),
-          Field(
-              &mojom::BundleIntegrityBlockParseError::message,
-              Eq("The signature does not have the correct length, expected 64 "
-                 "bytes."))))));
+  EXPECT_THAT(ParseSignedBundleIntegrityBlock(&data_source),
+              ErrorIs(Pointee(
+                  AllOf(Field(&mojom::BundleIntegrityBlockParseError::type,
+                              Eq(mojom::BundleParseErrorType::kFormatError)),
+                        Field(&mojom::BundleIntegrityBlockParseError::message,
+                              Eq("The signature has the wrong length. Expected "
+                                 "64, but got 65 bytes."))))));
 }
 
 TEST_F(WebBundleParserTest, SignedBundleWrongSignatureStackEntryLength) {
