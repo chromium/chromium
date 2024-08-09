@@ -380,10 +380,10 @@ BASE_FEATURE(kAutofillFindCachedFieldsByIdOnly,
 // N depends on the parametrization of the feature.
 BASE_FEATURE(kAutofillSuggestionNStrikeModel,
              "AutofillSuggestionNStrikeModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kSuggestionStrikeLimit{
-    &kAutofillSuggestionNStrikeModel, "strike-limit", 5};
+    &kAutofillSuggestionNStrikeModel, "strike-limit", 3};
 
 // Makes disused suggestion suppression logic ignore the first
 // `kNumberOfIgnoredSuggestions` suggestions (in frecency order), so that the

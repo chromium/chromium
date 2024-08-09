@@ -2477,28 +2477,6 @@
             ]
         }
     ],
-    "AutofillSuggestionNStrikeModel": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "strike-limit": "5"
-                    },
-                    "enable_features": [
-                        "AutofillSuggestionNStrikeModel"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillSurveys": [
         {
             "platforms": [
