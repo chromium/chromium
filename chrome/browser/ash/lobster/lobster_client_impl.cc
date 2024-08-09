@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/lobster/lobster_client_impl.h"
+#include "chrome/browser/ash/lobster/lobster_client_impl.h"
 
 #include <string_view>
 
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
-#include "chrome/browser/ui/ash/lobster/lobster_service.h"
-#include "chrome/browser/ui/ash/lobster/lobster_system_state_provider.h"
+#include "chrome/browser/ash/lobster/lobster_service.h"
+#include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
 
 LobsterClientImpl::LobsterClientImpl(LobsterService* service)
     : service_(service) {}

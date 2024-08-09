@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LOBSTER_LOBSTER_SERVICE_H_
-#define CHROME_BROWSER_UI_ASH_LOBSTER_LOBSTER_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SERVICE_H_
+#define CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SERVICE_H_
 
 #include <string_view>
 
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/ash/lobster/image_fetcher.h"
-#include "chrome/browser/ui/ash/lobster/lobster_candidate_id_generator.h"
-#include "chrome/browser/ui/ash/lobster/lobster_system_state_provider.h"
+#include "chrome/browser/ash/lobster/image_fetcher.h"
+#include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
+#include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace manta {
@@ -47,4 +47,4 @@ class LobsterService : public KeyedService {
   LobsterSystemStateProvider system_state_provider_;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_LOBSTER_LOBSTER_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SERVICE_H_

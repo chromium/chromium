@@ -41,25 +41,6 @@ static_library("lobster") {
   ]
 }
 
-static_library("test_support") {
-  testonly = true
-
-  sources = [
-    "mock/mock_snapper_provider.cc",
-    "mock/mock_snapper_provider.h",
-  ]
-
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//components/manta",
-    "//net/traffic_annotation:traffic_annotation",
-    "//services/data_decoder/public/cpp:test_support",
-    "//testing/gmock",
-    "//ui/gfx:test_support",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
 
@@ -67,9 +48,9 @@ source_set("unit_tests") {
 
   deps = [
     ":lobster",
-    ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/lobster/mock:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//testing/gmock",
     "//testing/gtest",

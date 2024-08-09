@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/lobster/image_fetcher.h"
+#include "chrome/browser/ash/lobster/image_fetcher.h"
 
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/ash/lobster/mock/mock_snapper_provider.h"
+#include "chrome/browser/ash/lobster/mock/mock_snapper_provider.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"

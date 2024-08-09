@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
 #include "chrome/browser/ash/input_device_settings/peripherals_app_delegate_impl.h"
+#include "chrome/browser/ash/lobster/lobster_client_factory_impl.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_util_impl.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
@@ -52,6 +53,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_cleanup_manager.h"
+#include "chrome/browser/exo_parts.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 #include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
@@ -67,7 +69,6 @@
 #include "chrome/browser/ui/ash/ime_controller_client_impl.h"
 #include "chrome/browser/ui/ash/in_session_auth_dialog_client.h"
 #include "chrome/browser/ui/ash/in_session_auth_token_provider_impl.h"
-#include "chrome/browser/ui/ash/lobster/lobster_client_factory_impl.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
@@ -110,7 +111,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/ozone/evdev/heatmap_palm_detector.h"
-#include "chrome/browser/exo_parts.h"
 
 namespace {
 ChromeBrowserMainExtraPartsAsh* g_instance = nullptr;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LOBSTER_LOBSTER_SYSTEM_STATE_PROVIDER_H_
-#define CHROME_BROWSER_UI_ASH_LOBSTER_LOBSTER_SYSTEM_STATE_PROVIDER_H_
+#ifndef CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SYSTEM_STATE_PROVIDER_H_
+#define CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SYSTEM_STATE_PROVIDER_H_
 
 namespace ash {
 struct LobsterSystemState;
@@ -18,4 +18,4 @@ class LobsterSystemStateProvider {
   ash::LobsterSystemState GetSystemState();
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_LOBSTER_LOBSTER_SYSTEM_STATE_PROVIDER_H_
+#endif  // CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SYSTEM_STATE_PROVIDER_H_

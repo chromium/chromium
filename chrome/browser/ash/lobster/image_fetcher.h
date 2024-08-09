@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LOBSTER_IMAGE_FETCHER_H_
-#define CHROME_BROWSER_UI_ASH_LOBSTER_IMAGE_FETCHER_H_
+#ifndef CHROME_BROWSER_ASH_LOBSTER_IMAGE_FETCHER_H_
+#define CHROME_BROWSER_ASH_LOBSTER_IMAGE_FETCHER_H_
 
 #include <string_view>
 
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/ash/lobster/lobster_candidate_id_generator.h"
+#include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace manta {
@@ -51,4 +51,4 @@ class ImageFetcher {
   base::WeakPtrFactory<ImageFetcher> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_LOBSTER_IMAGE_FETCHER_H_
+#endif  // CHROME_BROWSER_ASH_LOBSTER_IMAGE_FETCHER_H_

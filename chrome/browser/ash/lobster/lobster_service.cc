@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/lobster/lobster_service.h"
+#include "chrome/browser/ash/lobster/lobster_service.h"
 
 #include <string_view>
 
 #include "ash/public/cpp/lobster/lobster_session.h"
-#include "chrome/browser/ui/ash/lobster/image_fetcher.h"
-#include "chrome/browser/ui/ash/lobster/lobster_candidate_id_generator.h"
+#include "chrome/browser/ash/lobster/image_fetcher.h"
+#include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
 #include "components/manta/snapper_provider.h"
 
 LobsterService::LobsterService(

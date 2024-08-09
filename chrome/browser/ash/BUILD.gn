@@ -2249,6 +2249,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/kcer/nssdb_migration:unit_tests",
     "//chrome/browser/ash/kerberos:unit_tests",
     "//chrome/browser/ash/language_packs:unit_tests",
+    "//chrome/browser/ash/lobster:unit_tests",
     "//chrome/browser/ash/lock_screen_apps:unit_tests",
     "//chrome/browser/ash/login:unit_tests",
     "//chrome/browser/ash/magic_boost:unit_tests",
