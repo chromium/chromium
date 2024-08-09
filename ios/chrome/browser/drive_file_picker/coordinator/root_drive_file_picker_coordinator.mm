@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h"
 
 #import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
@@ -102,8 +103,13 @@
 - (void)browseDriveFolderWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
                           driveFolder:(NSString*)driveFolder {
-  // TODO(crbug.com/344812548): Start the `BrowseDriveFilePickerCoordinator` and
-  // add it as child coordinator.
+  BrowseDriveFilePickerCoordinator* browseCoordinator =
+      [[BrowseDriveFilePickerCoordinator alloc]
+          initWithBaseNavigationViewController:_navigationController
+                                       browser:self.browser
+                                      webState:_webState];
+  [browseCoordinator start];
+  [self.childCoordinators addObject:browseCoordinator];
 }
 
 - (void)searchDriveFolderWithMediator:
