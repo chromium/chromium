@@ -73,13 +73,18 @@ LayoutUnit ResolveInlineLengthInternal(
           *length, percentage_resolution_size,
           {.intrinsic_evaluator =
                [&](const Length& length_to_evaluate) {
-                 const LayoutUnit result = ResolveInlineLengthInternal(
+                 LayoutUnit result = ResolveInlineLengthInternal(
                      constraint_space, style, border_padding,
                      min_max_sizes_func, length_to_evaluate, auto_length,
                      override_available_size, calc_size_keyword_behavior);
                  if (result == kIndefiniteSize) {
                    evaluated_indefinite = true;
+                   return kIndefiniteSize;
                  }
+                 if (style.BoxSizing() == EBoxSizing::kContentBox) {
+                   result -= border_padding.InlineSum();
+                 }
+                 DCHECK_GE(result, LayoutUnit());
                  return result;
                },
            .calc_size_keyword_behavior = calc_size_keyword_behavior});
@@ -183,14 +188,19 @@ LayoutUnit ResolveBlockLengthInternal(
       LayoutUnit value = MinimumValueForLength(
           *length, percentage_resolution_size,
           {.intrinsic_evaluator = [&](const Length& length_to_evaluate) {
-            const LayoutUnit result = ResolveBlockLengthInternal(
+            LayoutUnit result = ResolveBlockLengthInternal(
                 constraint_space, style, border_padding, length_to_evaluate,
                 auto_length, override_available_size,
                 override_percentage_resolution_size, block_size_func,
                 is_main_length);
             if (result == kIndefiniteSize) {
               evaluated_indefinite = true;
+              return kIndefiniteSize;
             }
+            if (style.BoxSizing() == EBoxSizing::kContentBox) {
+              result -= border_padding.BlockSum();
+            }
+            DCHECK_GE(result, LayoutUnit());
             return result;
           }});
 
