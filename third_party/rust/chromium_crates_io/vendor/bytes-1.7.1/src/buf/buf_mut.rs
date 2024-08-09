@@ -165,7 +165,7 @@ pub unsafe trait BufMut {
     ///
     /// # Implementer notes
     ///
-    /// This function should never panic. `chunk_mut` should return an empty
+    /// This function should never panic. `chunk_mut()` should return an empty
     /// slice **if and only if** `remaining_mut()` returns 0. In other words,
     /// `chunk_mut()` returning an empty slice implies that `remaining_mut()` will
     /// return 0 and `remaining_mut()` returning 0 implies that `chunk_mut()` will

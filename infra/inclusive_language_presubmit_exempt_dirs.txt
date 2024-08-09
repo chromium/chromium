@@ -659,7 +659,7 @@ third_party/rust/chromium_crates_io/vendor/anstyle-1.0.8 1 1
 third_party/rust/chromium_crates_io/vendor/anyhow-1.0.86 2 1
 third_party/rust/chromium_crates_io/vendor/anyhow-1.0.86/.github/workflows 3 1
 third_party/rust/chromium_crates_io/vendor/base64-0.13.1 1 1
-third_party/rust/chromium_crates_io/vendor/bytes-1.6.1/.github/workflows 3 1
+third_party/rust/chromium_crates_io/vendor/bytes-1.7.1/.github/workflows 3 1
 third_party/rust/chromium_crates_io/vendor/cfg-if-1.0.0/.github/workflows 4 1
 third_party/rust/chromium_crates_io/vendor/clap-4.5.9 2 1
 third_party/rust/chromium_crates_io/vendor/clap-4.5.9/src 4 2

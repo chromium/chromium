@@ -1,3 +1,4 @@
+#![allow(unknown_lints, unexpected_cfgs)]
 #![warn(missing_docs, missing_debug_implementations, rust_2018_idioms)]
 #![doc(test(
     no_crate_inject,
@@ -146,4 +147,19 @@ fn panic_does_not_fit(size: usize, nbytes: usize) -> ! {
         "size too large: the integer type can fit {} bytes, but nbytes is {}",
         size, nbytes
     );
+}
+
+/// Precondition: dst >= original
+///
+/// The following line is equivalent to:
+///
+/// ```rust,ignore
+/// self.ptr.as_ptr().offset_from(ptr) as usize;
+/// ```
+///
+/// But due to min rust is 1.39 and it is only stabilized
+/// in 1.47, we cannot use it.
+#[inline]
+fn offset_from(dst: *const u8, original: *const u8) -> usize {
+    dst as usize - original as usize
 }

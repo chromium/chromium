@@ -47,7 +47,7 @@ fn clone_static(b: &mut Bencher) {
 
     b.iter(|| {
         for _ in 0..1024 {
-            test::black_box(&bytes.clone());
+            test::black_box(test::black_box(&bytes).clone());
         }
     })
 }
@@ -58,7 +58,7 @@ fn clone_shared(b: &mut Bencher) {
 
     b.iter(|| {
         for _ in 0..1024 {
-            test::black_box(&bytes.clone());
+            test::black_box(test::black_box(&bytes).clone());
         }
     })
 }
@@ -70,7 +70,7 @@ fn clone_arc_vec(b: &mut Bencher) {
 
     b.iter(|| {
         for _ in 0..1024 {
-            test::black_box(&bytes.clone());
+            test::black_box(test::black_box(&bytes).clone());
         }
     })
 }

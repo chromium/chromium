@@ -1,3 +1,40 @@
+# 1.7.1 (August 1, 2024)
+
+This release reverts the following change due to a regression:
+
+- Reuse capacity when possible in `<BytesMut as Buf>::advance` impl (#698)
+
+The revert can be found at #726.
+
+# 1.7.0 (July 31, 2024)
+
+### Added
+
+- Add conversion from `Bytes` to `BytesMut` (#695, #710)
+- Add reclaim method without additional allocation (#686)
+
+### Documented
+
+- Clarify how `BytesMut::zeroed` works (#714)
+- Clarify the behavior of `Buf::chunk` (#717)
+
+### Changed
+
+- Change length condition of `BytesMut::truncate`
+- Reuse capacity when possible in `<BytesMut as Buf>::advance` impl (#698)
+- Improve `must_use` suggestion of `BytesMut::split` (#699)
+
+### Internal changes
+
+- Use `ManuallyDrop` instead of `mem::forget` (#678)
+- Don't set `len` in `BytesMut::reserve` (#682)
+- Optimize `Bytes::copy_to_bytes` (#688)
+- Refactor `BytesMut::truncate` (#694)
+- Refactor `BytesMut::resize` (#696)
+- Reorder assertion in `Bytes::split_to`, `Bytes::split_off` (#689, #693)
+- Use `offset_from` in more places (#705)
+- Correct the wrong usage of `IntoIter` (#707)
+
 # 1.6.1 (July 13, 2024)
 
 This release fixes a bug where `Bytes::is_unique` returns incorrect values when
