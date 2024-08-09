@@ -4717,6 +4717,8 @@ static_library("browser") {
       "notifications/pwa_notifier_controller.h",
       "notifications/web_page_notifier_controller.cc",
       "notifications/web_page_notifier_controller.h",
+      "page_load_metrics/observers/ash_session_restore_page_load_metrics_observer.cc",
+      "page_load_metrics/observers/ash_session_restore_page_load_metrics_observer.h",
       "performance_manager/mechanisms/working_set_trimmer_chromeos.cc",
       "performance_manager/mechanisms/working_set_trimmer_chromeos.h",
       "performance_manager/policies/working_set_trimmer_policy_arcvm.cc",

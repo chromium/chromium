@@ -4143,6 +4143,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.FullRestore.Browser.FirstInputDelay" units="ms"
+    expires_after="2025-07-01">
+  <owner>esum@google.com</owner>
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    This is the same latency as PageLoad.InteractiveTiming.FirstInputDelay4
+    except it's recorded once per user session for the active browser window's
+    foreground tab in a session restore (either a full ChromeOS-level session
+    restore or a Chrome-specific restore). If a browser window that's not from a
+    full session restore is active (ex: user opened manually), this metric is
+    skipped.
+  </summary>
+</histogram>
+
 <histogram name="Ash.FullRestore.ShowFullRestoreNotification" enum="BooleanHit"
     expires_after="2025-07-19">
   <owner>sammiequon@chromium.org</owner>

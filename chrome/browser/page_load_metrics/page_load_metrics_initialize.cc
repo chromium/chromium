@@ -69,6 +69,10 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/page_load_metrics/observers/ash_session_restore_page_load_metrics_observer.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
 #endif
@@ -248,6 +252,15 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
   if (translate_observer)
     tracker->AddObserver(std::move(translate_observer));
   tracker->AddObserver(std::make_unique<ZstdPageLoadMetricsObserver>());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (AshSessionRestorePageLoadMetricsObserver::ShouldBeInstantiated(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()))) {
+    tracker->AddObserver(
+        std::make_unique<AshSessionRestorePageLoadMetricsObserver>(
+            web_contents()));
+  }
+#endif
 }
 
 bool PageLoadMetricsEmbedder::IsNewTabPageUrl(const GURL& url) {
