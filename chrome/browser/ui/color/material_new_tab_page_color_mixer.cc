@@ -91,6 +91,8 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
 
   mixer[kColorNewTabPageModuleCalendarEventTimeStatusBackground] = {
       ui::kColorSysNeutralContainer};
+  mixer[kColorNewTabPageModuleCalendarAttachmentScrollbarThumb] = {
+      ui::kColorSysTonalOutline};
 
   mixer[kColorNewTabPagePromoBackground] = {ui::kColorSysBase};
   mixer[kColorNewTabPagePrimaryForeground] = {ui::kColorSysOnSurface};

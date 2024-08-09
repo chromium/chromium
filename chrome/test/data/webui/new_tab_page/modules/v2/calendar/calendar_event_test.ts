@@ -7,7 +7,7 @@ import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createEvent} from './test_support.js';
+import {createAttachments, createEvent} from './test_support.js';
 
 // Microseconds between windows and unix epoch.
 const kWindowsToUnixEpochOffset: bigint = 11644473600000000n;
@@ -17,6 +17,7 @@ suite('NewTabPageModulesCalendaEventTest', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.style.width = '300px';
     element = new CalendarEventElement();
     element.event = createEvent(1);
     element.expanded = false;
@@ -152,6 +153,54 @@ suite('NewTabPageModulesCalendaEventTest', () => {
     const attachmentsElement = $$(element, '#attachments');
     assertTrue(!!attachmentsElement);
     assertFalse(isVisible(attachmentsElement));
+  });
+
+  test('attachments fade on edge of scroll', async () => {
+    element.expanded = true;
+    element.event = createEvent(1, {attachments: createAttachments(10)});
+    await microtasksFinished();
+
+    // Assert.
+    const attachmentListElement = $$(element, '#attachmentList');
+    assertTrue(!!attachmentListElement);
+    assertEquals(attachmentListElement.children.length, 10);
+
+    function whenVisibilityChanged(e: Element): Promise<void> {
+      return new Promise(resolve => {
+        const pageObserver = new IntersectionObserver((_entries, observer) => {
+          resolve();
+          observer.unobserve(e);
+        }, {root: document.documentElement});
+        pageObserver.observe(e);
+      });
+    }
+
+    // Act.
+    attachmentListElement.scrollTo({top: 0, left: 0, behavior: 'instant'});
+    await whenVisibilityChanged(attachmentListElement.children[0]!);
+    await microtasksFinished();
+
+    // Assert.
+    assertEquals(attachmentListElement.className, 'scrollable-right');
+
+    // Act.
+    attachmentListElement.scrollTo({top: 0, left: 100, behavior: 'instant'});
+    await whenVisibilityChanged(attachmentListElement.children[0]!);
+    await microtasksFinished();
+
+    // Assert.
+    assertEquals(attachmentListElement.className, 'scrollable');
+
+    // Act.
+    const maxLeft =
+        attachmentListElement.scrollWidth - attachmentListElement.clientWidth;
+    attachmentListElement.scrollTo(
+        {top: 0, left: maxLeft, behavior: 'instant'});
+    await whenVisibilityChanged(attachmentListElement.children[9]!);
+    await microtasksFinished();
+
+    // Assert.
+    assertEquals(attachmentListElement.className, 'scrollable-left');
   });
 
   test('conference button hidden if empty', async () => {
