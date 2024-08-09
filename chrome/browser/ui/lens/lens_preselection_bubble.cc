@@ -93,6 +93,7 @@ void LensPreselectionBubble::Init() {
     exit_button_->SetProperty(views::kElementIdentifierKey,
                               kLensPreselectionBubbleExitButtonElementId);
   }
+  NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 }
 
 gfx::Rect LensPreselectionBubble::GetBubbleBounds() {
