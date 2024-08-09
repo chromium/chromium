@@ -26,6 +26,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "chrome/browser/local_discovery/service_discovery_client_mac_util.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "net/base/ip_address.h"
@@ -79,6 +80,10 @@ const char kServiceDiscoveryThreadName[] = "Service Discovery Thread";
 
 const NSTimeInterval kResolveTimeout = 10.0;
 
+// Duration of time to wait for the users to responds to the permission dialog
+// before the permission state metric is recorded.
+constexpr base::TimeDelta kPermissionsMetricsDelay = base::Seconds(60);
+
 void SetUpServiceBrowser(
     nw_browser_t browser,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
@@ -127,8 +132,25 @@ void SetUpServiceBrowser(
     return;
   }
 
-  nw_browser_set_state_changed_handler(
-      browser, ^(nw_browser_state_t state, nw_error_t error) {
+  nw_browser_set_state_changed_handler(browser, ^(nw_browser_state_t state,
+                                                  nw_error_t error) {
+    // nw_browser always starts in the 'ready' state, but this doesn't mean
+    // permission is granted.
+    // Permission granted -> no change in the browser state.
+    // Permission denied -> transitions to the 'waiting' state with an error.
+    // Permission pending -> no change in the browser state.
+    // We use a delayed task to handle this: If permission is
+    // denied before the task runs, it's a no-op (permission is recorded once
+    // per session). Otherwise, we record the permission as granted. Note that
+    // it's possible that users deny the permission after the timer expires so
+    // there will be a few false positives.
+    switch (state) {
+      case nw_browser_state_ready:
+        task_runner->PostDelayedTask(FROM_HERE,
+                                     base::BindOnce(metrics_callback, true),
+                                     kPermissionsMetricsDelay);
+        break;
+      case nw_browser_state_waiting:
         if (nw_error_get_error_code(error) == kDNSServiceErr_PolicyDenied) {
           task_runner->PostTask(
               FROM_HERE,
@@ -136,10 +158,12 @@ void SetUpServiceBrowser(
                   services_update_callback,
                   ServiceWatcher::UpdateType::UPDATE_PERMISSION_REJECTED, ""));
           metrics_callback.Run(/*permission_granted*/ false);
-        } else {
-          metrics_callback.Run(/*permission_granted*/ true);
         }
-      });
+        break;
+      default:
+        break;
+    }
+  });
 }
 
 // These functions are used to PostTask with ObjC objects, without needing to
