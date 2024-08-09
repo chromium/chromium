@@ -950,7 +950,7 @@ class Spanifier {
                  varDecl(hasType(arrayType().bind("array_type")),
                          hasTypeLoc(
                              loc(qualType(anything())).bind("array_type_loc")),
-                         unless(exclusions))
+                         unless(exclusions), unless(hasExternalFormalLinkage()))
                      .bind("array_variable")))))))
             .bind("buffer_expr"));
     match_finder_.addMatcher(buffer_expr2, &potential_nodes_);

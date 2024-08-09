@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// No rewrite expected.
+extern const int kPropertyVisitedIDs[];
+
 void fct() {
   // Expected rewrite:
   // std::array<int, 4> buf = {1, 2, 3, 4};
@@ -24,4 +27,6 @@ void fct() {
   // std::array<int, buf3[0]> buf4;
   int buf4[buf3[0]];
   buf4[index] = 11;
+
+  index = kPropertyVisitedIDs[index];
 }
