@@ -93,6 +93,7 @@ public class VisitedUrlRankingBackend implements SuggestionBackend {
             @NonNull String visitId,
             long requestId,
             String appId,
+            String reasonToShowTab,
             @NonNull List<SuggestionEntry> suggestions) {
         SuggestionEntry entry =
                 new SuggestionEntry(
@@ -102,7 +103,8 @@ public class VisitedUrlRankingBackend implements SuggestionBackend {
                         title,
                         lastActiveTime,
                         localTabId,
-                        sShowHistoryAppChip ? appId : null);
+                        sShowHistoryAppChip ? appId : null,
+                        reasonToShowTab);
         if (!visitId.isEmpty()) {
             entry.trainingInfo =
                     new TrainingInfo(mNativeVisitedUrlRankingBackend, visitId, requestId);

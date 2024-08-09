@@ -163,6 +163,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
                     isHistory
                             ? tileView.maybeShowAppChip(mPackageManager, entry.type, entry.appId)
                             : null;
+            String preInfoText = appChipText == null ? entry.reasonToShowTab : null;
             String postInfoText =
                     isHistory
                             ? domainUrl
@@ -170,7 +171,8 @@ public class TabResumptionTileContainerView extends LinearLayout {
                                     R.string.tab_resumption_module_domain_url_and_device_name,
                                     domainUrl,
                                     entry.sourceName);
-            return tileView.setSuggestionTextsSingle(null, appChipText, entry.title, postInfoText);
+            return tileView.setSuggestionTextsSingle(
+                    preInfoText, appChipText, entry.title, postInfoText);
         }
 
         String infoText;

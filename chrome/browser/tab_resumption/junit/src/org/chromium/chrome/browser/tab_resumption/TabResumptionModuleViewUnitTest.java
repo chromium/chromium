@@ -68,6 +68,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
 
     private static final String TAB_TITLE = "Tab Title";
+    private static final String REASON_TO_SHOW_TAB = "Your most recent Tab";
     private static final int TAB_ID = 11;
 
     @Mock private UrlImageProvider mUrlImageProvider;
@@ -561,7 +562,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         "Google Dog",
                         makeTimestamp(24 - 3, 0, 0),
                         Tab.INVALID_TAB_ID,
-                        appId);
+                        appId,
+                        null);
         mSuggestionBundle.entries.add(entry1);
 
         Assert.assertEquals(0, mTileContainerView.getChildCount());
@@ -625,6 +627,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         "Google Dog",
                         makeTimestamp(24 - 3, 0, 0),
                         Tab.INVALID_TAB_ID,
+                        null,
                         null);
         mSuggestionBundle.entries.add(entry1);
 
@@ -645,9 +648,13 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         // Neither pre_info/app chip is displayed.
         TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
         Assert.assertEquals(View.GONE, tile1.findViewById(R.id.tile_pre_info_text).getVisibility());
-        Assert.assertEquals(View.GONE, tile1.findViewById(R.id.tile_app_chip).getVisibility());
+        // Verifies that the maximum lines are the default 3 lines for the display text.
+        TextView displayTextView = tile1.findViewById(R.id.tile_display_text);
         Assert.assertEquals(
-                "Google Dog", ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
+                TabResumptionTileView.DISPLAY_TEXT_MAX_LINES_DEFAULT,
+                displayTextView.getMaxLines());
+        Assert.assertEquals(View.GONE, tile1.findViewById(R.id.tile_app_chip).getVisibility());
+        Assert.assertEquals("Google Dog", displayTextView.getText());
         // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
         Assert.assertEquals(
                 "www.google.com",
@@ -670,6 +677,52 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         tile1.performClick();
         Assert.assertEquals(1, mClickCount);
         Assert.assertEquals(JUnitTestGURLs.GOOGLE_URL_DOG, mLastClickEntry.url);
+    }
+
+    @Test
+    @SmallTest
+    public void testRenderSingleWithReasonToShowTab() throws Exception {
+        initModuleView();
+
+        SuggestionEntry entry1 =
+                new SuggestionEntry(
+                        SuggestionEntryType.HISTORY,
+                        "Source not to be shown",
+                        JUnitTestGURLs.GOOGLE_URL_DOG,
+                        "Google Dog",
+                        makeTimestamp(24 - 3, 0, 0),
+                        Tab.INVALID_TAB_ID,
+                        null,
+                        REASON_TO_SHOW_TAB);
+        mSuggestionBundle.entries.add(entry1);
+
+        Assert.assertEquals(0, mTileContainerView.getChildCount());
+
+        mModuleView.setSuggestionBundle(mSuggestionBundle);
+        Assert.assertEquals(1, mTileContainerView.getChildCount());
+
+        // The pre_info is displayed, while app chip isn't.
+        TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
+        Assert.assertEquals(
+                View.VISIBLE, tile1.findViewById(R.id.tile_pre_info_text).getVisibility());
+        Assert.assertEquals(
+                REASON_TO_SHOW_TAB,
+                ((TextView) tile1.findViewById(R.id.tile_pre_info_text)).getText());
+
+        // Verifies that the maximum lines are 2 lines instead of the default 3 lines when a reason
+        // chip is shown.
+        TextView displayTextView = tile1.findViewById(R.id.tile_display_text);
+        Assert.assertEquals(
+                TabResumptionTileView.DISPLAY_TEXT_MAX_LINES_WITH_REASON,
+                displayTextView.getMaxLines());
+
+        Assert.assertEquals(View.GONE, tile1.findViewById(R.id.tile_app_chip).getVisibility());
+        Assert.assertEquals(
+                "Google Dog", ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
+        // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
+        Assert.assertEquals(
+                "www.google.com",
+                ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
     }
 
     private void initModuleView() {

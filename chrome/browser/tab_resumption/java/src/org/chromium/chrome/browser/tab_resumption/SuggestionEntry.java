@@ -21,6 +21,7 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
     public final long lastActiveTime;
     public final int localTabId;
     @Nullable public final String appId;
+    @Nullable public String reasonToShowTab;
     @Nullable public TrainingInfo trainingInfo;
 
     /**
@@ -32,6 +33,7 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
      * @param localTabId For local tab only, the Tab ID. Defaults to INVALID_TAB_ID.
      * @param appId The ID of the app that opened this entry. {@code null} if the type is not {@link
      *     SuggestionEntryType.HISTORY} or it was opened by BrApp.
+     * @param reasonToShowTab The reason why a Tab is chosen.
      */
     SuggestionEntry(
             int type,
@@ -40,7 +42,8 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
             String title,
             long lastActiveTime,
             int localTabId,
-            String appId) {
+            String appId,
+            @Nullable String reasonToShowTab) {
         this.type = type;
         this.sourceName = sourceName;
         this.url = url;
@@ -48,6 +51,7 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
         this.lastActiveTime = lastActiveTime;
         this.localTabId = localTabId;
         this.appId = appId;
+        this.reasonToShowTab = reasonToShowTab;
         // this.trainingInfo defaults to null, and gets assigned separately.
     }
 
@@ -62,6 +66,7 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
                 title,
                 lastActiveTime,
                 Tab.INVALID_TAB_ID,
+                null,
                 null);
     }
 
@@ -84,7 +89,8 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
                 /* title= */ localTab.getTitle(),
                 /* lastActiveTime= */ localTab.getTimestampMillis(),
                 /* localTabId= */ localTab.getId(),
-                /* appId= */ null);
+                /* appId= */ null,
+                /* reasonToShowTab= */ null);
     }
 
     /** Suggestion comparator that favors recency, and uses other fields for tie-breaking. */
