@@ -208,17 +208,6 @@ BASE_FEATURE(kPrivateStateTokensDevUI,
              "PrivateStateTokensDevUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTrackingProtectionSentimentSurvey,
-             "TrackingProtectionSentimentSurvey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<base::TimeDelta> kTrackingProtectionTimeToSurvey{
-    &kTrackingProtectionSentimentSurvey, "time-to-survey",
-    base::TimeDelta::Max()};
-
-const base::FeatureParam<int> kTrackingProtectionSurveyAnchor{
-    &kTrackingProtectionSentimentSurvey, "survey-anchor", 0};
-
 BASE_FEATURE(kPrivacySandboxActivityTypeStorage,
              "PrivacySandboxActivityTypeStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);

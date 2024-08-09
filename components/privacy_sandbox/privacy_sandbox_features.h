@@ -237,20 +237,6 @@ BASE_DECLARE_FEATURE(kPsDualWritePrefsToNoticeStorage);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<bool> kPsRedesignAdPrivacyPageEnableToggles;
 
-// Enables tracking protection HaTS surveys.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kTrackingProtectionSentimentSurvey);
-
-// Defines the time delta from the survey anchor to the start of the surveying
-// window.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<base::TimeDelta>
-    kTrackingProtectionTimeToSurvey;
-
-// Defines the anchor event for the start of the surveying window.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<int> kTrackingProtectionSurveyAnchor;
-
 // Enables Activity Type Storage
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxActivityTypeStorage);
@@ -290,14 +276,6 @@ BASE_DECLARE_FEATURE(kPrivacySandboxLocalNoticeConfirmation);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<bool>
     kPrivacySandboxLocalNoticeConfirmationDefaultToOSCountry;
-
-// Details the event that the survey window start time should be anchored on.
-enum class TrackingProtectionSurveyAnchor {
-  kUnset = 0,
-  kOnboarding = 1,
-  kFullExperience = 2,
-  kMaxValue = kFullExperience,
-};
 
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxMigratePrefsToNoticeConsentDataModel);
