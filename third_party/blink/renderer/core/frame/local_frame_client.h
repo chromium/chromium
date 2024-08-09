@@ -269,12 +269,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       HTMLFencedFrameElement*,
       mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>) = 0;
 
-  // Whether or not plugin creation should fail if the HTMLPlugInElement isn't
-  // in the DOM after plugin initialization.
-  enum DetachedPluginPolicy {
-    kFailOnDetachedPlugin,
-    kAllowDetachedPlugin,
-  };
+  // TODO(crbug.com/40511450): Remove `load_manually` once PPAPI is gone.
   virtual WebPluginContainerImpl* CreatePlugin(HTMLPlugInElement&,
                                                const KURL&,
                                                const Vector<String>&,

@@ -829,7 +829,6 @@ Document::Document(const DocumentInit& initializer,
       // web-observable.
       ready_state_(dom_window_ ? kLoading : kComplete),
       parsing_state_(kFinishedParsing),
-      contains_plugins_(false),
       ignore_destructive_write_count_(0),
       throw_on_dynamic_markup_insertion_count_(0),
       ignore_opens_during_unload_count_(0),

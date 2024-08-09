@@ -2526,7 +2526,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool is_dns_prefetch_enabled_;
   bool have_explicitly_disabled_dns_prefetch_;
-  bool contains_plugins_;
+
+  // TODO(crbug.com/40511450): Remove once PPAPI is gone.
+  bool contains_plugins_ = false;
 
   bool has_render_blocking_expect_link_elements_ = false;
 

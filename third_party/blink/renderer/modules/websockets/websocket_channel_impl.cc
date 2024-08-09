@@ -375,8 +375,8 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
   if (handshake_throttle_) {
     scoped_refptr<const SecurityOrigin> isolated_security_origin;
     const DOMWrapperWorld* world = execution_context_->GetCurrentWorld();
-    // TODO(crbug.com/702990): Current world can be null because of PPAPI. Null
-    // check can be cleaned up once PPAPI support is removed.
+    // TODO(crbug.com/40511450): Current world can be null because of PPAPI.
+    // Null check can be cleaned up once PPAPI support is removed.
     if (world && world->IsIsolatedWorld()) {
       isolated_security_origin = world->IsolatedWorldSecurityOrigin(
           execution_context_->GetAgentClusterID());
