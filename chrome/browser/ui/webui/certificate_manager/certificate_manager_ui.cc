@@ -76,6 +76,8 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_CERTIFICATES_DESCRIPTION},
       {"certificateManagerV2CRSLearnMoreLink",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_LEARN_MORE_LINK},
+      {"certificateManagerV2CRSLearnMoreLinkAriaLabel",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_LEARN_MORE_LINK_ARIA_LABEL},
       {"certificateManagerV2HashCopiedToast",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_HASH_COPIED_TOAST},
       {"certificateManagerV2AdminCertsTitle",
