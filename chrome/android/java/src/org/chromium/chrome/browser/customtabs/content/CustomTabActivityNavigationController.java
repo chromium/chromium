@@ -388,6 +388,7 @@ public class CustomTabActivityNavigationController
             // TabModel as both eCCT & iCCT have a different OTRProfileID from the primary OTR
             // profile.
             intent.setClass(ContextUtils.getApplicationContext(), ChromeLauncherActivity.class);
+            intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
             intent.putExtra(
                     Browser.EXTRA_APPLICATION_ID,
                     ContextUtils.getApplicationContext().getPackageName());
