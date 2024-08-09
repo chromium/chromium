@@ -301,8 +301,7 @@ void PlusAddressHttpClientImpl::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   access_token_fetcher_.reset();
   pending_callbacks_ = {};
-  loaders_for_creation_.clear();
-  loaders_for_preallocation_.clear();
+  loaders_.clear();
   loader_for_sync_.reset();
 }
 
@@ -341,8 +340,7 @@ void PlusAddressHttpClientImpl::ReservePlusAddressInternal(
           &PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete,
           // Safe since this class owns the list of loaders.
           base::Unretained(this),
-          loaders_for_creation_.insert(loaders_for_creation_.begin(),
-                                       std::move(loader)),
+          loaders_.insert(loaders_.begin(), std::move(loader)),
           PlusAddressNetworkRequestType::kReserve, base::TimeTicks::Now(),
           std::move(on_completed)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
@@ -383,8 +381,7 @@ void PlusAddressHttpClientImpl::ConfirmPlusAddressInternal(
           &PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete,
           // Safe since this class owns the list of loaders.
           base::Unretained(this),
-          loaders_for_creation_.insert(loaders_for_creation_.begin(),
-                                       std::move(loader)),
+          loaders_.insert(loaders_.begin(), std::move(loader)),
           PlusAddressNetworkRequestType::kCreate, base::TimeTicks::Now(),
           std::move(on_completed)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
@@ -435,8 +432,7 @@ void PlusAddressHttpClientImpl::PreallocatePlusAddressesInternal(
       base::BindOnce(&PlusAddressHttpClientImpl::OnPreallocationComplete,
                      // Safe since this class owns the list of loaders.
                      base::Unretained(this),
-                     loaders_for_preallocation_.insert(
-                         loaders_for_preallocation_.begin(), std::move(loader)),
+                     loaders_.insert(loaders_.begin(), std::move(loader)),
                      base::TimeTicks::Now(), std::move(callback)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
@@ -456,7 +452,7 @@ void PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete(
     metrics::RecordNetworkRequestResponseCode(type, *response_code);
   }
   // Destroy the loader before returning.
-  loaders_for_creation_.erase(it);
+  loaders_.erase(it);
   if (!response) {
     std::move(on_completed)
         .Run(base::unexpected(
@@ -488,7 +484,7 @@ void PlusAddressHttpClientImpl::OnPreallocationComplete(
     PreallocatePlusAddressesCallback on_completed,
     std::unique_ptr<std::string> response) {
   std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
-  loaders_for_preallocation_.erase(it);
+  loaders_.erase(it);
   // TODO: crbug.com/324559503 - Add metrics for latency, response code, and
   // response size.
   std::optional<int> response_code = GetResponseCode(loader.get());

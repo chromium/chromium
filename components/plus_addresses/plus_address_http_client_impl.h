@@ -141,15 +141,8 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
   // Stores callbacks that raced to get an auth token to run them once ready.
   base::queue<TokenReadyCallback> pending_callbacks_;
 
-  // List of loaders used by the creation flow (CreatePlusAddress). We use a
-  // list of loaders instead of a single one to handle several requests made
-  // quickly across different tabs.
-  std::list<std::unique_ptr<network::SimpleURLLoader>> loaders_for_creation_;
-
-  // Loaders used for pre-allocate calls.
-  // TODO: crbug.com/324559503 - Combine with `loaders_for_creation_`?
-  std::list<std::unique_ptr<network::SimpleURLLoader>>
-      loaders_for_preallocation_;
+  // Loaders used for Create, Reserve, and Preallocate calls.
+  UrlLoaderList loaders_;
 
   // A loader used infrequently for calls to GetAllPlusAddresses which keeps
   // the PlusAddressService synced with the remote server.
