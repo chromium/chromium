@@ -126,8 +126,6 @@ void MoveWebStateWithIdentifierToInsertionParams(
     return;
   }
 
-  WebStateList::ScopedBatchOperation lock =
-      web_state_list->StartBatchOperation();
   if (source_group) {
     if (!from_same_collection) {
       //  If the dropped item is from another collection and
