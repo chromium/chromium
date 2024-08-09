@@ -4082,6 +4082,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_ALLOW_NOTIFICATIONS" desc="Toggle button for allowing notifications for Safety Check alerts.">
         Allow Notifications
       </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_BROWSING_PROTECTION_OFF" desc="Alert message indicating that the user has browsing protection disabled, reducing their protection from dangerous sites, downloads, and extensions.">
+        Your Safe Browsing is currently off. Get protection from dangerous sites, downloads, and extensions.
+      </message>
       <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_CARD_SHOWS_ISSUES" desc="Description of the Safety Check card, stating that it shows privacy or security issues automatically detected by Safety Check.">
         This card shows any privacy or security issues that Safety Check automatically detects for you.
       </message>
