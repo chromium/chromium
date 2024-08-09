@@ -104,8 +104,12 @@ void MaybeDismissNotification() {
 
 + (void)setUpForTestCase {
   [super setUpForTestCase];
-
   [ChromeEarlGrey writeFirstRunSentinel];
+}
+
+- (void)setUp {
+  [super setUp];
+
   [ChromeEarlGrey clearDefaultBrowserPromoData];
   [ChromeEarlGrey resetDataForLocalStatePref:
                       prefs::kIosCredentialProviderPromoLastActionTaken];
@@ -170,8 +174,6 @@ void MaybeDismissNotification() {
 
 // Tests the SetUpList long press menu item to toggle Tips Notifications.
 - (void)testToggleTipsNotificationsMenuItem {
-  [ChromeEarlGrey
-      resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
   [self optInToTipsNotifications:{}];
   [self turnOffTipsNotifications];
 }
