@@ -969,7 +969,7 @@ public class UrlBar extends AutocompleteEditText {
                         String previousTLD =
                                 mPreviousScrollText == null
                                                 || (mPreviousScrollText.length()
-                                                        <= mPreviousScrollOriginEndIndex)
+                                                        < mPreviousScrollOriginEndIndex)
                                         ? null
                                         : mPreviousScrollText.substring(
                                                 0, mPreviousScrollOriginEndIndex);
