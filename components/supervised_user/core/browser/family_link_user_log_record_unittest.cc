@@ -55,8 +55,9 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
   std::unique_ptr<FamilyLinkUserLogRecord> CreateFamilyLinkUserLogRecord() {
     SupervisedUserURLFilter filter(
         pref_service_,
-        std::make_unique<safe_search_api::FakeURLCheckerClient>(),
         base::BindRepeating([](const GURL& url) { return false; }));
+    filter.SetURLCheckerClient(
+        std::make_unique<safe_search_api::FakeURLCheckerClient>());
 
     return std::make_unique<FamilyLinkUserLogRecord>(
         FamilyLinkUserLogRecord::Create(identity_test_env_.identity_manager(),
@@ -90,8 +91,9 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
 
     SupervisedUserURLFilter filter(
         pref_service_,
-        std::make_unique<safe_search_api::FakeURLCheckerClient>(),
         base::BindRepeating([](const GURL& url) { return false; }));
+    filter.SetURLCheckerClient(
+        std::make_unique<safe_search_api::FakeURLCheckerClient>());
 
     switch (web_filter_type) {
       case WebFilterType::kAllowAllSites:

@@ -235,12 +235,9 @@ std::optional<FilteringSubdomainConflictType> AddConflict(
 
 SupervisedUserURLFilter::SupervisedUserURLFilter(
     PrefService& user_prefs,
-    std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client,
     ValidateURLSupportCallback check_webstore_url_callback)
     : default_behavior_(FilteringBehavior::kAllow),
       user_prefs_(user_prefs),
-      async_url_checker_(std::make_unique<safe_search_api::URLChecker>(
-          std::move(url_checker_client))),
       check_webstore_url_callback_(std::move(check_webstore_url_callback)) {}
 
 SupervisedUserURLFilter::~SupervisedUserURLFilter() {
@@ -682,6 +679,7 @@ void SupervisedUserURLFilter::Clear() {
   url_map_.clear();
   allowed_host_list_.clear();
   blocked_host_list_.clear();
+  async_url_checker_.reset();
   is_filter_initialized_ = false;
 }
 
@@ -777,13 +775,14 @@ bool SupervisedUserURLFilter::RunAsyncChecker(
     return true;
   }
 
+  CHECK(async_url_checker_);
   return async_url_checker_->CheckURL(
       url_matcher::util::Normalize(url),
       base::BindOnce(&SupervisedUserURLFilter::CheckCallback,
                      base::Unretained(this), std::move(callback)));
 }
 
-void SupervisedUserURLFilter::SetURLCheckerClientForTesting(
+void SupervisedUserURLFilter::SetURLCheckerClient(
     std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client) {
   async_url_checker_.reset(
       new safe_search_api::URLChecker(std::move(url_checker_client)));

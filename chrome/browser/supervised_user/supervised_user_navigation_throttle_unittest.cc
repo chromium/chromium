@@ -30,7 +30,6 @@ class MockSupervisedUserURLFilter
   explicit MockSupervisedUserURLFilter(PrefService& prefs)
       : supervised_user::SupervisedUserURLFilter(
             prefs,
-            std::make_unique<safe_search_api::FakeURLCheckerClient>(),
             base::BindRepeating([](const GURL& url) { return false; })) {}
 
   MOCK_METHOD(FilteringBehavior,

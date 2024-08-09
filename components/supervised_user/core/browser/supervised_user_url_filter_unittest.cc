@@ -29,6 +29,8 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   SupervisedUserURLFilterTest() {
     PrefRegistrySimple* registry = pref_service_.registry();
     supervised_user::RegisterProfilePrefs(registry);
+    filter_.SetURLCheckerClient(
+        std::make_unique<safe_search_api::FakeURLCheckerClient>());
     filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
     filter_.AddObserver(this);
   }
@@ -76,7 +78,6 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   TestingPrefServiceSimple pref_service_;
   SupervisedUserURLFilter filter_ = SupervisedUserURLFilter(
       pref_service_,
-      std::make_unique<safe_search_api::FakeURLCheckerClient>(),
       base::BindRepeating([](const GURL& url) { return false; }));
   supervised_user::FilteringBehavior behavior_;
   supervised_user::FilteringBehaviorReason reason_;
@@ -521,6 +522,8 @@ class SupervisedUserURLFilteringWithConflictsTest
   SupervisedUserURLFilteringWithConflictsTest() {
     PrefRegistrySimple* registry = pref_service_.registry();
     supervised_user::RegisterProfilePrefs(registry);
+    filter_.SetURLCheckerClient(
+        std::make_unique<safe_search_api::FakeURLCheckerClient>());
     filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
   }
 
@@ -536,7 +539,6 @@ class SupervisedUserURLFilteringWithConflictsTest
   TestingPrefServiceSimple pref_service_;
   SupervisedUserURLFilter filter_ = SupervisedUserURLFilter(
       pref_service_,
-      std::make_unique<safe_search_api::FakeURLCheckerClient>(),
       base::BindRepeating([](const GURL& url) { return false; }));
 };
 

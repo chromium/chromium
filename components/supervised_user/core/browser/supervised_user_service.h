@@ -236,6 +236,8 @@ class SupervisedUserService : public KeyedService,
 
   const bool can_show_first_time_interstitial_banner_;
 
+  std::unique_ptr<SupervisedUserURLFilter::Delegate> url_filter_delegate_;
+
   // Manages remote web approvals.
   RemoteWebApprovalsManager remote_web_approvals_manager_;
 

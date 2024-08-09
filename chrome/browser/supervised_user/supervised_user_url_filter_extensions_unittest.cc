@@ -23,6 +23,8 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS), "For Enabled extensions only");
 class SupervisedUserURLFilterExtensionsTest : public ::testing::Test {
  public:
   SupervisedUserURLFilterExtensionsTest() {
+    filter_.SetURLCheckerClient(
+        std::make_unique<safe_search_api::FakeURLCheckerClient>());
     filter_.SetDefaultFilteringBehavior(
         supervised_user::FilteringBehavior::kBlock);
   }
@@ -34,7 +36,6 @@ class SupervisedUserURLFilterExtensionsTest : public ::testing::Test {
   supervised_user::SupervisedUserURLFilter filter_ =
       supervised_user::SupervisedUserURLFilter(
           pref_service_,
-          std::make_unique<safe_search_api::FakeURLCheckerClient>(),
           base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL));
 };
 

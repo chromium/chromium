@@ -14,6 +14,11 @@ namespace supervised_user {
 
 class SupervisedUserUtilsTest : public ::testing::Test {
  public:
+  SupervisedUserUtilsTest() {
+    filter_.SetURLCheckerClient(
+        std::make_unique<safe_search_api::FakeURLCheckerClient>());
+  }
+
   ~SupervisedUserUtilsTest() override = default;
 
   supervised_user::SupervisedUserURLFilter& filter() { return filter_; }
@@ -23,7 +28,6 @@ class SupervisedUserUtilsTest : public ::testing::Test {
   supervised_user::SupervisedUserURLFilter filter_ =
       supervised_user::SupervisedUserURLFilter(
           pref_service_,
-          std::make_unique<safe_search_api::FakeURLCheckerClient>(),
           base::BindRepeating([](const GURL& url) { return false; }));
 };
 

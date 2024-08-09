@@ -94,7 +94,10 @@ class MockPermissionRequestCreator
 
 class RemoteWebApprovalsManagerTest : public ::testing::Test {
  protected:
-  RemoteWebApprovalsManagerTest() = default;
+  RemoteWebApprovalsManagerTest() {
+    filter_.SetURLCheckerClient(
+        std::make_unique<safe_search_api::FakeURLCheckerClient>());
+  }
 
   RemoteWebApprovalsManagerTest(const RemoteWebApprovalsManagerTest&) = delete;
   RemoteWebApprovalsManagerTest& operator=(
@@ -126,7 +129,6 @@ class RemoteWebApprovalsManagerTest : public ::testing::Test {
   supervised_user::SupervisedUserURLFilter filter_ =
       supervised_user::SupervisedUserURLFilter(
           pref_service_,
-          std::make_unique<safe_search_api::FakeURLCheckerClient>(),
           base::BindRepeating([](const GURL& url) { return false; }));
   supervised_user::RemoteWebApprovalsManager remote_web_approvals_manager_;
 };

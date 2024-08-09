@@ -116,7 +116,6 @@ class SupervisedUserURLFilter {
 
   SupervisedUserURLFilter(
       PrefService& user_prefs,
-      std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client,
       ValidateURLSupportCallback check_webstore_url_callback);
 
   virtual ~SupervisedUserURLFilter();
@@ -220,7 +219,7 @@ class SupervisedUserURLFilter {
   void SetFilterInitialized(bool is_filter_initialized);
 
   // Sets safe_search_api::URLCheckerClient for SafeSites classification.
-  void SetURLCheckerClientForTesting(
+  void SetURLCheckerClient(
       std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client);
 
   // Checks if an exact match for a host exists in the host blocklist.

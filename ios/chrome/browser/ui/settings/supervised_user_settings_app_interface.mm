@@ -232,7 +232,7 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
       std::make_unique<supervised_user::KidsChromeManagementURLCheckerClient>(
           identity_manager, shared_url_loader_factory, /*country=*/"",
           version_info::Channel::UNKNOWN);
-  supervised_user_service->GetURLFilter()->SetURLCheckerClientForTesting(
+  supervised_user_service->GetURLFilter()->SetURLCheckerClient(
       std::move(url_checker_client));
 }
 

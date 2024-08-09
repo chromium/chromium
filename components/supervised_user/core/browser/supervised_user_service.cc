@@ -159,16 +159,10 @@ SupervisedUserService::SupervisedUserService(
       delegate_(nullptr),
       platform_delegate_(std::move(platform_delegate)),
       can_show_first_time_interstitial_banner_(
-          can_show_first_time_interstitial_banner) {
-  CHECK(url_filter_delegate);
-  std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client =
-      std::make_unique<KidsChromeManagementURLCheckerClient>(
-          identity_manager, url_loader_factory,
-          url_filter_delegate->GetCountryCode(),
-          url_filter_delegate->GetChannel());
+          can_show_first_time_interstitial_banner),
+      url_filter_delegate_(std::move(url_filter_delegate)) {
   url_filter_ = std::make_unique<SupervisedUserURLFilter>(
-      user_prefs, std::move(url_checker_client),
-      std::move(check_webstore_url_callback));
+      user_prefs, std::move(check_webstore_url_callback));
   url_filter_->AddObserver(this);
 }
 
@@ -214,6 +208,13 @@ void SupervisedUserService::SetActive(bool active) {
   }
 
   if (active_) {
+    // Initialize SafeSites URL checker.
+    GetURLFilter()->SetURLCheckerClient(
+        std::make_unique<KidsChromeManagementURLCheckerClient>(
+            identity_manager_, url_loader_factory_,
+            url_filter_delegate_->GetCountryCode(),
+            url_filter_delegate_->GetChannel()));
+
     pref_change_registrar_.Add(
         prefs::kDefaultSupervisedUserFilteringBehavior,
         base::BindRepeating(
