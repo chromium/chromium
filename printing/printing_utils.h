@@ -50,7 +50,7 @@ std::u16string FormatDocumentTitleWithOwnerAndLength(
     const std::u16string& title,
     size_t length);
 
-#if BUILDFLAG(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(USE_CUPS)
 // Returns the paper size (microns) most common in the locale to the nearest
 // millimeter. Defaults to ISO A4 for an empty or invalid locale.
 COMPONENT_EXPORT(PRINTING_BASE)
