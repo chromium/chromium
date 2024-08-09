@@ -3385,6 +3385,8 @@ source_set("browser") {
       # Android, not the browser.
       "webid/digital_credentials/cross_device_request_dispatcher.cc",
       "webid/digital_credentials/cross_device_request_dispatcher.h",
+      "webid/digital_credentials/cross_device_transaction_impl.cc",
+      "webid/digital_credentials/cross_device_transaction_impl.h",
     ]
 
     if (!is_fuchsia) {

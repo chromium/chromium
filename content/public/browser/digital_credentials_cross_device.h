@@ -58,12 +58,12 @@ enum class SystemEvent {
   kBluetoothNotPowered,
   // The user has been prompted for Bluetooth permission. The system will show
   // a dialog to them for them to approve. No action is needed by the caller:
-  // either the user will grant permission and the `kRunning` event will be
+  // either the user will grant permission and the `kReady` event will be
   // reported, or the user will deny permission and the transaction will fail
   // with `SystemError::kPermissionDenied`.
   kNeedPermission,
   // The system is listening for BLE adverts.
-  kRunning,
+  kReady,
 };
 
 using Error = absl::variant<SystemError, ProtocolError, RemoteError>;

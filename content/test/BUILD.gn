@@ -2942,6 +2942,7 @@ test("content_unittests") {
       "../browser/compute_pressure/pressure_service_for_frame_unittest.cc",
       "../browser/compute_pressure/pressure_service_for_worker_unittest.cc",
       "../browser/webid/digital_credentials/cross_device_request_dispatcher_unittest.cc",
+      "../browser/webid/digital_credentials/cross_device_transaction_impl_unittest.cc",
     ]
   }
 
