@@ -31,7 +31,8 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
-      /*expected_cleartext_payload=*/ ONE_CONTRIBUTION_EXAMPLE_PAYLOAD,
+      /*expected_contribution_payload_components=*/
+      ONE_CONTRIBUTION_EXAMPLE_COMPONENTS,
       /*context_id=*/ undefined,
       /*aggregation_coordinator_origin=*/ get_host_info().HTTPS_REMOTE_ORIGIN);
 
@@ -64,7 +65,8 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
-      /*expected_cleartext_payload=*/ ONE_CONTRIBUTION_EXAMPLE_PAYLOAD,
+      /*expected_contribution_payload_components=*/
+      ONE_CONTRIBUTION_EXAMPLE_COMPONENTS,
       /*context_id=*/ undefined,
       /*aggregation_coordinator_origin=*/ get_host_info().HTTPS_ORIGIN);
 

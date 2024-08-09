@@ -28,8 +28,8 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
-      /*expected_cleartext_payload=*/
-      ONE_CONTRIBUTION_WITH_FILTERING_ID_EXAMPLE_PAYLOAD,
+      /*expected_contribution_payload_components=*/
+      ONE_CONTRIBUTION_WITH_FILTERING_ID_EXAMPLE_COMPONENTS,
       /*expected_context_id=*/ undefined);
 
   const debug_reports = await pollReports(
@@ -57,7 +57,7 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ false,
       /*debug_key=*/ undefined,
-      /*expected_cleartext_payload=*/ undefined,
+      /*expected_contribution_payload_components=*/ undefined,
       /*expected_context_id=*/ undefined);
 
   // We use a short timeout as the previous poll should've waited long enough.
@@ -82,7 +82,8 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
-      /*expected_cleartext_payload=*/ ONE_CONTRIBUTION_EXAMPLE_PAYLOAD,
+      /*expected_contribution_payload_components=*/
+      ONE_CONTRIBUTION_EXAMPLE_COMPONENTS,
       /*expected_context_id=*/ undefined);
 
   const debug_reports = await pollReports(
@@ -111,7 +112,8 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
-      /*expected_cleartext_payload=*/ ONE_CONTRIBUTION_EXAMPLE_PAYLOAD,
+      /*expected_contribution_payload_components=*/
+      ONE_CONTRIBUTION_EXAMPLE_COMPONENTS,
       /*expected_context_id=*/ undefined);
 
   const debug_reports = await pollReports(
@@ -136,7 +138,7 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ false,
       /*debug_key=*/ undefined,
-      /*expected_cleartext_payload=*/ undefined,
+      /*expected_contribution_payload_components=*/ undefined,
       /*expected_context_id=*/ undefined);
 
   // We use a short timeout as the previous poll should've waited long enough.
@@ -203,9 +205,11 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
-      /*expected_cleartext_payload=*/
-      ONE_CONTRIBUTION_WITH_FILTERING_ID_AND_CUSTOM_MAX_BYTES_EXAMPLE_PAYLOAD,
-      /*expected_context_id=*/ undefined);
+      /*expected_contribution_payload_components=*/
+      ONE_CONTRIBUTION_WITH_FILTERING_ID_AND_CUSTOM_MAX_BYTES_EXAMPLE_COMPONENTS,
+      /*expected_context_id=*/ undefined,
+      /*aggregation_coordinator_origin=*/ undefined,
+      /*pad_with=*/ PADDING_PAYLOAD_COMPONENT_WITH_CUSTOM_MAX_BYTES);
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -234,9 +238,11 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
-      /*expected_cleartext_payload=*/
-      ONE_CONTRIBUTION_WITH_CUSTOM_FILTERING_ID_MAX_BYTES_EXAMPLE_PAYLOAD,
-      /*expected_context_id=*/ undefined);
+      /*expected_contribution_payload_components=*/
+      ONE_CONTRIBUTION_WITH_CUSTOM_FILTERING_ID_MAX_BYTES_EXAMPLE_COMPONENTS,
+      /*expected_context_id=*/ undefined,
+      /*aggregation_coordinator_origin=*/ undefined,
+      /*pad_with=*/ PADDING_PAYLOAD_COMPONENT_WITH_CUSTOM_MAX_BYTES);
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')
@@ -267,7 +273,7 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ false,
       /*debug_key=*/ undefined,
-      /*expected_cleartext_payload=*/ undefined,
+      /*expected_contribution_payload_components=*/ undefined,
       /*expected_context_id=*/ undefined);
 
   // We use a short timeout as the previous poll should've waited long enough.
@@ -322,7 +328,7 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ false,
       /*debug_key=*/ undefined,
-      /*expected_cleartext_payload=*/ undefined,
+      /*expected_contribution_payload_components=*/ undefined,
       /*expected_context_id=*/ undefined);
 
   // We use a short timeout as the previous poll should've waited long enough.
@@ -376,8 +382,8 @@ private_aggregation_promise_test(async () => {
   verifyReport(
       report, /*api=*/ 'shared-storage', /*is_debug_enabled=*/ true,
       /*debug_key=*/ undefined,
-      /*expected_cleartext_payload=*/
-      MULTIPLE_CONTRIBUTIONS_DIFFERING_IN_FILTERING_ID_EXAMPLE_PAYLOAD);
+      /*expected_contribution_payload_components=*/
+      MULTIPLE_CONTRIBUTIONS_DIFFERING_IN_FILTERING_ID_EXAMPLE_COMPONENTS);
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-shared-storage')

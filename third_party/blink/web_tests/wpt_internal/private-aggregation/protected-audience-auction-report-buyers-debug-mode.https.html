@@ -34,7 +34,7 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ false, /*debug_key=*/ undefined,
-      /*expected_cleartext_payload=*/ undefined);
+      /*expected_contribution_payload_components=*/ undefined);
 
   // We use a short timeout as the previous poll should've waited long enough.
   const debug_reports = await pollReports(
@@ -67,7 +67,8 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ undefined,
-      /*expected_cleartext_payload=*/ ONE_CONTRIBUTION_EXAMPLE_PAYLOAD);
+      /*expected_contribution_payload_components=*/
+      ONE_CONTRIBUTION_EXAMPLE_COMPONENTS);
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -101,7 +102,8 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ true, /*debug_key=*/ '1234',
-      /*expected_cleartext_payload=*/ ONE_CONTRIBUTION_EXAMPLE_PAYLOAD);
+      /*expected_contribution_payload_components=*/
+      ONE_CONTRIBUTION_EXAMPLE_COMPONENTS);
 
   const debug_reports = await pollReports(
       '/.well-known/private-aggregation/debug/report-protected-audience');
@@ -134,7 +136,7 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ false, /*debug_key=*/ undefined,
-      /*expected_cleartext_payload=*/ undefined);
+      /*expected_contribution_payload_components=*/ undefined);
 
   // We use a short timeout as the previous poll should've waited long enough.
   const debug_reports = await pollReports(
@@ -167,7 +169,7 @@ private_aggregation_promise_test(async test => {
   verifyReport(
       report, /*api=*/ 'protected-audience',
       /*is_debug_enabled=*/ false, /*debug_key=*/ undefined,
-      /*expected_cleartext_payload=*/ undefined);
+      /*expected_contribution_payload_components=*/ undefined);
 
   // We use a short timeout as the previous poll should've waited long enough.
   const debug_reports = await pollReports(
