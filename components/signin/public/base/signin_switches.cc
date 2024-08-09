@@ -82,15 +82,20 @@ const base::FeatureParam<std::string>
         &kEnableBoundSessionCredentials, "exclusive-registration-path",
         "/RegisterSession"};
 
-// Enables Chrome refresh tokens binding to a device. Requires
-// "EnableBoundSessionCredentials" being enabled as a prerequisite.
+// Enables Chrome refresh tokens binding to a device.
 BASE_FEATURE(kEnableChromeRefreshTokenBinding,
              "EnableChromeRefreshTokenBinding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs) {
-  return IsBoundSessionCredentialsEnabled(profile_prefs) &&
-         base::FeatureList::IsEnabled(kEnableChromeRefreshTokenBinding);
+  // Enterprise policy takes precedence over the feature value.
+  // Do not allow force-enabling because the feature isn't complete yet.
+  if (profile_prefs->HasPrefPath(prefs::kBoundSessionCredentialsEnabled) &&
+      !profile_prefs->GetBoolean(prefs::kBoundSessionCredentialsEnabled)) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(kEnableChromeRefreshTokenBinding);
 }
 #endif
 

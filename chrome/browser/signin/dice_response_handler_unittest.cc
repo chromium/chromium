@@ -171,12 +171,6 @@ class DiceResponseHandlerTest : public testing::Test,
         signin_error_controller_(
             SigninErrorController::AccountMode::PRIMARY_ACCOUNT,
             identity_test_env_.identity_manager()) {
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kEnableBoundSessionCredentials,
-                              switches::kEnableChromeRefreshTokenBinding},
-        /*disabled_features=*/{});
-#endif
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     AboutSigninInternals::RegisterPrefs(pref_service_.registry());
     auto account_reconcilor_delegate =
@@ -295,7 +289,8 @@ class DiceResponseHandlerTest : public testing::Test,
   GoogleServiceAuthError auth_error_;
   std::string auth_error_email_;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kEnableChromeRefreshTokenBinding};
   base::OnceCallback<void(std::optional<RegistrationTokenHelper::Result>)>
       binding_registration_callback_;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
