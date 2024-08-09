@@ -1158,6 +1158,12 @@ INSTANTIATE_TEST_SUITE_P(All,
 class NavigationEntryScreenshotBrowserTestWithEviction
     : public NavigationEntryScreenshotBrowserTest {
  public:
+  void SetUp() override {
+    if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+      GTEST_SKIP() << "This test is flaky on automotive. crbug.com/358342700";
+    }
+    NavigationEntryScreenshotBrowserTest::SetUp();
+  }
   bool Use1MinuteEvictionDelay() const override { return true; }
   ~NavigationEntryScreenshotBrowserTestWithEviction() override = default;
 };
