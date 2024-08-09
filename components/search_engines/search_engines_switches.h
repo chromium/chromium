@@ -49,11 +49,6 @@ BASE_DECLARE_FEATURE(kSearchEngineChoiceAttribution);
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kSearchEnginesSortingCleanup);
 
-#if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_DECLARE_FEATURE(kPersistentSearchEngineChoiceImport);
-#endif
-
 // Forces the search engine choice country to Belgium. Used for testing
 // purposes.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)

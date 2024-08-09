@@ -372,7 +372,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kForceDisableExtendedSyncPromos,
     &switches::kSearchEngineChoice,
     &switches::kClayBlocking,
-    &switches::kPersistentSearchEngineChoiceImport,
     &switches::kSeedAccountsRevamp,
     &sync_sessions::kOptimizeAssociateWindowsAndroid,
     &syncer::kEnableBatchUploadFromSettings,
@@ -389,7 +388,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &visited_url_ranking::features::kVisitedURLRankingService,
     &webapps::features::kWebApkInstallFailureNotification,
     &network::features::kPrivateStateTokens,
-    &switches::kPersistentSearchEngineChoiceImport,
     &base::features::kPostGetMyMemoryStateToBackground,
 };
 

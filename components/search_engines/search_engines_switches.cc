@@ -57,12 +57,6 @@ BASE_FEATURE(kSearchEnginesSortingCleanup,
              "kSearchEnginesSortingCleanup",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kPersistentSearchEngineChoiceImport,
-             "PersistentSearchEngineChoiceImport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 const base::FeatureParam<bool> kSearchEngineChoiceTriggerWithForceEeaCountry{
     &kSearchEngineChoiceTrigger, /*name=*/"with_force_eea_country", false};
