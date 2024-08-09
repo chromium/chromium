@@ -1,3 +1,14 @@
+1.10.6 (2024-08-02)
+===================
+This is a new patch release with a fix for the `unstable` crate feature that
+enables `std::str::Pattern` trait integration.
+
+Bug fixes:
+
+* [BUG #1219](https://github.com/rust-lang/regex/pull/1219):
+Fix the `Pattern` trait implementation as a result of nightly API breakage.
+
+
 1.10.5 (2024-06-09)
 ===================
 This is a new patch release with some minor fixes.

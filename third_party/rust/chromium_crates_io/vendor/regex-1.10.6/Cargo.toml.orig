@@ -1,6 +1,6 @@
 [package]
 name = "regex"
-version = "1.10.5"  #:version
+version = "1.10.6"  #:version
 authors = ["The Rust Project Developers", "Andrew Gallant <jamslam@gmail.com>"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
