@@ -439,6 +439,10 @@ chromium-metrics-reviews@google.com.
   <variant name="UserCreation" summary="User Creation Screen"/>
 </variants>
 
+<variants name="PerksID">
+  <variant name="G1"/>
+</variants>
+
 <variants name="PersonalizedAppsType">
   <variant name="ARC"/>
   <variant name="Web"/>
@@ -1034,6 +1038,52 @@ chromium-metrics-reviews@google.com.
     the completion of the last onboarding screen for the first user (before the
     start of the first session). The time recorded includes the time while the
     device is turned off.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.PerksDiscoveryScreen.ErrorReason"
+    enum="PerksDiscoveryErrorReason" expires_after="2025-01-01">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>bohdanty@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Records different error codes that we could get during data processing on
+    the screen. Emits either before we show overview step of the screen or after
+    user finished selecting perks.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.PerksDiscoveryScreen.Selected.{PerksID}" enum="Boolean"
+    expires_after="2025-01-01">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>bohdanty@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Whether {PerksID} perk was selected by a user. Recorded when user finished
+    traversing through the all avaialble perks.
+  </summary>
+  <token key="PerksID" variants="PerksID"/>
+</histogram>
+
+<histogram name="OOBE.PerksDiscoveryScreen.SelectedPerksCount" units="perks"
+    expires_after="2025-01-01">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>bohdanty@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    The number of perks user selected on the Perks Discovery screen. Recorded
+    when user finished traversing through the all avaialble perks.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.PerksDiscoveryScreen.SelectedPerksPercentage" units="%"
+    expires_after="2024-12-31">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>bohdanty@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Ratio of selected perks to the number of perks fetched from the server.
+    Recorded when user finished traversing through the all avaialble perks.
   </summary>
 </histogram>
 
