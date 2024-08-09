@@ -45,10 +45,13 @@ component("public") {
   deps = [
     "//base",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//components/account_id",
   ]
   sources = [
     "common_types.h",
     "constants.h",
+    "cryptohome_util.cc",
+    "cryptohome_util.h",
     "error_types.cc",
     "error_types.h",
     "error_util.cc",
@@ -72,6 +75,7 @@ source_set("unit_tests") {
   ]
   sources = [
     "auth_factor_conversions_unittest.cc",
+    "cryptohome_util_unittest.cc",
     "system_salt_getter_unittest.cc",
     "userdataauth_util_unittest.cc",
   ]

@@ -70,6 +70,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/rmad:test_support",
     "//chromeos/ash/components/dbus/services:unit_tests",
     "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/session_manager:unit_tests",
     "//chromeos/ash/components/dbus/shill:test_support",
     "//chromeos/ash/components/dbus/system_clock:unit_tests",
     "//chromeos/ash/components/dbus/userdataauth",

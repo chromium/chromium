@@ -91,6 +91,7 @@ static_library("core") {
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/cryptohome:public",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/update_engine",

@@ -48,23 +48,24 @@ namespace {
 
 class ObservableFakeSessionManagerClient : public FakeSessionManagerClient {
  public:
-  void SetOnRetrieveDevicePolicyCalled(const base::RepeatingClosure& closure) {
-    on_retrieve_device_policy_called_ = closure;
+  void SetOnRetrievePolicyCalled(const base::RepeatingClosure& closure) {
+    on_retrieve_policy_called_ = closure;
   }
 
   // SessionManagerClient override:
-  void RetrieveDevicePolicy(RetrievePolicyCallback callback) override {
-    FakeSessionManagerClient::RetrieveDevicePolicy(std::move(callback));
+  void RetrievePolicy(const login_manager::PolicyDescriptor& descriptor,
+                      RetrievePolicyCallback callback) override {
+    FakeSessionManagerClient::RetrievePolicy(descriptor, std::move(callback));
 
     // Run the task just after the |callback| is invoked.
-    if (!on_retrieve_device_policy_called_.is_null()) {
+    if (!on_retrieve_policy_called_.is_null()) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, on_retrieve_device_policy_called_);
+          FROM_HERE, on_retrieve_policy_called_);
     }
   }
 
  private:
-  base::RepeatingClosure on_retrieve_device_policy_called_;
+  base::RepeatingClosure on_retrieve_policy_called_;
 };
 
 }  // namespace
@@ -216,15 +217,15 @@ TEST_F(SessionManagerOperationTest, RestartLoad) {
       base::BindOnce(&SessionManagerOperationTest::OnOperationCompleted,
                      base::Unretained(this)));
 
-  // Just after the first RetrieveDevicePolicy() completion,
+  // Just after the first RetrievePolicy() completion,
   // verify the state, install a different key, then RestartLoad().
-  session_manager_client_.SetOnRetrieveDevicePolicyCalled(base::BindRepeating(
+  session_manager_client_.SetOnRetrievePolicyCalled(base::BindRepeating(
       [](SessionManagerOperationTest* test, policy::DevicePolicyBuilder* policy,
          ObservableFakeSessionManagerClient* session_manager_client,
          scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util,
          LoadSettingsOperation* op) {
         // Reset this callback to avoid infinite loop.
-        session_manager_client->SetOnRetrieveDevicePolicyCalled(
+        session_manager_client->SetOnRetrievePolicyCalled(
             base::RepeatingClosure());
 
         // Verify the public_key() is properly set, but the callback is

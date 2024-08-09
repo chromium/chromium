@@ -499,55 +499,6 @@ void FakeSessionManagerClient::RetrieveActiveSessions(
   PostReply(FROM_HERE, std::move(callback), user_sessions_);
 }
 
-void FakeSessionManagerClient::RetrieveDevicePolicy(
-    RetrievePolicyCallback callback) {
-  login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
-      login_manager::ACCOUNT_TYPE_DEVICE, kEmptyAccountId);
-  RetrievePolicy(descriptor, std::move(callback));
-}
-
-RetrievePolicyResponseType
-FakeSessionManagerClient::BlockingRetrieveDevicePolicy(
-    std::string* policy_out) {
-  login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
-      login_manager::ACCOUNT_TYPE_DEVICE, kEmptyAccountId);
-  return BlockingRetrievePolicy(descriptor, policy_out);
-}
-
-void FakeSessionManagerClient::RetrievePolicyForUser(
-    const cryptohome::AccountIdentifier& cryptohome_id,
-    RetrievePolicyCallback callback) {
-  login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
-      login_manager::ACCOUNT_TYPE_USER, cryptohome_id.account_id());
-  RetrievePolicy(descriptor, std::move(callback));
-}
-
-RetrievePolicyResponseType
-FakeSessionManagerClient::BlockingRetrievePolicyForUser(
-    const cryptohome::AccountIdentifier& cryptohome_id,
-    std::string* policy_out) {
-  login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
-      login_manager::ACCOUNT_TYPE_USER, cryptohome_id.account_id());
-  return BlockingRetrievePolicy(descriptor, policy_out);
-}
-
-void FakeSessionManagerClient::RetrieveDeviceLocalAccountPolicy(
-    const std::string& account_id,
-    RetrievePolicyCallback callback) {
-  login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
-      login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT, account_id);
-  RetrievePolicy(descriptor, std::move(callback));
-}
-
-RetrievePolicyResponseType
-FakeSessionManagerClient::BlockingRetrieveDeviceLocalAccountPolicy(
-    const std::string& account_id,
-    std::string* policy_out) {
-  login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
-      login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT, account_id);
-  return BlockingRetrievePolicy(descriptor, policy_out);
-}
-
 void FakeSessionManagerClient::RetrievePolicy(
     const login_manager::PolicyDescriptor& descriptor,
     RetrievePolicyCallback callback) {
