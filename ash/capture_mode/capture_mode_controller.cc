@@ -660,6 +660,11 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
                 }));
 }
 
+void CaptureModeController::StartSunfishSession() {
+  DCHECK(features::IsSunfishFeatureEnabled());
+  // TODO(b/357658506): Hook this up to start a new session.
+}
+
 void CaptureModeController::Stop() {
   CHECK(IsActive());
   capture_mode_session_->ReportSessionHistograms();

@@ -38,6 +38,7 @@ chromium-metrics-reviews@google.com.
   <variant name="DebugPrintWindowHierarchy"/>
   <variant name="DebugShowInformedRestore"/>
   <variant name="DebugShowToast"/>
+  <variant name="DebugStartSunfishSession"/>
   <variant name="DebugSystemUiStyleViewer"/>
   <variant name="DebugToggleDarkMode"/>
   <variant name="DebugToggleDynamicColor"/>
