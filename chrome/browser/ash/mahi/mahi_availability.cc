@@ -33,6 +33,11 @@ bool CanUseMahiService() {
       return false;
     }
 
+    // Guest session is not allowed when not in demo mode.
+    if (profile->IsGuestSession()) {
+      return false;
+    }
+
     if (manta::MantaService* service =
             manta::MantaServiceFactory::GetForProfile(profile);
         service->CanAccessMantaFeaturesWithoutMinorRestrictions() !=

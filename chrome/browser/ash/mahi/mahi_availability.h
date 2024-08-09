@@ -7,9 +7,10 @@
 
 namespace ash {
 
-// Check whether Mahi is allowed. This function checks two restrictions:
+// Check whether Mahi is allowed. This function checks following restrictions:
 //   * age: if not demo mode, the account must not hit minor restrictions
 //   * country: the country code must be in the allow list.
+//   * If not in demo mode, guest session is not allowed.
 bool CanUseMahiService();
 
 }  // namespace ash
