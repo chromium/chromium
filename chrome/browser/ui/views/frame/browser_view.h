@@ -1185,6 +1185,8 @@ class BrowserView : public BrowserWindow,
 
   // The side panel aligned to the left or the right side of the browser window
   // depending on the kSidePanelHorizontalAlignment pref's value.
+  // Conceptually this member should exist if and only if the
+  // side_panel_coordinator is created.
   raw_ptr<SidePanel, AcrossTasksDanglingUntriaged> unified_side_panel_ =
       nullptr;
   raw_ptr<views::View, AcrossTasksDanglingUntriaged>

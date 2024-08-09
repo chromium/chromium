@@ -113,6 +113,10 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   // TODO(crbug.com/346148093): Move SidePanelCoordinator construction to Init.
   // TODO(crbug.com/346148554): Do not create a SidePanelCoordinator for most
   // browser.h types
+  // Conceptually, SidePanelCoordinator handles the "model" whereas
+  // BrowserView::unified_side_panel_ handles the "ui". When we stop making this
+  // for most browser.h types, we should also stop making the
+  // unified_side_panel_.
   side_panel_coordinator_ =
       std::make_unique<SidePanelCoordinator>(browser_view);
 }
