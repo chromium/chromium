@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 
 #import "base/notreached.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -29,7 +30,8 @@ constexpr CGFloat kTabGroupHeaderEstimatedHeight = 70;
 // Estimated size of the Search headers.
 constexpr CGFloat kSearchHeaderEstimatedHeight = 50;
 // Estimated size of the SuggestedActions item.
-constexpr CGFloat kSuggestedActionsEstimatedHeight = 150;
+constexpr CGFloat kSuggestedActionsEstimatedHeight = 100;
+constexpr CGFloat kLegacySuggestedActionsEstimatedHeight = 150;
 // Different width thresholds for determining the columns count.
 constexpr CGFloat kSmallWidthThreshold = 500;
 constexpr CGFloat kLargeWidthThreshold = 1000;
@@ -282,8 +284,11 @@ NSCollectionLayoutSection* SuggestedActionsSection(
       [NSCollectionLayoutItem itemWithLayoutSize:item_size];
 
   // Configure the layout group.
+  CGFloat estimated_height = IsTabGroupSyncEnabled()
+                                 ? kSuggestedActionsEstimatedHeight
+                                 : kLegacySuggestedActionsEstimatedHeight;
   NSCollectionLayoutDimension* group_height_dimension =
-      EstimatedDimension(kSuggestedActionsEstimatedHeight);
+      EstimatedDimension(estimated_height);
   NSCollectionLayoutSize* group_size =
       [NSCollectionLayoutSize sizeWithWidthDimension:FractionalWidth(1.)
                                      heightDimension:group_height_dimension];
