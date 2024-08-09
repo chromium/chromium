@@ -16,14 +16,18 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/condition_variable.h"
+#include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/simple_test_clock.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -63,6 +67,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/unexportable_key.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/features.h"
@@ -336,6 +341,22 @@ static constexpr char kGetAssertionUvDiscouraged[] = R"((() => {
     allowCredentials: [],
   }}).then(c => window.domAutomationController.send('webauthn: OK'),
            e => window.domAutomationController.send('error ' + e));
+})())";
+
+static constexpr char kAbortableGetAssertion[] = R"((() => {
+  window.enclaveAbortSignal = new AbortController();
+  navigator.credentials.get({ publicKey: {
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    userVerification: 'discouraged',
+    allowCredentials: [],
+  },
+  signal: window.enclaveAbortSignal.signal,
+  });
+})())";
+
+static constexpr char kAbort[] = R"((() => {
+  window.enclaveAbortSignal.abort();
 })())";
 
 static constexpr char kGetAssertionUvRequired[] = R"((() => {
@@ -2934,6 +2955,115 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 }
 
 #endif  // IS_LINUX
+
+// Allows a `BlockingUnexportableKeyProvider` to block inside a thread-pool
+// thread so that the main test can synchronize with it on the UI thread.
+class BlockingUnexportableKeyProviderRendezvous {
+ public:
+  void Block() {
+    base::ScopedAllowBaseSyncPrimitivesForTesting locks_allowed;
+    base::AutoLock locked(lock_);
+
+    blocked_ = true;
+    while (!ready_to_continue_) {
+      condition_.Wait();
+    }
+  }
+
+  bool IsBlocked() {
+    base::AutoLock locked(lock_);
+    return blocked_;
+  }
+
+  void Continue() {
+    base::AutoLock locked(lock_);
+    CHECK(!ready_to_continue_);
+
+    ready_to_continue_ = true;
+    condition_.Broadcast();
+  }
+
+ private:
+  base::Lock lock_;
+  base::ConditionVariable condition_{&lock_};
+  bool blocked_ GUARDED_BY(lock_) = false;
+  bool ready_to_continue_ GUARDED_BY(lock_) = false;
+};
+
+BlockingUnexportableKeyProviderRendezvous&
+GetBlockingUnexportableKeyProviderRendezvous() {
+  static base::NoDestructor<BlockingUnexportableKeyProviderRendezvous> instance;
+  return *instance;
+}
+
+// An `UnexportableKeyProvider` that blocks inside `SelectAlgorithm` and waits
+// for the UI thread to synchronize with it. It doesn't implement any other
+// functions.
+class BlockingUnexportableKeyProvider : public crypto::UnexportableKeyProvider {
+ public:
+  std::optional<crypto::SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
+      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+          acceptable_algorithms) override {
+    CHECK(!acceptable_algorithms.empty());
+
+    // This function runs in a thread-pool thread.
+    GetBlockingUnexportableKeyProviderRendezvous().Block();
+    return acceptable_algorithms[0];
+  }
+
+  std::unique_ptr<crypto::UnexportableSigningKey> GenerateSigningKeySlowly(
+      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+          acceptable_algorithms) override {
+    NOTREACHED_NORETURN();
+  }
+
+  std::unique_ptr<crypto::UnexportableSigningKey> FromWrappedSigningKeySlowly(
+      base::span<const uint8_t> wrapped_key) override {
+    NOTREACHED_NORETURN();
+  }
+
+  bool DeleteSigningKeySlowly(base::span<const uint8_t> wrapped_key) override {
+    NOTREACHED_NORETURN();
+  }
+};
+
+std::unique_ptr<crypto::UnexportableKeyProvider>
+BlockingUnexportableKeyProviderFactory() {
+  return std::make_unique<BlockingUnexportableKeyProvider>();
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       CancelRacesTPMCheck) {
+  // https://crbug.com/352532554
+
+  // Set the UnexportableKeyProvider to one that will block inside
+  // `SelectAlgorithm` so that we can simulate a slow TPM check.
+  mock_hw_provider_.reset();
+  crypto::internal::SetUnexportableKeyProviderForTesting(
+      BlockingUnexportableKeyProviderFactory);
+
+  // Start a WebAuthn request. It'll block when checking the TPM.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  EXPECT_TRUE(content::ExecJs(web_contents, kAbortableGetAssertion));
+
+  // Wait until the request is blocked on checking the TPM.
+  auto run_loop = std::make_unique<base::RunLoop>();
+  while (!GetBlockingUnexportableKeyProviderRendezvous().IsBlocked()) {
+    run_loop->RunUntilIdle();
+  }
+
+  // Cancel the outstanding request.
+  EXPECT_TRUE(content::ExecJs(web_contents, kAbort));
+
+  // Let the TPM check complete.
+  GetBlockingUnexportableKeyProviderRendezvous().Continue();
+  run_loop->RunUntilIdle();
+
+  // This test is successful if it doesn't crash. It reliably crashed prior to
+  // the fix for https://crbug.com/352532554.
+}
 
 }  // namespace
 

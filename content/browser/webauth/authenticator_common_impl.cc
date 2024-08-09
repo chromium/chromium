@@ -585,6 +585,10 @@ CredentialRequestResultFromCode(bool success, device::AuthenticatorType type) {
 // that this state be reset after processing each one and collecting it into
 // this structure makes that easier to enforce.
 struct AuthenticatorCommonImpl::RequestState {
+  // Uniquely identifies this request in the scope of its owning
+  // `AuthenticatorCommonImpl`.
+  RequestKey request_key;
+
   std::unique_ptr<AuthenticatorRequestClientDelegate> request_delegate;
   std::unique_ptr<device::FidoRequestHandlerBase> request_handler;
   std::unique_ptr<device::FidoDiscoveryFactory> discovery_factory;
@@ -828,6 +832,7 @@ void AuthenticatorCommonImpl::MakeCredential(
     return;
   }
   req_state_ = std::make_unique<RequestState>();
+  req_state_->request_key = RequestKey(next_request_key_);
 
   req_state_->make_credential_response_callback = std::move(callback);
   req_state_->is_payment_request = options->is_payment_credential_creation;
@@ -874,8 +879,8 @@ void AuthenticatorCommonImpl::MakeCredential(
           remote_desktop_client_override,
           base::BindOnce(
               &AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck,
-              weak_factory_.GetWeakPtr(), caller_origin, std::move(options),
-              is_cross_origin_iframe));
+              weak_factory_.GetWeakPtr(), GetRequestKey(), caller_origin,
+              std::move(options), is_cross_origin_iframe));
 
   // If `remote_validation` is nullptr then the request may already have
   // completed.
@@ -885,10 +890,14 @@ void AuthenticatorCommonImpl::MakeCredential(
 }
 
 void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
+    RequestKey request_key,
     url::Origin caller_origin,
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
     bool is_cross_origin_iframe,
     blink::mojom::AuthenticatorStatus rp_id_validation_result) {
+  if (!CheckRequestKey(request_key)) {
+    return;
+  }
   req_state_->remote_rp_id_validation.reset();
 
   if (rp_id_validation_result != blink::mojom::AuthenticatorStatus::SUCCESS) {
@@ -948,7 +957,7 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
     req_state_->pending_proxied_request_id = proxy->SignalCreateRequest(
         options,
         base::BindOnce(&AuthenticatorCommonImpl::OnMakeCredentialProxyResponse,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(), GetRequestKey()));
     return;
   }
 
@@ -1132,23 +1141,31 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
       base::BindOnce(
           &AuthenticatorCommonImpl::
               ContinueMakeCredentialAfterBrowserPasskeysAvailabilityCheck,
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr(), GetRequestKey()));
 }
 
 void AuthenticatorCommonImpl::
     ContinueMakeCredentialAfterBrowserPasskeysAvailabilityCheck(
+        RequestKey request_key,
         bool available) {
+  if (!CheckRequestKey(request_key)) {
+    return;
+  }
   browser_passkeys_available_ = available;
   GetWebAuthenticationDelegate()
       ->IsUserVerifyingPlatformAuthenticatorAvailableOverride(
           GetRenderFrameHost(),
           base::BindOnce(&AuthenticatorCommonImpl::
                              ContinueMakeCredentialAfterIsUvpaaOverrideCheck,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr(), GetRequestKey()));
 }
 
 void AuthenticatorCommonImpl::ContinueMakeCredentialAfterIsUvpaaOverrideCheck(
+    RequestKey request_key,
     std::optional<bool> is_uvpaa_override) {
+  if (!CheckRequestKey(request_key)) {
+    return;
+  }
   is_uvpaa_override_ = is_uvpaa_override;
   StartMakeCredentialRequest(/*allow_skipping_pin_touch=*/true);
 }
@@ -1164,6 +1181,7 @@ void AuthenticatorCommonImpl::GetAssertion(
     return;
   }
   req_state_ = std::make_unique<RequestState>();
+  req_state_->request_key = RequestKey(next_request_key_);
 
   req_state_->get_assertion_response_callback = std::move(callback);
   req_state_->is_payment_request = !payment_options.is_null();
@@ -1238,8 +1256,9 @@ void AuthenticatorCommonImpl::GetAssertion(
           remote_desktop_client_override,
           base::BindOnce(
               &AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck,
-              weak_factory_.GetWeakPtr(), caller_origin, std::move(options),
-              std::move(payment_options), is_cross_origin_iframe));
+              weak_factory_.GetWeakPtr(), GetRequestKey(), caller_origin,
+              std::move(options), std::move(payment_options),
+              is_cross_origin_iframe));
 
   // If `remote_validation` is nullptr then the request may already have
   // completed.
@@ -1249,11 +1268,15 @@ void AuthenticatorCommonImpl::GetAssertion(
 }
 
 void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
+    RequestKey request_key,
     url::Origin caller_origin,
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
     blink::mojom::PaymentOptionsPtr payment_options,
     bool is_cross_origin_iframe,
     blink::mojom::AuthenticatorStatus rp_id_validation_result) {
+  if (!CheckRequestKey(request_key)) {
+    return;
+  }
   req_state_->remote_rp_id_validation.reset();
 
   if (rp_id_validation_result != blink::mojom::AuthenticatorStatus::SUCCESS) {
@@ -1312,7 +1335,7 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
     req_state_->pending_proxied_request_id = proxy->SignalGetRequest(
         options,
         base::BindOnce(&AuthenticatorCommonImpl::OnGetAssertionProxyResponse,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(), GetRequestKey()));
     return;
   }
 
@@ -1445,22 +1468,31 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
       base::BindOnce(
           &AuthenticatorCommonImpl::
               ContinueGetAssertionAfterBrowserPasskeysAvailabilityCheck,
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr(), GetRequestKey()));
 }
 
 void AuthenticatorCommonImpl::
-    ContinueGetAssertionAfterBrowserPasskeysAvailabilityCheck(bool available) {
+    ContinueGetAssertionAfterBrowserPasskeysAvailabilityCheck(
+        RequestKey request_key,
+        bool available) {
+  if (!CheckRequestKey(request_key)) {
+    return;
+  }
   browser_passkeys_available_ = available;
   GetWebAuthenticationDelegate()
       ->IsUserVerifyingPlatformAuthenticatorAvailableOverride(
           GetRenderFrameHost(),
           base::BindOnce(&AuthenticatorCommonImpl::
                              ContinueGetAssertionAfterIsUvpaaOverrideCheck,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr(), GetRequestKey()));
 }
 
 void AuthenticatorCommonImpl::ContinueGetAssertionAfterIsUvpaaOverrideCheck(
+    RequestKey request_key,
     std::optional<bool> is_uvpaa_override) {
+  if (!CheckRequestKey(request_key)) {
+    return;
+  }
   is_uvpaa_override_ = is_uvpaa_override;
   StartGetAssertionRequest(/*allow_skipping_pin_touch=*/true);
 }
@@ -2363,7 +2395,11 @@ void AuthenticatorCommonImpl::CompleteGetAssertionRequest(
 }
 
 void AuthenticatorCommonImpl::Cleanup() {
+  CHECK(!req_state_ || req_state_->request_key.value() == next_request_key_);
   req_state_.reset();
+  next_request_key_++;
+  CHECK(next_request_key_);  // crash on overflow. Only 2^64 WebAuthn requests
+                             // per instance of this object are supported.
 }
 
 void AuthenticatorCommonImpl::DisableUI() {
@@ -2441,9 +2477,13 @@ AuthenticatorCommonImpl::GetWebAuthnRequestProxyIfActive(
 }
 
 void AuthenticatorCommonImpl::OnMakeCredentialProxyResponse(
+    RequestKey request_key,
     WebAuthenticationRequestProxy::RequestId request_id,
     blink::mojom::WebAuthnDOMExceptionDetailsPtr error,
     blink::mojom::MakeCredentialAuthenticatorResponsePtr response) {
+  if (!CheckRequestKey(request_key)) {
+    return;
+  }
   DCHECK_EQ(*req_state_->pending_proxied_request_id, request_id);
   DCHECK(req_state_->make_credential_response_callback);
   req_state_->pending_proxied_request_id.reset();
@@ -2459,9 +2499,13 @@ void AuthenticatorCommonImpl::OnMakeCredentialProxyResponse(
 }
 
 void AuthenticatorCommonImpl::OnGetAssertionProxyResponse(
+    RequestKey request_key,
     WebAuthenticationRequestProxy::RequestId request_id,
     blink::mojom::WebAuthnDOMExceptionDetailsPtr error,
     blink::mojom::GetAssertionAuthenticatorResponsePtr response) {
+  if (!CheckRequestKey(request_key)) {
+    return;
+  }
   DCHECK_EQ(*req_state_->pending_proxied_request_id, request_id);
   DCHECK(req_state_->get_assertion_response_callback);
   req_state_->pending_proxied_request_id.reset();
@@ -2474,6 +2518,14 @@ void AuthenticatorCommonImpl::OnGetAssertionProxyResponse(
   }
   CompleteGetAssertionRequest(blink::mojom::AuthenticatorStatus::SUCCESS,
                               std::move(response));
+}
+
+AuthenticatorCommonImpl::RequestKey AuthenticatorCommonImpl::GetRequestKey() {
+  return req_state_->request_key;
+}
+
+bool AuthenticatorCommonImpl::CheckRequestKey(RequestKey request_key) {
+  return req_state_.get() && req_state_->request_key == request_key;
 }
 
 }  // namespace content
