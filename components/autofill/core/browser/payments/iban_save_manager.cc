@@ -392,6 +392,11 @@ void IbanSaveManager::OnDidUploadIban(const Iban& import_candidate,
       GetIbanSaveStrikeDatabase()->AddStrike(partial_iban_hash);
     }
   }
+
+  // Display the IBAN upload save confirmation dialog based on the result.
+  client_->GetPaymentsAutofillClient()->IbanUploadCompleted(
+      result == PaymentsRpcResult::kSuccess,
+      GetIbanSaveStrikeDatabase()->ShouldBlockFeature(partial_iban_hash));
   if (observer_for_testing_) {
     if (result == PaymentsRpcResult::kSuccess) {
       observer_for_testing_->OnAcceptUploadSaveIbanComplete();

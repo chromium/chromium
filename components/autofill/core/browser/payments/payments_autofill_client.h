@@ -142,7 +142,8 @@ class PaymentsAutofillClient : public RiskDataLoader {
       base::OnceCallback<void(SaveIbanOfferUserDecision user_decision,
                               std::u16string_view nickname)>;
 
-  // Callback to run after credit card upload confirmation prompt is closed.
+  // Callback to run after credit card or IBAN upload confirmation prompt is
+  // closed.
   using OnConfirmationClosedCallback = base::OnceClosure;
 
   // Callback to run if the OK button or the cancel button in a
@@ -329,6 +330,12 @@ class PaymentsAutofillClient : public RiskDataLoader {
                                         LegalMessageLines legal_message_lines,
                                         bool should_show_prompt,
                                         SaveIbanPromptCallback callback);
+
+  // Shows upload result to users. Called after IBAN upload is finished.
+  // `iban_saved` indicates if the IBAN was successfully saved.
+  // `hit_max_strikes` indicates whether the maximum number of strikes has been
+  // reached when the offer to upload IBAN request fails.
+  virtual void IbanUploadCompleted(bool iban_saved, bool hit_max_strikes);
 
   // Show/dismiss the progress dialog which contains a throbber and a text
   // message indicating that something is in progress.

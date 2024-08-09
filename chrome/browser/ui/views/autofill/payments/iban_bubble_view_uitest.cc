@@ -433,6 +433,7 @@ class IbanBubbleViewFullFormBrowserTest
         CHECK(iban_bubble_view);
         break;
       }
+      case IbanBubbleType::kUploadCompleted:
       case IbanBubbleType::kInactive:
         NOTREACHED_NORETURN();
     }

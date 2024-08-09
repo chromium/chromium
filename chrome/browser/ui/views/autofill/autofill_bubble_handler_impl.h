@@ -91,6 +91,9 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler {
   AutofillBubbleBase* ShowSaveCardConfirmationBubble(
       content::WebContents* web_contents,
       SaveCardBubbleController* controller) override;
+  AutofillBubbleBase* ShowSaveIbanConfirmationBubble(
+      content::WebContents* web_contents,
+      IbanBubbleController* controller) override;
 
  private:
   // Show the save card and virtual card enrollment confirmation bubble.

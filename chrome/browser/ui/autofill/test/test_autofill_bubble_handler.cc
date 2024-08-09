@@ -139,4 +139,14 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveCardConfirmationBubble(
   return save_card_confirmation_bubble_view_.get();
 }
 
+AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveIbanConfirmationBubble(
+    content::WebContents* web_contents,
+    IbanBubbleController* controller) {
+  if (!save_iban_confirmation_bubble_view_) {
+    save_iban_confirmation_bubble_view_ =
+        std::make_unique<TestAutofillBubble>();
+  }
+  return save_iban_confirmation_bubble_view_.get();
+}
+
 }  // namespace autofill

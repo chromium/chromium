@@ -114,6 +114,9 @@ void PaymentsAutofillClient::ConfirmUploadIbanToCloud(
     bool should_show_prompt,
     SaveIbanPromptCallback callback) {}
 
+void PaymentsAutofillClient::IbanUploadCompleted(bool iban_saved,
+                                                 bool hit_max_strikes) {}
+
 void PaymentsAutofillClient::ShowAutofillProgressDialog(
     AutofillProgressDialogType autofill_progress_dialog_type,
     base::OnceClosure cancel_callback) {}

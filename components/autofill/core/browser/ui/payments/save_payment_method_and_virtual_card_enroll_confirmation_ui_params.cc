@@ -48,7 +48,8 @@ SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
 
 // static
 SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
-SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::CreateForSaveCardSuccess() {
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+    CreateForSaveCardSuccess() {
   return SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams(
       /*is_success=*/true,
       /*title_text=*/
@@ -75,7 +76,8 @@ SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
 
 // static
 SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
-SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::CreateForSaveCardFailure() {
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+    CreateForSaveCardFailure() {
   return SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams(
       /*is_success=*/false,
       /*title_text=*/
@@ -91,8 +93,8 @@ SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::CreateForSaveCardFail
 
 // static
 SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
-SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::CreateForVirtualCardFailure(
-    const std::u16string card_label) {
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+    CreateForVirtualCardFailure(const std::u16string card_label) {
   return SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams(
       /*is_success=*/false,
       /*title_text=*/
@@ -105,6 +107,40 @@ SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::CreateForVirtualCardF
       /*failure_ok_button_accessible_name=*/
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_OK_BUTTON_ACCESSIBLE_NAME));
+}
+
+// static
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+    CreateForSaveIbanSuccess() {
+  return SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams(
+      /*is_success=*/true,
+      /*title_text=*/
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_SUCCESS_TITLE_TEXT),
+      /*description_text=*/
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
+}
+
+// static
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+    CreateForSaveIbanFailure(bool hit_max_strikes) {
+  return SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams(
+      /*is_success=*/false,
+      /*title_text=*/
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_FAILURE_TITLE_TEXT),
+      /*description_text=*/
+      hit_max_strikes
+          ? l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_FAILURE_HIT_MAX_STRIKE_DESCRIPTION_TEXT)
+          : l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_FAILURE_DESCRIPTION_TEXT),
+      /*failure_ok_button_accessible_name=*/
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_OK_BUTTON_ACCESSIBLE_NAME));
 }
 
 }  // namespace autofill

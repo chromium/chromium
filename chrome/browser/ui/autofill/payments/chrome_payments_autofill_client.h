@@ -149,6 +149,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
                                 LegalMessageLines legal_message_lines,
                                 bool should_show_prompt,
                                 SaveIbanPromptCallback callback) override;
+  void IbanUploadCompleted(bool iban_saved, bool hit_max_strikes) override;
   void ShowAutofillProgressDialog(
       AutofillProgressDialogType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback) override;

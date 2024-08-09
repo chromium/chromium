@@ -113,6 +113,10 @@ class AutofillBubbleHandler {
   virtual AutofillBubbleBase* ShowSaveCardConfirmationBubble(
       content::WebContents* web_contents,
       SaveCardBubbleController* controller) = 0;
+
+  virtual AutofillBubbleBase* ShowSaveIbanConfirmationBubble(
+      content::WebContents* web_contents,
+      IbanBubbleController* controller) = 0;
 };
 
 }  // namespace autofill

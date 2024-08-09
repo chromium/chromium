@@ -35,6 +35,10 @@ struct SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams {
   CreateForSaveCardFailure();
   static SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
   CreateForVirtualCardFailure(const std::u16string card_label);
+  static SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+  CreateForSaveIbanSuccess();
+  static SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+  CreateForSaveIbanFailure(bool hit_max_strikes);
 
   bool is_success;
   std::u16string title_text;

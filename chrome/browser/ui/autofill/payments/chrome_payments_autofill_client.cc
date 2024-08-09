@@ -483,6 +483,16 @@ void ChromePaymentsAutofillClient::ConfirmUploadIbanToCloud(
 #endif
 }
 
+void ChromePaymentsAutofillClient::IbanUploadCompleted(bool iban_saved,
+                                                       bool hit_max_strikes) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (IbanBubbleControllerImpl* controller =
+          IbanBubbleControllerImpl::FromWebContents(web_contents())) {
+    controller->ShowConfirmationBubbleView(iban_saved, hit_max_strikes);
+  }
+#endif
+}
+
 void ChromePaymentsAutofillClient::ShowAutofillProgressDialog(
     AutofillProgressDialogType autofill_progress_dialog_type,
     base::OnceClosure cancel_callback) {
