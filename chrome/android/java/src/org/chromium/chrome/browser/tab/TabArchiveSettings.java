@@ -133,9 +133,10 @@ public class TabArchiveSettings {
 
     /** Returns whether auto-deletion of archived tabs is enabled. */
     public boolean isAutoDeleteEnabled() {
-        return mPrefsManager.readBoolean(
-                ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_ENABLED,
-                ChromeFeatureList.sAndroidTabDeclutterAutoDeleteEnabled.getValue());
+        return getArchiveEnabled()
+                && mPrefsManager.readBoolean(
+                        ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_ENABLED,
+                        ChromeFeatureList.sAndroidTabDeclutterAutoDeleteEnabled.getValue());
     }
 
     /** Sets whether auto deletion for archived tabs is enabled in settings. */

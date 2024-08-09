@@ -76,11 +76,19 @@ public class TabArchiveSettingsTest {
         mSettings.setArchiveTimeDeltaHours(1);
         assertEquals(1, mSettings.getArchiveTimeDeltaHours());
 
+        mSettings.setArchiveEnabled(true);
         mSettings.setAutoDeleteEnabled(true);
         assertTrue(mSettings.isAutoDeleteEnabled());
 
         mSettings.setAutoDeleteTimeDeltaHours(1);
         assertEquals(1, mSettings.getArchiveTimeDeltaHours());
+    }
+
+    @Test
+    public void testAutoDeleteDisabledWhenArchiveDisabled() {
+        mSettings.setArchiveEnabled(false);
+        mSettings.setAutoDeleteEnabled(true);
+        assertEquals(false, mSettings.isAutoDeleteEnabled());
     }
 
     @Test
@@ -106,6 +114,8 @@ public class TabArchiveSettingsTest {
         mSettings.setArchiveEnabled(
                 ChromeFeatureList.sAndroidTabDeclutterArchiveEnabled.getValue());
         assertFalse(mSettings.getArchiveEnabled());
+        assertFalse(mSettings.isAutoDeleteEnabled());
+        mSettings.setArchiveEnabled(true);
         assertTrue(mSettings.isAutoDeleteEnabled());
         assertEquals(10, mSettings.getArchiveTimeDeltaHours());
         assertEquals(20, mSettings.getAutoDeleteTimeDeltaHours());

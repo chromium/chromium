@@ -613,11 +613,18 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         int autoDeleteTimeDeletaDays = mTabArchiveSettings.getAutoDeleteTimeDeltaDays();
         String settingsTitle =
                 mContext.getString(R.string.archived_tab_iph_card_subtitle_settings_title);
+        // The auto-delete section is blank when the feature param is disabled.
+        String autoDeleteTitle =
+                mTabArchiveSettings.isAutoDeleteEnabled()
+                        ? mContext.getString(
+                                R.string.archived_tab_iph_card_subtitle_autodelete_section,
+                                autoDeleteTimeDeletaDays)
+                        : "";
         String description =
                 mContext.getString(
                         R.string.archived_tab_iph_card_subtitle,
                         archiveTimeDeltaDays,
-                        autoDeleteTimeDeletaDays,
+                        autoDeleteTitle,
                         settingsTitle);
         SpannableString ss = new SpannableString(description);
         ForegroundColorSpan fcs =
