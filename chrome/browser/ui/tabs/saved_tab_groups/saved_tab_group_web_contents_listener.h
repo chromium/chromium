@@ -9,8 +9,6 @@
 
 #include "base/token.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
-#include "components/favicon/core/favicon_driver.h"
-#include "components/favicon/core/favicon_driver_observer.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page.h"
@@ -27,8 +25,7 @@ namespace tab_groups {
 // and the saved tab group tab that exists for that tab. Listens to navigation
 // events on the tab and performs actions to the tab group service, and when
 // a sync navigation occurs, updates the local webcontents.
-class SavedTabGroupWebContentsListener : public content::WebContentsObserver,
-                                         public favicon::FaviconDriverObserver {
+class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
  public:
   SavedTabGroupWebContentsListener(content::WebContents* web_contents,
                                    const LocalTabID& token,
@@ -57,16 +54,7 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver,
   // content::WebContentsObserver
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void TitleWasSet(content::NavigationEntry* entry) override;
   void DidGetUserInteraction(const blink::WebInputEvent& event) override;
-
-  // favicon::FaviconDriverObserver
-  void OnFaviconUpdated(
-      favicon::FaviconDriver* favicon_driver,
-      FaviconDriverObserver::NotificationIconType notification_icon_type,
-      const GURL& icon_url,
-      bool icon_url_changed,
-      const gfx::Image& image) override;
 
  private:
   // Clear and then update the |tab_redirect_chain_| for the navigation_handle's
@@ -83,9 +71,6 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver,
 
   // The webcontents for the Tab that is being listened to.
   const raw_ptr<content::WebContents> web_contents_ = nullptr;
-
-  // Services that support pulling data about the tab.
-  const raw_ptr<favicon::FaviconDriver> favicon_driver_ = nullptr;
 
   // An adapter between TabGroupSyncService and SavedTabGroupKeyedService.
   const raw_ptr<TabGroupServiceWrapper> wrapper_service_ = nullptr;
