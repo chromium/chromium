@@ -47,10 +47,12 @@ class RenderThreadManager : public CompositorFrameConsumer {
   void SetScrollOffsetOnUI(gfx::Point scroll_offset) override;
   std::unique_ptr<ChildFrame> SetFrameOnUI(
       std::unique_ptr<ChildFrame> frame) override;
-  void TakeParentDrawDataOnUI(ParentCompositorDrawConstraints* constraints,
-                              viz::FrameSinkId* frame_sink_id,
-                              viz::FrameTimingDetailsMap* timing_details,
-                              uint32_t* frame_token) override;
+  void TakeParentDrawDataOnUI(
+      ParentCompositorDrawConstraints* constraints,
+      viz::FrameSinkId* frame_sink_id,
+      viz::FrameTimingDetailsMap* timing_details,
+      uint32_t* frame_token,
+      base::TimeDelta* preferred_frame_interval) override;
   ChildFrameQueue PassUncommittedFrameOnUI() override;
 
   void RemoveFromCompositorFrameProducerOnUI();
@@ -62,7 +64,8 @@ class RenderThreadManager : public CompositorFrameConsumer {
       const ParentCompositorDrawConstraints& parent_draw_constraints,
       const viz::FrameSinkId& frame_sink_id,
       viz::FrameTimingDetailsMap timing_details,
-      uint32_t frame_token);
+      uint32_t frame_token,
+      base::TimeDelta preferred_frame_interval);
   void InsertReturnedResourcesOnRT(std::vector<viz::ReturnedResource> resources,
                                    const viz::FrameSinkId& frame_sink_id,
                                    uint32_t layer_tree_frame_sink_id);
@@ -99,7 +102,7 @@ class RenderThreadManager : public CompositorFrameConsumer {
   void SetInsideHardwareRelease(bool inside);
 
   // UI thread methods.
-  void UpdateParentDrawConstraintsOnUI();
+  void UpdateParentDrawDataOnUI();
   void ViewTreeForceDarkStateChangedOnUI(bool view_tree_force_dark_state);
   void CheckUiCallsAllowed() const {
 #if DCHECK_IS_ON()
@@ -133,6 +136,7 @@ class RenderThreadManager : public CompositorFrameConsumer {
   viz::FrameSinkId frame_sink_id_for_presentation_feedbacks_;
   viz::FrameTimingDetailsMap timing_details_;
   uint32_t presented_frame_token_ = 0u;
+  base::TimeDelta preferred_frame_interval_;
 
   base::WeakPtrFactory<RenderThreadManager> weak_factory_on_ui_thread_{this};
 };

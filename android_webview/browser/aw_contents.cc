@@ -988,6 +988,21 @@ void AwContents::OnViewTreeForceDarkStateChanged(
   web_contents_->NotifyPreferencesChanged();
 }
 
+void AwContents::SetPreferredFrameInterval(
+    base::TimeDelta preferred_frame_interval) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (preferred_frame_interval_ == preferred_frame_interval) {
+    return;
+  }
+  preferred_frame_interval_ = preferred_frame_interval;
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj) {
+    Java_AwContents_onPreferredFrameIntervalChanged(
+        env, obj, preferred_frame_interval.InNanoseconds());
+  }
+}
+
 base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetCertificate(
     JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

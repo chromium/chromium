@@ -25,6 +25,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -42,6 +43,7 @@
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/display/display_scheduler.h"
+#include "components/viz/service/display/frame_interval_decider.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
@@ -170,7 +172,8 @@ class HardwareRenderer::OnViz : public viz::DisplayClient {
                         bool overlays_enabled_by_hwui,
                         ChildFrame* child_frame);
   void PostDrawOnViz(viz::FrameTimingDetailsMap* timing_details,
-                     std::vector<pid_t>* rendering_thread_ids);
+                     std::vector<pid_t>* rendering_thread_ids,
+                     base::TimeDelta* preferred_frame_interval);
   void RemoveOverlaysOnViz();
   void MarkAllowContextLossOnViz();
 
@@ -217,6 +220,8 @@ class HardwareRenderer::OnViz : public viz::DisplayClient {
 
   base::PlatformThreadId browser_io_thread_id_ = base::kInvalidThreadId;
 
+  base::TimeDelta preferred_frame_interval_;
+
   THREAD_CHECKER(viz_thread_checker_);
 };
 
@@ -247,6 +252,35 @@ HardwareRenderer::OnViz::OnViz(
 
   display_->SetVisible(true);
   display_->DisableGPUAccessByDefault();
+
+  if (viz::FrameIntervalDecider* decider = display_->frame_interval_decider()) {
+    viz::FrameIntervalDecider::Settings settings;
+    std::vector<std::unique_ptr<viz::FrameIntervalMatcher>> matchers;
+    matchers.push_back(std::make_unique<viz::InputBoostMatcher>());
+    matchers.push_back(std::make_unique<viz::OnlyVideoMatcher>());
+    matchers.push_back(std::make_unique<viz::OnlyAnimatingImageMatcher>());
+
+    // Raw `self` pointer is safe because this owns viz::Display which owns
+    // viz::FrameIntervalDecider. So this pointer is guaranteed to be valid for
+    // the lifetime of viz::FrameIntervalDecider.
+    settings.result_callback = base::BindRepeating(
+        [](HardwareRenderer::OnViz* self,
+           viz::FrameIntervalDecider::Result result,
+           viz::FrameIntervalMatcherType matcher_type) {
+          self->preferred_frame_interval_ = absl::visit(
+              base::Overloaded(
+                  [](viz::FrameIntervalDecider::FrameIntervalClass
+                         frame_interval_class) {
+                    // Zero currently is interpreted by WebView as no opinion,
+                    // which allows system to use its default heuristics.
+                    return base::Milliseconds(0);
+                  },
+                  [](base::TimeDelta interval) { return interval; }),
+              result);
+        },
+        this);
+    decider->UpdateSettings(std::move(settings), std::move(matchers));
+  }
 }
 
 HardwareRenderer::OnViz::~OnViz() {
@@ -452,7 +486,8 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
 
 void HardwareRenderer::OnViz::PostDrawOnViz(
     viz::FrameTimingDetailsMap* timing_details,
-    std::vector<pid_t>* rendering_thread_ids) {
+    std::vector<pid_t>* rendering_thread_ids,
+    base::TimeDelta* preferred_frame_interval) {
   *timing_details = without_gpu_->TakeChildFrameTimingDetailsMap();
 
   auto renderer_thread_ids = without_gpu_->GetChildFrameRendererThreadIds();
@@ -467,6 +502,8 @@ void HardwareRenderer::OnViz::PostDrawOnViz(
   if (browser_io_thread_id_ != base::kInvalidThreadId) {
     rendering_thread_ids->push_back(browser_io_thread_id_);
   }
+
+  *preferred_frame_interval = preferred_frame_interval_;
 }
 
 void HardwareRenderer::OnViz::RemoveOverlaysOnViz() {
@@ -620,7 +657,7 @@ HardwareRenderer::~HardwareRenderer() {
   if (child_frame_) {
     render_thread_manager_->PostParentDrawDataToChildCompositorOnRT(
         ParentCompositorDrawConstraints(), child_frame_->frame_sink_id,
-        viz::FrameTimingDetailsMap(), 0u);
+        viz::FrameTimingDetailsMap(), 0u, preferred_frame_interval_);
   }
   for (auto& child_frame : child_frame_queue_) {
     child_frame->WaitOnFutureIfNeeded();
@@ -688,8 +725,8 @@ void HardwareRenderer::DrawAndSwap(
       // TODO(vasilyt): Move frame timing details delivery over to
       // RootFrameSink.
       render_thread_manager_->PostParentDrawDataToChildCompositorOnRT(
-          draw_constraints, viz::FrameSinkId(), viz::FrameTimingDetailsMap(),
-          0);
+          draw_constraints, viz::FrameSinkId(), viz::FrameTimingDetailsMap(), 0,
+          preferred_frame_interval_);
     }
     return;
   }
@@ -744,21 +781,27 @@ void HardwareRenderer::DrawAndSwap(
   // Implement proper damage tracking, then deliver FrameTimingDetails
   // through the common begin frame path.
   std::vector<pid_t> rendering_thread_ids;
+  base::TimeDelta preferred_frame_interval;
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
       base::BindOnce(&HardwareRenderer::OnViz::PostDrawOnViz,
                      base::Unretained(on_viz_.get()), &timing_details,
-                     &rendering_thread_ids));
+                     &rendering_thread_ids, &preferred_frame_interval));
   if (report_rendering_threads_ && report_rendering_threads_callback) {
     std::move(report_rendering_threads_callback)
         .Run(rendering_thread_ids.data(), rendering_thread_ids.size());
   }
 
-  if (need_to_update_draw_constraints || !timing_details.empty()) {
+  bool frame_interval_changed =
+      preferred_frame_interval_ != preferred_frame_interval;
+  preferred_frame_interval_ = preferred_frame_interval;
+
+  if (need_to_update_draw_constraints || !timing_details.empty() ||
+      frame_interval_changed) {
     // |frame_token| will be reported through the FrameSinkManager so we pass 0
     // here.
     render_thread_manager_->PostParentDrawDataToChildCompositorOnRT(
         draw_constraints, child_frame_->frame_sink_id,
-        std::move(timing_details), 0);
+        std::move(timing_details), 0, preferred_frame_interval_);
   }
 
   // If using ANGLE we have not reset Skia's state at the beginning of the draw,
