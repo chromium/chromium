@@ -101,7 +101,7 @@ class RuleFeatureSetTest : public testing::Test {
                                        const char* class_name) const {
     Element* element = Traversal<HTMLElement>::FirstChild(
         *Traversal<HTMLElement>::FirstChild(*document_->body()));
-    rule_feature_set_.CollectInvalidationSetsForClass(
+    rule_feature_set_.GetRuleInvalidationData().CollectInvalidationSetsForClass(
         invalidation_lists, *element, AtomicString(class_name));
   }
 
@@ -109,8 +109,8 @@ class RuleFeatureSetTest : public testing::Test {
                                     const char* id) const {
     Element* element = Traversal<HTMLElement>::FirstChild(
         *Traversal<HTMLElement>::FirstChild(*document_->body()));
-    rule_feature_set_.CollectInvalidationSetsForId(invalidation_lists, *element,
-                                                   AtomicString(id));
+    rule_feature_set_.GetRuleInvalidationData().CollectInvalidationSetsForId(
+        invalidation_lists, *element, AtomicString(id));
   }
 
   void CollectInvalidationSetsForAttribute(
@@ -118,8 +118,9 @@ class RuleFeatureSetTest : public testing::Test {
       const QualifiedName& attribute_name) const {
     Element* element = Traversal<HTMLElement>::FirstChild(
         *Traversal<HTMLElement>::FirstChild(*document_->body()));
-    rule_feature_set_.CollectInvalidationSetsForAttribute(
-        invalidation_lists, *element, attribute_name);
+    rule_feature_set_.GetRuleInvalidationData()
+        .CollectInvalidationSetsForAttribute(invalidation_lists, *element,
+                                             attribute_name);
   }
 
   void CollectInvalidationSetsForPseudoClass(
@@ -127,27 +128,30 @@ class RuleFeatureSetTest : public testing::Test {
       CSSSelector::PseudoType pseudo) const {
     Element* element = Traversal<HTMLElement>::FirstChild(
         *Traversal<HTMLElement>::FirstChild(*document_->body()));
-    rule_feature_set_.CollectInvalidationSetsForPseudoClass(invalidation_lists,
-                                                            *element, pseudo);
+    rule_feature_set_.GetRuleInvalidationData()
+        .CollectInvalidationSetsForPseudoClass(invalidation_lists, *element,
+                                               pseudo);
   }
 
   void CollectPartInvalidationSet(InvalidationLists& invalidation_lists) const {
-    rule_feature_set_.CollectPartInvalidationSet(invalidation_lists);
+    rule_feature_set_.GetRuleInvalidationData().CollectPartInvalidationSet(
+        invalidation_lists);
   }
 
   void CollectUniversalSiblingInvalidationSet(
       InvalidationLists& invalidation_lists) {
-    rule_feature_set_.CollectUniversalSiblingInvalidationSet(invalidation_lists,
-                                                             1);
+    rule_feature_set_.GetRuleInvalidationData()
+        .CollectUniversalSiblingInvalidationSet(invalidation_lists, 1);
   }
 
   void CollectNthInvalidationSet(InvalidationLists& invalidation_lists) {
-    rule_feature_set_.CollectNthInvalidationSet(invalidation_lists);
+    rule_feature_set_.GetRuleInvalidationData().CollectNthInvalidationSet(
+        invalidation_lists);
   }
 
   bool NeedsHasInvalidationForClass(const char* class_name) {
-    return rule_feature_set_.NeedsHasInvalidationForClass(
-        AtomicString(class_name));
+    return rule_feature_set_.GetRuleInvalidationData()
+        .NeedsHasInvalidationForClass(AtomicString(class_name));
   }
 
   void MergeInto(RuleFeatureSet& rule_feature_set) {
@@ -669,8 +673,8 @@ class RuleFeatureSetTest : public testing::Test {
       const char* class_name,
       RefCount ref_count) {
     return HasRefCountForInvalidationSet(
-        rule_feature_set.class_invalidation_sets_, AtomicString(class_name),
-        ref_count);
+        rule_feature_set.GetRuleInvalidationData().class_invalidation_sets,
+        AtomicString(class_name), ref_count);
   }
 
   AssertionResult HasRefCountForAttributeInvalidationSet(
@@ -678,16 +682,17 @@ class RuleFeatureSetTest : public testing::Test {
       const char* attribute,
       RefCount ref_count) {
     return HasRefCountForInvalidationSet(
-        rule_feature_set.attribute_invalidation_sets_, AtomicString(attribute),
-        ref_count);
+        rule_feature_set.GetRuleInvalidationData().attribute_invalidation_sets,
+        AtomicString(attribute), ref_count);
   }
 
   AssertionResult HasRefCountForIdInvalidationSet(
       const RuleFeatureSet& rule_feature_set,
       const char* id,
       RefCount ref_count) {
-    return HasRefCountForInvalidationSet(rule_feature_set.id_invalidation_sets_,
-                                         AtomicString(id), ref_count);
+    return HasRefCountForInvalidationSet(
+        rule_feature_set.GetRuleInvalidationData().id_invalidation_sets,
+        AtomicString(id), ref_count);
   }
 
   AssertionResult HasRefCountForPseudoInvalidationSet(
@@ -695,7 +700,8 @@ class RuleFeatureSetTest : public testing::Test {
       CSSSelector::PseudoType key,
       RefCount ref_count) {
     return HasRefCountForInvalidationSet(
-        rule_feature_set.pseudo_invalidation_sets_, key, ref_count);
+        rule_feature_set.GetRuleInvalidationData().pseudo_invalidation_sets,
+        key, ref_count);
   }
 
  protected:

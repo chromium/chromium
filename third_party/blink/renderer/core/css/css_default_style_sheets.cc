@@ -400,7 +400,9 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     changed_default_style = true;
   }
 
-  DCHECK(!default_html_style_->Features().HasIdsInSelectors());
+  DCHECK(!default_html_style_->Features()
+              .GetRuleInvalidationData()
+              .HasIdsInSelectors());
   return changed_default_style;
 }
 

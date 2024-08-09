@@ -307,13 +307,17 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   }
 
   unsigned MaxDirectAdjacentSelectors() const {
-    return GetRuleFeatureSet().MaxDirectAdjacentSelectors();
+    return GetRuleFeatureSet()
+        .GetRuleInvalidationData()
+        .MaxDirectAdjacentSelectors();
   }
   bool UsesFirstLineRules() const {
-    return GetRuleFeatureSet().UsesFirstLineRules();
+    return GetRuleFeatureSet().GetRuleInvalidationData().UsesFirstLineRules();
   }
   bool UsesWindowInactiveSelector() const {
-    return GetRuleFeatureSet().UsesWindowInactiveSelector();
+    return GetRuleFeatureSet()
+        .GetRuleInvalidationData()
+        .UsesWindowInactiveSelector();
   }
 
   // Set when we recalc the style of any element that depends on layout.
