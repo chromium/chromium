@@ -45,6 +45,13 @@ BASE_FEATURE(kPlusAddressAndSingleFieldFormFill,
              "PlusAddressAndSingleFieldFormFill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Chrome will fetch the blocklist data using the Component
+// Updater and employ that for blocking Plus Addresses. Otherwise, the blocklist
+// information is sourced from a Finch parameter.
+BASE_FEATURE(kPlusAddressBlocklistEnabled,
+             "PlusAddressBlocklistEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls the enabled/disabled state of the experimental feature.
 BASE_FEATURE(kPlusAddressesEnabled,
              "PlusAddressesEnabled",
