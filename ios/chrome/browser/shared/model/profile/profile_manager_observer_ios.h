@@ -8,6 +8,7 @@
 #include "base/observer_list_types.h"
 
 class ChromeBrowserState;
+class ProfileManagerIOS;
 
 // TODO(crbug.com/358356195): Remove this forward declaration and typedef when
 // no usage of ChromeBrowserStateManagerObserver remains.
