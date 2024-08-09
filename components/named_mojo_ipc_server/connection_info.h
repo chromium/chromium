@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_NAMED_MOJO_IPC_SERVER_CONNECTION_INFO_H_
 #define COMPONENTS_NAMED_MOJO_IPC_SERVER_CONNECTION_INFO_H_
 
-#include <optional>
-
 #include "base/process/process_handle.h"
 #include "build/buildflag.h"
 
@@ -29,9 +27,7 @@ struct ConnectionInfo {
   ConnectionInfo& operator=(const ConnectionInfo&) = delete;
 
   base::ProcessId pid{};
-#if BUILDFLAG(IS_WIN)
-  std::optional<base::win::ScopedHandle> impersonation_token{};
-#elif BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
   audit_token_t audit_token{};
 #elif BUILDFLAG(IS_LINUX)
   ucred credentials{};
