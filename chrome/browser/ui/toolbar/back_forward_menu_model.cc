@@ -65,6 +65,10 @@ BackForwardMenuModel::BackForwardMenuModel(Browser* browser,
 
 BackForwardMenuModel::~BackForwardMenuModel() = default;
 
+base::WeakPtr<ui::MenuModel> BackForwardMenuModel::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 size_t BackForwardMenuModel::GetItemCount() const {
   size_t items = GetHistoryItemCount();
   if (items == 0)

@@ -16,6 +16,10 @@ MojoMenuModel::MojoMenuModel(std::vector<mojom::MenuItemPtr> menu_items,
 
 MojoMenuModel::~MojoMenuModel() = default;
 
+base::WeakPtr<ui::MenuModel> MojoMenuModel::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 size_t MojoMenuModel::GetItemCount() const {
   return menu_items_.size();
 }

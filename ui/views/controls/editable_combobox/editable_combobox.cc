@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -143,7 +144,7 @@ std::u16string EditableCombobox::MenuDecorationStrategy::DecorateItemText(
 
 // Adapts a ui::ComboboxModel to a ui::MenuModel to be used by EditableCombobox.
 // Also provides a filtering capability.
-class EditableCombobox::EditableComboboxMenuModel
+class EditableCombobox::EditableComboboxMenuModel final
     : public ui::MenuModel,
       public ui::ComboboxModelObserver {
  public:
@@ -219,6 +220,10 @@ class EditableCombobox::EditableComboboxMenuModel
 
   void OnComboboxModelDestroying(ui::ComboboxModel* model) override {
     observation_.Reset();
+  }
+
+  base::WeakPtr<ui::MenuModel> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
   size_t GetItemCount() const override { return items_shown_.size(); }
@@ -302,6 +307,8 @@ class EditableCombobox::EditableComboboxMenuModel
 
   base::ScopedObservation<ui::ComboboxModel, ui::ComboboxModelObserver>
       observation_{this};
+
+  base::WeakPtrFactory<EditableComboboxMenuModel> weak_ptr_factory_{this};
 };
 
 // This class adds itself as the pre-target handler for the RootView of the

@@ -15,6 +15,10 @@ bool ComboboxMenuModel::UseCheckmarks() const {
 }
 
 // Overridden from MenuModel:
+base::WeakPtr<ui::MenuModel> ComboboxMenuModel::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 size_t ComboboxMenuModel::GetItemCount() const {
   return model_->GetItemCount();
 }

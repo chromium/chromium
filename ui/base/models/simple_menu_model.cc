@@ -407,6 +407,10 @@ std::optional<size_t> SimpleMenuModel::GetIndexOfCommandId(
 ////////////////////////////////////////////////////////////////////////////////
 // SimpleMenuModel, MenuModel implementation:
 
+base::WeakPtr<ui::MenuModel> SimpleMenuModel::AsWeakPtr() {
+  return method_factory_.GetWeakPtr();
+}
+
 size_t SimpleMenuModel::GetItemCount() const {
   return items_.size();
 }

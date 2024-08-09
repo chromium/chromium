@@ -26,6 +26,10 @@ void DialogModelMenuModelAdapter::OnDialogButtonChanged() {
   NOTREACHED_NORETURN();
 }
 
+base::WeakPtr<ui::MenuModel> DialogModelMenuModelAdapter::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 size_t DialogModelMenuModelAdapter::GetItemCount() const {
   return model_->fields(DialogModelHost::GetPassKey()).size();
 }

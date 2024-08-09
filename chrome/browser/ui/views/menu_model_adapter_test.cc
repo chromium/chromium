@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "ui/views/controls/menu/menu_model_adapter.h"
+
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
@@ -79,11 +81,9 @@ class CommonMenuModel : public ui::MenuModel {
   void ActivatedAt(size_t index) override {}
 };
 
-class SubMenuModel : public CommonMenuModel {
+class SubMenuModel final : public CommonMenuModel {
  public:
-  SubMenuModel()
-      : showing_(false) {
-  }
+  SubMenuModel() = default;
 
   SubMenuModel(const SubMenuModel&) = delete;
   SubMenuModel& operator=(const SubMenuModel&) = delete;
@@ -96,6 +96,10 @@ class SubMenuModel : public CommonMenuModel {
 
  private:
   // ui::MenuModel implementation.
+  base::WeakPtr<ui::MenuModel> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   size_t GetItemCount() const override { return 1; }
 
   ItemType GetTypeAt(size_t index) const override { return TYPE_COMMAND; }
@@ -111,10 +115,11 @@ class SubMenuModel : public CommonMenuModel {
   // Called when the menu is about to close.
   void MenuWillClose() override { showing_ = false; }
 
-  bool showing_;
+  bool showing_ = false;
+  base::WeakPtrFactory<SubMenuModel> weak_ptr_factory_{this};
 };
 
-class TopMenuModel : public CommonMenuModel {
+class TopMenuModel final : public CommonMenuModel {
  public:
   TopMenuModel() {
   }
@@ -130,6 +135,10 @@ class TopMenuModel : public CommonMenuModel {
 
  private:
   // ui::MenuModel implementation.
+  base::WeakPtr<ui::MenuModel> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   size_t GetItemCount() const override { return 1; }
 
   ItemType GetTypeAt(size_t index) const override { return TYPE_SUBMENU; }
@@ -145,6 +154,7 @@ class TopMenuModel : public CommonMenuModel {
   }
 
   mutable SubMenuModel sub_menu_model_;
+  base::WeakPtrFactory<TopMenuModel> weak_ptr_factory_{this};
 };
 
 }  // namespace

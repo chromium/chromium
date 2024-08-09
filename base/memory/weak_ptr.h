@@ -92,13 +92,6 @@ class ProcessNodeImpl;
 class WorkerNodeImpl;
 }  // namespace performance_manager
 
-// TODO(crbug.com/40485134): This is a hack to prevent new uses of
-// SupportsWeakPtr. The remaining uses are troublesome to fix, so we declare
-// these classes as friends so they have access to the constructor.
-namespace ui {
-class MenuModel;
-}  // namespace ui
-
 namespace base {
 
 namespace sequence_manager::internal {
@@ -504,7 +497,6 @@ class SupportsWeakPtr : public internal::SupportsWeakPtrBase {
   friend struct MultiplyDerivedProducer;
   friend struct Producer;
   friend struct weak_ptr_unittest::Target;
-  friend class ui::MenuModel;
 
   // The constructor is private so only the declared friends can construct
   // instances.

@@ -28,8 +28,7 @@ class ButtonMenuItemModel;
 class ImageModel;
 
 // An interface implemented by an object that provides the content of a menu.
-class COMPONENT_EXPORT(UI_BASE) MenuModel
-    : public base::SupportsWeakPtr<MenuModel> {
+class COMPONENT_EXPORT(UI_BASE) MenuModel {
  public:
   // The type of item.
   enum ItemType {
@@ -53,6 +52,9 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel
   MenuModel();
 
   virtual ~MenuModel();
+
+  // This must be implemented by the most concrete class.
+  virtual base::WeakPtr<MenuModel> AsWeakPtr() = 0;
 
   // Returns the number of items in the menu.
   virtual size_t GetItemCount() const = 0;
