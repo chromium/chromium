@@ -340,6 +340,9 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
           std::make_unique<metrics::DemographicsClient>(),
           metrics::MetricsLogUploader::MetricServiceType::UMA));
 
+  metrics_service_->RegisterMetricsProvider(
+      CreateIOSProfileSessionMetricsProvider());
+
   std::vector<ChromeBrowserState*> loaded_browser_states =
       GetApplicationContext()
           ->GetChromeBrowserStateManager()
@@ -348,9 +351,6 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
     metrics_service_->RegisterMetricsProvider(
         std::make_unique<IOSFeedActivityMetricsProvider>(
             browser_state->GetPrefs()));
-
-    metrics_service_->RegisterMetricsProvider(
-        CreateIOSProfileSessionMetricsProvider());
 
     metrics_service_->RegisterMetricsProvider(
         std::make_unique<IOSFeedEnabledMetricsProvider>(
