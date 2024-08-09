@@ -39,6 +39,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/checked_iterators.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/numerics/safe_conversions.h"
@@ -1315,10 +1316,36 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   const T* data() const { return Base::Buffer(); }
 
   // Iterators and reverse iterators. They are invalidated on a reallocation.
-  iterator begin() { return iterator(data()); }
-  iterator end() { return iterator(DataEnd()); }
-  const_iterator begin() const { return const_iterator(data()); }
-  const_iterator end() const { return const_iterator(DataEnd()); }
+  iterator begin() {
+    if constexpr (checked_iter) {
+      return iterator(data(), DataEnd());
+    } else {
+      return iterator(data());
+    }
+  }
+  iterator end() {
+    if constexpr (checked_iter) {
+      auto* e = DataEnd();
+      return iterator(data(), e, e);
+    } else {
+      return iterator(DataEnd());
+    }
+  }
+  const_iterator begin() const {
+    if constexpr (checked_iter) {
+      return const_iterator(data(), DataEnd());
+    } else {
+      return const_iterator(data());
+    }
+  }
+  const_iterator end() const {
+    if constexpr (checked_iter) {
+      auto* e = DataEnd();
+      return const_iterator(data(), e, e);
+    } else {
+      return const_iterator(DataEnd());
+    }
+  }
 
   reverse_iterator rbegin() { return reverse_iterator(end()); }
   reverse_iterator rend() { return reverse_iterator(begin()); }
