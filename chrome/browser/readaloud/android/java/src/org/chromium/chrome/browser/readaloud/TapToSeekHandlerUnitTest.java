@@ -20,14 +20,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextPart;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextType;
@@ -46,13 +44,10 @@ public class TapToSeekHandlerUnitTest {
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private Profile mProfile;
-    @Mock private ObservableSupplier<Tab> mMockTabProvider;
     @Mock private Playback mPlayback;
     @Mock private Playback.Metadata mMetadata;
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
     @Mock private ReadAloudFeatures.Natives mReadAloudFeaturesNatives;
-
-    private TapToSeekHandler mTapToSeekHandler;
 
     @Before
     public void setUp() {
@@ -60,8 +55,6 @@ public class TapToSeekHandlerUnitTest {
         doReturn(false).when(mProfile).isOffTheRecord();
         when(mPlayback.getMetadata()).thenReturn(mMetadata);
         mJniMocker.mock(ReadAloudFeaturesJni.TEST_HOOKS, mReadAloudFeaturesNatives);
-
-        mTapToSeekHandler = new TapToSeekHandler(mMockTabProvider);
     }
 
     @After
@@ -171,6 +164,6 @@ public class TapToSeekHandlerUnitTest {
                 };
         PlaybackTextPart[] paragraphs = new PlaybackTextPart[] {p};
         when(mMetadata.paragraphs()).thenReturn(paragraphs);
-        mTapToSeekHandler.tapToSeek(content, beginOffset, endOffset, mPlayback, playing);
+        TapToSeekHandler.tapToSeek(content, beginOffset, endOffset, mPlayback, playing);
     }
 }
