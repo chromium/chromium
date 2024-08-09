@@ -618,7 +618,7 @@ if (current_toolchain == default_toolchain) {
       "//components/infobars/android:java",
       "//components/infobars/core:infobar_enums_java",
       "//components/installedapp/android:java",
-      "//components/ip_protection/android_auth_client_lib/client:ip_protection_auth_client_java",
+      "//components/ip_protection/android/android_auth_client_lib/client:ip_protection_auth_client_java",
       "//components/javascript_dialogs/android:java",
       "//components/language/android:java",
       "//components/location/android:location_java",
@@ -3010,7 +3010,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/fast_checkout/internal:javatests",
       "//chrome/browser/ui/android/plus_addresses:javatests",
       "//chrome/browser/ui/android/webid/internal:javatests",
-      "//components/ip_protection/android_auth_client_lib/javatests:ip_protection_auth_javatests",
+      "//components/ip_protection/android/android_auth_client_lib/javatests:ip_protection_auth_javatests",
     ]
 
     data_deps = [ "//testing/buildbot/filters:chrome_public_test_apk_filters" ]
@@ -3023,7 +3023,7 @@ if (current_toolchain == default_toolchain) {
     additional_apks = [
       "//chrome/android/webapk/shell_apk:javatests_webapk",
       "//chrome/test/android/chrome_public_test_support:chrome_public_test_support_apk",
-      "//components/ip_protection/android_auth_client_lib/testing/mock_service:ip_protection_auth_test_service_apk",
+      "//components/ip_protection/android/android_auth_client_lib/testing/mock_service:ip_protection_auth_test_service_apk",
       "//components/media_router/test/android/media_router_test_support:media_router_test_support_apk",
     ]
 
@@ -4004,7 +4004,7 @@ chrome_common_shared_library("libchromefortest") {
     "//chrome/browser/supervised_user:test_support",
     "//components/crash/android:crash_android",
     "//components/external_intents/android:test_support",
-    "//components/ip_protection/android_auth_client_lib/cpp:ip_protection_auth_test_natives",
+    "//components/ip_protection/android/android_auth_client_lib/cpp:ip_protection_auth_test_natives",
     "//components/minidump_uploader",
     "//components/paint_preview/player/android:test_support",
     "//components/sync",

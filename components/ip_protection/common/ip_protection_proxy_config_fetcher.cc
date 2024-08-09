@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/ip_protection/ip_protection_proxy_config_fetcher.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 
 #include <string>
 #include <vector>
@@ -13,7 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/ip_protection/get_proxy_config.pb.h"
-#include "components/ip_protection/ip_protection_proxy_config_retriever.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_retriever.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_IP_PROTECTION_BLIND_SIGN_MESSAGE_ANDROID_IMPL_H_
-#define COMPONENTS_IP_PROTECTION_BLIND_SIGN_MESSAGE_ANDROID_IMPL_H_
+#ifndef COMPONENTS_IP_PROTECTION_ANDROID_BLIND_SIGN_MESSAGE_ANDROID_IMPL_H_
+#define COMPONENTS_IP_PROTECTION_ANDROID_BLIND_SIGN_MESSAGE_ANDROID_IMPL_H_
 
 #include <memory>
 #include <optional>
@@ -17,7 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
-#include "components/ip_protection/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
+#include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_message_interface.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/auth_and_sign.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/get_initial_data.pb.h"
@@ -137,4 +137,4 @@ class BlindSignMessageAndroidImpl : public quiche::BlindSignMessageInterface {
 
 }  // namespace ip_protection
 
-#endif  // COMPONENTS_IP_PROTECTION_BLIND_SIGN_MESSAGE_ANDROID_IMPL_H_
+#endif  // COMPONENTS_IP_PROTECTION_ANDROID_BLIND_SIGN_MESSAGE_ANDROID_IMPL_H_

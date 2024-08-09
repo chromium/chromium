@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_IP_PROTECTION_ANDROID_AUTH_CLIENT_LIB_CPP_BYTE_ARRAY_CALLBACK_LISTENER_H_
-#define COMPONENTS_IP_PROTECTION_ANDROID_AUTH_CLIENT_LIB_CPP_BYTE_ARRAY_CALLBACK_LISTENER_H_
+#ifndef COMPONENTS_IP_PROTECTION_ANDROID_ANDROID_AUTH_CLIENT_LIB_CPP_BYTE_ARRAY_CALLBACK_LISTENER_H_
+#define COMPONENTS_IP_PROTECTION_ANDROID_ANDROID_AUTH_CLIENT_LIB_CPP_BYTE_ARRAY_CALLBACK_LISTENER_H_
 
 #include <jni.h>
 
 #include "base/android/jni_android.h"
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
-#include "components/ip_protection/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
+#include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
 
 namespace ip_protection::android {
 
@@ -41,4 +41,4 @@ class ByteArrayCallbackListener {
 
 }  // namespace ip_protection::android
 
-#endif  // COMPONENTS_IP_PROTECTION_ANDROID_AUTH_CLIENT_LIB_CPP_BYTE_ARRAY_CALLBACK_LISTENER_H_
+#endif  // COMPONENTS_IP_PROTECTION_ANDROID_ANDROID_AUTH_CLIENT_LIB_CPP_BYTE_ARRAY_CALLBACK_LISTENER_H_

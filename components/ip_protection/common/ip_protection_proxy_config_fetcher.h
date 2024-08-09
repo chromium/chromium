@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_IP_PROTECTION_IP_PROTECTION_PROXY_CONFIG_FETCHER_H_
-#define COMPONENTS_IP_PROTECTION_IP_PROTECTION_PROXY_CONFIG_FETCHER_H_
+#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_CONFIG_FETCHER_H_
+#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_CONFIG_FETCHER_H_
 
 #include <memory>
 #include <optional>
@@ -13,7 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/ip_protection/get_proxy_config.pb.h"
-#include "components/ip_protection/ip_protection_proxy_config_retriever.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_retriever.h"
 #include "net/base/proxy_chain.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -101,4 +101,4 @@ class IpProtectionProxyConfigFetcher {
 
 }  // namespace ip_protection
 
-#endif  // COMPONENTS_IP_PROTECTION_IP_PROTECTION_PROXY_CONFIG_FETCHER_H_
+#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_CONFIG_FETCHER_H_

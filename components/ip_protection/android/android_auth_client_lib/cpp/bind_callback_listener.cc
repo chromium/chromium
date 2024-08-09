@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/ip_protection/android_auth_client_lib/cpp/bind_callback_listener.h"
+#include "components/ip_protection/android/android_auth_client_lib/cpp/bind_callback_listener.h"
 
 #include <utility>
 
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
-#include "components/ip_protection/android_auth_client_lib/cpp/ip_protection_auth_client.h"
-#include "components/ip_protection/android_auth_client_lib/cpp/jni_headers/BindCallbackListener_jni.h"
+#include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client.h"
+#include "components/ip_protection/android/android_auth_client_lib/cpp/jni_headers/BindCallbackListener_jni.h"
 
 namespace ip_protection::android {
 

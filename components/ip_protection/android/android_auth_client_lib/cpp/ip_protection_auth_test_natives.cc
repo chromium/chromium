@@ -14,9 +14,9 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
-#include "components/ip_protection/android_auth_client_lib/cpp/ip_protection_auth_client.h"
-#include "components/ip_protection/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
-#include "components/ip_protection/android_auth_client_lib/javatests/jni_headers/IpProtectionAuthTestNatives_jni.h"
+#include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client.h"
+#include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
+#include "components/ip_protection/android/android_auth_client_lib/javatests/jni_headers/IpProtectionAuthTestNatives_jni.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/auth_and_sign.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/get_initial_data.pb.h"
 

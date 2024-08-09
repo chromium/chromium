@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/ip_protection/blind_sign_message_android_impl.h"
+#include "components/ip_protection/android/blind_sign_message_android_impl.h"
 
 #include <memory>
 #include <string>
@@ -13,9 +13,9 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/ip_protection/android_auth_client_lib/cpp/ip_protection_auth_client.h"
-#include "components/ip_protection/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
-#include "components/ip_protection/blind_sign_message_android_impl.h"
+#include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client.h"
+#include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
+#include "components/ip_protection/android/blind_sign_message_android_impl.h"
 #include "net/base/features.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/auth_and_sign.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/get_initial_data.pb.h"

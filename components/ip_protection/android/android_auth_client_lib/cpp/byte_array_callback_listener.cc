@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/ip_protection/android_auth_client_lib/cpp/byte_array_callback_listener.h"
+#include "components/ip_protection/android/android_auth_client_lib/cpp/byte_array_callback_listener.h"
 
 #include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
-#include "components/ip_protection/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
-#include "components/ip_protection/android_auth_client_lib/cpp/jni_headers/ByteArrayCallbackListener_jni.h"
+#include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
+#include "components/ip_protection/android/android_auth_client_lib/cpp/jni_headers/ByteArrayCallbackListener_jni.h"
 
 namespace ip_protection::android {
 

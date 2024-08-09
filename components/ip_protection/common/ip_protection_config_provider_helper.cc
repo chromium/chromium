@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/ip_protection/ip_protection_config_provider_helper.h"
+#include "components/ip_protection/common/ip_protection_config_provider_helper.h"
 
 #include <optional>
 #include <string>
@@ -85,7 +85,7 @@ IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
     base::Time expiration,
     const network::GeoHint& geo_hint) {
   privacy::ppn::PrivacyPassTokenData privacy_pass_token_data =
-      CreatePrivacyPassTokenForTesting(std::move(token_value));
+      CreatePrivacyPassTokenForTesting(std::move(token_value));  // IN-TEST
   quiche::BlindSignToken blind_sign_token;
   blind_sign_token.token = privacy_pass_token_data.SerializeAsString();
   blind_sign_token.expiration = absl::FromTimeT(expiration.ToTimeT());
@@ -108,8 +108,8 @@ IpProtectionConfigProviderHelper::CreateMockBlindSignedAuthTokenForTesting(
     std::string token_value,
     base::Time expiration,
     const network::GeoHint& geo_hint) {
-  quiche::BlindSignToken blind_sign_token =
-      CreateBlindSignTokenForTesting(token_value, expiration, geo_hint);
+  quiche::BlindSignToken blind_sign_token = CreateBlindSignTokenForTesting(
+      token_value, expiration, geo_hint);  // IN-TEST
   return CreateBlindSignedAuthToken(std::move(blind_sign_token));
 }
 

@@ -9,9 +9,9 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
   sources = [
-    "//components/ip_protection/android_auth_client_lib/client/java/src/org/chromium/components/ip_protection_auth/BindCallbackListener.java",
-    "//components/ip_protection/android_auth_client_lib/client/java/src/org/chromium/components/ip_protection_auth/ByteArrayCallbackListener.java",
-    "//components/ip_protection/android_auth_client_lib/client/java/src/org/chromium/components/ip_protection_auth/IpProtectionAuthClient.java",
+    "//components/ip_protection/android/android_auth_client_lib/client/java/src/org/chromium/components/ip_protection_auth/BindCallbackListener.java",
+    "//components/ip_protection/android/android_auth_client_lib/client/java/src/org/chromium/components/ip_protection_auth/ByteArrayCallbackListener.java",
+    "//components/ip_protection/android/android_auth_client_lib/client/java/src/org/chromium/components/ip_protection_auth/IpProtectionAuthClient.java",
   ]
 }
 
@@ -38,7 +38,7 @@ source_set("ip_protection_auth_test_natives") {
     ":native",
     "//base:base_javatests_lib",
     "//base/test:test_support",
-    "//components/ip_protection/android_auth_client_lib/javatests:jni_headers",
+    "//components/ip_protection/android/android_auth_client_lib/javatests:jni_headers",
     "//net/third_party/quiche:blind_sign_auth_proto",
     "//third_party/anonymous_tokens:anonymous_tokens_cc_proto",
   ]

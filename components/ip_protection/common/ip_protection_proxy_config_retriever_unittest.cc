@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/ip_protection/ip_protection_proxy_config_retriever.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_retriever.h"
 
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
