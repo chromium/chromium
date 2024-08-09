@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
   <variant name="" summary="any"/>
   <variant name=".RTT200To450" summary="RTT between 200 to 450ms"/>
   <variant name=".RTTAbove450" summary="RTT greater than 450ms"/>
-  <variant name=".RTTUnder200" summary="RTT less than 200ms"/>
+  <variant name=".RTTBelow200" summary="RTT less than 200ms"/>
   <variant name=".RTTUnkown" summary="RTT unkown"/>
 </variants>
 
