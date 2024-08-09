@@ -661,11 +661,6 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
 
   bring_to_front_timer_.Stop();
 
-  // TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  DragState old_state = current_state_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   if (current_state_ == DragState::kNotStarted) {
     if (!CanStartDrag(point_in_screen))
       return;  // User hasn't dragged far enough yet.
@@ -734,18 +729,6 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
         drag_offset = GetWindowOffset(point_in_screen);
       }
 
-      // TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      static bool reported = false;
-      if (in_move_loop_ && !reported) {
-        reported = true;
-        LOG(ERROR) << "Before the move loop is nested, Drag() is called with a "
-                      "DraggingState that equals "
-                   << static_cast<std::underlying_type<DragState>::type>(
-                          old_state)
-                   << ".";
-      }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       RunMoveLoop(drag_offset);
       return;
     }
@@ -966,19 +949,6 @@ TabDragController::Liveness TabDragController::ContinueDragging(
   }
 
   const bool tab_strip_changed = (target_context != attached_context_);
-  // TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  static bool reported = false;
-  if (in_move_loop_ && tab_strip_changed && !reported) {
-    reported = true;
-    LOG(ERROR) << "Before the move loop is nested, tab strip change is "
-                  "detected. (target_context == nullptr) is "
-               << (target_context == nullptr)
-               << ", and (attached_context_ == nullptr) is "
-               << (attached_context_ == nullptr);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   last_point_in_screen_ = point_in_screen;
 
   if (current_state_ == DragState::kDraggingUsingSystemDragAndDrop &&
@@ -1024,15 +994,6 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
                "point_in_screen", point_in_screen.ToString());
 
   if (!target_context) {
-// TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    static bool reported = false;
-    if (in_move_loop_ && !reported) {
-      reported = true;
-      LOG(ERROR)
-          << "Before the move loop is nested, target context is nullified.";
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     DetachIntoNewBrowserAndRunMoveLoop(point_in_screen);
     return DRAG_BROWSER_RESULT_STOP;
   }
@@ -1388,23 +1349,6 @@ TabDragController::Liveness TabDragController::GetTargetTabStripForPoint(
   *context = current_state_ == DragState::kDraggingWindow
                  ? attached_context_.get()
                  : nullptr;
-// TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  static bool reported = false;
-  if (in_move_loop_ && !context && !reported) {
-    reported = true;
-    if (current_state_ != DragState::kDraggingWindow) {
-      LOG(ERROR) << "Before the move loop is nested, context is nullified "
-                    "because current_state_ is "
-                 << static_cast<std::underlying_type<DragState>::type>(
-                        current_state_)
-                 << " instead of kDraggingWindow.";
-    } else {
-      LOG(ERROR) << "Before the move loop is nested, context is nullified "
-                    "because attached context is nullified.";
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return Liveness::ALIVE;
 }
 
@@ -1610,15 +1554,6 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
       return;
     }
 
-    // TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    static bool reported = false;
-    if (in_move_loop_ && !reported) {
-      reported = true;
-      LOG(ERROR) << "Before the move loop is nested, all the tabs in a browser "
-                    "are being dragged.";
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     RunMoveLoop(GetWindowOffset(point_in_screen));
     return;
   }
@@ -1698,15 +1633,6 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
       return;
     }
   }
-  // TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  static bool reported = false;
-  if (in_move_loop_ && !reported) {
-    reported = true;
-    LOG(ERROR) << "Before the move loop is nested, not all the tabs in a "
-                  "browser are being dragged.";
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   RunMoveLoop(drag_offset);
 }
 
@@ -1720,10 +1646,6 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
   // in which case the observation is already established.
   widget_observation_.Reset();
   widget_observation_.Observe(move_loop_widget_.get());
-  // TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  DragState old_state = current_state_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   current_state_ = DragState::kDraggingWindow;
   base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
   if (can_release_capture_) {
@@ -1754,23 +1676,6 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
   // lower in the stack. This is a CHECK() as there may be security
   // implications to attempting a nested run loop.
 
-  // TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  static bool reported = false;
-  if (in_move_loop_ && !reported) {
-    reported = true;
-    if (!ref) {
-      LOG(ERROR) << "The enclosing tab drag controller is already gone during "
-                    "a nested move loop.";
-    } else {
-      LOG(ERROR) << "The enclosing tab drag controller is still alive during a "
-                    "nested move loop.";
-    }
-    LOG(ERROR) << "Before the move loop is nested, the previous DragState is "
-               << static_cast<std::underlying_type<DragState>::type>(old_state)
-               << ".";
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   CHECK(!in_move_loop_);
   in_move_loop_ = true;
   views::Widget::MoveLoopResult result = move_loop_widget_->RunMoveLoop(
