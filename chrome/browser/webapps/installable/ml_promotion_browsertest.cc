@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +21,8 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -31,6 +34,8 @@
 #include "components/segmentation_platform/public/trigger.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/user_education/common/feature_promo_data.h"
+#include "components/user_education/common/user_education_features.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/metrics/site_quality_metrics_task.h"
@@ -162,10 +167,15 @@ class MLPromotionBrowserTest : public MLPromotionBrowserTestBase {
  public:
   MLPromotionBrowserTest() {
     task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        webapps::features::kWebAppsEnableMLModelForPromotion,
-        {{features::kWebAppsMLGuardrailResultReportProb.name, "1.0"},
-         {features::kWebAppsMLModelUserDeclineReportProb.name, "1.0"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {base::test::FeatureRefAndParams(
+             webapps::features::kWebAppsEnableMLModelForPromotion,
+             {{features::kWebAppsMLGuardrailResultReportProb.name, "1.0"},
+              {features::kWebAppsMLModelUserDeclineReportProb.name, "1.0"}}),
+         base::test::FeatureRefAndParams(
+             user_education::features::kUserEducationExperienceVersion2, {})},
+        /*disabled_features=*/{});
   }
   ~MLPromotionBrowserTest() override = default;
 
@@ -173,9 +183,27 @@ class MLPromotionBrowserTest : public MLPromotionBrowserTestBase {
     MLPromotionBrowserTestBase::SetUpOnMainThread();
     ml_promoter()->SetTaskRunnerForTesting(task_runner_);
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+
+    // Set the session start time to `features::GetSessionStartGracePeriod()`
+    // time ago, to ensure ML install promotion isn't blocked by the grace
+    // period.
+    SetUserEducationSessionStartTime(
+        base::Time::Now() -
+        user_education::features::GetSessionStartGracePeriod());
   }
 
  protected:
+  void SetUserEducationSessionStartTime(base::Time time) {
+    UserEducationService* edu_service =
+        UserEducationServiceFactory::GetForBrowserContext(profile());
+    user_education::FeaturePromoSessionData session_data;
+    session_data.start_time = time;
+    session_data.most_recent_active_time = base::Time::Now();
+    edu_service->feature_promo_storage_service()
+        .set_profile_creation_time_for_testing(time);
+    edu_service->feature_promo_storage_service().SaveSessionData(session_data);
+  }
+
   GURL GetUrlWithFaviconsNoManifest() {
     return https_server()->GetURL("/banners/test_page_with_favicon.html");
   }
@@ -1012,6 +1040,39 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   EXPECT_FALSE(provider().registrar_unsafe().is_empty());
+}
+
+IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
+                       MlInstallBlockedIphGracePeriod) {
+  if (IsCurrentTestStateShortcutDialog()) {
+    GTEST_SKIP()
+        << "Skipping because ML cannot trigger the Create Shortcut Dialog.";
+  }
+  NavigateAndAwaitMetricsCollectionPending(GetUrlBasedOnDialogState());
+
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetUrlBasedOnDialogState(),
+      /*manifest_id=*/GetUrlBasedOnDialogState(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel,
+      TrainingRequestId(1ll));
+
+  // Setting the start time to now should apply the grace period, blocking ml
+  // install promotion via guardrail.
+  SetUserEducationSessionStartTime(base::Time::Now());
+
+  // This calls unblocks the metrics tasks, allowing the pipeline to continue
+  // and check guardrails.
+  task_runner_->RunPendingTasks();
+
+  // Ensure that nothing is installed.
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_TRUE(provider().registrar_unsafe().is_empty());
+
+  ExpectTrainingResult(TrainingRequestId(1ll),
+                       MlInstallResponse::kBlockedGuardrails, web_contents());
+  // Doing another navigation should now trigger the guardrail blocked signal.
+  web_app::NavigateViaLinkClickToURLAndWait(browser(),
+                                            GURL(url::kAboutBlankURL));
 }
 
 IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,

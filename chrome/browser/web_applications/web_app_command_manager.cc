@@ -240,7 +240,8 @@ void WebAppCommandManager::AwaitAllCommandsCompleteForTesting() {
   }
 
   if (!run_loop_for_testing_) {
-    run_loop_for_testing_ = std::make_unique<base::RunLoop>();
+    run_loop_for_testing_ = std::make_unique<base::RunLoop>(
+        base::RunLoop::Type::kNestableTasksAllowed);
   }
   run_loop_for_testing_->Run();
   run_loop_for_testing_.reset();
