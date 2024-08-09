@@ -7,7 +7,7 @@
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ash/external_metrics.h"
+#include "chrome/browser/ash/external_metrics/external_metrics.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 
 namespace ash {

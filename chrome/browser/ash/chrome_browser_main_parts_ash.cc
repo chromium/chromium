@@ -102,7 +102,7 @@
 #include "chrome/browser/ash/events/event_rewriter_delegate_impl.h"
 #include "chrome/browser/ash/extensions/default_app_order.h"
 #include "chrome/browser/ash/extensions/login_screen_ui/ui_handler.h"
-#include "chrome/browser/ash/external_metrics.h"
+#include "chrome/browser/ash/external_metrics/external_metrics.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/language_preferences.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"

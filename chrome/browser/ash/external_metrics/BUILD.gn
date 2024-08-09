@@ -1,0 +1,53 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/chromeos/crosier_tests.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("external_metrics") {
+  sources = [
+    "external_metrics.cc",
+    "external_metrics.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser:browser_public_dependencies",
+    "//components/metrics:serialization",
+    "//content/public/browser",
+  ]
+}
+
+if (is_chromeos_device) {
+  crosier_tests("integration_tests") {
+    sources = [ "external_metrics_integration_test.cc" ]
+    sources_metadata = [ "external_metrics_integration_test.yaml" ]
+    deps = [
+      ":external_metrics",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/test:ash_integration_test_support",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "external_metrics_unittest.cc" ]
+
+  deps = [
+    ":external_metrics",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//components/metrics:serialization",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

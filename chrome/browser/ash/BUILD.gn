@@ -35,8 +35,6 @@ static_library("ash") {
     "chrome_browser_main_parts_ash.h",
     "concierge_helper_service.cc",
     "concierge_helper_service.h",
-    "external_metrics.cc",
-    "external_metrics.h",
     "external_protocol_dialog.cc",
     "external_protocol_dialog.h",
     "http_auth_dialog.cc",
@@ -343,6 +341,7 @@ static_library("ash") {
     "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
     "//chrome/browser/ash/dbus",
     "//chrome/browser/ash/dbus/vm",
+    "//chrome/browser/ash/external_metrics",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_manager/virtual_tasks",
     "//chrome/browser/ash/fileapi",
@@ -1567,7 +1566,6 @@ source_set("unit_tests") {
     "../ui/webui/settings/about_handler_unittest.cc",
     "camera_presence_notifier_unittest.cc",
     "concierge_helper_service_unittest.cc",
-    "external_metrics_unittest.cc",
     "locale_change_guard_unittest.cc",
     "note_taking/note_taking_helper_unittest.cc",
     "proxy_config_service_impl_unittest.cc",
@@ -2236,6 +2234,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/extensions:unit_tests",
     "//chrome/browser/ash/extensions/file_manager:unit_tests",
     "//chrome/browser/ash/extensions/login_screen_ui:unit_tests",
+    "//chrome/browser/ash/external_metrics:unit_tests",
     "//chrome/browser/ash/file_manager:unit_tests",
     "//chrome/browser/ash/file_suggest:unit_tests",
     "//chrome/browser/ash/file_system_provider:unit_tests",
@@ -2490,7 +2489,6 @@ source_set("browser_tests") {
 if (is_chromeos_device) {
   crosier_tests("integration_tests") {
     sources = [
-      "external_metrics_integration_test.cc",
       "featured_integration_test.cc",
       "ml_integration_test.cc",
       "screenshot_integration_test.cc",
@@ -2499,7 +2497,6 @@ if (is_chromeos_device) {
     ]
 
     sources_metadata = [
-      "external_metrics_integration_test.yaml",
       "featured_integration_test.yaml",
       "ml_integration_test.yaml",
       "screenshot_integration_test.yaml",
@@ -2520,6 +2517,7 @@ if (is_chromeos_device) {
       "//chrome/browser/ash/assistant:integration_tests",
       "//chrome/browser/ash/bluetooth:integration_tests",
       "//chrome/browser/ash/child_accounts:integration_tests",
+      "//chrome/browser/ash/external_metrics:integration_tests",
       "//chrome/browser/ash/login:integration_tests",
       "//chrome/browser/ash/power/ml/smart_dim:integration_tests",
       "//chrome/browser/ash/scanning:integration_tests",

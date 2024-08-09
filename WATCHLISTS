@@ -1534,7 +1534,7 @@
       'filepath': 'base/metrics/'\
                   '|chrome/android/java/src/org/chromium/chrome/browser/metrics/'\
                   '|chrome/browser/metrics/'\
-                  '|chrome/browser/ash/external_metrics'\
+                  '|chrome/browser/ash/external_metrics/'\
                   '|chrome/browser/extensions/api/metrics_private/'\
                   '|chrome/browser/ui/webui/metrics_handler'\
                   '|chromecast/browser/metrics/'\
