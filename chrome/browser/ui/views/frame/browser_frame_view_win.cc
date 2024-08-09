@@ -45,6 +45,7 @@
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/win/hwnd_metrics.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/display/win/dpi.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/canvas.h"
@@ -664,7 +665,8 @@ void BrowserFrameViewWin::TabletModeChanged() {
 void BrowserFrameViewWin::SetSystemMicaTitlebarAttributes() {
   CHECK(SystemTitlebarCanUseMicaMaterial());
 
-  const BOOL dark_titlebar_enabled = GetNativeTheme()->ShouldUseDarkColors();
+  const BOOL dark_titlebar_enabled =
+      frame()->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
   DwmSetWindowAttribute(views::HWNDForWidget(frame()),
                         DWMWA_USE_IMMERSIVE_DARK_MODE, &dark_titlebar_enabled,
                         sizeof(dark_titlebar_enabled));
