@@ -95,6 +95,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -764,11 +765,17 @@ TEST_F(SavedDeskTest, OverviewItemsStayHiddenInSavedDeskGridOnDeskClose) {
   EXPECT_EQ(0.0f, test_window_2->layer()->opacity());
 
   // While in the saved desk grid, delete the active desk by clicking on the
-  // mini view close button.
+  // combine desk option.
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   auto* mini_view =
       desks_bar_view->FindMiniViewForDesk(desks_controller->active_desk());
-  LeftClickOn(mini_view->desk_action_view()->combine_desks_button());
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    LeftClickOn(GetActiveDeskActionContextMenuItem(
+        Shell::GetPrimaryRootWindow(),
+        DeskActionContextMenu::CommandId::kCombineDesks));
+  } else {
+    LeftClickOn(mini_view->desk_action_view()->combine_desks_button());
+  }
 
   // Expect we stay in the saved desk grid.
   ASSERT_TRUE(overview_grid->IsShowingSavedDeskLibrary());
@@ -907,6 +914,11 @@ TEST_F(SavedDeskTest, DeleteTemplate) {
 // Tests that the save desk button container is aligned with the first
 // overview item. Regression test for https://crbug.com/1285491.
 TEST_F(SavedDeskTest, SaveDeskButtonContainerAligned) {
+  // The save desk button container is removed as part of the UI revamp.
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    GTEST_SKIP();
+  }
+
   // Create a test window in the current desk.
   auto test_window1 = CreateAppWindow();
   auto test_window2 = CreateAppWindow();
@@ -1133,18 +1145,21 @@ TEST_F(SavedDeskTest, SaveDeskAsTemplateButtonShowsSavedDeskGrid) {
   auto test_window = CreateAppWindow();
   ToggleOverview();
 
-  // The `save_desk_as_template_button` is visible when at least one window is
+  // The "Save desk as template" option is visible when at least one window is
   // open.
-  SavedDeskSaveDeskButton* save_desk_as_template_button =
-      GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(save_desk_as_template_button);
-  EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
-                  ->IsSaveDeskAsTemplateButtonVisible());
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    LeftClickOn(GetActiveDeskActionContextMenuItem(
+        Shell::GetPrimaryRootWindow(), DeskActionContextMenu::kSaveAsTemplate));
+  } else {
+    SavedDeskSaveDeskButton* save_desk_as_template_button =
+        GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
+    ASSERT_TRUE(save_desk_as_template_button);
+    EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
+                    ->IsSaveDeskAsTemplateButtonVisible());
+    LeftClickOn(save_desk_as_template_button);
+  }
 
-  // Click on `save_desk_as_template_button`.
-  LeftClickOn(save_desk_as_template_button);
   ASSERT_EQ(1ul, GetAllEntries().size());
-
   WaitForSavedDeskUI();
 
   // Expect that the saved desk grid is visible.
@@ -1164,10 +1179,15 @@ TEST_F(SavedDeskTest, DesksBarLoadsBeforeSaveDeskButtons) {
 
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
 
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "SaveDeskButtonContainerWidget");
-  EnterOverview();
-  waiter.WaitIfNeededAndGet();
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    ToggleOverview();
+    WaitForOverviewEnterAnimation();
+  } else {
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "SaveDeskButtonContainerWidget");
+    EnterOverview();
+    waiter.WaitIfNeededAndGet();
+  }
 
   // Ensure we are in overview.
   auto* overview_controller = OverviewController::Get();
@@ -1180,10 +1200,15 @@ TEST_F(SavedDeskTest, DesksBarLoadsBeforeSaveDeskButtons) {
       GetOverviewGridForRoot(root_window)->desks_bar_view();
   ASSERT_NE(desks_bar_view, nullptr);
 
-  // Click on the button to save a desk. We should transition into the desk
-  // library and there should be no crash.
-  auto* save_for_later_button = GetSaveDeskForLaterButtonForRoot(root_window);
-  LeftClickOn(save_for_later_button);
+  // Click on the "Save desk for later" option. We should transition into the
+  // desk library and there should be no crash.
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    LeftClickOn(GetActiveDeskActionContextMenuItem(
+        root_window, DeskActionContextMenu::kSaveForLater));
+  } else {
+    LeftClickOn(GetSaveDeskForLaterButtonForRoot(root_window));
+  }
+
   WaitForSavedDeskUI();
   WaitForSavedDeskUI();
   EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingSavedDeskLibrary());
@@ -1206,8 +1231,14 @@ TEST_F(SavedDeskTest, SaveTemplateNudgesNameView) {
   // We open overview and save template without clicking out of the newly
   // created template name view.
   ToggleOverview();
-  LeftClickOn(
-      GetSaveDeskAsTemplateButtonForRoot(Shell::Get()->GetPrimaryRootWindow()));
+  auto* root = Shell::Get()->GetPrimaryRootWindow();
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    LeftClickOn(GetActiveDeskActionContextMenuItem(
+        root, DeskActionContextMenu::kSaveAsTemplate));
+  } else {
+    LeftClickOn(GetSaveDeskAsTemplateButtonForRoot(root));
+  }
+
   WaitForSavedDeskUI();
   ASSERT_EQ(3ul, GetAllEntries().size());
 
@@ -3055,20 +3086,13 @@ TEST_F(SavedDeskTest, SaveDeskAsTemplateRecordsMetric) {
   auto test_window = CreateAppWindow();
   ToggleOverview();
 
-  // Record histogram
+  // Record histogram.
   base::HistogramTester histogram_tester;
 
-  // The `save_desk_as_template_button` is visible when at least one window is
+  // The "Save desk as template" option is visible when at least one window is
   // open.
-  SavedDeskSaveDeskButton* save_desk_as_template_button =
-      GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(save_desk_as_template_button);
-  EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
-                  ->IsSaveDeskAsTemplateButtonVisible());
+  OpenOverviewAndSaveTemplate(Shell::GetPrimaryRootWindow());
 
-  // Click on `save_desk_as_template_button`.
-  LeftClickOn(save_desk_as_template_button);
-  WaitForSavedDeskUI();
   ASSERT_EQ(1ul, GetAllEntries().size());
 
   // Expect that the saved desk grid is visible.
@@ -3193,21 +3217,10 @@ TEST_F(SavedDeskTest, UserTemplateCountRecordsMetricCorrectly) {
     // There are no saved template entries and one test window initially.
     auto test_window = CreateAppWindow();
 
-    // Enter overview. This is needed to save a template via the UI.
     ASSERT_FALSE(GetOverviewSession());
-    ToggleOverview();
 
-    // The `save_desk_as_template_button` is visible when at least one window is
-    // open.
-    SavedDeskSaveDeskButton* save_desk_as_template_button =
-        GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-    ASSERT_TRUE(save_desk_as_template_button);
-    EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
-                    ->IsSaveDeskAsTemplateButtonVisible());
-
-    // Click on `save_desk_as_template_button` button.
-    LeftClickOn(save_desk_as_template_button);
-    WaitForSavedDeskUI();
+    // Enter overview and save the active desk as a template.
+    OpenOverviewAndSaveTemplate(Shell::GetPrimaryRootWindow());
     ASSERT_EQ(num_templates + 1, GetAllEntries().size());
 
     // Expect that the saved desk grid is visible.
@@ -3820,16 +3833,21 @@ TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
   auto test_window = CreateAppWindow();
   ToggleOverview();
 
-  // The `save_desk_as_template_button` is visible when at least one window is
+  // The "Save desk as template" option is visible when at least one window is
   // open.
-  SavedDeskSaveDeskButton* save_desk_as_template_button =
-      GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(save_desk_as_template_button);
-  EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
-                  ->IsSaveDeskAsTemplateButtonVisible());
+  auto* root = Shell::GetPrimaryRootWindow();
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    LeftClickOn(GetActiveDeskActionContextMenuItem(
+        root, DeskActionContextMenu::CommandId::kSaveAsTemplate));
+  } else {
+    SavedDeskSaveDeskButton* save_desk_as_template_button =
+        GetSaveDeskAsTemplateButtonForRoot(root);
+    ASSERT_TRUE(save_desk_as_template_button);
+    EXPECT_TRUE(
+        GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
+    LeftClickOn(save_desk_as_template_button);
+  }
 
-  // Click on `save_desk_as_template_button`.
-  LeftClickOn(save_desk_as_template_button);
   ASSERT_EQ(1ul, GetAllEntries().size());
   WaitForSavedDeskUI();
   ASSERT_EQ(u"Desk 1", DesksController::Get()->active_desk()->name());
@@ -3842,15 +3860,21 @@ TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
   ASSERT_FALSE(InOverviewSession());
   ToggleOverview();
 
-  save_desk_as_template_button =
-      GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(save_desk_as_template_button);
-  EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
-                  ->IsSaveDeskAsTemplateButtonVisible());
+  // The "Save desk as template" option is visible when at least one window is
+  // open.
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    LeftClickOn(GetActiveDeskActionContextMenuItem(
+        root, DeskActionContextMenu::CommandId::kSaveAsTemplate));
+  } else {
+    SavedDeskSaveDeskButton* save_desk_as_template_button =
+        GetSaveDeskAsTemplateButtonForRoot(root);
+    ASSERT_TRUE(save_desk_as_template_button);
+    EXPECT_TRUE(
+        GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
+    LeftClickOn(save_desk_as_template_button);
+  }
 
-  // Click on `save_desk_as_template_button`. At this point the template
-  // name matches the desk name.
-  LeftClickOn(save_desk_as_template_button);
+  // At this point the template name matches the desk name.
   ASSERT_EQ(2ul, GetAllEntries().size());
   WaitForSavedDeskUI();
   // Newly created template name_view.
@@ -3931,10 +3955,17 @@ TEST_F(SavedDeskTest, SelectAllAfterSavingDuplicateTemplate) {
   auto test_window = CreateAppWindow();
   ToggleOverview();
 
-  // Click on `save_desk_as_template_button` button.
-  SavedDeskSaveDeskButton* save_desk_as_template_button =
-      GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-  LeftClickOn(save_desk_as_template_button);
+  // Click on the "Save desk as template" option.
+  auto* root = Shell::GetPrimaryRootWindow();
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    LeftClickOn(GetActiveDeskActionContextMenuItem(
+        root, DeskActionContextMenu::kSaveAsTemplate));
+  } else {
+    LeftClickOn(GetSaveDeskAsTemplateButtonForRoot(root));
+  }
+
+  // Wait for the saved desk UI but don't click off or press enter/exit, as we
+  // want to stay focused on the desk's name field.
   WaitForSavedDeskUI();
 
   // Expect that the entire text of the new template is selected.
@@ -3959,17 +3990,24 @@ TEST_F(SavedDeskTest, NoSortBeforeNameConfirmed) {
 
   // Enter overview and save the same desk again.
   ToggleOverview();
-  // The `save_desk_as_template_button` is visible when at least one window is
-  // open.
-  SavedDeskSaveDeskButton* save_desk_as_template_button =
-      GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(save_desk_as_template_button);
-  EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
-                  ->IsSaveDeskAsTemplateButtonVisible());
 
-  // Click on `save_desk_as_template_button`. The newly saved template
-  // should be in the front, even though its name is not in alphabetical order.
-  LeftClickOn(save_desk_as_template_button);
+  // The "Save desk as template" option is visible when at least one window is
+  // open.
+  auto* root = Shell::GetPrimaryRootWindow();
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    LeftClickOn(GetActiveDeskActionContextMenuItem(
+        root, DeskActionContextMenu::CommandId::kSaveAsTemplate));
+  } else {
+    SavedDeskSaveDeskButton* save_desk_as_template_button =
+        GetSaveDeskAsTemplateButtonForRoot(root);
+    ASSERT_TRUE(save_desk_as_template_button);
+    EXPECT_TRUE(
+        GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
+    LeftClickOn(save_desk_as_template_button);
+  }
+
+  // The newly saved template should be in the front, even though its name is
+  // not in alphabetical order.
   ASSERT_EQ(2ul, GetAllEntries().size());
   WaitForSavedDeskUI();
 
@@ -3996,13 +4034,7 @@ TEST_F(SavedDeskTest, NudgeOnTheCorrectDisplay) {
   ASSERT_EQ(2u, Shell::GetAllRootWindows().size());
 
   auto test_window = CreateAppWindow();
-  ToggleOverview();
-
-  // Click on `save_desk_as_template_button` button on the primary display.
-  SavedDeskSaveDeskButton* save_desk_as_template_button =
-      GetSaveDeskAsTemplateButtonForRoot(Shell::GetAllRootWindows()[0]);
-  LeftClickOn(save_desk_as_template_button);
-  WaitForSavedDeskUI();
+  OpenOverviewAndSaveTemplate(Shell::GetPrimaryRootWindow());
 
   // The desks templates widget associated with the primary display should be
   // active.
@@ -4013,6 +4045,11 @@ TEST_F(SavedDeskTest, NudgeOnTheCorrectDisplay) {
 // Tests that the save desk button container is properly placed after an
 // overview item is closed via swipe.
 TEST_F(SavedDeskTest, SaveDeskButtonContainerVisibleAfterSwipeToClose) {
+  // The save desk button container is removed as part of the UI revamp.
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    GTEST_SKIP();
+  }
+
   // Use a test widget so we can close it properly after swiping to close. The
   // order matters here; overview items are ordered by MRU order, so the most
   // recently created widget corresponds to the first overview item.
@@ -4217,9 +4254,16 @@ TEST_F(SavedDeskTest, FocusedDeskItemFullyVisible) {
   // Create a window then save the current desk for later.
   CreateAppWindow().release();
   ToggleOverview();
-  auto* save_desk_button =
-      GetSaveDeskForLaterButtonForRoot(Shell::Get()->GetPrimaryRootWindow());
-  LeftClickOn(save_desk_button);
+  auto* root = Shell::Get()->GetPrimaryRootWindow();
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    LeftClickOn(GetActiveDeskActionContextMenuItem(
+        root, DeskActionContextMenu::kSaveForLater));
+  } else {
+    auto* save_desk_button = GetSaveDeskForLaterButtonForRoot(root);
+    ASSERT_TRUE(save_desk_button);
+    LeftClickOn(save_desk_button);
+  }
+
   WaitForSavedDeskUI();
   WaitForSavedDeskUI();
 
@@ -4257,11 +4301,23 @@ TEST_F(SavedDeskTest,
   ASSERT_EQ(1u, active_desk->GetAllAppWindows().size());
 
   ToggleOverview();
-  OverviewGrid* overview_grid = GetOverviewSession()->GetGridWithRootWindow(
-      Shell::GetPrimaryRootWindow());
+  auto* root = Shell::GetPrimaryRootWindow();
+  OverviewGrid* overview_grid =
+      GetOverviewSession()->GetGridWithRootWindow(root);
 
   // Pre-check whether the save desk button is in the correct state.
-  EXPECT_TRUE(overview_grid->IsSaveDeskButtonContainerVisible());
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    // Close the menu after getting each item so we can properly check the
+    // context menu button visibility.
+    EXPECT_TRUE(GetActiveDeskActionContextMenuItem(
+        root, DeskActionContextMenu::CommandId::kSaveAsTemplate));
+    DesksTestApi::MaybeCloseContextMenuForGrid(overview_grid);
+    EXPECT_TRUE(GetActiveDeskActionContextMenuItem(
+        root, DeskActionContextMenu::CommandId::kSaveForLater));
+    DesksTestApi::MaybeCloseContextMenuForGrid(overview_grid);
+  } else {
+    EXPECT_TRUE(overview_grid->IsSaveDeskButtonContainerVisible());
+  }
 
   const OverviewDeskBarView* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_EQ(2u, desks_bar_view->mini_views().size());
@@ -4269,18 +4325,45 @@ TEST_F(SavedDeskTest,
       desks_bar_view->FindMiniViewForDesk(active_desk);
   ASSERT_TRUE(mini_view_to_be_removed);
 
-  // Close the active desk and check that the save desk button updates
+  // Close the active desk and check that the save desk option updates
   // correctly.
-  LeftClickOn(mini_view_to_be_removed->desk_action_view()->close_all_button());
-  EXPECT_FALSE(overview_grid->IsSaveDeskButtonContainerVisible());
+  GetEventGenerator()->MoveMouseTo(
+      mini_view_to_be_removed->GetBoundsInScreen().CenterPoint());
+  auto* close_button =
+      mini_view_to_be_removed->desk_action_view()->close_all_button();
+  ASSERT_TRUE(close_button);
+  LeftClickOn(close_button);
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    auto* overview_controller = Shell::Get()->overview_controller();
+    ASSERT_TRUE(overview_controller->InOverviewSession());
+    ASSERT_EQ(desks_bar_view->mini_views().size(), 1u);
+    EXPECT_FALSE(
+        desks_bar_view->mini_views()[0]->desk_action_view()->GetVisible());
+  } else {
+    auto* overview_controller = Shell::Get()->overview_controller();
+    ASSERT_TRUE(overview_controller->InOverviewSession());
+    EXPECT_FALSE(overview_grid->IsSaveDeskButtonContainerVisible());
+  }
 
   // Try undoing desk close to see if the save desk button returns to the right
   // state.
   views::Button* undo_button =
       DesksTestApi::GetCloseAllUndoToastDismissButton();
   ASSERT_TRUE(undo_button);
+
+  // Clicking the undo button on the toast re-adds the mini view for the closed
+  // desk, so we need to wait for the bar view to layout again.
   LeftClickOn(undo_button);
-  EXPECT_TRUE(overview_grid->IsSaveDeskButtonContainerVisible());
+  views::test::RunScheduledLayout(overview_grid->desks_bar_view());
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    EXPECT_TRUE(GetActiveDeskActionContextMenuItem(
+        root, DeskActionContextMenu::CommandId::kSaveAsTemplate));
+    DesksTestApi::MaybeCloseContextMenuForGrid(overview_grid);
+    EXPECT_TRUE(GetActiveDeskActionContextMenuItem(
+        root, DeskActionContextMenu::CommandId::kSaveForLater));
+  } else {
+    EXPECT_TRUE(overview_grid->IsSaveDeskButtonContainerVisible());
+  }
 }
 
 // Tests that there are no overview item windows on theme change.

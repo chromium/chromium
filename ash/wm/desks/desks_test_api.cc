@@ -244,6 +244,9 @@ views::MenuItemView* DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
   DeskMiniView* mini_view = bar_view->mini_views()[index];
   event_generator.MoveMouseToInHost(
       mini_view->GetBoundsInScreen().CenterPoint());
+
+  // The menu button container should be visible, along with the button itself.
+  CHECK(mini_view->desk_action_view()->GetVisible());
   DeskActionButton* menu_button =
       mini_view->desk_action_view()->context_menu_button();
   CHECK(menu_button);
@@ -254,6 +257,18 @@ views::MenuItemView* DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
   DeskActionContextMenu* menu = mini_view->context_menu();
   CHECK(menu);
   return GetDeskActionContextMenuItem(menu, command_id);
+}
+
+// static
+void DesksTestApi::MaybeCloseContextMenuForGrid(OverviewGrid* overview_grid) {
+  for (DeskMiniView* mini_view :
+       overview_grid->desks_bar_view()->mini_views()) {
+    mini_view->MaybeCloseContextMenu();
+
+    // Closing the menu is asynchronous, so we want to wait until it has
+    // actually closed.
+    base::RunLoop().RunUntilIdle();
+  }
 }
 
 }  // namespace ash

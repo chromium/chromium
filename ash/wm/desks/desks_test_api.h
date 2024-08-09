@@ -94,6 +94,8 @@ class DesksTestApi {
       DeskBarViewBase::Type bar_type,
       size_t index,
       DeskActionContextMenu::CommandId command_id);
+
+  static void MaybeCloseContextMenuForGrid(OverviewGrid* overview_grid);
 };
 
 }  // namespace ash
