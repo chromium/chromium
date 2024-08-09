@@ -903,7 +903,8 @@ public class TabListMediatorUnitTest {
                 .getValue()
                 .onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
 
-        verify(mTabModel).closeTabs(argThat(params -> params.tabs.get(0) == mTab2));
+        TabClosureParams params = TabClosureParams.closeTab(mTab2).build();
+        verify(mTabModel).closeTabs(params);
     }
 
     @Test
@@ -920,7 +921,8 @@ public class TabListMediatorUnitTest {
                 .getValue()
                 .onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
 
-        verify(mTabModel).closeTabs(argThat(params -> params.tabs.get(0) == mTab2));
+        TabClosureParams params = TabClosureParams.closeTab(mTab2).allowUndo(false).build();
+        verify(mTabModel).closeTabs(params);
     }
 
     @Test

@@ -221,4 +221,26 @@ public class TabClosureParams {
                 this.saveToTabRestoreService,
                 this.tabCloseType);
     }
+
+    @Override
+    public String toString() {
+        return new StringBuilder()
+                .append("tabs ")
+                .append(this.tabs)
+                .append("\nisAllTabs ")
+                .append(this.isAllTabs)
+                .append("\nrecommendedNextTab ")
+                .append(this.recommendedNextTab)
+                .append("\nuponExit ")
+                .append(this.uponExit)
+                .append("\nallowUndo ")
+                .append(this.allowUndo)
+                .append("\nhideTabGroups ")
+                .append(this.hideTabGroups)
+                .append("\nsaveToTabRestoreService ")
+                .append(this.saveToTabRestoreService)
+                .append("\ntabCloseType ")
+                .append(this.tabCloseType)
+                .toString();
+    }
 }
