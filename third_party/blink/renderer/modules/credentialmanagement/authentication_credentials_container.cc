@@ -2124,6 +2124,15 @@ void AuthenticationCredentialsContainer::GetForIdentity(
     mediation_requirement = CredentialMediationRequirement::kOptional;
   }
 
+  if (identity_options.hasMediation()) {
+    resolver->GetExecutionContext()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "The 'mediation' parameter should be used outside of 'identity' in "
+            "the FedCM API call."));
+  }
+
   mojom::blink::RpMode rp_mode = mojom::blink::RpMode::kWidget;
   if (blink::RuntimeEnabledFeatures::FedCmButtonModeEnabled(
           resolver->GetExecutionContext())) {
