@@ -81,9 +81,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.BackgroundService.Collections.RequestLatency"
     units="ms" expires_after="2025-01-05">
-  <owner>danpeng@google.com</owner>
+  <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
-  <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     The time it took until a request from the New Tab Page for Backdrop
@@ -133,8 +132,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.BackgroundService.Images.RequestLatency" units="ms"
     expires_after="2024-11-03">
-  <owner>tiborg@chromium.org</owner>
   <owner>pauladedeji@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     The time it took until a request from the New Tab Page for Backdrop Images
@@ -447,8 +446,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.CustomizeChromeBackgroundAction"
     enum="NTPCustomizeChromeBackgroundAction" expires_after="2024-01-31">
-  <owner>tiborg@chromium.org</owner>
   <owner>pauladedeji@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Captures the actions performed when configuring a 'Chrome background' image
@@ -472,6 +471,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.CustomizeChromeSidePanelAction"
     enum="NTPCustomizeChromeSidePanelAction" expires_after="2025-02-02">
+  <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>rtatum@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -519,8 +519,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.CustomizeLocalImageBackgroundAction"
     enum="NTPCustomizeLocalImageBackgroundAction" expires_after="2024-01-31">
-  <owner>tiborg@chromium.org</owner>
   <owner>pauladedeji@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Captures the actions performed when uploading a local image as the
@@ -1600,6 +1600,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.WallpaperSearch.GetResultProcessingLatency"
     units="ms" expires_after="2024-12-08">
+  <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>rtatum@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1612,6 +1613,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.WallpaperSearch.SessionSetTheme"
     enum="NtpWallpaperSearchThemeType" expires_after="2024-08-22">
+  <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>rtatum@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1626,6 +1628,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="NewTabPage.WallpaperSearch.SetInspirationThemeProcessingLatency"
     units="ms" expires_after="2025-01-05">
+  <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>rtatum@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1640,6 +1643,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.WallpaperSearch.SetRecentThemeProcessingLatency"
     units="ms" expires_after="2024-12-15">
+  <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>rtatum@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1654,6 +1658,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.WallpaperSearch.SetResultThemeProcessingLatency"
     units="ms" expires_after="2024-12-08">
+  <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>rtatum@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1667,6 +1672,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.WallpaperSearch.Status"
     enum="NtpWallpaperSearchStatus" expires_after="2024-12-08">
+  <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>rtatum@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
