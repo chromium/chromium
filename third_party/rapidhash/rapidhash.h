@@ -231,35 +231,6 @@ inline uint64_t rapid_mix(uint64_t A, uint64_t B) {
 }
 
 /*
- *  Read functions.
- */
-inline uint64_t rapid_read64(const uint8_t* p) {
-  uint64_t v;
-  memcpy(&v, p, sizeof(uint64_t));
-  return v;
-}
-inline uint64_t rapid_read32(const uint8_t* p) {
-  uint32_t v;
-  memcpy(&v, p, sizeof(uint32_t));
-  return v;
-}
-
-/*
- *  Reads and combines 3 bytes of input.
- *
- *  @param p  Buffer to read from.
- *  @param k  Length of @p, in bytes.
- *
- *  Always reads and combines 3 bytes from memory.
- *  Guarantees to read each buffer position at least once.
- *
- *  Returns a 64-bit value containing all three bytes read.
- */
-inline uint64_t rapid_readSmall(const uint8_t* p, size_t k) {
-  return (((uint64_t)p[0]) << 56) | (((uint64_t)p[k >> 1]) << 32) | p[k - 1];
-}
-
-/*
  *  rapidhash main function.
  *
  *  @param key     Buffer to be hashed.
@@ -365,5 +336,8 @@ ALWAYS_INLINE static uint64_t rapidhash(const uint8_t* key,
                                         uint64_t seed = RAPID_SEED) {
   return rapidhash_internal<Reader>(key, len, seed, rapid_secret);
 }
+
+#undef _likely_
+#undef _unlikely_
 
 #endif  // _THIRD_PARTY_RAPIDHASH_H
