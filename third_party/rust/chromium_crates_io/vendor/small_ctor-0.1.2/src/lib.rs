@@ -62,7 +62,7 @@
 //! IO system is already unusable.  More importantly on many platforms these
 //! do not run properly.  For instance on macOS destructors do not run when
 //! thread local storage is in use.  If you do want to use something like this
-//! you can do something like invoke `libc::at_exit` from within a `#[ctor]`
+//! you can do something like invoke `libc::atexit` from within a `#[ctor]`
 //! function.
 use proc_macro::{Delimiter, Group, Ident, Literal, Punct, Spacing, Span, TokenStream, TokenTree};
 
@@ -209,13 +209,13 @@ pub fn ctor(args: TokenStream, input: TokenStream) -> TokenStream {
                 TokenTree::Group(Group::new(
                     Delimiter::Parenthesis,
                     tokens![
-                        TokenTree::Ident(Ident::new("target_os", Span::call_site())),
+                        TokenTree::Ident(Ident::new("target_vendor", Span::call_site())),
                         TokenTree::Punct(Punct::new('=', Spacing::Alone)),
-                        TokenTree::Literal(Literal::string("macos")),
+                        TokenTree::Literal(Literal::string("apple")),
                         TokenTree::Punct(Punct::new(',', Spacing::Alone)),
                         TokenTree::Ident(Ident::new("link_section", Span::call_site())),
                         TokenTree::Punct(Punct::new('=', Spacing::Alone)),
-                        TokenTree::Literal(Literal::string("__DATA_CONST,__mod_init_func")),
+                        TokenTree::Literal(Literal::string("__DATA,__mod_init_func")),
                     ],
                 ))
             ],

@@ -1546,6 +1546,12 @@ Reviewed in https://crrev.com/c/5171063
 Previously reviewed during security review and the audit is grandparented in.
 """
 
+[[audits.small_ctor]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.1 -> 0.1.2"
+notes = "I don't fully understand the changes in `lib.rs` but they seem to meet the low bar of `safe-to-run`."
+
 [[audits.static_assertions]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]

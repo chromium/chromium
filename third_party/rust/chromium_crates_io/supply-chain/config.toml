@@ -227,7 +227,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."skrifa:0.19.3"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."small_ctor:0.1.1"]
+[policy."small_ctor:0.1.2"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."static_assertions:1.1.0"]

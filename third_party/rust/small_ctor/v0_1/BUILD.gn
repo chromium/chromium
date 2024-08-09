@@ -13,15 +13,15 @@ cargo_crate("lib") {
   epoch = "0.1"
   crate_type = "proc-macro"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/small_ctor-0.1.1/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/small_ctor-0.1.2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/small_ctor-0.1.1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/small_ctor-0.1.2/src/lib.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "0.1.1"
+  cargo_pkg_version = "0.1.2"
   cargo_pkg_authors = "Armin Ronacher <armin.ronacher@active-4.com>"
   cargo_pkg_name = "small_ctor"
   cargo_pkg_description = "A minimal, dependency free version of the ctor crate"
