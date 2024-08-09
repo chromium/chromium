@@ -73,6 +73,7 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private OnTabSelectingListener mOnTabSelectingListener;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Tracker mTracker;
+    @Mock private Runnable mAppendMessageRunnable;
     @Captor private ArgumentCaptor<TabArchiveSettings.Observer> mTabArchiveSettingsObserver;
 
     private Activity mActivity;
@@ -100,7 +101,8 @@ public class ArchivedTabsMessageServiceUnitTest {
                         mRegularTabCreator,
                         mBackPressManager,
                         mModalDialogManager,
-                        mTracker);
+                        mTracker,
+                        mAppendMessageRunnable);
         mArchivedTabsMessageService.setArchivedTabsDialogCoordiantorForTesting(
                 mArchivedTabsDialogCoordinator);
         mArchivedTabsMessageService.addObserver(mMessageObserver);
@@ -133,6 +135,7 @@ public class ArchivedTabsMessageServiceUnitTest {
         assertEquals(0, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
         assertEquals(10, customCardPropertyModel.get(ARCHIVE_TIME_DELTA_DAYS));
         verify(mMessageObserver, times(1)).messageInvalidate(MessageType.ARCHIVED_TABS_MESSAGE);
+        verify(mAppendMessageRunnable).run();
     }
 
     @Test
@@ -154,6 +157,7 @@ public class ArchivedTabsMessageServiceUnitTest {
         // Sending another message to the queue should exit early without sending a message.
         verify(mMessageObserver, times(1))
                 .messageReady(eq(MessageType.ARCHIVED_TABS_MESSAGE), any());
+        verify(mAppendMessageRunnable, times(1)).run();
 
         // After invalidating the previous message, a new message should be sent.
         mArchivedTabsMessageService.maybeInvalidatePreviouslySentMessage();
@@ -161,6 +165,7 @@ public class ArchivedTabsMessageServiceUnitTest {
         verify(mMessageObserver, times(2))
                 .messageReady(eq(MessageType.ARCHIVED_TABS_MESSAGE), any());
         verify(mMessageObserver, times(1)).messageInvalidate(MessageType.ARCHIVED_TABS_MESSAGE);
+        verify(mAppendMessageRunnable, times(2)).run();
     }
 
     @Test

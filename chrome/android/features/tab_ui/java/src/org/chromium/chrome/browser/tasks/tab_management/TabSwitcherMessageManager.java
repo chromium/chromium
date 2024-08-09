@@ -294,7 +294,10 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                             mRegularTabCreator,
                             mBackPressManager,
                             mModalDialogManager,
-                            TrackerFactory.getTrackerForProfile(profile));
+                            TrackerFactory.getTrackerForProfile(profile),
+                            () ->
+                                    appendNextMessage(
+                                            MessageService.MessageType.ARCHIVED_TABS_MESSAGE));
             addObserver(mArchivedTabsMessageService);
             mMessageCardProviderCoordinator.subscribeMessageService(mArchivedTabsMessageService);
         }

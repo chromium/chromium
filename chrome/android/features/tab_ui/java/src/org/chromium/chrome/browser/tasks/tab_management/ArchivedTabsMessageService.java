@@ -115,6 +115,7 @@ public class ArchivedTabsMessageService extends MessageService
     private final @NonNull BackPressManager mBackPressManager;
     private final @NonNull ModalDialogManager mModalDialogManager;
     private final @NonNull Tracker mTracker;
+    private final @NonNull Runnable mAppendMessageRunnable;
 
     private TabArchiveSettings mTabArchiveSettings;
     private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
@@ -136,7 +137,8 @@ public class ArchivedTabsMessageService extends MessageService
             @NonNull TabCreator regularTabCreator,
             @NonNull BackPressManager backPressManager,
             @NonNull ModalDialogManager modalDialogManager,
-            @NonNull Tracker tracker) {
+            @NonNull Tracker tracker,
+            @NonNull Runnable appendMessageRunnable) {
         super(MessageType.ARCHIVED_TABS_MESSAGE);
         mContext = context;
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
@@ -149,6 +151,7 @@ public class ArchivedTabsMessageService extends MessageService
         mBackPressManager = backPressManager;
         mModalDialogManager = modalDialogManager;
         mTracker = tracker;
+        mAppendMessageRunnable = appendMessageRunnable;
 
         if (mArchivedTabModelOrchestrator.isTabModelInitialized()) {
             mArchivedTabModelOrchestratorObserver.onTabModelCreated(
@@ -239,6 +242,7 @@ public class ArchivedTabsMessageService extends MessageService
         updateModelProperties();
         sendAvailabilityNotification(new ArchivedTabsMessageData(this));
         mMessageSentToQueue = true;
+        mAppendMessageRunnable.run();
     }
 
     @VisibleForTesting
