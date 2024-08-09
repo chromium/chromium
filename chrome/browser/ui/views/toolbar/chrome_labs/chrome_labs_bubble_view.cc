@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_item_view.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
@@ -177,15 +178,20 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(views::Button* anchor_view,
                           base::Unretained(this))));
   restart_prompt_->SetVisible(about_flags::IsRestartNeededToCommitChanges());
 
-  CHECK(browser);
-  chrome_labs_action_item_ = actions::ActionManager::Get().FindAction(
-      kActionShowChromeLabs, browser->browser_actions()->root_action_item());
-  chrome_labs_action_item_->SetIsShowingBubble(true);
+  if (features::IsToolbarPinningEnabled()) {
+    CHECK(browser);
+    chrome_labs_action_item_ = actions::ActionManager::Get().FindAction(
+        kActionShowChromeLabs, browser->browser_actions()->root_action_item());
+    CHECK(chrome_labs_action_item_);
+    chrome_labs_action_item_->SetIsShowingBubble(true);
+  }
 }
 
 ChromeLabsBubbleView::~ChromeLabsBubbleView() {
-  CHECK(chrome_labs_action_item_);
-  chrome_labs_action_item_->SetIsShowingBubble(false);
+  if (features::IsToolbarPinningEnabled()) {
+    CHECK(chrome_labs_action_item_);
+    chrome_labs_action_item_->SetIsShowingBubble(false);
+  }
 }
 
 ChromeLabsItemView* ChromeLabsBubbleView::AddLabItem(

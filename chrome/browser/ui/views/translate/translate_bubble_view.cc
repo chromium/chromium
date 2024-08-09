@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/translate/translate_bubble_model_impl.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/translate/translate_icon_view.h"
 #include "chrome/common/url_constants.h"
@@ -119,7 +120,7 @@ TranslateBubbleView::~TranslateBubbleView() {
   // is referred by Combobox's destructor. Before destroying the models,
   // removing the child views is needed.
   RemoveAllChildViews();
-  if (translate_action_item_) {
+  if (features::IsToolbarPinningEnabled() && translate_action_item_) {
     translate_action_item_->SetIsShowingBubble(false);
   }
 }
@@ -177,11 +178,14 @@ void TranslateBubbleView::Init() {
     model_->ShowError(error_type_);
   }
 
-  Browser* browser = chrome::FindLastActive();
-  if (browser) {
-    translate_action_item_ = actions::ActionManager::Get().FindAction(
-        kActionShowTranslate, browser->browser_actions()->root_action_item());
-    translate_action_item_->SetIsShowingBubble(true);
+  if (features::IsToolbarPinningEnabled()) {
+    Browser* browser = chrome::FindLastActive();
+    if (browser) {
+      translate_action_item_ = actions::ActionManager::Get().FindAction(
+          kActionShowTranslate, browser->browser_actions()->root_action_item());
+      CHECK(translate_action_item_);
+      translate_action_item_->SetIsShowingBubble(true);
+    }
   }
 }
 

@@ -12,6 +12,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -131,7 +132,8 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
   }
 
   virtual void SetupFeatureList() {
-    feature_list_.InitAndEnableFeature(lens::features::kLensOverlay);
+    feature_list_.InitWithFeatures(
+        {features::kToolbarPinning, lens::features::kLensOverlay}, {});
   }
 
   CustomizeToolbarHandler& handler() { return *handler_; }
