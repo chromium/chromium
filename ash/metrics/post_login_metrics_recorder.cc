@@ -99,16 +99,6 @@ void PostLoginMetricsRecorder::AddLoginTimeMarker(
         "Ash.LoginSessionRestore.ShelfLoginAnimationEnd");
     REPORT_LOGIN_THROUGHPUT_EVENT("LoginAnimationEnd");
     REPORT_LOGIN_THROUGHPUT_EVENT("LoginFinished");
-    REPORT_LOGIN_THROUGHPUT_EVENT(
-        "Ash.LoginAnimation.Smoothness.ClamshellMode");
-    REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Smoothness.TabletMode");
-    REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Jank.ClamshellMode");
-    REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Jank.TabletMode");
-    REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Duration2.ClamshellMode");
-    REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Duration2.TabletMode");
-    REPORT_LOGIN_THROUGHPUT_EVENT(
-        "Ash.UnlockAnimation.Smoothness.ClamshellMode");
-    REPORT_LOGIN_THROUGHPUT_EVENT("Ash.UnlockAnimation.Smoothness.TabletMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("ArcUiAvailable");
     REPORT_LOGIN_THROUGHPUT_EVENT("OnAuthSuccess");
     REPORT_LOGIN_THROUGHPUT_EVENT("UserLoggedIn");
@@ -251,15 +241,10 @@ void PostLoginMetricsRecorder::OnCompositorAnimationFinished(
   int duration_ms = (ts - timestamp_origin_.value()).InMilliseconds();
 
   base::UmaHistogramPercentage(smoothness_name + suffix, smoothness);
-  AddLoginTimeMarker(smoothness_name + suffix);
-
   base::UmaHistogramPercentage(jank_name + suffix, jank);
-  AddLoginTimeMarker(jank_name + suffix);
-
   base::UmaHistogramCustomTimes(
       duration_name + suffix, base::Milliseconds(duration_ms),
       base::Milliseconds(100), base::Seconds(30), 100);
-  AddLoginTimeMarker(duration_name + suffix);
 }
 
 void PostLoginMetricsRecorder::OnArcUiReady(base::TimeTicks ts) {
