@@ -291,8 +291,7 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
                const base::Time& timestamp,
                const GURL& favicon_url,
                const std::string& session_name,
-               const DeviceFormFactor& form_factor,
-               const ui::ImageModel& backup_icon);
+               const DeviceFormFactor& form_factor);
   BirchTabItem(BirchTabItem&&);
   BirchTabItem(const BirchTabItem&);
   BirchTabItem& operator=(const BirchTabItem&);
@@ -323,7 +322,6 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
   std::string session_name_;
   DeviceFormFactor form_factor_;
   SecondaryIconType secondary_icon_type_;
-  ui::ImageModel backup_icon_;
 };
 
 // A birch item for the last active URL.
@@ -384,7 +382,6 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
                      const GURL& url,
                      const base::Time& shared_time,
                      const std::u16string& device_name,
-                     const ui::ImageModel& backup_icon,
                      const SecondaryIconType& secondary_icon_type,
                      base::RepeatingClosure activation_callback);
   BirchSelfShareItem(BirchSelfShareItem&&);
@@ -413,7 +410,6 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
   std::u16string guid_;
   GURL url_;
   base::Time shared_time_;
-  ui::ImageModel backup_icon_;
   SecondaryIconType secondary_icon_type_;
   // `activation_callback_` is triggered when the item is clicked by the user,
   // calling `OnItemPressed()` in `BirchSelfShareProvider` to mark the
@@ -427,7 +423,6 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
  public:
   BirchLostMediaItem(const GURL& source_url,
                      const std::u16string& media_title,
-                     const ui::ImageModel& backup_icon,
                      const SecondaryIconType& secondary_icon_type,
                      base::RepeatingClosure activation_callback);
   BirchLostMediaItem(BirchLostMediaItem&&);
@@ -453,7 +448,6 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
 
   GURL source_url_;
   std::u16string media_title_;
-  ui::ImageModel backup_icon_;
   SecondaryIconType secondary_icon_type_;
   base::RepeatingClosure activation_callback_;
 };
@@ -462,8 +456,7 @@ class ASH_EXPORT BirchWeatherItem : public BirchItem {
  public:
   BirchWeatherItem(const std::u16string& weather_description,
                    float temp_f,
-                   const GURL& icon_url,
-                   const ui::ImageModel& backup_icon);
+                   const GURL& icon_url);
   BirchWeatherItem(BirchWeatherItem&&);
   BirchWeatherItem(const BirchWeatherItem&);
   BirchWeatherItem& operator=(const BirchWeatherItem&);
@@ -487,7 +480,6 @@ class ASH_EXPORT BirchWeatherItem : public BirchItem {
 
   float temp_f_;
   GURL icon_url_;
-  ui::ImageModel backup_icon_;
 };
 
 class ASH_EXPORT BirchCoralItem : public BirchItem {

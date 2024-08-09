@@ -12,12 +12,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/target_device_info.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
 
@@ -89,10 +87,6 @@ void BirchSelfShareProvider::RequestBirchDataFetch() {
 
   items_.clear();
 
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  const ui::ImageModel backup_icon = ui::ImageModel::FromImageSkia(
-      *rb.GetImageSkiaNamed(IDR_CHROME_APP_ICON_192));
-
   for (std::string guid : new_guids) {
     const send_tab_to_self::SendTabToSelfEntry* entry =
         model->GetEntryByGUID(guid);
@@ -134,8 +128,7 @@ void BirchSelfShareProvider::RequestBirchDataFetch() {
       items_.emplace_back(
           base::UTF8ToUTF16(entry_guid), base::UTF8ToUTF16(entry->GetTitle()),
           entry->GetURL(), entry->GetSharedTime(),
-          base::UTF8ToUTF16(entry->GetDeviceName()), backup_icon,
-          secondary_icon_type,
+          base::UTF8ToUTF16(entry->GetDeviceName()), secondary_icon_type,
           base::BindRepeating(&BirchSelfShareProvider::OnItemPressed,
                               weak_factory_.GetWeakPtr(), entry_guid));
     }

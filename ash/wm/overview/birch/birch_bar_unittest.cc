@@ -399,8 +399,7 @@ class BirchBarTest : public AshTestBase {
           /*timestamp=*/base::Time(),
           /*favicon_url=*/GURL("https://www.favicon.com/"),
           /*session_name=*/"session",
-          /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop,
-          /*backup_icon=*/ui::ImageModel());
+          /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop);
       item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetRecentTabsItems(item_list);
@@ -435,7 +434,6 @@ class BirchBarTest : public AshTestBase {
           /*guid=*/u"self share guid", /*title*/ u"self share tab",
           /*url=*/GURL("https://www.exampletwo.com/"),
           /*shared_time=*/base::Time(), /*device_name=*/u"my device",
-          /*backup_icon=*/ui::ImageModel(),
           /*secondary_icon_type=*/SecondaryIconType::kTabFromDesktop,
           /*activation_callback=*/base::DoNothing());
       item_list.back().set_ranking(1.0f);
@@ -450,7 +448,6 @@ class BirchBarTest : public AshTestBase {
       item_list.emplace_back(
           /*source_url=*/GURL("https://www.source.com/"),
           /*media_title=*/u"media title",
-          /*backup_icon=*/ui::ImageModel(),
           /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideo,
           /*activation_callback=*/base::DoNothing());
       item_list.back().set_ranking(1.0f);
@@ -477,8 +474,7 @@ class BirchBarTest : public AshTestBase {
     for (size_t i = 0; i < num; i++) {
       item_list.emplace_back(/*weather_description=*/u"cloudy",
                              /*temperature=*/72.f,
-                             /*icon_url=*/GURL("http://icon.com/"),
-                             /*backup_icon=*/ui::ImageModel());
+                             /*icon_url=*/GURL("http://icon.com/"));
       item_list.back().set_ranking(1.0f);
     }
     weather_provider_->set_items(item_list);

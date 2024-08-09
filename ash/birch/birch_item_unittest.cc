@@ -120,8 +120,7 @@ class BirchItemTest : public testing::Test {
 
 TEST_F(BirchItemTest, RecordActionMetrics_Basics) {
   base::HistogramTester histograms;
-  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"),
-                        ui::ImageModel());
+  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"));
   item.set_ranking(5.f);
   item.RecordActionMetrics();
   histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 1);
@@ -132,8 +131,7 @@ TEST_F(BirchItemTest, RecordActionMetrics_Basics) {
 
 TEST_F(BirchItemTest, RecordActionMetrics_FirstSecondThird) {
   base::HistogramTester histograms;
-  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"),
-                        ui::ImageModel());
+  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"));
 
   // First action records in "ActivateFirst" metric.
   item.RecordActionMetrics();
@@ -428,8 +426,7 @@ TEST_F(BirchItemTest, File_PerformAction_Histograms) {
 }
 
 TEST_F(BirchItemTest, Weather_PerformAction) {
-  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"),
-                        ui::ImageModel());
+  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"));
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_,
             GURL("https://google.com/search?q=weather"));
@@ -437,8 +434,7 @@ TEST_F(BirchItemTest, Weather_PerformAction) {
 
 TEST_F(BirchItemTest, Weather_PerformAction_Histograms) {
   base::HistogramTester histograms;
-  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"),
-                        ui::ImageModel());
+  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"));
   item.PerformAction();
   histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.Chip.Activate",
@@ -450,15 +446,13 @@ using BirchWeatherItemTest = AshTestBase;
 
 TEST_F(BirchWeatherItemTest, AddonLabelInFahrenheit) {
   GetPrefService()->SetBoolean(prefs::kBirchUseCelsius, false);
-  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"),
-                        ui::ImageModel());
+  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"));
   EXPECT_EQ(item.addon_label(), u"72");
 }
 
 TEST_F(BirchWeatherItemTest, AddonLabelInCelsius) {
   GetPrefService()->SetBoolean(prefs::kBirchUseCelsius, true);
-  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"),
-                        ui::ImageModel());
+  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"));
   EXPECT_EQ(item.addon_label(), u"22");
 }
 
@@ -466,8 +460,7 @@ TEST_F(BirchItemTest, Tab_Subtitle_Recent) {
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time::Now() - base::Minutes(5),
                     /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
-                    /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop,
-                    /*backup_icon=*/ui::ImageModel());
+                    /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop);
   EXPECT_EQ(item.subtitle(), u"Within 1 hr · From Chromebook");
 }
 
@@ -475,8 +468,7 @@ TEST_F(BirchItemTest, Tab_Subtitle_OneHour) {
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time::Now() - base::Minutes(65),
                     /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
-                    /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop,
-                    /*backup_icon=*/ui::ImageModel());
+                    /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop);
   EXPECT_EQ(item.subtitle(), u"1 hr ago · From Chromebook");
 }
 
@@ -484,8 +476,7 @@ TEST_F(BirchItemTest, Tab_Subtitle_TwoHours) {
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time::Now() - base::Minutes(125),
                     /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
-                    /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop,
-                    /*backup_icon=*/ui::ImageModel());
+                    /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop);
   EXPECT_EQ(item.subtitle(), u"2 hr ago · From Chromebook");
 }
 
@@ -494,8 +485,7 @@ TEST_F(BirchItemTest, Tab_Subtitle_Yesterday) {
       u"item", /*url=*/GURL("http://example.com/"),
       /*timestamp=*/base::Time::Now().LocalMidnight() - base::Minutes(5),
       /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
-      /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop,
-      /*backup_icon=*/ui::ImageModel());
+      /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop);
   EXPECT_EQ(item.subtitle(), u"Yesterday · From Chromebook");
 }
 
@@ -503,8 +493,7 @@ TEST_F(BirchItemTest, Tab_PerformAction_ValidUrl) {
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time(),
                     /*favicon_url=*/GURL(), /*session_name=*/"",
-                    /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop,
-                    /*backup_icon=*/ui::ImageModel());
+                    /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop);
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_,
             GURL("http://example.com/"));
@@ -514,8 +503,7 @@ TEST_F(BirchItemTest, Tab_PerformAction_EmptyUrl) {
   BirchTabItem item(u"item", /*url=*/GURL(),
                     /*timestamp=*/base::Time(),
                     /*favicon_url=*/GURL(), /*session_name=*/"",
-                    /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop,
-                    /*backup_icon=*/ui::ImageModel());
+                    /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop);
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
 }
@@ -525,8 +513,7 @@ TEST_F(BirchItemTest, Tab_PerformAction_Histograms) {
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time(),
                     /*favicon_url=*/GURL(), /*session_name=*/"",
-                    /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop,
-                    /*backup_icon=*/ui::ImageModel());
+                    /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop);
   item.PerformAction();
   histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.Chip.Activate", BirchItemType::kTab,
@@ -564,7 +551,6 @@ TEST_F(BirchItemTest, SelfShare_PerformAction) {
       /*guid=*/u"self share guid", /*title*/ u"self share tab",
       /*url=*/GURL("https://www.example.com/"),
       /*shared_time=*/base::Time(), /*device_name=*/u"my device",
-      /*backup_icon=*/ui::ImageModel(),
       /*secondary_icon_type=*/SecondaryIconType::kTabFromDesktop,
       /*activation_callback=*/activation_callback.Get());
   EXPECT_CALL(activation_callback, Run).Times(1);
@@ -654,8 +640,7 @@ TEST_F(BirchItemIconTest, Tab_LoadIcon) {
                     /*timestamp=*/base::Time(),
                     /*favicon_url=*/GURL("http://icon.com/"),
                     /*session_name=*/"",
-                    /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop,
-                    /*backup_icon=*/ui::ImageModel());
+                    /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop);
   base::test::TestFuture<const ui::ImageModel&, SecondaryIconType> future;
   item.LoadIcon(future.GetCallback());
   // The favicon service was queried.
@@ -675,8 +660,7 @@ TEST_F(BirchItemIconTest, Tab_LoadIcon_InvalidUrl) {
                     /*timestamp=*/base::Time(),
                     /*favicon_url=*/GURL("invalid-url"),
                     /*session_name=*/"",
-                    /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop,
-                    /*backup_icon=*/ui::ImageModel());
+                    /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop);
   base::test::TestFuture<const ui::ImageModel&, SecondaryIconType> future;
   item.LoadIcon(future.GetCallback());
   // Secondary icon is of type no icon.
@@ -687,8 +671,7 @@ TEST_F(BirchItemIconTest, Tab_LoadIcon_InvalidUrl) {
 }
 
 TEST_F(BirchItemIconTest, Weather_LoadIcon) {
-  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"),
-                        ui::ImageModel());
+  BirchWeatherItem item(u"item", 72.f, GURL("http://icon.com/"));
 
   item.LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
@@ -698,11 +681,13 @@ TEST_F(BirchItemIconTest, Weather_LoadIcon) {
 }
 
 TEST_F(BirchItemIconTest, Weather_LoadIcon_NoIcon) {
-  BirchWeatherItem item(u"Sunny", 72.f, GURL(), ui::ImageModel());
+  BirchWeatherItem item(u"Sunny", 72.f, GURL());
 
   item.LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
-        EXPECT_TRUE(icon.IsEmpty());
+        // In the case where an invalid icon_url is provided, there should still
+        // be a valid backup_icon.
+        EXPECT_FALSE(icon.IsEmpty());
         EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 }
@@ -729,10 +714,9 @@ TEST_F(BirchItemIconTest, File_LoadIcon) {
 
 TEST_F(BirchItemIconTest, SelfShare_LoadIcon) {
   const GURL page_url = GURL("https://www.example.com/");
-  BirchSelfShareItem item(u"self share guid", u"self share tab", page_url,
-                          base::Time(), u"my device", ui::ImageModel(),
-                          SecondaryIconType::kTabFromDesktop,
-                          base::DoNothing());
+  BirchSelfShareItem item(
+      u"self share guid", u"self share tab", page_url, base::Time(),
+      u"my device", SecondaryIconType::kTabFromDesktop, base::DoNothing());
   base::test::TestFuture<const ui::ImageModel&, SecondaryIconType> future;
   item.LoadIcon(future.GetCallback());
   // The favicon service was queried.
@@ -748,14 +732,14 @@ TEST_F(BirchItemIconTest, SelfShare_LoadIcon) {
 }
 
 TEST_F(BirchItemTest, LostMedia_VideoConference_Subtitle) {
-  BirchLostMediaItem item(GURL(), u"test_title", ui::ImageModel(),
+  BirchLostMediaItem item(GURL(), u"test_title",
                           SecondaryIconType::kLostMediaVideoConference,
                           base::DoNothing());
   EXPECT_EQ(item.subtitle(), u"Ongoing · Switch to tab");
 }
 
 TEST_F(BirchItemTest, LostMedia_MediaTab_Subtitle) {
-  BirchLostMediaItem item(GURL(), u"test_title", ui::ImageModel(),
+  BirchLostMediaItem item(GURL(), u"test_title",
                           SecondaryIconType::kLostMediaVideo,
                           base::DoNothing());
   EXPECT_EQ(item.subtitle(), u"Playing · Switch to tab");
@@ -763,7 +747,7 @@ TEST_F(BirchItemTest, LostMedia_MediaTab_Subtitle) {
 
 TEST_F(BirchItemIconTest, LostMedia_LoadIcon) {
   const GURL page_url = GURL("https://www.example.com/");
-  BirchLostMediaItem item(page_url, u"test_title", ui::ImageModel(),
+  BirchLostMediaItem item(page_url, u"test_title",
                           SecondaryIconType::kLostMediaVideoConference,
                           base::DoNothing());
   base::test::TestFuture<const ui::ImageModel&, SecondaryIconType> future;

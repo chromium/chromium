@@ -139,11 +139,8 @@ void BirchWeatherProvider::AddItemToBirchModel(
     const std::u16string& weather_description,
     float temp_f,
     const std::string& icon_url) {
-  // Use the product logo ("favicon error") as the backup icon.
-  ui::ImageModel backup_icon =
-      ui::ImageModel::FromVectorIcon(kBirchFaviconErrorIcon);
   std::vector<BirchWeatherItem> items;
-  items.emplace_back(weather_description, temp_f, GURL(icon_url), backup_icon);
+  items.emplace_back(weather_description, temp_f, GURL(icon_url));
   birch_model_->SetWeatherItems(std::move(items));
 }
 

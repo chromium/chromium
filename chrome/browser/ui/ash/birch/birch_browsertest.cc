@@ -47,8 +47,7 @@ class TestWeatherProvider : public BirchDataProvider {
   // BirchDataProvider:
   void RequestBirchDataFetch() override {
     std::vector<BirchWeatherItem> items;
-    items.emplace_back(u"Cloudy", 70.f, GURL("http://icon.com/"),
-                       ui::ImageModel());
+    items.emplace_back(u"Cloudy", 70.f, GURL("http://icon.com/"));
     Shell::Get()->birch_model()->SetWeatherItems(std::move(items));
   }
 };
@@ -143,8 +142,7 @@ class TestRecentTabsProvider : public BirchDataProvider {
     std::vector<BirchTabItem> items;
     items.emplace_back(u"tab", GURL("http://example.com/"), base::Time::Now(),
                        GURL("http://favicon.com/"), "session",
-                       BirchTabItem::DeviceFormFactor::kDesktop,
-                       ui::ImageModel());
+                       BirchTabItem::DeviceFormFactor::kDesktop);
     Shell::Get()->birch_model()->SetRecentTabItems(std::move(items));
   }
 };
@@ -186,7 +184,7 @@ class TestSelfShareProvider : public BirchDataProvider {
   void RequestBirchDataFetch() override {
     std::vector<BirchSelfShareItem> items;
     items.emplace_back(u"guid", u"tab", GURL("http://example.com/"),
-                       base::Time::Now(), u"my device", ui::ImageModel(),
+                       base::Time::Now(), u"my device",
                        SecondaryIconType::kTabFromPhone, base::DoNothing());
     Shell::Get()->birch_model()->SetSelfShareItems(std::move(items));
   }
@@ -201,7 +199,7 @@ class TestLostMediaProvider : public BirchDataProvider {
   void RequestBirchDataFetch() override {
     std::vector<BirchLostMediaItem> items;
     items.emplace_back(GURL("https://www.source.com"), u"media title",
-                       ui::ImageModel(), SecondaryIconType::kLostMediaVideo,
+                       SecondaryIconType::kLostMediaVideo,
                        base::BindRepeating(&TestLostMediaProvider::OnActivation,
                                            weak_factory_.GetWeakPtr()));
     Shell::Get()->birch_model()->SetLostMediaItems(std::move(items));

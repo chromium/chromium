@@ -22,8 +22,6 @@ namespace {
 std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
   static const GURL kTestURL("https://www.example.com");
   static const GURL kTestFaviconURL("https://www.favicon.com");
-  static const ui::ImageModel kTestIcon =
-      ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(20));
 
   std::vector<std::unique_ptr<BirchItem>> items;
   switch (type) {
@@ -68,15 +66,13 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
           /*timestamp=*/base::Time(),
           /*favicon_url=*/kTestFaviconURL,
           /*session_name=*/"session",
-          /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop,
-          /*backup_icon=*/kTestIcon));
+          /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop));
       break;
     case BirchItemType::kWeather:
       items.push_back(std::make_unique<BirchWeatherItem>(
           /*weather_description=*/u"cloudy",
           /*temperature=*/72.f,
-          /*icon_url=*/GURL("http://icon.com/"),
-          /*icon=*/kTestIcon));
+          /*icon_url=*/GURL("http://icon.com/")));
       break;
     case BirchItemType::kReleaseNotes:
       items.push_back(std::make_unique<BirchReleaseNotesItem>(
@@ -90,7 +86,6 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
           /*guid=*/u"self share guid", /*title*/ u"self share tab",
           /*url=*/kTestURL,
           /*shared_time=*/base::Time(), /*device_name=*/u"my device",
-          /*backup_icon=*/kTestIcon,
           /*secondary_icon_type=*/SecondaryIconType::kTabFromDesktop,
           /*activation_callback=*/base::DoNothing()));
       break;
@@ -109,13 +104,11 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
       items.push_back(std::make_unique<BirchLostMediaItem>(
           /*source_url=*/kTestURL,
           /*media_title=*/u"lost media",
-          /*backup_icon=*/kTestIcon,
           /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideoConference,
           /*activation_callback=*/base::DoNothing()));
       items.push_back(std::make_unique<BirchLostMediaItem>(
           /*source_url=*/kTestURL,
           /*media_title=*/u"lost media",
-          /*backup_icon=*/kTestIcon,
           /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideo,
           /*activation_callback=*/base::DoNothing()));
       break;

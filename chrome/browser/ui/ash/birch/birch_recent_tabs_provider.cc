@@ -18,13 +18,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
 
@@ -125,10 +123,6 @@ void BirchRecentTabsProvider::RequestBirchDataFetch() {
 
   std::vector<BirchTabItem> items;
 
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  const ui::ImageModel backup_icon = ui::ImageModel::FromImageSkia(
-      *rb.GetImageSkiaNamed(IDR_CHROME_APP_ICON_192));
-
   for (auto& session : remote_sessions) {
     const std::string& session_tag = session->GetSessionTag();
     std::vector<const sessions::SessionTab*> tabs_in_session;
@@ -141,7 +135,7 @@ void BirchRecentTabsProvider::RequestBirchDataFetch() {
             current_navigation.title(), current_navigation.virtual_url(),
             current_navigation.timestamp(), current_navigation.favicon_url(),
             session->GetSessionName(),
-            GetTabItemFormFactor(session->GetDeviceFormFactor()), backup_icon);
+            GetTabItemFormFactor(session->GetDeviceFormFactor()));
       }
     }
   }
@@ -158,15 +152,11 @@ void BirchRecentTabsProvider::OnTabsRetrieved(
     std::vector<crosapi::mojom::TabSuggestionItemPtr> items) {
   std::vector<BirchTabItem> tab_items;
 
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  const ui::ImageModel backup_icon = ui::ImageModel::FromImageSkia(
-      *rb.GetImageSkiaNamed(IDR_CHROME_APP_ICON_192));
-
   for (auto& item : items) {
     tab_items.emplace_back(base::UTF8ToUTF16(item->title), item->url,
                            item->timestamp, item->favicon_url,
                            item->session_name,
-                           FromMojomFormFactor(item->form_factor), backup_icon);
+                           FromMojomFormFactor(item->form_factor));
   }
   Shell::Get()->birch_model()->SetRecentTabItems(std::move(tab_items));
 }
