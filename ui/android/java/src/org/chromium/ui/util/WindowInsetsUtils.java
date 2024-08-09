@@ -26,8 +26,8 @@ public final class WindowInsetsUtils {
     private static final Size DEFAULT_INSETS_FRAME = new Size(0, 0);
     private static final List<Rect> DEFAULT_INSETS_BOUNDING_RECTS = List.of();
 
-    private static Size sDefaultFrame;
-    private static List<Rect> sDefaultBoundingRects;
+    private static boolean sGetFrameMethodNotFound;
+    private static boolean sGetBoundingRectsMethodNotFound;
 
     /** Private constructor to stop instantiation. */
     private WindowInsetsUtils() {}
@@ -130,14 +130,14 @@ public final class WindowInsetsUtils {
         // This invocation is wrapped in a try-catch block to allow backporting of the #getFrame()
         // API on pre-V devices. On pre-V devices not supporting this API, a default value will be
         // cached on the first failure and returned subsequently.
-        if (sDefaultFrame != null) return sDefaultFrame;
+        if (sGetFrameMethodNotFound) return DEFAULT_INSETS_FRAME;
         try {
             return windowInsets == null ? DEFAULT_INSETS_FRAME : windowInsets.getFrame();
         } catch (NoSuchMethodError e) {
             Log.w(TAG, e.toString());
-            sDefaultFrame = DEFAULT_INSETS_FRAME;
+            sGetFrameMethodNotFound = true;
+            return DEFAULT_INSETS_FRAME;
         }
-        return sDefaultFrame;
     }
 
     /** See {@link WindowInsets#getBoundingRects(int)} for details. */
@@ -147,16 +147,16 @@ public final class WindowInsetsUtils {
         // This invocation is wrapped in a try-catch block to allow backporting of the
         // #getBoundingRects() API on pre-V devices. On pre-V devices not supporting this API, a
         // default value will be cached on the first failure and returned subsequently.
-        if (sDefaultBoundingRects != null) return sDefaultBoundingRects;
+        if (sGetBoundingRectsMethodNotFound) return DEFAULT_INSETS_BOUNDING_RECTS;
         try {
             return windowInsets == null
                     ? DEFAULT_INSETS_BOUNDING_RECTS
                     : windowInsets.getBoundingRects(insetType);
         } catch (NoSuchMethodError e) {
             Log.w(TAG, e.toString());
-            sDefaultBoundingRects = DEFAULT_INSETS_BOUNDING_RECTS;
+            sGetBoundingRectsMethodNotFound = true;
+            return DEFAULT_INSETS_BOUNDING_RECTS;
         }
-        return sDefaultBoundingRects;
     }
 
     private static void forEachRect(Region region, Callback<Rect> rectConsumer) {
