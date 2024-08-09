@@ -123,8 +123,8 @@ TEST_P(TextFragmentPainterTest, WheelEventListenerOnInlineElement) {
   )HTML");
 
   SetWheelEventListener("child");
-  HitTestData hit_test_data;
-  hit_test_data.wheel_event_rects = {gfx::Rect(0, 0, 150, 50)};
+  auto* hit_test_data = MakeGarbageCollected<HitTestData>();
+  hit_test_data->wheel_event_rects = {gfx::Rect(0, 0, 150, 50)};
   auto* parent = GetLayoutBoxByElementId("parent");
   EXPECT_THAT(
       ContentPaintChunks(),
@@ -133,7 +133,7 @@ TEST_P(TextFragmentPainterTest, WheelEventListenerOnInlineElement) {
                                PaintChunk::Id(parent->Layer()->Id(),
                                               DisplayItem::kLayerChunk),
                                parent->FirstFragment().ContentsProperties(),
-                               &hit_test_data, gfx::Rect(0, 0, 150, 100))));
+                               hit_test_data, gfx::Rect(0, 0, 150, 100))));
 }
 
 }  // namespace blink

@@ -1493,7 +1493,7 @@ PaintPropertyChangeType ViewTransitionStyleTracker::UpdateCaptureClip(
     }
 
     ClipPaintPropertyNode::State state(
-        current_transform, *element_data->captured_rect_in_layout_space,
+        *current_transform, *element_data->captured_rect_in_layout_space,
         FloatRoundedRect(*element_data->captured_rect_in_layout_space));
 
     if (!element_data->clip_node) {
@@ -1519,7 +1519,7 @@ const ClipPaintPropertyNode* ViewTransitionStyleTracker::GetCaptureClip(
       continue;
     }
     DCHECK(element_data->clip_node);
-    return element_data->clip_node.get();
+    return element_data->clip_node.Get();
   }
   NOTREACHED_IN_MIGRATION();
   return nullptr;
@@ -1923,6 +1923,7 @@ void ViewTransitionStyleTracker::InvalidateHitTestingCache() {
 
 void ViewTransitionStyleTracker::ElementData::Trace(Visitor* visitor) const {
   visitor->Trace(target_element);
+  visitor->Trace(clip_node);
 }
 
 // TODO(vmpstr): We need to write tests for the following:

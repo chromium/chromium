@@ -1523,11 +1523,11 @@ TEST_F(FrameSelectionTest, PaintCaretRecordsSelectionWithNoSelectionHandles) {
 
   const PaintChunk& chunk = paint_controller->GetPaintChunks()[0];
   EXPECT_THAT(chunk.layer_selection_data, Not(IsNull()));
-  LayerSelectionData selection_data = *chunk.layer_selection_data;
-  EXPECT_TRUE(selection_data.start.has_value());
-  EXPECT_EQ(gfx::SelectionBound::HIDDEN, selection_data.start->type);
-  EXPECT_TRUE(selection_data.end.has_value());
-  EXPECT_EQ(gfx::SelectionBound::HIDDEN, selection_data.end->type);
+  LayerSelectionData* selection_data = chunk.layer_selection_data;
+  EXPECT_TRUE(selection_data->start.has_value());
+  EXPECT_EQ(gfx::SelectionBound::HIDDEN, selection_data->start->type);
+  EXPECT_TRUE(selection_data->end.has_value());
+  EXPECT_EQ(gfx::SelectionBound::HIDDEN, selection_data->end->type);
 }
 
 }  // namespace blink
