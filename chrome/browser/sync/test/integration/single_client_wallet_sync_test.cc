@@ -31,7 +31,6 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/prefs/pref_service.h"
@@ -85,8 +84,6 @@ MATCHER(AddressHasConverted, "") {
 
 const char kLocalGuidA[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
 const char kDifferentBillingAddressId[] = "another address entity ID";
-const base::Time kArbitraryDefaultTime =
-    base::Time::FromSecondsSinceUnixEpoch(25);
 
 template <class T>
 class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {
@@ -167,10 +164,7 @@ class TestForAuthError : public UpdatedProgressMarkerChecker {
 
 class SingleClientWalletSyncTest : public SyncTest {
  public:
-  SingleClientWalletSyncTest() : SyncTest(SINGLE_CLIENT) {
-    test_clock_.SetNow(kArbitraryDefaultTime);
-  }
-
+  SingleClientWalletSyncTest() : SyncTest(SINGLE_CLIENT) {}
   SingleClientWalletSyncTest(const SingleClientWalletSyncTest&) = delete;
   SingleClientWalletSyncTest& operator=(const SingleClientWalletSyncTest&) =
       delete;
@@ -231,12 +225,9 @@ class SingleClientWalletSyncTest : public SyncTest {
         .Wait();
   }
 
-  void AdvanceAutofillClockByOneDay() { test_clock_.Advance(base::Days(1)); }
-
   testing::NiceMock<autofill::PersonalDataLoadedObserverMock>
       personal_data_observer_;
   base::HistogramTester histogram_tester_;
-  autofill::TestAutofillClock test_clock_;
 };
 
 // ChromeOS does not support late signin after profile creation, so the test
