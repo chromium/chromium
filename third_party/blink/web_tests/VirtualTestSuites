@@ -3250,5 +3250,34 @@
     ],
     "expires": "Jan 1, 2025",
     "owners": ["moonira@google.com"]
+  },
+  {
+    "prefix": "css-relative-currentcolor-disabled",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/css/css-color/relative-currentcolor-a98rgb-01.html",
+      "external/wpt/css/css-color/relative-currentcolor-displayp3-01.html",
+      "external/wpt/css/css-color/relative-currentcolor-hsl-01.html",
+      "external/wpt/css/css-color/relative-currentcolor-hsl-02.html",
+      "external/wpt/css/css-color/relative-currentcolor-hwb-01.html",
+      "external/wpt/css/css-color/relative-currentcolor-lab-01.html",
+      "external/wpt/css/css-color/relative-currentcolor-lch-01.html",
+      "external/wpt/css/css-color/relative-currentcolor-oklab-01.html",
+      "external/wpt/css/css-color/relative-currentcolor-oklch-01.html",
+      "external/wpt/css/css-color/relative-currentcolor-prophoto-01.html",
+      "external/wpt/css/css-color/relative-currentcolor-rec2020-01.html",
+      "external/wpt/css/css-color/relative-currentcolor-rec2020-02.html",
+      "external/wpt/css/css-color/relative-currentcolor-rgb-01.html",
+      "external/wpt/css/css-color/relative-currentcolor-rgb-02.html",
+      "external/wpt/css/css-color/relative-currentcolor-xyzd50-01.html",
+      "external/wpt/css/css-color/relative-currentcolor-xyzd65-01.html",
+      "external/wpt/css/css-color/parsing/color-computed-relative-color.html",
+      "external/wpt/css/css-color/parsing/color-invalid-relative-color.html",
+      "external/wpt/css/css-color/parsing/color-valid-relative-color.html",
+      "external/wpt/css/css-color/parsing/relative-color-out-of-gamut.html"
+    ],
+    "args": ["--disable-blink-features=CSSRelativeColorSupportsCurrentcolor"],
+    "owners": ["kbabbitt@microsoft.com"],
+    "expires": "Jan 1, 2025"
   }
 ]

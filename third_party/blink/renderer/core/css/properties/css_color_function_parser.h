@@ -55,11 +55,13 @@ class CORE_EXPORT ColorFunctionParser {
       double percentage_base,
       const CSSColorChannelMap& color_channel_map);
 
+  bool IsRelativeColor() const;
+
   Color::ColorSpace color_space_ = Color::ColorSpace::kNone;
   std::array<const CSSValue*, 3> unresolved_channels_;
   std::array<std::optional<double>, 3> channels_;
   std::array<ChannelType, 3> channel_types_;
-  const CSSValue* unresolved_alpha_;
+  const CSSValue* unresolved_alpha_ = nullptr;
   ChannelType alpha_channel_type_;
   std::optional<double> alpha_ = 1.0;
 
@@ -74,8 +76,8 @@ class CORE_EXPORT ColorFunctionParser {
   bool has_none_ = false;
 
   // For relative colors
-  bool is_relative_color_ = false;
-  Color origin_color_;
+  const CSSValue* unresolved_origin_color_ = nullptr;
+  std::optional<Color> origin_color_;
   CSSColorChannelMap color_channel_map_;
 };
 

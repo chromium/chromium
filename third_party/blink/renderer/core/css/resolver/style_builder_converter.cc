@@ -23,14 +23,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-#include "third_party/blink/renderer/core/style/style_view_transition_group.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 
 #include <algorithm>
 #include <memory>
@@ -67,6 +64,7 @@
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
 #include "third_party/blink/renderer/core/css/css_reflect_value.h"
+#include "third_party/blink/renderer/core/css/css_relative_color_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -93,6 +91,7 @@
 #include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
+#include "third_party/blink/renderer/core/style/style_view_transition_group.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -2441,6 +2440,14 @@ StyleColor ResolveColorValue(const CSSValue& value,
         color_mix_value->ColorInterpolationSpace(),
         color_mix_value->HueInterpolationMethod(), style_color1, style_color2,
         mix_amount, alpha_multiplier));
+  }
+
+  if (auto* relative_color_value =
+          DynamicTo<cssvalue::CSSRelativeColorValue>(value)) {
+    // TODO(crbug.com/325309578): Convert unresolved relative color values.
+    return ResolveColorValue(relative_color_value->OriginColor(),
+                             text_link_colors, used_color_scheme,
+                             color_provider, for_visited_link);
   }
 
   auto& light_dark_pair = To<CSSLightDarkValuePair>(value);
