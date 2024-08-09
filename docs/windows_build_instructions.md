@@ -397,6 +397,29 @@ $ autoninja -C out\Default ..\..\base\logging.cc^^
 In addition to `foo.cc^^`, Siso also supports `foo.h^^` syntax to compile
 the corresponding `foo.o` if it exists.
 
+If you run a `bash` shell, you can use the following script to ease invocation:
+
+```shell
+#!/bin/sh
+files=("${@/#/..\/..\/}")
+autoninja -C out/Default ${files[@]/%/^^}
+```
+
+This script assumes it is run from `src` and your output dir is `out/Default`;
+it invokes `autoninja` to compile all given files. If you place it in your
+`$PATH` and name it e.g. `compile`, you can invoke like this:
+
+```shell
+$ pwd  # Just to illustrate where this is run from
+/c/src
+$ compile base/time/time.cc base/time/time_unittest.cc
+...
+[0/47] 5.56s S CXX obj/base/base/time.obj
+...
+[2/3] 9.27s S CXX obj/base/base_unittests/time_unittest.obj
+...
+```
+
 ## Run Chromium
 
 Once it is built, you can simply run the browser:
