@@ -66,7 +66,7 @@ TEST(H264AnnexBToAvcBitstreamConverterTest, Success) {
 
       EXPECT_EQ(config.version, 1);
       EXPECT_EQ(config.profile_indication, 66);
-      EXPECT_EQ(config.profile_compatibility, 3);
+      EXPECT_EQ(config.profile_compatibility, 0xC0);
       EXPECT_EQ(config.avc_level, 30);
       EXPECT_EQ(config.length_size, 4);
       EXPECT_EQ(config.sps_list.size(), 1ul);
