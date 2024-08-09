@@ -127,6 +127,12 @@ class HostDisplayClient : public viz::HostDisplayClient {
   }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetPreferredRefreshRate(float refresh_rate) override {
+    NOTIMPLEMENTED();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
  private:
   [[maybe_unused]] const raw_ptr<ui::Compositor> compositor_;
 };

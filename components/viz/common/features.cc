@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
@@ -417,6 +418,14 @@ BASE_FEATURE(kVizNullHypothesis,
              "VizNullHypothesis",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Allows the display to seamlessly adjust the refresh rate in order to match
+// content preferences. ChromeOS only.
+BASE_FEATURE(kCrosContentAdjustedRefreshRate,
+             "CrosContentAdjustedRefreshRate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
 }
@@ -564,4 +573,20 @@ int NumPendingFrameSupported() {
   return num;
 }
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool IsCrosContentAdjustedRefreshRateEnabled() {
+  if (base::FeatureList::IsEnabled(kCrosContentAdjustedRefreshRate)) {
+    if (base::FeatureList::IsEnabled(kUseFrameIntervalDecider)) {
+      return true;
+    }
+
+    LOG(WARNING) << "Feature ContentAdjustedRefreshRate is ignored. It cannot "
+                    "be used without also setting UseFrameIntervalDecider.";
+  }
+
+  return false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace features

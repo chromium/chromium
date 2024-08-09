@@ -56,6 +56,10 @@ class VIZ_HOST_EXPORT HostDisplayClient : public mojom::DisplayClient {
   void DidCompleteSwapWithNewSize(const gfx::Size& size) override;
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetPreferredRefreshRate(float refresh_rate) override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   mojo::Receiver<mojom::DisplayClient> receiver_{this};
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
   gfx::AcceleratedWidget widget_;

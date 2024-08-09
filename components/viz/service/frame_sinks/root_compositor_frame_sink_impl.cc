@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/display/output_surface.h"
@@ -39,7 +40,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/feature_list.h"
-#include "components/viz/common/features.h"
 #include "components/viz/service/frame_sinks/external_begin_frame_source_mac.h"
 #endif
 
@@ -152,6 +152,10 @@ RootCompositorFrameSinkImpl::Create(
     external_begin_frame_source =
         std::make_unique<ExternalBeginFrameSourceIOS>(restart_id);
 #else
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    hw_support_for_multiple_refresh_rates =
+        features::IsCrosContentAdjustedRefreshRateEnabled();
+#endif
     if (params->disable_frame_rate_limit) {
       synthetic_begin_frame_source =
           std::make_unique<BackToBackBeginFrameSource>(
@@ -431,8 +435,27 @@ void RootCompositorFrameSinkImpl::UpdateRefreshRate(float refresh_rate) {
     external_begin_frame_source_->UpdateRefreshRate(refresh_rate);
 }
 
+void RootCompositorFrameSinkImpl::PreserveChildSurfaceControls() {
+  display_->PreserveChildSurfaceControls();
+}
+
+void RootCompositorFrameSinkImpl::SetSwapCompletionCallbackEnabled(
+    bool enable) {
+  enable_swap_completion_callback_ = enable;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 void RootCompositorFrameSinkImpl::SetSupportedRefreshRates(
     const std::vector<float>& supported_refresh_rates) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  CHECK_NE(use_preferred_interval_,
+           features::IsCrosContentAdjustedRefreshRateEnabled());
+  if (use_preferred_interval_) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   exact_supported_refresh_rates_.clear();
   base::flat_set<base::TimeDelta> supported_frame_intervals;
   for (float rate : supported_refresh_rates) {
@@ -443,17 +466,7 @@ void RootCompositorFrameSinkImpl::SetSupportedRefreshRates(
 
   display_->SetSupportedFrameIntervals(supported_frame_intervals);
 }
-
-void RootCompositorFrameSinkImpl::PreserveChildSurfaceControls() {
-  display_->PreserveChildSurfaceControls();
-}
-
-void RootCompositorFrameSinkImpl::SetSwapCompletionCallbackEnabled(
-    bool enable) {
-  enable_swap_completion_callback_ = enable;
-}
-
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 
 void RootCompositorFrameSinkImpl::AddVSyncParameterObserver(
     mojo::PendingRemote<mojom::VSyncParameterObserver> observer) {
@@ -717,7 +730,17 @@ void RootCompositorFrameSinkImpl::SetWideColorEnabled(bool enabled) {
 
 void RootCompositorFrameSinkImpl::SetPreferredFrameInterval(
     base::TimeDelta interval) {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  CHECK_NE(use_preferred_interval_,
+           features::IsCrosContentAdjustedRefreshRateEnabled());
+  if (use_preferred_interval_) {
+    preferred_frame_interval_ = interval;
+    UpdateVSyncParameters();
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH))
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   if (display_client_) {
     float refresh_rate;
     if (interval.is_zero()) {
@@ -737,7 +760,7 @@ void RootCompositorFrameSinkImpl::SetPreferredFrameInterval(
 #else
   preferred_frame_interval_ = interval;
   UpdateVSyncParameters();
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 base::TimeDelta

@@ -343,8 +343,8 @@ void Display::UpdateFrameIntervalDeciderSettings() {
     frame_interval_decider_ = std::make_unique<FrameIntervalDecider>(*this);
   }
 
-  // TODO(crbug.com/346732738): This is only implemented for android. Support
-  // other platforms / configurations.
+  // TODO(crbug.com/346732738): This is only implemented for android and
+  // chromeos. Support other platforms / configurations.
 
   FrameIntervalDecider::Settings settings;
   std::vector<std::unique_ptr<FrameIntervalMatcher>> matchers;
@@ -356,7 +356,7 @@ void Display::UpdateFrameIntervalDeciderSettings() {
   matchers.push_back(std::make_unique<OnlyScrollBarFadeOutAnimationMatcher>());
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   if (!output_surface_supports_set_frame_rate_) {
     FrameIntervalDecider::FixedIntervalSettings fixed_interval_settings;
     if (fixed_supported_intervals_.empty()) {
@@ -371,7 +371,7 @@ void Display::UpdateFrameIntervalDeciderSettings() {
     }
     settings.fixed_intervals = fixed_interval_settings;
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 
   frame_interval_decider_->UpdateSettings(std::move(settings),
                                           std::move(matchers));
@@ -1420,8 +1420,8 @@ void Display::SetFrameInterval(FrameIntervalDecider::Result result,
                       "matcher_type",
                       FrameIntervalMatcher::MatcherTypeToString(matcher_type));
 
-  // TODO(crbug.com/346732738): This is only implemented for android. Support
-  // other platforms / configurations.
+  // TODO(crbug.com/346732738): This is only implemented for android and
+  // chromeos. Support other platforms / configurations.
 
   base::TimeDelta interval = absl::visit(
       base::Overloaded(

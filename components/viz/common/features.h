@@ -101,6 +101,9 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kColorConversionInRenderer);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kLastVSyncArgsKillswitch);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBlitRequestsForViewTransition);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVizNullHypothesis);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kCrosContentAdjustedRefreshRate);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 VIZ_COMMON_EXPORT extern const char kDraw1Point12Ms[];
 VIZ_COMMON_EXPORT extern const char kDraw2Points6Ms[];
@@ -145,6 +148,9 @@ NumCooldownFramesForAckOnSurfaceActivationDuringInteraction();
 VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
     kNumCooldownFramesForAckOnSurfaceActivationDuringInteraction;
 VIZ_COMMON_EXPORT bool ShouldAckOnSurfaceActivationWhenInteractive();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+VIZ_COMMON_EXPORT bool IsCrosContentAdjustedRefreshRateEnabled();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace features
 
