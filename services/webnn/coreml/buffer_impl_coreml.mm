@@ -87,6 +87,18 @@ BufferImplCoreml::Create(
                                               "Failed to allocate buffer."));
   }
 
+  // `MLMultiArray` doesn't initialize its contents.
+  __block bool block_executing_synchronously = true;
+  [multi_array getMutableBytesWithHandler:^(void* mutable_bytes, NSInteger size,
+                                            NSArray<NSNumber*>* strides) {
+    // TODO(crbug.com/333392274): Refactor this method to assume the handler may
+    // be invoked on some other thread. We should not assume that the block
+    // will always run synchronously.
+    CHECK(block_executing_synchronously);
+    memset(mutable_bytes, 0, size);
+  }];
+  block_executing_synchronously = false;
+
   return base::WrapUnique(
       new BufferImplCoreml(std::move(receiver), context, std::move(buffer_info),
                            multi_array, base::PassKey<BufferImplCoreml>()));
