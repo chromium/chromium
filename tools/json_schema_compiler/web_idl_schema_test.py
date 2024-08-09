@@ -5,6 +5,7 @@
 
 import unittest
 import web_idl_schema
+from web_idl_schema import SchemaCompilerError
 
 
 def getFunction(schema, name):
@@ -54,24 +55,56 @@ class WebIdlSchemaTest(unittest.TestCase):
   # TODO(crbug.com/340297705): This will eventually be relaxed when adding
   # support for shared types to the new parser.
   def testMissingBrowserInterface(self):
-    expected_error_regex = 'Required partial Browser interface not found in .*'
+    expected_error_regex = (
+        '.* File\(test\/web_idl\/missing_browser_interface.idl\): Required'
+        ' partial Browser interface not found in schema\.'
+    )
     self.assertRaisesRegex(
-        Exception,
+        SchemaCompilerError,
         expected_error_regex,
         web_idl_schema.Load,
         'test/web_idl/missing_browser_interface.idl',
     )
 
+  # Tests that having a Browser interface on an API definition with no attribute
+  # throws an error.
   def testMissingAttributeOnBrowser(self):
     expected_error_regex = (
-        'The Browser interface should have exactly one '
-        'attribute for the name the API will be exposed under in .*'
+        '.* Interface\(Browser\): The partial Browser interface should have'
+        ' exactly one attribute for the name the API will be exposed under\.'
     )
     self.assertRaisesRegex(
         Exception,
         expected_error_regex,
         web_idl_schema.Load,
         'test/web_idl/missing_attribute_on_browser.idl',
+    )
+
+  # Tests that using a valid basic WebIDL type with a "name" the schema compiler
+  # doesn't support yet throws an error.
+  def testUnsupportedBasicType(self):
+    expected_error_regex = (
+        '.* PrimitiveType\(float\): Unsupported basic type found when'
+        ' processing type\.'
+    )
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/unsupported_basic_type.idl',
+    )
+
+  # Tests that using a valid WebIDL type with a node "class" the schema compiler
+  # doesn't support yet throws an error.
+  def testUnsupportedTypeClass(self):
+    expected_error_regex = (
+        '.* Any\(\): Unsupported type class when processing type\.'
+    )
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/unsupported_type_class.idl',
     )
 
 

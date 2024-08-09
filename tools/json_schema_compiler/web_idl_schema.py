@@ -36,6 +36,14 @@ else:
 IDLNode = idl_node.IDLNode  # Used for type hints.
 
 
+class SchemaCompilerError(Exception):
+
+  def __init__(self, message: str, node: IDLNode):
+    super().__init__(
+        node.GetLogLine(f'Error processing node {node}: {message}')
+    )
+
+
 def GetChildWithName(node: IDLNode, name: str) -> Optional[IDLNode]:
   """Gets the first child node with a given name from an IDLNode.
 
@@ -62,14 +70,13 @@ def GetTypeName(node: IDLNode) -> str:
     The string representing the name given to this IDL type definition.
 
   Raises:
-    Exception: If a child of class 'Type' was not found on the node.
+    SchemaCompilerError: If a child of class 'Type' was not found on the node.
   """
   for child_node in node.GetChildren():
     if child_node.GetClass() == 'Type':
       return child_node.GetOneOf('Typeref').GetName()
-  raise Exception(
-      'Could not find Type name for node %s in %s'
-      % (node.GetName(), node.GetProperty('FILENAME'))
+  raise SchemaCompilerError(
+      'Could not find Type node when looking for Typeref name.', node
   )
 
 
@@ -87,6 +94,10 @@ class Type:
   """
 
   def __init__(self, node: IDLNode, additional_properties: dict) -> None:
+    assert node.GetClass() == 'Type', node.GetLogLine(
+        'Attempted to process a "Type" node, but was passed a "%s" node.'
+        % (node.GetClass())
+    )
     self.node = node
     self.additional_properties = additional_properties
 
@@ -108,15 +119,14 @@ class Type:
       elif name == 'DOMString':
         properties['type'] = 'string'
       else:
-        raise Exception(
-            'Unknown PrimitiveType "%s" on node "%s" in %s(%s)'
-            % (
-                name,
-                self.node.GetName(),
-                basic_type.GetProperty('FILENAME'),
-                basic_type.GetProperty('LINENO'),
-            )
+        raise SchemaCompilerError(
+            'Unsupported basic type found when processing type.', basic_type
         )
+    else:
+      unknown_child = self.node.GetChildren()[0]
+      raise SchemaCompilerError(
+          'Unsupported type class when processing type.', unknown_child
+      )
 
     return properties
 
@@ -206,22 +216,18 @@ class IDLSchema:
     # processing "shared types", which are not exposed on a Browser interface.
     browser_node = GetChildWithName(self.idl, 'Browser')
     if browser_node is None or browser_node.GetClass() != 'Interface':
-      raise Exception(
-          'Required partial Browser interface not found in %s'
-          % (self.idl.GetProperty('FILENAME'))
+      raise SchemaCompilerError(
+          'Required partial Browser interface not found in schema.', self.idl
       )
 
     # The 'Browser' Interface has one attribute describing the name this API is
     # exposed on.
     attributes = browser_node.GetListOf('Attribute')
     if len(attributes) != 1:
-      raise Exception(
-          'The Browser interface should have exactly one attribute for the name'
-          ' the API will be exposed under in %s(%s)'
-          % (
-              browser_node.GetProperty('FILENAME'),
-              browser_node.GetProperty('LINENO'),
-          )
+      raise SchemaCompilerError(
+          'The partial Browser interface should have exactly one attribute for'
+          ' the name the API will be exposed under.',
+          browser_node,
       )
     api_name = attributes[0].GetName()
     idl_type = GetTypeName(attributes[0])
