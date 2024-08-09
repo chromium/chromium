@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/download/notification/multi_profile_download_notifier.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
-#include "chromeos/crosapi/mojom/download_controller.mojom-forward.h"
 
 namespace content {
 class DownloadManager;
@@ -49,7 +48,6 @@ class HoldingSpaceDownloadsDelegate
 
  private:
   class InProgressDownload;
-  class InProgressAshDownload;
 
   // HoldingSpaceKeyedServiceDelegate:
   void OnPersistenceRestored() override;
