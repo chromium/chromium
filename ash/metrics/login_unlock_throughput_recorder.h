@@ -201,21 +201,15 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
 
   bool user_logged_in_ = false;
 
-  // This flag is true after FullRestore has finished loading its data.
+  // Flags to DCHECK conditions.
   bool full_session_restore_data_loaded_ = false;
-
-  bool window_restore_done_ = false;
-
-  // |shelf_icons_loaded_| is true when all shelf icons are considered loaded,
-  // i.e. there is no pending icon on shelf after shelf is initialized.
-  bool shelf_icons_loaded_ = false;
-
   bool shelf_animation_end_scheduled_ = false;
 
-  bool shelf_animation_finished_ = false;
-
-  bool login_animation_throughput_received_ = false;
-
+  // Flags to track state transition.
+  std::optional<base::TimeTicks> time_window_restore_done_;
+  std::optional<base::TimeTicks> time_shelf_icons_loaded_;
+  std::optional<base::TimeTicks> time_shelf_animation_finished_;
+  std::optional<base::TimeTicks> time_compositor_animation_finished_;
   bool login_finished_reported_ = false;
 
   base::WeakPtr<ui::TotalAnimationThroughputReporter>

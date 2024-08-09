@@ -381,22 +381,25 @@ void LoginUnlockThroughputRecorder::OnCompositorAnimationFinished(
     obs.OnCompositorAnimationFinished(now, data);
   }
 
-  login_animation_throughput_received_ = true;
+  time_compositor_animation_finished_ = now;
   MaybeReportLoginFinished();
 }
 
 void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
   // If not ready yet, do nothing this time.
-  if (!window_restore_done_ || !shelf_icons_loaded_) {
+  if (!time_window_restore_done_.has_value() ||
+      !time_shelf_icons_loaded_.has_value()) {
     return;
   }
 
   DCHECK(!shelf_animation_end_scheduled_);
   shelf_animation_end_scheduled_ = true;
 
-  auto now = base::TimeTicks::Now();
+  auto timestamp =
+      std::max(*time_window_restore_done_, *time_shelf_icons_loaded_);
+
   for (auto& obs : observers_) {
-    obs.OnShelfIconsLoadedAndSessionRestoreDone(now);
+    obs.OnShelfIconsLoadedAndSessionRestoreDone(timestamp);
   }
 
   scoped_throughput_reporter_blocker_.reset();
@@ -425,7 +428,7 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
           obs.OnShelfAnimationFinished(now);
         }
 
-        self->shelf_animation_finished_ = true;
+        self->time_shelf_animation_finished_ = now;
         self->MaybeReportLoginFinished();
       },
       weak_ptr_factory_.GetWeakPtr());
@@ -439,10 +442,11 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
 }
 
 void LoginUnlockThroughputRecorder::OnAllExpectedShelfIconsLoaded() {
-  DCHECK(!shelf_icons_loaded_);
-  shelf_icons_loaded_ = true;
-
   auto now = base::TimeTicks::Now();
+
+  DCHECK(!time_shelf_icons_loaded_.has_value());
+  time_shelf_icons_loaded_ = now;
+
   for (auto& obs : observers_) {
     obs.OnAllExpectedShelfIconLoaded(now);
   }
@@ -471,8 +475,8 @@ void LoginUnlockThroughputRecorder::FullSessionRestoreDataLoaded(
   if (window_ids.empty() || !restore_automatically) {
     shelf_tracker_.IgnoreBrowserIcon();
 
-    DCHECK(!window_restore_done_);
-    window_restore_done_ = true;
+    DCHECK(!time_window_restore_done_.has_value());
+    time_window_restore_done_ = now;
     ScheduleWaitForShelfAnimationEndIfNeeded();
   } else {
     for (const auto& w : window_ids) {
@@ -493,7 +497,8 @@ void LoginUnlockThroughputRecorder::SetLoginFinishedReportedForTesting() {
 }
 
 void LoginUnlockThroughputRecorder::MaybeReportLoginFinished() {
-  if (!login_animation_throughput_received_ || !shelf_animation_finished_) {
+  if (!time_compositor_animation_finished_.has_value() ||
+      !time_shelf_animation_finished_.has_value()) {
     return;
   }
   if (login_finished_reported_) {
@@ -501,9 +506,11 @@ void LoginUnlockThroughputRecorder::MaybeReportLoginFinished() {
   }
   login_finished_reported_ = true;
 
-  auto now = base::TimeTicks::Now();
+  base::TimeTicks timestamp = std::max(*time_shelf_animation_finished_,
+                                       *time_compositor_animation_finished_);
+
   for (auto& obs : observers_) {
-    obs.OnShelfAnimationAndCompositorAnimationDone(now);
+    obs.OnShelfAnimationAndCompositorAnimationDone(timestamp);
   }
 
   ui_recorder_.OnPostLoginAnimationFinish();
@@ -545,8 +552,8 @@ void LoginUnlockThroughputRecorder::OnAllWindowsPresented(
     obs.OnAllBrowserWindowsPresented(time);
   }
 
-  DCHECK(!window_restore_done_);
-  window_restore_done_ = true;
+  DCHECK(!time_window_restore_done_.has_value());
+  time_window_restore_done_ = time;
   ScheduleWaitForShelfAnimationEndIfNeeded();
 }
 
