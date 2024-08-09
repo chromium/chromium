@@ -23,7 +23,6 @@ class PerfContextProvider;
 
 namespace media {
 class VideoFrame;
-class VideoResourceUpdater;
 }
 
 namespace viz {
@@ -84,15 +83,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
   friend class TestContextProvider;
   friend class TestInProcessContextProvider;
   friend class cc::PerfContextProvider;
-  friend class media::VideoResourceUpdater;
   friend class gpu::SharedImageFormatRestrictedUtilsAccessor;
-
-  // The following functions use unsigned int instead of GLenum, since including
-  // third_party/khronos/GLES2/gl2.h causes redefinition errors as
-  // macros/functions defined in it conflict with macros/functions defined in
-  // ui/gl/gl_bindings.h. See http://crbug.com/512833 for more information.
-  static unsigned int ToGLDataFormat(SharedImageFormat format);
-  static unsigned int ToGLDataType(SharedImageFormat format);
 
   // |use_angle_rgbx_format| should be true when the
   // GL_ANGLE_rgbx_internal_format extension is available.
