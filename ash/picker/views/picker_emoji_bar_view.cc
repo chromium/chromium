@@ -148,8 +148,10 @@ class GifsButton : public views::LabelButton {
 
  public:
   explicit GifsButton(base::RepeatingClosure pressed_callback) {
+    // The label is not translated to keep the width constant. Treat it as an
+    // icon.
     views::Builder<views::LabelButton>(this)
-        .SetText(l10n_util::GetStringUTF16(IDS_PICKER_GIFS_BUTTON_LABEL))
+        .SetText(u"GIF")
         .SetCallback(std::move(pressed_callback))
         .SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface)
         .BuildChildren();

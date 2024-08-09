@@ -381,8 +381,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.Call([view]() { view->gifs_button_for_testing()->RequestFocus(); });
 
-  sm_.ExpectSpeechPattern(
-      l10n_util::GetStringUTF8(IDS_PICKER_GIFS_BUTTON_LABEL));
+  sm_.ExpectSpeechPattern("GIF");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("row 1 column 4");
 
@@ -410,8 +409,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.Call([view]() { view->gifs_button_for_testing()->RequestFocus(); });
 
-  sm_.ExpectSpeechPattern(
-      l10n_util::GetStringUTF8(IDS_PICKER_GIFS_BUTTON_LABEL));
+  sm_.ExpectSpeechPattern("GIF");
   sm_.ExpectSpeechPattern("Button");
   sm_.ExpectSpeechPattern("Press * to activate");
   sm_.Replay();
