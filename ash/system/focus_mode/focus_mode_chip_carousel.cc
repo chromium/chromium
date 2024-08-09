@@ -67,7 +67,11 @@ void SetupChip(views::LabelButton* chip, bool first) {
 
   views::ViewAccessibility& view_accessibility = chip->GetViewAccessibility();
   view_accessibility.SetName(chip->GetText());
-  view_accessibility.SetRole(ax::mojom::Role::kListItem);
+  // Set the list item role with a description to let the users know that they
+  // can press this item as a button.
+  view_accessibility.SetRole(
+      ax::mojom::Role::kListItem,
+      l10n_util::GetStringUTF16(IDS_ASH_A11Y_ROLE_BUTTON));
 }
 
 void SetupOverflowIcon(views::ImageButton* overflow_icon, bool left) {
