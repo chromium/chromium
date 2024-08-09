@@ -107,4 +107,8 @@ void CommandBufferDirect::HandleReturnData(base::span<const uint8_t> data) {
   NOTIMPLEMENTED();
 }
 
+bool CommandBufferDirect::ShouldYield() {
+  return service_.ShouldYield();
+}
+
 }  // namespace gpu

@@ -200,5 +200,8 @@ void FakeDecoderClient::OnSwapBuffers(uint64_t, uint32_t) {}
 void FakeDecoderClient::ScheduleGrContextCleanup() {}
 void FakeDecoderClient::SetActiveURL(GURL) {}
 void FakeDecoderClient::HandleReturnData(base::span<const uint8_t>) {}
+bool FakeDecoderClient::ShouldYield() {
+  return false;
+}
 
 }  // namespace gpu

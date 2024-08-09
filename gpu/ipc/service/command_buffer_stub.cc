@@ -619,6 +619,10 @@ void CommandBufferStub::HandleReturnData(base::span<const uint8_t> data) {
   client_->OnReturnData(std::vector<uint8_t>(data.begin(), data.end()));
 }
 
+bool CommandBufferStub::ShouldYield() {
+  return channel_->scheduler()->ShouldYield(sequence_id_);
+}
+
 void CommandBufferStub::OnConsoleMessage(int32_t id,
                                          const std::string& message) {
   client_->OnConsoleMessage(message);

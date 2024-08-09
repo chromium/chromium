@@ -145,22 +145,6 @@ error::Error RasterDecoderImpl::HandleBeginRasterCHROMIUMImmediate(
   return error::kNoError;
 }
 
-error::Error RasterDecoderImpl::HandleRasterCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile raster::cmds::RasterCHROMIUM& c =
-      *static_cast<const volatile raster::cmds::RasterCHROMIUM*>(cmd_data);
-  GLuint raster_shm_id = static_cast<GLuint>(c.raster_shm_id);
-  GLuint raster_shm_offset = static_cast<GLuint>(c.raster_shm_offset);
-  GLuint raster_shm_size = static_cast<GLuint>(c.raster_shm_size);
-  GLuint font_shm_id = static_cast<GLuint>(c.font_shm_id);
-  GLuint font_shm_offset = static_cast<GLuint>(c.font_shm_offset);
-  GLuint font_shm_size = static_cast<GLuint>(c.font_shm_size);
-  DoRasterCHROMIUM(raster_shm_id, raster_shm_offset, raster_shm_size,
-                   font_shm_id, font_shm_offset, font_shm_size);
-  return error::kNoError;
-}
-
 error::Error RasterDecoderImpl::HandleEndRasterCHROMIUM(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

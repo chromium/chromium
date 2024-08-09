@@ -10413,6 +10413,25 @@
             ]
         }
     ],
+    "GpuYieldRasterization": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GpuYieldRasterization"
+                    ]
+                }
+            ]
+        }
+    ],
     "GrCacheLimits": [
         {
             "platforms": [
