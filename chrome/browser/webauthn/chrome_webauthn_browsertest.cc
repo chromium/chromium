@@ -216,8 +216,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
   </body>
 </html>
 )";
-  WriteFile(temp_dir.GetPath().AppendASCII(kPageFile), kContents,
-            sizeof(kContents) - 1);
+  WriteFile(temp_dir.GetPath().AppendASCII(kPageFile), kContents);
 
   static constexpr char kExtensionSite[] = "https://extension-site.com/";
   static constexpr char kWebAccessibleResources[] =
