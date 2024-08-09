@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.SpannableString;
@@ -52,6 +54,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -61,6 +64,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarManageable {
+
+    private static final int ANIM_DURATION_MS = 250;
 
     /** Interface exposing functionality to the menu items for the archived tabs dialog */
     public interface ArchiveDelegate {
@@ -126,7 +131,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 @Override
                 public void goBack() {
                     if (mTabActionState == TabActionState.CLOSABLE) {
-                        hide();
+                        hide(ANIM_DURATION_MS, /* animationFinishCallback= */ () -> {});
                     } else {
                         moveToState(TabActionState.CLOSABLE);
                     }
@@ -139,9 +144,10 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
      */
     private final Callback<Integer> mTabCountObserver =
             (count) -> {
-                if (count <= 0) {
+                if (count == 0 && !ArchivedTabsDialogCoordinator.this.mIsOpeningLastTab) {
                     // Post task to allow the last tab to be unregistered.
-                    PostTask.postTask(TaskTraits.UI_DEFAULT, () -> hide());
+                    PostTask.postTask(
+                            TaskTraits.UI_DEFAULT, () -> hide(ANIM_DURATION_MS, () -> {}));
                     return;
                 }
                 updateTitle();
@@ -158,18 +164,21 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
                 @Override
                 public void onTabSelecting(int tabId, boolean fromActionButton) {
-                    hide();
-
+                    mIsOpeningLastTab = mArchivedTabModel.getCount() == 1;
                     Tab tab = mArchivedTabModel.getTabById(tabId);
                     mArchivedTabModelOrchestrator
                             .getTabArchiver()
                             .unarchiveAndRestoreTab(mRegularTabCreator, tab);
 
-                    // Post task to allow the tab to be unregistered.
-                    PostTask.postTask(
-                            TaskTraits.UI_DEFAULT,
-                            () -> mOnTabSelectingListener.onTabSelecting(tab.getId()));
-                    RecordUserAction.record("Tabs.RestoreSingleTab");
+                    hide(
+                            ANIM_DURATION_MS,
+                            () -> {
+                                // Post task to allow the tab to be unregistered.
+                                PostTask.postTask(
+                                        TaskTraits.UI_DEFAULT,
+                                        () -> mOnTabSelectingListener.onTabSelecting(tab.getId()));
+                                RecordUserAction.record("Tabs.RestoreSingleTab");
+                            });
                 }
             };
 
@@ -192,8 +201,11 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 @Override
                 public void willHide() {
                     mRecyclerView.removeOnScrollListener(mRecyclerScrollListener);
-                    mRootView.removeView(mView);
                     mSnackbarManager.popParentViewFromOverrideStack(mSnackbarOverrideToken);
+                    // In case we were hidden by TabListEditor in some other case, force the
+                    // animation to finish.
+                    animateOut(/* duration= */ 0, /* animationFinishCallback= */ () -> {});
+                    mRootView.removeView(mDialogView);
                 }
 
                 @Override
@@ -228,7 +240,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private final @NonNull ModalDialogManager mModalDialogManager;
     private final @NonNull UndoBarController mUndoBarController;
     private final @NonNull ActionConfirmationDialog mActionConfirmationDialog;
-    private final @NonNull ViewGroup mView;
+    private final @NonNull ViewGroup mDialogView;
+    private final @NonNull ViewGroup mTabSwitcherView;
     private final @NonNull FadingShadowView mShadowView;
 
     private RecyclerView mRecyclerView;
@@ -237,6 +250,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private OnTabSelectingListener mOnTabSelectingListener;
     private PropertyModel mIphMessagePropertyModel;
     private int mSnackbarOverrideToken;
+    private boolean mIsOpeningLastTab;
+    private boolean mIsShowing;
 
     /**
      * @param context The android context.
@@ -258,6 +273,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             @NonNull TabContentManager tabContentManager,
             @TabListMode int mode,
             @NonNull ViewGroup rootView,
+            @NonNull ViewGroup tabSwitcherView,
             @NonNull SnackbarManager snackbarManager,
             @NonNull TabCreator regularTabCreator,
             @NonNull BackPressManager backPressManager,
@@ -285,15 +301,23 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         mArchivedTabModelOrchestrator.getTabModelSelector(),
                         /* snackbarManageable= */ this,
                         /* dialogVisibilitySupplier= */ null);
-        mView =
+        mTabSwitcherView = tabSwitcherView;
+
+        // Inflate the dialog view and hook it up
+        mDialogView =
                 (ViewGroup)
                         LayoutInflater.from(mContext)
                                 .inflate(R.layout.archived_tabs_dialog, mRootView, false);
-        mView.findViewById(R.id.close_all_tabs_button)
+        mDialogView
+                .findViewById(R.id.close_all_tabs_button)
                 .setOnClickListener(this::onCloseAllInactiveTabsButtonClicked);
-        mShadowView = mView.findViewById(R.id.close_all_tabs_button_container_shadow);
+
+        // Initialize the shadow for the "Close all inactive tabs" container.
+        mShadowView = mDialogView.findViewById(R.id.close_all_tabs_button_container_shadow);
         mShadowView.init(
                 mContext.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_BOTTOM);
+
+        // Initialize the confirmation dialog for when the last archived tab is removed.
         mActionConfirmationDialog = new ActionConfirmationDialog(mContext, mModalDialogManager);
     }
 
@@ -301,7 +325,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     public void destroy() {
         if (mTabListEditorCoordinator != null
                 && mTabListEditorCoordinator.getController().isVisible()) {
-            hide();
+            hide(/* animationDuration= */ 0, /* animationFinishCallback= */ () -> {});
         }
     }
 
@@ -311,6 +335,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
      * @param onTabSelectingListener Allows a tab to be selected in the main tab switcher.
      */
     public void show(OnTabSelectingListener onTabSelectingListener) {
+        if (mIsShowing) return;
+        mIsShowing = true;
+
         boolean tabListFirstShown = false;
         if (mTabListEditorCoordinator == null) {
             tabListFirstShown = true;
@@ -329,17 +356,17 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 R.string.accessibility_archived_tabs_dialog,
                 R.string.accessibility_archived_tabs_dialog_back_button);
 
-        mRecyclerView = mView.findViewById(R.id.tab_list_recycler_view);
+        mRecyclerView = mDialogView.findViewById(R.id.tab_list_recycler_view);
         mRecyclerView.addOnScrollListener(mRecyclerScrollListener);
         mShadowView.setVisibility(mRecyclerView.canScrollVertically(1) ? View.VISIBLE : View.GONE);
 
         // Register the dialog to handle back press events.
         mBackPressManager.addHandler(controller, BackPressHandler.Type.ARCHIVED_TABS_DIALOG);
 
-        FrameLayout snackbarContainer = mView.findViewById(R.id.snackbar_container);
+        FrameLayout snackbarContainer = mDialogView.findViewById(R.id.snackbar_container);
         mSnackbarOverrideToken = mSnackbarManager.pushParentViewToOverrideStack(snackbarContainer);
         // View is obscured by the TabListEditorCoordinator, so it needs to be brought to the front.
-        mView.findViewById(R.id.close_all_tabs_button_container).bringToFront();
+        mDialogView.findViewById(R.id.close_all_tabs_button_container).bringToFront();
         snackbarContainer.bringToFront();
 
         // Add the IPH to the TabListEditor.
@@ -361,15 +388,66 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mTabArchiveSettings.addObserver(mTabArchiveSettingsObserver);
 
         moveToState(TabActionState.CLOSABLE);
-        // Add the dialog view.
-        mRootView.addView(mView);
-        RecordUserAction.record("Tabs.ArchivedTabsDialogShown");
+        animateIn(ANIM_DURATION_MS);
+    }
+
+    private void animateIn(int duration) {
+        mDialogView.setVisibility(View.INVISIBLE);
+        mRootView.addView(mDialogView);
+        mDialogView.post(
+                () -> {
+                    mDialogView.setTranslationX(mDialogView.getWidth());
+                    mDialogView.setVisibility(View.VISIBLE);
+                    // TODO(crbug.com/358430208): Use AnimatorSet here.
+                    mDialogView
+                            .animate()
+                            .translationX(0f)
+                            .setDuration(duration)
+                            .setInterpolator(Interpolators.ACCELERATE_INTERPOLATOR)
+                            .start();
+                    mTabSwitcherView
+                            .animate()
+                            .translationX(-mTabSwitcherView.getWidth())
+                            .setDuration(duration)
+                            .setInterpolator(Interpolators.ACCELERATE_INTERPOLATOR)
+                            .start();
+
+                    RecordUserAction.record("Tabs.ArchivedTabsDialogShown");
+                });
+    }
+
+    private void animateOut(int duration, Runnable animationFinishCallback) {
+        // TODO(crbug.com/358430208): Use AnimatorSet here.
+        mDialogView
+                .animate()
+                .translationX(mDialogView.getWidth())
+                .setDuration(duration)
+                .setInterpolator(Interpolators.ACCELERATE_INTERPOLATOR)
+                .start();
+        mTabSwitcherView
+                .animate()
+                .translationX(0)
+                .setDuration(duration)
+                .setInterpolator(Interpolators.ACCELERATE_INTERPOLATOR)
+                .setListener(
+                        new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(@NonNull Animator animator) {
+                                animationFinishCallback.run();
+                            }
+                        })
+                .start();
     }
 
     /** Hides the dialog. */
-    public void hide() {
-        TabListEditorController controller = mTabListEditorCoordinator.getController();
-        controller.hide();
+    public void hide(int animationDuration, Runnable animationFinishCallback) {
+        animateOut(
+                animationDuration,
+                () -> {
+                    TabListEditorController controller = mTabListEditorCoordinator.getController();
+                    controller.hide();
+                    animationFinishCallback.run();
+                });
     }
 
     void hideInternal() {
@@ -379,6 +457,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mTabArchiveSettings.removeObserver(mTabArchiveSettingsObserver);
         mArchivedTabModel.getTabCountSupplier().removeObserver(mTabCountObserver);
         mSnackbarOverrideToken = TokenHolder.INVALID_TOKEN;
+        mIsShowing = false;
     }
 
     void moveToState(@TabActionState int tabActionState) {
@@ -423,7 +502,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 new TabListEditorCoordinator(
                         mContext,
                         mRootView,
-                        /* parentView= */ mView.findViewById(R.id.tab_list_editor_container),
+                        /* parentView= */ mDialogView.findViewById(R.id.tab_list_editor_container),
                         mBrowserControlsStateProvider,
                         mArchivedTabModelOrchestrator
                                 .getTabModelSelector()
@@ -578,6 +657,6 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     }
 
     View getViewForTesting() {
-        return mView;
+        return mDialogView;
     }
 }

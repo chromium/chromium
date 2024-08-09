@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.TaskTraits;
@@ -70,6 +71,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Spy private ViewGroup mRootView;
+    @Spy private ViewGroup mTabSwitcherView;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Mock private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     @Mock private TabModelSelectorBase mArchivedTabModelSelector;
@@ -98,6 +100,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         mRootView = spy(new FrameLayout(mContext));
+        mTabSwitcherView = spy(new FrameLayout(mContext));
         mCoordinator =
                 new ArchivedTabsDialogCoordinator(
                         mContext,
@@ -106,6 +109,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                         mTabContentManager,
                         TabListMode.GRID,
                         mRootView,
+                        mTabSwitcherView,
                         mSnackbarManager,
                         mRegularTabCreator,
                         mBackPressManager,
@@ -184,6 +188,10 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
 
         doReturn(0).when(mArchivedTabModel).getCount();
         mTabCountSupplier.set(0);
+
+        // Allow animations to finish.
+        ShadowLooper.runUiThreadTasks();
+
         verify(mTabListEditorController).hide();
     }
 
@@ -203,6 +211,10 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         doReturn(true).when(mTabListEditorController).isVisible();
         mCoordinator.show(mOnTabSelectingListener);
         mCoordinator.destroy();
+
+        // Allow animations to finish.
+        ShadowLooper.runUiThreadTasks();
+
         verify(mRootView).removeView(any());
         verify(mTabListEditorController).setLifecycleObserver(null);
         verify(mBackPressManager).removeHandler(any());

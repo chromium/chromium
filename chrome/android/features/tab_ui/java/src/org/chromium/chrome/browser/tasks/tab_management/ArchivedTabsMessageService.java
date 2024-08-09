@@ -245,6 +245,7 @@ public class ArchivedTabsMessageService extends MessageService
                         mTabContentManager,
                         mTabListMode,
                         mRootView,
+                        mRootView.findViewById(R.id.tab_switcher_view_holder),
                         mSnackbarManager,
                         mRegularTabCreator,
                         mBackPressManager,
