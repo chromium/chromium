@@ -2485,9 +2485,10 @@
     },
     {
       // TODO(crbug.com/40113891): This feature allows scrollers to be
-      // keyboard focusable by default.
+      // keyboard focusable by default. Enabled in M127, this should stay as a
+      // flag until the Deprecation Trial ends (expect at least 132).
       name: "KeyboardFocusableScrollers",
-      status: "experimental",
+      status: "stable",
       public: true,
     },
     {
