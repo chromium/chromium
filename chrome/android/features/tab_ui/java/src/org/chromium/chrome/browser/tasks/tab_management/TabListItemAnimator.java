@@ -141,11 +141,9 @@ public class TabListItemAnimator extends SimpleItemAnimator {
     private AnimatorHolder mMoves = new AnimatorHolder("Move");
     private AnimatorHolder mRemovals = new AnimatorHolder("Removal");
 
-    private final boolean mSkipRemovalDelay;
     private final boolean mRearrangeUseStandardEasing;
 
-    TabListItemAnimator(boolean skipRemovalDelay, boolean rearrangeUseStandardEasing) {
-        mSkipRemovalDelay = skipRemovalDelay;
+    TabListItemAnimator(boolean rearrangeUseStandardEasing) {
         mRearrangeUseStandardEasing = rearrangeUseStandardEasing;
     }
 
@@ -158,8 +156,6 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         if (!hasRemovals && !hasMoves && !hasChanges && !hasAdds) {
             return;
         }
-
-        hasRemovals = hasRemovals && !mSkipRemovalDelay;
 
         // Run animations in the priority
         // - P1: Remove P1

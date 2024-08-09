@@ -3585,34 +3585,20 @@ const FeatureEntry::FeatureVariation
          kTabGroupCreationDialogAndroidShowSetting,
          std::size(kTabGroupCreationDialogAndroidShowSetting), nullptr}};
 
-const FeatureEntry::FeatureParam kGtsCloseTabAnimationDefault[] = {
-    {"skip_removal_delay", "false"}};
-const FeatureEntry::FeatureParam kGtsCloseTabAnimationSkipRemovalDelay[] = {
-    {"skip_removal_delay", "true"}};
 const FeatureEntry::FeatureParam kGtsCloseTabAnimationUseStandardEasing[] = {
     {"rearrange_standard_easing", "true"}};
 const FeatureEntry::FeatureParam
     kGtsCloseTabAnimationCloseAllQuickDeleteAnimation[] = {
+        {"rearrange_standard_easing", "true"},
         {"close_all_quick_delete_animation", "true"}};
-const FeatureEntry::FeatureParam
-    kGtsCloseTabAnimationCloseAllCustomAnimation[] = {
-        {"close_all_custom_animation", "true"}};
 
 const FeatureEntry::FeatureVariation kGtsCloseTabAnimationVariations[] = {
-    {"Option A remove and move simultaneously",
-     kGtsCloseTabAnimationSkipRemovalDelay,
-     std::size(kGtsCloseTabAnimationSkipRemovalDelay), nullptr},
-    {"Option B remove then move", kGtsCloseTabAnimationDefault,
-     std::size(kGtsCloseTabAnimationDefault), nullptr},
     {"Option C use standard easing for rearrange",
      kGtsCloseTabAnimationUseStandardEasing,
      std::size(kGtsCloseTabAnimationUseStandardEasing), nullptr},
     {"Option D close all uses quick delete animation",
      kGtsCloseTabAnimationCloseAllQuickDeleteAnimation,
      std::size(kGtsCloseTabAnimationCloseAllQuickDeleteAnimation), nullptr},
-    {"Option E close all uses custom animation",
-     kGtsCloseTabAnimationCloseAllCustomAnimation,
-     std::size(kGtsCloseTabAnimationCloseAllCustomAnimation), nullptr},
 };
 
 const FeatureEntry::FeatureParam kEdgeToEdgeBottomChinDebugFeatureParams[] = {

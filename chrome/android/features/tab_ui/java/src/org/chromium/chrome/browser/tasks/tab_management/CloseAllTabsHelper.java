@@ -63,8 +63,9 @@ public class CloseAllTabsHelper {
             TabModelSelector tabModelSelector,
             boolean isIncognitoOnly) {
 
-        boolean useCustomAnimation =
-                ChromeFeatureList.sGtsCloseTabAnimationCloseAllCustomAnimation.getValue();
+        // TODO(crbug.com/346777141): Remove the custom animation logic once we are sure we don't
+        // need it.
+        boolean useCustomAnimation = false;
         boolean useQuickDeleteAnimation =
                 ChromeFeatureList.sGtsCloseTabAnimationCloseAllQuickDeleteAnimation.getValue();
 
