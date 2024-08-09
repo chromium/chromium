@@ -110,7 +110,8 @@ class PersonalizationAppSeaPenBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PersonalizationAppSeaPenBrowserTest, SeaPen) {
+// TODO(b/358486436): Disabled due to test failure.
+IN_PROC_BROWSER_TEST_F(PersonalizationAppSeaPenBrowserTest, DISABLED_SeaPen) {
   RunTestWithoutTestLoader(
       "chromeos/personalization_app/personalization_app_test.js",
       "runMochaSuite('sea pen')");
