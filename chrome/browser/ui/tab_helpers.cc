@@ -285,11 +285,6 @@
 #include "chrome/browser/printing/printing_init.h"
 #endif
 
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/privacy_sandbox/tracking_protection_notice_service.h"
-#endif
-
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/compose/chrome_compose_client.h"
 #include "chrome/browser/compose/compose_enabling.h"
@@ -654,11 +649,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   SadTabHelper::CreateForWebContents(web_contents);
   SearchTabHelper::CreateForWebContents(web_contents);
   TabDialogs::CreateForWebContents(web_contents);
-  if (privacy_sandbox::TrackingProtectionNoticeService::TabHelper::
-          IsHelperNeeded(profile)) {
-    privacy_sandbox::TrackingProtectionNoticeService::TabHelper::
-        CreateForWebContents(web_contents);
-  }
   MemorySaverChipTabHelper::CreateForWebContents(web_contents);
   TabResourceUsageTabHelper::CreateForWebContents(web_contents);
   if (base::FeatureList::IsEnabled(features::kTabHoverCardImages) ||

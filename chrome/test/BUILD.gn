@@ -2769,7 +2769,6 @@ if (!is_android) {
       "../browser/privacy_sandbox/privacy_sandbox_countries_browsertest.cc",
       "../browser/privacy_sandbox/privacy_sandbox_notice_confirmation_browsertest.cc",
       "../browser/privacy_sandbox/privacy_sandbox_settings_browsertest.cc",
-      "../browser/privacy_sandbox/tracking_protection_notice_browsertest.cc",
       "../browser/privacy_sandbox/tracking_protection_settings_browsertest.cc",
       "../browser/private_network_access/chrome_private_network_access_browsertest.cc",
       "../browser/private_network_access/private_network_device_browser_test_utils.cc",
