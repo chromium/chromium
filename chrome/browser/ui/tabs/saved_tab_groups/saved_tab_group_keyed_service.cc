@@ -663,8 +663,9 @@ void SavedTabGroupKeyedService::UpdateGroupVisualData(
   CHECK(saved_group);
 
   // Update the group to use the saved title and color.
-  TabGroupVisualData visual_data(saved_group->title(), saved_group->color(),
-                                 /*is_collapsed=*/false);
+  TabGroupVisualData visual_data(
+      saved_group->title(), saved_group->color(),
+      /*is_collapsed=*/tab_group->visual_data()->is_collapsed());
   tab_group->SetVisualData(visual_data, /*is_customized=*/true);
 }
 

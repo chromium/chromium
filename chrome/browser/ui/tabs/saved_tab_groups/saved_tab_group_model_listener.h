@@ -42,6 +42,10 @@ class SavedTabGroupModelListener : public BrowserListObserver,
   // Stop ignoring tab added/removed notifications that pertain to this group.
   void ResumeTrackingLocalTabGroup(const tab_groups::TabGroupId& group_id);
 
+  // True when we are tracking changes to `group_id` in
+  // `local_tab_group_listeners`. False otherwise.
+  bool IsTrackingLocalTabGroup(const tab_groups::TabGroupId& group_id);
+
   // New API for local observation.
   // Temporarily pauses local observers for all tab groups. Will ignore all
   // local updates until ResumeLocalObservation is called.
