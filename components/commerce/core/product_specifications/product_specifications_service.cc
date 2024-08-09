@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
@@ -132,6 +133,14 @@ GetProductSpecificationsSetFromMultiSpecifics(
       top_level_specific->uuid(),
       top_level_specific->creation_time_unix_epoch_millis(), update_time, urls,
       top_level_specific->product_comparison().name());
+}
+
+std::vector<GURL> GetUrls(const std::vector<commerce::UrlInfo> url_infos) {
+  std::vector<GURL> urls;
+  for (const auto& url_info : url_infos) {
+    urls.push_back(url_info.url);
+  }
+  return urls;
 }
 
 }  // namespace
@@ -294,7 +303,7 @@ void ProductSpecificationsService::GetSetByUuid(
 const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::AddProductSpecificationsSet(
     const std::string& name,
-    const std::vector<GURL>& urls) {
+    const std::vector<UrlInfo>& url_infos) {
   if (!bridge_->IsSyncEnabled()) {
     return std::nullopt;
   }
@@ -314,13 +323,13 @@ ProductSpecificationsService::AddProductSpecificationsSet(
     specifics.push_back(comparison_specifics);
     base::Time now = base::Time::Now();
     std::vector<sync_pb::ProductComparisonSpecifics> item_specifics =
-        CreateItemLevelSpecifics(top_level_uuid, urls, now);
+        CreateItemLevelSpecifics(top_level_uuid, GetUrls(url_infos), now);
     specifics.insert(specifics.end(),
                      std::make_move_iterator(item_specifics.begin()),
                      std::make_move_iterator(item_specifics.end()));
     bridge_->AddSpecifics(specifics);
     ProductSpecificationsSet set = ProductSpecificationsSet(
-        top_level_uuid, time_now, time_now, urls, name);
+        top_level_uuid, time_now, time_now, GetUrls(url_infos), name);
     OnProductSpecificationsSetAdded(set);
     return set;
   } else {
@@ -330,7 +339,7 @@ ProductSpecificationsService::AddProductSpecificationsSet(
     comparison_specifics.set_creation_time_unix_epoch_millis(time_now);
     comparison_specifics.set_update_time_unix_epoch_millis(time_now);
     comparison_specifics.set_name(name);
-    for (const GURL& url : urls) {
+    for (const GURL& url : GetUrls(url_infos)) {
       sync_pb::ComparisonData* comparison_data =
           comparison_specifics.add_data();
       comparison_data->set_url(url.spec());

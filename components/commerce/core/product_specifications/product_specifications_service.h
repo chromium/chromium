@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/product_specifications/product_specifications_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -46,10 +47,12 @@ class ProductSpecificationsService
           callback);
 
   // Add new product specifications set called |name| with product pages
-  // corresponding to |urls|.
+  // corresponding the urls in |url_infos|. Note, title support is being
+  // added to ProductSpecificationsService (crbug.com/357561655), although
+  // the title field in UrlInfo is currently unused.
   virtual const std::optional<ProductSpecificationsSet>
   AddProductSpecificationsSet(const std::string& name,
-                              const std::vector<GURL>& urls);
+                              const std::vector<UrlInfo>& url_infos);
 
   // Set the URLs for a product specifications set associated with the provided
   // Uuid. If a set with the provided Uuid exists, an updated

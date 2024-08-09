@@ -29,7 +29,7 @@ class MockProductSpecificationsService : public ProductSpecificationsService {
               (override));
   MOCK_METHOD(const std::optional<ProductSpecificationsSet>,
               AddProductSpecificationsSet,
-              (const std::string& name, const std::vector<GURL>& urls),
+              (const std::string& name, const std::vector<UrlInfo>& urls),
               (override));
   MOCK_METHOD(void,
               DeleteProductSpecificationsSet,

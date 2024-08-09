@@ -174,9 +174,13 @@ void ProductSpecificationsEntryPointController::OnEntryPointExecuted() {
   // Reset entry point show gap time.
   browser_->profile()->GetPrefs()->SetInteger(
       commerce::kProductSpecificationsEntryPointShowIntervalInDays, 0);
+  std::vector<commerce::UrlInfo> url_infos;
+  for (const auto& url : urls_in_set) {
+    url_infos.emplace_back(url, std::u16string());
+  }
   const std::optional<ProductSpecificationsSet> set =
       product_specifications_service_->AddProductSpecificationsSet(
-          current_entry_point_info_->title, std::move(urls_in_set));
+          current_entry_point_info_->title, std::move(url_infos));
   if (set.has_value()) {
     chrome::AddTabAt(browser_,
                      commerce::GetProductSpecsTabUrlForID(set->uuid()),

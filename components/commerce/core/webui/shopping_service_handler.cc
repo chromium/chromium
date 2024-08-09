@@ -936,9 +936,14 @@ void ShoppingServiceHandler::AddProductSpecificationsSet(
     return;
   }
 
+  std::vector<commerce::UrlInfo> url_infos;
+  for (const auto& url : urls) {
+    url_infos.emplace_back(url, std::u16string());
+  }
+
   std::optional<ProductSpecificationsSet> new_set =
       shopping_service_->GetProductSpecificationsService()
-          ->AddProductSpecificationsSet(name, urls);
+          ->AddProductSpecificationsSet(name, url_infos);
 
   std::move(callback).Run(
       new_set.has_value() ? ProductSpecsSetToMojo(new_set.value()) : nullptr);

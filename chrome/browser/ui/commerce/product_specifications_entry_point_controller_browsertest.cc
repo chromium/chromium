@@ -477,7 +477,9 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
       .WillByDefault(testing::Return(url_infos));
 
   // Only open URLs should be added to the set.
-  std::vector<GURL> expected_urls = {GURL(kTestUrl3), GURL(kTestUrl2)};
+  std::vector<commerce::UrlInfo> expected_urls = {
+      commerce::UrlInfo(GURL(kTestUrl3), u""),
+      commerce::UrlInfo(GURL(kTestUrl2), u"")};
   EXPECT_CALL(*mock_product_spec_service_,
               AddProductSpecificationsSet(kTitle, expected_urls))
       .Times(1);
