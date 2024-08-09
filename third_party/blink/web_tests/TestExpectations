@@ -2648,8 +2648,8 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac15-arm64 ] external/wpt/webrtc-priority/RTCPeerConnection-ondatachannel.html [ Timeout ]
-[ Mac15 ] external/wpt/webrtc-priority/RTCPeerConnection-ondatachannel.html [ Timeout ]
+crbug.com/358456309 [ Mac15-arm64 ] external/wpt/webrtc-priority/RTCPeerConnection-ondatachannel.html [ Timeout ]
+crbug.com/358456309 [ Mac15 ] external/wpt/webrtc-priority/RTCPeerConnection-ondatachannel.html [ Timeout ]
 crbug.com/358192562 [ Win11-arm64 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/compute-explicit-name-direct.tentative.html [ Failure ]
 crbug.com/358192562 [ Win11-arm64 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/compute-explicit-name-nested-vt-names.tentative.html [ Failure ]
 crbug.com/358192562 [ Win11-arm64 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/nearest-nested.tentative.html [ Failure ]
