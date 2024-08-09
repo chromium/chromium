@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Rendering of mo should only be affected by in-flow children
-  Failed to execute 'getComputedStyle' on 'Window': parameter 1 is not of type 'Element'.
-Harness: the test ran to completion.
-

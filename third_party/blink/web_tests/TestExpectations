@@ -2648,6 +2648,8 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac15-arm64 ] external/wpt/webrtc-priority/RTCPeerConnection-ondatachannel.html [ Timeout ]
+[ Mac15 ] external/wpt/webrtc-priority/RTCPeerConnection-ondatachannel.html [ Timeout ]
 crbug.com/358192562 [ Win11-arm64 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/compute-explicit-name-direct.tentative.html [ Failure ]
 crbug.com/358192562 [ Win11-arm64 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/compute-explicit-name-nested-vt-names.tentative.html [ Failure ]
 crbug.com/358192562 [ Win11-arm64 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/nearest-nested.tentative.html [ Failure ]
@@ -2888,6 +2890,7 @@ crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-004.htm
 crbug.com/626703 external/wpt/editing/crashtests/designMode-caret-change.html [ Timeout ]
 crbug.com/626703 virtual/third-party-storage-partitioning/external/wpt/IndexedDB/ready-state-destroyed-execution-context.html [ Timeout ]
 crbug.com/626703 [ Mac14 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
+crbug.com/626703 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/626703 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/no-white-flash-before-activation.html [ Timeout ]
 crbug.com/626703 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/no-white-flash-before-activation.html [ Timeout ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-view-transitions/no-white-flash-before-activation.html [ Timeout ]
