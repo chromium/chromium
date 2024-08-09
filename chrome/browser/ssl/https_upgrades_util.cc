@@ -99,6 +99,11 @@ bool IsBalancedModeUniquelyEnabled(const HttpInterstitialState& state) {
   return IsBalancedModeAvailable() && state.enabled_in_balanced_mode;
 }
 
+bool IsNewHttpsFirstModeInterstitialEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kHttpsFirstModeInterstitialAugust2024Refresh);
+}
+
 bool IsInterstitialEnabled(const HttpInterstitialState& state) {
   // Interstitials are enabled when "strict" interstitials are enabled...
   if (IsStrictInterstitialEnabled(state)) {

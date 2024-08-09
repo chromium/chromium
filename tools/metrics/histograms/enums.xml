@@ -19931,6 +19931,8 @@ from previous Chrome versions.
   <int value="-186707397" label="HideArcMediaNotifications:enabled"/>
   <int value="-185849961" label="IOSPromoPasswordBubble:disabled"/>
   <int value="-185162926" label="IncreaseInputAudioBufferSize:enabled"/>
+  <int value="-184619698"
+      label="HttpsFirstModeInterstitialAugust2024Refresh:disabled"/>
   <int value="-184091779"
       label="OmniboxUIExperimentWhiteBackgroundOnBlur:enabled"/>
   <int value="-183541827"
@@ -21043,6 +21045,8 @@ from previous Chrome versions.
   <int value="286001833" label="TabGroupsNewBadgePromo:enabled"/>
   <int value="286621673" label="FedCmIframeSupport:enabled"/>
   <int value="286717452" label="ContextualSearchDebug:disabled"/>
+  <int value="287599993"
+      label="HttpsFirstModeInterstitialAugust2024Refresh:enabled"/>
   <int value="287932297" label="AutofillSettingsCardTypeSplit:enabled"/>
   <int value="288012253" label="CrostiniFiles:enabled"/>
   <int value="288354568"

@@ -25,6 +25,7 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_blocking_page_quiet.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/https_only_mode_controller_client.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ssl/insecure_form/insecure_form_controller_client.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/url_constants.h"
@@ -277,7 +278,7 @@ CreateHttpsOnlyModePage(content::WebContents* web_contents) {
       std::make_unique<HttpsOnlyModeControllerClient>(web_contents,
                                                       request_url),
       security_interstitials::https_only_mode::HttpInterstitialState{},
-      /*balanced_mode=*/true);
+      /*use_new_interstitial=*/IsNewHttpsFirstModeInterstitialEnabled());
 }
 
 std::unique_ptr<security_interstitials::SecurityInterstitialPage>

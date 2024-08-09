@@ -1231,6 +1231,9 @@ extern const char kHttpsFirstBalancedModeDescription[];
 extern const char kHttpsFirstDialogUiName[];
 extern const char kHttpsFirstDialogUiDescription[];
 
+extern const char kHttpsFirstModeInterstitialAugust2024RefreshName[];
+extern const char kHttpsFirstModeInterstitialAugust2024RefreshDescription[];
+
 extern const char kHttpsFirstModeIncognitoName[];
 extern const char kHttpsFirstModeIncognitoDescription[];
 
