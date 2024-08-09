@@ -233,14 +233,21 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
       query_id_(0u),
       query_id_weak_ptr_factory_(&query_id_),
       weak_ptr_factory_(this) {
+  // Observe HistoryService with storage prepared, even when disabled. The user
+  // may disable the feature after using it and then request to delete data.
+  CHECK(history_service_);
+  storage_ = base::SequenceBound<Storage>(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+      history_service_->history_dir());
+  history_service_observation_.Observe(history_service_);
+
   if (!history_embeddings::IsHistoryEmbeddingsEnabled()) {
     // If the feature flag is disabled, skip initialization. Note we don't also
     // check the pref here, because the pref can change at runtime.
     return;
   }
-
-  CHECK(history_service_);
-  history_service_observation_.Observe(history_service_);
 
   // Notify page content annotations service that we will need the content
   // visibility model during the session.
@@ -275,12 +282,6 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
     optimization_guide_decider_->RegisterOptimizationTypes(
         {optimization_guide::proto::HISTORY_EMBEDDINGS});
   }
-
-  storage_ = base::SequenceBound<Storage>(
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-      history_service_->history_dir());
 
   // OnEmbedderReady callback needs to be set after the storage_ construction,
   // since the callback could be invoked immediately.
