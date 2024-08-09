@@ -1505,6 +1505,9 @@ TEST_F(RenderViewContextMenuPrefsTest,
       ash::standalone_browser::GetFeatureRefs();
   enabled.push_back(lens::features::kLensStandalone);
   features.InitWithFeatures(enabled, {});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
 
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
   auto* primary_user =
