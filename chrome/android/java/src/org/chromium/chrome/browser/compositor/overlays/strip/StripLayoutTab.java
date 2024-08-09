@@ -45,8 +45,10 @@ import java.util.Optional;
 public class StripLayoutTab extends StripLayoutView {
     /** An observer interface for StripLayoutTab. */
     public interface Observer {
-        /** @param visible Whether the StripLayoutTab is visible. */
-        void onVisibilityChanged(boolean visible);
+        /**
+         * @param newVisibility Whether the StripLayoutTab is visible.
+         */
+        void onVisibilityChanged(boolean newVisibility);
     }
 
     /** Delegate for additional tab functionality. */
@@ -526,12 +528,12 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     @Override
-    public void setVisible(boolean visible) {
-        if (isVisible() == visible) return;
-        super.setVisible(visible);
-        if (!visible) {
+    public void onVisibilityChanged(boolean newVisibility) {
+        if (!newVisibility) {
+            // TODO(crbug.com/358205243): Re-build the bitmaps if the tab becomes visible here.
             mUpdateHost.releaseResourcesForTab(mId);
         }
+
         for (Observer observer : mObservers) {
             observer.onVisibilityChanged(isVisible());
         }

@@ -2632,6 +2632,11 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         mLayerTitleCache.removeGroupTitle(rootId);
     }
 
+    @Override
+    public void rebuildResourcesForGroupTitle(StripLayoutGroupTitle groupTitle) {
+        updateGroupTitleBitmapIfNeeded(groupTitle);
+    }
+
     private AnimatorListener getCollapseAnimatorListener(
             StripLayoutGroupTitle collapsedGroupTitle) {
         return new AnimatorListenerAdapter() {

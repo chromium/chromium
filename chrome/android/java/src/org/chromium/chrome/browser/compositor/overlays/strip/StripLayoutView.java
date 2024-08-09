@@ -168,8 +168,17 @@ public abstract class StripLayoutView implements VirtualView {
      * @param visible Whether or not this {@link StripLayoutView} should be drawn.
      */
     public void setVisible(boolean visible) {
+        if (mVisible == visible) return;
         mVisible = visible;
+        onVisibilityChanged(mVisible);
     }
+
+    /**
+     * Called if the visibility state has changed.
+     *
+     * @param newVisibility Whether or not this {@link StripLayoutView} should be drawn.
+     */
+    void onVisibilityChanged(boolean newVisibility) {}
 
     /**
      * @return Whether or not this {@link StripLayoutView} is collapsed.

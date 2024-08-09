@@ -30,6 +30,13 @@ public class StripLayoutGroupTitle extends StripLayoutView {
         void releaseResourcesForGroupTitle(int rootId);
 
         /**
+         * Rebuilds the resources associated with this group indicator.
+         *
+         * @param groupTitle This group indicator.
+         */
+        void rebuildResourcesForGroupTitle(StripLayoutGroupTitle groupTitle);
+
+        /**
          * Handles group title click action.
          *
          * @param groupTitle The group title that was clicked.
@@ -127,10 +134,12 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     }
 
     @Override
-    public void setVisible(boolean visible) {
-        super.setVisible(visible);
-
-        if (!visible) mDelegate.releaseResourcesForGroupTitle(mRootId);
+    void onVisibilityChanged(boolean newVisibility) {
+        if (newVisibility) {
+            mDelegate.rebuildResourcesForGroupTitle(this);
+        } else {
+            mDelegate.releaseResourcesForGroupTitle(mRootId);
+        }
     }
 
     @Override
