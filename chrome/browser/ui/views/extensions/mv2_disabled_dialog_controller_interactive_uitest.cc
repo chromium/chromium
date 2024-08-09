@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
@@ -10,6 +12,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -66,11 +69,39 @@ class Mv2DisabledDialogControllerInteractiveUITest
     TestExtensionDir test_dir;
     test_dir.WriteManifest(base::StringPrintf(kManifest, name.data()));
 
-    extensions::ChromeTestExtensionLoader loader(browser()->profile());
+    ChromeTestExtensionLoader loader(browser()->profile());
     loader.set_location(location);
-    scoped_refptr<const extensions::Extension> extension =
+    scoped_refptr<const Extension> extension =
         loader.LoadExtension(test_dir.Pack());
+    return extension.get();
+  }
 
+  const Extension* AddMV2ExtensionWithIcon(std::string_view name,
+                                           std::string icon_file) {
+    static constexpr char kManifest[] =
+        R"({
+             "name": "%s",
+             "manifest_version": 2,
+             "version": "0.1",
+             "icons": {
+                "16": "icon16.png"
+             }
+           })";
+    base::ScopedAllowBlockingForTesting allow_io;
+    base::FilePath icon_path =
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+            .AppendASCII("extensions")
+            .AppendASCII(icon_file);
+    std::string icon_file_content;
+    EXPECT_TRUE(base::ReadFileToString(icon_path, &icon_file_content));
+
+    TestExtensionDir test_dir;
+    test_dir.WriteManifest(base::StringPrintf(kManifest, name.data()));
+    test_dir.WriteFile(FILE_PATH_LITERAL("icon16.png"), icon_file_content);
+
+    ChromeTestExtensionLoader loader(browser()->profile());
+    scoped_refptr<const Extension> extension =
+        loader.LoadExtension(test_dir.Pack());
     return extension.get();
   }
 
@@ -269,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 // TODO(crbug.com/358407359): Flaky on ChromeOS due to a race-condition with
 // informed restore dialog on Ash.
 #if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_NoUserAction NoUserAction
+#define MAYBE_NoUserAction DISABLED_NoUserAction
 #else
 #define MAYBE_NoUserAction NoUserAction
 #endif
@@ -387,6 +418,140 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
                 .Contains(policy_extension_id);
           },
           true));
+}
+
+// Tests that icons loaded asynchronously trigger the dialog after load is
+// finished.
+// Stage 1: Load an MV2 extension with an icon.
+// TODO(crbug.com/358407359): Flaky on ChromeOS due to a race-condition with
+// informed restore dialog on Ash.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PRE_IconsLoaded DISABLED_PRE_IconsLoaded
+#else
+#define MAYBE_PRE_IconsLoaded PRE_IconsLoaded
+#endif
+IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+                       MAYBE_PRE_IconsLoaded) {
+  scoped_refptr<const Extension> extension_A =
+      AddMV2ExtensionWithIcon("Extension A", "icon1.png");
+  scoped_refptr<const Extension> extension_B =
+      AddMV2ExtensionWithIcon("Extension B", "icon2.png");
+  scoped_refptr<const Extension> extension_C = AddMV2Extension("Extension C");
+
+  // Extensions are not affected by the MV2 deprecation, yet. Thus, dialog is
+  // not visible.
+  ASSERT_TRUE(
+      extension_registry()->enabled_extensions().Contains(extension_A->id()));
+  ASSERT_TRUE(
+      extension_registry()->enabled_extensions().Contains(extension_B->id()));
+  ASSERT_TRUE(
+      extension_registry()->enabled_extensions().Contains(extension_C->id()));
+}
+// Stage 2: Dialog should be visible and have icon.
+// TODO(crbug.com/358407359): Flaky on ChromeOS due to a race-condition with
+// informed restore dialog on Ash.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_IconsLoaded DISABLED_IconsLoaded
+#else
+#define MAYBE_IconsLoaded IconsLoaded
+#endif
+IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+                       MAYBE_IconsLoaded) {
+  RunTestSequence(
+      // Extensions are disabled due to the MV2 deprecation stage.
+      CheckResult(
+          [&]() {
+            return HasExtensionByName(
+                "Extension A", extension_registry()->disabled_extensions());
+          },
+          true),
+      CheckResult(
+          [&]() {
+            return HasExtensionByName(
+                "Extension B", extension_registry()->disabled_extensions());
+          },
+          true),
+      CheckResult(
+          [&]() {
+            return HasExtensionByName(
+                "Extension C", extension_registry()->disabled_extensions());
+          },
+          true),
+      // We cannot add an element identifier to the dialog when it's
+      // built using DialogModel::Builder. Thus, we check for its
+      // existence by checking the visibility of one of its
+      // elements.
+      WaitForShow(kExtensionsMv2DisabledDialogParagraphElementId),
+      // Verify the three extensions are on the dialog.
+      // Note: ideally we would verify the extension entries in the
+      // dialog. However, we cannot assign a different element id to
+      // each entry since the number of entries can change.
+      // Therefore, we check whether the dialog paragraph has plural
+      // string and that the correct extension info was provided to
+      // the dialog.
+      CheckViewProperty(
+          kExtensionsMv2DisabledDialogParagraphElementId,
+          &views::Label::GetText,
+          l10n_util::GetPluralStringFUTF16(
+              IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_DESCRIPTION,
+              /*number=*/3)));
+}
+
+// Tests that the correct extension info is passed to the dialog.
+// Stage 1: Load two MV2 extensions.
+// TODO(crbug.com/358407359): Flaky on ChromeOS due to a race-condition with
+// informed restore dialog on Ash.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PRE_CorrectExtensionInfo DISABLED_PRE_CorrectExtensionInfo
+#else
+#define MAYBE_PRE_CorrectExtensionInfo PRE_CorrectExtensionInfo
+#endif
+IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+                       MAYBE_PRE_CorrectExtensionInfo) {
+  scoped_refptr<const Extension> extension_A =
+      AddMV2ExtensionWithIcon("Extension A", "icon1.png");
+  scoped_refptr<const Extension> extension_B = AddMV2Extension("Extension B");
+
+  // Extensions are not affected by the MV2 deprecation, yet.
+  ASSERT_TRUE(
+      extension_registry()->enabled_extensions().Contains(extension_A->id()));
+  ASSERT_TRUE(
+      extension_registry()->enabled_extensions().Contains(extension_B->id()));
+}
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CorrectExtensionInfo DISABLED_CorrectExtensionInfo
+#else
+#define MAYBE_CorrectExtensionInfo CorrectExtensionInfo
+#endif
+// Stage 2: Verify extension info passed to dialog is correct.
+IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
+                       MAYBE_CorrectExtensionInfo) {
+  RunTestSequence(
+      // Wait for dialog to be visible. Other checks on this test will be done
+      // "outside" of it.
+      // Note: We cannot add an element identifier to the dialog when
+      // it's built using DialogModel::Builder. Thus, we check for its existence
+      // by checking the visibility of one of its elements.
+      WaitForShow(kExtensionsMv2DisabledDialogParagraphElementId));
+
+  EXPECT_TRUE(HasExtensionByName("Extension A",
+                                 extension_registry()->disabled_extensions()));
+  EXPECT_TRUE(HasExtensionByName("Extension B",
+                                 extension_registry()->disabled_extensions()));
+
+  Mv2DisabledDialogController* dialog_controller =
+      browser()
+          ->browser_window_features()
+          ->mv2_disabled_dialog_controller_for_testing();
+  std::vector<Mv2DisabledDialogController::ExtensionInfo> affected_extensions =
+      dialog_controller->GetAffectedExtensionsForTesting();
+
+  // Verify extensions are ordered alphabetically, by extension name, and they
+  // have an icon.
+  EXPECT_EQ(affected_extensions[0].name, "Extension A");
+  EXPECT_EQ(affected_extensions[1].name, "Extension B");
+  EXPECT_FALSE(affected_extensions[0].icon.IsEmpty());
+  EXPECT_FALSE(affected_extensions[0].icon.IsEmpty());
 }
 
 }  // namespace extensions
