@@ -41,7 +41,8 @@ class PersonalDataManagerTestBase {
   std::unique_ptr<PersonalDataManager> InitPersonalDataManager(
       bool use_sync_transport_mode);
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<PrefService> prefs_;
   signin::IdentityTestEnvironment identity_test_env_;
   syncer::TestSyncService sync_service_;

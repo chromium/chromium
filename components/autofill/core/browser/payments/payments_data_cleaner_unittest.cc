@@ -8,12 +8,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_base.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -72,8 +72,10 @@ class PaymentsDataCleanerTest : public PersonalDataManagerTestBase,
 // Tests that DeleteDisusedCreditCards deletes desired credit cards only.
 TEST_F(PaymentsDataCleanerTest,
        DeleteDisusedCreditCards_OnlyDeleteExpiredDisusedLocalCards) {
+  // Move the time to 20XX.
+  task_environment_.FastForwardBy(base::Days(365) * 31);
   const char kHistogramName[] = "Autofill.CreditCardsDeletedForDisuse";
-  auto now = AutofillClock::Now();
+  auto now = base::Time::Now();
 
   // Create a recently used local card, it is expected to remain.
   CreditCard credit_card1(base::Uuid::GenerateRandomV4().AsLowercaseString(),

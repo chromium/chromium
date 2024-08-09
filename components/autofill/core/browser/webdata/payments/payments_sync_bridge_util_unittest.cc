@@ -9,6 +9,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
@@ -20,7 +22,6 @@
 #include "components/autofill/core/browser/data_model/credit_card_benefit_test_api.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_test_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -80,6 +81,10 @@ class PaymentsSyncBridgeUtilTest : public testing::Test {
       delete;
 
   ~PaymentsSyncBridgeUtilTest() override = default;
+
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 // Tests that PopulateWalletTypesFromSyncData behaves as expected.
@@ -268,9 +273,7 @@ TEST_P(PaymentsSyncBridgeUtilCardBenefitsTest,
 
   // Set a time in milliseconds accuracy so that the testing benefits can be
   // generated in milliseconds to match the server format.
-  TestAutofillClock test_clock;
-  base::Time arbitrary_time = base::Time::FromMillisecondsSinceUnixEpoch(1234);
-  test_clock.SetNow(arbitrary_time);
+  task_environment_.FastForwardBy(base::Milliseconds(1234));
 
   // Add two credit-card-linked benefits to card 1.
   CreditCardBenefit merchant_benefit =
@@ -393,10 +396,8 @@ TEST_F(PaymentsSyncBridgeUtilTest,
 // Verify that the use stats on disk are kept when server cards are synced.
 TEST_F(PaymentsSyncBridgeUtilTest,
        CopyRelevantWalletMetadataAndCvc_KeepUseStats) {
-  TestAutofillClock test_clock;
-  base::Time arbitrary_time = base::Time::FromSecondsSinceUnixEpoch(25);
   base::Time disk_time = base::Time::FromSecondsSinceUnixEpoch(10);
-  test_clock.SetNow(arbitrary_time);
+  task_environment_.FastForwardBy(base::Seconds(25));
 
   std::vector<CreditCard> cards_from_local_storage;
   std::vector<CreditCard> wallet_cards;
