@@ -1,0 +1,11 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//services/device/public/cpp/compute_pressure/buildflags.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "ENABLE_COMPUTE_PRESSURE=$enable_compute_pressure" ]
+}

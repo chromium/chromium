@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 import("//third_party/blink/renderer/config.gni")
 
 # Generated sources for production
@@ -54,8 +55,6 @@ generated_callback_function_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_position_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_position_error_callback.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_position_error_callback.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_update_callback.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_update_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_remote_playback_availability_callback.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_remote_playback_availability_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_peer_connection_error_callback.cc",
@@ -83,6 +82,13 @@ generated_callback_function_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_frame_request_callback.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_frame_request_callback.h",
 ]
+
+if (enable_compute_pressure) {
+  generated_callback_function_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_update_callback.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_update_callback.h",
+  ]
+}
 
 generated_callback_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_entries_callback.cc",
@@ -924,8 +930,6 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_presentation_connection_close_event_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_presentation_source.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_presentation_source.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_observer_options.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_observer_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_private_aggregation_debug_mode_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_private_aggregation_debug_mode_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_private_aggregation_histogram_contribution.cc",
@@ -1294,6 +1298,13 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_webgl_layer_init.h",
 ]
 
+if (enable_compute_pressure) {
+  generated_dictionary_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_observer_options.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_observer_options.h",
+  ]
+}
+
 generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_aac_bitstream_format.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_aac_bitstream_format.h",
@@ -1623,10 +1634,6 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_presentation_connection_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_presentation_source_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_presentation_source_type.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_state.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_private_attribution_event.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_private_attribution_event.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_type.cc",
@@ -1798,6 +1805,15 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_visibility_state.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_visibility_state.h",
 ]
+
+if (enable_compute_pressure) {
+  generated_enumeration_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_state.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_state.h",
+  ]
+}
 
 generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_abort_payment_event.cc",
@@ -2546,10 +2562,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_presentation_receiver.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_presentation_request.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_presentation_request.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_observer.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_observer.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_record.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_record.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_private_aggregation.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_private_aggregation.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_private_attribution.cc",
@@ -3029,6 +3041,15 @@ generated_namespace_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_usage.h",
 ]
 
+if (enable_compute_pressure) {
+  generated_interface_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_observer.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_observer.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_record.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_record.h",
+  ]
+}
+
 generated_observable_array_sources_in_modules = []
 
 generated_sync_iterator_sources_in_modules = [
@@ -3413,8 +3434,6 @@ generated_interface_extra_sources_in_modules = [
 # Generated sources for testing
 
 generated_dictionary_sources_for_testing_in_modules = [
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_create_virtual_pressure_source_options.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_create_virtual_pressure_source_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_create_virtual_sensor_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_create_virtual_sensor_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_virtual_sensor_information.cc",
@@ -3422,6 +3441,13 @@ generated_dictionary_sources_for_testing_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_virtual_sensor_reading.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_virtual_sensor_reading.h",
 ]
+
+if (enable_compute_pressure) {
+  generated_dictionary_sources_for_testing_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_create_virtual_pressure_source_options.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_create_virtual_pressure_source_options.h",
+  ]
+}
 
 generated_enumeration_sources_for_testing_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_virtual_sensor_type.cc",

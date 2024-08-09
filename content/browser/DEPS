@@ -75,6 +75,7 @@ include_rules = [
   "-services/content",
   "+services/content/service.h",
   "+services/content/service_delegate.h",
+  "+services/device/public/cpp/compute_pressure",
   "-services/network",
   "+services/network/public/cpp",
   "+services/network/public/mojom",

@@ -1,0 +1,13 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+# Compute Pressure doesn't have a backend implementation for Android or
+# Fuchsia. This flag prevents to include compute pressure implementation
+# into the mentioned build to reduce the image size.
+
+declare_args() {
+  enable_compute_pressure = !is_android && !is_fuchsia
+}

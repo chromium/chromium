@@ -22,6 +22,7 @@ import("//media/media_options.gni")
 import("//net/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
@@ -214,6 +215,7 @@ source_set("browser") {
     "//services/data_decoder/public/mojom",
     "//services/device:lib",
     "//services/device/public/cpp:device_features",
+    "//services/device/public/cpp/compute_pressure:buildflags",
     "//services/device/public/cpp/generic_sensor",
     "//services/device/public/cpp/geolocation",
     "//services/device/public/mojom",
@@ -771,16 +773,6 @@ source_set("browser") {
     "code_cache/simple_lru_cache.h",
     "compositor/surface_utils.cc",
     "compositor/surface_utils.h",
-    "compute_pressure/pressure_client_impl.cc",
-    "compute_pressure/pressure_client_impl.h",
-    "compute_pressure/pressure_service_base.cc",
-    "compute_pressure/pressure_service_base.h",
-    "compute_pressure/pressure_service_for_frame.cc",
-    "compute_pressure/pressure_service_for_frame.h",
-    "compute_pressure/pressure_service_for_worker.cc",
-    "compute_pressure/pressure_service_for_worker.h",
-    "compute_pressure/web_contents_pressure_manager_proxy.cc",
-    "compute_pressure/web_contents_pressure_manager_proxy.h",
     "contacts/contacts_manager_impl.cc",
     "contacts/contacts_manager_impl.h",
     "contacts/contacts_provider.h",
@@ -2395,6 +2387,21 @@ source_set("browser") {
     "permissions/permission_util.cc",
     "permissions/permission_util.h",
   ]
+
+  if (enable_compute_pressure) {
+    sources += [
+      "compute_pressure/pressure_client_impl.cc",
+      "compute_pressure/pressure_client_impl.h",
+      "compute_pressure/pressure_service_base.cc",
+      "compute_pressure/pressure_service_base.h",
+      "compute_pressure/pressure_service_for_frame.cc",
+      "compute_pressure/pressure_service_for_frame.h",
+      "compute_pressure/pressure_service_for_worker.cc",
+      "compute_pressure/pressure_service_for_worker.h",
+      "compute_pressure/web_contents_pressure_manager_proxy.cc",
+      "compute_pressure/web_contents_pressure_manager_proxy.h",
+    ]
+  }
 
   if (use_viz_debugger) {
     sources += [

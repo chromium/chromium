@@ -48,10 +48,12 @@ namespace {
 
 constexpr char kCommandIsOnlyAvailableAtTopTarget[] =
     "Command can only be executed on top-level targets";
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 constexpr char kPressureSourceIsAlreadyOverridden[] =
     "The specified pressure source is already overridden";
 constexpr char kPressureSourceIsNotOverridden[] =
     "The specified pressure source is not being overridden";
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 constexpr char kSensorIsAlreadyOverridden[] =
     "The specified sensor type is already overridden";
 constexpr char kSensorIsNotOverridden[] =
@@ -140,7 +142,9 @@ void EmulationHandler::SetRenderer(int process_host_id,
     return;
   if (!frame_host) {
     sensor_overrides_.clear();
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
     pressure_overrides_.clear();
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   }
   host_ = frame_host;
   if (touch_emulation_enabled_)
@@ -169,7 +173,9 @@ Response EmulationHandler::Disable() {
   prefers_reduced_motion_ = "";
   prefers_reduced_transparency_ = "";
   sensor_overrides_.clear();
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   pressure_overrides_.clear();
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   ClearDevicePostureOverride();
   return Response::Success();
 }
@@ -409,6 +415,7 @@ void EmulationHandler::SetSensorOverrideReadings(
           std::move(callback)));
 }
 
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 namespace {
 
 device::mojom::VirtualPressureSourceMetadataPtr ConvertPressureMetadata(
@@ -447,11 +454,13 @@ Response ConvertPressureState(const Emulation::PressureState& state,
 }
 
 }  // namespace
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
 Response EmulationHandler::SetPressureSourceOverrideEnabled(
     bool enabled,
     const Emulation::PressureSource& source,
     Maybe<Emulation::PressureMetadata> metadata) {
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   if (!host_) {
     return Response::InternalError();
   }
@@ -476,6 +485,9 @@ Response EmulationHandler::SetPressureSourceOverrideEnabled(
     pressure_overrides_.erase(mojo_source);
   }
   return Response::Success();
+#else
+  return Response::InternalError();
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 }
 
 void EmulationHandler::SetPressureStateOverride(
@@ -486,6 +498,8 @@ void EmulationHandler::SetPressureStateOverride(
     callback->sendFailure(Response::InternalError());
     return;
   }
+
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   device::mojom::PressureSource mojo_source;
   if (auto response = ConvertPressureSource(source, &mojo_source);
       !response.IsSuccess()) {
@@ -507,6 +521,9 @@ void EmulationHandler::SetPressureStateOverride(
   it->second->UpdateVirtualPressureSourceState(
       mojo_state, base::BindOnce(&SetPressureStateOverrideCallback::sendSuccess,
                                  std::move(callback)));
+#else
+  callback->sendFailure(Response::InternalError());
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 }
 
 Response EmulationHandler::SetIdleOverride(bool is_user_active,

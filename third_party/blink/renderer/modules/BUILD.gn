@@ -5,6 +5,7 @@
 import("//build/config/cast.gni")
 import("//build/config/python.gni")
 import("//media/media_options.gni")
+import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/renderer/bindings/bindings.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
@@ -76,7 +77,6 @@ component("modules") {
     "//third_party/blink/renderer/modules/cache_storage",
     "//third_party/blink/renderer/modules/canvas",
     "//third_party/blink/renderer/modules/clipboard",
-    "//third_party/blink/renderer/modules/compute_pressure",
     "//third_party/blink/renderer/modules/contacts_picker",
     "//third_party/blink/renderer/modules/content_extraction",
     "//third_party/blink/renderer/modules/content_index",
@@ -190,6 +190,10 @@ component("modules") {
     ]
   }
 
+  if (enable_compute_pressure) {
+    sub_modules += [ "//third_party/blink/renderer/modules/compute_pressure" ]
+  }
+
   deps = [
     ":make_modules_generated",
     "//build:android_buildflags",
@@ -223,8 +227,6 @@ source_set("modules_testing") {
   sources = [
     "accessibility/testing/internals_accessibility.cc",
     "accessibility/testing/internals_accessibility.h",
-    "compute_pressure/testing/internals_compute_pressure.cc",
-    "compute_pressure/testing/internals_compute_pressure.h",
     "credentialmanagement/testing/internals_fed_cm.cc",
     "credentialmanagement/testing/internals_fed_cm.h",
     "device_posture/testing/internals_device_posture.cc",
@@ -263,6 +265,13 @@ source_set("modules_testing") {
     "webaudio/testing/internals_web_audio.cc",
     "webaudio/testing/internals_web_audio.h",
   ]
+
+  if (enable_compute_pressure) {
+    sources += [
+      "compute_pressure/testing/internals_compute_pressure.cc",
+      "compute_pressure/testing/internals_compute_pressure.h",
+    ]
+  }
 
   configs += [
     "//third_party/blink/renderer:config",
@@ -636,14 +645,19 @@ source_set("unit_tests") {
     "xr/xr_view_test.cc",
   ]
 
+  if (enable_compute_pressure) {
+    sources += [
+      "compute_pressure/pressure_observer_test.cc",
+      "compute_pressure/pressure_observer_test_utils.cc",
+      "compute_pressure/pressure_observer_test_utils.h",
+    ]
+  }
+
   if (!is_android) {
     sources += [
       # Inline text box tests do not apply to Android, which only loads
       # AXInlineTextBox tests for the focused node.
       "accessibility/ax_inline_text_box_test.cc",
-      "compute_pressure/pressure_observer_test.cc",
-      "compute_pressure/pressure_observer_test_utils.cc",
-      "compute_pressure/pressure_observer_test_utils.h",
     ]
   }
 

@@ -809,6 +809,7 @@ void DedicatedWorkerHost::GetFileSystemAccessManager(
       std::move(receiver));
 }
 
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 void DedicatedWorkerHost::BindPressureService(
     mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -842,6 +843,7 @@ void DedicatedWorkerHost::BindPressureService(
 
   pressure_service_->BindReceiver(std::move(receiver));
 }
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
 void DedicatedWorkerHost::ObserveNetworkServiceCrash(
     StoragePartitionImpl* storage_partition_impl) {

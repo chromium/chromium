@@ -17,6 +17,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
 import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
@@ -2097,7 +2098,6 @@ test("content_browsertests") {
   } else {
     # Non-Android.
     sources += [
-      "../browser/compute_pressure/pressure_service_browsertest.cc",
       "../browser/direct_sockets/direct_sockets_open_browsertest.cc",
       "../browser/direct_sockets/direct_sockets_tcp_browsertest.cc",
       "../browser/direct_sockets/direct_sockets_udp_browsertest.cc",
@@ -2121,6 +2121,11 @@ test("content_browsertests") {
       "//media/mojo/mojom:web_speech_recognition",
       "//ui/base/clipboard:clipboard_test_support",
     ]
+
+    if (enable_compute_pressure) {
+      sources +=
+          [ "../browser/compute_pressure/pressure_service_browsertest.cc" ]
+    }
 
     if (is_chromeos_ash) {
       deps += [ "//ash/constants:constants" ]
@@ -2930,7 +2935,7 @@ test("content_unittests") {
     ]
   }
 
-  if (!is_android) {
+  if (enable_compute_pressure) {
     sources += [
       "../browser/compute_pressure/pressure_service_for_frame_unittest.cc",
       "../browser/compute_pressure/pressure_service_for_worker_unittest.cc",

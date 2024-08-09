@@ -7,6 +7,7 @@ import("//build/config/ui.gni")  # For the toolkit_views variables.
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")  # For the enable_plugins variable.
 import("//printing/buildflags/buildflags.gni")
+import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 
 if (is_android) {
   import("//build/config/android/config.gni")
@@ -137,8 +138,6 @@ static_library("web_test_browser") {
     "browser/web_test_origin_trial_throttle.h",
     "browser/web_test_permission_manager.cc",
     "browser/web_test_permission_manager.h",
-    "browser/web_test_pressure_manager.cc",
-    "browser/web_test_pressure_manager.h",
     "browser/web_test_push_messaging_service.cc",
     "browser/web_test_push_messaging_service.h",
     "browser/web_test_sensor_provider_manager.cc",
@@ -152,6 +151,13 @@ static_library("web_test_browser") {
     "browser/web_test_tts_platform.cc",
     "browser/web_test_tts_platform.h",
   ]
+
+  if (enable_compute_pressure) {
+    sources += [
+      "browser/web_test_pressure_manager.cc",
+      "browser/web_test_pressure_manager.h",
+    ]
+  }
 
   if (is_mac) {
     sources += [ "browser/web_test_shell_platform_delegate_mac.mm" ]
@@ -207,6 +213,7 @@ static_library("web_test_browser") {
     "//ppapi/buildflags",
     "//sandbox",
     "//services/device/public/cpp:test_support",
+    "//services/device/public/cpp/compute_pressure:buildflags",
     "//services/network/public/cpp",
     "//services/service_manager/public/cpp",
     "//storage/browser",

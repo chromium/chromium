@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 
 mojom("mojom") {
   generate_java = true
@@ -103,6 +104,10 @@ mojom("device_service") {
 
   if (!is_android) {
     enabled_features += [ "enable_hid" ]
+  }
+
+  if (enable_compute_pressure) {
+    enabled_features += [ "enable_compute_pressure" ]
   }
 
   public_deps = [

@@ -11,7 +11,6 @@ import "services/device/public/mojom/geolocation_context.mojom";
 import "services/device/public/mojom/geolocation_control.mojom";
 import "services/device/public/mojom/geolocation_internals.mojom";
 import "services/device/public/mojom/power_monitor.mojom";
-import "services/device/public/mojom/pressure_manager.mojom";
 import "services/device/public/mojom/public_ip_address_geolocation_provider.mojom";
 import "services/device/public/mojom/screen_orientation.mojom";
 import "services/device/public/mojom/sensor_provider.mojom";
@@ -30,6 +29,9 @@ import "services/device/public/mojom/mtp_manager.mojom";
 
 [EnableIf=enable_hid]
 import "services/device/public/mojom/hid.mojom";
+
+[EnableIf=enable_compute_pressure]
+import "services/device/public/mojom/pressure_manager.mojom";
 
 [EnableIf=enable_input_device_manager]
 import "services/device/public/mojom/input_service.mojom";
@@ -61,6 +63,7 @@ interface DeviceService {
   BindBatteryMonitor(pending_receiver<BatteryMonitor> receiver);
 
   // Binds a PressureManager endpoint.
+  [EnableIf=enable_compute_pressure]
   BindPressureManager(pending_receiver<PressureManager> receiver);
 
   // Binds a NFCProvider endpoint.

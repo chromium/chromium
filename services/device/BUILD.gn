@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 import("//services/device/public/cpp/geolocation/buildflags.gni")
 import("//testing/test.gni")
 
@@ -36,12 +37,12 @@ source_set("lib") {
   deps = [
     ":binder_overrides",
     "//build:chromeos_buildflags",
-    "//services/device/compute_pressure",
     "//services/device/fingerprint",
     "//services/device/generic_sensor",
     "//services/device/geolocation",
     "//services/device/power_monitor",
     "//services/device/public/cpp:device_features",
+    "//services/device/public/cpp/compute_pressure:buildflags",
     "//services/device/public/mojom:geolocation_internals",
     "//services/device/public/mojom:usb",
     "//services/device/public/mojom:usb_test",
@@ -68,6 +69,10 @@ source_set("lib") {
       "//services/device/battery",
       "//services/device/hid",
     ]
+  }
+
+  if (enable_compute_pressure) {
+    deps += [ "//services/device/compute_pressure" ]
   }
 
   if (is_chromeos_ash && use_dbus) {
@@ -132,8 +137,6 @@ source_set("tests") {
 
   sources = [
     "battery/battery_status_service_unittest.cc",
-    "compute_pressure/cpu_probe_manager_unittest.cc",
-    "compute_pressure/pressure_manager_impl_unittest.cc",
     "generic_sensor/absolute_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_magnetometer_unittest.cc",
     "generic_sensor/fake_platform_sensor_and_provider.cc",
     "generic_sensor/fake_platform_sensor_and_provider.h",
@@ -179,7 +182,6 @@ source_set("tests") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//net:test_support",
-    "//services/device/compute_pressure",
     "//services/device/generic_sensor",
     "//services/device/geolocation",
     "//services/device/geolocation:test_support",
@@ -194,6 +196,14 @@ source_set("tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (enable_compute_pressure) {
+    sources += [
+      "compute_pressure/cpu_probe_manager_unittest.cc",
+      "compute_pressure/pressure_manager_impl_unittest.cc",
+    ]
+    deps += [ "//services/device/compute_pressure" ]
+  }
 
   if (is_android) {
     sources += [ "generic_sensor/platform_sensor_provider_unittest_android.cc" ]

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 import("//third_party/blink/renderer/config.gni")
 
 # Statically-defined (not build-time-generated) IDL files in 'modules' component
@@ -122,10 +123,6 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/clipboard/navigator_clipboard.idl",
   "//third_party/blink/renderer/modules/compression/compression_stream.idl",
   "//third_party/blink/renderer/modules/compression/decompression_stream.idl",
-  "//third_party/blink/renderer/modules/compute_pressure/pressure_observer.idl",
-  "//third_party/blink/renderer/modules/compute_pressure/pressure_observer_options.idl",
-  "//third_party/blink/renderer/modules/compute_pressure/pressure_record.idl",
-  "//third_party/blink/renderer/modules/compute_pressure/pressure_update_callback.idl",
   "//third_party/blink/renderer/modules/contacts_picker/contact_address.idl",
   "//third_party/blink/renderer/modules/contacts_picker/contact_info.idl",
   "//third_party/blink/renderer/modules/contacts_picker/contacts_manager.idl",
@@ -1371,12 +1368,20 @@ if (!target_os_is_android) {
   ]
 }
 
+# Compute Pressure
+if (enable_compute_pressure) {
+  static_idl_files_in_modules += [
+    "//third_party/blink/renderer/modules/compute_pressure/pressure_observer.idl",
+    "//third_party/blink/renderer/modules/compute_pressure/pressure_observer_options.idl",
+    "//third_party/blink/renderer/modules/compute_pressure/pressure_record.idl",
+    "//third_party/blink/renderer/modules/compute_pressure/pressure_update_callback.idl",
+  ]
+}
+
 # Statically-defined (not runtime-generated) IDL files in 'modules' component.
 # These IDL definitions are used only for testing.
 static_idl_files_in_modules_for_testing = [
   "//third_party/blink/renderer/modules/accessibility/testing/internals_accessibility.idl",
-  "//third_party/blink/renderer/modules/compute_pressure/testing/create_virtual_pressure_source_options.idl",
-  "//third_party/blink/renderer/modules/compute_pressure/testing/internals_compute_pressure.idl",
   "//third_party/blink/renderer/modules/credentialmanagement/testing/internals_fed_cm.idl",
   "//third_party/blink/renderer/modules/device_posture/testing/internals_device_posture.idl",
   "//third_party/blink/renderer/modules/fuzzing/internals_fuzzing.idl",
@@ -1394,3 +1399,11 @@ static_idl_files_in_modules_for_testing = [
   "//third_party/blink/renderer/modules/vibration/testing/internals_vibration.idl",
   "//third_party/blink/renderer/modules/webaudio/testing/internals_web_audio.idl",
 ]
+
+# Compute Pressure
+if (enable_compute_pressure) {
+  static_idl_files_in_modules_for_testing += [
+    "//third_party/blink/renderer/modules/compute_pressure/testing/create_virtual_pressure_source_options.idl",
+    "//third_party/blink/renderer/modules/compute_pressure/testing/internals_compute_pressure.idl",
+  ]
+}
