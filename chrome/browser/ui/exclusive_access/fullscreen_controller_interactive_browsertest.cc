@@ -859,8 +859,7 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
   AutomaticFullscreenTest() {
     feature_list_.InitWithFeatures(
         {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode,
-         features::kAutomaticFullscreenContentSetting,
-         blink::features::kAutomaticFullscreenPermissionsQuery},
+         features::kAutomaticFullscreenContentSetting},
         {});
   }
 
@@ -952,33 +951,8 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
       });
     })())";
 
-    // Without async permission checks, requestFullscreen in load event handlers
-    // races with pertient document settings reaching the renderer.
-    // TODO(crbug.com/40941384): Remove retries with document setting removal.
-    const bool retry = !base::FeatureList::IsEnabled(
-        blink::features::kAutomaticFullscreenPermissionsQuery);
-    const std::string script_with_retry = R"((() => {
-      let w = open(location.href, '', 'popup');
-      return new Promise(resolve => {
-        w.onload = () => {
-          w.document.onfullscreenchange = () => {
-            clearInterval(w.int);
-            resolve(!!w.document.fullscreenElement);
-          };
-          // Wait for document settings to reach the renderer after load :-/
-          w.int = setInterval(() => w.document.body.requestFullscreen(), 500);
-          // Stop retrying fullscreen before any ongoing 5s exit cooldown ends.
-          // Timeout precisely; time since `lastExit` may vary: e.g. 500-1750ms.
-          if (window.lastExit && (Date.now() - window.lastExit) < 5000) {
-            setTimeout(w.document.onfullscreenchange,
-                       4500 + window.lastExit - Date.now());
-          }
-        };
-      });
-    })())";
-
     Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-    auto result = EvalJs(web_contents_, retry ? script_with_retry : script);
+    auto result = EvalJs(web_contents_, script);
     Browser* popup = popup_observer.Wait();
     if (!popup) {
       return std::make_pair(false, nullptr);

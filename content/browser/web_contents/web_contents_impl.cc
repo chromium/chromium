@@ -520,10 +520,6 @@ bool IsWindowManagementGranted(RenderFrameHost* host) {
 
 // Returns true if `host` has the Automatic Fullscreen permission granted.
 bool IsAutomaticFullscreenGranted(RenderFrameHost* host) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kAutomaticFullscreenPermissionsQuery)) {
-    return false;
-  }
   content::PermissionController* permission_controller =
       host->GetBrowserContext()->GetPermissionController();
   CHECK(permission_controller);
@@ -10449,9 +10445,7 @@ bool WebContentsImpl::IsTransientActivationRequiredForHtmlFullscreen() {
     return false;
   }
 
-  return GetContentClient()
-      ->browser()
-      ->IsTransientActivationRequiredForHtmlFullscreen(host);
+  return true;
 }
 
 bool WebContentsImpl::IsBackForwardCacheSupported() {

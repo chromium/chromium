@@ -344,10 +344,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // `FileOrDirectoryPickerWithoutGestureAllowedForOrigins` policy.
   bool require_transient_activation_for_show_file_or_directory_picker = true;
 
-  // HTML Fullscreen (e.g. `Element.requestFullscreen()`) transient activation
-  // requirement can be bypassed via the "Automatic Fullscreen" content setting.
-  bool require_transient_activation_for_html_fullscreen = true;
-
   // `navigator.subApps.{add|remove|list}()`'s user gesture and authorization
   // can be bypassed via
   // `SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins` policy.

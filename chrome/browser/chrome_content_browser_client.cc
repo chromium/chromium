@@ -4547,10 +4547,6 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   web_prefs->require_transient_activation_for_show_file_or_directory_picker =
       IsFileOrDirectoryPickerWithoutGestureAllowed(web_contents);
 #endif  // !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/40941384): Remove this pref and solely rely on permissions.
-  web_prefs->require_transient_activation_for_html_fullscreen =
-      IsTransientActivationRequiredForHtmlFullscreen(
-          web_contents->GetPrimaryMainFrame());
 
 #if BUILDFLAG(IS_CHROMEOS)
   web_prefs->subapps_apis_require_user_gesture_and_authorization =
@@ -4659,15 +4655,6 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
   web_prefs->require_transient_activation_for_show_file_or_directory_picker =
       require_transient_activation_for_show_file_or_directory_picker;
 #endif  // !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/40941384): Remove this pref and solely rely on permissions.
-  const bool require_transient_activation_for_html_fullscreen =
-      IsTransientActivationRequiredForHtmlFullscreen(
-          web_contents->GetPrimaryMainFrame());
-  prefs_changed |=
-      (web_prefs->require_transient_activation_for_html_fullscreen !=
-       require_transient_activation_for_html_fullscreen);
-  web_prefs->require_transient_activation_for_html_fullscreen =
-      require_transient_activation_for_html_fullscreen;
 
   for (auto& parts : extra_parts_) {
     prefs_changed |=
@@ -8390,28 +8377,6 @@ bool ChromeContentBrowserClient::
 #else   // !BUILDFLAG(IS_ANDROID)
   return true;
 #endif  // !BUILDFLAG(IS_ANDROID)
-}
-
-bool ChromeContentBrowserClient::IsTransientActivationRequiredForHtmlFullscreen(
-    content::RenderFrameHost* render_frame_host) {
-  // TODO(crbug.com/40941384): Remove this code and solely rely on permissions.
-  if (base::FeatureList::IsEnabled(
-          features::kAutomaticFullscreenContentSetting) &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kAutomaticFullscreenPermissionsQuery)) {
-    const GURL& url = render_frame_host->GetLastCommittedURL();
-    const HostContentSettingsMap* const content_settings =
-        HostContentSettingsMapFactory::GetForProfile(
-            render_frame_host->GetBrowserContext());
-    if (content_settings &&
-        content_settings->GetContentSetting(
-            url, url, ContentSettingsType::AUTOMATIC_FULLSCREEN) ==
-            CONTENT_SETTING_ALLOW) {
-      return false;
-    }
-  }
-
-  return true;
 }
 
 #if BUILDFLAG(IS_MAC)

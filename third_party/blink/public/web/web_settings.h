@@ -110,7 +110,6 @@ class WebSettings {
   virtual void SetRequireTransientActivationForGetDisplayMedia(bool) = 0;
   virtual void SetRequireTransientActivationForShowFileOrDirectoryPicker(
       bool) = 0;
-  virtual void SetRequireTransientActivationForHtmlFullscreen(bool) = 0;
   virtual void SetAutoZoomFocusedEditableToLegibleScale(bool) = 0;
   virtual void SetCaretBrowsingEnabled(bool) = 0;
   virtual void SetClobberUserAgentInitialScaleQuirk(bool) = 0;

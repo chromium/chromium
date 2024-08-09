@@ -8606,12 +8606,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kAutomaticFullscreenContentSetting)},
 
-    {"automatic-fullscreen-permissions-query",
-     flag_descriptions::kAutomaticFullscreenPermissionsQueryName,
-     flag_descriptions::kAutomaticFullscreenPermissionsQueryDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(blink::features::kAutomaticFullscreenPermissionsQuery)},
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
     {"run-video-capture-service-in-browser",
      flag_descriptions::kRunVideoCaptureServiceInBrowserProcessName,

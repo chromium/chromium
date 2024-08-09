@@ -415,11 +415,6 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
           "Fullscreen Permission only supports allowWithoutGesture:true.");
       return nullptr;
     }
-    if (!RuntimeEnabledFeatures::AutomaticFullscreenPermissionsQueryEnabled()) {
-      exception_state.ThrowTypeError(
-          "Fullscreen Permissions API query support is not enabled.");
-      return nullptr;
-    }
     return CreateFullscreenPermissionDescriptor(
         fullscreen_permission->allowWithoutGesture());
   }

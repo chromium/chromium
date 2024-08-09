@@ -976,14 +976,6 @@
       initial: true,
     },
 
-    // HTML Fullscreen (e.g. `Element.requestFullscreen()`)'s transient
-    // activation requirement can be bypassed via the "Automatic Fullscreen"
-    // content setting.
-    {
-      name: "requireTransientActivationForHtmlFullscreen",
-      initial: true,
-    },
-
     //
     // Dark mode
     //

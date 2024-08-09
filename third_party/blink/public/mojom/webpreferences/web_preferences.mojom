@@ -408,10 +408,6 @@ struct WebPreferences {
   // policy.
   bool require_transient_activation_for_show_file_or_directory_picker;
 
-  // HTML Fullscreen (e.g. `Element.requestFullscreen()`)'s transient activation
-  // requirement can be bypassed via the "Automatic Fullscreen" content setting.
-  bool require_transient_activation_for_html_fullscreen;
-
   // `navigator.subApps.{add|remove|list}()`'s user gesture and authorization
   // can be bypassed via
   // `SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins` policy.

@@ -428,12 +428,6 @@
       origin_trial_feature_name: "AutoDarkMode",
     },
     {
-      // Enables Permissions API query support for Automatic Fullscreen.
-      // https://chromestatus.com/feature/6218822004768768
-      name: "AutomaticFullscreenPermissionsQuery",
-      status: "stable",
-    },
-    {
       name: "AutomationControlled",
       base_feature: "none",
       public: true,
