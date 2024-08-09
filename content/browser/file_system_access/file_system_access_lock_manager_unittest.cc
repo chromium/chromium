@@ -1342,4 +1342,32 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheEvictPendingTree) {
   ASSERT_FALSE(child_future2->IsReady());
   ASSERT_TRUE(parent_future->IsReady() && parent_future->Take());
 }
+
+TEST_F(FileSystemAccessLockManagerTest,
+       LocksCanExistAfterFileSystemAccessManagerIsDestroyed) {
+  base::FilePath path = dir_.GetPath().AppendASCII("foo");
+  auto url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal, path);
+
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+  auto exclusive_lock = TakeLockSync(kBindingContext, url, exclusive_lock_type);
+
+  base::WeakPtr<FileSystemAccessLockManager> lock_manager_weak_ptr =
+      manager_->GetLockManagerWeakPtrForTesting();
+
+  // Destroy the `FileSystemAccessManager` which holds a `scoped_refptr` to the
+  // `FileSystemAccessLockManager`.
+  manager_.reset();
+
+  // The `FileSystemAccessLockManager` stays alive despite the
+  // `FileSystemAccessManager` being destroyed.
+  ASSERT_TRUE(lock_manager_weak_ptr);
+
+  // The `exclusive_lock` is the only thing keeping the
+  // `FileSystemAccessLockManager` alive. So destroying it should destroy the
+  // `FileSystemAccessLockManager`.
+  exclusive_lock.reset();
+  ASSERT_FALSE(lock_manager_weak_ptr);
+}
+
 }  // namespace content

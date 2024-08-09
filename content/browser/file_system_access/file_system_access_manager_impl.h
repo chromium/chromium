@@ -241,6 +241,11 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   [[nodiscard]] FileSystemAccessLockManager::LockType
   GetAncestorLockTypeForTesting() const;
 
+  // Gets a `WeakPtr` of the `FileSystemAccessLockManager` for testing if its
+  // been destroyed.
+  base::WeakPtr<FileSystemAccessLockManager> GetLockManagerWeakPtrForTesting()
+      const;
+
   // Creates a new FileSystemAccessFileWriterImpl for a given target and
   // swap file URLs. Assumes the passed in URLs are valid and represent files.
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>
@@ -642,7 +647,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   // and `access_handle_host_receivers_`. The locks held by file writers and
   // access handles dereference the lock manager on destruction, so it should
   // outlive them.
-  std::unique_ptr<FileSystemAccessLockManager> lock_manager_
+  scoped_refptr<FileSystemAccessLockManager> lock_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   FileSystemAccessWatcherManager watcher_manager_
