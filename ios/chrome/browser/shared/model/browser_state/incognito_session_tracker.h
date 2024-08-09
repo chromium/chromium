@@ -12,7 +12,11 @@
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager_observer.h"
 
 class ChromeBrowserState;
-class ChromeBrowserStateManager;
+
+// TODO(crbug.com/358356195): Remove this typedef when this header is updated
+// to use ProfileManagerIOS.
+class ProfileManagerIOS;
+using ChromeBrowserStateManager = ProfileManagerIOS;
 
 // Tracks whether there are any open off-the-record tabs open by any
 // ChromeBrowserState in the application. Allow to be notified when
