@@ -3,15 +3,29 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/root_window_controller.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/style/pill_button.h"
+#include "ash/style/system_textfield.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_detailed_view.h"
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/unified/quick_settings_view.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/ash/ash_web_view_impl.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/controls/button/button_controller.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -55,6 +69,38 @@ void SimulatePlaybackState(bool is_playing) {
   FocusModeController::Get()
       ->focus_mode_sounds_controller()
       ->MediaSessionInfoChanged(std::move(session_info));
+}
+
+QuickSettingsView* OpenQuickSettings() {
+  UnifiedSystemTray* system_tray = Shell::GetPrimaryRootWindowController()
+                                       ->shelf()
+                                       ->GetStatusAreaWidget()
+                                       ->unified_system_tray();
+  system_tray->ShowBubble();
+  return system_tray->bubble()->quick_settings_view();
+}
+
+void ClickOnFocusTile(QuickSettingsView* panel) {
+  views::Button* tile = views::AsViewClass<views::Button>(
+      panel->GetViewByID(VIEW_ID_FEATURE_TILE_FOCUS_MODE));
+  tile->button_controller()->NotifyClick();
+  base::RunLoop().RunUntilIdle();
+}
+
+SystemTextfield* GetTimerTextfield(QuickSettingsView* quick_settings) {
+  FocusModeDetailedView* detailed_view =
+      quick_settings->GetDetailedViewForTest<FocusModeDetailedView>();
+  EXPECT_TRUE(detailed_view);
+  return views::AsViewClass<SystemTextfield>(detailed_view->GetViewByID(
+      FocusModeDetailedView::ViewId::kTimerTextfield));
+}
+
+PillButton* GetToggleFocusButton(QuickSettingsView* quick_settings) {
+  FocusModeDetailedView* detailed_view =
+      quick_settings->GetDetailedViewForTest<FocusModeDetailedView>();
+  EXPECT_TRUE(detailed_view);
+  return views::AsViewClass<PillButton>(detailed_view->GetViewByID(
+      FocusModeDetailedView::ViewId::kToggleFocusButton));
 }
 
 }  // namespace
@@ -349,6 +395,37 @@ IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest, MediaSourceTitle) {
   std::string source_title =
       web_view_impl->GetTitleForMediaControls(web_view_impl->web_contents());
   EXPECT_FALSE(source_title.empty());
+}
+
+// Tests that during the overvide mode, clicking on the focus panel will not end
+// the overview mode.
+IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest, ClickOnFocusPanelInOverviewMode) {
+  // Enter overview mode and open the focus panel.
+  ToggleOverview();
+  WaitForOverviewEnterAnimation();
+
+  auto* quick_settings = OpenQuickSettings();
+  ClickOnFocusTile(quick_settings);
+  EXPECT_TRUE(ash::OverviewController::Get()->InOverviewSession());
+
+  // 1. Click the timer textfield on the focus panel and stay in overview mode.
+  auto* timer_textfield = GetTimerTextfield(quick_settings);
+  EXPECT_TRUE(timer_textfield->GetVisible());
+
+  test::Click(timer_textfield);
+  EXPECT_TRUE(timer_textfield->HasFocus());
+  EXPECT_TRUE(ash::OverviewController::Get()->InOverviewSession());
+
+  // 2. Click the `Start` button to start a focus session and stay in overview
+  // mode.
+  auto* toggle_button = GetToggleFocusButton(quick_settings);
+  EXPECT_TRUE(toggle_button->GetVisible());
+
+  auto* focus_mode_controller = ash::FocusModeController::Get();
+  EXPECT_FALSE(focus_mode_controller->in_focus_session());
+  test::Click(toggle_button);
+  EXPECT_TRUE(focus_mode_controller->in_focus_session());
+  EXPECT_TRUE(ash::OverviewController::Get()->InOverviewSession());
 }
 
 }  // namespace ash

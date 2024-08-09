@@ -39,7 +39,13 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
  public:
   // Ids to easily find child views in `FocusModeDetailedView`. Unique only
   // within the `FocusModeDetailedView`.
-  enum ViewId { kTimerView = 1000, kTaskView, kSoundView };
+  enum ViewId {
+    kTimerView = 1000,
+    kTaskView,
+    kSoundView,
+    kTimerTextfield,
+    kToggleFocusButton
+  };
 
   explicit FocusModeDetailedView(DetailedViewDelegate* delegate);
   FocusModeDetailedView(const FocusModeDetailedView&) = delete;

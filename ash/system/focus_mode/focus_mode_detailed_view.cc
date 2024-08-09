@@ -9,6 +9,7 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/glanceables/common/glanceables_util.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
@@ -34,6 +35,7 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tri_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
+#include "ash/wm/window_properties.h"
 #include "base/check_op.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
@@ -402,6 +404,16 @@ void FocusModeDetailedView::AddedToWidget() {
   // The `TrayBubbleView` may not exist in unit tests.
   if (views::WidgetDelegate* bubble_view = GetWidget()->widget_delegate()) {
     bubble_view->SetCanActivate(true);
+    if (auto* window = GetWidget()->GetNativeWindow()) {
+      // Set window properties to stay in the overview mode when the focus panel
+      // gained the focus.
+      window->SetProperty(kStayInOverviewOnActivationKey, true);
+
+      // We should set a property to stay in overview mode when the focus panel
+      // was destroyed. For example, we click `Start` toggle button to start a
+      // focus session, we will close the bubble view.
+      window->SetProperty(kIgnoreWindowActivationKey, true);
+    }
   }
 }
 
@@ -498,6 +510,7 @@ void FocusModeDetailedView::CreateToggleView() {
               : IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_START_BUTTON),
       PillButton::Type::kPrimaryLargeWithoutIcon, /*icon=*/nullptr);
   toggle_button->SetUseLabelAsDefaultTooltip(false);
+  toggle_button->SetID(ViewId::kToggleFocusButton);
   toggle_view_->AddRightView(toggle_button.release());
   UpdateToggleButtonAccessibility(in_focus_session);
 
@@ -623,6 +636,7 @@ void FocusModeDetailedView::CreateTimerView() {
   // b/302038651.
   timer_textfield_ = textfield_container->AddChildView(
       std::make_unique<SystemTextfield>(SystemTextfield::Type::kLarge));
+  timer_textfield_->SetID(ViewId::kTimerTextfield);
   timer_textfield_->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_CENTER);
   timer_textfield_->SetFontList(
