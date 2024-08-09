@@ -3,9 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import copy
+import functools
 import json
 import sys
 
@@ -124,8 +123,7 @@ def _merge_json_test_result_format(shard_results_list):
           'Invalid json test results (missing %s)' % missing)
 
     # Curry merge_values for this result_json.
-    merge = lambda key, merge_func: merge_value(result_json, merged_results,
-                                                key, merge_func)
+    merge = functools.partial(merge_value, result_json, merged_results)
 
     # Traverse the result_json's test trie & merged_results's test tries in
     # DFS order & add the n to merged['tests'].

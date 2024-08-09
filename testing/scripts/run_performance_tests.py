@@ -249,10 +249,10 @@ class GtestCommandGenerator(object):
     if self._options.use_gtest_benchmark_script:
       output_args.append('--output-dir=' + output_dir)
     # These flags are to make sure that test output perf metrics in the log.
-    if not '--verbose' in self._get_additional_flags():
+    if '--verbose' not in self._get_additional_flags():
       output_args.append('--verbose')
-    if (not '--test-launcher-print-test-stdio=always'
-        in self._get_additional_flags()):
+    if ('--test-launcher-print-test-stdio=always'
+        not in self._get_additional_flags()):
       output_args.append('--test-launcher-print-test-stdio=always')
     return output_args
 
@@ -1071,11 +1071,12 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
             '\n### {folder} ###'.format(folder=reference_benchmark_foldername))
         # We intentionally ignore the return code and test results of the
         # reference build.
-        execute_telemetry_benchmark(reference_command_generator,
-                                    reference_output_paths,
-                                    options.xvfb,
-                                    options.ignore_benchmark_exit_code,
-                                    no_output_conversion=no_output_conversion)
+        execute_telemetry_benchmark(
+            reference_command_generator,
+            reference_output_paths,
+            options.xvfb,
+            options.ignore_benchmark_exit_code,
+            no_output_conversion=options.no_output_conversion)
   if 'executables' in shard_configuration:
     names_and_configs = shard_configuration['executables']
     for (name, configuration) in names_and_configs.items():

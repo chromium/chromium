@@ -40,7 +40,7 @@ def Pipeline(*funcs):
   function which computes their composition. Each of the functions are applied
   to the input in order from left to right, with the result of each function
   passed as the argument to the next function."""
-  return reduce(lambda f, g: lambda x: g(f(x)), funcs)
+  return functools.reduce(lambda f, g: lambda x: g(f(x)), funcs)
 
 
 def DeepMemoize(obj):

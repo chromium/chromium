@@ -81,7 +81,7 @@ def FindIndentedText(text):
   previous_number_of_spaces = 0
 
   # Go through every line and concatenate space-indented blocks into lines.
-  for i in xrange(0, len(lines), 1):
+  for i in range(0, len(lines), 1):
     if not lines[i]:
       # Ignore empty lines.
       continue

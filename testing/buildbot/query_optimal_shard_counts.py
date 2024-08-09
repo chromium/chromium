@@ -124,7 +124,7 @@ def _run_query(args):
     output = subprocess.check_output(args)
   except subprocess.CalledProcessError as e:
     print(e.output)
-    raise (e)
+    raise e
   return json.loads(output)
 
 
@@ -229,7 +229,7 @@ def _meets_optimal_shard_count_and_simulated_duration_requirements(
 
   # Don't bother resharding if the simulated runtime is greater than the
   # desired runtime.
-  if (float(row['simulated_max_shard_duration']) > desired_runtime):
+  if float(row['simulated_max_shard_duration']) > desired_runtime:
     return False
 
   # Shard values may have changed over the lookback period, so the query

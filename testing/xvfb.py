@@ -286,7 +286,7 @@ def _setup_xrandr(env, default_whd):
     # Set the mode of all monitors to connect and activate them.
     for i in range(0, len(output_names)):
       args = ['--output', output_names[i], '--mode', default_mode_label]
-      if (i > 0):
+      if i > 0:
         args += ['--right-of', output_names[i - 1]]
       call_xrandr(args)
 
@@ -412,7 +412,7 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
     kill(openbox_proc, 'openbox')
     kill(xcompmgr_proc, 'xcompmgr')
     kill(x11_proc, x11_binary)
-    if xorg_config_file != None:
+    if xorg_config_file is not None:
       os.remove(xorg_config_file)
 
     # dbus-daemon is not a subprocess, so we can't SIGTERM+waitpid() on it.

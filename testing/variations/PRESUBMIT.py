@@ -377,8 +377,9 @@ def CheckUndeclaredFeatures(input_api, output_api, json_data, changed_lines):
 
   if not declared_features:
     return [
-        message_type("Presubmit unable to find any declared flags "
-                     "in source. Please check PRESUBMIT.py for errors.")
+        output_api.PresubmitError(
+            'Presubmit unable to find any declared flags in source. Please '
+            'check PRESUBMIT.py for errors.')
     ]
 
   messages = []

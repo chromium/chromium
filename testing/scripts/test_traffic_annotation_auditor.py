@@ -8,6 +8,7 @@ check that traffic_annotation_auditor has the same results when heuristics that
 help it run fast and spam free on trybots are disabled."""
 
 import json
+import logging
 import os
 import re
 import sys
@@ -56,7 +57,7 @@ def get_current_platform_from_gn_args(build_path):
       with open(os.path.join(build_path, "args.gn")) as f:
         gn_args = f.read()
       if not gn_args:
-        logger.info("Could not retrieve args.gn")
+        logging.info("Could not retrieve args.gn")
 
       pattern = re.compile(r"^\s*target_os\s*=\s*\"chromeos\"\s*$",
                            re.MULTILINE)
@@ -64,7 +65,7 @@ def get_current_platform_from_gn_args(build_path):
         return "chromeos"
 
     except (ValueError, OSError) as e:
-      logger.info(e)
+      logging.info(e)
 
   return None
 

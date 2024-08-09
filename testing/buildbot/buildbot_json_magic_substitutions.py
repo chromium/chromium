@@ -128,7 +128,7 @@ def _IsSkylabBot(tester_config):
 
 
 def _IsAndroid(tester_config):
-  return ('os_type' in tester_config and tester_config['os_type'] == 'android')
+  return 'os_type' in tester_config and tester_config['os_type'] == 'android'
 
 
 def GPUExpectedVendorId(test_config, _, tester_config):

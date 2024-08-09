@@ -911,7 +911,7 @@ def _GetDisableReasonFromComment(line: str) -> str:
 
 
 def _IsCommentOrBlankLine(line: str) -> bool:
-  return (not line or line.startswith('#'))
+  return not line or line.startswith('#')
 
 
 def _ExpectationPartOfNonRemovableGroup(
@@ -941,7 +941,8 @@ def _ExpectationPartOfNonRemovableGroup(
     return False
 
   all_expectations_in_group = group_to_expectations[group_name]
-  return not (all_expectations_in_group <= removable_expectations)
+  group_removable = all_expectations_in_group <= removable_expectations
+  return not group_removable
 
 
 def _RemoveStaleComments(content: str, removed_lines: Set[int],

@@ -12,6 +12,7 @@ import ast
 import collections
 import copy
 import difflib
+import functools
 import glob
 import itertools
 import json
@@ -702,14 +703,14 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
           if test_key == replacement_key:
             found_key = True
             # Handle flags without values.
-            if replacement_val == None:
+            if replacement_val is None:
               del test[key][i]
             else:
               test[key][i+1] = replacement_val
             break
           if test_key.startswith(replacement_key + '='):
             found_key = True
-            if replacement_val == None:
+            if replacement_val is None:
               del test[key][i]
             else:
               test[key][i] = '%s=%s' % (replacement_key, replacement_val)
@@ -1213,20 +1214,22 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     # referenced by matrix suites exist.
     basic_suites = self.test_suites.get('basic_suites')
 
+    def update_tests_uncurried(full_suite, expanded):
+      for test_name, new_tests in expanded.items():
+        if not isinstance(new_tests, list):
+          new_tests = [new_tests]
+        tests_for_name = full_suite.setdefault(test_name, [])
+        for t in new_tests:
+          if t not in tests_for_name:
+            tests_for_name.append(t)
+
     for matrix_suite_name, matrix_config in matrix_compound_suites.items():
       full_suite = {}
 
       for test_suite, mtx_test_suite_config in matrix_config.items():
         basic_test_def = copy.deepcopy(basic_suites[test_suite])
 
-        def update_tests(expanded):
-          for test_name, new_tests in expanded.items():
-            if not isinstance(new_tests, list):
-              new_tests = [new_tests]
-            tests_for_name = full_suite.setdefault(test_name, [])
-            for t in new_tests:
-              if t not in tests_for_name:
-                tests_for_name.append(t)
+        update_tests = functools.partial(update_tests_uncurried, full_suite)
 
         if (variants := mtx_test_suite_config.get('variants')):
           mixins = mtx_test_suite_config.get('mixins', [])
