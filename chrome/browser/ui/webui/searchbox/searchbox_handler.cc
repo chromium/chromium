@@ -349,7 +349,7 @@ std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
               ntp_features::kRealboxCr23ExpandedStateIcons) ||
           base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All)) {
         mojom_match->is_weather_answer_suggestion =
-            match.answer->type() == omnibox::ANSWER_TYPE_WEATHER;
+            match.answer_type == omnibox::ANSWER_TYPE_WEATHER;
       }
     }
     mojom_match->is_rich_suggestion =

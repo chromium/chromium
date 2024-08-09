@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, AnswerVectorIcons) {
        answer_type != omnibox::AnswerType_ARRAYSIZE; answer_type++) {
     AutocompleteMatch match;
     SuggestionAnswer answer;
-    answer.set_type(answer_type);
+    match.answer_type = static_cast<omnibox::AnswerType>(answer_type);
     match.answer = answer;
     const bool is_bookmark = BrowserTestWithParam::GetParam();
     const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmark);

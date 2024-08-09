@@ -17,8 +17,7 @@ namespace {
 OmniboxSuggestionIconType IconTypeFromMatch(const AutocompleteMatch& match) {
   // Some suggestions have custom icons. Others fallback to the icon from the
   // overall match type.
-  int answer_type = match.answer.has_value() ? match.answer.value().type()
-                                             : match.answer_type;
+  omnibox::AnswerType answer_type = match.answer_type;
   if (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
     switch (answer_type) {
       case omnibox::ANSWER_TYPE_DICTIONARY:

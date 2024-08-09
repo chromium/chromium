@@ -535,12 +535,9 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     const TemplateURL* turl) const {
   if (is_bookmark)
     return omnibox::kBookmarkChromeRefreshIcon;
-  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
-      answer_template.has_value()) {
+  if (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
     return AnswerTypeToAnswerIcon(answer_type);
   }
-  if (answer.has_value())
-    return AnswerTypeToAnswerIcon(answer->type());
 
   switch (type) {
     case Type::URL_WHAT_YOU_TYPED:

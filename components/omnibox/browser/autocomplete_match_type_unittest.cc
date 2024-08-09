@@ -84,14 +84,14 @@ TEST(AutocompleteMatchTypeTest, AccessibilityLabelPedal) {
 
 namespace {
 
-bool ParseAnswer(const std::string& answer_json, SuggestionAnswer* answer) {
+bool ParseAnswer(const std::string& answer_json,
+                 omnibox::AnswerType answer_type,
+                 SuggestionAnswer* answer) {
   std::optional<base::Value> value = base::JSONReader::Read(answer_json);
   if (!value || !value->is_dict())
     return false;
 
-  // ParseAnswer previously did not change the default answer type of -1, so
-  // here we keep the same behavior by explicitly supplying default value.
-  return SuggestionAnswer::ParseAnswer(value->GetDict(), u"-1", answer);
+  return SuggestionAnswer::ParseAnswer(value->GetDict(), answer_type, answer);
 }
 
 bool ParseJsonToAnswerData(const std::string& answer_json,
@@ -112,6 +112,7 @@ TEST(AutocompleteMatchTypeTest, AccessibilityLabelAnswer) {
   const std::u16string& kSearchDesc = u"Google Search";
 
   AutocompleteMatch match;
+  match.answer_type = omnibox::ANSWER_TYPE_WEATHER;
   match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
   match.description = kSearchDesc;
   std::string answer_json =
@@ -121,7 +122,7 @@ TEST(AutocompleteMatchTypeTest, AccessibilityLabelAnswer) {
       "5 }] } }] }";
   {
     SuggestionAnswer answer;
-    ASSERT_TRUE(ParseAnswer(answer_json, &answer));
+    ASSERT_TRUE(ParseAnswer(answer_json, match.answer_type, &answer));
     match.answer = answer;
 
     EXPECT_EQ(

@@ -122,11 +122,9 @@ TEST_F(OmniboxAnswerResultTest, WeatherResult) {
   ASSERT_TRUE(value && value->is_dict());
   // Create weather result when ACMatch has |answer| populated.
   {
-    // This comes from omnibox::ANSWER_TYPE_WEATHER.
-    const std::u16string kWeatherType = u"8";
     SuggestionAnswer answer;
-    ASSERT_TRUE(
-        SuggestionAnswer::ParseAnswer(value->GetDict(), kWeatherType, &answer));
+    ASSERT_TRUE(SuggestionAnswer::ParseAnswer(value->GetDict(),
+                                              match.answer_type, &answer));
     match.answer = answer;
 
     OmniboxAnswerResult result(
@@ -233,11 +231,9 @@ TEST_F(OmniboxAnswerResultTest, AnswerResult) {
   ASSERT_TRUE(value && value->is_dict());
   // Create result when ACMatch has |answer| populated.
   {
-    // This comes from omnibox:ANSWER_TYPE_FINANCE.
-    const std::u16string kFinanceType = u"2";
     SuggestionAnswer answer;
-    ASSERT_TRUE(
-        SuggestionAnswer::ParseAnswer(value->GetDict(), kFinanceType, &answer));
+    ASSERT_TRUE(SuggestionAnswer::ParseAnswer(value->GetDict(),
+                                              match.answer_type, &answer));
     match.answer = answer;
 
     OmniboxAnswerResult result(
@@ -367,10 +363,8 @@ TEST_F(OmniboxAnswerResultTest, DictionaryResultMultiline) {
   // Dictionary result when ACMatch has |answer| populated.
   {
     SuggestionAnswer answer;
-    // This comes from omnibox::ANSWER_TYPE_DICTIONARY.
-    const std::u16string kDictionaryType = u"1";
-    ASSERT_TRUE(SuggestionAnswer::ParseAnswer(value->GetDict(), kDictionaryType,
-                                              &answer));
+    ASSERT_TRUE(SuggestionAnswer::ParseAnswer(value->GetDict(),
+                                              match.answer_type, &answer));
     match.answer = answer;
 
     OmniboxAnswerResult result(

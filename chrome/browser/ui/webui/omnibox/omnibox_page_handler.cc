@@ -57,7 +57,7 @@ using bookmarks::BookmarkModel;
 
 namespace {
 
-std::string SuggestionAnswerTypeToString(int answer_type) {
+std::string AnswerTypeToString(int answer_type) {
   switch (answer_type) {
     case omnibox::ANSWER_TYPE_UNSPECIFIED:
       return "invalid";
@@ -296,7 +296,7 @@ struct TypeConverter<mojom::AutocompleteMatchPtr, AutocompleteMatch> {
           SuggestionAnswerImageLineToString(input.answer->first_line()) +
           " / " +
           SuggestionAnswerImageLineToString(input.answer->second_line()) +
-          " / " + SuggestionAnswerTypeToString(input.answer->type());
+          " / " + AnswerTypeToString(input.answer_type);
     }
     result->transition =
         ui::PageTransitionGetCoreTransitionString(input.transition);

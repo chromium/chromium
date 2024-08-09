@@ -22,9 +22,8 @@ bool ParseAnswer(const std::string& answer_json, SuggestionAnswer* answer) {
   if (!value || !value->is_dict())
     return false;
 
-  // ParseAnswer previously did not change the default answer type of -1, so
-  // here we keep the same behavior by explicitly supplying default value.
-  return SuggestionAnswer::ParseAnswer(value->GetDict(), u"-1", answer);
+  return SuggestionAnswer::ParseAnswer(value->GetDict(),
+                                       omnibox::ANSWER_TYPE_WEATHER, answer);
 }
 
 bool ParseJsonToAnswerData(const std::string& answer_json,
@@ -51,7 +50,6 @@ TEST(SuggestionAnswerTest, CopiesAreEqual) {
   EXPECT_TRUE(answer1.Equals(SuggestionAnswer(answer1)));
 
   auto answer2 = std::make_unique<SuggestionAnswer>();
-  answer2->set_type(832345);
   EXPECT_TRUE(answer2->Equals(SuggestionAnswer(*answer2)));
 
   std::string json =
@@ -77,14 +75,8 @@ TEST(SuggestionAnswerTest, DifferentValuesAreUnequal) {
   SuggestionAnswer answer1;
   ASSERT_TRUE(ParseAnswer(json, &answer1));
 
-  // Same but with a different answer type.
-  SuggestionAnswer answer2 = answer1;
-  EXPECT_TRUE(answer1.Equals(answer2));
-  answer2.set_type(44);
-  EXPECT_FALSE(answer1.Equals(answer2));
-
   // Same but with a different type for one of the text fields.
-  answer2 = answer1;
+  SuggestionAnswer answer2 = answer1;
   EXPECT_TRUE(answer1.Equals(answer2));
   answer2.first_line_.text_fields_[1].type_ = 1;
   EXPECT_FALSE(answer1.Equals(answer2));
@@ -230,8 +222,6 @@ TEST(SuggestionAnswerTest, ValidPropertyValues) {
       "              \"st\": { \"t\": \"oh hi, Mark\", \"tt\": 729347 } } } "
       "] }";
   ASSERT_TRUE(ParseAnswer(json, &answer));
-  answer.set_type(420527);
-  EXPECT_EQ(420527, answer.type());
 
   const SuggestionAnswer::ImageLine& first_line = answer.first_line();
   EXPECT_EQ(2U, first_line.text_fields().size());

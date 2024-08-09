@@ -927,7 +927,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
                       *answer_json, &answer_template);
             } else {
               answer_parsed_successfully = SuggestionAnswer::ParseAnswer(
-                  *answer_json, base::UTF8ToUTF16(*answer_type_str), &answer);
+                  *answer_json, answer_type, &answer);
             }
           }
           base::UmaHistogramBoolean("Omnibox.AnswerParseSuccess",

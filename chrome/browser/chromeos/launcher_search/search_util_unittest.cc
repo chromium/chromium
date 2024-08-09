@@ -100,7 +100,8 @@ TEST(SearchUtilTest, CreateAnswerResult) {
   // Create answer result using SuggestionAnswer.
   {
     SuggestionAnswer answer;
-    ASSERT_TRUE(SuggestionAnswer::ParseAnswer(value->GetDict(), u"1", &answer));
+    ASSERT_TRUE(SuggestionAnswer::ParseAnswer(value->GetDict(),
+                                              match.answer_type, &answer));
     match.answer = answer;
 
     const auto result =
@@ -219,7 +220,8 @@ TEST(SearchUtilTest, CreateWeatherResult) {
   {
     SuggestionAnswer answer;
     ASSERT_TRUE(SuggestionAnswer::ParseAnswer(
-        value->GetDict(), /* The answer type for 'weather'. */ u"8", &answer));
+        value->GetDict(),
+        /* The answer type for 'weather'. */ match.answer_type, &answer));
     match.answer = answer;
     const auto result =
         CreateAnswerResult(match, nullptr, u"query", AutocompleteInput());

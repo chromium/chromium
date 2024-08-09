@@ -57,7 +57,7 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
 
   base::android::ScopedJavaLocalRef<jobject> janswer;
   if (answer)
-    janswer = answer->CreateJavaObject();
+    janswer = answer->CreateJavaObject(answer_type);
 
   ScopedJavaLocalRef<jbyteArray> j_answer_template;
   if (answer_template) {
@@ -219,7 +219,8 @@ void AutocompleteMatch::UpdateJavaAnswer() {
   if (java_match_) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_AutocompleteMatch_setAnswer(
-        env, *java_match_, answer ? answer->CreateJavaObject() : nullptr);
+        env, *java_match_,
+        answer ? answer->CreateJavaObject(answer_type) : nullptr);
   }
 }
 
