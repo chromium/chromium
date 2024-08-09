@@ -265,6 +265,71 @@ public class PromiseTest {
         assertEquals(value.get(), 5);
     }
 
+    @Test
+    public void andFinallyOnFulfill() {
+        Value value = new Value();
+        Promise<Integer> promise = new Promise<>();
+
+        promise.andFinally(() -> value.set(5));
+        assertEquals(0, value.get());
+
+        promise.fulfill(0);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(5, value.get());
+    }
+
+    @Test
+    public void andFinallyOnReject() {
+        Value value = new Value();
+        Promise<Integer> promise = new Promise<>();
+
+        promise.andFinally(() -> value.set(5));
+        assertEquals(0, value.get());
+
+        promise.reject();
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(5, value.get());
+    }
+
+    @Test
+    public void andFinallyChainingFulfillment() {
+        Value value = new Value();
+        Promise<Integer> promise = new Promise<>();
+
+        Promise<Integer> chainedPromise =
+                promise.andFinally(() -> value.set(value.get() + 1))
+                        .then(Object::toString)
+                        .andFinally(() -> value.set(value.get() * 10))
+                        .then(String::length);
+        assertEquals(0, value.get());
+        assertTrue(chainedPromise.isPending());
+
+        promise.fulfill(123);
+        assertTrue(chainedPromise.isFulfilled());
+        assertEquals(10, value.get());
+        assertEquals(3, chainedPromise.getResult().intValue());
+    }
+
+    @Test
+    public void andFinallyChainingRejection() {
+        Value value = new Value();
+        Promise<Integer> promise = new Promise<>();
+
+        Promise<Integer> chainedPromise =
+                promise.andFinally(() -> value.set(value.get() + 1))
+                        .then(Object::toString)
+                        .andFinally(() -> value.set(value.get() * 10))
+                        .then(String::length);
+        assertEquals(0, value.get());
+        assertTrue(chainedPromise.isPending());
+
+        promise.reject();
+        assertEquals(10, value.get()); // Both `andFinally()` still run.
+        assertTrue(chainedPromise.isRejected());
+    }
+
     /** Convenience method that returns a Callback that does nothing with its result. */
     private static <T> Callback<T> pass() {
         return unusedArg -> {};

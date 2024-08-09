@@ -198,6 +198,19 @@ public class Promise<T> {
     }
 
     /**
+     * Queues a {@link Runnable} to be run when the Promise is fulfilled or rejected. This allow to
+     * chain the promise while avoiding duplicating code in both the Promise's {@link #then} and
+     * {@link #except} handlers.
+     */
+    @SuppressWarnings("unchecked")
+    public Promise<T> andFinally(Runnable runnable) {
+        Callback<?> asCallback = unused -> runnable.run();
+        thenInner((Callback<T>) asCallback);
+        exceptInner((Callback<Exception>) asCallback);
+        return this;
+    }
+
+    /**
      * Fulfills the Promise with the result and passes it to any {@link Callback}s previously queued
      * on the next iteration of the message loop.
      */
@@ -250,6 +263,12 @@ public class Promise<T> {
     public boolean isRejected() {
         checkThread();
         return mState == PromiseState.REJECTED;
+    }
+
+    /** Returns whether the promise is in none of the fulfilled nor rejected states. */
+    public boolean isPending() {
+        checkThread();
+        return mState == PromiseState.UNFULFILLED;
     }
 
     /**
