@@ -16,6 +16,7 @@ source_set("cpp") {
   ]
 
   deps = [
+    ":constants",
     "//base",
     "//chromeos/components/kiosk",
     "//chromeos/components/magic_boost/public/cpp",
@@ -38,4 +39,8 @@ source_set("prefs") {
   ]
 
   deps = [ "//components/prefs" ]
+}
+
+source_set("constants") {
+  sources = [ "constants.h" ]
 }

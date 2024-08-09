@@ -15,7 +15,10 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
+
+// TODO(b/340628526): Put this under quick_answers namespace.
 
 // The consent will appear up to a total of 6 times.
 constexpr int kConsentImpressionCap = 6;
@@ -90,6 +93,12 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
   static base::expected<quick_answers::prefs::ConsentStatus,
                         QuickAnswersState::Error>
   GetConsentStatusAs(FeatureType feature_type);
+  // Intent generation can be done before a feature is enabled to show a user
+  // consent UI. Use a word eligible instead of enabled to make it clear that
+  // it's not gated by `IsEnabled`.
+  static bool IsIntentEligible(quick_answers::Intent intent);
+  static bool IsIntentEligibleAs(quick_answers::Intent intent,
+                                 FeatureType feature_type);
 
   QuickAnswersState();
 
@@ -126,9 +135,6 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
 
   bool IsSupportedLanguage(const std::string& language) const;
 
-  bool definition_enabled() const { return definition_enabled_; }
-  bool translation_enabled() const { return translation_enabled_; }
-  bool unit_conversion_enabled() const { return unit_conversion_enabled_; }
   const std::string& application_locale() const {
     return resolved_application_locale_;
   }
@@ -156,6 +162,9 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
   void SetQuickAnswersFeatureConsentStatus(
       quick_answers::prefs::ConsentStatus consent_status);
 
+  void SetIntentEligibilityAsQuickAnswers(quick_answers::Intent intent,
+                                          bool eligible);
+
   void InitializeObserver(QuickAnswersStateObserver* observer);
 
   // Notify eligibility change to observers in the current feature type if it
@@ -169,14 +178,7 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
                            int nth_impression,
                            const base::TimeDelta duration);
 
-  // Whether the Quick Answers definition is enabled.
-  bool definition_enabled_ = true;
 
-  // Whether the Quick Answers translation is enabled.
-  bool translation_enabled_ = true;
-
-  // Whether the Quick Answers unit conversion is enabled.
-  bool unit_conversion_enabled_ = true;
 
   // The resolved application locale.
   std::string resolved_application_locale_;
@@ -211,15 +213,26 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
   base::expected<quick_answers::prefs::ConsentStatus, Error>
       quick_answers_consent_status_ = base::unexpected(Error::kUninitialized);
 
+  // Whether the definition is eligible as Quick Answers feature.
+  base::expected<bool, Error> quick_answers_definition_eligible_ =
+      base::unexpected(Error::kUninitialized);
+
+  // Whether the translation is eligible as Quick Answers feature.
+  base::expected<bool, Error> quick_answers_translation_eligible_ =
+      base::unexpected(Error::kUninitialized);
+
+  // Whether the unit conversion is eligible as Quick Answers feature.
+  base::expected<bool, Error> quick_answers_unit_conversion_eligible_ =
+      base::unexpected(Error::kUninitialized);
+
   // Use `base::expected` instead of `std::optional` to avoid implicit bool
   // conversion: https://abseil.io/tips/141.
-  // TODO(b/340628526): Implement functions for:
-  // - IsIntentEnabled
   //
   // Dependencies:
   // - IsEligible <- ApplicationLocale
   // - IsEnabled <- IsEligible, GetConsentStatus
   // - GetConsentStatus <- none
+  // - IsIntentEligible <- IsEligible
   //
   // Remember to call dependent values notify method if a value has changed,
   // e.g., call `MaybeNotifyIsEnabled` from `MaybeNotifyGetConsentStatus`.
@@ -233,6 +246,11 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
   GetConsentStatusExpected() const;
   base::expected<quick_answers::prefs::ConsentStatus, Error>
   GetConsentStatusExpectedAs(FeatureType feature_type) const;
+  base::expected<bool, Error> IsIntentEligibleExpected(
+      quick_answers::Intent intent) const;
+  base::expected<bool, Error> IsIntentEligibleExpectedAs(
+      quick_answers::Intent intent,
+      FeatureType feature_type) const;
 
   // Last notified values in the current feature type.
   base::expected<bool, Error> last_notified_is_eligible_ =

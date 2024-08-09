@@ -284,13 +284,13 @@ void IntentGenerator::AnnotationCallback(
     auto intent_type_map = GetIntentTypeMap();
     auto it = intent_type_map.find(type);
     if (it != intent_type_map.end()) {
-      // Skip the entity if the corresponding intent type is disabled.
-      bool definition_disabled =
-          !QuickAnswersState::Get()->definition_enabled();
-      bool unit_conversion_disabled =
-          !QuickAnswersState::Get()->unit_conversion_enabled();
-      if ((it->second == IntentType::kDictionary && definition_disabled) ||
-          (it->second == IntentType::kUnit && unit_conversion_disabled)) {
+      // Skip the entity if the corresponding intent type is ineligible.
+      bool definition_ineligible =
+          !QuickAnswersState::IsIntentEligible(Intent::kDefinition);
+      bool unit_conversion_ineligible =
+          !QuickAnswersState::IsIntentEligible(Intent::kUnitConversion);
+      if ((it->second == IntentType::kDictionary && definition_ineligible) ||
+          (it->second == IntentType::kUnit && unit_conversion_ineligible)) {
         // Fallback to language detection for generating translation intent.
         MaybeGenerateTranslationIntent(request);
         return;
@@ -326,7 +326,7 @@ void IntentGenerator::MaybeGenerateTranslationIntent(
     const QuickAnswersRequest& request) {
   DCHECK(complete_callback_);
 
-  if (!QuickAnswersState::Get()->translation_enabled() ||
+  if (!QuickAnswersState::IsIntentEligible(Intent::kTranslation) ||
       chromeos::features::IsQuickAnswersV2TranslationDisabled()) {
     std::move(complete_callback_)
         .Run(IntentInfo(request.selected_text, IntentType::kUnknown));

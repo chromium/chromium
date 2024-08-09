@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -131,18 +132,21 @@ void QuickAnswersStateLacros::OnConsentStatusChanged(base::Value value) {
 
 void QuickAnswersStateLacros::OnDefinitionEnabledChanged(base::Value value) {
   DCHECK(value.is_bool());
-  definition_enabled_ = value.GetBool();
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kDefinition,
+                                     value.GetBool());
 }
 
 void QuickAnswersStateLacros::OnTranslationEnabledChanged(base::Value value) {
   DCHECK(value.is_bool());
-  translation_enabled_ = value.GetBool();
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kTranslation,
+                                     value.GetBool());
 }
 
 void QuickAnswersStateLacros::OnUnitConversionEnabledChanged(
     base::Value value) {
   DCHECK(value.is_bool());
-  unit_conversion_enabled_ = value.GetBool();
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kUnitConversion,
+                                     value.GetBool());
 }
 
 void QuickAnswersStateLacros::OnApplicationLocaleChanged(base::Value value) {

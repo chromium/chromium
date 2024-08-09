@@ -13,7 +13,9 @@
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -196,30 +198,45 @@ TEST_F(QuickAnswersStateAshTest, UpdateConsentStatus) {
 }
 
 TEST_F(QuickAnswersStateAshTest, UpdateDefinitionEnabled) {
+  const std::string application_locale = "en-US";
+  prefs()->SetString(language::prefs::kApplicationLocale, application_locale);
+
   // Definition subfeature is default on.
-  EXPECT_TRUE(QuickAnswersState::Get()->definition_enabled());
+  EXPECT_TRUE(
+      QuickAnswersState::IsIntentEligible(quick_answers::Intent::kDefinition));
 
   prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersDefinitionEnabled,
                       false);
-  EXPECT_FALSE(QuickAnswersState::Get()->definition_enabled());
+  EXPECT_FALSE(
+      QuickAnswersState::IsIntentEligible(quick_answers::Intent::kDefinition));
 }
 
 TEST_F(QuickAnswersStateAshTest, UpdateTranslationEnabled) {
+  const std::string application_locale = "en-US";
+  prefs()->SetString(language::prefs::kApplicationLocale, application_locale);
+
   // Translation subfeature is default on.
-  EXPECT_TRUE(QuickAnswersState::Get()->translation_enabled());
+  EXPECT_TRUE(
+      QuickAnswersState::IsIntentEligible(quick_answers::Intent::kTranslation));
 
   prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersTranslationEnabled,
                       false);
-  EXPECT_FALSE(QuickAnswersState::Get()->translation_enabled());
+  EXPECT_FALSE(
+      QuickAnswersState::IsIntentEligible(quick_answers::Intent::kTranslation));
 }
 
 TEST_F(QuickAnswersStateAshTest, UpdateUnitConversionEnabled) {
+  const std::string application_locale = "en-US";
+  prefs()->SetString(language::prefs::kApplicationLocale, application_locale);
+
   // Unit conversion subfeature is default on.
-  EXPECT_TRUE(QuickAnswersState::Get()->unit_conversion_enabled());
+  EXPECT_TRUE(QuickAnswersState::IsIntentEligible(
+      quick_answers::Intent::kUnitConversion));
 
   prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersUnitConversionEnabled,
                       false);
-  EXPECT_FALSE(QuickAnswersState::Get()->unit_conversion_enabled());
+  EXPECT_FALSE(QuickAnswersState::IsIntentEligible(
+      quick_answers::Intent::kUnitConversion));
 }
 
 TEST_F(QuickAnswersStateAshTest, NotifyApplicationLocaleReady) {

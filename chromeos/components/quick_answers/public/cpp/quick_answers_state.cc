@@ -136,6 +136,23 @@ QuickAnswersState::GetConsentStatusAs(FeatureType feature_type) {
   return quick_answers_state->GetConsentStatusExpectedAs(feature_type);
 }
 
+// static
+bool QuickAnswersState::IsIntentEligible(quick_answers::Intent intent) {
+  return IsIntentEligibleAs(intent, GetFeatureType());
+}
+
+// static
+bool QuickAnswersState::IsIntentEligibleAs(quick_answers::Intent intent,
+                                           FeatureType feature_type) {
+  QuickAnswersState* quick_answers_state = Get();
+  if (!quick_answers_state) {
+    return false;
+  }
+
+  return quick_answers_state->IsIntentEligibleExpectedAs(intent, feature_type)
+      .value_or(false);
+}
+
 QuickAnswersState::QuickAnswersState() {
   CHECK(!g_quick_answers_state);
   g_quick_answers_state = this;
@@ -245,6 +262,7 @@ QuickAnswersState::IsEnabledExpected() const {
 base::expected<bool, QuickAnswersState::Error>
 QuickAnswersState::IsEnabledExpectedAs(
     QuickAnswersState::FeatureType feature_type) const {
+  // TODO(b/340628526): Use `IsEligibleExpectedAs` to propagate error values.
   if (!IsEligibleAs(feature_type)) {
     return false;
   }
@@ -253,6 +271,8 @@ QuickAnswersState::IsEnabledExpectedAs(
   // status. Note that there is a combination of IsEnabled=false and
   // ConsentStatus=kAccepted if a user has turned off a feature after they have
   // enabled/consented.
+  // TODO(b/340628526): Use `GetConsentStatusExpectedAs` to propagate error
+  // values.
   if (GetConsentStatusAs(feature_type) !=
       quick_answers::prefs::ConsentStatus::kAccepted) {
     return false;
@@ -303,6 +323,42 @@ QuickAnswersState::GetConsentStatusExpectedAs(
   }
 }
 
+base::expected<bool, QuickAnswersState::Error>
+QuickAnswersState::IsIntentEligibleExpected(
+    quick_answers::Intent intent) const {
+  return IsIntentEligibleExpectedAs(intent, GetFeatureType());
+}
+
+base::expected<bool, QuickAnswersState::Error>
+QuickAnswersState::IsIntentEligibleExpectedAs(
+    quick_answers::Intent intent,
+    QuickAnswersState::FeatureType feature_type) const {
+  // Use `IsEligibleExpectedAs` instead of `IsEligibleAs` since we would like to
+  // return an error value if eligible is an error value.
+  base::expected<bool, QuickAnswersState::Error> maybe_eligible =
+      IsEligibleExpectedAs(feature_type);
+  if (maybe_eligible != true) {
+    return maybe_eligible;
+  }
+
+  switch (feature_type) {
+    case QuickAnswersState::FeatureType::kHmr:
+      // All intents are always eligible for kHmr.
+      return true;
+    case QuickAnswersState::FeatureType::kQuickAnswers:
+      switch (intent) {
+        case quick_answers::Intent::kDefinition:
+          return quick_answers_definition_eligible_;
+        case quick_answers::Intent::kTranslation:
+          return quick_answers_translation_eligible_;
+        case quick_answers::Intent::kUnitConversion:
+          return quick_answers_unit_conversion_eligible_;
+      }
+
+      CHECK(false) << "Invalid IntentType enum class value provided.";
+  }
+}
+
 void QuickAnswersState::SetEligibilityForTesting(bool is_eligible) {
   CHECK_IS_TEST();
   is_eligible_for_testing_ = is_eligible;
@@ -314,6 +370,24 @@ void QuickAnswersState::SetQuickAnswersFeatureConsentStatus(
   quick_answers_consent_status_ = consent_status;
 
   MaybeNotifyConsentStatusChanged();
+}
+
+void QuickAnswersState::SetIntentEligibilityAsQuickAnswers(
+    quick_answers::Intent intent,
+    bool eligible) {
+  switch (intent) {
+    case quick_answers::Intent::kDefinition:
+      quick_answers_definition_eligible_ = eligible;
+      return;
+    case quick_answers::Intent::kTranslation:
+      quick_answers_translation_eligible_ = eligible;
+      return;
+    case quick_answers::Intent::kUnitConversion:
+      quick_answers_unit_conversion_eligible_ = eligible;
+      return;
+  }
+
+  CHECK(false) << "Invalid Intent enum class value provided.";
 }
 
 void QuickAnswersState::InitializeObserver(

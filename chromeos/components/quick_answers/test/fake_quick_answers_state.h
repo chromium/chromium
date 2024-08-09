@@ -9,6 +9,8 @@
 
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 
+// TODO(b/340628526): Put this under quick_answers namespace.
+
 class FakeQuickAnswersState : public QuickAnswersState {
  public:
   FakeQuickAnswersState();
@@ -22,6 +24,9 @@ class FakeQuickAnswersState : public QuickAnswersState {
   void SetApplicationLocale(const std::string& locale);
   void SetPreferredLanguages(const std::string& preferred_languages);
   void OnPrefsInitialized();
+  void SetDefinitionEligible(bool eligible);
+  void SetTranslationEligible(bool eligible);
+  void SetUnitConversionEligible(bool eligible);
 
  protected:
   void AsyncWriteConsentUiImpressionCount(int32_t count) override;
