@@ -81,16 +81,6 @@
       "all"
     ]
   },
-  "ios-simulator reclient test": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
-  "ios-simulator reclient test untrusted": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
   "mac-arm64-rel reclient staging": {
     "additional_compile_targets": [
       "all"

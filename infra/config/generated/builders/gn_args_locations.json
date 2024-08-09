@@ -448,8 +448,6 @@
     "Windows Cross deterministic": "reclient/Windows Cross deterministic/gn-args.json",
     "ios-simulator reclient staging": "reclient/ios-simulator reclient staging/gn-args.json",
     "ios-simulator reclient staging untrusted": "reclient/ios-simulator reclient staging untrusted/gn-args.json",
-    "ios-simulator reclient test": "reclient/ios-simulator reclient test/gn-args.json",
-    "ios-simulator reclient test untrusted": "reclient/ios-simulator reclient test untrusted/gn-args.json",
     "mac-arm64-rel reclient staging": "reclient/mac-arm64-rel reclient staging/gn-args.json",
     "mac-arm64-rel reclient staging untrusted": "reclient/mac-arm64-rel reclient staging untrusted/gn-args.json",
     "mac-arm64-rel reclient test": "reclient/mac-arm64-rel reclient test/gn-args.json",

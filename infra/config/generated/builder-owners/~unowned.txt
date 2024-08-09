@@ -194,8 +194,6 @@ reclient/Win x64 Cross Builder (reclient compare)
 reclient/Windows Cross deterministic
 reclient/ios-simulator reclient staging
 reclient/ios-simulator reclient staging untrusted
-reclient/ios-simulator reclient test
-reclient/ios-simulator reclient test untrusted
 reclient/mac-arm64-rel reclient staging
 reclient/mac-arm64-rel reclient staging untrusted
 reclient/mac-arm64-rel reclient test
