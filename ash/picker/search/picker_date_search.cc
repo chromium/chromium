@@ -200,17 +200,23 @@ void HandleDayOfWeekQueries(const base::Time& now,
     }
   }
 }
-}  // namespace
 
-std::vector<PickerSearchResult> PickerDateSearch(const base::Time& now,
-                                                 std::u16string_view query) {
+std::vector<ResolvedDate> ResolveQuery(const base::Time& now,
+                                       std::u16string_view query) {
   std::vector<ResolvedDate> resolved_dates;
   std::string clean_query = base::UTF16ToUTF8(base::TrimWhitespace(
       base::i18n::ToLower(query), base::TrimPositions::TRIM_ALL));
   HandleSpecificDayQueries(now, clean_query, resolved_dates);
   HandleDaysOrWeeksAwayQueries(now, clean_query, resolved_dates);
   HandleDayOfWeekQueries(now, clean_query, resolved_dates);
+  return resolved_dates;
+}
 
+}  // namespace
+
+std::vector<PickerSearchResult> PickerDateSearch(const base::Time& now,
+                                                 std::u16string_view query) {
+  std::vector<ResolvedDate> resolved_dates = ResolveQuery(now, query);
   std::vector<PickerSearchResult> results;
   results.reserve(resolved_dates.size());
   for (const ResolvedDate& resolved_date : resolved_dates) {
