@@ -32,6 +32,7 @@ LayoutUnit ResolveInlineLengthInternal(
     MinMaxSizesFunctionRef min_max_sizes_func,
     const Length& original_length,
     const Length* auto_length,
+    LengthTypeInternal length_type,
     LayoutUnit override_available_size,
     CalcSizeKeywordBehavior calc_size_keyword_behavior) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
@@ -76,7 +77,8 @@ LayoutUnit ResolveInlineLengthInternal(
                  LayoutUnit result = ResolveInlineLengthInternal(
                      constraint_space, style, border_padding,
                      min_max_sizes_func, length_to_evaluate, auto_length,
-                     override_available_size, calc_size_keyword_behavior);
+                     length_type, override_available_size,
+                     calc_size_keyword_behavior);
                  if (result == kIndefiniteSize) {
                    evaluated_indefinite = true;
                    return kIndefiniteSize;
@@ -111,8 +113,17 @@ LayoutUnit ResolveInlineLengthInternal(
           override_available_size == kIndefiniteSize
               ? constraint_space.AvailableSize().inline_size
               : override_available_size;
+
+      // fit-content resolves differently depending on the type of length.
       if (available_size == kIndefiniteSize) {
-        return kIndefiniteSize;
+        switch (length_type) {
+          case LengthTypeInternal::kMin:
+            return min_max_sizes_func(SizeType::kContent).sizes.min_size;
+          case LengthTypeInternal::kMain:
+            return kIndefiniteSize;
+          case LengthTypeInternal::kMax:
+            return min_max_sizes_func(SizeType::kContent).sizes.max_size;
+        }
       }
       DCHECK_GE(available_size, LayoutUnit());
 
@@ -142,10 +153,10 @@ LayoutUnit ResolveBlockLengthInternal(
     const BoxStrut& border_padding,
     const Length& original_length,
     const Length* auto_length,
+    LengthTypeInternal length_type,
     LayoutUnit override_available_size,
     const LayoutUnit* override_percentage_resolution_size,
-    BlockSizeFunctionRef block_size_func,
-    bool is_main_length) {
+    BlockSizeFunctionRef block_size_func) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
 
   CHECK(!original_length.IsAuto() || auto_length);
@@ -164,8 +175,9 @@ LayoutUnit ResolveBlockLengthInternal(
               ? constraint_space.AvailableSize().block_size
               : override_available_size;
       if (available_size == kIndefiniteSize) {
-        return is_main_length ? block_size_func(SizeType::kContent)
-                              : kIndefiniteSize;
+        return length_type == LengthTypeInternal::kMain
+                   ? block_size_func(SizeType::kContent)
+                   : kIndefiniteSize;
       }
       DCHECK_GE(available_size, LayoutUnit());
       const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
@@ -181,8 +193,9 @@ LayoutUnit ResolveBlockLengthInternal(
               : constraint_space.PercentageResolutionBlockSize();
       if (length->HasPercent() &&
           percentage_resolution_size == kIndefiniteSize) {
-        return is_main_length ? block_size_func(SizeType::kContent)
-                              : kIndefiniteSize;
+        return length_type == LengthTypeInternal::kMain
+                   ? block_size_func(SizeType::kContent)
+                   : kIndefiniteSize;
       }
       bool evaluated_indefinite = false;
       LayoutUnit value = MinimumValueForLength(
@@ -190,9 +203,8 @@ LayoutUnit ResolveBlockLengthInternal(
           {.intrinsic_evaluator = [&](const Length& length_to_evaluate) {
             LayoutUnit result = ResolveBlockLengthInternal(
                 constraint_space, style, border_padding, length_to_evaluate,
-                auto_length, override_available_size,
-                override_percentage_resolution_size, block_size_func,
-                is_main_length);
+                auto_length, length_type, override_available_size,
+                override_percentage_resolution_size, block_size_func);
             if (result == kIndefiniteSize) {
               evaluated_indefinite = true;
               return kIndefiniteSize;
