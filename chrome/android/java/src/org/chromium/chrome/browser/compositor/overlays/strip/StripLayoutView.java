@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import android.graphics.RectF;
 import android.util.FloatProperty;
 
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -45,10 +46,22 @@ public abstract class StripLayoutView implements VirtualView {
                 }
             };
 
+    // Position variables.
+    protected final RectF mBounds = new RectF();
     private float mIdealX;
     private float mOffsetX;
+
+    // State variables.
     private boolean mVisible = true;
     private boolean mCollapsed;
+    private boolean mIsIncognito;
+
+    /**
+     * @param incognito The incognito state of the view.
+     */
+    protected StripLayoutView(boolean incognito) {
+        mIsIncognito = incognito;
+    }
 
     /**
      * This is used to help calculate the view's position and is not used for rendering.
@@ -71,42 +84,60 @@ public abstract class StripLayoutView implements VirtualView {
     /**
      * @return The horizontal position of the view.
      */
-    public abstract float getDrawX();
+    public float getDrawX() {
+        return mBounds.left;
+    }
 
     /**
      * @param x The horizontal position of the view.
      */
-    public abstract void setDrawX(float x);
+    public void setDrawX(float x) {
+        mBounds.right = x + mBounds.width();
+        mBounds.left = x;
+    }
 
     /**
      * @return The vertical position of the view.
      */
-    public abstract float getDrawY();
+    public float getDrawY() {
+        return mBounds.top;
+    }
 
     /**
      * @param y The vertical position of the view.
      */
-    public abstract void setDrawY(float y);
+    public void setDrawY(float y) {
+        mBounds.bottom = y + mBounds.height();
+        mBounds.top = y;
+    }
 
     /**
      * @return The width of the view.
      */
-    public abstract float getWidth();
+    public float getWidth() {
+        return mBounds.width();
+    }
 
     /**
      * @param width The width of the view.
      */
-    public abstract void setWidth(float width);
+    public void setWidth(float width) {
+        mBounds.right = mBounds.left + width;
+    }
 
     /**
      * @return The height of the view.
      */
-    public abstract float getHeight();
+    public float getHeight() {
+        return mBounds.height();
+    }
 
     /**
      * @param height The height of the view.
      */
-    public abstract void setHeight(float height);
+    public void setHeight(float height) {
+        mBounds.bottom = mBounds.top + height;
+    }
 
     /**
      * This is used to help calculate the view's position and is not used for rendering.
@@ -152,6 +183,20 @@ public abstract class StripLayoutView implements VirtualView {
      */
     public void setCollapsed(boolean collapsed) {
         mCollapsed = collapsed;
+    }
+
+    /**
+     * @return The incognito state of the view.
+     */
+    public boolean isIncognito() {
+        return mIsIncognito;
+    }
+
+    /**
+     * @param state The incognito state of the view.
+     */
+    public void setIncognito(boolean state) {
+        mIsIncognito = state;
     }
 
     /**

@@ -44,7 +44,6 @@ public class CompositorButton extends StripLayoutView {
     }
 
     // Pre-allocated to avoid in-frame allocations.
-    private final RectF mBounds = new RectF();
     private final RectF mCacheBounds = new RectF();
 
     private final CompositorOnClickHandler mClickHandler;
@@ -61,26 +60,24 @@ public class CompositorButton extends StripLayoutView {
     private boolean mIsPressed;
     private boolean mIsPressedFromMouse;
     private boolean mIsHovered;
-    private boolean mIsIncognito;
-    private boolean mIsEnabled;
     private String mAccessibilityDescription = "";
     private String mAccessibilityDescriptionIncognito = "";
 
     /**
      * Default constructor for {@link CompositorButton}
-     * @param context      An Android context for fetching dimens.
-     * @param width        The button width.
-     * @param height       The button height.
+     *
+     * @param context An Android context for fetching dimens.
+     * @param width The button width.
+     * @param height The button height.
      * @param clickHandler The action to be performed on click.
      */
     public CompositorButton(
             Context context, float width, float height, CompositorOnClickHandler clickHandler) {
+        super(false);
         mBounds.set(0, 0, width, height);
 
         mOpacity = 1.f;
         mIsPressed = false;
-        mIsIncognito = false;
-        mIsEnabled = true;
         setVisible(true);
 
         Resources res = context.getResources();
@@ -119,7 +116,7 @@ public class CompositorButton extends StripLayoutView {
     /** {@link org.chromium.chrome.browser.layouts.components.VirtualView} Implementation */
     @Override
     public String getAccessibilityDescription() {
-        return mIsIncognito ? mAccessibilityDescriptionIncognito : mAccessibilityDescription;
+        return isIncognito() ? mAccessibilityDescriptionIncognito : mAccessibilityDescription;
     }
 
     @Override
@@ -136,7 +133,7 @@ public class CompositorButton extends StripLayoutView {
      */
     @Override
     public boolean checkClickedOrHovered(float x, float y) {
-        if (mOpacity < 1.f || !isVisible() || !mIsEnabled) return false;
+        if (mOpacity < 1.f || !isVisible()) return false;
 
         mCacheBounds.set(mBounds);
         mCacheBounds.inset(-mClickSlop, -mClickSlop);
@@ -146,49 +143,6 @@ public class CompositorButton extends StripLayoutView {
     @Override
     public void handleClick(long time) {
         mClickHandler.onClick(time);
-    }
-
-    /** {@link StripLayoutView} Implementation */
-    @Override
-    public float getDrawX() {
-        return mBounds.left;
-    }
-
-    @Override
-    public void setDrawX(float x) {
-        mBounds.right = x + mBounds.width();
-        mBounds.left = x;
-    }
-
-    @Override
-    public float getDrawY() {
-        return mBounds.top;
-    }
-
-    @Override
-    public void setDrawY(float y) {
-        mBounds.bottom = y + mBounds.height();
-        mBounds.top = y;
-    }
-
-    @Override
-    public float getWidth() {
-        return mBounds.width();
-    }
-
-    @Override
-    public void setWidth(float width) {
-        mBounds.right = mBounds.left + width;
-    }
-
-    @Override
-    public float getHeight() {
-        return mBounds.height();
-    }
-
-    @Override
-    public void setHeight(float height) {
-        mBounds.bottom = mBounds.top + height;
     }
 
     /**
@@ -241,36 +195,8 @@ public class CompositorButton extends StripLayoutView {
     }
 
     /**
-     * @return The incognito state of the button.
-     */
-    public boolean isIncognito() {
-        return mIsIncognito;
-    }
-
-    /**
-     * @param state The incognito state of the button.
-     */
-    public void setIncognito(boolean state) {
-        mIsIncognito = state;
-    }
-
-    /**
-     * @return Whether or not the button can be interacted with.
-     */
-    public boolean isEnabled() {
-        return mIsEnabled;
-    }
-
-    /**
-     * @param enabled Whether or not the button can be interacted with.
-     */
-    public void setEnabled(boolean enabled) {
-        mIsEnabled = enabled;
-    }
-
-    /**
-     * @param slop  The additional area outside of the button to be considered when
-     *              checking click target bounds.
+     * @param slop The additional area outside of the button to be considered when checking click
+     *     target bounds.
      */
     public void setClickSlop(float slop) {
         mClickSlop = slop;

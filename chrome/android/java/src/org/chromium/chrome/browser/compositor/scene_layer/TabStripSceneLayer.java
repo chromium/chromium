@@ -258,7 +258,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             st.isEndDividerVisible(),
                             st.isLoading(),
                             st.getLoadingSpinnerRotation(),
-                            st.getBrightness(),
                             st.getContainerOpacity(),
                             layerTitleCache,
                             resourceManager);
@@ -399,7 +398,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 boolean isEndDividerVisible,
                 boolean isLoading,
                 float spinnerRotation,
-                float brightness,
                 float opacity,
                 LayerTitleCache layerTitleCache,
                 ResourceManager resourceManager);

@@ -141,7 +141,6 @@ class TabStripSceneLayer : public SceneLayer {
       jboolean is_end_divider_visible,
       jboolean is_loading,
       jfloat spinner_rotation,
-      jfloat brightness,
       jfloat opacity,
       const base::android::JavaParamRef<jobject>& jlayer_title_cache,
       const base::android::JavaParamRef<jobject>& jresource_manager);

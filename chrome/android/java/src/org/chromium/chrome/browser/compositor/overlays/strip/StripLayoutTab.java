@@ -178,7 +178,6 @@ public class StripLayoutTab extends StripLayoutView {
     private boolean mFolioAttached = true;
     private boolean mStartDividerVisible;
     private boolean mEndDividerVisible;
-    private final boolean mIncognito;
     private float mBottomMargin;
     private float mContainerOpacity;
     private float mLeftInset;
@@ -194,10 +193,6 @@ public class StripLayoutTab extends StripLayoutView {
     private float mTrailingMargin;
 
     // Actual draw parameters
-    private float mDrawX;
-    private float mDrawY;
-    private float mWidth;
-    private float mHeight;
     private final RectF mTouchTarget = new RectF();
 
     // Startup parameters
@@ -209,7 +204,6 @@ public class StripLayoutTab extends StripLayoutView {
     private CompositorAnimator mButtonOpacityAnimation;
 
     private float mLoadingSpinnerRotationDegrees;
-    private float mBrightness = 1.f;
 
     // Preallocated
     private final RectF mClosePlacement = new RectF();
@@ -234,12 +228,12 @@ public class StripLayoutTab extends StripLayoutView {
             TabLoadTrackerCallback loadTrackerCallback,
             LayoutUpdateHost updateHost,
             boolean incognito) {
+        super(incognito);
         mId = id;
         mContext = context;
         mDelegate = delegate;
         mLoadTracker = new TabLoadTracker(id, loadTrackerCallback);
         mUpdateHost = updateHost;
-        mIncognito = incognito;
         CompositorOnClickHandler closeClickAction =
                 time -> mDelegate.handleCloseButtonClick(StripLayoutTab.this, time);
         mCloseButton =
@@ -285,7 +279,7 @@ public class StripLayoutTab extends StripLayoutView {
                 apsBackgroundIncognitoHoveredTint,
                 apsBackgroundIncognitoPressedTint);
 
-        mCloseButton.setIncognito(mIncognito);
+        mCloseButton.setIncognito(incognito);
         mCloseButton.setBounds(getCloseRect());
         mCloseButton.setClickSlop(0.f);
         if (LocalizationUtils.isLayoutRtl()) {
@@ -478,18 +472,18 @@ public class StripLayoutTab extends StripLayoutView {
         // TODO(crbug.com/40888366): Avoid calculating every time. Instead, store the tab's
         //  color and only re-determine when the color could have changed (i.e. on selection).
         return TabUiThemeUtil.getTabStripContainerColor(
-                mContext, mIncognito, foreground, mIsReordering, mIsPlaceholder, hovered);
+                mContext, isIncognito(), foreground, mIsReordering, mIsPlaceholder, hovered);
     }
 
     /**
      * @return The tint color resource for the tab divider.
      */
     public @ColorInt int getDividerTint() {
-        if (mIncognito) {
+        if (isIncognito()) {
             return mContext.getColor(R.color.divider_line_bg_color_light);
         }
 
-        if (!ColorUtils.inNightMode(mContext) && !mIncognito) {
+        if (!ColorUtils.inNightMode(mContext) && !isIncognito()) {
             // This color will not be used at full opacity. We can't set this using the alpha
             // component of the {@code @ColorInt}, since it is ignored when loading resources
             // with a specified tint in the CC layer (instead retaining the alpha of the original
@@ -541,6 +535,11 @@ public class StripLayoutTab extends StripLayoutView {
         for (Observer observer : mObservers) {
             observer.onVisibilityChanged(isVisible());
         }
+    }
+
+    @Override
+    public void setIncognito(boolean incognito) {
+        assert false : "Incognito state of a tab cannot change";
     }
 
     /**
@@ -615,20 +614,6 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     /**
-     * @param brightness The fraction (from 0.f to 1.f) of how bright the tab should be.
-     */
-    public void setBrightness(float brightness) {
-        mBrightness = brightness;
-    }
-
-    /**
-     * @return The fraction (from 0.f to 1.f) of how bright the tab should be.
-     */
-    public float getBrightness() {
-        return mBrightness;
-    }
-
-    /**
      * @param opacity The fraction (from 0.f to 1.f) of how opaque the tab container should be.
      */
     public void setContainerOpacity(float opacity) {
@@ -689,52 +674,32 @@ public class StripLayoutTab extends StripLayoutView {
     /** {@link StripLayoutView} Implementation */
     @Override
     public void setDrawX(float x) {
-        mCloseButton.setDrawX(mCloseButton.getDrawX() + (x - mDrawX));
-        mDrawX = x;
-        mTouchTarget.left = mDrawX + mLeftInset;
-        mTouchTarget.right = mDrawX + mWidth - mRightInset;
-    }
-
-    @Override
-    public float getDrawX() {
-        return mDrawX;
+        mCloseButton.setDrawX(mCloseButton.getDrawX() + (x - getDrawX()));
+        super.setDrawX(x);
+        mTouchTarget.left = x + mLeftInset;
+        mTouchTarget.right = x + getWidth() - mRightInset;
     }
 
     @Override
     public void setDrawY(float y) {
-        mCloseButton.setDrawY(mCloseButton.getDrawY() + (y - mDrawY));
-        mDrawY = y;
-        mTouchTarget.top = mDrawY;
-        mTouchTarget.bottom = mDrawY + mHeight;
-    }
-
-    @Override
-    public float getDrawY() {
-        return mDrawY;
+        mCloseButton.setDrawY(mCloseButton.getDrawY() + (y - getDrawY()));
+        super.setDrawY(y);
+        mTouchTarget.top = y;
+        mTouchTarget.bottom = y + getHeight();
     }
 
     @Override
     public void setWidth(float width) {
-        mWidth = width;
+        super.setWidth(width);
         resetCloseRect();
-        mTouchTarget.right = mDrawX + mWidth - mRightInset;
-    }
-
-    @Override
-    public float getWidth() {
-        return mWidth;
+        mTouchTarget.right = getDrawX() + width - mRightInset;
     }
 
     @Override
     public void setHeight(float height) {
-        mHeight = height;
+        super.setHeight(height);
         resetCloseRect();
-        mTouchTarget.bottom = mDrawY + mHeight;
-    }
-
-    @Override
-    public float getHeight() {
-        return mHeight;
+        mTouchTarget.bottom = getDrawY() + height;
     }
 
     /**
@@ -774,19 +739,20 @@ public class StripLayoutTab extends StripLayoutView {
 
     /**
      * This represents how much this tab's width should be counted when positioning tabs in the
-     * stack.  As tabs close or open, their width weight is increased.  They visually take up
-     * the same amount of space but the other tabs will smoothly move out of the way to make room.
+     * stack. As tabs close or open, their width weight is increased. They visually take up the same
+     * amount of space but the other tabs will smoothly move out of the way to make room.
+     *
      * @return The weight from 0 to 1 that the width of this tab should have on the stack.
      */
     public float getWidthWeight() {
-        return MathUtils.clamp(1.f - mDrawY / mHeight, 0.f, 1.f);
+        return MathUtils.clamp(1.f - getDrawY() / getHeight(), 0.f, 1.f);
     }
 
     /**
      * @param x The x position of the position to test.
      * @param y The y position of the position to test.
-     * @return Whether or not {@code x} and {@code y} is over the close button for this tab and
-     *         if the button can be clicked.
+     * @return Whether or not {@code x} and {@code y} is over the close button for this tab and if
+     *     the button can be clicked.
      */
     public boolean checkCloseHitTest(float x, float y) {
         return mShowingCloseButton ? mCloseButton.checkClickedOrHovered(x, y) : false;
