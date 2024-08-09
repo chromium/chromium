@@ -125,7 +125,7 @@ interface CoreProbes {
   void DidFailProvisionalLoad([Keep] LocalFrame*);
   void WillCommitLoad([Keep] LocalFrame*, DocumentLoader*);
   void DidCommitLoad([Keep] LocalFrame*, DocumentLoader*);
-  void DidNavigateWithinDocument([Keep] LocalFrame*);
+  void DidNavigateWithinDocument([Keep] LocalFrame*, blink::mojom::SameDocumentNavigationType);
   void DidRestoreFromBackForwardCache([Keep] LocalFrame*);
   void DidOpenDocument([Keep] LocalFrame*, DocumentLoader*);
   void WillCreateDocumentParser(Document*, bool& force_sync_parsing);

@@ -64,6 +64,7 @@
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-blink.h"
@@ -1040,7 +1041,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   GetLocalFrameClient().DidFinishSameDocumentNavigation(
       commit_type, is_synchronously_committed, same_document_navigation_type,
       is_client_redirect_, is_browser_initiated);
-  probe::DidNavigateWithinDocument(frame_);
+  probe::DidNavigateWithinDocument(frame_, same_document_navigation_type);
 
   // If intercept() was called during this same-document navigation's
   // NavigateEvent, the navigation will finish asynchronously, so

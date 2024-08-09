@@ -9512,6 +9512,15 @@ domain Page
       FrameId frameId
       # Frame's new url.
       string url
+      # Navigation type
+      enum navigationType
+        # Navigation due to fragment navigation.
+        fragment
+        # Navigation due to history API usage.
+        historyApi
+        # Navigation due to other reasons.
+        other
+
 
   # Compressed image data requested by the `startScreencast`.
   experimental event screencastFrame

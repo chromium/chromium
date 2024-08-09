@@ -46,6 +46,7 @@
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/ad_tagging/ad_evidence.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/local_window_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
@@ -977,11 +978,32 @@ protocol::Response InspectorPageAgent::setDocumentContent(
   return protocol::Response::Success();
 }
 
-void InspectorPageAgent::DidNavigateWithinDocument(LocalFrame* frame) {
+namespace {
+const char* NavigationTypeToProtocolString(
+    mojom::blink::SameDocumentNavigationType navigation_type) {
+  switch (navigation_type) {
+    case mojom::blink::SameDocumentNavigationType::kFragment:
+      return protocol::Page::NavigatedWithinDocument::NavigationTypeEnum::
+          Fragment;
+    case mojom::blink::SameDocumentNavigationType::kHistoryApi:
+      return protocol::Page::NavigatedWithinDocument::NavigationTypeEnum::
+          HistoryApi;
+    case mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept:
+    case mojom::blink::SameDocumentNavigationType::
+        kPrerenderNoVarySearchActivation:
+      return protocol::Page::NavigatedWithinDocument::NavigationTypeEnum::Other;
+  }
+}
+}  // namespace
+
+void InspectorPageAgent::DidNavigateWithinDocument(
+    LocalFrame* frame,
+    mojom::blink::SameDocumentNavigationType navigation_type) {
   Document* document = frame->GetDocument();
   if (document) {
     return GetFrontend()->navigatedWithinDocument(
-        IdentifiersFactory::FrameId(frame), document->Url());
+        IdentifiersFactory::FrameId(frame), document->Url(),
+        NavigationTypeToProtocolString(navigation_type));
   }
 }
 
