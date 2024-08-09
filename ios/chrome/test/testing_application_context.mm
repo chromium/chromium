@@ -156,8 +156,14 @@ const std::string& TestingApplicationContext::GetApplicationCountry() {
   return application_country_;
 }
 
+// TODO(crbug.com/358299872): After all usage has changed to
+// GetProfileManager(), remove this method.
 ChromeBrowserStateManager*
 TestingApplicationContext::GetChromeBrowserStateManager() {
+  return GetProfileManager();
+}
+
+ChromeBrowserStateManager* TestingApplicationContext::GetProfileManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return chrome_browser_state_manager_;
 }
