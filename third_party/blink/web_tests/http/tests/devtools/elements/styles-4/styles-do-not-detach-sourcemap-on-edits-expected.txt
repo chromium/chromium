@@ -16,7 +16,6 @@ div { (user agent stylesheet)
     display: block;
     unicode-bidi: isolate;
 
-error: Unknown VE context:,NAME
 
 Running: editSelector
 [expanded] 
@@ -33,7 +32,6 @@ div { (user agent stylesheet)
     display: block;
     unicode-bidi: isolate;
 
-error: Unknown VE context:,NAME
 
 Running: editMedia
 [expanded] 
@@ -50,7 +48,6 @@ div { (user agent stylesheet)
     display: block;
     unicode-bidi: isolate;
 
-error: Unknown VE context:,NAME
 
 Running: addRule
 [expanded] 
@@ -67,7 +64,6 @@ div { (user agent stylesheet)
     display: block;
     unicode-bidi: isolate;
 
-error: Unknown VE context:,NAME
 
 Running: finish
 [expanded] 

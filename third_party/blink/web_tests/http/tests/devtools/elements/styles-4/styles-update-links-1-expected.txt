@@ -42,7 +42,6 @@ div { (user agent stylesheet)
     display: block;
     unicode-bidi: isolate;
 
-error: Unknown VE context:,PROPERTY
 
 
 #### AFTER PROPERTY INSERTION ####
@@ -87,7 +86,6 @@ div { (user agent stylesheet)
     display: block;
     unicode-bidi: isolate;
 
-error: Unknown VE context:,PROPERTY
 4 rule ranges are equal.
 4 rule ranges are equal.
 3 rule ranges are equal.

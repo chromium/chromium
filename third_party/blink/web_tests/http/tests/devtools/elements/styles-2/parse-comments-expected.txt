@@ -1,7 +1,5 @@
 Tests that comments in stylesheets are parsed correctly by the DevTools.
 
-error: Unknown VE context:,color/* color: red */
-error: Unknown VE context:,background /* color: red */
 Main style:
 [expanded] 
 element.style { ()

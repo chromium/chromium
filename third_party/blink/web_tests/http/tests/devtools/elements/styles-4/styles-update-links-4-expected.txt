@@ -2,11 +2,8 @@ Tests that links are updated property when editing pseudo element property.
 
 
 Running: selectNodeWithPseudoElements
-error: Unknown VE context:,pseudo-property
 
 Running: testPseudoSectionPropertyEdit
-error: Unknown VE context:,pseudo-property
-error: Unknown VE context:,PROPERTY
 
 
 #### AFTER PROPERTY INSERTED ####
@@ -36,8 +33,6 @@ section { (user agent stylesheet)
 /-- overloaded --/     PROPERTY: INSERTED;
     color: red;
 
-error: Unknown VE context:,pseudo-property
-error: Unknown VE context:,PROPERTY
 0 rule ranges are equal.
 3 rule ranges are equal.
 3 rule ranges are equal.

@@ -128,7 +128,6 @@ Attached TextData to root
 Tree:
  TextData
 
-error: Unknown VE context:,second-col
 Added secondCol
 
 Tree:

@@ -3,8 +3,6 @@ Tests co-existence of multiple DevTools extensions
 Started extension.
 Running tests...
 RUNNING TEST: extension_testCreatePanel
-error: Unknown VE context:,http://devtools-extensions.oopif.testTestPanel
-error: Unknown VE context:,http://devtools-extensions.oopif.testTestPanel
 Panel created
 {
     createStatusBarButton : <function>
@@ -25,7 +23,6 @@ Panel created
 Started extension.
 Running tests...
 RUNNING TEST: extension_testCreatePanel
-error: Unknown VE context:,http://devtools-extensions.oopif.testTestPanel
 Panel created
 {
     createStatusBarButton : <function>

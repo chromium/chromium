@@ -34,8 +34,6 @@ div { (user agent stylesheet)
     display: block;
     unicode-bidi: isolate;
 
-error: Unknown VE context:,third-property
-error: Unknown VE context:,third-property
 After insertion at index 2:
 [expanded] 
 element.style { ()

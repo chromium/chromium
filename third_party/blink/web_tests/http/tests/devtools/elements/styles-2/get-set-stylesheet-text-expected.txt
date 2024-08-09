@@ -24,8 +24,6 @@ body.main2{background: green /* value !important comment */ !important /* no sem
 
 
 Running: testNewElementStyles
-error: Unknown VE context:,colorz
-error: Unknown VE context:,important
 === Matched rules for h1 after setText() ===
 
 rule
