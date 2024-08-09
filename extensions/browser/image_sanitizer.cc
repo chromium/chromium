@@ -52,10 +52,9 @@ std::pair<bool, std::vector<unsigned char>> EncodeImage(const SkBitmap& image) {
   return std::make_pair(success, std::move(image_data));
 }
 
-int WriteFile(const base::FilePath& path,
-              const std::vector<unsigned char>& data) {
-  return base::WriteFile(path, reinterpret_cast<const char*>(data.data()),
-                         base::checked_cast<int>(data.size()));
+bool WriteFile(const base::FilePath& path,
+               const std::vector<unsigned char>& data) {
+  return base::WriteFile(path, data);
 }
 
 }  // namespace
@@ -186,19 +185,17 @@ void ImageSanitizer::ImageReencoded(
     return;
   }
 
-  int size = base::checked_cast<int>(image_data.size());
   io_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&WriteFile, image_dir_.Append(image_path),
                      std::move(image_data)),
       base::BindOnce(&ImageSanitizer::ImageWritten, weak_factory_.GetWeakPtr(),
-                     image_path, size));
+                     image_path));
 }
 
 void ImageSanitizer::ImageWritten(const base::FilePath& image_path,
-                                  int expected_size,
-                                  int actual_size) {
-  if (expected_size != actual_size) {
+                                  bool success) {
+  if (!success) {
     ReportError(Status::kFileWriteError, image_path);
     return;
   }
