@@ -40,6 +40,7 @@ void SetExecutionRequest(
       SetExecutionRequestTemplate<HistoryAnswerFeatureTypeMap>(
           log_ai_request, request_metadata);
       return;
+    case ModelBasedCapabilityKey::kFormsPredictions:
     case ModelBasedCapabilityKey::kPromptApi:
     case ModelBasedCapabilityKey::kTextSafety:
     case ModelBasedCapabilityKey::kTest:
@@ -70,6 +71,7 @@ void SetExecutionResponse(ModelBasedCapabilityKey feature,
       SetExecutionResponseTemplate<HistoryAnswerFeatureTypeMap>(
           log_ai_request, response_metadata);
       return;
+    case ModelBasedCapabilityKey::kFormsPredictions:
     case ModelBasedCapabilityKey::kPromptApi:
     case ModelBasedCapabilityKey::kTextSafety:
     case ModelBasedCapabilityKey::kTest:

@@ -139,6 +139,7 @@ bool IsOnDeviceModelEnabled(ModelBasedCapabilityKey feature) {
           optimization_guide::features::kOptimizationGuideComposeOnDeviceEval);
     case ModelBasedCapabilityKey::kTest:
       return base::FeatureList::IsEnabled(kOnDeviceModelTestFeature);
+    case ModelBasedCapabilityKey::kFormsPredictions:
     case ModelBasedCapabilityKey::kTabOrganization:
     case ModelBasedCapabilityKey::kWallpaperSearch:
     case ModelBasedCapabilityKey::kTextSafety:
@@ -169,6 +170,7 @@ bool IsOnDeviceModelAdaptationEnabled(ModelBasedCapabilityKey feature) {
       return true;
     case ModelBasedCapabilityKey::kHistorySearch:
       return true;
+    case ModelBasedCapabilityKey::kFormsPredictions:
     case ModelBasedCapabilityKey::kTabOrganization:
     case ModelBasedCapabilityKey::kWallpaperSearch:
     case ModelBasedCapabilityKey::kTextSafety:
