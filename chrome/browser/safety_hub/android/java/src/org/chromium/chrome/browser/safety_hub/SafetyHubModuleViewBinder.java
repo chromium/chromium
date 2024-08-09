@@ -536,25 +536,24 @@ public class SafetyHubModuleViewBinder {
             case SafetyHubModuleProperties.ModuleState.INFO:
             case SafetyHubModuleProperties.ModuleState.UNAVAILABLE:
                 return managed
-                        ? SettingsUtils.getTintedIcon(
-                                context,
-                                R.drawable.ic_business_small,
-                                R.color.default_icon_color_secondary_tint_list)
+                        ? getManagedIcon(context)
                         : SettingsUtils.getTintedIcon(
                                 context,
                                 R.drawable.btn_info,
                                 R.color.default_icon_color_secondary_tint_list);
             case SafetyHubModuleProperties.ModuleState.WARNING:
                 return managed
-                        ? SettingsUtils.getTintedIcon(
-                                context,
-                                R.drawable.ic_business_small,
-                                R.color.default_icon_color_secondary_tint_list)
+                        ? getManagedIcon(context)
                         : SettingsUtils.getTintedIcon(
                                 context, R.drawable.ic_error, R.color.default_red);
             default:
                 throw new IllegalArgumentException();
         }
+    }
+
+    private static Drawable getManagedIcon(Context context) {
+        return SettingsUtils.getTintedIcon(
+                context, R.drawable.ic_business, R.color.default_icon_color_secondary_tint_list);
     }
 
     private static boolean shouldExpandModule(
