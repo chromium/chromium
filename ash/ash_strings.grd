@@ -7459,6 +7459,7 @@ New install
         Change capitalization
       </message>
       <message name="IDS_PICKER_NEW_MENU_LABEL"
+        meaning="Creates new documents or windows"
         desc="This string appears as a selectable menu item in a menu. When the user hovers over this item, it opens a submenu with various options to create new documents or Chrome tabs. The submenu options are: 'Google Doc', 'Google Sheet', 'Google Slide', and 'Chrome window'.">
         New
       </message>
