@@ -152,8 +152,10 @@ public class Fido2CredentialRequestRobolectricTest {
         Mockito.when(mFrameHost.getLastCommittedOrigin()).thenReturn(mOrigin);
         Mockito.doAnswer(
                         (invocation) -> {
-                            ((Callback<Integer>) invocation.getArguments()[3])
-                                    .onResult(AuthenticatorStatus.SUCCESS);
+                            ((Callback<WebAuthSecurityChecksResults>) invocation.getArguments()[3])
+                                    .onResult(
+                                            new WebAuthSecurityChecksResults(
+                                                    AuthenticatorStatus.SUCCESS, false));
                             return null;
                         })
                 .when(mFrameHost)
@@ -192,10 +194,12 @@ public class Fido2CredentialRequestRobolectricTest {
                 /* maybeClientDataHash= */ null,
                 /* maybeBrowserOptions= */ null,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
 
-        verify(mCredManHelperMock, times(1)).startMakeRequest(any(), any(), any(), any(), any());
+        verify(mCredManHelperMock, times(1))
+                .startMakeRequest(any(), any(), anyBoolean(), any(), any(), any());
     }
 
     @Test
@@ -213,10 +217,12 @@ public class Fido2CredentialRequestRobolectricTest {
                 clientDataHash,
                 mBrowserOptions,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
 
-        verify(mCredManHelperMock, times(0)).startMakeRequest(any(), any(), any(), any(), any());
+        verify(mCredManHelperMock, times(0))
+                .startMakeRequest(any(), any(), anyBoolean(), any(), any(), any());
     }
 
     @Test
@@ -235,10 +241,12 @@ public class Fido2CredentialRequestRobolectricTest {
                 clientDataHash,
                 mBrowserOptions,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
 
-        verify(mCredManHelperMock, times(1)).startMakeRequest(any(), any(), any(), any(), any());
+        verify(mCredManHelperMock, times(1))
+                .startMakeRequest(any(), any(), anyBoolean(), any(), any(), any());
     }
 
     @Test
@@ -254,10 +262,12 @@ public class Fido2CredentialRequestRobolectricTest {
                 clientDataHash,
                 mBrowserOptions,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
 
-        verify(mCredManHelperMock, times(0)).startMakeRequest(any(), any(), any(), any(), any());
+        verify(mCredManHelperMock, times(0))
+                .startMakeRequest(any(), any(), anyBoolean(), any(), any(), any());
     }
 
     @Test
@@ -271,13 +281,15 @@ public class Fido2CredentialRequestRobolectricTest {
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
 
         assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isTrue();
         assertThat(mFido2ApiCallHelper.getChannelExtraOrNull()).isEqualTo(TEST_CHANNEL_EXTRA);
         assertThat(mFido2ApiCallHelper.getIncognitoExtraOrNull()).isTrue();
-        verify(mCredManHelperMock, times(0)).startMakeRequest(any(), any(), any(), any(), any());
+        verify(mCredManHelperMock, times(0))
+                .startMakeRequest(any(), any(), anyBoolean(), any(), any(), any());
     }
 
     @Test
@@ -290,6 +302,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
+                mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -310,6 +323,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
 
@@ -329,11 +343,13 @@ public class Fido2CredentialRequestRobolectricTest {
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
 
         assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isFalse();
-        verify(mCredManHelperMock).startMakeRequest(any(), any(), any(), any(), any());
+        verify(mCredManHelperMock)
+                .startMakeRequest(any(), any(), anyBoolean(), any(), any(), any());
     }
 
     @Test
@@ -347,6 +363,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mCreationOptions,
                 /* maybeClientDataHash= */ new byte[] {0},
                 mBrowserOptions,
+                mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);

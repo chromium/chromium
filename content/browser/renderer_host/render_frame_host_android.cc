@@ -246,9 +246,12 @@ void RenderFrameHostAndroid::PerformMakeCredentialWebAuthSecurityChecks(
       is_payment_credential_creation,
       base::BindOnce(
           [](base::android::ScopedJavaGlobalRef<jobject> callback,
-             blink::mojom::AuthenticatorStatus status) {
-            base::android::RunIntCallbackAndroid(callback,
-                                                 static_cast<int32_t>(status));
+             blink::mojom::AuthenticatorStatus status, bool is_cross_origin) {
+            base::android::RunObjectCallbackAndroid(
+                callback,
+                Java_RenderFrameHostImpl_createWebAuthSecurityChecksResults(
+                    base::android::AttachCurrentThread(),
+                    static_cast<jint>(status), is_cross_origin));
           },
           base::android::ScopedJavaGlobalRef<jobject>(callback)));
 }

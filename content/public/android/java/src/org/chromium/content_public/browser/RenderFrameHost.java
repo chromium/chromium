@@ -173,13 +173,15 @@ public interface RenderFrameHost {
      * credential. See performGetAssertionWebAuthSecurityChecks for more on |effectiveOrigin|.
      *
      * <p>This operation may trigger network fetches and thus it takes a `Callback`. The argument to
-     * the callback is a code corresponding to the AuthenticatorStatus mojo enum.
+     * the callback is an object containing (1) the status code indicating the result of the
+     * GetAssertion request security checks, and (2) whether the effectiveOrigin is a cross-origin
+     * with any frame in this frame's ancestor chain.
      */
     void performMakeCredentialWebAuthSecurityChecks(
             String relyingPartyId,
             Origin effectiveOrigin,
             boolean isPaymentCredentialCreation,
-            Callback<Integer> callback);
+            Callback<WebAuthSecurityChecksResults> callback);
 
     /**
      * @return An identifier for this RenderFrameHost.

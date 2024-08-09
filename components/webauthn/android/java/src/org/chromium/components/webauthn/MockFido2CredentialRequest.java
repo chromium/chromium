@@ -51,6 +51,7 @@ public class MockFido2CredentialRequest extends Fido2CredentialRequest {
             byte[] maybeClientDataHash,
             Bundle browserOptions,
             Origin origin,
+            Origin topOrigin,
             MakeCredentialResponseCallback callback,
             FidoErrorResponseCallback errorCallback) {
         errorCallback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);

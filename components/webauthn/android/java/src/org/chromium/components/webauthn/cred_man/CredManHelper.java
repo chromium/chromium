@@ -94,9 +94,11 @@ public class CredManHelper {
     public int startMakeRequest(
             PublicKeyCredentialCreationOptions options,
             String originString,
+            boolean isCrossOrigin,
             byte[] maybeClientDataHash,
             MakeCredentialResponseCallback makeCallback,
             Callback<Integer> errorCallback) {
+        mIsCrossOrigin = isCrossOrigin;
         final String requestAsJson =
                 Fido2CredentialRequestJni.get().createOptionsToJson(options.serialize());
         final byte[] clientDataHash =
@@ -106,7 +108,7 @@ public class CredManHelper {
                                 ClientDataRequestType.WEB_AUTHN_CREATE,
                                 originString,
                                 options.challenge,
-                                /* isCrossOrigin= */ false,
+                                mIsCrossOrigin,
                                 options.relyingParty.id,
                                 /* topOrigin= */ null);
         if (clientDataHash == null) {

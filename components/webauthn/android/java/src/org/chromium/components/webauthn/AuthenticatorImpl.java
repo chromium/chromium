@@ -176,6 +176,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                 /* maybeClientDataHash= */ null,
                 maybeCreateBrowserOptions(),
                 mOrigin,
+                mTopOrigin,
                 this::onRegisterResponse,
                 this::onError);
     }

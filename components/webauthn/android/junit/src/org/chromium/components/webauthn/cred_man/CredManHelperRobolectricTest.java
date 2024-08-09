@@ -164,6 +164,7 @@ public class CredManHelperRobolectricTest {
                 mCredManHelper.startMakeRequest(
                         mCreationOptions,
                         mOriginString,
+                        /* isCrossOrigin= */ false,
                         /* maybeClientDataHash= */ null,
                         mCallback::onRegisterResponse,
                         mErrorCallback);
@@ -193,6 +194,7 @@ public class CredManHelperRobolectricTest {
                 mCredManHelper.startMakeRequest(
                         mCreationOptions,
                         mOriginString,
+                        /* isCrossOrigin= */ false,
                         mMaybeClientDataHash,
                         mCallback::onRegisterResponse,
                         mErrorCallback);
@@ -219,6 +221,7 @@ public class CredManHelperRobolectricTest {
                 mCredManHelper.startMakeRequest(
                         mCreationOptions,
                         mOriginString,
+                        /* isCrossOrigin= */ false,
                         mMaybeClientDataHash,
                         mCallback::onRegisterResponse,
                         mErrorCallback);
@@ -243,6 +246,7 @@ public class CredManHelperRobolectricTest {
                 mCredManHelper.startMakeRequest(
                         mCreationOptions,
                         mOriginString,
+                        /* isCrossOrigin= */ false,
                         mMaybeClientDataHash,
                         mCallback::onRegisterResponse,
                         mErrorCallback);
@@ -268,6 +272,7 @@ public class CredManHelperRobolectricTest {
                 mCredManHelper.startMakeRequest(
                         mCreationOptions,
                         mOriginString,
+                        /* isCrossOrigin= */ false,
                         mMaybeClientDataHash,
                         mCallback::onRegisterResponse,
                         mErrorCallback);

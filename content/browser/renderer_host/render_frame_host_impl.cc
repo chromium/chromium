@@ -16363,17 +16363,18 @@ void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
     const std::string& relying_party_id,
     const url::Origin& effective_origin,
     bool is_payment_credential_creation,
-    base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback) {
-  bool unused_is_cross_origin;
+    base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
+        callback) {
+  bool is_cross_origin = true;  // Will be reset in ValidateAncestorOrigins().
   WebAuthRequestSecurityChecker::RequestType request_type =
       is_payment_credential_creation
           ? WebAuthRequestSecurityChecker::RequestType::kMakePaymentCredential
           : WebAuthRequestSecurityChecker::RequestType::kMakeCredential;
   blink::mojom::AuthenticatorStatus status =
       GetWebAuthRequestSecurityChecker()->ValidateAncestorOrigins(
-          effective_origin, request_type, &unused_is_cross_origin);
+          effective_origin, request_type, &is_cross_origin);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
-    std::move(callback).Run(status);
+    std::move(callback).Run(status, is_cross_origin);
     return;
   }
 
@@ -16381,7 +16382,7 @@ void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
            ->browser()
            ->IsSecurityLevelAcceptableForWebAuthn(this, effective_origin)) {
     std::move(callback).Run(
-        blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
+        blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR, is_cross_origin);
     return;
   }
 
@@ -16393,7 +16394,7 @@ void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
               base::BindOnce(&RenderFrameHostImpl::
                                  OnMakeCredentialWebAuthSecurityChecksCompleted,
                              weak_ptr_factory_.GetWeakPtr(),
-                             std::move(callback)));
+                             std::move(callback), is_cross_origin));
 
   // If `remote_validation` is nullptr then this object may already have been
   // destroyed.
@@ -16403,10 +16404,11 @@ void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
 }
 
 void RenderFrameHostImpl::OnMakeCredentialWebAuthSecurityChecksCompleted(
-    base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback,
+    base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)> callback,
+    bool is_cross_origin,
     blink::mojom::AuthenticatorStatus status) {
   webauthn_remote_rp_id_validation_.reset();
-  std::move(callback).Run(status);
+  std::move(callback).Run(status, is_cross_origin);
 }
 #endif
 

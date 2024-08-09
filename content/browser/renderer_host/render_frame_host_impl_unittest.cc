@@ -1264,7 +1264,9 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
       "doofenshmirtz.evil", url::Origin::Create(url),
       /*is_payment_credential_creation=*/false,
       base::BindLambdaForTesting(
-          [&status](blink::mojom::AuthenticatorStatus s) { status = s; }));
+          [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
+            status = s;
+          }));
   EXPECT_EQ(status.value(),
             blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
 }
@@ -1299,7 +1301,9 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
       "owca.org", url::Origin::Create(url),
       /*is_payment_credential_creation=*/false,
       base::BindLambdaForTesting(
-          [&status](blink::mojom::AuthenticatorStatus s) { status = s; }));
+          [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
+            status = s;
+          }));
   EXPECT_EQ(status.value(), blink::mojom::AuthenticatorStatus::SUCCESS);
 }
 
