@@ -1000,6 +1000,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
                        FaceGazeSettingsPageOpensWhenFeatureIsEnabled) {
+  GetActiveUserPrefs()->SetBoolean(
+      prefs::kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted, true);
   base::RunLoop waiter;
   AccessibilityManager::Get()->SetOpenSettingsSubpageObserverForTest(
       base::BindLambdaForTesting([&waiter]() { waiter.Quit(); }));

@@ -648,4 +648,12 @@ class MockAccessibilityPrivate {
         await getFileBytes(`${mediapipeDir}/vision_wasm_internal.wasm`);
     this.faceGazeAssets_ = assets;
   }
+
+  /**
+   * @param {string} title
+   * @param {string} description
+   * @param {?string|undefined} cancelName
+   * @param {function(boolean): void} callback
+   */
+  showConfirmationDialog(title, description, cancelName, callback) {}
 }

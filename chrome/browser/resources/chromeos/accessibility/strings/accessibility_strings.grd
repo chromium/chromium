@@ -152,6 +152,7 @@
       <part file="chromevox_strings.grdp" />
       <part file="dictation_strings.grdp" />
       <part file="enhanced_network_tts_strings.grdp" />
+      <part file="facegaze_strings.grdp" />
       <part file="select_to_speak_strings.grdp" />
       <part file="switch_access_strings.grdp" />
     </messages>

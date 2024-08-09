@@ -55,6 +55,47 @@ export class FaceGaze {
     }
     this.initialized_ = true;
 
+    chrome.settingsPrivate.getPref(
+        FaceGaze.PREF_ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED, pref => {
+          if (pref.value === undefined || pref.value === null) {
+            return;
+          }
+
+          if (pref.value) {
+            // If the confirmation dialog has already been accepted, there is no
+            // need to show it again. We can proceed as if it's been accepted.
+            this.onConfirmationDialog_(true);
+            return;
+          }
+
+          // If the confirmation dialog has not been accepted yet, display it to
+          // the user.
+          const title =
+              chrome.i18n.getMessage('facegaze_confirmation_dialog_title');
+          const description =
+              chrome.i18n.getMessage('facegaze_confirmation_dialog_desc');
+          chrome.accessibilityPrivate.showConfirmationDialog(
+              title, description, /*cancelName=*/ undefined, (accepted) => {
+                this.onConfirmationDialog_(accepted);
+              });
+        });
+  }
+
+  /** Runs when the confirmation dialog has either been accepted or rejected. */
+  private onConfirmationDialog_(accepted: boolean): void {
+    chrome.settingsPrivate.setPref(
+        FaceGaze.PREF_ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED, accepted);
+    if (!accepted) {
+      // If the dialog was rejected, then disable the FaceGaze feature.
+      chrome.settingsPrivate.setPref(FaceGaze.PREF_FACE_GAZE_ENABLED, false);
+      return;
+    }
+
+    // If the dialog was accepted, then initialize FaceGaze.
+    this.openWeightsPanel_();
+    chrome.accessibilityPrivate.openSettingsSubpage(
+        FaceGaze.SETTINGS_PAGE_ROUTE);
+
     // Use a timeout to defer the initialization of the WebCamFaceLandmarker.
     // For tests, we can guard the initialization using a testing-specific
     // variable. For production, this will initialize the WebCamFaceLandmarker
@@ -62,8 +103,6 @@ export class FaceGaze {
     setTimeout(() => {
       this.maybeInitializeWebCamFaceLandmarker_();
     }, FaceGaze.INITIALIZE_WEB_CAM_FACE_LANDMARKER_TIMEOUT);
-
-    this.openWeightsPanel_();
   }
 
   private maybeInitializeWebCamFaceLandmarker_(): void {
@@ -202,9 +241,14 @@ export class FaceGaze {
 export namespace FaceGaze {
   export const INITIALIZE_WEB_CAM_FACE_LANDMARKER_TIMEOUT = 5 * 1000;
   // Pref names. Should be in sync with with values at ash_pref_names.h.
+  export const PREF_ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED =
+      'settings.a11y.face_gaze.accelerator_dialog_has_been_accepted';
+  export const PREF_FACE_GAZE_ENABLED = 'settings.a11y.face_gaze.enabled';
+  export const PREF_ACTIONS_ENABLED = 'settings.a11y.face_gaze.actions_enabled';
   export const PREF_CURSOR_CONTROL_ENABLED =
       'settings.a11y.face_gaze.cursor_control_enabled';
-  export const PREF_ACTIONS_ENABLED = 'settings.a11y.face_gaze.actions_enabled';
+
+  export const SETTINGS_PAGE_ROUTE = 'manageAccessibility/faceGaze';
 }
 
 TestImportManager.exportForTesting(FaceGaze);

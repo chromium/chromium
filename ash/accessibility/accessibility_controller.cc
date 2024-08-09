@@ -303,6 +303,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kDictationNoDlcsDownloadedNotificationHasBeenShown,
     prefs::kDisplayRotationAcceleratorDialogHasBeenAccepted2,
     prefs::kSelectToSpeakAcceleratorDialogHasBeenAccepted,
+    prefs::kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted,
     prefs::kFaceGazeDlcSuccessNotificationHasBeenShown,
     prefs::kFaceGazeDlcFailureNotificationHasBeenShown,
 };
@@ -1229,6 +1230,8 @@ void AccessibilityController::RegisterProfilePrefs(
       prefs::kDisplayRotationAcceleratorDialogHasBeenAccepted2, false);
   registry->RegisterBooleanPref(prefs::kShouldAlwaysShowAccessibilityMenu,
                                 false);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted, false);
   registry->RegisterBooleanPref(
       prefs::kFaceGazeDlcSuccessNotificationHasBeenShown, false);
   registry->RegisterBooleanPref(

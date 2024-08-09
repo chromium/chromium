@@ -133,8 +133,6 @@ using ::extensions::api::braille_display_private::StubBrailleController;
 // When this flag is set, system sounds will not be played.
 constexpr char kAshDisableSystemSounds[] = "ash-disable-system-sounds";
 
-constexpr char kFaceGazeSettingsPath[] = "manageAccessibility/faceGaze";
-
 // A key for the spoken feedback enabled boolean state for a known user.
 const char kUserSpokenFeedbackEnabled[] = "UserSpokenFeedbackEnabled";
 
@@ -660,11 +658,6 @@ void AccessibilityManager::EnableLargeCursor(bool enabled) {
 
 void AccessibilityManager::OnFaceGazeChanged() {
   OnAccessibilityCommonChanged(prefs::kAccessibilityFaceGazeEnabled);
-  const bool enabled =
-      profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityFaceGazeEnabled);
-  if (enabled) {
-    OpenSettingsSubpage(kFaceGazeSettingsPath);
-  }
 }
 
 void AccessibilityManager::OnLargeCursorChanged() {
