@@ -934,9 +934,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadSystemFonts);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kPreloadSystemFontsTargets;
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kPreloadSystemFontsFromPage;
-
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kPreloadSystemFontsRequiredMemoryGB;
 

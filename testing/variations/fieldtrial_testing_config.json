@@ -17204,7 +17204,6 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "preload_system_fonts_from_page": "false",
                         "preload_system_fonts_required_memory_gb": "4",
                         "preload_system_fonts_targets": "[{\"family\":\"arial\",\"weight\":400,\"size\":14,\"csize\":14,\"text\":\"ab\"}]"
                     },

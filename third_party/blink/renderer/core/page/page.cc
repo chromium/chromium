@@ -279,11 +279,6 @@ Page::Page(base::PassKey<Page>,
     // production.
     IsolatedSVGDocumentHostInitializer::Get()
         ->MaybePrepareIsolatedSVGDocumentHost();
-    static const bool preload_system_fonts_from_page =
-        features::kPreloadSystemFontsFromPage.Get();
-    if (preload_system_fonts_from_page) {
-      FontCache::MaybePreloadSystemFonts();
-    }
   }
 }
 

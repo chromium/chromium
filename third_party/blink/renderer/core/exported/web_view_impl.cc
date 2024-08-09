@@ -477,6 +477,17 @@ void ForEachFrameWidgetControlledByView(
   }
 }
 
+void MaybePreloadSystemFonts(Page* page) {
+  static bool is_first_run = true;
+  if (!is_first_run) {
+    return;
+  }
+  is_first_run = false;
+
+  page->GetAgentGroupScheduler().DefaultTaskRunner()->PostTask(
+      FROM_HERE, WTF::BindOnce([]() { FontCache::MaybePreloadSystemFonts(); }));
+}
+
 }  // namespace
 
 // WebView ----------------------------------------------------------------
@@ -3553,6 +3564,8 @@ void WebViewImpl::UpdateRendererPreferences(
         renderer_preferences_.prefixed_fullscreen_video_api_availability
             .value());
   }
+
+  MaybePreloadSystemFonts(GetPage());
 }
 
 void WebViewImpl::SetHistoryOffsetAndLength(int32_t history_offset,
