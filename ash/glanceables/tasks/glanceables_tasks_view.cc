@@ -156,8 +156,16 @@ END_METADATA
 
 GlanceablesTasksView::GlanceablesTasksView(
     const ui::ListModel<api::TaskList>* task_lists)
-    : GlanceablesTimeManagementBubbleView(Context::kTasks),
+    : GlanceablesTimeManagementBubbleView(
+          Context::kTasks,
+          std::make_unique<GlanceablesTasksComboboxModel>(task_lists)),
       shown_time_(base::Time::Now()) {
+  tasks_combobox_model_ =
+      static_cast<GlanceablesTasksComboboxModel*>(combobox_model());
+  // Assign a default value for tooltip and accessible text.
+  combobox_view()->SetTooltipText(l10n_util::GetStringFUTF16(
+      IDS_GLANCEABLES_TASKS_DROPDOWN_ACCESSIBLE_NAME, u""));
+
   expand_button()->SetExpandedStateTooltipStringId(
       IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_EXPAND_TOOLTIP);
   expand_button()->SetCollapsedStateTooltipStringId(
@@ -171,25 +179,22 @@ GlanceablesTasksView::GlanceablesTasksView(
   // Hide `add_new_task_button_` until the initial task list update.
   add_new_task_button_->SetVisible(false);
 
-  auto* const header_icon =
-      header_view()->AddChildView(std::make_unique<IconButton>(
+  auto* const header_icon = header_view()->AddChildViewAt(
+      std::make_unique<IconButton>(
           base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
                               base::Unretained(this),
                               TasksLaunchSource::kHeaderButton,
                               GURL(kTasksManagementPage)),
           IconButton::Type::kSmall, &kGlanceablesTasksIcon,
-          IDS_GLANCEABLES_TASKS_HEADER_ICON_ACCESSIBLE_NAME));
+          IDS_GLANCEABLES_TASKS_HEADER_ICON_ACCESSIBLE_NAME),
+      0);
   header_icon->SetBackgroundColor(SK_ColorTRANSPARENT);
   header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
   header_icon->SetID(
       base::to_underlying(GlanceablesViewId::kTimeManagementBubbleHeaderIcon));
 
-  tasks_combobox_model_ =
-      std::make_unique<GlanceablesTasksComboboxModel>(task_lists);
-  CreateComboBoxView();
-
-  auto text_on_combobox = task_list_combo_box_view_->GetTextForRow(
-      task_list_combo_box_view_->GetSelectedIndex().value());
+  auto text_on_combobox =
+      combobox_view()->GetTextForRow(GetComboboxSelectedIndex());
   combobox_replacement_label_ = header_view()->AddChildView(
       std::make_unique<views::Label>(text_on_combobox));
   combobox_replacement_label_->SetProperty(views::kMarginsKey,
@@ -328,7 +333,7 @@ void GlanceablesTasksView::SetExpandState(bool is_expanded,
 
   progress_bar()->SetVisible(is_expanded_);
   content_scroll_view()->SetVisible(is_expanded_);
-  task_list_combo_box_view_->SetVisible(is_expanded_);
+  combobox_view()->SetVisible(is_expanded_);
   combobox_replacement_label_->SetVisible(!is_expanded_);
 
   if (is_expanded) {
@@ -400,19 +405,19 @@ std::unique_ptr<GlanceablesTaskView> GlanceablesTasksView::CreateTaskView(
   return task_view;
 }
 
-void GlanceablesTasksView::SelectedTasksListChanged() {
+void GlanceablesTasksView::SelectedListChanged() {
   if (!glanceables_util::IsNetworkConnected()) {
     // If the network is disconnected, cancel the list change and show the error
     // message.
     ShowErrorMessageWithType(
         GlanceablesTasksErrorType::kCantLoadTasksNoNetwork,
         GlanceablesErrorMessageView::ButtonActionType::kDismiss);
-    task_list_combo_box_view_->SetSelectedIndex(cached_selected_list_index_);
+    combobox_view()->SetSelectedIndex(cached_selected_list_index_);
     return;
   }
 
-  combobox_replacement_label_->SetText(task_list_combo_box_view_->GetTextForRow(
-      task_list_combo_box_view_->GetSelectedIndex().value()));
+  combobox_replacement_label_->SetText(
+      combobox_view()->GetTextForRow(GetComboboxSelectedIndex()));
 
   weak_ptr_factory_.InvalidateWeakPtrs();
   tasks_requested_time_ = base::TimeTicks::Now();
@@ -421,12 +426,12 @@ void GlanceablesTasksView::SelectedTasksListChanged() {
 }
 
 void GlanceablesTasksView::ScheduleUpdateTasks(ListShownContext context) {
-  if (!task_list_combo_box_view_->GetSelectedIndex().has_value()) {
+  if (!combobox_view()->GetSelectedIndex().has_value()) {
     return;
   }
 
   SetIsLoading(true);
-  task_list_combo_box_view_->GetViewAccessibility().SetDescription(u"");
+  combobox_view()->GetViewAccessibility().SetDescription(u"");
 
   const auto* const active_task_list = GetActiveTaskList();
   tasks_combobox_model_->SaveLastSelectedTaskList(active_task_list->id);
@@ -480,8 +485,7 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
         ShowErrorMessageWithType(
             GlanceablesTasksErrorType::kCantLoadTasks,
             GlanceablesErrorMessageView::ButtonActionType::kDismiss);
-        task_list_combo_box_view_->SetSelectedIndex(
-            cached_selected_list_index_);
+        combobox_view()->SetSelectedIndex(cached_selected_list_index_);
         return;
     }
   }
@@ -510,7 +514,7 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
 
   task_list_sentinel_ = nullptr;
   task_view_model_.Clear();
-  cached_selected_list_index_ = task_list_combo_box_view_->GetSelectedIndex();
+  cached_selected_list_index_ = combobox_view()->GetSelectedIndex();
 
   size_t num_tasks_shown = 0;
   user_with_no_tasks_ =
@@ -550,7 +554,7 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
   list_footer_view()->SetVisible(tasks->item_count() >= kMaximumTasks);
   expand_button()->UpdateCounter(tasks->item_count());
 
-  task_list_combo_box_view_->SetTooltipText(
+  combobox_view()->SetTooltipText(
       l10n_util::GetStringFUTF16(IDS_GLANCEABLES_TASKS_DROPDOWN_ACCESSIBLE_NAME,
                                  base::UTF8ToUTF16(task_list_title)));
   items_container_view()->GetViewAccessibility().SetName(
@@ -731,8 +735,7 @@ void GlanceablesTasksView::OnTaskSaved(
 }
 
 const api::TaskList* GlanceablesTasksView::GetActiveTaskList() const {
-  return tasks_combobox_model_->GetTaskListAt(
-      task_list_combo_box_view_->GetSelectedIndex().value());
+  return tasks_combobox_model_->GetTaskListAt(GetComboboxSelectedIndex());
 }
 
 void GlanceablesTasksView::ShowErrorMessageWithType(
@@ -908,30 +911,6 @@ void GlanceablesTasksView::RemoveTaskView(
 
   items_container_view()->SetVisible(
       !items_container_view()->children().empty());
-}
-
-void GlanceablesTasksView::CreateComboBoxView() {
-  if (task_list_combo_box_view_) {
-    header_view()->RemoveChildViewT(
-        std::exchange(task_list_combo_box_view_, nullptr));
-  }
-
-  task_list_combo_box_view_ = header_view()->AddChildView(
-      std::make_unique<Combobox>(tasks_combobox_model_.get()));
-  task_list_combo_box_view_->SetID(
-      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox));
-  task_list_combo_box_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kPreferred));
-  task_list_combo_box_view_->SetVisible(is_expanded_);
-
-  // Assign a default value for tooltip and accessible text.
-  task_list_combo_box_view_->SetTooltipText(l10n_util::GetStringFUTF16(
-      IDS_GLANCEABLES_TASKS_DROPDOWN_ACCESSIBLE_NAME, u""));
-  task_list_combo_box_view_->GetViewAccessibility().SetDescription(u"");
-  task_list_combo_box_view_->SetSelectionChangedCallback(base::BindRepeating(
-      &GlanceablesTasksView::SelectedTasksListChanged, base::Unretained(this)));
 }
 
 void GlanceablesTasksView::SetIsLoading(bool is_loading) {

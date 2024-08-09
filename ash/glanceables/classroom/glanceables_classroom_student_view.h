@@ -27,7 +27,6 @@ class Label;
 
 namespace ash {
 
-class Combobox;
 struct GlanceablesClassroomAssignment;
 
 // This enum is used for metrics, so enum values should not be changed. New enum
@@ -71,6 +70,7 @@ class ASH_EXPORT GlanceablesClassroomStudentView
  private:
   // GlanceablesTimeManagementBubbleView:
   void OnFooterButtonPressed() override;
+  void SelectedListChanged() override;
 
   // Triggers classroom bubble resize animation to new preferred size, if an
   // animation is required.
@@ -100,7 +100,6 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   void AnnounceListStateOnComboBoxAccessibility();
 
   // Owned by views hierarchy.
-  raw_ptr<Combobox> combo_box_view_ = nullptr;
   // This is a simple label that copies the label style on `combo_box_view_` so
   // that it can visually replace it when `combo_box_view_` is hidden.
   raw_ptr<views::Label> combobox_replacement_label_ = nullptr;

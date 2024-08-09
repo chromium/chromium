@@ -30,7 +30,6 @@ class LabelButton;
 
 namespace ash {
 
-class Combobox;
 class GlanceablesTasksComboboxModel;
 class GlanceablesTaskView;
 
@@ -79,6 +78,7 @@ class ASH_EXPORT GlanceablesTasksView
 
   // GlanceablesTimeManagementBubbleView:
   void OnFooterButtonPressed() override;
+  void SelectedListChanged() override;
 
   // Handles press behavior for `add_new_task_button_`.
   void AddNewTaskButtonPressed();
@@ -89,7 +89,6 @@ class ASH_EXPORT GlanceablesTasksView
       const api::Task* task);
 
   // Handles switching between tasks lists.
-  void SelectedTasksListChanged();
   void ScheduleUpdateTasks(ListShownContext context);
   void RetryUpdateTasks(ListShownContext context);
   void UpdateTasksInTaskList(const std::string& task_list_id,
@@ -152,9 +151,6 @@ class ASH_EXPORT GlanceablesTasksView
   // Removes `task_view` from the tasks container.
   void RemoveTaskView(base::WeakPtr<GlanceablesTaskView> task_view);
 
-  // Creates and initializes `task_list_combo_box_view_`.
-  void CreateComboBoxView();
-
   // This function should be called with `is_loading` = true if `this` is
   // waiting for fetched data to be returned. After the data arrives, resets the
   // states by calling with `is_loading` = false.
@@ -174,8 +170,8 @@ class ASH_EXPORT GlanceablesTasksView
   void AnimateTaskViewVisibility(views::View* task, bool visible);
   void OnTaskViewAnimationCompleted();
 
-  // Model for the combobox used to change the active task list.
-  std::unique_ptr<GlanceablesTasksComboboxModel> tasks_combobox_model_;
+  // Caching `combobox_model_` from GlanceablesTimeManagementBubbleView.
+  raw_ptr<GlanceablesTasksComboboxModel> tasks_combobox_model_;
 
   // The number of times that the tasks list has been changed during the
   // lifetime of this view.
@@ -190,7 +186,6 @@ class ASH_EXPORT GlanceablesTasksView
   // `task_list_combo_box_view_` so that it can visually replace it when
   // `task_list_combo_box_view_` is hidden.
   raw_ptr<views::Label> combobox_replacement_label_ = nullptr;
-  raw_ptr<Combobox> task_list_combo_box_view_ = nullptr;
   raw_ptr<views::LabelButton> add_new_task_button_ = nullptr;
 
   // An invisible view added at the last element to the task list container to

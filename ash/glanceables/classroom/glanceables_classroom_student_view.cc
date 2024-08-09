@@ -64,7 +64,7 @@
 namespace ash {
 namespace {
 
-// Helps to map `combo_box_view_` selected index to the corresponding
+// Helps to map `combobox_view_` selected index to the corresponding
 // `StudentAssignmentsListType` value.
 constexpr std::array<StudentAssignmentsListType, 4>
     kStudentAssignmentsListTypeOrdered = {
@@ -154,34 +154,27 @@ class ClassroomStudentComboboxModel : public ui::ComboboxModel {
 }  // namespace
 
 GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
-    : GlanceablesTimeManagementBubbleView(Context::kClassroom),
+    : GlanceablesTimeManagementBubbleView(
+          Context::kClassroom,
+          std::make_unique<ClassroomStudentComboboxModel>()),
       shown_time_(base::Time::Now()) {
-  auto* const header_icon =
-      header_view()->AddChildView(std::make_unique<IconButton>(
+  auto* const header_icon = header_view()->AddChildViewAt(
+      std::make_unique<IconButton>(
           base::BindRepeating(
               &GlanceablesClassroomStudentView::OnHeaderIconPressed,
               base::Unretained(this)),
           IconButton::Type::kSmall, &kGlanceablesClassroomIcon,
-          IDS_GLANCEABLES_CLASSROOM_HEADER_ICON_ACCESSIBLE_NAME));
+          IDS_GLANCEABLES_CLASSROOM_HEADER_ICON_ACCESSIBLE_NAME),
+      0);
   header_icon->SetBackgroundColor(SK_ColorTRANSPARENT);
   header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
   header_icon->SetID(
       base::to_underlying(GlanceablesViewId::kTimeManagementBubbleHeaderIcon));
 
-  combo_box_view_ = header_view()->AddChildView(std::make_unique<Combobox>(
-      std::make_unique<ClassroomStudentComboboxModel>()));
-  combo_box_view_->SetID(
-      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox));
-  combo_box_view_->SetTooltipText(l10n_util::GetStringUTF16(
+  combobox_view()->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_GLANCEABLES_CLASSROOM_DROPDOWN_ACCESSIBLE_NAME));
-  combo_box_view_->GetViewAccessibility().SetDescription(u"");
-  combo_box_view_->SetSelectionChangedCallback(base::BindRepeating(
-      &GlanceablesClassroomStudentView::SelectedAssignmentListChanged,
-      base::Unretained(this),
-      /*initial_update=*/false));
-
-  auto text_on_combobox = combo_box_view_->GetTextForRow(
-      combo_box_view_->GetSelectedIndex().value());
+  auto text_on_combobox =
+      combobox_view()->GetTextForRow(GetComboboxSelectedIndex());
   combobox_replacement_label_ = header_view()->AddChildView(
       std::make_unique<views::Label>(text_on_combobox));
   combobox_replacement_label_->SetProperty(views::kMarginsKey,
@@ -276,7 +269,7 @@ void GlanceablesClassroomStudentView::SetExpandState(
 
   progress_bar()->SetVisible(is_expanded_);
   content_scroll_view()->SetVisible(is_expanded_);
-  combo_box_view_->SetVisible(is_expanded_);
+  combobox_view()->SetVisible(is_expanded_);
   combobox_replacement_label_->SetVisible(!is_expanded_);
 
   if (is_expanded) {
@@ -300,7 +293,7 @@ void GlanceablesClassroomStudentView::SetExpandState(
 void GlanceablesClassroomStudentView::OnFooterButtonPressed() {
   base::RecordAction(
       base::UserMetricsAction("Glanceables_Classroom_SeeAllPressed"));
-  CHECK(combo_box_view_->GetSelectedIndex());
+  CHECK(combobox_view()->GetSelectedIndex());
 
   switch (selected_list_type_) {
     case StudentAssignmentsListType::kAssigned:
@@ -344,14 +337,13 @@ void GlanceablesClassroomStudentView::SelectedAssignmentListChanged(
   }
 
   const auto prev_selected_list_type = selected_list_type_;
-  CHECK(combo_box_view_->GetSelectedIndex());
-  const auto selected_index = combo_box_view_->GetSelectedIndex().value();
+  const auto selected_index = GetComboboxSelectedIndex();
   CHECK(selected_index >= 0 ||
         selected_index < kStudentAssignmentsListTypeOrdered.size());
   selected_list_type_ = kStudentAssignmentsListTypeOrdered[selected_index];
 
   combobox_replacement_label_->SetText(
-      combo_box_view_->GetTextForRow(selected_index));
+      combobox_view()->GetTextForRow(selected_index));
 
   if (!initial_update) {
     base::RecordAction(
@@ -376,7 +368,7 @@ void GlanceablesClassroomStudentView::SelectedAssignmentListChanged(
 
   assignments_requested_time_ = base::TimeTicks::Now();
   progress_bar()->UpdateProgressBarVisibility(/*visible=*/true);
-  combo_box_view_->GetViewAccessibility().SetDescription(u"");
+  combobox_view()->GetViewAccessibility().SetDescription(u"");
 
   auto callback =
       base::BindOnce(&GlanceablesClassroomStudentView::OnGetAssignments,
@@ -402,6 +394,10 @@ void GlanceablesClassroomStudentView::SelectedAssignmentListChanged(
           IDS_GLANCEABLES_CLASSROOM_STUDENT_EMPTY_ITEM_DONE_LIST));
       return client->GetCompletedStudentAssignments(std::move(callback));
   }
+}
+
+void GlanceablesClassroomStudentView::SelectedListChanged() {
+  SelectedAssignmentListChanged(/*initial_update=*/false);
 }
 
 void GlanceablesClassroomStudentView::AnimateResize() {

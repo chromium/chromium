@@ -9,10 +9,12 @@
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/public/cpp/metrics_util.h"
+#include "ash/style/combobox.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/combobox_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -122,7 +124,9 @@ int GlanceablesTimeManagementBubbleView::ResizeAnimation::GetCurrentHeight()
 }
 
 GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
-    Context context) {
+    Context context,
+    std::unique_ptr<ui::ComboboxModel> combobox_model)
+    : combobox_model_(std::move(combobox_model)) {
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
 
   UpdateInteriorMargin();
@@ -149,6 +153,8 @@ GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
                                views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithWeight(1));
+
+  CreateComboBoxView();
 
   expand_button_ = header_container->AddChildView(
       std::make_unique<GlanceablesExpandButton>());
@@ -213,6 +219,33 @@ void GlanceablesTimeManagementBubbleView::Layout(PassKey) {
 void GlanceablesTimeManagementBubbleView::SetAnimationEndedClosureForTest(
     base::OnceClosure closure) {
   resize_animation_ended_closure_ = std::move(closure);
+}
+
+void GlanceablesTimeManagementBubbleView::CreateComboBoxView() {
+  if (combobox_view_) {
+    header_view_->RemoveChildViewT(std::exchange(combobox_view_, nullptr));
+  }
+
+  combobox_view_ = header_view_->AddChildView(
+      std::make_unique<Combobox>(combobox_model_.get()));
+  combobox_view_->SetID(
+      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox));
+  combobox_view_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred));
+  combobox_view_->SetVisible(is_expanded_);
+
+  // Assign a default value for tooltip and accessible text.
+  combobox_view_->GetViewAccessibility().SetDescription(u"");
+  combobox_view_->SetSelectionChangedCallback(base::BindRepeating(
+      &GlanceablesTimeManagementBubbleView::SelectedListChanged,
+      base::Unretained(this)));
+}
+
+size_t GlanceablesTimeManagementBubbleView::GetComboboxSelectedIndex() const {
+  CHECK(combobox_view_->GetSelectedIndex().has_value());
+  return combobox_view_->GetSelectedIndex().value();
 }
 
 void GlanceablesTimeManagementBubbleView::SetUpResizeThroughputTracker(

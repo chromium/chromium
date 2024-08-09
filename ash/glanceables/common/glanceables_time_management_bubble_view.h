@@ -9,6 +9,7 @@
 #include "ash/glanceables/common/glanceables_error_message_view.h"
 #include "ash/style/counter_expand_button.h"
 #include "base/functional/callback_forward.h"
+#include "ui/base/models/combobox_model.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -16,6 +17,7 @@
 
 namespace ash {
 
+class Combobox;
 class GlanceablesContentsScrollView;
 class GlanceablesListFooterView;
 class GlanceablesProgressBarView;
@@ -43,7 +45,9 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
                                       bool expand_by_overscroll) = 0;
   };
 
-  explicit GlanceablesTimeManagementBubbleView(Context context);
+  GlanceablesTimeManagementBubbleView(
+      Context context,
+      std::unique_ptr<ui::ComboboxModel> combobox_model);
   GlanceablesTimeManagementBubbleView(
       const GlanceablesTimeManagementBubbleView&) = delete;
   GlanceablesTimeManagementBubbleView& operator=(
@@ -137,8 +141,17 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
   // Handles press on the "See all" button in `GlanceablesListFooterView`.
   virtual void OnFooterButtonPressed() = 0;
 
+  // Called when the selected list changed in `combobox_view_`.
+  virtual void SelectedListChanged() = 0;
+
   // Updates the interior margin according to the current view state.
   void UpdateInteriorMargin();
+
+  // Creates and initializes `combobox_view_`.
+  void CreateComboBoxView();
+
+  // Returns the index that `combobox_view_` is currently selected.
+  size_t GetComboboxSelectedIndex() const;
 
   void SetUpResizeThroughputTracker(const std::string& histogram_name);
 
@@ -149,6 +162,7 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
                         GlanceablesErrorMessageView::ButtonActionType type);
 
   views::FlexLayoutView* header_view() { return header_view_; }
+  Combobox* combobox_view() { return combobox_view_; }
   GlanceablesExpandButton* expand_button() { return expand_button_; }
   GlanceablesProgressBarView* progress_bar() { return progress_bar_; }
   GlanceablesContentsScrollView* content_scroll_view() {
@@ -157,6 +171,8 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
   views::View* items_container_view() { return items_container_view_; }
   GlanceablesListFooterView* list_footer_view() { return list_footer_view_; }
   GlanceablesErrorMessageView* error_message() { return error_message_; }
+
+  ui::ComboboxModel* combobox_model() { return combobox_model_.get(); }
 
   // Whether the view is expanded and showing the contents in contents scroll
   // view.
@@ -176,11 +192,15 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
 
   // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView> header_view_ = nullptr;
+  raw_ptr<Combobox> combobox_view_ = nullptr;
   raw_ptr<GlanceablesExpandButton> expand_button_ = nullptr;
   raw_ptr<GlanceablesProgressBarView> progress_bar_ = nullptr;
   raw_ptr<GlanceablesContentsScrollView> content_scroll_view_ = nullptr;
   raw_ptr<views::View> items_container_view_ = nullptr;
   raw_ptr<GlanceablesListFooterView> list_footer_view_ = nullptr;
+
+  // The model for `combobox_view_`.
+  const std::unique_ptr<ui::ComboboxModel> combobox_model_;
 
   // Measure animation smoothness metrics for `resize_animation_`.
   std::optional<ui::ThroughputTracker> resize_throughput_tracker_;
