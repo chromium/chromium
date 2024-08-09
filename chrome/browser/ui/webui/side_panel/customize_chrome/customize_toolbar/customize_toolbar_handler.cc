@@ -317,12 +317,8 @@ void CustomizeToolbarHandler::ResetToDefault() {
   model_->ResetToDefault();
 }
 
-void CustomizeToolbarHandler::OnActionAdded(const actions::ActionId& id) {
-  OnActionPinnedChanged(id, true);
-}
-
-void CustomizeToolbarHandler::OnActionRemoved(const actions::ActionId& id) {
-  OnActionPinnedChanged(id, false);
+void CustomizeToolbarHandler::OnActionsChanged() {
+  client_->NotifyActionsUpdated();
 }
 
 void CustomizeToolbarHandler::OnActionPinnedChanged(actions::ActionId id,

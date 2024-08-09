@@ -352,21 +352,14 @@ views::View::DropCallback PinnedToolbarActionsContainer::GetDropCallback(
                         std::move(cleanup));
 }
 
-void PinnedToolbarActionsContainer::OnActionAdded(const actions::ActionId& id) {
-  RecordPinnedActionsCount(model_->PinnedActionIds().size());
-  drop_weak_ptr_factory_.InvalidateWeakPtrs();
-}
-
-void PinnedToolbarActionsContainer::OnActionRemoved(
+void PinnedToolbarActionsContainer::OnActionAddedLocally(
     const actions::ActionId& id) {
   RecordPinnedActionsCount(model_->PinnedActionIds().size());
-  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void PinnedToolbarActionsContainer::OnActionMoved(const actions::ActionId& id,
-                                                  int from_index,
-                                                  int to_index) {
-  drop_weak_ptr_factory_.InvalidateWeakPtrs();
+void PinnedToolbarActionsContainer::OnActionRemovedLocally(
+    const actions::ActionId& id) {
+  RecordPinnedActionsCount(model_->PinnedActionIds().size());
 }
 
 void PinnedToolbarActionsContainer::OnActionsChanged() {
