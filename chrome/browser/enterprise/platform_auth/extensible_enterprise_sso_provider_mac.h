@@ -4,6 +4,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_EXTENSIBLE_ENTERPRISE_SSO_PROVIDER_MAC_H_
 #define CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_EXTENSIBLE_ENTERPRISE_SSO_PROVIDER_MAC_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider.h"
 #include "url/gurl.h"
 
@@ -15,7 +16,8 @@ namespace enterprise_auth {
 // SSO extensions installed on the device.
 class ExtensibleEnterpriseSSOProvider : public PlatformAuthProvider {
  public:
-  ExtensibleEnterpriseSSOProvider() = default;
+  ExtensibleEnterpriseSSOProvider();
+  ~ExtensibleEnterpriseSSOProvider() override;
   ExtensibleEnterpriseSSOProvider(const ExtensibleEnterpriseSSOProvider&) =
       delete;
   ExtensibleEnterpriseSSOProvider& operator=(
@@ -26,6 +28,9 @@ class ExtensibleEnterpriseSSOProvider : public PlatformAuthProvider {
   void FetchOrigins(FetchOriginsCallback on_fetch_complete) override;
   void GetData(const GURL& url,
                PlatformAuthProviderManager::GetDataCallback callback) override;
+
+ private:
+  base::WeakPtrFactory<ExtensibleEnterpriseSSOProvider> weak_factory_{this};
 };
 
 }  // namespace enterprise_auth
