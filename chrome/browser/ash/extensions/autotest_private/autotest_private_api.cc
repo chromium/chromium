@@ -5932,10 +5932,15 @@ void AutotestPrivateStopSmoothnessTrackingFunction::OnReportData(
 
   timeout_timer_.AbandonAndStop();
 
-  std::vector<double> jank_durations;  // In milliseconds.
-  jank_durations.reserve(frame_data.jank_durations.size());
-  for (base::TimeDelta duration : frame_data.jank_durations) {
-    jank_durations.push_back(duration.InMillisecondsF());
+  std::vector<int> jank_timestamps;  // In milliseconds.
+  std::vector<int> jank_durations;   // In milliseconds.
+  jank_timestamps.reserve(frame_data.janks.size());
+  jank_durations.reserve(frame_data.janks.size());
+
+  for (auto jank : frame_data.janks) {
+    jank_timestamps.emplace_back(
+        (jank.start_time - base::TimeTicks()).InMilliseconds());
+    jank_durations.emplace_back(jank.duration.InMilliseconds());
   }
 
   api::autotest_private::DisplaySmoothnessData result_data;
@@ -5944,6 +5949,7 @@ void AutotestPrivateStopSmoothnessTrackingFunction::OnReportData(
       frame_data.frames_expected_v3 - frame_data.frames_dropped_v3;
   result_data.jank_count = frame_data.jank_count_v3;
   result_data.throughput = std::move(throughput);
+  result_data.jank_timestamps = std::move(jank_timestamps);
   result_data.jank_durations = std::move(jank_durations);
 
   Respond(ArgumentList(
