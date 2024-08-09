@@ -10,9 +10,7 @@
 
 namespace system_media_controls::internal {
 
-RemoteCommandCenterDelegate::RemoteCommandCenterDelegate(
-    SystemMediaControls* system_media_controls)
-    : system_media_controls_(system_media_controls) {
+RemoteCommandCenterDelegate::RemoteCommandCenterDelegate() {
   remote_command_center_delegate_cocoa_ =
       [[RemoteCommandCenterDelegateCocoa alloc] initWithDelegate:this];
 }
@@ -24,16 +22,6 @@ RemoteCommandCenterDelegate::~RemoteCommandCenterDelegate() {
   SetIsPlayPauseEnabled(false);
   SetIsStopEnabled(false);
   SetIsSeekToEnabled(false);
-}
-
-void RemoteCommandCenterDelegate::AddObserver(
-    SystemMediaControlsObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void RemoteCommandCenterDelegate::RemoveObserver(
-    SystemMediaControlsObserver* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 void RemoteCommandCenterDelegate::SetIsNextEnabled(bool value) {
@@ -75,44 +63,48 @@ void RemoteCommandCenterDelegate::SetIsSeekToEnabled(bool value) {
 
 void RemoteCommandCenterDelegate::OnNext() {
   DCHECK(enabled_commands_.contains(Command::kNextTrack));
-  for (auto& observer : observers_)
-    observer.OnNext(system_media_controls_);
+  observer_remote_->OnNext();
 }
 
 void RemoteCommandCenterDelegate::OnPrevious() {
   DCHECK(enabled_commands_.contains(Command::kPreviousTrack));
-  for (auto& observer : observers_)
-    observer.OnPrevious(system_media_controls_);
+  observer_remote_->OnPrevious();
 }
 
 void RemoteCommandCenterDelegate::OnPlay() {
   DCHECK(enabled_commands_.contains(Command::kPlayPause));
-  for (auto& observer : observers_)
-    observer.OnPlay(system_media_controls_);
+  observer_remote_->OnPlay();
 }
 
 void RemoteCommandCenterDelegate::OnPause() {
   DCHECK(enabled_commands_.contains(Command::kPlayPause));
-  for (auto& observer : observers_)
-    observer.OnPause(system_media_controls_);
+  observer_remote_->OnPause();
 }
 
 void RemoteCommandCenterDelegate::OnPlayPause() {
   DCHECK(enabled_commands_.contains(Command::kPlayPause));
-  for (auto& observer : observers_)
-    observer.OnPlayPause(system_media_controls_);
+  observer_remote_->OnPlayPause();
 }
 
 void RemoteCommandCenterDelegate::OnStop() {
   DCHECK(enabled_commands_.contains(Command::kStop));
-  for (auto& observer : observers_)
-    observer.OnStop(system_media_controls_);
+  observer_remote_->OnStop();
 }
 
 void RemoteCommandCenterDelegate::OnSeekTo(const base::TimeDelta& time) {
   DCHECK(enabled_commands_.contains(Command::kSeekTo));
-  for (auto& observer : observers_)
-    observer.OnSeekTo(system_media_controls_, time);
+  observer_remote_->OnSeekTo(time);
+}
+
+void RemoteCommandCenterDelegate::BindObserverRemote(
+    mojo::PendingRemote<mojom::SystemMediaControlsObserver> remote) {
+  if (observer_remote_.is_bound()) {
+    observer_remote_.reset();
+  }
+  observer_remote_.Bind(std::move(remote));
+
+  DCHECK(observer_remote_.is_bound());
+  DCHECK(observer_remote_.is_connected());
 }
 
 bool RemoteCommandCenterDelegate::ShouldSetCommandEnabled(Command command,
@@ -126,6 +118,10 @@ bool RemoteCommandCenterDelegate::ShouldSetCommandEnabled(Command command,
     enabled_commands_.erase(command);
 
   return true;
+}
+
+void RemoteCommandCenterDelegate::OnBridgeCreatedForTesting() {
+  observer_remote_->OnBridgeCreatedForTesting();
 }
 
 }  // namespace system_media_controls::internal

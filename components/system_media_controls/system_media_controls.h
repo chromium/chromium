@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControls {
   static std::unique_ptr<SystemMediaControls> Create(
       remote_cocoa::ApplicationHost* application_host);
 #else
-  // |window| used by Windows OS for web app (dPWA) connections.
+  // `window` used by Windows OS for web app (dPWA) connections.
   static std::unique_ptr<SystemMediaControls> Create(
       const std::string& product_name,
       int window = -1);
@@ -76,6 +76,8 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControls {
   static void SetVisibilityChangedCallbackForTesting(
       base::RepeatingCallback<void(bool)>*);
   virtual bool GetVisibilityForTesting() const = 0;
+  virtual void SetOnBridgeCreatedCallbackForTesting(
+      base::RepeatingCallback<void()>) {}
 };
 
 }  // namespace system_media_controls

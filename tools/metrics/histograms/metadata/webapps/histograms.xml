@@ -1147,7 +1147,7 @@ chromium-metrics-reviews@google.com.
     enum="WebAppSystemMediaControlsEvent" expires_after="2025-09-10">
   <owner>dmurph@chromium.org</owner>
   <owner>stahon@microsoft.com</owner>
-  <owner>stemiel@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
   <summary>
     Records events when Progressive Web Apps (PWAs) play audio as well as when
     PWA specific SystemMediaControls are interacted with in the operating

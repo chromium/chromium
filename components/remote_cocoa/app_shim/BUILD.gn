@@ -75,6 +75,7 @@ component("app_shim") {
     "//base:i18n",
     "//components/crash/core/common",
     "//components/remote_cocoa/common:mojo",
+    "//components/system_media_controls",
     "//mojo/public/cpp/bindings",
     "//net",
     "//ui/accelerated_widget_mac",

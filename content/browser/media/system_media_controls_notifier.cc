@@ -59,14 +59,14 @@ SystemMediaControlsNotifier::SystemMediaControlsNotifier(
       controller_manager_remote.BindNewPipeAndPassReceiver());
 
   if (request_id == base::UnguessableToken::Null()) {
-    // Null ID for all scenarios where kWebAppSystemMediaControlsWin is not
-    // supported. ie. Mac, Linux, Windows with the feature flag off.
+    // Null ID for all scenarios where kWebAppSystemMediaControls is not
+    // supported. ie. Linux always, and Mac/Windows when the feature flag off.
     // Create a media controller that follows the active session for this case.
     controller_manager_remote->CreateActiveMediaController(
         media_controller_remote_.BindNewPipeAndPassReceiver());
   } else {
     // Create a media controller tied to |request_id| when
-    // kWebAppSystemMediaControlsWin is enabled (on Windows OS).
+    // kWebAppSystemMediaControls is enabled (on Windows or macOS).
     controller_manager_remote->CreateMediaControllerForSession(
         media_controller_remote_.BindNewPipeAndPassReceiver(), request_id);
   }

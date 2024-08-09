@@ -1,6 +1,7 @@
 # Never include ui/views from here!
 include_rules = [
   "+components/crash/core/common/crash_key.h",
+  "+components/system_media_controls",
   "+components/viz/common",
   "+mojo/public/cpp/bindings",
   "+mojo/public/cpp/test_support",

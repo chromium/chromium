@@ -733,6 +733,8 @@ static_library("test_support") {
       "../browser/renderer_host/test_render_widget_host_view_mac_factory.h",
       "../browser/renderer_host/test_render_widget_host_view_mac_factory.mm",
       "../public/test/browser_test_utils_mac.mm",
+      "../public/test/system_media_controls_bridge_test_utils.cc",
+      "../public/test/system_media_controls_bridge_test_utils.h",
       "../public/test/text_input_test_utils_mac.mm",
     ]
     deps += [
