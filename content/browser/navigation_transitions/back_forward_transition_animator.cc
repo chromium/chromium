@@ -694,6 +694,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // `navigation_state_` to `NavigationState::kCancelledBeforeStart`.
 
       CHECK(navigation_state_ == NavigationState::kNotStarted ||
+            navigation_state_ == NavigationState::kBeforeUnloadDispatched ||
             navigation_state_ == NavigationState::kCancelled ||
             navigation_state_ == NavigationState::kCancelledBeforeStart)
           << ToString(navigation_state_);
@@ -729,9 +730,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       break;
     }
     case State::kWaitingForBeforeUnloadResponse:
-      NOTREACHED_IN_MIGRATION()
-          << "The start of the second navigation will always cancel the "
-             "navigation that's waiting for the renderer's BeforeUnload ack.";
+      skip_all_animations = true;
       break;
     case State::kAnimationFinished:
     case State::kAnimationAborted:

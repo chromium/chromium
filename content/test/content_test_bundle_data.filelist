@@ -6019,6 +6019,7 @@ data/background_sync/test.html
 data/battery_monitor/battery_status_event_listener_test.html
 data/battery_monitor/battery_status_manual_test.html
 data/battery_monitor/battery_status_promise_resolution_test.html
+data/before_unload_same_doc_nav.html
 data/blank.jpg
 data/blob_storage/blob_creation_and_slicing.html
 data/blob_storage/common.js

@@ -1841,6 +1841,19 @@ void InjectBeforeUnload(ToRenderFrameHost adapter) {
   ASSERT_TRUE(ExecJs(adapter, kScript, EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
+void AddUserActivationForBeforeUnload(RenderFrameHostImpl* frame) {
+  // Set the sticky user activation and let the bit propagate from renderer to
+  // the browser.
+  BrowserUserActivationWaiter wait_for_expected_user_activation(
+      frame, blink::mojom::UserActivationNotificationType::kTest);
+  frame->GetAssociatedLocalFrame()->NotifyUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest);
+  wait_for_expected_user_activation.Wait();
+  ASSERT_TRUE(frame->ShouldDispatchBeforeUnload(
+      /*check_subframes_only=*/false));
+  ASSERT_TRUE(frame->HasStickyUserActivation());
+}
+
 // Inject a BeforeUnload handler into `adapter`, and maybe set the stick user
 // activation.
 void InjectBeforeUnloadAndSetStickyUserActivation(
@@ -1850,21 +1863,12 @@ void InjectBeforeUnloadAndSetStickyUserActivation(
 
   auto* frame = static_cast<RenderFrameHostImpl*>(adapter.render_frame_host());
 
-  if (!set_sticky_user_activation) {
+  if (set_sticky_user_activation) {
+    AddUserActivationForBeforeUnload(frame);
+  } else {
     ASSERT_TRUE(
         frame->ShouldDispatchBeforeUnload(/*check_subframes_only=*/false));
     ASSERT_FALSE(frame->HasStickyUserActivation());
-  } else {
-    // Set the sticky user activation and let the bit propagate from renderer to
-    // the browser.
-    BrowserUserActivationWaiter wait_for_expected_user_activation(
-        frame, blink::mojom::UserActivationNotificationType::kInteraction);
-    SimulateMouseClick(WebContents::FromRenderFrameHost(frame), 0,
-                       blink::WebPointerProperties::Button::kLeft);
-    wait_for_expected_user_activation.Wait();
-    ASSERT_TRUE(frame->ShouldDispatchBeforeUnload(
-        /*check_subframes_only=*/false));
-    ASSERT_TRUE(frame->HasStickyUserActivation());
   }
 }
 
@@ -2138,6 +2142,39 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 
   ASSERT_EQ(web_contents()->GetController().GetEntryCount(), 3);
   ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntryIndex(), 2);
+}
+
+// Test the case where script commits a same-document navigation in beforeunload
+// while the cancel animation is playing.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTest,
+    BeforeUnload_SameDocumentNavigation_DuringCancelAnimation) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  ASSERT_TRUE(NavigateToURL(
+      web_contents(),
+      embedded_test_server()->GetURL("/before_unload_same_doc_nav.html")));
+  AddUserActivationForBeforeUnload(web_contents()->GetPrimaryMainFrame());
+
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  GetAnimatorForTesting()->SetFinishedStateToAnimationAborted();
+  base::test::TestFuture<void> destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.GetCallback());
+  GetAnimatorForTesting()->PauseAnimationAtDisplayingCancelAnimation();
+
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+  EXPECT_TRUE(web_contents()->HasUncommittedNavigationInPrimaryMainFrame());
+
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_EQ(
+      web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
+      embedded_test_server()->GetURL("/before_unload_same_doc_nav.html#foo"));
 }
 
 namespace {
