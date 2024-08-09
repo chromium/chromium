@@ -5807,6 +5807,7 @@ static_library("ui") {
       deps += [
         "//chrome/browser/ash/system_web_apps/types",
         "//chrome/browser/ui/ash/system_web_apps",
+        "//chromeos/ash/components/nonclosable_app_ui",
       ]
 
       # Any circular includes must depend on the target

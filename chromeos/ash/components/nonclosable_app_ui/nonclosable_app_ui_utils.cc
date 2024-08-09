@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/nonclosable_app_ui_utils.h"
+#include "chromeos/ash/components/nonclosable_app_ui/nonclosable_app_ui_utils.h"
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/system/toast_data.h"

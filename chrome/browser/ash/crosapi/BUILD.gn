@@ -420,6 +420,7 @@ static_library("crosapi") {
     "//chromeos/ash/components/nearby/common/connections_manager",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network/portal_detector",
+    "//chromeos/ash/components/nonclosable_app_ui",
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/components/report:utils",
     "//chromeos/ash/components/settings",

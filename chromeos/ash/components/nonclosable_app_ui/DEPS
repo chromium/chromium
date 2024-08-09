@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "nonclosable_app_ui_utils\.cc": [
+    "+ash/public/cpp",
+    "+ui/base",
+  ]
+}

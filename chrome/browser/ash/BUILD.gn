@@ -49,8 +49,6 @@ static_library("ash") {
     "locale_change_guard.h",
     "logging.cc",
     "logging.h",
-    "nonclosable_app_ui_utils.cc",
-    "nonclosable_app_ui_utils.h",
     "note_taking/note_taking_controller_client.cc",
     "note_taking/note_taking_controller_client.h",
     "note_taking/note_taking_helper.cc",
