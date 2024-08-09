@@ -21,6 +21,7 @@ import xml.etree.ElementTree as ElementTree
 
 from dataclasses import dataclass
 from xml.dom import minidom
+from functools import partial
 from enum import Enum, auto
 from google.protobuf import text_format
 from pathlib import Path
@@ -1438,6 +1439,28 @@ class Auditor:
       return True
     return any(r.match(posix_path) for r in safe_list[exception_type])
 
+  def process_file(self, relative_path: Path, compdb_files: Set[str],
+                   path_filters: List[str]) -> List[Annotation]:
+    absolute_path = SRC_DIR / relative_path
+
+    # Skip files based on compdb and path_filters. Java files aren't in
+    # compile_commands.json, so don't check those.
+    if (absolute_path.suffix != ".java" and compdb_files is not None
+        and str(absolute_path) not in compdb_files):
+      return None
+    if (path_filters
+        and not self._path_filters_match(path_filters, relative_path)):
+      return None
+
+    # Pre-filter files based on their content, using a fast regex. When files
+    # are already in memory from the disk cache, this saves ~10 seconds.
+    file_contents = absolute_path.read_text(encoding="utf-8")
+    if (not self.no_filtering
+        and not extractor.may_contain_annotations(file_contents)):
+      return None
+
+    return extractor.extract_annotations(absolute_path, file_contents)
+
   def run_extractor(self, build_path: Path, path_filters: List[str],
                     skip_compdb: bool) -> List[extractor.Annotation]:
     """Run the extractor on the codebase.
@@ -1487,30 +1510,19 @@ class Auditor:
                   "repository.".format(suffixes))
 
     all_annotations = []
+    num_workers = 5
 
-    for relative_path in files:
-      absolute_path = SRC_DIR / relative_path
+    with concurrent.futures.ProcessPoolExecutor(
+        max_workers=num_workers) as executor:
+      process_files_with_args = partial(self.process_file,
+                                        compdb_files=compdb_files,
+                                        path_filters=path_filters)
 
-      # Skip files based on compdb and path_filters. Java files aren't in
-      # compile_commands.json, so don't check those.
-      if (absolute_path.suffix != ".java" and compdb_files is not None
-          and str(absolute_path) not in compdb_files):
-        continue
-      if (path_filters
-          and not self._path_filters_match(path_filters, relative_path)):
-        continue
-
-      # Pre-filter files based on their content, using a fast regex. When files
-      # are already in memory from the disk cache, this saves ~10 seconds.
-      if (not self.no_filtering
-          and not extractor.may_contain_annotations(absolute_path)):
-        continue
-
-      # Extract annotations from the .cc/.mm/.java file. This will throw a
-      # SourceCodeParsingError if the format is invalid.
-      annotations = extractor.extract_annotations(absolute_path)
-      if annotations:
-        all_annotations.extend(annotations)
+      for annotations in executor.map(process_files_with_args,
+                                      files,
+                                      chunksize=len(files) // num_workers):
+        if annotations:
+          all_annotations.extend(annotations)
 
     return all_annotations
 
