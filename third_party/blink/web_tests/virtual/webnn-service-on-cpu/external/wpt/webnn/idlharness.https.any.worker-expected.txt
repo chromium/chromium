@@ -1,66 +1,6 @@
 This is a testharness.js-based test.
-Found 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] MLActivation interface: existence and properties of interface object
-  assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
-[FAIL] MLActivation interface object length
-  assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
-[FAIL] MLActivation interface object name
-  assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
-[FAIL] MLActivation interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
-[FAIL] MLActivation interface: existence and properties of interface prototype object's "constructor" property
-  assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
-[FAIL] MLActivation interface: existence and properties of interface prototype object's @@unscopables property
-  assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
-[FAIL] MLGraphBuilder interface: operation argMin(MLOperand, optional MLArgMinMaxOptions)
-  assert_equals: property has wrong .length expected 1 but got 2
-[FAIL] MLGraphBuilder interface: operation argMax(MLOperand, optional MLArgMinMaxOptions)
-  assert_equals: property has wrong .length expected 1 but got 2
-[FAIL] MLGraphBuilder interface: operation elu(MLOperand, optional MLEluOptions)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation elu(optional MLEluOptions)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation gelu(MLOperand)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation gelu()
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation hardSigmoid(MLOperand, optional MLHardSigmoidOptions)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation hardSigmoid(optional MLHardSigmoidOptions)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation hardSwish(MLOperand)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation hardSwish()
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation leakyRelu(MLOperand, optional MLLeakyReluOptions)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation leakyRelu(optional MLLeakyReluOptions)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation linear(MLOperand, optional MLLinearOptions)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation linear(optional MLLinearOptions)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation relu(MLOperand)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation relu()
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation sigmoid(MLOperand)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation sigmoid()
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation softmax(MLOperand, unsigned long)
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] MLGraphBuilder interface: operation softmax(MLOperand, unsigned long, optional MLOperatorOptions)
   assert_equals: property has wrong .length expected 2 but got 1
-[FAIL] MLGraphBuilder interface: operation softplus(MLOperand)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation softplus()
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation softsign(MLOperand)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation softsign()
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation tanh(MLOperand)
-  assert_equals: property has wrong .length expected 0 but got 1
-[FAIL] MLGraphBuilder interface: operation tanh()
-  assert_equals: property has wrong .length expected 0 but got 1
 Harness: the test ran to completion.
 

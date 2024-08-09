@@ -2648,6 +2648,9 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win11 ] virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/private-aggregation-disallowed-fields.sub.https.html [ Timeout ]
+[ Win10.20h2 ] virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/private-aggregation-disallowed-fields.sub.https.html [ Timeout ]
+[ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/concat.https.any.worker.html?npu [ Failure Timeout ]
 crbug.com/358456309 [ Mac15-arm64 ] external/wpt/webrtc-priority/RTCPeerConnection-ondatachannel.html [ Timeout ]
 crbug.com/358456309 [ Mac15 ] external/wpt/webrtc-priority/RTCPeerConnection-ondatachannel.html [ Timeout ]
 crbug.com/358192562 [ Win11-arm64 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/compute-explicit-name-direct.tentative.html [ Failure ]

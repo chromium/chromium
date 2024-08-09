@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Rendering of mpadded should only be affected by in-flow children
-  compareLayout is not defined
-Harness: the test ran to completion.
-
