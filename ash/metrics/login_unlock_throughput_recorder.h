@@ -177,7 +177,9 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
 
  private:
   void OnCompositorAnimationFinished(
-      const cc::FrameSequenceMetrics::CustomReportData& data);
+      const cc::FrameSequenceMetrics::CustomReportData& data,
+      base::TimeTicks first_animation_started_at,
+      base::TimeTicks last_animation_finished_at);
 
   void ScheduleWaitForShelfAnimationEndIfNeeded();
 

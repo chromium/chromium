@@ -374,13 +374,14 @@ void LoginUnlockThroughputRecorder::
 }
 
 void LoginUnlockThroughputRecorder::OnCompositorAnimationFinished(
-    const cc::FrameSequenceMetrics::CustomReportData& data) {
-  auto now = base::TimeTicks::Now();
+    const cc::FrameSequenceMetrics::CustomReportData& data,
+    base::TimeTicks first_animation_started_at,
+    base::TimeTicks last_animation_finished_at) {
   for (auto& obs : observers_) {
-    obs.OnCompositorAnimationFinished(now, data);
+    obs.OnCompositorAnimationFinished(last_animation_finished_at, data);
   }
 
-  time_compositor_animation_finished_ = now;
+  time_compositor_animation_finished_ = last_animation_finished_at;
   MaybeReportLoginFinished();
 }
 

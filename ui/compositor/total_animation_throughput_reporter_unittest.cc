@@ -100,6 +100,18 @@ class TestCompositorMonitor : public ui::CompositorObserver {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
+TotalAnimationThroughputReporter::ReportOnceCallback IgnoreTimestamps(
+    ThroughputReportChecker::ReportOnceCallback original) {
+  return base::BindOnce(
+      [](ThroughputReportChecker::ReportOnceCallback original,
+         const cc::FrameSequenceMetrics::CustomReportData& data,
+         base::TimeTicks first_animation_started_at,
+         base::TimeTicks last_animation_finished_at) {
+        std::move(original).Run(data);
+      },
+      std::move(original));
+}
+
 }  // namespace
 
 using TotalAnimationThroughputReporterTest =
@@ -367,7 +379,8 @@ TEST_F(TotalAnimationThroughputReporterTest, OnceReporter) {
 
   ThroughputReportChecker checker(this);
   TotalAnimationThroughputReporter reporter(
-      compositor(), checker.once_callback(), /*should_delete=*/false);
+      compositor(), IgnoreTimestamps(checker.once_callback()),
+      /*should_delete=*/false);
   auto scoped_blocker = reporter.NewScopedBlocker();
 
   // Make sure the TotalAnimationThroughputReporter removes itself
@@ -435,9 +448,8 @@ TEST_F(TotalAnimationThroughputReporterTest, OnceReporterShouldDelete) {
   TotalAnimationThroughputReporter* reporter = new DeleteTestReporter(
       compositor(),
       base::BindLambdaForTesting(
-          [&](const cc::FrameSequenceMetrics::CustomReportData&) {
-            run_loop.Quit();
-          }),
+          [&](const cc::FrameSequenceMetrics::CustomReportData&,
+              base::TimeTicks, base::TimeTicks) { run_loop.Quit(); }),
       &deleted);
   auto scoped_blocker = reporter->NewScopedBlocker();
 
@@ -486,8 +498,9 @@ TEST_F(TotalAnimationThroughputReporterTest, ThreadCheck) {
             std::move(once_callback).Run(data);
           });
 
-  TotalAnimationThroughputReporter reporter(c, std::move(callback),
-                                            /*should_delete=*/false);
+  TotalAnimationThroughputReporter reporter(
+      c, IgnoreTimestamps(std::move(callback)),
+      /*should_delete=*/false);
   auto scoped_blocker = reporter.NewScopedBlocker();
 
   // Report data for animation of opacity goes to 1.
