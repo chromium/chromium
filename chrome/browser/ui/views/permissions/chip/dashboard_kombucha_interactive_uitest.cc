@@ -513,3 +513,27 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       // Blocked indicator disappears by itself after a short delay.
       WaitForHide(PermissionChipView::kIndicatorChipElementId));
 }
+
+// Make sure PageInfo does not re-open on an indicator click.
+IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
+                       SuppressPageInfoReopen) {
+  SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW);
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      EnsureNotPresent(PermissionChipView::kIndicatorChipElementId),
+      ExecuteJs(kWebContentsElementId, "requestCamera"),
+      WaitForShow(PermissionChipView::kIndicatorChipElementId), FlushEvents(),
+      // Clicking on LHS indicator opens PageInfo, the second click should hide
+      // PageInfo.
+      PressButton(PermissionChipView::kIndicatorChipElementId),
+      WaitForShow(PageInfoMainView::kPermissionsElementId), FlushEvents(),
+      PressButton(PermissionChipView::kIndicatorChipElementId),
+      WaitForHide(PageInfoMainView::kPermissionsElementId), FlushEvents(),
+      // Repeat again to make sure all flags are reset and can be reused.
+      PressButton(PermissionChipView::kIndicatorChipElementId),
+      WaitForShow(PageInfoMainView::kPermissionsElementId), FlushEvents(),
+      PressButton(PermissionChipView::kIndicatorChipElementId),
+      WaitForHide(PageInfoMainView::kPermissionsElementId));
+}

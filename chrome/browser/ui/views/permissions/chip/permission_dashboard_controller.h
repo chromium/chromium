@@ -48,6 +48,7 @@ class PermissionDashboardController : public PermissionChipView::Observer {
   void OnChipVisibilityChanged(bool is_visible) override;
   void OnExpandAnimationEnded() override;
   void OnCollapseAnimationEnded() override;
+  void OnMousePressed() override;
 
   bool is_verbose() const { return is_verbose_; }
 
@@ -98,6 +99,13 @@ class PermissionDashboardController : public PermissionChipView::Observer {
   bool blocked_on_system_level_ = false;
   content::GlobalRenderFrameHostId main_frame_id_;
   views::ViewTracker page_info_bubble_tracker_;
+
+  // This is used to check if the PageInfo bubble was showing in the last mouse
+  // press event. If this is true then PageInfo bubble should not be shown
+  // again. This flag is necessary because the bubble gets dismissed before the
+  // button handles the mouse release event.
+  bool should_suppress_reopening_page_info_ = false;
+
   base::ScopedObservation<PermissionChipView, PermissionChipView::Observer>
       observation_{this};
   base::WeakPtrFactory<PermissionDashboardController> weak_factory_{this};

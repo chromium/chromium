@@ -125,6 +125,13 @@ gfx::Size PermissionChipView::CalculatePreferredSize(
                               .height());
 }
 
+bool PermissionChipView::OnMousePressed(const ui::MouseEvent& event) {
+  for (Observer& observer : observers_) {
+    observer.OnMousePressed();
+  }
+  return MdTextButton::OnMousePressed(event);
+}
+
 void PermissionChipView::OnThemeChanged() {
   MdTextButton::OnThemeChanged();
   UpdateIconAndColors();

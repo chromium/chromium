@@ -40,6 +40,7 @@ class PermissionChipView : public views::MdTextButton {
     virtual void OnChipVisibilityChanged(bool is_visible) {}
     virtual void OnExpandAnimationEnded() {}
     virtual void OnCollapseAnimationEnded() {}
+    virtual void OnMousePressed() {}
   };
 
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
@@ -59,6 +60,7 @@ class PermissionChipView : public views::MdTextButton {
   // views::MdTextButton:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnThemeChanged() override;
   void UpdateBackgroundColor() override;
 
