@@ -2200,7 +2200,7 @@ BASE_FEATURE(kSearchCustomizableShortcutsInLauncher,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Orca for ARC apps.
-BASE_FEATURE(kOrcaArc, "OrcaArc", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOrcaArc, "OrcaArc", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables elaborate for Orca.
 BASE_FEATURE(kOrcaElaborate, "OrcaElaborate", base::FEATURE_ENABLED_BY_DEFAULT);
