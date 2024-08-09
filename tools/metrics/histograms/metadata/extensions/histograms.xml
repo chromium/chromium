@@ -144,9 +144,7 @@ This is emitted for two scenarios when a worker may be unregistered:
                to prepare for the updated version's worker to be registered."/>
   <variant name="_DeactivateExtension"
       summary="This metric is only emitted in the #2 (deactivate extension)
-               scenario when the worker is the current worker activation.
-               This means the worker was not deactivated by the
-               ServiceWorkerTaskQueue when this was emitted."/>
+               scenario when the worker is the current worker activation."/>
 </variants>
 
 <variants name="VerifiedFileType">
@@ -4767,7 +4765,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
-    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus{UnregistrationType}2"
+    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus{UnregistrationType}3"
     enum="ServiceWorkerStatusCode" expires_after="2025-03-25">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -4792,14 +4790,16 @@ This is emitted for two scenarios when a worker may be unregistered:
 
     {UnregistrationType}
 
-    Note: This metric was incremented Aug, 2024 since it did not emit if the
-    extension was deactivated (which was always true).
+    Note: This metric was incremented Aug, 2024 due to the #2 case no longer
+    emitting the not found error if there was no previous worker registered. The
+    logic for #2 does not check if a worker was previously registered before
+    attempting to unregister it so the error is not considered a failure.
   </summary>
   <token key="UnregistrationType" variants="UnregistrationType"/>
 </histogram>
 
 <histogram
-    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationState{UnregistrationType}"
+    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationState{UnregistrationType}2"
     enum="Boolean" expires_after="2025-01-15">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -4819,6 +4819,12 @@ This is emitted for two scenarios when a worker may be unregistered:
     #2 can occur independently outside of an extension update.
 
     {UnregistrationType}
+
+    Note: This metric was incremented Aug, 2024 due to the #2 case emitting true
+    if the error status is not found and there was no previous worker registered
+    (instead of the previous false). The logic for #2 does not check if a worker
+    was previously registered before attempting to unregister it so the error is
+    considered an unregistration success.
   </summary>
   <token key="UnregistrationType" variants="UnregistrationType"/>
 </histogram>

@@ -313,6 +313,10 @@ class ServiceWorkerTaskQueue
   // attempted.
   bool ShouldRetryRegistrationRequest(base::UnguessableToken activation_token);
 
+  // Callbacks called when the worker is registered or unregistered,
+  // respectively. `worker_previously_successfully_registered` true indicates
+  // that when the unregistration request was made the task queue had a record
+  // of an existing worker registration.
   void DidRegisterServiceWorker(const SequencedContextId& context_id,
                                 RegistrationReason reason,
                                 base::Time start_time,
@@ -320,6 +324,7 @@ class ServiceWorkerTaskQueue
   void DidUnregisterServiceWorker(
       const ExtensionId& extension_id,
       const base::UnguessableToken& activation_token,
+      bool worker_previously_registered,
       blink::ServiceWorkerStatusCode status);
 
   void DidStartWorkerForScope(const SequencedContextId& context_id,

@@ -568,7 +568,7 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
   // TODO(lazyboy): Run orphaned tasks with nullptr ContextInfo.
   pending_tasks_map_.erase(context_id);
   worker_state_map_.erase(context_id);
-  worker_registered_.erase(context_id);
+  bool worker_previously_registered = worker_registered_.erase(context_id);
   // If an extension/worker is unloaded/disabled before the registration
   // callback then we might still have this record to delete.
   worker_reregistration_attempts_.erase(context_id.token);
@@ -590,7 +590,7 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
       blink::StorageKey::CreateFirstParty(extension->origin()),
       base::BindOnce(&ServiceWorkerTaskQueue::DidUnregisterServiceWorker,
                      weak_factory_.GetWeakPtr(), extension_id,
-                     *activation_token));
+                     *activation_token, worker_previously_registered));
 
   StopObserving(service_worker_context);
 }
@@ -779,16 +779,27 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
 void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
     const ExtensionId& extension_id,
     const base::UnguessableToken& activation_token,
+    bool worker_previously_registered,
     blink::ServiceWorkerStatusCode status) {
   // When unregistering the worker we should've already deactivated the
   // extension.
   CHECK(!IsCurrentActivation(extension_id, activation_token));
-  bool success = status == blink::ServiceWorkerStatusCode::kOk;
+
+  bool success = false;
+  if (status == blink::ServiceWorkerStatusCode::kOk) {
+    success = true;
+  } else if (status == blink::ServiceWorkerStatusCode::kErrorNotFound &&
+             !worker_previously_registered) {
+    // If worker was not successfully registered before then a not found error
+    // is expected.
+    success = true;
+  }
+
   base::UmaHistogramBoolean(
-      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState", success);
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState2", success);
   base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
-      "DeactivateExtension",
+      "DeactivateExtension2",
       success);
 
   // TODO(crbug.com/346732739): Handle this better than just logging an error
@@ -800,11 +811,11 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
     // LOG(ERROR) << "Failed to unregistering service worker for extension id: "
     //             << extension_id << " status was: " << (int)status;
     base::UmaHistogramEnumeration(
-        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus2",
+        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus3",
         status);
     base::UmaHistogramEnumeration(
         "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-        "DeactivateExtension2",
+        "DeactivateExtension3",
         status);
   }
 
