@@ -31,9 +31,6 @@ def __step_config(ctx, step_config):
         {
             "name": "typescript/ts_library",
             "command_prefix": "python3 ../../tools/typescript/ts_library.py",
-            "inputs": [
-                "tools/typescript/ts_library.py",
-            ],
             "indirect_inputs": {
                 "includes": [
                     "*.js",
@@ -53,9 +50,6 @@ def __step_config(ctx, step_config):
         {
             "name": "typescript/ts_definitions",
             "command_prefix": "python3 ../../tools/typescript/ts_definitions.py",
-            "inputs": [
-                "tools/typescript/ts_definitions.py",
-            ],
             "indirect_inputs": {
                 "includes": [
                     "*.ts",  # *.d.ts, *.css.ts, *.html.ts, etc
