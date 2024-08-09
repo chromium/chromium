@@ -7,8 +7,10 @@
 
 #include <map>
 #include <memory>
+#include <set>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
@@ -127,6 +129,21 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // streams before processing pending requests.
   void ProcessPendingRequestsInGroups();
 
+  // Returns true when HTTP/1.1 is required for `stream_key`.
+  bool RequiresHTTP11(const HttpStreamKey& stream_key);
+
+  // Returns true when QUIC can be used for `stream_key`.
+  bool CanUseQuic(const HttpStreamKey& stream_key,
+                  bool enable_ip_based_pooling,
+                  bool enable_alternative_services);
+
+  // Returns true when there is an existing QUIC session for `stream_key` and
+  // `quic_session_key`.
+  bool CanUseExistingQuicSession(const HttpStreamKey& stream_key,
+                                 const QuicSessionKey& quic_session_key,
+                                 bool enable_ip_based_pooling,
+                                 bool enable_alternative_services);
+
   Group& GetOrCreateGroupForTesting(const HttpStreamKey& stream_key);
 
   HttpNetworkSession* http_network_session() const {
@@ -156,6 +173,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   }
 
  private:
+  class PooledStreamRequestHelper;
+
   Group& GetOrCreateGroup(const HttpStreamKey& stream_key);
 
   // Searches for a group that has the highest priority pending request and
@@ -166,6 +185,14 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // Closes one idle stream from an arbitrary group. Returns true if it closed a
   // stream.
   bool CloseOneIdleStreamSocket();
+
+  std::unique_ptr<HttpStreamRequest> CreatePooledStreamRequest(
+      HttpStreamRequest::Delegate* delegate,
+      std::unique_ptr<HttpStream> http_stream,
+      NextProto negotiated_protocol,
+      const NetLogWithSource& net_log);
+
+  void OnPooledStreamRequestComplete(PooledStreamRequestHelper* helper);
 
   const raw_ptr<HttpNetworkSession> http_network_session_;
 
@@ -186,6 +213,10 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   size_t total_connecting_stream_count_ = 0;
 
   std::map<HttpStreamKey, std::unique_ptr<Group>> groups_;
+
+  std::set<std::unique_ptr<PooledStreamRequestHelper>,
+           base::UniquePtrComparator>
+      pooled_stream_request_helpers_;
 };
 
 }  // namespace net

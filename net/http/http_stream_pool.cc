@@ -12,21 +12,104 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/load_states.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/session_usage.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool_group.h"
+#include "net/http/http_stream_request.h"
 #include "net/log/net_log_with_source.h"
+#include "net/quic/quic_http_stream.h"
+#include "net/quic/quic_session_pool.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/spdy/spdy_http_stream.h"
 #include "net/spdy/spdy_session.h"
 #include "url/gurl.h"
 
 namespace net {
+
+// An implementation of HttpStreamRequest::Helper that is used to create a
+// request when the pool can immediately provide an HttpStream from existing
+// QUIC/SPDY sessions. This eliminates unnecessary creation/destruction of
+// Group/Job when QUIC/SPDY sessions are already available.
+class HttpStreamPool::PooledStreamRequestHelper
+    : public HttpStreamRequest::Helper {
+ public:
+  PooledStreamRequestHelper(HttpStreamPool* pool,
+                            std::unique_ptr<HttpStream> stream,
+                            NextProto negotiated_protocol)
+      : pool_(pool),
+        stream_(std::move(stream)),
+        negotiated_protocol_(negotiated_protocol) {}
+
+  PooledStreamRequestHelper(const PooledStreamRequestHelper&) = delete;
+  PooledStreamRequestHelper& operator=(const PooledStreamRequestHelper&) =
+      delete;
+
+  ~PooledStreamRequestHelper() override = default;
+
+  std::unique_ptr<HttpStreamRequest> CreateRequest(
+      HttpStreamRequest::Delegate* delegate,
+      const NetLogWithSource& net_log) {
+    CHECK(!delegate_);
+    CHECK(delegate);
+    delegate_ = delegate;
+
+    auto request = std::make_unique<HttpStreamRequest>(
+        this, /*websocket_handshake_stream_create_helper=*/nullptr, net_log,
+        HttpStreamRequest::StreamType::HTTP_STREAM);
+
+    request_ = request.get();
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PooledStreamRequestHelper::CallRequestComplete,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return request;
+  }
+
+  // HttpStreamRequest::Helper methods:
+  LoadState GetLoadState() const override { return LOAD_STATE_IDLE; }
+
+  void OnRequestComplete() override {
+    CHECK(request_);
+    CHECK(delegate_);
+    request_ = nullptr;
+    delegate_ = nullptr;
+    pool_->OnPooledStreamRequestComplete(this);
+    // `this` is deleted.
+  }
+
+  int RestartTunnelWithProxyAuth() override { NOTREACHED_NORETURN(); }
+
+  void SetPriority(RequestPriority priority) override { NOTREACHED_NORETURN(); }
+
+ private:
+  void CallRequestComplete() {
+    CHECK(request_);
+    CHECK(delegate_);
+    request_->Complete(negotiated_protocol_,
+                       ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON);
+    ProxyInfo proxy_info;
+    proxy_info.UseDirect();
+    delegate_->OnStreamReady(proxy_info, std::move(stream_));
+  }
+
+  const raw_ptr<HttpStreamPool> pool_;
+
+  std::unique_ptr<HttpStream> stream_;
+  NextProto negotiated_protocol_;
+
+  raw_ptr<HttpStreamRequest> request_;
+  raw_ptr<HttpStreamRequest::Delegate> delegate_;
+
+  base::WeakPtrFactory<PooledStreamRequestHelper> weak_ptr_factory_{this};
+};
 
 HttpStreamPool::HttpStreamPool(HttpNetworkSession* http_network_session,
                                bool cleanup_on_ip_address_change)
@@ -59,6 +142,34 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
     bool enable_alternative_services,
     quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
+  QuicSessionKey quic_session_key = stream_key.ToQuicSessionKey();
+  if (CanUseExistingQuicSession(stream_key, quic_session_key,
+                                enable_ip_based_pooling,
+                                enable_alternative_services)) {
+    QuicChromiumClientSession* quic_session =
+        http_network_session()->quic_session_pool()->FindExistingSession(
+            quic_session_key, stream_key.destination());
+    auto http_stream = std::make_unique<QuicHttpStream>(
+        quic_session->CreateHandle(stream_key.destination()),
+        quic_session->GetDnsAliasesForSessionKey(quic_session_key));
+    return CreatePooledStreamRequest(delegate, std::move(http_stream),
+                                     NextProto::kProtoQUIC, net_log);
+  }
+
+  SpdySessionKey spdy_session_key = stream_key.ToSpdySessionKey();
+  base::WeakPtr<SpdySession> spdy_session =
+      http_network_session()->spdy_session_pool()->FindAvailableSession(
+          spdy_session_key, enable_ip_based_pooling, /*is_websocket=*/false,
+          net_log);
+  if (spdy_session) {
+    auto http_stream = std::make_unique<SpdyHttpStream>(
+        spdy_session, net_log.source(),
+        http_network_session()->spdy_session_pool()->GetDnsAliasesForSessionKey(
+            spdy_session_key));
+    return CreatePooledStreamRequest(delegate, std::move(http_stream),
+                                     NextProto::kProtoHTTP2, net_log);
+  }
+
   return GetOrCreateGroup(stream_key)
       .RequestStream(delegate, priority, allowed_bad_certs,
                      enable_ip_based_pooling, enable_alternative_services,
@@ -70,6 +181,18 @@ int HttpStreamPool::Preconnect(const HttpStreamKey& stream_key,
                                quic::ParsedQuicVersion quic_version,
                                CompletionOnceCallback callback) {
   CHECK_GE(kMaxStreamSocketsPerGroup, num_streams);
+  QuicSessionKey quic_session_key = stream_key.ToQuicSessionKey();
+  if (CanUseExistingQuicSession(stream_key, quic_session_key,
+                                /*enable_ip_based_pooling=*/true,
+                                /*enable_alternative_services=*/true)) {
+    return OK;
+  }
+  SpdySessionKey spdy_session_key = stream_key.ToSpdySessionKey();
+  if (http_network_session()->spdy_session_pool()->HasAvailableSession(
+          spdy_session_key, /*is_websocket=*/false)) {
+    return OK;
+  }
+
   return GetOrCreateGroup(stream_key)
       .Preconnect(num_streams, quic_version, std::move(callback));
 }
@@ -163,6 +286,30 @@ void HttpStreamPool::ProcessPendingRequestsInGroups() {
   }
 }
 
+bool HttpStreamPool::RequiresHTTP11(const HttpStreamKey& stream_key) {
+  return http_network_session()->http_server_properties()->RequiresHTTP11(
+      stream_key.destination(), stream_key.network_anonymization_key());
+}
+
+bool HttpStreamPool::CanUseQuic(const HttpStreamKey& stream_key,
+                                bool enable_ip_based_pooling,
+                                bool enable_alternative_services) {
+  return enable_ip_based_pooling && enable_alternative_services &&
+         GURL::SchemeIsCryptographic(stream_key.destination().scheme()) &&
+         !RequiresHTTP11(stream_key);
+}
+
+bool HttpStreamPool::CanUseExistingQuicSession(
+    const HttpStreamKey& stream_key,
+    const QuicSessionKey& quic_session_key,
+    bool enable_ip_based_pooling,
+    bool enable_alternative_services) {
+  return CanUseQuic(stream_key, enable_ip_based_pooling,
+                    enable_alternative_services) &&
+         http_network_session()->quic_session_pool()->CanUseExistingSession(
+             quic_session_key, stream_key.destination());
+}
+
 HttpStreamPool::Group& HttpStreamPool::GetOrCreateGroupForTesting(
     const HttpStreamKey& stream_key) {
   return GetOrCreateGroup(stream_key);
@@ -210,6 +357,26 @@ bool HttpStreamPool::CloseOneIdleStreamSocket() {
     }
   }
   NOTREACHED_NORETURN();
+}
+
+std::unique_ptr<HttpStreamRequest> HttpStreamPool::CreatePooledStreamRequest(
+    HttpStreamRequest::Delegate* delegate,
+    std::unique_ptr<HttpStream> http_stream,
+    NextProto negotiated_protocol,
+    const NetLogWithSource& net_log) {
+  auto helper = std::make_unique<PooledStreamRequestHelper>(
+      this, std::move(http_stream), negotiated_protocol);
+  PooledStreamRequestHelper* raw_helper = helper.get();
+  pooled_stream_request_helpers_.emplace(std::move(helper));
+
+  return raw_helper->CreateRequest(delegate, net_log);
+}
+
+void HttpStreamPool::OnPooledStreamRequestComplete(
+    PooledStreamRequestHelper* helper) {
+  auto it = pooled_stream_request_helpers_.find(helper);
+  CHECK(it != pooled_stream_request_helpers_.end());
+  pooled_stream_request_helpers_.erase(it);
 }
 
 }  // namespace net

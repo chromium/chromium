@@ -147,6 +147,14 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
     bool enable_alternative_services,
     quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
+  // HttpStreamPool should check the existing QUIC/SPDY sessions before calling
+  // this method.
+  CHECK(!CanUseExistingQuicSession());
+  CHECK(!spdy_session_);
+  CHECK(!spdy_session_pool()->FindAvailableSession(
+      spdy_session_key(), enable_ip_based_pooling_,
+      /*is_websocket=*/false, net_log));
+
   auto entry = std::make_unique<RequestEntry>(this);
   std::unique_ptr<HttpStreamRequest> request =
       entry->CreateRequest(delegate, net_log);
@@ -169,29 +177,6 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
   }
 
   MaybeChangeServiceEndpointRequestPriority();
-
-  // Check if we already have SPDY/QUIC session. When found, notify the request
-  // that an HttpStream is ready. Use PostTask() since `delegate` doesn't expect
-  // the request to finish synchronously.
-  if (CanUseExistingQuicSession()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&Job::CreateQuicStreamAndNotify,
-                                  weak_ptr_factory_.GetWeakPtr()));
-    return request;
-  }
-
-  if (!spdy_session_) {
-    spdy_session_ =
-        http_network_session()->spdy_session_pool()->FindAvailableSession(
-            spdy_session_key(), enable_ip_based_pooling_,
-            /*is_websocket=*/false, net_log);
-  }
-  if (spdy_session_) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&Job::CreateSpdyStreamAndNotify,
-                                  weak_ptr_factory_.GetWeakPtr()));
-    return request;
-  }
 
   // Check idle streams. If found, notify the request that an HttpStream is
   // ready. Use PostTask() since `delegate` doesn't expect the request finishes
@@ -216,18 +201,15 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
 int HttpStreamPool::Job::Preconnect(size_t num_streams,
                                     quic::ParsedQuicVersion quic_version,
                                     CompletionOnceCallback callback) {
+  // HttpStreamPool should check the existing QUIC/SPDY sessions before calling
+  // this method.
+  CHECK(!CanUseExistingQuicSession());
+  CHECK(!spdy_session_);
+  CHECK(!spdy_session_pool()->HasAvailableSession(spdy_session_key(),
+                                                  /*is_websocket=*/false));
+
   if (is_failing_) {
     return error_to_notify_;
-  }
-
-  if (CanUseExistingQuicSession()) {
-    return OK;
-  }
-
-  if (spdy_session_pool()->HasAvailableSession(spdy_session_key(),
-                                               /*is_websocket=*/false)) {
-    CHECK(!RequiresHTTP11());
-    return OK;
   }
 
   if (group_->ActiveStreamSocketCount() >= num_streams) {
@@ -361,8 +343,7 @@ bool HttpStreamPool::Job::UsingTls() const {
 }
 
 bool HttpStreamPool::Job::RequiresHTTP11() {
-  return http_network_session()->http_server_properties()->RequiresHTTP11(
-      stream_key().destination(), stream_key().network_anonymization_key());
+  return pool()->RequiresHTTP11(stream_key());
 }
 
 LoadState HttpStreamPool::Job::GetLoadState() const {
@@ -1200,13 +1181,14 @@ void HttpStreamPool::Job::OnSpdyThrottleDelayPassed() {
 }
 
 bool HttpStreamPool::Job::CanUseQuic() {
-  return enable_alternative_services_ && enable_ip_based_pooling_ &&
-         UsingTls() && !RequiresHTTP11();
+  return pool()->CanUseQuic(stream_key(), enable_ip_based_pooling_,
+                            enable_alternative_services_);
 }
 
 bool HttpStreamPool::Job::CanUseExistingQuicSession() {
-  return CanUseQuic() && quic_session_pool()->CanUseExistingSession(
-                             quic_session_key(), stream_key().destination());
+  return pool()->CanUseExistingQuicSession(stream_key(), quic_session_key(),
+                                           enable_ip_based_pooling_,
+                                           enable_alternative_services_);
 }
 
 void HttpStreamPool::Job::MaybeComplete() {
