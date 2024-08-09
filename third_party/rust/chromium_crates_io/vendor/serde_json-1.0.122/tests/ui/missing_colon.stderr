@@ -9,4 +9,4 @@ note: while trying to match `@`
   |
   |     (@array [$($elems:expr,)*]) => {
   |      ^
-  = note: this error originates in the macro `json_internal` which comes from the expansion of the macro `json` (in Nightly builds, run with -Z macro-backtrace for more info)
+  = note: this error originates in the macro `$crate::json_internal` which comes from the expansion of the macro `json` (in Nightly builds, run with -Z macro-backtrace for more info)

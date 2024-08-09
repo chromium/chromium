@@ -415,19 +415,14 @@ impl<'a> SliceRead<'a> {
     }
 
     fn position_of_index(&self, i: usize) -> Position {
-        let mut position = Position { line: 1, column: 0 };
-        for ch in &self.slice[..i] {
-            match *ch {
-                b'\n' => {
-                    position.line += 1;
-                    position.column = 0;
-                }
-                _ => {
-                    position.column += 1;
-                }
-            }
+        let start_of_line = match memchr::memrchr(b'\n', &self.slice[..i]) {
+            Some(position) => position + 1,
+            None => 0,
+        };
+        Position {
+            line: 1 + memchr::memchr_iter(b'\n', &self.slice[..start_of_line]).count(),
+            column: i - start_of_line,
         }
-        position
     }
 
     /// The big optimization here over IoRead is that if the string contains no

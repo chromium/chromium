@@ -1,6 +1,6 @@
 [package]
 name = "serde_json"
-version = "1.0.120"
+version = "1.0.122"
 authors = ["Erick Tryzelaar <erick.tryzelaar@gmail.com>", "David Tolnay <dtolnay@gmail.com>"]
 categories = ["encoding", "parser-implementations", "no-std"]
 description = "A JSON serialization file format"
@@ -14,6 +14,7 @@ rust-version = "1.56"
 [dependencies]
 indexmap = { version = "2.2.3", optional = true }
 itoa = "1.0"
+memchr = { version = "2", default-features = false }
 ryu = "1.0"
 serde = { version = "1.0.194", default-features = false }
 
@@ -45,7 +46,7 @@ features = ["raw_value"]
 [features]
 default = ["std"]
 
-std = ["serde/std"]
+std = ["memchr/std", "serde/std"]
 
 # Provide integration for heap-allocated collections without depending on the
 # rest of the Rust standard library.

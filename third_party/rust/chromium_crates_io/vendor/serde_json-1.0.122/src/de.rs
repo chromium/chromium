@@ -1870,8 +1870,9 @@ impl<'de, 'a, R: Read<'de>> de::Deserializer<'de> for &'a mut Deserializer<R> {
             Some(b'{') => {
                 check_recursion! {
                     self.eat_char();
-                    let value = tri!(visitor.visit_enum(VariantAccess::new(self)));
+                    let ret = visitor.visit_enum(VariantAccess::new(self));
                 }
+                let value = tri!(ret);
 
                 match tri!(self.parse_whitespace()) {
                     Some(b'}') => {
