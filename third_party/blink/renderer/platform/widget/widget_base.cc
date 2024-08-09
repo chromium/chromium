@@ -1182,7 +1182,7 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
     params->edit_context_control_bounds = control_bounds;
     params->edit_context_selection_bounds = selection_bounds;
 
-    if (!new_info.ime_text_spans.empty()) {
+    if (!new_info.ime_text_spans.empty() && frame_widget) {
       params->ime_text_spans_info =
           frame_widget->GetImeTextSpansInfo(new_info.ime_text_spans);
     }
