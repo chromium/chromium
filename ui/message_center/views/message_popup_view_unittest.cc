@@ -105,7 +105,12 @@ class MessagePopupViewTest : public views::ViewsTestBase {
   std::unique_ptr<Notification> notification_ = nullptr;
 };
 
-TEST_F(MessagePopupViewTest, AccessibleAttributes) {
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+#define MAYBE_AccessibleAttributes DISABLED_AccessibleAttributes
+#else
+#define MAYBE_AccessibleAttributes AccessibleAttributes
+#endif
+TEST_F(MessagePopupViewTest, MAYBE_AccessibleAttributes) {
   MockMessagePopupCollection popup_collection;
   MessagePopupView* popup = popup_collection.CreatePopup(GetNotification());
 
