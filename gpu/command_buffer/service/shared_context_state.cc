@@ -769,7 +769,7 @@ void SharedContextState::FlushAndSubmit(bool sync_to_cpu) {
     FlushGraphiteRecorder();
     graphite_context()->submit(sync_to_cpu ? skgpu::graphite::SyncToCpu::kYes
                                            : skgpu::graphite::SyncToCpu::kNo);
-  } else {
+  } else if (gr_context()) {
     gr_context()->flushAndSubmit(sync_to_cpu ? GrSyncCpu::kYes
                                              : GrSyncCpu::kNo);
   }
