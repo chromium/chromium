@@ -127,13 +127,19 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
 }
 
 const gfx::VectorIcon* GetSearchOrLauncherVectorIcon() {
-  if (Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()) {
-    return IsAssistantAvailable()
-               ? &kCaptureModeDemoToolsLauncherAssistantOnIcon
-               : &kCaptureModeDemoToolsLauncherAssistantOffIcon;
+  switch (Shell::Get()->keyboard_capability()->GetMetaKeyToDisplay()) {
+    case ui::mojom::MetaKey::kSearch:
+      return &kCaptureModeDemoToolsSearchIcon;
+    case ui::mojom::MetaKey::kLauncher:
+      return IsAssistantAvailable()
+                 ? &kCaptureModeDemoToolsLauncherAssistantOnIcon
+                 : &kCaptureModeDemoToolsLauncherAssistantOffIcon;
+    case ui::mojom::MetaKey::kLauncherRefresh:
+      return &kCampbellHeroIcon;
+    case ui::mojom::MetaKey::kExternalMeta:
+    case ui::mojom::MetaKey::kCommand:
+      NOTREACHED_NORETURN();
   }
-
-  return &kCaptureModeDemoToolsSearchIcon;
 }
 
 }  // namespace ash
