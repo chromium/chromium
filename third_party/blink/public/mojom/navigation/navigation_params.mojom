@@ -18,17 +18,19 @@ import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/web_client_hints_types.mojom";
 import "services/network/public/mojom/web_sandbox_flags.mojom";
+import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom";
-import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
-import "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom";
-import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
+import "third_party/blink/public/mojom/conversions/conversions.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
+import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
+import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
 import "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom";
 import "third_party/blink/public/mojom/loader/mixed_content.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/messaging/task_attribution_id.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom";
+import "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom";
 import "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom";
@@ -42,8 +44,6 @@ import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
-import "third_party/blink/public/mojom/conversions/conversions.mojom";
-import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 
 enum NavigationType {
   // Reload the page, validating only cache entry for the main resource.
@@ -84,12 +84,13 @@ enum NavigationType {
   DIFFERENT_DOCUMENT,
 };
 
-// Maps to https://html.spec.whatwg.org/multipage/nav-history-apis.html#dom-navigateevent-navigationtype-dev.
+// Maps to
+// https://html.spec.whatwg.org/multipage/nav-history-apis.html#dom-navigateevent-navigationtype-dev.
 enum NavigationTypeForNavigationApi {
   kPush,
   kTraverse,
   kReplace,
-  kReload
+  kReload,
 };
 
 // Used by the renderer to indicate a case where a standard navigation that
@@ -300,7 +301,6 @@ struct CommonNavigationParams {
   // Indicates the request destination.
   network.mojom.RequestDestination request_destination =
       network.mojom.RequestDestination.kEmpty;
-
 };
 
 // Provided by the browser -----------------------------------------------------
@@ -317,7 +317,7 @@ enum ParentResourceTimingAccess {
   // TODO(https://github.com/whatwg/fetch/issues/1602) clarify the spec around
   // this.
   kReportWithoutResponseDetails,
-  kReportWithResponseDetails
+  kReportWithResponseDetails,
 };
 
 // Timings collected in the browser during navigation for the
@@ -332,7 +332,8 @@ struct NavigationTiming {
   // begins.
   SystemEntropy system_entropy_at_navigation_start = kEmpty;
 
-  ParentResourceTimingAccess parent_resource_timing_access = ParentResourceTimingAccess.kDoNotReport;
+  ParentResourceTimingAccess parent_resource_timing_access =
+      ParentResourceTimingAccess.kDoNotReport;
 };
 
 // Sent with CommitNavigationParams and should only be set for main-frame
@@ -476,6 +477,10 @@ struct CommitNavigationParams {
 
   // Whether this navigation was browser initiated.
   bool is_browser_initiated = false;
+
+  // Whether a visual transition was done by the browser before committing this
+  // navigation.
+  bool has_ua_visual_transition = false;
 
   // UKM source id to be associated with the Document that will be installed
   // in the current frame. This could be an invalid id for empty Document. Only

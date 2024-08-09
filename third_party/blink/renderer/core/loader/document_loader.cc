@@ -1579,6 +1579,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     Element* source_element,
     mojom::blink::TriggeringEventInfo triggering_event_info,
     bool is_browser_initiated,
+    bool has_ua_visual_transition,
     std::optional<scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id) {
   DCHECK(!IsReloadLoadType(frame_load_type));
@@ -1646,6 +1647,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     params->source_element = source_element;
     params->destination_item = history_item;
     params->is_browser_initiated = is_browser_initiated;
+    params->has_ua_visual_transition = has_ua_visual_transition;
     params->is_synchronously_committed_same_document =
         is_synchronously_committed;
     params->soft_navigation_heuristics_task_id =

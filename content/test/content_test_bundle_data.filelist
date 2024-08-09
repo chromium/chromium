@@ -6763,6 +6763,7 @@ data/gtk_key_bindings_test_gtkrc
 data/gzip-content.svgz
 data/gzip-content.svgz.mock-http-headers
 data/hang_before_unload.html
+data/has-ua-visual-transition.html
 data/hello.html
 data/hello.html.mock-http-headers
 data/https_upgrade_cross_site.html

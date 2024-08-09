@@ -722,6 +722,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
         resource_request.HasUserGesture(), origin_window->GetSecurityOrigin(),
         /*is_synchronously_committed=*/true, request.GetSourceElement(),
         request.GetTriggeringEventInfo(), /*is_browser_initiated=*/false,
+        /*has_ua_visual_transition*/false,
         /*soft_navigation_heuristics_task_id=*/std::nullopt);
     return;
   }

@@ -46,6 +46,7 @@ struct CORE_EXPORT NavigateEventDispatchParams
   scoped_refptr<SerializedScriptValue> state_object;
   Member<HistoryItem> destination_item;
   bool is_browser_initiated = false;
+  bool has_ua_visual_transition = false;
   bool is_synchronously_committed_same_document = true;
   String download_filename;
   std::optional<scheduler::TaskAttributionId>

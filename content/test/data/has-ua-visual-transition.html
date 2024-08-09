@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation API Example</title>
+    <script>
+        var hasUAVisualTransitionValue = false;
+        // Check if the browser supports the Navigation API
+        if ('navigation' in window) {
+            window.navigation.addEventListener('navigate', (event) => {
+                hasUAVisualTransitionValue = event.hasUAVisualTransition;
+            });
+        } else {
+            console.log('Navigation API is not supported in this browser.');
+        }
+    </script>
+</head>
+<body>
+    <h1>Value of hasUAVisualTransition of Navigation API</h1>
+    <div>
+        <a href="#frag1"> Section 1 </a>
+        <a href="#frag2"> Section 2 </a>
+    </div>
+    <div class="section" id="frag1">
+        <p> This is section 1</p>
+    </div>
+    <div class="section" id="frag2">
+        <p> This is section 2 </p>
+    </div>
+</body>
+</html>

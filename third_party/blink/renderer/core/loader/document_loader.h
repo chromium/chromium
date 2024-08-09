@@ -316,6 +316,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       Element* source_element,
       mojom::blink::TriggeringEventInfo,
       bool is_browser_initiated,
+      bool has_ua_visual_transition,
       std::optional<scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id);
 
