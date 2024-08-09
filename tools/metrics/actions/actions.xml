@@ -22804,6 +22804,22 @@ should be able to be added at any place in this file.
   <description>User pressed the stop option in the app menu.</description>
 </action>
 
+<action name="MobileMenuSwitchOutOfIncognito">
+  <owner>skavuluru@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User pressed 'Switch out of Incognito' in the tab switcher action menu.
+  </description>
+</action>
+
+<action name="MobileMenuSwitchToIncognito">
+  <owner>skavuluru@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User pressed 'Switch to Incognito' in the tab switcher action menu.
+  </description>
+</action>
+
 <action name="MobileMenuTextZoom">
   <owner>rkgibson@google.com</owner>
   <description>User pressed 'Zoom Text' in the app menu</description>
@@ -44881,6 +44897,24 @@ should be able to be added at any place in this file.
 <action-suffix separator="." ordering="suffix">
   <suffix name="LongTapMenu" label="Users closed a tab by long tap menu"/>
   <affected-action name="MobileMenuCloseTab"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="LongTapMenu"
+      label="Users closed all incognito tabs by long tap menu"/>
+  <affected-action name="MobileMenuCloseAllIncognitoTabs"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="LongTapMenu"
+      label="Users switched to incognito by long tap menu"/>
+  <affected-action name="MobileMenuSwitchToIncognito"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="LongTapMenu"
+      label="Users switched out of incognito by long tap menu"/>
+  <affected-action name="MobileMenuSwitchOutOfIncognito"/>
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">
