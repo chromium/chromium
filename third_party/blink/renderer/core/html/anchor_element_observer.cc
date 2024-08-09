@@ -16,7 +16,7 @@ class AnchorIdTargetObserver : public IdTargetObserver {
  public:
   AnchorIdTargetObserver(const AtomicString& id,
                          AnchorElementObserver* anchor_element_observer)
-      : IdTargetObserver(anchor_element_observer->GetElement()
+      : IdTargetObserver(anchor_element_observer->GetSourceElement()
                              .GetTreeScope()
                              .GetIdTargetObserverRegistry(),
                          id),
@@ -35,7 +35,7 @@ class AnchorIdTargetObserver : public IdTargetObserver {
   Member<AnchorElementObserver> anchor_element_observer_;
 };
 
-bool NeedsIdTargetObserver(HTMLElement& element) {
+bool NeedsIdTargetObserver(Element& element) {
   return element.IsInTreeScope() &&
          !element.HasExplicitlySetAttrAssociatedElements(
              html_names::kAnchorAttr) &&
@@ -45,32 +45,33 @@ bool NeedsIdTargetObserver(HTMLElement& element) {
 }  // namespace
 
 void AnchorElementObserver::Trace(Visitor* visitor) const {
-  visitor->Trace(element_);
-  visitor->Trace(anchor_);
+  visitor->Trace(source_element_);
+  visitor->Trace(current_anchor_);
   visitor->Trace(id_target_observer_);
   ElementRareDataField::Trace(visitor);
 }
 
 void AnchorElementObserver::Notify() {
-  Element* new_anchor = element_->anchorElement();
-  if (anchor_ != new_anchor) {
-    if (anchor_) {
-      anchor_->DecrementImplicitlyAnchoredElementCount();
+  Element* new_anchor = source_element_->anchorElement();
+  if (current_anchor_ != new_anchor) {
+    if (current_anchor_) {
+      current_anchor_->DecrementImplicitlyAnchoredElementCount();
     }
     if (new_anchor) {
       new_anchor->IncrementImplicitlyAnchoredElementCount();
     }
-    anchor_ = new_anchor;
-    if (element_->GetLayoutObject()) {
-      element_->GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
-          layout_invalidation_reason::kAnchorPositioning);
+    current_anchor_ = new_anchor;
+    if (source_element_->GetLayoutObject()) {
+      source_element_->GetLayoutObject()
+          ->SetNeedsLayoutAndFullPaintInvalidation(
+              layout_invalidation_reason::kAnchorPositioning);
     }
   }
   ResetIdTargetObserverIfNeeded();
 }
 
 void AnchorElementObserver::ResetIdTargetObserverIfNeeded() {
-  if (!NeedsIdTargetObserver(*element_)) {
+  if (!NeedsIdTargetObserver(*source_element_)) {
     if (id_target_observer_) {
       id_target_observer_->Unregister();
       id_target_observer_ = nullptr;
@@ -78,7 +79,7 @@ void AnchorElementObserver::ResetIdTargetObserverIfNeeded() {
     return;
   }
   const AtomicString& anchor_id =
-      element_->FastGetAttribute(html_names::kAnchorAttr);
+      source_element_->FastGetAttribute(html_names::kAnchorAttr);
   if (id_target_observer_) {
     if (static_cast<AnchorIdTargetObserver*>(id_target_observer_.Get())
             ->SameId(anchor_id)) {

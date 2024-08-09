@@ -1265,10 +1265,9 @@ Element* Element::anchorElement() const {
 
 void Element::setAnchorElement(Element* new_element) {
   CHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
+  CHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
   SetElementAttribute(html_names::kAnchorAttr, new_element);
-  if (RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
-    EnsureAnchorElementObserver().Notify();
-  }
+  EnsureAnchorElementObserver().Notify();
 }
 
 inline void Element::SynchronizeAttribute(const QualifiedName& name) const {
@@ -2782,8 +2781,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       }
     }
   } else if (params.name == html_names::kAnchorAttr) {
-    if (IsA<HTMLElement>(this) &&
-        RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
+    if (RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled()) {
       EnsureAnchorElementObserver().Notify();
       return;
     }
@@ -10283,21 +10281,19 @@ AnchorElementObserver* Element::GetAnchorElementObserver() const {
 }
 
 AnchorElementObserver& Element::EnsureAnchorElementObserver() {
-  DCHECK(IsHTMLElement());
-  DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
-  return EnsureElementRareData().EnsureAnchorElementObserver(
-      To<HTMLElement>(this));
+  DCHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
+  return EnsureElementRareData().EnsureAnchorElementObserver(this);
 }
 
 Element* Element::ImplicitAnchorElement() const {
   if (!RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
     return nullptr;
   }
+  if (Element* anchor = anchorElement()) {
+    DCHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
+    return anchor;
+  }
   if (const HTMLElement* html_element = DynamicTo<HTMLElement>(this)) {
-    if (Element* anchor = html_element->anchorElement()) {
-      DCHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
-      return anchor;
-    }
     if (Element* internal_anchor = html_element->internalImplicitAnchor()) {
       return internal_anchor;
     }
@@ -10307,8 +10303,8 @@ Element* Element::ImplicitAnchorElement() const {
         return select;
       }
     }
-  } else if (const PseudoElement* pseudo_element =
-                 DynamicTo<PseudoElement>(this)) {
+  }
+  if (const PseudoElement* pseudo_element = DynamicTo<PseudoElement>(this)) {
     switch (pseudo_element->GetPseudoId()) {
       case kPseudoIdBefore:
       case kPseudoIdAfter:

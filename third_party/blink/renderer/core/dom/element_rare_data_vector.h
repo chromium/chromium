@@ -316,7 +316,7 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   void RemoveAnchorPositionScrollData();
   AnchorPositionScrollData& EnsureAnchorPositionScrollData(Element*);
 
-  AnchorElementObserver& EnsureAnchorElementObserver(HTMLElement*);
+  AnchorElementObserver& EnsureAnchorElementObserver(Element*);
   AnchorElementObserver* GetAnchorElementObserver() const;
 
   void IncrementImplicitlyAnchoredElementCount();

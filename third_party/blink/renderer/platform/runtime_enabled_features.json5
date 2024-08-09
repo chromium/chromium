@@ -2248,6 +2248,7 @@
     // popover API.
     {
       name: "HTMLAnchorAttribute",
+      depends_on: ["CSSAnchorPositioning"],
       status: "experimental",
     },
     // Adds support for the experimental `interesttarget`

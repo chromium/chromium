@@ -419,11 +419,13 @@ AnchorPositionScrollData& ElementRareDataVector::EnsureAnchorPositionScrollData(
 }
 
 AnchorElementObserver& ElementRareDataVector::EnsureAnchorElementObserver(
-    HTMLElement* element) {
+    Element* new_source_element) {
   DCHECK(!GetAnchorElementObserver() ||
-         GetAnchorElementObserver()->GetElement() == element);
+         GetAnchorElementObserver()->GetSourceElement() == new_source_element);
+  CHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
+  CHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
   return EnsureField<AnchorElementObserver>(FieldId::kAnchorElementObserver,
-                                            element);
+                                            new_source_element);
 }
 
 AnchorElementObserver* ElementRareDataVector::GetAnchorElementObserver() const {
