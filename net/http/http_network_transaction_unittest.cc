@@ -88,7 +88,6 @@
 #include "net/http/http_server_properties.h"
 #include "net/http/http_stream.h"
 #include "net/http/http_stream_factory.h"
-#include "net/http/http_stream_pool_test_util.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -27986,14 +27985,6 @@ class HttpNetworkTransactionPoolTest : public HttpNetworkTransactionTest {
  public:
   HttpNetworkTransactionPoolTest() {
     feature_list_.InitAndEnableFeature(features::kHappyEyeballsV3);
-    session_deps_.alternate_host_resolver =
-        std::make_unique<FakeServiceEndpointResolver>();
-  }
-
- protected:
-  FakeServiceEndpointResolver* resolver() {
-    return static_cast<FakeServiceEndpointResolver*>(
-        session_deps_.alternate_host_resolver.get());
   }
 
  private:
@@ -28005,11 +27996,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Bool());
 
 TEST_P(HttpNetworkTransactionPoolTest, SwitchToHttpStreamPool) {
-  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
-  endpoint_request
-      ->add_endpoint(ServiceEndpointBuilder().add_v4("127.0.0.1").endpoint())
-      .set_start_result(OK);
-
   MockRead data_reads[] = {
       MockRead("HTTP/1.1 200 OK\r\n\r\n"),
       MockRead("hello world"),

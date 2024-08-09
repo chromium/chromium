@@ -21,6 +21,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/pattern.h"
@@ -41,6 +42,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/dns_alias_utility.h"
 #include "net/dns/dns_names_util.h"
@@ -134,10 +136,11 @@ int ParseAddressList(std::string_view host_list,
   return OK;
 }
 
-class MockHostResolverBase::RequestImpl
-    : public HostResolver::ResolveHostRequest {
+// Base class for
+// MockHostResolverBase::{RequestImpl,ServiceEndpointRequestImpl}.
+class MockHostResolverBase::RequestBase {
  public:
-  RequestImpl(Host request_endpoint,
+  RequestBase(Host request_endpoint,
               const NetworkAnonymizationKey& network_anonymization_key,
               const std::optional<ResolveHostParameters>& optional_parameters,
               base::WeakPtr<MockHostResolverBase> resolver)
@@ -150,13 +153,14 @@ class MockHostResolverBase::RequestImpl
         resolve_error_info_(ResolveErrorInfo(ERR_IO_PENDING)),
         resolver_(resolver) {}
 
-  RequestImpl(const RequestImpl&) = delete;
-  RequestImpl& operator=(const RequestImpl&) = delete;
+  RequestBase(const RequestBase&) = delete;
+  RequestBase& operator=(const RequestBase&) = delete;
 
-  ~RequestImpl() override {
+  virtual ~RequestBase() {
     if (id_ > 0) {
-      if (resolver_)
+      if (resolver_) {
         resolver_->DetachRequest(id_);
+      }
       id_ = 0;
       resolver_ = nullptr;
     }
@@ -166,6 +170,160 @@ class MockHostResolverBase::RequestImpl
     id_ = 0;
     resolver_ = nullptr;
   }
+
+  void SetError(int error) {
+    // Should only be called before request is marked completed.
+    DCHECK(!complete_);
+    resolve_error_info_ = ResolveErrorInfo(error);
+  }
+
+  // Sets `endpoint_results_`, `fixed_up_dns_alias_results_`,
+  // `address_results_` and `staleness_` after fixing them up.
+  // Also sets `error` to OK.
+  void SetEndpointResults(
+      std::vector<HostResolverEndpointResult> endpoint_results,
+      std::set<std::string> aliases,
+      std::optional<HostCache::EntryStaleness> staleness) {
+    DCHECK(!complete_);
+    DCHECK(!endpoint_results_);
+    DCHECK(!parameters_.is_speculative);
+
+    endpoint_results_ = std::move(endpoint_results);
+    for (auto& result : *endpoint_results_) {
+      result.ip_endpoints = FixupEndPoints(result.ip_endpoints);
+    }
+
+    fixed_up_dns_alias_results_ = FixupAliases(aliases);
+
+    // `HostResolver` implementations are expected to provide an `AddressList`
+    // result whenever `HostResolverEndpointResult` is also available.
+    address_results_ = EndpointResultToAddressList(
+        *endpoint_results_, *fixed_up_dns_alias_results_);
+
+    staleness_ = std::move(staleness);
+
+    SetError(OK);
+    SetEndpointResultsInternal();
+  }
+
+  void OnAsyncCompleted(size_t id, int error) {
+    DCHECK_EQ(id_, id);
+    id_ = 0;
+
+    // Check that error information has been set and that the top-level error
+    // code is valid.
+    DCHECK(resolve_error_info_.error != ERR_IO_PENDING);
+    DCHECK(error == OK || error == ERR_NAME_NOT_RESOLVED ||
+           error == ERR_DNS_NAME_HTTPS_ONLY);
+
+    DCHECK(!complete_);
+    complete_ = true;
+
+    DCHECK(callback_);
+    std::move(callback_).Run(error);
+  }
+
+  const Host& request_endpoint() const { return request_endpoint_; }
+
+  const NetworkAnonymizationKey& network_anonymization_key() const {
+    return network_anonymization_key_;
+  }
+
+  const ResolveHostParameters& parameters() const { return parameters_; }
+
+  int host_resolver_flags() const { return host_resolver_flags_; }
+
+  size_t id() { return id_; }
+
+  RequestPriority priority() const { return priority_; }
+
+  void set_id(size_t id) {
+    DCHECK_GT(id, 0u);
+    DCHECK_EQ(0u, id_);
+
+    id_ = id;
+  }
+
+  bool complete() { return complete_; }
+
+  // Similar get GetAddressResults() and GetResolveErrorInfo(), but only exposed
+  // through the HostResolver::ResolveHostRequest interface, and don't have the
+  // DCHECKs that `complete_` is true.
+  const std::optional<AddressList>& address_results() const {
+    return address_results_;
+  }
+  ResolveErrorInfo resolve_error_info() const { return resolve_error_info_; }
+
+ protected:
+  std::vector<IPEndPoint> FixupEndPoints(
+      const std::vector<IPEndPoint>& endpoints) {
+    std::vector<IPEndPoint> corrected;
+    for (const IPEndPoint& endpoint : endpoints) {
+      DCHECK_NE(endpoint.GetFamily(), ADDRESS_FAMILY_UNSPECIFIED);
+      if (parameters_.dns_query_type == DnsQueryType::UNSPECIFIED ||
+          parameters_.dns_query_type ==
+              AddressFamilyToDnsQueryType(endpoint.GetFamily())) {
+        if (endpoint.port() == 0) {
+          corrected.emplace_back(endpoint.address(),
+                                 request_endpoint_.GetPort());
+        } else {
+          corrected.push_back(endpoint);
+        }
+      }
+    }
+    return corrected;
+  }
+
+  std::set<std::string> FixupAliases(const std::set<std::string> aliases) {
+    if (aliases.empty()) {
+      return std::set<std::string>{
+          std::string(request_endpoint_.GetHostnameWithoutBrackets())};
+    }
+    return aliases;
+  }
+
+  // Helper method of SetEndpointResults() for subclass specific logic.
+  virtual void SetEndpointResultsInternal() {}
+
+  const Host request_endpoint_;
+  const NetworkAnonymizationKey network_anonymization_key_;
+  const ResolveHostParameters parameters_;
+  RequestPriority priority_;
+  int host_resolver_flags_;
+
+  std::optional<AddressList> address_results_;
+  std::optional<std::vector<HostResolverEndpointResult>> endpoint_results_;
+  std::optional<std::set<std::string>> fixed_up_dns_alias_results_;
+  std::optional<HostCache::EntryStaleness> staleness_;
+  ResolveErrorInfo resolve_error_info_;
+
+  // Used while stored with the resolver for async resolution.  Otherwise 0.
+  size_t id_ = 0;
+
+  CompletionOnceCallback callback_;
+  // Use a WeakPtr as the resolver may be destroyed while there are still
+  // outstanding request objects.
+  base::WeakPtr<MockHostResolverBase> resolver_;
+  bool complete_ = false;
+};
+
+class MockHostResolverBase::RequestImpl
+    : public RequestBase,
+      public HostResolver::ResolveHostRequest {
+ public:
+  RequestImpl(Host request_endpoint,
+              const NetworkAnonymizationKey& network_anonymization_key,
+              const std::optional<ResolveHostParameters>& optional_parameters,
+              base::WeakPtr<MockHostResolverBase> resolver)
+      : RequestBase(std::move(request_endpoint),
+                    network_anonymization_key,
+                    optional_parameters,
+                    std::move(resolver)) {}
+
+  RequestImpl(const RequestImpl&) = delete;
+  RequestImpl& operator=(const RequestImpl&) = delete;
+
+  ~RequestImpl() override = default;
 
   int Start(CompletionOnceCallback callback) override {
     DCHECK(callback);
@@ -231,135 +389,109 @@ class MockHostResolverBase::RequestImpl
   void ChangeRequestPriority(RequestPriority priority) override {
     priority_ = priority;
   }
+};
 
-  void SetError(int error) {
-    // Should only be called before request is marked completed.
+class MockHostResolverBase::ServiceEndpointRequestImpl
+    : public RequestBase,
+      public HostResolver::ServiceEndpointRequest {
+ public:
+  ServiceEndpointRequestImpl(
+      Host request_endpoint,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const std::optional<ResolveHostParameters>& optional_parameters,
+      base::WeakPtr<MockHostResolverBase> resolver)
+      : RequestBase(std::move(request_endpoint),
+                    network_anonymization_key,
+                    optional_parameters,
+                    std::move(resolver)) {}
+
+  ServiceEndpointRequestImpl(const ServiceEndpointRequestImpl&) = delete;
+  ServiceEndpointRequestImpl& operator=(const ServiceEndpointRequestImpl&) =
+      delete;
+
+  ~ServiceEndpointRequestImpl() override = default;
+
+  // HostResolver::ServiceEndpointRequest implementations:
+  int Start(Delegate* delegate) override {
+    CHECK(delegate);
+    CHECK(!delegate_);
+    CHECK_EQ(id_, 0u);
+    CHECK(!complete_);
+    CHECK(resolver_);
+
+    int rv = resolver_->Resolve(this);
     DCHECK(!complete_);
-    resolve_error_info_ = ResolveErrorInfo(error);
-  }
-
-  // Sets `endpoint_results_`, `fixed_up_dns_alias_results_`,
-  // `address_results_` and `staleness_` after fixing them up.
-  // Also sets `error` to OK.
-  void SetEndpointResults(
-      std::vector<HostResolverEndpointResult> endpoint_results,
-      std::set<std::string> aliases,
-      std::optional<HostCache::EntryStaleness> staleness) {
-    DCHECK(!complete_);
-    DCHECK(!endpoint_results_);
-    DCHECK(!parameters_.is_speculative);
-
-    endpoint_results_ = std::move(endpoint_results);
-    for (auto& result : *endpoint_results_) {
-      result.ip_endpoints = FixupEndPoints(result.ip_endpoints);
+    if (rv == ERR_IO_PENDING) {
+      CHECK_GT(id_, 0u);
+      delegate_ = delegate;
+      callback_ = base::BindOnce(
+          &ServiceEndpointRequestImpl::NotifyDelegateOfCompletion,
+          weak_ptr_factory_.GetWeakPtr());
+    } else {
+      CHECK_EQ(id_, 0u);
+      complete_ = true;
     }
 
-    fixed_up_dns_alias_results_ = FixupAliases(aliases);
-
-    // `HostResolver` implementations are expected to provide an `AddressList`
-    // result whenever `HostResolverEndpointResult` is also available.
-    address_results_ = EndpointResultToAddressList(
-        *endpoint_results_, *fixed_up_dns_alias_results_);
-
-    staleness_ = std::move(staleness);
-
-    SetError(OK);
+    return rv;
   }
 
-  void OnAsyncCompleted(size_t id, int error) {
-    DCHECK_EQ(id_, id);
-    id_ = 0;
-
-    // Check that error information has been set and that the top-level error
-    // code is valid.
-    DCHECK(resolve_error_info_.error != ERR_IO_PENDING);
-    DCHECK(error == OK || error == ERR_NAME_NOT_RESOLVED ||
-           error == ERR_DNS_NAME_HTTPS_ONLY);
-
-    DCHECK(!complete_);
-    complete_ = true;
-
-    DCHECK(callback_);
-    std::move(callback_).Run(error);
+  const std::vector<ServiceEndpoint>& GetEndpointResults() override {
+    return service_endpoint_results_;
   }
 
-  const Host& request_endpoint() const { return request_endpoint_; }
-
-  const NetworkAnonymizationKey& network_anonymization_key() const {
-    return network_anonymization_key_;
+  const std::set<std::string>& GetDnsAliasResults() override {
+    if (fixed_up_dns_alias_results_.has_value()) {
+      return *fixed_up_dns_alias_results_;
+    }
+    static const base::NoDestructor<std::set<std::string>> kEmptyDnsAliases;
+    return *kEmptyDnsAliases.get();
   }
 
-  const ResolveHostParameters& parameters() const { return parameters_; }
+  bool EndpointsCryptoReady() override { return true; }
 
-  int host_resolver_flags() const { return host_resolver_flags_; }
-
-  size_t id() { return id_; }
-
-  RequestPriority priority() const { return priority_; }
-
-  void set_id(size_t id) {
-    DCHECK_GT(id, 0u);
-    DCHECK_EQ(0u, id_);
-
-    id_ = id;
+  ResolveErrorInfo GetResolveErrorInfo() override {
+    return resolve_error_info_;
   }
 
-  bool complete() { return complete_; }
-
-  // Similar get GetAddressResults() and GetResolveErrorInfo(), but only exposed
-  // through the HostResolver::ResolveHostRequest interface, and don't have the
-  // DCHECKs that `complete_` is true.
-  const std::optional<AddressList>& address_results() const {
-    return address_results_;
+  void ChangeRequestPriority(RequestPriority priority) override {
+    priority_ = priority;
   }
-  ResolveErrorInfo resolve_error_info() const { return resolve_error_info_; }
 
  private:
-  std::vector<IPEndPoint> FixupEndPoints(
-      const std::vector<IPEndPoint>& endpoints) {
-    std::vector<IPEndPoint> corrected;
-    for (const IPEndPoint& endpoint : endpoints) {
-      DCHECK_NE(endpoint.GetFamily(), ADDRESS_FAMILY_UNSPECIFIED);
-      if (parameters_.dns_query_type == DnsQueryType::UNSPECIFIED ||
-          parameters_.dns_query_type ==
-              AddressFamilyToDnsQueryType(endpoint.GetFamily())) {
-        if (endpoint.port() == 0) {
-          corrected.emplace_back(endpoint.address(),
-                                 request_endpoint_.GetPort());
+  void SetEndpointResultsInternal() override {
+    if (!endpoint_results_.has_value()) {
+      return;
+    }
+
+    std::vector<ServiceEndpoint> service_endpoints;
+    for (const auto& endpoint : *endpoint_results_) {
+      std::vector<IPEndPoint> ipv4_endpoints;
+      std::vector<IPEndPoint> ipv6_endpoints;
+      for (const auto& ip_endpoint : endpoint.ip_endpoints) {
+        if (ip_endpoint.address().IsIPv6()) {
+          ipv6_endpoints.emplace_back(ip_endpoint);
         } else {
-          corrected.push_back(endpoint);
+          ipv4_endpoints.emplace_back(ip_endpoint);
         }
       }
+      service_endpoints.emplace_back(std::move(ipv4_endpoints),
+                                     std::move(ipv6_endpoints),
+                                     endpoint.metadata);
     }
-    return corrected;
-  }
-  std::set<std::string> FixupAliases(const std::set<std::string> aliases) {
-    if (aliases.empty())
-      return std::set<std::string>{
-          std::string(request_endpoint_.GetHostnameWithoutBrackets())};
-    return aliases;
+
+    service_endpoint_results_ = std::move(service_endpoints);
   }
 
-  const Host request_endpoint_;
-  const NetworkAnonymizationKey network_anonymization_key_;
-  const ResolveHostParameters parameters_;
-  RequestPriority priority_;
-  int host_resolver_flags_;
+  void NotifyDelegateOfCompletion(int rv) {
+    CHECK(delegate_);
+    CHECK_NE(rv, ERR_IO_PENDING);
+    delegate_.ExtractAsDangling()->OnServiceEndpointRequestFinished(rv);
+  }
 
-  std::optional<AddressList> address_results_;
-  std::optional<std::vector<HostResolverEndpointResult>> endpoint_results_;
-  std::optional<std::set<std::string>> fixed_up_dns_alias_results_;
-  std::optional<HostCache::EntryStaleness> staleness_;
-  ResolveErrorInfo resolve_error_info_;
+  raw_ptr<Delegate> delegate_;
+  std::vector<ServiceEndpoint> service_endpoint_results_;
 
-  // Used while stored with the resolver for async resolution.  Otherwise 0.
-  size_t id_ = 0;
-
-  CompletionOnceCallback callback_;
-  // Use a WeakPtr as the resolver may be destroyed while there are still
-  // outstanding request objects.
-  base::WeakPtr<MockHostResolverBase> resolver_;
-  bool complete_ = false;
+  base::WeakPtrFactory<ServiceEndpointRequestImpl> weak_ptr_factory_{this};
 };
 
 class MockHostResolverBase::ProbeRequestImpl
@@ -733,8 +865,9 @@ MockHostResolverBase::CreateServiceEndpointRequest(
     NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource net_log,
     ResolveHostParameters parameters) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return std::make_unique<ServiceEndpointRequestImpl>(
+      std::move(host), network_anonymization_key, parameters,
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 std::unique_ptr<HostResolver::ProbeRequest>
@@ -814,7 +947,7 @@ void MockHostResolverBase::ResolveNow(size_t id) {
   if (it == state_->mutable_requests().end())
     return;  // was canceled
 
-  RequestImpl* req = it->second;
+  RequestBase* req = it->second;
   state_->mutable_requests().erase(it);
 
   int error = DoSynchronousResolution(*req);
@@ -891,7 +1024,7 @@ void MockHostResolverBase::TriggerMdnsListeners(
   }
 }
 
-MockHostResolverBase::RequestImpl* MockHostResolverBase::request(size_t id) {
+MockHostResolverBase::RequestBase* MockHostResolverBase::request(size_t id) {
   RequestMap::iterator request = state_->mutable_requests().find(id);
   CHECK(request != state_->mutable_requests().end());
   CHECK_EQ(request->second->id(), id);
@@ -912,7 +1045,7 @@ MockHostResolverBase::MockHostResolverBase(bool use_caching,
     DCHECK_GE(0, cache_invalidation_num);
 }
 
-int MockHostResolverBase::Resolve(RequestImpl* request) {
+int MockHostResolverBase::Resolve(RequestBase* request) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   last_request_priority_ = request->parameters().initial_priority;
@@ -1060,7 +1193,7 @@ int MockHostResolverBase::ResolveFromIPLiteralOrCache(
   return rv;
 }
 
-int MockHostResolverBase::DoSynchronousResolution(RequestImpl& request) {
+int MockHostResolverBase::DoSynchronousResolution(RequestBase& request) {
   state_->IncrementNumNonLocalResolves();
 
   const RuleResolver::RuleResultOrError& result = rule_resolver_.Resolve(
