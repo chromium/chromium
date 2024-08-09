@@ -90,6 +90,9 @@
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_EXPORT_BUTTON_LABEL" desc="Label for button that exports a list of certificates.">
       Export
     </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_EXPORT_BUTTON_ARIA_LABEL" desc="Text read by screen readers when focusing on the export certificates button. If the button is activated, it will export the list of certificates as a downloadable file. This text will only be announced by screen readers and will not be visible in the UI.">
+      Export all <ph name="CERT_GROUP">$1<ex>Trusted Certificates</ex></ph>
+    </message>
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_NUM_CERTS" desc="Label describing a number of certificates.">
       {COUNT, plural,
       =0 {No certificates}
@@ -131,6 +134,14 @@
     </message>
     <message name="IDS_CERTIFICATE_MANAGER_V2_SUBPAGE_BACK_BUTTON_ARIA_ROLE_DESCRIPTION" desc="Description read by screen readers when focusing on the back button. Indicates to the user that activating the back button will cause the settings page to navigate away from the currently displaying subpage to the parent page. This text will only be announced by screen readers and will not be visible in the UI.">
       Click to navigate away from <ph name="SUBPAGE_TITLE">$1<ex>Installed by your Administrator</ex> subpage</ph>.
+    </message>
+
+    <!-- Cert Entry -->
+    <message name="IDS_CERTIFICATE_MANAGER_V2_CERT_ENTRY_VIEW_ARIA_LABEL" desc="Text read by screen readers when focusing on the view certficate details button. If the button is activated, it will open up a view certificate dialog. This text will only be announced by screen readers and will not be visible in the UI.">
+      View certificate details for <ph name="CERT_NAME">$1<ex>GTS Root R2</ex></ph> in a new dialog
+    </message>
+    <message name="IDS_CERTIFICATE_MANAGER_V2_CERT_HASH_COPY_ARIA_LABEL" desc="Text read by screen readers when focusing on the copy certificate hash button. If the button is activated, it will copy the certificate hash to the clipboard. This text will only be announced by screen readers and will not be visible in the UI.">
+      Copy certificate hash for <ph name="CERT_NAME">$1<ex>GTS Root R2</ex></ph>
     </message>
   </if>
 </grit-part>

@@ -32,6 +32,7 @@
       <!-- TODO(crbug.com/40928765): button for "import and bind" -->
       <cr-button class="action-button"
           hidden$="[[hideExportButton_(hideExport, hasCerts_)]]"
+          aria-label="[[i18n('certificateManagerV2ExportButtonAriaLabel', headerText)]]"
           id="exportCerts" on-click="onExportCertsClick_">
         [[i18n("certificateManagerV2ExportButtonLabel")]]
       </cr-button>

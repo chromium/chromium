@@ -92,6 +92,8 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_NO_CERTIFICATES_ROW},
       {"certificateManagerV2ExportButtonLabel",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_EXPORT_BUTTON_LABEL},
+      {"certificateManagerV2ExportButtonAriaLabel",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_EXPORT_BUTTON_ARIA_LABEL},
       {"certificateManagerV2PlatformCertsTitle",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TITLE},
       {"certificateManagerV2PlatformCertsToggleLabel",
@@ -108,6 +110,10 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
        IDS_CERTIFICATE_MANAGER_V2_SUBPAGE_BACK_BUTTON_ARIA_LABEL},
       {"certificateManagerV2SubpageBackButtonAriaRoleDescription",
        IDS_CERTIFICATE_MANAGER_V2_SUBPAGE_BACK_BUTTON_ARIA_ROLE_DESCRIPTION},
+      {"certificateManagerV2CertEntryViewAriaLabel",
+       IDS_CERTIFICATE_MANAGER_V2_CERT_ENTRY_VIEW_ARIA_LABEL},
+      {"certificateManagerV2CertHashCopyAriaLabel",
+       IDS_CERTIFICATE_MANAGER_V2_CERT_HASH_COPY_ARIA_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

@@ -17,6 +17,7 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './certificate_entry_v2.html.js';
@@ -37,8 +38,9 @@ declare global {
   }
 }
 
+const CertificateEntryV2ElementBase = I18nMixin(PolymerElement);
 
-export class CertificateEntryV2Element extends PolymerElement {
+export class CertificateEntryV2Element extends CertificateEntryV2ElementBase {
   static get is() {
     return 'certificate-entry-v2';
   }
