@@ -13,7 +13,8 @@ from typing import Iterable, List, Tuple
 
 _FILTER_DIR = 'testing/buildbot/filters'
 _SSH_KEYS = os.path.expanduser('~/.ssh/fuchsia_authorized_keys')
-
+_CHROME_HEADLESS = 'CHROME_HEADLESS'
+_SWARMING_SERVER = 'SWARMING_SERVER'
 
 class VersionNotFoundError(Exception):
     """Thrown when version info cannot be retrieved from device."""
@@ -32,14 +33,24 @@ def running_unattended() -> bool:
     """
 
     # TODO(crbug.com/40884247): Change to mixin based approach.
-    return 'SWARMING_SERVER' in os.environ
+    # And remove SWARMING_SERVER check when it's no longer needed by dart,
+    # eureka and flutter to partially revert https://crrev.com/c/4112522.
+    return _CHROME_HEADLESS in os.environ or _SWARMING_SERVER in os.environ
 
 
 def force_running_unattended() -> None:
     """Treats everything as running non-interactively."""
     if not running_unattended():
-        os.environ['SWARMING_SERVER'] = '1'
+        os.environ[_CHROME_HEADLESS] = '1'
         assert running_unattended()
+
+
+def force_running_attended() -> None:
+    """Treats everything as running interactively."""
+    if running_unattended():
+        os.environ.pop(_CHROME_HEADLESS, None)
+        os.environ.pop(_SWARMING_SERVER, None)
+        assert not running_unattended()
 
 
 def get_host_arch() -> str:

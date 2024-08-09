@@ -14,6 +14,8 @@ import unittest.mock as mock
 
 import compatible_utils
 
+# Allow access to constants for testing.
+# pylint: disable=protected-access
 
 @unittest.skipIf(os.name == 'nt', 'Fuchsia tests not supported on Windows')
 class CompatibleUtilsTest(unittest.TestCase):
@@ -21,7 +23,7 @@ class CompatibleUtilsTest(unittest.TestCase):
 
     def test_running_unattended_returns_true_if_headless_set(self) -> None:
         """Test |running_unattended| returns True if CHROME_HEADLESS is set."""
-        with mock.patch('os.environ', {'SWARMING_SERVER': 0}):
+        with mock.patch('os.environ', {compatible_utils._CHROME_HEADLESS: 0}):
             self.assertTrue(compatible_utils.running_unattended())
 
         with mock.patch('os.environ', {'FOO_HEADLESS': 0}):
@@ -163,11 +165,12 @@ class CompatibleUtilsTest(unittest.TestCase):
 
     def test_force_running_unattended(self) -> None:
         """Test |force_running_unattended|."""
-        if compatible_utils.running_unattended():
-            del os.environ['SWARMING_SERVER']
-        self.assertFalse(compatible_utils.running_unattended())
-        compatible_utils.force_running_unattended()
-        self.assertTrue(compatible_utils.running_unattended())
+        # force switching the states twice no matter which state we start in.
+        for _ in range(2):
+            compatible_utils.force_running_attended()
+            self.assertFalse(compatible_utils.running_unattended())
+            compatible_utils.force_running_unattended()
+            self.assertTrue(compatible_utils.running_unattended())
 
 
 if __name__ == '__main__':

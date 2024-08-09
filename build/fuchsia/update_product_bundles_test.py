@@ -16,12 +16,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              'test')))
 
 import common
+import compatible_utils
 
 
 class TestUpdateProductBundles(unittest.TestCase):
   def setUp(self):
     # By default, test in attended mode.
-    os.environ.pop('SWARMING_SERVER', None)
+    compatible_utils.force_running_attended()
     ffx_mock = mock.Mock()
     ffx_mock.returncode = 0
     self._ffx_patcher = mock.patch('common.run_ffx_command',
