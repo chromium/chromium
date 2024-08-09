@@ -42,20 +42,38 @@ source_set("browser_state") {
   allow_circular_includes_from = [ "//ios/chrome/browser/shared/model/profile" ]
 }
 
+source_set("incognito_session_tracker") {
+  sources = [
+    "incognito_session_tracker.h",
+    "incognito_session_tracker.mm",
+  ]
+  deps = [
+    ":browser_state",
+    "//base",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
     "browser_state_info_cache_unittest.cc",
     "chrome_browser_state_unittest.cc",
+    "incognito_session_tracker_unittest.mm",
     "test_chrome_browser_state_manager_unittest.cc",
   ]
   deps = [
     ":browser_state",
+    ":incognito_session_tracker",
     ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/prefs:test_support",
     "//components/variations/net",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
