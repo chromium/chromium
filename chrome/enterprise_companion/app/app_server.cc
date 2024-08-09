@@ -26,9 +26,37 @@
 #include "base/threading/thread.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include <atlsecurity.h>
+
+#include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/scoped_handle.h"
+#endif
+
 namespace enterprise_companion {
 
 namespace {
+
+#if BUILDFLAG(IS_WIN)
+bool IsSystemProcess() {
+  CAccessToken current_process_token;
+  if (!current_process_token.GetProcessToken(TOKEN_QUERY,
+                                             ::GetCurrentProcess())) {
+    PLOG(ERROR) << "CAccessToken::GetProcessToken failed";
+    return false;
+  }
+
+  CSid logon_sid;
+  if (!current_process_token.GetUser(&logon_sid)) {
+    PLOG(ERROR) << "CAccessToken::GetUser failed";
+    return false;
+  }
+
+  return logon_sid == Sids::System();
+}
+#endif
 
 // AppServer runs the EnterpriseCompanion Mojo IPC server process.
 class AppServer : public App {
@@ -36,6 +64,28 @@ class AppServer : public App {
   AppServer() {
 #if !BUILDFLAG(IS_MAC)
     net_thread_.StartWithOptions({base::MessagePumpType::IO, 0});
+#endif
+#if BUILDFLAG(IS_WIN)
+    // Try to impersonate the logged-in user for the lifetime of the net thread.
+    // Skip impersonation if the process is not running as the SYSTEM user,
+    // which should only be true in tests.
+    if (IsSystemProcess()) {
+      net_thread_.task_runner()->PostTask(
+          FROM_HERE, base::BindOnce([] {
+            updater::HResultOr<updater::ScopedKernelHANDLE> token =
+                updater::GetLoggedOnUserToken();
+            VLOG_IF(2, !token.has_value())
+                << __func__ << ": GetLoggedOnUserToken failed: " << std::hex
+                << token.error();
+            if (token.has_value()) {
+              if (!::ImpersonateLoggedOnUser(token->get())) {
+                PLOG(ERROR)
+                    << "Failed to impersonate logged on user. Networking "
+                       "may fail.";
+              }
+            }
+          }));
+    }
 #endif
   }
 

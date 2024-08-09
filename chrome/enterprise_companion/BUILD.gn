@@ -87,6 +87,7 @@ source_set("base") {
     "//base",
     "//chrome/enterprise_companion/device_management_storage",
     "//chrome/enterprise_companion/proto",
+    "//chrome/updater:public_sources",
     "//components/named_mojo_ipc_server",
     "//components/named_system_lock",
     "//components/policy/core/common",
