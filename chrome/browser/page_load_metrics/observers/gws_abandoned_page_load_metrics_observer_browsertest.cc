@@ -782,18 +782,13 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 }
 
 // Test SRP navigations that are cancelled by a new navigation, at various
-// points during the navigation.
-// TODO(https://crbug.com/347706997): Record the type of the new navigation.
-// TODO(crbug.com/353708981): Test flaky on Linux MSAN
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_SearchCancelledByNewNavigation \
-  DISABLED_SearchCancelledByNewNavigation
-#else
-#define MAYBE_SearchCancelledByNewNavigation SearchCancelledByNewNavigation
-#endif
+// points during the navigation.  Note we are only testing with throttleable
+// milestones for this test since the new navigation might take a while to
+// arrive on the browser side, and the oldnavigation might have advanced if
+// it's not actually paused.
 IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
-                       MAYBE_SearchCancelledByNewNavigation) {
-  for (NavigationMilestone milestone : all_testable_milestones()) {
+                       SearchCancelledByNewNavigation) {
+  for (NavigationMilestone milestone : all_throttleable_milestones()) {
     for (AbandonReason reason :
          {AbandonReason::kNewReloadNavigation,
           AbandonReason::kNewHistoryNavigation,
