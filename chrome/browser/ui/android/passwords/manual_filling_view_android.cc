@@ -128,7 +128,7 @@ ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
           env, java_object, j_user_info,
           static_cast<int>(tab_data.get_sheet_type()), field.display_text(),
           field.text_to_fill(), field.a11y_description(), field.id(),
-          field.is_obfuscated(), field.selectable());
+          field.icon_id(), field.is_obfuscated(), field.selectable());
     }
   }
 

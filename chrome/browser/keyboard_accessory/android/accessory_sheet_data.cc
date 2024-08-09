@@ -28,10 +28,10 @@ AccessorySheetField& AccessorySheetField::operator=(AccessorySheetField&&) =
 std::ostream& operator<<(std::ostream& os, const AccessorySheetField& field) {
   os << "(display text: \"" << field.display_text() << "\", "
      << "text_to_fill: \"" << field.text_to_fill() << "\", "
-     << "a11y_description: \"" << field.a11y_description() << "\", "
-     << "id: \"" << field.id() << "\", "
-     << "is " << (field.selectable() ? "" : "not ") << "selectable, "
-     << "is " << (field.is_obfuscated() ? "" : "not ") << "obfuscated)";
+     << "a11y_description: \"" << field.a11y_description() << "\", " << "id: \""
+     << field.id() << "\", " << "icon_id: \"" << field.icon_id() << "\", "
+     << "is " << (field.selectable() ? "" : "not ") << "selectable, " << "is "
+     << (field.is_obfuscated() ? "" : "not ") << "obfuscated)";
   return os;
 }
 
@@ -73,6 +73,12 @@ AccessorySheetField::Builder&& AccessorySheetField::Builder::SetIsObfuscated(
 AccessorySheetField::Builder&& AccessorySheetField::Builder::SetSelectable(
     bool selectable) && {
   accessory_sheet_field_.set_selectable(selectable);
+  return std::move(*this);
+}
+
+AccessorySheetField::Builder&& AccessorySheetField::Builder::SetIconId(
+    int icon_id) && {
+  accessory_sheet_field_.set_icon_id(icon_id);
   return std::move(*this);
 }
 
@@ -474,6 +480,27 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
           .SetSelectable(selectable)
           .Build());
   return *this;
+}
+
+AccessorySheetData::Builder&& AccessorySheetData::Builder::AppendField(
+    std::u16string display_text,
+    std::u16string text_to_fill,
+    std::u16string a11y_description,
+    std::string id,
+    int icon_id,
+    bool is_obfuscated,
+    bool selectable) && {
+  accessory_sheet_data_.mutable_user_info_list().back().add_field(
+      AccessorySheetField::Builder()
+          .SetDisplayText(std::move(display_text))
+          .SetTextToFill(std::move(text_to_fill))
+          .SetA11yDescription(std::move(a11y_description))
+          .SetId(std::move(id))
+          .SetIconId(icon_id)
+          .SetIsObfuscated(is_obfuscated)
+          .SetSelectable(selectable)
+          .Build());
+  return std::move(*this);
 }
 
 AccessorySheetData::Builder&&

@@ -180,6 +180,7 @@ class ManualFillingComponentBridge {
             @JniType("std::u16string") String textToFill,
             @JniType("std::u16string") String a11yDescription,
             @JniType("std::string") String guid,
+            int iconId,
             boolean isObfuscated,
             boolean selectable) {
         Callback<UserInfoField> callback = null;
@@ -204,6 +205,7 @@ class ManualFillingComponentBridge {
                                 .setTextToFill(textToFill)
                                 .setA11yDescription(a11yDescription)
                                 .setId(guid)
+                                .setIconId(iconId)
                                 .setIsObfuscated(isObfuscated)
                                 .setCallback(callback)
                                 .build());

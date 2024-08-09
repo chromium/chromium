@@ -20,6 +20,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
@@ -51,6 +52,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/resources/android/theme_resources.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "content/public/browser/render_frame_host.h"
@@ -76,9 +78,10 @@ using ShouldShowAction = ManualFillingController::ShouldShowAction;
 
 namespace {
 
-autofill::UserInfo TranslateCredentials(bool current_field_is_password,
+autofill::UserInfo TranslateCredentials(const UiCredential& credential,
                                         const url::Origin& frame_origin,
-                                        const UiCredential& credential) {
+                                        bool current_field_is_password,
+                                        int username_icon_id) {
   DCHECK(!credential.origin().opaque());
   UserInfo user_info(
       credential.origin().Serialize(),
@@ -89,6 +92,7 @@ autofill::UserInfo TranslateCredentials(bool current_field_is_password,
   user_info.add_field(AccessorySheetField::Builder()
                           .SetDisplayText(username)
                           .SetSelectable(!credential.username().empty())
+                          .SetIconId(username_icon_id)
                           .Build());
 
   user_info.add_field(
@@ -210,14 +214,17 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
         credential_cache_->GetCredentialStore(origin).GetCredentials();
     info_to_add.reserve(suggestions.size());
     for (const auto& credential : suggestions) {
-      info_to_add.push_back(
-          TranslateCredentials(is_password_field, origin, credential));
       const std::string username_utf8 =
           base::UTF16ToUTF8(credential.username());
+      int username_icon_id = 0;
       if (auto it = plus_addresses_used_as_usernames.find(username_utf8);
           it != plus_addresses_used_as_usernames.end()) {
         it->second = true;
+        username_icon_id =
+            ResourceMapper::MapToJavaDrawableId(IDR_AUTOFILL_PLUS_ADDRESS);
       }
+      info_to_add.emplace_back(TranslateCredentials(
+          credential, origin, is_password_field, username_icon_id));
     }
   }
 

@@ -18,6 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_affiliated_plus_profiles_provider.h"
@@ -49,6 +50,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
+#include "components/resources/android/theme_resources.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webauthn/android/cred_man_support.h"
@@ -1000,8 +1002,59 @@ TEST_F(PasswordAccessoryControllerTest, PlusAddressUsedAsUsername) {
       controller()->GetSheetData(),
       PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
           .AddUserInfo(kExampleSite)
-          .AppendField(u"example@gmail", u"example@gmail", false, true)
+          .AppendField(
+              u"example@gmail", u"example@gmail", u"example@gmail", "",
+              ResourceMapper::MapToJavaDrawableId(IDR_AUTOFILL_PLUS_ADDRESS),
+              false, true)
           .AppendField(u"S3cur3", password_for_str(u"example@gmail"), true,
+                       false)
+          .AppendFooterCommand(generate_plus_address_str(),
+                               autofill::AccessoryAction::
+                                   CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
+          .AppendFooterCommand(select_plus_address_str(),
+                               autofill::AccessoryAction::
+                                   SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
+          .Build());
+}
+
+TEST_F(PasswordAccessoryControllerTest, BothPlusAddressAndCredentialShown) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled);
+
+  CreateSheetController();
+
+  std::vector<PasswordForm> matches = {
+      CreateEntry("foo.bar@gmail", "S3cur3", GURL(kExampleSite),
+                  PasswordForm::MatchType::kExact)};
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      matches, CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+
+  MockAffiliatedPlusProfilesProvider provider;
+  EXPECT_CALL(provider, AddObserver(controller()));
+  controller()->RegisterPlusProfilesProvider(provider.GetWeakPtr());
+
+  // Provide 1 plus address, which is used as a username in the saved
+  // credential. It should not appear as a standalone suggestion in the password
+  // sheet.
+  std::vector<PlusProfile> profiles{plus_addresses::test::CreatePlusProfile(
+      /*plus_address=*/"example@gmail", /*is_confirmed=*/true,
+      /*use_full_domain*/ false)};
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
+  EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
+      .WillRepeatedly(Return(base::make_span(profiles)));
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableNonSearchField);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
+          .AddUserInfo(kExampleSite)
+          .AddPlusAddressSection("foo.com", u"example@gmail")
+          .AppendField(u"foo.bar@gmail", u"foo.bar@gmail",
+                       /*is_obfuscated=*/false, /*selectable=*/true)
+          .AppendField(u"S3cur3", password_for_str(u"foo.bar@gmail"), true,
                        false)
           .AppendFooterCommand(generate_plus_address_str(),
                                autofill::AccessoryAction::

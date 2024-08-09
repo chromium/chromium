@@ -42,6 +42,8 @@ class AccessorySheetField final {
 
   bool selectable() const { return selectable_; }
 
+  int icon_id() const { return icon_id_; }
+
   bool operator==(const AccessorySheetField&) const = default;
 
  private:
@@ -67,6 +69,8 @@ class AccessorySheetField final {
 
   void set_selectable(bool selectable) { selectable_ = selectable; }
 
+  void set_icon_id(int icon_id) { icon_id_ = icon_id; }
+
   std::u16string display_text_;
   // The string that would be used to fill in the form, for cases when it is
   // different from |display_text_|. For example: For unmasked credit cards,
@@ -75,6 +79,7 @@ class AccessorySheetField final {
   std::u16string text_to_fill_;
   std::u16string a11y_description_;
   std::string id_;  // Optional, if needed to complete filling.
+  int icon_id_ = 0;
   bool is_obfuscated_ = false;
   bool selectable_ = false;
 };
@@ -99,6 +104,8 @@ class AccessorySheetField::Builder final {
   Builder&& SetIsObfuscated(bool is_obfuscated) &&;
 
   Builder&& SetSelectable(bool selectable) &&;
+
+  Builder&& SetIconId(int icon_id) &&;
 
   // This class returns the constructed AccessorySheetField object. Since this
   // would render the builder unusable, it's required to destroy the object
@@ -474,6 +481,14 @@ class AccessorySheetData::Builder final {
                        std::string id,
                        bool is_obfuscated,
                        bool selectable) &;
+
+  Builder&& AppendField(std::u16string display_text,
+                        std::u16string text_to_fill,
+                        std::u16string a11y_description,
+                        std::string id,
+                        int icon_id,
+                        bool is_obfuscated,
+                        bool selectable) &&;
 
   // Adds a new PlusAddressSection `accessory_sheet_data_`.
   Builder&& AddPlusAddressSection(std::string origin,
