@@ -3639,10 +3639,6 @@ class CSSMathExpressionNodeParser {
 
     DCHECK(RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled());
 
-    // TODO(https://crbug.com/313072): Restrict usage of calc-size() inside of
-    // calc(), probably along the lines of
-    // https://github.com/w3c/csswg-drafts/issues/626#issuecomment-1881898328
-
     tokens.ConsumeWhitespace();
 
     CSSMathExpressionNode* basis = nullptr;
