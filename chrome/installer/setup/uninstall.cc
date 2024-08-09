@@ -796,18 +796,14 @@ void UninstallOsUpdateHandler(const base::FilePath& installer_dir,
                               const InstallerState& installer_state) {
   const base::FilePath os_update_handler_exe =
       installer_dir.DirName().Append(installer::kOsUpdateHandlerExe);
-  if (!base::PathExists(os_update_handler_exe)) {
-    return;
-  }
-  constexpr base::TimeDelta kOsUpdateUninstallTimeout =
-      base::Milliseconds(5000);
+  constexpr base::TimeDelta kOsUpdateUninstallTimeout = base::Seconds(5);
   base::CommandLine uninstall_cmd(os_update_handler_exe);
   uninstall_cmd.AppendSwitch(installer::switches::kUninstall);
   if (installer_state.system_install()) {
     uninstall_cmd.AppendSwitch(installer::switches::kSystemLevel);
   }
   const std::wstring cmd_string = uninstall_cmd.GetCommandLineString();
-  VLOG(0) << "Launching: " << cmd_string;
+  VLOG(1) << "Launching: " << cmd_string;
   const base::Process process = base::LaunchProcess(uninstall_cmd, {});
   int exit_code = 0;
   if (!process.IsValid()) {
@@ -817,7 +813,8 @@ void UninstallOsUpdateHandler(const base::FilePath& installer_dir,
     // The GetExitCodeProcess failed or timed-out.
     LOG(ERROR) << "Command (" << cmd_string << ") is taking more than "
                << kOsUpdateUninstallTimeout.InMilliseconds()
-               << " milliseconds to complete.";
+               << " milliseconds to complete. Terminating it.";
+    process.Terminate(0, /*wait=*/true);
   } else if (exit_code != 0) {
     LOG(ERROR) << "Command (" << cmd_string << ") exited with code "
                << exit_code;
