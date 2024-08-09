@@ -49,7 +49,8 @@ void MatrixFromMatrixDataProto(const MatrixData& matrix_data, Matrix* matrix) {
   }
 }
 
-#if !defined(MEDIAPIPE_MOBILE) && !defined(MEDIAPIPE_LITE)
+#if !defined(MEDIAPIPE_MOBILE) && !defined(MEDIAPIPE_LITE) && \
+    !defined(MEDIAPIPE_PROTO_LITE)
 std::string MatrixAsTextProto(const Matrix& matrix) {
   MatrixData matrix_data;
   MatrixDataProtoFromMatrix(matrix, &matrix_data);

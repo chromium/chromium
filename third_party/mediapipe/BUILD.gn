@@ -114,6 +114,7 @@ proto_library("mediapipe_proto") {
     "src/mediapipe/framework/formats/detection.proto",
     "src/mediapipe/framework/formats/image_format.proto",
     "src/mediapipe/framework/formats/location_data.proto",
+    "src/mediapipe/framework/formats/matrix_data.proto",
     "src/mediapipe/framework/formats/object_detection/anchor.proto",
     "src/mediapipe/framework/mediapipe_options.proto",
     "src/mediapipe/framework/packet_factory.proto",
@@ -177,9 +178,9 @@ tflite_source_set("mediapipe_tasks_always_link") {
     "src/mediapipe/calculators/tensor/inference_calculator_utils.h",
     "src/mediapipe/calculators/tensor/inference_feedback_manager.cc",
     "src/mediapipe/calculators/tensor/inference_feedback_manager.h",
+    "src/mediapipe/calculators/tensor/inference_interpreter_delegate_runner.cc",
     "src/mediapipe/calculators/tensor/inference_io_mapper.cc",
     "src/mediapipe/calculators/tensor/inference_io_mapper.h",
-    "src/mediapipe/calculators/tensor/inference_interpreter_delegate_runner.cc",
     "src/mediapipe/calculators/tensor/tensor_converter_metal.cc",
     "src/mediapipe/calculators/tensor/tensor_converter_metal.h",
     "src/mediapipe/calculators/tensor/tensor_span.cc",
@@ -341,6 +342,8 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/framework/deps/topologicalsorter.h",
     "src/mediapipe/framework/executor.cc",
     "src/mediapipe/framework/executor.h",
+    "src/mediapipe/framework/formats/matrix.cc",
+    "src/mediapipe/framework/formats/matrix.h",
     "src/mediapipe/framework/formats/tensor.cc",
     "src/mediapipe/framework/formats/tensor.h",
     "src/mediapipe/framework/formats/tensor_ahwb.cc",
@@ -458,6 +461,9 @@ tflite_static_library("mediapipe_core") {
     sources += [ "src/mediapipe/util/resource_util_windows.cc" ]
   } else if (is_apple) {
     sources += [ "src/mediapipe/util/resource_util_apple.cc" ]
+
+    # TODO: the right solution is for files that use objective-c to use the
+    # extension .mm.
     cflags = [ "-ObjC++" ]
   } else if (is_android) {
     # This is by design - our Windows no-op implementation works for Android
@@ -525,6 +531,7 @@ tflite_static_library("mediapipe_core") {
   configs_to_remove = [ "//build/config/compiler:chromium_code" ]
   configs_to_add = [
     "//build/config/compiler:no_chromium_code",
+    "//third_party/eigen3:eigen_includes",
     ":mediapipe_flags",
     ":mediapipe_config",
     ":mediapipe_internal_config",
