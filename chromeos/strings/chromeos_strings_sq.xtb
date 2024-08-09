@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">shigjeta poshtë</translation>
 <translation id="4425149324548788773">Disku im</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> është joaktiv</translation>
+<translation id="4428840632568803690">Folësi <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Bileta e Kerberos skadon së shpejti</translation>
 <translation id="4431821876790500265">Shiko raportin</translation>
 <translation id="4443192710976771874">të kuqe</translation>
@@ -818,6 +819,7 @@
 <translation id="5332948983412042822">Zgjidh një të ri tani</translation>
 <translation id="5333530671332546086">Gjendje e panjohur portali</translation>
 <translation id="5335373365677455232">rozë</translation>
+<translation id="5344619683981067131">Teksti i zgjedhur po zëvendësohet me sugjerimin</translation>
 <translation id="5346687412805619883">Rrjeti lokal</translation>
 <translation id="5358174242040570474">Ndodhi një gabim. Provo të zgjedhësh sërish një imazh sfondi ose të rihapësh aplikacionin.</translation>
 <translation id="5372659122375744710">Rrjeti Wi-Fi nuk është i sigurt</translation>
@@ -869,6 +871,7 @@
 <translation id="5662240986744577912">aktivizo/çaktivizo ekranin e privatësisë</translation>
 <translation id="5669267381087807207">Po aktivizohet</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">Përshkruaj imazhin e sfondit që dëshiron të krijosh</translation>
 <translation id="5680504961595602662">Një <ph name="SURREAL_LANDSCAPE" /> surreale me <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">qershi</translation>
 <translation id="5691511426247308406">Familja</translation>
@@ -1102,6 +1105,7 @@
 <translation id="680983167891198932">Çelësi</translation>
 <translation id="6816797338148849397">Ka informacion në lidhje me zgjedhjen tënde. Përdor tastin "Shigjeta lart" për ta hapur.</translation>
 <translation id="6853312040151791195">Shpejtësia e shkarkimit</translation>
+<translation id="6862416241246624313">Komentet u dërguan</translation>
 <translation id="6866732840889595464">luledele</translation>
 <translation id="6871256179359663621">vjollcë e çelur</translation>
 <translation id="6889786074662672253">Gjatë rinisjes, mos e hiq nga priza pajisjen e jashtme dhe mos e fik kompjuterin. Mund ta minimizosh këtë dritare. Kjo mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
@@ -1295,6 +1299,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7802764839223122985">Tasti mungon. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Jo, faleminderit</translation>
 <translation id="7805768142964895445">Statusi</translation>
+<translation id="7811024689617730980">Zgjidh një ditë për rivendosjen automatike që varion nga 1 deri në 31, duke i përfshirë këto</translation>
 <translation id="7813073042185856802">mal</translation>
 <translation id="7819857487979277519">PSK (WPA ose RSN)</translation>
 <translation id="7824219488248240180">post-impresionist</translation>

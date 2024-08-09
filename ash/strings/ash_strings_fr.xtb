@@ -104,6 +104,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Appuyez sur <ph name="LAUNCHER_KEY_NAME" /> + G à tout moment.</translation>
 <translation id="1306549533752902673">APPLICATIONS RECOMMANDÉES</translation>
+<translation id="1310396869741602366">Modifier le ton</translation>
 <translation id="1312604459020188865">Force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Toujours afficher l'étagère</translation>
 <translation id="132346741904777634">Appareil photo aligné sur l'angle supérieur gauche. Conflit avec la surface du système.</translation>
@@ -234,6 +235,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1768366657309696705">Le raccourci clavier <ph name="LAUNCHER_KEY_NAME" />+. (point) a été modifié. Pour utiliser la touche Entrée, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+Maj+Retour arrière.</translation>
 <translation id="1770726142253415363">Déplacée vers la ligne <ph name="ROW_NUMBER" />, colonne <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Vers la droite</translation>
+<translation id="17722141032474077">Calculs</translation>
 <translation id="1774796056689732716">Agenda, <ph name="CURRENT_MONTH_YEAR" />, le <ph name="DATE" /> est actuellement sélectionné.</translation>
 <translation id="178347895271755507">Configurer l'affichage des photos, notifications et contenus multimédias récents de votre téléphone</translation>
 <translation id="1787955149152357925">Désactivé</translation>
@@ -375,6 +377,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2392659840443812875">Aucun point d'accès disponible. Vérifiez que votre appareil est à proximité et que le Bluetooth est activé.</translation>
 <translation id="2397416548179033562">Afficher le menu Chrome</translation>
 <translation id="240006516586367791">Commandes multimédias</translation>
+<translation id="240155812475001919">Document Google Docs</translation>
 <translation id="2402411679569069051">Pour déverrouiller votre Chromebook, utilisez votre empreinte ou déverrouillez votre téléphone</translation>
 <translation id="240545663114741956">Appuyez deux fois sur <ph name="ACCELERATOR" /> pour vous déconnecter.</translation>
 <translation id="2405664212338326887">Non connecté</translation>
@@ -464,7 +467,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2704781753052663061">Rejoindre d'autres réseaux Wi-Fi</translation>
 <translation id="2705001408393684014"><ph name="STATE_TEXT" /> Déplacez le curseur vers la droite pour activer le son.</translation>
 <translation id="2706462751667573066">Haut</translation>
-<translation id="271033894570825754">Nouveau</translation>
 <translation id="2710984741481549981">Verrouiller les fenêtres</translation>
 <translation id="2718395828230677721">Éclairage nocturne</translation>
 <translation id="2726420622004325180">Les données mobiles doivent être activées sur votre téléphone pour qu'il puisse fournir un point d'accès</translation>
@@ -561,6 +563,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3077734595579995578">maj</translation>
 <translation id="3081696990447829002">Développer le menu</translation>
 <translation id="3087734570205094154">En bas</translation>
+<translation id="3090214513075567547">Ouvrir le menu contextuel</translation>
 <translation id="3090989381251959936">Activer/Désactiver <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Manquante</translation>
 <translation id="3095995014811312755">version</translation>
@@ -575,6 +578,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3122464029669770682">UC</translation>
 <translation id="3125690294288312932">Type de travaux et devoirs</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3130793786899299931">Modifier la longueur</translation>
 <translation id="3134486240968249588">Quelques points à retenir</translation>
 <translation id="3139188263101386725">Utiliser le raccourci mis à jour</translation>
 <translation id="3139942575505304791">Bureau 1</translation>
@@ -585,6 +589,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="316086887565479535">Le modèle contient des applis non compatibles</translation>
 <translation id="3160929076476941240">2 h</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> effectue un rollback de votre <ph name="DEVICE_TYPE" />. Cela entraînera la réinitialisation de votre appareil et la suppression de toutes vos données.</translation>
+<translation id="316798519864381606">Présentation Google Slides</translation>
 <translation id="3171170659304083361">Paramètres des modes de saisie</translation>
 <translation id="3176221688814061633">Votre Chromebook ou votre appareil Bluetooth utilise une ancienne version du Bluetooth. Activez le Bluetooth Super Résolution ou utilisez un micro interne pour une meilleure qualité audio.</translation>
 <translation id="3181441307743005334">Le redémarrage peut prendre du temps</translation>
@@ -900,6 +905,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="425364040945105958">Aucune carte SIM</translation>
 <translation id="4261870227682513959">Afficher les paramètres de notification. Les notifications sont désactivées</translation>
 <translation id="4264977415328155183">(réduit)</translation>
+<translation id="4265259722091164182">Majuscule Au Début De Chaque Mot</translation>
 <translation id="4269883910223712419">L'administrateur de cet appareil peut :</translation>
 <translation id="4274537685965975248">Le raccourci clavier Ctrl+Alt+Flèche vers le bas a été modifié. Pour utiliser la touche Fin, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers la droite.</translation>
 <translation id="4275283744500212192">Accéder aux options de mise en page des fenêtres</translation>
@@ -909,6 +915,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4283888303416325161">Veuillez saisir votre mot de passe pour renforcer la sécurité</translation>
 <translation id="4285498937028063278">Retirer</translation>
 <translation id="428715201724021596">Connexion au profil… Cela peut prendre quelques minutes.</translation>
+<translation id="4287250812980588583">Fenêtre Chrome</translation>
 <translation id="4294319844246081198">Bonjour <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Effacer les <ph name="COUNT" /> notifications</translation>
 <translation id="4300272766492248925">Ouvrir l'application</translation>
@@ -985,6 +992,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4544483149666270818">Sélectionner une fenêtre à enregistrer</translation>
 <translation id="4545950850562423083">Enregistrer la page active dans les favoris</translation>
 <translation id="4548482551627849548">Déplacer la fenêtre active vers le bureau à gauche</translation>
+<translation id="4549853322523631092">Aucun résultat.</translation>
 <translation id="4552748006424994716">Pour éviter l'écho, vous pouvez n'écouter votre micro qu'avec un casque filaire.</translation>
 <translation id="4560576029703263363">Activé</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1022,6 +1030,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4667099493359681081">Téléchargement du fichier <ph name="FILENAME" /> en cours</translation>
 <translation id="4672539464599646374">Économiseur de batterie activé</translation>
 <translation id="4673427585974421255">Laisser activé</translation>
+<translation id="4677040906536311086">Feuille de calcul Google Sheets</translation>
 <translation id="468293128311738995">Applis de votre téléphone</translation>
 <translation id="4690510401873698237">Étagère en bas</translation>
 <translation id="4696813013609194136">Déverrouiller l'appareil avec le code parental</translation>
@@ -1446,6 +1455,7 @@ Aucun appareil connecté.</translation>
 <translation id="6068258534237496331">Commandes d'appel vidéo</translation>
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
 <translation id="6074087755403037157">Version bêta</translation>
+<translation id="6075098173600599596">Modifier la casse</translation>
 <translation id="6091929401758362855">Playlist : <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Désactivé par l'administrateur</translation>
 <translation id="6095008505822982596">Débit</translation>
@@ -1504,6 +1514,7 @@ Aucun appareil connecté.</translation>
 <translation id="6249795363855770621">Impossible de marquer la tâche comme terminée. Réessayez une fois en ligne.</translation>
 <translation id="6254629735336163724">Verrouillée en position horizontale</translation>
 <translation id="6259254695169772643">Effectuez une sélection à l'aide de votre stylet</translation>
+<translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" /> : activation en cours…</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">Afficher le code source de la page</translation>
@@ -1574,6 +1585,7 @@ Aucun appareil connecté.</translation>
 <translation id="6537924328260219877">Force du signal : <ph name="SIGNAL_STRENGTH" />, batterie du téléphone à <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Téléchargement en cours d'analyse : <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Diffusion vers <ph name="RECEIVER_NAME" />…</translation>
+<translation id="6542891623636520977">Emoji, GIF et plus</translation>
 <translation id="6555373427270923730">Saisissez une adresse Web dans la barre d'adresse, puis appuyez sur <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nouvelle installation</translation>
@@ -1671,6 +1683,7 @@ Nouvelle installation</translation>
 <translation id="6874854809828346832">Voir les détails du point d'accès. Celui-ci est activé.</translation>
 <translation id="6878400149835617132">Raccourci désactivé</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 appli}one{# appli}other{# applis}}</translation>
+<translation id="6879454869409141992">Activer le verrouillage des majuscules</translation>
 <translation id="6883768636838842873">Raccourcis clavier, conseils d'utilisation de l'appareil, etc.</translation>
 <translation id="6884665277231944629">Revenir à aujourd'hui</translation>
 <translation id="6886172995547742638">Cela peut nuire aux performances de votre <ph name="DEVICE_TYPE" />. Utilisez un adaptateur secteur USB-C de <ph name="PREFERRED_MINIMUM_POWER" /> W ou plus.</translation>
@@ -1895,6 +1908,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7725108879223146004">Voir les détails du point d'accès. Il est en cours de désactivation.</translation>
 <translation id="7726391492136714301">Afficher les notifications et les applis de votre téléphone</translation>
 <translation id="7727952505535211425">Ouvrir dans un nouvel onglet le site indiqué dans la barre d'adresse</translation>
+<translation id="7728657226117099693">Désactiver le verrouillage des majuscules</translation>
 <translation id="7742327441377685481">Aucune notification</translation>
 <translation id="774736258792760908">Lorsque vous activez M'aider à écrire et M'aider à lire, le texte saisi et le contenu du document sont envoyés aux serveurs d'IA de Google pour générer des suggestions de texte et des résumés, répondre aux questions et améliorer le produit, conformément aux <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel, sensible ou confidentiel.</translation>
 <translation id="7748275671948949022">Mettre en surbrillance le bouton du lanceur d'applications sur l'étagère</translation>
@@ -1969,6 +1983,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7946681191253332687">Mises à jour de sécurité étendues disponibles</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> souhaite utiliser votre <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Réduire la luminosité du clavier</translation>
+<translation id="7953176344218790168">MAJUSCULES</translation>
 <translation id="7953994493035617347">Confirmer la nouvelle résolution ?</translation>
 <translation id="795958884516058160">Loupe plein écran activée. Appuyez de nouveau sur <ph name="ACCELERATOR" /> pour la désactiver.</translation>
 <translation id="7962583092928373823">Masquer toutes les suggestions Google Agenda</translation>
@@ -2151,6 +2166,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8649597172973390955">Étagère toujours affichée</translation>
 <translation id="8652175077544655965">Fermer les paramètres</translation>
 <translation id="8653151467777939995">Afficher les paramètres de notification. Les notifications sont activées</translation>
+<translation id="8657066291275741003">minuscules</translation>
 <translation id="8660331759611631213">Racine carrée de 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Appuyez sur Entrée pour faire une capture d'écran partielle</translation>

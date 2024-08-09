@@ -148,6 +148,7 @@
 <translation id="7792771145871471484">Revisar as sugestões.</translation>
 <translation id="7825973332242257878">Grupos de guias</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Colocar <ph name="TABS_COUNT_ONE" /> guia selecionada no grupo}one{Colocar <ph name="TABS_COUNT_MANY" /> guia selecionada no grupo}other{Colocar <ph name="TABS_COUNT_MANY" /> guias selecionadas no grupo}}</translation>
+<translation id="7853202427316060426">Atividade</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. <ph name="REVIEWS_COUNT_ONE" /> avaliação}one{Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. <ph name="REVIEWS_COUNT_MANY" /> avaliação}other{Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. <ph name="REVIEWS_COUNT_MANY" /> avaliações}}</translation>
 <translation id="7885132941432959125">Mover guia para a direita</translation>
 <translation id="7939917283308035850">Cor não selecionada: <ph name="COLOR_NAME" /></translation>

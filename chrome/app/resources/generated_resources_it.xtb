@@ -437,7 +437,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1307431692088049276">Non ripetere più la domanda</translation>
 <translation id="1307559529304613120">Spiacenti, il sistema non è riuscito a memorizzare il token di accesso all'API a lungo termine per questo dispositivo.</translation>
 <translation id="1308548450293664112">Ho creato io questo file, gruppo di pulsanti di opzione, 1 di 3</translation>
-<translation id="1308876641060960899">Quando usi Google Lens, viene inviato uno screenshot della pagina a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">I dati che influiscono sulla personalizzazione degli annunci vengono eliminati</translation>
 <translation id="1311294419381837540">Stai trasmettendo una scheda. Puoi mettere in pausa o interrompere la trasmissione in qualsiasi momento.</translation>
 <translation id="131188242279372879">Scopri la Protezione avanzata per ottenere il massimo livello di sicurezza di Chrome per i download</translation>
@@ -2645,6 +2644,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2853121255651601031">Password salvata</translation>
 <translation id="2855243985454069333">Consente di eliminare la cronologia da tutti i dispositivi sincronizzati</translation>
 <translation id="2855812646048059450">Accedi con <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Modalità più restrittiva</translation>
 <translation id="2856776373509145513">Crea un nuovo container</translation>
 <translation id="2856907950922663165">Disattivare la crittografia degli URL?</translation>
 <translation id="2859741939921354763">Importa password in <ph name="BRAND" /></translation>
@@ -3122,7 +3122,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3220943972464248773">Per sincronizzare le tue password devi verificare la tua identità</translation>
 <translation id="3222066309010235055">Prerender: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Connetti a <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Cerca ciò che vuoi su questa pagina con Google Lens</translation>
 <translation id="3223109931751684474">Rimuovi l'accesso alle tue passkey su questo dispositivo</translation>
 <translation id="3223531857777746191">Pulsante di ripristino</translation>
 <translation id="3225084153129302039">Avatar viola predefinito</translation>
@@ -6401,6 +6400,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5623282979409330487">Questo sito sta accedendo ai sensori di movimento.</translation>
 <translation id="5623842676595125836">Log</translation>
 <translation id="5624120631404540903">Gestisci password</translation>
+<translation id="5624959475330585145">Chiedi prima di utilizzare connessioni non sicure</translation>
 <translation id="5625225435499354052">Modifica in Google Pay</translation>
 <translation id="5626134646977739690">Nome:</translation>
 <translation id="5627832140542566187">Orientamento del display</translation>
@@ -9637,6 +9637,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8008356846765065031">Disconnesso da Internet. Controlla la tua connessione Internet.</translation>
 <translation id="8008704580256716350">File sospetto bloccato</translation>
 <translation id="8009225694047762179">Gestisci password</translation>
+<translation id="8010081455002666927">Rileva automaticamente</translation>
 <translation id="8011372169388649948">Preferito "<ph name="BOOKMARK_TITLE" />" spostato.</translation>
 <translation id="8012188750847319132">bloc maiusc</translation>
 <translation id="8012463809859447963">Dettagli hotspot istantaneo</translation>
@@ -11040,6 +11041,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9009707268312089299">Importato da Windows</translation>
 <translation id="9009708085379296446">Forse intendevi modificare la pagina?</translation>
 <translation id="9010845741772269259">Aggiungi metodi di pagamento</translation>
+<translation id="901087299639956505">Modalità bilanciata</translation>
 <translation id="9011163749350026987">Mostra sempre l'icona</translation>
 <translation id="9011262023858991985">Trasmissione di questa scheda in corso…</translation>
 <translation id="9011393886518328654">Note di rilascio</translation>

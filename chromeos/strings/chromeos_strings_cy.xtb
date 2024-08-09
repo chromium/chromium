@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">saeth i lawr</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622">Mae <ph name="NETWORK_NAME" /> wedi'i ddiffodd</translation>
+<translation id="4428840632568803690">Siaradwr <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Mae tocyn Kerberos yn darfod yn fuan</translation>
 <translation id="4431821876790500265">Gweld yr adroddiad</translation>
 <translation id="4443192710976771874">coch</translation>
@@ -1298,6 +1299,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="7802764839223122985">Mae'r fysell ar goll. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Dim diolch</translation>
 <translation id="7805768142964895445">Statws</translation>
+<translation id="7811024689617730980">Dewiswch ddiwrnod ailosod awtomatig o'r ystod 1 i 31, yn gynhwysol</translation>
 <translation id="7813073042185856802">mynydd</translation>
 <translation id="7819857487979277519">PSK (WPA neu RSN)</translation>
 <translation id="7824219488248240180">ôl-argraffiadol</translation>

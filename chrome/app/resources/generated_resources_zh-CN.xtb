@@ -437,7 +437,6 @@
 <translation id="1307431692088049276">不再询问</translation>
 <translation id="1307559529304613120">糟糕！系统无法为该设备存储长期的 API 访问令牌。</translation>
 <translation id="1308548450293664112">此文件是我创建的，单选按钮分组，第 1 个，共 3 个</translation>
-<translation id="1308876641060960899">当您使用 Google 智能镜头时，系统会将相关页面的屏幕截图发送给 Google。<ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">对广告个性化有影响的数据会被删除</translation>
 <translation id="1311294419381837540">您正在投放一个标签页。您可随时暂停或停止投放。</translation>
 <translation id="131188242279372879">了解增强型保护，为下载内容提供最高级别的 Chrome 安全防护</translation>
@@ -2636,6 +2635,7 @@
 <translation id="2853121255651601031">密码已保存</translation>
 <translation id="2855243985454069333">从所有已同步的设备中删除历史记录</translation>
 <translation id="2855812646048059450">通过 <ph name="CREDENTIAL_PROVIDER" /> 登录</translation>
+<translation id="28559674945112027">严格模式</translation>
 <translation id="2856776373509145513">创建一个新容器</translation>
 <translation id="2856907950922663165">关闭网址加密？</translation>
 <translation id="2859741939921354763">将密码导入 <ph name="BRAND" /></translation>
@@ -3112,7 +3112,6 @@
 <translation id="3220943972464248773">若要同步您的密码，请验证是您本人在操作</translation>
 <translation id="3222066309010235055">预渲染：<ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">连接到 <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">使用 Google 智能镜头搜索此页面中的任何内容</translation>
 <translation id="3223109931751684474">撤消此设备对通行密钥的访问权限</translation>
 <translation id="3223531857777746191">“重置”按钮</translation>
 <translation id="3225084153129302039">默认的紫色头像</translation>
@@ -6387,6 +6386,7 @@
 <translation id="5623282979409330487">此网站正在使用您的移动传感器。</translation>
 <translation id="5623842676595125836">日志</translation>
 <translation id="5624120631404540903">管理密码</translation>
+<translation id="5624959475330585145">在使用不安全的连接前询问</translation>
 <translation id="5625225435499354052">在 Google Pay 中修改</translation>
 <translation id="5626134646977739690">名字：</translation>
 <translation id="5627832140542566187">显示屏方向</translation>
@@ -9620,6 +9620,7 @@
 <translation id="8008356846765065031">网络已断开，请检查您的互联网连接是否正常。</translation>
 <translation id="8008704580256716350">已屏蔽可疑文件</translation>
 <translation id="8009225694047762179">管理密码</translation>
+<translation id="8010081455002666927">自动检测</translation>
 <translation id="8011372169388649948">已移动书签“<ph name="BOOKMARK_TITLE" />”。</translation>
 <translation id="8012188750847319132">CapsLock 键</translation>
 <translation id="8012463809859447963">智能热点详情</translation>
@@ -11023,6 +11024,7 @@
 <translation id="9009707268312089299">从 Windows 导入</translation>
 <translation id="9009708085379296446">更改此网页是您的本意吗？</translation>
 <translation id="9010845741772269259">添加付款方式</translation>
+<translation id="901087299639956505">均衡模式</translation>
 <translation id="9011163749350026987">始终显示图标</translation>
 <translation id="9011262023858991985">正在投放此标签页</translation>
 <translation id="9011393886518328654">版本说明</translation>

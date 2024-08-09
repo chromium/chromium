@@ -467,7 +467,6 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2704781753052663061">Pridružitev drugih omrežij Wi-Fi</translation>
 <translation id="2705001408393684014">Preklop mikrofona. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Gor</translation>
-<translation id="271033894570825754">Novo</translation>
 <translation id="2710984741481549981">Zaklepanje oken</translation>
 <translation id="2718395828230677721">Nočna svetloba</translation>
 <translation id="2726420622004325180">Če želite, da telefon da na voljo dostopno točko, mora imeti vklopljen prenos podatkov v mobilnem omrežju.</translation>
@@ -1234,7 +1233,6 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="5331975486040154427">Naprava USB-C (vrata levo zadaj)</translation>
 <translation id="533282197239610265">Prikaz naprav za predvajanje</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (desna)</translation>
-<translation id="5346119650615956459">GIF-i</translation>
 <translation id="5352250171825660495">Temna tema je vklopljena</translation>
 <translation id="5354804064646502504">To lahko povzroči stroške prenosa podatkov.
 Nobena naprava ni povezana.</translation>

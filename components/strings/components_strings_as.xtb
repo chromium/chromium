@@ -456,6 +456,7 @@
 <translation id="180757923930449935">(৬৪-বিট এমুলে’ট কৰা)</translation>
 <translation id="180991881384371158">আপোনাৰ CVC আপোনাৰ কাৰ্ডৰ পিছফালে আছে। এইটো স্বাক্ষৰ বাকচৰ একেবাৰে ওপৰৰ সোঁফালে থকা অন্তিম ৩ টা অংক।</translation>
 <translation id="1810391395243432441">আপোনাৰ স্ক্ৰীন লকৰ জৰিয়তে পাছৱৰ্ড সুৰক্ষিত কৰক</translation>
+<translation id="1810597570737826742">{count,plural, =1{{count} টাতকৈও অধিক ঠিকনাৰ {position}}one{{count} টাতকৈও অধিক ঠিকনাৰ {position}}other{{count} টাতকৈও অধিক ঠিকনাৰ {position}}}</translation>
 <translation id="1812527064848182527">লেণ্ডস্কে’প</translation>
 <translation id="1812975699435941848">স্বাস্থ্য সম্পৰ্কীয় শিক্ষা আৰু চিকিৎসাৰ প্ৰশিক্ষণ</translation>
 <translation id="1816436748874040213">শ্বেয়াৰ কৰা টেবসমূহ স্ক্ৰল আৰু জুম কৰিবলৈ ক’ব পাৰে</translation>
@@ -1504,6 +1505,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ইঞ্চি)</translation>
 <translation id="3792826587784915501">কাল্ট আৰু ইণ্ডী চলচ্চিত্ৰ</translation>
 <translation id="3793574014653384240">শেহতীয়াকৈ হোৱা ক্রেশ্বসমূহৰ সংখ্যা আৰু কাৰণসমূহ</translation>
+<translation id="3796417399166194741"><ph name="SITE" />এ Chromeক এটা সুৰক্ষিত সংযোগ স্থাপন কৰাত বাধা দিছে</translation>
 <translation id="3799805948399000906">ফ’ণ্টৰ বাবে অনুৰোধ কৰা হৈছে</translation>
 <translation id="3801265110651850478">আপোনাৰ ব্ৰাউজিঙৰ ট্ৰেফিকৰ জৰিয়তে "ট্ৰেক কৰা নিষেধ" বুলি এটা অনুৰোধ পঠিয়াওক</translation>
 <translation id="380329542618494757">নাম</translation>
@@ -2697,6 +2699,7 @@
 <translation id="6106989379647458772"><ph name="PAGE" />ৰ ৱেবপৃষ্ঠাটো অস্থায়ীভাৱে ব্যৱহাৰযোগ্য হৈ নাথাকিব পাৰে বা ইয়াক কোনো নতুন ৱেব ঠিকনালৈ স্থায়ী ভাৱে নিয়া হ’ব পাৰে।</translation>
 <translation id="6107012941649240045">ইয়াত প্ৰদান কৰা হৈছে</translation>
 <translation id="6107924765192360631">লিখাৰ পৰামৰ্শ লাভ কৰিবলৈ মাত্ৰ কেইটামান শব্দ অথবা প্ৰথম খচৰাৰে আৰম্ভ কৰক।</translation>
+<translation id="6108580855199168381">প্ৰমাণপত্ৰৰ সবিশেষ</translation>
 <translation id="6108702513636120202">Chromiumত আপোনাৰ সন্ধান ইঞ্জিন</translation>
 <translation id="6108849843016142864">সৰীসৃপ আৰু উভচৰ প্ৰাণী</translation>
 <translation id="610911394827799129">আপোনাৰ Google একাউণ্টৰ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ত অন্য ব্ৰাউজিং ইতিহাস থাকিব পাৰে৷</translation>
@@ -3467,6 +3470,12 @@
 <translation id="7535087603100972091">মান</translation>
 <translation id="753556296624075801">Googleএ আগবঢ়োৱা</translation>
 <translation id="7537536606612762813">বাধ্যতামূলক</translation>
+<translation id="7541586907443866208">আক্ৰমণকাৰীসকলে আপোনাৰ আৰু এই ছাইটৰ মাজত পঠিওৱা যিকোনো ডেটা চাবলৈ আৰু সেয়া সলনি কৰিবলৈ সক্ষম হ’ব।
+    &lt;ul&gt;
+    &lt;li&gt;যদি আপুনি বৰ্তমান ৰাজহুৱা নেটৱৰ্ক ব্যৱহাৰ কৰি আছে, যেনে বিমানবন্দৰ বা হোটেলৰ ৱাইফাই, আপুনি বিশ্বাসযোগ্য নেটৱৰ্কৰ (যেনে - ঘৰত বা কৰ্মস্থানত) সৈতে সংযোজিত হ’লে পুনৰ চেষ্টা কৰাৰ কথা বিবেচনা কৰক।&lt;/li&gt;
+    &lt;li&gt;যদি আপুনি ছাইটৰ গৰাকীক জানে, তেওঁক এইটো ঠিক কৰিবলৈ কওক।&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />এই সকীয়নিৰ বিষয়ে অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">স্বয়ংক্ৰিয়ভাৱে ক্ৰেডিট কাৰ্ডৰ তথ্য পূৰ হোৱা সুবিধাটো অক্ষম কৰি থোৱা আছে কাৰণ এই ফৰ্মখনে সুৰক্ষিত সংযোগ ব্যৱহাৰ নকৰে।</translation>
 <translation id="7543525346216957623">আপোনাৰ অভিভাৱকক সোধক</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> ষ্টাৰ্ট কৰি থকা হৈছে</translation>

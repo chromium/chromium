@@ -437,7 +437,6 @@
 <translation id="1307431692088049276">다시 묻지 않음</translation>
 <translation id="1307559529304613120">시스템이 이 기기에 대한 장기 API 액세스 토큰을 저장하지 못했습니다.</translation>
 <translation id="1308548450293664112">내가 만든 파일, 라디오 버튼 그룹, 3개 중 1개</translation>
-<translation id="1308876641060960899">Google 렌즈를 사용하면 페이지의 스크린샷이 Google에 전송됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">광고 개인 최적화에 영향을 미치는 데이터가 삭제됨</translation>
 <translation id="1311294419381837540">탭을 전송하고 있습니다. 언제든지 전송을 일시중지하거나 중지할 수 있습니다.</translation>
 <translation id="131188242279372879">Chrome의 향상된 보호 모드를 통해 안전하게 다운로드하세요.</translation>
@@ -3138,7 +3137,6 @@
 <translation id="3220943972464248773">비밀번호를 동기화하려면 본인 여부를 인증하세요.</translation>
 <translation id="3222066309010235055">사전 렌더링: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" />에 연결</translation>
-<translation id="3222857603094643834">Google 렌즈로 이 페이지 전체 검색</translation>
 <translation id="3223109931751684474">이 기기의 패스키 액세스 권한 삭제</translation>
 <translation id="3223531857777746191">초기화 버튼</translation>
 <translation id="3225084153129302039">기본 보라색 아바타</translation>

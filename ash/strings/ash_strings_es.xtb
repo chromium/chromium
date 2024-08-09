@@ -467,7 +467,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2704781753052663061">Conectarse a otras redes Wi‑Fi</translation>
 <translation id="2705001408393684014">Activar o desactivar micrófono. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Flecha hacia arriba</translation>
-<translation id="271033894570825754">Nuevo</translation>
 <translation id="2710984741481549981">Bloquea las ventanas</translation>
 <translation id="2718395828230677721">Luz nocturna</translation>
 <translation id="2726420622004325180">Se requieren datos móviles para activar el punto de acceso</translation>
@@ -564,6 +563,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3077734595579995578">mayús</translation>
 <translation id="3081696990447829002">Mostrar menú</translation>
 <translation id="3087734570205094154">Inferior</translation>
+<translation id="3090214513075567547">Abre el menú contextual</translation>
 <translation id="3090989381251959936">Activar o desactivar <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Por entregar</translation>
 <translation id="3095995014811312755">versión</translation>
@@ -1234,7 +1234,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5331975486040154427">Dispositivo USB tipo C (puerto trasero izquierdo)</translation>
 <translation id="533282197239610265">Mostrar dispositivos de emisión</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (derecho)</translation>
-<translation id="5346119650615956459">GIFs</translation>
 <translation id="5352250171825660495">Tema oscuro está activado</translation>
 <translation id="5354804064646502504">Es posible que se apliquen cargos por el uso de datos.
 No hay dispositivos conectados.</translation>

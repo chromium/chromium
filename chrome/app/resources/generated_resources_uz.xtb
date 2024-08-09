@@ -437,7 +437,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1307431692088049276">Boshqa soʻralmasin</translation>
 <translation id="1307559529304613120">Tizim bu qurilmada API uchun ruxsat tokenini saqlay olmadi.</translation>
 <translation id="1308548450293664112">Bu men yaratgan fayl, tanlash tugmalari guruhi, 1/3</translation>
-<translation id="1308876641060960899">Google Lens ishlatilganda sahifa skrinshoti Google serverlariga yuboriladi. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Reklamani moslashtirishga aloqador axborot oʻchirildi</translation>
 <translation id="1311294419381837540">Varaq translatsiya qilinmoqda. Translatsiyani istalgan vaqt pauza qilish yoki tugatish mumkin.</translation>
 <translation id="131188242279372879">Chromeda yuklanmalardan yuqori darajali himoyalanish uchun kengaytirilgan himoya bilan tanishing</translation>
@@ -2646,6 +2645,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2853121255651601031">Parol saqlandi</translation>
 <translation id="2855243985454069333">Sinxronlangan barcha qurilmalardagi brauzer tarixini oʻchirib tashlaydi</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> bilan kirish</translation>
+<translation id="28559674945112027">Qatʼiy rejim</translation>
 <translation id="2856776373509145513">Yangi konteyner yaratish</translation>
 <translation id="2856907950922663165">URL shifrlanishi faolsizlantirilsinmi?</translation>
 <translation id="2859741939921354763">Parollarni <ph name="BRAND" /> ga import qilish</translation>
@@ -3122,7 +3122,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3220943972464248773">Parollarni sinxronlash uchun shaxsingizni tasdiqlang</translation>
 <translation id="3222066309010235055">Oldindan ishlov berish: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Bunga ulanish: <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Google Lens bilan bu sahifadagi istalgan narsani qidiring</translation>
 <translation id="3223109931751684474">Bu qurilmaning kirish kalitlariga ruxsatini olib tashlash</translation>
 <translation id="3223531857777746191">Asliga qaytarish tugmasi</translation>
 <translation id="3225084153129302039">Standart siyohrang avatar</translation>
@@ -6401,6 +6400,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5623282979409330487">Bu saytda harakat sensorlari ishlatilyapti.</translation>
 <translation id="5623842676595125836">Jurnal</translation>
 <translation id="5624120631404540903">Sozlash</translation>
+<translation id="5624959475330585145">Himoyasiz ulanishlar ishlatishdan oldin ruxsat soʻrash</translation>
 <translation id="5625225435499354052">Google Pay xizmatida tahrirlash</translation>
 <translation id="5626134646977739690">Ism:</translation>
 <translation id="5627832140542566187">Displey joylashuvi</translation>
@@ -9633,6 +9633,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8008356846765065031">Tarmoqqa ulanib bo‘lmadi. Internetga ulanish sozlamalarini tekshiring.</translation>
 <translation id="8008704580256716350">Shubhali fayl bloklandi</translation>
 <translation id="8009225694047762179">Parollarni boshqarish</translation>
+<translation id="8010081455002666927">Avtomatik aniqlash</translation>
 <translation id="8011372169388649948">“<ph name="BOOKMARK_TITLE" />” boshqa joyga olindi.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Tezkor modem tafsilotlari</translation>
@@ -11035,6 +11036,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="9009707268312089299">Windowsdan import qilingan</translation>
 <translation id="9009708085379296446">Bu sahifa oʻzgartirilsinmi?</translation>
 <translation id="9010845741772269259">Toʻlov usullarini kiritish</translation>
+<translation id="901087299639956505">Muvozanatli rejim</translation>
 <translation id="9011163749350026987">Doim ikonka ko‘rsatilsin</translation>
 <translation id="9011262023858991985">Bu varaq uzatilmoqda</translation>
 <translation id="9011393886518328654">Reliz izohlari</translation>

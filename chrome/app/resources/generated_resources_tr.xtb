@@ -437,7 +437,6 @@
 <translation id="1307431692088049276">Bunu bir daha sorma</translation>
 <translation id="1307559529304613120">Hata! Sistem bu cihaza ait uzun vadeli API erişim verisini kaydedemedi.</translation>
 <translation id="1308548450293664112">Bu dosyayı ben oluşturdum, radyo düğmesi grubu, 1/3</translation>
-<translation id="1308876641060960899">Google Lens kullanıldığında sayfanın ekran görüntüsü Google'a gönderilir. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Reklam kişiselleştirmeyi etkileyen veriler silinir</translation>
 <translation id="1311294419381837540">Bir sekme yayınlıyorsunuz. İstediğiniz zaman yayını duraklatabilir veya durdurabilirsiniz.</translation>
 <translation id="131188242279372879">İndirme işlemlerinde Chrome'un en yüksek güvenlik düzeyinden yararlanmak için gelişmiş korumayı keşfedin</translation>
@@ -3119,7 +3118,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3220943972464248773">Şifrelerinizi senkronize etmek için kimliğinizi doğrulayın</translation>
 <translation id="3222066309010235055">Ön oluşturucu: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" /> ağına bağlan</translation>
-<translation id="3222857603094643834">Google Lens ile bu sayfada istediğiniz şeyi arayın</translation>
 <translation id="3223109931751684474">Bu cihazda geçiş anahtarlarıma erişimi kaldır</translation>
 <translation id="3223531857777746191">Sıfırlama Düğmesi</translation>
 <translation id="3225084153129302039">Varsayılan mor avatar</translation>

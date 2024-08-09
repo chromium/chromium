@@ -1058,6 +1058,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6188737759358894319">Creado o <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Mensaxes non lidas</translation>
 <translation id="6196207969502475924">Busca por voz</translation>
+<translation id="6198252989419008588">Cambiar PIN</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Pechar {COUNT} pestana}other{Pechar {COUNT} pestanas}}</translation>
 <translation id="6210079381482819663">As pestanas que non se usen durante <ph name="THRESHOLD" /> días ou máis moveranse aquí. Podes cambiar esta opción en calquera momento en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Non se atopou ningún enderezo</translation>

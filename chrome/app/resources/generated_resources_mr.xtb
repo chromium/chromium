@@ -437,7 +437,6 @@
 <translation id="1307431692088049276">मला पुन्हा विचारू नका</translation>
 <translation id="1307559529304613120">अरेरे! या डिव्हाइसाठी दीर्घ-मुदतीचे API ॲक्सेस टोकन स्टोअर करण्यात सिस्टम अयशस्वी झाली.</translation>
 <translation id="1308548450293664112">मी ही फाइल तयार केली आहे, रेडिओ बटणाचा गट, ३ पैकी १</translation>
-<translation id="1308876641060960899">तुम्ही Google Lens वापरता, तेव्हा पेजचा स्क्रीनशॉट Google ला पाठवला जातो. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">जाहिरात पर्सनलायझेशनवर परिणाम करणारा डेटा हटवला आहे</translation>
 <translation id="1311294419381837540">तुम्ही टॅब कास्ट करत आहात. तुम्ही कास्ट करणे कधीही थांबवू किंवा बंद करू शकता.</translation>
 <translation id="131188242279372879">Chrome ची सर्वोच्च सुरक्षा पातळी मिळवण्यासाठी वर्धित संरक्षण डिस्कव्हर करा</translation>
@@ -1214,6 +1213,7 @@
 <translation id="184183613002882946">नाही, एकच स्विच वापरा</translation>
 <translation id="184273675144259287">तुमची Linux अ‍ॅप्स आणि फाइल मागील बॅकअपसह बदला</translation>
 <translation id="1842766183094193446">तुम्हाला खरंच डेमो मोड सुरू करायचा आहे का?</translation>
+<translation id="1843048149176045210">डाउनलोड लिंक कॉपी करा</translation>
 <translation id="1845060436536902492">ChromeOS Flex, ChromeVox वरील स्क्रीन रीडर प्रामुख्याने दृष्टिहीन किंवा दृष्टिदोष असलेल्या लोकांद्वारे स्क्रीनवर प्रदर्शित केलेला मजकूर हा स्पीच सिंथेसायझर अथवा ब्रेल डिस्प्लेसह वाचण्यासाठी वापरले जाते. ChromeVox सुरू करण्यासाठी स्पेस बार प्रेस करा. ChromeVox अ‍ॅक्टिव्हेट झाल्यावर, तुम्हाला झटपट फेरफटका मिळेल.</translation>
 <translation id="1845727111305721124">आवाज प्ले करण्याची अनुमती आहे</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> चालवण्‍यासाठी Control-क्लिक करा</translation>
@@ -3135,7 +3135,6 @@
 <translation id="3220943972464248773">तुमचे पासवर्ड सिंक करण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="3222066309010235055">पूर्वप्रस्तुती: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" /> शी कनेक्ट करा</translation>
-<translation id="3222857603094643834">Google Lens वापरून या पेजवरील काहीही शोधा</translation>
 <translation id="3223109931751684474">या डिव्हाइसवरील तुमच्या पासकीचा अ‍ॅक्सेस काढून टाका</translation>
 <translation id="3223531857777746191">रीसेट करा बटण</translation>
 <translation id="3225084153129302039">डीफॉल्ट जांभळा अवतार</translation>
@@ -3175,6 +3174,7 @@
 <translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> ला “Ok Google” म्हणून Google Assistant अ‍ॅक्सेस करू द्या</translation>
 <translation id="3251759466064201842">&lt;प्रमाणपत्राचा भाग नाही&gt;</translation>
 <translation id="325238099842880997">लहान मुलांना घरामध्ये खेळण्यास, एक्सप्लोर करण्यास आणि शाळेतील कामे करण्यास मदत करण्याकरिता डिजिटल मूलभूत नियम सेट करा</translation>
+<translation id="3253083398453405334">तुम्हाला नोटिफिकेशन मिळाल्यावर स्क्रीन फ्लॅश करा</translation>
 <translation id="3253225298092156258">उपलब्ध नाही</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{ही फाइल कॉपी करण्यासाठी <ph name="CLOUD_PROVIDER" /> मधील जागा मोकळी करा}other{या फाइल कॉपी करण्यासाठी <ph name="CLOUD_PROVIDER" /> मधील जागा मोकळी करा}}</translation>
 <translation id="3253448572569133955">अज्ञात खाते</translation>
@@ -3671,6 +3671,7 @@
 <translation id="3621202678540785336">इनपुट</translation>
 <translation id="3621807901162200696">ChromeOS च्या वैशिष्ट्यांमध्ये आणि परफॉर्मन्समध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{अ‍ॅप}other{# अ‍ॅप्स}}</translation>
+<translation id="3622820753353315928">फ्लॅश होणाऱ्या स्क्रीनचा रंग</translation>
 <translation id="362333465072914957">CA ने सर्टिफिकेट जारी करण्याची प्रतीक्षा करत आहे</translation>
 <translation id="3623598555687153298">यामुळे प्रदर्शित केलेल्या साइटनी स्टोअर केलेला <ph name="TOTAL_USAGE" /> डेटा हटवला जाईल</translation>
 <translation id="3624567683873126087">डिव्हाइस अनलॉक करा आणि Google खात्यामध्ये साइन इन करा</translation>
@@ -7178,6 +7179,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6197128521826316819">या पेजसाठी QR कोड तयार करा</translation>
 <translation id="6198223452299275399">पेजदरम्यान स्‍वाइप करा</translation>
 <translation id="6198252989419008588">पिन बदला</translation>
+<translation id="61988015556954366">स्क्रीन फ्लॅश</translation>
 <translation id="6200047250927636406">फाइल काढून टाका</translation>
 <translation id="6200151268994853226">एक्स्टेंशन व्यवस्थापित करा</translation>
 <translation id="6201608810045805374">हे खाते काढून टाकायचे आहे का?</translation>
@@ -7535,6 +7537,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> फाइल</translation>
 <translation id="6469557521904094793">मोबाइल नेटवर्क सुरू करा</translation>
 <translation id="6469702164109431067">पासवर्ड आणि पासकी</translation>
+<translation id="6470120577693311302">फ्लॅश नोटिफिकेशन</translation>
 <translation id="6470823736074966819">सूचना म्यूट करा</translation>
 <translation id="6472893788822429178">होम बटण दर्शवा</translation>
 <translation id="6473315466413288899">पर्याय निवडा</translation>
@@ -7967,6 +7970,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6790820461102226165">व्यक्ती जोडा...</translation>
 <translation id="6793610798874309813">तुमचा पिन ४ किंवा त्याहून जास्त वर्णांचा असू शकतो</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> हे क्लिपबोर्डवर कॉपी केले आहे</translation>
 <translation id="6794511157503068">तुमची <ph name="APP_NAME" /> ची पासकी USB सिक्युरिटी की यावर असल्यास, आता घाला आणि स्पर्श करा</translation>
 <translation id="679486139907144816">पासकी वापरून या साइटमध्ये साइन इन करण्यासाठी, तुम्ही सेटिंग्जमध्ये Windows Hello सुरू करणे आवश्यक आहे. त्यानंतर या साइटवर परत येऊन पुन्हा प्रयत्न करा.</translation>
 <translation id="6795371939514004514">ऑटो-स्कॅन हे तुम्हाला स्क्रीनवरील आयटमदरम्यान आपोआप नेव्हिगेट करू देते. एखादा आयटम हायलाइट केला जातो तेव्हा, तो अ‍ॅक्टिव्हेट करण्यासाठी “निवडा” प्रेस करा.</translation>

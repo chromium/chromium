@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">fletxa avall</translation>
 <translation id="4425149324548788773">La meva unitat</translation>
 <translation id="4428374560396076622">La xarxa <ph name="NETWORK_NAME" /> està desactivada</translation>
+<translation id="4428840632568803690">Orador <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">El tiquet de Kerberos caducarà aviat</translation>
 <translation id="4431821876790500265">Mostra l'informe</translation>
 <translation id="4443192710976771874">vermell</translation>
@@ -1298,6 +1299,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7802764839223122985">Falta la tecla. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">No, gràcies</translation>
 <translation id="7805768142964895445">Estat</translation>
+<translation id="7811024689617730980">Selecciona un dia de restabliment automàtic entre l'1 i el 31, ambdós inclosos</translation>
 <translation id="7813073042185856802">una muntanya</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
 <translation id="7824219488248240180">postimpressionista</translation>

@@ -437,7 +437,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1307431692088049276">Fråga mig inte igen</translation>
 <translation id="1307559529304613120">Hoppsan! Det gick inte att lagra någon långsiktig API-åtkomsttoken för den här enheten.</translation>
 <translation id="1308548450293664112">Jag har skapat den här filen, alternativknappsgrupp, 1 av 3</translation>
-<translation id="1308876641060960899">När du använder Google Lens skickas en skärmbild av sidan till Google. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Data som påverkar annonsanpassning raderas</translation>
 <translation id="1311294419381837540">Du castar en flik. Du kan pausa eller sluta casta när du vill.</translation>
 <translation id="131188242279372879">Upptäck utökat skydd och få Chromes bästa säkerhet för nedladdningar</translation>
@@ -2657,6 +2656,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2853121255651601031">Lösenordet sparades</translation>
 <translation id="2855243985454069333">Raderar historiken från alla synkroniserade enheter</translation>
 <translation id="2855812646048059450">Logga in med <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Strikt läge</translation>
 <translation id="2856776373509145513">Skapa en ny behållare</translation>
 <translation id="2856907950922663165">Vill du inaktivera kryptering av webbadresser?</translation>
 <translation id="2859741939921354763">Importera lösenord till <ph name="BRAND" /></translation>
@@ -3135,7 +3135,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3220943972464248773">Verifiera din identitet för att synkronisera lösenord</translation>
 <translation id="3222066309010235055">För-renderare <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Anslut till <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Sök efter allt på den här sidan med Google Lens</translation>
 <translation id="3223109931751684474">Ta bort åtkomsten till dina nycklar på den här enheten</translation>
 <translation id="3223531857777746191">Återställningsknapp</translation>
 <translation id="3225084153129302039">Lila standardavatar</translation>
@@ -6415,6 +6414,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5623282979409330487">Den här webbplatsen använder enhetens rörelsesensorer.</translation>
 <translation id="5623842676595125836">Logg</translation>
 <translation id="5624120631404540903">Hantera lösenord</translation>
+<translation id="5624959475330585145">Fråga innan den osäkra anslutningar används</translation>
 <translation id="5625225435499354052">Redigera i Google Pay</translation>
 <translation id="5626134646977739690">Namn:</translation>
 <translation id="5627832140542566187">Skärmriktning</translation>
@@ -9649,6 +9649,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8008356846765065031">Internetanslutningen har avbrutits. Kontrollera internetanslutningen.</translation>
 <translation id="8008704580256716350">Den misstänkta filen har blockerats</translation>
 <translation id="8009225694047762179">Hantera Lösenord</translation>
+<translation id="8010081455002666927">Upptäck automatiskt</translation>
 <translation id="8011372169388649948"><ph name="BOOKMARK_TITLE" /> har flyttats.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Information om snabb surfzon</translation>
@@ -11052,6 +11053,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="9009707268312089299">Importerade från Windows</translation>
 <translation id="9009708085379296446">Hade du tänkt ändra den här sidan?</translation>
 <translation id="9010845741772269259">Lägg till betalningsmetoder</translation>
+<translation id="901087299639956505">Balanserat läge</translation>
 <translation id="9011163749350026987">Visa alltid ikonen</translation>
 <translation id="9011262023858991985">Casta den här fliken</translation>
 <translation id="9011393886518328654">Viktig information</translation>

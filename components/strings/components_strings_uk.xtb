@@ -1507,6 +1507,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> дюйм.)</translation>
 <translation id="3792826587784915501">Культові й альтернативні фільми</translation>
 <translation id="3793574014653384240">Кількість і причини останніх аварійних завершень роботи</translation>
+<translation id="3796417399166194741">Chrome не може встановити захищене з’єднання із сайтом <ph name="SITE" /></translation>
 <translation id="3799805948399000906">Запит на шрифт</translation>
 <translation id="3801265110651850478">Надсилати запит Do Not Track разом із трафіком веб-перегляду</translation>
 <translation id="380329542618494757">Повне ім’я</translation>
@@ -2701,6 +2702,7 @@
 <translation id="6106989379647458772">Можливо, веб-сторінка <ph name="PAGE" /> тимчасово недоступна або її назавжди переміщено на нову веб-адресу.</translation>
 <translation id="6107012941649240045">Кому видано</translation>
 <translation id="6107924765192360631">Просто почніть із кількох слів або створіть першу чернетку, щоб отримувати пропозиції щодо виправлення орфографічних помилок.</translation>
+<translation id="6108580855199168381">Дані сертифіката</translation>
 <translation id="6108702513636120202">Ваша пошукова система в Chromium</translation>
 <translation id="6108849843016142864">Плазуни й земноводні</translation>
 <translation id="610911394827799129">Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
@@ -3472,6 +3474,13 @@
 <translation id="7535087603100972091">Яскравість</translation>
 <translation id="753556296624075801">Технологія Google</translation>
 <translation id="7537536606612762813">Обов’язкове</translation>
+<translation id="7541586907443866208">Зловмисники зможуть переглядати й змінювати будь-які дані, якими ви обмінюєтесь із цим сайтом.
+    &lt;ul&gt;
+
+    &lt;li&gt;Якщо ви зараз підключені до загальнодоступної мережі, як-от Wi-Fi в аеропорту або готелі, повторіть спробу пізніше, коли під’єднаєтеся до надійної мережі (наприклад, удома чи на роботі).&lt;/li&gt;
+    &lt;li&gt;Якщо ви знаєте власника сайту, попросіть його вирішити цю проблему.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">Автоматичне заповнення кредитної картки вимкнено, оскільки ця форма не використовує безпечне з'єднання.</translation>
 <translation id="7543525346216957623">Попросіть когось із батьків</translation>
 <translation id="7546409722674205727">Запуск додатка <ph name="APP_NAME" /></translation>

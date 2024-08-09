@@ -1507,6 +1507,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> инча)</translation>
 <translation id="3792826587784915501">Култови и независими филми</translation>
 <translation id="3793574014653384240">Брой и причини за наскоро възникналите сривове</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> не позволява на Chrome да установи защитена връзка</translation>
 <translation id="3799805948399000906">Шрифтът е заявен</translation>
 <translation id="3801265110651850478">Изпращане на заявка Do Not Track с трафика ви на сърфиране</translation>
 <translation id="380329542618494757">Име</translation>
@@ -2701,6 +2702,7 @@
 <translation id="6106989379647458772">Уеб страницата на адрес <ph name="PAGE" /> може временно да не е налице или да е била преместена на нов уеб адрес.</translation>
 <translation id="6107012941649240045">Издаден на</translation>
 <translation id="6107924765192360631">За да получите предложения за писане, трябва само да започнете с няколко думи или първоначална чернова.</translation>
+<translation id="6108580855199168381">Подробности за сертификата</translation>
 <translation id="6108702513636120202">Вашата търсеща машина в Chromium</translation>
 <translation id="6108849843016142864">Влечуги и земноводни</translation>
 <translation id="610911394827799129">В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
@@ -3472,6 +3474,13 @@
 <translation id="7535087603100972091">Стойност</translation>
 <translation id="753556296624075801">Предоставено от Google</translation>
 <translation id="7537536606612762813">Задължително</translation>
+<translation id="7541586907443866208">Хакерите ще могат да виждат и променят данните, обменяни между вас и този сайт.
+    &lt;/ul&gt;
+    &lt;li&gt;Ако използвате обществена мрежа, като например Wi-Fi на летище или в хотел, опитайте отново, когато ползвате надеждна мрежа (напр. у дома или на работното си място).&lt;/li&gt;
+    &lt;li&gt;В случай че познавате собственика на сайта, помолете го да отстрани проблема.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече за това предупреждение<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">Автоматичното попълване на кредитната карта е деактивирано, защото този формуляр не използва защитена връзка.</translation>
 <translation id="7543525346216957623">Попитайте родителя си</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> се стартира</translation>

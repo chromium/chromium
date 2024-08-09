@@ -1060,6 +1060,7 @@
 <translation id="6188737759358894319">‏تم إنشاء الخلفية بتاريخ ‎<ph name="DATE" />.</translation>
 <translation id="6189413832092199491">غير مقروءة</translation>
 <translation id="6196207969502475924">البحث الصوتي</translation>
+<translation id="6198252989419008588">تغيير رقم التعريف الشخصي</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{إغلاق علامة تبويب واحدة ({COUNT})}zero{إغلاق {COUNT} علامة تبويب}two{إغلاق علامتَي تبويب ({COUNT})}few{إغلاق {COUNT} علامات تبويب}many{إغلاق {COUNT} علامة تبويب}other{إغلاق {COUNT} علامة تبويب}}</translation>
 <translation id="6210079381482819663">يتم هنا نقل علامات التبويب غير المستخدَمة لمدة <ph name="THRESHOLD" /> يوم أو أكثر. يمكنك تعديل هذا الإعداد في أي وقت من خلال <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">لا تتوفّر أي عناوين</translation>

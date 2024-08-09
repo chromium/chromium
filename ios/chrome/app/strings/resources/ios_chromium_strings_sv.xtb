@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">Om du vill inaktivera låsningsläget i Chromium kan du stänga av det på din iPhone.</translation>
 <translation id="159029779861043703">Chromium skyddar dina känsliga uppgifter med Face ID.</translation>
 <translation id="1591119736686995611">Öppnar rutnätet med flikar i Chromium.</translation>
+<translation id="16001233025397167">Med säkerhetskontrollen skyddas du från dataintrång, osäkra webbplatser med mera. Få varningar om integritets- eller säkerhetsproblem som identifieras av Chromium.</translation>
 <translation id="1611584326765829247">Du kan spåra paket med hjälp av Chromium</translation>
 <translation id="1617663976202781617">Data från Chromium-synkronisering</translation>
 <translation id="1647558790457890304">Chromium-inställningar</translation>
@@ -56,6 +57,7 @@
 <translation id="2426113998523353159">Organisationen kräver att du loggar in för att använda Chromium.</translation>
 <translation id="2450140762465183767">Nu kan du använda Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="2478931088402984578">Välj <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2497941343438581585">Få ut mesta möjliga av Shopping i Chromium</translation>
 <translation id="252374538254180121">Ställ in Chromium som standardwebbläsare</translation>
 <translation id="2574528844022712255">Se bokmärken i Chromium</translation>
 <translation id="2590893390871230428">Synkronisera data i Chromium</translation>
@@ -103,6 +105,7 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 <translation id="3855938650519180865">Nyheter i Chromium</translation>
 <translation id="3886689467633467988">Logga in på den här webbplatsen och i Chromium om du vill få dina bokmärken med mera på alla dina enheter.</translation>
 <translation id="3904484643286601695">Du kan uppdatera dina val när som helst i inställningarna för Chromium.</translation>
+<translation id="3983291422281996849">Ställ in Chromium som standardwebbläsare för att enkelt bevaka priser och få prisinformation för saker du vill köpa.</translation>
 <translation id="4005283307739974863">Säkerhetskontrollen öppnas och körs i Chromium.</translation>
 <translation id="4043291146360695975">Lösenorden sparas med Lösenordshantering endast på den här enheten.</translation>
 <translation id="4099085513035183040">Stöds inte på Chromium Beta</translation>
@@ -133,6 +136,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="4736424910885271643">Eftersom ditt konto hanteras av <ph name="HOSTED_DOMAIN" /> raderas din data i Chromium från enheten</translation>
 <translation id="4790638144988730920">Fortsätt använda Chromium-data i Google-kontot.</translation>
 <translation id="4828317641996116749">Chromium kunde inte kontrollera alla lösenord. Försök igen senare.</translation>
+<translation id="4904452304169763785">Varningar om integritets- eller säkerhetsproblem som identifieras av Chromium.</translation>
 <translation id="4962295957157529683">Gör klart det du höll på med i det andra öppna Chromium-fönstret.</translation>
 <translation id="4985291216379576555">Chromium kan inte söka efter uppdateringar offline</translation>
 <translation id="4996471330284142407">Få mer gjort med Chromium, som är enklare, säkrare och snabbare än någonsin.</translation>
@@ -176,6 +180,7 @@ Tänk på detta:
   • Om Chromium kraschar kan personliga uppgifter finnas med i kraschinformationen.
 
   • Om du synkroniserar historiken med Google-kontot kan mätvärdena även innehålla information om webbadresser du besöker.<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">Få varningar om integritets- eller säkerhetsproblem som identifieras automatiskt av Chromium.</translation>
 <translation id="5945387852661427312">Du håller på att logga in med ett konto som hanteras av <ph name="DOMAIN" /> vilket ger administratören kontroll över data i Chromium. Din data kopplas permanent till det här kontot. Om du loggar ut från Chromium raderas all din data från enheten, men den lagras fortfarande på Google-kontot.</translation>
 <translation id="5951593919357934226">Få ut mesta möjliga av Chromium.</translation>
 <translation id="5983312940147103417">Gör Chromium bättre</translation>

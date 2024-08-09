@@ -1507,6 +1507,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> tolli)</translation>
 <translation id="3792826587784915501">Kultus- ja indie-filmid</translation>
 <translation id="3793574014653384240">Hiljutiste krahhide arv ja põhjused</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> takistab Chrome'il turvalise ühenduse loomist</translation>
 <translation id="3799805948399000906">Taotleti fonti</translation>
 <translation id="3801265110651850478">Saada sirvimisliikluse kohta taotlus „Ära jälgi”</translation>
 <translation id="380329542618494757">Nimi</translation>
@@ -2701,6 +2702,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6106989379647458772">Veebileht <ph name="PAGE" /> võib olla ajutiselt maas või see viidi jäädavalt üle uuele veebiaadressile.</translation>
 <translation id="6107012941649240045">Väljastatud subjektile:</translation>
 <translation id="6107924765192360631">Lihtsalt alustage mõne sõna või esmase mustandiga, et saada kirjutamissoovitusi.</translation>
+<translation id="6108580855199168381">Serdi üksikasjad</translation>
 <translation id="6108702513636120202">Teie otsingumootor Chromiumis</translation>
 <translation id="6108849843016142864">Roomajad ja kahepaiksed</translation>
 <translation id="610911394827799129">Aadressil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu</translation>
@@ -3472,6 +3474,12 @@ Lisateave:
 <translation id="7535087603100972091">Väärtus</translation>
 <translation id="753556296624075801">Funktsiooni pakub Google</translation>
 <translation id="7537536606612762813">Kohustuslik</translation>
+<translation id="7541586907443866208">Ründajad saavad vaadata ja muuta teie ja selle saidi vahel saadetavaid andmeid.
+    &lt;ul&gt;
+    &lt;li&gt;Kui kasutate praegu avalikku võrku, nt lennujaama või hotelli WiFi-t, võiksite uuesti proovida pärast ühenduse loomist usaldusväärse võrguga (nt kodu või töökoha võrk).&lt;/li&gt;
+    &lt;li&gt;Kui te teate saidi omanikku, paluge tal see probleem lahendada.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave selle hoiatuse kohta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">Automaatne krediitkaardi täide on keelatud, sest see vorm ei kasuta turvalist ühendust.</translation>
 <translation id="7543525346216957623">Küsige vanematelt abi</translation>
 <translation id="7546409722674205727">Rakenduse <ph name="APP_NAME" /> käivitamine</translation>

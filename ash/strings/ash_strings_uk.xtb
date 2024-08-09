@@ -467,7 +467,6 @@
 <translation id="2704781753052663061">Підключитися до інших мереж Wi-Fi</translation>
 <translation id="2705001408393684014">Перемикач мікрофона. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Вгору</translation>
-<translation id="271033894570825754">Новий</translation>
 <translation id="2710984741481549981">Заблокувати вікна</translation>
 <translation id="2718395828230677721">Нічний екран</translation>
 <translation id="2726420622004325180">Щоб увімкнути функцію "Точка доступу", на телефоні має бути мобільний Інтернет</translation>
@@ -564,6 +563,7 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Розгорнути меню</translation>
 <translation id="3087734570205094154">Низ</translation>
+<translation id="3090214513075567547">Відкрити контекстне меню</translation>
 <translation id="3090989381251959936">Перемкнути функцію "<ph name="FEATURE_NAME" />". <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Немає</translation>
 <translation id="3095995014811312755">версія</translation>
@@ -1233,7 +1233,6 @@
 <translation id="5331975486040154427">Пристрій, під’єднаний до порту USB-C (ліворуч на задній панелі)</translation>
 <translation id="533282197239610265">Показати пристрої для трансляції</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Правий)</translation>
-<translation id="5346119650615956459">Зображення GIF</translation>
 <translation id="5352250171825660495">Темну тему ввімкнено</translation>
 <translation id="5354804064646502504">За передавання даних може стягуватися плата.
 Немає підключених пристроїв.</translation>

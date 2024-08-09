@@ -438,7 +438,6 @@
 <translation id="1307431692088049276">ዳግም አትጠይቀኝ</translation>
 <translation id="1307559529304613120">ውይ!  ስርዓቱ የዚህ መሣሪያ የረጅም ጊዜ ኤ ፒ አይ መዳረሻ ማስመሰያ ማከማቸት አልቻለም።</translation>
 <translation id="1308548450293664112">ይህን ፋይል ፈጥሬያለሁ፣ የራድዮ አዝራር ቡድን፣ 1 ከ3</translation>
-<translation id="1308876641060960899">Google ሌንስን ሲጠቀሙ የገጹ ቅጽበታዊ ገጽ እይታ ወደ Google ይላካል። <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">ማስታወቂያን ግላዊነት ማላበስ ላይ ተጽዕኖ የሚያሳድር ውሂብ ተሰርዟል</translation>
 <translation id="1311294419381837540">እርስዎ አንድ ትር cast እያደረጉ ነው። በማንኛውም ጊዜ cast ማድረግን ባለበት ማቆም ወይም ማቆም ይችላሉ።</translation>
 <translation id="131188242279372879">ለውርዶች ከፍተኛውን የChrome ደህንነት ደረጃ ለማግኘት የላቀ ጥበቃን ያግኙ</translation>
@@ -2652,6 +2651,7 @@
 <translation id="2853121255651601031">የይለፍ ቃሉ ተቀምጧል</translation>
 <translation id="2855243985454069333">ታሪክን ከሁሉም ከተመሳሰሉ መሣሪያዎች ይሰርዛል</translation>
 <translation id="2855812646048059450">በ<ph name="CREDENTIAL_PROVIDER" /> በመለያ ይግቡ</translation>
+<translation id="28559674945112027">የተገደበ ሁነታ</translation>
 <translation id="2856776373509145513">አዲስ መያዣ ይፍጠሩ</translation>
 <translation id="2856907950922663165">የዩአርኤል ምስጠራ ይጥፋ?</translation>
 <translation id="2859741939921354763">የይለፍ ቃላትን ወደ <ph name="BRAND" /> ያስመጡ</translation>
@@ -3130,7 +3130,6 @@
 <translation id="3220943972464248773">የይለፍ ቃላትዎን ለማስምር፣ እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="3222066309010235055">ቅድሚያ አሳይ፦ <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">ከ<ph name="USB_VM_NAME" /> ጋር አገናኝ</translation>
-<translation id="3222857603094643834">በዚህ ገጽ ላይ ማንኛውንም ነገር በGoogle ሌንስ ይፈልጉ</translation>
 <translation id="3223109931751684474">በዚህ መሣሪያ ላይ ያለውን የይለፍ ቁልፎችዎ መዳረሻ ያስወግዱ</translation>
 <translation id="3223531857777746191">አዝራርን ዳግም አቀናብር</translation>
 <translation id="3225084153129302039">ነባሪ ሐምራዊ አምሳያ</translation>
@@ -6408,6 +6407,7 @@
 <translation id="5623282979409330487">ይህ ጥጣቢያ የእንቅስቃሴ ዳሳሾችዎን እየደረሰ ነውው።</translation>
 <translation id="5623842676595125836">ምዝግብ ማስታወሻ</translation>
 <translation id="5624120631404540903">የይለፍ ቃሎችን አስተዳድር</translation>
+<translation id="5624959475330585145">ደህንነታቸው ያልተጠበቁ ግንኙነቶችን ከመጠቀምዎ በፊት ይጠይቁ</translation>
 <translation id="5625225435499354052">በGoogle Pay ውስጥ ያርትዑ</translation>
 <translation id="5626134646977739690">ስም፦</translation>
 <translation id="5627832140542566187">የማሳያ አቀማመጥ</translation>
@@ -9649,6 +9649,7 @@ nil</translation>
 <translation id="8008356846765065031">የበይነመረብ ግንኙነት ተቋርጧል። እባክዎ የበይነመረብዎን ግንኙነት ይፈትሹ።</translation>
 <translation id="8008704580256716350">አጠራጣሪ ፋይል ታግዷል</translation>
 <translation id="8009225694047762179">የይለፍ ቃላትን ያቀናብሩ</translation>
+<translation id="8010081455002666927">በራስ-አግኝ</translation>
 <translation id="8011372169388649948">‹<ph name="BOOKMARK_TITLE" />› ተወስደዋል።</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">ቅጽበታዊ የመገናኛ ነጥብ ዝርዝሮች</translation>
@@ -11053,6 +11054,7 @@ nil</translation>
 <translation id="9009707268312089299">ከWindows የመጡ</translation>
 <translation id="9009708085379296446">ይህን ገፅ ለመለወጥ ፈልገው ነው?</translation>
 <translation id="9010845741772269259">የመክፈያ ዘዴዎችን አክል</translation>
+<translation id="901087299639956505">የተመጣጠነ ሁነታ</translation>
 <translation id="9011163749350026987">ሁልጊዜ አዶን አሳይ</translation>
 <translation id="9011262023858991985">ይህን ትር cast በማድረግ ላይ</translation>
 <translation id="9011393886518328654">የልቀት ማስታወሻዎች</translation>

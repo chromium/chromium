@@ -437,7 +437,6 @@
 <translation id="1307431692088049276">Экинчи суралбасын</translation>
 <translation id="1307559529304613120">Ой! Система бул түзмөктүн узак мөөнөттүү API энбелгисин сактап калган жок.</translation>
 <translation id="1308548450293664112">Бул файлды түздүм, радио баскычы тобу, 3 ичинен 1</translation>
-<translation id="1308876641060960899">Google Lens'ти колдонгонуңузда, барактын скриншоту Google'га жөнөтүлөт. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Жарнамаларды жекелештирүүгө таасирин тийгизе турган маалымат өчүрүлдү</translation>
 <translation id="1311294419381837540">Өтмөктү тышкы экранга чыгарып жатасыз. Тышкы экранга чыгарууну каалаган убакта тындырып же токтото аласыз.</translation>
 <translation id="131188242279372879">Жүктөлүп алынган файлдар үчүн Chrome'дун эң жогорку коопсуздук деңгээлин пайдалануу максатында мыктылап коргоону караңыз</translation>
@@ -2657,6 +2656,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2853121255651601031">Сырсөз сакталды</translation>
 <translation id="2855243985454069333">Шайкештирилген бардык түзмөктөрүңүздөгү таржымал өчүрүлөт</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> менен кирүү</translation>
+<translation id="28559674945112027">Катаал режим</translation>
 <translation id="2856776373509145513">Жаңы контейнер түзүү</translation>
 <translation id="2856907950922663165">URL'ди шифрлөөнү өчүрөсүзбү?</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> кызматына сырсөздөрдү өткөрүп алуу</translation>
@@ -3135,7 +3135,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3220943972464248773">Сырсөздөрүңүздү шайкештирүү үчүн өзүңүз экениңизди ырастаңыз</translation>
 <translation id="3222066309010235055">Алдыртан визуалдаштыруу: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" /> түзмөгүнө туташуу</translation>
-<translation id="3222857603094643834">Google Lens менен бул барактан каалаган нерсени издеңиз</translation>
 <translation id="3223109931751684474">Бул түзмөктө киргизүүчү ачкычтарды колдонууга тыюу салуу</translation>
 <translation id="3223531857777746191">Баштапкы абалга келтирүү баскычы</translation>
 <translation id="3225084153129302039">Демейки кызгылт сыя аватар</translation>
@@ -6415,6 +6414,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5623282979409330487">Бул сайт кыймыл сенсорлорун колдонуп жатат.</translation>
 <translation id="5623842676595125836">Таржымал</translation>
 <translation id="5624120631404540903">Сырсөздөрдү башкаруу</translation>
+<translation id="5624959475330585145">Корголбогон байланышты колдонуудан мурун уруксат суроо</translation>
 <translation id="5625225435499354052">Google Pay'де түзөтүү</translation>
 <translation id="5626134646977739690">Аты:</translation>
 <translation id="5627832140542566187">Дисплейдин багыты</translation>
@@ -9648,6 +9648,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8008356846765065031">Интернет туташууңуз үзүлдү. Интернет туташууңузду текшериңиз.</translation>
 <translation id="8008704580256716350">Шектүү файл бөгөттөлдү</translation>
 <translation id="8009225694047762179">Сырсөздөрдү башкаруу</translation>
+<translation id="8010081455002666927">Авто аныктоо</translation>
 <translation id="8011372169388649948">"<ph name="BOOKMARK_TITLE" />" жылдырылды.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Ыкчам байланыш түйүнүнүн чоо-жайы</translation>
@@ -11050,6 +11051,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="9009707268312089299">Windows'тон импорттолгондор</translation>
 <translation id="9009708085379296446">Бул баракты өзгөртөйүн дедиңиз беле?</translation>
 <translation id="9010845741772269259">Төлөм ыкмаларын кошуу</translation>
+<translation id="901087299639956505">Балансталган режим</translation>
 <translation id="9011163749350026987">Ар дайым сүрөтчөнү көрсөтүү</translation>
 <translation id="9011262023858991985">Бул өтмөк тышкы экранга чыгарылып турат</translation>
 <translation id="9011393886518328654">Чыгарылышка байланыштуу маалымат</translation>

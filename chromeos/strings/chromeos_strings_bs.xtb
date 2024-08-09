@@ -462,6 +462,7 @@
 <translation id="346423161771747987">Struja</translation>
 <translation id="346539236881580388">Ponovo snimi</translation>
 <translation id="3484914941826596830">Nemojte iskopčati ovaj vanjski uređaj ili isključiti računar dok traje ažuriranje firmvera. Ovaj prozor možete minimizirati. Ovo ažuriranje može potrajati nekoliko minuta. Moguće je da za to vrijeme vanjski uređaj neće funkcionirati.</translation>
+<translation id="3485555238092220889">radnja u vezi s pristupačnošću</translation>
 <translation id="3486220673238053218">definicija</translation>
 <translation id="3487866404496702283">Povratne informacije o funkciji Mahi</translation>
 <translation id="3488065109653206955">Djelimično aktivirano</translation>
@@ -637,7 +638,7 @@
 <translation id="4422041425070339732">strelica nadolje</translation>
 <translation id="4425149324548788773">Moj disk</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> mreža je isključena</translation>
-<translation id="4428840632568803690">Govornik <ph name="SPEAKER_LABEL" /></translation>
+<translation id="4428840632568803690"><ph name="SPEAKER_LABEL" />. govornik</translation>
 <translation id="4429881212383817840">Kerberos tiket uskoro ističe</translation>
 <translation id="4431821876790500265">Prikaži izvještaj</translation>
 <translation id="4443192710976771874">crvene</translation>
@@ -871,7 +872,7 @@
 <translation id="5662240986744577912">uključivanje/isključivanje ekrana privatnosti</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
 <translation id="5670702108860320605">BSSID</translation>
-<translation id="5674943355143004615">Opišite pozadinu koju želite izraditi</translation>
+<translation id="5674943355143004615">Opišite pozadinsku sliku koju želite kreirati</translation>
 <translation id="5680504961595602662">Nadrealna slika koja prikazuje "<ph name="SURREAL_LANDSCAPE" />" s objektom <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">Trešnje</translation>
 <translation id="5691511426247308406">Porodica</translation>
@@ -1105,7 +1106,7 @@
 <translation id="680983167891198932">Ključ</translation>
 <translation id="6816797338148849397">Dostupne su informacije u vezi s vašim odabirom. Pristupite tipkom strelice nagore.</translation>
 <translation id="6853312040151791195">Brzina pražnjenja</translation>
-<translation id="6862416241246624313">Povratna informacija je poslana</translation>
+<translation id="6862416241246624313">Povratne informacije su poslane</translation>
 <translation id="6866732840889595464">bijela rada</translation>
 <translation id="6871256179359663621">svijetloljubičasta</translation>
 <translation id="6889786074662672253">Dok traje ponovno pokretanje, nemojte iskopčati ovaj vanjski uređaj ili isključiti računar. Ovaj prozor možete minimizirati. Ovo može potrajati nekoliko minuta. Moguće je da za to vrijeme vanjski uređaj neće funkcionirati.</translation>
@@ -1299,7 +1300,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="7802764839223122985">Nedostaje tipka. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7805768142964895445">Status</translation>
-<translation id="7811024689617730980">Odaberite dan automatskog povratka na zadano u rasponu od 1. do 31., uključujući obje krajnje vrijednosti</translation>
+<translation id="7811024689617730980">Odaberite dan za automatsko poništavanje od 1. do 31, uključujući te dvije vrijednosti</translation>
 <translation id="7813073042185856802">planina</translation>
 <translation id="7819857487979277519">PSK (WPA ili RSN)</translation>
 <translation id="7824219488248240180">postimpresionizam</translation>

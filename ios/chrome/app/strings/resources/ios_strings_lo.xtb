@@ -408,6 +408,7 @@
 <translation id="2975121486251958312">ມີແຕ່ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນພ້ອມໃຫ້ນຳໃຊ້</translation>
 <translation id="2982481275546140226">ລຶບລ້າງຂໍ້ມູນ</translation>
 <translation id="298306318844797842">ເພີ່ມວິທີການຈ່າຍເງິນ...</translation>
+<translation id="2984370252102312100">ແຖບ ແລະ ກຸ່ມແຖບທີ່ເປີດຢູ່</translation>
 <translation id="2989805286512600854">ເປີດຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="300455800299409273">ເຊື່ອງ "ສືບຕໍ່ໃຊ້ແຖບນີ້"</translation>
 <translation id="3010025794097054078">ປອດໄພຈາກການລະເມີດຂໍ້ມູນ, ເວັບໄຊທີ່ບໍ່ປອດໄພ ແລະ ອື່ນໆ.</translation>
@@ -896,6 +897,7 @@
 <translation id="5415289094036440596">ບໍ່ສາມາດແບ່ງປັນກະແຈຜ່ານໄດ້</translation>
 <translation id="5416022985862681400">7 ມື້ຫຼ້າສຸດ</translation>
 <translation id="5416455648658732408">ຍ້າຍໄປໃສ່ກຸ່ມແຖບ</translation>
+<translation id="5419613306346207284">ກຸ່ມແຖບຈາກອຸປະກອນທັງໝົດ</translation>
 <translation id="5423269318075950257">ຕິດຕາມລາຄາ</translation>
 <translation id="5431252637281434233">ທ່ານຈະອອກຈາກລະບົບ</translation>
 <translation id="543338862236136125">ແກ້ໄຂລະຫັດຜ່ານ</translation>
@@ -1058,6 +1060,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6188737759358894319">ສ້າງເມື່ອ <ph name="DATE" /></translation>
 <translation id="6189413832092199491">ຍັງບໍ່ໄດ້ອ່ານ</translation>
 <translation id="6196207969502475924">​ການຄົ້ນຫາ​ສຽງ</translation>
+<translation id="6198252989419008588">ປ່ຽນ PIN</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{ປິດ {COUNT} ແຖບ}other{ປິດ {COUNT} ແຖບ}}</translation>
 <translation id="6210079381482819663">ແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ເປັນເວລາຢ່າງໜ້ອຍ <ph name="THRESHOLD" /> ຈະຖືກຍ້າຍມາຢູ່ບ່ອນນີ້. ທ່ານສາມາດປ່ຽນສິ່ງນີ້ຕອນໃດກໍໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">ບໍ່ພົບທີ່ຢູ່</translation>

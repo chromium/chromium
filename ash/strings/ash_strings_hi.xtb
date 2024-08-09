@@ -467,7 +467,6 @@
 <translation id="2704781753052663061">अन्य वाई-फ़ाई नेटवर्क से कनेक्ट करें</translation>
 <translation id="2705001408393684014">माइक टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ऊपर</translation>
-<translation id="271033894570825754">नया</translation>
 <translation id="2710984741481549981">विंडो लॉक करें</translation>
 <translation id="2718395828230677721">नाइट लाइट</translation>
 <translation id="2726420622004325180">आपके फ़ोन में मोबाइल डेटा होना ज़रूरी है, ताकि हॉटस्पॉट की सुविधा दी जा सके</translation>
@@ -564,6 +563,7 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">मेन्यू बड़ा करें</translation>
 <translation id="3087734570205094154">नीचे</translation>
+<translation id="3090214513075567547">कॉन्टेक्स्ट मेन्यू खोलें</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> को टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">असाइनमेंट पूरा करने की तारीख मौजूद नहीं है</translation>
 <translation id="3095995014811312755">वर्शन</translation>
@@ -664,6 +664,7 @@
 <translation id="3439896670700055005">कैश मेमोरी में सेव किए गए कॉन्टेंट का इस्तेमाल किए बिना, मौजूदा पेज फिर से लोड करें</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">माउस को अपनी पसंद के मुताबिक बनाएं</translation>
+<translation id="3444385531800624797">नतीजे लोड हो रहे हैं</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनट</translation>
 <translation id="3445925074670675829">USB-C डिवाइस</translation>
 <translation id="3454555520521576458">साइज़ बदलने की सुविधा वाला ऐप्लिकेशन</translation>
@@ -1207,6 +1208,7 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> नाम वाले ब्लूटूथ डिवाइस से कनेक्ट किया गया है. इसकी बैटरी <ph name="BATTERY_PERCENTAGE" />% है</translation>
 <translation id="5258528442992323769">कोई डेस्क सेव नहीं किया गया है</translation>
 <translation id="5260676007519551770">डेस्क 4</translation>
+<translation id="5265391159779542051">नतीजे लोड हो गए हैं</translation>
 <translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">स्टाइलस टूल को टॉगल करें</translation>
 <translation id="5278086053818066789">ChromeVox (बोलकर दिए जाने वाले जवाब की सुविधा) को चालू या बंद करने के लिए</translation>
@@ -1234,7 +1236,6 @@
 <translation id="5331975486040154427">USB-C डिवाइस (बायां पिछला पोर्ट)</translation>
 <translation id="533282197239610265">कास्ट डिवाइस दिखाएं</translation>
 <translation id="5344128444027639014">दाएं वायरलेस बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है</translation>
-<translation id="5346119650615956459">GIF</translation>
 <translation id="5352250171825660495">गहरे रंग वाली थीम चालू है</translation>
 <translation id="5354804064646502504">इससे डेटा खर्च हो सकता है.
 कोई डिवाइस कनेक्ट नहीं है.</translation>
@@ -1502,6 +1503,7 @@
 <translation id="6210042900243040400"><ph name="EMAIL" /> में पहले से सेव किए गए <ph name="NAME" /> को कनेक्ट करें</translation>
 <translation id="6213808132343683860">स्क्रीन के कुछ हिस्से का स्क्रीनशॉट लेने या स्क्रीन रिकॉर्डिंग करने के लिए</translation>
 <translation id="621606890568890214">Google Classroom को बड़ा करें</translation>
+<translation id="6216759484154215561">ब्राउज़र में ज़्यादा जानकारी पाने वाला लिंक खोला गया</translation>
 <translation id="6220928844947387476">अब, कैमरे और स्क्रीन दोनों पर दिख रही चीज़ों की रिकॉर्डिंग एक साथ की जा सकती है</translation>
 <translation id="622484624075952240">नीचे</translation>
 <translation id="6228457605945141550">स्‍क्रीन की रोशनी कम करें</translation>
@@ -2205,6 +2207,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">स्क्रीन पर सबसे नीचे दाएं कोने, लॉन्चर, पता बार, बुकमार्क बार, खुली हुई वेबसाइट, और डाउनलोड के बीच स्विच करने के लिए, आगे की ओर जाएं</translation>
 <translation id="8792626944327216835">माइक्रोफ़ोन</translation>
+<translation id="8797381270745758905">फिर से कोशिश करने वाले लिंक पर क्लिक किया गया</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> फ़ोल्डर</translation>
 <translation id="880709030178078220">"सहायता"</translation>

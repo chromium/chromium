@@ -1058,6 +1058,7 @@
 <translation id="6188737759358894319">作成: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">未読</translation>
 <translation id="6196207969502475924">音声検索</translation>
+<translation id="6198252989419008588">PIN を変更</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} 個のタブを閉じる}other{{COUNT} 個のタブを閉じる}}</translation>
 <translation id="6210079381482819663"><ph name="THRESHOLD" /> 日間使用していないタブはここに移動されます。これは<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />でいつでも変更できます。</translation>
 <translation id="6213281885682386884">住所が見つかりませんでした</translation>

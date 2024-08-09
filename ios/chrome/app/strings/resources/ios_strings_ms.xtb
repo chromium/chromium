@@ -408,6 +408,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2975121486251958312">Hanya Mod Inkognito Tersedia</translation>
 <translation id="2982481275546140226">Kosongkan Data</translation>
 <translation id="298306318844797842">Tambahkan Kaedah Pembayaran...</translation>
+<translation id="2984370252102312100">Buka Tab dan Kumpulan Tab</translation>
 <translation id="2989805286512600854">Buka dalam Tab Baharu</translation>
 <translation id="300455800299409273">Sembunyikan "Teruskan dengan Tab Ini"</translation>
 <translation id="3010025794097054078">Kekal selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi.</translation>
@@ -896,6 +897,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5415289094036440596">Kunci laluan tidak boleh dikongsi</translation>
 <translation id="5416022985862681400">7 Hari Lalu</translation>
 <translation id="5416455648658732408">Beralih kepada Kumpulan Tab</translation>
+<translation id="5419613306346207284">Kumpulan Tab daripada semua peranti</translation>
 <translation id="5423269318075950257">Jejaki Harga</translation>
 <translation id="5431252637281434233">Anda akan dilog keluar</translation>
 <translation id="543338862236136125">Edit kata laluan</translation>
@@ -1058,6 +1060,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6188737759358894319">Dibuat pada <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Belum dibaca</translation>
 <translation id="6196207969502475924">Carian Suara</translation>
+<translation id="6198252989419008588">Tukar PIN</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Tutup {COUNT} Tab}other{Tutup {COUNT} Tab}}</translation>
 <translation id="6210079381482819663">Tab yang tidak digunakan selama <ph name="THRESHOLD" /> hari atau lebih dialihkan kepada bahagian ini. Anda boleh menukar pilihan ini pada bila-bila masa dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Tiada alamat ditemukan</translation>

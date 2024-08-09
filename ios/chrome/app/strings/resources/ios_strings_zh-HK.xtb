@@ -1058,6 +1058,7 @@
 <translation id="6188737759358894319">建立時間：<ph name="DATE" /></translation>
 <translation id="6189413832092199491">未讀</translation>
 <translation id="6196207969502475924">語音搜尋</translation>
+<translation id="6198252989419008588">變更 PIN</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{關閉 {COUNT} 個分頁}other{關閉 {COUNT} 個分頁}}</translation>
 <translation id="6210079381482819663">已有 <ph name="THRESHOLD" /> 天或以上未使用的分頁會移到此處。您可隨時在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中變更此設定。</translation>
 <translation id="6213281885682386884">找不到地址</translation>

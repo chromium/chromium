@@ -438,7 +438,6 @@
 <translation id="1307431692088049276">නැවත මගෙන් නොඅසන්න</translation>
 <translation id="1307559529304613120">අපොයි!  මෙම උපාංගය සඳහා දිගුකාලීන API ප්‍රවේශ ටෝකනය ගබඩා කිරීමට පද්ධතිය අපොහොසත් විය.</translation>
 <translation id="1308548450293664112">මම මෙම ගොනුව, රේඩියෝ බොත්තම් සමූහය, 3න් 1ක් නිර්මාණය කළෙමි</translation>
-<translation id="1308876641060960899">ඔබ Google Lens භාවිත කරන විට, පිටුවේ තිර රුවක් Google වෙත යවනු ලැබේ. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">දැන්වීම් පෞද්ගලීකරණයට බලපාන දත්ත මකා දමනු ලැබේ</translation>
 <translation id="1311294419381837540">ඔබ පටිත්ත විකාශය කරයි. ඔබට ඕනෑම වේලාවක විකාශනය විරාම කිරීම හෝ නැවැත්විය හැක.</translation>
 <translation id="131188242279372879">බා ගැනීම් සඳහා Chrome හි ඉහළමට මට්ටමේ ආරක්‍ෂාව ලබා ගැනීමට දියුණු කළ ආරක්‍ෂාව සොයා ගන්න</translation>
@@ -2646,6 +2645,7 @@
 <translation id="2853121255651601031">මුරපදය සුරැකිණි</translation>
 <translation id="2855243985454069333">සියලුම සමමුහූර්ත උපාංගවලින් ඉතිහාසය මකයි</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> සමඟ පුරන්න</translation>
+<translation id="28559674945112027">දැඩි ප්‍රකාරය</translation>
 <translation id="2856776373509145513">නව බහාලුමක් තනන්න</translation>
 <translation id="2856907950922663165">URL සංකේතනය ක්‍රියාවිරහිත කරන්න ද?</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> වෙත මුරපද ආයාත කරන්න</translation>
@@ -3122,7 +3122,6 @@
 <translation id="3220943972464248773">ඔබගේ මුරපද සමමුහුර්ත කිරීමට, ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="3222066309010235055">පූර්ව සමර්පණය: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" /> වෙත සබඳින්න</translation>
-<translation id="3222857603094643834">Google Lens සමග මෙම පිටුව මත ඕනෑම දෙයක් සොයන්න</translation>
 <translation id="3223109931751684474">මෙම උපාංගය මත ඔබේ මුරයතුරු භාවිත කිරීමේ ප්‍රවේශය ඉවත් කරන්න</translation>
 <translation id="3223531857777746191">යළි සැකසුම් බොත්තම</translation>
 <translation id="3225084153129302039">පෙරනිමි දම් නියුරුව</translation>
@@ -6403,6 +6402,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5623282979409330487">මෙම වෙබ් අඩවිය ඔබේ චලන සංවේදක වෙත ප්‍රවේශ වෙයි.</translation>
 <translation id="5623842676595125836">වාර්තාව</translation>
 <translation id="5624120631404540903">මුරපද පාලනය</translation>
+<translation id="5624959475330585145">අනාරක්ෂිත සම්බන්ධතා භාවිත කිරීමට පෙර විමසන්න</translation>
 <translation id="5625225435499354052">Google Pay හි සංස්කරණය කරන්න</translation>
 <translation id="5626134646977739690">නම:</translation>
 <translation id="5627832140542566187">සංදර්ශක දිශානතිය</translation>
@@ -9635,6 +9635,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8008356846765065031">අන්තර්ජාලයෙන් විසන්ධි විය. ඔබේ අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කර බලන්න.</translation>
 <translation id="8008704580256716350">සැක සහිත ගොනුව අවහිර කර ඇත</translation>
 <translation id="8009225694047762179">මුරපද කළමනාකරණය</translation>
+<translation id="8010081455002666927">ස්වයං-අනාවරණය</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' ගෙන යන ලදී.</translation>
 <translation id="8012188750847319132">මහකුරු අගුල</translation>
 <translation id="8012463809859447963">ක්‍ෂණික හොට්ස්පොට් විස්තර</translation>
@@ -11038,6 +11039,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9009707268312089299">Windows වෙතින් ආයාත කරන ලදි</translation>
 <translation id="9009708085379296446">ඔබ අදහස් කළේ මෙම පිටුව වෙනස් කිරීමටද?</translation>
 <translation id="9010845741772269259">ගෙවීමේ ක්‍රම එක් කරන්න</translation>
+<translation id="901087299639956505">සමබර ප්‍රකාරය</translation>
 <translation id="9011163749350026987">සෑම විටම නිරූපකය පෙන්වන්න</translation>
 <translation id="9011262023858991985">මෙම පටිත්ත විකාශනය කිරීම</translation>
 <translation id="9011393886518328654">නිකුත් කිරීමේ සටහන්</translation>

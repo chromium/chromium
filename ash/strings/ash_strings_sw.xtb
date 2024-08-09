@@ -467,7 +467,6 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="2704781753052663061">Jiunge kwenye mitandao mingine ya Wi-Fi</translation>
 <translation id="2705001408393684014">Washa Maikrofoni. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Juu</translation>
-<translation id="271033894570825754">Mpya</translation>
 <translation id="2710984741481549981">Funga madirisha</translation>
 <translation id="2718395828230677721">Mwanga wa Usiku</translation>
 <translation id="2726420622004325180">Ni lazima simu yako iwe na data ya mtandao wa simu ili utumie kipengele cha mtandao pepe</translation>
@@ -564,6 +563,7 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Panua menyu</translation>
 <translation id="3087734570205094154">Chini</translation>
+<translation id="3090214513075567547">Fungua menyu</translation>
 <translation id="3090989381251959936">Zima au uwashe <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Inakosekana</translation>
 <translation id="3095995014811312755">toleo</translation>
@@ -1233,7 +1233,6 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="5331975486040154427">Kifaa cha USB-C (mlango wa upande wa kushoto nyuma)</translation>
 <translation id="533282197239610265">Onyesha vifaa vinavyotuma maudhui</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Kulia)</translation>
-<translation id="5346119650615956459">GIF</translation>
 <translation id="5352250171825660495">Mandhari meusi yamewashwa</translation>
 <translation id="5354804064646502504">Huenda ukatozwa gharama za data.
 Hakuna vifaa vilivyounganishwa.</translation>

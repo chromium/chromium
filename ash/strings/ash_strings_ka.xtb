@@ -467,7 +467,6 @@
 <translation id="2704781753052663061">სხვა Wi-Fi ქსელებში გაწევრიანება</translation>
 <translation id="2705001408393684014">მიკროფონის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ზემოთ</translation>
-<translation id="271033894570825754">ახალი</translation>
 <translation id="2710984741481549981">ფანჯრების ჩაკეტვა</translation>
 <translation id="2718395828230677721">ღამის განათება</translation>
 <translation id="2726420622004325180">უსადენო ქსელის უზრუნველსაყოფად თქვენს ტელეფონს უნდ ჰქონდეს მობილური ინტერნეტი</translation>
@@ -665,6 +664,7 @@
 <translation id="3439896670700055005">მიმდინარე გვერდის გადატვირთვა ქეშირებული კონტენტის გამოყენების გარეშე</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">მოირგეთ თქვენი მაუსი</translation>
+<translation id="3444385531800624797">მიმდინარეობს შედეგების ჩატვირთვა</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> წთ</translation>
 <translation id="3445925074670675829">USB-C მოწყობილობა</translation>
 <translation id="3454555520521576458">ზომაცვლადი</translation>
@@ -1207,6 +1207,7 @@
 <translation id="5253783950165989294">დაკავშირებულია მოწყობილობასთან, სახელად <ph name="DEVICE_NAME" />, ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">სამუშაო მაგიდები არ არის შენახული</translation>
 <translation id="5260676007519551770">დესკტოპი 4</translation>
+<translation id="5265391159779542051">შედეგები ჩაიტვირთა</translation>
 <translation id="5270547718570958938">Google კალენდარი</translation>
 <translation id="5277869901083657836">სტილუსის ხელსაწყოების გადართვა</translation>
 <translation id="5278086053818066789">ChromeVox-ის (გახმოვანებული უკუკავშირის) ჩართვა/გამორთვა</translation>
@@ -1234,7 +1235,6 @@
 <translation id="5331975486040154427">USB-C მოწყობილობა (მარცხენა უკანა პორტი)</translation>
 <translation id="533282197239610265">გადაცემის მოწყობილობების ჩვენება</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (მარჯვენა)</translation>
-<translation id="5346119650615956459">GIF-ები</translation>
 <translation id="5352250171825660495">მუქი თემა ჩართულია</translation>
 <translation id="5354804064646502504">ამის გამო, შესაძლოა, მობილური ინტერნეტის საფასურის გადახდა მოგიწიოთ.
 დაკავშირებული მოწყობილობები არ არის.</translation>
@@ -1502,6 +1502,7 @@
 <translation id="6210042900243040400">დააკავშირეთ <ph name="NAME" />, რომლებიც ადრე შენახული იყო <ph name="EMAIL" />-ში</translation>
 <translation id="6213808132343683860">ეკრანის ნაწილობრივი ანაბეჭდის გადაღება ან ეკრანის ჩაწერა</translation>
 <translation id="621606890568890214">Google Classroom-ის გაფართოება</translation>
+<translation id="6216759484154215561">ბრაუზერში გაიხსნა ბმული მეტის შესატყობად</translation>
 <translation id="6220928844947387476">ახლა თქვენი თავის და ეკრანის ჩაწერა ერთდროულად შეგიძლიათ</translation>
 <translation id="622484624075952240">ქვემოთ</translation>
 <translation id="6228457605945141550">სიკაშკაშის დაკლება</translation>
@@ -2205,6 +2206,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">ქვედა მარჯვენა კუთხეს, გამშვებს, მისამართთა ზოლს, სანიშნეების ზოლს, გახსნილ ვებსაიტებსა და ჩამოტვირთვებს შორის უკან გადაადგილება</translation>
 <translation id="8792626944327216835">მიკროფონი</translation>
+<translation id="8797381270745758905">ხელახლა ცდის ბმულის გააქტიურდა</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">საქაღალდე <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"დახმარება"</translation>

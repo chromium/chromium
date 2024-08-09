@@ -438,7 +438,6 @@
 <translation id="1307431692088049276">Не прашувај ме повторно</translation>
 <translation id="1307559529304613120">Ах! Системот не успеа да го складира пристапниот токен на долгорочниот АПИ за уредот.</translation>
 <translation id="1308548450293664112">Јас ја создадов датотекава, група тркалезни копчиња, 1 од 3</translation>
-<translation id="1308876641060960899">При користење Google Lens, до Google се испраќа слика од екранот на страницата. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Податоците што влијат на персонализацијата на реклами се избришани</translation>
 <translation id="1311294419381837540">Емитувате картичка. Емитувањето може да го паузирате или сопрете во секое време.</translation>
 <translation id="131188242279372879">Откријте ја „Подобрената заштита“ за да го добиете највисокото ниво на заштита на Chrome</translation>
@@ -2658,6 +2657,7 @@
 <translation id="2853121255651601031">Лозинката е зачувана</translation>
 <translation id="2855243985454069333">Ќе се избрише историјата од сите синхронизирани уреди</translation>
 <translation id="2855812646048059450">Најавување со <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Строг режим</translation>
 <translation id="2856776373509145513">Создајте нов контејнер</translation>
 <translation id="2856907950922663165">Да се исклучи шифрирањето URL-адреси?</translation>
 <translation id="2859741939921354763">Увезување лозинки на <ph name="BRAND" /></translation>
@@ -3136,7 +3136,6 @@
 <translation id="3220943972464248773">За да ги синхронизирате лозинките, потврдете дека сте вие</translation>
 <translation id="3222066309010235055">Претприкажувач: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Поврзете се со <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Пребарајте што било на страницава со Google Lens</translation>
 <translation id="3223109931751684474">Отстранете го пристапот до вашите криптографски клучеви на уредов</translation>
 <translation id="3223531857777746191">Копче за ресетирање</translation>
 <translation id="3225084153129302039">Стандарден виолетов аватар</translation>
@@ -6416,6 +6415,7 @@
 <translation id="5623282979409330487">Овој сајт пристапува до вашите сензори за движење.</translation>
 <translation id="5623842676595125836">Дневник</translation>
 <translation id="5624120631404540903">Управувај со лозинки</translation>
+<translation id="5624959475330585145">Прашај пред да користиш небезбедни врски</translation>
 <translation id="5625225435499354052">Изменете во Google Pay</translation>
 <translation id="5626134646977739690">Име:</translation>
 <translation id="5627832140542566187">Ориентација на екранот</translation>
@@ -9651,6 +9651,7 @@
 <translation id="8008356846765065031">Исклучен интернет. Проверете го поврзувањето на интернет.</translation>
 <translation id="8008704580256716350">Блокирана е сомнителна датотека</translation>
 <translation id="8009225694047762179">Управување со лозинки</translation>
+<translation id="8010081455002666927">Автоматско откривање</translation>
 <translation id="8011372169388649948">Ознаката „<ph name="BOOKMARK_TITLE" />“ е преместена.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Детали за инстант точка на пристап</translation>
@@ -11057,6 +11058,7 @@
 <translation id="9009707268312089299">Увезено од Windows</translation>
 <translation id="9009708085379296446">Дали мислевте да ја промените страницава?</translation>
 <translation id="9010845741772269259">Додајте начини на плаќање</translation>
+<translation id="901087299639956505">Балансиран режим</translation>
 <translation id="9011163749350026987">Секогаш прикажувај ја иконата</translation>
 <translation id="9011262023858991985">Се емитува картичкава</translation>
 <translation id="9011393886518328654">Белешки за верзијата</translation>

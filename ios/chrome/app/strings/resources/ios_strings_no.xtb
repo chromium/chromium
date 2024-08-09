@@ -220,6 +220,7 @@
 <translation id="2080769225927880590">Logg på med en gyldig konto</translation>
 <translation id="2103075008456228677">Åpne history.google.com</translation>
 <translation id="21133533946938348">Fest fanen</translation>
+<translation id="2120859803436824248">Slå av varsler fra sikkerhetssjekk</translation>
 <translation id="2122754583996902531">Nettleseren din administreres. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Vil du slå på prisvarsler?</translation>
 <translation id="2139867232736819575">Søk etter teksten du kopierte</translation>
@@ -320,6 +321,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="261305050785128654">Gi nettsteder beskjed om hvilke språk du snakker. Nettsteder viser innhold på disse språkene når det er mulig.</translation>
 <translation id="2617210333344098964">Flytt adressen til kontoen</translation>
 <translation id="261739049332372104">For å få oppdateringer om innhold du er interessert i, slå på varsler i iOS-innstillingene.</translation>
+<translation id="2623536180761008356">Skjul «Sikkerhetssjekk»</translation>
 <translation id="2625189173221582860">Passordet er kopiert</translation>
 <translation id="2626236249646841566">Kontroller tilkoblingen din, og prøv å logge på igjen.</translation>
 <translation id="2635918910848538771">Fyll ut verifiseringskoden automatisk</translation>
@@ -613,6 +615,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4049507953662678203">Sørg for at du er koblet til et nettverk, og prøv igjen.</translation>
 <translation id="4054572406751135230">Hold deg oppdatert om nyheter, sport med mer.</translation>
 <translation id="4068959193278821990">Slå på økt beskyttelse …</translation>
+<translation id="407435320163086788">Slå på varsler fra sikkerhetssjekk</translation>
 <translation id="4088879333319441249">Vil du oppheve fanegruppen?</translation>
 <translation id="4092655288299341041">Vis Hjelp</translation>
 <translation id="4094361089640885693">Spor priser enkelt, og få prisstatistikk.</translation>
@@ -640,6 +643,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="421070604241073551">Når dette er på, lagres data i Google-kontoen din. Når dette er av, lagres data bare på denne enheten.</translation>
 <translation id="4216918546378735658">Avbryt</translation>
 <translation id="422474357428465195">Du har flere passordproblemer som kan utgjøre en sikkerhetsrisiko.</translation>
+<translation id="4231395118547300571">Varsler fra sikkerhetssjekk er slått på</translation>
 <translation id="4232900911558558076">Utforsk den nye menyen</translation>
 <translation id="4233831822770018312">Endre tillatelser</translation>
 <translation id="4236584471598725073">Sporer prisen</translation>
@@ -683,6 +687,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4402672425188312225">{COUNT,plural, =1{1 fane}other{# faner}}</translation>
 <translation id="4405320213589929829">Bruk adresser på nettsider for å få lokal informasjon og veibeskrivelser.</translation>
 <translation id="4420409367264901497">Rediger bokmerke</translation>
+<translation id="4424654658080265901">Slå på varsler fra sikkerhetssjekk</translation>
 <translation id="4431224949908513835">Velg betalingsmåten du vil fylle ut.</translation>
 <translation id="4442550905108052454">Åpne <ph name="BEGIN_BOLD" />Innstillinger<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Legg til språk</translation>
@@ -811,6 +816,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5016420433031926653">Send til <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Påminn meg senere</translation>
 <translation id="5024511550058813796">Du får loggen din på alle synkroniserte enheter, slik at du kan fortsette med det du holdt på med</translation>
+<translation id="5032181563676357724">Varsler fra sikkerhetssjekk er slått av</translation>
 <translation id="5037676449506322593">Velg alle</translation>
 <translation id="5038113048373546701">Motta varsler om nyheter, sport med mer basert på interessene dine</translation>
 <translation id="5039804452771397117">Tillat</translation>
@@ -951,6 +957,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5702108177581350218">Når du deler en kopi av brukernavnet og passordet ditt, kan familiemedlemmet ditt fylle ut disse med Google Passordlagring.</translation>
 <translation id="5704908597376970822">Kan ikke logge på.</translation>
 <translation id="5706552126692816153">Aktiv for én dag siden</translation>
+<translation id="5709005673595820640">{count,plural, =1{Du har {count} gjenbrukt passord som kan utgjøre en sikkerhetsrisiko. Fiks det nå for å ivareta sikkerheten.}other{Du har {count} gjenbrukte passord som kan utgjøre en sikkerhetsrisiko. Fiks dem nå for å ivareta sikkerheten.}}</translation>
 <translation id="5718049162805123412">Du bør endre disse nå</translation>
 <translation id="5724941645893276623">For å surfe privat på nettet, legg til en ny fane</translation>
 <translation id="5728072125198221967">Sammenknyttede Google-tjenester</translation>
@@ -966,6 +973,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5765456154762864099">Meny → Innstillinger → Standardnettleser</translation>
 <translation id="5777888488419460501">Lagre i konto</translation>
 <translation id="5778292857689789362">Fanegruppe, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> faner.</translation>
+<translation id="5779117921996157216">{count,plural, =1{Du har {count} passord som er utsatt for sikkerhetsbrudd og kan utgjøre en sikkerhetsrisiko. Fiks det nå for å ivareta sikkerheten.}other{Du har {count} passord som er utsatt for sikkerhetsbrudd og kan utgjøre en sikkerhetsrisiko. Fiks dem nå for å ivareta sikkerheten.}}</translation>
 <translation id="5782227691023083829">Oversetter</translation>
 <translation id="5791632441210678828">Sorteringsknapp for Følger-feeden.</translation>
 <translation id="5793373065989412701">Sjekker familiemedlemmene dine …</translation>
@@ -1050,6 +1058,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6188737759358894319">Laget <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ulest</translation>
 <translation id="6196207969502475924">Google Talesøk</translation>
+<translation id="6198252989419008588">Endre personlig kode</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Lukk {COUNT} fane}other{Lukk {COUNT} faner}}</translation>
 <translation id="6210079381482819663">Faner som ikke brukes i <ph name="THRESHOLD" /> dager eller mer, flyttes hit. Du kan når som helst endre dette i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Fant ingen adresser</translation>
@@ -1131,6 +1140,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="6494931198667773526">Slutter</translation>
 <translation id="6500795388871406244">Bruk foreslått passord:</translation>
 <translation id="650279896687777322">Finn ut mer …</translation>
+<translation id="6503763061813913607">Varsler fra sikkerhetssjekk</translation>
 <translation id="6505334220040167806">Skjul fanegruppen.</translation>
 <translation id="6507973708545996744">Logg på for å få leselisten din på alle enhetene dine.</translation>
 <translation id="6510072653668207258">Påminn meg senere</translation>
@@ -1351,6 +1361,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7600965453749440009">Oversett aldri <ph name="LANGUAGE" /></translation>
 <translation id="7603308509262646847">Autofyll kortholderen <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Blokkerte forgrunnsvinduer (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="760667371114328991">Slå av varsler fra sikkerhetssjekk</translation>
 <translation id="7607521702806708809">Slett passordet</translation>
 <translation id="7609559547731036746">Bokmerker</translation>
 <translation id="7638584964844754484">Feil passordfrase</translation>
@@ -1670,6 +1681,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9079935439869366234">Merk alle som ulest</translation>
 <translation id="9081058212938299310">Vil du oppdatere passordet for <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">For å synkronisere og gi et personlig preg på alle enhetene, slå på synkronisering.</translation>
+<translation id="9084367296493549256">{count,plural, =1{Du har {count} svakt passord som kan utgjøre en sikkerhetsrisiko. Fiks det nå for å ivareta sikkerheten.}other{Du har {count} svakt passord som kan utgjøre en sikkerhetsrisiko. Fiks dem nå for å ivareta sikkerheten.}}</translation>
 <translation id="9087339162317338348">Bruk HTTPS når det er mulig, og bli advart før innlasting av nettsteder som ikke støtter dette.</translation>
 <translation id="9093271241977565440">Trykk på søkeikonet øverst på skjermen</translation>
 <translation id="9094033019050270033">Oppdater passordet</translation>

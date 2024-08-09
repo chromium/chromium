@@ -439,7 +439,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1307431692088049276">Ne pitaj me ponovo</translation>
 <translation id="1307559529304613120">Ups!  Sistem nije uspio pohraniti token za dugoročni pristup API-ju za ovaj uređaj.</translation>
 <translation id="1308548450293664112">Potvrda kreiranja ovog fajla. Grupa dugmadi za izbor, 1 od 3</translation>
-<translation id="1308876641060960899">Kada koristite Google Objektiv, snimak ekrana stranice se šalje Googleu. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Podaci koji utiču na personalizaciju oglasa su izbrisani</translation>
 <translation id="1311294419381837540">Emitirate karticu. Možete u svakom trenutku pauzirati ili zaustaviti emitiranje.</translation>
 <translation id="131188242279372879">Otkrijte poboljšanu zaštitu da dobijete Chromeov najviši nivo zaštite za preuzimanja</translation>
@@ -1214,7 +1213,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="184183613002882946">Ne, ostavi 1 prekidač</translation>
 <translation id="184273675144259287">Zamijenite Linux aplikacije i fajlove prethodnom sigurnosnom kopijom</translation>
 <translation id="1842766183094193446">Jeste li sigurni da želite omogućiti demo način rada?</translation>
-<translation id="1843048149176045210">Kopiraj vezu za preuzimanje</translation>
+<translation id="1843048149176045210">Kopiraj link za preuzimanje</translation>
 <translation id="1845060436536902492">Čitač ekrana na ChromeOS Flexu, ChromeVox, prvenstveno koriste slijepe ili slabovidne osobe za čitanje teksta s ekrana pomoću sintisajzera govora ili Brailleovog ekrana. Pritisnite tipku za razmak da uključite ChromeVox. Kada se ChromeVox aktivira, proći ćete brz obilazak.</translation>
 <translation id="1845727111305721124">Dozvoljeno je reproduciranje zvuka</translation>
 <translation id="1846308012215045257">Ctrl + klik da pokrenete dodatak <ph name="PLUGIN_NAME" /></translation>
@@ -2462,6 +2461,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="272741954544380994">Traži sliku pomoću <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Ne podsjećaj me ponovo</translation>
 <translation id="2727712005121231835">Stvarna veličina</translation>
+<translation id="2727713483500953825">Odaberite slike/tekst za pretraživanje pomoću Objektiva</translation>
 <translation id="2727744317940422214">Nažalost, nešto nije uredu. Pošaljite povratne informacije uz hešteg #bruschetta u opisu. Kȏd greške je <ph name="ERROR" />. Brisanje nije uspjelo. Možda ćete to morati ručno obaviti.</translation>
 <translation id="2729327310379176711">Chrome pronalazi nove načine da smanji praćenje i poveća vašu sigurnost dok pregledate. Chrome također <ph name="ESTIMATE_INTERESTS_LINK" /> i omogućava vam da njima upravljate. Tako web lokacije koje posjetite mogu zatražiti od Chromea vaša interesovanja da bi vam prikazivali oglase.</translation>
 <translation id="2729577602370119849">Lako pristupajte štampačima i upravljajte njima</translation>
@@ -3136,7 +3136,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3220943972464248773">Da sinhronizirate lozinke, potvrdite identitet</translation>
 <translation id="3222066309010235055">Prikazivanje unaprijed: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Povežite se s uređajem <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Pretražite bilo šta na ovoj stranici putem Google Objektiva</translation>
 <translation id="3223109931751684474">Uklonite pristup pristupnim ključevima na uređaju</translation>
 <translation id="3223531857777746191">Dugme za poništavanje</translation>
 <translation id="3225084153129302039">Zadani ljubičasti avatar</translation>
@@ -3176,7 +3175,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3251714896659475029">Dozvolite da <ph name="SUPERVISED_USER_NAME" /> pristupa Google Asistentu pomoću fraze "Ok Google"</translation>
 <translation id="3251759466064201842">&lt;Nije dio potvrde&gt;</translation>
 <translation id="325238099842880997">Postavite osnovna digitalna pravila da pomognete djeci da se zabave, istražuju i rade školsko gradivo kod kuće</translation>
-<translation id="3253083398453405334">Zaslon blješti kad primite obavijest</translation>
+<translation id="3253083398453405334">Ekran blica kada primite obavještenja</translation>
 <translation id="3253225298092156258">Nije dostupno</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Oslobodite prostor na usluzi <ph name="CLOUD_PROVIDER" /> da kopirate fajl}one{Oslobodite prostor na usluzi <ph name="CLOUD_PROVIDER" /> da kopirate fajlove}few{Oslobodite prostor na usluzi <ph name="CLOUD_PROVIDER" /> da kopirate fajlove}other{Oslobodite prostor na usluzi <ph name="CLOUD_PROVIDER" /> da kopirate fajlove}}</translation>
 <translation id="3253448572569133955">Nepoznat račun</translation>
@@ -3673,11 +3672,12 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3621202678540785336">Ulaz</translation>
 <translation id="3621807901162200696">Pomozite nam da poboljšamo funkcije i performanse ChromeOS-a</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikaciju}one{# aplikaciju}few{# aplikacije}other{# aplikacija}}</translation>
-<translation id="3622820753353315928">Boja bljeskanja zaslona</translation>
+<translation id="3622820753353315928">Boja blicanja ekrana</translation>
 <translation id="362333465072914957">Čeka se da CA izda certifikat</translation>
 <translation id="3623598555687153298">Ovim će se izbrisati <ph name="TOTAL_USAGE" /> podataka koje su pohranile prikazane web lokacije</translation>
 <translation id="3624567683873126087">Otključajte uređaj i prijavite se na Google račun</translation>
 <translation id="3624583033347146597">Odaberite postavke za kolačiće trećih strana</translation>
+<translation id="3625345586754200168">Isprobajte Objektiv</translation>
 <translation id="3625481642044239431">Odabran je nevažeći fajl. Pokušajte ponovo.</translation>
 <translation id="3626296069957678981">Koristite kompatibilnu Dell bateriju za punjenje ovog Chromebooka.</translation>
 <translation id="3627320433825461852">Preostalo još manje od 1 minute</translation>
@@ -4834,6 +4834,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4450974146388585462">Dijagnosticiraj</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> je otkrio aktivni TPM koji može sigurnije pohraniti vaše podatke.</translation>
 <translation id="4452898361839215358">ili odaberite PPD. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Pretražujte slike ili tekst pomoću Objektiva</translation>
 <translation id="4453430595102511050">Dodirnite senzor za otisak prsta u gornjem desnom uglu tastature. Vaši podaci otiska prsta se sigurno pohranjuju i nikada ne napuštaju uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Pretražite <ph name="SEARCH_ENGINE_NAME" /> ili unesite URL</translation>
 <translation id="4457472090507035117">Odaberite trenutni glas:</translation>
@@ -6418,7 +6419,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5623282979409330487">Ova web lokacija pristupa vašim senzorima pokreta.</translation>
 <translation id="5623842676595125836">Zapis</translation>
 <translation id="5624120631404540903">Upravljajte lozinkama</translation>
-<translation id="5624959475330585145">Pitaj prije upotrebe nesigurnih veza</translation>
+<translation id="5624959475330585145">Pitaj prije korištenja nesigurnih veza</translation>
 <translation id="5625225435499354052">Uredi u Google Payu</translation>
 <translation id="5626134646977739690">Naziv:</translation>
 <translation id="5627832140542566187">Orijentacija prikaza</translation>
@@ -6995,6 +6996,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6059276912018042191">Nedavne kartice Chromea</translation>
 <translation id="6059652578941944813">Hijerarhija potvrda</translation>
 <translation id="6059925163896151826">USB uređaji</translation>
+<translation id="6060842547856900641">Otvorite Objektiv</translation>
 <translation id="6061408389284235459">Poslano je obavještenje na uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Kreirajte QR kôd</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> Neko sa sličnim glasom ili snimkom može pristupiti ličnim rezultatima djeteta <ph name="SUPERVISED_USER_NAME" />. Radi uštede baterije, u postavkama Asistenta računa koji koristi <ph name="SUPERVISED_USER_NAME" /> možete odabrati da aktiviranje frazom "Ok Google" uključite samo kada je uređaj povezan na izvor napajanja.</translation>
@@ -7180,7 +7182,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6197128521826316819">Kreiraj QR kôd za ovu stranicu</translation>
 <translation id="6198223452299275399">Prevlačite između stranica</translation>
 <translation id="6198252989419008588">Promijeni PIN</translation>
-<translation id="61988015556954366">Bljeskanje zaslona</translation>
+<translation id="61988015556954366">Blicanje ekrana</translation>
 <translation id="6200047250927636406">Odbaci fajl</translation>
 <translation id="6200151268994853226">Upravljajte ekstenzijom</translation>
 <translation id="6201608810045805374">Ukloniti ovaj račun?</translation>
@@ -7538,7 +7540,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6468773105221177474">Broj fajlova: <ph name="FILE_COUNT" /></translation>
 <translation id="6469557521904094793">Uključi mobilnu mrežu</translation>
 <translation id="6469702164109431067">Lozinke i pristupni ključevi</translation>
-<translation id="6470120577693311302">Bljeskajuće obavijesti</translation>
+<translation id="6470120577693311302">Obavještenja blicanjem</translation>
 <translation id="6470823736074966819">Isključi zvuk obavještenja</translation>
 <translation id="6472893788822429178">Prikaz dugmeta za početni ekran</translation>
 <translation id="6473315466413288899">Odaberite opciju</translation>
@@ -7975,7 +7977,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6790820461102226165">Dodaj osobu...</translation>
 <translation id="6793610798874309813">PIN može sadržavati 4 ili više znakova</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
-<translation id="6794175321111873395">Kopirano u međuspremnik: <ph name="DOWNLOAD_URL" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> je kopirano u međumemoriju</translation>
 <translation id="6794511157503068">Ako je vaš pristupni ključ za aplikaciju <ph name="APP_NAME" /> na USB sigurnosnom ključu, sada ga umetnite i dodirnite</translation>
 <translation id="679486139907144816">Za pristup ovoj web lokaciji pomoću pristupnog ključa uključite Windows Hello u postavkama. Zatim se vratite na ovu web lokaciju i pokušajte ponovo.</translation>
 <translation id="6795371939514004514">Automatsko skeniranje vam omogućava da se automatski krećete kroz stavke na ekranu. Kada je stavka istaknuta, pritisnite "Odaberi" da je aktivirate.</translation>

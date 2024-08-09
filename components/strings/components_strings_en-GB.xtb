@@ -1507,6 +1507,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Cult and indie films</translation>
 <translation id="3793574014653384240">Numbers and causes of the crashes that occurred recently</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> is preventing Chrome from establishing a secure connection</translation>
 <translation id="3799805948399000906">Font requested</translation>
 <translation id="3801265110651850478">Send a 'Do Not Track' request with your browsing traffic</translation>
 <translation id="380329542618494757">Name</translation>
@@ -2701,6 +2702,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6106989379647458772">The web page at <ph name="PAGE" /> might be temporarily down or it may have moved permanently to a new web address.</translation>
 <translation id="6107012941649240045">Issued To</translation>
 <translation id="6107924765192360631">Just start with a few words or a first draft to get writing suggestions.</translation>
+<translation id="6108580855199168381">Certificate details</translation>
 <translation id="6108702513636120202">Your search engine in Chromium</translation>
 <translation id="6108849843016142864">Reptiles and amphibians</translation>
 <translation id="610911394827799129">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
@@ -3472,6 +3474,12 @@ Additional details:
 <translation id="7535087603100972091">Value</translation>
 <translation id="753556296624075801">Powered by Google</translation>
 <translation id="7537536606612762813">Mandatory</translation>
+<translation id="7541586907443866208">Attackers will be able to see and change any data sent between you and this site.
+    &lt;ul&gt;
+    &lt;li&gt;If you're currently on a public network, such as an airport or hotel Wi-Fi, consider trying again when you're connected to a trusted network (e.g. at home or at work).&lt;/li&gt;
+    &lt;li&gt;If you know the site owner, ask them to fix this.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">Automatic credit card filling is disabled because this form does not use a secure connection.</translation>
 <translation id="7543525346216957623">Ask your parent</translation>
 <translation id="7546409722674205727">Starting <ph name="APP_NAME" /></translation>

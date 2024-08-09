@@ -467,7 +467,6 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="2704781753052663061">Ymuno â rhwydweithiau Wi-Fi eraill</translation>
 <translation id="2705001408393684014">Toglo'r Meicroffon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">I fyny</translation>
-<translation id="271033894570825754">Newydd</translation>
 <translation id="2710984741481549981">Cloi'r ffenestri</translation>
 <translation id="2718395828230677721">Golau nos</translation>
 <translation id="2726420622004325180">Rhaid bod gan eich ffôn ddata symudol i ddarparu poethfan</translation>
@@ -564,6 +563,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Ehangu'r ddewislen</translation>
 <translation id="3087734570205094154">Gwaelod</translation>
+<translation id="3090214513075567547">Agor y ddewislen cyd-destunol</translation>
 <translation id="3090989381251959936">Toglo <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Ar goll</translation>
 <translation id="3095995014811312755">fersiwn</translation>
@@ -1233,7 +1233,6 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="5331975486040154427">Dyfais USB-C (porth chwith ar y cefn)</translation>
 <translation id="533282197239610265">Dangos dyfeisiau castio</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Dde)</translation>
-<translation id="5346119650615956459">GIF</translation>
 <translation id="5352250171825660495">Mae'r thema dywyll ymlaen</translation>
 <translation id="5354804064646502504">Gall hyn arwain at gost data.
 Dim dyfeisiau yn gysylltiedig.</translation>

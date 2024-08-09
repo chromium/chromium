@@ -467,7 +467,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2704781753052663061">Anslut till andra wifi-nätverk</translation>
 <translation id="2705001408393684014">Aktivera eller inaktivera mikrofonen. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Upp</translation>
-<translation id="271033894570825754">Ny</translation>
 <translation id="2710984741481549981">Lås fönstren</translation>
 <translation id="2718395828230677721">Nattljus</translation>
 <translation id="2726420622004325180">Telefonen måste ha mobildata för att användas som surfzon</translation>
@@ -564,6 +563,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3077734595579995578">skift</translation>
 <translation id="3081696990447829002">Utöka menyn</translation>
 <translation id="3087734570205094154">Nederst</translation>
+<translation id="3090214513075567547">Öppna snabbmenyn</translation>
 <translation id="3090989381251959936">Aktivera och inaktivera <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Saknas</translation>
 <translation id="3095995014811312755">version</translation>
@@ -1233,7 +1233,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5331975486040154427">USB-C-enhet (bakre porten på vänster sida)</translation>
 <translation id="533282197239610265">Visa cast-enheter</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (höger)</translation>
-<translation id="5346119650615956459">Giffar</translation>
 <translation id="5352250171825660495">Mörkt tema är på</translation>
 <translation id="5354804064646502504">Detta kan innebära datakostnader.
 Inga enheter är anslutna.</translation>

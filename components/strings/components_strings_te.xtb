@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">మూవింగ్ &amp; రీలొకేషన్</translation>
 <translation id="1270502636509132238">పికప్ పద్ధతి</translation>
 <translation id="1273592791152866347">ధర ట్రాకింగ్ ఆఫ్‌లో ఉంది</translation>
+<translation id="1277711244058668002">బాగుంది అని తెలియజేసే బటన్, మీకు ఈ సూచన నచ్చిందని ఫీడ్‌బ్యాక్‌ను సమర్పించడానికి ఎంటర్ చేయండి</translation>
 <translation id="127777513559587977">టీవీ టాక్ షోలు</translation>
 <translation id="1281476433249504884">స్టాకర్ 1</translation>
 <translation id="1281536351321444151">తర్వాతసారి ఈ IBANను ఆటోఫిల్ చేయడానికి, దాన్ని మీ Google ఖాతాలో సేవ్ చేయండి</translation>
@@ -658,6 +659,7 @@
 <translation id="2188375229972301266">దిగువ భాగంలో అనేక రంధ్రాలు</translation>
 <translation id="2194856509914051091">పరిగణించాల్సిన విషయాలు</translation>
 <translation id="2197398642355049178">మీ టాపిక్‌లు</translation>
+<translation id="2200678913752027654">బాగా లేదు అని తెలియజేసే బటన్, మీకు ఈ సూచన ఎందుకు నచ్చలేదు అనే విషయానికి సంబంధించి వివరణాత్మక ఫీడ్‌బ్యాక్‌ను సమర్పించే ఫారమ్‌ను తెరవడానికి ఎంటర్ చేయండి</translation>
 <translation id="2202627062836089804">మీ కార్డ్ వెనుక వైపు</translation>
 <translation id="2204482073374652408">అప్‌డేట్ చేయడం పూర్తయింది!</translation>
 <translation id="2207770355672215546">ఏదైనా కార్డ్‌తో ఎల్లవేళలా అనుమతించండి</translation>
@@ -2580,6 +2582,7 @@
 <translation id="5887687176710214216">చివరిగా నిన్న సందర్శించారు</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించండి</translation>
 <translation id="5895187275912066135">జారీ చేయబడినది</translation>
+<translation id="5898767305816764989">బాగుంది అని తెలియజేసే బటన్, మీకు నచ్చిందని ఫీడ్‌బ్యాక్‌ను సమర్పించడానికి ఎంటర్ చేయండి, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">పసుపు</translation>
 <translation id="5903264686717710770">శీర్షిక:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (సింక్ చేయబడింది)</translation>
@@ -3312,6 +3315,7 @@
 అదనపు వివరాలు:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">మీ అడ్మినిస్ట్రేటర్ ఇలా అన్నారు: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">బాగా లేదు అని తెలియజేసే బటన్, మీకు ఎందుకు నచ్చలేదు అనే విషయానికి సంబంధించి వివరణాత్మక ఫీడ్‌బ్యాక్‌ను సమర్పించే ఫారమ్‌ను తెరవడానికి ఎంటర్ చేయండి, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">రియర్ ట్రే</translation>
 <translation id="7257453341537973799">కెరీర్ రిసోర్సులు &amp; ప్లానింగ్</translation>
 <translation id="725866823122871198">మీ కంప్యూటర్ తేదీ మరియు సమయం (<ph name="DATE_AND_TIME" />) తప్పుగా ఉన్నందున <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />కు ఒక ప్రైవేట్ కనెక్షన్‌ను ఏర్పాటు చేయడం వీలుకాలేదు.</translation>

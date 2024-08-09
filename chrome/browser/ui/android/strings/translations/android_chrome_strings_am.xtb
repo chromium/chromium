@@ -319,6 +319,7 @@
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች ተሰርዟል</translation>
 <translation id="2536728043171574184">የዚህን ገፅ የመስመር ውጭ ቅጂ በመመልከት ላይ</translation>
 <translation id="2546283357679194313">ኩኪዎች እና የጣቢያ ውሂብ</translation>
+<translation id="2547843573592965873">የእርስዎ መገለጫ መቆለፊያ የይለፍ ቃሎችን፣ ክፍያዎችን እና ሌሎች በGoogle መለያዎ ውስጥ የተቀመጡትን ጨምሮ መረጃዎን በመኪናው ውስጥ ደህንነቱን ይጠብቃል።</translation>
 <translation id="254973855621628293">በዚህ መሣሪያ ላይ የተቀመጡ የይለፍ ቃላት</translation>
 <translation id="2560519950693256002">በቅርብ ጊዜ የተረጋገጡ የይለፍ ቃላት ወደ <ph name="USERNAME" /> ተቀምጠዋል</translation>
 <translation id="2567385386134582609">ምስል</translation>
@@ -1632,7 +1633,7 @@
 <translation id="854522910157234410">ይህን ገፅ ክፈት</translation>
 <translation id="8547025137714087639">{ARCHIVED_TAB_COUNT,plural, =1{ያልነቃ ትር (1)}one{ያልነቃ ትር (#)}other{ያልነቁ ትሮች (#)}}</translation>
 <translation id="8551513938758868521">Chromeን ሲዘጉ ማንነት የማያሳውቁ ትሮችን ይቆልፉ</translation>
-<translation id="8551524210492420949">አጸያፊ ወይም ደህንነቱ ያልተጠበቀ</translation>
+<translation id="8551524210492420949">አስጸያፊ ወይም ደህንነቱ ያልተጠበቀ</translation>
 <translation id="8559961053328923750">Chrome የማስታወቂያ አፈጻጸምን ለመለካት ጣቢያዎች በአሳሹ በኩል የሚያጋሯቸውን ጠቅላላ የውሂብ መጠን ይገድባል</translation>
 <translation id="8559990750235505898">ገጾችን በሌሎች ቋንቋዎች ለመተርጎም ጥያቄ አቅርብ</translation>
 <translation id="8560602726703398413">የንባብ ዝርዝርዎን በዕልባቶች ውስጥ ያግኙ</translation>

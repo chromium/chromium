@@ -439,7 +439,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1307431692088049276">Příště se neptat</translation>
 <translation id="1307559529304613120">Jejda! Systému se pro toto zařízení nepodařilo uložit token dlouhodobého přístupu k rozhraní API.</translation>
 <translation id="1308548450293664112">Tenhle soubor jsem vytvořil(a) já, skupina přepínačů, 1 ze 3</translation>
-<translation id="1308876641060960899">Při použití Google Lens se do Googlu odešle snímek obrazovky stránky. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Budou smazána data ovlivňující personalizaci reklam</translation>
 <translation id="1311294419381837540">Jednu z karet odesíláte. Odesílání můžete kdykoli pozastavit nebo ukončit.</translation>
 <translation id="131188242279372879">Objevte vylepšenou ochranu a získejte nejvyšší úroveň zabezpečení Chromu pro stažené soubory</translation>
@@ -755,7 +754,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1543538514740974167">Rychlejší přístup</translation>
 <translation id="1544588554445317666">Zkuste použít kratší název souboru nebo soubor uložit do jiné složky</translation>
 <translation id="1545177026077493356">Automatický režim veřejného terminálu</translation>
-<translation id="1545749641540134597">Naskenovat QR kód</translation>
+<translation id="1545749641540134597">Naskenujte QR kód</translation>
 <translation id="1545775234664667895">Nainstalován motiv <ph name="THEME_NAME" /></translation>
 <translation id="1546031833947068368">{COUNT,plural, =1{Anonymní okno se neotevře znovu.}few{# anonymní okna se neotevřou znovu.}many{# anonymního okna se neotevře znovu.}other{# anonymních oken se neotevře znovu.}}</translation>
 <translation id="1546280085599573572">Toto rozšíření změnilo stránku, která se zobrazí po kliknutí na tlačítko Domovská stránka.</translation>
@@ -2646,6 +2645,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2853121255651601031">Heslo uloženo</translation>
 <translation id="2855243985454069333">Vymaže historii ze všech synchronizovaných zařízení</translation>
 <translation id="2855812646048059450">Přihlaste se pomocí identifikačního údaje typu <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Přísný režim</translation>
 <translation id="2856776373509145513">Vytvoření nového kontejneru</translation>
 <translation id="2856907950922663165">Vypnout šifrování adres URL?</translation>
 <translation id="2859741939921354763">Importovat hesla do <ph name="BRAND" /></translation>
@@ -3122,7 +3122,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3220943972464248773">Pokud chcete synchronizovat hesla, ověřte svoji totožnost</translation>
 <translation id="3222066309010235055">Předběžně vykreslit: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Připojit k síti <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Vyhledejte cokoliv z této stránky pomocí Google Lens</translation>
 <translation id="3223109931751684474">Odebrat přístup k vašim přístupovým klíčům na tomto zařízení</translation>
 <translation id="3223531857777746191">Tlačítko Resetovat</translation>
 <translation id="3225084153129302039">Výchozí nachový avatar</translation>
@@ -6397,6 +6396,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5623282979409330487">Tento web používá senzory pohybu.</translation>
 <translation id="5623842676595125836">Protokol</translation>
 <translation id="5624120631404540903">Spravovat hesla</translation>
+<translation id="5624959475330585145">Před použitím nezabezpečených připojení se zeptat</translation>
 <translation id="5625225435499354052">Upravit ve službě Google Pay</translation>
 <translation id="5626134646977739690">Jméno:</translation>
 <translation id="5627832140542566187">Orientace displeje</translation>
@@ -9633,6 +9633,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8008356846765065031">Internet byl odpojen. Zkontrolujte prosím své internetové připojení.</translation>
 <translation id="8008704580256716350">Byl zablokován podezřelý soubor</translation>
 <translation id="8009225694047762179">Spravovat hesla</translation>
+<translation id="8010081455002666927">Automatická detekce</translation>
 <translation id="8011372169388649948">Záložka <ph name="BOOKMARK_TITLE" /> byla přesunuta.</translation>
 <translation id="8012188750847319132">capslock</translation>
 <translation id="8012463809859447963">Podrobnosti o okamžitém hotspotu</translation>
@@ -11037,6 +11038,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="9009707268312089299">Importováno z Windows</translation>
 <translation id="9009708085379296446">Chtěli jste tuto stránku změnit?</translation>
 <translation id="9010845741772269259">Přidat platební metody</translation>
+<translation id="901087299639956505">Vyvážený režim</translation>
 <translation id="9011163749350026987">Vždy zobrazovat ikonu</translation>
 <translation id="9011262023858991985">Odesílání této karty</translation>
 <translation id="9011393886518328654">Poznámky k vydání</translation>

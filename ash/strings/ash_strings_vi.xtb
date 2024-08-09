@@ -104,6 +104,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + g bất cứ lúc nào</translation>
 <translation id="1306549533752902673">ỨNG DỤNG ĐỀ XUẤT</translation>
+<translation id="1310396869741602366">Thay đổi giọng điệu</translation>
 <translation id="1312604459020188865">Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Luôn hiển thị kệ</translation>
 <translation id="132346741904777634">Máy ảnh được chuyển đến góc trên bên trái Xung đột với khu vực hệ thống.</translation>
@@ -234,6 +235,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1768366657309696705">Phím tắt <ph name="LAUNCHER_KEY_NAME" /> + Dấu chấm đã thay đổi. Để sử dụng phím Insert, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Đã di chuyển sang hàng <ph name="ROW_NUMBER" />, cột <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Cuộn sang phải</translation>
+<translation id="17722141032474077">Máy tính</translation>
 <translation id="1774796056689732716">Lịch, <ph name="CURRENT_MONTH_YEAR" />, đang chọn <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Thiết lập tính năng xem thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="1787955149152357925">Tắt</translation>
@@ -375,6 +377,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2392659840443812875">Không có điểm phát sóng nào. Hãy đảm bảo thiết bị của bạn đang ở gần và đã bật Bluetooth.</translation>
 <translation id="2397416548179033562">Hiển thị menu Chrome</translation>
 <translation id="240006516586367791">Điều khiển nội dung nghe nhìn</translation>
+<translation id="240155812475001919">Google Tài liệu</translation>
 <translation id="2402411679569069051">Hãy dùng vân tay hoặc mở khóa điện thoại của bạn để mở khóa Chromebook</translation>
 <translation id="240545663114741956">Nhấn <ph name="ACCELERATOR" /> hai lần để đăng xuất.</translation>
 <translation id="2405664212338326887">Chưa kết nối</translation>
@@ -464,7 +467,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2704781753052663061">Dùng các mạng Wi-Fi khác</translation>
 <translation id="2705001408393684014">Bật tắt micrô. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Lên</translation>
-<translation id="271033894570825754">Mới</translation>
 <translation id="2710984741481549981">Khoá cửa sổ</translation>
 <translation id="2718395828230677721">Ánh sáng đêm</translation>
 <translation id="2726420622004325180">Điện thoại của bạn phải có dữ liệu di động thì mới dùng làm điểm phát sóng được</translation>
@@ -561,6 +563,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Mở rộng menu</translation>
 <translation id="3087734570205094154">Bên dưới</translation>
+<translation id="3090214513075567547">Mở trình đơn theo bối cảnh</translation>
 <translation id="3090989381251959936">Bật/tắt <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Trễ hạn</translation>
 <translation id="3095995014811312755">phiên bản</translation>
@@ -575,6 +578,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Loại bài tập trên lớp</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3130793786899299931">Thay đổi độ dài</translation>
 <translation id="3134486240968249588">Một vài điều cần lưu ý</translation>
 <translation id="3139188263101386725">Sử dụng phím tắt mới</translation>
 <translation id="3139942575505304791">Không gian làm việc 1</translation>
@@ -585,6 +589,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="316086887565479535">Các ứng dụng không được hỗ trợ trong mẫu</translation>
 <translation id="3160929076476941240">2 giờ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> đang hạ cấp hệ điều hành trên thiết bị <ph name="DEVICE_TYPE" /> của bạn. Thiết bị của bạn sẽ được đặt lại và toàn bộ dữ liệu sẽ bị xoá.</translation>
+<translation id="316798519864381606">Google Trang trình bày</translation>
 <translation id="3171170659304083361">Chế độ cài đặt phương thức nhập</translation>
 <translation id="3176221688814061633">Chromebook hoặc thiết bị Bluetooth của bạn đang dùng phiên bản Bluetooth cũ. Hãy bật Bluetooth có độ phân giải siêu cao hoặc sử dụng micrô bên trong để có chất lượng âm thanh tốt hơn.</translation>
 <translation id="3181441307743005334">Quá trình khởi động có thể mất một chút thời gian</translation>
@@ -900,6 +905,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="425364040945105958">Không có SIM</translation>
 <translation id="4261870227682513959">Hiển thị các tùy chọn cài đặt thông báo. Thông báo hiện đang tắt</translation>
 <translation id="4264977415328155183">, đã thu gọn</translation>
+<translation id="4265259722091164182">Viết hoa tựa đề</translation>
 <translation id="4269883910223712419">Quản trị viên của thiết bị này có thể:</translation>
 <translation id="4274537685965975248">Phím tắt Ctrl + Alt + Mũi tên xuống đã thay đổi. Để sử dụng phím End, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Mũi tên phải.</translation>
 <translation id="4275283744500212192">Mở tuỳ chọn bố cục cửa sổ</translation>
@@ -909,6 +915,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4283888303416325161">Hãy nhập mật khẩu để tăng cường bảo mật</translation>
 <translation id="4285498937028063278">Bỏ ghim</translation>
 <translation id="428715201724021596">Đang kết nối với hồ sơ. Quá trình này có thể mất vài phút.</translation>
+<translation id="4287250812980588583">Cửa sổ Chrome</translation>
 <translation id="4294319844246081198">Xin chào <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Xóa tất cả <ph name="COUNT" /> thông báo</translation>
 <translation id="4300272766492248925">Mở ứng dụng</translation>
@@ -985,6 +992,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4544483149666270818">Chọn một cửa sổ để ghi hình</translation>
 <translation id="4545950850562423083">Lưu trang hiện tại làm dấu trang</translation>
 <translation id="4548482551627849548">Di chuyển cửa sổ đang hoạt động sang không gian làm việc ở bên trái</translation>
+<translation id="4549853322523631092">Không tìm thấy kết quả nào.</translation>
 <translation id="4552748006424994716">Để tránh tiếng vọng, bạn chỉ nghe được micrô của mình khi dùng tai nghe có dây.</translation>
 <translation id="4560576029703263363">Đang bật</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1022,6 +1030,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4667099493359681081">Đang tải <ph name="FILENAME" /> xuống</translation>
 <translation id="4672539464599646374">Đã bật Trình tiết kiệm pin</translation>
 <translation id="4673427585974421255">Tiếp tục bật</translation>
+<translation id="4677040906536311086">Google Trang tính</translation>
 <translation id="468293128311738995">Ứng dụng từ điện thoại của bạn</translation>
 <translation id="4690510401873698237">Giá ở dưới cùng</translation>
 <translation id="4696813013609194136">Mở khóa thiết bị bằng mã dành cho cha mẹ</translation>
@@ -1446,6 +1455,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6068258534237496331">Các tuỳ chọn điều khiển cuộc gọi video</translation>
 <translation id="6073451960410192870">Dừng ghi</translation>
 <translation id="6074087755403037157">Kênh thử nghiệm Beta</translation>
+<translation id="6075098173600599596">Thay đổi cách viết hoa</translation>
 <translation id="6091929401758362855">Danh sách phát: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Quản trị viên đã vô hiệu hoá chế độ này</translation>
 <translation id="6095008505822982596">Tốc độ đọc</translation>
@@ -1504,6 +1514,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6249795363855770621">Không thể đánh dấu là hoàn thành. Hãy thử lại khi có kết nối mạng.</translation>
 <translation id="6254629735336163724">Đã khóa theo chiều ngang</translation>
 <translation id="6259254695169772643">Sử dụng bút cảm ứng để chọn</translation>
+<translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Đang kích hoạt...</translation>
 <translation id="6274202259872570803">Video ghi lại chuyển động trên màn hình</translation>
 <translation id="6276708887952587684">Xem nguồn trang</translation>
@@ -1574,6 +1585,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6537924328260219877">Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Pin điện thoại <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Đang quét tệp tải xuống <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Đang truyền tới <ph name="RECEIVER_NAME" /></translation>
+<translation id="6542891623636520977">Biểu tượng cảm xúc, GIF và nhiều nội dung khác</translation>
 <translation id="6555373427270923730">Nhập địa chỉ web vào thanh địa chỉ, sau đó nhấn phím <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Mới cài đặt</translation>
@@ -1671,6 +1683,7 @@ Mới cài đặt</translation>
 <translation id="6874854809828346832">Hiển thị thông tin chi tiết về điểm phát sóng. Điểm phát sóng đang bật.</translation>
 <translation id="6878400149835617132">Đã tắt phím tắt</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ứng dụng}other{# ứng dụng}}</translation>
+<translation id="6879454869409141992">Bật Caps Lock</translation>
 <translation id="6883768636838842873">Phím tắt, mẹo sử dụng thiết bị, v.v.</translation>
 <translation id="6884665277231944629">Quay lại hôm nay</translation>
 <translation id="6886172995547742638">Hiệu suất của <ph name="DEVICE_TYPE" /> của bạn có thể bị giảm. Hãy dùng bộ sạc USB-C được chứng nhận có công suất <ph name="PREFERRED_MINIMUM_POWER" />W trở lên.</translation>
@@ -1894,6 +1907,7 @@ Mới cài đặt</translation>
 <translation id="7725108879223146004">Hiển thị thông tin chi tiết về điểm phát sóng. Điểm phát sóng sắp tắt.</translation>
 <translation id="7726391492136714301">Xem thông báo và ứng dụng trên điện thoại</translation>
 <translation id="7727952505535211425">Mở trang web trên thanh địa chỉ trong thẻ mới</translation>
+<translation id="7728657226117099693">Tắt Caps Lock</translation>
 <translation id="7742327441377685481">Không có thông báo</translation>
 <translation id="774736258792760908">Khi bạn bật tính năng Giúp tôi viết và Giúp tôi đọc, hệ thống sẽ gửi văn bản bạn nhập và nội dung tài liệu đến các máy chủ AI của Google để tạo ra gợi ý viết, tóm tắt, trả lời câu hỏi và cải thiện sản phẩm theo <ph name="LINK_TO_SERVICE_TERMS" />. Đừng nhập thông tin mang tính cá nhân, nhạy cảm hoặc bí mật.</translation>
 <translation id="7748275671948949022">Đánh dấu nút Trình chạy trên kệ</translation>
@@ -1968,6 +1982,7 @@ Mới cài đặt</translation>
 <translation id="7946681191253332687">Hiện đã có bản cập nhật bảo mật mở rộng</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> muốn sử dụng <ph name="DEVICE_NAME" /> của bạn</translation>
 <translation id="7951630946012935453">Giảm độ sáng bàn phím</translation>
+<translation id="7953176344218790168">VIẾT HOA</translation>
 <translation id="7953994493035617347">Bạn có muốn xác nhận độ phân giải mới không?</translation>
 <translation id="795958884516058160">Đã bật tính năng phóng to toàn màn hình. Nhấn <ph name="ACCELERATOR" /> lần nữa để tắt.</translation>
 <translation id="7962583092928373823">Ẩn mọi đề xuất của Lịch Google</translation>
@@ -2150,6 +2165,7 @@ Mới cài đặt</translation>
 <translation id="8649597172973390955">Giá luôn hiển thị</translation>
 <translation id="8652175077544655965">Đóng cài đặt</translation>
 <translation id="8653151467777939995">Hiển thị các tùy chọn cài đặt thông báo. Thông báo đang bật</translation>
+<translation id="8657066291275741003">viết thường</translation>
 <translation id="8660331759611631213">Căn bậc hai của 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Nhấn phím Enter để chụp ảnh một phần màn hình</translation>

@@ -220,6 +220,7 @@
 <translation id="2080769225927880590">Faça login com uma conta válida</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="21133533946938348">Fixar guia</translation>
+<translation id="2120859803436824248">Desativar as notificações de Confirmação de segurança…</translation>
 <translation id="2122754583996902531">Seu navegador é gerenciado. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Ativar os alertas de preço?</translation>
 <translation id="2139867232736819575">Pesquisar o texto que você copiou</translation>
@@ -320,6 +321,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="261305050785128654">Informe aos sites os idiomas que você fala. Eles vão mostrar conteúdo nesses idiomas sempre que possível.</translation>
 <translation id="2617210333344098964">Transferir o endereço para a conta</translation>
 <translation id="261739049332372104">Para receber atualizações sobre conteúdos importantes para você, ative as notificações nas configurações do iOS.</translation>
+<translation id="2623536180761008356">Ocultar a Confirmação de segurança</translation>
 <translation id="2625189173221582860">Senha copiada</translation>
 <translation id="2626236249646841566">Verifique sua conexão e tente fazer login novamente.</translation>
 <translation id="2635918910848538771">Preencher automaticamente o CVC</translation>
@@ -613,6 +615,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4049507953662678203">Verifique se você tem uma conexão de rede e tente novamente.</translation>
 <translation id="4054572406751135230">Acompanhe as notícias, esportes e muito mais.</translation>
 <translation id="4068959193278821990">Ativar a proteção reforçada…</translation>
+<translation id="407435320163086788">Ativar as notificações de Confirmação de segurança…</translation>
 <translation id="4088879333319441249">Desfazer grupo de guias?</translation>
 <translation id="4092655288299341041">Mostrar "Ajuda"</translation>
 <translation id="4094361089640885693">Acompanhe os preços com facilidade e receba informações sobre eles.</translation>
@@ -640,6 +643,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="421070604241073551">Quando essa opção está ativada, os dados são salvos na sua Conta do Google. Quando desativada, os dados são salvos apenas neste dispositivo.</translation>
 <translation id="4216918546378735658">Cancelar</translation>
 <translation id="422474357428465195">Você tem vários problemas de senha que podem colocar sua segurança em risco.</translation>
+<translation id="4231395118547300571">Notificações da Confirmação de segurança ativadas</translation>
 <translation id="4232900911558558076">Explorar o novo menu</translation>
 <translation id="4233831822770018312">Editar permissões</translation>
 <translation id="4236584471598725073">Monitorando preço</translation>
@@ -683,6 +687,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4402672425188312225">{COUNT,plural, =1{1 guia}one{# guia}other{# guias}}</translation>
 <translation id="4405320213589929829">Use endereços em páginas da Web para conferir informações locais e rotas.</translation>
 <translation id="4420409367264901497">Editar favorito</translation>
+<translation id="4424654658080265901">Ativar as notificações da Confirmação de segurança</translation>
 <translation id="4431224949908513835">Selecione uma forma de pagamento para preencher.</translation>
 <translation id="4442550905108052454">Abra as <ph name="BEGIN_BOLD" />Configurações<ph name="END_BOLD" />.</translation>
 <translation id="4454246407045105932">Adicionar idioma</translation>
@@ -811,6 +816,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5016420433031926653">Enviar para <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Lembrar mais tarde</translation>
 <translation id="5024511550058813796">Seu histórico será mostrado em todos os dispositivos sincronizados para que você possa continuar o que estava fazendo</translation>
+<translation id="5032181563676357724">As notificações da Confirmação de segurança foram desativadas</translation>
 <translation id="5037676449506322593">Selecionar tudo</translation>
 <translation id="5038113048373546701">Receba notificações de notícias, esportes e muito mais com base nos seus interesses</translation>
 <translation id="5039804452771397117">Permitir</translation>
@@ -951,6 +957,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5702108177581350218">Quando você compartilha uma cópia do nome de usuário e da senha, o membro da família pode preencher esses dados usando o Gerenciador de senhas do Google.</translation>
 <translation id="5704908597376970822">Não é possível fazer login.</translation>
 <translation id="5706552126692816153">Ativado há um dia</translation>
+<translation id="5709005673595820640">{count,plural, =1{Você tem {count} senha reutilizada que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}one{Você tem {count} senha reutilizada que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}other{Você tem {count} senhas reutilizadas que podem colocar sua segurança em risco. Corrija o problema agora para se proteger.}}</translation>
 <translation id="5718049162805123412">Mude imediatamente</translation>
 <translation id="5724941645893276623">Para navegar na Web com privacidade, adicione uma nova guia</translation>
 <translation id="5728072125198221967">Serviços do Google vinculados</translation>
@@ -966,6 +973,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5765456154762864099">Menu → Configurações → Navegador padrão</translation>
 <translation id="5777888488419460501">Salvar na conta</translation>
 <translation id="5778292857689789362">Grupo de guias <ph name="GROUP_TITLE" />: <ph name="TABS_NUMBER" /> guias</translation>
+<translation id="5779117921996157216">{count,plural, =1{Você tem {count} senha comprometida que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}one{Você tem {count} senha comprometida que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}other{Você tem {count} senhas comprometidas que podem colocar sua segurança em risco. Corrija o problema agora para se proteger.}}</translation>
 <translation id="5782227691023083829">Traduzindo...</translation>
 <translation id="5791632441210678828">Botão para ordenar o feed "Seguindo".</translation>
 <translation id="5793373065989412701">Verificando os membros da sua família…</translation>
@@ -1050,6 +1058,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6188737759358894319">Criado em <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Não lidas</translation>
 <translation id="6196207969502475924">Pesquisa por voz</translation>
+<translation id="6198252989419008588">Alterar PIN</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Fechar {COUNT} guia}one{Fechar {COUNT} guia}other{Fechar {COUNT} guias}}</translation>
 <translation id="6210079381482819663">As guias não usadas há <ph name="THRESHOLD" /> dias ou mais são movidas para cá. É possível mudar isso a qualquer momento nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Nenhum endereço encontrado</translation>
@@ -1131,6 +1140,7 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="6494931198667773526">Fim</translation>
 <translation id="6500795388871406244">Usar senha sugerida:</translation>
 <translation id="650279896687777322">Saiba mais…</translation>
+<translation id="6503763061813913607">Notificações da Confirmação de segurança</translation>
 <translation id="6505334220040167806">Fechar grupo de guias.</translation>
 <translation id="6507973708545996744">Faça login para ter sua Lista de leitura em todos os seus dispositivos.</translation>
 <translation id="6510072653668207258">Lembrar mais tarde</translation>
@@ -1351,6 +1361,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="7603308509262646847">Preencher automaticamente o titular do cartão <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Pop-ups bloqueados (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="760667371114328991">Desativar as notificações da Confirmação de segurança</translation>
 <translation id="7607521702806708809">Excluir senha</translation>
 <translation id="7609559547731036746">Favoritos</translation>
 <translation id="7638584964844754484">Senha incorreta</translation>
@@ -1670,6 +1681,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9079935439869366234">Marcar todas as entradas como não lidas</translation>
 <translation id="9081058212938299310">Atualizar senha para <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Para sincronizar e personalizar vários dispositivos, ative a sincronização.</translation>
+<translation id="9084367296493549256">{count,plural, =1{Você tem {count} senha fraca que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}one{Você tem {count} senha fraca que pode colocar sua segurança em risco. Corrija o problema agora para se proteger.}other{Você tem {count} senhas fracas que podem colocar sua segurança em risco. Corrija o problema agora para se proteger.}}</translation>
 <translation id="9087339162317338348">Use HTTPS sempre que possível e receba um aviso antes de carregar sites que não têm suporte a esse protocolo.</translation>
 <translation id="9093271241977565440">Na parte de cima da tela, toque no ícone de pesquisa</translation>
 <translation id="9094033019050270033">Atualizar senha</translation>

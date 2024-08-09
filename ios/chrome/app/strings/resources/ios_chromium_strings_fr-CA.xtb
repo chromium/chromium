@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">Pour désactiver le mode de confinement dans Chromium, désactivez-le sur votre iPhone.</translation>
 <translation id="159029779861043703">Chromium protège vos données confidentielles avec Face ID.</translation>
 <translation id="1591119736686995611">Ouvre la grille d'onglets de Chromium.</translation>
+<translation id="16001233025397167">Vérification de sécurité vous protège contre les violations de données, les sites Web dangereux et bien plus encore. Recevez des alertes concernant tout problème de confidentialité ou de sécurité que Chromium détecte pour vous.</translation>
 <translation id="1611584326765829247">Laisser Chromium vous aider à suivre vos colis</translation>
 <translation id="1617663976202781617">Données de la synchronisation de Chromium</translation>
 <translation id="1647558790457890304">Paramètres de Chromium</translation>
@@ -56,6 +57,7 @@
 <translation id="2426113998523353159">Votre organisation vous demande de vous connecter pour utiliser Chromium.</translation>
 <translation id="2450140762465183767">Vous pouvez maintenant utiliser Chromium chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>
 <translation id="2478931088402984578">Sélectionnez <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2497941343438581585">Bénéficiez de la puissance de Chromium Shopping</translation>
 <translation id="252374538254180121">Définir Chromium comme navigateur par défaut</translation>
 <translation id="2574528844022712255">Voir les favoris Chromium</translation>
 <translation id="2590893390871230428">Synchroniser vos données Chromium</translation>
@@ -103,6 +105,7 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="3855938650519180865">Quoi de neuf dans Chromium</translation>
 <translation id="3886689467633467988">Connectez-vous à ce site et à Chromium pour obtenir vos favoris et plus encore sur tous vos appareils.</translation>
 <translation id="3904484643286601695">Vous pouvez mettre à jour vos sélections à tout moment dans les paramètres de Chromium.</translation>
+<translation id="3983291422281996849">Définissez Chromium comme votre navigateur par défaut pour suivre facilement les prix et obtenir des statistiques sur les prix pour des articles que vous souhaitez acheter.</translation>
 <translation id="4005283307739974863">Ouvre et exécute la Vérification de sécurité dans Chromium.</translation>
 <translation id="4043291146360695975">Les mots de passe sont enregistrés dans le gestionnaire de mots de passe sur cet appareil uniquement.</translation>
 <translation id="4099085513035183040">Fonctionnalité non prise en charge par Chromium Beta</translation>
@@ -133,6 +136,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="4736424910885271643">Votre compte est géré par <ph name="HOSTED_DOMAIN" />, donc vos données Chromium seront effacées de cet appareil</translation>
 <translation id="4790638144988730920">Continuez à utiliser les données Chromium dans votre compte Google.</translation>
 <translation id="4828317641996116749">Chromium n'a pas pu vérifier tous les mots de passe. Réessayez plus tard.</translation>
+<translation id="4904452304169763785">Alertes concernant tout problème de confidentialité ou de sécurité que Chromium détecte pour vous.</translation>
 <translation id="4962295957157529683">Terminez ce que vous faisiez dans votre autre fenêtre ouverte de Chromium.</translation>
 <translation id="4985291216379576555">Hors ligne, Chromium ne peut pas vérifier s'il y a des mises à jour</translation>
 <translation id="4996471330284142407">Faites-en plus avec le navigateur Chromium : simple, sécuritaire et plus rapide que jamais.</translation>
@@ -176,6 +180,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
   • En cas de plantage de Chromium, les détails de l'événement peuvent inclure des renseignements personnels.
 
   • Si vous synchronisez votre historique avec votre compte Google, les mesures peuvent également inclure des renseignements sur les URL que vous visitez.<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">Recevez des alertes concernant tout problème de confidentialité ou de sécurité que Chromium détecte automatiquement pour vous.</translation>
 <translation id="5945387852661427312">Vous vous connectez avec un compte géré par <ph name="DOMAIN" />, et son administrateur pourra contrôler vos données Chromium. Celles-ci seront définitivement liées à votre compte. En vous déconnectant de Chromium, vous supprimerez vos données sur cet appareil, mais celles-ci resteront stockées dans votre compte Google.</translation>
 <translation id="5951593919357934226">Tirez le meilleur parti de Chromium.</translation>
 <translation id="5983312940147103417">Contribuez à améliorer Chromium</translation>

@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">доош заасан сум</translation>
 <translation id="4425149324548788773">Миний Драйв</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> унтраалттай байна</translation>
+<translation id="4428840632568803690"><ph name="SPEAKER_LABEL" />-р яригч</translation>
 <translation id="4429881212383817840">Kerberos тасалбарын хугацаа удахгүй дуусна</translation>
 <translation id="4431821876790500265">Тайланг харах</translation>
 <translation id="4443192710976771874">улаан</translation>
@@ -1298,6 +1299,7 @@
 <translation id="7802764839223122985">Товч дутуу байна. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
 <translation id="7805768142964895445">Байр байдал</translation>
+<translation id="7811024689617730980">1-нээс 31-ний хоорондох өдрүүдээс (эдгээр өдрийг мөн оруулна) автоматаар шинэчлэх өдрийг сонго</translation>
 <translation id="7813073042185856802">уул</translation>
 <translation id="7819857487979277519">PSK (WPA эсвэл RSN)</translation>
 <translation id="7824219488248240180">пост импрессионист</translation>

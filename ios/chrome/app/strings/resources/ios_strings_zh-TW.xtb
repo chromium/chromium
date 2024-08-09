@@ -220,6 +220,7 @@
 <translation id="2080769225927880590">使用有效帳戶登入</translation>
 <translation id="2103075008456228677">開啟 history.google.com</translation>
 <translation id="21133533946938348">固定分頁</translation>
+<translation id="2120859803436824248">關閉安全檢查通知…</translation>
 <translation id="2122754583996902531">你的瀏覽器受到管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">要開啟價格通知嗎？</translation>
 <translation id="2139867232736819575">搜尋你複製的文字</translation>
@@ -320,6 +321,7 @@
 <translation id="261305050785128654">如果網站知道你使用哪些語言，就會盡可能以這些語言顯示內容。</translation>
 <translation id="2617210333344098964">將地址資訊移到帳戶</translation>
 <translation id="261739049332372104">如要接收重要內容的最新資訊，請在 iOS 設定中開啟通知。</translation>
+<translation id="2623536180761008356">隱藏「安全檢查」</translation>
 <translation id="2625189173221582860">已複製密碼</translation>
 <translation id="2626236249646841566">請檢查你的連線狀態，然後再次嘗試登入。</translation>
 <translation id="2635918910848538771">自動填入信用卡驗證碼</translation>
@@ -613,6 +615,7 @@
 <translation id="4049507953662678203">請確定您已連上網路，然後再試一次。</translation>
 <translation id="4054572406751135230">隨時掌握新聞、體育賽事等資訊。</translation>
 <translation id="4068959193278821990">開啟強化防護...</translation>
+<translation id="407435320163086788">開啟安全檢查通知…</translation>
 <translation id="4088879333319441249">要將所有分頁移出群組嗎？</translation>
 <translation id="4092655288299341041">顯示說明資訊</translation>
 <translation id="4094361089640885693">輕鬆追蹤價格並取得價格分析。</translation>
@@ -640,6 +643,7 @@
 <translation id="421070604241073551">開啟時，資料會儲存到 Google 帳戶；關閉後，資料只會儲存到這部裝置。</translation>
 <translation id="4216918546378735658">取消</translation>
 <translation id="422474357428465195">你有多個密碼問題，可能導致安全性風險。</translation>
+<translation id="4231395118547300571">安全檢查通知已開啟</translation>
 <translation id="4232900911558558076">探索新選單</translation>
 <translation id="4233831822770018312">編輯權限</translation>
 <translation id="4236584471598725073">追蹤價格</translation>
@@ -683,6 +687,7 @@
 <translation id="4402672425188312225">{COUNT,plural, =1{1 個分頁}other{# 個分頁}}</translation>
 <translation id="4405320213589929829">使用網頁上的地址取得當地資訊和路線。</translation>
 <translation id="4420409367264901497">編輯書籤</translation>
+<translation id="4424654658080265901">開啟安全檢查通知</translation>
 <translation id="4431224949908513835">請選取要填入的付款方式。</translation>
 <translation id="4442550905108052454">開啟「設定」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">新增語言</translation>
@@ -811,6 +816,7 @@
 <translation id="5016420433031926653">傳送至 <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">稍後提醒我</translation>
 <translation id="5024511550058813796">你可以在所有已同步的裝置上查看歷史記錄，繼續執行先前的任何工作</translation>
+<translation id="5032181563676357724">安全檢查通知已關閉</translation>
 <translation id="5037676449506322593">全選</translation>
 <translation id="5038113048373546701">接收與個人興趣相關的新聞、體育賽事通知</translation>
 <translation id="5039804452771397117">允許</translation>
@@ -951,6 +957,7 @@
 <translation id="5702108177581350218">當你分享使用者名稱和密碼副本後，家庭成員就能使用 Google 密碼管理工具填寫這類資訊。</translation>
 <translation id="5704908597376970822">無法登入。</translation>
 <translation id="5706552126692816153">上次使用時間：1 天前</translation>
+<translation id="5709005673595820640">{count,plural, =1{你有 {count} 組重複使用的密碼，可能導致安全性風險。請立即修正以確保安全。}other{你有 {count} 組重複使用的密碼，可能導致安全性風險。請立即修正以確保安全。}}</translation>
 <translation id="5718049162805123412">建議你立即變更密碼</translation>
 <translation id="5724941645893276623">如要以私密模式瀏覽網頁，請開啟新分頁</translation>
 <translation id="5728072125198221967">連結的 Google 服務</translation>
@@ -966,6 +973,7 @@
 <translation id="5765456154762864099">「選單」→「設定」→「預設瀏覽器」</translation>
 <translation id="5777888488419460501">儲存到帳戶</translation>
 <translation id="5778292857689789362">分頁群組，<ph name="GROUP_TITLE" />，<ph name="TABS_NUMBER" /> 個分頁</translation>
+<translation id="5779117921996157216">{count,plural, =1{你有 {count} 組密碼外洩，可能導致安全性風險。請立即修正以確保安全。}other{你有 {count} 組密碼外洩，可能導致安全性風險。請立即修正以確保安全。}}</translation>
 <translation id="5782227691023083829">正在翻譯...</translation>
 <translation id="5791632441210678828">用於排序已追蹤動態消息的按鈕。</translation>
 <translation id="5793373065989412701">正在檢查家庭成員…</translation>
@@ -1050,6 +1058,7 @@
 <translation id="6188737759358894319">建立時間：<ph name="DATE" /></translation>
 <translation id="6189413832092199491">未讀取</translation>
 <translation id="6196207969502475924">語音搜尋</translation>
+<translation id="6198252989419008588">變更 PIN 碼</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{關閉 {COUNT} 個分頁}other{關閉 {COUNT} 個分頁}}</translation>
 <translation id="6210079381482819663"><ph name="THRESHOLD" /> 天以上未使用的分頁會移到這裡。你隨時可以前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />進行變更。</translation>
 <translation id="6213281885682386884">找不到地址</translation>
@@ -1131,6 +1140,7 @@
 <translation id="6494931198667773526">結束時間</translation>
 <translation id="6500795388871406244">使用建議的密碼：</translation>
 <translation id="650279896687777322">瞭解詳情...</translation>
+<translation id="6503763061813913607">安全檢查通知</translation>
 <translation id="6505334220040167806">收合分頁群組。</translation>
 <translation id="6507973708545996744">只要登入帳戶，即可在所有裝置上取用自己的閱讀清單。</translation>
 <translation id="6510072653668207258">稍後提醒我</translation>
@@ -1351,6 +1361,7 @@
 <translation id="7600965453749440009">一律不翻譯<ph name="LANGUAGE" /></translation>
 <translation id="7603308509262646847">自動填入持卡人「<ph name="NAME" />」</translation>
 <translation id="7603852183842204213">已封鎖彈出式視窗 (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="760667371114328991">關閉安全檢查通知</translation>
 <translation id="7607521702806708809">刪除密碼</translation>
 <translation id="7609559547731036746">書籤</translation>
 <translation id="7638584964844754484">通關密語不正確</translation>
@@ -1670,6 +1681,7 @@
 <translation id="9079935439869366234">全部標示為未讀取</translation>
 <translation id="9081058212938299310">要更新 <ph name="USERNAME" /> 的密碼嗎？</translation>
 <translation id="9083838294503912307">想在所有裝置上保持同步並享有個人化體驗，請開啟同步功能。</translation>
+<translation id="9084367296493549256">{count,plural, =1{你有 {count} 組低強度密碼，可能導致安全性風險。請立即修正以確保安全。}other{你有 {count} 組低強度密碼，可能導致安全性風險。請立即修正以確保安全。}}</translation>
 <translation id="9087339162317338348">盡可能使用 HTTPS，並在載入不支援該通訊協定的網站前發出警告。</translation>
 <translation id="9093271241977565440">輕觸畫面頂端的「搜尋」圖示</translation>
 <translation id="9094033019050270033">更新密碼</translation>

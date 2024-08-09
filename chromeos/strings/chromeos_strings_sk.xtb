@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">šípka nadol</translation>
 <translation id="4425149324548788773">Môj disk</translation>
 <translation id="4428374560396076622">Sieť <ph name="NETWORK_NAME" /> je vypnutá</translation>
+<translation id="4428840632568803690"><ph name="SPEAKER_LABEL" />. hovoriaci</translation>
 <translation id="4429881212383817840">Platnosť tiketu Kerberos čoskoro uplynie</translation>
 <translation id="4431821876790500265">Zobraziť prehľad</translation>
 <translation id="4443192710976771874">červenom</translation>
@@ -818,6 +819,7 @@
 <translation id="5332948983412042822">Zvoľte si nové heslo teraz</translation>
 <translation id="5333530671332546086">Neznámy stav portálu</translation>
 <translation id="5335373365677455232">ružový/-á</translation>
+<translation id="5344619683981067131">Vybraný text sa nahrádza návrhom</translation>
 <translation id="5346687412805619883">Miestna sieť</translation>
 <translation id="5358174242040570474">Vyskytol sa problém. Skúste znova vybrať tapetu alebo opäť otvorte aplikáciu.</translation>
 <translation id="5372659122375744710">Sieť Wi‑Fi nie je zabezpečená</translation>
@@ -869,6 +871,7 @@
 <translation id="5662240986744577912">prepnutie zámky na ochranu súkromia</translation>
 <translation id="5669267381087807207">Aktivuje sa</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">Opíšte tapetu, ktorú chcete vytvoriť</translation>
 <translation id="5680504961595602662">Surreálny obrázok <ph name="SURREAL_LANDSCAPE" /> obsahujúca <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">čerešne</translation>
 <translation id="5691511426247308406">Rodina</translation>
@@ -1102,6 +1105,7 @@
 <translation id="680983167891198932">Kľúč</translation>
 <translation id="6816797338148849397">K dispozícii sú informácie súvisiace s vaším výberom. Prístup získate pomocou šípky nahor.</translation>
 <translation id="6853312040151791195">Rýchlosť vybíjania</translation>
+<translation id="6862416241246624313">Spätná väzba bola odoslaná</translation>
 <translation id="6866732840889595464">sedmokráska</translation>
 <translation id="6871256179359663621">svetlofialový/-á</translation>
 <translation id="6889786074662672253">Počas reštartu neodpájajte toto externé zariadenie ani nevypínajte počítač. Toto okno môžete minimalizovať. Reštart môže trvať niekoľko minút a vaše externé zariadenie nemusí počas neho fungovať.</translation>
@@ -1295,6 +1299,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="7802764839223122985">Chýba kláves. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Nie, ďakujem</translation>
 <translation id="7805768142964895445">Stav</translation>
+<translation id="7811024689617730980">Vyberte deň automatického resetovania v rozsahu od 1 do 31 (vrátane)</translation>
 <translation id="7813073042185856802">hory</translation>
 <translation id="7819857487979277519">PSK (WPA alebo RSN)</translation>
 <translation id="7824219488248240180">postimpresionizmu</translation>

@@ -438,7 +438,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1307431692088049276">Ekki spyrja aftur</translation>
 <translation id="1307559529304613120">Úbbs! Kerfinu tókst ekki að vista langtímaaðgangslykil forritaskila fyrir þetta tæki.</translation>
 <translation id="1308548450293664112">Ég bjó þessa skrá til, hringhnappahópur eitt af þremur</translation>
-<translation id="1308876641060960899">Þegar þú notar Google-linsu er skjámynd af síðunni send til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Gögnum sem hafa áhrif á sérsniðnar auglýsingar er eytt</translation>
 <translation id="1311294419381837540">Þú ert að varpa flipa. Þú getur gert hlé á eða hætt að varpa hvenær sem er.</translation>
 <translation id="131188242279372879">Kynntu þér hvernig aukin vörn veitir þér hámarksöryggi Chrome þegar þú sækir efni</translation>
@@ -2658,6 +2657,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2853121255651601031">Aðgangsorð vistað</translation>
 <translation id="2855243985454069333">Eyðir ferli í öllum samstilltum tækjum</translation>
 <translation id="2855812646048059450">Skrá inn með <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Stíf stilling</translation>
 <translation id="2856776373509145513">Búa til nýjan geymi</translation>
 <translation id="2856907950922663165">Slökkva á dulkóðun vefslóða?</translation>
 <translation id="2859741939921354763">Flytja aðgangsorð inn í <ph name="BRAND" /></translation>
@@ -3136,7 +3136,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3220943972464248773">Staðfestu að þetta sért þú til að samstilla aðgangsorðin þín</translation>
 <translation id="3222066309010235055">Forteikna: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Tengjast <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Leitaðu að hverju sem er á þessari síðu með Google-linsu</translation>
 <translation id="3223109931751684474">Fjarlægja aðgang að aðgangslyklunum þínum í þessu tæki</translation>
 <translation id="3223531857777746191">Hnappur til að endurstilla</translation>
 <translation id="3225084153129302039">Sjálfgefin fjólublá notandamynd</translation>
@@ -6416,6 +6415,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5623282979409330487">Þetta vefsvæði er að nota hreyfiskynjarana þína.</translation>
 <translation id="5623842676595125836">Notkunarskrá</translation>
 <translation id="5624120631404540903">Stjórna aðgangsorðum</translation>
+<translation id="5624959475330585145">Spyrja áður en ótryggar tengingar eru notaðar</translation>
 <translation id="5625225435499354052">Breyta í Google Pay</translation>
 <translation id="5626134646977739690">Nafn:</translation>
 <translation id="5627832140542566187">Stefna skjás</translation>
@@ -9651,6 +9651,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8008356846765065031">Engin nettenging. Kannaðu tenginguna við internetið.</translation>
 <translation id="8008704580256716350">Lokað á grunsamlega skrá</translation>
 <translation id="8009225694047762179">Stjórna aðgangsorðum</translation>
+<translation id="8010081455002666927">Greina sjálfkrafa</translation>
 <translation id="8011372169388649948">„<ph name="BOOKMARK_TITLE" />“ flutt.</translation>
 <translation id="8012188750847319132">hástafalás</translation>
 <translation id="8012463809859447963">Ítaratriði skynditengingar við heitan reit</translation>
@@ -11054,6 +11055,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="9009707268312089299">Innflutt úr Windows</translation>
 <translation id="9009708085379296446">Vildirðu breyta þessari síðu?</translation>
 <translation id="9010845741772269259">Bæta við greiðslumátum</translation>
+<translation id="901087299639956505">Venjuleg stilling</translation>
 <translation id="9011163749350026987">Sýna alltaf tákn</translation>
 <translation id="9011262023858991985">Sendir þennan flipa út</translation>
 <translation id="9011393886518328654">Um útgáfuna</translation>

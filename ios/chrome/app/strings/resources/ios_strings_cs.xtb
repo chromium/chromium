@@ -107,7 +107,7 @@
 <translation id="1524563461097350801">Ne, díky</translation>
 <translation id="1539173178539798367">Skrýt možnost Vymazat údaje o prohlížení</translation>
 <translation id="1540800554400757039">První řádek adresy</translation>
-<translation id="1545749641540134597">Naskenovat QR kód</translation>
+<translation id="1545749641540134597">Naskenujte QR kód</translation>
 <translation id="1552525382687785070">Synchronizaci administrátor zakázal</translation>
 <translation id="1554477036522844996">Nové okno</translation>
 <translation id="1563071802032385236">Zapněte možnost Žádat o otevření odkazů z jiných aplikací v anonymním režimu.</translation>
@@ -220,6 +220,7 @@
 <translation id="2080769225927880590">Přihlaste se pomocí platného účtu</translation>
 <translation id="2103075008456228677">Otevřít history.google.com</translation>
 <translation id="21133533946938348">Připnout kartu</translation>
+<translation id="2120859803436824248">Vypnout oznámení bezpečnostní kontroly…</translation>
 <translation id="2122754583996902531">Váš prohlížeč je spravován. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Zapnout upozornění na ceny?</translation>
 <translation id="2139867232736819575">Vyhledat zkopírovaný text</translation>
@@ -320,6 +321,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="261305050785128654">Sdělte webům, kterými jazyky mluvíte. Pokud to bude možné, zobrazí obsah v těchto jazycích.</translation>
 <translation id="2617210333344098964">Přesunout adresu do účtu</translation>
 <translation id="261739049332372104">Pokud chcete dostávat aktuální informace o obsahu, který je pro vás důležitý, zapněte v nastavení systému iOS oznámení.</translation>
+<translation id="2623536180761008356">Skrýt bezpečnostní kontrolu</translation>
 <translation id="2625189173221582860">Heslo bylo zkopírováno</translation>
 <translation id="2626236249646841566">Zkontrolujte připojení a zkuste se přihlásit znovu.</translation>
 <translation id="2635918910848538771">Automaticky vyplnit kód CVC</translation>
@@ -613,6 +615,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4049507953662678203">Zkontrolujte, zda jste připojeni k síti a zkuste to znovu.</translation>
 <translation id="4054572406751135230">Sledujte zprávy, sport a podobně.</translation>
 <translation id="4068959193278821990">Zapnout vylepšenou ochranu…</translation>
+<translation id="407435320163086788">Zapnout oznámení bezpečnostní kontroly…</translation>
 <translation id="4088879333319441249">Odebrat karty ze skupiny?</translation>
 <translation id="4092655288299341041">Zobrazit nápovědu</translation>
 <translation id="4094361089640885693">Snadno sledujte ceny a získejte informace o cenách.</translation>
@@ -640,6 +643,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="421070604241073551">Když je tato funkce zapnutá, ukládají se data do vašeho účtu Google. Když je vypnutá, ukládají se pouze do tohoto zařízení.</translation>
 <translation id="4216918546378735658">Zrušit</translation>
 <translation id="422474357428465195">Máte několik problémů s hesly, které by mohly ohrozit vaši bezpečnost.</translation>
+<translation id="4231395118547300571">Oznámení bezpečnostní kontroly jsou zapnutá</translation>
 <translation id="4232900911558558076">Prozkoumejte novou nabídku</translation>
 <translation id="4233831822770018312">Upravit oprávnění</translation>
 <translation id="4236584471598725073">Sledujete cenu</translation>
@@ -683,6 +687,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4402672425188312225">{COUNT,plural, =1{1 karta}few{# karty}many{# karty}other{# karet}}</translation>
 <translation id="4405320213589929829">Používejte adresy na webových stránkách k získání místních informací a tras.</translation>
 <translation id="4420409367264901497">Upravit záložku</translation>
+<translation id="4424654658080265901">Zapnout oznámení bezpečnostní kontroly</translation>
 <translation id="4431224949908513835">Vyberte platební metodu, kterou chcete vyplnit.</translation>
 <translation id="4442550905108052454">Otevřete <ph name="BEGIN_BOLD" />Nastavení<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Přidat jazyk</translation>
@@ -811,6 +816,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5016420433031926653">Odeslat na adresu <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Připomenout později</translation>
 <translation id="5024511550058813796">Ve všech synchronizovaných zařízeních budete mít historii, takže budete moci pokračovat v tom, co jste dělali</translation>
+<translation id="5032181563676357724">Oznámení bezpečnostní kontroly jsou vypnutá</translation>
 <translation id="5037676449506322593">Vybrat vše</translation>
 <translation id="5038113048373546701">Nechte si zasílat oznámení o zprávách, sportu a dalších věcech podle svých zájmů</translation>
 <translation id="5039804452771397117">Povolit</translation>
@@ -951,6 +957,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5702108177581350218">Když sdílíte kopii svého uživatelského jména a hesla, člen vaší rodiny je může vyplnit pomocí Správce hesel Google.</translation>
 <translation id="5704908597376970822">Nepodařilo se přihlásit.</translation>
 <translation id="5706552126692816153">Aktivní včera</translation>
+<translation id="5709005673595820640">{count,plural, =1{Máte {count} opakovaně použité heslo, které by mohlo ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}few{Máte {count} opakovaně použitá hesla, která by mohla ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}many{Máte {count} opakovaně použitého hesla, které by mohlo ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}other{Máte {count} opakovaně použitých hesel, která by mohla ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}}</translation>
 <translation id="5718049162805123412">Měli byste je hned změnit</translation>
 <translation id="5724941645893276623">Chcete-li procházet web v soukromí, přidejte novou kartu</translation>
 <translation id="5728072125198221967">Propojené služby Google</translation>
@@ -966,6 +973,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5765456154762864099">Nabídka → Nastavení → Výchozí prohlížeč</translation>
 <translation id="5777888488419460501">Uložit do účtu</translation>
 <translation id="5778292857689789362">Skupina karet <ph name="GROUP_TITLE" /> s <ph name="TABS_NUMBER" /> kartami.</translation>
+<translation id="5779117921996157216">{count,plural, =1{Máte {count} prolomené heslo, které by mohlo ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}few{Máte {count} prolomená hesla, která by mohla ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}many{Máte {count} prolomeného hesla, které by mohlo ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}other{Máte {count} prolomených hesel, která by mohla ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}}</translation>
 <translation id="5782227691023083829">Překládání...</translation>
 <translation id="5791632441210678828">Tlačítko řazení informačního kanálu Sledováno.</translation>
 <translation id="5793373065989412701">Kontrola členů vaší rodiny…</translation>
@@ -1050,6 +1058,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6188737759358894319">Vytvořeno <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Nepřečtené</translation>
 <translation id="6196207969502475924">Hlasové vyhledávání</translation>
+<translation id="6198252989419008588">Změnit kód PIN</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zavřít {COUNT} kartu}few{Zavřít {COUNT} karty}many{Zavřít {COUNT} karty}other{Zavřít {COUNT} karet}}</translation>
 <translation id="6210079381482819663">Sem se přesouvají karty, které <ph name="THRESHOLD" /> nebo déle nebyly použity. Možnosti této funkce můžete v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" /> kdykoli změnit.</translation>
 <translation id="6213281885682386884">Nebyly nalezeny žádné adresy</translation>
@@ -1131,6 +1140,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="6494931198667773526">Končí</translation>
 <translation id="6500795388871406244">Použít navrhované heslo:</translation>
 <translation id="650279896687777322">Další informace…</translation>
+<translation id="6503763061813913607">Oznámení bezpečnostní kontroly</translation>
 <translation id="6505334220040167806">Sbalit skupinu karet.</translation>
 <translation id="6507973708545996744">Pokud seznam četby chcete mít na všech svých zařízeních, přihlaste se.</translation>
 <translation id="6510072653668207258">Připomenout později</translation>
@@ -1351,6 +1361,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7600965453749440009">Jazyk <ph name="LANGUAGE" /> nikdy nepřekládat</translation>
 <translation id="7603308509262646847">Automaticky vyplnit držitele karty <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Blokována vyskakovací okna (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="760667371114328991">Vypnout oznámení bezpečnostní kontroly</translation>
 <translation id="7607521702806708809">Smazat heslo</translation>
 <translation id="7609559547731036746">Záložky</translation>
 <translation id="7638584964844754484">Nesprávná heslová fráze</translation>
@@ -1670,6 +1681,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="9079935439869366234">Označit vše jako nepřečtené</translation>
 <translation id="9081058212938299310">Aktualizovat heslo uživatele <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Chcete-li synchronizovat a přizpůsobit různá zařízení, zapněte synchronizaci.</translation>
+<translation id="9084367296493549256">{count,plural, =1{Máte {count} slabé heslo, které by mohlo ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}few{Máte {count} slabá hesla, která by mohla ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}many{Máte {count} slabého hesla, které by mohlo ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}other{Máte {count} slabých hesel, která by mohla ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}}</translation>
 <translation id="9087339162317338348">Používejte HTTPS, kdykoli je to možné, a nechte se upozornit, než načtete web, který tento protokol nepodporuje.</translation>
 <translation id="9093271241977565440">V horní části obrazovky klepněte na ikonu Vyhledávání</translation>
 <translation id="9094033019050270033">Aktualizovat heslo</translation>

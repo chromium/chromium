@@ -1505,6 +1505,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> 吋)</translation>
 <translation id="3792826587784915501">另類與獨立電影</translation>
 <translation id="3793574014653384240">最近發生當機情形的次數和原因</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> 無法與 Chrome 建立安全連線</translation>
 <translation id="3799805948399000906">要求的字型</translation>
 <translation id="3801265110651850478">將「Do Not Track」要求與瀏覽流量一併送出</translation>
 <translation id="380329542618494757">姓名</translation>
@@ -2699,6 +2700,7 @@
 <translation id="6106989379647458772">位於 <ph name="PAGE" /> 的網頁可能暫時無法使用，或是已永久移至新的網址。</translation>
 <translation id="6107012941649240045">核發對象</translation>
 <translation id="6107924765192360631">只要輸入幾個字詞或初稿，就能取得撰寫建議。</translation>
+<translation id="6108580855199168381">憑證詳細資訊</translation>
 <translation id="6108702513636120202">你在 Chromium 中的搜尋引擎</translation>
 <translation id="6108849843016142864">爬蟲類與兩棲類</translation>
 <translation id="610911394827799129">你的 Google 帳戶仍可能保留了其他類型的瀏覽記錄 (可前往 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 查詢)。</translation>
@@ -3470,6 +3472,12 @@
 <translation id="7535087603100972091">值</translation>
 <translation id="753556296624075801">Google 技術提供</translation>
 <translation id="7537536606612762813">強制</translation>
+<translation id="7541586907443866208">攻擊者將可查看及變更你與這個網站之間傳送的任何資料。
+    &lt;ul&gt;
+    &lt;li&gt;如果目前正連線至機場或飯店 Wi-Fi 等公用網路，建議你在連線至信任的網路 (例如自家或公司) 後再試一次。&lt;/li&gt;
+    &lt;li&gt;如果你認識網站擁有者，可以請對方修正此問題。&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">由於這個表單並未採用加密連線方式，所以信用卡自動填入功能已停用。</translation>
 <translation id="7543525346216957623">請徵求家長同意</translation>
 <translation id="7546409722674205727">正在啟動「<ph name="APP_NAME" />」</translation>

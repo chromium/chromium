@@ -1058,6 +1058,7 @@
 <translation id="6188737759358894319">Δημιουργήθηκε στις <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Μη αναγνωσμένα</translation>
 <translation id="6196207969502475924">Φωνητική αναζήτηση</translation>
+<translation id="6198252989419008588">Αλλαγή PIN</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Κλείσιμο {COUNT} καρτέλας}other{Κλείσιμο {COUNT} καρτελών}}</translation>
 <translation id="6210079381482819663">Οι καρτέλες που δεν χρησιμοποιούνται για <ph name="THRESHOLD" /> ή περισσότερες ημέρες μετακινούνται εδώ. Μπορείτε να αλλάξετε αυτήν τη ρύθμιση ανά πάσα στιγμή από τις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Δεν βρέθηκαν διευθύνσεις</translation>

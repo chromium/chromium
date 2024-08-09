@@ -437,7 +437,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1307431692088049276">Ikke spør meg igjen</translation>
 <translation id="1307559529304613120">Beklager. Systemet kunne ikke lagre noe langvarig API-tilgangstoken for denne enheten.</translation>
 <translation id="1308548450293664112">Jeg har opprettet denne filen, gruppe med alternativknapper, 1 av 3</translation>
-<translation id="1308876641060960899">Når du bruker Google Lens, sendes et skjermbilde av siden til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Data som påvirker personlig tilpasning av annonser, blir slettet</translation>
 <translation id="1311294419381837540">Du caster en fane. Du kan når som helst stoppe castingen eller sette den på pause.</translation>
 <translation id="131188242279372879">Bruk økt beskyttelse for å få det høyeste sikkerhetsnivået for nedlastinger i Chrome</translation>
@@ -2651,6 +2650,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2853121255651601031">Passordet er lagret</translation>
 <translation id="2855243985454069333">Sletter loggen fra alle synkroniserte enheter</translation>
 <translation id="2855812646048059450">Logg på med <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Streng modus</translation>
 <translation id="2856776373509145513">Opprett en ny beholder</translation>
 <translation id="2856907950922663165">Vil du slå av nettadressekryptering?</translation>
 <translation id="2859741939921354763">Importer passord til <ph name="BRAND" /></translation>
@@ -3129,7 +3129,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3220943972464248773">For å synkronisere passordene dine, bekreft at det er deg</translation>
 <translation id="3222066309010235055">Forhåndsgjengivelse: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Koble til <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Søk etter hva som helst på denne siden med Google Lens</translation>
 <translation id="3223109931751684474">Fjern tilgangen til passnøklene dine på denne enheten</translation>
 <translation id="3223531857777746191">Tilbakestillingsknapp</translation>
 <translation id="3225084153129302039">Fiolett standardbrukerbilde</translation>
@@ -6404,6 +6403,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5623282979409330487">Dette nettstedet bruker bevegelsessensorene dine.</translation>
 <translation id="5623842676595125836">Logg</translation>
 <translation id="5624120631404540903">Administrer passord</translation>
+<translation id="5624959475330585145">Spør før bruk av usikre tilkoblinger</translation>
 <translation id="5625225435499354052">Rediger i Google Pay</translation>
 <translation id="5626134646977739690">Navn:</translation>
 <translation id="5627832140542566187">Skjermretning</translation>
@@ -9638,6 +9638,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8008356846765065031">Internett er frakoblet. Sjekk Internett-forbindelsen din .</translation>
 <translation id="8008704580256716350">En mistenkelig fil er blokkert</translation>
 <translation id="8009225694047762179">Administrer passord</translation>
+<translation id="8010081455002666927">Oppdag automatisk</translation>
 <translation id="8011372169388649948">«<ph name="BOOKMARK_TITLE" />» ble flyttet.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Detaljer om umiddelbar wifi-sone</translation>
@@ -11041,6 +11042,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9009707268312089299">Importert fra Windows</translation>
 <translation id="9009708085379296446">Var det meningen å endre denne siden?</translation>
 <translation id="9010845741772269259">Legg til betalingsmåter</translation>
+<translation id="901087299639956505">Balansert modus</translation>
 <translation id="9011163749350026987">Vis alltid ikonet</translation>
 <translation id="9011262023858991985">Caster denne fanen</translation>
 <translation id="9011393886518328654">Versjonsnotater</translation>

@@ -76,6 +76,7 @@
 <translation id="1142713751288681188">Vrsta papira</translation>
 <translation id="1144136880160289237">Još nemate aktivnih tema</translation>
 <translation id="1149617035358809955">potvrdite svoj identitet da bi se mogli unijeti vaši podaci o plaćanju</translation>
+<translation id="115055975835908275">Zatvori promociju</translation>
 <translation id="1150565364351027703">Sunčane naočale</translation>
 <translation id="1150979032973867961">Poslužitelj nije mogao dokazati da je <ph name="DOMAIN" />; operativni sustav vašeg računala smatra da njegov sigurnosni certifikat nije pouzdan. To može biti uzrokovano pogrešnom konfiguracijom ili napadom na vašu vezu.</translation>
 <translation id="1151972924205500581">Potrebna je zaporka</translation>
@@ -158,6 +159,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1270328905573953738">Selidba i premještaj</translation>
 <translation id="1270502636509132238">Način preuzimanja</translation>
 <translation id="1273592791152866347">Praćenje cijene isključeno</translation>
+<translation id="1277711244058668002">Gumb Palac gore, pritisnite Enter da biste poslali povratne informacije da vam se prijedlog sviđa</translation>
 <translation id="127777513559587977">TV emisije s gostima</translation>
 <translation id="1281476433249504884">Spremnik za slaganje u snopove 1</translation>
 <translation id="1281536351321444151">Da biste sljedeći put automatski popunili IBAN, spremite ga na svoj Google račun</translation>
@@ -664,6 +666,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2188375229972301266">Višestruko bušenje pri dnu</translation>
 <translation id="2194856509914051091">Važne napomene</translation>
 <translation id="2197398642355049178">Vaše teme</translation>
+<translation id="2200678913752027654">Gumb Palac dolje, pritisnite Enter da biste otvorili obrazac za slanje detaljnih povratnih informacija o tome zašto vam se prijedlog ne sviđa</translation>
 <translation id="2202627062836089804">poleđina kartice</translation>
 <translation id="2204482073374652408">Ažuriranje je dovršeno!</translation>
 <translation id="2207770355672215546">Uvijek dopusti, uz bilo koju karticu</translation>
@@ -869,6 +872,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2565789370591907825">Zaključavanje i upotreba tipkovnice</translation>
 <translation id="2570734079541893434">Upravljajte postavkama</translation>
 <translation id="257136025287118539">Administrator premješta vaše datoteke na uslugu <ph name="CLOUD_PROVIDER" />. Te datoteke možete izmijeniti nakon dovršetka prijenosa.</translation>
+<translation id="2571488850200220306">Da bi se osigurala sigurnost, administrator može vidjeti i OS uređaja, verziju preglednika i koji je softver instaliran</translation>
 <translation id="2573170131138724450">Televizori</translation>
 <translation id="257674075312929031">Grupa</translation>
 <translation id="2586657967955657006">Međuspremnik</translation>
@@ -1004,6 +1008,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2903493209154104877">Adrese</translation>
 <translation id="290376772003165898">Ovo nije <ph name="LANGUAGE" />?</translation>
 <translation id="2905107382358353958">Upozorenje o novoj postavci plaćanja</translation>
+<translation id="2909693957408648848">Promocija</translation>
 <translation id="2909946352844186028">Otkrivena je promjena mreže.</translation>
 <translation id="2911255567212929079">Strojno učenje i umjetna inteligencija</translation>
 <translation id="2911973620368911614">ID korisnika poslovnog računa</translation>
@@ -2585,6 +2590,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5887687176710214216">Posljednji posjet bio je jučer</translation>
 <translation id="5895138241574237353">Ponovno pokreni</translation>
 <translation id="5895187275912066135">Izdano</translation>
+<translation id="5898767305816764989">Gumb Palac gore, pritisnite Enter da biste poslali povratne informacije koje vam se sviđaju, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Žuta</translation>
 <translation id="5903264686717710770">Naslov:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinkronizirano)</translation>
@@ -2773,6 +2779,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6240964651812394252">Da biste upotrebljavali Google upravitelj zaporki sa svojim operativnim sustavom, ponovo pokrenite Chrome i dopustite pristup upravitelju zaporki računala. Kartice će se ponovo otvoriti nakon ponovnog pokretanja.</translation>
 <translation id="6241121617266208201">Sakrij prijedloge</translation>
 <translation id="624499991300733384">Usluga slaganja ispisa</translation>
+<translation id="6246868321321344665">Vaša organizacija može vidjeti podatke o pregledavanju na poslovnom i osobnom profilu, kao što su zaporke i povijest</translation>
 <translation id="6250932670816326647">Proizvodi za kupanje i tijelo</translation>
 <translation id="6251906504834538140">{0,plural, =1{Blokirano je premještanje datoteke}one{Blokirano je premještanje <ph name="FILE_COUNT" /> datoteke}few{Blokirano je premještanje <ph name="FILE_COUNT" /> datoteke}other{Blokirano je premještanje <ph name="FILE_COUNT" /> datoteka}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste upravljali datotekama koje ste preuzeli u Chromeu</translation>
@@ -3317,6 +3324,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 Dodatne pojedinosti:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Administrator kaže: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">Gumb Palac dolje, pritisnite Enter da biste otvorili obrazac za slanje detaljnih povratnih informacija o tome zašto vam se ne sviđa, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Stražnja ladica</translation>
 <translation id="7257453341537973799">Resursi za karijeru i planiranje karijere</translation>
 <translation id="725866823122871198">Sigurnu vezu s domenom <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> nije moguće uspostaviti jer datum i vrijeme na računalu (<ph name="DATE_AND_TIME" />) nisu točni.</translation>
@@ -4312,6 +4320,7 @@ Dodatne pojedinosti:
 <translation id="9101630580131696064">Ladica 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> obično upotrebljava enkripciju radi zaštite vaših podataka. Prilikom ovog pokušaja povezivanja Chromiuma s web-lokacijom <ph name="SITE" /> ta je web-lokacija vratila neuobičajene
 i netočne vjerodajnice. To može značiti da se neki napadač pokušava predstaviti kao <ph name="SITE" /> ili je zaslon za prijavu na Wi-Fi prekinuo vezu. Vaši su podaci još uvijek sigurni jer je Chromium zaustavio povezivanje prije razmjene podataka.</translation>
+<translation id="9107199998619088551">Vašim profilom upravlja organizacija <ph name="MANAGER" /></translation>
 <translation id="9107467864910557787">Vašim preglednikom upravlja <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Administratorsko pravilo onemogućuje dijeljenje zaslona s aplikacijom <ph name="APPLICATION_TITLE" /> ako je vidljiv povjerljiv sadržaj</translation>
 <translation id="9114524666733003316">Potvrđivanje kartice...</translation>

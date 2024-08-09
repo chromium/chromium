@@ -437,7 +437,6 @@
 <translation id="1307431692088049276">不要再詢問我</translation>
 <translation id="1307559529304613120">糟糕！系統無法為這個裝置儲存長期 API 存取符記。</translation>
 <translation id="1308548450293664112">這是我建立的檔案，一組 3 個圓形按鈕中的第 1 個</translation>
-<translation id="1308876641060960899">使用 Google 智慧鏡頭時，系統會將頁面的螢幕截圖傳送給 Google。<ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">系統會刪除影響廣告個人化的資料</translation>
 <translation id="1311294419381837540">你正在投放分頁。你隨時可以暫停或停止投放。</translation>
 <translation id="131188242279372879">探索強化防護，享有 Chrome 最強大的下載項目安全防護機制</translation>
@@ -2644,6 +2643,7 @@
 <translation id="2853121255651601031">密碼已儲存</translation>
 <translation id="2855243985454069333">從所有已同步裝置上刪除歷史記錄</translation>
 <translation id="2855812646048059450">使用 <ph name="CREDENTIAL_PROVIDER" /> 帳戶登入</translation>
+<translation id="28559674945112027">嚴格模式</translation>
 <translation id="2856776373509145513">建立新容器</translation>
 <translation id="2856907950922663165">要關閉網址加密功能嗎？</translation>
 <translation id="2859741939921354763">將密碼匯入「<ph name="BRAND" />」</translation>
@@ -3119,7 +3119,6 @@
 <translation id="3220943972464248773">如要同步處理密碼，請驗證你的身分</translation>
 <translation id="3222066309010235055">預先轉譯：<ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">連接到「<ph name="USB_VM_NAME" />」</translation>
-<translation id="3222857603094643834">透過 Google 智慧鏡頭搜尋這個頁面上的所有內容</translation>
 <translation id="3223109931751684474">移除這部裝置的密碼金鑰存取權</translation>
 <translation id="3223531857777746191">重設按鈕</translation>
 <translation id="3225084153129302039">預設的紫色顯示圖片</translation>
@@ -6394,6 +6393,7 @@
 <translation id="5623282979409330487">這個網站正在存取你的動作感應器。</translation>
 <translation id="5623842676595125836">記錄</translation>
 <translation id="5624120631404540903">管理密碼</translation>
+<translation id="5624959475330585145">使用不安全連線前先詢問</translation>
 <translation id="5625225435499354052">在 Google Pay 中編輯</translation>
 <translation id="5626134646977739690">名稱：</translation>
 <translation id="5627832140542566187">螢幕方向</translation>
@@ -9626,6 +9626,7 @@
 <translation id="8008356846765065031">網路連線中斷，請檢查你的網際網路連線。</translation>
 <translation id="8008704580256716350">已封鎖可疑檔案</translation>
 <translation id="8009225694047762179">管理密碼</translation>
+<translation id="8010081455002666927">自動偵測</translation>
 <translation id="8011372169388649948">已移動「<ph name="BOOKMARK_TITLE" />」。</translation>
 <translation id="8012188750847319132">Caps Lock 鍵</translation>
 <translation id="8012463809859447963">即時無線基地台詳細資料</translation>
@@ -11029,6 +11030,7 @@
 <translation id="9009707268312089299">從 Windows 匯入</translation>
 <translation id="9009708085379296446">你要變更這個頁面嗎？</translation>
 <translation id="9010845741772269259">新增付款方式</translation>
+<translation id="901087299639956505">平衡模式</translation>
 <translation id="9011163749350026987">一律顯示圖示</translation>
 <translation id="9011262023858991985">正在投放這個分頁</translation>
 <translation id="9011393886518328654">版本資訊</translation>

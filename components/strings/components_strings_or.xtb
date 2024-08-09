@@ -1504,6 +1504,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ଇଞ୍ଚ)</translation>
 <translation id="3792826587784915501">କଲ୍ଟ ଏବଂ ଇଣ୍ଡି ମୁଭିଗୁଡ଼ିକ</translation>
 <translation id="3793574014653384240">ବର୍ତ୍ତମାନ ଘଟିଥିବା କ୍ରାସଗୁଡ଼ିକର ସଂଖ୍ୟା ଏବଂ କାରଣଗୁଡ଼ିକ</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> Chromeକୁ ଏକ ସୁରକ୍ଷିତ କନେକ୍ସନ ସ୍ଥାପନ କରିବାରୁ ପ୍ରତିରୋଧ କରୁଛି</translation>
 <translation id="3799805948399000906">ଅନୁରୋଧ କରାଯାଇଥିବା ଫଣ୍ଟ</translation>
 <translation id="3801265110651850478">ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଟ୍ରାଫିକ ସହ ଏକ “Do Not Track” ଅନୁରୋଧ ପଠାନ୍ତୁ</translation>
 <translation id="380329542618494757">ନାମ</translation>
@@ -2698,6 +2699,7 @@
 <translation id="6106989379647458772"><ph name="PAGE" />ରେ ଥିବା ୱେବ୍‌ପୃଷ୍ଠାଟି ଅସ୍ଥାୟୀ ରୂପେ ଡାଉନ୍‌ ଥାଇପାରେ କିମ୍ବା ସ୍ଥାୟୀଭାବେ ଏକ ନୂତନ ୱେବ୍ ଠିକଣାକୁ ସ୍ଥାନାନ୍ତର ହୋଇପାରେ।</translation>
 <translation id="6107012941649240045">ଏହାଙ୍କୁ ଜାରି କରାଯାଇଛି</translation>
 <translation id="6107924765192360631">ଲିଖନ ପରାମର୍ଶ ପାଇବାକୁ କେବଳ କିଛି ଶବ୍ଦ କିମ୍ବା ଏକ ପ୍ରଥମ ଡ୍ରାଫ୍ଟ ସହିତ ଆରମ୍ଭ କରନ୍ତୁ।</translation>
+<translation id="6108580855199168381">ସାର୍ଟିଫିକେଟ ବିବରଣୀ</translation>
 <translation id="6108702513636120202">Chromiumରେ ଆପଣଙ୍କ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ</translation>
 <translation id="6108849843016142864">ସରୀସୃପ ଏବଂ ଉଭୟଚରଗୁଡ଼ିକ</translation>
 <translation id="610911394827799129"><ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ରେ ହୁଏତ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟର ଅନ୍ୟାନ୍ୟ ଧରଣର ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି ଥାଇପାରେ</translation>
@@ -3468,6 +3470,12 @@
 <translation id="7535087603100972091">ମୂଲ୍ୟ</translation>
 <translation id="753556296624075801">Google ଦ୍ଵାରା ପରିଚାଳିତ</translation>
 <translation id="7537536606612762813">ବାଧ୍ୟତାମୂଳକ</translation>
+<translation id="7541586907443866208">ଆପଣ ଏବଂ ଏହି ସାଇଟ ମଧ୍ୟରେ ପଠାଯାଇଥିବା ଯେ କୌଣସି ଡାଟା ଦେଖିବା ଏବଂ ପରିବର୍ତ୍ତନ କରିବାକୁ ଆକ୍ରମଣକାରୀମାନେ ସକ୍ଷମ ହେବେ।
+    &lt;ul&gt;
+    &lt;li&gt;ଯଦି ଆପଣ ବର୍ତ୍ତମାନ ଏକ ଏୟାରପୋର୍ଟ କିମ୍ବା ହୋଟେଲ ୱାଇଫାଇ ପରି ଗୋଟିଏ ପବ୍ଲିକ ନେଟୱାର୍କରେ ଅଛନ୍ତି, ତେବେ ଆପଣ ଏକ ବିଶ୍ୱସ୍ତ ନେଟୱାର୍କ (ଉ.ଦା., ଘରେ କିମ୍ବା ହୋମରେ) ସହିତ କନେକ୍ଟ ହେଲେ ପୁଣି ଚେଷ୍ଟା କରିବାକୁ ବିଚାର କରନ୍ତୁ।&lt;/li&gt;
+    &lt;li&gt;ଯଦି ଆପଣ ସାଇଟ ମାଲିକଙ୍କୁ ଜାଣନ୍ତି, ତେବେ ତାଙ୍କୁ ଏହାକୁ ଠିକ କରିବା ପାଇଁ କୁହନ୍ତୁ।&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />ଏହି ଚେତାବନୀ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">ସ୍ଵଚାଳିତ ଭାବେ କ୍ରେଡିଟ୍ କାର୍ଡ ପୂରଣକୁ ଅକ୍ଷମ କରନ୍ତୁ କାରଣ ଏହି ଫର୍ମ ଏକ ସୁରକ୍ଷିତ ସଂଯୋଗ ବ୍ୟବହାର କରେ ନାହିଁ।</translation>
 <translation id="7543525346216957623">ନିଜର ଅଭିଭାବକଙ୍କୁ ପଚାରନ୍ତୁ</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> ଆରମ୍ଭ ହେଉଛି</translation>

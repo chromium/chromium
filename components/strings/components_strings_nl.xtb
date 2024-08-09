@@ -158,6 +158,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1270328905573953738">Verhuizen</translation>
 <translation id="1270502636509132238">Ophaalmethode</translation>
 <translation id="1273592791152866347">Prijs volgen staat uit</translation>
+<translation id="1277711244058668002">Knop Leuk, druk op Enter om feedback te geven dat je deze suggestie leuk vindt</translation>
 <translation id="127777513559587977">Tv-talkshows</translation>
 <translation id="1281476433249504884">Stapeleenheid 1</translation>
 <translation id="1281536351321444151">Sla dit IBAN op in je Google-account om het de volgende keer automatisch in te vullen</translation>
@@ -456,6 +457,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="180757923930449935">(64-bits emulatie)</translation>
 <translation id="180991881384371158">De CVC-code staat achter op je kaart. Het zijn de laatste 3 cijfers rechtsboven in het handtekeningvak.</translation>
 <translation id="1810391395243432441">Wachtwoorden beveiligen met je schermvergrendeling</translation>
+<translation id="1810597570737826742">{count,plural, =1{{position} van {count} Plus Code-adres}other{{position} van {count} Plus Code-adressen}}</translation>
 <translation id="1812527064848182527">liggend</translation>
 <translation id="1812975699435941848">Gezondheidsvoorlichting en medische opleidingen</translation>
 <translation id="1816436748874040213">Kan vragen om te scrollen en te zoomen op gedeelde tabbladen</translation>
@@ -663,6 +665,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2188375229972301266">Meerdere perforaties onder</translation>
 <translation id="2194856509914051091">Overwegingen</translation>
 <translation id="2197398642355049178">Je onderwerpen</translation>
+<translation id="2200678913752027654">Knop Niet leuk, druk op Enter om een formulier te openen waarin je gedetailleerde feedback kunt geven over waarom je deze suggestie niet leuk vindt</translation>
 <translation id="2202627062836089804">achterkant van je kaart</translation>
 <translation id="2204482073374652408">Updaten voltooid</translation>
 <translation id="2207770355672215546">Altijd toestaan, met elke kaart</translation>
@@ -2580,6 +2583,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5887687176710214216">Laatst bezocht: gisteren</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
 <translation id="5895187275912066135">Verleend op</translation>
+<translation id="5898767305816764989">Knop Leuk, druk op Enter om feedback te geven dat je <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> leuk vindt</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5903264686717710770">Titel:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (gesynchroniseerd)</translation>
@@ -3311,6 +3315,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 Aanvullende informatie:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Je beheerder zegt: '<ph name="CUSTOM_MESSAGE" />'</translation>
+<translation id="7255540419660272073">Knop Niet leuk, druk op Enter om een formulier te openen waarin je gedetailleerde feedback kunt geven over waarom je <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> niet leuk vindt</translation>
 <translation id="7256634549594854023">Achterste lade</translation>
 <translation id="7257453341537973799">Loopbaanbronnen en -planning</translation>
 <translation id="725866823122871198">Er kan geen privéverbinding met <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tot stand worden gebracht, omdat de datum en tijd van de computer (<ph name="DATE_AND_TIME" />) onjuist zijn.</translation>

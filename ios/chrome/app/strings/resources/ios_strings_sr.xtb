@@ -1060,6 +1060,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6188737759358894319">Направљено <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Непрочитано</translation>
 <translation id="6196207969502475924">Гласовна претрага</translation>
+<translation id="6198252989419008588">Промени PIN</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Затвори {COUNT} картицу}one{Затвори {COUNT} картицу}few{Затвори {COUNT} картице}other{Затвори {COUNT} картица}}</translation>
 <translation id="6210079381482819663">Картице које се не користе <ph name="THRESHOLD" /> дана или дуже премештају се овде. Ово можете да промените у сваком тренутку у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Није пронађена ниједна адреса</translation>
@@ -1267,7 +1268,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7069695992271320873">Уклони са овог уређаја</translation>
 <translation id="7080806333218412752">Шаље URL-ове у Безбедно прегледање на проверу. Шаље и мали узорак страница, преузимања, активности додатака и информација система да би се откриле нове претње. Привремено повезује те податке са Google налогом када сте пријављени да бисте били заштићени у свим Google апликацијама.</translation>
 <translation id="7082853213442715471">Када је укључен, одређене веб-технологије су блокиране, што може да доведе до споријег учитавања веб-сајтова или неправилног рада.</translation>
-<translation id="7084872401503983471">Отворите <ph name="GROUP_TITLE" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7095110968493193530">У Google менаџеру лозинки за <ph name="EMAIL" /></translation>
 <translation id="7101580180124131336">Сада ћете видети садржај са канала <ph name="CHANNEL_NAME" /> и о њему у одељку Праћења.</translation>
 <translation id="7102005569666697658"><ph name="FILE_SIZE" /> се преузима…</translation>

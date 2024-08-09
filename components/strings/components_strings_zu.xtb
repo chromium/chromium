@@ -1504,6 +1504,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Ama-movie Wenkolo Nawezinkampane Ezizimele</translation>
 <translation id="3793574014653384240">Izinombolo nezimbangela zokuphahlazeka ezenzeke muva nje</translation>
+<translation id="3796417399166194741">I-<ph name="SITE" /> ivimbela iChrome ukuba ithole ukuxhuma okuvikelekile</translation>
 <translation id="3799805948399000906">Ifonti iceliwe</translation>
 <translation id="3801265110651850478">Thumela isicelo esithi "Ungalandeleli" nethrafikhi yakho yokubhrawuza</translation>
 <translation id="380329542618494757">Igama</translation>
@@ -2698,6 +2699,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6106989379647458772">Ikhasi lewebhu ku-<ph name="PAGE" /> lingahle liphansi okwesikhashana noma lingahle liye unaphakathi ekheli elisha lewebhu.</translation>
 <translation id="6107012941649240045">Ikhishelwe ku-</translation>
 <translation id="6107924765192360631">Vele uqale ngamazwi ambalwa noma ngombhalo wokuqala osazolungiswa ukuze uthole iziphakamiso zokubhala.</translation>
+<translation id="6108580855199168381">Imininingwane yesitifiketi</translation>
 <translation id="6108702513636120202">Injini Yakho Yokusesha ku-Chromium</translation>
 <translation id="6108849843016142864">Izilwane Ezinwabuzelayo kanye Nezilwane Ezihlala Emanzini</translation>
 <translation id="610911394827799129">I-akhawunti yakho ye-Google ingaba namanye amafomu omlando wokuphequlula ku-<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -3469,6 +3471,12 @@ Imininingwane engeziwe:
 <translation id="7535087603100972091">Inani</translation>
 <translation id="753556296624075801">Ixhaswe ngabakwa-Google</translation>
 <translation id="7537536606612762813">Iyadingeka</translation>
+<translation id="7541586907443866208">Abahlaseli bazokwazi ukubona nokushintsha noma iyiphi idatha ethunyelwe phakathi kwakho nale sayithi.
+    &lt;ul&gt;
+    &lt;li&gt;Uma okwamanje ukunethiwekhi yomphakathi, njengaku-wifi yasesikhumulweni sezindiza noma yasehhotela, sicela ucabangele ukuphinde uzame uma usuxhume kunethiwekhi ethenjwayo (isb., ekhaya noma emsebenzini).&lt;/li&gt;
+    &lt;li&gt;Uma umazi umnikazi wesayithi, mcele ukuba akulungise lokhu.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />Funda kabanzi mayelana nalesi sexwayiso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">Ukugcwaliswa kwekhadi lesikweletu okuzenzakalelayo kukhutshaziwe ngoba leli fomu alisebenzisi ukuxhumeka okuvikelekile.</translation>
 <translation id="7543525346216957623">Buza umzali wakho</translation>
 <translation id="7546409722674205727">I-<ph name="APP_NAME" /> iyaqalisa</translation>

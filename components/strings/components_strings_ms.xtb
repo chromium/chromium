@@ -456,6 +456,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="180757923930449935">(64 bit diemulasikan)</translation>
 <translation id="180991881384371158">CVC tertera pada bahagian belakang kad anda. CVC ialah 3 digit terakhir pada bahagian atas sebelah kanan kotak tandatangan.</translation>
 <translation id="1810391395243432441">Lindungi kata laluan dengan kunci skrin anda</translation>
+<translation id="1810597570737826742">{count,plural, =1{{position} daripada {count} alamat bertanda tambah}other{{position} daripada {count} alamat bertanda tambah}}</translation>
 <translation id="1812527064848182527">landskap</translation>
 <translation id="1812975699435941848">Pendidikan Kesihatan &amp; Latihan Perubatan</translation>
 <translation id="1816436748874040213">Boleh meminta untuk menatal dan mengezum tab kongsi</translation>

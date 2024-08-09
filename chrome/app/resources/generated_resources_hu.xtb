@@ -437,7 +437,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1307431692088049276">Ne kérdezze meg újra</translation>
 <translation id="1307559529304613120">Hoppá! A rendszer nem tudta tárolni az eszköz hosszú távú API hozzáférési tokenjét.</translation>
 <translation id="1308548450293664112">Én hoztam létre ezt a fájlt, választógombcsoport, 3/1.</translation>
-<translation id="1308876641060960899">A Google Lens használatakor a rendszer elküldi az oldal képernyőképét a Google-nak. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">A hirdetések személyre szabását befolyásoló adatok törlődnek</translation>
 <translation id="1311294419381837540">Folyamatban van egy lap átküldése. Az átküldést bármikor szüneteltetheti vagy leállíthatja.</translation>
 <translation id="131188242279372879">Fedezze fel a Speciális védelmet, amely a Chrome legmagasabb szintű védelmét nyújtja a letöltésekhez</translation>
@@ -2656,6 +2655,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2853121255651601031">A jelszó mentése megtörtént</translation>
 <translation id="2855243985454069333">Az összes bejelentkezett eszközről törli az előzményeket</translation>
 <translation id="2855812646048059450">Bejelentkezés a következővel: <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Szigorú mód</translation>
 <translation id="2856776373509145513">Új tároló létrehozása</translation>
 <translation id="2856907950922663165">Kikapcsolja az URL-ek titkosítását?</translation>
 <translation id="2859741939921354763">Jelszavak importálása ide: <ph name="BRAND" /></translation>
@@ -3134,7 +3134,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3220943972464248773">Jelszavai szinkronizálásához igazolja személyazonosságát</translation>
 <translation id="3222066309010235055">Előmegjelenítés: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Csatlakozás a következőhöz: <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Keresés az oldalon a Google Lens segítségével</translation>
 <translation id="3223109931751684474">Az azonosítókulcsaihoz való hozzáférés eltávolítása ezen az eszközön</translation>
 <translation id="3223531857777746191">Visszaállítás gomb</translation>
 <translation id="3225084153129302039">Alapértelmezett lila avatar</translation>
@@ -6414,6 +6413,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5623282979409330487">Ez a webhely hozzáfér a mozgásérzékelőkhöz.</translation>
 <translation id="5623842676595125836">Napló</translation>
 <translation id="5624120631404540903">Jelszavak kezelése</translation>
+<translation id="5624959475330585145">Kérdezzen rá a nem biztonságos kapcsolatok használata előtt</translation>
 <translation id="5625225435499354052">Módosítás a Google Pay szolgáltatásban</translation>
 <translation id="5626134646977739690">Név:</translation>
 <translation id="5627832140542566187">Kijelző tájolása</translation>
@@ -9647,6 +9647,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8008356846765065031">Az internetkapcsolat megszűnt. Kérjük, ellenőrizze az internetkapcsolatot.</translation>
 <translation id="8008704580256716350">Gyanús fájl letiltva</translation>
 <translation id="8009225694047762179">Jelszó kezelése</translation>
+<translation id="8010081455002666927">Automatikus felismerés</translation>
 <translation id="8011372169388649948">„<ph name="BOOKMARK_TITLE" />” áthelyezve.</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8012463809859447963">Az azonnali hotspot részletei</translation>
@@ -11050,6 +11051,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="9009707268312089299">Windows rendszerről importálva</translation>
 <translation id="9009708085379296446">Szándékosan változtatta meg ezt az oldalt?</translation>
 <translation id="9010845741772269259">Fizetési módok hozzáadása</translation>
+<translation id="901087299639956505">Kiegyensúlyozott mód</translation>
 <translation id="9011163749350026987">Mindig mutassa az ikont</translation>
 <translation id="9011262023858991985">Lap átküldése</translation>
 <translation id="9011393886518328654">Kibocsátási megjegyzések</translation>

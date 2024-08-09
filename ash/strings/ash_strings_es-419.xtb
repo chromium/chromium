@@ -467,7 +467,6 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2704781753052663061">Unirse a otras redes Wi-Fi</translation>
 <translation id="2705001408393684014">Activa o desactiva el micrófono. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Arriba</translation>
-<translation id="271033894570825754">Nuevo</translation>
 <translation id="2710984741481549981">Bloquear las ventanas</translation>
 <translation id="2718395828230677721">Luz nocturna</translation>
 <translation id="2726420622004325180">Tu teléfono debe tener los datos móviles activados para proporcionar un hotspot.</translation>
@@ -564,6 +563,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Expandir menú</translation>
 <translation id="3087734570205094154">Inferior</translation>
+<translation id="3090214513075567547">Abrir menú contextual</translation>
 <translation id="3090989381251959936">Activa o desactiva <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Vencidas</translation>
 <translation id="3095995014811312755">versión</translation>
@@ -1234,7 +1234,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5331975486040154427">Dispositivo USB-C (puerto lateral izquierdo trasero)</translation>
 <translation id="533282197239610265">Mostrar dispositivos de transmisión</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (derecho)</translation>
-<translation id="5346119650615956459">GIFs</translation>
 <translation id="5352250171825660495">El Tema oscuro está activado</translation>
 <translation id="5354804064646502504">Es posible que se generen costos por el uso de datos.
 No hay dispositivos conectados.</translation>

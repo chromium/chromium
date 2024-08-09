@@ -470,7 +470,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2704781753052663061">Visualizza altre reti Wi-Fi</translation>
 <translation id="2705001408393684014">Attiva/disattiva il microfono. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Su</translation>
-<translation id="271033894570825754">Nuovo</translation>
 <translation id="2710984741481549981">Blocca le finestre</translation>
 <translation id="2718395828230677721">Luce notturna</translation>
 <translation id="2726420622004325180">Il telefono deve avere i dati mobili per poter fornire un hotspot</translation>
@@ -567,6 +566,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3077734595579995578">maiusc</translation>
 <translation id="3081696990447829002">Espandi il menu</translation>
 <translation id="3087734570205094154">In basso</translation>
+<translation id="3090214513075567547">Apri il menu contestuale</translation>
 <translation id="3090989381251959936">Attiva/disattiva <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Mancante</translation>
 <translation id="3095995014811312755">versione</translation>
@@ -1236,7 +1236,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5331975486040154427">Dispositivo USB-C (porta posteriore sinistra)</translation>
 <translation id="533282197239610265">Mostra i dispositivi di trasmissione</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (destro)</translation>
-<translation id="5346119650615956459">GIF</translation>
 <translation id="5352250171825660495">Tema scuro attivo</translation>
 <translation id="5354804064646502504">Per questa operazione potrebbe essere addebitato il costo dei dati.
 Nessun dispositivo connesso.</translation>

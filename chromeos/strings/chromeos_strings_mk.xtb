@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">стрелка надолу</translation>
 <translation id="4425149324548788773">Мојот Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> е исклучена</translation>
+<translation id="4428840632568803690">Говорник <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Билетот на Kerberos истекува наскоро</translation>
 <translation id="4431821876790500265">Прикажи го извештајот</translation>
 <translation id="4443192710976771874">црвена</translation>
@@ -818,6 +819,7 @@
 <translation id="5332948983412042822">Може да изберете нова сега</translation>
 <translation id="5333530671332546086">Непозната состојба на портал</translation>
 <translation id="5335373365677455232">розова</translation>
+<translation id="5344619683981067131">Избраниот текст се заменува со предлог</translation>
 <translation id="5346687412805619883">Локална мрежа</translation>
 <translation id="5358174242040570474">Нешто тргна наопаку. Обидете се повторно да изберете тапет или повторно отворете ја апликацијата.</translation>
 <translation id="5372659122375744710">WiFi мрежата не е безбедна</translation>
@@ -869,6 +871,7 @@
 <translation id="5662240986744577912">вклучување/исклучување „Заштита на приватноста“</translation>
 <translation id="5669267381087807207">Се активира</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">Опишете го тапетот што сакате да го создадете</translation>
 <translation id="5680504961595602662">Нереална слика на <ph name="SURREAL_LANDSCAPE" /> со <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">цреши</translation>
 <translation id="5691511426247308406">Семејни</translation>
@@ -1102,6 +1105,7 @@
 <translation id="680983167891198932">Клуч</translation>
 <translation id="6816797338148849397">Достапни се информации поврзани со вашиот избор. Користете го копчето со стрелка нагоре за да пристапите.</translation>
 <translation id="6853312040151791195">Брзина на празнење</translation>
+<translation id="6862416241246624313">Повратните информации се испратени</translation>
 <translation id="6866732840889595464">маргаритка</translation>
 <translation id="6871256179359663621">светловиолетова</translation>
 <translation id="6889786074662672253">Додека се рестартира, не исклучувајте го надворешниов уред од струја или не исклучувајте го компјутерот. Може да го минимизирате прозорецов. Ова може да потрае неколку минути и надворешниот уред можеби нема да работи во ова време.</translation>
@@ -1295,6 +1299,7 @@
 <translation id="7802764839223122985">Недостасува копче. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7805768142964895445">Статус</translation>
+<translation id="7811024689617730980">Изберете ден за автоматско ресетирање од 1 до 31, вклучувајќи ги и тие два дена</translation>
 <translation id="7813073042185856802">планина</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7824219488248240180">постимпресионист</translation>

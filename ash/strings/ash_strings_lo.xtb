@@ -467,7 +467,6 @@
 <translation id="2704781753052663061">ເຂົ້າຮ່ວມເຄືອຂ່າຍ Wi-Fi ອື່ນ</translation>
 <translation id="2705001408393684014">ເປີດໄມ. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ຂຶ້ນ</translation>
-<translation id="271033894570825754">ໃຫມ່</translation>
 <translation id="2710984741481549981">ລັອກໜ້າຈໍ</translation>
 <translation id="2718395828230677721">ແສງກາງຄືນ</translation>
 <translation id="2726420622004325180">ໂທລະສັບຂອງທ່ານຕ້ອງມີອິນເຕີເນັດມືຖືເພື່ອໃຫ້ຮັອດສະປອດ</translation>
@@ -1234,7 +1233,6 @@
 <translation id="5331975486040154427">ອຸ​ປະ​ກອນ USB-C (​ຜອດ​ດ້ານ​ຫຼັງເບື້ອງຊ້າຍ)</translation>
 <translation id="533282197239610265">ສະແດງອຸປະກອນ Chromecast</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ຂວາ)</translation>
-<translation id="5346119650615956459">GIF</translation>
 <translation id="5352250171825660495">ຮູບແບບສີສັນມືດເປີດຢູ່</translation>
 <translation id="5354804064646502504">ສິ່ງນີ້ອາດມີຄ່າໃຊ້ຈ່າຍຂໍ້ມູນ.
 ບໍ່ມີອຸປະກອນທີ່ເຊື່ອມຕໍ່ໄວ້.</translation>

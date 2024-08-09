@@ -439,7 +439,6 @@
 <translation id="1307431692088049276">Այլևս չհարցնել</translation>
 <translation id="1307559529304613120">Համակարգին չհաջողվեց պահել այս սարքի երկարաժամկետ API մուտքի հետքանշիչը:</translation>
 <translation id="1308548450293664112">Ես ստեղծել եմ այս ֆայլը, կետակոճակների խումբ, 1/3</translation>
-<translation id="1308876641060960899">Երբ օգտագործում եք Google Տեսապակին, էջի սքրինշոթն ուղարկվում է Google-ին։ <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Տվյալները, որոնք ազդում են գովազդի անհատականացման վրա, ջնջվել են</translation>
 <translation id="1311294419381837540">Դուք ներդիր եք հեռարձակում։ Ցանկացած պահի կարող եք դադարեցնել կամ ավարտել հեռարձակումը։</translation>
 <translation id="131188242279372879">Բացահայտեք բարելավված պաշտպանությունը՝ Chrome-ի լավագույն պաշտպանության համակարգերը ներբեռնումներ կատարելիս օգտագործելու համար</translation>
@@ -2644,6 +2643,7 @@
 <translation id="2853121255651601031">Գաղտնաբառը պահվեց</translation>
 <translation id="2855243985454069333">Ջնջել պատմությունը բոլոր համաժամացված սարքերից</translation>
 <translation id="2855812646048059450">Մուտք գործել <ph name="CREDENTIAL_PROVIDER" />-ի միջոցով</translation>
+<translation id="28559674945112027">Խիստ ռեժիմ</translation>
 <translation id="2856776373509145513">Նոր կոնտեյների ստեղծում</translation>
 <translation id="2856907950922663165">Անջատե՞լ URL-ների գաղտնագրումը</translation>
 <translation id="2859741939921354763">Ներմուծել գաղտնաբառերը <ph name="BRAND" /></translation>
@@ -3122,7 +3122,6 @@
 <translation id="3220943972464248773">Ձեր գաղտնաբառերը համաժամացնելու համար հաստատեք ձեր ինքնությունը</translation>
 <translation id="3222066309010235055">Նախնական մշակում՝ <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Միացնել վիրտուալ մեքենային (<ph name="USB_VM_NAME" />)</translation>
-<translation id="3222857603094643834">Որոնեք որևէ բան այս էջում Google Տեսապակու միջոցով</translation>
 <translation id="3223109931751684474">Արգելել մուտքի բանալիների օգտագործումն այս սարքում</translation>
 <translation id="3223531857777746191">«Զրոյացնել» կոճակ</translation>
 <translation id="3225084153129302039">Կանխադրված մանուշակագույն ավատար</translation>
@@ -6397,6 +6396,7 @@
 <translation id="5623282979409330487">Այս կայքն օգտագործում է շարժման տվիչները:</translation>
 <translation id="5623842676595125836">Մատյան</translation>
 <translation id="5624120631404540903">Կառավարել գաղտնաբառերը</translation>
+<translation id="5624959475330585145">Հարցնել նախքան ոչ ապահով միացում օգտագործելը</translation>
 <translation id="5625225435499354052">Փոփոխել Google Pay-ում</translation>
 <translation id="5626134646977739690">Անուն՝</translation>
 <translation id="5627832140542566187">Էկրանի դիրքավորումը</translation>
@@ -9630,6 +9630,7 @@
 <translation id="8008356846765065031">Համացանցն անջատված է: Ստուգեք ձեր կապակցումը:</translation>
 <translation id="8008704580256716350">Կասկածելի ֆայլն արգելափակված է</translation>
 <translation id="8009225694047762179">Կառավարել գաղտնաբառերը</translation>
+<translation id="8010081455002666927">Ինքնահայտնաբերում</translation>
 <translation id="8011372169388649948">«<ph name="BOOKMARK_TITLE" />» էջանիշը տեղափոխվեց։</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Մանրամասներ ակնթարթային թեժ կետի մասին</translation>
@@ -11033,6 +11034,7 @@
 <translation id="9009707268312089299">Windows-ից ներմուծված</translation>
 <translation id="9009708085379296446">Ուզում էիք փոխե՞լ այս էջը</translation>
 <translation id="9010845741772269259">Ավելացնել վճարման եղանակներ</translation>
+<translation id="901087299639956505">Հավասարակշռված ռեժիմ</translation>
 <translation id="9011163749350026987">Միշտ ցուցադրել պատկերակը</translation>
 <translation id="9011262023858991985">Այս ներդիրը հեռարձակվում է</translation>
 <translation id="9011393886518328654">Թողարկման նշումներ</translation>

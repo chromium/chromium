@@ -437,7 +437,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1307431692088049276">Não voltar a perguntar</translation>
 <translation id="1307559529304613120">Ups! O sistema não conseguiu guardar o token de acesso da API de longo prazo para este dispositivo.</translation>
 <translation id="1308548450293664112">Criei este ficheiro, grupo de botões de opção, 1 de 3</translation>
-<translation id="1308876641060960899">Quando usa o Google Lens, é enviada uma captura de ecrã da página para a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Os dados que afetam a personalização de anúncios são apagados</translation>
 <translation id="1311294419381837540">Está a transmitir um separador. Pode pausar ou parar a transmissão em qualquer altura.</translation>
 <translation id="131188242279372879">Descubra a Proteção melhorada para desfrutar do nível de segurança mais elevado do Chrome para as transferências</translation>
@@ -2450,6 +2449,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="272741954544380994">Pesquisar imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Não lembrar novamente</translation>
 <translation id="2727712005121231835">Tamanho real</translation>
+<translation id="2727713483500953825">Selecione imagens/texto para pesquisar com o Lens</translation>
 <translation id="2727744317940422214">Desculpe, mas algo correu mal. Envie feedback com #bruschetta na descrição. O código de erro é <ph name="ERROR" />. A limpeza falhou. Pode ter de a fazer manualmente.</translation>
 <translation id="2729327310379176711">O Chrome está a encontrar novas formas de reduzir a monitorização e dar-lhe ainda mais segurança enquanto navega. O Chrome também <ph name="ESTIMATE_INTERESTS_LINK" /> e permite-lhe geri-los. Em seguida, os sites que visita podem pedir ao Chrome os seus interesses para lhe mostrar anúncios.</translation>
 <translation id="2729577602370119849">Aceda e faça a gestão das impressoras facilmente</translation>
@@ -3125,7 +3125,6 @@ Quer pará-lo?</translation>
 <translation id="3220943972464248773">Para sincronizar as palavras-passe, valide a sua identidade</translation>
 <translation id="3222066309010235055">Pré-renderizar: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Ligar a <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Pesquise qualquer conteúdo nesta página com o Google Lens</translation>
 <translation id="3223109931751684474">Remover o acesso às chaves de acesso neste dispositivo</translation>
 <translation id="3223531857777746191">Botão Repor</translation>
 <translation id="3225084153129302039">Avatar roxo predefinido</translation>
@@ -3667,6 +3666,7 @@ Quer pará-lo?</translation>
 <translation id="3623598555687153298">Esta ação vai eliminar <ph name="TOTAL_USAGE" /> de dados armazenados pelos sites apresentados</translation>
 <translation id="3624567683873126087">Desbloquear o dispositivo e iniciar sessão na Conta Google</translation>
 <translation id="3624583033347146597">Escolha as preferências de cookies de terceiros</translation>
+<translation id="3625345586754200168">Experimentar Lens</translation>
 <translation id="3625481642044239431">Foi selecionado um ficheiro inválido. Tente novamente.</translation>
 <translation id="3626296069957678981">Para carregar este Chromebook, utilize uma bateria Dell compatível.</translation>
 <translation id="3627320433825461852">Falta menos de 1 minuto</translation>
@@ -4823,6 +4823,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4450974146388585462">Diagnosticar</translation>
 <translation id="445099924538929605">O <ph name="DEVICE_OS" /> detetou um TPM ativo que pode armazenar os seus dados com mais segurança.</translation>
 <translation id="4452898361839215358">ou selecionar um PPD. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Pesquise qualquer imagem ou texto com o Lens</translation>
 <translation id="4453430595102511050">Toque no sensor de impressões digitais no canto superior direito do teclado. Os seus dados de impressões digitais são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Procurar no <ph name="SEARCH_ENGINE_NAME" /> ou introduzir um URL</translation>
 <translation id="4457472090507035117">Selecionar voz atual:</translation>
@@ -6985,6 +6986,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6059276912018042191">Separadores do Chrome recentes</translation>
 <translation id="6059652578941944813">Hierarquia de certificados</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
+<translation id="6060842547856900641">Abrir Lens</translation>
 <translation id="6061408389284235459">Enviámos uma notificação para o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Criar código QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> uma voz semelhante ou uma gravação pode conseguir aceder aos resultados pessoais de <ph name="SUPERVISED_USER_NAME" />. Para poupar bateria, nas Definições do Assistente de <ph name="SUPERVISED_USER_NAME" />, pode optar por ativar o comando "OK Google" apenas quando este dispositivo estiver ligado a uma fonte de alimentação.</translation>

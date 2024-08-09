@@ -437,7 +437,6 @@
 <translation id="1307431692088049276">Дахиж асуух хэрэггүй</translation>
 <translation id="1307559529304613120">Өө! Систем нь энэ төхөөрөмжид урт хугацааны API нэвтрэх түлхүүрийг хадгалж чадсангүй.</translation>
 <translation id="1308548450293664112">Би энэ файлыг үүсгэсэн, радио товчийн бүлэг, 3-аас 1</translation>
-<translation id="1308876641060960899">Таныг Google Lens-г ашиглах үед хуудасны дэлгэцийн агшныг Google-д илгээдэг. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Сонирхсон зарын тохируулгад нөлөөлөх өгөгдлийг устгасан</translation>
 <translation id="1311294419381837540">Та таб дамжуулж байна. Та дамжуулалтыг хүссэн үедээ түр зогсоох эсвэл зогсоох боломжтой.</translation>
 <translation id="131188242279372879">Chrome-н хамгийн өндөр түвшний аюулгүй байдлыг татаж авсан файлуудад авахын тулд сайжруулсан хамгаалалтыг олж мэднэ үү</translation>
@@ -2653,6 +2652,7 @@
 <translation id="2853121255651601031">Нууц үгийг хадгалсан</translation>
 <translation id="2855243985454069333">Синк хийсэн бүх төхөөрөмжөөс түүхийг устгана</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" />-р нэвтрэх</translation>
+<translation id="28559674945112027">Нарийн чанд горим</translation>
 <translation id="2856776373509145513">Шинэ контейнер үүсгэх</translation>
 <translation id="2856907950922663165">URL-н шифрлэлтийг унтраах уу?</translation>
 <translation id="2859741939921354763">Нууц үгнүүдийг <ph name="BRAND" /> руу импорт хийх</translation>
@@ -3131,7 +3131,6 @@
 <translation id="3220943972464248773">Нууц үгнүүдээ синк хийхийн тулд өөрийгөө мөн болохыг бататгана уу</translation>
 <translation id="3222066309010235055">Компьютер графикжуулах: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" />-д холбогдох</translation>
-<translation id="3222857603094643834">Энэ хуудсан дээр байгаа дурын зүйлийг Google Lens-р хайгаарай</translation>
 <translation id="3223109931751684474">Энэ төхөөрөмж дээрх нэвтрэх түлхүүрт тань хандах эрхийг хасна уу</translation>
 <translation id="3223531857777746191">Шинэчлэх товчлуур</translation>
 <translation id="3225084153129302039">Өгөгдмөл нил ягаан аватар</translation>
@@ -6411,6 +6410,7 @@
 <translation id="5623282979409330487">Энэ сайт таны хөдөлгөөн мэдрэгчид хандаж байна.</translation>
 <translation id="5623842676595125836">Нэвтрэх</translation>
 <translation id="5624120631404540903">Нууц үгийг удирдах</translation>
+<translation id="5624959475330585145">Аюултай холболт ашиглахаас өмнө асуух</translation>
 <translation id="5625225435499354052">Google Pay-д засах</translation>
 <translation id="5626134646977739690">Нэр:</translation>
 <translation id="5627832140542566187">Дэлгэцийн чиглэл</translation>
@@ -9641,6 +9641,7 @@
 <translation id="8008356846765065031">Интернэт салсан байна. Интернетийн холболтоо шалгана уу.</translation>
 <translation id="8008704580256716350">Сэжигтэй файлыг блоклосон</translation>
 <translation id="8009225694047762179">Нууц үгийг удирдах</translation>
+<translation id="8010081455002666927">Автоматаар илрүүлэх</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />'-г зөөсөн.</translation>
 <translation id="8012188750847319132">том үсгийн горим</translation>
 <translation id="8012463809859447963">Шуурхай сүлжээний цэгийн дэлгэрэнгүй</translation>
@@ -11041,6 +11042,7 @@
 <translation id="9009707268312089299">Windows-с импорт хийсэн</translation>
 <translation id="9009708085379296446">Та энэ хуудсыг өөрчлөх гэж байсан уу?</translation>
 <translation id="9010845741772269259">Төлбөрийн хэрэгслүүд нэмэх</translation>
+<translation id="901087299639956505">Тэнцвэртэй горим</translation>
 <translation id="9011163749350026987">Байнга дүрс тэмдэг харуулах</translation>
 <translation id="9011262023858991985">Энэ табыг дамжуулж байна</translation>
 <translation id="9011393886518328654">Хувилбарын тайлбарууд</translation>

@@ -437,7 +437,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1307431692088049276">Don't ask me again</translation>
 <translation id="1307559529304613120">Oops!  The system failed to store the long-term API access token for this device.</translation>
 <translation id="1308548450293664112">I created this file, radio button group, 1 of 3</translation>
-<translation id="1308876641060960899">When you use Google Lens, a screenshot of the page is sent to Google. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Data that affects Ad Personalisation is deleted</translation>
 <translation id="1311294419381837540">You are casting a tab. You can pause or stop casting at any time.</translation>
 <translation id="131188242279372879">Discover enhanced protection to get Chrome's highest level of security for downloads</translation>
@@ -2657,6 +2656,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2853121255651601031">Password Saved</translation>
 <translation id="2855243985454069333">Deletes history from all synced devices</translation>
 <translation id="2855812646048059450">Sign in with <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Strict mode</translation>
 <translation id="2856776373509145513">Create a new container</translation>
 <translation id="2856907950922663165">Turn off URL encryption?</translation>
 <translation id="2859741939921354763">Import passwords to <ph name="BRAND" /></translation>
@@ -3135,7 +3135,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3220943972464248773">To sync your passwords, verify that it's you</translation>
 <translation id="3222066309010235055">Prerender: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Connect to <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Search anything on this page with Google Lens</translation>
 <translation id="3223109931751684474">Remove access to your passkeys on this device</translation>
 <translation id="3223531857777746191">Reset button</translation>
 <translation id="3225084153129302039">Default purple avatar</translation>
@@ -6415,6 +6414,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5623282979409330487">This site is accessing your motion sensors.</translation>
 <translation id="5623842676595125836">Log</translation>
 <translation id="5624120631404540903">Manage passwords</translation>
+<translation id="5624959475330585145">Ask before using insecure connections</translation>
 <translation id="5625225435499354052">Edit in Google Pay</translation>
 <translation id="5626134646977739690">Name:</translation>
 <translation id="5627832140542566187">Display orientation</translation>
@@ -9649,6 +9649,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8008356846765065031">Internet disconnected. Please check your Internet connection.</translation>
 <translation id="8008704580256716350">Suspicious file blocked</translation>
 <translation id="8009225694047762179">Manage passwords</translation>
+<translation id="8010081455002666927">Auto-detect</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' moved.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Instant hotspot details</translation>
@@ -11052,6 +11053,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9009707268312089299">Imported from Windows</translation>
 <translation id="9009708085379296446">Did you mean to change this page?</translation>
 <translation id="9010845741772269259">Add payment methods</translation>
+<translation id="901087299639956505">Balanced mode</translation>
 <translation id="9011163749350026987">Always show icon</translation>
 <translation id="9011262023858991985">Casting this tab</translation>
 <translation id="9011393886518328654">Release notes</translation>

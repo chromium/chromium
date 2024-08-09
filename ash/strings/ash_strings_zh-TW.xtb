@@ -467,7 +467,6 @@
 <translation id="2704781753052663061">加入其他 Wi-Fi 網路</translation>
 <translation id="2705001408393684014">切換麥克風。<ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">向上鍵</translation>
-<translation id="271033894570825754">全新</translation>
 <translation id="2710984741481549981">鎖定視窗</translation>
 <translation id="2718395828230677721">夜燈</translation>
 <translation id="2726420622004325180">你的手機必須有行動數據才能提供無線基地台</translation>
@@ -564,6 +563,7 @@
 <translation id="3077734595579995578">Shift</translation>
 <translation id="3081696990447829002">展開選單</translation>
 <translation id="3087734570205094154">置底</translation>
+<translation id="3090214513075567547">開啟內容選單</translation>
 <translation id="3090989381251959936">切換<ph name="FEATURE_NAME" />功能。<ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">沒有截止日期</translation>
 <translation id="3095995014811312755">版本</translation>
@@ -1230,7 +1230,6 @@
 <translation id="5331975486040154427">USB-C 裝置 (左後方連接埠)</translation>
 <translation id="533282197239610265">顯示投放裝置</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (右側)</translation>
-<translation id="5346119650615956459">GIF</translation>
 <translation id="5352250171825660495">深色主題已開啟</translation>
 <translation id="5354804064646502504">這種情況可能需要支付數據傳輸費用。
 未連線到任何裝置。</translation>

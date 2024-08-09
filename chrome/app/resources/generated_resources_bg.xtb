@@ -437,7 +437,6 @@
 <translation id="1307431692088049276">Не ме питайте отново</translation>
 <translation id="1307559529304613120">Ами сега!  Системата не успя да съхрани дългосрочното означение за достъп на това устройство до приложния програмен интерфейс (API).</translation>
 <translation id="1308548450293664112">Създадох този файл, група бутони за избор, 1 от 3</translation>
-<translation id="1308876641060960899">Когато използвате Google Обектив, до нас се изпраща екранна снимка на страницата. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Данните, които засягат персонализирането на рекламите, се изтриват</translation>
 <translation id="1311294419381837540">Предавате раздел. Можете да поставите предаването на пауза или да го спрете по всяко време.</translation>
 <translation id="131188242279372879">Изпробвайте подобрената защита, за да получите най-високото ниво на сигурност на Chrome за изтеглянията</translation>
@@ -2653,6 +2652,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2853121255651601031">Паролата е запазена</translation>
 <translation id="2855243985454069333">Изтриване на историята от всички синхронизирани устройства</translation>
 <translation id="2855812646048059450">Влизане с(ъс) <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Строг режим</translation>
 <translation id="2856776373509145513">Създаване на нов контейнер</translation>
 <translation id="2856907950922663165">Да се изключи ли шифроването на URL адресите?</translation>
 <translation id="2859741939921354763">Импортиране на пароли в <ph name="BRAND" /></translation>
@@ -3131,7 +3131,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3220943972464248773">За да се синхронизират паролите ви, потвърдете, че сте вие</translation>
 <translation id="3222066309010235055">Предварително изобразяване: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Свързване с(ъс) <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Търсене в цялото съдържание на тази страница посредством Google Обектив</translation>
 <translation id="3223109931751684474">Премахване на достъпа до ключовете ви за достъп на това устройство</translation>
 <translation id="3223531857777746191">Бутон за възстановяване на фабричните настройки</translation>
 <translation id="3225084153129302039">Стандартен виолетов аватар</translation>
@@ -6413,6 +6412,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5623282979409330487">Този сайт осъществява достъп до сензорите ви за движение.</translation>
 <translation id="5623842676595125836">Регистрационен файл</translation>
 <translation id="5624120631404540903">Управление на паролите</translation>
+<translation id="5624959475330585145">Извеждане на запитване преди използване на незащитени връзки</translation>
 <translation id="5625225435499354052">Редактиране в Google Pay</translation>
 <translation id="5626134646977739690">Име:</translation>
 <translation id="5627832140542566187">Ориентация на дисплея</translation>
@@ -9647,6 +9647,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8008356846765065031">Няма връзка с интернет. Моля, проверете връзката си.</translation>
 <translation id="8008704580256716350">Блокиран е подозрителен файл</translation>
 <translation id="8009225694047762179">Управление на паролите</translation>
+<translation id="8010081455002666927">Автоматично откриване</translation>
 <translation id="8011372169388649948">Преместихте „<ph name="BOOKMARK_TITLE" />“.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Подробности за мигновената точка за достъп</translation>
@@ -11050,6 +11051,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9009707268312089299">Импортирани от Windows</translation>
 <translation id="9009708085379296446">Искахте ли да промените тази страница?</translation>
 <translation id="9010845741772269259">Добавяне на начини на плащане</translation>
+<translation id="901087299639956505">Балансиран режим</translation>
 <translation id="9011163749350026987">Иконата да се показва винаги</translation>
 <translation id="9011262023858991985">Този раздел се предава</translation>
 <translation id="9011393886518328654">Бележки по версията</translation>

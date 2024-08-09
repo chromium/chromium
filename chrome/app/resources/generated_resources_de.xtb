@@ -437,7 +437,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1307431692088049276">Nicht mehr fragen</translation>
 <translation id="1307559529304613120">Hoppla! Das System konnte das langfristig gültige API-Zugriffstoken für das Gerät nicht speichern.</translation>
 <translation id="1308548450293664112">Ich habe diese Datei erstellt, Optionsfeldgruppe, 1 von 3</translation>
-<translation id="1308876641060960899">Wenn du Google Lens verwendest, wird ein Screenshot der Seite an Google gesendet. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Daten, die sich auf personalisierte Werbung auswirken, werden gelöscht</translation>
 <translation id="1311294419381837540">Du streamst gerade einen Tab. Du kannst den Stream jederzeit pausieren oder beenden.</translation>
 <translation id="131188242279372879">Aktiviere den erweiterten Schutz, um bei Downloads in Chrome von einem Höchstmaß an Sicherheit zu profitieren</translation>
@@ -3117,7 +3116,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3220943972464248773">Bestätige deine Identität, um deine Passwörter zu synchronisieren</translation>
 <translation id="3222066309010235055">Vorab rendern: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Mit <ph name="USB_VM_NAME" /> verbinden</translation>
-<translation id="3222857603094643834">Mit Google Lens nach beliebigen Inhalten auf dieser Seite suchen</translation>
 <translation id="3223109931751684474">Zugriff auf deine Passkeys auf diesem Gerät entfernen</translation>
 <translation id="3223531857777746191">Taste zum Zurücksetzen</translation>
 <translation id="3225084153129302039">Lila Standardavatar</translation>

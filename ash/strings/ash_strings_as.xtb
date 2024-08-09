@@ -467,7 +467,6 @@
 <translation id="2704781753052663061">অন্য ৱাই-ফাই নেটৱৰ্কসমূহত যোগদান কৰক</translation>
 <translation id="2705001408393684014">মাইক ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ওপৰলৈ</translation>
-<translation id="271033894570825754">নতুন</translation>
 <translation id="2710984741481549981">ৱিণ্ড’ লক কৰক</translation>
 <translation id="2718395828230677721">ৰাতিৰ পোহৰ</translation>
 <translation id="2726420622004325180">এটা হটস্পট প্ৰদান কৰিবলৈ আপোনাৰ ফ’নত ম’বাইল ডেটা থাকিবই লাগিব</translation>
@@ -564,6 +563,7 @@
 <translation id="3077734595579995578">Shift+</translation>
 <translation id="3081696990447829002">মেনু বিস্তাৰ কৰক</translation>
 <translation id="3087734570205094154">একেবাৰে তলি</translation>
+<translation id="3090214513075567547">প্ৰসংগ মেনু খোলক</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">নাই</translation>
 <translation id="3095995014811312755">সংস্কৰণ</translation>
@@ -1233,7 +1233,6 @@
 <translation id="5331975486040154427">USB-C ডিভাইচ (বাওঁফালৰ বেকপর্টত)</translation>
 <translation id="533282197239610265">কাষ্ট ডিভাইচসমূহ দেখুৱাওক</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (সোঁফালে)</translation>
-<translation id="5346119650615956459">GIF</translation>
 <translation id="5352250171825660495">গাঢ় ৰঙৰ থীম অন হৈ আছে</translation>
 <translation id="5354804064646502504">এইটোৱে ডেটাৰ মাচুল প্ৰযোজ্য কৰিব পাৰে।
 কোনো ডিভাইচ সংযোগ কৰা হোৱা নাই।</translation>

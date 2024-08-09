@@ -1502,6 +1502,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" />)</translation>
 <translation id="3792826587784915501">Kult va indi filmlar</translation>
 <translation id="3793574014653384240">Oxirgi ishdan chiqishlar va ularning sabablari</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> Chromening xavfsiz ulanish oʻrnatishiga toʻsqinlik qilyapti</translation>
 <translation id="3799805948399000906">Shrift talabi qilindi</translation>
 <translation id="3801265110651850478">Brauzerda kezish trafigi bilan “Kuzatilmasin” soʻrovini yuborish</translation>
 <translation id="380329542618494757">Ism</translation>
@@ -2696,6 +2697,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6106989379647458772"><ph name="PAGE" /> veb-sahifasi vaqtincha ishlamayotgan yoki yangi veb-manzilga o‘tkazilgan bo‘lishi mumkin.</translation>
 <translation id="6107012941649240045">Berilgan:</translation>
 <translation id="6107924765192360631">Yozma tavsiyalar olish uchun bir necha soʻz yozing yoki qoralama yarating.</translation>
+<translation id="6108580855199168381">Sertifikat tafsilotlari</translation>
 <translation id="6108702513636120202">Chromium asosiy qidiruv tizimi</translation>
 <translation id="6108849843016142864">Sudralib yuruvchilar va amfibiyalar</translation>
 <translation id="610911394827799129">Google hisobingiz orqali bajargan internetdagi faoliyatingizni <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> orqali ko‘rishingiz mumkin.</translation>
@@ -3466,6 +3468,12 @@ Batafsil axborot:
 <translation id="7535087603100972091">Qiymat</translation>
 <translation id="753556296624075801">Google texnologiyalarida ishlaydi</translation>
 <translation id="7537536606612762813">Majburiy</translation>
+<translation id="7541586907443866208">Firibgarlar sayt bilan almashinadigan axborotlarni koʻrishi va oʻzgartirishi mumkin.
+    &lt;ul&gt;
+    &lt;li&gt;Aeroport yoki mehmonxonadagi Wi-Fi kabi hammaga ochiq tarmoqqa ulangan boʻlsangiz, uy yoki ishxonadagi kabi ishonchli tarmoqqa ulanganda qaytadan urining.&lt;/li&gt;
+    &lt;li&gt;Sayt egasini tanisangiz, unga bu muammo haqida xabar qiling.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />Bu ogohlantirish haqida batafsil<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">Bank kartasi ma’lumotlari avtomatik to‘ldirilishi o‘chiq, chunki bu saytdagi ulanish himoyalanmagan.</translation>
 <translation id="7543525346216957623">Ota-onangizdan so‘rang</translation>
 <translation id="7546409722674205727">Boshlanishi: <ph name="APP_NAME" /></translation>

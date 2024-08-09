@@ -1507,6 +1507,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> polzades)</translation>
 <translation id="3792826587784915501">Pel·lícules de culte i independents</translation>
 <translation id="3793574014653384240">Nombre i motius dels errors que s'han produït recentment</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> impedeix que Chrome estableixi una connexió segura</translation>
 <translation id="3799805948399000906">Tipus de lletra sol·licitat</translation>
 <translation id="3801265110651850478">Envia una sol·licitud Do Not Track amb el trànsit de navegació</translation>
 <translation id="380329542618494757">Nom</translation>
@@ -2701,6 +2702,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6106989379647458772">És possible que la pàgina web <ph name="PAGE" /> estigui temporalment fora de servei o s'hagi traslladat permanentment a una adreça web nova.</translation>
 <translation id="6107012941649240045">Emès per a</translation>
 <translation id="6107924765192360631">Comença amb unes quantes paraules o amb un primer esborrany per obtenir suggeriments d'escriptura.</translation>
+<translation id="6108580855199168381">Detalls del certificat</translation>
 <translation id="6108702513636120202">El teu motor de cerca a Chromium</translation>
 <translation id="6108849843016142864">Rèptils i amfibis</translation>
 <translation id="610911394827799129">A <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> trobaràs altres maneres d'explorar l'historial de navegació del teu Compte de Google</translation>
@@ -3472,6 +3474,12 @@ Detalls addicionals:
 <translation id="7535087603100972091">Valor</translation>
 <translation id="753556296624075801">Amb la tecnologia de Google</translation>
 <translation id="7537536606612762813">Obligatòria</translation>
+<translation id="7541586907443866208">Els atacants podran veure i canviar les dades que s'enviïn entre tu i aquest lloc web.
+    &lt;ul&gt;
+    &lt;li&gt;Si estàs fent servir una xarxa pública, com ara la Wi-Fi d'un aeroport o d'un hotel, planteja't tornar-ho a provar quan tinguis connexió a una xarxa de confiança (per exemple, a casa o a la feina).&lt;/li&gt;
+    &lt;li&gt;Si coneixes el propietari del lloc web, demana-li que corregeixi el problema.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />Més informació sobre aquest advertiment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">L'emplenament automàtic de targetes de crèdit està desactivat perquè el formulari no utilitza una connexió segura.</translation>
 <translation id="7543525346216957623">Demana-ho al teu pare o a la teva mare</translation>
 <translation id="7546409722674205727">S'està iniciant <ph name="APP_NAME" /></translation>

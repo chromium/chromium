@@ -249,6 +249,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1831565490995294689">Odaberite za otvaranje aplikacije <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838011306813517425">Postavke načina rada za koncentraciju</translation>
 <translation id="1838895407229022812">Noćno je svjetlo isključeno.</translation>
+<translation id="1840920496749066704">°C</translation>
 <translation id="1854180393107901205">Zaustavi emitiranje</translation>
 <translation id="1862077610023398675">Sakrij kontrole</translation>
 <translation id="1862380676329487333">Ažuriraj i odjavi se</translation>
@@ -317,7 +318,9 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2135456203358955318">Usidreno povećalo</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2149229036084364364">Prelazak na prethodnu verziju</translation>
+<translation id="2152796271648108398">Trenutačno vrijeme</translation>
 <translation id="2152895518047545149">Izgleda da ništa ne nedostaje. Izvrsno!</translation>
+<translation id="2159568970844941445">Nema slika u Datotekama</translation>
 <translation id="2161132820593978283">Isprobajte okvir kamere da biste se prikazivali u središtu zaslona tijekom videopoziva. Uključite ga u Brzim postavkama.</translation>
 <translation id="216955976692983107">Promjena veličine prozora u pločicama povlačenjem udesno</translation>
 <translation id="2185166372312820725">Prelazak na prethodnu karticu</translation>
@@ -467,7 +470,6 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2704781753052663061">Pridružite se drugim Wi-Fi mrežama</translation>
 <translation id="2705001408393684014">Pomaknite klizač mikrofona udesno. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Gore</translation>
-<translation id="271033894570825754">Novo</translation>
 <translation id="2710984741481549981">Zaključajte prozore</translation>
 <translation id="2718395828230677721">Noćno svjetlo</translation>
 <translation id="2726420622004325180">Telefon mora imati mobilne podatke da bi osigurao žarišnu točku</translation>
@@ -615,6 +617,7 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3264031581203585083">Sakrij sve prijedloge Google diska</translation>
 <translation id="3265032511221679826">Želite li uključiti pristup točnoj lokaciji?</translation>
 <translation id="3269597722229482060">Desni klik</translation>
+<translation id="3273040715184276344">Caps Lock isključen</translation>
 <translation id="3274634049061007184">Prikaz aplikacija telefona</translation>
 <translation id="3289364673986435196">Izbornik tipke za uključivanje</translation>
 <translation id="3289544412142055976">Linux aplikacije trenutačno nisu podržane</translation>
@@ -665,6 +668,7 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3439896670700055005">Ponovno učitavanje trenutačne stranice bez upotrebe predmemoriranog sadržaja</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">Prilagodba miša</translation>
+<translation id="3444385531800624797">Rezultati se učitavaju</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C uređaj</translation>
 <translation id="3454555520521576458">Promjenjiva veličina</translation>
@@ -1089,6 +1093,7 @@ Jedan uređaj je povezan.</translation>
 <translation id="4868492592575313542">aktivirano</translation>
 <translation id="4871905435473761992">Prikažite pojedinosti žarišne točke. Vaša mobilna mreža ne podržava žarišnu točku.</translation>
 <translation id="4872237917498892622">Alt + Pretraživanje ili Shift</translation>
+<translation id="4872724534194216608">Pretraživanje radi izračuna</translation>
 <translation id="4872852897273142380">Fokusiranje ili isticanje trake oznaka (ako se prikazuje)</translation>
 <translation id="4876935764454575645">Odabir audiouređaja</translation>
 <translation id="4881323000405981760">Efekti nisu podržani na Linux aplikacijama</translation>
@@ -1202,11 +1207,13 @@ Možete upotrijebiti i tipkovni prečac. Najprije istaknite tekst, a zatim priti
 <translation id="523505283826916779">Postavke pristupačnosti</translation>
 <translation id="5238719049014159442">Otvaranje/zatvaranje pokretača</translation>
 <translation id="5240725217819182328">Brzi pristup određenim stranicama ili radnjama unutar instaliranih aplikacija</translation>
+<translation id="5243355658487390559">Pretraživanje datuma</translation>
 <translation id="5245201184978705914">Generiranje prijepisa nije uspjelo</translation>
 <translation id="5251174953851719648">Osvježavanje sadržaja</translation>
 <translation id="5253783950165989294">Povezano s uređajem <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterije</translation>
 <translation id="5258528442992323769">Nema nijedne spremljene radne površine</translation>
 <translation id="5260676007519551770">Radna površina 4</translation>
+<translation id="5265391159779542051">Rezultati su učitani</translation>
 <translation id="5270547718570958938">Google kalendar</translation>
 <translation id="5277869901083657836">Uključite/isključite alate olovke</translation>
 <translation id="5278086053818066789">Uključivanje/isključivanje ChromeVoxa (govorne povratne informacije)</translation>
@@ -1234,7 +1241,6 @@ Neke su značajke ograničene i mogu produljiti trajanje baterije.</translation>
 <translation id="5331975486040154427">USB-C uređaj (stražnji lijevi priključak)</translation>
 <translation id="533282197239610265">Prikažite uređaje za emitiranje</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (desna)</translation>
-<translation id="5346119650615956459">GIF-ovi</translation>
 <translation id="5352250171825660495">Tamna tema je uključena</translation>
 <translation id="5354804064646502504">To može uzrokovati troškove za prijenos podataka.
 Nije povezan nijedan uređaj.</translation>
@@ -1247,6 +1253,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5369717264580061086">Pregled datoteke u aplikaciji Datoteke</translation>
 <translation id="5377367976106153749">Želite li uključiti pristup kameri?</translation>
 <translation id="5379115545237091094">Previše pokušaja</translation>
+<translation id="5383434787520761436">Nema datoteka Google diska</translation>
 <translation id="5391307769715781764">Želite li zamijeniti spremljenu radnu površinu?</translation>
 <translation id="5392327145184648521">Izračun postotka baterije...</translation>
 <translation id="5393156353051693207">Dodirnite i držite bilo gdje da biste promijenili redoslijed svojih aplikacija</translation>
@@ -1502,6 +1509,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6210042900243040400">Povežite uređaj <ph name="NAME" /> koji je prethodno spremljen na e-adresu <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Izrada djelomične snimke zaslona ili snimanje zaslona</translation>
 <translation id="621606890568890214">Proširi Google učionicu</translation>
+<translation id="6216759484154215561">Otvorena veza sa savjetima u pregledniku</translation>
 <translation id="6220928844947387476">Sad možete snimiti sebe i zaslon istovremeno.</translation>
 <translation id="622484624075952240">Dolje</translation>
 <translation id="6228457605945141550">Smanjivanje svjetline</translation>
@@ -1597,6 +1605,7 @@ Novo instaliranje</translation>
 <translation id="6565007273808762236">eSIM veza nije dostupna</translation>
 <translation id="6570831796530454248">{0,plural, =1{Ažurirajte uređaj u roku od sat vremena}one{Ažurirajte uređaj u roku od # sata}few{Ažurirajte uređaj u roku od # sata}other{Ažurirajte uređaj u roku od # sati}}</translation>
 <translation id="6570902864550063460">Punjenje putem USB-a</translation>
+<translation id="6571006437522772306">Pretraži Files</translation>
 <translation id="6574587113394758819">Obavijesti aplikacije <ph name="APP_TITLE" /> skrivene su jer je uključena zaštita prikaza.</translation>
 <translation id="6574622320167699133">Otključao telefon. Dodirnite ili kliknite za ulazak.</translation>
 <translation id="6578407462441924264">Bez naziva</translation>
@@ -1634,6 +1643,7 @@ Novo instaliranje</translation>
 <translation id="6682029141988159141">Lijepljenje sadržaja iz međuspremnika</translation>
 <translation id="6683022854667115063">Slušalice</translation>
 <translation id="6686023075541098243">Postavljanje prikaza obavijesti telefona</translation>
+<translation id="6694973220096431421">Pretraži Google disk</translation>
 <translation id="6696025732084565524">Potrebno je preuzeti važno ažuriranje za vašu odvojivu tipkovnicu</translation>
 <translation id="6697913454192220372">Dodaj novu radnu površinu</translation>
 <translation id="6700713906295497288">Gumb izbornika IME-a</translation>
@@ -1679,6 +1689,7 @@ Novo instaliranje</translation>
 <translation id="6852628153543175788">Dodajte 10 minuta</translation>
 <translation id="6855029042976311970">Uređeno upravo sad</translation>
 <translation id="6856708615407876657">Promjena kategorija rezultata pretraživanja</translation>
+<translation id="6856756288284651804">Chromebook je ažuriran</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Preostala jedna brojka}one{Preostala # brojka}few{Preostale # brojke}other{Preostalo # brojki}}</translation>
 <translation id="6867938213751067702">Pauzirano je preuzimanje datoteke <ph name="FILENAME" /></translation>
@@ -1756,6 +1767,7 @@ Novo instaliranje</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144942256906679589">Status baterije</translation>
 <translation id="7145639536026937076">Baterija je na <ph name="PERCENTAGE" />% i puni se. Štednja baterije je uključena.</translation>
+<translation id="7147587499155271409">Nema povijesti pregledavanja</translation>
 <translation id="7149149900052329230">Upravljajte lokalnim datotekama i datotekama na Google disku, a sve to u aplikaciji Datoteke.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1789,6 +1801,7 @@ Novo instaliranje</translation>
 <translation id="73289266812733869">Neoznačeno</translation>
 <translation id="7330397557116570022">Idite na tekstno polje da biste upotrebljavali diktiranje</translation>
 <translation id="7331646370422660166">Alt + strelica prema dolje</translation>
+<translation id="7336943714413713812">Pretraživanje povijesti pregledavanja</translation>
 <translation id="7337660433630200387">Više od 10 min</translation>
 <translation id="7340731148882810149">Izbornik automatskih klikova</translation>
 <translation id="7346909386216857016">Dobro, shvaćam</translation>
@@ -1891,6 +1904,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7670953955701272011">Otvorite ovaj datum u Google kalendaru</translation>
 <translation id="7671610481353807627">Aplikacije su poredane po boji</translation>
 <translation id="7672095158465655885">Povezano s: <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
+<translation id="7680417644536099065">Caps Lock uključen</translation>
 <translation id="7682351277038250258">Lijepljenje sadržaja iz međuspremnika kao običnog teksta</translation>
 <translation id="7684531502177797067">Unos kamerom postavljen je na kameru <ph name="CAMERA_NAME" />.</translation>
 <translation id="7687172143976244806">Otvorili ste</translation>
@@ -2143,6 +2157,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8553395910833293175">Već je dodijeljeno svim radnim površinama.</translation>
 <translation id="8555757996376137129">Uklanjanje trenutačne radne površine</translation>
 <translation id="8559845965695780508"><ph name="USER" /> je uredio/uredila</translation>
+<translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">Evo nekoliko prijedloga koje možete isprobati</translation>
 <translation id="857201607579416096">Izbornik je premješten u donji desni kut zaslona.</translation>
 <translation id="8581946341807941670">Pritisnite <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> i kliknite vezu</translation>
@@ -2205,6 +2220,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">Pomicanje unaprijed prebacivanjem iz donjeg desnog kuta na Pokretač, adresnu traku, traku oznaka, web-lokaciju koja je otvorena i preuzimanja</translation>
 <translation id="8792626944327216835">mikrofon</translation>
+<translation id="8797381270745758905">Aktivirana je veza za ponovni pokušaj</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Mapa <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Pomoć"</translation>
@@ -2253,6 +2269,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8951539504029375108">S vašim Chromebookom kompatibilni su samo uređaji koje je odobrio Thunderbolt</translation>
 <translation id="8956420987536947088">Otvorite prethodne prozore i aplikacije</translation>
 <translation id="8959380109429710384">Pritisnuli ste tipkovni prečac za povećalo za cijeli zaslon. Upotrijebite Ctrl + Alt + strelice kako biste se kretali po povećanom prikazu.</translation>
+<translation id="896335827708646237">Otvori brze postavke pristupačnosti</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Postavljanje fokusa na ikonu izbornika</translation>
 <translation id="8980862970816311842">Premještanje ikone aplikacije u mapu na rešetki aplikacija ili iz nje</translation>
@@ -2288,6 +2305,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="9089416786594320554">Načini unosa</translation>
 <translation id="9091406374499386796">Pretražite svoje datoteke, aplikacije i drugo u Pokretaču. Možete i dobiti odgovore na pitanja o svojem uređaju <ph name="PRODUCT_NAME" />.</translation>
 <translation id="9091626656156419976">Zaslon <ph name="DISPLAY_NAME" /> uklonjen je</translation>
+<translation id="9098750710832798892">U međuspremnik nije kopirana nijedna stavka</translation>
 <translation id="9098969848082897657">Utišaj telefon</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ili <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Poništavanje zadnje radnje</translation>
@@ -2297,6 +2315,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="9139720510312328767">Brisanje sljedećeg slova</translation>
 <translation id="9148058034647219655">Izlaz</translation>
 <translation id="9151906066336345901">kraj</translation>
+<translation id="9159421884295554245">Pretraži međuspremnik</translation>
 <translation id="9161053988251441839">PREDLOŽENE APLIKACIJE</translation>
 <translation id="9168436347345867845">Učinite to kasnije</translation>
 <translation id="9178475906033259337">Prikazuje se jedan rezultat za upit <ph name="QUERY" /></translation>

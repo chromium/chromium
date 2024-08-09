@@ -437,7 +437,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1307431692088049276">Jangan tanya saya lagi</translation>
 <translation id="1307559529304613120">Op!  Sistem gagal menyimpan token akses API jangka panjang untuk peranti ini.</translation>
 <translation id="1308548450293664112">Saya membuat fail ini, kumpulan butang radio, 1 daripada 3</translation>
-<translation id="1308876641060960899">Apabila anda menggunakan Google Lens, tangkapan skrin halaman dihantar kepada Google. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Data yang mempengaruhi pemeribadian iklan dipadamkan</translation>
 <translation id="1311294419381837540">Anda menghantar tab. Anda boleh menjeda atau menghentikan penghantaran pada bila-bila masa.</translation>
 <translation id="131188242279372879">Temukan perlindungan dipertingkat untuk mendapatkan tahap keselamatan tertinggi Chrome bagi muat turun</translation>
@@ -1215,6 +1214,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="184183613002882946">Tidak, kekal dengan 1 suis</translation>
 <translation id="184273675144259287">Gantikan apl dan fail Linux anda dengan sandaran sebelumnya</translation>
 <translation id="1842766183094193446">Adakah anda pasti mahu mendayakan mod tunjuk cara?</translation>
+<translation id="1843048149176045210">Salin pautan muat turun</translation>
 <translation id="1845060436536902492">Pembaca skrin pada ChromeOS Flex, ChromeVox biasanya digunakan oleh orang buta atau rabun untuk membaca teks yang dipaparkan pada skrin dengan pensintesis ucapan atau paparan braille. Tekan bar ruang untuk menghidupkan ChromeVox. Apabila ChromeVox diaktifkan, anda akan melalui lawatan pantas.</translation>
 <translation id="1845727111305721124">Dibenarkan untuk memainkan bunyi</translation>
 <translation id="1846308012215045257">Tekan Ctrl dan klik untuk menjalankan <ph name="PLUGIN_NAME" /></translation>
@@ -3136,7 +3136,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3220943972464248773">Untuk menyegerakkan kata laluan anda, sahkan orang itu ialah anda</translation>
 <translation id="3222066309010235055">Prapaparan: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Sambungkan kepada <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Cari apa-apa item pada halaman ini dengan Google Lens</translation>
 <translation id="3223109931751684474">Alih keluar akses kepada kunci laluan anda pada peranti ini</translation>
 <translation id="3223531857777746191">Butang Tetapan Semula</translation>
 <translation id="3225084153129302039">Avatar ungu lalai</translation>
@@ -3176,6 +3175,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3251714896659475029">Benarkan <ph name="SUPERVISED_USER_NAME" /> mengakses Google Assistant dengan “Ok Google”</translation>
 <translation id="3251759466064201842">&lt;Bukan Sebahagian Daripada Sijil&gt;</translation>
 <translation id="325238099842880997">Tetapkan peraturan asas digital untuk membantu kanak-kanak bermain, meneroka sesuatu dan membuat kerja sekolah di rumah</translation>
+<translation id="3253083398453405334">Denyarkan skrin apabila anda menerima pemberitahuan</translation>
 <translation id="3253225298092156258">Tidak tersedia</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Kosongkan ruang dalam <ph name="CLOUD_PROVIDER" /> untuk menyalin fail ini}other{Kosongkan ruang dalam <ph name="CLOUD_PROVIDER" /> untuk menyalin fail ini}}</translation>
 <translation id="3253448572569133955">Akaun tidak diketahui</translation>
@@ -3672,6 +3672,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3621202678540785336">Input</translation>
 <translation id="3621807901162200696">Bantu kami memperbaik ciri dan prestasi Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{satu apl}other{# apl}}</translation>
+<translation id="3622820753353315928">Warna denyaran skrin</translation>
 <translation id="362333465072914957">Menunggu CA mengeluarkan sijil</translation>
 <translation id="3623598555687153298">Tindakan ini akan memadamkan <ph name="TOTAL_USAGE" /> daripada data yang disimpan oleh laman yang dipaparkan</translation>
 <translation id="3624567683873126087">Buka kunci peranti dan log masuk ke Google Account</translation>
@@ -7178,6 +7179,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6197128521826316819">Buat Kod QR untuk Halaman ini</translation>
 <translation id="6198223452299275399">Leret antara halaman</translation>
 <translation id="6198252989419008588">Tukar PIN</translation>
+<translation id="61988015556954366">Denyar skrin</translation>
 <translation id="6200047250927636406">Buang fail</translation>
 <translation id="6200151268994853226">Urus Sambungan</translation>
 <translation id="6201608810045805374">Alih keluar akaun ini?</translation>
@@ -7535,6 +7537,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> Fail</translation>
 <translation id="6469557521904094793">Hidupkan Rangkaian selular</translation>
 <translation id="6469702164109431067">Kata laluan dan kunci laluan</translation>
+<translation id="6470120577693311302">Pemberitahuan denyar</translation>
 <translation id="6470823736074966819">Redamkan Pemberitahuan</translation>
 <translation id="6472893788822429178">Paparkan butang Laman Utama</translation>
 <translation id="6473315466413288899">Buat satu pilihan</translation>
@@ -7967,6 +7970,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6790820461102226165">Tambah Orang...</translation>
 <translation id="6793610798874309813">PIN anda boleh terdiri daripada sekurang-kurangnya 4 aksara</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> disalin kepada papan keratan</translation>
 <translation id="6794511157503068">Jika kunci laluan anda untuk <ph name="APP_NAME" /> berada pada kunci keselamatan USB, masukkan dan sentuh kunci tersebut sekarang</translation>
 <translation id="679486139907144816">Untuk log masuk ke laman ini dengan kunci laluan, anda perlu menghidupkan Windows Hello dalam tetapan. Kemudian kembali kepada laman ini dan cuba lagi.</translation>
 <translation id="6795371939514004514">Autoimbas membolehkan anda bergerak melalui item pada skrin secara automatik. Apabila item diserlahkan, tekan “Pilih” untuk mengaktifkan item tersebut.</translation>

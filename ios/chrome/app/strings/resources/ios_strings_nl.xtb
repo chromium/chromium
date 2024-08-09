@@ -408,6 +408,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="2975121486251958312">Alleen de incognitomodus is beschikbaar</translation>
 <translation id="2982481275546140226">Gegevens wissen</translation>
 <translation id="298306318844797842">Betaalmethode toevoegen…</translation>
+<translation id="2984370252102312100">Tabbladen en tabbladgroepen openen</translation>
 <translation id="2989805286512600854">Openen op nieuw tabblad</translation>
 <translation id="300455800299409273">'Doorgaan met dit tabblad' verbergen</translation>
 <translation id="3010025794097054078">Laat je beschermen tegen onder andere gegevenslekken en onveilige websites.</translation>
@@ -896,6 +897,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5415289094036440596">Toegangssleutels kunnen niet worden gedeeld</translation>
 <translation id="5416022985862681400">Afgelopen 7 dagen</translation>
 <translation id="5416455648658732408">Verplaatsen naar tabbladgroep</translation>
+<translation id="5419613306346207284">Tabbladgroepen van alle apparaten</translation>
 <translation id="5423269318075950257">Prijs volgen</translation>
 <translation id="5431252637281434233">Je wordt uitgelogd</translation>
 <translation id="543338862236136125">Wachtwoord bewerken</translation>
@@ -1058,6 +1060,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6188737759358894319">Gemaakt op <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ongelezen</translation>
 <translation id="6196207969502475924">Gesproken zoekopdrachten</translation>
+<translation id="6198252989419008588">Pincode wijzigen</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} tabblad sluiten}other{{COUNT} tabbladen sluiten}}</translation>
 <translation id="6210079381482819663">Tabbladen die <ph name="THRESHOLD" /> dagen of langer niet zijn gebruikt, worden hier naartoe verplaatst. Je kunt dit altijd wijzigen in de <ph name="BEGIN_LINK" />instellingen<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Geen adressen gevonden</translation>

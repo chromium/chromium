@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">Để vô hiệu hoá Chế độ khoá trong Chromium, hãy tắt chế độ này trên iPhone.</translation>
 <translation id="159029779861043703">Chromium bảo vệ dữ liệu nhạy cảm của bạn bằng Face ID.</translation>
 <translation id="1591119736686995611">Mở lưới thẻ trong Chromium.</translation>
+<translation id="16001233025397167">Tính năng Kiểm tra an toàn sẽ bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web nguy hiểm và những vấn đề khác. Nhận cảnh báo về mọi vấn đề liên quan đến quyền riêng tư hoặc bảo mật mà Chromium phát hiện ra.</translation>
 <translation id="1611584326765829247">Cho phép Chromium giúp bạn theo dõi các gói hàng của mình</translation>
 <translation id="1617663976202781617">Dữ liệu từ tính năng đồng bộ hóa của Chromium</translation>
 <translation id="1647558790457890304">Cài đặt Chromium</translation>
@@ -56,6 +57,7 @@
 <translation id="2426113998523353159">Tổ chức của bạn yêu cầu bạn đăng nhập để dùng Chromium.</translation>
 <translation id="2450140762465183767">Giờ đây, bạn có thể dùng Chromium mỗi khi nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="2478931088402984578">Chọn <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2497941343438581585">Khai thác sức mạnh của tính năng Mua sắm trên Chromium</translation>
 <translation id="252374538254180121">Đặt Chromium làm trình duyệt mặc định</translation>
 <translation id="2574528844022712255">Xem Dấu trang trên Chromium</translation>
 <translation id="2590893390871230428">Đồng bộ hóa dữ liệu của bạn trên Chromium</translation>
@@ -103,6 +105,7 @@
 <translation id="3855938650519180865">Tính năng mới trong Chromium</translation>
 <translation id="3886689467633467988">Đăng nhập vào trang web này và Chromium để sử dụng dấu trang và các nội dung khác trên tất cả thiết bị của bạn.</translation>
 <translation id="3904484643286601695">Bạn có thể cập nhật lựa chọn của mình bất cứ lúc nào trong phần Cài đặt Chromium.</translation>
+<translation id="3983291422281996849">Đặt Chromium làm trình duyệt mặc định để dễ dàng theo dõi giá và nhận thông tin chi tiết về giá của những mặt hàng bạn muốn mua.</translation>
 <translation id="4005283307739974863">Mở và chạy quy trình Kiểm tra an toàn trên Chromium.</translation>
 <translation id="4043291146360695975">Chỉ lưu mật khẩu vào Trình quản lý mật khẩu trên thiết bị này.</translation>
 <translation id="4099085513035183040">Chưa hỗ trợ trên Chromium phiên bản thử nghiệm</translation>
@@ -133,6 +136,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="4736424910885271643">Tài khoản của bạn do <ph name="HOSTED_DOMAIN" /> quản lý nên dữ liệu của bạn trên Chromium sẽ bị xóa khỏi thiết bị này</translation>
 <translation id="4790638144988730920">Tiếp tục sử dụng dữ liệu Chromium trong Tài khoản Google của bạn.</translation>
 <translation id="4828317641996116749">Chromium không thể kiểm tra một số mật khẩu. Hãy thử lại sau.</translation>
+<translation id="4904452304169763785">Cảnh báo về mọi vấn đề liên quan đến quyền riêng tư hoặc bảo mật mà Chromium phát hiện ra.</translation>
 <translation id="4962295957157529683">Hoàn thành những việc bạn đang làm trong cửa sổ Chromium đang mở khác.</translation>
 <translation id="4985291216379576555">Không có kết nối mạng, Chromium không thể kiểm tra xem có bản cập nhật mới nào không</translation>
 <translation id="4996471330284142407">Với phiên bản Chromium đơn giản, an toàn và nhanh nhất từ trước đến nay, bạn sẽ làm được nhiều việc hơn.</translation>
@@ -176,6 +180,7 @@ Những yếu tố cần xem xét:
   • Nếu Chromium gặp sự cố, thông tin chi tiết về sự cố có thể sẽ bao gồm một số thông tin cá nhân.
 
   • Nếu bạn đồng bộ hoá nhật ký với Tài khoản Google, các chỉ số cũng có thể bao gồm thông tin về các URL bạn truy cập.<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">Nhận cảnh báo về mọi vấn đề liên quan đến quyền riêng tư hoặc bảo mật mà Chromium tự động phát hiện ra.</translation>
 <translation id="5945387852661427312">Bạn đang đăng nhập bằng tài khoản do <ph name="DOMAIN" /> quản lý và cấp cho quản trị viên quyền kiểm soát dữ liệu Chromium của bạn. Dữ liệu của bạn sẽ được liên kết vĩnh viễn với tài khoản này. Đăng xuất khỏi Chromium sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu đó sẽ vẫn được lưu trữ trong Tài khoản Google.</translation>
 <translation id="5951593919357934226">Khai thác tối đa Chromium.</translation>
 <translation id="5983312940147103417">Cải thiện Chromium</translation>

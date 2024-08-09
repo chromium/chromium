@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">стрілка вниз</translation>
 <translation id="4425149324548788773">Мій диск</translation>
 <translation id="4428374560396076622">Мережу <ph name="NETWORK_NAME" /> вимкнено</translation>
+<translation id="4428840632568803690">Мовець <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Термін дії квитка Kerberos незабаром минає</translation>
 <translation id="4431821876790500265">Переглянути звіт</translation>
 <translation id="4443192710976771874">червоному</translation>
@@ -1298,6 +1299,7 @@
 <translation id="7802764839223122985">Клавіша відсутня. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Ні, дякую</translation>
 <translation id="7805768142964895445">Статус</translation>
+<translation id="7811024689617730980">Виберіть день автоматичного скидання даних у діапазоні від 1 до 31 включно</translation>
 <translation id="7813073042185856802">гора</translation>
 <translation id="7819857487979277519">PSK (WPA або RSN)</translation>
 <translation id="7824219488248240180">постімпресіонізм</translation>

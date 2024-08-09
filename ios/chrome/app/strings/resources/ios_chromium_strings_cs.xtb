@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">Pokud chcete v prohlížeči Chromium deaktivovat režim blokování, vypněte ho na svém iPhonu.</translation>
 <translation id="159029779861043703">Chromium chrání vaše citlivá data pomocí Face ID.</translation>
 <translation id="1591119736686995611">Otevře mřížku karet prohlížeče Chromium.</translation>
+<translation id="16001233025397167">Bezpečnostní kontrola vás chrání před úniky dat, nebezpečnými weby a dalšími hrozbami. Nechte si zasílat upozornění na problémy s ochranou soukromí nebo zabezpečením, které u vás Chromium zjistí.</translation>
 <translation id="1611584326765829247">Nechte prohlížeč Chromium pomáhat vám se sledováním zásilek</translation>
 <translation id="1617663976202781617">Data ze synchronizace prohlížeče Chromium</translation>
 <translation id="1647558790457890304">Nastavení prohlížeče Chromium</translation>
@@ -55,6 +56,7 @@
 <translation id="2426113998523353159">Vaše organizace vyžaduje, abyste se k používání prohlížeče Chromium přihlásili.</translation>
 <translation id="2450140762465183767">Nyní můžete Chromium použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích.</translation>
 <translation id="2478931088402984578">Vyberte <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2497941343438581585">Získejte nákupní funkce prohlížeče Chromium</translation>
 <translation id="252374538254180121">Nastavit Chromium jako výchozí prohlížeč</translation>
 <translation id="2574528844022712255">Zobrazit Záložky prohlížeče Chromium</translation>
 <translation id="2590893390871230428">Synchronizovat data prohlížeče Chromium</translation>
@@ -102,6 +104,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="3855938650519180865">Novinky v prohlížeči Chromium</translation>
 <translation id="3886689467633467988">Když se na tento web a do prohlížeče Chromium přihlásíte, budete mít své záložky a další položky k dispozici na všech svých zařízeních.</translation>
 <translation id="3904484643286601695">Svůj výběr můžete v nastavení prohlížeče Chromium kdykoli aktualizovat.</translation>
+<translation id="3983291422281996849">Nastavte si Chromium jako výchozí prohlížeč, abyste mohli snadno sledovat ceny a získávat informace o cenách věcí, které chcete koupit.</translation>
 <translation id="4005283307739974863">Otevře a spustí bezpečnostní kontrolu v prohlížeči Chromium.</translation>
 <translation id="4043291146360695975">Hesla se ukládají pouze do Správce hesel na tomto zařízení.</translation>
 <translation id="4099085513035183040">V beta verzi prohlížeče Chromium není podporováno</translation>
@@ -132,6 +135,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="4736424910885271643">Váš účet spravuje doména <ph name="HOSTED_DOMAIN" />, proto budou data prohlížeče Chromium z tohoto zařízení vymazána</translation>
 <translation id="4790638144988730920">Pokračujte v používání dat prohlížeče Chromium ve svém účtu Google.</translation>
 <translation id="4828317641996116749">Chromiu se nepodařilo zkontrolovat všechna hesla. Zkuste to později.</translation>
+<translation id="4904452304169763785">Upozornění na problémy s ochranou soukromí nebo zabezpečením, které u vás Chromium zjistí.</translation>
 <translation id="4962295957157529683">Dokončete akci, kterou jste prováděli v jiném otevřeném okně prohlížeče Chromium.</translation>
 <translation id="4985291216379576555">Chrome nemůže vyhledat dostupné aktualizace, protože jste offline</translation>
 <translation id="4996471330284142407">S prohlížečem Chromium toho stihnete víc – je jednoduchý, bezpečný a rychlejší než kdy dřív.</translation>
@@ -175,6 +179,7 @@ Co je třeba zvážit:
   • Pokud Chromium spadne, podrobnosti o selhání mohou zahrnovat některé osobní údaje.
 
   • Pokud svou historii synchronizujete do účtu Google, mohou metriky zahrnovat také navštívené adresy URL.<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">Nechte si zasílat upozornění na jakékoli problémy s ochranou soukromí nebo zabezpečením, které u vás Chromium automaticky zjistí.</translation>
 <translation id="5945387852661427312">Přihlašujete se pomocí účtu spravovaného doménou <ph name="DOMAIN" /> a poskytujete jeho správci kontrolu nad svými daty prohlížeče Chromium. Vaše data budou trvale přidružena k tomuto účtu. Odhlášením z prohlížeče Chromium svá data smažete z tohoto zařízení, ve vašem účtu Google však uložena zůstanou.</translation>
 <translation id="5951593919357934226">Využijte Chromium na maximum.</translation>
 <translation id="5983312940147103417">Pomozte s vylepšováním prohlížeče Chromium</translation>

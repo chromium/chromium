@@ -437,7 +437,6 @@
 <translation id="1307431692088049276">ຢ່າຖາມຂ້ອຍອີກ</translation>
 <translation id="1307559529304613120">ອຸ້ຍ!  ລະບົບເກັບຮັກສາເຄື່ອງໝາຍການເຂົ້າ​ຫາ API ໄລຍະຍາວສໍາລັບອຸປະກອນນີ້ບໍ່ໄດ້.</translation>
 <translation id="1308548450293664112">ຂ້ອຍສ້າງໄຟລ໌ນີ້, ກຸ່ມປຸ່ມຕົວເລືອກ, 1 ຈາກ 3</translation>
-<translation id="1308876641060960899">ເມື່ອທ່ານໃຊ້ Google Lens, ລະບົບຈະສົ່ງຮູບໜ້າຈໍຂອງໜ້າເວັບໄປໃຫ້ Google. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">ລະບົບຈະລຶບຂໍ້ມູນທີ່ມີຜົນຕໍ່ການປັບແຕ່ງໂຄສະນາເປັນແບບສ່ວນຕົວ</translation>
 <translation id="1311294419381837540">ທ່ານກຳລັງສົ່ງສັນຍານແຖບ. ທ່ານສາມາດຢຸດຊົ່ວຄາວ ຫຼື ຢຸດການສົ່ງສັນຍານຕອນໃດກໍໄດ້.</translation>
 <translation id="131188242279372879">ຄົ້ນພົບການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນເພື່ອຮັບການຮັກສາຄວາມປອດໄພລະດັບສູງສຸດສຳລັບການດາວໂຫຼດຂອງ Chrome</translation>
@@ -1213,6 +1212,7 @@
 <translation id="184183613002882946">ບໍ່, ໃຊ້ 1 ສະວິດຕໍ່ໄປ</translation>
 <translation id="184273675144259287">ປ່ຽນແທນແອັບ ແລະ ໄຟລ໌ Linux ຂອງທ່ານດ້ວຍຂໍ້ມູນທີ່ສຳຮອງໄວ້ກ່ອນນີ້</translation>
 <translation id="1842766183094193446">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການເປີດນຳໃຊ້ໂໝດສາທິດ?</translation>
+<translation id="1843048149176045210">ສຳເນົາລິ້ງດາວໂຫຼດ</translation>
 <translation id="1845060436536902492">ໂປຣແກຣມອ່ານໜ້າຈໍຢູ່ ChromeOS Flex, ChromeVox, ແມ່ນໃຊ້ໂດຍຜູ້ພິການທາງສາຍຕາ ຫຼື ມີບັນຫາໃນການເບິ່ງເຫັນເປັນຫຼັກເພື່ອອ່ານຂໍ້ຄວາມທີ່ສະແດງຢູ່ໜ້າຈໍດ້ວຍຕົວສັງເຄາະສຽງເວົ້າ ຫຼື ຈໍສະແດງຜົນຕົວອັກສອນນູນ. ກົດປຸ່ມຍະຫວ່າງເພື່ອເປີດ ChromeVox. ເມື່ອເປີດການນຳໃຊ້ ChromeVox, ລະບົບຈະແນະນຳການນຳໃຊ້ແບບສັ້ນໆໃຫ້ກັບທ່ານ.</translation>
 <translation id="1845727111305721124">ໄດ້ຮັບອະນຸຍາດໃຫ້ຫຼິ້ນສຽງ</translation>
 <translation id="1846308012215045257">ກົດ Control ແລ້ວຄລິກເພື່ອເປີດໃຊ້ <ph name="PLUGIN_NAME" />.</translation>
@@ -3135,7 +3135,6 @@
 <translation id="3220943972464248773">ເພື່ອຊິ້ງຂໍ້ມູນລະຫັດຜ່ານຂອງທ່ານ, ໃຫ້ຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້</translation>
 <translation id="3222066309010235055">ກ່ອນໃຫ້: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">ເຊື່ອມຕໍ່ກັບ <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">ຊອກຫາຫຍັງກໍໄດ້ໃນໜ້ານີ້ດ້ວຍ Google Lens</translation>
 <translation id="3223109931751684474">ລຶບສິດເຂົ້າເຖິງກະແຈຜ່ານຂອງທ່ານຢູ່ອຸປະກອນນີ້</translation>
 <translation id="3223531857777746191">ປຸ່ມຣີເຊັດ</translation>
 <translation id="3225084153129302039">ຮູບແທນຕົວສີມ່ວງຕາມຄ່າເລີ່ມຕົ້ນ</translation>
@@ -3175,6 +3174,7 @@
 <translation id="3251714896659475029">ໃຫ້ <ph name="SUPERVISED_USER_NAME" /> ເຂົ້າເຖິງຜູ້ຊ່ວຍ Google ດ້ວຍຄຳສັ່ງ “Ok Google”</translation>
 <translation id="3251759466064201842">&lt;ບໍ່ແມ່ນສ່ວນຂອງໃບຢັ້ງຢືນ&gt;</translation>
 <translation id="325238099842880997">ຕັ້ງຄ່າກົດລະບຽບພື້ນຖານສຳລັບການໃຊ້ດິຈິຕອນເພື່ອຊ່ວຍເດັກນ້ອຍຫຼິ້ນ, ສຳຫຼວດ ແລະ ເຮັດວຽກບ້ານຢູ່ເຮືອນ</translation>
+<translation id="3253083398453405334">ກະພິບໜ້າຈໍເມື່ອທ່ານໄດ້ຮັບການແຈ້ງເຕືອນ</translation>
 <translation id="3253225298092156258">ບໍ່ມີຂໍ້ມູນ</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{ເພີ່ມພື້ນທີ່ຫວ່າງໃນ <ph name="CLOUD_PROVIDER" /> ເພື່ອສຳເນົາໄຟລ໌ນີ້}other{ເພີ່ມພື້ນທີ່ຫວ່າງໃນ <ph name="CLOUD_PROVIDER" /> ເພື່ອສຳເນົາໄຟລ໌ເຫຼົ່ານີ້}}</translation>
 <translation id="3253448572569133955">ບັນຊີທີ່ບໍ່ຮູ້ຈັກ</translation>
@@ -3671,6 +3671,7 @@
 <translation id="3621202678540785336">ການປ້ອນເຂົ້າ</translation>
 <translation id="3621807901162200696">ຊ່ວຍປັບປຸງຄຸນສົມບັດ ແລະ ປະສິດທິພາບຂອງ ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{ແອັບ}other{# ແອັບ}}</translation>
+<translation id="3622820753353315928">ສີຂອງການກະພິບໜ້າຈໍ</translation>
 <translation id="362333465072914957">ກຳລັງລໍຖ້າໃຫ້ CA ອອກໃບຮັບຮອງ</translation>
 <translation id="3623598555687153298">ຄຳສັ່ງນີ້ຈະລຶບຂໍ້ມູນ <ph name="TOTAL_USAGE" /> ທີ່ຈັດເກັບໄວ້ໂດຍເວັບໄຊທີ່ສະແດງ</translation>
 <translation id="3624567683873126087">ປົດລັອກອຸປະກອນ ແລະ ເຂົ້າສູ່ລະບົບບັນຊີ Google</translation>
@@ -7176,6 +7177,7 @@
 <translation id="6197128521826316819">ສ້າງລະຫັດ QR ສຳລັບໜ້ານີ້</translation>
 <translation id="6198223452299275399">ປັດລະຫວ່າງໜ້າ</translation>
 <translation id="6198252989419008588">ປ່ຽນ PIN</translation>
+<translation id="61988015556954366">ກະພິບໜ້າຈໍ</translation>
 <translation id="6200047250927636406">ຍົກເລີກໄຟລ໌</translation>
 <translation id="6200151268994853226">ຈັດການສ່ວນຂະຫຍາຍ</translation>
 <translation id="6201608810045805374">ລຶບບັນຊີນີ້ອອກບໍ?</translation>
@@ -7533,6 +7535,7 @@
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ໄຟລ໌</translation>
 <translation id="6469557521904094793">ເປີດເຄືອຂ່າຍມືຖື</translation>
 <translation id="6469702164109431067">ລະຫັດຜ່ານ ແລະ ກະແຈຜ່ານ</translation>
+<translation id="6470120577693311302">ການແຈ້ງເຕືອນດ້ວຍແຟລດ</translation>
 <translation id="6470823736074966819">ປິດສຽງການແຈ້ງເຕືອນ</translation>
 <translation id="6472893788822429178">ສະແດງປຸ່ມໜ້າ​ຫຼັກ</translation>
 <translation id="6473315466413288899">ເລືອກຕົວເລືອກ</translation>
@@ -7965,6 +7968,7 @@
 <translation id="6790820461102226165">ເພີ່ມບຸກຄົນ...</translation>
 <translation id="6793610798874309813">PIN ຂອງທ່ານສາມາດມີໄດ້ 4 ຕົວອັກສອນຂຶ້ນໄປ</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395">ສຳເນົາ <ph name="DOWNLOAD_URL" /> ໃສ່ຄລິບບອດແລ້ວ</translation>
 <translation id="6794511157503068">ຫາກກະແຈຜ່ານຂອງທ່ານສຳລັບ <ph name="APP_NAME" /> ຢູ່ໃນກະແຈຄວາມປອດໄພ USB, ໃຫ້ສຽບ ແລະ ສຳຜັດຕອນນີ້ເລີຍ</translation>
 <translation id="679486139907144816">ເພື່ອເຂົ້າສູ່ລະບົບເວັບໄຊນີ້ດ້ວຍກະແຈຜ່ານ, ທ່ານຈໍາເປັນຕ້ອງເປີດ Windows Hello ໃນການຕັ້ງຄ່າ. ຈາກນັ້ນກັບຄືນມາຫາເວັບໄຊນີ້ແລ້ວລອງໃໝ່.</translation>
 <translation id="6795371939514004514">ການສະແກນອັດຕະໂນມັດຈະເຮັດໃຫ້ທ່ານສາມາດເລື່ອນຜ່ານລາຍການຢູ່ໜ້າຈໍໄດ້ໂດຍອັດຕະໂນມັດ. ເມື່ອໄຮໄລ້ລາຍການໃດໜຶ່ງແລ້ວ, ໃຫ້ກົດ “ເລືອກ” ເພື່ອເປີດນຳໃຊ້ມັນ.</translation>

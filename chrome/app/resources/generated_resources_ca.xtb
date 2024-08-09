@@ -437,7 +437,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1307431692088049276">No m'ho tornis a preguntar</translation>
 <translation id="1307559529304613120">El sistema no ha pogut emmagatzemar un testimoni d'accés a l'API de llarg termini per a aquest dispositiu.</translation>
 <translation id="1308548450293664112">He creat aquest fitxer, grup de botons d'opció, 1 de 3</translation>
-<translation id="1308876641060960899">Quan utilitzes Google Lens, s'envia a Google una captura de pantalla de la pàgina. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Se suprimiran les dades que afecten la personalització d'anuncis</translation>
 <translation id="1311294419381837540">Estàs emetent una pestanya. Pots posar en pausa l'emissió o aturar-la en qualsevol moment.</translation>
 <translation id="131188242279372879">Descobreix la protecció millorada per obtenir el màxim nivell de seguretat de Chrome per a les baixades</translation>
@@ -2644,6 +2643,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2853121255651601031">S'ha desat la contrasenya</translation>
 <translation id="2855243985454069333">Suprimeix l'historial de tots els dispositius sincronitzats</translation>
 <translation id="2855812646048059450">Inicia la sessió amb <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Mode estricte</translation>
 <translation id="2856776373509145513">Crea un contenidor nou</translation>
 <translation id="2856907950922663165">Vols desactivar l'encriptació d'URL?</translation>
 <translation id="2859741939921354763">Importa les contrasenyes a <ph name="BRAND" /></translation>
@@ -3120,7 +3120,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3220943972464248773">Per sincronitzar les contrasenyes, verifica la teva identitat</translation>
 <translation id="3222066309010235055">Renderitzador previ: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Connecta a <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Cerca qualsevol cosa en aquesta pàgina amb Google Lens</translation>
 <translation id="3223109931751684474">Suprimeix l'accés a les teves claus d'accés en aquest dispositiu</translation>
 <translation id="3223531857777746191">Botó Restableix</translation>
 <translation id="3225084153129302039">Avatar morat predeterminat</translation>
@@ -6397,6 +6396,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5623282979409330487">Aquest lloc web està accedint als sensors de moviment.</translation>
 <translation id="5623842676595125836">Registre</translation>
 <translation id="5624120631404540903">Gestiona les contrasenyes</translation>
+<translation id="5624959475330585145">Pregunta abans d'utilitzar connexions no segures</translation>
 <translation id="5625225435499354052">Edita a Google Pay</translation>
 <translation id="5626134646977739690">Nom:</translation>
 <translation id="5627832140542566187">Orientació de la pantalla</translation>
@@ -9630,6 +9630,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8008356846765065031">S'ha desconnectat Internet. Comproveu la connexió.</translation>
 <translation id="8008704580256716350">S'ha bloquejat un fitxer sospitós</translation>
 <translation id="8009225694047762179">Gestiona les contrasenyes</translation>
+<translation id="8010081455002666927">Detecta automàticament</translation>
 <translation id="8011372169388649948">S'han mogut <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="8012188750847319132">bloq maj</translation>
 <translation id="8012463809859447963">Detalls del punt d'accés instantani</translation>
@@ -11034,6 +11035,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="9009707268312089299">Importats de Windows</translation>
 <translation id="9009708085379296446">Volies canviar aquesta pàgina?</translation>
 <translation id="9010845741772269259">Afegeix formes de pagament</translation>
+<translation id="901087299639956505">Mode equilibrat</translation>
 <translation id="9011163749350026987">Mostra sempre la icona</translation>
 <translation id="9011262023858991985">S'està emetent aquesta pestanya</translation>
 <translation id="9011393886518328654">Notes de la versió</translation>

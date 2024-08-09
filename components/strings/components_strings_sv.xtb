@@ -1507,6 +1507,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> tum)</translation>
 <translation id="3792826587784915501">Kult- och indiefilm</translation>
 <translation id="3793574014653384240">Antal och orsaker till krascher som har skett nyligen</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> förhindrar Chrome från att upprätta en säker anslutning</translation>
 <translation id="3799805948399000906">Teckensnitt begärt</translation>
 <translation id="3801265110651850478">Skicka en Do Not Track-begäran med webbtrafiken</translation>
 <translation id="380329542618494757">Namn</translation>
@@ -2701,6 +2702,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6106989379647458772">Webbsidan på <ph name="PAGE" /> kan vara nere tillfälligt eller ha flyttats permanent till en ny webbadress.</translation>
 <translation id="6107012941649240045">Utfärdat till</translation>
 <translation id="6107924765192360631">Börja med några ord eller ett första utkast för att få skrivförslag.</translation>
+<translation id="6108580855199168381">Certifikatinformation</translation>
 <translation id="6108702513636120202">Din sökmotor i Chromium</translation>
 <translation id="6108849843016142864">Reptiler och amfibier</translation>
 <translation id="610911394827799129">Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
@@ -3472,6 +3474,14 @@ Mer information.
 <translation id="7535087603100972091">Värde</translation>
 <translation id="753556296624075801">Tillhandahålls av Google</translation>
 <translation id="7537536606612762813">Obligatorisk</translation>
+<translation id="7541586907443866208">Angripare kan se och ändra all data som skickas mellan dig och webbplatsen.
+    &lt;ul&gt;
+
+    &lt;li&gt;Om du för närvarande är ansluten till ett offentligt nätverk, till exempel wifi på en flygplats eller ett hotell, kan du försöka igen när du är ansluten till ett betrott nätverk (t.ex. hemma eller på jobbet).&lt;/li&gt;
+    &lt;li&gt;Om du känner webbplatsägaren ber du hen att åtgärda detta.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer om den här varningen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">Automatisk ifyllning av kreditkort har inaktiverats eftersom formulärets anslutning inte är säker.</translation>
 <translation id="7543525346216957623">Fråga en förälder</translation>
 <translation id="7546409722674205727">Startar <ph name="APP_NAME" /></translation>

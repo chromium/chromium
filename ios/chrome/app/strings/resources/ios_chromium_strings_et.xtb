@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">Chromiumis lukustamisrežiimi keelamiseks lülitage see iPhone'is välja.</translation>
 <translation id="159029779861043703">Chromium kaitseb teie delikaatseid isikuandmeid näotuvastuse abil.</translation>
 <translation id="1591119736686995611">Avab Chromiumi vahelehtede ruudustiku.</translation>
+<translation id="16001233025397167">Ohutuskontroll kaitseb teid andmetega seotud rikkumiste, ebaturvaliste veebisaitide ja muu eest. Saate hoiatusi mis tahes privaatsus- ja turvaprobleemide kohta, mille Chromium teie eest tuvastab.</translation>
 <translation id="1611584326765829247">Lubage Chromiumil aidata teil pakke jälgida</translation>
 <translation id="1617663976202781617">Chromiumi andmete sünkroonimine</translation>
 <translation id="1647558790457890304">Chromiumi seaded</translation>
@@ -56,6 +57,7 @@
 <translation id="2426113998523353159">Teie organisatsioon nõuab, et logiksite Chromiumi kasutamiseks sisse.</translation>
 <translation id="2450140762465183767">Nüüd saate kasutada Chromiumi iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="2478931088402984578">Valige <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2497941343438581585">Kasutage Chromiumi pakutavaid ostuvõimalusi</translation>
 <translation id="252374538254180121">Chromiumi määramine vaikebrauseriks</translation>
 <translation id="2574528844022712255">Kuva Chromiumi järjehoidjad</translation>
 <translation id="2590893390871230428">Chromiumi andmete sünkroonimine</translation>
@@ -103,6 +105,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chromiu
 <translation id="3855938650519180865">Mis on Chromiumis uut?</translation>
 <translation id="3886689467633467988">Logige sisse sellele saidile ja Chromiumi, et teie järjehoidjad ja muu sisu oleksid saadaval kõigis seadmetes.</translation>
 <translation id="3904484643286601695">Chromiumi seadetes saate igal ajal oma valikuid värskendada.</translation>
+<translation id="3983291422281996849">Määrake Chromium oma vaikebrauseriks, et hõlpsasti jälgida hindu ja saada hinnastatistikat toodete kohta, mida soovite osta.</translation>
 <translation id="4005283307739974863">Avab ja käitab Chromiumi ohutuskontrolli.</translation>
 <translation id="4043291146360695975">Paroolid salvestatakse rakendusse Paroolihaldur ainult selles seadmes.</translation>
 <translation id="4099085513035183040">Ei toetata Chromiumi beetaversioonis</translation>
@@ -133,6 +136,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi an
 <translation id="4736424910885271643">Teie kontot haldab <ph name="HOSTED_DOMAIN" />, seega kustutatakse teie Chromiumi andmed sellest seadmest</translation>
 <translation id="4790638144988730920">Jätkake Google’i kontol Chromiumi andmete kasutamist.</translation>
 <translation id="4828317641996116749">Chromiumil ei õnnestunud kõiki paroole kontrollida. Proovige hiljem uuesti.</translation>
+<translation id="4904452304169763785">Hoiatab privaatsus- või turvaprobleemidest, mille Chromium teie eest tuvastab.</translation>
 <translation id="4962295957157529683">Lõpetage teises avatud Chromiumi aknas pooleliolev toiming.</translation>
 <translation id="4985291216379576555">Võrguühenduseta, Chromium ei saa värskendusi otsida</translation>
 <translation id="4996471330284142407">Chromium on nüüd lihtsam, turvalisem ja kiirem kui kunagi varem ning aitab teil veelgi rohkem toiminguid teha.</translation>
@@ -176,6 +180,7 @@ Tasub teada
   • Kui Chromium jookseb kokku, võivad kokkujooksmise üksikasjad sisaldada isiklikku teavet.
 
   • Kui sünkroonite oma ajaloo Google’i kontoga, võivad mõõdikud sisaldada teavet ka teie külastatavate URL-ide kohta.<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">Saate hoiatusi mis tahes privaatsus- ja turvaprobleemide kohta, mille Chromium automaatselt teie eest tuvastab.</translation>
 <translation id="5945387852661427312">Logite sisse kontoga, mida haldab <ph name="DOMAIN" />, ja annate selle administraatorile üle Chromiumi andmete juhtimise. Teie andmed seotakse jäädavalt selle kontoga. Chromiumist väljalogimisel kustutatakse teie andmed sellest seadmest, kuid need jäävad alles teie Google'i kontole.</translation>
 <translation id="5951593919357934226">Kasutage Chromiumi parimal moel.</translation>
 <translation id="5983312940147103417">Chromiumi täiustamine</translation>

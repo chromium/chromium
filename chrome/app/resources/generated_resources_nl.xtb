@@ -437,7 +437,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1307431692088049276">Niet opnieuw vragen</translation>
 <translation id="1307559529304613120">Het opslaan van de langdurige API-toegangstoken voor dit apparaat is mislukt.</translation>
 <translation id="1308548450293664112">Ik heb dit bestand gemaakt, groep met keuzerondjes, 1 van 3</translation>
-<translation id="1308876641060960899">Als je Google Lens gebruikt, wordt een screenshot van de pagina naar Google gestuurd. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Gegevens die van invloed zijn op advertentiepersonalisatie, worden verwijderd</translation>
 <translation id="1311294419381837540">Je cast een tabblad. Je kunt het casten op elk moment onderbreken of stoppen.</translation>
 <translation id="131188242279372879">Ontdek Geoptimaliseerde beveiliging voor het hoogste beveiligingsniveau van Chrome voor downloads</translation>
@@ -1206,6 +1205,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="184183613002882946">Nee, 1 schakelaar gebruiken</translation>
 <translation id="184273675144259287">Je Linux-apps en -bestanden vervangen door een eerdere back-up</translation>
 <translation id="1842766183094193446">Weet je zeker dat je de demomodus wilt aanzetten?</translation>
+<translation id="1843048149176045210">Downloadlink kopiëren</translation>
 <translation id="1845060436536902492">ChromeVox, de schermlezer op ChromeOS Flex, wordt voornamelijk gebruikt door blinden en slechtzienden om tekst op het scherm te lezen met een spraaksynthesizer of brailleleesregel. Druk op de spatiebalk om ChromeVox aan te zetten. Zodra ChromeVox is geactiveerd, krijg je een korte rondleiding.</translation>
 <translation id="1845727111305721124">Toestemming om geluid af te spelen</translation>
 <translation id="1846308012215045257">Ctrl-klik om <ph name="PLUGIN_NAME" /> uit te voeren</translation>
@@ -3121,7 +3121,6 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="3220943972464248773">Bevestig dat jij het bent als je je wachtwoorden wilt synchroniseren</translation>
 <translation id="3222066309010235055">PreRender: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Verbinden met <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Zoek naar iets op deze pagina met Google Lens</translation>
 <translation id="3223109931751684474">Toegang tot je toegangssleutels intrekken voor dit apparaat</translation>
 <translation id="3223531857777746191">Resetknop</translation>
 <translation id="3225084153129302039">Standaard paarse avatar</translation>
@@ -3161,6 +3160,7 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> toegang geven tot de Google Assistent met 'Hey Google'</translation>
 <translation id="3251759466064201842">&lt;Geen onderdeel van certificaat&gt;</translation>
 <translation id="325238099842880997">Stel digitale huisregels in, zodat je kind thuis kan spelen, ontdekken en leren</translation>
+<translation id="3253083398453405334">Laat het scherm flitsen als je meldingen krijgt</translation>
 <translation id="3253225298092156258">Niet beschikbaar</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Maak ruimte in <ph name="CLOUD_PROVIDER" /> vrij om dit bestand te kopiëren}other{Maak ruimte in <ph name="CLOUD_PROVIDER" /> vrij om deze bestanden te kopiëren}}</translation>
 <translation id="3253448572569133955">Onbekend account</translation>
@@ -3657,6 +3657,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3621202678540785336">Ingang</translation>
 <translation id="3621807901162200696">Help de functies en prestaties van Chrome OS te verbeteren</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{een app}other{# apps}}</translation>
+<translation id="3622820753353315928">Kleur van schermflits</translation>
 <translation id="362333465072914957">Wachten tot de certificeringsinstantie (CA) een certificaat uitgeeft</translation>
 <translation id="3623598555687153298">Hiermee wis je <ph name="TOTAL_USAGE" /> aan gegevens die zijn opgeslagen door de weergegeven sites</translation>
 <translation id="3624567683873126087">Apparaat ontgrendelen en inloggen op Google-account</translation>
@@ -7157,6 +7158,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6197128521826316819">QR-code maken voor deze pagina</translation>
 <translation id="6198223452299275399">Swipen tussen pagina's</translation>
 <translation id="6198252989419008588">Pincode wijzigen</translation>
+<translation id="61988015556954366">Schermflits</translation>
 <translation id="6200047250927636406">Bestand weggooien</translation>
 <translation id="6200151268994853226">Extensie beheren</translation>
 <translation id="6201608810045805374">Dit account verwijderen?</translation>
@@ -7514,6 +7516,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> bestanden</translation>
 <translation id="6469557521904094793">Mobiel netwerk aanzetten</translation>
 <translation id="6469702164109431067">Wachtwoorden en toegangssleutels</translation>
+<translation id="6470120577693311302">Meldingen met flits</translation>
 <translation id="6470823736074966819">Meldingen negeren</translation>
 <translation id="6472893788822429178">Homepage-knop tonen</translation>
 <translation id="6473315466413288899">Selecteer een optie</translation>
@@ -7946,6 +7949,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6790820461102226165">Persoon toevoegen...</translation>
 <translation id="6793610798874309813">Je pincode kan 4 of meer tekens bevatten</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> gekopieerd naar klembord</translation>
 <translation id="6794511157503068">Als de toegangssleutel voor <ph name="APP_NAME" /> zich op een USB-beveiligingssleutel bevindt, plaats je deze nu en tik je erop</translation>
 <translation id="679486139907144816">Als je met een toegangssleutel wilt inloggen bij deze site, moet je Windows Hello aanzetten in de instellingen. Ga daarna terug naar deze site en probeer het opnieuw.</translation>
 <translation id="6795371939514004514">Met Automatische scan kun je automatisch door items op het scherm navigeren. Als een item is gemarkeerd, druk je op Selecteren om dit te activeren.</translation>

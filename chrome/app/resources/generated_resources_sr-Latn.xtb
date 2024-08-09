@@ -439,7 +439,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1307431692088049276">Ne pitaj me ponovo</translation>
 <translation id="1307559529304613120">Ups! Sistem nije uspeo da sačuva oznaku dugoročnog pristupa API-ju za ovaj uređaj.</translation>
 <translation id="1308548450293664112">Napravio/la sam ovaj fajl, grupa dugmadi za izbor, 1. od 3</translation>
-<translation id="1308876641060960899">Kada koristite Google objektiv, snimak ekrana stranice se šalje Google-u. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Podaci koji utiču na personalizaciju oglasa se brišu</translation>
 <translation id="1311294419381837540">Prebacujete karticu. Prebacivanje možete da pauzirate ili zaustavite u svakom trenutku.</translation>
 <translation id="131188242279372879">Otkrijte Poboljšanu zaštitu da biste dobili najviši nivo bezbednosti u Chrome-u za preuzimanja</translation>
@@ -3122,7 +3121,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3220943972464248773">Da biste sinhronizovali lozinke, potvrdite svoj identitet</translation>
 <translation id="3222066309010235055">Pretprikazivanje: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Povežite se sa <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Pretražite bilo šta na ovoj stranici pomoću Google objektiva</translation>
 <translation id="3223109931751684474">Uklonite pristup pristupnim ključevima na ovom uređaju</translation>
 <translation id="3223531857777746191">Dugme Resetuj</translation>
 <translation id="3225084153129302039">Podrazumevani ljubičasti avatar</translation>

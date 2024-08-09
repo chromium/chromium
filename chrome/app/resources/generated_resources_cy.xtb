@@ -441,7 +441,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1307431692088049276">Peidiwch â gofyn i fi eto</translation>
 <translation id="1307559529304613120">Wps!  Gwnaeth y system fethu â storio'r tocyn mynediad API hirdymor ar gyfer y ddyfais hon.</translation>
 <translation id="1308548450293664112">Creais y ffeil hon, grŵp botwm radio, 1 o 3</translation>
-<translation id="1308876641060960899">Pan fyddwch yn defnyddio Google Lens, mae sgrinlun o'r dudalen yn cael ei anfon at Google. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Dilëwyd data sy'n effeithio ar bersonoli hysbysebion</translation>
 <translation id="1311294419381837540">Rydych yn castio tab. Gallwch oedi neu stopio castio unrhyw bryd.</translation>
 <translation id="131188242279372879">Darganfyddwch well amddiffyniad i gael y lefel uchaf o ddiogelwch Chrome ar gyfer lawrlwythiadau</translation>
@@ -2660,6 +2659,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2853121255651601031">Cadwyd y Cyfrinair</translation>
 <translation id="2855243985454069333">Yn dileu hanes o bob dyfais sydd wedi'i chysoni</translation>
 <translation id="2855812646048059450">Mewngofnodi gyda <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Modd llym</translation>
 <translation id="2856776373509145513">Creu cynhwysydd newydd</translation>
 <translation id="2856907950922663165">Diffodd amgryptio cyfeiriadau URL?</translation>
 <translation id="2859741939921354763">Mewnforio cyfrineiriau i <ph name="BRAND" /></translation>
@@ -3138,7 +3138,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3220943972464248773">I gysoni'ch cyfrineiriau, cadarnhewch mai chi sydd yno</translation>
 <translation id="3222066309010235055">Cyn-rendro: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Cysylltu â <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Chwiliwch unrhyw beth ar y dudalen hon gyda Google Lens</translation>
 <translation id="3223109931751684474">Tynnu mynediad at eich codau pas ar y ddyfais hon</translation>
 <translation id="3223531857777746191">Botwm Ailosod</translation>
 <translation id="3225084153129302039">Rhithffurf porffor diofyn</translation>
@@ -6418,6 +6417,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5623282979409330487">Mae'r wefan hon yn cyrchu'ch synwyryddion symudiad.</translation>
 <translation id="5623842676595125836">Log</translation>
 <translation id="5624120631404540903">Rheoli cyfrineiriau</translation>
+<translation id="5624959475330585145">Gofyn cyn defnyddio cysylltiadau anniogel</translation>
 <translation id="5625225435499354052">Golygu yn Google Pay</translation>
 <translation id="5626134646977739690">Enw:</translation>
 <translation id="5627832140542566187">Cyfeiriadedd y sgrîn</translation>
@@ -9659,6 +9659,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8008356846765065031">Mae'r rhyngrwyd wedi'i ddatgysylltu. Gwiriwch eich cysylltiad rhyngrwyd.</translation>
 <translation id="8008704580256716350">Ffeil amheus wedi'i rhwystro</translation>
 <translation id="8009225694047762179">Rheoli Cyfrineiriau</translation>
+<translation id="8010081455002666927">Awto-ganfod</translation>
 <translation id="8011372169388649948">Mae '<ph name="BOOKMARK_TITLE" />' wedi'i symud.</translation>
 <translation id="8012188750847319132">Clo CAPS</translation>
 <translation id="8012463809859447963">Manylion poethfan sydyn</translation>
@@ -11065,6 +11066,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="9009707268312089299">Mewnforiwyd o Windows</translation>
 <translation id="9009708085379296446">Oeddech chi'n bwriadu newid y dudalen hon?</translation>
 <translation id="9010845741772269259">Ychwanegwch ddulliau talu</translation>
+<translation id="901087299639956505">Modd cytbwys</translation>
 <translation id="9011163749350026987">Dangos yr eicon bob amser</translation>
 <translation id="9011262023858991985">Castio'r tab hwn</translation>
 <translation id="9011393886518328654">Nodiadau cyhoeddi</translation>

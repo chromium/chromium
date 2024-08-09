@@ -249,6 +249,7 @@
 <translation id="1831565490995294689">Изаберите да бисте отворили апликацију <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838011306813517425">Подешавања фокуса</translation>
 <translation id="1838895407229022812">Ноћно светло је искључено.</translation>
+<translation id="1840920496749066704">°C</translation>
 <translation id="1854180393107901205">Заустави пребацивање</translation>
 <translation id="1862077610023398675">Сакриј контроле</translation>
 <translation id="1862380676329487333">Ажурирај и одјави ме</translation>
@@ -317,7 +318,9 @@
 <translation id="2135456203358955318">Монтирана лупа екрана</translation>
 <translation id="2148716181193084225">Данас</translation>
 <translation id="2149229036084364364">Иди на претходну песму</translation>
+<translation id="2152796271648108398">Актуелно време</translation>
 <translation id="2152895518047545149">Изгледа да ништа не недостаје. Браво!</translation>
+<translation id="2159568970844941445">Нема слика у Фајловима</translation>
 <translation id="2161132820593978283">Пробајте уоквиривање камере да бисте били у центру екрана током видео позива. Укључите га у Брзим подешавањима.</translation>
 <translation id="216955976692983107">Померите прозор променљиве величине у облику плочице надесно</translation>
 <translation id="2185166372312820725">Идите на претходну картицу</translation>
@@ -467,7 +470,6 @@
 <translation id="2704781753052663061">Придружи се другим WiFi мрежама</translation>
 <translation id="2705001408393684014">Укључите/искључите микрофон. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Нагоре</translation>
-<translation id="271033894570825754">Ново</translation>
 <translation id="2710984741481549981">Закључај прозоре</translation>
 <translation id="2718395828230677721">Ноћно светло</translation>
 <translation id="2726420622004325180">Телефон мора да има мобилне податке да би пружао функцију хотспота</translation>
@@ -615,6 +617,7 @@
 <translation id="3264031581203585083">Сакриј све предлоге Google диска</translation>
 <translation id="3265032511221679826">Желите да укључите приступ прецизној локацији?</translation>
 <translation id="3269597722229482060">Десни клик</translation>
+<translation id="3273040715184276344">Caps Lock је искључен</translation>
 <translation id="3274634049061007184">Прегледајте апликације на телефону</translation>
 <translation id="3289364673986435196">Мени дугмета за укључивање</translation>
 <translation id="3289544412142055976">Linux апликације тренутно нису подржане</translation>
@@ -1090,6 +1093,7 @@
 <translation id="4868492592575313542">активирано</translation>
 <translation id="4871905435473761992">Прегледајте детаље хотспота. Мобилна мрежа не подржава хотспот.</translation>
 <translation id="4872237917498892622">Alt + тастер за претрагу или Shift</translation>
+<translation id="4872724534194216608">Претражите да бисте израчунали</translation>
 <translation id="4872852897273142380">Фокусирај или истакни траку са обележивачима (ако се види)</translation>
 <translation id="4876935764454575645">Избор звука</translation>
 <translation id="4881323000405981760">Ефекти нису подржани у Linux апликацијама</translation>
@@ -1203,6 +1207,7 @@
 <translation id="523505283826916779">Подешавања приступачности</translation>
 <translation id="5238719049014159442">Отвори или затвори Покретач</translation>
 <translation id="5240725217819182328">Брз приступ одређеним страницама или радњама у оквиру инсталираних апликација</translation>
+<translation id="5243355658487390559">Претражите датум</translation>
 <translation id="5245201184978705914">Генерисање транскрипта није успело</translation>
 <translation id="5251174953851719648">Освежи садржај</translation>
 <translation id="5253783950165989294">Повезани сте са уређајем под називом <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% батерије</translation>
@@ -1235,7 +1240,6 @@
 <translation id="5331975486040154427">Уређај са USB прикључком типа C (леви задњи порт)</translation>
 <translation id="533282197239610265">Прегледајте уређаје за пребацивање</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (десна)</translation>
-<translation id="5346119650615956459">GIF-ови</translation>
 <translation id="5352250171825660495">Тамна тема је укључена</translation>
 <translation id="5354804064646502504">То може да доведе до трошкова за пренос података.
 Ниједан уређај није повезан.</translation>
@@ -1248,6 +1252,7 @@
 <translation id="5369717264580061086">Прегледајте фајл у апликацији Фајлови</translation>
 <translation id="5377367976106153749">Желите да укључите приступ камери?</translation>
 <translation id="5379115545237091094">Превише покушаја</translation>
+<translation id="5383434787520761436">Нема фајлова на Google диску</translation>
 <translation id="5391307769715781764">Желите да замените сачувану радну површину?</translation>
 <translation id="5392327145184648521">Израчунава се проценат батерије...</translation>
 <translation id="5393156353051693207">Додирните и задржите било где да бисте променили редослед апликација</translation>
@@ -1598,6 +1603,7 @@
 <translation id="6565007273808762236">eSIM веза није доступна</translation>
 <translation id="6570831796530454248">{0,plural, =1{Ажурирајте уређај у року од једног сата}one{Ажурирајте уређај у року од # сата}few{Ажурирајте уређај у року од # сата}other{Ажурирајте уређај у року од # сати}}</translation>
 <translation id="6570902864550063460">Пуни се преко USB-а</translation>
+<translation id="6571006437522772306">Претражите Фајлове</translation>
 <translation id="6574587113394758819">Обавештење апликације <ph name="APP_TITLE" /> је скривено јер је заштита од прегледа укључена</translation>
 <translation id="6574622320167699133">Откључан је телефоном. Додирните или кликните да бисте покренули Chromebook.</translation>
 <translation id="6578407462441924264">Без имена</translation>
@@ -1635,6 +1641,7 @@
 <translation id="6682029141988159141">Налепи садржај из привремене меморије</translation>
 <translation id="6683022854667115063">Слушалице</translation>
 <translation id="6686023075541098243">Подесите преглед обавештења на телефону</translation>
+<translation id="6694973220096431421">Претражите Google диск</translation>
 <translation id="6696025732084565524">Треба да инсталирате важно ажурирање за одвојиву тастатуру</translation>
 <translation id="6697913454192220372">Додајте нову радну површину</translation>
 <translation id="6700713906295497288">Дугме IME менија</translation>
@@ -1680,6 +1687,7 @@
 <translation id="6852628153543175788">Додајте 10 минута</translation>
 <translation id="6855029042976311970">Измењено малопре</translation>
 <translation id="6856708615407876657">Укључите/искључите категорије резултата претраге</translation>
+<translation id="6856756288284651804">Chromebook је ажуриран</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостала је једна цифра}one{Преостала је # цифра}few{Преостале су # цифре}other{Преостало је # цифара}}</translation>
 <translation id="6867938213751067702">Преузимање је паузирано <ph name="FILENAME" /></translation>
@@ -1757,6 +1765,7 @@
 <translation id="7143207342074048698">Повезивање</translation>
 <translation id="7144942256906679589">Статус батерије</translation>
 <translation id="7145639536026937076">Батерија је на <ph name="PERCENTAGE" />% и пуни се. Уштеда батерије је укључена.</translation>
+<translation id="7147587499155271409">Нема историје прегледања</translation>
 <translation id="7149149900052329230">Управљајте локалним фајловима и фајловима са Google диска, све у апликацији Фајлови.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1791,6 +1800,7 @@
 <translation id="73289266812733869">Избор је опозван</translation>
 <translation id="7330397557116570022">Идите у поље за текст да бисте користили диктирање</translation>
 <translation id="7331646370422660166">alt + стрелица надоле</translation>
+<translation id="7336943714413713812">Претражите историју прегледања</translation>
 <translation id="7337660433630200387">+10 мин</translation>
 <translation id="7340731148882810149">Мени за аутоматске кликове</translation>
 <translation id="7346909386216857016">Важи</translation>
@@ -1893,6 +1903,7 @@
 <translation id="7670953955701272011">Отворите овај датум у Google календару</translation>
 <translation id="7671610481353807627">Апликације су сортиране према боји</translation>
 <translation id="7672095158465655885">Успостављена је веза са: <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
+<translation id="7680417644536099065">Caps Lock је укључен</translation>
 <translation id="7682351277038250258">Налепи садржај из привремене меморије као обичан текст</translation>
 <translation id="7684531502177797067">Унос помоћу камере је подешен на <ph name="CAMERA_NAME" />.</translation>
 <translation id="7687172143976244806">Отворили сте</translation>
@@ -2145,6 +2156,7 @@
 <translation id="8553395910833293175">Већ је додељено свим радним површинама.</translation>
 <translation id="8555757996376137129">Уклони актуелну радну површину</translation>
 <translation id="8559845965695780508">Изменио/ла: <ph name="USER" /></translation>
+<translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">Ево пар предлога које можете да испробате</translation>
 <translation id="857201607579416096">Мени је премештен у доњи десни угао екрана.</translation>
 <translation id="8581946341807941670">Притисните <ph name="MODIFIER_1" /> <ph name="MODIFIER_2" /> и кликните на линк</translation>
@@ -2255,6 +2267,7 @@
 <translation id="8951539504029375108">Само одобрени Thunderbolt уређаји су компатибилни са вашим Chromebook-ом</translation>
 <translation id="8956420987536947088">Отворите претходне прозоре и апликације</translation>
 <translation id="8959380109429710384">Притиснули сте тастерску пречицу за лупу преко целог екрана. Користите ctrl + alt + стрелице да бисте се кретали по увећаном приказу.</translation>
+<translation id="896335827708646237">Отворите брза подешавања приступачности</translation>
 <translation id="8964525410783593407">1 с</translation>
 <translation id="8973885907461690937">Постави фокус на икону менија</translation>
 <translation id="8980862970816311842">Преместите икону апликације у фолдер у мрежи апликација или из њега</translation>
@@ -2290,6 +2303,7 @@
 <translation id="9089416786594320554">Методи уноса</translation>
 <translation id="9091406374499386796">Потражите фајлове, апликације и друго у Покретачу. Можете и да добијете одговоре на питања о <ph name="PRODUCT_NAME" />-у.</translation>
 <translation id="9091626656156419976">Уклоњен је приказ <ph name="DISPLAY_NAME" /></translation>
+<translation id="9098750710832798892">Нема ставки копираних у привремену меморију</translation>
 <translation id="9098969848082897657">Искључи звук телефона</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> или <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Опозови последњу радњу</translation>
@@ -2299,6 +2313,7 @@
 <translation id="9139720510312328767">Избриши следеће слово</translation>
 <translation id="9148058034647219655">Изађи</translation>
 <translation id="9151906066336345901">end</translation>
+<translation id="9159421884295554245">Претражите привремену меморију</translation>
 <translation id="9161053988251441839">ПРЕДЛОЖЕНЕ АПЛИКАЦИЈЕ</translation>
 <translation id="9168436347345867845">Урадићу то касније</translation>
 <translation id="9178475906033259337">Приказује се један резултат за: <ph name="QUERY" /></translation>

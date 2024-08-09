@@ -438,7 +438,6 @@
 <translation id="1307431692088049276">मुझसे दोबारा न पूछें</translation>
 <translation id="1307559529304613120">ओह!  सिस्टम इस डिवाइस के लिए, लंबे समय तक चलने वाला API (एपीआई) एक्सेस टोकन सेव नहीं कर सका.</translation>
 <translation id="1308548450293664112">यह फ़ाइल मैंने बनाई है, रेडियो बटन का ग्रुप, तीन में से पहला विकल्प</translation>
-<translation id="1308876641060960899">Google Lens का इस्तेमाल करने पर, Google को उस पेज का स्क्रीनशॉट भेजा जाता है. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">दिलचस्पी के मुताबिक विज्ञापन पर असर डालने वाला डेटा मिटा दिया जाएगा</translation>
 <translation id="1311294419381837540">टैब को कास्ट किया जा रहा है. आपके पास किसी भी समय कास्ट को रोकने या बंद करने का विकल्प होता है.</translation>
 <translation id="131188242279372879">Chrome की सबसे बेहतर सुरक्षा के साथ कॉन्टेंट डाउनलोड करने के लिए, बेहतर सुरक्षा मोड के बारे में जानें</translation>
@@ -2463,6 +2462,7 @@
 <translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से इमेज खोजें</translation>
 <translation id="2727633948226935816">मुझे फिर से याद न दिलाएं</translation>
 <translation id="2727712005121231835">वास्तविक आकार</translation>
+<translation id="2727713483500953825">Lens से खोजने के लिए, इमेज/टेक्स्ट को चुनें</translation>
 <translation id="2727744317940422214">माफ़ करें, कोई गड़बड़ी हुई. कृपया जानकारी में #bruschetta शामिल करके, इसकी शिकायत करें. गड़बड़ी कोड <ph name="ERROR" /> है. अधूरे इंस्टॉलेशन को हटाया नहीं जा सका. आपको यह काम मैन्युअल तरीके से करना होगा.</translation>
 <translation id="2729327310379176711">Chrome, ब्राउज़ करने के दौरान ट्रैकिंग को कम करके, आपको ज़्यादा सुरक्षित रखने के नए तरीके ढूंढ रहा है. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> और उन्हें मैनेज करने की सुविधा देता है. इसके बाद, आपकी देखी गई साइटें Chrome से आपकी पसंद जानने की अनुमति मांग सकती हैं. साइटें यह अनुमति इसलिए मांगती हैं, ताकि वह आपको आपकी पसंद के हिसाब से विज्ञापन दिखा सकें.</translation>
 <translation id="2729577602370119849">प्रिंटर को आसानी से ऐक्सेस और मैनेज करें</translation>
@@ -2658,6 +2658,7 @@
 <translation id="2853121255651601031">पासवर्ड सेव किया गया</translation>
 <translation id="2855243985454069333">सिंक किए गए सभी डिवाइसों से ब्राउज़िंग इतिहास मिटा देता है</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> से साइन इन करें</translation>
+<translation id="28559674945112027">स्ट्रिक्ट मोड</translation>
 <translation id="2856776373509145513">नया कंटेनर बनाएं</translation>
 <translation id="2856907950922663165">क्या आपको यूआरएल को एन्क्रिप्ट करने की सुविधा बंद करनी है?</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> में पासवर्ड इंपोर्ट करें</translation>
@@ -3136,7 +3137,6 @@
 <translation id="3220943972464248773">पासवर्ड सिंक करने के लिए अपनी पहचान की पुष्टि करें</translation>
 <translation id="3222066309010235055">प्रीरेंडर: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" /> से जोड़ें</translation>
-<translation id="3222857603094643834">Google Lens की मदद से, इस पेज पर मौजूद किसी भी विषय के बारे में खोजें</translation>
 <translation id="3223109931751684474">इस डिवाइस के लिए, अपनी पासकी का ऐक्सेस हटाएं</translation>
 <translation id="3223531857777746191">'रीसेट करें' बटन</translation>
 <translation id="3225084153129302039">डिफ़ॉल्ट बैंगनी अवतार</translation>
@@ -3676,6 +3676,7 @@
 <translation id="3623598555687153298">इससे, देखी गई साइटों के सेव किए गए कुल डेटा में से <ph name="TOTAL_USAGE" /> डेटा मिट जाएगा</translation>
 <translation id="3624567683873126087">डिवाइस अनलॉक करें और 'Google खाते' में साइन इन करें</translation>
 <translation id="3624583033347146597">तीसरे पक्ष की कुकी से जुड़ी प्राथमिकताएं चुनें</translation>
+<translation id="3625345586754200168">Lens आज़माएं</translation>
 <translation id="3625481642044239431">गलत फ़ाइल चुनी गई. फिर से कोशिश करें.</translation>
 <translation id="3626296069957678981">इस Chromebook को चार्ज करने के लिए इसके साथ काम करने वाली Dell बैटरी इस्तेमाल करें.</translation>
 <translation id="3627320433825461852">1 मिनट से भी कम शेष है</translation>
@@ -4831,6 +4832,7 @@
 <translation id="4450974146388585462">निदान करें</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ने एक ऐसे चालू TPM का पता लगाया है जो डेटा को ज़्यादा सुरक्षित तरीके से सेव कर सकता है.</translation>
 <translation id="4452898361839215358">इसके अलावा, पीपीडी फ़ाइल चुनें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Lens के ज़रिए, किसी भी इमेज या टेक्स्ट को खोजें</translation>
 <translation id="4453430595102511050">अपने कीबोर्ड के सबसे ऊपर दाएं कोने पर मौजूद, फ़िंगरप्रिंट सेंसर को छुएं. आपके फ़िंगरप्रिंट का डेटा सुरक्षित तरीके से सेव किया जाता है. साथ ही, यह आपके <ph name="DEVICE_TYPE" /> में ही रहता है.</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> पर खोजें या कोई यूआरएल लिखें</translation>
 <translation id="4457472090507035117">मौजूदा ध्वनि चुनें:</translation>
@@ -6413,6 +6415,7 @@
 <translation id="5623282979409330487">यह साइट आपके हलचल पकड़ने वाले सेंसर को ऐक्सेस कर रही है.</translation>
 <translation id="5623842676595125836">लॉग</translation>
 <translation id="5624120631404540903">पासवर्ड प्रबंधित करें</translation>
+<translation id="5624959475330585145">असुरक्षित कनेक्शन का इस्तेमाल करने से पहले अनुमति लें</translation>
 <translation id="5625225435499354052">Google Pay पर इससे जुड़ी जानकारी में बदलाव करें</translation>
 <translation id="5626134646977739690">नाम:</translation>
 <translation id="5627832140542566187">डिसप्ले की दिशा</translation>
@@ -6989,6 +6992,7 @@
 <translation id="6059276912018042191">Chrome पर हाल ही में खोले गए टैब</translation>
 <translation id="6059652578941944813">प्रमाणपत्र पदानुक्रम</translation>
 <translation id="6059925163896151826">USB डिवाइस</translation>
+<translation id="6060842547856900641">Lens खोलें</translation>
 <translation id="6061408389284235459"><ph name="DEVICE_NAME" /> को सूचना भेजी गई</translation>
 <translation id="6063284707309177505">QR कोड बनाएं</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" /> किसी मिलती-जुलती आवाज़ या रिकॉर्डिंग से भी <ph name="SUPERVISED_USER_NAME" /> के निजी खोज नतीजे ऐक्सेस किए जा सकते हैं. बैटरी बचाने के लिए, आप <ph name="SUPERVISED_USER_NAME" /> की Assistant सेटिंग में "Ok Google" सिर्फ़ तब चालू रखना चुन सकते हैं, जब डिवाइस किसी पावर सोर्स से कनेक्ट हो.</translation>
@@ -9647,6 +9651,7 @@
 <translation id="8008356846765065031">इंटरनेट डिसकनेक्ट हो गया है. कृपया अपना इंटरनेट कनेक्‍शन जाँचें.</translation>
 <translation id="8008704580256716350">संदिग्ध फ़ाइल ब्लॉक की गई</translation>
 <translation id="8009225694047762179">पासवर्ड संभालें</translation>
+<translation id="8010081455002666927">भाषा को अपने-आप पहचानने की सुविधा</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' की जगह बदली गई.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">इंस्टैंट हॉटस्पॉट के बारे में जानकारी</translation>
@@ -11051,6 +11056,7 @@
 <translation id="9009707268312089299">Windows से इंपोर्ट किए गए सर्टिफ़िकेट</translation>
 <translation id="9009708085379296446">क्या आपका मतलब इस पेज को बदलने से है?</translation>
 <translation id="9010845741772269259">पेमेंट के तरीके जोड़ें</translation>
+<translation id="901087299639956505">बैलेंस मोड</translation>
 <translation id="9011163749350026987">आइकॉन हमेशा दिखाएं</translation>
 <translation id="9011262023858991985">इस टैब को कास्ट किया जा रहा है</translation>
 <translation id="9011393886518328654">प्रॉडक्ट की जानकारी</translation>

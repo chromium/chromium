@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">கீழ்நோக்கிய அம்புக்குறி ஐகான்</translation>
 <translation id="4425149324548788773">எனது இயக்ககம்</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> முடக்கப்பட்டுள்ளது</translation>
+<translation id="4428840632568803690">பேச்சாளர் <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos டிக்கெட் விரைவில் காலாவதியாகும்</translation>
 <translation id="4431821876790500265">அறிக்கையைக் காட்டு</translation>
 <translation id="4443192710976771874">சிவப்பு</translation>
@@ -818,6 +819,7 @@
 <translation id="5332948983412042822">புதிய கடவுச்சொல்லை இப்போதே தேர்ந்தெடுக்கவும்</translation>
 <translation id="5333530671332546086">அறியப்படாத போர்டல் நிலை</translation>
 <translation id="5335373365677455232">பிங்க்</translation>
+<translation id="5344619683981067131">தேர்ந்தெடுத்த வார்த்தையைப் பரிந்துரையுடன் மாற்றுகிறது</translation>
 <translation id="5346687412805619883">அக நெட்வொர்க்</translation>
 <translation id="5358174242040570474">ஏதோ தவறாகிவிட்டது. வால்பேப்பரை மீண்டும் தேர்வுசெய்யவும் அல்லது ஆப்ஸை மீண்டும் திறக்கவும்.</translation>
 <translation id="5372659122375744710">வைஃபை நெட்வொர்க் பாதுகாப்பாக இல்லை</translation>
@@ -869,6 +871,7 @@
 <translation id="5662240986744577912">தனிப்பட்ட திரையை இயக்குவதற்கான அல்லது முடக்குவதற்கான ஐகான்</translation>
 <translation id="5669267381087807207">செயலாக்குகிறது</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">நீங்கள் உருவாக்க விரும்பும் வால்பேப்பரை விவரிக்கவும்</translation>
 <translation id="5680504961595602662"><ph name="SURREAL_SUBJECT" /> இருக்கும் கற்பனை <ph name="SURREAL_LANDSCAPE" /></translation>
 <translation id="5685478548317291523">செர்ரிகள்</translation>
 <translation id="5691511426247308406">குடும்பம்</translation>
@@ -1102,6 +1105,7 @@
 <translation id="680983167891198932">குறியீடு</translation>
 <translation id="6816797338148849397">நீங்கள் தேர்ந்தெடுத்தவற்றுடன் தொடர்புடைய தகவல்கள். இவற்றை அணுக மேல்நோக்கிய அம்புக்குறி விசையைப் பயன்படுத்துங்கள்.</translation>
 <translation id="6853312040151791195">சார்ஜ் இறங்கும் விகிதம்</translation>
+<translation id="6862416241246624313">கருத்து சமர்ப்பிக்கப்பட்டது</translation>
 <translation id="6866732840889595464">டெய்ஸி</translation>
 <translation id="6871256179359663621">வெளிர் ஊதா</translation>
 <translation id="6889786074662672253">மீண்டும் தொடங்கும்போது இந்த வெளிப்புறச் சாதனத்தின் இணைப்பைத் துண்டிக்கவோ உங்கள் கம்ப்யூட்டரை ஷட் டவுன் செய்யவோ கூடாது. இந்தச் சாளரத்தைச் சிறிதாக்கிக்கொள்ளலாம். இந்தச் செயல்பாடு நிறைவடைய சில நிமிடங்கள் ஆகலாம். அதுவரை உங்கள் வெளிப்புறச் சாதனத்தில் வேறு எதுவும் செய்ய முடியாமல் போகலாம்.</translation>
@@ -1295,6 +1299,7 @@
 <translation id="7802764839223122985">பட்டன் ஒதுக்கப்படவில்லை. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">வேண்டாம்</translation>
 <translation id="7805768142964895445">நிலை</translation>
+<translation id="7811024689617730980">தானாக ரீசெட் செய்வதற்கான தேதியை (1 முதல் 31 வரை) தேர்ந்தெடுங்கள்</translation>
 <translation id="7813073042185856802">மலை</translation>
 <translation id="7819857487979277519">PSK (WPA அல்லது RSN)</translation>
 <translation id="7824219488248240180">பின்-உணர்வுப்பதிவியம்</translation>

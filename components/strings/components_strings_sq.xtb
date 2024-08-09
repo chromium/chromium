@@ -1507,6 +1507,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> inç)</translation>
 <translation id="3792826587784915501">Filma kult dhe të pavarur</translation>
 <translation id="3793574014653384240">Shifrat dhe shkaqet e përplasjeve që kanë ndodhur së fundi</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> po parandalon vendosjen e një lidhjeje të sigurt nga Chrome</translation>
 <translation id="3799805948399000906">Fonti i kërkuar</translation>
 <translation id="3801265110651850478">Dërgo një kërkesë "Do Not Track" me trafikun e shfletimit</translation>
 <translation id="380329542618494757">Emri</translation>
@@ -2701,6 +2702,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6106989379647458772">Faqja e uebit në <ph name="PAGE" /> mund të mos jetë përkohësisht në punë ose mund të jetë zhvendosur përgjithmonë në një adresë uebi të re.</translation>
 <translation id="6107012941649240045">Lëshuar për</translation>
 <translation id="6107924765192360631">Thjesht fillo me disa fjalë ose një draft të parë për të marrë sugjerime për të shkruarit.</translation>
+<translation id="6108580855199168381">Detajet e certifikatës</translation>
 <translation id="6108702513636120202">Motori yt i kërkimit në Chromium</translation>
 <translation id="6108849843016142864">Zvarranikë dhe amfibë</translation>
 <translation id="610911394827799129">Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
@@ -3471,6 +3473,12 @@ Detaje shtesë:
 <translation id="7535087603100972091">Vlera</translation>
 <translation id="753556296624075801">Mundësuar nga Google</translation>
 <translation id="7537536606612762813">E detyrueshme</translation>
+<translation id="7541586907443866208">Sulmuesit do të mund të shikojnë dhe të ndryshojnë çdo të dhënë të dërguar mes teje dhe këtij sajti.
+    &lt;ul&gt;
+    &lt;li&gt;Nëse je aktualisht në një rrjet publik, si p.sh. në rrjetin Wi-Fi të një aeroporti ose hoteli, ki parasysh që të provosh përsëri kur të jesh lidhur me një rrjet të besuar (p.sh. në shtëpi ose punë).&lt;/li&gt;
+    &lt;li&gt;Nëse e njeh zotëruesin e sajtit, kërkoji që ta rregullojë këtë.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë rreth këtij paralajmërimi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">Plotësimi automatik i kartës së kreditit është çaktivizuar sepse ky formular nuk përdor një lidhje të sigurt.</translation>
 <translation id="7543525346216957623">Pyet prindin tënd</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> po niset</translation>

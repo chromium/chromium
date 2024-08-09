@@ -79,7 +79,7 @@
 <translation id="124678866338384709">סגירת הכרטיסייה הנוכחית</translation>
 <translation id="1246890715821376239">אפליקציות שאינן נתמכות</translation>
 <translation id="1247372569136754018">מיקרופון (פנימי)</translation>
-<translation id="1247519845643687288">אפליקציות אחרונות</translation>
+<translation id="1247519845643687288">אפליקציות שהיו בשימוש לאחרונה</translation>
 <translation id="1252999807265626933">טעינה מ-<ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">מה מזג האוויר?</translation>
 <translation id="1256734167083229794">‏לחצת על מקש הקיצור של 'מגדיל למסך מלא'. אפשר להשתמש ב-<ph name="ZOOM_IN_ACCELERATOR" /> כדי להגדיל את התצוגה וב-<ph name="ZOOM_OUT_ACCELERATOR" /> כדי להקטין את התצוגה. כדי לזוז במסך כשמגדילים את התצוגה, משתמשים ב-Ctrl‏ + Alt + מקשי החיצים.</translation>
@@ -467,7 +467,6 @@
 <translation id="2704781753052663061">‏הצטרפות לרשתות Wi-Fi אחרות</translation>
 <translation id="2705001408393684014">החלפת מצב המיקרופון. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">למעלה</translation>
-<translation id="271033894570825754">חדש</translation>
 <translation id="2710984741481549981">נעילת החלונות</translation>
 <translation id="2718395828230677721">תאורת לילה</translation>
 <translation id="2726420622004325180">כדי לספק נקודה לשיתוף אינטרנט, נדרשת חבילת גלישה בטלפון</translation>
@@ -1233,7 +1232,6 @@
 <translation id="5331975486040154427">‏מכשיר עם יציאת USB-C (יציאה שמאלית-אחורית)</translation>
 <translation id="533282197239610265">‏הצגת מכשירי CAST</translation>
 <translation id="5344128444027639014">%<ph name="BATTERY_PERCENTAGE" /> (ימין)</translation>
-<translation id="5346119650615956459">‏קובצי GIF</translation>
 <translation id="5352250171825660495">עיצוב כהה פועל</translation>
 <translation id="5354804064646502504">עשויים לחול חיובים על שימוש בחבילת הגלישה.
 אין מכשירים מחוברים.</translation>

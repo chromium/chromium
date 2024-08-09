@@ -438,7 +438,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1307431692088049276">Ne plus me demander</translation>
 <translation id="1307559529304613120">Oups! Le système n'a pas réussi à stocker le jeton d'accès aux API à long terme pour cet appareil.</translation>
 <translation id="1308548450293664112">J'ai créé ce fichier, groupe de boutons radio, 1 sur 3</translation>
-<translation id="1308876641060960899">Lorsque vous utilisez Lentille Google, une capture d'écran de la page est envoyée à Google. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Les données qui touchent la personnalisation des annonces sont supprimées</translation>
 <translation id="1311294419381837540">Vous diffusez un onglet. Vous pouvez mettre en pause ou arrêter la diffusion à tout moment.</translation>
 <translation id="131188242279372879">Découvrez une protection renforcée pour bénéficier du plus haut niveau de sécurité de Chrome pour les téléchargements</translation>
@@ -2647,6 +2646,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2853121255651601031">Mot de passe enregistré</translation>
 <translation id="2855243985454069333">Supprime l'historique de tous les appareils synchronisés</translation>
 <translation id="2855812646048059450">Se connecter avec <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Mode strict</translation>
 <translation id="2856776373509145513">Créer un conteneur</translation>
 <translation id="2856907950922663165">Désactiver le chiffrement des URL?</translation>
 <translation id="2859741939921354763">Importer des mots de passe dans <ph name="BRAND" /></translation>
@@ -3125,7 +3125,6 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3220943972464248773">Confirmez votre identité pour synchroniser vos mots de passe</translation>
 <translation id="3222066309010235055">Prérendu : <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Connexion à <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Rechercher n'importe quel contenu sur cette page à l'aide de Lentille Google</translation>
 <translation id="3223109931751684474">Supprimer l'accès à vos clés d'accès sur cet appareil</translation>
 <translation id="3223531857777746191">Bouton de réinitialisation</translation>
 <translation id="3225084153129302039">Avatar mauve par défaut</translation>
@@ -6403,6 +6402,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5623282979409330487">Ce site a accès à vos capteurs de mouvement.</translation>
 <translation id="5623842676595125836">Journal</translation>
 <translation id="5624120631404540903">Gérer les mots de passe</translation>
+<translation id="5624959475330585145">Demander avant d'utiliser des connexions non sécurisées</translation>
 <translation id="5625225435499354052">Modifier dans Google Pay</translation>
 <translation id="5626134646977739690">Nom :</translation>
 <translation id="5627832140542566187">Orientation de l'écran</translation>
@@ -9638,6 +9638,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8008356846765065031">Connexion Internet interrompue. Veuillez vérifier votre connexion.</translation>
 <translation id="8008704580256716350">Fichier suspect bloqué</translation>
 <translation id="8009225694047762179">Gérer les mots de passe</translation>
+<translation id="8010081455002666927">Détection automatique</translation>
 <translation id="8011372169388649948">« <ph name="BOOKMARK_TITLE" /> » déplacé.</translation>
 <translation id="8012188750847319132">verrouillage des majuscules</translation>
 <translation id="8012463809859447963">Détails sur le point d'accès sans fil immédiat</translation>
@@ -11040,6 +11041,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="9009707268312089299">Importés de Windows</translation>
 <translation id="9009708085379296446">Vouliez-vous modifier cette page?</translation>
 <translation id="9010845741772269259">Ajouter des modes de paiement</translation>
+<translation id="901087299639956505">Mode équilibré</translation>
 <translation id="9011163749350026987">Toujours afficher l'icône</translation>
 <translation id="9011262023858991985">Diffuser cet onglet</translation>
 <translation id="9011393886518328654">Notes de version</translation>

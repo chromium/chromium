@@ -467,7 +467,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2704781753052663061">Koble til andre Wifi-nettverk</translation>
 <translation id="2705001408393684014">Slå av/på mikrofonen. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Opp</translation>
-<translation id="271033894570825754">Ny</translation>
 <translation id="2710984741481549981">Lås vinduene</translation>
 <translation id="2718395828230677721">Nattlys</translation>
 <translation id="2726420622004325180">Telefonen må ha mobildata for å kunne tilby en wifi-sone</translation>
@@ -564,6 +563,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Vis menyen</translation>
 <translation id="3087734570205094154">Bunn</translation>
+<translation id="3090214513075567547">Åpne den kontekstuelle menyen</translation>
 <translation id="3090989381251959936">Slå av/på <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Mangler</translation>
 <translation id="3095995014811312755">versjon</translation>
@@ -1233,7 +1233,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5331975486040154427">USB-C-enhet (porten bak på venstre side)</translation>
 <translation id="533282197239610265">Vis Cast-enheter</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (høyre)</translation>
-<translation id="5346119650615956459">GIF-er</translation>
 <translation id="5352250171825660495">Mørkt tema er på</translation>
 <translation id="5354804064646502504">Dette kan medføre datakostnader.
 Ingen enheter er tilkoblet.</translation>

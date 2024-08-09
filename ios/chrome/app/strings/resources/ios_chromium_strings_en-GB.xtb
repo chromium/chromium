@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">To disable Lockdown mode in Chromium, turn it off on your iPhone.</translation>
 <translation id="159029779861043703">Chromium keeps your sensitive data secure with Face ID.</translation>
 <translation id="1591119736686995611">Opens the Chromium Tab Grid.</translation>
+<translation id="16001233025397167">Safety Check keeps you safe from data breaches, unsafe websites and more. Receive alerts on any privacy or security issues that Chromium detects for you.</translation>
 <translation id="1611584326765829247">Let Chromium help you track your packages</translation>
 <translation id="1617663976202781617">Data from Chromium sync</translation>
 <translation id="1647558790457890304">Chromium settings</translation>
@@ -56,6 +57,7 @@
 <translation id="2426113998523353159">Your organisation requires you to sign in to use Chromium.</translation>
 <translation id="2450140762465183767">You can now use Chromium any time that you tap links in messages, documents and other apps.</translation>
 <translation id="2478931088402984578">Select <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2497941343438581585">Get the power of Chromium Shopping</translation>
 <translation id="252374538254180121">Set Chromium as default browser</translation>
 <translation id="2574528844022712255">See Chromium bookmarks</translation>
 <translation id="2590893390871230428">Sync your Chromium data</translation>
@@ -103,6 +105,7 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 <translation id="3855938650519180865">What's new in Chromium</translation>
 <translation id="3886689467633467988">Sign in to this site and Chromium to get your bookmarks and more on all your devices.</translation>
 <translation id="3904484643286601695">You can update your selections at any time in Chromium settings.</translation>
+<translation id="3983291422281996849">Set Chromium as your default browser to easily track prices and get price insights for things that you want to buy.</translation>
 <translation id="4005283307739974863">Opens and Runs Safety Check in Chromium.</translation>
 <translation id="4043291146360695975">Passwords are saved to Password Manager on this device only.</translation>
 <translation id="4099085513035183040">Not supported on Chromium beta</translation>
@@ -133,6 +136,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your
 <translation id="4736424910885271643">Your account is managed by <ph name="HOSTED_DOMAIN" />, so your Chromium data will be cleared from this device</translation>
 <translation id="4790638144988730920">Keep using the Chromium data in your Google Account.</translation>
 <translation id="4828317641996116749">Chromium couldn't check all passwords. Try again later.</translation>
+<translation id="4904452304169763785">Alerts on any privacy or security issues that Chromium detects for you.</translation>
 <translation id="4962295957157529683">Finish what you were doing in your other open Chromium window.</translation>
 <translation id="4985291216379576555">Offline, Chromium can't check for updates</translation>
 <translation id="4996471330284142407">Get more done with a simple, secure and faster-than-ever Chromium.</translation>
@@ -176,6 +180,7 @@ Things to consider:
   • If Chromium crashes, details about the crash may include some personal info.
 
   • If you sync your history to your Google Account, metrics may also include info about URLs you visit.<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">Receive alerts on any privacy or security issues that Chromium automatically detects for you.</translation>
 <translation id="5945387852661427312">You are signing in with an account managed by <ph name="DOMAIN" /> and giving its administrator control over your Chromium data. Your data will become permanently tied to this account. Signing out of Chromium will delete your data from this device, but it will remain stored in your Google Account.</translation>
 <translation id="5951593919357934226">Get the most out of Chromium.</translation>
 <translation id="5983312940147103417">Make Chromium Better</translation>

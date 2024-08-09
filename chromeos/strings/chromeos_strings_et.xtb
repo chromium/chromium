@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">allanool</translation>
 <translation id="4425149324548788773">Minu ketas</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> on välja lülitatud</translation>
+<translation id="4428840632568803690">Kõneleja <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberose pilet aegub peagi</translation>
 <translation id="4431821876790500265">Kuva aruanne</translation>
 <translation id="4443192710976771874">punastes toonides</translation>
@@ -1298,6 +1299,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="7802764839223122985">Klahvi pole määratud. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Tänan, ei</translation>
 <translation id="7805768142964895445">Olek</translation>
+<translation id="7811024689617730980">Valige automaatse lähtestamise päev vahemikus 1–31 (kaasa arvatud)</translation>
 <translation id="7813073042185856802">mägi</translation>
 <translation id="7819857487979277519">PSK (WPA või RSN)</translation>
 <translation id="7824219488248240180">postimpressionism</translation>

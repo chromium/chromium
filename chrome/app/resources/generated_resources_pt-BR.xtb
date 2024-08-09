@@ -438,7 +438,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1307431692088049276">Não perguntar novamente</translation>
 <translation id="1307559529304613120">Ops. O sistema encontrou uma falha ao armazenar um token de acesso de longo prazo à API para este dispositivo.</translation>
 <translation id="1308548450293664112">Eu criei esse arquivo, grupo de botões de opção, 1 de 3</translation>
-<translation id="1308876641060960899">Quando você usa o Lens, uma captura de tela da página é enviada ao Google. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Os dados que afetam a personalização de anúncios são excluídos</translation>
 <translation id="1311294419381837540">Você está transmitindo uma guia. É possível pausar ou interromper a transmissão a qualquer momento.</translation>
 <translation id="131188242279372879">Conheça a proteção reforçada e tenha o nível mais alto de segurança para downloads do Chrome</translation>
@@ -2657,6 +2656,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2853121255651601031">Senha salva</translation>
 <translation id="2855243985454069333">Exclui o histórico de todos os dispositivos sincronizados</translation>
 <translation id="2855812646048059450">Fazer login com <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Modo restrito</translation>
 <translation id="2856776373509145513">Criar um novo contêiner</translation>
 <translation id="2856907950922663165">Desativar a criptografia de URL?</translation>
 <translation id="2859741939921354763">Importar senhas para o <ph name="BRAND" /></translation>
@@ -3135,7 +3135,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3220943972464248773">Para sincronizar suas senhas, confirme sua identidade</translation>
 <translation id="3222066309010235055">Pré-processar: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Conectar à VM <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Use o Google Lens para pesquisar o que quiser nesta página</translation>
 <translation id="3223109931751684474">Remover suas chaves de acesso deste dispositivo</translation>
 <translation id="3223531857777746191">Botão "Redefinir"</translation>
 <translation id="3225084153129302039">Avatar roxo padrão</translation>
@@ -6417,6 +6416,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5623282979409330487">Este site está acessando seus sensores de movimento.</translation>
 <translation id="5623842676595125836">Registro</translation>
 <translation id="5624120631404540903">Gerenciar senhas</translation>
+<translation id="5624959475330585145">Perguntar antes de usar conexões não seguras</translation>
 <translation id="5625225435499354052">Editar no Google Pay</translation>
 <translation id="5626134646977739690">Nome:</translation>
 <translation id="5627832140542566187">Orientação da tela</translation>
@@ -9653,6 +9653,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8008356846765065031">Internet desconectada. Verifique sua conexão com a Internet.</translation>
 <translation id="8008704580256716350">Arquivo suspeito bloqueado</translation>
 <translation id="8009225694047762179">Gerenciar senhas</translation>
+<translation id="8010081455002666927">Detecção automática</translation>
 <translation id="8011372169388649948">O favorito "<ph name="BOOKMARK_TITLE" />" foi movido.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Detalhes do ponto de acesso instantâneo</translation>
@@ -11057,6 +11058,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9009707268312089299">Importado do Windows</translation>
 <translation id="9009708085379296446">Você quis modificar esta página?</translation>
 <translation id="9010845741772269259">Adicionar formas de pagamento</translation>
+<translation id="901087299639956505">Modo equilibrado</translation>
 <translation id="9011163749350026987">Sempre mostrar ícone</translation>
 <translation id="9011262023858991985">Transmitindo esta guia</translation>
 <translation id="9011393886518328654">Notas da versão</translation>

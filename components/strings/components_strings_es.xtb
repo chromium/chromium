@@ -1507,6 +1507,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Películas de culto e independientes</translation>
 <translation id="3793574014653384240">La cantidad y las causas de los bloqueos que han ocurrido recientemente</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> está impidiendo que Chrome establezca una conexión segura</translation>
 <translation id="3799805948399000906">Fuente solicitada</translation>
 <translation id="3801265110651850478">Enviar una solicitud "Do Not Track" con tu tráfico de navegación</translation>
 <translation id="380329542618494757">Nombre</translation>
@@ -2701,6 +2702,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6106989379647458772">La página web <ph name="PAGE" /> podría estar temporalmente fuera de servicio o bien podría haberse trasladado a una dirección web nueva permanentemente.</translation>
 <translation id="6107012941649240045">Enviado a</translation>
 <translation id="6107924765192360631">Escribe algunas palabras o un primer borrador para recibir sugerencias de escritura.</translation>
+<translation id="6108580855199168381">Detalles del certificado</translation>
 <translation id="6108702513636120202">Tu buscador en Chromium</translation>
 <translation id="6108849843016142864">Reptiles y anfibios</translation>
 <translation id="610911394827799129">Es posible que tu cuenta de Google tenga otros tipos de historial de navegación en la página <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
@@ -3472,6 +3474,12 @@ Más información:
 <translation id="7535087603100972091">Valor</translation>
 <translation id="753556296624075801">Con la tecnología de Google</translation>
 <translation id="7537536606612762813">Obligatoria</translation>
+<translation id="7541586907443866208">Los atacantes podrán ver y cambiar todos los datos que se envíen entre este sitio y tú.
+    &lt;ul&gt;
+    &lt;li&gt;Si estás usando una red pública, como la de un aeropuerto o un hotel, prueba a volver a intentarlo cuando te conectes a una red de confianza (por ejemplo, en casa o en el trabajo).&lt;/li&gt;
+    &lt;li&gt;Si conoces al propietario del sitio, pídele que solucione este problema.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />Más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">La opción de autocompletado de la tarjeta de crédito está inhabilitada porque este formulario no utiliza una conexión segura.</translation>
 <translation id="7543525346216957623">Pide permiso a uno de tus padres</translation>
 <translation id="7546409722674205727">Iniciando <ph name="APP_NAME" /></translation>

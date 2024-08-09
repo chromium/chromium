@@ -638,6 +638,7 @@
 <translation id="4422041425070339732">Freccia giù</translation>
 <translation id="4425149324548788773">I miei file</translation>
 <translation id="4428374560396076622">Rete <ph name="NETWORK_NAME" /> disattivata</translation>
+<translation id="4428840632568803690">Persona <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">La richiesta di Kerberos scade a breve</translation>
 <translation id="4431821876790500265">Visualizza rapporto</translation>
 <translation id="4443192710976771874">rosso</translation>
@@ -1299,6 +1300,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7802764839223122985">Tasto mancante. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">No grazie</translation>
 <translation id="7805768142964895445">Stato</translation>
+<translation id="7811024689617730980">Seleziona un giorno tra 1 e 31 (inclusi) per il ripristino automatico</translation>
 <translation id="7813073042185856802">una montagna</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
 <translation id="7824219488248240180">postimpressionista</translation>

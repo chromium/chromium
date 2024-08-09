@@ -220,6 +220,7 @@
 <translation id="2080769225927880590">Skráðu þig inn með gildum reikningi</translation>
 <translation id="2103075008456228677">Opna history.google.com</translation>
 <translation id="21133533946938348">Festa flipa</translation>
+<translation id="2120859803436824248">Slökkva á tilkynningum fyrir öryggisathugun …</translation>
 <translation id="2122754583996902531">Vafranum þínum er stjórnað. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="2139502497535990641">Kveikja á verðtilkynningum?</translation>
 <translation id="2139867232736819575">Leita að texta sem þú afritaðir</translation>
@@ -320,6 +321,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="261305050785128654">Láttu vefsvæði vita hvaða tungumál þú talar. Þau munu þá birta þér efni á þeim tungumálum þegar það er í boði.</translation>
 <translation id="2617210333344098964">Færa heimilisfang á reikning</translation>
 <translation id="261739049332372104">Kveiktu á tilkynningum í iOS-stillingunum þínum til að fá uppfærslur um efni sem skiptir þig máli.</translation>
+<translation id="2623536180761008356">Fela „Öryggisathugun“</translation>
 <translation id="2625189173221582860">Aðgangsorð afritað</translation>
 <translation id="2626236249646841566">Athugaðu nettenginguna og reyndu að skrá þig inn aftur.</translation>
 <translation id="2635918910848538771">Fylla CVC-númer sjálfkrafa út</translation>
@@ -613,6 +615,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4049507953662678203">Gakktu úr skugga um að þú sért tengd(ur) netinu og reyndu svo aftur.</translation>
 <translation id="4054572406751135230">Fylgstu með fréttum, íþróttum og fleiru.</translation>
 <translation id="4068959193278821990">Kveikja á aukinni vörn...</translation>
+<translation id="407435320163086788">Kveikja á tilkynningum fyrir öryggisathugun …</translation>
 <translation id="4088879333319441249">Fjarlægja flipa úr hóp?</translation>
 <translation id="4092655288299341041">Sýna hjálp</translation>
 <translation id="4094361089640885693">Vaktaðu verð og fáðu verðinnsýn á einfaldan hátt.</translation>
@@ -640,6 +643,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="421070604241073551">Ef kveikt er á þessu verða gögn vistuð á Google-reikningnum þínum. Ef slökkt er á þessu verða gögn eingöngu vistuð í þessu tæki.</translation>
 <translation id="4216918546378735658">Hætta við</translation>
 <translation id="422474357428465195">Þú ert með ýmis aðgangsorðavandamál sem gætu stefnt öryggi þínu í hættu.</translation>
+<translation id="4231395118547300571">Kveikt er á tilkynningum fyrir öryggisathugun</translation>
 <translation id="4232900911558558076">Skoðaðu nýju valmyndina</translation>
 <translation id="4233831822770018312">Breyta heimildum</translation>
 <translation id="4236584471598725073">Vaktar verð</translation>
@@ -683,6 +687,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4402672425188312225">{COUNT,plural, =1{Einn flipi}one{# flipi}other{# flipar}}</translation>
 <translation id="4405320213589929829">Notaðu heimilisföng á vefsíðum til að fá staðbundnar upplýsingar og leiðarlýsingar.</translation>
 <translation id="4420409367264901497">Breyta bókamerki</translation>
+<translation id="4424654658080265901">Kveikja á tilkynningum fyrir öryggisathugun</translation>
 <translation id="4431224949908513835">Veldu greiðslumáta til að fylla inn.</translation>
 <translation id="4442550905108052454">Opnaðu <ph name="BEGIN_BOLD" />stillingar<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Bæta tungumáli við</translation>
@@ -811,6 +816,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5016420433031926653">Senda til <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Minna mig á seinna</translation>
 <translation id="5024511550058813796">Ferilinn þinn verður í öllum samstilltum tækjum svo að þú getir haldið áfram þar sem frá var horfið</translation>
+<translation id="5032181563676357724">Slökkt er á tilkynningum fyrir öryggisathugun</translation>
 <translation id="5037676449506322593">Velja allt</translation>
 <translation id="5038113048373546701">Fáðu tilkynningar um fréttir, íþróttir og fleira byggt á áhugasviðunum þínum</translation>
 <translation id="5039804452771397117">Leyfa</translation>
@@ -951,6 +957,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5702108177581350218">Þegar þú deilir afriti af notandanafninu og aðgangsorðinu þínu getur fjölskyldumeðlimur notað þau með Google-aðgangsorðastjórnun.</translation>
 <translation id="5704908597376970822">Innskráning mistókst.</translation>
 <translation id="5706552126692816153">Virkt fyrir 1 degi</translation>
+<translation id="5709005673595820640">{count,plural, =1{Þú ert með {count} endurnýtt aðgangsorð sem gæti stefnt öryggi þínu í hættu. Lagfærðu það núna til að gæta öryggis.}one{Þú ert með {count} endurnýtt aðgangsorð sem gæti stefnt öryggi þínu í hættu. Lagfærðu þau núna til að gæta öryggis.}other{Þú ert með {count} endurnýtt aðgangsorð sem gætu stefnt öryggi þínu í hættu. Lagfærðu þau núna til að gæta öryggis.}}</translation>
 <translation id="5718049162805123412">Þú ættir að breyta þeim strax</translation>
 <translation id="5724941645893276623">Opnaðu nýjan flipa til að vafra leynilega</translation>
 <translation id="5728072125198221967">Tengdar Google-þjónustur</translation>
@@ -966,6 +973,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5765456154762864099">Valmynd → Stillingar → Sjálfgefinn vafri</translation>
 <translation id="5777888488419460501">Vista á reikningi</translation>
 <translation id="5778292857689789362">Flipahópur, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> flipar.</translation>
+<translation id="5779117921996157216">{count,plural, =1{Þú ert með {count} aðgangsorð í hættu sem gæti stefnt öryggi þínu í hættu. Lagfærðu það núna til að gæta öryggis.}one{Þú ert með {count} aðgangsorð í hættu sem gæti stefnt öryggi þínu í hættu. Lagfærðu þau núna til að gæta öryggis.}other{Þú ert með {count} aðgangsorð í hættu sem gætu stefnt öryggi þínu í hættu. Lagfærðu þau núna til að gæta öryggis.}}</translation>
 <translation id="5782227691023083829">Þýðir...</translation>
 <translation id="5791632441210678828">Flokkunarhnappur fyrir strauminn „Fylgir“.</translation>
 <translation id="5793373065989412701">Athugar fjölskyldumeðlimi þína…</translation>
@@ -1050,6 +1058,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6188737759358894319">Búið til <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ólesið</translation>
 <translation id="6196207969502475924">Raddleit</translation>
+<translation id="6198252989419008588">Breyta PIN-númeri</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Loka {COUNT} flipa}one{Loka {COUNT} flipa}other{Loka {COUNT} flipum}}</translation>
 <translation id="6210079381482819663">Flipar sem eru ekki notaðir í <ph name="THRESHOLD" /> daga eða meira eru færðir hingað. Þú getur breytt þessu hvenær sem er í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Engin heimilisföng fundust</translation>
@@ -1131,6 +1140,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="6494931198667773526">Lýkur</translation>
 <translation id="6500795388871406244">Notaðu tillögu að aðgangsorði:</translation>
 <translation id="650279896687777322">Nánar...</translation>
+<translation id="6503763061813913607">Tilkynningar fyrir öryggisathugun</translation>
 <translation id="6505334220040167806">Draga saman flipahóp.</translation>
 <translation id="6507973708545996744">Skráðu þig inn til að fá leslistann þinn í öllum tækjunum þínum.</translation>
 <translation id="6510072653668207258">Minna mig á seinna</translation>
@@ -1351,6 +1361,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7600965453749440009">Þýða aldrei <ph name="LANGUAGE" /></translation>
 <translation id="7603308509262646847">Fylla korthafann „<ph name="NAME" />“ sjálfkrafa út</translation>
 <translation id="7603852183842204213">Sprettigluggar útilokaðir (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="760667371114328991">Slökkva á tilkynningum fyrir öryggisathugun</translation>
 <translation id="7607521702806708809">Eyða aðgangsorði</translation>
 <translation id="7609559547731036746">Bókamerki</translation>
 <translation id="7638584964844754484">Rangt aðgangsorð</translation>
@@ -1597,6 +1608,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8730621377337864115">Lokið</translation>
 <translation id="8731958888085671579">Fela „Finna á síðu“</translation>
 <translation id="87371078663613140">Skoðaðu valkosti á valmyndarstikunni</translation>
+<translation id="8739145690729256497">Leyfa tilkynningar</translation>
 <translation id="8741995161408053644">Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil á <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Þú finnur flipana þína hér</translation>
 <translation id="8756969031206844760">Uppfæra aðgangsorð?</translation>
@@ -1669,6 +1681,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9079935439869366234">Merkja allt sem ólesið</translation>
 <translation id="9081058212938299310">Uppfæra aðgangsorð fyrir <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Kveiktu á samstillingu til að hafa allt samstillt og sérsniðið í tækjunum þínum.</translation>
+<translation id="9084367296493549256">{count,plural, =1{Þú ert með {count} lélegt aðgangsorð sem gæti stefnt öryggi þínu í hættu. Lagfærðu það núna til að gæta öryggis.}one{Þú ert með {count} lélegt aðgangsorð sem gæti stefnt öryggi þínu í hættu. Lagfærðu þau núna til að gæta öryggis.}other{Þú ert með {count} léleg aðgangsorð sem gætu stefnt öryggi þínu í hættu. Lagfærðu þau núna til að gæta öryggis.}}</translation>
 <translation id="9087339162317338348">Nota HTTPS þegar hægt er og fá viðvörun áður en síðum sem styðja það ekki er hlaðið.</translation>
 <translation id="9093271241977565440">Ýttu á leitartáknið efst á skjánum</translation>
 <translation id="9094033019050270033">Uppfæra aðgangsorð</translation>

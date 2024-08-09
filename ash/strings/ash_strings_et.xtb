@@ -467,7 +467,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2704781753052663061">Muude WiFi-võrkudega liitumine</translation>
 <translation id="2705001408393684014">Lülitage mikrofoni. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Üles</translation>
-<translation id="271033894570825754">Uus</translation>
 <translation id="2710984741481549981">Lukusta aknad</translation>
 <translation id="2718395828230677721">Öövalgus</translation>
 <translation id="2726420622004325180">Teie telefonil peab kuumkoha pakkumiseks olema mobiilne andmesideühendus</translation>
@@ -564,6 +563,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3077734595579995578">tõstuklahv</translation>
 <translation id="3081696990447829002">Laienda menüü</translation>
 <translation id="3087734570205094154">Alaserv</translation>
+<translation id="3090214513075567547">Kontekstimenüü avamine</translation>
 <translation id="3090989381251959936">Vahetage funktsiooni <ph name="FEATURE_NAME" /> olekut. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Tähtaja ületanud</translation>
 <translation id="3095995014811312755">Versioon</translation>
@@ -1234,7 +1234,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5331975486040154427">C-tüüpi USB-seade (tagumine vasakpoolne port)</translation>
 <translation id="533282197239610265">Ülekandeseadmete kuvamine</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (parem)</translation>
-<translation id="5346119650615956459">GIF-id</translation>
 <translation id="5352250171825660495">Tume teema on sees</translation>
 <translation id="5354804064646502504">See võib põhjustada andmesidekulusid.
 Ükski seade pole ühendatud.</translation>

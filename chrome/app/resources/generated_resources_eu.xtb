@@ -437,7 +437,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1307431692088049276">Ez galdetu berriro</translation>
 <translation id="1307559529304613120">Sistemak ezin izan du biltegiratu gailu honi dagokion APIaren epe luzerako sarbide-tokena.</translation>
 <translation id="1308548450293664112">Neuk sortu dut fitxategia, aukera-botoien taldea, hirutatik lehenengoa</translation>
-<translation id="1308876641060960899">Google Lens erabiltzen duzunean, orriaren pantaila-argazki bat bidaltzen zaio Google-ri. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Iragarkien pertsonalizazioari eragiten dioten datuak ezabatzen dira.</translation>
 <translation id="1311294419381837540">Fitxa bat igortzen ari zara. Nahi duzunean pausa dezakezu igorpena, edo igortzeari utzi.</translation>
 <translation id="131188242279372879">Ezagutu babes hobetua Chrome-ren deskargetarako segurtasun-mailarik handiena lortzeko</translation>
@@ -3121,7 +3120,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3220943972464248773">Pasahitzak sinkronizatzeko, egiaztatu zeu zarela</translation>
 <translation id="3222066309010235055">Aurrerrendatzea: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Konektatu <ph name="USB_VM_NAME" />-era</translation>
-<translation id="3222857603094643834">Bilatu orriko edozein atal Google Lens-ekin</translation>
 <translation id="3223109931751684474">Kendu gailu honetan sarbide-gakoak erabiltzeko baimena</translation>
 <translation id="3223531857777746191">Berrezartzeko botoia</translation>
 <translation id="3225084153129302039">Abatar more lehenetsia</translation>
@@ -4158,7 +4156,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="3955896417885489542">Berrikusi Google Play-ko aukerak saioa konfiguratu ondoren</translation>
 <translation id="3957079323242030166">Babeskopiek ez dute hartzen tokirik Drive-n.</translation>
 <translation id="3957663711862465084">USBaren ezarpenak</translation>
-<translation id="3957844511978444971">Sakatu "Onartu" Google-ren zerbitzuen ezarpen hauek hautatu dituzula berresteko.</translation>
+<translation id="3957844511978444971">Sakatu "Onartu" Google-ren zerbitzuen ezarpenok hautatu dituzula berresteko.</translation>
 <translation id="3958088479270651626">Inportatu laster-markak eta ezarpenak</translation>
 <translation id="3958110062351175311">Tresna-barran eskaerak erakusteko baimena du</translation>
 <translation id="3958821725268247062"><ph name="APP_NAME" /> instalatu da dagoeneko</translation>

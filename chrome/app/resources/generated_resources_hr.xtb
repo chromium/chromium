@@ -439,7 +439,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1307431692088049276">Nemoj me pitati ponovno</translation>
 <translation id="1307559529304613120">Ups! Sustav nije uspio pohraniti token za dugotrajni pristup API-ju za ovaj uređaj.</translation>
 <translation id="1308548450293664112">Izradio/izradila sam ovu datoteku, grupa izbornih gumba, 1 od 3</translation>
-<translation id="1308876641060960899">Kada upotrebljavate Google objektiv, snimka zaslona stranice šalje se Googleu. <ph name="LEARN_MORE" />.</translation>
 <translation id="131112695174432497">Brišu se podaci koji utječu na personalizaciju oglasa</translation>
 <translation id="1311294419381837540">Emitirate karticu. Emitiranje uvijek možete pauzirati ili zaustaviti.</translation>
 <translation id="131188242279372879">Otkrijte poboljšanu zaštitu da biste dobili najvišu Chromeovu razinu sigurnosti za preuzimanja</translation>
@@ -2453,6 +2452,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="272741954544380994">Pretraži sliku pomoću usluge <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Nemoj me više podsjećati</translation>
 <translation id="2727712005121231835">Stvarna veličina</translation>
+<translation id="2727713483500953825">Odaberite slike/tekst za pretraživanje pomoću Objektiva</translation>
 <translation id="2727744317940422214">Nešto nije u redu. Pošaljite povratne informacije s oznakom #bruschetta u opisu. Kôd pogreške je <ph name="ERROR" />. Čišćenje nije uspjelo, možda ćete morati očistiti ručno.</translation>
 <translation id="2729327310379176711">Chrome pronalazi nove načine za smanjivanje praćenja te vas dodatno štiti dok pregledavate. Chrome također <ph name="ESTIMATE_INTERESTS_LINK" /> i omogućuje vam da upravljate njima. Web-lokacije koje zatim posjetite mogu od Chromea tražiti vaše interese da bi vam prikazivale oglase.</translation>
 <translation id="2729577602370119849">Jednostavan pristup pisačima i upravljanje njima</translation>
@@ -3126,7 +3126,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3220943972464248773">Za sinkroniziranje zaporki potvrdite da ste to vi</translation>
 <translation id="3222066309010235055">Iscrtavanje unaprijed: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Povežite s uređajem <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Pretražite bilo što na ovoj stranici pomoću Google objektiva</translation>
 <translation id="3223109931751684474">Uklanjanje pristupa pristupnim ključevima na ovom uređaju</translation>
 <translation id="3223531857777746191">Gumb Vrati na zadano</translation>
 <translation id="3225084153129302039">Zadani ljubičasti avatar</translation>
@@ -3668,6 +3667,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3623598555687153298">Izbrisat će se <ph name="TOTAL_USAGE" /> podataka koje su spremile prikazane web-lokacije</translation>
 <translation id="3624567683873126087">Otključajte uređaj i prijavite se na Google račun</translation>
 <translation id="3624583033347146597">Odabir preferencija za kolačiće trećih strana</translation>
+<translation id="3625345586754200168">Isprobajte Objektiv</translation>
 <translation id="3625481642044239431">Odabrana je nevažeća datoteka. Pokušajte ponovo.</translation>
 <translation id="3626296069957678981">Za punjenje Chromebooka upotrijebite kompatibilnu Dell bateriju.</translation>
 <translation id="3627320433825461852">Preostalo je manje od 1 minute</translation>
@@ -4824,6 +4824,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4450974146388585462">Dijagnosticiranje</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> detektirao je aktivan TPM koji može sigurnije pohraniti vaše podatke.</translation>
 <translation id="4452898361839215358">ili odaberite PPD. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Pretražujte slike ili tekst pomoću Objektiva</translation>
 <translation id="4453430595102511050">Dodirnite senzor otiska prsta u gornjem desnom kutu tipkovnice. Podaci o otisku prsta sigurno se pohranjuju i nikamo se ne šalju s uređaja <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Pretraži <ph name="SEARCH_ENGINE_NAME" /> ili unesi URL</translation>
 <translation id="4457472090507035117">Odaberite trenutačni glas:</translation>
@@ -6980,6 +6981,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6059276912018042191">Nedavne Chromeove kartice</translation>
 <translation id="6059652578941944813">Hijerarhija certifikata</translation>
 <translation id="6059925163896151826">USB uređaji</translation>
+<translation id="6060842547856900641">Otvorite Objektiv</translation>
 <translation id="6061408389284235459">Obavijest je poslana na uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Izrada QR kôda</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> netko sa sličnim glasom ili snimkom možda bi mogao pristupiti osobnim rezultatima s računa kojim se koristi <ph name="SUPERVISED_USER_NAME" />. Radi štednje baterije u postavkama Asistenta računa kojim se koristi <ph name="SUPERVISED_USER_NAME" /> možete odabrati da se "Hey Google" detektira samo kad je uređaj priključen na izvor napajanja.</translation>

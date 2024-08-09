@@ -1503,6 +1503,7 @@
 <translation id="3792100426446126328"><ph name="NAME" />（<ph name="WIDTH" /> x <ph name="HEIGHT" /> 英寸）</translation>
 <translation id="3792826587784915501">邪典电影与独立电影</translation>
 <translation id="3793574014653384240">近期发生崩溃的次数和原因</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> 阻止 Chrome 建立安全连接</translation>
 <translation id="3799805948399000906">请求的字体</translation>
 <translation id="3801265110651850478">在浏览流量中发送“Do Not Track”请求</translation>
 <translation id="380329542618494757">名称</translation>
@@ -2697,6 +2698,7 @@
 <translation id="6106989379647458772">位于 <ph name="PAGE" /> 的网页可能暂时无法打开或已永久移至新网址。</translation>
 <translation id="6107012941649240045">颁发对象</translation>
 <translation id="6107924765192360631">只需先输入几个字词或撰写一份初稿，即可获得写作建议。</translation>
+<translation id="6108580855199168381">证书详情</translation>
 <translation id="6108702513636120202">您在 Chromium 中使用的搜索引擎</translation>
 <translation id="6108849843016142864">爬行动物与两栖动物</translation>
 <translation id="610911394827799129">您的 Google 账号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录</translation>
@@ -3467,6 +3469,12 @@
 <translation id="7535087603100972091">值</translation>
 <translation id="753556296624075801">由 Google 提供支持</translation>
 <translation id="7537536606612762813">强制</translation>
+<translation id="7541586907443866208">攻击者将能够查看和更改您与此网站相互之间传送的所有数据。
+    &lt;ul&gt;
+    &lt;li&gt;如果您目前使用的是公共网络（例如机场或酒店的 Wi-Fi），请考虑在连接到可信网络（例如家中或单位的网络）后重试。&lt;/li&gt;
+    &lt;li&gt;如果您认识网站所有者，可以请其解决此问题。&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">由于该表单不使用安全连接，因此自动填写信用卡信息的功能已停用。</translation>
 <translation id="7543525346216957623">需要家长同意</translation>
 <translation id="7546409722674205727">正在启动<ph name="APP_NAME" /></translation>

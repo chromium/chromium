@@ -1507,6 +1507,7 @@
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> po x <ph name="HEIGHT" /> po)</translation>
 <translation id="3792826587784915501">Films cultes et indépendants</translation>
 <translation id="3793574014653384240">Nombre et causes des plantages survenus récemment</translation>
+<translation id="3796417399166194741"><ph name="SITE" /> empêche Chrome d'établir une connexion sécurisée</translation>
 <translation id="3799805948399000906">Police demandée</translation>
 <translation id="3801265110651850478">Envoyer une demande « Do Not Track » avec les transferts liés à votre navigation</translation>
 <translation id="380329542618494757">Nom</translation>
@@ -2701,6 +2702,7 @@
 <translation id="6106989379647458772">Il se peut que la page Web à l'adresse <ph name="PAGE" /> soit temporairement inaccessible ou qu'elle ait été déplacée de façon permanente à une autre adresse Web.</translation>
 <translation id="6107012941649240045">Délivré à</translation>
 <translation id="6107924765192360631">Commencez simplement par quelques mots ou une première ébauche pour obtenir des suggestions de rédaction.</translation>
+<translation id="6108580855199168381">Détails du certificat</translation>
 <translation id="6108702513636120202">Votre moteur de recherche dans Chromium</translation>
 <translation id="6108849843016142864">Reptiles et amphibiens</translation>
 <translation id="610911394827799129">D'autres formes d'historique de navigation peuvent exister sur votre compte Google à l'adresse <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
@@ -3472,6 +3474,12 @@ Détails supplémentaires :
 <translation id="7535087603100972091">Valeur</translation>
 <translation id="753556296624075801">Propulsé par Google</translation>
 <translation id="7537536606612762813">Obligatoire</translation>
+<translation id="7541586907443866208">Des pirates informatiques pourront voir et modifier toute donnée transmise entre vous et ce site.
+    &lt;ul&gt;
+&lt;li&gt;Si vous utilisez actuellement un réseau public, tel que le Wi-Fi d'un aéroport ou d'un hôtel, pensez à réessayer lorsque vous serez connecté à un réseau de confiance (par exemple, à la maison ou au travail).&lt;/li&gt;
+&lt;li&gt;Si vous connaissez le propriétaire du site, demandez-lui de résoudre ce problème.&lt;/li&gt;
+&lt;/ul&gt;
+<ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">Le remplissage automatique des numéros de carte de crédit est désactivé, car la connexion utilisée par ce formulaire n'est pas sécurisée.</translation>
 <translation id="7543525346216957623">Demande à l'un de tes parents</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> en cours de démarrage…</translation>

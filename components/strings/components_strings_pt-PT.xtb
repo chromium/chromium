@@ -76,6 +76,7 @@
 <translation id="1142713751288681188">Tipo de papel</translation>
 <translation id="1144136880160289237">Ainda não tem tópicos ativos</translation>
 <translation id="1149617035358809955">validar a sua identidade para poder preencher as informações de pagamento</translation>
+<translation id="115055975835908275">Fechar promoção</translation>
 <translation id="1150565364351027703">Óculos de sol</translation>
 <translation id="1150979032973867961">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o sistema operativo do seu computador não confia no respetivo certificado de segurança. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="1151972924205500581">É necessária a palavra-passe</translation>
@@ -158,6 +159,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1270328905573953738">Mudanças</translation>
 <translation id="1270502636509132238">Método de recolha</translation>
 <translation id="1273592791152866347">Acompanhamento de preços desativado</translation>
+<translation id="1277711244058668002">Botão Gosto, prima Enter para enviar feedback a indicar que gosta desta sugestão</translation>
 <translation id="127777513559587977">Debates televisivos</translation>
 <translation id="1281476433249504884">Empilhador 1</translation>
 <translation id="1281536351321444151">Para preencher automaticamente este IBAN da próxima vez, guarde-o na sua Conta Google</translation>
@@ -664,6 +666,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2188375229972301266">Perfuração múltipla na parte inferior</translation>
 <translation id="2194856509914051091">Aspetos a considerar</translation>
 <translation id="2197398642355049178">Os seus tópicos</translation>
+<translation id="2200678913752027654">Botão Não gosto, prima Enter para abrir um formulário e enviar feedback detalhado sobre o motivo pelo qual não gosta desta sugestão</translation>
 <translation id="2202627062836089804">no verso do cartão</translation>
 <translation id="2204482073374652408">Atualização concluída!</translation>
 <translation id="2207770355672215546">Permitir sempre, com qualquer cartão</translation>
@@ -869,6 +872,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2565789370591907825">Bloqueio e utilização do teclado</translation>
 <translation id="2570734079541893434">Gerir definições</translation>
 <translation id="257136025287118539">O administrador está a mover os seus ficheiros para o <ph name="CLOUD_PROVIDER" />. Pode modificar estes ficheiros quando o carregamento estiver concluído.</translation>
+<translation id="2571488850200220306">Para ajudar a garantir a segurança, também pode ver o SO do dispositivo, a versão do navegador e o software instalado</translation>
 <translation id="2573170131138724450">Televisões</translation>
 <translation id="257674075312929031">Grupo</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
@@ -1004,6 +1008,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2903493209154104877">Moradas</translation>
 <translation id="290376772003165898">A página não está em <ph name="LANGUAGE" />?</translation>
 <translation id="2905107382358353958">Alerta acerca de uma nova definição de pagamento</translation>
+<translation id="2909693957408648848">Promoção</translation>
 <translation id="2909946352844186028">Foi detetada uma alteração de rede.</translation>
 <translation id="2911255567212929079">Aprendizagem automática e inteligência artificial</translation>
 <translation id="2911973620368911614">ID do utilizador da contabilidade da tarefa</translation>
@@ -2586,6 +2591,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5887687176710214216">Última visita ontem</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895187275912066135">Emitido em</translation>
+<translation id="5898767305816764989">Botão Gosto, prima Enter para enviar feedback a indicar que gosta, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5903264686717710770">Título:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizados)</translation>
@@ -2774,6 +2780,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6240964651812394252">Para usar o Gestor de Palavras-passe da Google com o seu sistema operativo, reinicie o Chrome e permita o acesso ao gestor de palavras-passe do computador. Os separadores reabrem depois de serem reiniciados.</translation>
 <translation id="6241121617266208201">Ocultar sugestões</translation>
 <translation id="624499991300733384">Serviço do compositor de impressão</translation>
+<translation id="6246868321321344665">A sua organização pode ver os dados de navegação, como as palavras-passe e o histórico, tanto nos perfis pessoais como nos perfis de trabalho</translation>
 <translation id="6250932670816326647">Produtos para o banho e o corpo</translation>
 <translation id="6251906504834538140">{0,plural, =1{A movimentação do ficheiro foi bloqueada}other{A movimentação de <ph name="FILE_COUNT" /> ficheiros foi bloqueada}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Prima Tab e, em seguida, Enter para gerir ficheiros que transferiu no Chrome</translation>
@@ -3318,6 +3325,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 Detalhes adicionais:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">O administrador diz "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">Botão Não gosto, prima Enter para abrir um formulário e enviar feedback detalhado sobre o motivo pelo qual não gosta, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Tabuleiro posterior</translation>
 <translation id="7257453341537973799">Recursos e planeamento de carreiras</translation>
 <translation id="725866823122871198">Não é possível estabelecer uma ligação privada a <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do computador (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
@@ -4311,6 +4319,7 @@ Detalhes adicionais:
 <translation id="9101450247048146228">Utilização e movimento da câmara (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Tabuleiro 1</translation>
 <translation id="9103872766612412690">Normalmente, o site <ph name="SITE" /> utiliza a encriptação para proteger as suas informações. Quando o Chromium tentou estabelecer ligação a <ph name="SITE" /> desta vez, o Website devolveu credenciais invulgares e incorretas. Isto pode acontecer quando um utilizador mal intencionado tenta simular ser <ph name="SITE" /> ou quando um ecrã de início de sessão Wi-Fi interrompe a ligação. As suas informações continuam seguras porque o Chromium interrompeu a ligação antes de qualquer troca de dados.</translation>
+<translation id="9107199998619088551">A <ph name="MANAGER" /> gere o seu perfil</translation>
 <translation id="9107467864910557787">O navegador é gerido por <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">A política do administrador desativa a partilha de ecrã com <ph name="APPLICATION_TITLE" /> quando existe conteúdo confidencial visível.</translation>
 <translation id="9114524666733003316">A confirmar o cartão…</translation>

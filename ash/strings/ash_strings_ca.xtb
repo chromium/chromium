@@ -467,7 +467,6 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2704781753052663061">Uneix-te a altres xarxes Wi-Fi</translation>
 <translation id="2705001408393684014">Commuta el micròfon. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Amunt</translation>
-<translation id="271033894570825754">Nou</translation>
 <translation id="2710984741481549981">Bloqueja les finestres</translation>
 <translation id="2718395828230677721">Llum nocturna</translation>
 <translation id="2726420622004325180">El telèfon ha de tenir dades mòbils per proporcionar un punt d'accés</translation>
@@ -564,6 +563,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="3077734595579995578">maj</translation>
 <translation id="3081696990447829002">Desplega el menú</translation>
 <translation id="3087734570205094154">Part inferior</translation>
+<translation id="3090214513075567547">Obre el menú contextual</translation>
 <translation id="3090989381251959936">Commuta <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">No entregat</translation>
 <translation id="3095995014811312755">versió</translation>
@@ -1233,7 +1233,6 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="5331975486040154427">Dispositiu USB-C (port posterior esquerre)</translation>
 <translation id="533282197239610265">Mostra els dispositius d'emissió</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (auricular dret)</translation>
-<translation id="5346119650615956459">GIF</translation>
 <translation id="5352250171825660495">El tema fosc està activat</translation>
 <translation id="5354804064646502504">Això pot comportar costos de dades.
 No hi ha cap dispositiu connectat.</translation>

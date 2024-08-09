@@ -467,7 +467,6 @@
 <translation id="2704781753052663061">Միացեք այլ Wi-Fi ցանցերի</translation>
 <translation id="2705001408393684014">Միացնել/անջատել խոսափողը։ <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
-<translation id="271033894570825754">New</translation>
 <translation id="2710984741481549981">Կողպել պատուհանները</translation>
 <translation id="2718395828230677721">Գիշերային ռեժիմ</translation>
 <translation id="2726420622004325180">Թեժ կետն ակտիվացնելու համար հեռախոսում պետք է միացված լինի բջջային ինտերնետը</translation>
@@ -564,6 +563,7 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Ծավալել ընտրացանկը</translation>
 <translation id="3087734570205094154">Ներքև</translation>
+<translation id="3090214513075567547">Բացել տեղային ընտրացանկը</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" />՝ միացնել/անջատել։ <ph name="STATE_TEXT" />։</translation>
 <translation id="3093423061078042895">Վերջնաժամկետը նշված չէ</translation>
 <translation id="3095995014811312755">տարբերակ</translation>
@@ -1233,7 +1233,6 @@
 <translation id="5331975486040154427">USB-C սարք (հետևի ձախակողմյան միացք)</translation>
 <translation id="533282197239610265">Ցուցադրել հեռարձակման սարքերը</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (աջ)</translation>
-<translation id="5346119650615956459">GIF պատկերներ</translation>
 <translation id="5352250171825660495">Մուգ թեման միացված է</translation>
 <translation id="5354804064646502504">Տվյալների փոխանցման համար կարող է գումար գանձվել։
 Միացած սարքեր չկան։</translation>

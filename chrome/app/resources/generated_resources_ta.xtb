@@ -437,7 +437,6 @@
 <translation id="1307431692088049276">மீண்டும் கேட்காதே</translation>
 <translation id="1307559529304613120">அச்சச்சோ! இந்தச் சாதனத்திற்கான நீண்டகால API அணுகல் டோக்கனை சேமிப்பதில் சிஸ்டம் தோல்வியடைந்தது.</translation>
 <translation id="1308548450293664112">இது நான் உருவாக்கிய ஃபைல், ரேடியோ பட்டன் குழு, 1/3</translation>
-<translation id="1308876641060960899">Google Lensஸைப் பயன்படுத்தும்போது, பக்கத்தின் ஸ்கிரீன்ஷாட் Googleளுக்கு அனுப்பப்படும். <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">விளம்பரப் பிரத்தியேகமாக்கலைப் பாதிக்கும் தரவு நீக்கப்படும்</translation>
 <translation id="1311294419381837540">பக்கத்தை அலைபரப்புகிறீர்கள். அலைபரப்பை எப்போது வேண்டுமானாலும் இடைநிறுத்தலாம் அல்லது நிறுத்தலாம்.</translation>
 <translation id="131188242279372879">Chromeமின் மிகவும் பாதுகாப்பான சேவையைப் பதிவிறக்கங்களுக்குப் பெற மேம்பட்ட பாதுகாப்பு குறித்துத் தெரிந்துகொள்ளுங்கள்</translation>
@@ -2657,6 +2656,7 @@
 <translation id="2853121255651601031">கடவுச்சொல் சேமிக்கப்பட்டது</translation>
 <translation id="2855243985454069333">ஒத்திசைக்கப்பட்ட அனைத்து சாதனங்களில் இருந்தும் பதிவை நீக்கும்</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> மூலம் உள்நுழையலாம்</translation>
+<translation id="28559674945112027">கண்டிப்புப் பயன்முறை</translation>
 <translation id="2856776373509145513">புதிய கண்டெய்னரை உருவாக்குதல்</translation>
 <translation id="2856907950922663165">URL என்க்ரிப்ஷனை முடக்கவா?</translation>
 <translation id="2859741939921354763">கடவுச்சொற்களை <ph name="BRAND" />க்கு ஏற்றலாம்</translation>
@@ -3135,7 +3135,6 @@
 <translation id="3220943972464248773">கடவுச்சொற்களை ஒத்திசைக்க இது நீங்கள்தான் என உறுதிசெய்யவும்</translation>
 <translation id="3222066309010235055">முன்செயலாக்கம்: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" /> உடன் இணைக்கவும்</translation>
-<translation id="3222857603094643834">Google Lens மூலம் இந்தப் பக்கத்தில் உள்ள எதையும் தேடுங்கள்</translation>
 <translation id="3223109931751684474">இந்தச் சாதனத்தில் உள்ள உங்கள் கடவுச்சாவிகளுக்கான அணுகலை அகற்றுதல்</translation>
 <translation id="3223531857777746191">மீட்டமைப்பதற்கான பட்டன்</translation>
 <translation id="3225084153129302039">இயல்பு பர்பிள்நிறத் தோற்றப்படம்</translation>
@@ -6416,6 +6415,7 @@
 <translation id="5623282979409330487">இந்தத் தளம் உங்கள் மோஷன் சென்சார்களைப் பயன்படுத்துகிறது.</translation>
 <translation id="5623842676595125836">பதிவு</translation>
 <translation id="5624120631404540903">கடவுச்சொற்களை நிர்வகி</translation>
+<translation id="5624959475330585145">பாதுகாப்பற்ற இணைப்புகளைப் பயன்படுத்தும் முன் கேள்</translation>
 <translation id="5625225435499354052">Google Payயில் திருத்துக</translation>
 <translation id="5626134646977739690">பெயர்:</translation>
 <translation id="5627832140542566187">டிஸ்ப்ளே திசையமைப்பு</translation>
@@ -9650,6 +9650,7 @@
 <translation id="8008356846765065031">இணையம் துண்டிக்கப்பட்டது. உங்கள் இணைய இணைப்பைச் சரிபார்க்கவும்.</translation>
 <translation id="8008704580256716350">சந்தேகத்திற்குரிய ஃபைல் தடுக்கப்பட்டுள்ளது</translation>
 <translation id="8009225694047762179">கடவுச்சொற்களை நிர்வகி</translation>
+<translation id="8010081455002666927">தானியங்குக் கண்டறிதல்</translation>
 <translation id="8011372169388649948"><ph name="BOOKMARK_TITLE" /> புக்மார்க் நகர்த்தப்பட்டது.</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8012463809859447963">உடனடி ஹாட்ஸ்பாட் விவரங்கள்</translation>
@@ -11053,6 +11054,7 @@
 <translation id="9009707268312089299">Windowsஸில் இருந்து பதிவிறக்கியவை</translation>
 <translation id="9009708085379296446">இந்தப் பக்கத்தை மாற்ற விரும்புகிறீர்களா?</translation>
 <translation id="9010845741772269259">பேமெண்ட் முறைகளைச் சேர்க்கும்</translation>
+<translation id="901087299639956505">சமநிலைப் பயன்முறை</translation>
 <translation id="9011163749350026987">எப்போதும் ஐகானைக் காட்டு</translation>
 <translation id="9011262023858991985">இந்த உலாவிப் பக்கத்தை அலைபரப்புகிறது</translation>
 <translation id="9011393886518328654">வெளியீட்டுக் குறிப்புகள்</translation>

@@ -1058,6 +1058,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6188737759358894319">Ustvarjeno dne <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Neprebrano</translation>
 <translation id="6196207969502475924">Glasovno iskanje</translation>
+<translation id="6198252989419008588">Spremeni PIN</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zapri {COUNT} zavihek}one{Zapri {COUNT} zavihek}two{Zapri {COUNT} zavihka}few{Zapri {COUNT} zavihke}other{Zapri {COUNT} zavihkov}}</translation>
 <translation id="6210079381482819663">Sem so premaknjeni zavihki, ki jih ne uporabljate najmanj toliko dni: <ph name="THRESHOLD" />. To lahko kadar koli spremenite v <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Najden ni bil noben naslov</translation>

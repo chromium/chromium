@@ -467,7 +467,6 @@
 <translation id="2704781753052663061">Бусад Wi-Fi сүлжээнд нэгдэх</translation>
 <translation id="2705001408393684014">Микрофоныг асаах/унтраах. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Дээш</translation>
-<translation id="271033894570825754">Шинэ</translation>
 <translation id="2710984741481549981">Цонхнуудыг түгжих</translation>
 <translation id="2718395828230677721">Шөнийн гэрэл</translation>
 <translation id="2726420622004325180">Таны утас сүлжээний цэг өгөхийн тулд мобайл дататай байх ёстой</translation>
@@ -564,6 +563,7 @@
 <translation id="3077734595579995578">Шилжүүлэх</translation>
 <translation id="3081696990447829002">Цэсийг дэлгэх</translation>
 <translation id="3087734570205094154">Доод</translation>
+<translation id="3090214513075567547">Хам сэдэв цэсийг нээх</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" />-г асаах/унтраах. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Дутуу</translation>
 <translation id="3095995014811312755">хувилбар</translation>
@@ -1234,7 +1234,6 @@
 <translation id="5331975486040154427">USB-C төхөөрөмж (ард талын портны зүүн тал)</translation>
 <translation id="533282197239610265">Дамжуулагч төхөөрөмжүүдийг харуулна уу</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Баруун)</translation>
-<translation id="5346119650615956459">GIF</translation>
 <translation id="5352250171825660495">Бараан загвар асаалттай байна</translation>
 <translation id="5354804064646502504">Энэ нь дата ашиглалтын зардал гаргаж магадгүй.
 Ямар ч төхөөрөмж холбогдоогүй.</translation>

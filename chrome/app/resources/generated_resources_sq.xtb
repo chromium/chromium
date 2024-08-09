@@ -437,7 +437,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1307431692088049276">Mos më pyet përsëri</translation>
 <translation id="1307559529304613120">Mos! Sistemi nuk arriti të ruante kodin afatgjatë të qasjes së API-së për këtë pajisje.</translation>
 <translation id="1308548450293664112">E kam krijuar unë këtë skedar, grupi i butonave të radios, 1 nga 3</translation>
-<translation id="1308876641060960899">Kur përdor "Lenten e Google", Google i dërgohet një pamje ekrani e faqes. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Të dhënat që ndikojnë në personalizimin e reklamave do të fshihen</translation>
 <translation id="1311294419381837540">Po transmeton një skedë. Mund ta vendosësh në pauzë ose ta ndalosh transmetimin në çdo kohë.</translation>
 <translation id="131188242279372879">Zbulo mbrojtjen e përmirësuar për të marrë nivelin më të lartë të sigurisë të Chrome për shkarkimet</translation>
@@ -2642,6 +2641,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2853121255651601031">Fjalëkalimi u ruajt</translation>
 <translation id="2855243985454069333">Fshin historikun nga të gjitha pajisjet e sinkronizuara</translation>
 <translation id="2855812646048059450">Identifikohu me <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">Modaliteti i rreptë</translation>
 <translation id="2856776373509145513">Krijo një kontejner të ri</translation>
 <translation id="2856907950922663165">Të çaktivizohet enkriptimi i URL-ve?</translation>
 <translation id="2859741939921354763">Importo fjalëkalimet te "<ph name="BRAND" />"</translation>
@@ -3118,7 +3118,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3220943972464248773">Për të sinkronizuar fjalëkalimet e tua, verifiko që je ti</translation>
 <translation id="3222066309010235055">Interpretuesi paraprak: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Lidhu me <ph name="USB_VM_NAME" /></translation>
-<translation id="3222857603094643834">Kërko çdo gjë në këtë faqe me "Lenten e Google"</translation>
 <translation id="3223109931751684474">Hiq qasjen te çelësat e tu të kalimit në këtë pajisje</translation>
 <translation id="3223531857777746191">Butoni i rivendosjes</translation>
 <translation id="3225084153129302039">Avatari i parazgjedhur i purpurt</translation>
@@ -6396,6 +6395,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5623282979409330487">Kjo faqe po të hap sensorët e lëvizjes.</translation>
 <translation id="5623842676595125836">Ditari</translation>
 <translation id="5624120631404540903">Menaxho fjalëkalimet</translation>
+<translation id="5624959475330585145">Pyet para përdorimit të lidhjeve të pasigurta</translation>
 <translation id="5625225435499354052">Modifiko në Google Pay</translation>
 <translation id="5626134646977739690">Emri:</translation>
 <translation id="5627832140542566187">Orientimi i ekranit</translation>
@@ -9628,6 +9628,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8008356846765065031">Interneti u shkëput. Kontrollo lidhjen e internetit.</translation>
 <translation id="8008704580256716350">Një skedar i dyshimtë u bllokua</translation>
 <translation id="8009225694047762179">Menaxho fjalëkalimet</translation>
+<translation id="8010081455002666927">Zbulo automatikisht</translation>
 <translation id="8011372169388649948">"<ph name="BOOKMARK_TITLE" />" u zhvendos.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8012463809859447963">Detajet e "Zonës së qasjes për internet në çast"</translation>
@@ -11030,6 +11031,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="9009707268312089299">Importuar nga Windows</translation>
 <translation id="9009708085379296446">Dëshiroje ta ndryshoje këtë faqe?</translation>
 <translation id="9010845741772269259">Shto mënyrat e pagesës</translation>
+<translation id="901087299639956505">Modaliteti i balancuar</translation>
 <translation id="9011163749350026987">Shfaq gjithmonë ikonën</translation>
 <translation id="9011262023858991985">Kjo skedë po transmetohet</translation>
 <translation id="9011393886518328654">Shënimet e versionit</translation>

@@ -467,7 +467,6 @@
 <translation id="2704781753052663061">Csatlakozás másik Wi-Fi-hálózatokhoz</translation>
 <translation id="2705001408393684014">Mikrofon be-/kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Fel</translation>
-<translation id="271033894570825754">Új</translation>
 <translation id="2710984741481549981">Az ablakok zárolása</translation>
 <translation id="2718395828230677721">Éjszakai fény</translation>
 <translation id="2726420622004325180">Hotspot biztosításához telefonján engedélyeznie kell a mobiladat-használatot</translation>
@@ -564,6 +563,7 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Menü kibontása</translation>
 <translation id="3087734570205094154">Alja</translation>
+<translation id="3090214513075567547">Helyi menü megnyitása</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> be-/kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Hiányzik</translation>
 <translation id="3095995014811312755">verzió</translation>
@@ -1234,7 +1234,6 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="5331975486040154427">C típusú USB-vel kompatibilis eszköz (bal hátsó port)</translation>
 <translation id="533282197239610265">Cast-eszközök megjelenítése</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (jobb)</translation>
-<translation id="5346119650615956459">GIF-ek</translation>
 <translation id="5352250171825660495">Sötét téma bekapcsolva.</translation>
 <translation id="5354804064646502504">Ez adatforgalmi költségekkel járhat.
 Nincsenek csatlakoztatott eszközök.</translation>

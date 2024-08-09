@@ -148,6 +148,7 @@
 <translation id="7792771145871471484">Controlla i suggerimenti.</translation>
 <translation id="7825973332242257878">Gruppi di schede</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Raggruppa <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Raggruppa <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
+<translation id="7853202427316060426">Attività</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recensione}other{Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recensioni}}</translation>
 <translation id="7885132941432959125">Sposta scheda a destra</translation>
 <translation id="7939917283308035850">Colore <ph name="COLOR_NAME" /> non selezionato</translation>
