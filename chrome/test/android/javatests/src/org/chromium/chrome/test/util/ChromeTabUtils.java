@@ -243,7 +243,8 @@ public class ChromeTabUtils {
             // then it's likely the case that we started observing the tab after
             // onPageLoadFinished but before onLoadStopped. (The latter sets tab.mIsLoading to
             // false.) Try to carry on with the test.
-            if (loadStoppedLatch.getCount() == 0 && loadComplete(tab, url)) {
+            if (loadStoppedLatch.getCount() == 0
+                    && ThreadUtils.runOnUiThreadBlocking(() -> loadComplete(tab, url))) {
                 Log.w(
                         TAG,
                         "onPageLoadFinished was never called, but loading stopped "
