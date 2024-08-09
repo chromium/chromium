@@ -128,6 +128,7 @@ class CORE_EXPORT LayoutAlgorithm {
   }
 
   const BoxStrut& Borders() const { return container_builder_.Borders(); }
+  const BoxStrut& Scrollbar() const { return container_builder_.Scrollbar(); }
   const BoxStrut& Padding() const { return container_builder_.Padding(); }
   const BoxStrut& BorderPadding() const {
     return container_builder_.BorderPadding();

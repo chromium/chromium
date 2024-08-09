@@ -316,8 +316,14 @@ void SetupFragmentBuilderForFragmentation(
     const BlockBreakToken* previous_break_token,
     BoxFragmentBuilder*);
 
+// Return whether any block-start border+padding should be included in the
+// fragment being generated. Only one of the fragments should include this,
+// unless box decorations are to be cloned.
+bool ShouldIncludeBlockStartBorderPadding(const BoxFragmentBuilder&);
+
 // Return whether any block-end border+padding should be included in the
-// fragment being generated. Only one of the fragments should include this.
+// fragment being generated. Only one of the fragments should include this,
+// unless box decorations are to be cloned.
 bool ShouldIncludeBlockEndBorderPadding(const BoxFragmentBuilder&);
 
 // Return the size of the block-start box decorations, if they are cloned. In
