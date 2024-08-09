@@ -19876,6 +19876,19 @@
        {}
       ]
      ],
+     "break-inside-avoid-multicol-iframe-crash-print.html": [
+      "080ec5364736682cf2da450691abf05ae9da558b",
+      [
+       null,
+       [
+        [
+         "/common/blank.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
      "break-nested-float-in-table-001-print.html": [
       "e4e0a578e9a6c6d763fcb9e80d6ff8b91561f3e5",
       [
