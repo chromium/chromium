@@ -300,6 +300,8 @@ void ManualFillingControllerImpl::InitializePlusProfilesCache() {
   if (client && service) {
     plus_profiles_cache_ =
         std::make_unique<AffiliatedPlusProfilesCache>(client, service);
+    pwd_controller_->RegisterPlusProfilesProvider(
+        plus_profiles_cache_->GetWeakPtr());
     address_controller_->RegisterPlusProfilesProvider(
         plus_profiles_cache_->GetWeakPtr());
   }

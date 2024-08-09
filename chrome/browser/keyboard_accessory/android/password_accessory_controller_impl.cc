@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -49,6 +50,7 @@
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_types.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "content/public/browser/render_frame_host.h"
@@ -59,10 +61,12 @@ using autofill::AccessorySheetData;
 using autofill::AccessorySheetField;
 using autofill::FooterCommand;
 using autofill::PasskeySection;
+using autofill::PlusAddressSection;
 using autofill::UserInfo;
 using autofill::mojom::FocusedFieldType;
 using password_manager::CredentialCache;
 using password_manager::UiCredential;
+using plus_addresses::PlusProfile;
 using webauthn::WebAuthnCredManDelegate;
 using BlocklistedStatus =
     password_manager::OriginCredentialStore::BlocklistedStatus;
@@ -140,11 +144,23 @@ ShouldShowAction ShouldShowCredManReentryAction(
   NOTREACHED_NORETURN() << "Showing undefined for " << focused_field_type;
 }
 
+std::string GetOriginFromPlusProfile(
+    const plus_addresses::PlusProfile& profile) {
+  if (absl::holds_alternative<std::string>(profile.facet)) {
+    return absl::get<std::string>(profile.facet);
+  } else {
+    return absl::get<affiliations::FacetURI>(profile.facet).canonical_spec();
+  }
+}
+
 }  // namespace
 
 PasswordAccessoryControllerImpl::~PasswordAccessoryControllerImpl() {
   if (authenticator_) {
     authenticator_->Cancel();
+  }
+  if (plus_profiles_provider_) {
+    plus_profiles_provider_->RemoveObserver(this);
   }
 }
 
@@ -175,9 +191,20 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
   std::vector<PasskeySection> passkeys_to_add;
   std::vector<UserInfo> info_to_add;
   std::vector<FooterCommand> footer_commands_to_add;
+  base::span<const PlusProfile> plus_profiles =
+      plus_profiles_provider_
+          ? plus_profiles_provider_->GetAffiliatedPlusProfiles()
+          : base::span<const PlusProfile, 0>();
+
+  base::flat_map<std::string, bool>::container_type items(plus_profiles.size());
+  for (const PlusProfile& profile : plus_profiles) {
+    items.push_back({profile.plus_address, false});
+  }
+  base::flat_map<std::string, bool> plus_addresses_used_as_usernames(
+      std::move(items));
+
   const bool is_password_field = last_focused_field_info_->focused_field_type ==
                                  FocusedFieldType::kFillablePasswordField;
-
   if (autofill::IsFillable(last_focused_field_info_->focused_field_type)) {
     base::span<const UiCredential> suggestions =
         credential_cache_->GetCredentialStore(origin).GetCredentials();
@@ -185,6 +212,12 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
     for (const auto& credential : suggestions) {
       info_to_add.push_back(
           TranslateCredentials(is_password_field, origin, credential));
+      const std::string username_utf8 =
+          base::UTF16ToUTF8(credential.username());
+      if (auto it = plus_addresses_used_as_usernames.find(username_utf8);
+          it != plus_addresses_used_as_usernames.end()) {
+        it->second = true;
+      }
     }
   }
 
@@ -274,6 +307,14 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
                            data.add_passkey_section(std::move(section));
                          });
 
+  for (const PlusProfile& profile : plus_profiles) {
+    if (!plus_addresses_used_as_usernames[profile.plus_address]) {
+      data.add_plus_address_section(autofill::PlusAddressSection(
+          GetOriginFromPlusProfile(profile),
+          base::UTF8ToUTF16(profile.plus_address)));
+    }
+  }
+
   if (ShouldShowRecoveryToggle(origin)) {
     BlocklistedStatus blocklisted_status =
         credential_cache_->GetCredentialStore(origin).GetBlocklistedStatus();
@@ -286,7 +327,6 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
       data.set_option_toggle(option_toggle);
     }
   }
-  // TODO: crbug.com/327838324 - Populate the plus address section.
   return data;
 }
 
@@ -470,6 +510,14 @@ void PasswordAccessoryControllerImpl::OnToggleChanged(
       << "Unhandled selected action: " << static_cast<int>(toggled_action);
 }
 
+void PasswordAccessoryControllerImpl::RegisterPlusProfilesProvider(
+    base::WeakPtr<AffiliatedPlusProfilesProvider> provider) {
+  plus_profiles_provider_ = provider;
+  if (plus_profiles_provider_) {
+    plus_profiles_provider_->AddObserver(this);
+  }
+}
+
 void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
     FocusedFieldType focused_field_type) {
   // Discard all frame data. This ensures that the data is never used for an
@@ -501,37 +549,8 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
 
   last_focused_field_info_.emplace(origin, focused_field_type,
                                    is_manual_generation_available);
-  bool sheet_provides_value = is_manual_generation_available;
 
-  all_passwords_helper_.ClearUpdateCallback();
-  if (!all_passwords_helper_.available_credentials().has_value()) {
-    all_passwords_helper_.SetUpdateCallback(base::BindOnce(
-        &PasswordAccessoryControllerImpl::RefreshSuggestionsForField,
-        base::Unretained(this), focused_field_type));
-  } else {
-    sheet_provides_value |=
-        all_passwords_helper_.available_credentials().value() > 0;
-  }
-
-  if (ShouldShowRecoveryToggle(origin)) {
-    if (credential_cache_->GetCredentialStore(origin).GetBlocklistedStatus() ==
-        BlocklistedStatus::kIsBlocklisted) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "KeyboardAccessory.DisabledSavingAccessoryImpressions", true);
-    }
-    sheet_provides_value = true;
-  }
-
-  CHECK(source_observer_);
-  // The all passwords sheet could cover this but if it's still loading, use
-  // this data as the next closest proxy to minimize delayed updates UI.
-  sheet_provides_value |=
-      !credential_cache_->GetCredentialStore(origin).GetCredentials().empty();
-  // The "Manage Passwords" entry point doesn't justify showing this fallback
-  // sheet for non-password fields.
-  source_observer_.Run(
-      this, IsFillingSourceAvailable(autofill::IsFillable(focused_field_type) &&
-                                     sheet_provides_value));
+  RefreshSuggestions();
 }
 
 void PasswordAccessoryControllerImpl::OnGenerationRequested(
@@ -776,6 +795,59 @@ void PasswordAccessoryControllerImpl::OnPlusAddressSelected(
     driver->FillIntoFocusedField(/*is_password=*/false,
                                  base::UTF8ToUTF16(plus_address.value()));
   }
+}
+
+void PasswordAccessoryControllerImpl::RefreshSuggestions() {
+  if (!last_focused_field_info_) {
+    return;
+  }
+
+  bool sheet_provides_value =
+      last_focused_field_info_->is_manual_generation_available;
+
+  all_passwords_helper_.ClearUpdateCallback();
+  if (!all_passwords_helper_.available_credentials().has_value()) {
+    all_passwords_helper_.SetUpdateCallback(base::BindOnce(
+        &PasswordAccessoryControllerImpl::RefreshSuggestionsForField,
+        base::Unretained(this), last_focused_field_info_->focused_field_type));
+  } else {
+    sheet_provides_value |=
+        all_passwords_helper_.available_credentials().value() > 0;
+  }
+
+  if (ShouldShowRecoveryToggle(last_focused_field_info_->origin)) {
+    if (credential_cache_->GetCredentialStore(last_focused_field_info_->origin)
+            .GetBlocklistedStatus() == BlocklistedStatus::kIsBlocklisted) {
+      UMA_HISTOGRAM_BOOLEAN(
+          "KeyboardAccessory.DisabledSavingAccessoryImpressions", true);
+    }
+    sheet_provides_value = true;
+  }
+
+  // The all passwords sheet could cover this but if it's still loading, use
+  // this data as the next closest proxy to minimize delayed updates UI.
+  sheet_provides_value |=
+      !credential_cache_->GetCredentialStore(last_focused_field_info_->origin)
+           .GetCredentials()
+           .empty();
+
+  if (plus_profiles_provider_) {
+    sheet_provides_value |=
+        !plus_profiles_provider_->GetAffiliatedPlusProfiles().empty();
+  }
+
+  CHECK(source_observer_);
+  // The "Manage Passwords" entry point doesn't justify showing this fallback
+  // sheet for non-password fields.
+  source_observer_.Run(
+      this,
+      IsFillingSourceAvailable(
+          autofill::IsFillable(last_focused_field_info_->focused_field_type) &&
+          sheet_provides_value));
+}
+
+void PasswordAccessoryControllerImpl::OnAffiliatedPlusProfilesFetched() {
+  RefreshSuggestions();
 }
 
 bool PasswordAccessoryControllerImpl::IsSecureSite() const {

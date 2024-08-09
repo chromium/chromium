@@ -26,6 +26,10 @@ class MockPasswordAccessoryController : public PasswordAccessoryController {
 
   ~MockPasswordAccessoryController() override;
 
+  MOCK_METHOD(void,
+              RegisterPlusProfilesProvider,
+              (base::WeakPtr<AffiliatedPlusProfilesProvider>),
+              (override));
   MOCK_METHOD(
       void,
       SavePasswordsForOrigin,

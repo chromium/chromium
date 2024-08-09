@@ -20,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
+#include "chrome/browser/keyboard_accessory/test_utils/android/mock_affiliated_plus_profiles_provider.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_controller_impl.h"
@@ -47,6 +48,7 @@
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webauthn/android/cred_man_support.h"
@@ -82,6 +84,7 @@ using password_manager::PasswordManagerDriver;
 using password_manager::PasswordManagerInterface;
 using password_manager::PasswordStoreInterface;
 using password_manager::TestPasswordStore;
+using plus_addresses::PlusProfile;
 using testing::_;
 using testing::ByMove;
 using testing::Eq;
@@ -119,6 +122,7 @@ class MockPasswordGenerationController
               OnGenerationRequested,
               (autofill::password_generation::PasswordGenerationType));
 };
+
 // static
 void MockPasswordGenerationController::CreateForWebContents(
     content::WebContents* web_contents) {
@@ -925,6 +929,87 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnAnyFieldIfBlocked) {
       FocusedFieldType::kFillableNonSearchField);
 
   EXPECT_EQ(controller()->GetSheetData(), std::move(data_builder).Build());
+}
+
+TEST_F(PasswordAccessoryControllerTest, AppendsPlusAddressSuggestions) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled);
+
+  CreateSheetController();
+
+  MockAffiliatedPlusProfilesProvider provider;
+  EXPECT_CALL(provider, AddObserver(controller()));
+  controller()->RegisterPlusProfilesProvider(provider.GetWeakPtr());
+
+  // Provide 1 plus address, which is not used as a username in any credential.
+  // It should appear as a standalone suggestion in the password sheet.
+  std::vector<PlusProfile> profiles{plus_addresses::test::CreatePlusProfile(
+      /*plus_address=*/"example@gmail", /*is_confirmed=*/true,
+      /*use_full_domain*/ false)};
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
+  EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
+      .WillRepeatedly(Return(base::span(profiles)));
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableNonSearchField);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
+          .AddPlusAddressSection("foo.com", u"example@gmail")
+          .AppendFooterCommand(generate_plus_address_str(),
+                               autofill::AccessoryAction::
+                                   CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
+          .AppendFooterCommand(select_plus_address_str(),
+                               autofill::AccessoryAction::
+                                   SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
+          .Build());
+}
+
+TEST_F(PasswordAccessoryControllerTest, PlusAddressUsedAsUsername) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled);
+
+  CreateSheetController();
+
+  std::vector<PasswordForm> matches = {
+      CreateEntry("example@gmail", "S3cur3", GURL(kExampleSite),
+                  PasswordForm::MatchType::kExact)};
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      matches, CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+
+  MockAffiliatedPlusProfilesProvider provider;
+  EXPECT_CALL(provider, AddObserver(controller()));
+  controller()->RegisterPlusProfilesProvider(provider.GetWeakPtr());
+
+  // Provide 1 plus address, which is used as a username in the saved
+  // credential. It should not appear as a standalone suggestion in the password
+  // sheet.
+  std::vector<PlusProfile> profiles{plus_addresses::test::CreatePlusProfile(
+      /*plus_address=*/"example@gmail", /*is_confirmed=*/true,
+      /*use_full_domain*/ false)};
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
+  EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
+      .WillRepeatedly(Return(base::make_span(profiles)));
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableNonSearchField);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
+          .AddUserInfo(kExampleSite)
+          .AppendField(u"example@gmail", u"example@gmail", false, true)
+          .AppendField(u"S3cur3", password_for_str(u"example@gmail"), true,
+                       false)
+          .AppendFooterCommand(generate_plus_address_str(),
+                               autofill::AccessoryAction::
+                                   CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
+          .AppendFooterCommand(select_plus_address_str(),
+                               autofill::AccessoryAction::
+                                   SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
+          .Build());
 }
 
 // Verify that the action to open plus address creation bottom sheet is appended

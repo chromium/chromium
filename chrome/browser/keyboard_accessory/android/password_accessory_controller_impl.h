@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
+#include "chrome/browser/keyboard_accessory/android/affiliated_plus_profiles_provider.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_helper.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
@@ -41,6 +42,7 @@ class AllPlusAddressesBottomSheetController;
 // contents of one of its frames. This can cause cross-origin hazards.
 class PasswordAccessoryControllerImpl
     : public PasswordAccessoryController,
+      public AffiliatedPlusProfilesProvider::Observer,
       public content::WebContentsObserver,
       public content::WebContentsUserData<PasswordAccessoryControllerImpl> {
  public:
@@ -71,6 +73,8 @@ class PasswordAccessoryControllerImpl
                        bool enabled) override;
 
   // PasswordAccessoryController:
+  void RegisterPlusProfilesProvider(
+      base::WeakPtr<AffiliatedPlusProfilesProvider> provider) override;
   void RefreshSuggestionsForField(
       autofill::mojom::FocusedFieldType focused_field_type) override;
   void OnGenerationRequested(
@@ -195,6 +199,12 @@ class PasswordAccessoryControllerImpl
   void OnPlusAddressSelected(
       base::optional_ref<const std::string> plus_address);
 
+  // Fetches suggestions and propagates them to the frontend.
+  void RefreshSuggestions();
+
+  // AffiliatedPlusProfilesProvider::Observer:
+  void OnAffiliatedPlusProfilesFetched() override;
+
   content::WebContents& GetWebContents() const;
 
   // Keeps track of credentials which are stored for all origins in this tab.
@@ -202,6 +212,10 @@ class PasswordAccessoryControllerImpl
 
   // The password accessory controller object to forward client requests to.
   base::WeakPtr<ManualFillingController> manual_filling_controller_;
+
+  // The plus profiles provider that is used to generate the plus profiles
+  // section for the frontend.
+  base::WeakPtr<AffiliatedPlusProfilesProvider> plus_profiles_provider_;
 
   // The password manager client is used to update the save passwords status
   // for the currently focused origin.

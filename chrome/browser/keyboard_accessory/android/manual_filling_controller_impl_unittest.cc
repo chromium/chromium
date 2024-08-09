@@ -99,12 +99,14 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
                             identity_test_env_.identity_manager(),
                             &setting_service_));
 
-    ON_CALL(mock_pwd_controller_, RegisterFillingSourceObserver(_))
-        .WillByDefault(SaveArg<0>(&pwd_source_observer_));
-    ON_CALL(mock_payment_method_controller_, RegisterFillingSourceObserver(_))
-        .WillByDefault(SaveArg<0>(&cc_source_observer_));
-    ON_CALL(mock_address_controller_, RegisterFillingSourceObserver(_))
-        .WillByDefault(SaveArg<0>(&address_source_observer_));
+    EXPECT_CALL(mock_pwd_controller_, RegisterFillingSourceObserver)
+        .WillOnce(SaveArg<0>(&pwd_source_observer_));
+    EXPECT_CALL(mock_pwd_controller_, RegisterPlusProfilesProvider);
+    EXPECT_CALL(mock_payment_method_controller_, RegisterFillingSourceObserver)
+        .WillOnce(SaveArg<0>(&cc_source_observer_));
+    EXPECT_CALL(mock_address_controller_, RegisterFillingSourceObserver)
+        .WillOnce(SaveArg<0>(&address_source_observer_));
+    EXPECT_CALL(mock_address_controller_, RegisterPlusProfilesProvider);
     ManualFillingControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_pwd_controller_.AsWeakPtr(),
         mock_address_controller_.AsWeakPtr(),
