@@ -245,7 +245,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
-          token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
+          # Temporary disabled
+          token: ${{ secrets.NONE }}
       - name: Download Artifact
         # There is no way to download artifacts by wildcard, so we need to download
         # all of them. The `updated-wpt-metadata` directory should contain all the
