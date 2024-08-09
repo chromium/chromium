@@ -2714,6 +2714,9 @@ bool DeviceStatusCollector::GetRunningKioskApp(
     case DeviceLocalAccountType::kWebKioskApp:
       running_kiosk_app->set_app_id(account->web_kiosk_app_info.url());
       break;
+    case DeviceLocalAccountType::kKioskIsolatedWebApp:
+      running_kiosk_app->set_app_id(account->kiosk_iwa_info.web_bundle_id());
+      break;
     case DeviceLocalAccountType::kPublicSession:
     case DeviceLocalAccountType::kSamlPublicSession:
       NOTREACHED_IN_MIGRATION();
@@ -3002,6 +3005,9 @@ bool DeviceStatusCollector::GetKioskSessionStatus(
     }
     case DeviceLocalAccountType::kWebKioskApp:
       app_status->set_app_id(account->web_kiosk_app_info.url());
+      break;
+    case DeviceLocalAccountType::kKioskIsolatedWebApp:
+      app_status->set_app_id(account->kiosk_iwa_info.web_bundle_id());
       break;
     case DeviceLocalAccountType::kPublicSession:
     case DeviceLocalAccountType::kSamlPublicSession:

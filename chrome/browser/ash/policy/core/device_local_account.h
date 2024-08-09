@@ -34,6 +34,26 @@ struct WebKioskAppBasicInfo {
   std::string icon_url_;
 };
 
+struct IsolatedWebAppKioskBasicInfo {
+ public:
+  IsolatedWebAppKioskBasicInfo(std::string web_bundle_id,
+                               std::string update_manifest_url);
+  IsolatedWebAppKioskBasicInfo() = default;
+  ~IsolatedWebAppKioskBasicInfo() = default;
+
+  [[nodiscard]] const std::string& web_bundle_id() const {
+    return web_bundle_id_;
+  }
+
+  [[nodiscard]] const std::string& update_manifest_url() const {
+    return update_manifest_url_;
+  }
+
+ private:
+  std::string web_bundle_id_;
+  std::string update_manifest_url_;
+};
+
 // This must match DeviceLocalAccountInfoProto.AccountType in
 // chrome_device_policy.proto.
 struct DeviceLocalAccount {
@@ -56,9 +76,15 @@ struct DeviceLocalAccount {
                      const std::string& account_id,
                      const std::string& kiosk_app_id,
                      const std::string& kiosk_app_update_url);
+
   DeviceLocalAccount(EphemeralMode ephemeral_mode,
                      const WebKioskAppBasicInfo& app_info,
                      const std::string& account_id);
+
+  DeviceLocalAccount(EphemeralMode ephemeral_mode,
+                     const IsolatedWebAppKioskBasicInfo& kiosk_iwa_info,
+                     const std::string& account_id);
+
   DeviceLocalAccount(const DeviceLocalAccount& other);
   ~DeviceLocalAccount();
 
@@ -87,6 +113,7 @@ struct DeviceLocalAccount {
   std::string kiosk_app_update_url;
 
   WebKioskAppBasicInfo web_kiosk_app_info;
+  IsolatedWebAppKioskBasicInfo kiosk_iwa_info;
 };
 
 // Retrieves a list of device-local accounts from `cros_settings`.

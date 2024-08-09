@@ -38,8 +38,16 @@ bool GetString(const base::Value::Dict& dict,
 }
 
 bool IsKioskType(DeviceLocalAccountType type) {
-  return type == DeviceLocalAccountType::kKioskApp ||
-         type == DeviceLocalAccountType::kWebKioskApp;
+  switch (type) {
+    case DeviceLocalAccountType::kKioskApp:
+    case DeviceLocalAccountType::kWebKioskApp:
+    case DeviceLocalAccountType::kKioskIsolatedWebApp:
+      return true;
+    case DeviceLocalAccountType::kPublicSession:
+    case DeviceLocalAccountType::kSamlPublicSession:
+      return false;
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -52,6 +60,12 @@ WebKioskAppBasicInfo::WebKioskAppBasicInfo(const std::string& url,
 WebKioskAppBasicInfo::WebKioskAppBasicInfo() = default;
 
 WebKioskAppBasicInfo::~WebKioskAppBasicInfo() = default;
+
+IsolatedWebAppKioskBasicInfo::IsolatedWebAppKioskBasicInfo(
+    std::string web_bundle_id,
+    std::string update_manifest_url)
+    : web_bundle_id_(std::move(web_bundle_id)),
+      update_manifest_url_(std::move(update_manifest_url)) {}
 
 DeviceLocalAccount::DeviceLocalAccount(DeviceLocalAccountType type,
                                        EphemeralMode ephemeral_mode,
@@ -74,6 +88,16 @@ DeviceLocalAccount::DeviceLocalAccount(
       account_id(account_id),
       user_id(GenerateDeviceLocalAccountUserId(account_id, type)),
       web_kiosk_app_info(web_kiosk_app_info) {}
+
+DeviceLocalAccount::DeviceLocalAccount(
+    EphemeralMode ephemeral_mode,
+    const IsolatedWebAppKioskBasicInfo& kiosk_iwa_info,
+    const std::string& account_id)
+    : type(DeviceLocalAccountType::kKioskIsolatedWebApp),
+      ephemeral_mode(ephemeral_mode),
+      account_id(account_id),
+      user_id(GenerateDeviceLocalAccountUserId(account_id, type)),
+      kiosk_iwa_info(kiosk_iwa_info) {}
 
 DeviceLocalAccount::DeviceLocalAccount(const DeviceLocalAccount& other) =
     default;
@@ -194,6 +218,34 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
                               account_id);
         break;
       }
+      case DeviceLocalAccountType::kKioskIsolatedWebApp: {
+        std::string web_bundle_id;
+        if (!GetString(entry_dict,
+                       ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskBundleId,
+                       &web_bundle_id)) {
+          LOG(ERROR) << "Missing web bundle ID in IWA kiosk type device-local "
+                        "account at index "
+                     << i << ".";
+          continue;
+        }
+
+        std::string update_manifest_url;
+        if (!GetString(
+                entry_dict,
+                ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateUrl,
+                &update_manifest_url)) {
+          LOG(ERROR) << "Missing manifest url in IWA kiosk type device-local "
+                        "account at index "
+                     << i << ".";
+          continue;
+        }
+
+        accounts.emplace_back(
+            ephemeral_mode_value,
+            IsolatedWebAppKioskBasicInfo(web_bundle_id, update_manifest_url),
+            account_id);
+        break;
+      }
     }
   }
   return accounts;
@@ -236,6 +288,12 @@ void SetDeviceLocalAccountsForTesting(
           entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
                     account.web_kiosk_app_info.icon_url());
         }
+        break;
+      case DeviceLocalAccountType::kKioskIsolatedWebApp:
+        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskBundleId,
+                  account.kiosk_iwa_info.web_bundle_id());
+        entry.Set(ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateUrl,
+                  account.kiosk_iwa_info.update_manifest_url());
         break;
     }
     list.Append(std::move(entry));
