@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -45,7 +46,8 @@ class PickerSuggestionsController;
 // Controls a Picker widget.
 class ASH_EXPORT PickerController : public PickerViewDelegate,
                                     public views::ViewObserver,
-                                    public PickerAssetFetcherImplDelegate {
+                                    public PickerAssetFetcherImplDelegate,
+                                    public input_method::ImeKeyboard::Observer {
  public:
   PickerController();
   PickerController(const PickerController&) = delete;
@@ -129,6 +131,10 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
                           const gfx::Size& size,
                           FetchFileThumbnailCallback callback) override;
 
+  // input_method::ImeKeyboard::Observer
+  void OnCapsLockChanged(bool enabled) override;
+  void OnLayoutChanging(const std::string& layout_name) override;
+
   // Disables the feature key checking. Only works in tests.
   static void DisableFeatureKeyCheckForTesting();
   // Disables the feature tour. Only works in tests.
@@ -190,6 +196,10 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
 
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
       this};
+
+  base::ScopedObservation<input_method::ImeKeyboard,
+                          input_method::ImeKeyboard::Observer>
+      ime_keyboard_observation_{this};
 
   // Closes CapsLock state view after some time.
   base::OneShotTimer caps_lock_state_view_close_timer_;

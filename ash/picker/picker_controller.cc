@@ -286,6 +286,7 @@ ui::EmojiPickerCategory EmojiResultTypeToCategory(
 
 PickerController::PickerController()
     : asset_fetcher_(std::make_unique<PickerAssetFetcherImpl>(this)) {
+  ime_keyboard_observation_.Observe(&GetImeKeyboard());
 }
 
 PickerController::~PickerController() {
@@ -594,7 +595,6 @@ PickerModeType PickerController::GetMode() {
 void PickerController::OnViewIsDeleting(views::View* view) {
   view_observation_.Reset();
 
-  caps_lock_state_view_ = nullptr;
   model_.reset();
   feature_usage_metrics_.StopUsage();
   session_metrics_.reset();
@@ -610,10 +610,7 @@ void PickerController::FetchFileThumbnail(const base::FilePath& path,
 
 void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
                                   WidgetTriggerSource trigger_source) {
-  CloseCapsLockStateView();
   show_editor_callback_ = client_->CacheEditorContext();
-
-  feature_usage_metrics_.StartUsage();
 
   model_ = std::make_unique<PickerModel>(
       GetFocusedTextInputClient(), &GetImeKeyboard(),
@@ -623,14 +620,6 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
   if (model_->GetMode() == PickerModeType::kPassword) {
     bool should_enable = !model_->is_caps_lock_enabled();
     GetImeKeyboard().SetCapsLockEnabled(should_enable);
-    caps_lock_state_view_ = new PickerCapsLockStateView(
-        GetParentView(), should_enable, GetCaretBounds());
-    caps_lock_state_view_->Show();
-    view_observation_.Observe(caps_lock_state_view_);
-    caps_lock_state_view_close_timer_.Start(
-        FROM_HERE, kCapsLockStateViewDisplayTime,
-        base::BindOnce(&PickerController::CloseCapsLockStateView,
-                       weak_ptr_factory_.GetWeakPtr()));
     model_.reset();
     return;
   }
@@ -652,6 +641,7 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
   }
   widget_->Show();
 
+  feature_usage_metrics_.StartUsage();
   session_metrics_->OnStartSession(GetFocusedTextInputClient());
   view_observation_.Observe(widget_->GetContentsView());
 }
@@ -668,9 +658,9 @@ void PickerController::CloseWidget() {
 
 void PickerController::CloseCapsLockStateView() {
   caps_lock_state_view_close_timer_.Stop();
-  if (caps_lock_state_view_) {
+  if (caps_lock_state_view_ != nullptr) {
     caps_lock_state_view_->Close();
-    OnViewIsDeleting(caps_lock_state_view_);
+    caps_lock_state_view_ = nullptr;
   }
 }
 
@@ -787,5 +777,24 @@ PickerCapsLockPosition PickerController::GetCapsLockPosition() {
   }
   return PickerCapsLockPosition::kBottom;
 }
+
+// TODO(b/358248370): CapsLock state view is actually not dependent on
+// PickerController, it lives here for legacy reason. We should refactor related
+// code to a separate class.
+void PickerController::OnCapsLockChanged(bool enabled) {
+  CloseCapsLockStateView();
+  if (GetFocusedTextInputClient() == nullptr) {
+    return;
+  }
+  caps_lock_state_view_ =
+      new PickerCapsLockStateView(GetParentView(), enabled, GetCaretBounds());
+  caps_lock_state_view_->Show();
+  caps_lock_state_view_close_timer_.Start(
+      FROM_HERE, kCapsLockStateViewDisplayTime,
+      base::BindOnce(&PickerController::CloseCapsLockStateView,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PickerController::OnLayoutChanging(const std::string& layout_name) {}
 
 }  // namespace ash
