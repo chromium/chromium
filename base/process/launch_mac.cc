@@ -140,6 +140,9 @@ bool GetAppOutputInternal(const std::vector<std::string>& argv,
   }
 
   Process process = LaunchProcess(argv, launch_options);
+  if (!process.IsValid()) {
+    return false;
+  }
 
   // Close the parent process' write descriptor, so that EOF is generated in
   // read loop below.
