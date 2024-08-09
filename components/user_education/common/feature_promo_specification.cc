@@ -26,9 +26,7 @@ namespace {
 // It is not to be modified except by the Frizzle team.
 bool IsAllowedLegalNotice(const base::Feature& promo_feature) {
   // Add the text names of allowlisted critical promos here:
-  static const char* const kAllowedPromoNames[] = {
-      "IPH_TrackingProtectionOnboarding",
-  };
+  static const char* const kAllowedPromoNames[] = {};
   for (const auto* promo_name : kAllowedPromoNames) {
     if (!strcmp(promo_feature.name, promo_name)) {
       return true;

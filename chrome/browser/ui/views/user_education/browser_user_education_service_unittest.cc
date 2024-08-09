@@ -204,7 +204,6 @@ TEST(BrowserUserEducationServiceTest, PreventNewHardCodedConfigurations) {
       "IPH_SidePanelGenericPinnableFeature",
       "IPH_SignoutWebIntercept",
       "IPH_TabOrganizationSuccess",
-      "IPH_TrackingProtectionOnboarding",
       "IPH_TrackingProtectionReminder",
       "IPH_ProfileSwitch",
       "IPH_PriceTrackingInSidePanel",
