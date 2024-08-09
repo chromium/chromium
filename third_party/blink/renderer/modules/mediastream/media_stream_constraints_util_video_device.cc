@@ -624,6 +624,7 @@ class ImageCaptureDeviceState {
     std::optional<DoubleRangeSet> focus_distance_intersection_;
     std::optional<BoolSet> torch_intersection_;
     std::optional<BoolSet> background_blur_intersection_;
+    std::optional<BoolSet> background_segmentation_mask_intersection_;
     std::optional<BoolSet> eye_gaze_correction_intersection_;
     std::optional<BoolSet> face_framing_intersection_;
   };
@@ -670,6 +671,11 @@ class ImageCaptureDeviceState {
           TryToApplyConstraint(
               constraint_set.background_blur, background_blur_set_,
               result->background_blur_intersection_, failed_constraint_name) &&
+          TryToApplyConstraint(
+              constraint_set.background_segmentation_mask,
+              background_segmentation_mask_set_,
+              result->background_segmentation_mask_intersection_,
+              failed_constraint_name) &&
           TryToApplyConstraint(constraint_set.eye_gaze_correction,
                                eye_gaze_correction_set_,
                                result->eye_gaze_correction_intersection_,
@@ -717,6 +723,10 @@ class ImageCaptureDeviceState {
     if (result.background_blur_intersection_.has_value()) {
       background_blur_set_ = *result.background_blur_intersection_;
     }
+    if (result.background_segmentation_mask_intersection_.has_value()) {
+      background_segmentation_mask_set_ =
+          *result.background_segmentation_mask_intersection_;
+    }
     if (result.eye_gaze_correction_intersection_.has_value()) {
       eye_gaze_correction_set_ = *result.eye_gaze_correction_intersection_;
     }
@@ -747,6 +757,8 @@ class ImageCaptureDeviceState {
            BoolSetFitness(basic_constraint_set.torch, torch_set_) +
            BoolSetFitness(basic_constraint_set.background_blur,
                           background_blur_set_) +
+           BoolSetFitness(basic_constraint_set.background_segmentation_mask,
+                          background_segmentation_mask_set_) +
            BoolSetFitness(basic_constraint_set.eye_gaze_correction,
                           eye_gaze_correction_set_) +
            BoolSetFitness(basic_constraint_set.face_framing, face_framing_set_);
@@ -782,6 +794,9 @@ class ImageCaptureDeviceState {
     settings->torch = SelectSetting(basic_constraint_set.torch, torch_set_);
     settings->background_blur = SelectSetting(
         basic_constraint_set.background_blur, background_blur_set_);
+    settings->background_segmentation_mask =
+        SelectSetting(basic_constraint_set.background_segmentation_mask,
+                      background_segmentation_mask_set_);
     settings->eye_gaze_correction = SelectSetting(
         basic_constraint_set.eye_gaze_correction, eye_gaze_correction_set_);
     settings->face_framing =
@@ -792,8 +807,8 @@ class ImageCaptureDeviceState {
           settings->brightness || settings->contrast || settings->saturation ||
           settings->sharpness || settings->focus_distance || settings->pan ||
           settings->tilt || settings->zoom || settings->torch ||
-          settings->background_blur || settings->eye_gaze_correction ||
-          settings->face_framing)) {
+          settings->background_blur || settings->background_segmentation_mask ||
+          settings->eye_gaze_correction || settings->face_framing)) {
       settings.reset();
     }
 
@@ -874,6 +889,7 @@ class ImageCaptureDeviceState {
   DoubleRangeSet focus_distance_set_;
   BoolSet torch_set_;
   BoolSet background_blur_set_;
+  BoolSet background_segmentation_mask_set_;
   BoolSet eye_gaze_correction_set_;
   BoolSet face_framing_set_;
 };

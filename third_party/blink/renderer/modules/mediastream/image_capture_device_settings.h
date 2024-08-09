@@ -26,6 +26,7 @@ struct MODULES_EXPORT ImageCaptureDeviceSettings {
   std::optional<double> zoom;
   std::optional<bool> torch;
   std::optional<bool> background_blur;
+  std::optional<bool> background_segmentation_mask;
   std::optional<bool> eye_gaze_correction;
   std::optional<bool> face_framing;
 };

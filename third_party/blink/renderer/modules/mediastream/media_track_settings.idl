@@ -46,6 +46,7 @@ dictionary MediaTrackSettings {
 
     // W3C Media Capture Extensions
     [RuntimeEnabled=MediaCaptureBackgroundBlur] boolean backgroundBlur;
+    [RuntimeEnabled=MediaCaptureCameraControls] boolean backgroundSegmentationMask;
     [RuntimeEnabled=MediaCaptureCameraControls] boolean eyeGazeCorrection;
     [RuntimeEnabled=MediaCaptureCameraControls] boolean faceFraming;
 

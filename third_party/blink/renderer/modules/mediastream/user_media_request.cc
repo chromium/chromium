@@ -419,6 +419,7 @@ UserMediaRequest* UserMediaRequest::Create(
           &video_basic.tilt,
           &video_basic.zoom,
           &video_basic.background_blur,
+          &video_basic.background_segmentation_mask,
           &video_basic.eye_gaze_correction,
           &video_basic.face_framing,
       };

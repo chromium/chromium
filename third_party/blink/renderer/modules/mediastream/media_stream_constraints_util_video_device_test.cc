@@ -215,6 +215,7 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
     return {
         &MediaTrackConstraintSetPlatform::torch,
         &MediaTrackConstraintSetPlatform::background_blur,
+        &MediaTrackConstraintSetPlatform::background_segmentation_mask,
         &MediaTrackConstraintSetPlatform::eye_gaze_correction,
         &MediaTrackConstraintSetPlatform::face_framing,
     };
@@ -2653,6 +2654,16 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
           result.image_capture_device_settings()->background_blur.value());
     }
     EXPECT_EQ(
+        result.image_capture_device_settings()
+            ->background_segmentation_mask.has_value(),
+        constraint ==
+            &MediaTrackConstraintSetPlatform::background_segmentation_mask);
+    if (result.image_capture_device_settings()
+            ->background_segmentation_mask.has_value()) {
+      EXPECT_FALSE(result.image_capture_device_settings()
+                       ->background_segmentation_mask.value());
+    }
+    EXPECT_EQ(
         result.image_capture_device_settings()->eye_gaze_correction.has_value(),
         constraint == &MediaTrackConstraintSetPlatform::eye_gaze_correction);
     if (result.image_capture_device_settings()
@@ -2937,6 +2948,16 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, BasicImageCapture) {
     if (result.image_capture_device_settings()->background_blur.has_value()) {
       EXPECT_FALSE(
           result.image_capture_device_settings()->background_blur.value());
+    }
+    EXPECT_EQ(
+        result.image_capture_device_settings()
+            ->background_segmentation_mask.has_value(),
+        constraint ==
+            &MediaTrackConstraintSetPlatform::background_segmentation_mask);
+    if (result.image_capture_device_settings()
+            ->background_segmentation_mask.has_value()) {
+      EXPECT_FALSE(result.image_capture_device_settings()
+                       ->background_segmentation_mask.value());
     }
     EXPECT_EQ(
         result.image_capture_device_settings()->eye_gaze_correction.has_value(),

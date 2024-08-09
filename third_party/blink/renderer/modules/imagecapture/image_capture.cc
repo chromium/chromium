@@ -198,6 +198,10 @@ void CopyCommonMembers(const T* source,
   if (source->hasBackgroundBlur()) {
     destination->setBackgroundBlur(source->backgroundBlur());
   }
+  if (source->hasBackgroundSegmentationMask()) {
+    destination->setBackgroundSegmentationMask(
+        source->backgroundSegmentationMask());
+  }
   if (source->hasEyeGazeCorrection()) {
     destination->setEyeGazeCorrection(source->eyeGazeCorrection());
   }
@@ -1456,6 +1460,16 @@ void MaybeSetBackgroundBlurSetting(bool value,
 
 void MaybeSetBoolSetting(bool value,
                          const Vector<bool>& capability,
+                         std::optional<bool>& setting) {
+  if (!base::Contains(capability, value)) {
+    return;
+  }
+
+  setting = value;
+}
+
+void MaybeSetBoolSetting(bool value,
+                         const Vector<bool>& capability,
                          bool& has_setting,
                          bool& setting) {
   if (!base::Contains(capability, value)) {
@@ -2029,6 +2043,12 @@ void ImageCapture::SetVideoTrackDeviceSettingsFromTrack(
           *device_settings->background_blur, capabilities_->backgroundBlur(),
           settings->has_background_blur_mode, settings->background_blur_mode);
     }
+    if (device_settings->background_segmentation_mask.has_value() &&
+        capabilities_->hasBackgroundSegmentationMask()) {
+      MaybeSetBoolSetting(*device_settings->background_segmentation_mask,
+                          capabilities_->backgroundSegmentationMask(),
+                          settings->background_segmentation_mask_state);
+    }
     if (device_settings->eye_gaze_correction.has_value() &&
         capabilities_->hasEyeGazeCorrection()) {
       MaybeSetEyeGazeCorrectionSetting(*device_settings->eye_gaze_correction,
@@ -2051,7 +2071,8 @@ void ImageCapture::SetVideoTrackDeviceSettingsFromTrack(
          settings->has_tilt || settings->has_zoom || settings->has_torch ||
          settings->has_background_blur_mode ||
          settings->has_face_framing_mode ||
-         settings->eye_gaze_correction_mode.has_value())) {
+         settings->eye_gaze_correction_mode.has_value() ||
+         settings->background_segmentation_mask_state.has_value())) {
       service_->SetPhotoOptions(
           SourceId(), std::move(settings),
           WTF::BindOnce(&ImageCapture::OnSetVideoTrackDeviceSettingsFromTrack,
@@ -2297,6 +2318,18 @@ void ImageCapture::ApplyMediaTrackConstraintSetToSettings(
       settings->background_blur_mode = ParseBackgroundBlur(setting);
     }
   }
+  if (constraint_set->hasBackgroundSegmentationMask() &&
+      effective_capabilities->hasBackgroundSegmentationMask()) {
+    bool has_setting = false;
+    bool setting;
+    effective_capabilities->setBackgroundSegmentationMask(ApplyValueConstraint(
+        &has_setting, &setting,
+        effective_capabilities->backgroundSegmentationMask(),
+        constraint_set->backgroundSegmentationMask(), constraint_set_type));
+    if (has_setting) {
+      settings->background_segmentation_mask_state.emplace(setting);
+    }
+  }
   if (constraint_set->hasEyeGazeCorrection() &&
       effective_capabilities->hasEyeGazeCorrection()) {
     bool has_setting = false;
@@ -2491,6 +2524,16 @@ bool ImageCapture::CheckMediaTrackConstraintSet(
     MaybeRejectWithOverconstrainedError(
         resolver, "backgroundBlur",
         "backgroundBlur setting value not supported");
+    return false;
+  }
+  if (constraint_set->hasBackgroundSegmentationMask() &&
+      effective_capabilities->hasBackgroundSegmentationMask() &&
+      !CheckValueConstraint(
+          effective_capabilities->backgroundSegmentationMask(),
+          constraint_set->backgroundSegmentationMask(), constraint_set_type)) {
+    MaybeRejectWithOverconstrainedError(
+        resolver, "backgroundSegmentationMask",
+        "backgroundSegmentationMask setting value not supported");
     return false;
   }
   if (constraint_set->hasEyeGazeCorrection() &&
@@ -2787,6 +2830,14 @@ void ImageCapture::UpdateMediaTrackSettingsAndCapabilities(
         ToBooleanMode(photo_state->background_blur_mode));
   }
 
+  if (photo_state->supported_background_segmentation_mask_states &&
+      !photo_state->supported_background_segmentation_mask_states->empty()) {
+    capabilities_->setBackgroundSegmentationMask(
+        *photo_state->supported_background_segmentation_mask_states);
+    settings_->setBackgroundSegmentationMask(
+        photo_state->current_background_segmentation_mask_state);
+  }
+
   if (photo_state->supported_eye_gaze_correction_modes &&
       !photo_state->supported_eye_gaze_correction_modes->empty()) {
     Vector<bool> supported_eye_gaze_correction_modes;
@@ -2993,6 +3044,13 @@ ImageCapture::GetConstraintWithCapabilityExistenceMismatch(
           CapabilityExists(capabilities_->hasBackgroundBlur()),
           constraint_set_type)) {
     return "backgroundBlur";
+  }
+  if (constraint_set->hasBackgroundSegmentationMask() &&
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->backgroundSegmentationMask(),
+          CapabilityExists(capabilities_->hasBackgroundSegmentationMask()),
+          constraint_set_type)) {
+    return "backgroundSegmentationMask";
   }
   if (constraint_set->hasEyeGazeCorrection() &&
       !CheckIfCapabilityExistenceSatisfiesConstraint(

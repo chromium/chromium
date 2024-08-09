@@ -191,6 +191,16 @@ struct PhotoState {
   // Only meaningful if |supported_eye_gaze_correction_modes| is non-empty.
   [MinVersion=3]
   EyeGazeCorrectionMode current_eye_gaze_correction_mode;
+  // An array of unique supported values for
+  // |PhotoSettings.background_segmentation_mask_state|.
+  // Should not be null (but is nullable for stable backward compatibility).
+  [MinVersion=4]
+  array<bool>? supported_background_segmentation_mask_states;
+  // The current background mask state.
+  // Only meaningful if |supported_background_segmentation_mask_states| is
+  // non-empty.
+  [MinVersion=4]
+  bool current_background_segmentation_mask_state;
 };
 
 // Equivalent to idl Point2D.
@@ -269,6 +279,8 @@ struct PhotoSettings {
   MeteringMode face_framing_mode;
   [MinVersion=3]
   EyeGazeCorrectionMode? eye_gaze_correction_mode;
+  [MinVersion=4]
+  bool? background_segmentation_mask_state;
 };
 
 // This is a mojo move-only equivalent of a Blob, i.e. MIME type and Data.

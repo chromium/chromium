@@ -266,6 +266,7 @@ struct MediaTrackConstraintSetPlatform {
 
   // W3C Media Capture Extensions
   BooleanConstraint background_blur;
+  BooleanConstraint background_segmentation_mask;
   BooleanConstraint eye_gaze_correction;
   BooleanConstraint face_framing;
 

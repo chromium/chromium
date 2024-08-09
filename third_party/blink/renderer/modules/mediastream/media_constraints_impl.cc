@@ -667,6 +667,12 @@ bool ValidateAndCopyConstraintSet(
                           constraint_buffer.background_blur);
   }
 
+  if (constraints_in->hasBackgroundSegmentationMask()) {
+    CopyBooleanConstraint(constraints_in->backgroundSegmentationMask(),
+                          naked_treatment,
+                          constraint_buffer.background_segmentation_mask);
+  }
+
   if (constraints_in->hasEyeGazeCorrection()) {
     CopyBooleanConstraint(constraints_in->eyeGazeCorrection(), naked_treatment,
                           constraint_buffer.eye_gaze_correction);
@@ -933,6 +939,10 @@ void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
   if (!input.background_blur.IsUnconstrained()) {
     output->setBackgroundBlur(
         ConvertBoolean(input.background_blur, naked_treatment));
+  }
+  if (!input.background_segmentation_mask.IsUnconstrained()) {
+    output->setBackgroundSegmentationMask(
+        ConvertBoolean(input.background_segmentation_mask, naked_treatment));
   }
   if (!input.eye_gaze_correction.IsUnconstrained()) {
     output->setEyeGazeCorrection(
