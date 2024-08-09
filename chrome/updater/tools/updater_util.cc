@@ -23,6 +23,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_executor.h"
@@ -414,7 +415,7 @@ UpdateService::Priority Priority() {
 }
 
 std::string Quoted(const std::string& value) {
-  return "\"" + value + "\"";
+  return base::StrCat({"\"", value, "\""});
 }
 
 bool OutputInJSONFormat() {
