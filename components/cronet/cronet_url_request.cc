@@ -306,6 +306,33 @@ void CronetURLRequest::NetworkTasks::Start(
       referer) {
     url_request_->SetReferrer(*referer);
   }
+  if (shared_dictionary_) {
+    if (!context->GetURLRequestContext(network_)->enable_brotli()) {
+      // Ideally this would be impossible. Unfortunately, due to Cronet's API
+      // structure, it is impossible to know within UrlRequest.Builder's API
+      // code whether the associated CronetEngine has Brotli enabled or not.
+      // So, since we cannot throw there, the best we can do is log error here.
+      LOG(WARNING) << "Compression dictionary will be ignored: the "
+                      "CronetEngine being used disables Brotli, which is a "
+                      "requirement for compression dictionaries.";
+    } else {
+      url_request_->SetSharedDictionaryGetter(base::BindRepeating(
+          [](scoped_refptr<net::SharedDictionary> dict,
+             const std::optional<net::SharedDictionaryIsolationKey>&
+                 isolation_key,
+             const GURL& request_url) {
+            // Cronet currently does not implement the retrieval of compression
+            // dictionaries, it instead relies on the embedder to provide them
+            // for a specific URLRequest. As such, Cronet doesn't handle
+            // matching dictionaries with isolation keys & URLs, but relies on
+            // the embedder to do the right thing.
+            return dict;
+          },
+          shared_dictionary_));
+      url_request_->SetIsSharedDictionaryReadAllowedCallback(
+          base::BindRepeating([] { return true; }));
+    }
+  }
   if (upload)
     url_request_->set_upload(std::move(upload));
   if (traffic_stats_tag_set_ || traffic_stats_uid_set_) {

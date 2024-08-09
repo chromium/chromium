@@ -15,6 +15,7 @@
 #include "net/base/idempotency.h"
 #include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
+#include "net/shared_dictionary/shared_dictionary.h"
 #include "net/url_request/url_request.h"
 #include "url/gurl.h"
 
@@ -302,6 +303,8 @@ class CronetURLRequest {
     const int32_t traffic_stats_uid_;
     // Idempotency of the request.
     const net::Idempotency idempotency_;
+    // Optional compression dictionary for this request. != nullptr if present.
+    scoped_refptr<net::SharedDictionary> shared_dictionary_;
 
     net::handles::NetworkHandle network_;
 
