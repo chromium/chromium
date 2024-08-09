@@ -146,13 +146,28 @@ typedef record<DOMString, MLBuffer> MLNamedBuffers;
         optional MLSize64 srcByteOffset = 0,
         optional MLSize64 srcByteSize);
 
-  // TODO(crbug.com/328102504): enable transferable view to avoid copy.
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
   ] Promise<ArrayBuffer> readBuffer(
         MLBuffer srcBuffer);
+
+  [
+    RuntimeEnabled=MachineLearningNeuralNetwork,
+    CallWith=ScriptState,
+    RaisesException
+  ] Promise<void> readBuffer(
+        MLBuffer srcBuffer,
+        [AllowShared] ArrayBufferView dstData);
+
+  [
+    RuntimeEnabled=MachineLearningNeuralNetwork,
+    CallWith=ScriptState,
+    RaisesException
+  ] Promise<void> readBuffer(
+        MLBuffer srcBuffer,
+        [AllowShared] ArrayBuffer dstData);
 
   // TODO(crbug.com/1273291): enable partial buffer dispatches.
   [

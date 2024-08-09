@@ -524,6 +524,46 @@ ScriptPromise<DOMArrayBuffer> MLContext::readBuffer(
   return src_buffer->ReadBufferImpl(script_state, exception_state);
 }
 
+ScriptPromise<void> MLContext::readBuffer(ScriptState* script_state,
+                                          MLBuffer* src_buffer,
+                                          DOMArrayBufferBase* dst_data,
+                                          ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid script state");
+    return EmptyPromise();
+  }
+
+  if (src_buffer->context() != this) {
+    exception_state.ThrowTypeError(
+        "The source buffer wasn't created with this context.");
+    return EmptyPromise();
+  }
+
+  return src_buffer->ReadBufferImpl(script_state, dst_data, exception_state);
+}
+
+ScriptPromise<void> MLContext::readBuffer(
+    ScriptState* script_state,
+    MLBuffer* src_buffer,
+    MaybeShared<DOMArrayBufferView> dst_data,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid script state");
+    return EmptyPromise();
+  }
+
+  if (src_buffer->context() != this) {
+    exception_state.ThrowTypeError(
+        "The source buffer wasn't created with this context.");
+    return EmptyPromise();
+  }
+
+  return src_buffer->ReadBufferImpl(script_state, dst_data.Get(),
+                                    exception_state);
+}
+
 void MLContext::WriteWebNNBuffer(ScriptState* script_state,
                                  MLBuffer* dst_buffer,
                                  base::span<const uint8_t> src_data,

@@ -73,6 +73,14 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   ScriptPromise<DOMArrayBuffer> ReadBufferImpl(ScriptState* script_state,
                                                ExceptionState& exception_state);
 
+  ScriptPromise<void> ReadBufferImpl(ScriptState* script_state,
+                                     DOMArrayBufferBase* dst_data,
+                                     ExceptionState& exception_state);
+
+  ScriptPromise<void> ReadBufferImpl(ScriptState* script_state,
+                                     DOMArrayBufferView* dst_data,
+                                     ExceptionState& exception_state);
+
   // Write data to the MLBuffer. If write was successful, the data will be
   // stored in the MLBuffer.
   void WriteBufferImpl(base::span<const uint8_t> src_data,
@@ -83,6 +91,12 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   // OS machine learning APIs.
   void OnDidReadBuffer(ScriptPromiseResolver<DOMArrayBuffer>* resolver,
                        webnn::mojom::blink::ReadBufferResultPtr result);
+  void OnDidReadBufferByob(ScriptPromiseResolver<void>* resolver,
+                           DOMArrayBufferBase* dst_data,
+                           webnn::mojom::blink::ReadBufferResultPtr result);
+  void OnDidReadBufferByobView(ScriptPromiseResolver<void>* resolver,
+                               DOMArrayBufferView* dst_data,
+                               webnn::mojom::blink::ReadBufferResultPtr result);
 
   void OnConnectionError();
 
@@ -101,6 +115,7 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   // Keep a set of unresolved `ScriptPromiseResolver`s which will be
   // rejected when the Mojo pipe is unexpectedly disconnected.
   HeapHashSet<Member<ScriptPromiseResolver<DOMArrayBuffer>>> pending_resolvers_;
+  HeapHashSet<Member<ScriptPromiseResolver<void>>> pending_byob_resolvers_;
 };
 
 }  // namespace blink
