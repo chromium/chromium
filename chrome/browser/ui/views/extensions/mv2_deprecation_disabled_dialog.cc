@@ -28,7 +28,7 @@ void ShowMv2DeprecationDisabledDialog(
   int extensions_size = extension_ids.size();
 
   ui::DialogModel::Builder dialog_builder;
-  dialog_builder
+  dialog_builder.SetInternalName("Mv2DeprecationDisabledDialog")
       .AddParagraph(
           ui::DialogModelLabel(l10n_util::GetPluralStringFUTF16(
               IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_DESCRIPTION,
