@@ -4001,7 +4001,8 @@ def make_cross_origin_named_getter_callback(cg_context, function_name):
                     cond="bindings::GetCrossOriginFunction("
                     "${isolate}, operation.name, operation.callback, "
                     "operation.func_length,"
-                    "${class_name}::GetWrapperTypeInfo())"
+                    "${class_name}::GetWrapperTypeInfo(), "
+                    "v8::ExceptionContext::kOperation, ${class_like_name})"
                     ".ToLocal(&function)",
                     attribute=None,
                     body=TextNode(
@@ -4099,11 +4100,13 @@ for (const auto& attribute : kCrossOriginAttributeTable) {
   v8::Local<v8::Value> set;
   if (!bindings::GetCrossOriginGetterSetter(
            ${info}.GetIsolate(), attribute.name, attribute.get_callback, 0,
-           ${class_name}::GetWrapperTypeInfo())
+           ${class_name}::GetWrapperTypeInfo(),
+           v8::ExceptionContext::kAttributeGet, ${class_like_name})
            .ToLocal(&get) ||
       !bindings::GetCrossOriginGetterSetter(
            ${info}.GetIsolate(), attribute.name, attribute.set_callback, 1,
-           ${class_name}::GetWrapperTypeInfo())
+           ${class_name}::GetWrapperTypeInfo(),
+           v8::ExceptionContext::kAttributeSet, ${class_like_name})
            .ToLocal(&set)) {
     // Exception was thrown which means that the request was intercepted.
     return v8::Intercepted::kYes;
@@ -4120,7 +4123,8 @@ for (const auto& operation : kCrossOriginOperationTable) {
   v8::Local<v8::Function> function;
   if (!bindings::GetCrossOriginFunction(
            ${info}.GetIsolate(), operation.name, operation.callback,
-           operation.func_length, ${class_name}::GetWrapperTypeInfo())
+           operation.func_length, ${class_name}::GetWrapperTypeInfo(),
+           v8::ExceptionContext::kOperation, ${class_like_name})
            .ToLocal(&function)) {
     // Exception was thrown which means that the request was intercepted.
     return v8::Intercepted::kYes;
@@ -4501,6 +4505,7 @@ def _make_attribute_registration_table(table_name, attribute_entries):
     entry_nodes = []
     pattern = ("{{"
                "\"{property_name}\", "
+               "\"${{class_like.identifier}}\", "
                "{attribute_get_callback}, "
                "{attribute_set_callback}, "
                "{v8_property_attribute}, "
@@ -4656,6 +4661,7 @@ def _make_operation_registration_table(table_name, operation_entries):
     nadc_overload_nodes = ListNode()
     pattern = ("{{"
                "\"{property_name}\", "
+               "\"${{class_like.identifier}}\", "
                "{operation_callback}, "
                "{function_length}, "
                "{v8_property_attribute}, "
@@ -5432,6 +5438,12 @@ def make_install_interface_template(cg_context, function_name, class_name,
                        entry.ctor_callback_name),
             FormatNode("${interface_function_template}->SetLength({});",
                        entry.ctor_func_length),
+            FormatNode(
+                "${interface_function_template}->SetInterfaceName("
+                "V8String(${isolate}, \"{}\"));",
+                cg_context.class_like.identifier),
+            T("${interface_function_template}->SetExceptionContext("
+              "v8::ExceptionContext::kConstructor);"),
         ]
         if not (entry.exposure_conditional.is_always_true
                 or entry.is_context_dependent):

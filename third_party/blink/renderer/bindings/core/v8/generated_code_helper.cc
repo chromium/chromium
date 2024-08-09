@@ -316,6 +316,7 @@ v8::MaybeLocal<v8::Value> CreateLegacyFactoryFunctionFunction(
             .As<v8::FunctionTemplate>();
     function_template->Inherit(interface_template);
     function_template->SetClassName(V8AtomicString(isolate, func_name));
+    function_template->SetExceptionContext(v8::ExceptionContext::kConstructor);
     per_isolate_data->AddV8Template(world, callback_key, function_template);
   }
 

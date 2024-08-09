@@ -15,7 +15,6 @@
 // bindings code.
 
 namespace blink {
-
 struct WrapperTypeInfo;
 
 namespace bindings {
@@ -39,14 +38,18 @@ PLATFORM_EXPORT v8::MaybeLocal<v8::Function> GetCrossOriginFunction(
     const StringView& func_name,
     v8::FunctionCallback callback,
     int func_length,
-    const WrapperTypeInfo* wrapper_type_info);
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::ExceptionContext exception_context,
+    const char* interface_name);
 
 PLATFORM_EXPORT v8::MaybeLocal<v8::Value> GetCrossOriginGetterSetter(
     v8::Isolate* isolate,
     const StringView& func_name,
     v8::FunctionCallback callback,
     int func_length,
-    const WrapperTypeInfo* wrapper_type_info);
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::ExceptionContext exception_context,
+    const char* interface_name);
 
 // HTML 7.2.3.2 CrossOriginPropertyFallback ( P )
 // https://html.spec.whatwg.org/C/#crossoriginpropertyfallback-(-p-)

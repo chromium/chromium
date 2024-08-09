@@ -51,7 +51,8 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
   struct AttributeConfig {
     AttributeConfig& operator=(const AttributeConfig&) = delete;
 
-    const char* name;
+    const char* property_name;
+    const char* interface_name;
     v8::FunctionCallback callback_for_get;
     v8::FunctionCallback callback_for_set;
     unsigned v8_property_attribute : 3;       // v8::PropertyAttribute
@@ -112,7 +113,8 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
   struct OperationConfig {
     OperationConfig& operator=(const OperationConfig&) = delete;
 
-    const char* name;
+    const char* property_name;
+    const char* interface_name;
     v8::FunctionCallback callback;
     unsigned length : 8;
     unsigned v8_property_attribute : 3;  // v8::PropertyAttribute
