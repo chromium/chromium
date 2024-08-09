@@ -521,6 +521,23 @@ TEST_F(PlusAddressHttpClientRequests, PreallocatePlusAddresses_NetworkError) {
                 PlusAddressRequestError::AsNetworkError(net::HTTP_NOT_FOUND)));
 }
 
+// Tests that resetting the http client while a pre-allocate request is ongoing
+// results in a `kUserSignedOut` error.
+TEST_F(PlusAddressHttpClientRequests, PreallocatePlusAddresses_SignoutError) {
+  base::test::TestFuture<PlusAddressHttpClient::PreallocatePlusAddressesResult>
+      future;
+  client().PreallocatePlusAddresses(future.GetCallback());
+  identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kToken, base::Time::Max());
+
+  EXPECT_EQ(url_loader_factory().NumPending(), 1);
+  client().Reset();
+  EXPECT_EQ(url_loader_factory().NumPending(), 0);
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), base::unexpected(PlusAddressRequestError(
+                              PlusAddressRequestErrorType::kUserSignedOut)));
+}
+
 // Ensures the request sent by Chrome matches what we intended.
 TEST_F(PlusAddressHttpClientRequests, GetAllPlusAddressesV1_IssuesCorrectRequest) {
   client().GetAllPlusAddresses(base::DoNothing());

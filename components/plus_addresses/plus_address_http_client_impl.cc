@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "base/check_deref.h"
@@ -191,9 +192,9 @@ std::optional<int> GetResponseCode(network::SimpleURLLoader* loader) {
 template <typename T>
 class RunOnDestroyHelper final {
  public:
-  using Callback = base::OnceCallback<void(const T&)>;
-
-  RunOnDestroyHelper(Callback callback, T arg_on_destroy)
+  using ArgType = std::remove_cvref_t<T>;
+  RunOnDestroyHelper(base::OnceCallback<void(T)> callback,
+                     ArgType arg_on_destroy)
       : callback_(std::move(callback)),
         arg_on_destroy_(std::move(arg_on_destroy)) {}
 
@@ -214,21 +215,21 @@ class RunOnDestroyHelper final {
   }
 
  private:
-  Callback callback_;
-  T arg_on_destroy_;
+  base::OnceCallback<void(T)> callback_;
+  ArgType arg_on_destroy_;
 };
 
-// Given a `base::OnceCallback<void(const T&)>` `callback`, it returns another
+// Given a `base::OnceCallback<void(T)>` `callback`, it returns another
 // `base::OnceCallback` of the same signature with the property that the
 // returned callback is run with argument `arg_on_destroy` on its destruction if
 // it has not been run before.
 template <typename T, typename V>
   requires(std::constructible_from<T, V>)
-base::OnceCallback<void(const T&)> WrapAsAutorunCallback(
-    base::OnceCallback<void(const T&)> callback,
+base::OnceCallback<void(T)> WrapAsAutorunCallback(
+    base::OnceCallback<void(T)> callback,
     V arg_on_destroy) {
   return base::BindOnce(
-      [](RunOnDestroyHelper<T> helper, const T& profile) {
+      [](RunOnDestroyHelper<T> helper, T profile) {
         std::move(helper).Run(profile);
       },
       RunOnDestroyHelper<T>(std::move(callback), std::move(arg_on_destroy)));
@@ -279,10 +280,11 @@ void PlusAddressHttpClientImpl::PreallocatePlusAddresses(
   if (!server_url_) {
     return;
   }
-  // TODO: crbug.com/32455950 - Extend WrapAsAutoRun and use it here.
   GetAuthToken(base::BindOnce(
       &PlusAddressHttpClientImpl::PreallocatePlusAddressesInternal,
-      base::Unretained(this), std::move(callback)));
+      base::Unretained(this),
+      WrapAsAutorunCallback<PreallocatePlusAddressesResult>(
+          std::move(callback), base::unexpected(kSignoutError))));
 }
 
 void PlusAddressHttpClientImpl::GetAllPlusAddresses(
