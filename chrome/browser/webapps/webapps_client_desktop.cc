@@ -12,8 +12,6 @@
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
-#include "chrome/browser/user_education/user_education_service.h"
-#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -166,28 +164,9 @@ bool WebappsClientDesktop::IsMlPromotionBlockedByHistoryGuardrail(
   CHECK(browser_context);
   Profile* profile = Profile::FromBrowserContext(browser_context);
   CHECK(profile);
-
-  if (!manifest_id.is_empty() &&
-      web_app::WebAppPrefGuardrails::GetForMlInstallPrompt(profile->GetPrefs())
-          .IsBlockedByGuardrails(
-              web_app::GenerateAppIdFromManifestId(manifest_id))) {
-    return true;
-  }
-
-  // Do not copy this. This is a temporary hack to help not bother users before
-  // the ML triggering is moved to triggering IPH for a new install entry point.
-  // crbug.com/356401517
-  UserEducationService* const user_education_service =
-      UserEducationServiceFactory::GetForBrowserContext(profile);
-  user_education::FeaturePromoResult synthetic_result =
-      user_education_service->feature_promo_session_policy().CanShowPromo(
-          {.weight =
-               user_education::FeaturePromoSessionPolicy::PromoWeight::kHeavy,
-           .priority =
-               user_education::FeaturePromoSessionPolicy::PromoPriority::kLow},
-          /*currently_showing=*/std::nullopt);
-  return synthetic_result.failure() ==
-         user_education::FeaturePromoResult::kBlockedByGracePeriod;
+  return web_app::WebAppPrefGuardrails::GetForMlInstallPrompt(
+             profile->GetPrefs())
+      .IsBlockedByGuardrails(web_app::GenerateAppIdFromManifestId(manifest_id));
 }
 
 segmentation_platform::SegmentationPlatformService*
