@@ -1134,7 +1134,9 @@
     "owners": ["arichiv@chromium.org", "bingler@chromium.org"]
   },
 
-  "isInputPending requires threaded compositing and layerized iframes",
+  "isInputPending requires threaded compositing and layerized iframes, so ",
+  "these tests are run exclusively with a virtual test suite that never ",
+  "expires.",
   {
     "prefix": "threaded-composited-iframes",
     "platforms": ["Linux", "Mac", "Win"],
@@ -1143,7 +1145,7 @@
     "args": ["--enable-threaded-compositing",
              "--disable-auto-wpt-origin-isolation",
              "--disable-features=OriginKeyedProcessesByDefault"],
-    "expires": "Jul 1, 2024"
+    "expires": "never"
   },
 
   {
