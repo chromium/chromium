@@ -224,8 +224,7 @@ void LuciTestResult::AddTag(const std::string& key, const std::string& value) {
 
 void LuciTestResult::WriteToFile(const base::FilePath& result_file) const {
   const std::string json = ToJson(*this);
-  const int json_size = json.size();
-  CHECK(WriteFile(result_file, json.data(), json_size) == json_size);
+  CHECK(WriteFile(result_file, json));
 }
 
 }  // namespace perf_test
