@@ -99,15 +99,6 @@ class Stub final : public mojom::EnterpriseCompanion {
 
 }  // namespace
 
-IpcTrustDecider CreateIpcTrustDecider() {
-  return base::BindRepeating(
-      [](const named_mojo_ipc_server::ConnectionInfo& info) {
-        // TODO(342180612): Implement in the style of
-        // updater::IsConnectionTrusted.
-        return false;
-      });
-}
-
 named_mojo_ipc_server::EndpointOptions CreateServerEndpointOptions(
     const mojo::NamedPlatformChannel::ServerName& server_name) {
   return {

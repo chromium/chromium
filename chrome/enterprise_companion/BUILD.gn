@@ -71,6 +71,7 @@ source_set("base") {
     "event_logger.cc",
     "event_logger.h",
     "installer.h",
+    "ipc_security.h",
     "ipc_support.cc",
     "ipc_support.h",
     "lock.cc",
@@ -109,16 +110,23 @@ source_set("base") {
   }
 
   if (is_linux) {
-    sources += [ "installer_linux.cc" ]
+    sources += [
+      "installer_linux.cc",
+      "ipc_security_linux.cc",
+    ]
   } else if (is_mac) {
     sources += [
       "app/app_net_worker.cc",
       "installer_mac.mm",
+      "ipc_security_mac.cc",
       "mac/mac_utils.h",
       "mac/mac_utils.mm",
     ]
   } else if (is_win) {
-    sources += [ "installer_win.cc" ]
+    sources += [
+      "installer_win.cc",
+      "ipc_security_win.cc",
+    ]
     deps += [ "//chrome/installer/util:work_item" ]
   }
 }
