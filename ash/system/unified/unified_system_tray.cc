@@ -177,6 +177,7 @@ void UnifiedSystemTray::OnButtonPressed(const ui::Event& event) {
 
   if (features::IsWelcomeTourEnabled()) {
     welcome_tour_metrics::RecordInteraction(
+        Shell::Get()->session_controller()->GetLastActiveUserPrefService(),
         welcome_tour_metrics::Interaction::kQuickSettings);
   }
 }

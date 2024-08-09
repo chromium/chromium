@@ -18,6 +18,7 @@
 #include "ui/base/ui_base_types.h"
 
 class AccountId;
+class PrefService;
 
 namespace gfx {
 struct VectorIcon;
@@ -115,6 +116,9 @@ ASH_EXPORT ui::mojom::ModalType GetHelpBubbleModalType(
     const user_education::HelpBubbleParams::ExtendedProperties&
         extended_properties);
 
+// Returns the last active user pref service. Could be nullptr in tests.
+ASH_EXPORT PrefService* GetLastActiveUserPrefService();
+
 // Returns a matching view for the specified `element_id` in the root window
 // associated with the specified `display_id`, or `nullptr` if no match is
 // found. Note that if multiple matches exist, this method does *not* guarantee
@@ -133,6 +137,9 @@ ASH_EXPORT std::optional<user_manager::UserType> GetUserType(
 
 // Returns whether the primary user account is active.
 ASH_EXPORT bool IsPrimaryAccountActive();
+
+// Returns whether the primary user account's pref service is active.
+ASH_EXPORT bool IsPrimaryAccountPrefServiceActive();
 
 // Returns whether `account_id` is associated with the primary user account.
 ASH_EXPORT bool IsPrimaryAccountId(const AccountId& account_id);

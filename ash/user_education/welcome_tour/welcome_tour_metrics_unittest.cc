@@ -10,6 +10,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/user_education/user_education_ash_test_base.h"
+#include "ash/user_education/user_education_util.h"
 #include "base/containers/enum_set.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -283,10 +284,11 @@ TEST_P(WelcomeTourInteractionMetricsTest, RecordInteraction) {
   ClearPref("ash.welcome_tour.v2.prevented.first_time");
 
   base::HistogramTester histogram_tester;
+  PrefService* prefs = user_education_util::GetLastActiveUserPrefService();
 
   // Case: Before tour attempt. No interactions should be logged.
   for (auto interaction : kAllInteractionsSet) {
-    RecordInteraction(interaction);
+    RecordInteraction(prefs, interaction);
     histogram_tester.ExpectTotalCount(
         GetInteractionFirstTimeBucketMetricName(interaction), 0);
     histogram_tester.ExpectTotalCount(
@@ -298,13 +300,13 @@ TEST_P(WelcomeTourInteractionMetricsTest, RecordInteraction) {
   // Case: First time after tour attempt. Interactions should be recorded, along
   // with first interaction times, if the tour was attempted.
   if (const auto completed = IsCompleted()) {
-    RecordTourDuration(base::Minutes(1), completed.value());
+    RecordTourDuration(prefs, base::Minutes(1), completed.value());
   } else if (GetPreventedReason()) {
-    RecordTourPrevented(GetPreventedReason().value());
+    RecordTourPrevented(prefs, GetPreventedReason().value());
   }
 
   for (auto interaction : kAllInteractionsSet) {
-    RecordInteraction(interaction);
+    RecordInteraction(prefs, interaction);
 
     if (InteractionsShouldBeRecorded()) {
       histogram_tester.ExpectTotalCount(
@@ -327,7 +329,7 @@ TEST_P(WelcomeTourInteractionMetricsTest, RecordInteraction) {
   // the tour was attempted, but the first time metric should not be recorded
   // again.
   for (auto interaction : kAllInteractionsSet) {
-    RecordInteraction(interaction);
+    RecordInteraction(prefs, interaction);
 
     if (InteractionsShouldBeRecorded()) {
       histogram_tester.ExpectTotalCount(
@@ -349,10 +351,10 @@ TEST_P(WelcomeTourInteractionMetricsTest, RecordInteraction) {
 
 // Verifies that attempting to record an interaction before login doesn't crash.
 TEST_P(WelcomeTourInteractionMetricsTest, RecordInteractionBeforeLogin) {
-  EXPECT_FALSE(
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService());
+  PrefService* prefs = user_education_util::GetLastActiveUserPrefService();
+  EXPECT_FALSE(prefs);
   for (auto interaction : kAllInteractionsSet) {
-    RecordInteraction(interaction);
+    RecordInteraction(prefs, interaction);
   }
 }
 
@@ -512,12 +514,13 @@ TEST_F(WelcomeTourMetricsTest, RecordTourDuration) {
   static constexpr auto kTestTourLength = base::Seconds(30);
 
   SimulateNewUserFirstLogin("user@test");
+  PrefService* prefs = user_education_util::GetLastActiveUserPrefService();
 
   // Case: Tour is aborted.
   {
     base::HistogramTester histogram_tester;
 
-    RecordTourDuration(kTestTourLength, /*completed=*/false);
+    RecordTourDuration(prefs, kTestTourLength, /*completed=*/false);
     histogram_tester.ExpectTotalCount(kAbortedTourDurationMetricName, 1);
     histogram_tester.ExpectTotalCount(kCompletedTourDurationMetricName, 0);
     histogram_tester.ExpectTimeBucketCount(kAbortedTourDurationMetricName,
@@ -528,7 +531,7 @@ TEST_F(WelcomeTourMetricsTest, RecordTourDuration) {
   {
     base::HistogramTester histogram_tester;
 
-    RecordTourDuration(kTestTourLength, /*completed=*/true);
+    RecordTourDuration(prefs, kTestTourLength, /*completed=*/true);
     histogram_tester.ExpectTotalCount(kAbortedTourDurationMetricName, 0);
     histogram_tester.ExpectTotalCount(kCompletedTourDurationMetricName, 1);
     histogram_tester.ExpectTimeBucketCount(kCompletedTourDurationMetricName,
@@ -539,10 +542,18 @@ TEST_F(WelcomeTourMetricsTest, RecordTourDuration) {
 // Verifies that all valid values of the `PreventedReason` enum can be
 // successfully recorded by the `RecordTourPrevented()` utility function.
 TEST_F(WelcomeTourMetricsTest, RecordTourPrevented) {
+  static constexpr char kTourPreventedReasonMetricName[] =
+      "Ash.WelcomeTour.Prevented.Reason";
+
   SimulateNewUserFirstLogin("user@test");
-  TestEnumHistogram<PreventedReason>("Ash.WelcomeTour.Prevented.Reason",
-                                     kAllPreventedReasonsSet,
-                                     &RecordTourPrevented);
+  PrefService* prefs = user_education_util::GetLastActiveUserPrefService();
+
+  for (auto reason : kAllPreventedReasonsSet) {
+    base::HistogramTester histogram_tester;
+    RecordTourPrevented(prefs, reason);
+    histogram_tester.ExpectUniqueSample(kTourPreventedReasonMetricName, reason,
+                                        1);
+  }
 }
 
 }  // namespace ash::welcome_tour_metrics

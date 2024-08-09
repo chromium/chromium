@@ -435,6 +435,11 @@ void WelcomeTourController::OnAccessibilityStatusChanged() {
   MaybeAbortWelcomeTour(welcome_tour_metrics::AbortedReason::kChromeVoxEnabled);
 }
 
+void WelcomeTourController::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
+  MaybeStartWelcomeTour();
+}
+
 void WelcomeTourController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   MaybeStartWelcomeTour();
@@ -466,7 +471,8 @@ void WelcomeTourController::OnDisplayTabletStateChanged(
 void WelcomeTourController::MaybeStartWelcomeTour() {
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
-  if (!user_education_util::IsPrimaryAccountActive()) {
+  if (!user_education_util::IsPrimaryAccountActive() ||
+      !user_education_util::IsPrimaryAccountPrefServiceActive()) {
     return;
   }
 
@@ -474,7 +480,12 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   // the tour when the primary user session is activated for the first time.
   session_observation_.Reset();
 
-  welcome_tour_metrics::MaybeActivateExperimentalArm();
+  // `prefs` is guaranteed to be non-null since this method is only called when
+  // the primary user pref service is active.
+  PrefService* prefs = user_education_util::GetLastActiveUserPrefService();
+  CHECK(prefs);
+
+  welcome_tour_metrics::MaybeActivateExperimentalArm(prefs);
 
   if (!features::IsWelcomeTourForceUserEligibilityEnabled()) {
     // Welcome Tour is supported for regular users only.
@@ -482,14 +493,14 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     if (const auto user_type = session_controller->GetUserType();
         user_type != user_manager::UserType::kRegular) {
       welcome_tour_metrics::RecordTourPrevented(
-          welcome_tour_metrics::PreventedReason::kUserTypeNotRegular);
+          prefs, welcome_tour_metrics::PreventedReason::kUserTypeNotRegular);
       return;
     }
 
     // Welcome Tour is not supported for managed accounts.
     if (session_controller->IsActiveAccountManaged()) {
       welcome_tour_metrics::RecordTourPrevented(
-          welcome_tour_metrics::PreventedReason::kManagedAccount);
+          prefs, welcome_tour_metrics::PreventedReason::kManagedAccount);
       return;
     }
 
@@ -498,7 +509,7 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     // considered "new" locally in case the proxy check proves to be erroneous.
     if (!session_controller->IsUserFirstLogin()) {
       welcome_tour_metrics::RecordTourPrevented(
-          welcome_tour_metrics::PreventedReason::kUserNotNewLocally);
+          prefs, welcome_tour_metrics::PreventedReason::kUserNotNewLocally);
       return;
     }
 
@@ -510,6 +521,7 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     // cannot be delayed and we want to err on the side of being conservative.
     if (!is_new_user.has_value()) {
       welcome_tour_metrics::RecordTourPrevented(
+          prefs,
           welcome_tour_metrics::PreventedReason::kUserNewnessNotAvailable);
       return;
     }
@@ -517,7 +529,7 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     // Welcome Tour is not supported for "existing" users.
     if (!is_new_user.value()) {
       welcome_tour_metrics::RecordTourPrevented(
-          welcome_tour_metrics::PreventedReason::kUserNotNewCrossDevice);
+          prefs, welcome_tour_metrics::PreventedReason::kUserNotNewCrossDevice);
       return;
     }
   }
@@ -535,23 +547,23 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled() &&
       !features::IsWelcomeTourChromeVoxSupported()) {
     welcome_tour_metrics::RecordTourPrevented(
-        welcome_tour_metrics::PreventedReason::kChromeVoxEnabled);
+        prefs, welcome_tour_metrics::PreventedReason::kChromeVoxEnabled);
     return;
   }
 
   // Welcome Tour is not supported in tablet mode.
   if (display::Screen::GetScreen()->InTabletMode()) {
     welcome_tour_metrics::RecordTourPrevented(
-        welcome_tour_metrics::PreventedReason::kTabletModeEnabled);
+        prefs, welcome_tour_metrics::PreventedReason::kTabletModeEnabled);
     return;
   }
 
-  welcome_tour_metrics::MaybeRecordExperimentalArm();
+  welcome_tour_metrics::MaybeRecordExperimentalArm(prefs);
 
   // Welcome Tour is not supported for holdback experiment arm.
   if (features::IsWelcomeTourHoldbackEnabled()) {
     welcome_tour_metrics::RecordTourPrevented(
-        welcome_tour_metrics::PreventedReason::kHoldbackExperimentArm);
+        prefs, welcome_tour_metrics::PreventedReason::kHoldbackExperimentArm);
     return;
   }
 
@@ -684,8 +696,9 @@ void WelcomeTourController::OnWelcomeTourEnded(
 
   SetCurrentStep(std::nullopt);
 
-  welcome_tour_metrics::RecordTourDuration(time_since_start.Elapsed(),
-                                           completed);
+  welcome_tour_metrics::RecordTourDuration(
+      user_education_util::GetLastActiveUserPrefService(),
+      time_since_start.Elapsed(), completed);
 
   welcome_tour_metrics::RecordTourResult(
       completed ? welcome_tour_metrics::TourResult::kCompleted

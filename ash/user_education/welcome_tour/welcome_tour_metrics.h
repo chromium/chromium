@@ -10,6 +10,8 @@
 #include "ash/ash_export.h"
 #include "base/containers/enum_set.h"
 
+class PrefService;
+
 namespace base {
 class TimeDelta;
 }  // namespace base
@@ -153,17 +155,17 @@ enum class TourResult {
 // Attempts to activate an experimental arm if and only if the user was
 // previously active in an experimental arm during the first attempt to show the
 // Welcome Tour.
-ASH_EXPORT void MaybeActivateExperimentalArm();
+ASH_EXPORT void MaybeActivateExperimentalArm(PrefService* prefs);
 
 // Record the experimental arm in which the user was active when the first
 // attempt was made to show the Welcome Tour.
-ASH_EXPORT void MaybeRecordExperimentalArm();
+ASH_EXPORT void MaybeRecordExperimentalArm(PrefService* prefs);
 
 // Record the usage of ChromeVox in the Welcome Tour.
 ASH_EXPORT void RecordChromeVoxEnabled(ChromeVoxEnabled when);
 
 // Record that a given `interaction` has occurred.
-ASH_EXPORT void RecordInteraction(Interaction interaction);
+ASH_EXPORT void RecordInteraction(PrefService* prefs, Interaction interaction);
 
 // Record that the given `step` of the Welcome Tour was aborted.
 ASH_EXPORT void RecordStepAborted(Step step);
@@ -179,10 +181,12 @@ ASH_EXPORT void RecordTourAborted(AbortedReason reason);
 
 // Record the `duration` of the Welcome Tour as a whole. If the tour was not
 // fully completed, `completed` should be false.
-ASH_EXPORT void RecordTourDuration(base::TimeDelta duration, bool completed);
+ASH_EXPORT void RecordTourDuration(PrefService* prefs,
+                                   base::TimeDelta duration,
+                                   bool completed);
 
 // Record that the Welcome Tour was prevented for the given `reason`.
-ASH_EXPORT void RecordTourPrevented(PreventedReason reason);
+ASH_EXPORT void RecordTourPrevented(PrefService* prefs, PreventedReason reason);
 
 // Record the result for an attempt to show the Welcome Tour to the user.
 ASH_EXPORT void RecordTourResult(TourResult result);

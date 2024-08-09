@@ -19,6 +19,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
@@ -195,18 +196,20 @@ void RecordWelcomeTourInteraction(apps::DefaultAppName default_app_name,
     return;
   }
 
+  PrefService* prefs = ash::user_education_util::GetLastActiveUserPrefService();
+
   switch (default_app_name) {
     case apps::DefaultAppName::kFiles:
       ash::welcome_tour_metrics::RecordInteraction(
-          ash::welcome_tour_metrics::Interaction::kFilesApp);
+          prefs, ash::welcome_tour_metrics::Interaction::kFilesApp);
       break;
     case apps::DefaultAppName::kHelpApp:
       ash::welcome_tour_metrics::RecordInteraction(
-          ash::welcome_tour_metrics::Interaction::kExploreApp);
+          prefs, ash::welcome_tour_metrics::Interaction::kExploreApp);
       break;
     case apps::DefaultAppName::kSettings:
       ash::welcome_tour_metrics::RecordInteraction(
-          ash::welcome_tour_metrics::Interaction::kSettingsApp);
+          prefs, ash::welcome_tour_metrics::Interaction::kSettingsApp);
       break;
     default:
       break;

@@ -40,6 +40,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/user_education/user_education_class_properties.h"
+#include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
@@ -666,6 +667,7 @@ void SearchBoxView::HandleQueryChange(const std::u16string& query,
 
       if (features::IsWelcomeTourEnabled()) {
         welcome_tour_metrics::RecordInteraction(
+            user_education_util::GetLastActiveUserPrefService(),
             welcome_tour_metrics::Interaction::kSearch);
       }
     } else if (!current_query_.empty() && query.empty()) {
