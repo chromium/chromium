@@ -18,6 +18,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterStringPref(prefs::kPolicyRecoveryToken, std::string());
   registry->RegisterStringPref(prefs::kPolicyRecoveryClientId, std::string());
+
+  registry->RegisterBooleanPref(prefs::kPolicyRecoveryRequired, false);
 }
 
 }  // namespace enterprise_signin

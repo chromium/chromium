@@ -130,6 +130,10 @@ constexpr char kValueValidationMessage[] = "fake-value-validation-message";
 constexpr char kRobotAuthCode[] = "fake-robot-auth-code";
 constexpr char kApiAuthScope[] = "fake-api-auth-scope";
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+constexpr base::TimeDelta kDefaultOidcRegistrationTimeout = base::Seconds(30);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 constexpr int64_t kAgeOfCommand = 123123123;
 constexpr int64_t kLastCommandId = 123456789;
 constexpr int64_t kTimestamp = 987654321;
@@ -921,7 +925,8 @@ TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetch) {
       em::DeviceRegisterRequest::USER,
       em::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
   client_->RegisterWithOidcResponse(register_user, kOAuthToken, kIdToken,
-                                    std::string() /* no client_id*/);
+                                    std::string() /* no client_id*/,
+                                    kDefaultOidcRegistrationTimeout);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_OIDC_REGISTRATION,
             job_type_);
@@ -932,7 +937,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetch) {
               Not(Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken))));
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_EQ(base::Seconds(0), timeout_);
+  EXPECT_EQ(kDefaultOidcRegistrationTimeout, timeout_);
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 
   ExpectAndCaptureJob(policy_response);
@@ -966,7 +971,8 @@ TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetchWithOidcState) {
   register_parameters.oidc_state = kOidcState;
 
   client_->RegisterWithOidcResponse(register_parameters, kOAuthToken, kIdToken,
-                                    std::string() /* no client_id*/);
+                                    std::string() /* no client_id*/,
+                                    kDefaultOidcRegistrationTimeout);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_OIDC_REGISTRATION,
             job_type_);
@@ -977,7 +983,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetchWithOidcState) {
               Not(Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken))));
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_EQ(base::Seconds(0), timeout_);
+  EXPECT_EQ(kDefaultOidcRegistrationTimeout, timeout_);
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 
   ExpectAndCaptureJob(policy_response);
@@ -1005,7 +1011,8 @@ TEST_F(CloudPolicyClientTest, OidcRegistrationFailure) {
       em::DeviceRegisterRequest::USER,
       em::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
   client_->RegisterWithOidcResponse(register_user, kOAuthToken, kIdToken,
-                                    std::string() /* no client_id*/);
+                                    std::string() /* no client_id*/,
+                                    kDefaultOidcRegistrationTimeout);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_OIDC_REGISTRATION,
             job_type);

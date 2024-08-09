@@ -511,7 +511,8 @@ void CloudPolicyClient::RegisterWithOidcResponse(
     const RegistrationParameters& parameters,
     const std::string& oauth_token,
     const std::string& oidc_id_token,
-    const std::string& client_id) {
+    const std::string& client_id,
+    const base::TimeDelta& timeout_duration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!oidc_id_token.empty());
   CHECK(!oauth_token.empty());
@@ -527,6 +528,12 @@ void CloudPolicyClient::RegisterWithOidcResponse(
 
   auto config =
       std::make_unique<RegistrationJobConfiguration>(std::move(params));
+
+  // Set a limit for OIDC registration so the loading state doesn't hang
+  // forever.
+  if (timeout_duration > base::TimeDelta()) {
+    config->SetTimeoutDuration(timeout_duration);
+  }
 
   em::DeviceRegisterRequest* request =
       config->request()->mutable_register_request();

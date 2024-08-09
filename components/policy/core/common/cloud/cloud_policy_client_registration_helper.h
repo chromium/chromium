@@ -72,6 +72,7 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
                                        const std::string& id_token,
                                        const std::string& client_id,
                                        const std::string& state,
+                                       const base::TimeDelta& timeout_duration,
                                        base::OnceClosure callback);
 
  private:

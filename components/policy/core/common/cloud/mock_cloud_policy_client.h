@@ -62,7 +62,8 @@ class MockCloudPolicyClient : public CloudPolicyClient {
               (const RegistrationParameters&,
                const std::string&,
                const std::string&,
-               const std::string&),
+               const std::string&,
+               const base::TimeDelta&),
               (override));
   MOCK_METHOD(void, FetchPolicy, (PolicyFetchReason), (override));
   MOCK_METHOD(void,
