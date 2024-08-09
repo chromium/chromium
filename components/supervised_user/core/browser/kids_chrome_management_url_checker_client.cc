@@ -50,15 +50,15 @@ void OnResponse(
     const ProtoFetcherStatus& status,
     std::unique_ptr<kidsmanagement::ClassifyUrlResponse>
         classify_url_response) {
-  DVLOG(1) << "URL classification = "
-           << classify_url_response->display_classification();
-
   if (!status.IsOk()) {
     DVLOG(1) << "ClassifyUrl request failed with status: " << status.ToString();
     std::move(client_callback)
         .Run(url, safe_search_api::ClientClassification::kUnknown);
     return;
   }
+
+  DVLOG(1) << "URL classification = "
+           << classify_url_response->display_classification();
 
   std::move(client_callback)
       .Run(url, ToSafeSearchClientClassification(classify_url_response.get()));
