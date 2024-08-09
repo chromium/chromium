@@ -13,7 +13,7 @@
 
 class BrowserStateInfoCache;
 class ChromeBrowserState;
-class ChromeBrowserStateManagerObserver;
+class ProfileManagerObserverIOS;
 
 // TODO(crbug.com/358356195): Remove this forward declaration and typedef when
 // no usage of ChromeBrowserStateManager remains.
@@ -34,8 +34,8 @@ class ProfileManagerIOS {
   virtual ~ProfileManagerIOS() {}
 
   // Registers/unregisters observers.
-  virtual void AddObserver(ChromeBrowserStateManagerObserver* observer) = 0;
-  virtual void RemoveObserver(ChromeBrowserStateManagerObserver* observer) = 0;
+  virtual void AddObserver(ProfileManagerObserverIOS* observer) = 0;
+  virtual void RemoveObserver(ProfileManagerObserverIOS* observer) = 0;
 
   // Loads the last active browser states. *Deprecated*.
   virtual void LoadBrowserStates() = 0;

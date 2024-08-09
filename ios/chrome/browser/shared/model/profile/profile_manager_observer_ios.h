@@ -5,11 +5,37 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_MANAGER_OBSERVER_IOS_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_MANAGER_OBSERVER_IOS_H_
 
-// This is a forwarding header to ease the name transition of ChromeBrowserState
-// and related classes to ProfileIOS. This header will become the header for
-// ProfileManagerObserverIOS when ChromeBrowserStateManagerObserver is renamed.
-// Until then it just forward-includes that class's header.
+#include "base/observer_list_types.h"
 
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager_observer.h"
+class ChromeBrowserState;
+
+// TODO(crbug.com/358356195): Remove this forward declaration and typedef when
+// no usage of ChromeBrowserStateManagerObserver remains.
+class ProfileManagerObserverIOS;
+using ChromeBrowserStateManagerObserver = ProfileManagerObserverIOS;
+
+// An observer that can be registered with a ChromeBrowserStateManager.
+class ProfileManagerObserverIOS : public base::CheckedObserver {
+ public:
+  // Called when the ProfileManagerIOS is destroyed. The observer
+  // must unregister itself. This is called as part of the shutdown of the
+  // application.
+  virtual void OnChromeBrowserStateManagerDestroyed(
+      ProfileManagerIOS* manager) = 0;
+
+  // Called when a ChromeBrowserState is created, before the initialisation is
+  // complete. In most case `OnBrowserStateAdded(...)` is a better event to
+  // listen to. Will only be called for non-incognito ChromeBrowserState.
+  virtual void OnChromeBrowserStateCreated(
+      ProfileManagerIOS* manager,
+      ChromeBrowserState* browser_state) = 0;
+
+  // Called when a ChromeBrowserState has been fully loaded and initialised and
+  // is available through the ProfileManagerIOS. Will only be called for
+  // non-incognito ChromeBrowserState.
+  virtual void OnChromeBrowserStateLoaded(
+      ProfileManagerIOS* manager,
+      ChromeBrowserState* browser_state) = 0;
+};
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_MANAGER_OBSERVER_IOS_H_
