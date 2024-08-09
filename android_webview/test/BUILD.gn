@@ -182,7 +182,6 @@ base_webview_instrumentation_apk("webview_instrumentation_apk") {
 android_resources("webview_instrumentation_apk_resources") {
   sources = [
     "../javatests/res/raw/add_two_numbers.wasm",
-    "../javatests/res/values/strings.xml",
     "shell/res/layout/testshell_activity.xml",
     "shell/res/raw/resource_file.html",
     "shell/res/raw/resource_icon.png",

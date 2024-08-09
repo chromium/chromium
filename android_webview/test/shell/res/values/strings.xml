@@ -12,6 +12,12 @@ found in the LICENSE file.
           \"namespace\": \"web\",
           \"site\": \"https://example.com\"
         }
+      }, {
+        \"relation\": [\"delegate_permission/common.handle_all_urls\"],
+        \"target\": {
+          \"namespace\": \"web\",
+          \"site\": \"http://localhost\"
+        }
       }]
     </string>
 </resources>

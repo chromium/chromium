@@ -27,7 +27,6 @@ import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -354,7 +353,6 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
-    @DisabledTest(message = "crbug.com/358119171")
     public void testAutoGrantSAA_trusted() throws Exception {
         var histogramWatcher =
                 HistogramWatcher.newBuilder().expectAnyRecord(SAA_GRANT_TIME_HISTOGRAM).build();
@@ -408,7 +406,6 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     @Features.EnableFeatures({AwFeatures.WEBVIEW_AUTO_SAA})
-    @DisabledTest(message = "crbug.com/358119171")
     public void testAutoGrantSAA_untrustedApp() throws Exception {
         var histogramWatcher =
                 HistogramWatcher.newBuilder().expectAnyRecord(SAA_GRANT_TIME_HISTOGRAM).build();
