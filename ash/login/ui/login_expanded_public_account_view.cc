@@ -206,13 +206,6 @@ class SelectionButtonView : public LoginButton {
 
   ~SelectionButtonView() override = default;
 
-  // Return the preferred height of this view. This overrides the default
-  // behavior in FillLayout::GetPreferredHeightForWidth which calculates the
-  // height based on its child height.
-  int GetHeightForWidth(int w) const override {
-    return GetPreferredSize().height();
-  }
-
   ui::Cursor GetCursor(const ui::MouseEvent& event) override {
     return ui::mojom::CursorType::kHand;
   }
@@ -921,13 +914,6 @@ void LoginExpandedPublicAccountView::OnBoundsChanged(
   } else {
     UsePortraitLayout();
   }
-}
-
-int LoginExpandedPublicAccountView::GetHeightForWidth(int width) const {
-  if (width >= GetPreferredSizeLandscape().width()) {
-    return GetPreferredSizeLandscape().height();
-  }
-  return GetPreferredSizePortrait().height();
 }
 
 void LoginExpandedPublicAccountView::Layout(PassKey) {

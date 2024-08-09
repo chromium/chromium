@@ -95,7 +95,6 @@ class ASH_EXPORT LoginUserView : public views::View,
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  int GetHeightForWidth(int w) const override;
   void Layout(PassKey) override;
   void RequestFocus() override;
   views::View::Views GetChildrenInZOrder() override;
