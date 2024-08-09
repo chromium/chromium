@@ -5473,7 +5473,10 @@ bool Element::CanAttachShadowRoot() const {
          IsValidShadowHostName(local_name);
 }
 
-const char* Element::ErrorMessageForAttachShadow(bool for_declarative) const {
+const char* Element::ErrorMessageForAttachShadow(
+    String mode,
+    bool for_declarative,
+    ShadowRootMode& mode_out) const {
   // https://dom.spec.whatwg.org/#concept-attach-a-shadow-root
   // 1. If shadow host’s namespace is not the HTML namespace, then throw a
   // "NotSupportedError" DOMException.
@@ -5505,6 +5508,15 @@ const char* Element::ErrorMessageForAttachShadow(bool for_declarative) const {
       return "attachShadow() is disabled by disabledFeatures static field.";
     }
   }
+  if (EqualIgnoringASCIICase(mode, "open")) {
+    mode_out = ShadowRootMode::kOpen;
+  } else if (EqualIgnoringASCIICase(mode, "closed")) {
+    mode_out = ShadowRootMode::kClosed;
+  } else {
+    CHECK(for_declarative);
+    return "Invalid declarative shadowrootmode attribute value. Valid values "
+           "are \"open\" and \"closed\".";
+  }
 
   if (!GetShadowRoot()) {
     return nullptr;
@@ -5527,14 +5539,7 @@ const char* Element::ErrorMessageForAttachShadow(bool for_declarative) const {
 ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
                                   ExceptionState& exception_state) {
   DCHECK(shadow_root_init_dict->hasMode());
-  ShadowRootMode type = shadow_root_init_dict->mode() == "open"
-                            ? ShadowRootMode::kOpen
-                            : ShadowRootMode::kClosed;
-  if (type == ShadowRootMode::kOpen) {
-    UseCounter::Count(GetDocument(), WebFeature::kElementAttachShadowOpen);
-  } else {
-    UseCounter::Count(GetDocument(), WebFeature::kElementAttachShadowClosed);
-  }
+  String mode_string = shadow_root_init_dict->mode();
   bool serializable = shadow_root_init_dict->getSerializableOr(false);
   if (serializable) {
     UseCounter::Count(GetDocument(),
@@ -5553,18 +5558,30 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
   CustomElementRegistry* registry = shadow_root_init_dict->hasRegistry()
                                         ? shadow_root_init_dict->registry()
                                         : nullptr;
-  if (const char* error_message =
-          ErrorMessageForAttachShadow(/*for_declarative*/ false)) {
+  ShadowRootMode mode;
+  if (const char* error_message = ErrorMessageForAttachShadow(
+          mode_string, /*for_declarative*/ false, mode)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       error_message);
     return nullptr;
+  }
+
+  switch (mode) {
+    case ShadowRootMode::kOpen:
+      UseCounter::Count(GetDocument(), WebFeature::kElementAttachShadowOpen);
+      break;
+    case ShadowRootMode::kClosed:
+      UseCounter::Count(GetDocument(), WebFeature::kElementAttachShadowClosed);
+      break;
+    case ShadowRootMode::kUserAgent:
+      NOTREACHED();
   }
 
   // If there's already a declarative shadow root, verify that the existing
   // mode is the same as the requested mode.
   if (auto* existing_shadow = GetShadowRoot()) {
     CHECK(existing_shadow->IsDeclarativeShadowRoot());
-    if (existing_shadow->GetMode() != type) {
+    if (existing_shadow->GetMode() != mode) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
           "The requested mode does not match the existing declarative shadow "
@@ -5574,7 +5591,7 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
   }
 
   ShadowRoot& shadow_root =
-      AttachShadowRootInternal(type, focus_delegation, slot_assignment,
+      AttachShadowRootInternal(mode, focus_delegation, slot_assignment,
                                registry, serializable, clonable);
 
   // Ensure that the returned shadow root is not marked as declarative so that
@@ -5585,29 +5602,29 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
 }
 
 bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
-                                          ShadowRootMode type,
+                                          String mode_string,
                                           FocusDelegation focus_delegation,
                                           SlotAssignmentMode slot_assignment,
                                           bool serializable,
                                           bool clonable) {
-  CHECK(type == ShadowRootMode::kOpen || type == ShadowRootMode::kClosed);
-
   // 12. Run attach a shadow root with shadow host equal to declarative shadow
   // host element, mode equal to declarative shadow mode, and delegates focus
   // equal to declarative shadow delegates focus. If an exception was thrown by
   // attach a shadow root, catch it, and ignore the exception.
-  if (const char* error_message =
-          ErrorMessageForAttachShadow(/*for_declarative*/ true)) {
+  ShadowRootMode mode;
+  if (const char* error_message = ErrorMessageForAttachShadow(
+          mode_string, /*for_declarative*/ true, mode)) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kError, error_message));
     return false;
   }
+  CHECK(mode == ShadowRootMode::kOpen || mode == ShadowRootMode::kClosed);
 
   // TODO(crbug.com/1523816): Declarative shadow roots should set the registry
   // argument here.
   ShadowRoot& shadow_root =
-      AttachShadowRootInternal(type, focus_delegation, slot_assignment,
+      AttachShadowRootInternal(mode, focus_delegation, slot_assignment,
                                /*registry*/ nullptr, serializable, clonable);
   // 13.1. Set declarative shadow host element's shadow host's "is declarative
   // shadow root" property to true.

@@ -41,12 +41,6 @@ namespace blink {
 class DocumentFragment;
 class TemplateContentDocumentFragment;
 
-enum class DeclarativeShadowRootMode {
-  kNone,
-  kOpen,
-  kClosed,
-};
-
 class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
