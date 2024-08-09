@@ -182,8 +182,6 @@ reclient/Linux Builder reclient test (unified uploads) untrusted
 reclient/Linux Builder reclient test untrusted
 reclient/Mac Builder reclient staging
 reclient/Mac Builder reclient staging untrusted
-reclient/Mac Builder reclient test
-reclient/Mac Builder reclient test untrusted
 reclient/Simple Chrome Builder reclient staging
 reclient/Simple Chrome Builder reclient staging untrusted
 reclient/Simple Chrome Builder reclient test

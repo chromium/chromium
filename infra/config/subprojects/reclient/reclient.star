@@ -300,46 +300,6 @@ fyi_reclient_staging_builder(
     },
 )
 
-fyi_reclient_test_builder(
-    name = "Mac Builder reclient test",
-    builder_spec = builder_config.copy_from(
-        "ci/Mac Builder",
-        lambda spec: structs.evolve(
-            spec,
-            gclient_config = structs.extend(
-                spec.gclient_config,
-                apply_configs = [
-                    "reclient_test",
-                ],
-            ),
-            build_gs_bucket = "chromium-fyi-archive",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "gpu_tests",
-            "release_builder",
-            "remoteexec",
-            "minimal_symbols",
-            "mac",
-            "arm64",
-        ],
-    ),
-    builderless = True,
-    cores = None,
-    os = os.MAC_DEFAULT,
-    cpu = cpu.ARM64,
-    console_view_category = "mac",
-    priority = 35,
-    reclient_bootstrap_env = {
-        "GLOG_vmodule": "depsscannerclient.go=2,main.go=2",
-    },
-    reclient_profiler_service = "reclient-mac",
-    reclient_rewrapper_env = {
-        "RBE_compression_threshold": "0",
-    },
-)
-
 fyi_reclient_staging_builder(
     name = "Win x64 Builder reclient staging",
     builder_spec = builder_config.copy_from(

@@ -435,8 +435,6 @@
     "Linux Builder reclient test untrusted": "reclient/Linux Builder reclient test untrusted/gn-args.json",
     "Mac Builder reclient staging": "reclient/Mac Builder reclient staging/gn-args.json",
     "Mac Builder reclient staging untrusted": "reclient/Mac Builder reclient staging untrusted/gn-args.json",
-    "Mac Builder reclient test": "reclient/Mac Builder reclient test/gn-args.json",
-    "Mac Builder reclient test untrusted": "reclient/Mac Builder reclient test untrusted/gn-args.json",
     "Simple Chrome Builder reclient staging": "reclient/Simple Chrome Builder reclient staging/gn-args.json",
     "Simple Chrome Builder reclient staging untrusted": "reclient/Simple Chrome Builder reclient staging untrusted/gn-args.json",
     "Simple Chrome Builder reclient test": "reclient/Simple Chrome Builder reclient test/gn-args.json",
