@@ -67,11 +67,10 @@ constexpr std::u16string_view kNumberToDayOfWeek[] = {
     u"Sunday",   u"Monday", u"Tuesday", u"Wednesday",
     u"Thursday", u"Friday", u"Saturday"};
 
-constexpr std::tuple<std::u16string_view, std::u16string_view>
-    kSuggestedDates[] = {
-        {u"today", u"Today's date"},
-        {u"tomorrow", u"Tomorrow's date"},
-        {u"2 weeks from now", u"Two weeks from now"},
+constexpr std::u16string_view kSuggestedDates[] = {
+    {u"Today"},
+    {u"Tomorrow"},
+    {u"2 weeks from now"},
 };
 
 // The result of parsing a date expression query.
@@ -92,12 +91,13 @@ PickerSearchResult MakeResult(const ResolvedDate& date) {
       PickerSearchResult::TextData::Source::kDate);
 }
 
-PickerSearchResult OverrideSecondaryText(PickerSearchResult result,
-                                         std::u16string_view secondary_text) {
-  const PickerSearchResult::TextData& data =
-      std::get<PickerSearchResult::TextData>(result.data());
-  return PickerSearchResult::Text(data.primary_text, secondary_text, data.icon,
-                                  data.source);
+PickerSearchResult MakeSuggestedResult(std::u16string_view query_text,
+                                       const ResolvedDate& date) {
+  CHECK(!date.disambiguation_text.has_value());
+  return PickerSearchResult::SearchRequest(
+      query_text, base::LocalizedTimeFormatWithPattern(date.time, "LLLd"),
+      ui::ImageModel::FromVectorIcon(kPickerCalendarIcon,
+                                     cros_tokens::kCrosSysOnSurface));
 }
 
 void HandleSpecificDayQueries(const base::Time& now,
@@ -228,12 +228,11 @@ std::vector<PickerSearchResult> PickerDateSearch(const base::Time& now,
 std::vector<PickerSearchResult> PickerSuggestedDateResults() {
   std::vector<PickerSearchResult> results;
 
-  for (const auto& date : kSuggestedDates) {
-    std::vector<PickerSearchResult> query_results =
-        PickerDateSearch(base::Time::Now(), std::get<0>(date));
-    for (const auto& result : query_results) {
-      results.push_back(OverrideSecondaryText(result, std::get<1>(date)));
-    }
+  for (const std::u16string_view query : kSuggestedDates) {
+    std::vector<ResolvedDate> resolved_dates =
+        ResolveQuery(base::Time::Now(), query);
+    CHECK_EQ(resolved_dates.size(), 1u);
+    results.push_back(MakeSuggestedResult(query, resolved_dates[0]));
   }
 
   return results;

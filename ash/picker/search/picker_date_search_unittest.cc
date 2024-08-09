@@ -218,11 +218,12 @@ TEST(PickerSuggestedDateResults, ReturnsSuggestedResults) {
       results,
       Each(Property(
           "data", &PickerSearchResult::data,
-          VariantWith<PickerSearchResult::TextData>(AllOf(
-              Field("primary_text", &PickerSearchResult::TextData::primary_text,
+          VariantWith<PickerSearchResult::SearchRequestData>(AllOf(
+              Field("primary_text",
+                    &PickerSearchResult::SearchRequestData::primary_text,
                     Not(IsEmpty())),
               Field("secondary_text",
-                    &PickerSearchResult::TextData::secondary_text,
+                    &PickerSearchResult::SearchRequestData::secondary_text,
                     Not(IsEmpty())))))));
 }
 }  // namespace
