@@ -4,6 +4,7 @@
 package org.chromium.net.impl;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.net.BidirectionalStream;
@@ -17,6 +18,7 @@ import org.chromium.net.UrlRequest;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -62,6 +64,14 @@ public abstract class CronetEngineBase extends ExperimentalCronetEngine {
      *     Set to {@code null} if not used.
      * @param idempotency idempotency of the request which should be one of the {@link
      *     ExperimentalUrlRequest.Builder#DEFAULT_IDEMPOTENCY IDEMPOTENT NOT_IDEMPOTENT} values.
+     * @param dictionarySha256Hash the SHA-256 of the specified compression dictionary. Optional,
+     *     null if no dictionary is specified.
+     * @param dictionary the compression dictionary that Cronet can use for this UrlRequest. This
+     *     must be a direct ByteBuffer. Optional, {@code null} if no custom dictionary is to be
+     *     used.
+     * @param dictionaryId the optional ID associated with this dictionary, must be an empty string
+     *     if missing. If present, this will be sent via the Dictionary-ID header. You would need to
+     *     specify this if the server specified an id in its "Use-As-Dictionary" response.
      * @param network network to be used to send this request. Set to {@code null} if not specified.
      * @return new request.
      */
@@ -84,7 +94,10 @@ public abstract class CronetEngineBase extends ExperimentalCronetEngine {
             String method,
             ArrayList<Map.Entry<String, String>> requestHeaders,
             UploadDataProvider uploadDataProvider,
-            Executor uploadDataProviderExecutor);
+            Executor uploadDataProviderExecutor,
+            byte[] dictionarySha256Hash,
+            ByteBuffer dictionary,
+            @NonNull String dictionaryId);
 
     /**
      * Creates a {@link BidirectionalStream} object. {@code callback} methods will be invoked on

@@ -494,6 +494,7 @@ public abstract class org.chromium.net.UrlRequest$Builder {
   public org.chromium.net.UrlRequest$Builder setTrafficStatsTag(int);
   public org.chromium.net.UrlRequest$Builder setTrafficStatsUid(int);
   public org.chromium.net.UrlRequest$Builder setRequestFinishedListener(org.chromium.net.RequestFinishedInfo$Listener);
+  public org.chromium.net.UrlRequest$Builder setRawCompressionDictionary(byte[], java.nio.ByteBuffer, java.lang.String);
   public abstract org.chromium.net.UrlRequest build();
 }
 public abstract class org.chromium.net.UrlRequest$Callback {
@@ -504,6 +505,8 @@ public abstract class org.chromium.net.UrlRequest$Callback {
   public abstract void onSucceeded(org.chromium.net.UrlRequest, org.chromium.net.UrlResponseInfo);
   public abstract void onFailed(org.chromium.net.UrlRequest, org.chromium.net.UrlResponseInfo, org.chromium.net.CronetException);
   public void onCanceled(org.chromium.net.UrlRequest, org.chromium.net.UrlResponseInfo);
+}
+public interface org.chromium.net.UrlRequest$Experimental extends java.lang.annotation.Annotation {
 }
 public class org.chromium.net.UrlRequest$Status {
   public static final int INVALID;
@@ -636,4 +639,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.JsonCronetCallback forJsonBody(org.chromium.net.apihelpers.RedirectHandler, org.chromium.net.apihelpers.CronetRequestCompletionListener<org.json.JSONObject>);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: 373f90cf8fd10bf187e827fa2a4701af
+Stamp: f9ffa80f186fc8aee2c24ea2738865a0

@@ -75,7 +75,13 @@ static jlong JNI_CronetUrlRequest_CreateRequestAdapter(
     jboolean jtraffic_stats_uid_set,
     jint jtraffic_stats_uid,
     jint jidempotency,
+    const base::android::JavaParamRef<jbyteArray>& jdictionary_sha256_hash,
+    const base::android::JavaParamRef<jobject>& jdictionary_byte_buffer,
+    jint jdictionary_position,
+    jint jdictionary_limit,
+    const base::android::JavaParamRef<jstring>& jdictionary_id,
     jlong jnetwork_handle) {
+  CHECK(jdictionary_id);
   CronetContextAdapter* context_adapter =
       reinterpret_cast<CronetContextAdapter*>(jurl_request_context_adapter);
   DCHECK(context_adapter);
@@ -91,15 +97,13 @@ static jlong JNI_CronetUrlRequest_CreateRequestAdapter(
       jdisable_connection_migration, jtraffic_stats_tag_set, jtraffic_stats_tag,
       jtraffic_stats_uid_set, jtraffic_stats_uid,
       static_cast<net::Idempotency>(jidempotency),
-      // TODO(b/355623186): Pass the actual compression
-      // dictionary when present.
       SharedDictionaryWithByteBuffer::MaybeCreate(
           env,
-          /*dictionary_sha256_hash=*/nullptr,
-          /*dictionary_content_byte_buffer=*/nullptr,
-          /*dictionary_content_position=*/0,
-          /*dictionary_content_limit=*/0,
-          /*dictionary_id=*/nullptr),
+          /*dictionary_sha256_hash=*/jdictionary_sha256_hash,
+          /*dictionary_content_byte_buffer=*/jdictionary_byte_buffer,
+          /*dictionary_content_position=*/jdictionary_position,
+          /*dictionary_content_limit=*/jdictionary_limit,
+          /*dictionary_id=*/jdictionary_id),
       jnetwork_handle);
 
   return reinterpret_cast<jlong>(adapter);

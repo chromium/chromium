@@ -7,6 +7,7 @@ package org.chromium.net.test;
 import android.content.Context;
 
 import androidx.annotation.GuardedBy;
+import androidx.annotation.NonNull;
 
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.CronetEngine;
@@ -29,6 +30,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandlerFactory;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -324,7 +326,10 @@ final class FakeCronetEngine extends CronetEngineBase {
             String method,
             ArrayList<Map.Entry<String, String>> requestHeaders,
             UploadDataProvider uploadDataProvider,
-            Executor uploadDataProviderExecutor) {
+            Executor uploadDataProviderExecutor,
+            byte[] dictionarySha256Hash,
+            ByteBuffer sharedDictionary,
+            @NonNull String sharedDictionaryId) {
         if (networkHandle != DEFAULT_NETWORK_HANDLE) {
             throw new UnsupportedOperationException(
                     "The multi-network API is not supported by the Fake implementation "

@@ -130,7 +130,16 @@ public final class Http2TestServer {
         return getServerUrl() + Http2TestHandler.SERVE_SIMPLE_BROTLI_RESPONSE;
     }
 
-    /** @return url of the reporting collector */
+    /**
+     * @return url of a shared-brotli-encoded server resource.
+     */
+    public static String getServeSharedBrotliResponse() {
+        return getServerUrl() + Http2TestHandler.SERVE_SHARED_BROTLI_RESPONSE;
+    }
+
+    /**
+     * @return url of the reporting collector
+     */
     public static String getReportingCollectorUrl() {
         return getServerUrl() + Http2TestHandler.REPORTING_COLLECTOR_PATH;
     }

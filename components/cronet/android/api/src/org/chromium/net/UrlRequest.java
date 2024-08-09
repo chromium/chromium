@@ -4,6 +4,8 @@
 
 package org.chromium.net;
 
+import androidx.annotation.RequiresOptIn;
+
 import java.nio.ByteBuffer;
 import java.util.concurrent.Executor;
 
@@ -182,9 +184,37 @@ public abstract class UrlRequest {
         }
 
         /**
+         * Allows Cronet to use the specified compression dictionary for this request. When
+         * specified, Cronet might signal to the server the availability of said compression
+         * dictionary. For this to have any effect, the CronetEngine that will execute this request
+         * must have been configured to enable a compression scheme that supports external
+         * dictionaries. This partially implements draft-ietf-httpbis-compression-dictionary within
+         * Cronet. Cronet won't directly handle "Use-As-Dictionary" response headers, it will
+         * instead rely on the embedder to: either, handle them and later call
+         * UrlRequest.Builder#setCompressionDictionary for requests which match Use-As-Dictionary's
+         * rules; or, fetch compression dictionaries via some other out of band mechanism, and later
+         * call UrlRequest.Builder#setCompressionDictionary. Cronet will interpret the dictionary as
+         * matching only this UrlRequest. If said request is redirected, and the embedder decides to
+         * follow the redirect, the dictionary will match also the new URL.
+         *
+         * @param dictionarySha256Hash the SHA-256 of the specified compression dictionary.
+         * @param dictionary the compression dictionary that Cronet can use for this UrlRequest.
+         *     This must be a direct ByteBuffer.
+         * @param dictionaryId the optional ID associated with this dictionary, must be an empty
+         *     string if missing. If present, this will be sent via the Dictionary-ID header. You
+         *     would need to specify this if the server specified an id in its "Use-As-Dictionary"
+         *     response.
+         * @return the builder to facilitate chaining.
+         */
+        @Experimental
+        public Builder setRawCompressionDictionary(
+                byte[] dictionarySha256Hash, ByteBuffer dictionary, String dictionaryId) {
+            return this;
+        }
+
+        /**
          * Creates a {@link UrlRequest} using configuration within this {@link Builder}. The
-         * returned
-         * {@code UrlRequest} can then be started by calling {@link UrlRequest#start}.
+         * returned {@code UrlRequest} can then be started by calling {@link UrlRequest#start}.
          *
          * @return constructed {@link UrlRequest} using configuration within this {@link Builder}.
          */
@@ -476,4 +506,20 @@ public abstract class UrlRequest {
     // Note:  There are deliberately no accessors for the results of the request
     // here. Having none removes any ambiguity over when they are populated,
     // particularly in the redirect case.
+
+    /**
+     * An annotation for APIs which are not considered stable yet.
+     *
+     * <p>Experimental APIs are subject to change, breakage, or removal at any time and may not be
+     * production ready.
+     *
+     * <p>It's highly recommended to reach out to Cronet maintainers (<code>net-dev@chromium.org
+     * </code>) before using one of the APIs annotated as experimental outside of debugging and
+     * proof-of-concept code.
+     *
+     * <p>By using an Experimental API, applications acknowledge that they are doing so at their own
+     * risk.
+     */
+    @RequiresOptIn
+    public @interface Experimental {}
 }

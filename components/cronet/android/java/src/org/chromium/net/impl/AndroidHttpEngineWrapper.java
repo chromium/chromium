@@ -12,6 +12,7 @@ import android.net.http.HttpEngine;
 import android.os.Process;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresExtension;
 import androidx.annotation.VisibleForTesting;
@@ -27,6 +28,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandlerFactory;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -236,7 +238,10 @@ class AndroidHttpEngineWrapper extends CronetEngineBase {
             String method,
             ArrayList<Map.Entry<String, String>> requestHeaders,
             UploadDataProvider uploadDataProvider,
-            Executor uploadDataProviderExecutor) {
+            Executor uploadDataProviderExecutor,
+            byte[] dictionarySha256Hash,
+            ByteBuffer sharedDictionary,
+            @NonNull String sharedDictionaryId) {
         AndroidUrlRequestCallbackWrapper wrappedCallback =
                 new AndroidUrlRequestCallbackWrapper(callback);
         android.net.http.UrlRequest.Builder requestBuilder =
