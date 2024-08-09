@@ -205,6 +205,8 @@ source_set("cronet_static") {
     "//components/cronet/android/cronet_url_request_adapter.h",
     "//components/cronet/android/io_buffer_with_byte_buffer.cc",
     "//components/cronet/android/io_buffer_with_byte_buffer.h",
+    "//components/cronet/android/shared_dictionary_with_byte_buffer.cc",
+    "//components/cronet/android/shared_dictionary_with_byte_buffer.h",
     "//components/cronet/android/url_request_close_source.cc",
     "//components/cronet/android/url_request_close_source.h",
     "//components/cronet/android/url_request_error.cc",

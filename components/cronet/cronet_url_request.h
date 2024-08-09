@@ -159,6 +159,7 @@ class CronetURLRequest {
                    bool traffic_stats_uid_set,
                    int32_t traffic_stats_uid,
                    net::Idempotency idempotency,
+                   scoped_refptr<net::SharedDictionary> shared_dictionary,
                    net::handles::NetworkHandle network =
                        net::handles::kInvalidNetworkHandle);
 
@@ -222,6 +223,7 @@ class CronetURLRequest {
                  bool traffic_stats_uid_set,
                  int32_t traffic_stats_uid,
                  net::Idempotency idempotency,
+                 scoped_refptr<net::SharedDictionary> shared_dictionary,
                  net::handles::NetworkHandle network);
 
     NetworkTasks(const NetworkTasks&) = delete;

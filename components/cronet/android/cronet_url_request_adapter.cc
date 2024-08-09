@@ -11,8 +11,10 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "components/cronet/android/cronet_context_adapter.h"
 #include "components/cronet/android/io_buffer_with_byte_buffer.h"
+#include "components/cronet/android/shared_dictionary_with_byte_buffer.h"
 #include "components/cronet/android/url_request_close_source.h"
 #include "components/cronet/android/url_request_error.h"
 #include "components/cronet/metrics_util.h"
@@ -38,6 +40,7 @@
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 
+namespace cronet {
 namespace {
 
 base::android::ScopedJavaLocalRef<jobjectArray> ConvertResponseHeadersToJava(
@@ -58,8 +61,6 @@ base::android::ScopedJavaLocalRef<jobjectArray> ConvertResponseHeadersToJava(
 }
 
 }  // namespace
-
-namespace cronet {
 
 static jlong JNI_CronetUrlRequest_CreateRequestAdapter(
     JNIEnv* env,
@@ -89,7 +90,17 @@ static jlong JNI_CronetUrlRequest_CreateRequestAdapter(
       static_cast<net::RequestPriority>(jpriority), jdisable_cache,
       jdisable_connection_migration, jtraffic_stats_tag_set, jtraffic_stats_tag,
       jtraffic_stats_uid_set, jtraffic_stats_uid,
-      static_cast<net::Idempotency>(jidempotency), jnetwork_handle);
+      static_cast<net::Idempotency>(jidempotency),
+      // TODO(b/355623186): Pass the actual compression
+      // dictionary when present.
+      SharedDictionaryWithByteBuffer::MaybeCreate(
+          env,
+          /*dictionary_sha256_hash=*/nullptr,
+          /*dictionary_content_byte_buffer=*/nullptr,
+          /*dictionary_content_position=*/0,
+          /*dictionary_content_limit=*/0,
+          /*dictionary_id=*/nullptr),
+      jnetwork_handle);
 
   return reinterpret_cast<jlong>(adapter);
 }
@@ -107,20 +118,21 @@ CronetURLRequestAdapter::CronetURLRequestAdapter(
     jboolean jtraffic_stats_uid_set,
     jint jtraffic_stats_uid,
     net::Idempotency idempotency,
+    scoped_refptr<net::SharedDictionary> shared_dictionary,
     jlong network)
-    : request_(
-          new CronetURLRequest(context->cronet_url_request_context(),
-                               std::unique_ptr<CronetURLRequestAdapter>(this),
-                               url,
-                               priority,
-                               jdisable_cache == JNI_TRUE,
-                               jdisable_connection_migration == JNI_TRUE,
-                               jtraffic_stats_tag_set == JNI_TRUE,
-                               jtraffic_stats_tag,
-                               jtraffic_stats_uid_set == JNI_TRUE,
-                               jtraffic_stats_uid,
-                               idempotency,
-                               network)) {
+    : request_(new CronetURLRequest(context->cronet_url_request_context(),
+                                    base::WrapUnique<>(this),
+                                    url,
+                                    priority,
+                                    jdisable_cache == JNI_TRUE,
+                                    jdisable_connection_migration == JNI_TRUE,
+                                    jtraffic_stats_tag_set == JNI_TRUE,
+                                    jtraffic_stats_tag,
+                                    jtraffic_stats_uid_set == JNI_TRUE,
+                                    jtraffic_stats_uid,
+                                    idempotency,
+                                    shared_dictionary,
+                                    network)) {
   owner_.Reset(env, jurl_request);
 }
 

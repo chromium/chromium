@@ -10,13 +10,13 @@ namespace cronet {
 
 IOBufferWithByteBuffer::IOBufferWithByteBuffer(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jbyte_buffer,
+    const base::android::JavaRef<jobject>& jbyte_buffer,
     jint position,
     jint limit)
     : net::WrappedIOBuffer(base::make_span(
                                [&]() {
-                                 auto* data =
-                                     env->GetDirectBufferAddress(jbyte_buffer);
+                                 auto* data = env->GetDirectBufferAddress(
+                                     jbyte_buffer.obj());
                                  CHECK(data);
                                  return static_cast<char*>(data);
                                }(),
