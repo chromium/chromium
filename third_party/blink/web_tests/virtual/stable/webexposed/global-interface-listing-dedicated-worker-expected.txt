@@ -3585,7 +3585,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter responseText
 [Worker]     getter responseType
 [Worker]     getter responseURL
-[Worker]     getter responseXML
 [Worker]     getter status
 [Worker]     getter statusText
 [Worker]     getter timeout
