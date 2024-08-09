@@ -5,10 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_BROWSER_STATE_METRICS_MODEL_BROWSER_STATE_METRICS_H_
 #define IOS_CHROME_BROWSER_BROWSER_STATE_METRICS_MODEL_BROWSER_STATE_METRICS_H_
 
-class ProfileManagerIOS;
-// TODO(crbug.com/358356195): Remove this typedef when this header is updated
-// to use ProfileManagerIOS.
-using ChromeBrowserStateManager = ProfileManagerIOS;
+class ChromeBrowserStateManager;
 
 namespace profile_metrics {
 struct Counts;

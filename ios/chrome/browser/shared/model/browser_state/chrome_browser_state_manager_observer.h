@@ -8,11 +8,7 @@
 #include "base/observer_list_types.h"
 
 class ChromeBrowserState;
-
-class ProfileManagerIOS;
-// TODO(crbug.com/358356195): Remove this typedef when this header is updated
-// to use ProfileManagerIOS.
-using ChromeBrowserStateManager = ProfileManagerIOS;
+class ChromeBrowserStateManager;
 
 // An observer that can be registered with a ChromeBrowserStateManager.
 class ChromeBrowserStateManagerObserver : public base::CheckedObserver {
