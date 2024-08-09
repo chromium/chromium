@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
   ASSERT_TRUE(request->trusted_params);
   url::Origin cross_origin = url::Origin::Create(cross_origin_target_url);
   EXPECT_TRUE(net::IsolationInfo::Create(
-                  net::IsolationInfo::RequestType::kOther, cross_origin,
+                  net::IsolationInfo::RequestType::kMainFrame, cross_origin,
                   cross_origin, net::SiteForCookies())
                   .IsEqualForTesting(request->trusted_params->isolation_info));
 }
@@ -213,9 +213,11 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
                        DISABLED_CrossOriginDocumentReusedAsNavigation) {
   const char* prefetch_path = "/prefetch.html";
   const char* target_path = "/target.html";
-  RegisterResponse(
-      target_path,
-      ResponseEntry("<head><title>Prefetch Target</title></head>"));
+  RegisterResponse(target_path,
+                   ResponseEntry("<head><title>Prefetch Target</title></head>",
+                                 // The empty content type prevents this
+                                 // response from being blocked by ORB.
+                                 /*content_types=*/""));
 
   base::RunLoop prefetch_waiter;
   auto request_counter = RequestCounter::CreateAndMonitor(
@@ -722,7 +724,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
   ASSERT_TRUE(request->trusted_params);
   url::Origin cross_origin = url::Origin::Create(cross_origin_target_url);
   EXPECT_TRUE(net::IsolationInfo::Create(
-                  net::IsolationInfo::RequestType::kOther, cross_origin,
+                  net::IsolationInfo::RequestType::kMainFrame, cross_origin,
                   cross_origin, net::SiteForCookies())
                   .IsEqualForTesting(request->trusted_params->isolation_info));
 }
