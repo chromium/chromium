@@ -4032,9 +4032,7 @@ bool hasQueryParam(WebContents* wc, std::string query_param) {
          wc->GetLastCommittedURL().query().find(query_param);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
-                       EnterprisePolicyEnabledByDefault) {
-  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
+IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, NotBeBlockedByFeatureFlag) {
   SetupAccountCapabilities();
   OpenDevToolsWindow(kDebuggerTestPage, false);
   LoadLegacyFilesInFrontend(window_);
@@ -4054,11 +4052,42 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
 #else
   EXPECT_TRUE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
 #endif
+  CloseDevToolsWindow();
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
+                       EnterprisePolicyEnabledByDefault) {
+  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
+  SetupAccountCapabilities();
+  OpenDevToolsWindow(kDebuggerTestPage, false);
+  LoadLegacyFilesInFrontend(window_);
+  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+  const auto result = content::EvalJs(wc, content::JsReplace(R"(
+    (async function() {
+      return new Promise(resolve => {
+        Host.InspectorFrontendHost.getHostConfig(resolve);
+      });
+    })();
+  )"));
+  ASSERT_TRUE(result.value.is_dict());
+  auto* configConsoleInsights =
+      result.value.GetDict().FindDict("devToolsConsoleInsights");
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(configConsoleInsights->FindBool("enabled").value());
   EXPECT_FALSE(
       configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
   EXPECT_FALSE(configConsoleInsights->FindBool("blockedByAge").value());
   EXPECT_FALSE(configConsoleInsights->FindBool("blockedByGeo").value());
   EXPECT_FALSE(configConsoleInsights->FindBool("optIn").value());
+#else
+  EXPECT_FALSE(configConsoleInsights->FindBool("enabled").value());
+  EXPECT_TRUE(
+      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByAge").value());
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByGeo").value());
+  EXPECT_FALSE(configConsoleInsights->FindBool("optIn").value());
+#endif
+
   CloseDevToolsWindow();
 }
 
@@ -4079,15 +4108,18 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsBlockedByGeo) {
   auto* configConsoleInsights =
       result.value.GetDict().FindDict("devToolsConsoleInsights");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
+  EXPECT_TRUE(configConsoleInsights->FindBool("enabled").value());
   EXPECT_TRUE(configConsoleInsights->FindBool("blockedByGeo").value());
-#else
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByGeo").value());
-#endif
   EXPECT_FALSE(
       configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
   EXPECT_FALSE(configConsoleInsights->FindBool("blockedByAge").value());
+#else
+  EXPECT_FALSE(configConsoleInsights->FindBool("enabled").value());
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByGeo").value());
+  EXPECT_TRUE(
+      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByAge").value());
+#endif
   CloseDevToolsWindow();
 }
 
@@ -4108,15 +4140,19 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsNotEnabledForMinors) {
   auto* configConsoleInsights =
       result.value.GetDict().FindDict("devToolsConsoleInsights");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
+  EXPECT_TRUE(configConsoleInsights->FindBool("enabled").value());
   EXPECT_TRUE(configConsoleInsights->FindBool("blockedByAge").value());
-#else
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByAge").value());
-#endif
   EXPECT_FALSE(
       configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
   EXPECT_FALSE(configConsoleInsights->FindBool("blockedByGeo").value());
+#else
+  EXPECT_FALSE(configConsoleInsights->FindBool("enabled").value());
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByAge").value());
+  EXPECT_TRUE(
+      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByGeo").value());
+#endif
+
   CloseDevToolsWindow();
 }
 
@@ -4147,12 +4183,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
   auto* configConsoleInsights =
       result.value.GetDict().FindDict("devToolsConsoleInsights");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
+  EXPECT_TRUE(configConsoleInsights->FindBool("enabled").value());
   EXPECT_TRUE(
       configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
 #else
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
-  EXPECT_FALSE(
+  EXPECT_FALSE(configConsoleInsights->FindBool("enabled").value());
+  EXPECT_TRUE(
       configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
 #endif
   CloseDevToolsWindow();
@@ -4185,12 +4221,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
   auto* configConsoleInsights =
       result.value.GetDict().FindDict("devToolsConsoleInsights");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
-#else
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
-#endif
+  EXPECT_TRUE(configConsoleInsights->FindBool("enabled").value());
   EXPECT_FALSE(
       configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+#else
+  EXPECT_FALSE(configConsoleInsights->FindBool("enabled").value());
+  EXPECT_TRUE(
+      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+#endif
+
   CloseDevToolsWindow();
 }
 
@@ -4219,13 +4258,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
   auto* configConsoleInsights =
       result.value.GetDict().FindDict("devToolsConsoleInsights");
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_FALSE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
+  EXPECT_TRUE(configConsoleInsights->FindBool("enabled").value());
   EXPECT_TRUE(configConsoleInsights->FindBool("disallowLogging").value());
-#else
-  EXPECT_TRUE(configConsoleInsights->FindBool("blockedByFeatureFlag").value());
-#endif
   EXPECT_FALSE(
       configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+#else
+  EXPECT_FALSE(configConsoleInsights->FindBool("enabled").value());
+  EXPECT_TRUE(
+      configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
+#endif
+
   CloseDevToolsWindow();
 }
 

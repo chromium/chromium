@@ -110,22 +110,11 @@ bool IsAidaBlockedByGeo(std::string country_code) {
   return !kAidaSupportedCountries.contains(country_code);
 }
 
-AidaClient::BlockedReason AidaClient::CanUseAida(Profile* profile) {
-  struct BlockedReason result;
-  // Console insights is only available on branded builds
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  result.blocked = true;
-  result.blocked_by_feature_flag = true;
-  return result;
-#else
-  // Console insights is not available if the feature flag is off
-  if (!base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
-    result.blocked = true;
-    result.blocked_by_feature_flag = true;
-    return result;
-  }
-  // If the feature flag is on, evaluate other restriction reasons
-  result.blocked_by_feature_flag = false;
+AidaClient::Availability AidaClient::CanUseAida(Profile* profile) {
+  struct Availability result;
+  // AidaClient is only available on branded builds
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  result.available = true;
   auto account_info = AccountInfoForProfile(profile);
   result.blocked_by_age = IsAidaBlockedByAge(account_info);
   result.blocked_by_enterprise_policy =
@@ -140,6 +129,12 @@ AidaClient::BlockedReason AidaClient::CanUseAida(Profile* profile) {
       IsLoggingDisabledByGeo(country_code);
   result.blocked = result.blocked_by_age ||
                    result.blocked_by_enterprise_policy || result.blocked_by_geo;
+
+  return result;
+#else
+  // AidaClient is only available on branded builds
+  result.available = false;
+  result.blocked = true;
   return result;
 #endif
 }
