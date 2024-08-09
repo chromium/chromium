@@ -9,8 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/language_preferences.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/language_preferences/language_preferences.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"

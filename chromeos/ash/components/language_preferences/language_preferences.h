@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LANGUAGE_PREFERENCES_H_
-#define CHROME_BROWSER_ASH_LANGUAGE_PREFERENCES_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_LANGUAGE_PREFERENCES_LANGUAGE_PREFERENCES_H_
+#define CHROMEOS_ASH_COMPONENTS_LANGUAGE_PREFERENCES_LANGUAGE_PREFERENCES_H_
 
 class PrefRegistrySimple;
 
@@ -35,4 +35,4 @@ void RegisterPrefs(PrefRegistrySimple* registry);
 }  // namespace language_prefs
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LANGUAGE_PREFERENCES_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_LANGUAGE_PREFERENCES_LANGUAGE_PREFERENCES_H_

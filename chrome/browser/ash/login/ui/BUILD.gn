@@ -121,6 +121,7 @@ static_library("ui") {
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/geolocation",
     "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/language_preferences",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/osauth/public",

@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/browser/ash/customization",
   "+chrome/browser/ash/extensions/login_screen_ui",
   "+chrome/browser/ash/first_run",
-  "+chrome/browser/ash/language_preferences.h",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/nearby",
   "+chrome/browser/ash/net",

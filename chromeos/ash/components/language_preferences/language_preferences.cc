@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/language_preferences.h"
+#include "chromeos/ash/components/language_preferences/language_preferences.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
