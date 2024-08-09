@@ -113,6 +113,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     );
     this.#permissionsProcessor = new PermissionsProcessor(browserCdpClient);
     this.#scriptProcessor = new ScriptProcessor(
+      eventManager,
       browsingContextStorage,
       realmStorage,
       preloadScriptStorage,

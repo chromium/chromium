@@ -18,11 +18,14 @@
 import {
   type EmptyResult,
   type Script,
+  type BrowsingContext,
+  ChromiumBidi,
   NoSuchScriptException,
 } from '../../../protocol/protocol.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
+import type {EventManager} from '../session/EventManager.js';
 
 import {PreloadScript} from './PreloadScript.js';
 import type {PreloadScriptStorage} from './PreloadScriptStorage.js';
@@ -30,12 +33,14 @@ import type {Realm} from './Realm.js';
 import type {RealmStorage} from './RealmStorage.js';
 
 export class ScriptProcessor {
+  readonly #eventManager: EventManager;
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #realmStorage: RealmStorage;
   readonly #preloadScriptStorage;
   readonly #logger?: LoggerFn;
 
   constructor(
+    eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     preloadScriptStorage: PreloadScriptStorage,
@@ -45,6 +50,45 @@ export class ScriptProcessor {
     this.#realmStorage = realmStorage;
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#logger = logger;
+
+    this.#eventManager = eventManager;
+    this.#eventManager.addSubscribeHook(
+      ChromiumBidi.Script.EventNames.RealmCreated,
+      this.#onRealmCreatedSubscribeHook.bind(this)
+    );
+  }
+
+  #onRealmCreatedSubscribeHook(
+    contextId: BrowsingContext.BrowsingContext
+  ): Promise<void> {
+    const context = this.#browsingContextStorage.getContext(contextId);
+    const contextsToReport = [
+      context,
+      ...this.#browsingContextStorage.getContext(contextId).allChildren,
+    ];
+
+    const realms = new Set<Realm>();
+    for (const reportContext of contextsToReport) {
+      const realmsForContext = this.#realmStorage.findRealms({
+        browsingContextId: reportContext.id,
+      });
+      for (const realm of realmsForContext) {
+        realms.add(realm);
+      }
+    }
+
+    for (const realm of realms) {
+      this.#eventManager.registerEvent(
+        {
+          type: 'event',
+          method: ChromiumBidi.Script.EventNames.RealmCreated,
+          params: realm.realmInfo,
+        },
+        context.id
+      );
+    }
+
+    return Promise.resolve();
   }
 
   async addPreloadScript(
