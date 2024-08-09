@@ -5152,15 +5152,11 @@
             ]
         }
     ],
-    "ClassifyUrlOnProcessResponseEvent": [
+    "ClassifyUrlOnProcessResponseEventAndroidAndChromeOS": [
         {
             "platforms": [
                 "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
+                "chromeos"
             ],
             "experiments": [
                 {
