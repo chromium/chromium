@@ -51,13 +51,9 @@ pub(crate) fn something_went_wrong<D>(_src: &str, _err: D) -> ! {
 /// empty slice might not match the pointer value of the input reference.
 #[inline(always)]
 pub(crate) unsafe fn bytes_of<T: Copy>(t: &T) -> &[u8] {
-  if size_of::<T>() == 0 {
-    &[]
-  } else {
-    match try_cast_slice::<T, u8>(core::slice::from_ref(t)) {
-      Ok(s) => s,
-      Err(_) => unreachable!(),
-    }
+  match try_cast_slice::<T, u8>(core::slice::from_ref(t)) {
+    Ok(s) => s,
+    Err(_) => unreachable!(),
   }
 }
 
@@ -67,13 +63,9 @@ pub(crate) unsafe fn bytes_of<T: Copy>(t: &T) -> &[u8] {
 /// empty slice might not match the pointer value of the input reference.
 #[inline]
 pub(crate) unsafe fn bytes_of_mut<T: Copy>(t: &mut T) -> &mut [u8] {
-  if size_of::<T>() == 0 {
-    &mut []
-  } else {
-    match try_cast_slice_mut::<T, u8>(core::slice::from_mut(t)) {
-      Ok(s) => s,
-      Err(_) => unreachable!(),
-    }
+  match try_cast_slice_mut::<T, u8>(core::slice::from_mut(t)) {
+    Ok(s) => s,
+    Err(_) => unreachable!(),
   }
 }
 
@@ -347,12 +339,11 @@ pub(crate) unsafe fn try_cast_mut<A: Copy, B: Copy>(
 ///   type, and the output slice wouldn't be a whole number of elements when
 ///   accounting for the size change (eg: 3 `u16` values is 1.5 `u32` values, so
 ///   that's a failure).
-/// * Similarly, you can't convert between a [ZST](https://doc.rust-lang.org/nomicon/exotic-sizes.html#zero-sized-types-zsts)
-///   and a non-ZST.
 #[inline]
 pub(crate) unsafe fn try_cast_slice<A: Copy, B: Copy>(
   a: &[A],
 ) -> Result<&[B], PodCastError> {
+  let input_bytes = core::mem::size_of_val::<[A]>(a);
   // Note(Lokathor): everything with `align_of` and `size_of` will optimize away
   // after monomorphization.
   if align_of::<B>() > align_of::<A>()
@@ -361,10 +352,11 @@ pub(crate) unsafe fn try_cast_slice<A: Copy, B: Copy>(
     Err(PodCastError::TargetAlignmentGreaterAndInputNotAligned)
   } else if size_of::<B>() == size_of::<A>() {
     Ok(unsafe { core::slice::from_raw_parts(a.as_ptr() as *const B, a.len()) })
-  } else if size_of::<A>() == 0 || size_of::<B>() == 0 {
-    Err(PodCastError::SizeMismatch)
-  } else if core::mem::size_of_val(a) % size_of::<B>() == 0 {
-    let new_len = core::mem::size_of_val(a) / size_of::<B>();
+  } else if (size_of::<B>() != 0 && input_bytes % size_of::<B>() == 0)
+    || (size_of::<B>() == 0 && input_bytes == 0)
+  {
+    let new_len =
+      if size_of::<B>() != 0 { input_bytes / size_of::<B>() } else { 0 };
     Ok(unsafe { core::slice::from_raw_parts(a.as_ptr() as *const B, new_len) })
   } else {
     Err(PodCastError::OutputSliceWouldHaveSlop)
@@ -379,6 +371,7 @@ pub(crate) unsafe fn try_cast_slice<A: Copy, B: Copy>(
 pub(crate) unsafe fn try_cast_slice_mut<A: Copy, B: Copy>(
   a: &mut [A],
 ) -> Result<&mut [B], PodCastError> {
+  let input_bytes = core::mem::size_of_val::<[A]>(a);
   // Note(Lokathor): everything with `align_of` and `size_of` will optimize away
   // after monomorphization.
   if align_of::<B>() > align_of::<A>()
@@ -389,10 +382,11 @@ pub(crate) unsafe fn try_cast_slice_mut<A: Copy, B: Copy>(
     Ok(unsafe {
       core::slice::from_raw_parts_mut(a.as_mut_ptr() as *mut B, a.len())
     })
-  } else if size_of::<A>() == 0 || size_of::<B>() == 0 {
-    Err(PodCastError::SizeMismatch)
-  } else if core::mem::size_of_val(a) % size_of::<B>() == 0 {
-    let new_len = core::mem::size_of_val(a) / size_of::<B>();
+  } else if (size_of::<B>() != 0 && input_bytes % size_of::<B>() == 0)
+    || (size_of::<B>() == 0 && input_bytes == 0)
+  {
+    let new_len =
+      if size_of::<B>() != 0 { input_bytes / size_of::<B>() } else { 0 };
     Ok(unsafe {
       core::slice::from_raw_parts_mut(a.as_mut_ptr() as *mut B, new_len)
     })

@@ -212,14 +212,48 @@ notes = "The changes from the previous version are negligible and thus it retain
 [[audits.bytemuck]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "safe-to-deploy"
-version = "1.14.3"
-notes = "Additional review notes may be found in https://crrev.com/c/5362675."
+version = "1.16.3"
+notes = """
+Review notes from the original audit (of 1.14.3) may be found in
+https://crrev.com/c/5362675.  Note that this audit has initially missed UB risk
+that was fixed in 1.16.2 - see https://github.com/Lokathor/bytemuck/pull/258.
+Because of this, the original audit has been edited to certify version `1.16.3`
+instead (see also https://crrev.com/c/5771867).
+"""
 
 [[audits.bytemuck]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = ["does-not-implement-crypto", "ub-risk-2"]
+criteria = ["does-not-implement-crypto", "ub-risk-4"]
 delta = "1.13.1 -> 1.14.3"
-notes = "Additional review notes may be found in https://crrev.com/c/5362675."
+notes = """
+Review notes from the original audit may be found in
+https://crrev.com/c/5362675.  Note that this audit has initially missed UB risk
+that was fixed in 1.16.2 - see https://github.com/Lokathor/bytemuck/pull/258.
+Because of this, the original audit has been edited to certify `ub-risk-4`
+instead.
+"""
+
+[[audits.bytemuck]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.13.1 -> 1.16.3"
+notes = """
+The certification of the 1.13.1 => 1.16.1 delta is based on:
+
+* 1.13.1 -> 1.14.3 audit in https://crrev.com/c/5362675.  Note that this audit
+  has initially missed UB risk that was fixed in 1.16.2 - see
+  https://github.com/Lokathor/bytemuck/pull/258.
+* 1.14.3 -> 1.15.0 audit in https://crrev.com/c/5380327
+* 1.15.0 -> 1.16.0 audit in https://crrev.com/c/5535688
+* 1.16.0 -> 1.16.1 audit in https://crrev.com/c/5650895
+
+When auditing the changes in the 1.16.1 -> 1.16.3 delta it seems that:
+
+* The changes correctly account for ZSTs:
+    * Avoiding division-by-zero errors
+    * Avoiding UB in `BoxBytes::drop`
+* The changes preserve safety gurantees for nearby `unsafe` blocks
+"""
 
 [[audits.bytemuck]]
 who = "Adrian Taylor <adetaylor@chromium.org>"
