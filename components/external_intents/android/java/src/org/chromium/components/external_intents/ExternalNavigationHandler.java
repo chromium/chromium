@@ -312,6 +312,20 @@ public class ExternalNavigationHandler {
             mModalDialogManager.dismissDialog(mPropertyModel, DialogDismissalCause.NAVIGATE);
         }
 
+        /** Browser initiated cancellation. */
+        void onNavigationStarted(long navigationId) {
+            if (navigationId == mParams.getNavigationId()) return;
+            // Cancel the dialog if a different navigation is started.
+            cancelDialog();
+        }
+
+        /** Browser initiated cancellation. */
+        void onNavigationFinished(long navigationId) {
+            if (navigationId == mParams.getNavigationId()) return;
+            // Cancel the dialog if a different navigation is finished.
+            cancelDialog();
+        }
+
         boolean isShowing() {
             return mPropertyModel != null && mModalDialogManager.isShowing();
         }
@@ -538,11 +552,11 @@ public class ExternalNavigationHandler {
     public static boolean sAllowIntentsToSelfForTesting;
     private final ExternalNavigationDelegate mDelegate;
     private final ModalDialogManager mModalDialogManager;
-    private IncognitoDialogDelegate mIncognitoDialogDelegate;
+    @VisibleForTesting protected IncognitoDialogDelegate mIncognitoDialogDelegate;
 
     /**
-     * Constructs a new instance of {@link ExternalNavigationHandler}, using the injected
-     * {@link ExternalNavigationDelegate}.
+     * Constructs a new instance of {@link ExternalNavigationHandler}, using the injected {@link
+     * ExternalNavigationDelegate}.
      */
     public ExternalNavigationHandler(ExternalNavigationDelegate delegate) {
         mDelegate = delegate;
@@ -554,10 +568,11 @@ public class ExternalNavigationHandler {
     }
 
     /**
-     * Determines whether the URL needs to be sent as an intent to the system,
-     * and sends it, if appropriate.
-     * @return Whether the URL generated an intent, caused a navigation in
-     *         current tab, or wasn't handled at all.
+     * Determines whether the URL needs to be sent as an intent to the system, and sends it, if
+     * appropriate.
+     *
+     * @return Whether the URL generated an intent, caused a navigation in current tab, or wasn't
+     *     handled at all.
      */
     public OverrideUrlLoadingResult shouldOverrideUrlLoading(ExternalNavigationParams params) {
         if (debug()) Log.i(TAG, "shouldOverrideUrlLoading called on " + params.getUrl().getSpec());
@@ -2487,7 +2502,21 @@ public class ExternalNavigationHandler {
         return false;
     }
 
-    /** @return Default SMS application's package name at the system level. Null if there isn't any. */
+    public void onNavigationStarted(long navigationId) {
+        if (mIncognitoDialogDelegate != null && mIncognitoDialogDelegate.isShowing()) {
+            mIncognitoDialogDelegate.onNavigationStarted(navigationId);
+        }
+    }
+
+    public void onNavigationFinished(long navigationId) {
+        if (mIncognitoDialogDelegate != null && mIncognitoDialogDelegate.isShowing()) {
+            mIncognitoDialogDelegate.onNavigationFinished(navigationId);
+        }
+    }
+
+    /**
+     * @return Default SMS application's package name at the system level. Null if there isn't any.
+     */
     @VisibleForTesting
     protected String getDefaultSmsPackageNameFromSystem() {
         return Telephony.Sms.getDefaultSmsPackage(ContextUtils.getApplicationContext());
