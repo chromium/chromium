@@ -846,6 +846,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       return None
     result = copy.deepcopy(test_config)
     result.setdefault('test', test_name)
+    result['run_cft'] = True
 
     if 'cros_board' in result or 'cros_board' in tester_config:
       result['cros_board'] = tester_config.get('cros_board') or result.get(
@@ -858,8 +859,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     if 'dut_pool' in result or 'cros_dut_pool' in tester_config:
       result['dut_pool'] = tester_config.get('cros_dut_pool') or result.get(
           'dut_pool')
-    if 'run_cft' in result or 'run_cft' in tester_config:
-      result['run_cft'] = tester_config.get('run_cft') or result.get('run_cft')
     if 'cros_build_target' in result or 'cros_build_target' in tester_config:
       result['cros_build_target'] = tester_config.get(
           'cros_build_target') or result.get('cros_build_target')
