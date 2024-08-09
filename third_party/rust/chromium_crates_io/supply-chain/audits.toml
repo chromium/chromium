@@ -1753,6 +1753,12 @@ who = "danakj <danakj@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.1.6 -> 0.1.8"
 
+[[audits.winapi-util]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.1.8 -> 0.1.9"
+notes = "The delta only changes Cargo.toml."
+
 [[audits.wycheproof]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

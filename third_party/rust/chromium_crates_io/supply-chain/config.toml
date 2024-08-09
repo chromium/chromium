@@ -266,7 +266,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."wasi:0.11.0+wasi-snapshot-preview1"]
 criteria = []
 
-[policy."winapi-util:0.1.8"]
+[policy."winapi-util:0.1.9"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."windows-sys:0.52.0"]
