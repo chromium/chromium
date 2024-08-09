@@ -442,10 +442,13 @@ void VideoCaptureManager::ConnectClient(
     return;
   }
 
+  bool client_exist =
+      controller->HasActiveClient() || controller->HasPausedClient();
+  base::UmaHistogramBoolean("Media.VideoCapture.StreamShared", client_exist);
+
   // First client starts the device. Device can't be started while the screen is
   // locked.
-  if (!controller->HasActiveClient() && !controller->HasPausedClient() &&
-      lock_time_.is_null()) {
+  if (!client_exist && lock_time_.is_null()) {
     std::ostringstream string_stream;
     string_stream
         << "VideoCaptureManager queueing device start for device_id = "
