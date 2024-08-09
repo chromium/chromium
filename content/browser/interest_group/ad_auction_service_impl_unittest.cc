@@ -869,7 +869,6 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
         /*enabled_features=*/
         {blink::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI, blink::features::kFledge,
-         blink::features::kFledgeClearOriginJoinedAdInterestGroups,
          blink::features::kFledgeNegativeTargeting,
          blink::features::kFledgeRealTimeReporting,
          blink::features::kFledgeAuctionDealSupport},

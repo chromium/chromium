@@ -291,7 +291,6 @@ AdAuctionServiceTestcase::AdAuctionServiceTestcase(
       /*enabled_features=*/
       {blink::features::kInterestGroupStorage,
        blink::features::kAdInterestGroupAPI, blink::features::kFledge,
-       blink::features::kFledgeClearOriginJoinedAdInterestGroups,
        blink::features::kFledgeNegativeTargeting},
       /*disabled_features=*/{});
   fenced_frame_feature_list_.InitAndEnableFeatureWithParameters(

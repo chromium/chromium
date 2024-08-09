@@ -1962,10 +1962,6 @@
       origin_trial_allows_third_party: true,
     },
     {
-      name: "FledgeClearOriginJoinedAdInterestGroups",
-      status: "stable",
-    },
-    {
       name: "FledgeCreateAuctionNonceSynchronousResolution",
       status: "stable",
     },
