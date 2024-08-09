@@ -14,6 +14,18 @@
 
 namespace media {
 
+namespace {
+const char* GetContentHintName(VideoEncoder::ContentHint content_hint) {
+  switch (content_hint) {
+    case VideoEncoder::ContentHint::Camera:
+      return "camera";
+    case VideoEncoder::ContentHint::Screen:
+      return "screen";
+  }
+}
+
+}  // namespace
+
 uint8_t GetDefaultVideoEncoderDropFrameThreshold() {
   // This function is to be invoked only in WebCodecs usage.
   // The drop frame threshold is the same as WebRTC.
@@ -70,6 +82,42 @@ VideoEncoder::~VideoEncoder() = default;
 VideoEncoder::Options::Options() = default;
 VideoEncoder::Options::Options(const Options&) = default;
 VideoEncoder::Options::~Options() = default;
+
+std::string VideoEncoder::Options::ToString() {
+  std::vector<std::string> keys;
+  if (bitrate) {
+    keys.push_back("bitrate: " + bitrate->ToString());
+  }
+  if (framerate) {
+    keys.push_back(base::StringPrintf("framerate: %f", *framerate));
+  }
+  keys.push_back("frame_size: " + frame_size.ToString());
+  if (keyframe_interval) {
+    keys.push_back(
+        base::StringPrintf("keyframe_interval: %d", *keyframe_interval));
+  }
+  keys.push_back(base::StringPrintf(
+      "latency_mode: %s",
+      latency_mode == LatencyMode::Quality ? "quality" : "realtime"));
+  if (scalability_mode) {
+    keys.push_back(base::StringPrintf(
+        "scalability_mode: %s", GetScalabilityModeName(*scalability_mode)));
+  }
+  if (content_hint) {
+    keys.push_back(base::StringPrintf("content_hint: %s",
+                                      GetContentHintName(*content_hint)));
+  }
+  if (subsampling) {
+    keys.push_back("subsampling: " + VideoChromaSamplingToString(*subsampling));
+  }
+  if (bit_depth) {
+    keys.push_back(base::StringPrintf("bit_depth: %d", *bit_depth));
+  }
+  keys.push_back(base::StringPrintf(
+      "produce_annexb: %s",
+      avc.produce_annexb || hevc.produce_annexb ? "true" : "false"));
+  return base::JoinString(keys, ",  ");
+}
 
 VideoEncoder::PendingEncode::PendingEncode() = default;
 VideoEncoder::PendingEncode::PendingEncode(PendingEncode&&) = default;

@@ -72,6 +72,9 @@ class MEDIA_EXPORT VideoEncoder {
     Options();
     Options(const Options&);
     ~Options();
+
+    std::string ToString();
+
     std::optional<Bitrate> bitrate;
     std::optional<double> framerate;
 
