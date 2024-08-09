@@ -52,12 +52,12 @@ class VIZ_COMMON_EXPORT OffsetTag {
  private:
   friend struct mojo::StructTraits<mojom::OffsetTagDataView, OffsetTag>;
 
-  // base::Token is used as a convenient representation of 128 bits of data. It
-  // has a built in empty state which avoid the extra memory overhead of
-  // requiring std::optional<OffsetTag>. 128bits allows randomly generated
-  // tokens to be used without risk of collision but it isn't intended to be
-  // unguessable. Security is achieved by having the embedder explicitly specify
-  // the viz client that will provide the OffsetTagValue.
+  // base::Token / a 128 bits token allow randomly generated tokens to be used
+  // without risk of collision but isn't intended to provide any security
+  // guarantees. Collision free allocation avoids having to coordinate
+  // allocation of tags. The embedder explicitly picks which viz client provides
+  // the OffsetTagValue so it's not possible for a malicious viz client to
+  // provide a different value.
   base::Token token_;
 };
 
