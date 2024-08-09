@@ -62,7 +62,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -384,7 +383,7 @@ ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::
     ~ProgressivePdf() = default;
 
 void ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::AddPage(
-    mojo_base::BigBuffer jpg,
+    const std::vector<uint8_t>& jpg,
     uint32_t index) {
   if (!pdf_searchifier_) {
     LOG(ERROR) << "Failed to add new page to PDF";

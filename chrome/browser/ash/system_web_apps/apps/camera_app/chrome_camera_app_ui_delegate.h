@@ -27,7 +27,6 @@
 #include "chrome/services/pdf/public/mojom/pdf_thumbnailer.mojom.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_ui.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -145,7 +144,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
       ~ProgressivePdf() override;
 
       // ash::camera_app::mojom::PdfBuilder
-      void AddPage(mojo_base::BigBuffer jpg, uint32_t index) override;
+      void AddPage(const std::vector<uint8_t>& jpg, uint32_t index) override;
       void DeletePage(uint32_t index) override;
       void Save(SaveCallback callback) override;
 

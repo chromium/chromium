@@ -21,12 +21,8 @@ import {
 import {Filenamer} from '../models/file_namer.js';
 import {getI18nMessage} from '../models/load_time_data.js';
 import {ResultSaver} from '../models/result_saver.js';
-import {ChromeHelper, createBigBufferFromBlob} from '../mojo/chrome_helper.js';
-import {
-  BigBuffer,
-  PdfBuilderRemote,
-  ToteMetricFormat,
-} from '../mojo/type.js';
+import {castToNumberArray, ChromeHelper} from '../mojo/chrome_helper.js';
+import {PdfBuilderRemote, ToteMetricFormat} from '../mojo/type.js';
 import * as nav from '../nav.js';
 import {speakMessage} from '../spoken_msg.js';
 import {show as showToast} from '../toast.js';
@@ -632,8 +628,9 @@ class PdfBuilder {
    */
   async addPage(jpg: Blob, index: number): Promise<void> {
     assert(this.builder !== null);
-    const bigBuffer = await createBigBufferFromBlob(jpg);
-    this.builder.addPage(bigBuffer, index);
+    const buffer = await jpg.arrayBuffer();
+    const numArray = castToNumberArray(new Uint8Array(buffer));
+    this.builder.addPage(numArray, index);
   }
 
   /**
@@ -650,7 +647,7 @@ class PdfBuilder {
   async save(): Promise<Blob> {
     assert(this.builder !== null);
     const {pdf} = await this.builder.save();
-    return this.createPdfBlob(pdf);
+    return new Blob([new Uint8Array(pdf)], {type: MimeType.PDF});
   }
 
   /**
@@ -660,31 +657,5 @@ class PdfBuilder {
     assert(this.builder !== null);
     this.builder.$.close();
     this.builder = null;
-  }
-
-  /**
-   * Create a PDF Blob from `bigBuffer`.
-   *
-   * This function handles the different ways the data can be stored in the
-   * `bigBuffer` object and returns a Blob containing the PDF data. Only one of
-   * the three scenarios will happen:
-   *
-   * - `invalidBuffer` is true, no data is sent.
-   * - `bytes` is defined, creates a Blob from the provided byte array.
-   * - `sharedMemory` is defined, maps the shared memory region to a buffer and
-   *   creates a Blob from the mapped data.
-   */
-  private createPdfBlob(bigBuffer: BigBuffer): Blob {
-    assert(bigBuffer.invalidBuffer !== true);
-    let bytes: Uint8Array|null = null;
-    if (bigBuffer.bytes !== undefined) {
-      bytes = new Uint8Array(bigBuffer.bytes);
-    } else {
-      const {bufferHandle, size} = assertExists(bigBuffer.sharedMemory);
-      const {result, buffer} = bufferHandle.mapBuffer(0, size);
-      assert(result === Mojo.RESULT_OK);
-      bytes = new Uint8Array(buffer);
-    }
-    return new Blob([assertExists(bytes)], {type: MimeType.PDF});
   }
 }
