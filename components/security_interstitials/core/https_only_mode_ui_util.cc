@@ -16,13 +16,13 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
     const GURL& url,
     const security_interstitials::https_only_mode::HttpInterstitialState&
         interstitial_state,
-    bool new_interstitial_enabled) {
+    bool august2024_refresh_enabled) {
   load_time_data.Set("tabTitle",
                      l10n_util::GetStringUTF16(IDS_HTTPS_ONLY_MODE_TITLE));
 
   int heading_id = IDS_HTTPS_ONLY_MODE_HEADING;
   int primary_paragraph_id = IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH;
-  if (new_interstitial_enabled) {
+  if (august2024_refresh_enabled) {
     heading_id = IDS_HTTPS_ONLY_BALANCED_MODE_HEADING;
     primary_paragraph_id = IDS_HTTPS_ONLY_BALANCED_MODE_PRIMARY_PARAGRAPH;
   }
@@ -74,7 +74,8 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
 }
 
 void PopulateHttpsOnlyModeStringsForSharedHTML(
-    base::Value::Dict& load_time_data) {
+    base::Value::Dict& load_time_data,
+    bool august2024_refresh_enabled) {
   load_time_data.Set("type", "HTTPS_ONLY");
   load_time_data.Set("overridable", false);
   load_time_data.Set("hide_primary_button", false);
@@ -83,4 +84,7 @@ void PopulateHttpsOnlyModeStringsForSharedHTML(
   load_time_data.Set("openDetails", "");
   load_time_data.Set("explanationParagraph", "");
   load_time_data.Set("finalParagraph", "");
+  if (august2024_refresh_enabled) {
+    load_time_data.Set("august2024Refresh", true);
+  }
 }
