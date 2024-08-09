@@ -89,6 +89,11 @@ extern const char kAuxiliarySearchDonationDescription[];
 extern const char kBackgroundResourceFetchName[];
 extern const char kBackgroundResourceFetchDescription[];
 
+extern const char
+    kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsName[];
+extern const char
+    kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsDescription[];
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kBirchWeatherName[];
 extern const char kBirchWeatherDescription[];

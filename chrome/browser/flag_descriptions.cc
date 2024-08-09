@@ -107,6 +107,13 @@ const char kBirchWeatherDescription[] =
     "appear after enabling this feature.";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+const char kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsName[] =
+    "Blink Scheduler Discrete Input Matches Responsiveness Metrics";
+const char
+    kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsDescription[] =
+        "Uses Responsiveness Metrics definitions for discrete input in blink "
+        "scheduler heuristics.";
+
 const char kCdmStorageDatabaseName[] = "Cdm Storage Database";
 const char kCdmStorageDatabaseDescription[] =
     "Start to use the CdmStorageDatabase to store data alongside the "

@@ -11805,6 +11805,16 @@ const FeatureEntry kFeatureEntries[] = {
          kDeferRendererTasksAfterInputVariations,
          "DeferRendererTasksAfterInput")},
 
+    {"blink-scheduler-discrete-input-matches-responsiveness-metrics",
+     flag_descriptions::
+         kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsName,
+     flag_descriptions::
+         kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         blink::features::
+             kBlinkSchedulerDiscreteInputMatchesResponsivenessMetrics)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"allow-fpmcu-beta-firmware",
      flag_descriptions::kAllowFpmcuBetaFirmwareName,

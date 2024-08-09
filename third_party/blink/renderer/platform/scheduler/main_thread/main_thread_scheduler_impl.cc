@@ -1353,7 +1353,12 @@ void MainThreadSchedulerImpl::DidHandleInputEventOnMainThread(
     }
   }
 
-  if (!PendingUserInput::IsContinuousEventType(web_input_event.GetType())) {
+  bool is_discrete =
+      base::FeatureList::IsEnabled(
+          features::kBlinkSchedulerDiscreteInputMatchesResponsivenessMetrics)
+          ? WebInputEvent::IsWebInteractionEvent(web_input_event.GetType())
+          : !PendingUserInput::IsContinuousEventType(web_input_event.GetType());
+  if (is_discrete) {
     main_thread_only().is_current_task_discrete_input = true;
     main_thread_only().is_frame_requested_after_discrete_input =
         frame_requested;

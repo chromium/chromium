@@ -1017,6 +1017,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "blink-scheduler-discrete-input-matches-responsiveness-metrics",
+    "owners": [ "shaseley@google.com" ],
+    "expiry_milestone": 131
+  },
+  {
     "name": "block-insecure-private-network-requests",
     "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
     "expiry_milestone": 130

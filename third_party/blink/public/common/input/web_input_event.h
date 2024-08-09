@@ -218,6 +218,35 @@ class BLINK_COMMON_EXPORT WebInputEvent {
     return Type::kPointerTypeFirst <= type && type <= Type::kPointerTypeLast;
   }
 
+  // Returns true if the WebInputEvent |type| will potentially be considered
+  // part of a "web interaction" for responsiveness metrics, e.g.
+  // Interaction-to-Next-Paint (INP). This, for example, includes clicks and
+  // key presses, but excludes continuous input like scrolling.
+  //
+  // This list includes `WebInputEvent::Type`s that can result in dispatching
+  // relevant events [1] considered by blink::ResponsivenessMetrics (see
+  // IsEventTypeForInteractionId() in window_performance.cc). For example the
+  // handling of kPointerUp, kMouseUp, and kTouchEnd `WebInputEvent::Type` raw
+  // events can all lead to dispatching a "pointerup" event, which is used in
+  // computing responsiveness metrics.
+  //
+  // [1] Note this excludes some events that are used for responsiveness metrics
+  // state tracking, e.g. "pointercancel".
+  static bool IsWebInteractionEvent(WebInputEvent::Type type) {
+    return type == WebInputEvent::Type::kMouseDown ||
+           type == WebInputEvent::Type::kMouseUp ||
+           type == WebInputEvent::Type::kKeyDown ||
+           type == WebInputEvent::Type::kRawKeyDown ||
+           type == WebInputEvent::Type::kKeyUp ||
+           type == WebInputEvent::Type::kChar ||
+           type == WebInputEvent::Type::kGestureTapDown ||
+           type == WebInputEvent::Type::kGestureTap ||
+           type == WebInputEvent::Type::kPointerDown ||
+           type == WebInputEvent::Type::kPointerUp ||
+           type == WebInputEvent::Type::kTouchStart ||
+           type == WebInputEvent::Type::kTouchEnd;
+  }
+
   bool IsSameEventClass(const WebInputEvent& other) const {
     if (IsMouseEventType(type_))
       return IsMouseEventType(other.type_);
