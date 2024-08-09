@@ -1,11 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
-<translation id="1003363546227723021">Паказ фота, часу, надвор'я і інфармацыі пра медыяфайл, калі экран не выкарыстоўваецца</translation>
+<translation id="1003363546227723021">Паказ фота, часу, надвор’я і інфармацыі пра медыяфайл, калі экран не выкарыстоўваецца</translation>
 <translation id="1014750484722996375">Працоўныя сталы</translation>
 <translation id="1018219910092211213">Не ўдалося ажыццявіць DNS-пераўтварэнне</translation>
 <translation id="1018656279737460067">Скасавана</translation>
-<translation id="1020274983236703756">Цяпер даступны эксклюзіўныя аб'екты <ph name="PRODUCT_NAME" /></translation>
+<translation id="1020274983236703756">Цяпер даступны эксклюзіўныя аб’екты <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Рух Зямлі</translation>
 <translation id="1026212596705997935">Спалучэнне клавіш выкарыстоўваецца для дзеяння "<ph name="CONFLICT_ACCEL_NAME" />". Націсніце новае спалучэнне. Каб замяніць існуючае, націсніце новае спалучэнне клавіш яшчэ раз.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (патокаў: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
@@ -433,7 +433,7 @@
 <translation id="3462187165860821523">Ідзе абнаўленне прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="346423161771747987">Ток</translation>
 <translation id="346539236881580388">Перазняць</translation>
-<translation id="3484914941826596830">Падчас абнаўлення ўбудаванага ПЗ не адключайце знешнюю прыладу і не выключайце камп'ютар. Гэта акно можна згарнуць. Абнаўленне зойме некалькі хвілін, і падчас яго знешняя прылада можа не працаваць.</translation>
+<translation id="3484914941826596830">Падчас абнаўлення ўбудаванага ПЗ не адключайце знешнюю прыладу і не выключайце камп’ютар. Гэта акно можна згарнуць. Абнаўленне зойме некалькі хвілін, і падчас яго знешняя прылада можа не працаваць.</translation>
 <translation id="3486220673238053218">азначэнне</translation>
 <translation id="3487866404496702283">Водгук пра функцыю</translation>
 <translation id="3488065109653206955">Часткова актывавана</translation>
@@ -630,7 +630,7 @@
 <translation id="458794348635939462">Не ўдалося супаставіць усе хосты</translation>
 <translation id="4593212453765072419">Патрабуецца аўтэнтыфікацыя проксі-сервера</translation>
 <translation id="4609350030397390689">Паменшыць яркасць клавіятуры</translation>
-<translation id="4617553623719764431">Прагноз надвор'я не паказваецца, бо ваша месцазнаходжанне не вызначана. Каб бачыць звесткі пра надвор'е, <ph name="BEGIN_LINK" />уключыце доступ да даных пра месцазнаходжанне<ph name="END_LINK" />.</translation>
+<translation id="4617553623719764431">Прагноз надвор’я не паказваецца, бо ваша месцазнаходжанне не вызначана. Каб бачыць звесткі пра надвор’е, <ph name="BEGIN_LINK" />уключыце доступ да даных пра месцазнаходжанне<ph name="END_LINK" />.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Каб скасаваць заданне друку, націсніце Enter.</translation>
 <translation id="463791356324567266">Сканіраванне скасоўваецца…</translation>
 <translation id="4646949265910132906">Бяспечнае падключэнне да сеткі Wi-Fi</translation>

@@ -176,7 +176,7 @@
 <translation id="2379576081295865700">Ідзе праверка наяўнасці месца ў сховішчы… Знойдзены 1 элемент.</translation>
 <translation id="2383454254762599978">Перамясціць у сметніцу</translation>
 <translation id="2387458720915042159">Тып падключэння проксі-сервера</translation>
-<translation id="2389832672041313158">Бірманская/М'янма</translation>
+<translation id="2389832672041313158">Бірманская/М’янма</translation>
 <translation id="2392369802118427583">Уключыць</translation>
 <translation id="240770291734945588">Даступна <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="2417486498593892439">Увайдзіце ў сетку</translation>
@@ -216,9 +216,9 @@
 <translation id="2719020180254996569">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, падрабязныя звесткі</translation>
 <translation id="2724954091494693138">Турэцкая (раскладка Turkish F)</translation>
 <translation id="2732288874651063549">Кіраваць абагульваннем з <ph name="VM_NAME" /></translation>
-<translation id="2732839045120506979">В'етнамская (раскладка VNI)</translation>
+<translation id="2732839045120506979">В’етнамская (раскладка VNI)</translation>
 <translation id="2735623501230989521">Даць Parallels Desktop доступ да файлаў у папцы "<ph name="FOLDER_NAME" />"</translation>
-<translation id="2764206540577097904">Вы выкарысталі ўвесь даступны вам аб'ём індывідуальнага сховішча Google Workspace.</translation>
+<translation id="2764206540577097904">Вы выкарысталі ўвесь даступны вам аб’ём індывідуальнага сховішча Google Workspace.</translation>
 <translation id="2771816809568414714">Сыр</translation>
 <translation id="2781645665747935084">Бельгійская</translation>
 <translation id="2782104745158847185">Памылка ўсталявання Linux-праграмы</translation>
@@ -512,7 +512,7 @@
 <translation id="4988205478593450158">Сапраўды выдаліць файл "<ph name="FILE_NAME" />?"</translation>
 <translation id="498902553138568924">Чырвоны матылёк</translation>
 <translation id="4992066212339426712">Уключыць гук</translation>
-<translation id="5010406651457630570">Камп'ютары</translation>
+<translation id="5010406651457630570">Камп’ютары</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Аперацыя займае больш часу, чым звычайна. Спыніць яе?</translation>
 <translation id="5036159836254554629">Кіраваць абагульваннем з Parallels Desktop</translation>
@@ -819,7 +819,7 @@
 <translation id="7297443947353982503">Няправільнае імя карыстальніка або пароль ці збой аўтэнтыфікацыі EAP</translation>
 <translation id="7309413087278791451">Нямецкая (Бельгія)</translation>
 <translation id="7339898014177206373">Новае акно</translation>
-<translation id="7343393116438664539">В'етнамская (раскладка Telex)</translation>
+<translation id="7343393116438664539">В’етнамская (раскладка Telex)</translation>
 <translation id="7347346221088620549">Зашыфраваны файл</translation>
 <translation id="7357762654218998920">Гэты тып файла не падтрымліваецца. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
 <translation id="7359359531237882347">Ідзе капіраванне элементаў (<ph name="NUMBER_OF_ITEMS" />)...</translation>
