@@ -6,12 +6,17 @@
 
 #include <string>
 
+#include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/hash/sha1.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/request_header_integrity/build_derived_values.h"
 #include "chrome/common/channel_info.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/google/core/common/google_util.h"
+#include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/resource_request.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -24,6 +29,10 @@
 
 #if !defined(LASTCHANGE_YEAR_HEADER_NAME)
 #define LASTCHANGE_YEAR_HEADER_NAME "X-Placeholder-2"
+#endif
+
+#if !defined(VALIDATE_HEADER_NAME)
+#define VALIDATE_HEADER_NAME "X-Placeholder-3"
 #endif
 
 namespace request_header_integrity {
@@ -69,11 +78,15 @@ void RequestHeaderIntegrityURLLoaderThrottle::WillStartRequest(
     return;
   }
 
-  std::string channel_name = GetChannelName();
+  const std::string digest =
+      base::Base64Encode(base::SHA1Hash(base::as_bytes(base::make_span(
+          google_apis::GetAPIKey() + embedder_support::GetUserAgent()))));
+  const std::string channel_name = GetChannelName();
   if (!channel_name.empty()) {
     request->headers.SetHeader(CHANNEL_NAME_HEADER_NAME, channel_name);
   }
   request->headers.SetHeader(LASTCHANGE_YEAR_HEADER_NAME, LASTCHANGE_YEAR);
+  request->headers.SetHeader(VALIDATE_HEADER_NAME, digest);
 }
 
 // static

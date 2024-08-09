@@ -60,7 +60,7 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSite) {
   ASSERT_TRUE(request.headers.IsEmpty());
   bool ignored;
   throttle().WillStartRequest(&request, &ignored);
-  EXPECT_EQ(1u, request.headers.GetHeaderVector().size());
+  EXPECT_EQ(2u, request.headers.GetHeaderVector().size());
 }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -69,6 +69,7 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSite) {
 TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSiteWithBranding) {
   ASSERT_NE(CHANNEL_NAME_HEADER_NAME, "X-Placeholder-1");
   ASSERT_NE(LASTCHANGE_YEAR_HEADER_NAME, "X-Placeholder-2");
+  ASSERT_NE(VALIDATE_HEADER_NAME, "X-Placeholder-3");
 
   chrome::ScopedChannelOverride override(
       chrome::ScopedChannelOverride::Channel::kStable);
@@ -78,9 +79,10 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSiteWithBranding) {
   ASSERT_TRUE(request.headers.IsEmpty());
   bool ignored;
   throttle().WillStartRequest(&request, &ignored);
-  EXPECT_EQ(2u, request.headers.GetHeaderVector().size());
+  EXPECT_EQ(3u, request.headers.GetHeaderVector().size());
   EXPECT_TRUE(request.headers.HasHeader(CHANNEL_NAME_HEADER_NAME));
   EXPECT_TRUE(request.headers.HasHeader(LASTCHANGE_YEAR_HEADER_NAME));
+  EXPECT_TRUE(request.headers.HasHeader(VALIDATE_HEADER_NAME));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
         // !BUILDFLAG(IS_ANDROID)

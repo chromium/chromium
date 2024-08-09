@@ -9,4 +9,5 @@ declare_args() {
 
   channel_name_header_name = ""
   lastchange_year_header_name = ""
+  validate_header_name = ""
 }

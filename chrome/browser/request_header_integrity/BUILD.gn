@@ -18,6 +18,10 @@ config("header_name_defines") {
     defines +=
         [ "LASTCHANGE_YEAR_HEADER_NAME=\"$lastchange_year_header_name\"" ]
   }
+
+  if (validate_header_name != "") {
+    defines += [ "VALIDATE_HEADER_NAME=\"$validate_header_name\"" ]
+  }
 }
 
 source_set("request_header_integrity") {
@@ -37,7 +41,9 @@ source_set("request_header_integrity") {
     "//base",
     "//build:branding_buildflags",
     "//chrome/common:channel_info",
+    "//components/embedder_support:browser_util",
     "//components/google/core/common",
+    "//google_apis",
     "//services/network/public/cpp",
     "//third_party/blink/public/common:headers",
   ]
