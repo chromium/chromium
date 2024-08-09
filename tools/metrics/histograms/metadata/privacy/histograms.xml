@@ -1554,27 +1554,6 @@ reviewer.
 </histogram>
 
 <histogram
-    name="PrivacySandbox.TrackingProtection.NoticeService.IsObservingTabStripModel"
-    enum="Boolean" expires_after="2024-12-08">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records a boolean for whether or not the tab strip model is being observed.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.TrackingProtection.NoticeServiceEvent"
-    enum="TrackingProtectionNoticeServiceEvent" expires_after="2025-07-01">
-  <owner>boujane@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records different events, such as tab changes, navigation finishing, and
-    browser type being non normal, that occur in the notice service during
-    Tracking Protection Onboarding.
-  </summary>
-</histogram>
-
-<histogram
     name="PrivacySandbox.TrackingProtection.Onboarding.DidNoticeActionAckowledge"
     enum="Boolean" expires_after="2024-12-08">
   <owner>jacobstanley@google.com</owner>
@@ -1637,21 +1616,6 @@ reviewer.
   <summary>
     Records a boolean for whether or not the MaybeMarkIneligible function
     changed the user to ineligible.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.NoticeControllerEvent"
-    enum="TrackingProtectionNoticeControllerEvent" expires_after="2025-01-05">
-  <owner>tommasin@chromium.org</owner>
-  <owner>kartoffel-core-eng@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the current state of the Tracking Protection onboarding notice and
-    its controller. This is a Clank-only metric and helps understanding whether
-    the message was requested to be shown but wasn't due to e.g. navigation only
-    on tabs with non-secure connection state. This histogram is in the
-    deprecation process and will be removed soon.
   </summary>
 </histogram>
 

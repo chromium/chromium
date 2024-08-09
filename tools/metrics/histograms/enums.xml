@@ -32974,32 +32974,6 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="Recently uploaded another trace"/>
 </enum>
 
-<enum name="TrackingProtectionNoticeControllerEvent">
-  <int value="0" label="Notice controller created"/>
-  <int value="1" label="Active tab changed"/>
-  <int value="2" label="Navigation finished"/>
-  <int value="3" label="Controller is no longer observing"/>
-  <int value="4" label="Non secure connection page"/>
-  <int value="5" label="Notice is already showing"/>
-  <int value="6" label="Notice requested and shown"/>
-  <int value="7" label="Notice requested and not shown"/>
-</enum>
-
-<enum name="TrackingProtectionNoticeServiceEvent">
-  <int value="0" label="kPromoPreviouslyDismissed"/>
-  <int value="1" label="kActiveTabChanged"/>
-  <int value="2" label="kNavigationFinished"/>
-  <int value="3" label="kUpdateNoticeVisibility"/>
-  <int value="4" label="kBrowserTypeNonNormal"/>
-  <int value="5" label="kNoticeShowingButShouldnt"/>
-  <int value="6" label="kInactiveWebcontentUpdated"/>
-  <int value="7" label="kLocationIconNonSecure"/>
-  <int value="8" label="kLocationIconNonVisible"/>
-  <int value="9" label="kNoticeAlreadyShowing"/>
-  <int value="10" label="kNoticeRequestedAndShown"/>
-  <int value="11" label="kNoticeRequestedButNotShown"/>
-</enum>
-
 <enum name="TrendingTileEvent">
   <int value="0" label="Tile was shown"/>
   <int value="1" label="Tile was removed"/>
