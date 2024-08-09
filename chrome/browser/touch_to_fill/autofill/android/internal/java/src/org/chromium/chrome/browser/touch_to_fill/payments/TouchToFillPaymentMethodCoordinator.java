@@ -16,7 +16,6 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -25,6 +24,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
+import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -70,10 +70,11 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
 
     @Override
     public void showSheet(
-            List<Pair<CreditCard, Boolean>> cardsWithAcceptabilites,
+            List<CreditCard> cards,
+            List<AutofillSuggestion> suggestions,
             boolean shouldShowScanCreditCard) {
         assert mCardImageFunction != null : "Attempting to call showSheet before initialize.";
-        mMediator.showSheet(cardsWithAcceptabilites, shouldShowScanCreditCard, mCardImageFunction);
+        mMediator.showSheet(cards, suggestions, shouldShowScanCreditCard, mCardImageFunction);
     }
 
     @Override

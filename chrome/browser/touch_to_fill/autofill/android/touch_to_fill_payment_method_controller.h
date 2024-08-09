@@ -13,6 +13,7 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_controller.h"
 #include "components/autofill/android/touch_to_fill_keyboard_suppressor.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 
 namespace autofill {
 
@@ -51,13 +52,16 @@ class TouchToFillPaymentMethodController
                                       ContentAutofillDriver& driver) override;
 
   // Shows the Touch To Fill `view`. `delegate` will provide the fillable credit
-  // cards and be notified of the user's decision. `cards_acceptabilities`
-  // will determine which cards are needed to be disabled & grayed-out for the
-  // current merchant. Returns whether the surface was successfully shown.
+  // cards and be notified of the user's decision. `suggestions` are generated
+  // using the `cards_to_suggest` data and include fields such as `main_text`,
+  // `minor_text`, and `apply_deactivated_style`. The `apply_deactivated_style`
+  // field determines which card suggestions should be disabled and grayed out
+  // for the current merchant. Returns whether the surface was successfully
+  // shown.
   bool Show(std::unique_ptr<TouchToFillPaymentMethodView> view,
             base::WeakPtr<TouchToFillDelegate> delegate,
             base::span<const CreditCard> cards_to_suggest,
-            const std::vector<bool>& card_acceptabilities);
+            base::span<const Suggestion> suggestions);
 
   // Shows the Touch To Fill `view`. `delegate` will provide the fillable IBANs
   // and be notified of the user's decision. Returns whether the surface was

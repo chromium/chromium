@@ -2702,4 +2702,54 @@ TEST_F(
   EXPECT_FALSE(summary.ranking_context.RankingsAreDifferent());
 }
 
+class AutofillCreditCardSuggestionContentForTouchToFillTest
+    : public AutofillCreditCardSuggestionContentTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool is_merchant_opted_out() { return GetParam(); }
+
+ private:
+  void SetUp() override {
+    AutofillCreditCardSuggestionContentTest::SetUp();
+    ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+                autofill_client()->GetAutofillOptimizationGuide()),
+            ShouldBlockFormFieldSuggestion)
+        .WillByDefault(testing::Return(is_merchant_opted_out()));
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AutofillCreditCardSuggestionContentForTouchToFillTest,
+                         testing::Bool());
+
+// Verify that the suggestion's `main_text` and `minor_text` are populated
+// correctly for both the virtual card and the real card. Furthermore, it
+// verifies that if the merchant has opted out of VCN, `apply_deactivated_style`
+// is set only for the virtual card, not for the real card.
+TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
+       GetCreditCardSuggestionsForTouchToFill_MainTextMinorTextMerchantOptOut) {
+  CreditCard virtual_card = test::GetVirtualCard();
+  CreditCard server_card = CreateServerCard();
+  std::vector<CreditCard> cards = {virtual_card, server_card};
+  base::span<const CreditCard> credit_cards_span(cards);
+
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      credit_cards_span, *autofill_client());
+
+  ASSERT_EQ(suggestions.size(), 2U);
+  EXPECT_EQ(suggestions[0].main_text.value,
+            virtual_card.CardNameForAutofillDisplay(virtual_card.nickname()));
+  EXPECT_EQ(suggestions[0].minor_text.value,
+            virtual_card.ObfuscatedNumberWithVisibleLastFourDigits());
+  // `apply_deactivated_style` is true only when merchant has opted out of VCN.
+  EXPECT_EQ(suggestions[0].apply_deactivated_style, is_merchant_opted_out());
+
+  EXPECT_EQ(suggestions[1].main_text.value,
+            server_card.CardNameForAutofillDisplay(server_card.nickname()));
+  EXPECT_EQ(suggestions[1].minor_text.value,
+            server_card.ObfuscatedNumberWithVisibleLastFourDigits());
+  // `apply_deactivated_style` is false for the real card.
+  EXPECT_EQ(suggestions[1].apply_deactivated_style, false);
+}
+
 }  // namespace autofill

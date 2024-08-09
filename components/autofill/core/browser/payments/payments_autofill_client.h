@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 
 namespace autofill {
 
@@ -449,15 +450,16 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Shows the Touch To Fill surface for filling credit card information, if
   // possible, and returns `true` on success. `delegate` will be notified of
-  // events. `card_acceptabilies` is a boolean list denoting if the virtual
-  // card in `cards_to_suggest` is acceptable on the merchant's platform.
-  // Should be called only if the feature is supported by the platform.
-  // This function is implemented on all platforms, so this should be a pure
-  // virtual function to enforce the override implementation.
+  // events. `suggestions` are generated using the `cards_to_suggest` data and
+  // include fields such as `main_text`, `minor_text`, and
+  // `apply_deactivated_style`. Should be called only if the feature is
+  // supported by the platform. This function is implemented on all platforms,
+  // so this should be a pure virtual function to enforce the override
+  // implementation.
   virtual bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest,
-      const std::vector<bool>& card_acceptabilies);
+      base::span<const Suggestion> suggestions);
 };
 
 }  // namespace payments

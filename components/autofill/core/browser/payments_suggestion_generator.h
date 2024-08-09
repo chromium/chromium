@@ -72,6 +72,12 @@ std::vector<CreditCard> GetTouchToFillCardsToSuggest(
     const FormFieldData& trigger_field,
     FieldType trigger_field_type);
 
+// Generates touch-to-fill suggestions for all available credit cards to be
+// used in the bottom sheet.
+std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
+    base::span<const CreditCard> credit_cards,
+    const AutofillClient& client);
+
 // Generates a footer suggestion "Manage payment methods..." menu item which
 // will redirect to Chrome payment settings page. `with_gpay_logo` is used to
 // conditionally add GPay logo icon to the manage payment methods suggestion.

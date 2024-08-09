@@ -8,12 +8,13 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h"
+#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 
@@ -92,7 +93,7 @@ bool TouchToFillPaymentMethodController::Show(
     std::unique_ptr<TouchToFillPaymentMethodView> view,
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const CreditCard> cards_to_suggest,
-    const std::vector<bool>& card_acceptabilities) {
+    base::span<const Suggestion> suggestions) {
   if (!keyboard_suppressor_.is_suppressing()) {
     return false;
   }
@@ -101,7 +102,7 @@ bool TouchToFillPaymentMethodController::Show(
   if (view_)
     return false;
 
-  if (!view->Show(this, cards_to_suggest, card_acceptabilities,
+  if (!view->Show(this, cards_to_suggest, suggestions,
                   delegate->ShouldShowScanCreditCard())) {
     java_object_.Reset();
     return false;

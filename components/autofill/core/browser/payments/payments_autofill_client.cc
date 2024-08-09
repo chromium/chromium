@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 
 namespace autofill::payments {
 
@@ -211,7 +212,7 @@ const AutofillOfferManager* PaymentsAutofillClient::GetAutofillOfferManager()
 bool PaymentsAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const autofill::CreditCard> cards_to_suggest,
-    const std::vector<bool>& card_acceptabilies) {
+    base::span<const Suggestion> suggestions) {
   return false;
 }
 

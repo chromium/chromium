@@ -199,7 +199,8 @@ void PrintTo(const Suggestion& suggestion, std::ostream* os) {
       << ", minor_text:\"" << suggestion.minor_text.value << "\""
       << (suggestion.minor_text.is_primary ? "(Primary)" : "(Not Primary)")
       << ", additional_label: \"" << suggestion.additional_label << "\""
-      << ", icon:" << ConvertIconToPrintableString(suggestion.icon)
+      << ", apply_deactivated_style: \"" << suggestion.apply_deactivated_style
+      << "\"" << ", icon:" << ConvertIconToPrintableString(suggestion.icon)
       << ", trailing_icon:"
       << ConvertIconToPrintableString(suggestion.trailing_icon) << ")";
 }

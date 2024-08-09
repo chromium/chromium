@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "content/public/browser/web_contents_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -193,7 +194,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest,
-      const std::vector<bool>& card_acceptabilities) override;
+      base::span<const Suggestion> suggestions) override;
 
 #if BUILDFLAG(IS_ANDROID)
   // The AutofillSnackbarController is used to show a snackbar notification

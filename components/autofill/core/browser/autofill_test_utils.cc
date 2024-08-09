@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -999,6 +1000,16 @@ Suggestion CreateAutofillSuggestion(SuggestionType type,
   suggestion.type = type;
   suggestion.main_text.value = main_text_value;
   suggestion.payload = payload;
+  return suggestion;
+}
+
+Suggestion CreateAutofillSuggestion(const std::u16string& main_text_value,
+                                    const std::u16string& minor_text_value,
+                                    bool apply_deactivated_style) {
+  Suggestion suggestion;
+  suggestion.main_text.value = main_text_value;
+  suggestion.minor_text.value = minor_text_value;
+  suggestion.apply_deactivated_style = apply_deactivated_style;
   return suggestion;
 }
 

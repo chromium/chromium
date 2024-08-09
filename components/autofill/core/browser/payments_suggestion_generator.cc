@@ -1132,6 +1132,28 @@ std::vector<CreditCard> GetTouchToFillCardsToSuggest(
              : std::vector<CreditCard>();
 }
 
+std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
+    base::span<const CreditCard> credit_cards,
+    const AutofillClient& client) {
+  std::vector<Suggestion> suggestions;
+  suggestions.reserve(credit_cards.size());
+  for (const CreditCard& credit_card : credit_cards) {
+    Suggestion suggestion;
+    std::u16string nickname = GetDisplayNicknameForCreditCard(
+        credit_card, client.GetPersonalDataManager()->payments_data_manager());
+    suggestion.main_text.value =
+        credit_card.CardNameForAutofillDisplay(nickname);
+    suggestion.minor_text.value =
+        credit_card.ObfuscatedNumberWithVisibleLastFourDigits();
+    if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
+      suggestion.apply_deactivated_style = !IsCardSuggestionAcceptable(
+          credit_card, client, /*is_manual_fallback= */ false);
+    }
+    suggestions.push_back(suggestion);
+  }
+  return suggestions;
+}
+
 // static
 Suggestion CreateManageCreditCardsSuggestion(bool with_gpay_logo) {
   return CreateManagePaymentMethodsEntry(SuggestionType::kManageCreditCard,

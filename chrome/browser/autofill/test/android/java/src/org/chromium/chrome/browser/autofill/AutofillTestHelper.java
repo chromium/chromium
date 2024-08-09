@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.autofill.AddressNormalizer;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.SubKeyRequester;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.autofill.payments.BankAccount;
@@ -458,6 +459,15 @@ public class AutofillTestHelper {
                 /* cardNameForAutofillDisplay= */ nameForAutofillDisplay,
                 /* obfuscatedLastFourDigits= */ obfuscatedLastFourDigits,
                 /* cvc= */ "");
+    }
+
+    public static AutofillSuggestion createCreditCardSuggestion(
+            String label, String subLabel, boolean applyDeactivatedStyle) {
+        return new AutofillSuggestion.Builder()
+                .setLabel(label)
+                .setSubLabel(subLabel)
+                .setApplyDeactivatedStyle(applyDeactivatedStyle)
+                .build();
     }
 
     public static void addMaskedBankAccount(BankAccount bankAccount) {

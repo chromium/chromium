@@ -202,7 +202,8 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
              .GetPaymentsAutofillClient()
              ->ShowTouchToFillCreditCard(
                  GetWeakPtr(), *cards_to_suggest,
-                 GetCardAcceptabilities(*cards_to_suggest))) {
+                 GetCreditCardSuggestionsForTouchToFill(*cards_to_suggest,
+                                                        manager_->client()))) {
       dry_run.outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
     } else if (std::vector<Iban>* ibans_to_suggest =
                    absl::get_if<std::vector<Iban>>(&dry_run.items_to_suggest);
@@ -407,21 +408,6 @@ bool TouchToFillDelegateAndroidImpl::IsFormPrefilled(const FormData& form) {
     }
     return !SanitizedFieldIsEmpty(field.value());
   });
-}
-
-std::vector<bool> TouchToFillDelegateAndroidImpl::GetCardAcceptabilities(
-    base::span<const CreditCard> credit_cards) {
-  std::vector<bool> card_acceptabilities;
-  card_acceptabilities.reserve(credit_cards.size());
-
-  std::transform(credit_cards.begin(), credit_cards.end(),
-                 std::back_inserter(card_acceptabilities),
-                 [this](const CreditCard& credit_card) {
-                   return IsCardSuggestionAcceptable(
-                       credit_card, manager_->client(),
-                       /*is_manual_fallback=*/false);
-                 });
-  return card_acceptabilities;
 }
 
 base::WeakPtr<TouchToFillDelegateAndroidImpl>

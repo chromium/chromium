@@ -47,6 +47,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -778,7 +779,7 @@ AutofillOfferManager* ChromePaymentsAutofillClient::GetAutofillOfferManager() {
 bool ChromePaymentsAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const autofill::CreditCard> cards_to_suggest,
-    const std::vector<bool>& card_acceptabilities) {
+    base::span<const Suggestion> suggestions) {
 #if BUILDFLAG(IS_ANDROID)
   // Create the manual filling controller which will be used to show the
   // unmasked virtual card details in the manual fallback.
@@ -789,7 +790,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillCreditCard(
 
   return touch_to_fill_payment_method_controller_.Show(
       std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
-      delegate, cards_to_suggest, card_acceptabilities);
+      delegate, std::move(cards_to_suggest), std::move(suggestions));
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED_NORETURN();
