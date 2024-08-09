@@ -26,8 +26,9 @@ enum class LegendBlockAlignment {
   kEnd,
 };
 
-// This function is very similar to BlockAlignment() in length_utils.cc, but
-// it supports text-align:left/center/right.
+// Legends aren't inline-level. Yet they may be aligned within the fieldset
+// block-start border using the text-align property (in addition to using auto
+// margins).
 inline LegendBlockAlignment ComputeLegendBlockAlignment(
     const ComputedStyle& legend_style,
     const ComputedStyle& fieldset_style) {
@@ -284,38 +285,25 @@ void FieldsetLayoutAlgorithm::LayoutLegend(BlockNode& legend) {
   // pushed so that the center of the border will be flush with the center
   // of the border-box of the legend.
 
-  LayoutUnit legend_inline_start = ComputeLegendInlineOffset(
-      legend.Style(),
+  LayoutUnit legend_border_box_inline_size =
       LogicalFragment(writing_direction_, result->GetPhysicalFragment())
-          .InlineSize(),
-      legend_margins, Style(), BorderScrollbarPadding().inline_start,
-      ChildAvailableSize().inline_size);
-  LogicalOffset legend_offset = {legend_inline_start, block_offset};
+          .InlineSize();
 
-  container_builder_.AddResult(*result, legend_offset);
-}
-
-LayoutUnit FieldsetLayoutAlgorithm::ComputeLegendInlineOffset(
-    const ComputedStyle& legend_style,
-    LayoutUnit legend_border_box_inline_size,
-    const BoxStrut& legend_margins,
-    const ComputedStyle& fieldset_style,
-    LayoutUnit fieldset_border_padding_inline_start,
-    LayoutUnit fieldset_content_inline_size) {
   LayoutUnit legend_inline_start =
-      fieldset_border_padding_inline_start + legend_margins.inline_start;
-  // The following logic is very similar to ResolveInlineMargins(), but it uses
-  // ComputeLegendBlockAlignment().
+      BorderScrollbarPadding().inline_start + legend_margins.inline_start;
   const LayoutUnit available_space =
-      fieldset_content_inline_size - legend_border_box_inline_size;
+      ChildAvailableSize().inline_size - legend_border_box_inline_size;
   if (available_space > LayoutUnit()) {
-    auto alignment = ComputeLegendBlockAlignment(legend_style, fieldset_style);
+    auto alignment = ComputeLegendBlockAlignment(legend.Style(), Style());
     if (alignment == LegendBlockAlignment::kCenter)
       legend_inline_start += available_space / 2;
     else if (alignment == LegendBlockAlignment::kEnd)
       legend_inline_start += available_space - legend_margins.inline_end;
   }
-  return legend_inline_start;
+
+  LogicalOffset legend_offset = {legend_inline_start, block_offset};
+
+  container_builder_.AddResult(*result, legend_offset);
 }
 
 BreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
