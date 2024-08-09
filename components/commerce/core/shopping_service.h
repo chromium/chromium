@@ -478,6 +478,10 @@ class ShoppingService : public KeyedService,
   // analogous to switching tabs.
   void OnWebWrapperSwitched(WebWrapper* web);
 
+  // Called to signal that a WebWrapper is viewed. This happens when a new
+  // navigation is committed in a focused tab.
+  void OnWebWrapperViewed(WebWrapper* web);
+
   // Schedule (or reschedule) the on-page local extraction execution. Calling
   // this sequentially for the same web wrapper with the same URL will cancel
   // the pending task and schedule a new one. The script will, at most, run once
@@ -618,6 +622,8 @@ class ShoppingService : public KeyedService,
 
   void GetProductIdentifierForUrl(const GURL& url,
                                   UrlProductIdentifierTupleCallback callback);
+
+  void UpdateRecentlyViewedURL(WebWrapper* web);
 
   // Return all ProductSpecificationsSets from ProductSpecificationsService.
   virtual const std::vector<ProductSpecificationsSet>

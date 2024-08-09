@@ -49,6 +49,7 @@ class CommerceTabHelper
   void SetShoppingServiceForTesting(KeyedService* service);
 
  private:
+  friend class CommerceTabHelperTest;
   friend class content::WebContentsUserData<CommerceTabHelper>;
 
   CommerceTabHelper(content::WebContents* contents,

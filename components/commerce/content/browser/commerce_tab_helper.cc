@@ -50,6 +50,12 @@ void CommerceTabHelper::DidFinishNavigation(
   if (web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     shopping_service_->DidFinishLoad(web_wrapper_.get());
   }
+
+  if (navigation_handle->HasCommitted() &&
+      navigation_handle->ShouldUpdateHistory() &&
+      web_contents()->GetFocusedFrame()) {
+    shopping_service_->OnWebWrapperViewed(web_wrapper_.get());
+  }
 }
 
 void CommerceTabHelper::DidStopLoading() {

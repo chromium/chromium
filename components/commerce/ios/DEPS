@@ -4,4 +4,5 @@ include_rules = [
   "+ios/web/public",
   "+services/data_decoder/public/cpp",
   "+ui/base",
+  "+net/http/http_response_headers.h",
 ]
