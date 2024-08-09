@@ -64,7 +64,6 @@ ci/ios-fieldtrial-rel
 ci/ios-simulator
 ci/ios-simulator-code-coverage
 ci/ios-simulator-full-configs
-ci/ios-simulator-multi-window
 ci/ios-simulator-noncq
 ci/ios-webkit-tot
 ci/ios-wpt-fyi-rel
@@ -285,7 +284,6 @@ try/ios-simulator
 try/ios-simulator-code-coverage
 try/ios-simulator-compilator
 try/ios-simulator-full-configs
-try/ios-simulator-multi-window
 try/ios-simulator-noncq
 try/ios-wpt-fyi-rel
 try/ios17-beta-simulator

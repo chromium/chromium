@@ -1222,42 +1222,6 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "ios_simulator_multi_window_tests",
-    basic_suites = {
-        "ios_common_tests": targets.legacy_matrix_config(
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
-                "SIM_IPAD_AIR_6TH_GEN_18_0",
-            ],
-        ),
-        "ios_eg2_cq_tests": targets.legacy_matrix_config(
-            mixins = [
-                "xcodebuild_sim_runner",
-            ],
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
-                "SIM_IPAD_AIR_6TH_GEN_18_0",
-            ],
-        ),
-        "ios_eg2_tests": targets.legacy_matrix_config(
-            mixins = [
-                "xcodebuild_sim_runner",
-            ],
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
-                "SIM_IPAD_AIR_6TH_GEN_18_0",
-            ],
-        ),
-        "ios_screen_size_dependent_tests": targets.legacy_matrix_config(
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
-                "SIM_IPAD_AIR_6TH_GEN_18_0",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "ios_simulator_noncq_tests",
     basic_suites = {
         "ios_eg2_tests": targets.legacy_matrix_config(

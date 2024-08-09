@@ -7620,39 +7620,6 @@
       },
     },
 
-    'ios_simulator_multi_window_tests': {
-      'ios_common_tests': {
-        'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPAD_AIR_6TH_GEN_18_0',
-        ],
-      },
-      'ios_eg2_cq_tests': {
-        'mixins': [
-          'xcodebuild_sim_runner',
-        ],
-        'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPAD_AIR_6TH_GEN_18_0',
-        ],
-      },
-      'ios_eg2_tests': {
-        'mixins': [
-          'xcodebuild_sim_runner',
-        ],
-        'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPAD_AIR_6TH_GEN_18_0',
-        ],
-      },
-      'ios_screen_size_dependent_tests': {
-        'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPAD_AIR_6TH_GEN_18_0',
-        ],
-      },
-    },
-
     'ios_simulator_noncq_tests': {
       'ios_crash_xcuitests': {
         'mixins': [

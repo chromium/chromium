@@ -654,13 +654,6 @@ ios_builder(
 )
 
 ios_builder(
-    name = "ios-simulator-multi-window",
-    mirrors = ["ci/ios-simulator-multi-window"],
-    gn_args = "ci/ios-simulator-multi-window",
-    cpu = cpu.ARM64,
-)
-
-ios_builder(
     name = "ios-simulator-noncq",
     mirrors = [
         "ci/ios-simulator-noncq",
