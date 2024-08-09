@@ -15,19 +15,23 @@ class BrowserStateInfoCache;
 class ChromeBrowserState;
 class ChromeBrowserStateManagerObserver;
 
+// TODO(crbug.com/358356195): Remove this forward declaration and typedef when
+// no usage of ChromeBrowserStateManager remains.
+class ProfileManagerIOS;
+using ChromeBrowserStateManager = ProfileManagerIOS;
+
 // Provides methods that allow for various ways of creating non-incognito
 // ChromeBrowserState instances. Owns all instances that it creates.
-class ChromeBrowserStateManager {
+class ProfileManagerIOS {
  public:
   // Callback invoked when a ChromeBrowserState has been loaded asynchronously.
   using ChromeBrowserStateLoadedCallback =
       base::OnceCallback<void(ChromeBrowserState*)>;
 
-  ChromeBrowserStateManager(const ChromeBrowserStateManager&) = delete;
-  ChromeBrowserStateManager& operator=(const ChromeBrowserStateManager&) =
-      delete;
+  ProfileManagerIOS(const ProfileManagerIOS&) = delete;
+  ProfileManagerIOS& operator=(const ProfileManagerIOS&) = delete;
 
-  virtual ~ChromeBrowserStateManager() {}
+  virtual ~ProfileManagerIOS() {}
 
   // Registers/unregisters observers.
   virtual void AddObserver(ChromeBrowserStateManagerObserver* observer) = 0;
@@ -50,7 +54,7 @@ class ChromeBrowserStateManager {
   // Returns the list of loaded ChromeBrowserStates. The order is arbitrary.
   virtual std::vector<ChromeBrowserState*> GetLoadedBrowserStates() = 0;
 
-  // Asynchronously loads a ChromeBrowserState known by `name` is it exists. The
+  // Asynchronously loads a ChromeBrowserState known by `name` if it exists. The
   // `created_callback` will be called with the ChromeBrowserState when it has
   // been created (but not yet initialised) and `initialised_callback` will be
   // called once the ChromeBrowserState is fully initialised. Returns true if
@@ -96,7 +100,7 @@ class ChromeBrowserStateManager {
   virtual BrowserStateInfoCache* GetBrowserStateInfoCache() = 0;
 
  protected:
-  ChromeBrowserStateManager() {}
+  ProfileManagerIOS() {}
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_CHROME_BROWSER_STATE_MANAGER_H_
