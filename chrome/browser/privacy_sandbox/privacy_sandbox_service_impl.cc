@@ -878,6 +878,17 @@ void PrivacySandboxServiceImpl::LogPrivacySandboxState() {
   RecordFirstPartySetsStateHistogram(fps_status);
 
   RecordPrivacySandbox4StartupMetrics();
+
+  // TODO(crbug.com/333406690): After migration, move this portion to the
+  // chrome/browser/privacy_sandbox/privacy_sandbox_notice_service.h constructor
+  // and emit ALL startup histograms instead of just Topics consent related
+  // histograms.
+  notice_storage_->RecordHistogramsOnStartup(
+      pref_service_, privacy_sandbox::kTopicsConsentModal);
+  notice_storage_->RecordHistogramsOnStartup(
+      pref_service_, privacy_sandbox::kTopicsConsentModalClankBrApp);
+  notice_storage_->RecordHistogramsOnStartup(
+      pref_service_, privacy_sandbox::kTopicsConsentModalClankCCT);
 }
 
 void PrivacySandboxServiceImpl::ConvertInterestGroupDataKeysForDisplay(

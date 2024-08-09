@@ -444,6 +444,7 @@ class PrivacySandboxServiceTest : public testing::Test {
 #endif
 
  protected:
+  base::HistogramTester histogram_tester;
   std::unique_ptr<privacy_sandbox::PrivacySandboxNoticeStorage> notice_storage_;
 
  private:
@@ -593,6 +594,19 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeBlockedEtldPlusOne) {
   EXPECT_EQ(returned_sites[1], sites[2]);
 }
 
+TEST_F(PrivacySandboxServiceTest, HistogramsAreEmptyOnStartup) {
+  const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms, testing::Not(testing::AnyOf(
+                              "PrivacySandbox.Notice.NoticeStartupState."
+                              "TopicsConsentDesktopModal")));
+  EXPECT_THAT(histograms, testing::Not(testing::AnyOf(
+                              "PrivacySandbox.Notice.NoticeStartupState."
+                              "TopicsConsentModalClankBrApp")));
+  EXPECT_THAT(histograms, testing::Not(testing::AnyOf(
+                              "PrivacySandbox.Notice.NoticeStartupState."
+                              "TopicsConsentModalClankCCT")));
+}
+
 TEST_F(PrivacySandboxServiceTest, DidPromptActionUpdateNoticeStorage_OptIn) {
   std::string_view topics_notice_name;
   // TODO(crbug.com/352577199): Remove dependency on build flag when we
@@ -621,6 +635,13 @@ TEST_F(PrivacySandboxServiceTest, DidPromptActionUpdateNoticeStorage_OptIn) {
   auto actual = notice_storage_->ReadNoticeData(prefs(), topics_notice_name);
   EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kOptIn,
             actual->notice_action_taken);
+
+  // Check that histogram updated correctly
+  CreateService();
+  histogram_tester.ExpectBucketCount(
+      base::StrCat(
+          {"PrivacySandbox.Notice.NoticeStartupState.", topics_notice_name}),
+      privacy_sandbox::NoticeStartupState::kFlowCompletedWithOptIn, 1);
 }
 
 TEST_F(PrivacySandboxServiceTest, DidPromptActionUpdateNoticeStorage_OptOut) {
@@ -651,6 +672,13 @@ TEST_F(PrivacySandboxServiceTest, DidPromptActionUpdateNoticeStorage_OptOut) {
   auto actual = notice_storage_->ReadNoticeData(prefs(), topics_notice_name);
   EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kOptOut,
             actual->notice_action_taken);
+
+  // Check that histogram updated correctly
+  CreateService();
+  histogram_tester.ExpectBucketCount(
+      base::StrCat(
+          {"PrivacySandbox.Notice.NoticeStartupState.", topics_notice_name}),
+      privacy_sandbox::NoticeStartupState::kFlowCompletedWithOptOut, 1);
 }
 
 TEST_F(PrivacySandboxServiceTest, DidPromptActionUpdateNoticeStorage_Shown) {
