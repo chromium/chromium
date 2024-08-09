@@ -467,7 +467,7 @@
 <translation id="4058278702844053247">Выконваецца загрузка старонкі</translation>
 <translation id="4065205963140826639">Паспрабуйце націснуць клавішы "Пошук" + стрэлка ўправа, каб знайсці кнопку "Далей". Каб націснуць яе, націсніце клавішы "Пошук" + прабел.</translation>
 <translation id="4081085052247739398">{COUNT,plural, =1{ТЫЛЬДА}one{# тыльда}few{# тыльды}many{# тыльд}other{# тыльды}}</translation>
-<translation id="409334809956508737">Папярэдні аб'ект</translation>
+<translation id="409334809956508737">Папярэдні аб’ект</translation>
 <translation id="4099274309791143834">з падменю</translation>
 <translation id="4101527861445851766">Пазначанае поле для птушкі</translation>
 <translation id="4115378294792113321">Пурпурны</translation>
@@ -505,11 +505,11 @@
 <translation id="4294967782363273192">Адсартавана па ўзрастанні</translation>
 <translation id="4300318234632215983">Паказваць URL-адрас спасылак</translation>
 <translation id="4322625298640984693">Вохравы</translation>
-<translation id="4342180618051828363">{COUNT,plural, =1{кропка}=3{шматкроп'е}one{# кропка}few{# кропкі}many{# кропак}other{# кропкі}}</translation>
+<translation id="4342180618051828363">{COUNT,plural, =1{кропка}=3{шматкроп’е}one{# кропка}few{# кропкі}many{# кропак}other{# кропкі}}</translation>
 <translation id="4352022650330571548">увесці слова "<ph name="PHRASE" />"</translation>
 <translation id="4372435075475052704">мін:<ph name="X" /></translation>
 <translation id="4372705107434148843">Спыніць агучванне</translation>
-<translation id="4376316291247992553">Паказаць графічны аб'ект як набор кропак на дысплэі Брайля</translation>
+<translation id="4376316291247992553">Паказаць графічны аб’ект як набор кропак на дысплэі Брайля</translation>
 <translation id="437809255587011096">Агучыць стыль тэксту</translation>
 <translation id="4378308539633073595">Прагартаць наперад</translation>
 <translation id="4384583879834880242">Пытанні і адказы</translation>
@@ -808,7 +808,7 @@
 <translation id="6508059270146105198">Перамясціць дысплэй Брайля ўніз старонкі</translation>
 <translation id="6521550811716689390">Цёмна-фіялетавы</translation>
 <translation id="6536157907112457272">Ільняны</translation>
-<translation id="6540201937398578274">У ChromeVox клавіша пошуку з'яўляецца службовай клавішай. Большасць спалучэнняў клавіш у ChromeVox пачынаецца з клавішы пошуку. Таксама выкарыстоўваюцца клавішы са стрэлкамі для навігацыі.</translation>
+<translation id="6540201937398578274">У ChromeVox клавіша пошуку з’яўляецца службовай клавішай. Большасць спалучэнняў клавіш у ChromeVox пачынаецца з клавішы пошуку. Таксама выкарыстоўваюцца клавішы са стрэлкамі для навігацыі.</translation>
 <translation id="6544923685317771506">Марская ракавіна</translation>
 <translation id="6551185905438378412">Крэмава-белы</translation>
 <translation id="6561818612645211875">Перайсці ў пачатак бягучага радка</translation>
@@ -950,13 +950,13 @@
 <translation id="7596131838331109045">Светла-ласасёвы</translation>
 <translation id="7604026522577407655">Перайсці ў пачатак бягучага слупка</translation>
 <translation id="7604451927827590395">загал</translation>
-<translation id="7609342235116740824">Аб'яўляць URL-адрас бягучай старонкі</translation>
+<translation id="7609342235116740824">Аб’яўляць URL-адрас бягучай старонкі</translation>
 <translation id="7609363189280667021">Уключэнне субцітраў шрыфтам Брайля</translation>
 <translation id="761303759119251275">Баланс</translation>
 <translation id="762020119231868829">Прыпыняе прайграванне ўсіх мультымедыйных віджэтаў</translation>
 <translation id="7625690649919402823">Наступная табліца</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), узровень <ph name="GRADE" /></translation>
-<translation id="7637342083105831460">Каб знайсці вобласць практыкаванняў або кнопку "Наступны ўрок", націсніце Пошук + Стрэлка ўправа. Каб актываваць аб'ект, націсніце Пошук + Прабел.</translation>
+<translation id="7637342083105831460">Каб знайсці вобласць практыкаванняў або кнопку "Наступны ўрок", націсніце Пошук + Стрэлка ўправа. Каб актываваць аб’ект, націсніце Пошук + Прабел.</translation>
 <translation id="7639968568612851608">Цёмна-шэры</translation>
 <translation id="7663318257180412551">Загаловак 2</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{гадзіна}one{гадзіна}few{гадзіны}many{гадзін}other{гадзіны}}</translation>
