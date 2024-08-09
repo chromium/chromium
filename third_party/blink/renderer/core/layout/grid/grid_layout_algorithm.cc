@@ -1260,8 +1260,6 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
       // We could be clever is and make this an if-stmt, but each type has
       // subtle consequences. This forces us in the future when we add a new
       // length type to consider what the best thing is for grid.
-      // TODO(https://crbug.com/40339056): The separation here is not
-      // correct for calc-size().
       switch (main_length.GetType()) {
         case Length::kAuto:
         case Length::kFitContent:

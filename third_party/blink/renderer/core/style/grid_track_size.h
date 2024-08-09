@@ -133,7 +133,6 @@ class GridTrackSize {
   }
 
   void CacheMinMaxTrackBreadthTypes() {
-    // TODO(https://crbug.com/313072): Support calc-size() in grid track sizes.
     min_track_breadth_is_auto_ = min_track_breadth_.IsAuto();
     min_track_breadth_is_fixed_ = min_track_breadth_.IsSpecified();
     min_track_breadth_is_flex_ = min_track_breadth_.IsFlex();
