@@ -11,7 +11,9 @@ import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 
 declare_args() {
-  generate_about_credits = true
+  # Generating the credits page requires a filesystem traversal for licenses
+  # that is slow in some environments.
+  generate_about_credits = is_official_build
 }
 
 if (is_android) {
