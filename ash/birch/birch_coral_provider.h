@@ -7,18 +7,25 @@
 
 #include "ash/ash_export.h"
 #include "ash/birch/birch_data_provider.h"
+#include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "base/memory/raw_ptr.h"
 
 namespace ash {
 
 class BirchModel;
 
-class ASH_EXPORT BirchCoralProvider : public BirchDataProvider {
+class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
+                                      public TabClusterUIController::Observer {
  public:
   explicit BirchCoralProvider(BirchModel* birch_model);
   BirchCoralProvider(const BirchCoralProvider&) = delete;
   BirchCoralProvider& operator=(const BirchCoralProvider&) = delete;
   ~BirchCoralProvider() override;
+
+  // TabClusterUIController::Observer:
+  void OnTabItemAdded(TabClusterUIItem* tab_item) override;
+  void OnTabItemUpdated(TabClusterUIItem* tab_item) override;
+  void OnTabItemRemoved(TabClusterUIItem* tab_item) override;
 
   // Called from birch model to request coral information to be displayed.
   void RequestBirchDataFetch() override;

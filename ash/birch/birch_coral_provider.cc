@@ -4,14 +4,35 @@
 
 #include "ash/birch/birch_coral_provider.h"
 
+#include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
+#include "ash/shell.h"
+
 namespace ash {
 
 BirchCoralProvider::BirchCoralProvider(BirchModel* birch_model)
-    : birch_model_(birch_model) {}
-BirchCoralProvider::~BirchCoralProvider() = default;
+    : birch_model_(birch_model) {
+  if (features::IsTabClusterUIEnabled()) {
+    Shell::Get()->tab_cluster_ui_controller()->AddObserver(this);
+  }
+}
+BirchCoralProvider::~BirchCoralProvider() {
+  if (features::IsTabClusterUIEnabled()) {
+    Shell::Get()->tab_cluster_ui_controller()->RemoveObserver(this);
+  }
+}
 
 void BirchCoralProvider::RequestBirchDataFetch() {
   // TODO(yulunwu) fetch coral data and update `birch_model_`
 }
+
+void BirchCoralProvider::OnTabItemAdded(TabClusterUIItem* tab_item) {
+  // TODO(yulunwu) stream tab item metadata to backend for async embedding
+}
+
+void BirchCoralProvider::OnTabItemUpdated(TabClusterUIItem* tab_item) {
+  // TODO(yulunwu) stream tab item metadata to backend for async embedding
+}
+
+void BirchCoralProvider::OnTabItemRemoved(TabClusterUIItem* tab_item) {}
 
 }  // namespace ash

@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_icon_cache.h"
 #include "ash/birch/birch_item.h"
@@ -68,6 +69,9 @@ BirchModel::BirchModel()
       icon_cache_(std::make_unique<BirchIconCache>()) {
   if (features::IsBirchWeatherEnabled()) {
     weather_provider_ = std::make_unique<BirchWeatherProvider>(this);
+  }
+  if (features::IsBirchCoralEnabled()) {
+    coral_provider_ = std::make_unique<BirchCoralProvider>(this);
   }
   Shell::Get()->session_controller()->AddObserver(this);
   SimpleGeolocationProvider::GetInstance()->AddObserver(this);
