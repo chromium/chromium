@@ -358,9 +358,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
   EXPECT_FALSE(controller->get_plus_profile_for_testing().has_value());
 }
 
-// https://crbug.com/357797031
-TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
-       DISABLED_ModalCanceled) {
+TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ModalCanceled) {
   std::unique_ptr<content::WebContents> web_contents =
       ChromeRenderViewHostTestHarness::CreateTestWebContents();
 
