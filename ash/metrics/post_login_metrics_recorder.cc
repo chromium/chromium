@@ -32,9 +32,62 @@ constexpr char kLoginThroughput[] = "LoginThroughput";
 // Unit tests often miss initialization and thus we use different label.
 constexpr char kLoginThroughputUnordered[] = "LoginThroughput-unordered";
 
+constexpr char kAshLoginSessionRestoreAllShelfIconsLoaded[] =
+    "Ash.LoginSessionRestore.AllShelfIconsLoaded";
+
+constexpr char kAshLoginSessionRestoreAllBrowserWindowsCreated[] =
+    "Ash.LoginSessionRestore.AllBrowserWindowsCreated";
+
+constexpr char kAshLoginSessionRestoreAllBrowserWindowsShown[] =
+    "Ash.LoginSessionRestore.AllBrowserWindowsShown";
+
+constexpr char kAshLoginSessionRestoreAllBrowserWindowsPresented[] =
+    "Ash.LoginSessionRestore.AllBrowserWindowsPresented";
+
+constexpr char kAshLoginSessionRestoreShelfLoginAnimationEnd[] =
+    "Ash.LoginSessionRestore.ShelfLoginAnimationEnd";
+
 std::string GetDeviceModeSuffix() {
   return display::Screen::GetScreen()->InTabletMode() ? "TabletMode"
                                                       : "ClamshellMode";
+}
+
+void ReportLoginThroughputEvent(const std::string& event_name,
+                                base::TimeTicks begin,
+                                base::TimeTicks end) {
+  // NOTE: list all expected event names with string literals here because we
+  // cannot use dynamic strings for event names. (I.e. event names are filtered
+  // out for privacy reasons when reported with TRACE_EVENT_COPY_* macros.)
+
+#define REPORT_IF_MATCH(metric)                                      \
+  if (event_name == metric) {                                        \
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(                \
+        "startup", metric, TRACE_ID_LOCAL(kLoginThroughput), begin); \
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(                  \
+        "startup", metric, TRACE_ID_LOCAL(kLoginThroughput), end);   \
+    return;                                                          \
+  }
+  REPORT_IF_MATCH(kLoginThroughput);
+  REPORT_IF_MATCH(kLoginThroughputUnordered);
+  REPORT_IF_MATCH("OnAuthSuccess");
+  REPORT_IF_MATCH("UserLoggedIn");
+  REPORT_IF_MATCH("LoginAnimationEnd");
+  REPORT_IF_MATCH("LoginFinished");
+  REPORT_IF_MATCH("ArcUiAvailable");
+  REPORT_IF_MATCH("Ash.LoginSessionRestore.AllBrowserWindowsCreated");
+  REPORT_IF_MATCH("Ash.LoginSessionRestore.AllBrowserWindowsShown");
+  REPORT_IF_MATCH("Ash.LoginSessionRestore.AllShelfIconsLoaded");
+  REPORT_IF_MATCH("Ash.LoginSessionRestore.AllBrowserWindowsPresented");
+  REPORT_IF_MATCH("Ash.LoginSessionRestore.ShelfLoginAnimationEnd");
+#undef REPORT_IF_MATCH
+
+  LOG(ERROR) << "Failed to report " << event_name;
+  DCHECK(false) << "Failed to report " << event_name;
+  constexpr char kFailedEvent[] = "FailedToReportEvent";
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      "startup", kFailedEvent, TRACE_ID_LOCAL(kLoginThroughput), begin);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "startup", kFailedEvent, TRACE_ID_LOCAL(kLoginThroughput), end);
 }
 
 }  // namespace
@@ -52,78 +105,9 @@ PostLoginMetricsRecorder::PostLoginMetricsRecorder(
 
 PostLoginMetricsRecorder::~PostLoginMetricsRecorder() = default;
 
-void PostLoginMetricsRecorder::AddLoginTimeMarker(
-    const std::string& marker_name) {
-  // Unit tests often miss the full initialization flow so we use a
-  // different label in this case.
-  if (markers_.empty() && marker_name != kLoginThroughput) {
-    markers_.emplace_back(kLoginThroughputUnordered);
-
-    const base::TimeTicks begin = markers_.front().time();
-    const base::TimeTicks end = begin;
-
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "startup", kLoginThroughputUnordered, TRACE_ID_LOCAL(kLoginThroughput),
-        begin);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "startup", kLoginThroughputUnordered, TRACE_ID_LOCAL(kLoginThroughput),
-        end);
-  }
-
-  markers_.emplace_back(marker_name);
-  bool reported = false;
-
-#define REPORT_LOGIN_THROUGHPUT_EVENT(metric)                        \
-  if (marker_name == metric) {                                       \
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(                \
-        "startup", metric, TRACE_ID_LOCAL(kLoginThroughput), begin); \
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(                  \
-        "startup", metric, TRACE_ID_LOCAL(kLoginThroughput), end);   \
-    reported = true;                                                 \
-  }                                                                  \
-  class __STUB__
-
-  if (markers_.size() > 1) {
-    const base::TimeTicks begin = markers_[markers_.size() - 2].time();
-    const base::TimeTicks end = markers_[markers_.size() - 1].time();
-
-    REPORT_LOGIN_THROUGHPUT_EVENT(
-        "Ash.LoginSessionRestore.AllBrowserWindowsCreated");
-    REPORT_LOGIN_THROUGHPUT_EVENT(
-        "Ash.LoginSessionRestore.AllBrowserWindowsShown");
-    REPORT_LOGIN_THROUGHPUT_EVENT(
-        "Ash.LoginSessionRestore.AllShelfIconsLoaded");
-    REPORT_LOGIN_THROUGHPUT_EVENT(
-        "Ash.LoginSessionRestore.AllBrowserWindowsPresented");
-    REPORT_LOGIN_THROUGHPUT_EVENT(
-        "Ash.LoginSessionRestore.ShelfLoginAnimationEnd");
-    REPORT_LOGIN_THROUGHPUT_EVENT("LoginAnimationEnd");
-    REPORT_LOGIN_THROUGHPUT_EVENT("LoginFinished");
-    REPORT_LOGIN_THROUGHPUT_EVENT("ArcUiAvailable");
-    REPORT_LOGIN_THROUGHPUT_EVENT("OnAuthSuccess");
-    REPORT_LOGIN_THROUGHPUT_EVENT("UserLoggedIn");
-    if (!reported) {
-      constexpr char kFailedEvent[] = "FailedToReportEvent";
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-          "startup", kFailedEvent, TRACE_ID_LOCAL(kLoginThroughput), begin);
-      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-          "startup", kFailedEvent, TRACE_ID_LOCAL(kLoginThroughput), end);
-    }
-  } else {
-    // The first event will be used as a row name in the tracing UI.
-    const base::TimeTicks begin = markers_.front().time();
-    const base::TimeTicks end = begin;
-
-    REPORT_LOGIN_THROUGHPUT_EVENT(kLoginThroughput);
-  }
-#undef REPORT_LOGIN_THROUGHPUT_EVENT
-  DCHECK(reported) << "Failed to report " << marker_name
-                   << ", markers_.size()=" << markers_.size();
-}
-
 void PostLoginMetricsRecorder::OnAuthSuccess(base::TimeTicks ts) {
   EnsureTracingSliceNamed(ts);
-  AddLoginTimeMarker("OnAuthSuccess");
+  AddLoginTimeMarker("OnAuthSuccess", ts);
 }
 
 void PostLoginMetricsRecorder::OnUserLoggedIn(base::TimeTicks ts,
@@ -132,7 +116,7 @@ void PostLoginMetricsRecorder::OnUserLoggedIn(base::TimeTicks ts,
   std::optional<base::TimeTicks> timestamp_on_auth_success = timestamp_origin_;
 
   EnsureTracingSliceNamed(ts);
-  AddLoginTimeMarker("UserLoggedIn");
+  AddLoginTimeMarker("UserLoggedIn", ts);
 
   if (is_ash_restarted || !is_regular_user_or_owner) {
     return;
@@ -149,36 +133,30 @@ void PostLoginMetricsRecorder::OnAllExpectedShelfIconLoaded(
     base::TimeTicks ts) {
   if (timestamp_origin_.has_value()) {
     const base::TimeDelta duration_ms = ts - timestamp_origin_.value();
-    constexpr char kAshLoginSessionRestoreAllShelfIconsLoaded[] =
-        "Ash.LoginSessionRestore.AllShelfIconsLoaded";
     UMA_HISTOGRAM_CUSTOM_TIMES(kAshLoginSessionRestoreAllShelfIconsLoaded,
                                duration_ms, base::Milliseconds(1),
                                base::Seconds(100), 100);
-    AddLoginTimeMarker(kAshLoginSessionRestoreAllShelfIconsLoaded);
+    AddLoginTimeMarker(kAshLoginSessionRestoreAllShelfIconsLoaded, ts);
   }
 }
 
 void PostLoginMetricsRecorder::OnAllBrowserWindowsCreated(base::TimeTicks ts) {
   if (timestamp_origin_.has_value()) {
     const base::TimeDelta duration_ms = ts - timestamp_origin_.value();
-    constexpr char kAshLoginSessionRestoreAllBrowserWindowsCreated[] =
-        "Ash.LoginSessionRestore.AllBrowserWindowsCreated";
     UMA_HISTOGRAM_CUSTOM_TIMES(kAshLoginSessionRestoreAllBrowserWindowsCreated,
                                duration_ms, base::Milliseconds(1),
                                base::Seconds(100), 100);
-    AddLoginTimeMarker(kAshLoginSessionRestoreAllBrowserWindowsCreated);
+    AddLoginTimeMarker(kAshLoginSessionRestoreAllBrowserWindowsCreated, ts);
   }
 }
 
 void PostLoginMetricsRecorder::OnAllBrowserWindowsShown(base::TimeTicks ts) {
   if (timestamp_origin_.has_value()) {
     const base::TimeDelta duration_ms = ts - timestamp_origin_.value();
-    constexpr char kAshLoginSessionRestoreAllBrowserWindowsShown[] =
-        "Ash.LoginSessionRestore.AllBrowserWindowsShown";
-    UMA_HISTOGRAM_CUSTOM_TIMES("Ash.LoginSessionRestore.AllBrowserWindowsShown",
+    UMA_HISTOGRAM_CUSTOM_TIMES(kAshLoginSessionRestoreAllBrowserWindowsShown,
                                duration_ms, base::Milliseconds(1),
                                base::Seconds(100), 100);
-    AddLoginTimeMarker(kAshLoginSessionRestoreAllBrowserWindowsShown);
+    AddLoginTimeMarker(kAshLoginSessionRestoreAllBrowserWindowsShown, ts);
   }
 }
 
@@ -186,8 +164,6 @@ void PostLoginMetricsRecorder::OnAllBrowserWindowsPresented(
     base::TimeTicks ts) {
   if (timestamp_origin_.has_value()) {
     const base::TimeDelta duration_ms = ts - timestamp_origin_.value();
-    constexpr char kAshLoginSessionRestoreAllBrowserWindowsPresented[] =
-        "Ash.LoginSessionRestore.AllBrowserWindowsPresented";
     // Headless units do not report presentation time, so we only report
     // the histogram if primary display is functional.
     if (display::Screen::GetScreen()->GetPrimaryDisplay().detected()) {
@@ -195,19 +171,17 @@ void PostLoginMetricsRecorder::OnAllBrowserWindowsPresented(
           kAshLoginSessionRestoreAllBrowserWindowsPresented, duration_ms,
           base::Milliseconds(1), base::Seconds(100), 100);
     }
-    AddLoginTimeMarker(kAshLoginSessionRestoreAllBrowserWindowsPresented);
+    AddLoginTimeMarker(kAshLoginSessionRestoreAllBrowserWindowsPresented, ts);
   }
 }
 
 void PostLoginMetricsRecorder::OnShelfAnimationFinished(base::TimeTicks ts) {
   if (timestamp_origin_.has_value()) {
     const base::TimeDelta duration_ms = ts - timestamp_origin_.value();
-    constexpr char kAshLoginSessionRestoreShelfLoginAnimationEnd[] =
-        "Ash.LoginSessionRestore.ShelfLoginAnimationEnd";
     UMA_HISTOGRAM_CUSTOM_TIMES(kAshLoginSessionRestoreShelfLoginAnimationEnd,
                                duration_ms, base::Milliseconds(1),
                                base::Seconds(100), 100);
-    AddLoginTimeMarker(kAshLoginSessionRestoreShelfLoginAnimationEnd);
+    AddLoginTimeMarker(kAshLoginSessionRestoreShelfLoginAnimationEnd, ts);
   }
 }
 
@@ -222,7 +196,7 @@ void PostLoginMetricsRecorder::OnCompositorAnimationFinished(
   LoginEventRecorder::Get()->AddLoginTimeMarker("LoginAnimationEnd",
                                                 /*send_to_uma=*/false,
                                                 /*write_to_file=*/false);
-  AddLoginTimeMarker("LoginAnimationEnd");
+  AddLoginTimeMarker("LoginAnimationEnd", ts);
 
   // Report could happen during Shell shutdown. Early out in that case.
   if (!Shell::HasInstance() || !Shell::Get()->tablet_mode_controller()) {
@@ -236,20 +210,17 @@ void PostLoginMetricsRecorder::OnCompositorAnimationFinished(
 
   int smoothness = metrics_util::CalculateSmoothnessV3(data);
   int jank = metrics_util::CalculateJankV3(data);
-
   DCHECK(timestamp_origin_.has_value());
-  int duration_ms = (ts - timestamp_origin_.value()).InMilliseconds();
+  base::TimeDelta duration = ts - timestamp_origin_.value();
 
   base::UmaHistogramPercentage(smoothness_name + suffix, smoothness);
   base::UmaHistogramPercentage(jank_name + suffix, jank);
-  base::UmaHistogramCustomTimes(
-      duration_name + suffix, base::Milliseconds(duration_ms),
-      base::Milliseconds(100), base::Seconds(30), 100);
+  base::UmaHistogramCustomTimes(duration_name + suffix, duration,
+                                base::Milliseconds(100), base::Seconds(30),
+                                100);
 }
 
 void PostLoginMetricsRecorder::OnArcUiReady(base::TimeTicks ts) {
-  AddLoginTimeMarker("ArcUiAvailable");
-
   // It seems that neither `OnAuthSuccess` nor `LoggedInStateChanged` is called
   // on some ARC tests.
   if (!timestamp_origin_.has_value()) {
@@ -261,6 +232,10 @@ void PostLoginMetricsRecorder::OnArcUiReady(base::TimeTicks ts) {
                                 duration, base::Milliseconds(100),
                                 base::Seconds(30), 100);
   LOCAL_HISTOGRAM_TIMES("Ash.Tast.ArcUiAvailableAfterLogin.Duration", duration);
+
+  // Note that this event is only reported when OnArcUiReady is called
+  // before OnShelfAnimationAndCompositorAnimationDone.
+  AddLoginTimeMarker("ArcUiAvailable", ts);
 }
 
 void PostLoginMetricsRecorder::OnShelfIconsLoadedAndSessionRestoreDone(
@@ -276,10 +251,12 @@ void PostLoginMetricsRecorder::OnShelfIconsLoadedAndSessionRestoreDone(
 
 void PostLoginMetricsRecorder::OnShelfAnimationAndCompositorAnimationDone(
     base::TimeTicks ts) {
-  AddLoginTimeMarker("LoginFinished");
+  AddLoginTimeMarker("LoginFinished", ts);
   LoginEventRecorder::Get()->AddLoginTimeMarker("LoginFinished",
                                                 /*send_to_uma=*/false,
                                                 /*write_to_file=*/false);
+  // This is the last event we expect. We can report all the events now.
+  ReportTraceEvents();
 
   base::UmaHistogramCustomTimes(
       "BootTime.Login3", ts - timestamp_origin_.value(),
@@ -288,8 +265,22 @@ void PostLoginMetricsRecorder::OnShelfAnimationAndCompositorAnimationDone(
   LoginEventRecorder::Get()->RunScheduledWriteLoginTimes();
 }
 
-PostLoginMetricsRecorder::TimeMarker::TimeMarker(const std::string& name)
-    : name_(name) {}
+PostLoginMetricsRecorder::TimeMarker::TimeMarker(const std::string& name,
+                                                 base::TimeTicks time)
+    : name_(name), time_(time) {}
+
+void PostLoginMetricsRecorder::AddLoginTimeMarker(
+    const std::string& marker_name,
+    base::TimeTicks marker_timestamp) {
+  // Unit tests often miss the full initialization flow so we use a
+  // different label in this case.
+  if (markers_.empty() && marker_name != kLoginThroughput) {
+    markers_.emplace_back(kLoginThroughputUnordered,
+                          marker_timestamp - base::Microseconds(1));
+  }
+
+  markers_.emplace_back(marker_name, marker_timestamp);
+}
 
 void PostLoginMetricsRecorder::EnsureTracingSliceNamed(base::TimeTicks ts) {
   // EnsureTracingSliceNamed should be called only on expected events.
@@ -300,9 +291,25 @@ void PostLoginMetricsRecorder::EnsureTracingSliceNamed(base::TimeTicks ts) {
   // Depending on the login flow this function may get called multiple times.
   if (markers_.empty()) {
     // The first event will name the tracing row.
-    AddLoginTimeMarker(kLoginThroughput);
+    AddLoginTimeMarker(kLoginThroughput, ts - base::Microseconds(1));
     timestamp_origin_ = ts;
   }
+}
+
+void PostLoginMetricsRecorder::ReportTraceEvents() {
+  CHECK(!markers_.empty());
+
+  std::sort(markers_.begin(), markers_.end());
+
+  // First marker has the name of tracing track.
+  ReportLoginThroughputEvent(markers_[0].name(), markers_[0].time(),
+                             markers_[0].time());
+  for (size_t i = 1; i < markers_.size(); ++i) {
+    ReportLoginThroughputEvent(markers_[i].name(), markers_[i - 1].time(),
+                               markers_[i].time());
+  }
+
+  markers_.clear();
 }
 
 }  // namespace ash

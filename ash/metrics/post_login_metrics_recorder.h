@@ -29,10 +29,6 @@ class ASH_EXPORT PostLoginMetricsRecorder : public PostLoginEventObserver {
   PostLoginMetricsRecorder& operator=(const PostLoginMetricsRecorder&) = delete;
   ~PostLoginMetricsRecorder() override;
 
-  // Add a time marker for login animations events. A timeline will be sent to
-  // tracing after login is done.
-  void AddLoginTimeMarker(const std::string& marker_name);
-
   // PostLoginEventObserver overrides:
   void OnAuthSuccess(base::TimeTicks ts) override;
   void OnUserLoggedIn(base::TimeTicks ts,
@@ -53,8 +49,9 @@ class ASH_EXPORT PostLoginMetricsRecorder : public PostLoginEventObserver {
  private:
   class TimeMarker {
    public:
-    explicit TimeMarker(const std::string& name);
-    TimeMarker(const TimeMarker& other) = default;
+    TimeMarker(const std::string& name, base::TimeTicks time);
+    TimeMarker(TimeMarker&& other) = default;
+    TimeMarker& operator=(TimeMarker&& other) = default;
     ~TimeMarker() = default;
 
     const std::string& name() const { return name_; }
@@ -68,11 +65,15 @@ class ASH_EXPORT PostLoginMetricsRecorder : public PostLoginEventObserver {
    private:
     friend class std::vector<TimeMarker>;
 
-    const std::string name_;
-    const base::TimeTicks time_ = base::TimeTicks::Now();
+    std::string name_;
+    base::TimeTicks time_;
   };
 
+  // Add a time marker for login events. A timeline will be reported after
+  // login animation is done.
+  void AddLoginTimeMarker(const std::string& name, base::TimeTicks timestamp);
   void EnsureTracingSliceNamed(base::TimeTicks ts);
+  void ReportTraceEvents();
 
   std::vector<TimeMarker> markers_;
 
