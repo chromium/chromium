@@ -34,9 +34,11 @@ CastMediaSinkService::~CastMediaSinkService() {
 
 void CastMediaSinkService::Initialize(
     const OnSinksDiscoveredCallback& sinks_discovered_cb,
+    base::RepeatingClosure discovery_permission_rejected_cb,
     MediaSinkServiceBase* dial_media_sink_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!impl_);
+  discovery_permission_rejected_cb_ = discovery_permission_rejected_cb;
 
   // |sinks_discovered_cb| should only be invoked on the current sequence.
   // We wrap |sinks_discovered_cb| in a member function bound with WeakPtr to
@@ -182,6 +184,7 @@ void CastMediaSinkService::OnDnsSdEvent(
 
 void CastMediaSinkService::OnDnsSdPermissionRejected() {
   // TODO(354232593): Pass the error to the MR.
+  discovery_permission_rejected_cb_.Run();
 }
 
 void CastMediaSinkService::RunSinksDiscoveredCallback(

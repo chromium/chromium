@@ -181,6 +181,8 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
                              const std::optional<std::string>& error_text,
                              mojom::RouteRequestResultCode result_code);
 
+  void OnLocalDiscoveryPermissionRejected();
+
   // Callback called by MRP's BindMediaController().
   void OnMediaControllerBound(const MediaRoute::Id& route_id, bool success);
 

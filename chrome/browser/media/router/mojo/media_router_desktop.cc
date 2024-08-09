@@ -140,6 +140,10 @@ void MediaRouterDesktop::Initialize() {
       std::make_unique<InternalMediaRoutesObserver>(this);
   if (media_sink_service_) {
     media_sink_service_->AddLogger(GetLogger());
+    media_sink_service_->SetDiscoveryPermissionRejectedCallback(
+        base::BindRepeating(
+            &MediaRouterDesktop::OnLocalDiscoveryPermissionRejected,
+            weak_factory_.GetWeakPtr()));
     InitializeMediaRouteProviders();
 #if BUILDFLAG(IS_WIN)
     CanFirewallUseLocalPorts(
@@ -707,6 +711,10 @@ void MediaRouterDesktop::RouteResponseReceived(
   }
 
   std::move(callback).Run(std::move(connection), *result);
+}
+
+void MediaRouterDesktop::OnLocalDiscoveryPermissionRejected() {
+  // TODO(crbug.com/354232459): Add an issue to the IssueManager.
 }
 
 void MediaRouterDesktop::OnMediaControllerBound(const MediaRoute::Id& route_id,

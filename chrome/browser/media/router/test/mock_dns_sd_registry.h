@@ -16,15 +16,16 @@ class MockDnsSdRegistry : public DnsSdRegistry {
   explicit MockDnsSdRegistry(DnsSdObserver* observer);
   ~MockDnsSdRegistry() override;
 
-  MOCK_METHOD1(AddObserver, void(DnsSdObserver* observer));
-  MOCK_METHOD1(RemoveObserver, void(DnsSdObserver* observer));
-  MOCK_METHOD1(RegisterDnsSdListener, void(const std::string& service_type));
-  MOCK_METHOD1(UnregisterDnsSdListener, void(const std::string& service_type));
-  MOCK_METHOD1(Publish, void(const std::string&));
-  MOCK_METHOD0(ResetAndDiscover, void(void));
+  MOCK_METHOD(void, AddObserver, (DnsSdObserver * observer));
+  MOCK_METHOD(void, RemoveObserver, (DnsSdObserver * observer));
+  MOCK_METHOD(void, RegisterDnsSdListener, (const std::string& service_type));
+  MOCK_METHOD(void, UnregisterDnsSdListener, (const std::string& service_type));
+  MOCK_METHOD(void, Publish, (const std::string&));
+  MOCK_METHOD(void, ResetAndDiscover, ());
 
   void DispatchMDnsEvent(const std::string& service_type,
                          const DnsSdServiceList& services);
+  void SimulatePermissionRejected();
 
  private:
   raw_ptr<DnsSdObserver, DanglingUntriaged> observer_;
