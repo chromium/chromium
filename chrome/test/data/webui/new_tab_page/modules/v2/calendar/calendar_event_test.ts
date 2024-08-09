@@ -221,6 +221,7 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       const moduleName = 'GoogleCalendar';
       element.event = createEvent(1);
       element.moduleName = moduleName;
+      element.index = 1;
       await microtasksFinished();
 
       // Act.
@@ -234,6 +235,10 @@ suite('NewTabPageModulesCalendarEventTest', () => {
           metrics.count(
               `NewTabPage.${moduleName}.UserAction`,
               CalendarAction.BASIC_EVENT_HEADER_CLICKED));
+      assertEquals(
+          1,
+          metrics.count(
+              `NewTabPage.${moduleName}.EventClickIndex`, element.index));
     });
 
     test('expanded event click', async () => {
@@ -241,6 +246,7 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       element.expanded = true;
       element.event = createEvent(1);
       element.moduleName = moduleName;
+      element.index = 3;
       await microtasksFinished();
 
       // Act.
@@ -254,6 +260,10 @@ suite('NewTabPageModulesCalendarEventTest', () => {
           metrics.count(
               `NewTabPage.${moduleName}.UserAction`,
               CalendarAction.EXPANDED_EVENT_HEADER_CLICKED));
+      assertEquals(
+          1,
+          metrics.count(
+              `NewTabPage.${moduleName}.EventClickIndex`, element.index));
     });
 
     test('double booked event click', async () => {
@@ -261,6 +271,7 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       element.doubleBooked = true;
       element.event = createEvent(1);
       element.moduleName = moduleName;
+      element.index = 0;
       await microtasksFinished();
 
       // Act.
@@ -274,6 +285,10 @@ suite('NewTabPageModulesCalendarEventTest', () => {
           metrics.count(
               `NewTabPage.${moduleName}.UserAction`,
               CalendarAction.DOUBLE_BOOKED_EVENT_HEADER_CLICKED));
+      assertEquals(
+          1,
+          metrics.count(
+              `NewTabPage.${moduleName}.EventClickIndex`, element.index));
     });
 
     test('attachment click', async () => {

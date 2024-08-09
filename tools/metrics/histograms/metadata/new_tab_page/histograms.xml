@@ -599,6 +599,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.GoogleCalendar.EventClientIndex" units="count"
+    expires_after="2025-08-06">
+  <owner>rtatum@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the index of a clicked calendar event, with the first event at 0.
+    Recorded when the header of an event is clicked, but not when other aspects
+    are clicked for an expanded event.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.GoogleCalendar.RequestResult" units="count"
     expires_after="2025-08-06">
   <owner>rtatum@google.com</owner>

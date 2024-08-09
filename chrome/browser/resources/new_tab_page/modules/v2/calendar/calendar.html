@@ -4,7 +4,8 @@ ${this.events.map((item, index) => html`
       ?double-booked="${this.isDoubleBooked_(index) ? 'double-booked' : ''}"
       ?expanded="${this.isExpanded_(index)}"
       .event="${item}"
-      moduleName="${this.moduleName}">
+      .index="${index}"
+      .moduleName="${this.moduleName}">
   </ntp-calendar-event>
   ${this.isExpanded_(index) && this.hasDoubleBooked_() ? html`
     <div class="divider"><hr></hr></div>

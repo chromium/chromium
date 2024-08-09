@@ -56,6 +56,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
         reflect: true,
       },
 
+      index: {type: Number},
       moduleName: {type: String},
       attachmentListClass_: {type: String},
       formattedStartTime_: {type: String},
@@ -66,6 +67,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
   doubleBooked: boolean;
   event: CalendarEvent;
   expanded: boolean;
+  index: number;
   moduleName: string;
 
   protected attachmentListClass_: string;
@@ -159,6 +161,8 @@ export class CalendarEventElement extends CalendarEventElementBase {
       action = CalendarAction.DOUBLE_BOOKED_EVENT_HEADER_CLICKED;
     }
     recordCalendarAction(action, this.moduleName);
+    chrome.metricsPrivate.recordSmallCount(
+        `NewTabPage.${this.moduleName}.EventClickIndex`, this.index);
   }
 
   protected showConferenceButton_(): boolean {
