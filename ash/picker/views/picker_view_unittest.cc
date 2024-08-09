@@ -2053,6 +2053,38 @@ TEST_F(PickerViewTest, PressingEscClosesPreviewThenWidget) {
   views::test::WidgetDestroyedWaiter(widget.get()).Wait();
 }
 
+TEST_F(PickerViewTest, TabKeyNavigatesItemWithPreview) {
+  FakePickerViewDelegate delegate({
+      .zero_state_suggested_results =
+          {
+              PickerSearchResult::Text(u"Result A"),
+              PickerSearchResult::LocalFile(u"Result B", /*file_path=*/{}),
+              PickerSearchResult::Text(u"Result C"),
+          },
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  // Should navigate to the file result and show the preview bubble.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
+  PickerPreviewBubbleController& preview_controller =
+      GetPickerViewFromWidget(*widget)->preview_controller_for_testing();
+  PickerPreviewBubbleVisibleWaiter().Wait(&preview_controller);
+
+  EXPECT_TRUE(preview_controller.IsBubbleVisible());
+
+  // Should close the preview bubble and navigate to the next result.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
+
+  EXPECT_FALSE(preview_controller.IsBubbleVisible());
+  EXPECT_FALSE(widget->IsClosed());
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_THAT(delegate.last_inserted_result(),
+              Optional(PickerSearchResult::Text(u"Result C")));
+}
+
 TEST_F(PickerViewTest, KeyEventsNavigateWithinSubmenu) {
   FakePickerViewDelegate delegate({
       .zero_state_suggested_results =

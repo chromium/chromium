@@ -520,6 +520,9 @@ bool PickerView::MovePseudoFocusRight() {
 }
 
 bool PickerView::AdvancePseudoFocus(PickerPseudoFocusDirection direction) {
+  if (preview_controller_.IsBubbleVisible()) {
+    preview_controller_.CloseBubble();
+  }
   if (GetPseudoFocusedView() == nullptr) {
     return false;
   }
