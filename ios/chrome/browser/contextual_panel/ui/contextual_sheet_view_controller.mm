@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/contextual_panel/ui/contextual_sheet_view_controller.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "ios/chrome/browser/contextual_panel/ui/trait_collection_change_delegate.h"
 #import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -90,13 +91,27 @@ const CGFloat kTopCornerRadius = 10;
   _halfWidthConstraint.active =
       self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
 
-  _heightConstraint = [self.view.heightAnchor
-      constraintEqualToConstant:[self mediumDetentHeight]];
+  CGFloat initialHeight =
+      (self.traitCollection.verticalSizeClass ==
+       UIUserInterfaceSizeClassCompact)
+          ? self.view.superview.frame.size.height - kLargeDetentTopMargin
+          : [self mediumDetentHeight];
+  _heightConstraint =
+      [self.view.heightAnchor constraintEqualToConstant:initialHeight];
   _heightConstraint.active = YES;
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+
+  [self.traitCollectionDelegate traitCollectionDidChangeForViewController:self];
+
+  // It's possible that changing the trait collection removes this view from
+  // the view hierarchy, so only do the remaining updates if it's still here.
+  if (!self.view.superview) {
+    return;
+  }
+
   [self animateHeightConstraintToConstant:[self restingHeight]];
 
   _widthConstraint.active =
@@ -172,16 +187,11 @@ const CGFloat kTopCornerRadius = 10;
 }
 
 - (void)animateAppearance {
+  CGFloat initialHeight = _heightConstraint.constant;
+
   _heightConstraint.constant = 0;
   // Make sure the view is laid out offscreen to prepare for the animation in.
   [self.view.superview layoutIfNeeded];
-
-  CGFloat superviewHeight = self.view.superview.frame.size.height;
-
-  CGFloat initialHeight = (self.traitCollection.verticalSizeClass ==
-                           UIUserInterfaceSizeClassCompact)
-                              ? superviewHeight - kLargeDetentTopMargin
-                              : [self mediumDetentHeight];
 
   [self animateHeightConstraintToConstant:initialHeight];
 }

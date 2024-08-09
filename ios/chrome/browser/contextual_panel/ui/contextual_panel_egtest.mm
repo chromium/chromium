@@ -161,4 +161,47 @@
   [ChromeEarlGrey closeTabAtIndex:0];
 }
 
+// Tests that the contextual panel transitions neatly between iOS sheet
+// controller (full iPad layout) and the panel's custom sheet component (other
+// window open/iPhone-style layout).
+- (void)testContexutalPaneliPadMultiwindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   @"ContextualPanelEntrypointImageViewAXID")]
+      performAction:grey_tap()];
+
+  // Check that the contextual panel opened up.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(@"PanelContentViewAXID")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Open a second window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Check that the panel is still visible in the first window
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(@"PanelCloseButtonAXID")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Close the second window.
+  [ChromeEarlGrey closeWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:1];
+
+  // Check that the panel is still visible in the first window
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(@"PanelContentViewAXID")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(@"PanelCloseButtonAXID")]
+      performAction:grey_tap()];
+}
+
 @end

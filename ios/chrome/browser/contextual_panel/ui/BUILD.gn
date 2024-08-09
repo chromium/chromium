@@ -12,6 +12,7 @@ source_set("ui") {
     "panel_content_consumer.h",
     "panel_content_view_controller.h",
     "panel_content_view_controller.mm",
+    "trait_collection_change_delegate.h",
   ]
   deps = [
     ":public",

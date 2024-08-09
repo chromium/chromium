@@ -12,6 +12,7 @@
 @protocol ContextualSheetCommands;
 @protocol ContextualSheetDisplayController;
 @class PanelBlockData;
+@protocol TraitCollectionChangeDelegate;
 
 @protocol PanelContentViewControllerMetricsDelegate
 
@@ -36,6 +37,10 @@
 
 @property(nonatomic, weak) id<PanelContentViewControllerMetricsDelegate>
     metricsDelegate;
+
+// Delegate to inform about trait collection changes in this view controller.
+@property(nonatomic, weak) id<TraitCollectionChangeDelegate>
+    traitCollectionDelegate;
 
 // Updates the current block data.
 - (void)setPanelBlocks:(NSArray<PanelBlockData*>*)panelBlocks;

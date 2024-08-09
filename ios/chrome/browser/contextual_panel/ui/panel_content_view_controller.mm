@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/contextual_panel/ui/panel_block_data.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_block_metrics_data.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_item_collection_view_cell.h"
+#import "ios/chrome/browser/contextual_panel/ui/trait_collection_change_delegate.h"
 #import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -296,6 +297,12 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
     base::UmaHistogramEnumeration(impressionTypeHistogramName,
                                   blockImpressionType);
   }
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  [self.traitCollectionDelegate traitCollectionDidChangeForViewController:self];
 }
 
 #pragma mark - Public methods
