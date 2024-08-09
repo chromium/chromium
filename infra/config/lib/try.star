@@ -143,7 +143,8 @@ def tryjob(
       add_default_filters: A bool indicating whether to add default filters that
         exclude certain directories that would have no impact when building
         chromium with the patch applied (docs, config files that don't take
-        effect until landing, etc., see default_location_filters).
+        effect until landing, etc., see default_location_filters). This arg has
+        no effect when includable_only=True, and will instead be set to False.
       equivalent_builder: See cq.tryjob_verifier.
       equivalent_builder_percentage: See cq.tryjob_verifier.
       equivalent_builder_whitelist: See cq.tryjob_verifier.
@@ -163,7 +164,12 @@ def tryjob(
             return cq.location_filter(path_regexp = f)
         return f
 
+    if includable_only:
+        add_default_filters = False
+
     if location_filters:
+        if includable_only:
+            fail("Tryjobs with location_filters cannot be includable_only")
         location_filters = [normalize_location_filter(f) for f in location_filters]
 
     return struct(
@@ -381,6 +387,22 @@ def try_builder(
 
     return ret
 
+def presubmit_builder(*, name, tryjob, **kwargs):
+    """Define a presubmit builder.
+
+    Presubmit builders are builders that run fast checks that don't require
+    building. Their results aren't re-used because they tend to provide guards
+    against generated files being out of date, so they MUST run quickly so that
+    the submit after a CQ dry run doesn't take long.
+    """
+    if tryjob:
+        tryjob_args = {a: getattr(tryjob, a) for a in dir(tryjob)}
+        if tryjob_args.get("disable_reuse") == None:
+            tryjob_args["disable_reuse"] = True
+        tryjob_args["add_default_filters"] = False
+        tryjob = try_.job(**tryjob_args)
+    return try_builder(name = name, tryjob = tryjob, **kwargs)
+
 def _orchestrator_builder(
         *,
         name,
@@ -511,6 +533,7 @@ try_ = struct(
 
     # Functions for declaring try builders
     builder = try_builder,
+    presubmit_builder = presubmit_builder,
     job = tryjob,
     orchestrator_builder = _orchestrator_builder,
     compilator_builder = _compilator_builder,

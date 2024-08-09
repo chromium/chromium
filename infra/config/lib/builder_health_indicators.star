@@ -4,11 +4,12 @@
 
 """Library for defining builder health indicator thresholds.
 
-See //docs/infra/builder_health_indicators.md for more info.
+See chromium/src -- //docs/infra/builder_health_indicators.md for more info.
 """
 
 load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys")
+load("//project.star", "settings")
 load("./builder_exemptions.star", "exempted_from_contact_builders")
 load("./nodes.star", "nodes")
 load("./structs.star", "structs")
@@ -20,7 +21,7 @@ _HEALTH_SPEC = nodes.create_bucket_scoped_node_type("health_spec")
 _default_specs = {
     "Unhealthy": struct(
         score = 5,
-        period_days = 7,
+        period_days = 7 if settings.project.startswith("chromium") else 14,
         # If any of these thresholds are exceeded, the builder will be deemed
         # unhealthy.
         # Setting a value of None will ignore that threshold
@@ -34,7 +35,7 @@ _default_specs = {
             p50_mins = None,
         ),
         pending_time = struct(
-            p50_mins = 20,
+            p50_mins = 20 if settings.project.startswith("chromium") else 60,
         ),
     ),
     "Low Value": struct(
@@ -73,7 +74,7 @@ blank_low_value_thresholds = struct(
 DEFAULT = {
     "Unhealthy": struct(
         score = 5,
-        period_days = 7,
+        period_days = 7 if settings.project.startswith("chromium") else 14,
         _default = "_default",
     ),
     "Low Value": struct(
