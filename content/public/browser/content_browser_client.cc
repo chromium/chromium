@@ -1751,9 +1751,8 @@ bool ContentBrowserClient::ShouldSuppressAXLoadComplete(RenderFrameHost* rfh) {
 
 void ContentBrowserClient::BindAIManager(
     BrowserContext* browser_context,
-    std::variant<RenderFrameHost*, base::SupportsUserData*> context,
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
-  EchoAIManagerImpl::Create(browser_context, context, std::move(receiver));
+  EchoAIManagerImpl::Create(browser_context, std::move(receiver));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

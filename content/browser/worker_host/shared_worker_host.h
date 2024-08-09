@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/supports_user_data.h"
 #include "base/unguessable_token.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
@@ -75,8 +74,7 @@ struct WorkerScriptFetcherResult;
 // current BrowserContext.
 class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
                                         public RenderProcessHostObserver,
-                                        public BucketContext,
-                                        public base::SupportsUserData {
+                                        public BucketContext {
  public:
   SharedWorkerHost(
       SharedWorkerServiceImpl* service,

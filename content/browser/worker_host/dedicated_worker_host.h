@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
@@ -80,8 +79,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
     : public blink::mojom::DedicatedWorkerHost,
       public blink::mojom::BackForwardCacheControllerHost,
       public RenderProcessHostObserver,
-      public BucketContext,
-      public base::SupportsUserData {
+      public BucketContext {
  public:
   // Creates a new browser-side host for a single dedicated worker.
   //

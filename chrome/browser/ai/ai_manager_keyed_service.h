@@ -7,16 +7,13 @@
 
 #include <optional>
 
-#include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/supports_user_data.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ai/ai_text_session.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
@@ -27,24 +24,13 @@
 class AIManagerKeyedService : public KeyedService,
                               public blink::mojom::AIManager {
  public:
-  // When binding the receiver, we need to pass the `RenderFrameHost` for
-  // document, because we need to wrap the `AITextSession` in a
-  // `DocumentUserData` to ensure that it gets properly destroyed when the
-  // navigation happens and the RenderFrame is reused (until RenderDocument is
-  // launched).
-  // We cannot just pass it as `SupportsUserData` because `RenderFrameHost` is
-  // not an implementation of `SupportsUserData`.
-  using ReceiverContext =
-      std::variant<content::RenderFrameHost*, base::SupportsUserData*>;
-
   explicit AIManagerKeyedService(content::BrowserContext* browser_context);
   AIManagerKeyedService(const AIManagerKeyedService&) = delete;
   AIManagerKeyedService& operator=(const AIManagerKeyedService&) = delete;
 
   ~AIManagerKeyedService() override;
 
-  void AddReceiver(mojo::PendingReceiver<blink::mojom::AIManager> receiver,
-                   ReceiverContext host);
+  void AddReceiver(mojo::PendingReceiver<blink::mojom::AIManager> receiver);
   void CreateTextSessionForCloning(
       base::PassKey<AITextSession> pass_key,
       mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
@@ -55,29 +41,6 @@ class AIManagerKeyedService : public KeyedService,
  private:
   FRIEND_TEST_ALL_PREFIXES(AIManagerKeyedServiceTest,
                            NoUAFWithInvalidOnDeviceModelPath);
-  FRIEND_TEST_ALL_PREFIXES(AIManagerKeyedServiceTest, AITextSessionSet);
-
-  // The data structure holds a list of `AITextSession`. This will be
-  // bound as a whole to the `SupportsUserData`, so that the
-  // `AITextSession`s will be destroyed when the host of document or
-  // worker is gone.
-  class AITextSessionSet : public base::SupportsUserData::Data {
-   public:
-    AITextSessionSet();
-    AITextSessionSet(const AITextSessionSet&) = delete;
-    AITextSessionSet& operator=(const AITextSessionSet&) = delete;
-    ~AITextSessionSet() override;
-
-    // Add an AITextSession into the set.
-    void AddSession(std::unique_ptr<AITextSession> session);
-    void RemoveSession(AITextSession* session);
-
-   private:
-    FRIEND_TEST_ALL_PREFIXES(AIManagerKeyedServiceTest, AITextSessionSet);
-
-    base::flat_set<std::unique_ptr<AITextSession>, base::UniquePtrComparator>
-        sessions_;
-  };
 
   // `blink::mojom::AIManager` implementation.
   void CanCreateTextSession(CanCreateTextSessionCallback callback) override;
@@ -94,14 +57,9 @@ class AIManagerKeyedService : public KeyedService,
   void CanOptimizationGuideKeyedServiceCreateGenericSession(
       CanCreateTextSessionCallback callback);
 
-  AITextSessionSet* GetSessionsFromContext(base::SupportsUserData* context);
-  void AddSession(std::unique_ptr<AITextSession> session,
-                  ReceiverContext context);
-
-  // Creates an `AITextSession`, either as a new session, or as a clone of
-  // an existing session with its context copied.
+  // Creates an `AITextSession`, either as a new session, or as a clone of an
+  // existing session with its context copied.
   std::unique_ptr<AITextSession> CreateTextSessionInternal(
-      mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
       const blink::mojom::AITextSessionSamplingParamsPtr& sampling_params,
       const std::optional<const AITextSession::Context>& context =
           std::nullopt);
@@ -109,7 +67,7 @@ class AIManagerKeyedService : public KeyedService,
   // A `KeyedService` should never outlive the `BrowserContext`.
   raw_ptr<content::BrowserContext> browser_context_;
 
-  mojo::ReceiverSet<blink::mojom::AIManager, ReceiverContext> receivers_;
+  mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
 
   base::WeakPtrFactory<AIManagerKeyedService> weak_factory_{this};
 };

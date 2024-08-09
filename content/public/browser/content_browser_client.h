@@ -19,7 +19,6 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "base/values.h"
@@ -2972,7 +2971,6 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   virtual void BindAIManager(
       BrowserContext* browser_context,
-      std::variant<RenderFrameHost*, base::SupportsUserData*> host,
       mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
 #if !BUILDFLAG(IS_ANDROID)
