@@ -19,6 +19,7 @@ static_library("throttle") {
   deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/ash/concierge_helper",
     "//chrome/browser/profiles:profile",
     "//chromeos/ui/base",
     "//content/public/browser",

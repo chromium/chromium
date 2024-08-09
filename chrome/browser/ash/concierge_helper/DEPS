@@ -1,0 +1,8 @@
+include_rules = [
+  "-chrome",
+
+  "+chrome/browser/ash/concierge_helper",
+
+  "+chrome/browser/profiles",
+  "+chrome/test/base",
+]
