@@ -7933,3 +7933,6 @@ crbug.com/357976373 [ Mac ] fast/forms/color-scheme/checkbox/checkbox-appearance
 
 # Gardener 2024-08-08
 crbug.com/358343067 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-cuechange.html [ Failure Pass ]
+
+# Gardener 2024-08-09
+crbug.com/358463699 [ Linux ] http/tests/devtools/elements/styles-2/get-set-stylesheet-text.js [ Failure Pass ]
