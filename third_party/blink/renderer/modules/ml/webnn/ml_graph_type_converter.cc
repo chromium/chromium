@@ -1064,8 +1064,9 @@ base::expected<OperationPtr, String> CreateLstmCellOperation(
 
   const Vector<V8MLRecurrentNetworkActivation>& ml_activations =
       options->activations();
-  Vector<webnn::mojom::blink::RecurrentNetworkActivation> activations(
-      ml_activations.size());
+  CHECK_EQ(ml_activations.size(), 3u);
+  Vector<webnn::mojom::blink::RecurrentNetworkActivation> activations;
+  activations.reserve(ml_activations.size());
   for (const auto& activation : ml_activations) {
     activations.push_back(
         mojo::BlinkRecurrentNetworkActivationToMojo(activation));
