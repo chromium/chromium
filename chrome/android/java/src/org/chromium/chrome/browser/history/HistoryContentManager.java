@@ -631,6 +631,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                             mAppInfoList);
         }
         mAppFilterSheet.openSheet(mCurrentApp);
+        mUmaRecorder.recordAppFilterSheetOpened();
     }
 
     /** Callback from app filter sheet, with the newly chosen app to filter. */

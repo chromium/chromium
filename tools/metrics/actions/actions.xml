@@ -3332,6 +3332,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.HistoryPage.OpenAppFilterSheet">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <description>
+    User opened the history app filter sheet. Reported when user taps the app
+    filter chip UI to bring up the sheet.
+  </description>
+</action>
+
 <action name="Android.HistoryPage.OpenItem">
   <owner>twellington@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
