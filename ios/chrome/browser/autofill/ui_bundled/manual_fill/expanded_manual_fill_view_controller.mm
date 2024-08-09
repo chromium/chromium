@@ -190,10 +190,9 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
                      multiplier:kViewHeightMultiplier],
   ]];
 
-  UIAccessibilityPostNotification(
-      UIAccessibilityAnnouncementNotification,
-      l10n_util::GetNSString(
-          IDS_IOS_EXPANDED_MANUAL_FILL_VIEW_ACCESSIBILITY_ANNOUNCEMENT));
+  // Bring focus to the expanded view by focusing on the Chrome logo.
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  _chromeLogo);
 }
 
 - (void)viewDidLayoutSubviews {
@@ -295,6 +294,10 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   UIImageView* chromeLogo = [[UIImageView alloc] initWithImage:image];
   chromeLogo.translatesAutoresizingMaskIntoConstraints = NO;
   chromeLogo.contentMode = UIViewContentModeCenter;
+  chromeLogo.isAccessibilityElement = YES;
+  chromeLogo.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_EXPANDED_MANUAL_FILL_VIEW_ACCESSIBILITY_ANNOUNCEMENT);
+  chromeLogo.accessibilityTraits = UIAccessibilityTraitNone;
   chromeLogo.accessibilityIdentifier =
       manual_fill::kExpandedManualFillChromeLogoID;
 
