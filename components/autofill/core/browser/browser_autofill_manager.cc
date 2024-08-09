@@ -271,6 +271,7 @@ bool IsSingleFieldFormFillerFillingProduct(FillingProduct filling_product) {
     case FillingProduct::kStandaloneCvc:
       return true;
     case FillingProduct::kPlusAddresses:
+    case FillingProduct::kPredictionImprovements:
     case FillingProduct::kCompose:
     case FillingProduct::kPassword:
     case FillingProduct::kCreditCard:
@@ -471,6 +472,7 @@ bool IsTriggerSourceOnlyRelevantForCompose(
     case AutofillSuggestionTriggerSource::
         kShowPromptAfterDialogClosedNonManualFallback:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
+    case AutofillSuggestionTriggerSource::kPredictionImprovements:
       return false;
   }
 }

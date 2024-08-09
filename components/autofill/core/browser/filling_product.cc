@@ -33,6 +33,8 @@ std::string FillingProductToString(FillingProduct filling_product) {
       return "PlusAddresses";
     case FillingProduct::kStandaloneCvc:
       return "VirtualCard.StandaloneCvc";
+    case FillingProduct::kPredictionImprovements:
+      return "PredictionImprovements";
   };
   NOTREACHED_NORETURN();
 }

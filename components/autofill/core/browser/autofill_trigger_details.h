@@ -46,7 +46,9 @@ enum class AutofillTriggerSource {
   // fallbacks from the Chrome context menu. Contrary to regular address
   // Autofill, Autofill with this trigger source fills both classified and
   // unclassified form fields.
-  kManualFallback = 9
+  kManualFallback = 9,
+  // Autofill was triggered with prediction improvements.
+  kPredictionImprovements = 10
 };
 
 // Holds the details about a filling operation. The `trigger_source` field

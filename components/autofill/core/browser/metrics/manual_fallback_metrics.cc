@@ -56,6 +56,7 @@ void ManualFallbackEventLogger::ContextMenuEntryShown(
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
+    case FillingProduct::kPredictionImprovements:
     case FillingProduct::kStandaloneCvc:
       NOTREACHED_NORETURN();
   }
@@ -79,6 +80,7 @@ void ManualFallbackEventLogger::ContextMenuEntryAccepted(
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
+    case FillingProduct::kPredictionImprovements:
     case FillingProduct::kStandaloneCvc:
       NOTREACHED_NORETURN();
   }
@@ -139,6 +141,7 @@ void ManualFallbackEventLogger::UpdateSuggestionStateForFillingProduct(
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
+    case FillingProduct::kPredictionImprovements:
     case FillingProduct::kStandaloneCvc:
       NOTREACHED_NORETURN();
   }

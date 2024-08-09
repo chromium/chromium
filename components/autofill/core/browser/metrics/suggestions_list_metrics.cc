@@ -62,6 +62,7 @@ void LogSuggestionsCount(size_t num_suggestions,
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
+    case FillingProduct::kPredictionImprovements:
     case FillingProduct::kStandaloneCvc:
       NOTREACHED_NORETURN();
   }
@@ -95,6 +96,7 @@ void LogSuggestionAcceptedIndex(int index,
     case FillingProduct::kIban:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
+    case FillingProduct::kPredictionImprovements:
     case FillingProduct::kMerchantPromoCode:
       // It is NOTREACHED because all other types should be handled separately.
       NOTREACHED_NORETURN();

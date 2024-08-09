@@ -39,6 +39,7 @@ NSString* const kPaymentManualFillGPayLogoID = @"PaymentManualFillGPayLogoID";
     case autofill::FillingProduct::kNone:
       return manual_fill::ManualFillDataType::kOther;
     case autofill::FillingProduct::kCompose:
+    case autofill::FillingProduct::kPredictionImprovements:
     case autofill::FillingProduct::kMerchantPromoCode:
       // These cases are currently not available on iOS.
       NOTREACHED_NORETURN();

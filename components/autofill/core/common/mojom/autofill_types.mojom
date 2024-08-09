@@ -635,4 +635,6 @@ enum AutofillSuggestionTriggerSource {
   // Password manager renderer received password suggestions from the browser
   // after the field was focused (likely due to autofocus on the page load).
   kPasswordManagerProcessedFocusedField,
+  // Prediction improvements was invoked.
+  kPredictionImprovements,
 };
