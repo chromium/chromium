@@ -18,7 +18,7 @@
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "ui/gfx/text_elider.h"
 
-#if BUILDFLAG(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(USE_CUPS)
 #include <unicode/ulocdata.h>
 
 #include <cmath>
@@ -39,7 +39,7 @@ namespace {
 
 constexpr size_t kMaxDocumentTitleLength = 80;
 
-#if BUILDFLAG(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(USE_CUPS)
 constexpr gfx::Size kIsoA4Microns = gfx::Size(210000, 297000);
 #endif
 
@@ -92,7 +92,7 @@ std::u16string FormatDocumentTitleWithOwner(const std::u16string& owner,
                                                kMaxDocumentTitleLength);
 }
 
-#if BUILDFLAG(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(USE_CUPS)
 gfx::Size GetDefaultPaperSizeFromLocaleMicrons(std::string_view locale) {
   if (locale.empty())
     return kIsoA4Microns;
@@ -123,7 +123,7 @@ bool SizesEqualWithinEpsilon(const gfx::Size& lhs,
   return std::abs(lhs.width() - rhs.width()) <= epsilon &&
          std::abs(lhs.height() - rhs.height()) <= epsilon;
 }
-#endif  // BUILDFLAG(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(USE_CUPS)
 
 #if BUILDFLAG(IS_WIN)
 gfx::Rect GetCenteredPageContentRect(const gfx::Size& paper_size,

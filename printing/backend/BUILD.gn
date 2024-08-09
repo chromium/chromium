@@ -81,6 +81,8 @@ component("backend") {
     sources += [
       "cups_deleters.cc",
       "cups_deleters.h",
+      "cups_helper.cc",
+      "cups_helper.h",
     ]
 
     if (is_linux || is_chromeos) {
@@ -133,8 +135,6 @@ component("backend") {
       # TODO(crbug.com/40122734): Remove the original CUPS backend for macOS
       # when Cloud Print support is terminated. Follow up after Jan 1, 2021.
       sources += [
-        "cups_helper.cc",
-        "cups_helper.h",
         "print_backend_cups.cc",
         "print_backend_cups.h",
       ]
