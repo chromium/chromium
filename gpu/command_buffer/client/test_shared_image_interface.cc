@@ -179,6 +179,8 @@ scoped_refptr<ClientSharedImage>
 TestSharedImageInterface::CreateSharedImage(const SharedImageInfo& si_info,
                                             SurfaceHandle surface_handle,
                                             gfx::BufferUsage buffer_usage) {
+  DoCreateSharedImage(si_info.meta.size, si_info.meta.format, surface_handle,
+                      buffer_usage);
   if (fail_shared_image_creation_with_buffer_usage_) {
     return nullptr;
   }
