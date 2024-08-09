@@ -2582,7 +2582,6 @@ static_library("ui") {
       "//chrome/browser/screen_ai/public:optical_character_recognizer",
       "//chrome/browser/ui/ash",
       "//chrome/browser/ui/ash/accessibility",
-      "//chrome/browser/ui/ash/ambient",
       "//chrome/browser/ui/ash/annotator",
       "//chrome/browser/ui/ash/assistant",
       "//chrome/browser/ui/ash/birch",

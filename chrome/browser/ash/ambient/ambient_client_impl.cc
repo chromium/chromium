@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/ambient/ambient_client_impl.h"
+#include "chrome/browser/ash/ambient/ambient_client_impl.h"
 
 #include <string>
 #include <utility>

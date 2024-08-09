@@ -51,6 +51,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_event_rewriter_delegate_impl.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
+#include "chrome/browser/ash/ambient/ambient_client_impl.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller_impl.h"
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
@@ -974,6 +975,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   kiosk_controller_ =
       std::make_unique<KioskControllerImpl>(user_manager::UserManager::Get());
 
+  ambient_client_ = std::make_unique<AmbientClientImpl>();
+
   if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
     DeviceNameStore::Initialize(g_browser_process->local_state(),
                                 g_browser_process->platform_part()
@@ -1650,6 +1653,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Dependens on Profile, so needs to be destroyed before ProfileManager, which
   // happens in `ChromeBrowserMainPartsLinux::PostMainMessageLoopRun()` below.
   kiosk_controller_.reset();
+  ambient_client_.reset();
 
   // Make sure that there is no pending URLRequests.
   if (pre_profile_init_called_) {

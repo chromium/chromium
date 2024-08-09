@@ -209,7 +209,6 @@ static_library("ash") {
     "//chrome/browser/sync",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/ash/accessibility",
-    "//chrome/browser/ui/ash/ambient",
     "//chrome/browser/ui/ash/annotator",
     "//chrome/browser/ui/ash/boca",
     "//chrome/browser/ui/ash/capture_mode",
@@ -438,7 +437,6 @@ source_set("unit_tests") {
 
     # Gather unit tests from subdirectories.
     "//chrome/browser/ui/ash/accessibility:unit_tests",
-    "//chrome/browser/ui/ash/ambient:unit_tests",
     "//chrome/browser/ui/ash/annotator:unit_tests",
     "//chrome/browser/ui/ash/assistant:unit_tests",
     "//chrome/browser/ui/ash/birch:unit_tests",
@@ -539,7 +537,6 @@ source_set("browser_tests") {
     "//ui/events:test_support",
 
     # Gather browser tests from subdirectories.
-    "//chrome/browser/ui/ash/ambient:browser_tests",
     "//chrome/browser/ui/ash/annotator:browser_tests",
     "//chrome/browser/ui/ash/app_list:browser_tests",
     "//chrome/browser/ui/ash/birch:browser_tests",

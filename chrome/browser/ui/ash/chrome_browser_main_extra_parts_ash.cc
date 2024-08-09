@@ -54,7 +54,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_cleanup_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
-#include "chrome/browser/ui/ash/ambient/ambient_client_impl.h"
 #include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
 #include "chrome/browser/ui/ash/app_access_notifier.h"
 #include "chrome/browser/ui/ash/arc_open_url_delegate_impl.h"
@@ -196,9 +195,6 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   cast_config_controller_media_router_ =
       std::make_unique<CastConfigControllerMediaRouter>();
-
-  // Needed by AmbientController in ash.
-  ambient_client_ = std::make_unique<AmbientClientImpl>();
 
   // This controller MUST be initialized before the UI (AshShellInit) is
   // constructed. The video conferencing views will observe and have their own
@@ -521,8 +517,6 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
 
   mahi_media_app_content_manager_.reset();
   mahi_media_app_events_proxy_.reset();
-
-  ambient_client_.reset();
 
   cast_config_controller_media_router_.reset();
   if (ash::NetworkConnect::IsInitialized()) {

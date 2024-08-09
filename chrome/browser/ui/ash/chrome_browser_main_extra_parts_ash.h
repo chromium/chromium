@@ -46,7 +46,6 @@ class DisplaySettingsHandler;
 }
 
 class AccessibilityControllerClient;
-class AmbientClientImpl;
 class AppAccessNotifier;
 class AppListClientImpl;
 class ArcOpenUrlDelegateImpl;
@@ -184,7 +183,6 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
 
   // Initialized in PostBrowserStart in all configs:
   std::unique_ptr<MobileDataNotifications> mobile_data_notifications_;
-  std::unique_ptr<AmbientClientImpl> ambient_client_;
 
   // Boolean that is set to true after PostBrowserStart() executes.
   bool did_post_browser_start_ = false;
