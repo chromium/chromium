@@ -111,11 +111,11 @@ std::u16string GetTitle(bool has_suggestions, const url::Origin& origin) {
   const std::u16string elided_url =
       url_formatter::FormatOriginForSecurityDisplay(
           origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
-  return l10n_util::GetStringFUTF16(
-      has_suggestions
-          ? IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_TITLE
-          : IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_EMPTY_MESSAGE,
-      elided_url);
+  return has_suggestions
+             ? std::u16string()
+             : l10n_util::GetStringFUTF16(
+                   IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_EMPTY_MESSAGE,
+                   elided_url);
 }
 
 password_manager::PasswordManagerDriver* GetPasswordManagerDriver(

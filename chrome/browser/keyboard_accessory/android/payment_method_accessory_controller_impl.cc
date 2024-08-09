@@ -50,9 +50,10 @@ GURL GetCardArtUrl(const CreditCard& card) {
 }
 
 std::u16string GetTitle(bool has_suggestions) {
-  return l10n_util::GetStringUTF16(
-      has_suggestions ? IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_TITLE
-                      : IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_EMPTY_MESSAGE);
+  return has_suggestions
+             ? std::u16string()
+             : l10n_util::GetStringUTF16(
+                   IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_EMPTY_MESSAGE);
 }
 
 void AddSimpleField(std::u16string data, UserInfo* user_info, bool enabled) {

@@ -403,9 +403,6 @@
 
   <!-- Manual filling (keyboard accessory) strings -->
   <if expr="is_android">
-    <message name="IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_TITLE" desc="Title shown at the top of a sheet where users can select indiviual data pieces (e.g., the cardholder name) related to their stored payment methods (e.g., credit cards) to fill that data piece into the focused form field. Sentence-cased.">
-      Payment methods
-    </message>
     <message name="IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_ADDRESSES_LINK" desc="The text of the link in the address sheet that opens the address management section.">
       Manage payment methods
     </message>

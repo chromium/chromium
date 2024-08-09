@@ -49,10 +49,8 @@ namespace autofill {
 namespace {
 
 AccessorySheetData::Builder PaymentMethodAccessorySheetDataBuilder() {
-  return AccessorySheetData::Builder(
-             AccessoryTabType::CREDIT_CARDS,
-             l10n_util::GetStringUTF16(
-                 IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_TITLE))
+  return AccessorySheetData::Builder(AccessoryTabType::CREDIT_CARDS,
+                                     std::u16string())
       .AppendFooterCommand(
           l10n_util::GetStringUTF16(
               IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_ADDRESSES_LINK),
