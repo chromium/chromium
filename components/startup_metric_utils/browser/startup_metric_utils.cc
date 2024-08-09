@@ -161,10 +161,10 @@ void UmaHistogramWithTraceAndTemperature(
   UmaHistogramWithTemperature(histogram_function, histogram_basename,
                               end_ticks - begin_ticks);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      "startup", histogram_basename, TRACE_ID_WITH_SCOPE(histogram_basename, 0),
+      "startup", histogram_basename, TRACE_ID_LOCAL(histogram_basename),
       begin_ticks, "Temperature", g_startup_temperature);
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "startup", histogram_basename, TRACE_ID_WITH_SCOPE(histogram_basename, 0),
+      "startup", histogram_basename, TRACE_ID_LOCAL(histogram_basename),
       end_ticks);
 }
 
