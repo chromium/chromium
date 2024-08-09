@@ -30,10 +30,14 @@ class LensSearchBubbleController {
   // Shows an instance of the lens search bubble for this browser. This will
   // only be called by the LensOverlayController.
   void Show();
+
   // Closes the search bubble and cleans up the reference that the
   // RealboxOmniboxClient has of web_contents_. This will only be called by the
   // LensOverlayController.
   void Close();
+
+  // Returns whether the search bubble is open.
+  bool IsSearchBubbleVisible();
 
   // Closes the lens overlay. This is called when the user closes the bubble
   // manually through the "X" button.

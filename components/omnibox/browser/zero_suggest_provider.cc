@@ -231,9 +231,8 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::ResultTypeToRun(
     }
   }
 
-  // Lens searchboxes.
-  // TODO(b/335234545): Revisit sending the page URL.
-  if (omnibox::IsLensSearchbox(page_class)) {
+  // Lens multimodal searchboxes.
+  if (omnibox::IsLensMultiModalSearchbox(page_class)) {
     if (focus_type_input_type ==
         std::make_pair(OFT::INTERACTION_FOCUS, OIT::EMPTY)) {
       return ResultType::kRemoteNoURL;
@@ -245,6 +244,14 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::ResultTypeToRun(
   if (omnibox::IsNTPPage(page_class) ||
       !PageURLIsEligibleForSuggestRequest(input.current_url())) {
     return ResultType::kNone;
+  }
+
+  // Lens contextual searchbox.
+  if (omnibox::IsLensContextualSearchbox(page_class)) {
+    if (focus_type_input_type ==
+        std::make_pair(OFT::INTERACTION_FOCUS, OIT::EMPTY)) {
+      return ResultType::kRemoteSendURL;
+    }
   }
 
   // Open Web - does NOT include Search Results Page.

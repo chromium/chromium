@@ -1468,7 +1468,9 @@ void LensOverlayController::OnFindResultAvailable(
 }
 
 const GURL& LensOverlayController::GetPageURL() const {
-  // TODO(b/335234545): Return the page URL when appropriate.
+  if (lens::CanSharePageURLWithLensOverlay(pref_service_)) {
+    return tab_->GetContents()->GetVisibleURL();
+  }
   return GURL::EmptyGURL();
 }
 
@@ -1478,7 +1480,13 @@ SessionID LensOverlayController::GetTabId() const {
 
 metrics::OmniboxEventProto::PageClassification
 LensOverlayController::GetPageClassification() const {
-  // TODO(b/335234545): Return CONTEXTUAL_SEARCHBOX when appropriate.
+  // There are two cases where we are assuming to be in a contextual flow:
+  // 1) We are in the zero state with the CSB showing
+  // 2) A user has made a contextual query and the live page is now showing.
+  if (state_ == State::kLivePageAndResults ||
+      search_bubble_controller_->IsSearchBubbleVisible()) {
+    return metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
+  }
   return selected_region_thumbnail_uri_.empty()
              ? metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX
              : metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;

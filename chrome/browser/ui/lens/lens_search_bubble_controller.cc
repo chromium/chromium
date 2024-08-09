@@ -112,6 +112,11 @@ void LensSearchBubbleController::Close() {
   web_contents_ = nullptr;
 }
 
+bool LensSearchBubbleController::IsSearchBubbleVisible() {
+  return bubble_view_ && bubble_view_->GetWidget() &&
+         bubble_view_->GetWidget()->IsVisible();
+}
+
 void LensSearchBubbleController::CloseLensOverlay() {
   lens_overlay_controller_->CloseUISync(
       lens::LensOverlayDismissalSource::kSearchBubbleCloseButton);

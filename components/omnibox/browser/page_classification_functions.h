@@ -25,6 +25,14 @@ bool IsOtherWebPage(
 bool IsLensSearchbox(
     ::metrics::OmniboxEventProto::PageClassification classification);
 
+// Return true, if supplied page classification is a Lens multimodal searchbox.
+bool IsLensMultiModalSearchbox(
+    ::metrics::OmniboxEventProto::PageClassification classification);
+
+// Return true, if supplied page classification is a Lens contextual searchbox.
+bool IsLensContextualSearchbox(
+    ::metrics::OmniboxEventProto::PageClassification classification);
+
 // Return true, if supplied page classification is a Chrome Custom Tab.
 bool IsCustomTab(
     ::metrics::OmniboxEventProto::PageClassification classification);
