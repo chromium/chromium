@@ -36,6 +36,7 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/shapes/box_shape.h"
 #include "third_party/blink/renderer/core/layout/shapes/ellipse_shape.h"
 #include "third_party/blink/renderer/core/layout/shapes/polygon_shape.h"
@@ -63,48 +64,16 @@ static std::unique_ptr<Shape> CreateInsetShape(const FloatRoundedRect& bounds) {
   return std::make_unique<BoxShape>(bounds);
 }
 
-static inline gfx::RectF PhysicalRectToLogical(const gfx::RectF& rect,
-                                               float logical_box_height,
-                                               WritingMode writing_mode) {
-  if (IsHorizontalWritingMode(writing_mode))
-    return rect;
-  if (IsFlippedBlocksWritingMode(writing_mode)) {
-    return gfx::RectF(rect.y(), logical_box_height - rect.right(),
-                      rect.height(), rect.width());
-  }
-  return gfx::TransposeRect(rect);
-}
-
-static inline gfx::PointF PhysicalPointToLogical(const gfx::PointF& point,
-                                                 float logical_box_height,
-                                                 WritingMode writing_mode) {
-  if (IsHorizontalWritingMode(writing_mode))
-    return point;
-  if (IsFlippedBlocksWritingMode(writing_mode))
-    return gfx::PointF(point.y(), logical_box_height - point.x());
-  return gfx::TransposePoint(point);
-}
-
-static inline gfx::SizeF PhysicalSizeToLogical(const gfx::SizeF& size,
-                                               WritingMode writing_mode) {
-  if (IsHorizontalWritingMode(writing_mode))
-    return size;
-  return gfx::TransposeSize(size);
-}
-
 std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
                                           const LogicalSize& logical_box_size,
                                           WritingMode writing_mode,
                                           float margin) {
   DCHECK(basic_shape);
 
-  bool horizontal_writing_mode = IsHorizontalWritingMode(writing_mode);
-  float box_width = horizontal_writing_mode
-                        ? logical_box_size.inline_size.ToFloat()
-                        : logical_box_size.block_size.ToFloat();
-  float box_height = horizontal_writing_mode
-                         ? logical_box_size.block_size.ToFloat()
-                         : logical_box_size.inline_size.ToFloat();
+  WritingModeConverter converter({writing_mode, TextDirection::kLtr},
+                                 logical_box_size);
+  float box_width = converter.OuterSize().width.ToFloat();
+  float box_height = converter.OuterSize().height.ToFloat();
   std::unique_ptr<Shape> shape;
 
   switch (basic_shape->GetType()) {
@@ -115,8 +84,7 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
                                    gfx::SizeF(box_width, box_height));
       float radius = circle->FloatValueForRadiusInBox(
           center, gfx::SizeF(box_width, box_height));
-      gfx::PointF logical_center = PhysicalPointToLogical(
-          center, logical_box_size.block_size.ToFloat(), writing_mode);
+      gfx::PointF logical_center = converter.ToLogical(center);
 
       shape = std::make_unique<EllipseShape>(logical_center, radius, radius);
       break;
@@ -131,8 +99,7 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
                                                          center.x(), box_width);
       float radius_y = ellipse->FloatValueForRadiusInBox(
           ellipse->RadiusY(), center.y(), box_height);
-      gfx::PointF logical_center = PhysicalPointToLogical(
-          center, logical_box_size.block_size.ToFloat(), writing_mode);
+      gfx::PointF logical_center = converter.ToLogical(center);
 
       shape =
           std::make_unique<EllipseShape>(logical_center, radius_x, radius_y);
@@ -148,8 +115,7 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
       for (wtf_size_t i = 0; i < values_size; i += 2) {
         gfx::PointF vertex(FloatValueForLength(values.at(i), box_width),
                            FloatValueForLength(values.at(i + 1), box_height));
-        vertices[i / 2] = PhysicalPointToLogical(
-            vertex, logical_box_size.block_size.ToFloat(), writing_mode);
+        vertices[i / 2] = converter.ToLogical(vertex);
       }
       shape = std::make_unique<PolygonShape>(std::move(vertices),
                                              polygon->GetWindRule());
@@ -164,18 +130,17 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
       float bottom = FloatValueForLength(inset.Bottom(), box_height);
       gfx::RectF rect(left, top, std::max<float>(box_width - left - right, 0),
                       std::max<float>(box_height - top - bottom, 0));
-      gfx::RectF logical_rect = PhysicalRectToLogical(
-          rect, logical_box_size.block_size.ToFloat(), writing_mode);
+      gfx::RectF logical_rect = converter.ToLogical(rect);
 
       gfx::SizeF box_size(box_width, box_height);
-      gfx::SizeF top_left_radius = PhysicalSizeToLogical(
-          SizeForLengthSize(inset.TopLeftRadius(), box_size), writing_mode);
-      gfx::SizeF top_right_radius = PhysicalSizeToLogical(
-          SizeForLengthSize(inset.TopRightRadius(), box_size), writing_mode);
-      gfx::SizeF bottom_left_radius = PhysicalSizeToLogical(
-          SizeForLengthSize(inset.BottomLeftRadius(), box_size), writing_mode);
-      gfx::SizeF bottom_right_radius = PhysicalSizeToLogical(
-          SizeForLengthSize(inset.BottomRightRadius(), box_size), writing_mode);
+      gfx::SizeF top_left_radius = converter.ToLogical(
+          SizeForLengthSize(inset.TopLeftRadius(), box_size));
+      gfx::SizeF top_right_radius = converter.ToLogical(
+          SizeForLengthSize(inset.TopRightRadius(), box_size));
+      gfx::SizeF bottom_left_radius = converter.ToLogical(
+          SizeForLengthSize(inset.BottomLeftRadius(), box_size));
+      gfx::SizeF bottom_right_radius = converter.ToLogical(
+          SizeForLengthSize(inset.BottomRightRadius(), box_size));
       FloatRoundedRect::Radii corner_radii(top_left_radius, top_right_radius,
                                            bottom_left_radius,
                                            bottom_right_radius);
