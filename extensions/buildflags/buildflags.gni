@@ -29,3 +29,11 @@ declare_args() {
   # enable_android_desktop_extensions.
   enable_desktop_android_extensions = is_desktop_android
 }
+
+# Note: GN forbids relying on args from the same declare_args() block, so we
+# need this separate from the block above.
+declare_args() {
+  # A separate control for whether GuestView (and corresponding elements
+  # such as WebView, ExtensionOptionsView, etc) are enabled.
+  enable_guest_view = enable_extensions
+}

@@ -10,8 +10,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #endif
 
@@ -124,8 +123,7 @@ ExtensionNavigationUIData::ExtensionNavigationUIData(
                   frame_type,
                   document_lifecycle),
       parent_routing_id_(parent_routing_id) {
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   WebViewGuest* web_view = WebViewGuest::FromWebContents(web_contents);
   if (web_view) {
     is_web_view_ = true;

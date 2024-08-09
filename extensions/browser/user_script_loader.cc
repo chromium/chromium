@@ -34,8 +34,7 @@
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif
 
@@ -87,8 +86,7 @@ bool GetDeclarationValue(std::string_view line,
   return true;
 }
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 bool CanExecuteScriptEverywhere(BrowserContext* browser_context,
                                 const mojom::HostID& host_id) {
   if (host_id.type == mojom::HostID::HostType::kWebUi)
@@ -505,8 +503,7 @@ UserScriptLoader::SendUpdateResult UserScriptLoader::SendUpdate(
     return SendUpdateResult::kNoActionTaken;
   }
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   // If the process only hosts guest frames, then those guest frames share the
   // same embedder/owner. In this case, only scripts from allowlisted hosts or
   // from the guest frames' owner should be injected.

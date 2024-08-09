@@ -47,8 +47,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "url/origin.h"
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif
@@ -175,8 +174,7 @@ void RendererStartupHelper::InitializeProcess(
   renderer->SetScriptingAllowlist(
       ExtensionsClient::Get()->GetScriptingAllowlist());
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   // If the new render process is a WebView guest process, propagate the WebView
   // partition ID to it.
   if (WebViewRendererState::GetInstance()->IsGuest(process->GetID())) {

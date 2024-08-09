@@ -34,8 +34,7 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "components/guest_view/browser/guest_view_base.h"
 #include "extensions/browser/guest_view/web_view/web_view_content_script_manager.h"
 #endif
@@ -212,8 +211,7 @@ GURL GetEffectiveDocumentURL(
 // Returns whether the extension's scripts can run on `frame`.
 bool CanExtensionScriptsAffectFrame(content::RenderFrameHost& frame,
                                     const Extension& extension) {
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   // Most extension's scripts won't run on webviews. The only ones that may are
   // those from extensions that can execute script everywhere.
   auto* guest = guest_view::GuestViewBase::FromRenderFrameHost(&frame);
@@ -305,8 +303,7 @@ bool DoScriptsMatch(const Extension& extension,
 // the `frame` / `url`.
 bool DoWebViewScripstMatch(const Extension& extension,
                            content::RenderFrameHost& frame) {
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   content::RenderProcessHost& process = *frame.GetProcess();
   TRACE_EVENT("extensions", "ScriptInjectionTracker/DoWebViewScripstMatch",
               ChromeTrackEvent::kRenderProcessHost, process,
@@ -908,8 +905,7 @@ base::debug::CrashKeyString* GetLifecycleStateCrashKey() {
   return crash_key;
 }
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 base::debug::CrashKeyString* GetIsGuestCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
       "is_guest", base::debug::CrashKeySize::Size32);
@@ -974,8 +970,7 @@ ScopedScriptInjectionTrackerFailureCrashKeys::
       GetLifecycleStateCrashKey(),
       base::NumberToString(static_cast<int>(frame.GetLifecycleState())));
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   auto* guest = guest_view::GuestViewBase::FromRenderFrameHost(&frame);
   is_guest_crash_key_.emplace(GetIsGuestCrashKey(),
                               BoolToCrashKeyValue(!!guest));

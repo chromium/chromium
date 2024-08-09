@@ -46,8 +46,7 @@ namespace util {
 // chrome/browser/extensions/extension_util.h/cc that are only dependent on
 // extensions/ here.
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 // Returns a HostID type based on the given GuestViewBase.
 mojom::HostID::HostType HostIdTypeFromGuestView(
     const guest_view::GuestViewBase& guest);

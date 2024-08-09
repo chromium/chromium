@@ -27,8 +27,7 @@
 #include "extensions/common/extension_api.h"
 #include "extensions/common/permissions/permissions_data.h"
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #endif
@@ -43,8 +42,7 @@ namespace extensions {
 
 namespace {
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 constexpr char kDeclarativeEventPrefix[] = "declarative";
 #endif
 
@@ -166,8 +164,7 @@ ExtensionFunction::ResponseAction RulesFunction::Run() {
   // If we are not operating on a particular <webview>, then the key is 0.
   int rules_registry_id = RulesRegistryService::kDefaultRulesRegistryID;
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   bool from_web_view = web_view_instance_id != 0;
   if (from_web_view) {
     // Sample event names:

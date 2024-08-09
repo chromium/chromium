@@ -130,8 +130,7 @@ class ExtensionsAPIClient {
   virtual void OpenFileUrl(const GURL& file_url,
                            content::BrowserContext* browser_context);
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   // Creates the AppViewGuestDelegate.
   virtual AppViewGuestDelegate* CreateAppViewGuestDelegate() const;
 

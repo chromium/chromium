@@ -107,9 +107,7 @@ mojom("mojom") {
     "//url/mojom:url_mojom_gurl",
   ]
 
-  # TODO(https://crbug.com/356671305): Add a separate GN arg for enabling
-  # guest view.
-  if (enable_extensions) {
+  if (enable_guest_view) {
     sources += [ "mojom/guest_view.mojom" ]
   }
 

@@ -594,51 +594,16 @@ source_set("browser_sources") {
     "//third_party/re2",
   ]
 
-  # TODO(https://crbug.com/356905053): Break this into sections:
-  # * Sources that should be included with desktop_android (but aren't yet)
-  # * Sources that are required for guest_view
-  # * Sources that are required for platform_apps
-  # And isolate them into three different blocks.
-  if (enable_extensions) {
+  # TODO(crbug.com/41323543): Ideally web_view should be a separate target on
+  # which the extension system depends.
+  if (enable_guest_view) {
     sources += [
-      "api/device_permissions_manager.cc",
-      "api/device_permissions_manager.h",
-      "api/device_permissions_prompt.cc",
-      "api/device_permissions_prompt.h",
       "api/guest_view/app_view/app_view_guest_internal_api.cc",
       "api/guest_view/app_view/app_view_guest_internal_api.h",
       "api/guest_view/guest_view_internal_api.cc",
       "api/guest_view/guest_view_internal_api.h",
       "api/guest_view/web_view/web_view_internal_api.cc",
       "api/guest_view/web_view/web_view_internal_api.h",
-      "api/hid/hid_api.cc",
-      "api/hid/hid_api.h",
-      "api/hid/hid_connection_resource.cc",
-      "api/hid/hid_connection_resource.h",
-      "api/hid/hid_device_manager.cc",
-      "api/hid/hid_device_manager.h",
-
-      # TODO(https://crbug.com/41407868): Platform Apps code should not be
-      # included in //extensions code.
-      "app_window/app_delegate.h",
-      "app_window/app_web_contents_helper.cc",
-      "app_window/app_web_contents_helper.h",
-      "app_window/app_window.cc",
-      "app_window/app_window.h",
-      "app_window/app_window_client.cc",
-      "app_window/app_window_client.h",
-      "app_window/app_window_contents.cc",
-      "app_window/app_window_contents.h",
-      "app_window/app_window_geometry_cache.cc",
-      "app_window/app_window_geometry_cache.h",
-      "app_window/app_window_registry.cc",
-      "app_window/app_window_registry.h",
-      "app_window/native_app_window.h",
-      "app_window/size_constraints.cc",
-      "app_window/size_constraints.h",
-
-      # TODO(crbug.com/41323543): Ideally web_view should be a separate target
-      # on which the extension system depends.
       "guest_view/app_view/app_view_constants.cc",
       "guest_view/app_view/app_view_constants.h",
       "guest_view/app_view/app_view_guest.cc",
@@ -693,8 +658,49 @@ source_set("browser_sources") {
 
     deps += [
       "//components/guest_view/browser",
-      "//components/web_modal",
       "//extensions/browser/guest_view/web_view/web_ui",
+    ]
+  }
+
+  # TODO(https://crbug.com/356905053): Break this into sections:
+  # * Sources that should be included with desktop_android (but aren't yet)
+  # * Sources that are required for platform_apps
+  # And isolate them into two different blocks.
+  if (enable_extensions) {
+    sources += [
+      "api/device_permissions_manager.cc",
+      "api/device_permissions_manager.h",
+      "api/device_permissions_prompt.cc",
+      "api/device_permissions_prompt.h",
+      "api/hid/hid_api.cc",
+      "api/hid/hid_api.h",
+      "api/hid/hid_connection_resource.cc",
+      "api/hid/hid_connection_resource.h",
+      "api/hid/hid_device_manager.cc",
+      "api/hid/hid_device_manager.h",
+
+      # TODO(https://crbug.com/41407868): Platform Apps code should not be
+      # included in //extensions code.
+      "app_window/app_delegate.h",
+      "app_window/app_web_contents_helper.cc",
+      "app_window/app_web_contents_helper.h",
+      "app_window/app_window.cc",
+      "app_window/app_window.h",
+      "app_window/app_window_client.cc",
+      "app_window/app_window_client.h",
+      "app_window/app_window_contents.cc",
+      "app_window/app_window_contents.h",
+      "app_window/app_window_geometry_cache.cc",
+      "app_window/app_window_geometry_cache.h",
+      "app_window/app_window_registry.cc",
+      "app_window/app_window_registry.h",
+      "app_window/native_app_window.h",
+      "app_window/size_constraints.cc",
+      "app_window/size_constraints.h",
+    ]
+
+    deps += [
+      "//components/web_modal",
       "//services/device/public/cpp/hid",
     ]
   }

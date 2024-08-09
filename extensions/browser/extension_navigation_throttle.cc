@@ -34,17 +34,17 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "ui/base/page_transition_types.h"
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`
-// for guest-view related includes.
-// TODO(https://crbug.com/41407868): Update this to `ENABLE_PLATFORM_APPS`
-// for app-window related includes.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "components/guest_view/browser/guest_view_base.h"
-#include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/guest_view/app_view/app_view_guest.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_embedder.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif
+
+// TODO(https://crbug.com/41407868): Update this to `ENABLE_PLATFORM_APPS`.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
 #endif
 
 namespace extensions {
@@ -78,8 +78,7 @@ bool ShouldBlockNavigationToPlatformAppResource(
   }
 #endif
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   // Navigation within a guest web contents.
   if (view_type == mojom::ViewType::kExtensionGuest) {
     // Navigating within a PDF viewer extension (see crbug.com/1252154). This
@@ -156,8 +155,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     }
   }
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   // Some checks below will need to know whether this navigation is in a
   // <webview> guest.
   guest_view::GuestViewBase* guest =
@@ -180,8 +178,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     target_extension =
         registry->enabled_extensions().GetByID(target_origin.host());
   } else {
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
     // If this navigation is in a guest, check if the URL maps to the Chrome
     // Web Store hosted app. If so, block the navigation to avoid a renderer
     // kill later, see https://crbug.com/1197674.
@@ -242,8 +239,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     }
   }
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   if (url_has_extension_scheme && guest) {
     // Check whether the guest is allowed to load the extension URL. This is
     // usually allowed only for the guest's owner extension resources, and only
@@ -382,8 +378,7 @@ ExtensionNavigationThrottle::WillProcessResponse() {
     return PROCEED;
   }
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   auto* mime_handler_view_embedder =
       MimeHandlerViewEmbedder::Get(navigation_handle()->GetFrameTreeNodeId());
   if (!mime_handler_view_embedder)

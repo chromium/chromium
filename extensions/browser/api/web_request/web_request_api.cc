@@ -68,8 +68,7 @@
 #include "services/network/public/mojom/web_transport.mojom.h"
 #include "url/gurl.h"
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #endif
 
@@ -394,8 +393,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
   if (!MayHaveProxies()) {
     bool use_proxy = false;
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
     // There are a few internal WebUIs that use WebView tag that are allowlisted
     // for webRequest.
     // TODO(crbug.com/40288053): Remove the scheme check once we're sure
@@ -490,8 +488,7 @@ bool WebRequestAPI::MaybeProxyAuthRequest(
     WebViewGuest* web_view_guest) {
   if (!MayHaveProxies()) {
     bool needed_for_webview = false;
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
     needed_for_webview =
         web_view_guest &&
         IsAvailableToWebViewEmbedderFrame(web_view_guest->GetGuestMainFrame());
@@ -601,8 +598,7 @@ bool WebRequestAPI::MayHaveWebsocketProxiesForExtensionTelemetry() const {
 
 bool WebRequestAPI::IsAvailableToWebViewEmbedderFrame(
     content::RenderFrameHost* render_frame_host) const {
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   if (!render_frame_host || !WebViewGuest::IsGuest(render_frame_host)) {
     return false;
   }

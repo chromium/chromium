@@ -22,8 +22,7 @@
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "url/gurl.h"
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif
 
@@ -58,8 +57,7 @@ bool AllowCrossRendererResourceLoad(
     std::string partition_id;
     const Extension* owner_extension = nullptr;
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
     int owner_process_id;
     std::string owner_extension_id;
     WebViewRendererState::GetInstance()->GetOwnerInfo(

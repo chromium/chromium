@@ -108,8 +108,7 @@
 #include "url/origin.h"
 #include "url/url_util.h"
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #endif
 
@@ -1025,8 +1024,7 @@ CreateExtensionURLLoaderFactory(int render_process_id, int render_frame_id) {
   content::BrowserContext* browser_context = process_host->GetBrowserContext();
   bool is_web_view_request = false;
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
   is_web_view_request =

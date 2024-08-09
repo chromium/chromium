@@ -33,8 +33,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "components/guest_view/browser/guest_view_base.h"
 #endif
 
@@ -64,8 +63,7 @@ bool IsSigninProfileTestExtensionOnTestImage(const Extension* extension) {
 
 }  // namespace
 
-// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 mojom::HostID::HostType HostIdTypeFromGuestView(
     const guest_view::GuestViewBase& guest) {
   if (guest.IsOwnedByWebUI()) {
