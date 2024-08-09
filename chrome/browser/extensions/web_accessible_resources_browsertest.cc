@@ -345,7 +345,8 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesNonGuidBrowserTest,
 // TODO(crbug.com/352267920): Create a test for guid based on
 // accessible_link_resource.html;drc=9a60d160b6dfb2351ae0dad28341c3ca80f1ca59.
 
-// Test web requests and content scripts. It's important to set `iframe.src`
+// Verify setting script.src from a content script that relies on web request to
+// redirect to a web accessible resource. It's important to set `script.src`
 // using a script so that `CanRequestResource` has `upstream_url` set to
 // something other than a chrome extension.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest, WebRequest) {
@@ -367,7 +368,8 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest, WebRequest) {
   EXPECT_EQ(net::Error::OK, navigation_observer.last_net_error_code());
 }
 
-// Test web requests and content scripts. It's important to set `iframe.src`
+// Verify setting script.src from a content script that relies on web request to
+// redirect to a web accessible resource. It's important to set `script.src`
 // using a script so that `CanRequestResource` has `upstream_url` set to
 // something other than a chrome extension.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesNonGuidBrowserTest, WebRequest) {

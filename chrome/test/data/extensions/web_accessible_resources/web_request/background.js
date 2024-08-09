@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 chrome.webRequest.onBeforeRequest.addListener(details => {
-  if (details.url !== 'http://example.org/redirect.html') {
-    return;
+  if (details.url.endsWith('redirect.js')) {
+    return {redirectUrl: chrome.runtime.getURL('war.js')};
   }
-
-  return {redirectUrl: chrome.runtime.getURL('war.html')};
 }, {urls: ['<all_urls>']}, ['blocking']);
 
 chrome.test.sendMessage('ready');
