@@ -96,8 +96,7 @@ void InitializeCrashReporting(UpdaterScope updater_scope) {
     return;
   }
   if (AreRawUsageStatsEnabled(updater_scope)) {
-    CrashClient::GetInstance()->database()->GetSettings()->SetUploadsEnabled(
-        true);
+    CrashClient::GetInstance()->SetUploadsEnabled(true);
   }
   VLOG(1) << "Crash reporting initialized.";
 }

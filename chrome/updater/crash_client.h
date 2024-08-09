@@ -32,13 +32,14 @@ class CrashClient {
   static std::string GetClientId();
 
   // Initializes collection and upload of crash reports.
-  bool InitializeCrashReporting(UpdaterScope updater_scope);
+  [[nodiscard]] bool InitializeCrashReporting(UpdaterScope updater_scope);
 
   // Initializes the crash database only. Used in the crash reporter, which
   // cannot connect to itself to upload its own crashes.
-  bool InitializeDatabaseOnly(UpdaterScope updater_scope);
+  [[nodiscard]] bool InitializeDatabaseOnly(UpdaterScope updater_scope);
 
-  crashpad::CrashReportDatabase* database() { return database_.get(); }
+  // Enables uploading of crashes if `enabled` is true.
+  bool SetUploadsEnabled(bool enabled);
 
  private:
   friend class base::NoDestructor<CrashClient>;
