@@ -5,6 +5,8 @@
 #include "chrome/browser/request_header_integrity/request_header_integrity_url_loader_throttle.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -60,7 +62,7 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSite) {
   ASSERT_TRUE(request.headers.IsEmpty());
   bool ignored;
   throttle().WillStartRequest(&request, &ignored);
-  EXPECT_EQ(2u, request.headers.GetHeaderVector().size());
+  EXPECT_EQ(3u, request.headers.GetHeaderVector().size());
 }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -70,6 +72,7 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSiteWithBranding) {
   ASSERT_NE(CHANNEL_NAME_HEADER_NAME, "X-Placeholder-1");
   ASSERT_NE(LASTCHANGE_YEAR_HEADER_NAME, "X-Placeholder-2");
   ASSERT_NE(VALIDATE_HEADER_NAME, "X-Placeholder-3");
+  ASSERT_NE(COPYRIGHT_HEADER_NAME, "X-Placeholder-4");
 
   chrome::ScopedChannelOverride override(
       chrome::ScopedChannelOverride::Channel::kStable);
@@ -79,10 +82,14 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSiteWithBranding) {
   ASSERT_TRUE(request.headers.IsEmpty());
   bool ignored;
   throttle().WillStartRequest(&request, &ignored);
-  EXPECT_EQ(3u, request.headers.GetHeaderVector().size());
+  EXPECT_EQ(4u, request.headers.GetHeaderVector().size());
   EXPECT_TRUE(request.headers.HasHeader(CHANNEL_NAME_HEADER_NAME));
   EXPECT_TRUE(request.headers.HasHeader(LASTCHANGE_YEAR_HEADER_NAME));
   EXPECT_TRUE(request.headers.HasHeader(VALIDATE_HEADER_NAME));
+  const std::optional<std::string> copyright =
+      request.headers.GetHeader(COPYRIGHT_HEADER_NAME);
+  ASSERT_TRUE(copyright.has_value());
+  EXPECT_NE(copyright->find("Copyright"), std::string::npos);
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
         // !BUILDFLAG(IS_ANDROID)

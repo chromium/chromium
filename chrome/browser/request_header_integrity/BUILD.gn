@@ -22,6 +22,10 @@ config("header_name_defines") {
   if (validate_header_name != "") {
     defines += [ "VALIDATE_HEADER_NAME=\"$validate_header_name\"" ]
   }
+
+  if (copyright_header_name != "") {
+    defines += [ "COPYRIGHT_HEADER_NAME=\"$copyright_header_name\"" ]
+  }
 }
 
 source_set("request_header_integrity") {
@@ -79,7 +83,10 @@ process_version("build_derived_values") {
   # Needs to use the actual LASTCHANGE_YEAR instead of LASTCHANGE.dummy based
   # values for header reporting, which should be fine for caching builds as it
   # only changes once a year.
-  sources = [ "//build/util/LASTCHANGE" ]
+  sources = [
+    "//build/util/LASTCHANGE",
+    branding_file_path,
+  ]
 
   output = "$target_gen_dir/build_derived_values.h"
 }

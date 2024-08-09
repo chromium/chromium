@@ -35,6 +35,10 @@
 #define VALIDATE_HEADER_NAME "X-Placeholder-3"
 #endif
 
+#if !defined(COPYRIGHT_HEADER_NAME)
+#define COPYRIGHT_HEADER_NAME "X-Placeholder-4"
+#endif
+
 namespace request_header_integrity {
 
 namespace {
@@ -87,6 +91,7 @@ void RequestHeaderIntegrityURLLoaderThrottle::WillStartRequest(
   }
   request->headers.SetHeader(LASTCHANGE_YEAR_HEADER_NAME, LASTCHANGE_YEAR);
   request->headers.SetHeader(VALIDATE_HEADER_NAME, digest);
+  request->headers.SetHeader(COPYRIGHT_HEADER_NAME, CHROME_COPYRIGHT);
 }
 
 // static
