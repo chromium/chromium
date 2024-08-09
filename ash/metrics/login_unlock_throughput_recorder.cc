@@ -171,8 +171,7 @@ void WindowRestoreTracker::OnPresentedForTesting(int window_id) {
 void WindowRestoreTracker::OnCompositorFramePresented(
     int window_id,
     const viz::FrameTimingDetails& details) {
-  // TODO(b/353644000): Use details.presentation_feedback.timestamp.
-  OnPresented(window_id, base::TimeTicks::Now());
+  OnPresented(window_id, details.presentation_feedback.timestamp);
 }
 
 void WindowRestoreTracker::OnPresented(int window_id,
