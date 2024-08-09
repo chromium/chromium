@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,6 +48,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -70,6 +72,7 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private BackPressManager mBackPressManager;
     @Mock private OnTabSelectingListener mOnTabSelectingListener;
     @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private Tracker mTracker;
     @Captor private ArgumentCaptor<TabArchiveSettings.Observer> mTabArchiveSettingsObserver;
 
     private Activity mActivity;
@@ -96,7 +99,8 @@ public class ArchivedTabsMessageServiceUnitTest {
                         mSnackbarManager,
                         mRegularTabCreator,
                         mBackPressManager,
-                        mModalDialogManager);
+                        mModalDialogManager,
+                        mTracker);
         mArchivedTabsMessageService.setArchivedTabsDialogCoordiantorForTesting(
                 mArchivedTabsDialogCoordinator);
         mArchivedTabsMessageService.addObserver(mMessageObserver);
@@ -165,6 +169,7 @@ public class ArchivedTabsMessageServiceUnitTest {
                 mArchivedTabsMessageService.getCustomCardModelForTesting();
         customCardPropertyModel.get(CLICK_HANDLER).run();
         verify(mArchivedTabsDialogCoordinator).show(mOnTabSelectingListener);
+        verify(mTracker).notifyEvent("android_tab_declutter_button_clicked");
     }
 
     @Test
@@ -191,5 +196,26 @@ public class ArchivedTabsMessageServiceUnitTest {
         mArchivedTabsMessageService.destroy();
         verify(mTabArchiveSettings).removeObserver(mTabArchiveSettingsObserver.getValue());
         verify(mArchivedTabsDialogCoordinator).destroy();
+    }
+
+    @Test
+    public void testIphShownThisSession() {
+        TabArchiveSettings.setIphShownThisSession(true);
+
+        PropertyModel customCardPropertyModel =
+                mArchivedTabsMessageService.getCustomCardModelForTesting();
+
+        doReturn(12).when(mArchivedTabModel).getCount();
+        mTabCountSupplier.set(12);
+        assertEquals(12, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
+        assertEquals(10, customCardPropertyModel.get(ARCHIVE_TIME_DELTA_DAYS));
+
+        doReturn(8).when(mArchivedTabModel).getCount();
+        verify(mMessageObserver, times(1))
+                .messageReady(eq(MessageType.ARCHIVED_TABS_MESSAGE), any());
+        mTabCountSupplier.set(8);
+
+        // The bit should be reset.
+        assertFalse(TabArchiveSettings.getIphShownThisSession());
     }
 }

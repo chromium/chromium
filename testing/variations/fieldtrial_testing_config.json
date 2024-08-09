@@ -622,8 +622,14 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "android_tab_declutter_archive_enabled": "true",
+                        "android_tab_declutter_archive_time_delta_hours": "168",
+                        "android_tab_declutter_auto_delete_enabled": "false"
+                    },
                     "enable_features": [
-                        "AndroidTabDeclutter"
+                        "AndroidTabDeclutter",
+                        "IPH_AndroidTabDeclutter"
                     ]
                 }
             ]

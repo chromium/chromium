@@ -63,6 +63,7 @@ public class ToggleTabStackButtonCoordinatorTest {
 
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutSateProviderOneshotSupplier;
     private ObservableSupplier<Integer> mTabCountSupplier;
+    private ObservableSupplierImpl<Integer> mArchivedTabCountSupplier;
 
     private ToggleTabStackButtonCoordinator mCoordinator;
 
@@ -110,7 +111,13 @@ public class ToggleTabStackButtonCoordinatorTest {
                         mPromoShownOneshotSupplier,
                         mLayoutSateProviderOneshotSupplier,
                         new ObservableSupplierImpl<>());
-        coordinator.initializeWithNative(mOnClickListener, mOnLongClickListener, mTabCountSupplier);
+        coordinator.initializeWithNative(
+                mOnClickListener,
+                mOnLongClickListener,
+                mTabCountSupplier,
+                mArchivedTabCountSupplier,
+                () -> {},
+                () -> {});
         return coordinator;
     }
 

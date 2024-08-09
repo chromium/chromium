@@ -106,6 +106,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -1614,7 +1615,8 @@ public class ToolbarManager
             @Nullable StripLayoutHelperManager stripLayoutHelperManager,
             OnClickListener newTabClickHandler,
             OnClickListener bookmarkClickHandler,
-            OnClickListener customTabsBackClickHandler) {
+            OnClickListener customTabsBackClickHandler,
+            @Nullable ObservableSupplier<Integer> archivedTabCountSupplier) {
         TraceEvent.begin("ToolbarManager.initializeWithNative");
         assert !mInitializedWithNative;
         assert mTabModelSelectorSupplier.get() != null;
@@ -1633,7 +1635,10 @@ public class ToolbarManager
             mTabSwitcherButtonCoordinator.initializeWithNative(
                     newTabClickHandler,
                     tabSwitcherLongClickListener,
-                    mTabModelSelectorSupplier.get().getCurrentModelTabCountSupplier());
+                    mTabModelSelectorSupplier.get().getCurrentModelTabCountSupplier(),
+                    archivedTabCountSupplier,
+                    () -> TabArchiveSettings.setIphShownThisSession(true),
+                    () -> TabArchiveSettings.setIphShownThisSession(false));
         }
 
         mToolbar.initializeWithNative(

@@ -980,13 +980,17 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             OnClickListener bookmarkClickHandler =
                     v -> mTabBookmarkerSupplier.get().addOrEditBookmark(getActivityTab());
 
+            Profile profile = mTabModelProfileSupplier.get();
+            ObservableSupplier<Integer> archivedTabCountSupplier =
+                    ArchivedTabModelOrchestrator.getForProfile(profile).getTabCountSupplier();
             getToolbarManager()
                     .initializeWithNative(
                             mLayoutManager,
                             mLayoutManager.getStripLayoutHelperManager(),
                             v -> onTabSwitcherClicked(),
                             bookmarkClickHandler,
-                            null);
+                            /* customTabsBackClickHandler= */ null,
+                            archivedTabCountSupplier);
 
             // TODO(crbug.com/40828084): Fix this assert which is tripping on unrelated
             // tests.

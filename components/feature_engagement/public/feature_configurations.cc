@@ -762,6 +762,26 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
 #if BUILDFLAG(IS_ANDROID)
 
+  if (kIPHAndroidTabDeclutter.name == feature->name) {
+    // Allows an IPH for tab declutter for the tab switcher button:
+    // * Only once per week.
+    // * Up to 3 times per year.
+    // * And only as long as the user has never manually accessed their
+    //   archived tabs.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger = EventConfig("android_tab_declutter_iph_triggered",
+                                  Comparator(EQUAL, 0), 7, 7);
+    config->event_configs.insert(
+        EventConfig("android_tab_declutter_iph_triggered",
+                    Comparator(LESS_THAN, 3), 360, 360));
+    config->used = EventConfig("android_tab_declutter_button_clicked",
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
   if (kIPHTabGroupSyncOnStripFeature.name == feature->name) {
     // A config that allows the TabGroupSync IPH to be shown up to 3 times per
     // year.

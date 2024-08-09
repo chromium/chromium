@@ -13,12 +13,15 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
@@ -52,6 +55,11 @@ public class ToggleTabStackButtonCoordinator {
     private LayoutStateProvider mLayoutStateProvider;
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
     @VisibleForTesting boolean mIphBeingShown;
+    // Non-null when tab declutter is enabled and initWithNative is called.
+    private @Nullable ObservableSupplier<Integer> mArchivedTabCountSupplier;
+    private @Nullable Runnable mArchivedTabsIphShownCallback;
+    private @Nullable Runnable mArchivedTabsIphDismissedCallback;
+    private @Nullable Callback<Integer> mArchivedTabCountObserver = this::maybeShowDeclutterIph;
 
     /**
      * @param context The Android context used for various view operations.
@@ -98,14 +106,27 @@ public class ToggleTabStackButtonCoordinator {
      * @param onClickListener @{@link OnClickListener} for view.
      * @param onLongClickListener @{@link OnLongClickListener} for view.
      * @param tabCountSupplier Supplier for current tab count to show in view.
+     * @param archivedTabCountSupplier Supplies the current archived tab count, used for displaying
+     *     the associated IPH.
+     * @param archivedTabsIphShownCallback Callback for when the archived tabs iph is shown.
      */
     public void initializeWithNative(
             OnClickListener onClickListener,
             OnLongClickListener onLongClickListener,
-            ObservableSupplier<Integer> tabCountSupplier) {
+            ObservableSupplier<Integer> tabCountSupplier,
+            @Nullable ObservableSupplier<Integer> archivedTabCountSupplier,
+            @NonNull Runnable archivedTabsIphShownCallback,
+            @NonNull Runnable archivedTabsIphDismissedCallback) {
         mToggleTabStackButton.setOnClickListener(onClickListener);
         mToggleTabStackButton.setOnLongClickListener(onLongClickListener);
         mToggleTabStackButton.setTabCountSupplier(tabCountSupplier, mIsIncognitoSupplier);
+
+        mArchivedTabCountSupplier = archivedTabCountSupplier;
+        if (mArchivedTabCountSupplier != null) {
+            mArchivedTabCountSupplier.addObserver(mArchivedTabCountObserver);
+            mArchivedTabsIphShownCallback = archivedTabsIphShownCallback;
+            mArchivedTabsIphDismissedCallback = archivedTabsIphDismissedCallback;
+        }
     }
 
     /** Cleans up callbacks and observers. */
@@ -119,6 +140,11 @@ public class ToggleTabStackButtonCoordinator {
             mLayoutStateProvider = null;
             mLayoutStateObserver = null;
         }
+
+        if (mArchivedTabCountSupplier != null) {
+            mArchivedTabCountSupplier.removeObserver(mArchivedTabCountObserver);
+        }
+
         mToggleTabStackButton.destroy();
     }
 
@@ -240,5 +266,25 @@ public class ToggleTabStackButtonCoordinator {
 
     private void handleDismissCallback() {
         mIphBeingShown = false;
+    }
+
+    private void maybeShowDeclutterIph(int tabCount) {
+        if (!ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) return;
+        if (mIsIncognitoSupplier.get()) return;
+        if (tabCount == 0) return;
+
+        HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
+        params.setBoundsRespectPadding(true);
+        mUserEducationHelper.requestShowIPH(
+                new IPHCommandBuilder(
+                                mContext.getResources(),
+                                FeatureConstants.ANDROID_TAB_DECLUTTER_FEATURE,
+                                R.string.iph_android_tab_declutter_text,
+                                R.string.iph_android_tab_declutter_accessibility_text)
+                        .setAnchorView(mToggleTabStackButton)
+                        .setHighlightParams(params)
+                        .setOnShowCallback(mArchivedTabsIphShownCallback)
+                        .setOnDismissCallback(mArchivedTabsIphDismissedCallback)
+                        .build());
     }
 }

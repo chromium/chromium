@@ -20,6 +20,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -292,7 +293,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                             mSnackbarManager,
                             mRegularTabCreator,
                             mBackPressManager,
-                            mModalDialogManager);
+                            mModalDialogManager,
+                            TrackerFactory.getTrackerForProfile(profile));
             addObserver(mArchivedTabsMessageService);
             mMessageCardProviderCoordinator.subscribeMessageService(mArchivedTabsMessageService);
         }

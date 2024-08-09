@@ -27,6 +27,18 @@ public class TabArchiveSettings {
         void onSettingChanged();
     }
 
+    private static boolean sIphShownThisSession;
+
+    /** Sets whether the iph was shown this session. */
+    public static void setIphShownThisSession(boolean iphShownThisSession) {
+        sIphShownThisSession = iphShownThisSession;
+    }
+
+    /** Returns whether the iph was shown this session. */
+    public static boolean getIphShownThisSession() {
+        return sIphShownThisSession;
+    }
+
     @VisibleForTesting static final boolean DIALOG_IPH_DEFAULT = true;
     private static final Set<String> PREF_KEYS_FOR_NOTIFICATIONS =
             Set.of(

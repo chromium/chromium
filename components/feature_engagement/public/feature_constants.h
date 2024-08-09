@@ -90,6 +90,7 @@ BASE_DECLARE_FEATURE(kIPHBackNavigationMenuFeature);
 // should also be declared in:
 // org.chromium.components.feature_engagement.FeatureConstants.
 #if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kIPHAndroidTabDeclutter);
 BASE_DECLARE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature);
 BASE_DECLARE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationShareFeature);
 BASE_DECLARE_FEATURE(

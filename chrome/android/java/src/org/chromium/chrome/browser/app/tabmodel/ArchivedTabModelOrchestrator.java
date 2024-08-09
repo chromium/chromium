@@ -17,6 +17,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
@@ -83,6 +85,9 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final TabWindowManager mTabWindowManager;
+    private final ObservableSupplierImpl<Integer> mTabCountSupplier =
+            new ObservableSupplierImpl<>();
+    private final Callback<Integer> mTabCountSupplierObserver = mTabCountSupplier::set;
 
     private TaskRunner mTaskRunner;
     private WindowAndroid mWindow;
@@ -96,6 +101,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private boolean mDeclutterInitializationCalled;
     private boolean mRescueTabsCalled;
     private CallbackController mCallbackController = new CallbackController();
+    private ObservableSupplier<Integer> mUnderlyingTabCountSupplier;
 
     /**
      * Returns the ArchivedTabModelOrchestrator that corresponds to the given profile. Must be
@@ -171,6 +177,10 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             mTabWindowManager.setArchivedTabModelSelector(null);
         }
 
+        if (mUnderlyingTabCountSupplier != null) {
+            mUnderlyingTabCountSupplier.removeObserver(mTabCountSupplierObserver);
+        }
+
         super.destroy();
     }
 
@@ -182,6 +192,10 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     /** Removes an observer. */
     public void removeObserver(Observer observer) {
         mObservers.removeObserver(observer);
+    }
+
+    public ObservableSupplier<Integer> getTabCountSupplier() {
+        return mTabCountSupplier;
     }
 
     /** Returns whether the archived tab model has been initialized. */
@@ -256,9 +270,14 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         restoreTabs(/* setActiveTab= */ false);
         mInitCalled = true;
 
+        TabModel model = mTabModelSelector.getModel(/* incognito= */ false);
         for (Observer observer : mObservers) {
-            observer.onTabModelCreated(mTabModelSelector.getModel(/* incognito= */ false));
+            observer.onTabModelCreated(model);
         }
+
+        mUnderlyingTabCountSupplier = model.getTabCountSupplier();
+        mTabCountSupplier.set(mUnderlyingTabCountSupplier.get());
+        mUnderlyingTabCountSupplier.addObserver(mTabCountSupplierObserver);
     }
 
     /** Begins the process of decluttering tabs if it hasn't been started already. */
