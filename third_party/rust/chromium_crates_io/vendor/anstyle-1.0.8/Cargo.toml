@@ -13,7 +13,8 @@
 edition = "2021"
 rust-version = "1.65.0"
 name = "anstyle"
-version = "1.0.7"
+version = "1.0.8"
+build = false
 include = [
     "build.rs",
     "src/**/*",
@@ -24,6 +25,10 @@ include = [
     "benches/**/*",
     "examples/**/*",
 ]
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "ANSI text styling"
 homepage = "https://github.com/rust-cli/anstyle"
 readme = "README.md"
@@ -81,6 +86,14 @@ replace = """
 <!-- next-url -->
 [Unreleased]: https://github.com/rust-cli/anstyle/compare/{{tag_name}}...HEAD"""
 search = "<!-- next-url -->"
+
+[lib]
+name = "anstyle"
+path = "src/lib.rs"
+
+[[example]]
+name = "dump-style"
+path = "examples/dump-style.rs"
 
 [dependencies]
 

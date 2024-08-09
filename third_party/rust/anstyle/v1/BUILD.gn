@@ -13,20 +13,20 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.7/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.8/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.7/src/color.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.7/src/effect.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.7/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.7/src/macros.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.7/src/reset.rs",
-    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.7/src/style.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.8/src/color.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.8/src/effect.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.8/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.8/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.8/src/reset.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anstyle-1.0.8/src/style.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "1.0.7"
+  cargo_pkg_version = "1.0.8"
   cargo_pkg_name = "anstyle"
   cargo_pkg_description = "ANSI text styling"
   library_configs -= [ "//build/config/compiler:chromium_code" ]

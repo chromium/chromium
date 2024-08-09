@@ -1,14 +1,14 @@
 . 9 5
 ash/ambient/managed 2 1
 ash/components/arc 1 1
+ash/components/arc/mojom 1 1
 ash/system/bluetooth/hid_preserving_controller 1 1
-ash/system/input_device_settings 14 1
+ash/system/input_device_settings 18 1
 ash/webui/camera_app_ui/resources/js/lib 8 1
 base 1 1
 base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base 1 1
 base/android 1 1
 base/android/java/src/org/chromium/base 1 1
-base/android/java/src/org/chromium/base/compat 1 1
 base/containers 1 1
 base/debug 1 1
 base/files 1 1
@@ -34,6 +34,7 @@ build/toolchain/win/rc 1 1
 build/util/lib/common 1 1
 cc/input 2 2
 chrome/android/java/src/org/chromium/chrome/browser/omaha 2 2
+chrome/android/java/src/org/chromium/chrome/browser/tab 1 1
 chrome/android/junit/src/org/chromium/chrome/browser/payments 1 1
 chrome/browser 2 2
 chrome/browser/android/oom_intervention 1 1
@@ -109,6 +110,7 @@ chrome/test/data/third_party/spaceport 1 1
 chrome/test/data/updater 2 1
 chrome/test/data/variations/http_server 1 1
 chrome/test/data/webui 1 1
+chrome/test/data/webui/chromeos 1 1
 chrome/updater/win 1 1
 codelabs/mojo_examples 1 1
 components 1 1
@@ -218,7 +220,7 @@ ios/chrome/test/earl_grey 1 1
 ios/chrome/test/wpt/tools 1 1
 media/audio/alsa 2 1
 media/audio/android 2 1
-media/audio/mac 12 2
+media/audio/mac 11 1
 media/audio/pulse 1 1
 media/audio/win 4 2
 media/base 3 3
@@ -276,7 +278,7 @@ services/tracing/public/mojom 1 1
 storage/browser/database 1 1
 styleguide 8 2
 styleguide/web 1 1
-testing 1 1
+testing 2 2
 testing/buildbot 1 1
 testing/buildbot/filters 1 1
 testing/libfuzzer 5 3
@@ -508,6 +510,7 @@ third_party/crashpad/crashpad/doc/support 1 1
 third_party/crashpad/crashpad/snapshot 1 1
 third_party/crashpad/crashpad/snapshot/fuchsia 1 1
 third_party/crashpad/crashpad/test/mac 1 1
+third_party/crashpad/crashpad/third_party/cpp-httplib/cpp-httplib 1 1
 third_party/crashpad/crashpad/third_party/fuchsia 1 1
 third_party/crashpad/crashpad/third_party/linux 1 1
 third_party/crashpad/crashpad/third_party/ninja 1 1
@@ -586,6 +589,7 @@ third_party/mediapipe/src/mediapipe/modules/pose_landmark 4 1
 third_party/mediapipe/src/mediapipe/modules/selfie_segmentation 2 1
 third_party/mediapipe/src/mediapipe/tasks/cc/components/calculators 1 1
 third_party/mediapipe/src/mediapipe/tasks/cc/components/processors 2 2
+third_party/mediapipe/src/mediapipe/tasks/cc/genai/inference/proto 1 1
 third_party/mediapipe/src/mediapipe/tasks/cc/metadata/utils 2 2
 third_party/mediapipe/src/mediapipe/tasks/cc/text/custom_ops/sentencepiece 2 1
 third_party/mediapipe/src/mediapipe/util/tflite/operations 8 2
@@ -651,7 +655,7 @@ third_party/pylint/pylint 8 2
 third_party/qcms 1 1
 third_party/rapidhash 5 2
 third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.3/.github/workflows 5 1
-third_party/rust/chromium_crates_io/vendor/anstyle-1.0.7 1 1
+third_party/rust/chromium_crates_io/vendor/anstyle-1.0.8 1 1
 third_party/rust/chromium_crates_io/vendor/anyhow-1.0.86 2 1
 third_party/rust/chromium_crates_io/vendor/anyhow-1.0.86/.github/workflows 3 1
 third_party/rust/chromium_crates_io/vendor/base64-0.13.1 1 1
@@ -817,7 +821,6 @@ tools/memory/partition_allocator/palloc_viewer 1 1
 tools/metrics/actions 1 1
 tools/metrics/histograms 13 2
 tools/metrics/histograms/metadata/gpu 1 1
-tools/metrics/histograms/metadata/others 1 1
 tools/metrics/ukm 1 1
 tools/perf 7 5
 tools/perf/cli_tools/update_wpr 2 1

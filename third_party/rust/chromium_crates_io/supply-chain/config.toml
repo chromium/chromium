@@ -44,7 +44,7 @@ ub-risk-4 = "ub-risk-4"
 [policy."aho-corasick:1.1.3"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."anstyle:1.0.7"]
+[policy."anstyle:1.0.8"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."anyhow:1.0.86"]

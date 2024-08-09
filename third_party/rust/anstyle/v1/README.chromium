@@ -1,9 +1,9 @@
 Name: anstyle
 URL: https://crates.io/crates/anstyle
 Description: ANSI text styling
-Version: 1.0.7
+Version: 1.0.8
 Security Critical: yes
 Shipped: no
 License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/anstyle-1.0.7/LICENSE-APACHE
-Revision: caeb9d83a9931dacdee642d1c73724ec71b7514e
+License File: //third_party/rust/chromium_crates_io/vendor/anstyle-1.0.8/LICENSE-APACHE
+Revision: 6e96e966c1e75ed81194dea225570355161e300a
