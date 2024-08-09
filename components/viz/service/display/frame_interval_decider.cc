@@ -10,6 +10,7 @@
 
 #include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
+#include "base/trace_event/trace_event.h"
 #include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
@@ -37,8 +38,7 @@ void FrameIntervalDecider::ScopedAggregate::OnSurfaceWillBeDrawn(
                              surface->GetFrameIntervalInputs());
 }
 
-FrameIntervalDecider::FrameIntervalDecider(Client& client) : client_(client) {}
-
+FrameIntervalDecider::FrameIntervalDecider() = default;
 FrameIntervalDecider::~FrameIntervalDecider() = default;
 
 void FrameIntervalDecider::UpdateSettings(
@@ -111,9 +111,16 @@ void FrameIntervalDecider::Decide(
   if (frame_time - current_result_frame_time_ >
           settings_.increase_frame_interval_timeout ||
       MayDecreaseFrameInterval(current_result_, match_result)) {
+    TRACE_EVENT_INSTANT(
+        "viz", "FrameIntervalDeciderResult", "result",
+        FrameIntervalMatcher::ResultToString(match_result.value()),
+        "matcher_type",
+        FrameIntervalMatcher::MatcherTypeToString(matcher_type));
     current_result_frame_time_ = frame_time;
     current_result_ = match_result;
-    client_->SetFrameInterval(match_result.value(), matcher_type);
+    if (settings_.result_callback) {
+      settings_.result_callback.Run(match_result.value(), matcher_type);
+    }
   }
 }
 

@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/functional/overloaded.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -50,6 +49,7 @@
 #include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/display_scheduler.h"
 #include "components/viz/service/display/display_utils.h"
+#include "components/viz/service/display/frame_interval_decider.h"
 #include "components/viz/service/display/frame_interval_matchers.h"
 #include "components/viz/service/display/null_renderer.h"
 #include "components/viz/service/display/occlusion_culler.h"
@@ -136,15 +136,6 @@ gfx::PresentationFeedback SanitizePresentationFeedback(
 #endif
 
   return feedback;
-}
-
-bool SupportsSetFrameRate(const OutputSurface* output_surface) {
-#if BUILDFLAG(IS_ANDROID)
-  return output_surface->capabilities().supports_surfaceless &&
-         gfx::SurfaceControl::SupportsSetFrameRate();
-#else
-  return false;
-#endif
 }
 
 void IssueDisplayRenderingStatsEvent() {
@@ -311,14 +302,18 @@ void Display::Initialize(DisplayClient* client,
   if (output_surface_->software_device())
     output_surface_->software_device()->BindToClient(this);
 
-  output_surface_supports_set_frame_rate_ =
-      SupportsSetFrameRate(output_surface_.get());
-  if (!base::FeatureList::IsEnabled(features::kUseFrameIntervalDecider)) {
+  if (base::FeatureList::IsEnabled(features::kUseFrameIntervalDecider)) {
+    frame_interval_decider_ = std::make_unique<FrameIntervalDecider>();
+  } else {
+    bool output_surface_supports_set_frame_rate = false;
+#if BUILDFLAG(IS_ANDROID)
+    output_surface_supports_set_frame_rate =
+        OutputSurfaceSupportsSetFrameRate();
+#endif
     frame_rate_decider_ = std::make_unique<FrameRateDecider>(
         surface_manager_, this, hw_support_for_multiple_refresh_rates,
-        output_surface_supports_set_frame_rate_);
+        output_surface_supports_set_frame_rate);
   }
-  UpdateFrameIntervalDeciderSettings();
 
   InitializeRenderer();
 
@@ -332,49 +327,6 @@ void Display::Initialize(DisplayClient* client,
   // it could miss a callback before setting this.
   if (skia_output_surface_)
     skia_output_surface_->AddContextLostObserver(this);
-}
-
-void Display::UpdateFrameIntervalDeciderSettings() {
-  if (!base::FeatureList::IsEnabled(features::kUseFrameIntervalDecider)) {
-    return;
-  }
-
-  if (!frame_interval_decider_) {
-    frame_interval_decider_ = std::make_unique<FrameIntervalDecider>(*this);
-  }
-
-  // TODO(crbug.com/346732738): This is only implemented for android and
-  // chromeos. Support other platforms / configurations.
-
-  FrameIntervalDecider::Settings settings;
-  std::vector<std::unique_ptr<FrameIntervalMatcher>> matchers;
-  matchers.push_back(std::make_unique<InputBoostMatcher>());
-  matchers.push_back(std::make_unique<VideoConferenceMatcher>());
-#if BUILDFLAG(IS_ANDROID)
-  matchers.push_back(std::make_unique<OnlyVideoMatcher>());
-  matchers.push_back(std::make_unique<OnlyAnimatingImageMatcher>());
-  matchers.push_back(std::make_unique<OnlyScrollBarFadeOutAnimationMatcher>());
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!output_surface_supports_set_frame_rate_) {
-    FrameIntervalDecider::FixedIntervalSettings fixed_interval_settings;
-    if (fixed_supported_intervals_.empty()) {
-      fixed_interval_settings.supported_intervals = {
-          BeginFrameArgs::DefaultInterval()};
-      fixed_interval_settings.default_interval =
-          BeginFrameArgs::DefaultInterval();
-    } else {
-      fixed_interval_settings.supported_intervals = fixed_supported_intervals_;
-      fixed_interval_settings.default_interval =
-          *fixed_supported_intervals_.begin();
-    }
-    settings.fixed_intervals = fixed_interval_settings;
-  }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
-
-  frame_interval_decider_->UpdateSettings(std::move(settings),
-                                          std::move(matchers));
 }
 
 void Display::AddObserver(DisplayObserver* observer) {
@@ -1399,46 +1351,14 @@ void Display::SetNeedsOneBeginFrame() {
 }
 
 void Display::SetPreferredFrameInterval(base::TimeDelta interval) {
-  if (output_surface_supports_set_frame_rate_) {
-    float interval_s = interval.InSecondsF();
-    float frame_rate = interval_s == 0 ? 0 : (1 / interval_s);
-    output_surface_->SetFrameRate(frame_rate);
 #if BUILDFLAG(IS_ANDROID)
-    // On Android we want to return early because the |client_| callback hits
-    // a platform API in the browser process.
+  if (OutputSurfaceSupportsSetFrameRate()) {
+    SetFrameIntervalOnOutputSurface(interval);
     return;
-#endif  // BUILDFLAG(IS_ANDROID)
   }
+#endif
 
   client_->SetPreferredFrameInterval(interval);
-}
-
-void Display::SetFrameInterval(FrameIntervalDecider::Result result,
-                               FrameIntervalMatcherType matcher_type) {
-  TRACE_EVENT_INSTANT("viz", "SetFrameInterval", "result",
-                      FrameIntervalMatcher::ResultToString(result),
-                      "matcher_type",
-                      FrameIntervalMatcher::MatcherTypeToString(matcher_type));
-
-  // TODO(crbug.com/346732738): This is only implemented for android and
-  // chromeos. Support other platforms / configurations.
-
-  base::TimeDelta interval = absl::visit(
-      base::Overloaded(
-          [&](FrameIntervalDecider::FrameIntervalClass frame_interval_class) {
-            // For now, setting 0 implies no preference, and allow the OS to use
-            // its own heuristics to estimate.
-            return base::Milliseconds(0);
-          },
-          [](base::TimeDelta interval) { return interval; }),
-      result);
-
-  if (current_interval_ == interval) {
-    return;
-  }
-  current_interval_ = interval;
-
-  SetPreferredFrameInterval(interval);
 }
 
 base::TimeDelta Display::GetPreferredFrameIntervalForFrameSinkId(
@@ -1452,8 +1372,6 @@ void Display::SetSupportedFrameIntervals(
   if (frame_rate_decider_) {
     frame_rate_decider_->SetSupportedFrameIntervals(intervals);
   }
-  fixed_supported_intervals_ = std::move(intervals);
-  UpdateFrameIntervalDeciderSettings();
 }
 
 void Display::SetHwSupportForMultipleRefreshRates(bool support) {
@@ -1463,6 +1381,18 @@ void Display::SetHwSupportForMultipleRefreshRates(bool support) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+bool Display::OutputSurfaceSupportsSetFrameRate() {
+  return output_surface_ &&
+         output_surface_->capabilities().supports_surfaceless &&
+         gfx::SurfaceControl::SupportsSetFrameRate();
+}
+
+void Display::SetFrameIntervalOnOutputSurface(base::TimeDelta interval) {
+  float interval_s = interval.InSecondsF();
+  float frame_rate = interval_s == 0 ? 0 : (1 / interval_s);
+  output_surface_->SetFrameRate(frame_rate);
+}
+
 base::ScopedClosureRunner Display::GetCacheBackBufferCb() {
   return output_surface_->GetCacheBackBufferCb();
 }
