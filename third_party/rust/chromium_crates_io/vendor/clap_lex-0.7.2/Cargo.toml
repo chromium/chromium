@@ -13,7 +13,8 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap_lex"
-version = "0.7.1"
+version = "0.7.2"
+build = false
 include = [
     "build.rs",
     "src/**/*",
@@ -23,6 +24,10 @@ include = [
     "benches/**/*",
     "examples/**/*",
 ]
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Minimal, flexible command line parser"
 readme = "README.md"
 keywords = [
@@ -79,6 +84,8 @@ replace = "github.com/clap-rs/clap/blob/{{tag_name}}/"
 search = "github.com/clap-rs/clap/blob/[^/]+/"
 
 [lib]
+name = "clap_lex"
+path = "src/lib.rs"
 bench = false
 
 [dev-dependencies.automod]
