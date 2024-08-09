@@ -8,12 +8,11 @@
 #include "chrome/browser/ash/app_mode/consumer_kiosk_test_helper.h"
 
 #include <string>
-#include <tuple>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/check_deref.h"
-#include "base/containers/circular_deque.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
