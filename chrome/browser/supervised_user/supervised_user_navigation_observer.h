@@ -68,19 +68,6 @@ class SupervisedUserNavigationObserver
                                int frame_id,
                                const OnInterstitialResultCallback& callback);
 
-  void UpdateMainFrameFilteringStatus(
-      supervised_user::FilteringBehavior behavior,
-      supervised_user::FilteringBehaviorReason reason);
-
-  supervised_user::FilteringBehavior main_frame_filtering_behavior() const {
-    return main_frame_filtering_behavior_;
-  }
-
-  supervised_user::FilteringBehaviorReason
-  main_frame_filtering_behavior_reason() const {
-    return main_frame_filtering_behavior_reason_;
-  }
-
   // WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -162,12 +149,6 @@ class SupervisedUserNavigationObserver
       supervised_user_interstitials_;
 
   std::set<std::string> requested_hosts_;
-
-  supervised_user::FilteringBehavior main_frame_filtering_behavior_ =
-      supervised_user::FilteringBehavior::kAllow;
-  supervised_user::FilteringBehaviorReason
-      main_frame_filtering_behavior_reason_ =
-          supervised_user::FilteringBehaviorReason::DEFAULT;
 
   std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>
       blocked_navigations_;
