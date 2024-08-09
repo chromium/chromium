@@ -58,7 +58,7 @@ IOSChromeMetricsServicesManagerClient::
 std::unique_ptr<variations::VariationsService>
 IOSChromeMetricsServicesManagerClient::CreateVariationsService(
     variations::SyntheticTrialRegistry* synthetic_trial_registry) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // NOTE: On iOS, disabling background networking is not supported, so pass in
   // a dummy value for the name of the switch that disables background
@@ -75,14 +75,14 @@ IOSChromeMetricsServicesManagerClient::CreateVariationsService(
 std::unique_ptr<metrics::MetricsServiceClient>
 IOSChromeMetricsServicesManagerClient::CreateMetricsServiceClient(
     variations::SyntheticTrialRegistry* synthetic_trial_registry) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IOSChromeMetricsServiceClient::Create(GetMetricsStateManager(),
                                                synthetic_trial_registry);
 }
 
 metrics::MetricsStateManager*
 IOSChromeMetricsServicesManagerClient::GetMetricsStateManager() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!metrics_state_manager_) {
     base::FilePath user_data_dir;
     base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir);

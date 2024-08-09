@@ -35,7 +35,7 @@ UIThreadSearchTermsData::UIThreadSearchTermsData() {
 UIThreadSearchTermsData::~UIThreadSearchTermsData() {}
 
 std::string UIThreadSearchTermsData::GoogleBaseURLValue() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   GURL google_base_url = google_util::CommandLineGoogleBaseURL();
   if (google_base_url.is_valid())
     return google_base_url.spec();
@@ -44,14 +44,14 @@ std::string UIThreadSearchTermsData::GoogleBaseURLValue() const {
 }
 
 std::string UIThreadSearchTermsData::GetApplicationLocale() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetApplicationContext()->GetApplicationLocale();
 }
 
 std::u16string UIThreadSearchTermsData::GetRlzParameterValue(
     bool from_app_list) const {
   DCHECK(!from_app_list);
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::u16string rlz_string;
 #if BUILDFLAG(ENABLE_RLZ)
   // For organic brandcode do not use rlz at all.
@@ -68,12 +68,12 @@ std::u16string UIThreadSearchTermsData::GetRlzParameterValue(
 }
 
 std::string UIThreadSearchTermsData::GetSearchClient() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::string();
 }
 
 std::string UIThreadSearchTermsData::GoogleImageSearchSource() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const std::string channel_name = GetChannelString();
   return base::StrCat({version_info::GetProductName(), " ",
                        version_info::GetVersionNumber(),

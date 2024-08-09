@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 namespace network {
@@ -99,7 +99,7 @@ class TestingApplicationContext : public ApplicationContext {
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
 
  private:
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
   std::string application_locale_;
   std::string application_country_;
   raw_ptr<PrefService> local_state_;

@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 namespace base {
@@ -111,7 +111,7 @@ class ApplicationContextImpl : public ApplicationContext {
   // Create the gcm driver.
   void CreateGCMDriver();
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Used internally for tracking whether the call to StartTearDown() has
   // happened already, to avoid recreating lazily-constructed objects after they

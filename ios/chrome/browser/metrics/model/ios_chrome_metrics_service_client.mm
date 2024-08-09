@@ -137,12 +137,11 @@ IOSChromeMetricsServiceClient::IOSChromeMetricsServiceClient(
     : metrics_state_manager_(state_manager),
       synthetic_trial_registry_(synthetic_trial_registry),
       stability_metrics_provider_(nullptr) {
-  DCHECK(thread_checker_.CalledOnValidThread());
   notification_listeners_active_ = RegisterForNotifications();
 }
 
 IOSChromeMetricsServiceClient::~IOSChromeMetricsServiceClient() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 // static
@@ -222,7 +221,7 @@ std::string IOSChromeMetricsServiceClient::GetVersionString() {
 
 void IOSChromeMetricsServiceClient::CollectFinalMetricsForLog(
     base::OnceClosure done_callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   collect_final_metrics_done_callback_ = std::move(done_callback);
   CollectFinalHistograms();
@@ -382,7 +381,7 @@ void IOSChromeMetricsServiceClient::RegisterUKMProviders() {
 }
 
 void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   task_vm_info task_info_data;
   mach_msg_type_number_t count = sizeof(task_vm_info) / sizeof(natural_t);

@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_UI_THREAD_SEARCH_TERMS_DATA_H_
 #define IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_UI_THREAD_SEARCH_TERMS_DATA_H_
 
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "components/search_engines/search_terms_data.h"
 
 namespace ios {
@@ -28,7 +28,7 @@ class UIThreadSearchTermsData : public SearchTermsData {
   std::string GoogleImageSearchSource() const override;
 
  private:
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace ios
