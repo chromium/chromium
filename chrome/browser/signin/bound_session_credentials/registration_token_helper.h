@@ -53,9 +53,12 @@ class RegistrationTokenHelper {
   };
 
   // `unexportable_key_service` must outlive `this`.
+  // If `wrapped_binding_key_to_reuse_` is not empty, `this` will reuse an
+  // existing binding key instead of generating a new one.
   // TODO(alexilin): support timeout.
   explicit RegistrationTokenHelper(
-      unexportable_keys::UnexportableKeyService& unexportable_key_service);
+      unexportable_keys::UnexportableKeyService& unexportable_key_service,
+      const std::vector<uint8_t>& wrapped_binding_key_to_reuse = {});
 
   RegistrationTokenHelper(const RegistrationTokenHelper&) = delete;
   RegistrationTokenHelper& operator=(const RegistrationTokenHelper&) = delete;
@@ -98,6 +101,7 @@ class RegistrationTokenHelper {
   const raw_ref<unexportable_keys::UnexportableKeyService>
       unexportable_key_service_;
   std::unique_ptr<unexportable_keys::UnexportableKeyLoader> key_loader_;
+  const std::vector<uint8_t> wrapped_binding_key_to_reuse_;
   base::WeakPtrFactory<RegistrationTokenHelper> weak_ptr_factory_{this};
 };
 

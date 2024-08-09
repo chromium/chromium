@@ -93,8 +93,10 @@ enum DiceTokenFetchResult {
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 std::unique_ptr<RegistrationTokenHelper> BuildRegistrationTokenHelper(
-    unexportable_keys::UnexportableKeyService& unexportable_key_service) {
-  return std::make_unique<RegistrationTokenHelper>(unexportable_key_service);
+    unexportable_keys::UnexportableKeyService& unexportable_key_service,
+    const std::vector<uint8_t>& wrapped_binding_key_to_reuse) {
+  return std::make_unique<RegistrationTokenHelper>(
+      unexportable_key_service, wrapped_binding_key_to_reuse);
 }
 
 DiceResponseHandler::RegistrationTokenHelperFactory
@@ -112,6 +114,27 @@ CreateRegistrationTokenHelperFactory(
   // The factory holds a non-owning reference to `unexportable_key_service`.
   return base::BindRepeating(&BuildRegistrationTokenHelper,
                              std::ref(*unexportable_key_service));
+}
+
+// If any of existing accounts is already bound, returns its binding key.
+// Otherwise, returns an empty key indicating that a new key needs to be
+// generated.
+std::vector<uint8_t> GetWrappedBindingKeyToReuse(
+    const signin::IdentityManager& identity_manager) {
+  std::vector<CoreAccountInfo> accounts =
+      identity_manager.GetAccountsWithRefreshTokens();
+  for (const auto& account : accounts) {
+    std::vector<uint8_t> account_binding_key =
+        identity_manager.GetWrappedBindingKeyOfRefreshTokenForAccount(
+            account.account_id);
+    if (!account_binding_key.empty()) {
+      // All bound tokens are supposed to use the same key, so return the first
+      // non-empty key. Having two different keys should be considered a bug.
+      return account_binding_key;
+    }
+  }
+
+  return {};
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
@@ -189,7 +212,9 @@ DiceResponseHandler::DiceTokenFetcher::DiceTokenFetcher(
     SigninClient* signin_client,
     AccountReconcilor* account_reconcilor,
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate,
-    const RegistrationTokenHelperFactory& registration_token_helper_factory,
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    RegistrationTokenHelper* registration_token_helper,
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     DiceResponseHandler* dice_response_handler)
     : gaia_id_(gaia_id),
       email_(email),
@@ -205,10 +230,8 @@ DiceResponseHandler::DiceTokenFetcher::DiceTokenFetcher(
   account_reconcilor_lock_ =
       std::make_unique<AccountReconcilor::Lock>(account_reconcilor);
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  if (!registration_token_helper_factory.is_null()) {
-    CHECK(switches::IsChromeRefreshTokenBindingEnabled(
-        signin_client_->GetPrefs()));
-    StartBindingKeyGeneration(registration_token_helper_factory);
+  if (registration_token_helper) {
+    StartBindingKeyGeneration(*registration_token_helper);
     // Wait until the binding key is generated before fetching a token.
     return;
   }
@@ -282,13 +305,12 @@ void DiceResponseHandler::DiceTokenFetcher::StartTokenFetch() {
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 void DiceResponseHandler::DiceTokenFetcher::StartBindingKeyGeneration(
-    const RegistrationTokenHelperFactory& registration_token_helper_factory) {
+    RegistrationTokenHelper& registration_token_helper) {
   CHECK(
       switches::IsChromeRefreshTokenBindingEnabled(signin_client_->GetPrefs()));
-  registration_token_helper_ = registration_token_helper_factory.Run();
-  // `base::Unretained()` is safe because `this` owns
-  // `registration_token_helper_`.
-  registration_token_helper_->GenerateForTokenBinding(
+  // `base::Unretained()` is safe because `DiceResponseHandler` guarantees that
+  // `registration_token_helper` outlives `this`.
+  registration_token_helper.GenerateForTokenBinding(
       GaiaUrls::GetInstance()->oauth2_chrome_client_id(), authorization_code_,
       GURL("https://accounts.google.com/accountmanager"),
       base::BindOnce(&DiceTokenFetcher::OnRegistrationTokenGenerated,
@@ -303,7 +325,6 @@ void DiceResponseHandler::DiceTokenFetcher::OnRegistrationTokenGenerated(
     binding_registration_token_ = std::move(result->registration_token);
     wrapped_binding_key_ = std::move(result->wrapped_binding_key);
   }
-  registration_token_helper_.reset();
   StartTokenFetch();
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -441,9 +462,23 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
     identity_manager_->PrepareForAddingNewAccount();
   }
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  if (!registration_token_helper_factory_.is_null() &&
+      !registration_token_helper_) {
+    CHECK(switches::IsChromeRefreshTokenBindingEnabled(
+        signin_client_->GetPrefs()));
+    registration_token_helper_ = registration_token_helper_factory_.Run(
+        GetWrappedBindingKeyToReuse(*identity_manager_));
+  }
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
   token_fetchers_.push_back(std::make_unique<DiceTokenFetcher>(
       gaia_id, email, authorization_code, signin_client_, account_reconcilor_,
-      std::move(delegate), registration_token_helper_factory_, this));
+      std::move(delegate),
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      registration_token_helper_.get(),
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      this));
 }
 
 void DiceResponseHandler::ProcessEnableSyncHeader(
@@ -518,19 +553,29 @@ void DiceResponseHandler::ProcessDiceSignoutHeader(
     }
   }
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  if (token_fetchers_.empty()) {
+    registration_token_helper_.reset();
+  }
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
   if (!primary_account_signed_out) {
     RecordDiceResponseHeader(kSignoutSecondary);
   }
 }
 
 void DiceResponseHandler::DeleteTokenFetcher(DiceTokenFetcher* token_fetcher) {
-  for (auto it = token_fetchers_.begin(); it != token_fetchers_.end(); ++it) {
-    if (it->get() == token_fetcher) {
-      token_fetchers_.erase(it);
-      return;
-    }
+  size_t delete_count =
+      std::erase_if(token_fetchers_, [token_fetcher](const auto& current) {
+        return current.get() == token_fetcher;
+      });
+  CHECK_EQ(delete_count, 1U);
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  if (token_fetchers_.empty()) {
+    registration_token_helper_.reset();
   }
-  NOTREACHED_IN_MIGRATION();
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 }
 
 void DiceResponseHandler::OnTokenExchangeSuccess(

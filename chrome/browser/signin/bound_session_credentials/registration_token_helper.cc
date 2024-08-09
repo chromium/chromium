@@ -46,8 +46,10 @@ RegistrationTokenHelper::Result& RegistrationTokenHelper::Result::operator=(
 RegistrationTokenHelper::Result::~Result() = default;
 
 RegistrationTokenHelper::RegistrationTokenHelper(
-    unexportable_keys::UnexportableKeyService& unexportable_key_service)
-    : unexportable_key_service_(unexportable_key_service) {}
+    unexportable_keys::UnexportableKeyService& unexportable_key_service,
+    const std::vector<uint8_t>& wrapped_binding_key_to_reuse)
+    : unexportable_key_service_(unexportable_key_service),
+      wrapped_binding_key_to_reuse_(wrapped_binding_key_to_reuse) {}
 
 RegistrationTokenHelper::~RegistrationTokenHelper() = default;
 
@@ -84,8 +86,15 @@ void RegistrationTokenHelper::CreateKeyLoaderIfNeeded() {
     return;
   }
 
-  key_loader_ = unexportable_keys::UnexportableKeyLoader::CreateWithNewKey(
-      unexportable_key_service_.get(), kAcceptableAlgorithms, kTaskPriority);
+  if (!wrapped_binding_key_to_reuse_.empty()) {
+    key_loader_ =
+        unexportable_keys::UnexportableKeyLoader::CreateFromWrappedKey(
+            unexportable_key_service_.get(), wrapped_binding_key_to_reuse_,
+            kTaskPriority);
+  } else {
+    key_loader_ = unexportable_keys::UnexportableKeyLoader::CreateWithNewKey(
+        unexportable_key_service_.get(), kAcceptableAlgorithms, kTaskPriority);
+  }
 }
 
 void RegistrationTokenHelper::SignHeaderAndPayload(

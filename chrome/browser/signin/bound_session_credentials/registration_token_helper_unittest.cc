@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
@@ -15,6 +16,13 @@
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+constexpr crypto::SignatureVerifier::SignatureAlgorithm
+    kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256};
+constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
+    unexportable_keys::BackgroundTaskPriority::kUserBlocking;
+}  // namespace
 
 class RegistrationTokenHelperTest : public testing::Test {
  public:
@@ -39,6 +47,27 @@ class RegistrationTokenHelperTest : public testing::Test {
               unexportable_key_service().GetWrappedKey(result.binding_key_id));
   }
 
+  unexportable_keys::UnexportableKeyId GenerateNewKey() {
+    base::test::TestFuture<
+        unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>>
+        generate_future;
+    unexportable_key_service().GenerateSigningKeySlowlyAsync(
+        kAcceptableAlgorithms, kTaskPriority, generate_future.GetCallback());
+    RunBackgroundTasks();
+    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
+        key_id = generate_future.Get();
+    CHECK(key_id.has_value());
+    return *key_id;
+  }
+
+  std::vector<uint8_t> GetWrappedKey(
+      const unexportable_keys::UnexportableKeyId& key_id) {
+    unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
+        unexportable_key_service().GetWrappedKey(key_id);
+    CHECK(wrapped_key.has_value());
+    return *wrapped_key;
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::ThreadPoolExecutionMode::
@@ -59,6 +88,21 @@ TEST_F(RegistrationTokenHelperTest, SuccessForTokenBinding) {
   RunBackgroundTasks();
   ASSERT_TRUE(future.Get().has_value());
   VerifyResult(future.Get().value());
+}
+
+TEST_F(RegistrationTokenHelperTest, SuccessForTokenBindingReuseKey) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
+  std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewKey());
+  ASSERT_FALSE(wrapped_key.empty());
+  RegistrationTokenHelper helper(unexportable_key_service(), wrapped_key);
+  helper.GenerateForTokenBinding("test_client_id", "test_auth_code",
+                                 GURL("https://accounts.google.com/Register"),
+                                 future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_TRUE(future.Get().has_value());
+  VerifyResult(future.Get().value());
+  EXPECT_EQ(future.Get()->wrapped_binding_key, wrapped_key);
 }
 
 TEST_F(RegistrationTokenHelperTest, SuccessForSessionBinding) {
@@ -100,6 +144,19 @@ TEST_F(RegistrationTokenHelperTest, Failure) {
   crypto::ScopedNullUnexportableKeyProvider scoped_null_key_provider_;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
   RegistrationTokenHelper helper(unexportable_key_service());
+  helper.GenerateForTokenBinding("test_client_id", "test_auth_code",
+                                 GURL("https://accounts.google.com/Register"),
+                                 future.GetCallback());
+  RunBackgroundTasks();
+  EXPECT_FALSE(future.Get().has_value());
+}
+
+TEST_F(RegistrationTokenHelperTest, FailureReuseKey) {
+  const std::vector<uint8_t> kInvalidWrappedKey = {1, 2, 3};
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
+  RegistrationTokenHelper helper(unexportable_key_service(),
+                                 kInvalidWrappedKey);
   helper.GenerateForTokenBinding("test_client_id", "test_auth_code",
                                  GURL("https://accounts.google.com/Register"),
                                  future.GetCallback());

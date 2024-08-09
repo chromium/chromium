@@ -54,6 +54,7 @@ using signin::DiceAction;
 using signin::DiceResponseParams;
 using testing::_;
 using testing::Invoke;
+using testing::Return;
 using testing::StrictMock;
 using testing::Unused;
 
@@ -240,27 +241,37 @@ class DiceResponseHandlerTest : public testing::Test,
       bool invalid_primary_account);
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  void EnableRegistrationTokenHelper(std::string_view authorization_code) {
-    // base::Unretained(this) is safe because `this` owns
-    // `dice_response_handler_`.
+  void EnableRegistrationTokenHelperFactory() {
     dice_response_handler_->SetRegistrationTokenHelperFactoryForTesting(
-        base::BindRepeating(
-            &DiceResponseHandlerTest::BuildRegistrationTokenHelper,
-            base::Unretained(this), std::string(authorization_code)));
+        mock_registration_token_helper_factory_.Get());
+  }
+
+  void ExpectRegistrationTokenHelperCreated(
+      const std::vector<std::string>& expected_authorization_codes,
+      const std::vector<uint8_t>& expected_wrapped_binding_key) {
+    EXPECT_CALL(mock_registration_token_helper_factory_,
+                Run(expected_wrapped_binding_key))
+        .WillOnce(
+            Return(BuildRegistrationTokenHelper(expected_authorization_codes)));
   }
 
   std::unique_ptr<RegistrationTokenHelper> BuildRegistrationTokenHelper(
-      std::string_view authorization_code) {
+      const std::vector<std::string>& expected_authorization_codes) {
     auto helper = std::make_unique<StrictMock<MockRegistrationTokenHelper>>();
-    EXPECT_CALL(*helper, GenerateForTokenBinding(_, authorization_code, _, _))
-        .WillOnce(MoveArg<3>(&binding_registration_callback_));
+    for (const auto& authorization_code : expected_authorization_codes) {
+      EXPECT_CALL(*helper, GenerateForTokenBinding(_, authorization_code, _, _))
+          .WillOnce(
+              MoveArg<3>(&binding_registration_callbacks_[authorization_code]));
+    }
     return helper;
   }
 
   void SimulateRegistrationTokenHelperResult(
+      const std::string& authorization_code,
       std::optional<RegistrationTokenHelper::Result> result) {
-    ASSERT_FALSE(binding_registration_callback_.is_null());
-    std::move(binding_registration_callback_).Run(std::move(result));
+    auto node = binding_registration_callbacks_.extract(authorization_code);
+    ASSERT_FALSE(node.empty());
+    std::move(node.mapped()).Run(std::move(result));
   }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
@@ -291,8 +302,13 @@ class DiceResponseHandlerTest : public testing::Test,
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   base::test::ScopedFeatureList feature_list_{
       switches::kEnableChromeRefreshTokenBinding};
-  base::OnceCallback<void(std::optional<RegistrationTokenHelper::Result>)>
-      binding_registration_callback_;
+  std::map<
+      std::string,
+      base::OnceCallback<void(std::optional<RegistrationTokenHelper::Result>)>>
+      binding_registration_callbacks_;
+  StrictMock<
+      base::MockCallback<DiceResponseHandler::RegistrationTokenHelperFactory>>
+      mock_registration_token_helper_factory_;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 };
 
@@ -445,12 +461,16 @@ INSTANTIATE_TEST_SUITE_P(PreconnectEnabled,
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 // Checks that a SIGNIN action triggers a token exchange request.
 TEST_F(DiceResponseHandlerTest, SigninWithBoundToken) {
+  EnableRegistrationTokenHelperFactory();
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   const auto& account_info = dice_params.signin_info->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
       account_info.gaia_id, account_info.email);
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
-  EnableRegistrationTokenHelper(dice_params.signin_info->authorization_code);
+  const std::string authorization_code =
+      dice_params.signin_info->authorization_code;
+  ExpectRegistrationTokenHelperCreated({authorization_code},
+                                       /*expected_wrapped_binding_key=*/{});
   dice_response_handler_->ProcessDiceHeader(
       dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
 
@@ -459,6 +479,7 @@ TEST_F(DiceResponseHandlerTest, SigninWithBoundToken) {
   // Simulate successful token generation.
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   SimulateRegistrationTokenHelperResult(
+      authorization_code,
       RegistrationTokenHelper::Result(unexportable_keys::UnexportableKeyId(),
                                       kWrappedKey, "test_registration_token"));
 
@@ -478,20 +499,205 @@ TEST_F(DiceResponseHandlerTest, SigninWithBoundToken) {
   EXPECT_EQ(GoogleServiceAuthError::NONE, auth_error_.state());
 }
 
+TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOtherTokenIsBound) {
+  EnableRegistrationTokenHelperFactory();
+  const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
+  identity_test_env_.MakeAccountAvailable(
+      signin::AccountAvailabilityOptionsBuilder()
+          .WithRefreshTokenBindingKey(kWrappedKey)
+          .Build("other@email.com"));
+
+  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
+  const auto& account_info = dice_params.signin_info->account_info;
+  CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
+      account_info.gaia_id, account_info.email);
+  const std::string authorization_code =
+      dice_params.signin_info->authorization_code;
+  ExpectRegistrationTokenHelperCreated({authorization_code}, kWrappedKey);
+  dice_response_handler_->ProcessDiceHeader(
+      dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  // Verify that the next step can complete with the reused token.
+  // Token fetch should be blocked on the binding registration token generation.
+  ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::IsNull());
+  // Simulate successful token generation.
+  SimulateRegistrationTokenHelperResult(
+      authorization_code,
+      RegistrationTokenHelper::Result(unexportable_keys::UnexportableKeyId(),
+                                      kWrappedKey, "test_registration_token"));
+  // Check that a GaiaAuthFetcher has been created.
+  GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer, testing::NotNull());
+  // Simulate GaiaAuthFetcher success.
+  consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/true));
+  // Check that the token has been inserted in the token service.
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id));
+  EXPECT_EQ(identity_manager()->GetWrappedBindingKeyOfRefreshTokenForAccount(
+                account_id),
+            kWrappedKey);
+}
+
+TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOneTokenBoundOneNonBound) {
+  EnableRegistrationTokenHelperFactory();
+  const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
+  identity_test_env_.MakeAccountAvailable("nonbound@gmail.com");
+  identity_test_env_.MakeAccountAvailable(
+      signin::AccountAvailabilityOptionsBuilder()
+          .WithRefreshTokenBindingKey(kWrappedKey)
+          .Build("bound@email.com"));
+
+  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
+  ExpectRegistrationTokenHelperCreated(
+      {dice_params.signin_info->authorization_code}, kWrappedKey);
+  dice_response_handler_->ProcessDiceHeader(
+      dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
+}
+
+TEST_F(DiceResponseHandlerTest, NewBindingKeyOtherTokenIsNotBound) {
+  EnableRegistrationTokenHelperFactory();
+  identity_test_env_.MakeAccountAvailable("other@email.com");
+
+  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
+  ExpectRegistrationTokenHelperCreated(
+      {dice_params.signin_info->authorization_code},
+      /*expected_wrapped_binding_key=*/{});
+  dice_response_handler_->ProcessDiceHeader(
+      dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
+}
+
+TEST_F(DiceResponseHandlerTest, TwoFetchersReuseRegistrationTokenHelper) {
+  EnableRegistrationTokenHelperFactory();
+  auto account_id = [&](const DiceResponseParams& dice_params) {
+    const auto& account_info = dice_params.signin_info->account_info;
+    return identity_manager()->PickAccountIdForAccount(account_info.gaia_id,
+                                                       account_info.email);
+  };
+  auto authorization_code = [&](const DiceResponseParams& dice_params) {
+    return dice_params.signin_info->authorization_code;
+  };
+
+  DiceResponseParams dice_params_1 = MakeDiceParams(DiceAction::SIGNIN);
+  DiceResponseParams dice_params_2 = MakeDiceParams(DiceAction::SIGNIN);
+  dice_params_2.signin_info->account_info =
+      GetDiceResponseParamsAccountInfo("other@email.com");
+  dice_params_2.signin_info->authorization_code = "other_authorization_code";
+  ExpectRegistrationTokenHelperCreated(
+      {authorization_code(dice_params_1), authorization_code(dice_params_2)},
+      /*expected_wrapped_binding_key=*/{});
+  dice_response_handler_->ProcessDiceHeader(
+      dice_params_1, std::make_unique<TestProcessDiceHeaderDelegate>(this));
+  dice_response_handler_->ProcessDiceHeader(
+      dice_params_2, std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  // Token fetch should be blocked on the binding registration token generation.
+  ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::IsNull());
+  // Simulate successful token generation and check that GaiaAuthFetchers have
+  // been created.
+  const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
+  SimulateRegistrationTokenHelperResult(
+      authorization_code(dice_params_2),
+      RegistrationTokenHelper::Result(unexportable_keys::UnexportableKeyId(),
+                                      kWrappedKey, "test_registration_token"));
+  GaiaAuthConsumer* consumer_2 = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer_2, testing::NotNull());
+  SimulateRegistrationTokenHelperResult(
+      authorization_code(dice_params_1),
+      RegistrationTokenHelper::Result(unexportable_keys::UnexportableKeyId(),
+                                      kWrappedKey, "other_registration_token"));
+  GaiaAuthConsumer* consumer_1 = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer_1, testing::NotNull());
+
+  // Simulate GaiaAuthFetchers successes and check that tokens have been
+  // inserted in the token service.
+  consumer_1->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/true));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
+      account_id(dice_params_1)));
+  EXPECT_EQ(identity_manager()->GetWrappedBindingKeyOfRefreshTokenForAccount(
+                account_id(dice_params_1)),
+            kWrappedKey);
+  consumer_2->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/true));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
+      account_id(dice_params_2)));
+  EXPECT_EQ(identity_manager()->GetWrappedBindingKeyOfRefreshTokenForAccount(
+                account_id(dice_params_2)),
+            kWrappedKey);
+}
+
+TEST_F(DiceResponseHandlerTest,
+       NewRegistrationTokenHelperCreatedForConsecutiveFetchers) {
+  EnableRegistrationTokenHelperFactory();
+  auto account_id = [&](const DiceResponseParams& dice_params) {
+    const auto& account_info = dice_params.signin_info->account_info;
+    return identity_manager()->PickAccountIdForAccount(account_info.gaia_id,
+                                                       account_info.email);
+  };
+  auto authorization_code = [&](const DiceResponseParams& dice_params) {
+    return dice_params.signin_info->authorization_code;
+  };
+
+  DiceResponseParams dice_params_1 = MakeDiceParams(DiceAction::SIGNIN);
+  ExpectRegistrationTokenHelperCreated({authorization_code(dice_params_1)},
+                                       /*expected_wrapped_binding_key=*/{});
+  dice_response_handler_->ProcessDiceHeader(
+      dice_params_1, std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  // Token fetch should be blocked on the binding registration token generation.
+  ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::IsNull());
+  const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
+  SimulateRegistrationTokenHelperResult(
+      authorization_code(dice_params_1),
+      RegistrationTokenHelper::Result(unexportable_keys::UnexportableKeyId(),
+                                      kWrappedKey, "test_registration_token"));
+  GaiaAuthConsumer* consumer_1 = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer_1, testing::NotNull());
+
+  // Simulate GaiaAuthFetcher success with the binding key being rejected.
+  consumer_1->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token", "access_token", 10, /*is_child_account=*/false,
+      /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
+      account_id(dice_params_1)));
+  EXPECT_TRUE(identity_manager()
+                  ->GetWrappedBindingKeyOfRefreshTokenForAccount(
+                      account_id(dice_params_1))
+                  .empty());
+
+  // Next request should create a new RegistrationTokenHelper with a new binding
+  // key as none of the existing tokens are bound.
+  DiceResponseParams dice_params_2 = MakeDiceParams(DiceAction::SIGNIN);
+  dice_params_2.signin_info->account_info =
+      GetDiceResponseParamsAccountInfo("other@email.com");
+  dice_params_2.signin_info->authorization_code = "other_authorization_code";
+  ExpectRegistrationTokenHelperCreated({authorization_code(dice_params_2)},
+                                       /*expected_wrapped_binding_key=*/{});
+  dice_response_handler_->ProcessDiceHeader(
+      dice_params_2, std::make_unique<TestProcessDiceHeaderDelegate>(this));
+}
+
 TEST_F(DiceResponseHandlerTest, SigninWithFailedBoundTokenAttempt) {
+  EnableRegistrationTokenHelperFactory();
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   const auto& account_info = dice_params.signin_info->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
       account_info.gaia_id, account_info.email);
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
-  EnableRegistrationTokenHelper(dice_params.signin_info->authorization_code);
+  const std::string authorization_code =
+      dice_params.signin_info->authorization_code;
+  ExpectRegistrationTokenHelperCreated({authorization_code},
+                                       /*expected_wrapped_binding_key=*/{});
   dice_response_handler_->ProcessDiceHeader(
       dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
 
   // Token fetch should be blocked on the binding registration token generation.
   ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::IsNull());
   // Simulate failed token generation.
-  SimulateRegistrationTokenHelperResult(std::nullopt);
+  SimulateRegistrationTokenHelperResult(authorization_code, std::nullopt);
 
   // Check that a GaiaAuthFetcher has been created.
   GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();

@@ -502,9 +502,15 @@ class IdentityManager : public KeyedService,
       const AccountAvailabilityOptions& options);
   friend void SetAutomaticIssueOfAccessTokens(IdentityManager* identity_manager,
                                               bool grant);
-  friend void SetRefreshTokenForAccount(IdentityManager* identity_manager,
-                                        const CoreAccountId& account_id,
-                                        const std::string& token_value);
+  friend void SetRefreshTokenForAccount(
+      IdentityManager* identity_manager,
+      const CoreAccountId& account_id,
+      const std::string& token_value
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      ,
+      const std::vector<uint8_t>& wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  );
   friend void SetInvalidRefreshTokenForAccount(
       IdentityManager* identity_manager,
       const CoreAccountId& account_id,
