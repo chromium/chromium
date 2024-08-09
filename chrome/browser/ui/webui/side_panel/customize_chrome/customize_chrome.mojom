@@ -166,8 +166,10 @@ interface CustomizeChromePageHandler {
   // Opens link to Chrome Web Store collection page in a new tab.
   OpenChromeWebStoreCollectionPage(ChromeWebStoreCollection collection);
 
-  // Opens a link to the settings page with search selected.
-  OpenSettingsSearchEnginePage();
+  // Opens a link to the system that manages the NTP, if its a DSE, it links
+  // to the settings page for search engines, if its an extension, then links
+  // to the extensions details page.
+  OpenNtpManagedByPage();
 
   // If |visible| the modules will be shown.
   SetModulesVisible(bool visible);

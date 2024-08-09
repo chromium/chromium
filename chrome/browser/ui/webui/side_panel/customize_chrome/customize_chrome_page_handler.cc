@@ -15,6 +15,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,6 +41,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+#include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_provider.h"
 #include "ui/native_theme/native_theme.h"
@@ -156,6 +158,13 @@ void CustomizeChromePageHandler::AttachedTabStateUpdated(
     bool is_source_tab_first_party_ntp) {
   last_is_source_tab_first_party_ntp_ = is_source_tab_first_party_ntp;
   page_->AttachedTabStateUpdated(is_source_tab_first_party_ntp);
+}
+
+bool CustomizeChromePageHandler::IsNtpManagedByThirdPartySearchEngine() const {
+  return template_url_service_ &&
+         template_url_service_->GetDefaultSearchProvider() &&
+         !template_url_service_->GetDefaultSearchProvider()->HasGoogleBaseURLs(
+             template_url_service_->search_terms_data());
 }
 
 void CustomizeChromePageHandler::SetDefaultColor() {
@@ -381,10 +390,17 @@ void CustomizeChromePageHandler::OpenChromeWebStoreHomePage() {
                             NtpChromeWebStoreOpen::kHomePage);
 }
 
-void CustomizeChromePageHandler::OpenSettingsSearchEnginePage() {
+void CustomizeChromePageHandler::OpenNtpManagedByPage() {
+  const extensions::Extension* extension_managing_ntp =
+      extensions::GetExtensionOverridingNewTabPage(profile_);
+  if (extension_managing_ntp) {
+    open_url_callback_.Run(
+        net::AppendOrReplaceQueryParameter(GURL(chrome::kChromeUIExtensionsURL),
+                                           "id", extension_managing_ntp->id()));
+    return;
+  }
+
   open_url_callback_.Run(GURL(chrome::kBrowserSettingsSearchEngineURL));
-  UMA_HISTOGRAM_ENUMERATION("NewTabPage.ChromeWebStoreOpen",
-                            NtpChromeWebStoreOpen::kHomePage);
 }
 
 void CustomizeChromePageHandler::SetMostVisitedSettings(
@@ -493,24 +509,19 @@ bool CustomizeChromePageHandler::IsShortcutsVisible() const {
 }
 
 std::u16string CustomizeChromePageHandler::GetManagingThirdPartyName() const {
-  if (!template_url_service_) {
-    return std::u16string();
+  // Check overriding extensions first.
+  const extensions::Extension* extension_managing_ntp =
+      extensions::GetExtensionOverridingNewTabPage(profile_);
+  if (extension_managing_ntp) {
+    return base::UTF8ToUTF16(extension_managing_ntp->short_name());
   }
 
-  const TemplateURL* template_url =
-      template_url_service_->GetDefaultSearchProvider();
-  if (!template_url) {
-    return std::u16string();
+  // Check 3rd party search engines next.
+  if (IsNtpManagedByThirdPartySearchEngine()) {
+    return template_url_service_->GetDefaultSearchProvider()->short_name();
   }
 
-  // If the TemplateURL has google URLs then its a first party default search
-  // manager  and should not be returned.
-  if (template_url->HasGoogleBaseURLs(
-          template_url_service_->search_terms_data())) {
-    return std::u16string();
-  }
-
-  return template_url->short_name();
+  return std::u16string();
 }
 
 void CustomizeChromePageHandler::OnNativeThemeUpdated(
