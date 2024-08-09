@@ -158,6 +158,8 @@ static_library("app_mode") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "consumer_kiosk_test_helper.cc",
+    "consumer_kiosk_test_helper.h",
     "fake_cws.cc",
     "fake_cws.h",
     "fake_kiosk_app_launcher.cc",
@@ -182,6 +184,7 @@ static_library("test_support") {
     "//testing/gmock",
   ]
   deps = [
+    "//chrome/browser/ash/ownership",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",

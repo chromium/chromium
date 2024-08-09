@@ -17,6 +17,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -32,6 +33,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/app_mode/consumer_kiosk_test_helper.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
@@ -348,7 +350,8 @@ class ChromeAppKioskAppManagerTest : public InProcessBrowserTest {
     fake_cws_->SetUpdateCrx(id, crx_file_name, expected_version);
 
     AppDataLoadWaiter waiter(manager());
-    manager()->AddApp(id, owner_settings_service_.get());
+    AddConsumerKioskChromeAppForTesting(
+        CHECK_DEREF(owner_settings_service_.get()), id);
     waiter.Wait(3);
     EXPECT_EQ(waiter.data_change_count(), 3);
     EXPECT_EQ(waiter.data_load_failure_count(), 0);
@@ -412,12 +415,16 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, Basic) {
   // Add a couple of apps. Use "fake_app_x" that do not have data on the test
   // server to avoid pending data loads that could be lingering on tear down and
   // cause DCHECK failure in utility_process_host.cc.
-  manager()->AddApp("fake_app_1", owner_settings_service_.get());
-  manager()->AddApp("fake_app_2", owner_settings_service_.get());
+  AddConsumerKioskChromeAppForTesting(
+      CHECK_DEREF(owner_settings_service_.get()), "fake_app_1");
+  AddConsumerKioskChromeAppForTesting(
+      CHECK_DEREF(owner_settings_service_.get()), "fake_app_2");
   EXPECT_EQ("fake_app_1,fake_app_2", GetAppIds());
 
   // Set an auto launch app.
-  manager()->SetAutoLaunchApp("fake_app_1", owner_settings_service_.get());
+  SetConsumerKioskAutoLaunchChromeAppForTesting(
+      CHECK_DEREF(manager()), CHECK_DEREF(owner_settings_service_.get()),
+      "fake_app_1");
   EXPECT_EQ("fake_app_1", manager()->GetAutoLaunchApp());
 
   // Make sure that if an app was auto launched with zero delay, it is reflected
@@ -431,7 +438,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, Basic) {
   EXPECT_TRUE(app.was_auto_launched_with_zero_delay);
 
   // Clear the auto launch app.
-  manager()->SetAutoLaunchApp("", owner_settings_service_.get());
+  SetConsumerKioskAutoLaunchChromeAppForTesting(
+      CHECK_DEREF(manager()), CHECK_DEREF(owner_settings_service_.get()), "");
   EXPECT_EQ("", manager()->GetAutoLaunchApp());
 
   // App should still report it was auto launched with zero delay, even though
@@ -440,27 +448,37 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, Basic) {
   EXPECT_TRUE(app.was_auto_launched_with_zero_delay);
 
   // Set another auto launch app.
-  manager()->SetAutoLaunchApp("fake_app_2", owner_settings_service_.get());
+  SetConsumerKioskAutoLaunchChromeAppForTesting(
+      CHECK_DEREF(manager()), CHECK_DEREF(owner_settings_service_.get()),
+      "fake_app_2");
   EXPECT_EQ("fake_app_2", manager()->GetAutoLaunchApp());
 
   // Remove the auto launch app.
-  manager()->RemoveApp("fake_app_2", owner_settings_service_.get());
+  RemoveConsumerKioskChromeAppForTesting(
+      CHECK_DEREF(manager()), CHECK_DEREF(owner_settings_service_.get()),
+      "fake_app_2");
   EXPECT_EQ("fake_app_1", GetAppIds());
   EXPECT_EQ("", manager()->GetAutoLaunchApp());
 
   // Add the just removed auto launch app again and it should no longer be
   // the auto launch app.
-  manager()->AddApp("fake_app_2", owner_settings_service_.get());
+  AddConsumerKioskChromeAppForTesting(
+      CHECK_DEREF(owner_settings_service_.get()), "fake_app_2");
   EXPECT_EQ("", manager()->GetAutoLaunchApp());
-  manager()->RemoveApp("fake_app_2", owner_settings_service_.get());
+  RemoveConsumerKioskChromeAppForTesting(
+      CHECK_DEREF(manager()), CHECK_DEREF(owner_settings_service_.get()),
+      "fake_app_2");
   EXPECT_EQ("fake_app_1", GetAppIds());
 
   // Set a none exist app as auto launch.
-  manager()->SetAutoLaunchApp("none_exist_app", owner_settings_service_.get());
+  SetConsumerKioskAutoLaunchChromeAppForTesting(
+      CHECK_DEREF(manager()), CHECK_DEREF(owner_settings_service_.get()),
+      "none_exist_app");
   EXPECT_EQ("", manager()->GetAutoLaunchApp());
 
   // Add an existing app again.
-  manager()->AddApp("fake_app_1", owner_settings_service_.get());
+  AddConsumerKioskChromeAppForTesting(
+      CHECK_DEREF(owner_settings_service_.get()), "fake_app_1");
   EXPECT_EQ("fake_app_1", GetAppIds());
 }
 
@@ -617,7 +635,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, FailedToLoadFromCrx) {
 
 IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, BadApp) {
   AppDataLoadWaiter waiter(manager());
-  manager()->AddApp("unknown_app", owner_settings_service_.get());
+  AddConsumerKioskChromeAppForTesting(
+      CHECK_DEREF(owner_settings_service_.get()), "unknown_app");
   waiter.Wait(2);
   EXPECT_EQ(waiter.data_change_count(), 1);
   EXPECT_EQ(waiter.data_load_failure_count(), 1);
@@ -630,7 +649,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, GoodApp) {
   const char kAppId[] = "app_1";
   fake_cws()->SetNoUpdate(kAppId);
   AppDataLoadWaiter waiter(manager());
-  manager()->AddApp(kAppId, owner_settings_service_.get());
+  AddConsumerKioskChromeAppForTesting(
+      CHECK_DEREF(owner_settings_service_.get()), kAppId);
   waiter.Wait(2);
   EXPECT_EQ(waiter.data_change_count(), 2);
   EXPECT_EQ(waiter.data_load_failure_count(), 0);
@@ -646,7 +666,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest,
   const char kAppId[] = "app_with_required_platform_version";
   fake_cws()->SetNoUpdate(kAppId);
   AppDataLoadWaiter waiter(manager());
-  manager()->AddApp(kAppId, owner_settings_service_.get());
+  AddConsumerKioskChromeAppForTesting(
+      CHECK_DEREF(owner_settings_service_.get()), kAppId);
   waiter.Wait(2);
   EXPECT_EQ(waiter.data_change_count(), 2);
   EXPECT_EQ(waiter.data_load_failure_count(), 0);
@@ -662,7 +683,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest,
   const char kAppId[] = "app_with_bad_required_platform_version";
   fake_cws()->SetNoUpdate(kAppId);
   AppDataLoadWaiter waiter(manager());
-  manager()->AddApp(kAppId, owner_settings_service_.get());
+  AddConsumerKioskChromeAppForTesting(
+      CHECK_DEREF(owner_settings_service_.get()), kAppId);
   waiter.Wait(2);
   EXPECT_EQ(waiter.data_change_count(), 1);
   EXPECT_EQ(1, waiter.data_load_failure_count());
@@ -689,7 +711,9 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, RemoveApp) {
   EXPECT_EQ("1.0.0", version);
 
   // Remove the app now.
-  manager()->RemoveApp(kTestLocalFsKioskApp, owner_settings_service_.get());
+  RemoveConsumerKioskChromeAppForTesting(
+      CHECK_DEREF(manager()), CHECK_DEREF(owner_settings_service_.get()),
+      kTestLocalFsKioskApp);
   content::RunAllTasksUntilIdle();
   ASSERT_EQ(0u, manager()->GetApps().size());
   {
@@ -792,7 +816,9 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, UpdateAndRemoveApp) {
   }
 
   // Remove the app now.
-  manager()->RemoveApp(kTestLocalFsKioskApp, owner_settings_service_.get());
+  RemoveConsumerKioskChromeAppForTesting(
+      CHECK_DEREF(manager()), CHECK_DEREF(owner_settings_service_.get()),
+      kTestLocalFsKioskApp);
   content::RunAllTasksUntilIdle();
   ASSERT_EQ(0u, manager()->GetApps().size());
   // Verify both v1 and v2 crx files are removed.
@@ -819,7 +845,9 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest,
   EXPECT_EQ("", manager()->GetAutoLaunchApp());
   EXPECT_EQ("", manager()->GetAutoLaunchAppRequiredPlatformVersion());
 
-  manager()->SetAutoLaunchApp(kAppId, owner_settings_service_.get());
+  SetConsumerKioskAutoLaunchChromeAppForTesting(
+      CHECK_DEREF(manager()), CHECK_DEREF(owner_settings_service_.get()),
+      kAppId);
   EXPECT_EQ(kAppId, manager()->GetAutoLaunchApp());
   EXPECT_EQ(kRequiredPlatformVersion,
             manager()->GetAutoLaunchAppRequiredPlatformVersion());
@@ -862,7 +890,9 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest,
   const char kAppId[] = "app_id";
   SetExistingApp(kAppId, "App Name", "red16x16.png", "");
 
-  manager()->SetAutoLaunchApp(kAppId, owner_settings_service_.get());
+  SetConsumerKioskAutoLaunchChromeAppForTesting(
+      CHECK_DEREF(manager()), CHECK_DEREF(owner_settings_service_.get()),
+      kAppId);
   manager()->SetAppWasAutoLaunchedWithZeroDelay(kAppId);
 
   struct {

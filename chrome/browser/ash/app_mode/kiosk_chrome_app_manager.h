@@ -39,7 +39,6 @@ namespace ash {
 
 class KioskAppData;
 class KioskExternalUpdater;
-class OwnerSettingsServiceAsh;
 
 extern const char kKioskPrimaryAppInstallErrorHistogram[];
 extern const char kKioskPrimaryAppUpdateResultHistogram[];
@@ -121,19 +120,9 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   // Returns auto launcher app id or an empty string if there is none.
   std::string GetAutoLaunchApp() const;
 
-  // TODO(crbug.com/256596599): append ForTesting to this method.
-  // Sets `app_id` as the app to auto launch at start up.
-  void SetAutoLaunchApp(const std::string& app_id,
-                        OwnerSettingsServiceAsh* service);
-
   // Returns the cached required platform version of the auto launch with
   // zero delay kiosk app.
   std::string GetAutoLaunchAppRequiredPlatformVersion() const;
-
-  // Adds/removes a kiosk app by id. When removed, all locally cached data
-  // will be removed as well.
-  void AddApp(const std::string& app_id, OwnerSettingsServiceAsh* service);
-  void RemoveApp(const std::string& app_id, OwnerSettingsServiceAsh* service);
 
   // `KioskAppManagerBase` implementation:
   // Gets info of all apps that have no meta data load error.

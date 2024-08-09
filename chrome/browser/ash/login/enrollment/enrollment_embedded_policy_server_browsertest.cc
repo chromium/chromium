@@ -8,10 +8,12 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/test/gtest_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/app_mode/consumer_kiosk_test_helper.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
@@ -1385,10 +1387,11 @@ class KioskEnrollmentTest : public EnrollmentEmbeddedPolicyServerBase {
   }
 
   void SetupAutoLaunchApp(FakeOwnerSettingsService* service) {
-    KioskChromeAppManager::Get()->AddApp(KioskAppsMixin::kTestChromeAppId,
-                                         service);
-    KioskChromeAppManager::Get()->SetAutoLaunchApp(
-        KioskAppsMixin::kTestChromeAppId, service);
+    AddConsumerKioskChromeAppForTesting(CHECK_DEREF(service),
+                                        KioskAppsMixin::kTestChromeAppId);
+    SetConsumerKioskAutoLaunchChromeAppForTesting(
+        CHECK_DEREF(KioskChromeAppManager::Get()), CHECK_DEREF(service),
+        KioskAppsMixin::kTestChromeAppId);
   }
 
  private:
