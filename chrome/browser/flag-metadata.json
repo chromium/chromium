@@ -1473,6 +1473,11 @@
     "expiry_milestone": 131
   },
   {
+    "name": "clay-blocking-dialog",
+    "owners": ["triploblastic@google.com", "dgn@google.com", "chrome-waffle-eng@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "clear-cross-site-cross-browsing-context-group-window-name",
     "owners": [ "shuuran@chromium.org", "kaustubhag@chromium.org" ],
     "expiry_milestone": 115

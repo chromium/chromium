@@ -816,6 +816,9 @@ extern const char kMirrorBackForwardGesturesInRTLDescription[];
 extern const char kEnableSearchEngineChoiceName[];
 extern const char kEnableSearchEngineChoiceDescription[];
 
+extern const char kClayBlockingDialogName[];
+extern const char kClayBlockingDialogDescription[];
+
 extern const char kEnableFencedFramesName[];
 extern const char kEnableFencedFramesDescription[];
 

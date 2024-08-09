@@ -95,9 +95,7 @@ BASE_FEATURE(kSearchEngineChoice,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_FEATURE(kWaffleBlocking,
-             "WaffleBlocking",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kClayBlocking, "ClayBlocking", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)

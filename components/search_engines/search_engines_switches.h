@@ -101,7 +101,7 @@ BASE_DECLARE_FEATURE(kSearchEngineChoice);
 // Enables the blocking dialog that directs users to complete their choice of
 // default apps (for Browser & Search) in Android.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_DECLARE_FEATURE(kWaffleBlocking);
+BASE_DECLARE_FEATURE(kClayBlocking);
 #endif
 
 // Kill switch to revert the fix of using assistedQueryStats for prefetch source

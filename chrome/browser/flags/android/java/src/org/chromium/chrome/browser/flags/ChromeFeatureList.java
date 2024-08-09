@@ -448,7 +448,7 @@ public abstract class ChromeFeatureList {
             "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck";
     public static final String SEARCH_IN_CCT = "SearchInCCT";
     public static final String SEARCH_ENGINE_CHOICE = "SearchEngineChoice";
-    public static final String WAFFLE_BLOCKING = "WaffleBlocking";
+    public static final String CLAY_BLOCKING = "ClayBlocking";
     public static final String SHARE_CUSTOM_ACTIONS_IN_CCT = "ShareCustomActionsInCCT";
     public static final String PERSISTENT_SEARCH_ENGINE_CHOICE_IMPORT =
             "PersistentSearchEngineChoiceImport";

@@ -18810,6 +18810,7 @@ from previous Chrome versions.
   <int value="-655294302"
       label="UseMlServiceForNonLongformHandwritingOnAllBoards:disabled"/>
   <int value="-654705905" label="ShortcutCustomizationApp:enabled"/>
+  <int value="-654254555" label="ClayBlocking:enabled"/>
   <int value="-654196854" label="PasswordsKeyboardAccessory:enabled"/>
   <int value="-654111091" label="NavBarColorMatchesTabBackground:disabled"/>
   <int value="-653616608" label="MacSyscallSandbox:disabled"/>
@@ -23780,6 +23781,7 @@ from previous Chrome versions.
   <int value="1444324195" label="ForceReSyncDrive:enabled"/>
   <int value="1444347795"
       label="PageInfoAboutThisSiteDescriptionPlaceholder:enabled"/>
+  <int value="1444542845" label="ClayBlocking:disabled"/>
   <int value="1444634753" label="OsFeedbackJelly:disabled"/>
   <int value="1444719196"
       label="CellularBypassESimInstallationConnectivityCheck:enabled"/>

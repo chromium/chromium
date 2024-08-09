@@ -1430,6 +1430,11 @@ const char kEnableSearchEngineChoiceDescription[] =
     "also enables the new UI for the search engine settings page on both "
     "Desktop and Android.";
 
+const char kClayBlockingDialogName[] = "Clay blocking dialog";
+const char kClayBlockingDialogDescription[] =
+    "Enables the blocking dialog that directs users to complete their choice of"
+    "default apps (for Browser & Search) in Android.";
+
 const char kEnableNetworkLoggingToFileName[] = "Enable network logging to file";
 const char kEnableNetworkLoggingToFileDescription[] =
     "Enables network logging to a file named netlog.json in the user data "
