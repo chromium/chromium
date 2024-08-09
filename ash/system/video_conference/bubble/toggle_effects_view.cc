@@ -312,6 +312,9 @@ ToggleEffectsView::ToggleEffectsView(
                                       kButtonContainerSpacing / 2))
         .SetIgnoreDefaultMainAxisMargins(true);
 
+    // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+    row_view->SetLayoutManagerUseConstrainedSpace(false);
+
     // Add a button for each item in the row.
     for (auto* tile : row) {
       DCHECK_EQ(tile->type(), VcEffectType::kToggle);
