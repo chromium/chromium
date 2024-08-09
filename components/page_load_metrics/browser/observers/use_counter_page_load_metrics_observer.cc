@@ -419,6 +419,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kCSSColorMixFunction, WebDXFeature::kColorMix},
           {WebFeature::kImageSet, WebDXFeature::kImageSet},
           {WebFeature::kStructuredCloneMethod, WebDXFeature::kStructuredClone},
+          {WebFeature::kSlotAssignNode, WebDXFeature::kSlotAssign},
       });
 
   return *kMap;
