@@ -6,7 +6,6 @@
 
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {
@@ -115,23 +114,6 @@ PaintPropertyChangeType TransformPaintPropertyNode::State::ComputeChange(
   return change;
 }
 
-void TransformPaintPropertyNode::State::Trace(Visitor* visitor) const {
-  visitor->Trace(scroll);
-  visitor->Trace(scroll_translation_for_fixed);
-}
-
-TransformPaintPropertyNode::TransformPaintPropertyNode(RootTag)
-    : TransformPaintPropertyNodeOrAlias(kRoot),
-      state_{.scroll = &ScrollPaintPropertyNode::Root(),
-             .in_subtree_of_page_scale = false} {}
-
-const TransformPaintPropertyNode& TransformPaintPropertyNode::Root() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<TransformPaintPropertyNode>, root,
-      (MakeGarbageCollected<TransformPaintPropertyNode>(kRoot)));
-  return *root;
-}
-
 PaintPropertyChangeType
 TransformPaintPropertyNode::DirectlyUpdateTransformAndOrigin(
     TransformAndOrigin&& transform_and_origin,
@@ -142,6 +124,17 @@ TransformPaintPropertyNode::DirectlyUpdateTransformAndOrigin(
   if (change != PaintPropertyChangeType::kUnchanged)
     AddChanged(change);
   return change;
+}
+
+// The root of the transform tree. The root transform node references the root
+// scroll node.
+const TransformPaintPropertyNode& TransformPaintPropertyNode::Root() {
+  DEFINE_STATIC_REF(
+      TransformPaintPropertyNode, root,
+      base::AdoptRef(new TransformPaintPropertyNode(
+          nullptr, State{.scroll = &ScrollPaintPropertyNode::Root(),
+                         .in_subtree_of_page_scale = false})));
+  return *root;
 }
 
 bool TransformPaintPropertyNodeOrAlias::Changed(
@@ -212,12 +205,12 @@ std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
                     String(state_.compositor_element_id.ToString()));
   }
   if (state_.scroll)
-    json->SetString("scroll", String::Format("%p", state_.scroll.Get()));
+    json->SetString("scroll", String::Format("%p", state_.scroll.get()));
 
   if (state_.scroll_translation_for_fixed) {
     json->SetString(
         "scroll_translation_for_fixed",
-        String::Format("%p", state_.scroll_translation_for_fixed.Get()));
+        String::Format("%p", state_.scroll_translation_for_fixed.get()));
   }
   return json;
 }

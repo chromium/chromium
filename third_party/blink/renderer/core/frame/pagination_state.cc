@@ -15,13 +15,12 @@
 
 namespace blink {
 
-PaginationState::PaginationState()
-    : content_area_paint_properties_(
-          MakeGarbageCollected<ObjectPaintProperties>()) {}
+PaginationState::PaginationState() {
+  content_area_paint_properties_ = ObjectPaintProperties::Create();
+}
 
 void PaginationState::Trace(Visitor* visitor) const {
   visitor->Trace(anonymous_page_objects_);
-  visitor->Trace(content_area_paint_properties_);
 }
 
 LayoutBlockFlow* PaginationState::CreateAnonymousPageLayoutObject(
@@ -63,7 +62,7 @@ ObjectPaintProperties& PaginationState::EnsureContentAreaProperties(
       parent_transform, TransformPaintPropertyNode::State());
 
   // Create clip node.
-  ClipPaintPropertyNode::State clip_state(parent_transform, gfx::RectF(),
+  ClipPaintPropertyNode::State clip_state(&parent_transform, gfx::RectF(),
                                           FloatRoundedRect());
   content_area_paint_properties_->UpdateOverflowClip(parent_clip,
                                                      std::move(clip_state));
@@ -121,7 +120,7 @@ void PaginationState::UpdateContentAreaPropertiesForCurrentPage(
   gfx::RectF target_page_area_rect(gfx::PointF(target_content_rect.offset),
                                    gfx::SizeF(target_content_rect.size));
   ClipPaintPropertyNode::State clip_state(
-      chunk_properties.Transform(), target_page_area_rect,
+      &chunk_properties.Transform(), target_page_area_rect,
       FloatRoundedRect(target_page_area_rect));
   content_area_paint_properties_->UpdateOverflowClip(chunk_properties.Clip(),
                                                      std::move(clip_state));

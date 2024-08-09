@@ -14,6 +14,7 @@
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
+#include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/rect.h"
@@ -55,7 +56,7 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode final
    public:
     gfx::Rect container_rect;
     gfx::Size contents_size;
-    Member<const ClipPaintPropertyNode> overflow_clip_node;
+    scoped_refptr<const ClipPaintPropertyNode> overflow_clip_node;
     bool user_scrollable_horizontal = false;
     bool user_scrollable_vertical = false;
 
@@ -80,22 +81,16 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode final
     std::optional<cc::SnapContainerData> snap_container_data;
 
     PaintPropertyChangeType ComputeChange(const State& other) const;
-
-    void Trace(Visitor*) const;
   };
 
   // This node is really a sentinel, and does not represent a real scroll.
   static const ScrollPaintPropertyNode& Root();
 
-  static ScrollPaintPropertyNode* Create(const ScrollPaintPropertyNode& parent,
-                                         State&& state) {
-    return MakeGarbageCollected<ScrollPaintPropertyNode>(
-        kNonParentAlias, parent, std::move(state));
-  }
-
-  void Trace(Visitor* visitor) const final {
-    PaintPropertyNodeBase::Trace(visitor);
-    visitor->Trace(state_);
+  static scoped_refptr<ScrollPaintPropertyNode> Create(
+      const ScrollPaintPropertyNode& parent,
+      State&& state) {
+    return base::AdoptRef(
+        new ScrollPaintPropertyNode(&parent, std::move(state)));
   }
 
   // The empty AnimationState struct is to meet the requirement of
@@ -147,7 +142,7 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode final
   }
 
   const ClipPaintPropertyNode* OverflowClipNode() const {
-    return state_.overflow_clip_node.Get();
+    return state_.overflow_clip_node.get();
   }
 
   bool UserScrollableHorizontal() const {
@@ -188,18 +183,12 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode final
 
   std::unique_ptr<JSONObject> ToJSON() const final;
 
-  // These are public required by MakeGarbageCollected, but the protected tags
-  // prevent these from being called from outside.
-  explicit ScrollPaintPropertyNode(RootTag);
-  ScrollPaintPropertyNode(NonParentAliasTag,
-                          const ScrollPaintPropertyNode& parent,
-                          State&& state)
-      : PaintPropertyNodeBase(NonParentAliasTag(), parent),
-        state_(std::move(state)) {
+ private:
+  ScrollPaintPropertyNode(const ScrollPaintPropertyNode* parent, State&& state)
+      : PaintPropertyNodeBase(parent), state_(std::move(state)) {
     Validate();
   }
 
- private:
   void Validate() const {
 #if DCHECK_IS_ON()
     DCHECK(!state_.compositor_element_id ||

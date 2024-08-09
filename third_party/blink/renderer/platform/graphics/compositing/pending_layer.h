@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/platform/graphics/lcd_text_preference.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "third_party/blink/renderer/platform/graphics/paint/ref_counted_property_tree_state.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -56,8 +58,8 @@ class PLATFORM_EXPORT PendingLayer {
     return text_known_to_be_on_opaque_background_;
   }
   const PaintChunkSubset& Chunks() const { return chunks_; }
-  const PropertyTreeState& GetPropertyTreeState() const {
-    return property_tree_state_;
+  const PropertyTreeState GetPropertyTreeState() const {
+    return property_tree_state_.GetPropertyTreeState();
   }
   const gfx::Vector2dF& OffsetOfDecompositedTransforms() const {
     return offset_of_decomposited_transforms_;
@@ -220,7 +222,7 @@ class PLATFORM_EXPORT PendingLayer {
   // must draw a solid color that fully covers this pending layer.
   wtf_size_t solid_color_chunk_index_ = kNotFound;
   PaintChunkSubset chunks_;
-  PropertyTreeState property_tree_state_;
+  RefCountedPropertyTreeState property_tree_state_;
   gfx::Vector2dF offset_of_decomposited_transforms_;
   PaintPropertyChangeType change_of_decomposited_transforms_ =
       PaintPropertyChangeType::kUnchanged;
@@ -231,8 +233,7 @@ class PLATFORM_EXPORT PendingLayer {
   // Contains non-composited hit_test_data.scroll_translation of PaintChunks.
   // This is a vector instead of a set because the size is small vs the cost of
   // hashing.
-  HeapVector<Member<const TransformPaintPropertyNode>>
-      non_composited_scroll_translations_;
+  Vector<const TransformPaintPropertyNode*> non_composited_scroll_translations_;
 
   // This is set to non-null after layerization if ChunkRequiresOwnLayer() or
   // UsesSolidColorLayer() is true.

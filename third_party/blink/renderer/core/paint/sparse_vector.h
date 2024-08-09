@@ -11,8 +11,8 @@
 #include <type_traits>
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -25,9 +25,7 @@ namespace blink {
 //
 // Based heavily on the ElementRareDataVector class, however the implementation
 // is separate because that class requires garbage collection, whereas the
-// paint properties this class is used for were ref-counted.
-// TODO(crbug.com/358331314): Now both classes manage GC pointers. Consider
-// consolidating them.
+// paint properties this class is used for are ref-counted.
 //
 // Template type expectations:
 //   FieldId: must be a scoped enum (enforced below) and have a kNumFields entry
@@ -36,10 +34,11 @@ namespace blink {
 //              either an class or a managed pointer to a class.
 //
 // For usage, see the associated tests in `sparse_vector_test.cc`.
-template <typename FieldId, typename FieldType>
-  requires(std::is_enum_v<FieldId>)
+template <typename FieldId,
+          typename FieldType,
+          typename = std::enable_if_t<std::is_enum_v<FieldId>, FieldId>>
 class CORE_EXPORT SparseVector {
-  DISALLOW_NEW();
+  USING_FAST_MALLOC(SparseVector);
 
  public:
   SparseVector() = default;
@@ -48,8 +47,6 @@ class CORE_EXPORT SparseVector {
   SparseVector& operator=(SparseVector&&) = default;
   SparseVector& operator=(const SparseVector&) = delete;
   ~SparseVector() = default;
-
-  void Trace(Visitor* visitor) const { visitor->Trace(fields_); }
 
   // Common vector methods for checking state.
   wtf_size_t capacity() const { return fields_.capacity(); }
@@ -119,7 +116,7 @@ class CORE_EXPORT SparseVector {
     return __builtin_popcountll(fields_bitfield_ & mask);
   }
 
-  HeapVector<FieldType> fields_;
+  Vector<FieldType> fields_;
 
   BitfieldType fields_bitfield_ = {};
   static_assert(sizeof(fields_bitfield_) * CHAR_BIT >=
