@@ -73,24 +73,20 @@ bool FontVariantAlternatesParser::ConsumeAlternate(
       peek == CSSValueID::kStyleset || peek == CSSValueID::kCharacterVariant;
   CSSFunctionValue* function_value =
       MakeGarbageCollected<CSSFunctionValue>(peek);
-  CSSValueList* aliases;
-  {
-    CSSParserTokenStream::RestoringBlockGuard guard(stream);
-    stream.ConsumeWhitespace();
-    aliases = ConsumeCommaSeparatedList<CSSCustomIdentValue*(
-        CSSParserTokenStream&, const CSSParserContext&)>(ConsumeCustomIdent,
-                                                         stream, context);
-    // At least one argument is required:
-    // https://drafts.csswg.org/css-fonts-4/#font-variant-alternates-prop
-    if (!aliases || !stream.AtEnd()) {
-      return false;
-    }
-    if (aliases->length() > 1 && !multiple_idents_allowed) {
-      return false;
-    }
-    guard.Release();
+  CSSParserSavePoint savepoint(stream);
+  CSSParserTokenRange inner = css_parsing_utils::ConsumeFunction(stream);
+  CSSValueList* aliases = ConsumeCommaSeparatedList<CSSCustomIdentValue*(
+      CSSParserTokenRange&, const CSSParserContext&)>(ConsumeCustomIdent, inner,
+                                                      context);
+  // At least one argument is required:
+  // https://drafts.csswg.org/css-fonts-4/#font-variant-alternates-prop
+  if (!aliases || !inner.AtEnd()) {
+    return false;
   }
-  stream.ConsumeWhitespace();
+  if (aliases->length() > 1 && !multiple_idents_allowed) {
+    return false;
+  }
+  savepoint.Release();
   *value_to_set = MakeGarbageCollected<cssvalue::CSSAlternateValue>(
       *function_value, *aliases);
   return true;

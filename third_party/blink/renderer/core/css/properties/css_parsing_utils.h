@@ -668,6 +668,12 @@ CSSValue* ConsumeOffsetRotate(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumeInitialLetter(CSSParserTokenStream&, const CSSParserContext&);
 
 CSSValue* ConsumeBasicShape(
+    CSSParserTokenRange&,
+    const CSSParserContext&,
+    AllowPathValue = AllowPathValue::kAllow,
+    AllowBasicShapeRectValue = AllowBasicShapeRectValue::kAllow,
+    AllowBasicShapeXYWHValue = AllowBasicShapeXYWHValue::kAllow);
+CSSValue* ConsumeBasicShape(
     CSSParserTokenStream&,
     const CSSParserContext&,
     AllowPathValue = AllowPathValue::kAllow,
