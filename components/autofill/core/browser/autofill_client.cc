@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
@@ -74,6 +75,11 @@ AutofillComposeDelegate* AutofillClient::GetComposeDelegate() {
 }
 
 AutofillPlusAddressDelegate* AutofillClient::GetPlusAddressDelegate() {
+  return nullptr;
+}
+
+AutofillPredictionImprovementsDelegate*
+AutofillClient::GetAutofillPredictionImprovementsDelegate() {
   return nullptr;
 }
 

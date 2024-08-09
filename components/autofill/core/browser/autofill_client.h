@@ -80,6 +80,7 @@ class AutofillMlPredictionModelHandler;
 class AutofillOptimizationGuide;
 class AutofillSuggestionDelegate;
 class AutofillPlusAddressDelegate;
+class AutofillPredictionImprovementsDelegate;
 class AutofillProfile;
 enum class CreditCardFetchResult;
 class FormDataImporter;
@@ -323,6 +324,14 @@ class AutofillClient {
 
   // Returns the `AutofillComposeDelegate` instance for the tab of this client.
   virtual AutofillComposeDelegate* GetComposeDelegate();
+
+  // Returns the `AutofillPredictionImprovementsDelegate` instance for
+  // the tab of this client. This method can return nullptr if the user does not
+  // have the feature available, either because of not being part of the
+  // experiment or because of the current platform (prediction improvements are
+  // only available in Desktop).
+  virtual AutofillPredictionImprovementsDelegate*
+  GetAutofillPredictionImprovementsDelegate();
 
   // Returns the `AutofillPlusAddressDelegate` associated with the profile of
   // the window of this tab.

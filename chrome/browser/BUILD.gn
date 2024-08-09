@@ -18,6 +18,7 @@ import("//chrome/browser/request_header_integrity/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
+import("//components/autofill_prediction_improvements/features.gni")
 import("//components/captive_portal/core/features.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
@@ -1992,6 +1993,7 @@ static_library("browser") {
     "//components/autofill/content/browser",
     "//components/autofill/content/common:features",
     "//components/autofill/core/browser",
+    "//components/autofill_prediction_improvements:buildflags",
     "//components/back_forward_cache",
     "//components/background_fetch",
     "//components/background_sync",
@@ -8154,6 +8156,19 @@ static_library("browser") {
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//services/metrics/public/cpp:metrics_cpp",
       "//services/metrics/public/cpp:ukm_builders",
+    ]
+  }
+
+  if (enable_autofill_prediction_improvements) {
+    sources += [
+      "autofill_prediction_improvements/chrome_autofill_prediction_improvements_client.cc",
+      "autofill_prediction_improvements/chrome_autofill_prediction_improvements_client.h",
+    ]
+
+    deps += [
+      "//components/autofill/core/browser",
+      "//components/autofill/core/common",
+      "//components/autofill_prediction_improvements/core/browser",
     ]
   }
 

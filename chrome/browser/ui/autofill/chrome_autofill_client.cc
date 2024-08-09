@@ -87,6 +87,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/autofill_prediction_improvements/buildflags.h"
 #include "components/compose/buildflags.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -151,6 +152,11 @@
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/compose/chrome_compose_client.h"
 #include "components/compose/core/browser/compose_manager.h"
+#endif
+
+#if BUILDFLAG(ENABLE_AUTOFILL_PREDICTION_IMPROVEMENTS)
+#include "chrome/browser/autofill_prediction_improvements/chrome_autofill_prediction_improvements_client.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -270,6 +276,21 @@ AutofillPlusAddressDelegate* ChromeAutofillClient::GetPlusAddressDelegate() {
   }
   return PlusAddressServiceFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext());
+}
+
+AutofillPredictionImprovementsDelegate*
+ChromeAutofillClient::GetAutofillPredictionImprovementsDelegate() {
+#if BUILDFLAG(ENABLE_AUTOFILL_PREDICTION_IMPROVEMENTS)
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillPredictionImprovementsEnabled)) {
+    return nullptr;
+  }
+  auto* client = ChromeAutofillPredictionImprovementsClient::FromWebContents(
+      web_contents());
+  return client ? &client->GetManager() : nullptr;
+#else
+  return nullptr;
+#endif
 }
 
 void ChromeAutofillClient::OfferPlusAddressCreation(

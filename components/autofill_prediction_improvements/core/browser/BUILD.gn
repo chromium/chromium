@@ -1,0 +1,20 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+static_library("browser") {
+  sources = [
+    "autofill_prediction_improvements_client.h",
+    "autofill_prediction_improvements_manager.cc",
+    "autofill_prediction_improvements_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/keyed_service/core",
+  ]
+}
