@@ -91,6 +91,15 @@ chromium-metrics-reviews@google.com.
       summary="Software secure Widevine key system"/>
 </variants>
 
+<variants name="MF_MEDIA_ENGINE_ERR">
+  <variant name="MF_MEDIA_ENGINE_ERR_ABORTED"/>
+  <variant name="MF_MEDIA_ENGINE_ERR_DECODE"/>
+  <variant name="MF_MEDIA_ENGINE_ERR_ENCRYPTED"/>
+  <variant name="MF_MEDIA_ENGINE_ERR_NETWORK"/>
+  <variant name="MF_MEDIA_ENGINE_ERR_NOERROR"/>
+  <variant name="MF_MEDIA_ENGINE_ERR_SRC_NOT_SUPPORTED"/>
+</variants>
+
 <variants name="RendererType">
   <variant name="MediaFoundationRenderer"/>
   <variant name="RendererImpl"/>
@@ -4242,6 +4251,18 @@ chromium-metrics-reviews@google.com.
     with the camera capture service, including enumerations which never
     finished.
   </summary>
+</histogram>
+
+<histogram
+    name="Media.MediaFoundation.MediaEngineError.{MF_MEDIA_ENGINE_ERR}.Hresult"
+    enum="Hresult" expires_after="2025-02-27">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Hresult corresponding to a {MF_MEDIA_ENGINE_ERR}. Recorded when the
+    MediaEngine hits an error from Event Notify.
+  </summary>
+  <token key="MF_MEDIA_ENGINE_ERR" variants="MF_MEDIA_ENGINE_ERR"/>
 </histogram>
 
 <histogram name="Media.MediaFoundationRenderer.CreateMediaEngineError"
