@@ -17,7 +17,7 @@
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/process_manager.h"
+#include "extensions/browser/process_manager.h"  // nogncheck
 #endif
 
 namespace safe_browsing {

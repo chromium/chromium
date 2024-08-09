@@ -7,7 +7,7 @@ import("//extensions/buildflags/buildflags.gni")
 import("//extensions/common/api/schema.gni")
 import("//tools/json_schema_compiler/json_schema_api.gni")
 
-assert(enable_extensions,
+assert(enable_extensions || enable_desktop_android_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
 
 # The set of all targets needed to build out the extension API implementations
@@ -22,65 +22,70 @@ group("api") {
 }
 
 # The collection of API implementations.
-group("api_implementations") {
-  public_deps = [
-    "//extensions/browser:browser_sources",
-    "//extensions/browser/api/alarms",
-    "//extensions/browser/api/app_current_window_internal",
-    "//extensions/browser/api/app_runtime",
-    "//extensions/browser/api/app_window",
-    "//extensions/browser/api/audio",
-    "//extensions/browser/api/automation_internal",
-    "//extensions/browser/api/bluetooth",
-    "//extensions/browser/api/bluetooth_low_energy",
-    "//extensions/browser/api/bluetooth_socket",
-    "//extensions/browser/api/declarative_net_request",
-    "//extensions/browser/api/dns",
-    "//extensions/browser/api/feedback_private",
-    "//extensions/browser/api/file_handlers",
-    "//extensions/browser/api/file_system",
-    "//extensions/browser/api/i18n",
-    "//extensions/browser/api/idle",
-    "//extensions/browser/api/management",
-    "//extensions/browser/api/messaging",
-    "//extensions/browser/api/messaging:native_messaging",
-    "//extensions/browser/api/metrics_private",
-    "//extensions/browser/api/mime_handler_private",
-    "//extensions/browser/api/networking_private",
-    "//extensions/browser/api/offscreen",
-    "//extensions/browser/api/power",
-    "//extensions/browser/api/printer_provider",
-    "//extensions/browser/api/runtime",
-    "//extensions/browser/api/serial",
-    "//extensions/browser/api/socket",
-    "//extensions/browser/api/sockets_tcp",
-    "//extensions/browser/api/sockets_tcp_server",
-    "//extensions/browser/api/sockets_udp",
-    "//extensions/browser/api/storage",
-    "//extensions/browser/api/system_cpu",
-    "//extensions/browser/api/system_info",
-    "//extensions/browser/api/system_memory",
-    "//extensions/browser/api/system_network",
-    "//extensions/browser/api/system_storage",
-    "//extensions/browser/api/test",
-    "//extensions/browser/api/user_scripts",
-    "//extensions/browser/api/virtual_keyboard_private",
-  ]
-
-  if (is_chromeos) {
-    public_deps += [
-      "//extensions/browser/api/cec_private",
-      "//extensions/browser/api/virtual_keyboard",
-      "//extensions/browser/api/webcam_private",
+# TODO(https://crbug.com/356905053): Remove this if-block once APIs are compiled
+# on desktop android. Individual APIs can be toggled instead of the entire
+# group.
+if (enable_extensions) {
+  group("api_implementations") {
+    public_deps = [
+      "//extensions/browser:browser_sources",
+      "//extensions/browser/api/alarms",
+      "//extensions/browser/api/app_current_window_internal",
+      "//extensions/browser/api/app_runtime",
+      "//extensions/browser/api/app_window",
+      "//extensions/browser/api/audio",
+      "//extensions/browser/api/automation_internal",
+      "//extensions/browser/api/bluetooth",
+      "//extensions/browser/api/bluetooth_low_energy",
+      "//extensions/browser/api/bluetooth_socket",
+      "//extensions/browser/api/declarative_net_request",
+      "//extensions/browser/api/dns",
+      "//extensions/browser/api/feedback_private",
+      "//extensions/browser/api/file_handlers",
+      "//extensions/browser/api/file_system",
+      "//extensions/browser/api/i18n",
+      "//extensions/browser/api/idle",
+      "//extensions/browser/api/management",
+      "//extensions/browser/api/messaging",
+      "//extensions/browser/api/messaging:native_messaging",
+      "//extensions/browser/api/metrics_private",
+      "//extensions/browser/api/mime_handler_private",
+      "//extensions/browser/api/networking_private",
+      "//extensions/browser/api/offscreen",
+      "//extensions/browser/api/power",
+      "//extensions/browser/api/printer_provider",
+      "//extensions/browser/api/runtime",
+      "//extensions/browser/api/serial",
+      "//extensions/browser/api/socket",
+      "//extensions/browser/api/sockets_tcp",
+      "//extensions/browser/api/sockets_tcp_server",
+      "//extensions/browser/api/sockets_udp",
+      "//extensions/browser/api/storage",
+      "//extensions/browser/api/system_cpu",
+      "//extensions/browser/api/system_info",
+      "//extensions/browser/api/system_memory",
+      "//extensions/browser/api/system_network",
+      "//extensions/browser/api/system_storage",
+      "//extensions/browser/api/test",
+      "//extensions/browser/api/user_scripts",
+      "//extensions/browser/api/virtual_keyboard_private",
     ]
-  }
 
-  if (is_chromeos_ash) {
-    public_deps += [
-      "//extensions/browser/api/diagnostics",
-      "//extensions/browser/api/lock_screen_data",
-      "//extensions/browser/api/media_perception_private",
-    ]
+    if (is_chromeos) {
+      public_deps += [
+        "//extensions/browser/api/cec_private",
+        "//extensions/browser/api/virtual_keyboard",
+        "//extensions/browser/api/webcam_private",
+      ]
+    }
+
+    if (is_chromeos_ash) {
+      public_deps += [
+        "//extensions/browser/api/diagnostics",
+        "//extensions/browser/api/lock_screen_data",
+        "//extensions/browser/api/media_perception_private",
+      ]
+    }
   }
 }
 

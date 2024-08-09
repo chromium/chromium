@@ -65,10 +65,10 @@ class ExtensionNavigationUIData {
       api::extension_types::DocumentLifecycle document_lifecycle);
 
   ExtensionApiFrameIdMap::FrameData frame_data_;
-  bool is_web_view_;
+  bool is_web_view_ = false;
   // These are only valid iff is_web_view_.
-  int web_view_instance_id_;
-  int web_view_rules_registry_id_;
+  int web_view_instance_id_ = 0;
+  int web_view_rules_registry_id_ = 0;
 
   // ID for the parent RenderFrameHost of this navigation. Will only have a
   // valid value for sub-frame navigations.

@@ -265,7 +265,7 @@
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "extensions/browser/view_type_utils.h"
+#include "extensions/browser/view_type_utils.h"  // nogncheck
 #include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #endif

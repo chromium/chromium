@@ -241,8 +241,8 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/ui/webui/extensions/extensions_ui.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registry.h"  // nogncheck
+#include "extensions/browser/extension_system.h"    // nogncheck
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/feature_switch.h"

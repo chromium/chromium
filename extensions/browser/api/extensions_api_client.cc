@@ -8,10 +8,14 @@
 #include "extensions/browser/api/device_permissions_prompt.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
+#include "extensions/browser/supervised_user_extensions_delegate.h"
+
+// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/guest_view/extensions_guest_view_manager_delegate.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest_delegate.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper_delegate.h"
-#include "extensions/browser/supervised_user_extensions_delegate.h"
+#endif
 
 namespace extensions {
 class AppViewGuestDelegate;
@@ -69,6 +73,8 @@ void ExtensionsAPIClient::OpenFileUrl(
     const GURL& file_url,
     content::BrowserContext* browser_context) {}
 
+// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 AppViewGuestDelegate* ExtensionsAPIClient::CreateAppViewGuestDelegate() const {
   return nullptr;
 }
@@ -100,6 +106,7 @@ WebViewPermissionHelperDelegate* ExtensionsAPIClient::
         WebViewPermissionHelper* web_view_permission_helper) const {
   return new WebViewPermissionHelperDelegate(web_view_permission_helper);
 }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<ConsentProvider> ExtensionsAPIClient::CreateConsentProvider(

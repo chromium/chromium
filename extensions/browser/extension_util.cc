@@ -9,7 +9,6 @@
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crx_file/id_util.h"
-#include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
@@ -33,6 +32,11 @@
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
+
+// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "components/guest_view/browser/guest_view_base.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
@@ -60,6 +64,8 @@ bool IsSigninProfileTestExtensionOnTestImage(const Extension* extension) {
 
 }  // namespace
 
+// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 mojom::HostID::HostType HostIdTypeFromGuestView(
     const guest_view::GuestViewBase& guest) {
   if (guest.IsOwnedByWebUI()) {
@@ -84,6 +90,7 @@ mojom::HostID GenerateHostIdFromGuestView(
     const guest_view::GuestViewBase& guest) {
   return mojom::HostID(HostIdTypeFromGuestView(guest), guest.owner_host());
 }
+#endif
 
 bool CanBeIncognitoEnabled(const Extension* extension) {
   return IncognitoInfo::IsIncognitoAllowed(extension) &&

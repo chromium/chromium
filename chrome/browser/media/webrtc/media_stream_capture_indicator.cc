@@ -45,7 +45,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry.h"  // nogncheck
 #include "extensions/common/extension.h"
 #endif
 

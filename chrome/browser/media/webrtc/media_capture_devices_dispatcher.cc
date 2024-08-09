@@ -56,7 +56,7 @@
 #include "chrome/browser/media/extension_media_access_handler.h"
 #include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
 #include "chrome/browser/media/webrtc/tab_capture_access_handler.h"
-#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry.h"  // nogncheck
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

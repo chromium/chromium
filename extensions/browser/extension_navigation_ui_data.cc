@@ -8,7 +8,12 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
+
+// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif
 
 namespace extensions {
 
@@ -119,15 +124,15 @@ ExtensionNavigationUIData::ExtensionNavigationUIData(
                   frame_type,
                   document_lifecycle),
       parent_routing_id_(parent_routing_id) {
+// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   WebViewGuest* web_view = WebViewGuest::FromWebContents(web_contents);
   if (web_view) {
     is_web_view_ = true;
     web_view_instance_id_ = web_view->view_instance_id();
     web_view_rules_registry_id_ = web_view->rules_registry_id();
-  } else {
-    is_web_view_ = false;
-    web_view_instance_id_ = web_view_rules_registry_id_ = 0;
   }
+#endif
 }
 
 }  // namespace extensions

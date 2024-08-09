@@ -29,11 +29,15 @@
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
+
+// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
+#endif
 
 using content::BrowserThread;
 using content::BrowserContext;
@@ -83,6 +87,8 @@ bool GetDeclarationValue(std::string_view line,
   return true;
 }
 
+// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 bool CanExecuteScriptEverywhere(BrowserContext* browser_context,
                                 const mojom::HostID& host_id) {
   if (host_id.type == mojom::HostID::HostType::kWebUi)
@@ -95,6 +101,7 @@ bool CanExecuteScriptEverywhere(BrowserContext* browser_context,
   return extension && PermissionsData::CanExecuteScriptEverywhere(
                           extension->id(), extension->location());
 }
+#endif
 
 }  // namespace
 
@@ -498,6 +505,8 @@ UserScriptLoader::SendUpdateResult UserScriptLoader::SendUpdate(
     return SendUpdateResult::kNoActionTaken;
   }
 
+// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // If the process only hosts guest frames, then those guest frames share the
   // same embedder/owner. In this case, only scripts from allowlisted hosts or
   // from the guest frames' owner should be injected.
@@ -534,6 +543,7 @@ UserScriptLoader::SendUpdateResult UserScriptLoader::SendUpdate(
         break;
     }
   }
+#endif
 
   mojom::Renderer* renderer =
       RendererStartupHelperFactory::GetForBrowserContext(browser_context())

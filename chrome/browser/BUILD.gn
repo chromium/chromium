@@ -7600,6 +7600,12 @@ static_library("browser") {
     }
   }
 
+  # TODO(https://crbug.com/356905053): Add more dependencies here and merge this
+  # block with the `enable_extensions` block above.
+  if (enable_desktop_android_extensions) {
+    public_deps += [ "//extensions/browser" ]
+  }
+
   if (enable_library_cdms) {
     sources += [
       "media/output_protection_impl.cc",

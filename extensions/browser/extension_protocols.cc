@@ -67,8 +67,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
-#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/process_map_factory.h"
 #include "extensions/browser/url_request_util.h"
@@ -109,6 +107,11 @@
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "url/origin.h"
 #include "url/url_util.h"
+
+// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif
 
 using content::BrowserContext;
 using extensions::Extension;
@@ -1020,10 +1023,15 @@ CreateExtensionURLLoaderFactory(int render_process_id, int render_frame_id) {
   content::RenderProcessHost* process_host =
       content::RenderProcessHost::FromID(render_process_id);
   content::BrowserContext* browser_context = process_host->GetBrowserContext();
+  bool is_web_view_request = false;
+
+// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  bool is_web_view_request =
+  is_web_view_request =
       WebViewGuest::FromRenderFrameHost(render_frame_host) != nullptr;
+#endif
 
   return ExtensionURLLoaderFactory::Create(browser_context, is_web_view_request,
                                            render_process_id);

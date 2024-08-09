@@ -36,7 +36,7 @@
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/supervised_user/core/common/pref_names.h"
-#include "extensions/browser/pref_names.h"
+#include "extensions/browser/pref_names.h"  // nogncheck
 #endif
 
 namespace browser_sync {

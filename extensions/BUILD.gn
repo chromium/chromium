@@ -28,54 +28,54 @@ config("component_implementation") {
   defines = [ "EXTENSIONS_COMPONENT_IMPLEMENTATION" ]
 }
 
+group("extensions_resources") {
+  public_deps = [
+    ":extensions_browser_resources",
+    ":extensions_renderer_resources",
+    ":extensions_resources_grd",
+  ]
+}
+
+grit("extensions_resources_grd") {
+  source = "extensions_resources.grd"
+  outputs = [
+    "grit/extensions_resources.h",
+    "extensions_resources.pak",
+  ]
+}
+
+grit("extensions_browser_resources") {
+  source = "browser/resources/extensions_browser_resources.grd"
+  outputs = [
+    "grit/extensions_browser_resources.h",
+    "grit/extensions_browser_resources_map.cc",
+    "grit/extensions_browser_resources_map.h",
+    "extensions_browser_resources_100_percent.pak",
+    "extensions_browser_resources_200_percent.pak",
+  ]
+}
+
+grit("extensions_renderer_resources") {
+  source = "renderer/resources/extensions_renderer_resources.grd"
+  outputs = [
+    "grit/extensions_renderer_resources.h",
+    "extensions_renderer_resources.pak",
+  ]
+  grit_flags = [
+    "-E",
+    "mojom_root=" + rebase_path(root_gen_dir, root_build_dir),
+  ]
+
+  deps = [
+    "//extensions/common:mojom_js",
+    "//extensions/common/api:mojom_js",
+    "//services/device/public/mojom:mojom_js",
+  ]
+}
+
 # TODO(https://crbug.com/356905053): Gradually include more of these sources
 # in the desktop-android build.
 if (enable_extensions) {
-  group("extensions_resources") {
-    public_deps = [
-      ":extensions_browser_resources",
-      ":extensions_renderer_resources",
-      ":extensions_resources_grd",
-    ]
-  }
-
-  grit("extensions_resources_grd") {
-    source = "extensions_resources.grd"
-    outputs = [
-      "grit/extensions_resources.h",
-      "extensions_resources.pak",
-    ]
-  }
-
-  grit("extensions_browser_resources") {
-    source = "browser/resources/extensions_browser_resources.grd"
-    outputs = [
-      "grit/extensions_browser_resources.h",
-      "grit/extensions_browser_resources_map.cc",
-      "grit/extensions_browser_resources_map.h",
-      "extensions_browser_resources_100_percent.pak",
-      "extensions_browser_resources_200_percent.pak",
-    ]
-  }
-
-  grit("extensions_renderer_resources") {
-    source = "renderer/resources/extensions_renderer_resources.grd"
-    outputs = [
-      "grit/extensions_renderer_resources.h",
-      "extensions_renderer_resources.pak",
-    ]
-    grit_flags = [
-      "-E",
-      "mojom_root=" + rebase_path(root_gen_dir, root_build_dir),
-    ]
-
-    deps = [
-      "//extensions/common:mojom_js",
-      "//extensions/common/api:mojom_js",
-      "//services/device/public/mojom:mojom_js",
-    ]
-  }
-
   static_library("test_support") {
     testonly = true
     sources = [

@@ -69,9 +69,9 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/api/storage/storage_frontend.h"
-#include "extensions/browser/extension_system_provider.h"
-#include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/api/storage/storage_frontend.h"  // nogncheck
+#include "extensions/browser/extension_system_provider.h"     // nogncheck
+#include "extensions/browser/extensions_browser_client.h"     // nogncheck
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

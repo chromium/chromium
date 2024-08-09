@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/host_id.mojom.h"
@@ -45,6 +46,8 @@ namespace util {
 // chrome/browser/extensions/extension_util.h/cc that are only dependent on
 // extensions/ here.
 
+// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Returns a HostID type based on the given GuestViewBase.
 mojom::HostID::HostType HostIdTypeFromGuestView(
     const guest_view::GuestViewBase& guest);
@@ -52,6 +55,7 @@ mojom::HostID::HostType HostIdTypeFromGuestView(
 // Returns a HostID instance based on the given GuestViewBase.
 mojom::HostID GenerateHostIdFromGuestView(
     const guest_view::GuestViewBase& guest);
+#endif
 
 // Returns true if the extension can be enabled in incognito mode.
 bool CanBeIncognitoEnabled(const Extension* extension);

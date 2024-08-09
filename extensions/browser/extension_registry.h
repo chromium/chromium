@@ -18,7 +18,8 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(ENABLE_EXTENSIONS) && \
+    !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 #error "Extensions must be enabled"
 #endif
 

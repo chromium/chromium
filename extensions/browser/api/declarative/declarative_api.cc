@@ -23,11 +23,15 @@
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/guest_view/web_view/web_view_constants.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/common/api/events.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/permissions/permissions_data.h"
+
+// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/guest_view/web_view/web_view_constants.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif
 
 using extensions::api::events::Rule;
 
@@ -39,7 +43,11 @@ namespace extensions {
 
 namespace {
 
+// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr char kDeclarativeEventPrefix[] = "declarative";
+#endif
+
 constexpr char kDeclarativeContentEventPrefix[] = "declarativeContent.";
 constexpr char kDeclarativeWebRequestEventPrefix[] = "declarativeWebRequest.";
 constexpr char kDeclarativeWebRequestWebViewEventPrefix[] =
@@ -155,9 +163,12 @@ ExtensionFunction::ResponseAction RulesFunction::Run() {
 
   RecordUMA(event_name);
 
-  bool from_web_view = web_view_instance_id != 0;
   // If we are not operating on a particular <webview>, then the key is 0.
   int rules_registry_id = RulesRegistryService::kDefaultRulesRegistryID;
+
+// TODO(https://crbug.com/356671305): Update this to `ENABLE_GUEST_VIEW`.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  bool from_web_view = web_view_instance_id != 0;
   if (from_web_view) {
     // Sample event names:
     // webViewInternal.declarativeWebRequest.onRequest.
@@ -170,6 +181,7 @@ ExtensionFunction::ResponseAction RulesFunction::Run() {
     rules_registry_id = WebViewGuest::GetOrGenerateRulesRegistryID(
         source_process_id(), web_view_instance_id);
   }
+#endif
 
   // The following call will return a NULL pointer for apps_shell, but should
   // never be called there anyways.
