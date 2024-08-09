@@ -344,7 +344,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "SystemIndicatorManager",
     "WebAppProvider",
 #endif
-    "AboutThisSiteServiceFactory",
     "AccountReconcilor",
     "ActivityLog",
     "ActivityLogPrivateAPI",

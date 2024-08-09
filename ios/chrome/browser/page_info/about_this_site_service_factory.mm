@@ -61,8 +61,14 @@ AboutThisSiteServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
+  auto* template_service =
+      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
+  // TemplateURLService may be null during testing.
+  if (!template_service) {
+    return nullptr;
+  }
+
   return std::make_unique<page_info::AboutThisSiteService>(
       optimization_guide, browser_state->IsOffTheRecord(),
-      browser_state->GetPrefs(),
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state));
+      browser_state->GetPrefs(), template_service);
 }
