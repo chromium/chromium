@@ -48,7 +48,6 @@
 #include "components/autofill/core/browser/strike_databases/payments/test_credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_form_data_importer.h"
@@ -56,7 +55,6 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -97,9 +95,7 @@ using UkmCardUploadDecisionType = ukm::builders::Autofill_CardUploadDecision;
 using UkmDeveloperEngagementType = ukm::builders::Autofill_DeveloperEngagement;
 
 #if !BUILDFLAG(IS_IOS)
-// time_t representation of 9th Sep, 2001 01:46:40 GMT
-constexpr base::Time kArbitraryTime = base::Time::FromTimeT(1000000000);
-constexpr base::Time kMuchLaterTime = base::Time::FromTimeT(1234567890);
+base::TimeDelta kVeryLargeDelta = base::Days(365) * 75;
 #endif
 
 // Used to configure form for |CreateTestCreditCardFormData|.
@@ -272,6 +268,9 @@ class MockVirtualCardEnrollmentManager
 class CreditCardSaveManagerTest : public testing::Test {
  public:
   void SetUp() override {
+    // Change the year to be 20XX.
+    task_environment_.FastForwardBy(base::Days(365) * 31);
+
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     autofill_client_.set_test_strike_database(
         std::make_unique<TestStrikeDatabase>());
@@ -510,7 +509,8 @@ class CreditCardSaveManagerTest : public testing::Test {
     return *autofill_client_.GetStrikeDatabase();
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
@@ -845,12 +845,11 @@ TEST_F(CreditCardSaveManagerTest,
   CreditCard local_card = test::GetCreditCard();
 
   // Add 2 strike for the card and advance the required delay time.
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
   cvc_storage_strike_database.AddStrikes(2, local_card.guid());
   EXPECT_EQ(2, cvc_storage_strike_database.GetStrikes(local_card.guid()));
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
 
   // Verify that the CVC prompt is offered and reset the strike count for that
@@ -921,8 +920,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Advance the required delay time by half and AttemptToOfferCvcLocalSave with
   // user decision of `kIgnored`.
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value() /
       2);
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
@@ -933,7 +931,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Advance the required delay time by half and AttemptToOfferCvcLocalSave with
   // user decision of `kIgnored`.
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value() /
       2);
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
@@ -960,8 +958,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Advance the required delay time and AttemptToOfferCvcLocalSave with user
   // decision of `kDeclined`.
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
   payments_client().SetLocalSaveCallbackOfferDecision(
       AutofillClient::SaveCardOfferUserDecision::kDeclined);
@@ -978,14 +975,13 @@ TEST_F(CreditCardSaveManagerTest,
   CreditCard server_card = test::WithCvc(test::GetMaskedServerCard());
 
   // Add 2 strikes for the card and advance the required delay time.
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
   cvc_storage_strike_database.AddStrikes(
       2, base::NumberToString(server_card.instrument_id()));
   EXPECT_EQ(2, cvc_storage_strike_database.GetStrikes(
                    base::NumberToString(server_card.instrument_id())));
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
 
   // Verify that the CVC prompt is offered
@@ -1041,7 +1037,6 @@ TEST_F(CreditCardSaveManagerTest,
   CreditCard server_card = test::WithCvc(test::GetMaskedServerCard());
 
   // AttemptToOfferCvcUpload save and user declined.
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
   payments_client().SetCloudSaveCallbackOfferDecision(
@@ -1074,8 +1069,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Advance the required delay time by half and AttemptToOfferCvcUpload user
   // decision of `kIgnored`.
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value() /
       2);
   payments_client().SetCloudSaveCallbackOfferDecision(
@@ -1089,7 +1083,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Advance the required delay time by half and AttemptToOfferCvcUpload user
   // decision of `kIgnored`.
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value() /
       2);
   payments_client().SetCloudSaveCallbackOfferDecision(
@@ -1122,8 +1116,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Advance the required delay time and AttemptToOfferCvcUploadSave with user
   // decision of `kDeclined`.
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
   payments_client().SetCloudSaveCallbackOfferDecision(
       AutofillClient::SaveCardOfferUserDecision::kDeclined);
@@ -1222,7 +1215,6 @@ TEST_P(CvcStorageMetricTest, AttemptToOfferCvcSave_NotOfferSaveWithMaxStrikes) {
 // even if the strike limit has not yet been reached.
 TEST_P(CvcStorageMetricTest,
        AttemptToOfferCvcSave_NotOfferSaveWithoutRequiredDelay) {
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
   base::HistogramTester histogram_tester;
 
   CvcStorageStrikeDatabase cvc_storage_strike_database =
@@ -1241,7 +1233,7 @@ TEST_P(CvcStorageMetricTest,
 
   // Advance the clock by the required delay time and check that CVC save is
   // offered.
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
   if (record_type == CreditCard::RecordType::kLocalCard) {
     credit_card_save_manager_->AttemptToOfferCvcLocalSave(card);
@@ -1779,10 +1771,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoProfileAvailable) {
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoRecentlyUsedProfile) {
-  // Create the test clock and set the time to a specific value.
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime);
-
   // Create, fill and submit an address form in order to establish a profile.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen({address_form});
@@ -1791,7 +1779,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoRecentlyUsedProfile) {
   FormSubmitted(address_form);
 
   // Set the current time to another value.
-  test_clock.SetNow(kMuchLaterTime);
+  task_environment_.FastForwardBy(kVeryLargeDelta);
 
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
@@ -2585,10 +2573,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NamesCanMismatch) {
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_IgnoreOldProfiles) {
-  // Create the test clock and set the time to a specific value.
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime);
-
   // Create, fill and submit two address forms with different names.
   FormData address_form1 = test::CreateTestAddressFormData("1");
   FormData address_form2 = test::CreateTestAddressFormData("2");
@@ -2599,7 +2583,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_IgnoreOldProfiles) {
 
   // Advance the current time. Since |address_form1| will not be a recently
   // used address profile, we will not include it in the candidate profiles.
-  test_clock.SetNow(kMuchLaterTime);
+  task_environment_.FastForwardBy(kVeryLargeDelta);
 
   ManuallyFillAddressForm("John", "Smith", "77401", "US", &address_form2);
   FormSubmitted(address_form2);
@@ -3388,6 +3372,9 @@ TEST_F(CreditCardSaveManagerTest,
 TEST_F(
     CreditCardSaveManagerTest,
     UploadCreditCard_RequestExpirationDateIfExpirationDateInputIsTwoDigitAndExpired) {
+  // Make sure that the card will be expired.
+  task_environment_.FastForwardBy(base::Days(365 * 15));
+
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
