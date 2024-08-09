@@ -33,7 +33,6 @@ import time
 from typing import Dict, List
 
 import cluster
-import cyglog_to_orderfile
 import patch_orderfile
 import process_profiles
 import profile_android_startup
@@ -999,9 +998,6 @@ class OrderfileGenerator:
 
   def Generate(self):
     """Generates and maybe upload an order."""
-    assert (bool(self._options.profile) ^
-            bool(self._options.manual_symbol_offsets))
-
     if self._options.clobber:
       assert self._options.buildbot, '--clobber is intended for the buildbot.'
       # This is useful on the bot when we need to start from scratch to rebuild.
@@ -1028,21 +1024,6 @@ class OrderfileGenerator:
           self._compiler.CompileChromeApk(instrumented=True)
       self._GenerateAndProcessProfile()
       self._MaybeArchiveOrderfile(self._GetUnpatchedOrderfileFilename())
-    elif self._options.manual_symbol_offsets:
-      assert self._options.manual_libname
-      assert self._options.manual_objdir
-      with open(self._options.manual_symbol_offsets) as f:
-        symbol_offsets = [int(x) for x in f]
-      processor = process_profiles.SymbolOffsetProcessor(
-          self._options.manual_libname)
-      generator = cyglog_to_orderfile.OffsetOrderfileGenerator(
-          processor, cyglog_to_orderfile.ObjectFileProcessor(
-              self._options.manual_objdir))
-      ordered_sections = generator.GetOrderedSections(symbol_offsets)
-      if not ordered_sections:  # Either None or empty is a problem.
-        raise Exception('Failed to get ordered sections')
-      with open(self._GetUnpatchedOrderfileFilename(), 'w') as orderfile:
-        orderfile.write('\n'.join(ordered_sections))
 
     if self._options.patch:
       if self._options.profile:
@@ -1165,19 +1146,8 @@ def CreateArgumentParser():
                       default=False,
                       help='Use the webview startup benchmark profiles to '
                       'generate the orderfile.')
-  parser.add_argument('--manual-symbol-offsets',
-                      default=None,
-                      type=str,
-                      help=('File of list of ordered symbol offsets generated '
-                            'by manual profiling. Must set other --manual* '
-                            'flags if this is used, and must --skip-profile.'))
-  parser.add_argument('--manual-libname', default=None, type=str,
-                      help=('Library filename corresponding to '
-                            '--manual-symbol-offsets.'))
-  parser.add_argument('--manual-objdir', default=None, type=str,
-                      help=('Root of object file directory corresponding to '
-                            '--manual-symbol-offsets.'))
-  parser.add_argument('--noorder-outlined-functions', action='store_true',
+  parser.add_argument('--noorder-outlined-functions',
+                      action='store_true',
                       help='Disable outlined functions in the orderfile.')
   parser.add_argument('--pregenerated-profiles', default=None, type=str,
                       help=('Pregenerated profiles to use instead of running '

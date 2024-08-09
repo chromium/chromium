@@ -173,8 +173,7 @@ class SymbolOffsetProcessor:
     which contain the dump offsets, and returns their offsets. Note that while
     usually a symbol offset corresponds to a single symbol, in some cases
     several symbols will map to the same offset. For that reason this function
-    returns only the offset list. See cyglog_to_orderfile.py for computing more
-    information about symbols.
+    returns only the offset list.
 
     Args:
      dump: (int iterable) Dump offsets, for example as returned by MergeDumps().
