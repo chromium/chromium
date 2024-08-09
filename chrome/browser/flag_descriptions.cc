@@ -4591,6 +4591,12 @@ const char kMessagesForAndroidSaveCardName[] = "Save Card Messages UI";
 const char kMessagesForAndroidSaveCardDescription[] =
     "When enabled, save card prompt will use the new Messages UI.";
 
+const char kMigrateSyncingUserToSignedInName[] =
+    "Migrate syncing user to signed-in";
+const char kMigrateSyncingUserToSignedInDescription[] =
+    "Enables the migration of syncing users to the signed-in, non-syncing "
+    "state.";
+
 const char kMouseAndTrackpadDropdownMenuName[] =
     "Android Mouse & Trackpad Drop-down Text Selection Menu";
 const char kMouseAndTrackpadDropdownMenuDescription[] =
@@ -4913,6 +4919,12 @@ const char kTouchDragAndContextMenuName[] =
 const char kTouchDragAndContextMenuDescription[] =
     "Enables touch dragging and a context menu to start simultaneously, with"
     "the assumption that the menu is non-modal.";
+
+const char kUndoMigrationOfSyncingUserToSignedInName[] =
+    "Undo the migration of syncing users to signed-in";
+const char kUndoMigrationOfSyncingUserToSignedInDescription[] =
+    "Enables the reverse-migration of syncing users who were previously "
+    "migrated to the signed-in, non-syncing state.";
 
 const char kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarningName[] =
     "Access loss warning for unmigrated password manager users";

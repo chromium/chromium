@@ -16349,6 +16349,7 @@ from previous Chrome versions.
   <int value="-1690359116" label="ShortcutCustomizationJelly:enabled"/>
   <int value="-1689444567"
       label="AutofillUpdateChromeSettingsLinkToGPayWeb:disabled"/>
+  <int value="-1689041503" label="MigrateSyncingUserToSignedIn:enabled"/>
   <int value="-1688631209"
       label="AutofillEnableRankingFormulaAddressProfiles:enabled"/>
   <int value="-1688055622" label="webrtc-hw-decoding:disabled"/>
@@ -17720,6 +17721,8 @@ from previous Chrome versions.
   <int value="-1122895401"
       label="EnableExternalKeyboardsInDiagnosticsApp:disabled"/>
   <int value="-1122853453" label="LazyImageLoading:enabled"/>
+  <int value="-1122759290"
+      label="UndoMigrationOfSyncingUserToSignedIn:enabled"/>
   <int value="-1122637862" label="HistoryEmbeddings:disabled"/>
   <int value="-1122458028" label="UnifiedMediaView:enabled"/>
   <int value="-1121931029" label="DownloadsForeground:enabled"/>
@@ -19195,6 +19198,7 @@ from previous Chrome versions.
   <int value="-500367371" label="CCTPageInsightsHubBetterScroll:enabled"/>
   <int value="-500107766" label="OmniboxShortcutsAndroid:disabled"/>
   <int value="-500044371" label="ShowFeaturedEnterpriseSiteSearchIPH:enabled"/>
+  <int value="-499923792" label="MigrateSyncingUserToSignedIn:disabled"/>
   <int value="-499723386" label="EnableFilesAppCopyImage:disabled"/>
   <int value="-499186481"
       label="OmniboxGroupSuggestionsBySearchVsUrl:disabled"/>
@@ -23051,6 +23055,8 @@ from previous Chrome versions.
   <int value="1135813530" label="FileSystemObserver:enabled"/>
   <int value="1135893278" label="BruschettaAlphaMigrate:enabled"/>
   <int value="1136409654" label="EnableKeyboardRewriterFix:enabled"/>
+  <int value="1137441283"
+      label="UndoMigrationOfSyncingUserToSignedIn:disabled"/>
   <int value="1138141041"
       label="NtpMostRelevantTabResumptionModuleDeviceIcon:enabled"/>
   <int value="1138345742" label="PreferConstantFrameRate:disabled"/>

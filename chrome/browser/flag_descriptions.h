@@ -2692,6 +2692,9 @@ extern const char kMessagesForAndroidAdsBlockedDescription[];
 extern const char kMessagesForAndroidSaveCardName[];
 extern const char kMessagesForAndroidSaveCardDescription[];
 
+extern const char kMigrateSyncingUserToSignedInName[];
+extern const char kMigrateSyncingUserToSignedInDescription[];
+
 extern const char kMouseAndTrackpadDropdownMenuName[];
 extern const char kMouseAndTrackpadDropdownMenuDescription[];
 
@@ -2869,6 +2872,9 @@ extern const char kTabStripTransitionInDesktopWindowDescription[];
 
 extern const char kTouchDragAndContextMenuName[];
 extern const char kTouchDragAndContextMenuDescription[];
+
+extern const char kUndoMigrationOfSyncingUserToSignedInName[];
+extern const char kUndoMigrationOfSyncingUserToSignedInDescription[];
 
 extern const char
     kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarningName[];
