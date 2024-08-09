@@ -505,7 +505,7 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   _bottomToolbarHeight = height;
   if (_collectionView) {
     UIEdgeInsets insets = _collectionView.contentInset;
-    insets.bottom = height;
+    insets.bottom = height + kContentBottomMargin;
     _collectionView.contentInset = insets;
     [self setCollectionViewScrollIndicatorInsets];
     [self.sheetDisplayController

@@ -2,13 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/stringprintf.h"
 #import "components/feature_engagement/public/feature_constants.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "net/test/embedded_test_server/request_handler_util.h"
+
+namespace {
+// The page height of test pages. This must be big enough to triger fullscreen.
+const int kPageHeightEM = 200;
+
+// Provides test page long enough to allow fullscreen.
+std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
+    const net::test_server::HttpRequest& request) {
+  auto result = std::make_unique<net::test_server::BasicHttpResponse>();
+  result->set_code(net::HTTP_OK);
+  result->set_content(base::StringPrintf(
+      "<p style='height:%dem'>test1</p><p>test2</p>", kPageHeightEM));
+  return result;
+}
+}  // namespace
 
 @interface ContextualPanelTestCase : ChromeTestCase
 @end
@@ -17,8 +38,19 @@
 
 - (void)setUp {
   [super setUp];
+  [ChromeEarlGrey resetDataForLocalStatePref:prefs::kBottomOmnibox];
+
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, "/long-fullscreen",
+      base::BindRepeating(&GetLongResponseForFullscreen)));
+
   bool started = self.testServer->Start();
   GREYAssertTrue(started, @"Test server failed to start.");
+}
+
+- (void)tearDown {
+  [super tearDown];
+  [ChromeEarlGrey resetDataForLocalStatePref:prefs::kBottomOmnibox];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -199,6 +231,42 @@
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(@"PanelContentViewAXID")]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(@"PanelCloseButtonAXID")]
+      performAction:grey_tap()];
+}
+
+// Tests that fullscreen is disabled when the omnibox switches to bottom
+// position.
+- (void)testBottomOmniboxDisablesFullscreen {
+  if (![ChromeEarlGrey isBottomOmniboxAvailable]) {
+    EARL_GREY_TEST_SKIPPED(@"Test requires bottom omnibox");
+  }
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/long-fullscreen")];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   @"ContextualPanelEntrypointImageViewAXID")]
+      performAction:grey_tap()];
+
+  // Check that the contextual panel opened up.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(@"PanelContentViewAXID")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Scroll up in the webpage to enter fullscreen
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::WebStateScrollViewMatcher()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+  [ChromeEarlGreyUI waitForToolbarVisible:NO];
+
+  // Enable bottom omnibox.
+  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  // Make sure that panel can still be closed.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(@"PanelCloseButtonAXID")]
       performAction:grey_tap()];
