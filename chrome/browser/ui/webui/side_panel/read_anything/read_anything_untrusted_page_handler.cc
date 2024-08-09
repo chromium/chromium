@@ -537,7 +537,7 @@ void ReadAnythingUntrustedPageHandler::OnLinkClicked(
   action_data.action = ax::mojom::Action::kDoDefault;
   action_data.target_node_id = target_node_id;
 
-  PerformActionInTargetTree(action_data);
+  PerformActionInTargetTree(target_tree_id, action_data);
 }
 
 void ReadAnythingUntrustedPageHandler::OnImageDataRequested(
@@ -573,26 +573,13 @@ void ReadAnythingUntrustedPageHandler::OnImageDataDownloaded(
   }
 }
 
-void ReadAnythingUntrustedPageHandler::ScrollToTargetNode(
-    const ui::AXTreeID& target_tree_id,
-    ui::AXNodeID target_node_id) {
-  ui::AXActionData action_data;
-  action_data.target_tree_id = target_tree_id;
-  action_data.target_node_id = target_node_id;
-  action_data.vertical_scroll_alignment =
-      ax::mojom::ScrollAlignment::kScrollAlignmentTop;
-  action_data.scroll_behavior =
-      ax::mojom::ScrollBehavior::kDoNotScrollIfVisible;
-  action_data.action = ax::mojom::Action::kScrollToMakeVisible;
-
-  PerformActionInTargetTree(action_data);
-}
-
 void ReadAnythingUntrustedPageHandler::PerformActionInTargetTree(
+    const ui::AXTreeID& target_tree_id,
     const ui::AXActionData& data) {
+  CHECK_EQ(target_tree_id, data.target_tree_id);
   ui::AXActionHandlerBase* handler =
       ui::AXActionHandlerRegistry::GetInstance()->GetActionHandler(
-          data.target_tree_id);
+          target_tree_id);
   if (!handler) {
     return;
   }

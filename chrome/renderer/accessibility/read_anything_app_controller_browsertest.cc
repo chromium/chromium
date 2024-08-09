@@ -57,10 +57,6 @@ class MockReadAnythingUntrustedPageHandler
               (const ui::AXTreeID& target_tree_id, ui::AXNodeID target_node_id),
               (override));
   MOCK_METHOD(void,
-              ScrollToTargetNode,
-              (const ui::AXTreeID& target_tree_id, ui::AXNodeID target_node_id),
-              (override));
-  MOCK_METHOD(void,
               OnSelectionChange,
               (const ui::AXTreeID& target_tree_id,
                ui::AXNodeID anchor_node_id,
@@ -429,12 +425,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   void RequestImageDataUrl(ui::AXNodeID node_id) {
     controller_->RequestImageDataUrl(node_id);
-  }
-
-  void OnScrolledToBottom() { controller_->OnScrolledToBottom(); }
-
-  const std::set<ui::AXNodeID>& GetDisplayNodeIds() {
-    return controller_->model_.display_node_ids();
   }
 
   void OnSelectionChange(ui::AXNodeID anchor_node_id,
@@ -2056,81 +2046,6 @@ TEST_F(ReadAnythingAppControllerTest, OnLinkClicked_DistillationInProgress) {
   // If distillation is in progress, OnLinkClicked should not be called.
   EXPECT_CALL(page_handler_, OnLinkClicked).Times(0);
   OnLinkClicked(2);
-  page_handler_.FlushForTesting();
-  Mock::VerifyAndClearExpectations(distiller_);
-}
-
-// TODO(crbug.com/358251460): Flaky on Linux MSAN ASAN.
-#if BUILDFLAG(IS_LINUX) && \
-    (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER))
-#define MAYBE_ScrollToTargetNode_ScrollsIfGoogleDocs \
-  DISABLED_ScrollToTargetNode_ScrollsIfGoogleDocs
-#else
-#define MAYBE_ScrollToTargetNode_ScrollsIfGoogleDocs \
-  ScrollToTargetNode_ScrollsIfGoogleDocs
-#endif
-TEST_F(ReadAnythingAppControllerTest,
-       MAYBE_ScrollToTargetNode_ScrollsIfGoogleDocs) {
-  ui::AXNodeData root;
-  ui::AXTreeUpdate update;
-  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  test::SetUpdateTreeID(&update, id_1);
-
-  root.id = 1;
-  root.AddStringAttribute(
-      ax::mojom::StringAttribute::kUrl,
-      "https://docs.google.com/document/d/"
-      "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
-      "edit?ouid=103677288878638916900&usp=docs_home&ths=true");
-  update.nodes = {root};
-  update.root_id = root.id;
-
-  AccessibilityEventReceived({update});
-  EXPECT_TRUE(IsUrlInformationSet(id_1));
-  OnAXTreeDistilled({});
-  EXPECT_CALL(*distiller_, Distill).Times(1);
-  OnActiveAXTreeIDChanged(id_1);
-  EXPECT_TRUE(IsGoogleDocs());
-
-  ui::AXNodeID ax_node_id = *GetDisplayNodeIds().rbegin();
-  EXPECT_CALL(page_handler_, ScrollToTargetNode(id_1, ax_node_id)).Times(1);
-  OnScrolledToBottom();
-  page_handler_.FlushForTesting();
-  Mock::VerifyAndClearExpectations(distiller_);
-}
-
-// TODO(crbug.com/358251460): Flaky on Linux MSAN ASAN.
-#if BUILDFLAG(IS_LINUX) && \
-    (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER))
-#define MAYBE_ScrollToTargetNode_DoesNotScrollIfNotGoogleDocs \
-  DISABLED_ScrollToTargetNode_DoesNotScrollIfNotGoogleDocs
-#else
-#define MAYBE_ScrollToTargetNode_DoesNotScrollIfNotGoogleDocs \
-  ScrollToTargetNode_DoesNotScrollIfNotGoogleDocs
-#endif
-TEST_F(ReadAnythingAppControllerTest,
-       MAYBE_ScrollToTargetNode_DoesNotScrollIfNotGoogleDocs) {
-  ui::AXNodeData root;
-  ui::AXTreeUpdate update;
-  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  test::SetUpdateTreeID(&update, id_1);
-
-  root.id = 1;
-  root.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
-                          "https://www.google.com/");
-  update.nodes = {root};
-  update.root_id = root.id;
-
-  AccessibilityEventReceived({update});
-  EXPECT_TRUE(IsUrlInformationSet(id_1));
-  OnAXTreeDistilled({});
-  EXPECT_CALL(*distiller_, Distill).Times(1);
-  OnActiveAXTreeIDChanged(id_1);
-  EXPECT_FALSE(IsGoogleDocs());
-
-  ui::AXNodeID ax_node_id = *GetDisplayNodeIds().rbegin();
-  EXPECT_CALL(page_handler_, ScrollToTargetNode(id_1, ax_node_id)).Times(0);
-  OnScrolledToBottom();
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
 }

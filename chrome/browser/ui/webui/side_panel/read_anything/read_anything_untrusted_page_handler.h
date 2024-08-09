@@ -153,8 +153,6 @@ class ReadAnythingUntrustedPageHandler :
                              const GURL& image_url,
                              const std::vector<SkBitmap>& bitmaps,
                              const std::vector<gfx::Size>& sizes);
-  void ScrollToTargetNode(const ui::AXTreeID& target_tree_id,
-                          ui::AXNodeID target_node_id) override;
   void OnSelectionChange(const ui::AXTreeID& target_tree_id,
                          ui::AXNodeID anchor_node_id,
                          int anchor_offset,
@@ -202,7 +200,8 @@ class ReadAnythingUntrustedPageHandler :
   // tab.
   void ObserveWebContentsSidePanelController(tabs::TabInterface* tab);
 
-  void PerformActionInTargetTree(const ui::AXActionData& data);
+  void PerformActionInTargetTree(const ui::AXTreeID& target_tree_id,
+                                 const ui::AXActionData& data);
 
   raw_ptr<ReadAnythingSidePanelController> side_panel_controller_;
   const base::WeakPtr<Browser> browser_;

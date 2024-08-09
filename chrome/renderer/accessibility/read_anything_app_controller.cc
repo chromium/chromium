@@ -1830,10 +1830,5 @@ void ReadAnythingAppController::IncrementMetricCount(
 }
 
 void ReadAnythingAppController::OnScrolledToBottom() {
-  if (IsGoogleDocs()) {
-    // Scroll to the last display node shown on the Reading Mode side panel
-    // TODO (b/356935604): Investigate optimal scroll position
-    page_handler_->ScrollToTargetNode(model_.active_tree_id(),
-                                      *model_.display_node_ids().rbegin());
-  }
+  // TODO (b/353590969): trigger an accessibility action to refresh/scroll more
 }
