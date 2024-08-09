@@ -344,9 +344,11 @@ base::span<const uint8_t> AsByteSpan(NSData* data) {
     [dataTask resume];
   } else {
     VLOG(1) << __func__ << ": File write error, download job cancelled.";
-    _callbackRunner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(_downloadToFileCompleteCallback),
-                                  updater::kErrorFailedToWriteFile, -1));
+    if (_downloadToFileCompleteCallback) {
+      _callbackRunner->PostTask(
+          FROM_HERE, base::BindOnce(std::move(_downloadToFileCompleteCallback),
+                                    updater::kErrorFailedToWriteFile, -1));
+    }
     [dataTask cancel];
   }
 }
@@ -386,9 +388,11 @@ base::span<const uint8_t> AsByteSpan(NSData* data) {
     NSHTTPURLResponse* response = (NSHTTPURLResponse*)task.response;
     result = response.statusCode == 200 ? 0 : response.statusCode;
   }
-  _callbackRunner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(_downloadToFileCompleteCallback),
-                                result, [task countOfBytesReceived]));
+  if (_downloadToFileCompleteCallback) {
+    _callbackRunner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(_downloadToFileCompleteCallback),
+                                  result, [task countOfBytesReceived]));
+  }
 }
 
 @end
