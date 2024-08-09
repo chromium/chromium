@@ -412,7 +412,12 @@ CdmRegistryImpl::GetCapability(const std::string& key_system,
     }
 
 #if BUILDFLAG(IS_WIN)
-    if (IsMediaFoundationHardwareSecurityDisabledByGpuFeature()) {
+    // Check if the GPU is disabled from gpu/config/gpu_driver_bug_list.json and
+    // if the enable faulty GPU flag is disabled. If both are disabled, HW
+    // security should not be supported.
+    if (IsMediaFoundationHardwareSecurityDisabledByGpuFeature() &&
+        !base::FeatureList::IsEnabled(
+            media::kEnableFaultyGPUForMediaFoundation)) {
       DVLOG(1) << "Hardware security not supported: GPU workarounds";
       return {std::nullopt, Status::kGpuFeatureDisabled};
     }
