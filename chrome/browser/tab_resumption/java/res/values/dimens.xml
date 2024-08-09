@@ -29,4 +29,7 @@ found in the LICENSE file.
 
     <dimen name="local_tile_tab_thumbnail_padding_start">9dp</dimen>
     <dimen name="local_tile_tab_thumbnail_padding_top">6dp</dimen>
+
+    <dimen name="tab_resumption_module_reason_padding_top">2dp</dimen>
+    <dimen name="tab_resumption_module_reason_padding_start">8dp</dimen>
 </resources>
