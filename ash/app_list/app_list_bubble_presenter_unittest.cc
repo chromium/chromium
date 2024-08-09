@@ -1089,7 +1089,7 @@ TEST_F(AppListBubblePresenterTest, ContextMenuStaysOpenAfterDismissAppList) {
   generator->ClickRightButton();
 
   auto* rwc = RootWindowController::ForWindow(bubble_widget->GetNativeWindow());
-  ASSERT_TRUE(rwc->IsContextMenuShown());
+  ASSERT_TRUE(rwc->IsContextMenuShownForTest());
 
   // Wait for bubble to animate closed.
   ui::LayerAnimationStoppedWaiter().Wait(
@@ -1097,7 +1097,7 @@ TEST_F(AppListBubblePresenterTest, ContextMenuStaysOpenAfterDismissAppList) {
   ASSERT_FALSE(presenter->IsShowing());
 
   // Context menu is still open.
-  EXPECT_TRUE(rwc->IsContextMenuShown());
+  EXPECT_TRUE(rwc->IsContextMenuShownForTest());
 }
 
 }  // namespace

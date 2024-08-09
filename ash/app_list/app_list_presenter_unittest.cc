@@ -4490,7 +4490,7 @@ TEST_F(AppListPresenterHomeLauncherTest, WallpaperContextMenu) {
   const aura::Window* root = window_util::GetRootWindowAt(onscreen_point);
   const RootWindowController* root_window_controller =
       RootWindowController::ForWindow(root);
-  EXPECT_TRUE(root_window_controller->IsContextMenuShown());
+  EXPECT_TRUE(root_window_controller->IsContextMenuShownForTest());
 
   // Tap down to close the context menu.
   ui::GestureEvent tap_down(
@@ -4498,19 +4498,19 @@ TEST_F(AppListPresenterHomeLauncherTest, WallpaperContextMenu) {
       ui::GestureEventDetails(ui::EventType::kGestureTapDown));
   generator->Dispatch(&tap_down);
   GetAppListTestHelper()->WaitUntilIdle();
-  EXPECT_FALSE(root_window_controller->IsContextMenuShown());
+  EXPECT_FALSE(root_window_controller->IsContextMenuShownForTest());
 
   // Right click to open the context menu.
   generator->MoveMouseTo(onscreen_point);
   generator->ClickRightButton();
   GetAppListTestHelper()->WaitUntilIdle();
-  EXPECT_TRUE(root_window_controller->IsContextMenuShown());
+  EXPECT_TRUE(root_window_controller->IsContextMenuShownForTest());
 
   // Left click to close the context menu.
   generator->MoveMouseTo(onscreen_point);
   generator->ClickLeftButton();
   GetAppListTestHelper()->WaitUntilIdle();
-  EXPECT_FALSE(root_window_controller->IsContextMenuShown());
+  EXPECT_FALSE(root_window_controller->IsContextMenuShownForTest());
 }
 
 // Test backdrop exists for active non-fullscreen window in tablet mode.

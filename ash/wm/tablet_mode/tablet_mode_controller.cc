@@ -9,13 +9,13 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/app_menu/menu_util.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/login_status.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
@@ -903,9 +903,7 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
   // Hide the context menu on entering tablet mode to prevent users from
   // accessing forbidden options. Hide the context menu on exiting tablet mode
   // to match behaviors.
-  for (aura::Window* root_window : Shell::Get()->GetAllRootWindows()) {
-    RootWindowController::ForWindow(root_window)->HideContextMenu();
-  }
+  HideActiveContextMenu();
 
   // Suspend occlusion tracker when entering or exiting tablet mode.
   SuspendOcclusionTracker();

@@ -135,7 +135,6 @@ void AppMenuModelAdapter::OnMenuClosed(views::MenuItemView* menu) {
         ax::mojom::Event::kMenuEnd,
         /*send_native_event=*/true);
   }
-
   if (on_menu_closed_callback_)
     std::move(on_menu_closed_callback_).Run();
 }

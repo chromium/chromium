@@ -183,7 +183,7 @@ void ShellTestApi::WaitForWindowFinishAnimating(aura::Window* window) {
 }
 
 bool ShellTestApi::IsContextMenuShown() const {
-  return Shell::GetPrimaryRootWindowController()->IsContextMenuShown();
+  return Shell::GetPrimaryRootWindowController()->IsContextMenuShownForTest();
 }
 
 bool ShellTestApi::IsActionForAcceleratorEnabled(

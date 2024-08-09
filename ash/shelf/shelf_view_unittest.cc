@@ -1834,7 +1834,7 @@ TEST_P(LtrRtlShelfViewTest, TabletModeStartAndEndClosesContextMenu) {
   generator->PressRightButton();
 
   // Start tablet mode, which should close the menu.
-  shelf_view_->OnDisplayTabletStateChanged(display::TabletState::kInTabletMode);
+  TabletModeControllerTestApi().EnterTabletMode();
 
   // Attempt to close the menu, which should already be closed.
   EXPECT_FALSE(test_api_->CloseMenu());
@@ -1844,8 +1844,7 @@ TEST_P(LtrRtlShelfViewTest, TabletModeStartAndEndClosesContextMenu) {
   generator->PressRightButton();
 
   // End tablet mode, which should close the menu.
-  shelf_view_->OnDisplayTabletStateChanged(
-      display::TabletState::kInClamshellMode);
+  TabletModeControllerTestApi().LeaveTabletMode();
 
   // Attempt to close the menu, which should already be closed.
   EXPECT_FALSE(test_api_->CloseMenu());

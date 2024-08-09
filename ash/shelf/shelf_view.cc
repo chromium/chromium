@@ -856,20 +856,6 @@ void ShelfView::ShowContextMenuForViewImpl(views::View* source,
       display_id, context_menu_callback_.callback());
 }
 
-void ShelfView::OnDisplayTabletStateChanged(display::TabletState state) {
-  if (state != display::TabletState::kInClamshellMode &&
-      state != display::TabletState::kInTabletMode) {
-    return;
-  }
-
-  // Close all menus when tablet mode starts or ends so that menu options are
-  // kept consistent with device state and not show the clamshell / tablet only
-  // context menu options while they are unavailable.
-  if (shelf_menu_model_adapter_) {
-    shelf_menu_model_adapter_->Cancel();
-  }
-}
-
 void ShelfView::OnShelfConfigUpdated() {
   // Ensure the shelf app buttons have an icon which is up to date with the
   // current ShelfConfig sizing.
@@ -2693,8 +2679,9 @@ void ShelfView::OnMenuClosed(MayBeDangling<views::View> source) {
   closing_event_time_ = shelf_menu_model_adapter_->GetClosingEventTime();
 
   const ShelfItem* item = ShelfItemForView(source);
-  if (item)
+  if (item) {
     static_cast<ShelfAppButton*>(source)->OnMenuClosed();
+  }
 
   shelf_menu_model_adapter_.reset();
 
