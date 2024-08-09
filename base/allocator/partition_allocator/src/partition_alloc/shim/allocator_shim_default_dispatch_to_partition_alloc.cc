@@ -25,6 +25,7 @@
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
 #include "partition_alloc/shim/allocator_dispatch.h"
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc_internal.h"
 #include "partition_alloc/shim/allocator_shim_internals.h"
 
 #if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)

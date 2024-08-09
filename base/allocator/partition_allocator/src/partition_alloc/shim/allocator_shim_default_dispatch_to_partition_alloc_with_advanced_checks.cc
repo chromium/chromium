@@ -9,7 +9,7 @@
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/shim/allocator_dispatch.h"
-#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc_internal.h"
 
 namespace allocator_shim {
 
