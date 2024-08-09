@@ -22,6 +22,7 @@
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/android/window_android.h"
 #include "ui/events/back_gesture_event.h"
 
@@ -86,24 +87,19 @@ static constexpr ScrimAndCrossFadeAnimaitonConfig kCrossFadeAnimation{
     .duration = kCrossfadeDuration};
 
 //=============================== Scrim animation ==============================
-// The scim animations have two timelines:
-// - The fist timeline for while the screenshot layer is moving across the
-//   screen.
-// - The second timeline while the screenshot layer is cross-fading into the
-//   new content page.
+// The scrim range is from 0.2 to 0 in dark mode and 0.1 to 0 in light mode. The
+// scrim value is a linear function of the top layer's position.
+static constexpr ScrimAndCrossFadeAnimaitonConfig kScrimAnimationLightMode{
+    .target_property = TargetProperty::kScrim,
+    .start = 0.1f,
+    .end = 0.0f,
+    .duration = kFittedTimelineDuration};
 
-static constexpr ScrimAndCrossFadeAnimaitonConfig
-    kScrimAnimationDuringGestureProgress{
-        .target_property = TargetProperty::kScrim,
-        .start = 0.8f,
-        .end = 0.3f,
-        .duration = kFittedTimelineDuration};
-
-static constexpr ScrimAndCrossFadeAnimaitonConfig
-    kScrimAnimationDuringCrossFade{.target_property = TargetProperty::kScrim,
-                                   .start = 0.3f,
-                                   .end = 0.0f,
-                                   .duration = kCrossfadeDuration};
+static constexpr ScrimAndCrossFadeAnimaitonConfig kScrimAnimationDarkMode{
+    .target_property = TargetProperty::kScrim,
+    .start = 0.2f,
+    .end = 0.0f,
+    .duration = kFittedTimelineDuration};
 
 void AddFloatModelToEffect(ScrimAndCrossFadeAnimaitonConfig config,
                            gfx::FloatAnimationCurve::Target* target,
@@ -344,8 +340,8 @@ void BackForwardTransitionAnimator::OnAnimate(
       break;
     }
     case State::kDisplayingCrossFadeAnimation: {
-      // One cross-fade and one scrim models.
-      CHECK_EQ(effect_.keyframe_models().size(), 2U);
+      // The cross-fade model.
+      CHECK_EQ(effect_.keyframe_models().size(), 1U);
       effect_.Tick(frame_begin_time);
       // `Tick()` has the side effect of removing all the finished models. At
       // the last frame of `OnFloatAnimated()`, the model is still running, but
@@ -764,6 +760,7 @@ void BackForwardTransitionAnimator::OnFloatAnimated(
     int target_property_id,
     gfx::KeyframeModel* keyframe_model) {
   TargetProperty property = static_cast<TargetProperty>(target_property_id);
+  CHECK_EQ(effect_.keyframe_models().size(), 1u);
   switch (property) {
     case TargetProperty::kScrim: {
       CHECK(screenshot_scrim_);
@@ -774,8 +771,6 @@ void BackForwardTransitionAnimator::OnFloatAnimated(
     }
     case TargetProperty::kCrossFade: {
       CHECK(screenshot_layer_);
-      // Scrim (second timeline) and the crossfade model.
-      CHECK_EQ(effect_.keyframe_models().size(), 2u);
       screenshot_layer_->SetOpacity(value);
       return;
     }
@@ -807,10 +802,9 @@ void BackForwardTransitionAnimator::OnInvokeAnimationDisplayed() {
     progress_bar_.reset();
   }
 
-  // The first scrim timeline is a function of the top layer's position. At the
-  // end of the invoke animation, the top layer is completely out of the
-  // viewport, so the `KeyFrameModel` for the scrim should also be exhausted and
-  // removed.
+  // The scrim timeline is a function of the top layer's position. At the end of
+  // the invoke animation, the top layer is completely out of the viewport, so
+  // the `KeyFrameModel` for the scrim should also be exhausted and removed.
   CHECK(effect_.keyframe_models().empty());
   if (is_copied_from_embedder_) {
     AdvanceAndProcessState(State::kWaitingForContentForNavigationEntryShown);
@@ -918,19 +912,24 @@ void BackForwardTransitionAnimator::
   // at which we must have no models yet.
   CHECK(effect_.keyframe_models().empty());
 
-  // First scrim timeline for the screenshot layer's transform.
-  AddFloatModelToEffect(kScrimAnimationDuringGestureProgress, this, effect_);
+  const blink::web_pref::WebPreferences& web_prefs =
+      animation_manager_->web_contents_view_android()
+          ->web_contents()
+          ->GetOrCreateWebPreferences();
+
+  if (web_prefs.preferred_color_scheme ==
+      blink::mojom::PreferredColorScheme::kDark) {
+    AddFloatModelToEffect(kScrimAnimationDarkMode, this, effect_);
+  } else {
+    AddFloatModelToEffect(kScrimAnimationLightMode, this, effect_);
+  }
 }
 
 void BackForwardTransitionAnimator::InitializeEffectForCrossfadeAnimation() {
-  // At the the end if the invoke animation and before the cross-fade, the scrim
-  // model for the first timeline is finished (and removed).
+  // Before we add the cross-fade model, the scrim model must have finished.
   CHECK(effect_.keyframe_models().empty());
 
   AddFloatModelToEffect(kCrossFadeAnimation, this, effect_);
-
-  // Second scrim timeline for the cross-fade animation.
-  AddFloatModelToEffect(kScrimAnimationDuringCrossFade, this, effect_);
 }
 
 void BackForwardTransitionAnimator::AdvanceAndProcessState(State state) {
@@ -1084,8 +1083,9 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview() {
   CHECK(transform.IsIdentity()) << transform.ToString();
 
   if (use_fallback_screenshot_) {
-    // For now, the fallback screenshot is only the destination page's
-    // background color.
+    // For now, the fallback screenshot is only a solid color, without the
+    // rounded rectangle and favicon.
+    //
     // TODO(crbug/40260440): Implement the UX's spec using the favicon.
     auto screenshot_layer = cc::slim::SolidColorLayer::Create();
     screenshot_layer->SetBackgroundColor(fallback_ux_config_.background_color);

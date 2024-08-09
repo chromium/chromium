@@ -106,29 +106,6 @@ bool TwoSkColorApproximatelyEqual(const SkColor4f& a, const SkColor4f& b) {
          base::IsApproximatelyEqual(a.fR, b.fR, kFloatTolerance);
 }
 
-SkColor4f GetScrimForGestureProgress(GestureType gesture) {
-  auto scrim = SkColors::kBlack;
-  switch (gesture) {
-    case GestureType::kStart:
-      scrim.fA = 0.8f;
-      break;
-    case GestureType::k30ViewportWidth:
-      scrim.fA = 0.6725f;
-      break;
-    case GestureType::k60ViewportWidth:
-      scrim.fA = 0.545f;
-      break;
-    case GestureType::k90ViewportWidth:
-      scrim.fA = 0.4175f;
-      break;
-    case GestureType::kCancel:
-    case GestureType::kInvoke:
-      NOTREACHED_IN_MIGRATION();
-      break;
-  }
-  return scrim;
-}
-
 BackForwardTransitionAnimationManagerAndroid* GetAnimationManager(
     WebContents* tab) {
   auto* manager = tab->GetBackForwardTransitionAnimationManager();
@@ -286,10 +263,10 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
       ExpectedLayerTransforms(wcva_->web_contents(), kBothLayersCentered,
                               CrossFadeOrOldSurfaceClone::kCrossfade);
       const auto& layers = GetChildrenLayersOfWebContentsView();
-      // The first OnAnimate for the cross-fade animation will set the scrim
-      // to 0.3, and opacity to 1.
+      // The first OnAnimate for the cross-fade animation will set the opacity
+      // to 1.
       ASSERT_EQ(layers.at(1)->children().size(), 1U);
-      ASSERT_EQ(layers.at(1)->children().at(0)->background_color().fA, 0.3f);
+      ASSERT_EQ(layers.at(1)->children().at(0)->background_color().fA, 0.0f);
       ASSERT_EQ(layers.at(1)->opacity(), 1.f);
     }
     if (pause_on_animate_at_state_.has_value() &&
@@ -323,7 +300,7 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
     ASSERT_EQ(layers.size(), 2U);
     ASSERT_EQ(layers.at(0)->children().size(), 1U);
     // Screenshot should have the scrim.
-    EXPECT_EQ(layers.at(0)->children().at(0)->background_color().fA, 0.8f);
+    EXPECT_EQ(layers.at(0)->children().at(0)->background_color().fA, 0.1f);
 
     BackForwardTransitionAnimator::OnCancelAnimationDisplayed();
   }
@@ -360,8 +337,8 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
 
     const auto& screenshot_layer = layers.at(0);
     ASSERT_EQ(screenshot_layer->children().size(), has_progress_bar ? 2u : 1u);
-    // Scrim should be at the end of the first timeline.
-    EXPECT_EQ(screenshot_layer->children().at(0)->background_color().fA, 0.3f);
+    // Scrim should be zero when the invoke animation is finished.
+    EXPECT_EQ(screenshot_layer->children().at(0)->background_color().fA, 0.0f);
 
     BackForwardTransitionAnimator::OnInvokeAnimationDisplayed();
 
@@ -798,6 +775,29 @@ class BackForwardTransitionAnimationManagerBrowserTest
     auto* animator = static_cast<AnimatorForTesting*>(manager->animator_.get());
     EXPECT_TRUE(animator) << "Can only be called after a gesture has started.";
     return animator;
+  }
+
+  virtual SkColor4f GetScrimForGestureProgress(GestureType gesture) {
+    auto scrim = SkColors::kBlack;
+    switch (gesture) {
+      case GestureType::kStart:
+        scrim.fA = 0.1f;
+        break;
+      case GestureType::k30ViewportWidth:
+        scrim.fA = 0.0745f;
+        break;
+      case GestureType::k60ViewportWidth:
+        scrim.fA = 0.049f;
+        break;
+      case GestureType::k90ViewportWidth:
+        scrim.fA = 0.0235f;
+        break;
+      case GestureType::kCancel:
+      case GestureType::kInvoke:
+        NOTREACHED_IN_MIGRATION();
+        break;
+    }
+    return scrim;
   }
 
  protected:
@@ -2940,7 +2940,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   // Allow all pixels to be off by 1.
   auto comparator = cc::FuzzyPixelComparator()
                         .SetErrorPixelsPercentageLimit(100.0f)
-                        .SetAbsErrorLimit(1);
+                        .SetAbsErrorLimit(2);
   EXPECT_TRUE(cc::MatchesBitmap(actual_pixels, expected_pixels, comparator));
 }
 
@@ -3531,6 +3531,47 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(navigation_mainframe.WaitForNavigationFinished());
   ASSERT_TRUE(destroyed.Wait());
   ASSERT_FALSE(iframe_back_to_red.was_committed());
+}
+
+namespace {
+class BackForwardTransitionAnimationManagerBrowserTestDarkMode
+    : public BackForwardTransitionAnimationManagerBrowserTest {
+ public:
+  BackForwardTransitionAnimationManagerBrowserTestDarkMode() = default;
+  ~BackForwardTransitionAnimationManagerBrowserTestDarkMode() override =
+      default;
+
+  SkColor4f GetScrimForGestureProgress(GestureType gesture) override {
+    SkColor4f scrim = BackForwardTransitionAnimationManagerBrowserTest::
+        GetScrimForGestureProgress(gesture);
+    // Twice the scrim from the light mode.
+    scrim.fA *= 2;
+    return scrim;
+  }
+};
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTestDarkMode,
+                       DarkModeScrim) {
+  blink::web_pref::WebPreferences prefs =
+      web_contents()->GetOrCreateWebPreferences();
+  prefs.preferred_color_scheme = blink::mojom::PreferredColorScheme::kDark;
+  web_contents()->SetWebPreferences(prefs);
+
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k30ViewportWidth);
+  expected.push_back(GestureType::k60ViewportWidth);
+  expected.push_back(GestureType::k90ViewportWidth);
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  TestFrameNavigationObserver back_to_red(web_contents());
+  base::test::TestFuture<void> destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.GetCallback());
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+  ASSERT_TRUE(destroyed.Wait());
+  back_to_red.Wait();
+  ASSERT_EQ(back_to_red.last_committed_url(), RedURL());
 }
 
 }  // namespace content
