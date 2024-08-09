@@ -220,4 +220,15 @@ TabInterface* TabInterface::GetFromContents(
   return TabLookupFromWebContents::FromWebContents(web_contents)->model();
 }
 
+// static
+TabInterface* TabInterface::MaybeGetFromContentsHackForCrashBug(
+    content::WebContents* web_contents) {
+  TabLookupFromWebContents* lookup =
+      TabLookupFromWebContents::FromWebContents(web_contents);
+  if (!lookup) {
+    return nullptr;
+  }
+  return lookup->model();
+}
+
 }  // namespace tabs

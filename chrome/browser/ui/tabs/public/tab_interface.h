@@ -42,6 +42,14 @@ class TabInterface {
   // known to be tabs.
   static TabInterface* GetFromContents(content::WebContents* web_contents);
 
+  // Do not use this method, it is only temporarily introduced to fix a crash.
+  // This method exists to ease the transition from WebContents to TabInterface.
+  // This method may be called on WebContents that are not known to be tabs. In
+  // case it is called from a WebContents not belonging to a tab, it returns
+  // nullptr.
+  static TabInterface* MaybeGetFromContentsHackForCrashBug(
+      content::WebContents* web_contents);
+
   // When a tab is in the background, the WebContents may be discarded to save
   // memory. When a tab is in the foreground it is guaranteed to have a
   // WebContents.
