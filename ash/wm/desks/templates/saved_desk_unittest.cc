@@ -2064,14 +2064,22 @@ TEST_F(SavedDeskTest, UnsupportedAppsDialog) {
   // Create a normal window.
   auto test_window = CreateAppWindow();
 
-  // Open overview and click on the save template button. The unsupported apps
-  // dialog should show up.
   auto* root = Shell::Get()->GetPrimaryRootWindow();
   ToggleOverview();
   auto* save_desk_as_template_button = GetSaveDeskAsTemplateButtonForRoot(root);
-  ASSERT_TRUE(
-      GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
-  LeftClickOn(save_desk_as_template_button);
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    // Open overview and then the desk context menu and then click on the save
+    // template menu item. The unsupported apps dialog should show up.
+    auto* save_desk_as_template_menu_item = GetActiveDeskActionContextMenuItem(
+        root, DeskActionContextMenu::kSaveAsTemplate);
+    LeftClickOn(save_desk_as_template_menu_item);
+  } else {
+    // Open overview and click on the save template button. The unsupported apps
+    // dialog should show up.
+    ASSERT_TRUE(
+        GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
+    LeftClickOn(save_desk_as_template_button);
+  }
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
 
   // Decline the dialog. We should stay in overview and no template should have
@@ -2083,9 +2091,19 @@ TEST_F(SavedDeskTest, UnsupportedAppsDialog) {
   EXPECT_FALSE(Shell::IsSystemModalWindowOpen());
   EXPECT_TRUE(GetOverviewSession());
 
-  // Click on the save template button again. The unsupported apps dialog should
-  // show up.
-  LeftClickOn(save_desk_as_template_button);
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    // Click on the save template menu item again. The unsupported apps dialog
+    // should
+    // show up.
+    auto* save_desk_as_template_menu_item = GetActiveDeskActionContextMenuItem(
+        root, DeskActionContextMenu::kSaveAsTemplate);
+    LeftClickOn(save_desk_as_template_menu_item);
+  } else {
+    // Click on the save template button again. The unsupported apps dialog
+    // should
+    // show up.
+    LeftClickOn(save_desk_as_template_button);
+  }
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
 
   // Accept the dialog. The template should have been saved and the saved desk
@@ -3081,15 +3099,23 @@ TEST_F(SavedDeskTest, UnsupportedAppDialogRecordsMetric) {
   // Create a normal window.
   auto test_window = CreateAppWindow();
 
-  // Open overview and click on the save desk as template button. The
-  // unsupported apps dialog should show up.
   auto* root = Shell::Get()->GetPrimaryRootWindow();
   ToggleOverview();
-  SavedDeskSaveDeskButton* save_template_button =
-      GetSaveDeskAsTemplateButtonForRoot(root);
-  ASSERT_TRUE(
-      GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
-  LeftClickOn(save_template_button);
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    // Open overview and then the desk context menu and then click on the save
+    // template menu item. The unsupported apps dialog should show up.
+    auto* save_desk_as_template_menu_item = GetActiveDeskActionContextMenuItem(
+        root, DeskActionContextMenu::kSaveAsTemplate);
+    LeftClickOn(save_desk_as_template_menu_item);
+  } else {
+    // Open overview and click on the save desk as template button. The
+    // unsupported apps dialog should show up.
+    SavedDeskSaveDeskButton* save_template_button =
+        GetSaveDeskAsTemplateButtonForRoot(root);
+    ASSERT_TRUE(
+        GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
+    LeftClickOn(save_template_button);
+  }
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
 
   // Now we assert that we've recorded the metric.
