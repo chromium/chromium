@@ -71,6 +71,9 @@ class Mv2DisabledDialogControllerInteractiveUITest
 
     ChromeTestExtensionLoader loader(browser()->profile());
     loader.set_location(location);
+    // TODO(crbug.com/40269105): The packing step creates a _metadata folder
+    // which causes an install warning when loading.
+    loader.set_ignore_manifest_warnings(true);
     scoped_refptr<const Extension> extension =
         loader.LoadExtension(test_dir.Pack());
     return extension.get();
@@ -100,6 +103,9 @@ class Mv2DisabledDialogControllerInteractiveUITest
     test_dir.WriteFile(FILE_PATH_LITERAL("icon16.png"), icon_file_content);
 
     ChromeTestExtensionLoader loader(browser()->profile());
+    // TODO(crbug.com/40269105): The packing step creates a _metadata folder
+    // which causes an install warning when loading.
+    loader.set_ignore_manifest_warnings(true);
     scoped_refptr<const Extension> extension =
         loader.LoadExtension(test_dir.Pack());
     return extension.get();
