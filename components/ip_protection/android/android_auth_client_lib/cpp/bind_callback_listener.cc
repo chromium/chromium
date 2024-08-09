@@ -7,14 +7,17 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client.h"
+#include "components/ip_protection/android/android_auth_client_lib/cpp/ip_protection_auth_client_interface.h"
 #include "components/ip_protection/android/android_auth_client_lib/cpp/jni_headers/BindCallbackListener_jni.h"
 
 namespace ip_protection::android {
 
 base::android::ScopedJavaLocalRef<jobject> BindCallbackListener::Create(
-    CreateIpProtectionAuthClientCallback callback) {
+    base::OnceCallback<IpProtectionAuthClientInterface::ClientCreated>
+        callback) {
   return Java_BindCallbackListener_Constructor(
       base::android::AttachCurrentThread(),
       reinterpret_cast<jlong>(new BindCallbackListener(std::move(callback))));
@@ -33,7 +36,7 @@ void BindCallbackListener::OnError(JNIEnv* env, std::string error) {
 }
 
 BindCallbackListener::BindCallbackListener(
-    CreateIpProtectionAuthClientCallback callback)
+    base::OnceCallback<IpProtectionAuthClientInterface::ClientCreated> callback)
     : callback_(std::move(callback)) {}
 
 BindCallbackListener::~BindCallbackListener() = default;

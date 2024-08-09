@@ -19,14 +19,6 @@
 
 namespace ip_protection::android {
 
-class IpProtectionAuthClient;
-
-// Used to return an IpProtectionAuthClient or error to the user.
-// Expected type won't change, error type will be updated.
-using CreateIpProtectionAuthClientCallback = base::OnceCallback<void(
-    base::expected<std::unique_ptr<IpProtectionAuthClientInterface>,
-                   std::string>)>;
-
 // Wrapper around the Java IpProtectionAuthClient that translates native
 // function calls into IPCs to the Android service implementing IP Protection.
 class IpProtectionAuthClient : public IpProtectionAuthClientInterface {
@@ -39,7 +31,7 @@ class IpProtectionAuthClient : public IpProtectionAuthClientInterface {
   // Asynchronously request to bind to the Android IP Protection auth service.
   // Callback will be invoked on the calling process's main thread.
   static void CreateConnectedInstance(
-      CreateIpProtectionAuthClientCallback callback);
+      base::OnceCallback<ClientCreated> callback);
 
   // Request to bind to an alternative or mock Android IP Protection auth
   // service specified by |packageName| and |className|, which identify the
@@ -49,7 +41,7 @@ class IpProtectionAuthClient : public IpProtectionAuthClientInterface {
   static void CreateConnectedInstanceForTesting(
       const std::string_view packageName,
       const std::string_view className,
-      CreateIpProtectionAuthClientCallback callback);
+      base::OnceCallback<ClientCreated> callback);
 
   // Asynchronously send a GetInitialDataRequest to the signing server.
   //

@@ -48,7 +48,7 @@ ConvertProtoCallback(
 
 // static
 void IpProtectionAuthClient::CreateConnectedInstance(
-    CreateIpProtectionAuthClientCallback callback) {
+    base::OnceCallback<ClientCreated> callback) {
   Java_IpProtectionAuthClient_createConnectedInstance(
       base::android::AttachCurrentThread(),
       BindCallbackListener::Create(std::move(callback)));
@@ -58,7 +58,7 @@ void IpProtectionAuthClient::CreateConnectedInstance(
 void IpProtectionAuthClient::CreateConnectedInstanceForTesting(
     const std::string_view packageName,
     const std::string_view className,
-    CreateIpProtectionAuthClientCallback callback) {
+    base::OnceCallback<ClientCreated> callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_IpProtectionAuthClient_createConnectedInstanceForTesting(  // IN-TEST
       env, base::android::ConvertUTF8ToJavaString(env, packageName),

@@ -42,6 +42,12 @@ using AuthAndSignResponseCallback = base::OnceCallback<void(
 // Protection.
 class IpProtectionAuthClientInterface {
  public:
+  // Supplied to a client factory to asynchronously return an
+  // IpProtectionAuthClientInterface or error back to the caller.
+  using ClientCreated =
+      void(base::expected<std::unique_ptr<IpProtectionAuthClientInterface>,
+                          std::string>);
+
   virtual ~IpProtectionAuthClientInterface() = default;
 
   // Asynchronously send a GetInitialDataRequest to the signing server.

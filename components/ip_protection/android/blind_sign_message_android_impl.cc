@@ -24,7 +24,10 @@
 
 namespace ip_protection {
 
-BlindSignMessageAndroidImpl::BlindSignMessageAndroidImpl() = default;
+BlindSignMessageAndroidImpl::BlindSignMessageAndroidImpl()
+    : client_factory_(
+          base::BindRepeating(&ip_protection::android::IpProtectionAuthClient::
+                                  CreateConnectedInstance)) {}
 
 BlindSignMessageAndroidImpl::~BlindSignMessageAndroidImpl() = default;
 
@@ -56,13 +59,9 @@ void BlindSignMessageAndroidImpl::DoRequest(
 }
 
 void BlindSignMessageAndroidImpl::CreateIpProtectionAuthClient() {
-  if (skip_create_connected_instance_for_testing_) {
-    return;
-  }
-  ip_protection::android::IpProtectionAuthClient::CreateConnectedInstance(
-      base::BindPostTaskToCurrentDefault(base::BindOnce(
-          &BlindSignMessageAndroidImpl::OnCreateIpProtectionAuthClientComplete,
-          weak_ptr_factory_.GetWeakPtr())));
+  client_factory_.Run(base::BindPostTaskToCurrentDefault(base::BindOnce(
+      &BlindSignMessageAndroidImpl::OnCreateIpProtectionAuthClientComplete,
+      weak_ptr_factory_.GetWeakPtr())));
 }
 
 void BlindSignMessageAndroidImpl::OnCreateIpProtectionAuthClientComplete(
