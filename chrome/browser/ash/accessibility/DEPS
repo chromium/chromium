@@ -23,7 +23,7 @@ include_rules = [
   "+chrome/browser/ash/input_method/ui",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/policy/enrollment",
-  "+chrome/browser/ash/preferences.h",
+  "+chrome/browser/ash/preferences/preferences.h",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/browser_process.h",

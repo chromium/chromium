@@ -53,6 +53,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/notifications",
+    "//chrome/browser/ash/preferences",
     "//chrome/test:test_support_unit",
     "//components/prefs",
     "//components/sync_preferences:test_support",

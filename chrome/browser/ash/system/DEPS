@@ -22,7 +22,7 @@ include_rules = [
   "+chrome/browser/ash/policy/enrollment",
   "+chrome/browser/ash/policy/server_backed_state",
   "+chrome/browser/ash/policy/test_support",
-  "+chrome/browser/ash/preferences.h",
+  "+chrome/browser/ash/preferences/preferences.h",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
   "+chrome/browser/browser_process.h",
