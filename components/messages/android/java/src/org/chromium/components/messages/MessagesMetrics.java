@@ -392,8 +392,6 @@ public class MessagesMetrics {
                 return "DownloadIncognitoWarning";
             case MessageIdentifier.CVC_SAVE:
                 return "CvcSave";
-            case MessageIdentifier.TRACKING_PROTECTION_NOTICE:
-                return "TrackingProtectionNotice";
             case MessageIdentifier.DESKTOP_SITE_WINDOW_SETTING:
                 return "DesktopSiteWindowSetting";
             case MessageIdentifier.PROMPT_HATS_LOCATION_CUSTOM_INVITATION:

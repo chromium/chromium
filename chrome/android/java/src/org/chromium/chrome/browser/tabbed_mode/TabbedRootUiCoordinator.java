@@ -88,7 +88,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
-import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
 import org.chromium.chrome.browser.readaloud.ReadAloudIPHController;
@@ -862,22 +861,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return false;
     }
 
-    boolean maybeTriggerTrackingProtectionNoticeAndOnboarding(
-            Profile profile, boolean wasPromoTriggered) {
-        if (!wasPromoTriggered && TrackingProtectionNoticeController.shouldShowNotice(profile)) {
-            TrackingProtectionNoticeController.create(
-                    mActivity, profile, mActivityTabProvider, mMessageDispatcher);
-            // Promo will be triggered eventually. We don't want for this promo to clash with other
-            // promos in the same run.
-            return true;
-        }
-        return wasPromoTriggered;
-    }
-
     private boolean maybeTriggerPrivacySandboxPrompt(Profile profile) {
-        boolean wasPromoTriggered = maybeTriggerPSDialogSuppression(profile);
-        // TODO(b/350704805): Cleanup - keep wasPromoTriggered out of the nested function calls
-        return maybeTriggerTrackingProtectionNoticeAndOnboarding(profile, wasPromoTriggered);
+        return maybeTriggerPSDialogSuppression(profile);
     }
 
     // Private class methods
