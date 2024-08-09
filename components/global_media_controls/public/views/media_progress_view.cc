@@ -104,6 +104,7 @@ MediaProgressView::MediaProgressView(
   slide_animation_.SetSlideDuration(kSlideAnimationDuration);
   foreground_straight_line_width_ = kStrokeWidth;
 
+  GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
   GetViewAccessibility().SetValue(GetFormattedDuration(current_position_));
 }
 
@@ -130,7 +131,6 @@ gfx::Size MediaProgressView::CalculatePreferredSize(
 
 void MediaProgressView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kSlider;
   node_data->SetNameChecked(l10n_util::GetStringUTF16(
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_TIME_SCRUBBER));
   node_data->AddAction(ax::mojom::Action::kIncrement);
