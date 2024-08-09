@@ -4341,6 +4341,9 @@ extern const char kSeaPenEnterpriseDescription[];
 extern const char kShelfAutoHideSeparationName[];
 extern const char kShelfAutoHideSeparationDescription[];
 
+extern const char kShimlessRMAAproUpdateRootfsName[];
+extern const char kShimlessRMAAproUpdateRootfsDescription[];
+
 extern const char kShimlessRMAComplianceCheckName[];
 extern const char kShimlessRMAComplianceCheckDescription[];
 

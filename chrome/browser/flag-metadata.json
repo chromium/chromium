@@ -8148,6 +8148,11 @@
     "expiry_milestone": 114
   },
   {
+    "name": "shimless-rma-apro-update-rootfs",
+    "owners": [ "gavinwill@chromium.org", "kevinptt@chromium.org", "cros-peripherals@google.com", "cros-shimless-tpe-eng@google.com" ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "shimless-rma-compliance-check",
     "owners": [ "zentaro@chromium.org", "gavinwill@chromium.org", "cros-peripherals@google.com" ],
     "expiry_milestone": 130
