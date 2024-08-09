@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
+import static org.mockito.Mockito.when;
+
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -28,6 +31,8 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -54,6 +59,9 @@ public class TabSwitcherActionMenuRenderTest extends BlankUiTestActivityTestCase
                     .build();
 
     @Mock private Profile mProfile;
+    @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mModel;
 
     private View mView;
 
@@ -67,6 +75,10 @@ public class TabSwitcherActionMenuRenderTest extends BlankUiTestActivityTestCase
         MockitoAnnotations.initMocks(this);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         super.setUpTest();
+        when(mTabModelSelectorSupplier.hasValue()).thenReturn(true);
+        when(mTabModelSelectorSupplier.get()).thenReturn(mTabModelSelector);
+        when(mTabModelSelector.getModel(true)).thenReturn(mModel);
+        when(mModel.getCount()).thenReturn(0);
     }
 
     @Override
@@ -98,7 +110,8 @@ public class TabSwitcherActionMenuRenderTest extends BlankUiTestActivityTestCase
                 () -> {
                     Activity activity = getActivity();
                     TabSwitcherActionMenuCoordinator coordinator =
-                            new TabSwitcherActionMenuCoordinator(mProfile);
+                            new TabSwitcherActionMenuCoordinator(
+                                    mProfile, mTabModelSelectorSupplier);
 
                     coordinator.displayMenu(
                             activity,

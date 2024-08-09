@@ -1627,7 +1627,8 @@ public class ToolbarManager
             OnLongClickListener tabSwitcherLongClickListener =
                     TabSwitcherActionMenuCoordinator.createOnLongClickListener(
                             menuItemId -> mAppMenuDelegate.onOptionsItemSelected(menuItemId, null),
-                            profile);
+                            profile,
+                            mTabModelSelectorSupplier);
             mTabSwitcherButtonCoordinator.initializeWithNative(
                     newTabClickHandler,
                     tabSwitcherLongClickListener,

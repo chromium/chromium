@@ -18,8 +18,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -45,13 +48,19 @@ public class TabSwitcherActionMenuCoordinator {
         MenuItemType.DIVIDER,
         MenuItemType.CLOSE_TAB,
         MenuItemType.NEW_TAB,
-        MenuItemType.NEW_INCOGNITO_TAB
+        MenuItemType.NEW_INCOGNITO_TAB,
+        MenuItemType.SWITCH_TO_INCOGNITO,
+        MenuItemType.SWITCH_OUT_OF_INCOGNITO,
+        MenuItemType.CLOSE_ALL_INCOGNITO_TABS
     })
     public @interface MenuItemType {
         int DIVIDER = 0;
         int CLOSE_TAB = 1;
         int NEW_TAB = 2;
         int NEW_INCOGNITO_TAB = 3;
+        int SWITCH_TO_INCOGNITO = 4;
+        int SWITCH_OUT_OF_INCOGNITO = 5;
+        int CLOSE_ALL_INCOGNITO_TABS = 6;
     }
 
     /**
@@ -60,9 +69,12 @@ public class TabSwitcherActionMenuCoordinator {
      * @return a long click listener of the long press action of tab switcher button.
      */
     public static OnLongClickListener createOnLongClickListener(
-            Callback<Integer> onItemClicked, Profile profile) {
+            Callback<Integer> onItemClicked,
+            Profile profile,
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         return createOnLongClickListener(
-                new TabSwitcherActionMenuCoordinator(profile), onItemClicked);
+                new TabSwitcherActionMenuCoordinator(profile, tabModelSelectorSupplier),
+                onItemClicked);
     }
 
     // internal helper function to create a long click listener.
@@ -89,17 +101,26 @@ public class TabSwitcherActionMenuCoordinator {
             RecordUserAction.record("MobileMenuNewTab.LongTapMenu");
         } else if (id == R.id.new_incognito_tab_menu_id) {
             RecordUserAction.record("MobileMenuNewIncognitoTab.LongTapMenu");
+        } else if (id == R.id.close_all_incognito_tabs_menu_id) {
+            RecordUserAction.record("MobileMenuCloseAllIncognitoTabs.LongTapMenu");
+        } else if (id == R.id.switch_to_incognito_menu_id) {
+            RecordUserAction.record("MobileMenuSwitchToIncognito.LongTapMenu");
+        } else if (id == R.id.switch_out_of_incognito_menu_id) {
+            RecordUserAction.record("MobileMenuSwitchOutOfIncognito.LongTapMenu");
         }
     }
 
+    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Profile mProfile;
 
     // For test.
     private View mContentView;
 
     /** Construct a coordinator for the given {@link Profile}. */
-    public TabSwitcherActionMenuCoordinator(Profile profile) {
+    TabSwitcherActionMenuCoordinator(
+            Profile profile, ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mProfile = profile;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
     }
 
     /**
@@ -158,11 +179,30 @@ public class TabSwitcherActionMenuCoordinator {
     }
 
     ModelList buildMenuItems() {
+        boolean isCurrentModelIncognito =
+                mTabModelSelectorSupplier.hasValue()
+                        && mTabModelSelectorSupplier.get().isIncognitoBrandedModelSelected();
+        boolean hasIncognitoTabs =
+                mTabModelSelectorSupplier.hasValue()
+                        && mTabModelSelectorSupplier.get().getModel(true).getCount() > 0;
+        boolean incognitoMigrationFFEnabled =
+                ChromeFeatureList.sTabStripIncognitoMigration.isEnabled();
         ModelList itemList = new ModelList();
         itemList.add(buildListItemByMenuItemType(MenuItemType.CLOSE_TAB));
+        if (incognitoMigrationFFEnabled && isCurrentModelIncognito && hasIncognitoTabs) {
+            itemList.add(buildListItemByMenuItemType(MenuItemType.CLOSE_ALL_INCOGNITO_TABS));
+        }
         itemList.add(buildListItemByMenuItemType(MenuItemType.DIVIDER));
         itemList.add(buildListItemByMenuItemType(MenuItemType.NEW_TAB));
         itemList.add(buildListItemByMenuItemType(MenuItemType.NEW_INCOGNITO_TAB));
+        if (incognitoMigrationFFEnabled) {
+            if (isCurrentModelIncognito) {
+                itemList.add(buildListItemByMenuItemType(MenuItemType.SWITCH_OUT_OF_INCOGNITO));
+            } else if (hasIncognitoTabs) {
+                // Show switch into incognito when incognito model has tabs.
+                itemList.add(buildListItemByMenuItemType(MenuItemType.SWITCH_TO_INCOGNITO));
+            }
+        }
         return itemList;
     }
 
@@ -179,6 +219,21 @@ public class TabSwitcherActionMenuCoordinator {
                         R.id.new_incognito_tab_menu_id,
                         R.drawable.incognito_simple,
                         IncognitoUtils.isIncognitoModeEnabled(mProfile));
+            case MenuItemType.CLOSE_ALL_INCOGNITO_TABS:
+                return buildMenuListItem(
+                        R.string.menu_close_all_incognito_tabs,
+                        R.id.close_all_incognito_tabs_menu_id,
+                        R.drawable.ic_close_all_tabs);
+            case MenuItemType.SWITCH_TO_INCOGNITO:
+                return buildMenuListItem(
+                        R.string.menu_switch_to_incognito,
+                        R.id.switch_to_incognito_menu_id,
+                        R.drawable.ic_switch_to_incognito);
+            case MenuItemType.SWITCH_OUT_OF_INCOGNITO:
+                return buildMenuListItem(
+                        R.string.menu_switch_out_of_incognito,
+                        R.id.switch_out_of_incognito_menu_id,
+                        R.drawable.ic_switch_out_of_incognito);
             case MenuItemType.DIVIDER:
             default:
                 return buildMenuDivider();

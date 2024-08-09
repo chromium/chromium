@@ -2768,6 +2768,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     mTabModelSelector,
                     ArchivedTabModelOrchestrator.getForProfile(mTabModelProfileSupplier.get())
                             .getTabModelSelector());
+        } else if (id == R.id.switch_to_incognito_menu_id) {
+            mTabModelSelector.selectModel(true);
+            RecordUserAction.record("MobileMenuSwitchToIncognito");
+        } else if (id == R.id.switch_out_of_incognito_menu_id) {
+            mTabModelSelector.selectModel(false);
+            RecordUserAction.record("MobileMenuSwitchOutOfIncognito");
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu);
         }
