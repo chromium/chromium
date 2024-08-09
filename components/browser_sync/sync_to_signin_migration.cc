@@ -255,6 +255,10 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
                     syncer::DataTypeToHistogramSuffix(syncer::BOOKMARKS)}),
       bookmarks_decision);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // On Android no password migration is required here, because other layers are
+  // responsible for migrating the user to the local+account model, e.g.
+  // SetUsesSplitStoresAndUPMForLocal(), PasswordStoreBackendMigrationDecorator.
   const SyncToSigninMigrationDataTypeDecision passwords_decision =
       GetSyncToSigninMigrationDataTypeDecision(
           pref_service, syncer::PASSWORDS,
@@ -264,6 +268,7 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
                     GetHistogramMigratingOrNotInfix(doing_migration),
                     syncer::DataTypeToHistogramSuffix(syncer::PASSWORDS)}),
       passwords_decision);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   const SyncToSigninMigrationDataTypeDecision reading_list_decision =
       GetSyncToSigninMigrationDataTypeDecision(
@@ -329,6 +334,10 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
 
   bool migration_successful = true;
 
+// On Android no password migration is required here, because other layers are
+// responsible for migrating the user to the local+account model, e.g.
+// SetUsesSplitStoresAndUPMForLocal(), PasswordStoreBackendMigrationDecorator.
+#if !BUILDFLAG(IS_ANDROID)
   // Move passwords DB file, if password sync is enabled.
   if (passwords_decision == SyncToSigninMigrationDataTypeDecision::kMigrate) {
     base::FilePath from_path =
@@ -344,6 +353,7 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
     migration_successful =
         migration_successful && (error == base::File::Error::FILE_OK);
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Move bookmarks json file, if bookmark sync is enabled.
   if (bookmarks_decision == SyncToSigninMigrationDataTypeDecision::kMigrate) {
