@@ -68,13 +68,13 @@ void ConfigureEsimProfile(const EuiccInfo& euicc_info,
       HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
           kAddProfileWithService);
 
-  // Explicitly enable the newly added profile.
-  auto* hermes_profile_client = HermesProfileClient::Get();
-  CHECK(hermes_profile_client);
-  hermes_profile_client->EnableCarrierProfile(
-      dbus::ObjectPath(esim_info.profile_path()), base::DoNothing());
-
   if (connected) {
+    // Explicitly enable the newly added profile.
+    auto* hermes_profile_client = HermesProfileClient::Get();
+    CHECK(hermes_profile_client);
+    hermes_profile_client->EnableCarrierProfile(
+        dbus::ObjectPath(esim_info.profile_path()), base::DoNothing());
+
     esim_info.Connect();
   }
 }

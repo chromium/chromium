@@ -121,6 +121,9 @@ WebContentsInteractionTestUtil::DeepQuery ApnListNthItemRemoveButton(int n);
 // The n-th APN item enable button in its dots menu.
 WebContentsInteractionTestUtil::DeepQuery ApnListNthItemEnableButton(int n);
 
+// The div that indicates the auto-detected APN in the APN list item.
+WebContentsInteractionTestUtil::DeepQuery ApnListItemAutoDetectedDiv();
+
 // The confirm button in the APNs selection dialog.
 WebContentsInteractionTestUtil::DeepQuery ApnSelectionConfirmButton();
 

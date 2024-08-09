@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/ash/interactive/cellular/esim_interactive_uitest_base.h"
+#include "chrome/test/base/ash/interactive/cellular/wait_for_service_connected_observer.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 #include "chromeos/ash/components/dbus/hermes/fake_hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_service_client.h"
@@ -171,6 +172,28 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
         n, settings::cellular::ApnListNthItemEnableButton(n));
   }
 
+  ui::test::internal::InteractiveTestPrivate::MultiStep WaitForApnConnected(
+      const std::string& apn_name) {
+    return Steps(
+        WaitForElementTextContains(kOSSettingsId,
+                                   settings::cellular::ApnListFirstItemName(),
+                                   /*text=*/apn_name),
+        WaitForElementTextContains(
+            kOSSettingsId, settings::cellular::ApnListFirstItemSublabel(),
+            /*text=*/l10n_util::GetStringUTF8(IDS_ONC_CONNECTED).c_str()),
+        Do([&]() { VerifyLastGoodApn(apn_name); }));
+  }
+
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  WaitForAutoDetectedApnConnected() {
+    return Steps(
+        WaitForApnConnected(default_modb_apn_name()),
+        WaitForElementTextContains(
+            kOSSettingsId, settings::cellular::ApnListItemAutoDetectedDiv(),
+            /*text=*/
+            l10n_util::GetStringUTF8(IDS_SETTINGS_APN_AUTO_DETECTED).c_str()));
+  }
+
  private:
   ui::test::internal::InteractiveTestPrivate::MultiStep
   ClickButtonInDotsMenuOfNthApnInList(
@@ -230,6 +253,47 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
 
 IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest,
                        NonConnectedCellularHasNoApn) {
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(
+      context,
+
+      Log("Navigating to the internet page"),
+
+      NavigateToInternetDetailsPage(kOSSettingsId,
+                                    NetworkTypePattern::Cellular(),
+                                    esim_info().nickname()),
+
+      Log("Navigate to the APN revamp details page"),
+
+      NavigateToApnRevampDetailsPage(kOSSettingsId),
+
+      Log("Verify it connects to the auto detected APN"),
+
+      WaitForAutoDetectedApnConnected(),
+
+      Log("Disconnect cellular network"),
+
+      Do([&]() { esim_info().Disconnect(); }),
+
+      Log("Verify Zero state message shows and no APN shows in the list when "
+          "not connected"),
+
+      WaitForElementExists(kOSSettingsId,
+                           settings::cellular::ApnSubpageZeroStateContent()),
+      WaitForElementHasAttribute(
+          kOSSettingsId, settings::cellular::ApnListFirstItem(), "hidden"),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, MultipleNetworksDefaultApn) {
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(WaitForServiceConnectedObserver,
+                                      kConnectedToCellularService);
+  SimInfo esim_info1(/*id=*/1);
+  ConfigureEsimProfile(euicc_info(), esim_info1, /*connected=*/false);
 
   ui::ElementContext context =
       LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
@@ -250,30 +314,39 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest,
 
       Log("Verify it connects to the auto detected APN"),
 
-      WaitForElementTextContains(kOSSettingsId,
-                                 settings::cellular::ApnListFirstItemName(),
-                                 /*text=*/default_modb_apn_name()),
+      WaitForAutoDetectedApnConnected(),
+
+      Log("Navigate to the second cellular network"),
+
+      NavigateToInternetDetailsPage(
+          kOSSettingsId, NetworkTypePattern::Cellular(), esim_info1.nickname()),
+
+      Log("Connect to the second network"),
+
+      ObserveState(kConnectedToCellularService,
+                   std::make_unique<WaitForServiceConnectedObserver>(
+                       esim_info1.iccid())),
+      Do([&]() { esim_info1.Connect(); }),
+      WaitForState(kConnectedToCellularService, true),
+
+      Log("Wait for the UI shows connected"),
+
       WaitForElementTextContains(
-          kOSSettingsId, settings::cellular::ApnListFirstItemSublabel(),
+          kOSSettingsId, settings::SettingsSubpageNetworkState(),
           /*text=*/l10n_util::GetStringUTF8(IDS_ONC_CONNECTED).c_str()),
 
-      Log("Disconnect cellular network"),
+      Log("Navigate to the second APN revamp details page"),
 
-      Do([&]() { esim_info().Disconnect(); }),
+      NavigateToApnRevampDetailsPage(kOSSettingsId),
 
-      Log("Verify Zero state message shows and no APN shows in the list when "
-          "not connected"),
+      Log("Verify it connects to the auto detected APN"),
 
-      WaitForElementExists(kOSSettingsId,
-                           settings::cellular::ApnSubpageZeroStateContent()),
-      WaitForElementHasAttribute(
-          kOSSettingsId, settings::cellular::ApnListFirstItem(), "hidden"),
+      WaitForAutoDetectedApnConnected(),
 
       Log("Test complete"));
 }
 
 IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, CreateDefaultCustomApn) {
-
   ui::ElementContext context =
       LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
 
@@ -321,7 +394,6 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, CreateDefaultCustomApn) {
 
 IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest,
                        CreateDefaultAndAttachCustomApn) {
-
   ui::ElementContext context =
       LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
 
@@ -479,10 +551,7 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, DiscoverApns) {
 
       Log("Wait for the custom APN connected"),
 
-      WaitForElementTextContains(
-          kOSSettingsId, settings::cellular::ApnListFirstItemSublabel(),
-          /*text=*/l10n_util::GetStringUTF8(IDS_ONC_CONNECTED).c_str()),
-      Do([&]() { VerifyLastGoodApn(kDefaultCustomApnName); }),
+      WaitForApnConnected(kDefaultCustomApnName),
 
       Log("Open 'Show known APNs' dialog"),
 
@@ -509,24 +578,15 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, DiscoverApns) {
       WaitForElementDoesNotExist(kOSSettingsId,
                                  settings::cellular::ApnSelectionDialog()),
 
-      Log("Wait for the default APN appear at the top of the list"),
-
-      WaitForElementTextContains(kOSSettingsId,
-                                 settings::cellular::ApnListFirstItemName(),
-                                 /*text=*/default_modb_apn_name()),
-
       Log("Wait for the default APN connected"),
 
-      WaitForElementTextContains(
-          kOSSettingsId, settings::cellular::ApnListFirstItemSublabel(),
-          /*text=*/l10n_util::GetStringUTF8(IDS_ONC_CONNECTED).c_str()),
+      WaitForApnConnected(default_modb_apn_name()),
 
       Log("Check the custom APN re-ordered to second APN"),
 
       WaitForElementTextContains(kOSSettingsId,
                                  settings::cellular::ApnListNthItemName(2),
                                  /*text=*/kDefaultCustomApnName),
-      Do([&]() { VerifyLastGoodApn(default_modb_apn_name()); }),
 
       Log("Check custom APN disabled"),
 
@@ -572,10 +632,7 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, EnableDisableRemoveApns) {
 
       Log("Wait for the default custom APN connected"),
 
-      WaitForElementTextContains(
-          kOSSettingsId, settings::cellular::ApnListFirstItemSublabel(),
-          /*text=*/l10n_util::GetStringUTF8(IDS_ONC_CONNECTED).c_str()),
-      Do([&]() { VerifyLastGoodApn(kDefaultCustomApnName); }),
+      WaitForApnConnected(kDefaultCustomApnName),
 
       Log("Create a attach custom APN from the dialog"),
 
@@ -584,13 +641,7 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, EnableDisableRemoveApns) {
 
       Log("Checking for the default custom APN still connected"),
 
-      WaitForElementTextContains(kOSSettingsId,
-                                 settings::cellular::ApnListFirstItemName(),
-                                 /*text=*/kDefaultCustomApnName),
-      WaitForElementTextContains(
-          kOSSettingsId, settings::cellular::ApnListFirstItemSublabel(),
-          /*text=*/l10n_util::GetStringUTF8(IDS_ONC_CONNECTED).c_str()),
-      Do([&]() { VerifyLastGoodApn(kDefaultCustomApnName); }),
+      WaitForApnConnected(kDefaultCustomApnName),
 
       Log("Attempt to disable Default APN"),
 
@@ -640,12 +691,7 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, EnableDisableRemoveApns) {
 
       Log("Checking for auto-detected APN popped up in the APN list"),
 
-      WaitForElementTextContains(kOSSettingsId,
-                                 settings::cellular::ApnListFirstItemName(),
-                                 /*text=*/default_modb_apn_name()),
-      WaitForElementTextContains(
-          kOSSettingsId, settings::cellular::ApnListFirstItemSublabel(),
-          /*text=*/l10n_util::GetStringUTF8(IDS_ONC_CONNECTED).c_str()),
+      WaitForAutoDetectedApnConnected(),
 
       Log("Checking for Default custom APN removed and Modb APN connected in "
           "Shill"),
@@ -677,14 +723,8 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, EnableDisableRemoveApns) {
 
       Log("Enable Default APN"),
 
-      EnableNthApnInList(3),
-      WaitForElementTextContains(kOSSettingsId,
-                                 settings::cellular::ApnListFirstItemName(),
-                                 /*text=*/kDefaultCustomApnName),
-      WaitForElementTextContains(
-          kOSSettingsId, settings::cellular::ApnListFirstItemSublabel(),
-          /*text=*/l10n_util::GetStringUTF8(IDS_ONC_CONNECTED).c_str()),
-      Do([&]() { VerifyLastGoodApn(kDefaultCustomApnName); }), Do([&]() {
+      EnableNthApnInList(3), WaitForApnConnected(kDefaultCustomApnName),
+      Do([&]() {
         VerifyCustomApnInShill(/*expect_exists=*/true, kDefaultCustomApnName,
                                shill::kApnTypeDefault);
       }),
@@ -697,8 +737,8 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, EnableDisableRemoveApns) {
 
       RemoveNthApnInList(1),
 
-      Log("Checking for auto-detected APN popped up in the APN list if there's "
-          "no custom APN"),
+      Log("Checking for auto-detected APN popped up in the APN list when "
+          "there is no custom APN"),
 
       WaitForElementTextContains(kOSSettingsId,
                                  settings::cellular::ApnListFirstItemName(),

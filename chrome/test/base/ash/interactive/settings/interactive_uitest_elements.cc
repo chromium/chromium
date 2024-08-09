@@ -155,6 +155,10 @@ WebContentsInteractionTestUtil::DeepQuery ApnListNthItemEnableButton(int n) {
   return ApnListNthItem(n) + "button#enableButton";
 }
 
+WebContentsInteractionTestUtil::DeepQuery ApnListItemAutoDetectedDiv() {
+  return ApnListFirstItem() + "div#autoDetected";
+}
+
 WebContentsInteractionTestUtil::DeepQuery ApnSelectionConfirmButton() {
   return ApnSelectionDialog() + "cr-button#apnSelectionActionBtn";
 }

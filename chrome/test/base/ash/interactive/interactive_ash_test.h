@@ -76,7 +76,7 @@ class InteractiveAshTest
   ui::test::internal::InteractiveTestPrivate::MultiStep
   NavigateSettingsToBluetoothPage(const ui::ElementIdentifier& element_id);
 
-  //  Navigates the Settings app, which is expected to be associated with
+  // Navigates the Settings app, which is expected to be associated with
   // `element_id`, to the details page for the network named `network_name`
   // with type `network_pattern`.
   ui::test::internal::InteractiveTestPrivate::MultiStep
@@ -220,7 +220,7 @@ class InteractiveAshTest
 
   // This function is similar to `WaitForElementTextContains()` except it
   // supports non-unique elements. For more info see
-  // `FindElementWithTextAndDoAction()`.
+  // `FindElementAndDoActionOnChildren()`.
   ui::test::internal::InteractiveTestPrivate::MultiStep
   WaitForAnyElementTextContains(
       const ui::ElementIdentifier& element_id,
@@ -272,7 +272,7 @@ class InteractiveAshTest
       const WebContentsInteractionTestUtil::DeepQuery& query);
 
   // This function is similar to `ClickElement()` except it supports non-unique
-  // elements. For more info see `FindElementWithTextAndDoAction()`.
+  // elements. For more info see `FindElementAndDoActionOnChildren()`.
   ui::test::internal::InteractiveTestPrivate::MultiStep
   ClickAnyElementTextContains(
       const ui::ElementIdentifier& element_id,
@@ -308,18 +308,18 @@ class InteractiveAshTest
       const WebContentsInteractionTestUtil::DeepQuery& query,
       const std::string& text);
 
- private:
   // Waits for an element identified by `root` to exist in the DOM of an
   // instrumented WebUI identified by `element_id`. When found, this function
-  // will search for elements matching `selectors` and will execute `action` on
-  // each element until `action` returns a truthy value.
+  // will search for its children elements by `selectors` and will execute
+  // `action` on each element until `action` returns a truthy value.
   ui::test::internal::InteractiveTestPrivate::MultiStep
-  FindElementWithTextAndDoAction(
+  FindElementAndDoActionOnChildren(
       const ui::ElementIdentifier& element_id,
       const WebContentsInteractionTestUtil::DeepQuery& root,
       const WebContentsInteractionTestUtil::DeepQuery& selectors,
       const std::string& action);
 
+ private:
   // Helper function that navigates to a top-level page of the Settings app.
   // This function expects the Settings app to already be open. The `path`
   // parameter should correspond to a top-level menu item.
@@ -333,6 +333,14 @@ class InteractiveAshTest
   // desired detailed page.
   ui::test::internal::InteractiveTestPrivate::MultiStep
   NavigateQuickSettingsToPage(const ui::ElementIdentifier& element_id);
+
+  // Returns the JS code that searches for an element selected by
+  // `element_with_text` that contains the expected text, and when found will
+  // click on the sibling element selected by `element_to_click`.
+  const std::string ClickElementWithSiblingContainsText(
+      const WebContentsInteractionTestUtil::DeepQuery& element_with_text,
+      const std::string& expected,
+      const WebContentsInteractionTestUtil::DeepQuery& element_to_click);
 };
 
 #endif  // CHROME_TEST_BASE_ASH_INTERACTIVE_INTERACTIVE_ASH_TEST_H_
