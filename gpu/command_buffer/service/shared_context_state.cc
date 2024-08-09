@@ -763,8 +763,6 @@ void SharedContextState::FlushAndSubmit(bool sync_to_cpu) {
   } else if (gr_context()) {
     gr_context()->flushAndSubmit(sync_to_cpu ? GrSyncCpu::kYes
                                              : GrSyncCpu::kNo);
-  } else {
-    CHECK(context_lost());
   }
 }
 
