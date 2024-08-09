@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
+#include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_http_client_impl_test_api.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -106,6 +107,8 @@ class PlusAddressHttpClientRequests : public ::testing::Test {
       base::StrCat({kServerBaseUrl, kServerReservePlusAddressEndpoint});
   const std::string kFullCreateEndpoint =
       base::StrCat({kServerBaseUrl, kServerCreatePlusAddressEndpoint});
+  const std::string kFullPreallocateEndpoint =
+      base::StrCat({kServerBaseUrl, kServerPreallocatePlusAddressEndpoint});
   // This is a `std::string` to allow easier concatenation via `operator+`.
   const std::string kToken = "myToken";
 
@@ -446,6 +449,77 @@ INSTANTIATE_TEST_SUITE_P(
            info) {
       return metrics::PlusAddressNetworkRequestTypeToString(info.param);
     });
+
+TEST_F(PlusAddressHttpClientRequests,
+       PreallocatePlusAddresses_IssuesCorrectRequest) {
+  client().PreallocatePlusAddresses(base::DoNothing());
+  identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kToken, base::Time::Max());
+
+  EXPECT_EQ(last_request().url, kFullPreallocateEndpoint);
+  EXPECT_EQ(last_request().method, net::HttpRequestHeaders::kPostMethod);
+  EXPECT_EQ(
+      last_request().headers.GetHeader("Authorization").value_or(std::string()),
+      "Bearer " + kToken);
+
+  // Validate the request payload.
+  ASSERT_EQ(last_request().request_body, nullptr);
+}
+
+// Tests that a successful server response from the preallocation endpoint is
+// received, parsed, and triggers the callback properly.
+TEST_F(PlusAddressHttpClientRequests,
+       PreallocatePlusAddresses_SuccessResponse) {
+  base::test::TestFuture<PlusAddressHttpClient::PreallocatePlusAddressesResult>
+      future;
+  client().PreallocatePlusAddresses(future.GetCallback());
+  identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kToken, base::Time::Max());
+
+  const auto address1 = PreallocatedPlusAddress{
+      .plus_address = "plus1@plus.com", .lifetime = base::Days(10)};
+  const auto address2 = PreallocatedPlusAddress{.plus_address = "plus2@foo.com",
+                                                .lifetime = base::Days(50)};
+
+  const std::string json = test::MakePreallocateResponse({address1, address2});
+  EXPECT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kFullPreallocateEndpoint, json));
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), std::vector({address1, address2}));
+}
+
+// Tests that a malformed server response from the preallocation endpoint is
+// received, parsed, and passes a parsing error to the callback.
+TEST_F(PlusAddressHttpClientRequests, PreallocatePlusAddresses_ParsingError) {
+  base::test::TestFuture<PlusAddressHttpClient::PreallocatePlusAddressesResult>
+      future;
+  client().PreallocatePlusAddresses(future.GetCallback());
+  identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kToken, base::Time::Max());
+
+  EXPECT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kFullPreallocateEndpoint, "[]"));
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), base::unexpected(PlusAddressRequestError(
+                              PlusAddressRequestErrorType::kParsingError)));
+}
+
+// Tests that a network error response from the preallocation endpoint is
+// received and passed on to the callback.
+TEST_F(PlusAddressHttpClientRequests, PreallocatePlusAddresses_NetworkError) {
+  base::test::TestFuture<PlusAddressHttpClient::PreallocatePlusAddressesResult>
+      future;
+  client().PreallocatePlusAddresses(future.GetCallback());
+  identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kToken, base::Time::Max());
+
+  EXPECT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
+      kFullPreallocateEndpoint, "", net::HTTP_NOT_FOUND));
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(),
+            base::unexpected(
+                PlusAddressRequestError::AsNetworkError(net::HTTP_NOT_FOUND)));
+}
 
 // Ensures the request sent by Chrome matches what we intended.
 TEST_F(PlusAddressHttpClientRequests, GetAllPlusAddressesV1_IssuesCorrectRequest) {

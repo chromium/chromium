@@ -28,6 +28,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -103,6 +104,38 @@ constexpr net::NetworkTrafficAnnotationTag kConfirmPlusAddressAnnotation =
       policy {
         cookies_allowed: NO
         setting: "Disable the Plus Addresses feature."
+        policy_exception_justification: "We don't have an opt-out policy yet"
+                                        " as Plus Addresses hasn't launched."
+      }
+    )");
+
+constexpr net::NetworkTrafficAnnotationTag kPreallocatePlusAddressesAnnotation =
+    net::DefineNetworkTrafficAnnotation("plus_address_preallocation", R"(
+      semantics {
+        sender: "Chrome Plus Address Client"
+        description: "Pre-allocated Plus Addresses are requested. These may"
+                      "later be used to confirm the creation of a Plus Address."
+        trigger: "There are three scenarios:"
+                  "1) The user sees the notice screen for the first time."
+                  "2) The pre-allocated Plus Addresses on the device are"
+                  "   exhausted because they were confirmed and thus activated"
+                  "   for use."
+                  "3) The pre-allocated Plus Address on the device expired."
+        internal {
+          contacts {
+              email: "dc-komics@google.com"
+          }
+        }
+        user_data {
+          type: ACCESS_TOKEN,
+        }
+        data: "n/a"
+        destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2024-08-08"
+      }
+      policy {
+        cookies_allowed: NO
+        setting: "No setting."
         policy_exception_justification: "We don't have an opt-out policy yet"
                                         " as Plus Addresses hasn't launched."
       }
@@ -243,13 +276,13 @@ void PlusAddressHttpClientImpl::ConfirmPlusAddress(
 
 void PlusAddressHttpClientImpl::PreallocatePlusAddresses(
     PreallocatePlusAddressesCallback callback) {
-  // TODO: crbug.com/324559503 - implement.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          std::move(callback),
-          base::unexpected(PlusAddressRequestError(
-              PlusAddressRequestErrorType::kRequestNotSupportedError))));
+  if (!server_url_) {
+    return;
+  }
+  // TODO: crbug.com/32455950 - Extend WrapAsAutoRun and use it here.
+  GetAuthToken(base::BindOnce(
+      &PlusAddressHttpClientImpl::PreallocatePlusAddressesInternal,
+      base::Unretained(this), std::move(callback)));
 }
 
 void PlusAddressHttpClientImpl::GetAllPlusAddresses(
@@ -269,6 +302,7 @@ void PlusAddressHttpClientImpl::Reset() {
   access_token_fetcher_.reset();
   pending_callbacks_ = {};
   loaders_for_creation_.clear();
+  loaders_for_preallocation_.clear();
   loader_for_sync_.reset();
 }
 
@@ -379,6 +413,34 @@ void PlusAddressHttpClientImpl::GetAllPlusAddressesInternal(
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
+void PlusAddressHttpClientImpl::PreallocatePlusAddressesInternal(
+    PreallocatePlusAddressesCallback callback,
+    std::optional<std::string> auth_token) {
+  if (!auth_token.has_value()) {
+    std::move(callback).Run(base::unexpected(
+        PlusAddressRequestError(PlusAddressRequestErrorType::kOAuthError)));
+    return;
+  }
+
+  std::unique_ptr<network::ResourceRequest> resource_request =
+      CreateRequest(kServerPreallocatePlusAddressEndpoint,
+                    net::HttpRequestHeaders::kPostMethod, *auth_token);
+  std::unique_ptr<network::SimpleURLLoader> loader =
+      network::SimpleURLLoader::Create(std::move(resource_request),
+                                       kPreallocatePlusAddressesAnnotation);
+  network::SimpleURLLoader* loader_ptr = loader.get();
+  loader_ptr->SetTimeoutDuration(kRequestTimeout);
+  loader_ptr->DownloadToString(
+      url_loader_factory_.get(),
+      base::BindOnce(&PlusAddressHttpClientImpl::OnPreallocationComplete,
+                     // Safe since this class owns the list of loaders.
+                     base::Unretained(this),
+                     loaders_for_preallocation_.insert(
+                         loaders_for_preallocation_.begin(), std::move(loader)),
+                     base::TimeTicks::Now(), std::move(callback)),
+      network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+}
+
 void PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete(
     UrlLoaderList::iterator it,
     PlusAddressNetworkRequestType type,
@@ -416,6 +478,39 @@ void PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete(
                   return;
                 }
                 std::move(callback).Run(result.value());
+              },
+              std::move(on_completed))));
+}
+
+void PlusAddressHttpClientImpl::OnPreallocationComplete(
+    UrlLoaderList::iterator it,
+    base::TimeTicks request_start,
+    PreallocatePlusAddressesCallback on_completed,
+    std::unique_ptr<std::string> response) {
+  std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
+  loaders_for_preallocation_.erase(it);
+  // TODO: crbug.com/324559503 - Add metrics for latency, response code, and
+  // response size.
+  std::optional<int> response_code = GetResponseCode(loader.get());
+  if (!response) {
+    std::move(on_completed)
+        .Run(base::unexpected(
+            PlusAddressRequestError::AsNetworkError(response_code)));
+    return;
+  }
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      *response,
+      base::BindOnce(&ParsePreallocatedPlusAddresses)
+          .Then(base::BindOnce(
+              [](PreallocatePlusAddressesCallback callback,
+                 std::optional<std::vector<PreallocatedPlusAddress>> result) {
+                if (!result) {
+                  std::move(callback).Run(
+                      base::unexpected(PlusAddressRequestError(
+                          PlusAddressRequestErrorType::kParsingError)));
+                  return;
+                }
+                std::move(callback).Run(*std::move(result));
               },
               std::move(on_completed))));
 }

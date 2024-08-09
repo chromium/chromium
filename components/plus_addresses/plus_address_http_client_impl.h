@@ -40,6 +40,8 @@ inline constexpr std::string_view kServerReservePlusAddressEndpoint =
     "v1/profiles/reserve";
 inline constexpr std::string_view kServerCreatePlusAddressEndpoint =
     "v1/profiles/create";
+inline constexpr std::string_view kServerPreallocatePlusAddressEndpoint =
+    "v1/emailAddresses/reserve";
 
 class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
  public:
@@ -89,6 +91,9 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
                                   std::optional<std::string> auth_token);
   void GetAllPlusAddressesInternal(PlusAddressMapRequestCallback on_completed,
                                    std::optional<std::string> auth_token);
+  void PreallocatePlusAddressesInternal(
+      PreallocatePlusAddressesCallback callback,
+      std::optional<std::string> auth_token);
 
   // This is shared by the `ReservePlusAddress` and `ConfirmPlusAddress` methods
   // since they both use `loaders_for_creation_` and have the same return type.
@@ -98,6 +103,11 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
       base::TimeTicks request_start,
       PlusAddressRequestCallback on_completed,
       std::unique_ptr<std::string> response);
+
+  void OnPreallocationComplete(UrlLoaderList::iterator it,
+                               base::TimeTicks request_start,
+                               PreallocatePlusAddressesCallback on_completed,
+                               std::unique_ptr<std::string> response);
 
   void OnGetAllPlusAddressesComplete(base::TimeTicks request_start,
                                      PlusAddressMapRequestCallback on_completed,
@@ -135,6 +145,11 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
   // list of loaders instead of a single one to handle several requests made
   // quickly across different tabs.
   std::list<std::unique_ptr<network::SimpleURLLoader>> loaders_for_creation_;
+
+  // Loaders used for pre-allocate calls.
+  // TODO: crbug.com/324559503 - Combine with `loaders_for_creation_`?
+  std::list<std::unique_ptr<network::SimpleURLLoader>>
+      loaders_for_preallocation_;
 
   // A loader used infrequently for calls to GetAllPlusAddresses which keeps
   // the PlusAddressService synced with the remote server.

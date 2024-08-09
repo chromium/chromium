@@ -8,6 +8,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/plus_addresses/plus_address_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace plus_addresses::test {
@@ -75,6 +76,21 @@ std::string MakeListResponse(const std::vector<PlusProfile>& profiles) {
   std::optional<std::string> json = base::WriteJson(response);
   DCHECK(json.has_value());
   return json.value();
+}
+
+std::string MakePreallocateResponse(
+    const std::vector<PreallocatedPlusAddress>& addresses) {
+  base::Value::List profiles;
+  for (const PreallocatedPlusAddress& address : addresses) {
+    profiles.Append(
+        base::Value::Dict()
+            .Set("emailAddress", address.plus_address)
+            .Set("reservationLifetime",
+                 base::NumberToString(address.lifetime.InSeconds()) + "s"));
+  }
+  return base::WriteJson(
+             base::Value::Dict().Set("emailAddresses", std::move(profiles)))
+      .value();
 }
 
 std::string MakePlusProfile(const PlusProfile& profile) {
