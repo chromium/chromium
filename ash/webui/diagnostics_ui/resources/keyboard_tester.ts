@@ -337,10 +337,12 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   }
 
   close(): void {
-    const diagram: KeyboardDiagramElement|null =
-        this.shadowRoot!.querySelector('#diagram');
-    assert(diagram);
-    diagram.resetAllKeys();
+    if (this.layoutIsKnown) {
+      const diagram: KeyboardDiagramElement|null =
+          this.shadowRoot!.querySelector('#diagram');
+      assert(diagram);
+      diagram.resetAllKeys();
+    }
     this.$.dialog.close();
 
     const url = new URL(window.location.href);
