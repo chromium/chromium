@@ -241,8 +241,7 @@ public class TemplateUrlServiceTest {
                         PLAY_API_IMAGE_POST_PARAM,
                         PLAY_API_IMAGE_TRANSLATE_URL,
                         PLAY_API_IMAGE_TRANSLATE_SOURCE_KEY,
-                        PLAY_API_IMAGE_TRANSLATE_DEST_KEY,
-                        true));
+                        PLAY_API_IMAGE_TRANSLATE_DEST_KEY));
 
         TemplateUrl defaultSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
         Assert.assertEquals("keyword1", defaultSearchEngine.getKeyword());
@@ -276,8 +275,7 @@ public class TemplateUrlServiceTest {
                         null,
                         null,
                         null,
-                        null,
-                        true));
+                        null));
 
         defaultSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
         Assert.assertEquals(originalKeyword, defaultSearchEngine.getKeyword());
@@ -317,8 +315,7 @@ public class TemplateUrlServiceTest {
                         null,
                         null,
                         null,
-                        null,
-                        true));
+                        null));
 
         TemplateUrl defaultSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
         Assert.assertEquals("keyword1", defaultSearchEngine.getKeyword());
@@ -340,8 +337,7 @@ public class TemplateUrlServiceTest {
                         null,
                         null,
                         null,
-                        null,
-                        true));
+                        null));
 
         defaultSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
         Assert.assertEquals("keyword2", defaultSearchEngine.getKeyword());
@@ -389,8 +385,7 @@ public class TemplateUrlServiceTest {
             String imageUrlPostParams,
             String imageTranslateUrl,
             String imageTranslateSourceLanguageParamKey,
-            String imageTranslateTargetLanguageParamKey,
-            boolean setAsDefault) {
+            String imageTranslateTargetLanguageParamKey) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return templateUrlService.setPlayAPISearchEngine(
@@ -404,8 +399,7 @@ public class TemplateUrlServiceTest {
                             imageUrlPostParams,
                             imageTranslateUrl,
                             imageTranslateSourceLanguageParamKey,
-                            imageTranslateTargetLanguageParamKey,
-                            setAsDefault);
+                            imageTranslateTargetLanguageParamKey);
                 });
     }
 

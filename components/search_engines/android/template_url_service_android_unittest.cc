@@ -118,8 +118,7 @@ TEST_P(TemplateUrlServiceAndroidUnitTest, SetPlayAPISearchEngine) {
       ToParamRef(image_url), ToParamRef(image_url_post_params),
       ToParamRef(image_translate_url),
       ToParamRef(image_translate_source_language_param_key),
-      ToParamRef(image_translate_target_language_param_key),
-      /*set_as_default=*/true);
+      ToParamRef(image_translate_target_language_param_key));
 
   TemplateURL* t_url = template_url_service().GetTemplateURLForKeyword(keyword);
   EXPECT_TRUE(t_url);

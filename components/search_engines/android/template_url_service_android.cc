@@ -403,8 +403,7 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
     const base::android::JavaParamRef<jstring>&
         jimage_translate_source_language_param_key,
     const base::android::JavaParamRef<jstring>&
-        jimage_translate_target_language_param_key,
-    jboolean set_as_default) {
+        jimage_translate_target_language_param_key) {
   // The function is scheduled to run only when the service is loaded, see
   // `TemplateUrlService#runWhenLoaded()`.
   CHECK(template_url_service_->loaded(), base::NotFatalUntil::M128);
@@ -431,14 +430,6 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
       jnew_tab_url, jimage_url, jimage_url_post_params, jimage_translate_url,
       jimage_translate_source_language_param_key,
       jimage_translate_target_language_param_key);
-
-  // The "re-apply" flow that calls this without setting the engine as default
-  // is not supported when the re-import feature is enabled. So we can always
-  // force the default to be the incoming data without having to figure out
-  // another fallback default using some other logic when removing the old
-  // play api engine.
-  // TODO(b/339012617): Remove when cleaning up the feature.
-  CHECK(set_as_default);
 
   return template_url_service_->ResetPlayAPISearchEngine(
       new_play_api_turl_data);
