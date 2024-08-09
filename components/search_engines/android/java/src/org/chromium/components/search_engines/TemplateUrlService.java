@@ -411,37 +411,6 @@ public class TemplateUrlService {
                         imageTranslateTargetLanguageParamKey);
     }
 
-    @Deprecated
-    public boolean setPlayAPISearchEngine(
-            String name,
-            String keyword,
-            String searchUrl,
-            String suggestUrl,
-            String faviconUrl,
-            String newTabUrl,
-            String imageUrl,
-            String imageUrlPostParams,
-            String imageTranslateUrl,
-            String imageTranslateSourceLanguageParamKey,
-            String imageTranslateTargetLanguageParamKey,
-            boolean setAsDefault) {
-        return TemplateUrlServiceJni.get()
-                .setPlayAPISearchEngine(
-                        mNativeTemplateUrlServiceAndroid,
-                        TemplateUrlService.this,
-                        name,
-                        keyword,
-                        searchUrl,
-                        suggestUrl,
-                        faviconUrl,
-                        newTabUrl,
-                        imageUrl,
-                        imageUrlPostParams,
-                        imageTranslateUrl,
-                        imageTranslateSourceLanguageParamKey,
-                        imageTranslateTargetLanguageParamKey);
-    }
-
     public String addSearchEngineForTesting(String keyword, int ageInDays) {
         return TemplateUrlServiceJni.get()
                 .addSearchEngineForTesting(
