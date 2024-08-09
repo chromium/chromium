@@ -4994,6 +4994,7 @@ interface HTMLSelectElement : HTMLElement
     getter options
     getter required
     getter selectedIndex
+    getter selectedOptionElement
     getter selectedOptions
     getter size
     getter type
@@ -5018,6 +5019,7 @@ interface HTMLSelectElement : HTMLElement
     setter name
     setter required
     setter selectedIndex
+    setter selectedOptionElement
     setter size
     setter value
 interface HTMLSelectListElement : HTMLElement

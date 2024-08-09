@@ -1019,6 +1019,7 @@ html element select
     property reportValidity
     property required
     property selectedIndex
+    property selectedOptionElement
     property selectedOptions
     property setCustomValidity
     property showPicker

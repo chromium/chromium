@@ -425,6 +425,9 @@ bool IsElementReflectionAttribute(const QualifiedName& name) {
   if (name == html_names::kInteresttargetAttr) {
     return true;
   }
+  if (name == html_names::kSelectedoptionelementAttr) {
+    return true;
+  }
   return false;
 }
 
@@ -891,9 +894,12 @@ void Element::SetElementAttribute(const QualifiedName& name, Element* element) {
   }
 }
 
-namespace {
-Element* getElementByIdIncludingDisconnected(const Element& element,
-                                             AtomicString id) {
+Element* Element::getElementByIdIncludingDisconnected(
+    const Element& element,
+    const AtomicString& id) const {
+  if (id.empty()) {
+    return nullptr;
+  }
   if (element.isConnected()) {
     return element.GetTreeScope().getElementById(id);
   }
@@ -909,7 +915,6 @@ Element* getElementByIdIncludingDisconnected(const Element& element,
   }
   return nullptr;
 }
-}  // namespace
 
 Element* Element::GetElementAttribute(const QualifiedName& name) const {
   HeapLinkedHashSet<WeakMember<Element>>* element_attribute_vector =

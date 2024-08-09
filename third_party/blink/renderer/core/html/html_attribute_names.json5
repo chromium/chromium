@@ -321,6 +321,7 @@
     "scrolling",
     "select",
     "selected",
+    "selectedoptionelement",
     "shadowroot",
     "shadowrootmode",
     "shadowrootclonable",

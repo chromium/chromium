@@ -298,6 +298,13 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   HeapVector<Member<Element>>* GetAttrAssociatedElements(
       const QualifiedName& name);
 
+  // If treescope_element is connected, then we will search treescope_element's
+  // TreeScope for an element with the id. If treescope_element is disconnected,
+  // then we will use its TreeRoot() to search for an element with the id
+  // instead.
+  Element* getElementByIdIncludingDisconnected(const Element& treescope_element,
+                                               const AtomicString& id) const;
+
   FrozenArray<Element>* ariaControlsElements();
   void setAriaControlsElements(HeapVector<Member<Element>>* given_elements);
   FrozenArray<Element>* ariaDescribedByElements();

@@ -255,6 +255,10 @@ class CORE_EXPORT HTMLSelectElement final
   // preview of what is going to be autofilled.
   SelectAutofillPreviewElement* GetAutofillPreviewElement() const;
 
+  // Getter and setter for the selectedoptionelement attribute
+  Element* selectedOptionElement() const;
+  void setSelectedOptionElement(Element*);
+
   void DefaultEventHandler(Event&) override;
   bool SupportsFocus(UpdateBehavior update_behavior) const override;
 
@@ -349,6 +353,10 @@ class CORE_EXPORT HTMLSelectElement final
   // size).
   void ChangeRendering();
   void UpdateUserAgentShadowTree(ShadowRoot& root);
+
+  // Returns descendant_selectedoptions_ and the <selectedoption> targeted by
+  // the selectedoptionelement attribute.
+  HeapHashSet<Member<HTMLSelectedOptionElement>> TargetSelectedOptions() const;
 
   // list_items_ contains HTMLOptionElement, HTMLOptGroupElement, and
   // HTMLHRElement objects.

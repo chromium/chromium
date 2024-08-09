@@ -379,6 +379,25 @@ void HTMLSelectElement::ParseAttribute(
   } else if (params.name == html_names::kAccesskeyAttr) {
     // FIXME: ignore for the moment.
     //
+  } else if (params.name == html_names::kSelectedoptionelementAttr) {
+    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+      HTMLSelectedOptionElement* old_selectedoption =
+          DynamicTo<HTMLSelectedOptionElement>(
+              getElementByIdIncludingDisconnected(*this, params.old_value));
+      HTMLSelectedOptionElement* new_selectedoption =
+          DynamicTo<HTMLSelectedOptionElement>(
+              getElementByIdIncludingDisconnected(*this, params.new_value));
+      if (old_selectedoption != new_selectedoption) {
+        if (old_selectedoption) {
+          // Clear out the contents of any <selectedoption> which we are
+          // removing the association from.
+          old_selectedoption->CloneContentsFromOptionElement(nullptr);
+        }
+        if (new_selectedoption) {
+          new_selectedoption->CloneContentsFromOptionElement(SelectedOption());
+        }
+      }
+    }
   } else {
     HTMLFormControlElementWithState::ParseAttribute(params);
   }
@@ -429,9 +448,11 @@ void HTMLSelectElement::OptionElementChildrenChanged(
   }
 
   if (option.Selected()) {
-    for (HTMLSelectedOptionElement* selectedoption :
-         descendant_selectedoptions_) {
-      selectedoption->CloneContentsFromOptionElement(&option);
+    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+      for (HTMLSelectedOptionElement* selectedoption :
+           TargetSelectedOptions()) {
+        selectedoption->CloneContentsFromOptionElement(&option);
+      }
     }
   }
 }
@@ -960,8 +981,7 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
   }
 
   if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
-    for (HTMLSelectedOptionElement* selectedoption :
-         descendant_selectedoptions_) {
+    for (HTMLSelectedOptionElement* selectedoption : TargetSelectedOptions()) {
       selectedoption->CloneContentsFromOptionElement(element);
     }
   }
@@ -1752,6 +1772,46 @@ void HTMLSelectElement::SelectAutofillPreviewElement::Trace(
     Visitor* visitor) const {
   visitor->Trace(select_);
   HTMLDivElement::Trace(visitor);
+}
+
+Element* HTMLSelectElement::selectedOptionElement() const {
+  CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+  return DynamicTo<HTMLSelectedOptionElement>(
+      GetElementAttribute(html_names::kSelectedoptionelementAttr));
+}
+
+void HTMLSelectElement::setSelectedOptionElement(Element* element) {
+  CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+  HTMLSelectedOptionElement* old_selectedoption =
+      DynamicTo<HTMLSelectedOptionElement>(selectedOptionElement());
+  HTMLSelectedOptionElement* new_selectedoption =
+      DynamicTo<HTMLSelectedOptionElement>(element);
+  if (new_selectedoption) {
+    SetElementAttribute(html_names::kSelectedoptionelementAttr,
+                        new_selectedoption);
+  }
+
+  if (old_selectedoption != new_selectedoption) {
+    if (old_selectedoption) {
+      // Clear out the contents of any <selectedoption> which we are removing
+      // the association from.
+      old_selectedoption->CloneContentsFromOptionElement(nullptr);
+    }
+    if (new_selectedoption) {
+      new_selectedoption->CloneContentsFromOptionElement(SelectedOption());
+    }
+  }
+}
+
+HeapHashSet<Member<HTMLSelectedOptionElement>>
+HTMLSelectElement::TargetSelectedOptions() const {
+  HeapHashSet<Member<HTMLSelectedOptionElement>> selectedoptions =
+      descendant_selectedoptions_;
+  if (auto* attr_selectedoption =
+          DynamicTo<HTMLSelectedOptionElement>(selectedOptionElement())) {
+    selectedoptions.insert(attr_selectedoption);
+  }
+  return selectedoptions;
 }
 
 }  // namespace blink
