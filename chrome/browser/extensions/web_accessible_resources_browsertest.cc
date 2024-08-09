@@ -334,10 +334,6 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesNonGuidBrowserTest,
   ASSERT_TRUE(content::EvalJs(web_contents, script).ExtractBool());
 }
 
-// TODO(crbug.com/355668502): Add a test for content scripts.
-
-// TODO(crbug.com/352455685): Write a test for DNR and WAR.
-
 // TODO(crbug.com/352267920): Write a test to ensure that server redirects work
 // fine from this point. It already exists at
 // CrossExtensionEmbeddingOfWebAccessibleResources, but localize it here to
@@ -348,6 +344,50 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesNonGuidBrowserTest,
 
 // TODO(crbug.com/352267920): Create a test for guid based on
 // accessible_link_resource.html;drc=9a60d160b6dfb2351ae0dad28341c3ca80f1ca59.
+
+// Test web requests and content scripts. It's important to set `iframe.src`
+// using a script so that `CanRequestResource` has `upstream_url` set to
+// something other than a chrome extension.
+IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest, WebRequest) {
+  ExtensionTestMessageListener listener("ready");
+  auto file_path =
+      test_data_dir_.AppendASCII("web_accessible_resources/web_request");
+  const Extension* extension = LoadExtension(file_path);
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  // Navigate to a non extension page.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL gurl = embedded_test_server()->GetURL("example.com", "/empty.html");
+  content::TestNavigationObserver navigation_observer(web_contents);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(gurl, web_contents->GetLastCommittedURL());
+  EXPECT_EQ(net::Error::OK, navigation_observer.last_net_error_code());
+}
+
+// Test web requests and content scripts. It's important to set `iframe.src`
+// using a script so that `CanRequestResource` has `upstream_url` set to
+// something other than a chrome extension.
+IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesNonGuidBrowserTest, WebRequest) {
+  ExtensionTestMessageListener listener("ready");
+  auto file_path =
+      test_data_dir_.AppendASCII("web_accessible_resources/web_request");
+  const Extension* extension = LoadExtension(file_path);
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  // Navigate to a non extension page.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL gurl = embedded_test_server()->GetURL("example.com", "/empty.html");
+  content::TestNavigationObserver navigation_observer(web_contents);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(gurl, web_contents->GetLastCommittedURL());
+  EXPECT_EQ(net::Error::OK, navigation_observer.last_net_error_code());
+}
 
 }  // namespace
 }  // namespace extensions
