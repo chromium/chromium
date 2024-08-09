@@ -906,6 +906,11 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                    formIdentifier:(FormRendererId)formIdentifier
                   fieldIdentifier:(FieldRendererId)fieldIdentifier
                             frame:(base::WeakPtr<web::WebFrame>)weakFrame {
+  if (!_webState) {
+    // Stop here if the '_webState' was deleted before handling the decision for
+    // the generated password. Doing anything further is unsafe.
+    return;
+  }
   web::WebFrame* frame = weakFrame.get();
   if (!frame) {
     // The frame has been destroyed, probably due to a
@@ -954,6 +959,11 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                  isManuallyTriggered:(BOOL)isManuallyTriggered
                       formIdentifier:(FormRendererId)formIdentifier
                                frame:(base::WeakPtr<web::WebFrame>)weakFrame {
+  if (!_webState) {
+    // Stop here if the '_webState' was deleted before handling the decision for
+    // the generated password. Doing anything further is unsafe.
+    return;
+  }
   web::WebFrame* frame = weakFrame.get();
   if (!frame) {
     // The frame has been destroyed, probably due to a
