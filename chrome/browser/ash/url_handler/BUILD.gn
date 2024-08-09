@@ -1,0 +1,54 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("url_handler") {
+  sources = [
+    "os_url_handler.cc",
+    "os_url_handler.h",
+    "url_handler.cc",
+    "url_handler.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/components/kiosk",
+    "//components/user_manager",
+    "//ui/display",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "os_url_handler_browsertest.cc",
+    "url_handler_browsertest.cc",
+  ]
+
+  deps = [
+    ":url_handler",
+    "//base",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_OS_URL_HANDLER_H_
-#define CHROME_BROWSER_ASH_OS_URL_HANDLER_H_
+#ifndef CHROME_BROWSER_ASH_URL_HANDLER_OS_URL_HANDLER_H_
+#define CHROME_BROWSER_ASH_URL_HANDLER_OS_URL_HANDLER_H_
 
 #include "url/gurl.h"
 
@@ -22,4 +22,4 @@ bool TryLaunchOsUrlHandler(const GURL& url);
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_OS_URL_HANDLER_H_
+#endif  // CHROME_BROWSER_ASH_URL_HANDLER_OS_URL_HANDLER_H_

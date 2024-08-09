@@ -20,7 +20,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/url_handler.h"
+#include "chrome/browser/ash/url_handler/url_handler.h"
 #endif
 
 namespace {

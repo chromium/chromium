@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_URL_HANDLER_H_
-#define CHROME_BROWSER_ASH_URL_HANDLER_H_
+#ifndef CHROME_BROWSER_ASH_URL_HANDLER_URL_HANDLER_H_
+#define CHROME_BROWSER_ASH_URL_HANDLER_URL_HANDLER_H_
 
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "ui/base/window_open_disposition.h"
@@ -39,4 +39,4 @@ bool TryOpenUrl(
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_URL_HANDLER_H_
+#endif  // CHROME_BROWSER_ASH_URL_HANDLER_URL_HANDLER_H_

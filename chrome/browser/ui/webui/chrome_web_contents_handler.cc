@@ -20,7 +20,7 @@
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/url_handler.h"
+#include "chrome/browser/ash/url_handler/url_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserContext;

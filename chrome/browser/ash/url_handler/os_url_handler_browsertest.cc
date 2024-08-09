@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/os_url_handler.h"
+#include "chrome/browser/ash/url_handler/os_url_handler.h"
 
 #include "base/run_loop.h"
 #include "chrome/browser/ash/system_web_apps/apps/os_url_handler_system_web_app_info.h"

@@ -27,7 +27,7 @@
 #include "chrome/browser/ash/extensions/language_packs/language_packs_extensions_util.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
-#include "chrome/browser/ash/os_url_handler.h"
+#include "chrome/browser/ash/url_handler/os_url_handler.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
