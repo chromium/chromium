@@ -344,7 +344,7 @@ blink::mojom::NavigationType GetNavigationType(
     const GURL& new_url,
     ReloadType reload_type,
     NavigationEntryImpl* entry,
-    const FrameNavigationEntry& frame_entry,
+    FrameNavigationEntry* frame_entry,
     bool has_pending_cross_document_commit,
     bool is_currently_error_page,
     bool is_same_document_history_load,
@@ -387,7 +387,7 @@ blink::mojom::NavigationType GetNavigationType(
       !is_unfenced_top_navigation;
 
   // History navigations.
-  if (frame_entry.page_state().IsValid()) {
+  if (frame_entry && frame_entry->page_state().IsValid()) {
     return can_be_same_document && is_same_document_history_load
                ? blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT
                : blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
@@ -406,7 +406,7 @@ blink::mojom::NavigationType GetNavigationType(
   // navigation, but a different-document one. This is why history navigation
   // are classified before this check.
   bool is_same_doc = new_url.has_ref() && old_url.EqualsIgnoringRef(new_url) &&
-                     frame_entry.method() == "GET";
+                     frame_entry && frame_entry->method() == "GET";
 
   // The one case where we do the wrong thing here and incorrectly choose
   // SAME_DOCUMENT is if the navigation is browser-initiated but the document in
@@ -464,7 +464,8 @@ void ValidateRequestMatchesEntry(NavigationRequest* request,
   FrameNavigationEntry* frame_entry =
       entry->GetFrameEntry(request->frame_tree_node());
   if (!frame_entry) {
-    NOTREACHED_IN_MIGRATION();
+    // TODO(https://crbug.com/40467594): This case should be unreachable once
+    // all subframes have FrameNavigationEntries associated with them.
     return;
   }
 
@@ -3928,7 +3929,12 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     net::StorageAccessApiStatus storage_access_api_status,
     std::optional<std::u16string> embedder_shared_storage_context) {
   DCHECK_EQ(-1, GetIndexOfEntry(entry));
-  DCHECK(frame_entry);
+
+  // TODO(https://crbug.com/40467594): Add a CHECK(frame_entry) once all
+  // subframes have FrameNavigationEntries associated with them. Until then,
+  // there may be cases where a subframe navigation is missing `frame_entry`
+  // (e.g., see https://crbug.com/358084015).
+
   // All renderer-initiated navigations must have an initiator_origin.
   DCHECK(!params.is_renderer_initiated || params.initiator_origin.has_value());
 
@@ -3965,9 +3971,11 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     // NavigationRequest and FrameEntry. This will be fixed once we remove the
     // pending NavigationEntry, as we'll only make one call to
     // RewriteUrlForNavigation.
-    VLOG_IF(1, (url_to_load != frame_entry->url()))
-        << "NavigationRequest and FrameEntry have different URLs: "
-        << url_to_load << " vs " << frame_entry->url();
+    if (frame_entry) {
+      VLOG_IF(1, (url_to_load != frame_entry->url()))
+          << "NavigationRequest and FrameEntry have different URLs: "
+          << url_to_load << " vs " << frame_entry->url();
+    }
 
     // TODO(clamy): In order to remove the pending NavigationEntry,
     // |virtual_url| and |ignored_reverse_on_redirect| should be stored in the
@@ -3997,7 +4005,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   blink::mojom::NavigationType navigation_type = GetNavigationType(
       /*old_url=*/node->current_url(),
-      /*new_url=*/url_to_load, reload_type, entry, *frame_entry,
+      /*new_url=*/url_to_load, reload_type, entry, frame_entry,
       has_pending_cross_document_commit, is_currently_error_page,
       /*is_same_document_history_load=*/false,
       is_embedder_initiated_fenced_frame_navigation,
@@ -4013,6 +4021,9 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
   // Update |download_policy| if the virtual URL is view-source.
   if (is_view_source_mode)
     download_policy.SetDisallowed(blink::NavigationDownloadType::kViewSource);
+
+  std::string page_state_data =
+      frame_entry ? frame_entry->page_state().ToEncodedData() : std::string();
 
   blink::mojom::CommonNavigationParamsPtr common_params =
       blink::mojom::CommonNavigationParams::New(
@@ -4040,9 +4051,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           std::vector<network::mojom::URLResponseHeadPtr>(),
           std::vector<net::RedirectInfo>(), params.post_content_type,
           common_params->url, common_params->method,
-          params.can_load_local_resources,
-          frame_entry->page_state().ToEncodedData(), entry->GetUniqueID(),
-          entry->GetSubframeUniqueNames(node),
+          params.can_load_local_resources, page_state_data,
+          entry->GetUniqueID(), entry->GetSubframeUniqueNames(node),
           /*intended_as_new_entry=*/true,
           /*pending_history_list_offset=*/-1,
           params.should_clear_history_list ? -1 : GetLastCommittedEntryIndex(),
@@ -4183,7 +4193,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
 
   blink::mojom::NavigationType navigation_type = GetNavigationType(
       /*old_url=*/frame_tree_node->current_url(),
-      /*new_url=*/dest_url, reload_type, entry, *frame_entry,
+      /*new_url=*/dest_url, reload_type, entry, frame_entry,
       has_pending_cross_document_commit, is_currently_error_page,
       is_same_document_history_load,
       /*is_embedder_initiated_fenced_frame_navigation=*/false,
