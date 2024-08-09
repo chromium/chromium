@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/animation/animation_host.h"
+#include "cc/base/features.h"
 #include "cc/base/math_util.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/picture_layer.h"
@@ -3518,7 +3519,12 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueueActiveTree) {
   queue = TilingSetRasterQueueRequired::Create(
       active_layer()->picture_layer_tiling_set(),
       RasterTilePriorityQueue::Type::REQUIRED_FOR_ACTIVATION);
-  EXPECT_FALSE(queue);
+  if (features::IsCCSlimmingEnabled()) {
+    EXPECT_FALSE(queue);
+  } else {
+    EXPECT_TRUE(queue);
+    EXPECT_TRUE(queue->IsEmpty());
+  }
 }
 
 TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueueRequiredNoHighRes) {
@@ -3534,7 +3540,12 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueueRequiredNoHighRes) {
       TilingSetRasterQueueRequired::Create(
           pending_layer()->picture_layer_tiling_set(),
           RasterTilePriorityQueue::Type::REQUIRED_FOR_ACTIVATION);
-  EXPECT_FALSE(queue);
+  if (features::IsCCSlimmingEnabled()) {
+    EXPECT_FALSE(queue);
+  } else {
+    EXPECT_TRUE(queue);
+    EXPECT_TRUE(queue->IsEmpty());
+  }
 }
 
 TEST_F(LegacySWPictureLayerImplTest, TilingSetEvictionQueue) {

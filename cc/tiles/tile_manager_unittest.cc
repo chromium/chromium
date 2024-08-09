@@ -1680,7 +1680,11 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterQueueAllUsesCorrectTileBounds) {
         intersecting_rect);     // Eventually rect.
     std::unique_ptr<TilingSetRasterQueueAll> queue =
         TilingSetRasterQueueAll::Create(tiling_set.get(), false, false);
-    EXPECT_TRUE(!queue);
+    if (features::IsCCSlimmingEnabled()) {
+      EXPECT_FALSE(queue);
+    } else {
+      EXPECT_TRUE(queue);
+    }
   }
 
   // This is the behavior difference between FakePictureLayerTilingClient

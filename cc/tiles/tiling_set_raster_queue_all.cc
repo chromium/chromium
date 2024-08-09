@@ -100,6 +100,12 @@ TilingSetRasterQueueAll::TilingSetRasterQueueAll(
     PictureLayerTiling* active_non_ideal_pending_high_res_tiling,
     bool is_drawing_layer)
     : current_stage_(0), is_drawing_layer_(is_drawing_layer) {
+  if (!high_res_tiling && !low_res_tiling &&
+      !active_non_ideal_pending_high_res_tiling) {
+    DCHECK(!features::IsCCSlimmingEnabled());
+    return;
+  }
+
   // Make the tiling iterators.
   if (low_res_tiling) {
     MakeTilingIterator(LOW_RES, low_res_tiling);
