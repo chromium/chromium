@@ -40,14 +40,16 @@ class ShelfModel;
 // during login time and triggers callbacks on some events.
 class ASH_EXPORT WindowRestoreTracker {
  public:
+  using NotifyCallback = base::OnceCallback<void(base::TimeTicks)>;
+
   WindowRestoreTracker();
   ~WindowRestoreTracker();
   WindowRestoreTracker(const WindowRestoreTracker&) = delete;
   WindowRestoreTracker& operator=(const WindowRestoreTracker&) = delete;
 
-  void Init(base::OnceClosure on_all_window_created,
-            base::OnceClosure on_all_window_shown,
-            base::OnceClosure on_all_window_presented);
+  void Init(NotifyCallback on_all_window_created,
+            NotifyCallback on_all_window_shown,
+            NotifyCallback on_all_window_presented);
 
   void AddWindow(int window_id, const std::string& app_id);
   void OnCreated(int window_id);
@@ -64,14 +66,14 @@ class ASH_EXPORT WindowRestoreTracker {
 
   void OnCompositorFramePresented(int window_id,
                                   const viz::FrameTimingDetails& details);
-  void OnPresented(int window_id);
+  void OnPresented(int window_id, base::TimeTicks presentation_time);
   int CountWindowsInState(State state) const;
 
   // Map from window id to window state.
   std::map<int, State> windows_;
-  base::OnceClosure on_created_;
-  base::OnceClosure on_shown_;
-  base::OnceClosure on_presented_;
+  NotifyCallback on_created_;
+  NotifyCallback on_shown_;
+  NotifyCallback on_presented_;
 
   base::WeakPtrFactory<WindowRestoreTracker> weak_ptr_factory_{this};
 };
@@ -185,9 +187,9 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
 
   void OnPostLoginDeferredTaskTimerFired();
 
-  void OnAllWindowsCreated();
-  void OnAllWindowsShown();
-  void OnAllWindowsPresented();
+  void OnAllWindowsCreated(base::TimeTicks time);
+  void OnAllWindowsShown(base::TimeTicks time);
+  void OnAllWindowsPresented(base::TimeTicks time);
 
   UiMetricsRecorder ui_recorder_;
 

@@ -103,9 +103,10 @@ bool HasPendingIcon(const ShelfModel* model) {
 WindowRestoreTracker::WindowRestoreTracker() = default;
 WindowRestoreTracker::~WindowRestoreTracker() = default;
 
-void WindowRestoreTracker::Init(base::OnceClosure on_all_window_created,
-                                base::OnceClosure on_all_window_shown,
-                                base::OnceClosure on_all_window_presented) {
+void WindowRestoreTracker::Init(
+    WindowRestoreTracker::NotifyCallback on_all_window_created,
+    WindowRestoreTracker::NotifyCallback on_all_window_shown,
+    WindowRestoreTracker::NotifyCallback on_all_window_presented) {
   on_created_ = std::move(on_all_window_created);
   on_shown_ = std::move(on_all_window_shown);
   on_presented_ = std::move(on_all_window_presented);
@@ -132,7 +133,7 @@ void WindowRestoreTracker::OnCreated(int window_id) {
 
   const bool all_created = CountWindowsInState(State::kNotCreated) == 0;
   if (all_created && on_created_) {
-    std::move(on_created_).Run();
+    std::move(on_created_).Run(base::TimeTicks::Now());
   }
 }
 
@@ -149,7 +150,7 @@ void WindowRestoreTracker::OnShown(int window_id, ui::Compositor* compositor) {
   const bool all_shown = CountWindowsInState(State::kNotCreated) == 0 &&
                          CountWindowsInState(State::kCreated) == 0;
   if (all_shown && on_shown_) {
-    std::move(on_shown_).Run();
+    std::move(on_shown_).Run(base::TimeTicks::Now());
   }
 
   if (compositor &&
@@ -159,21 +160,23 @@ void WindowRestoreTracker::OnShown(int window_id, ui::Compositor* compositor) {
                        weak_ptr_factory_.GetWeakPtr(), window_id));
   } else if (compositor) {
     // Primary display not detected. Assume it's a headless unit.
-    OnPresented(window_id);
+    OnPresented(window_id, base::TimeTicks::Now());
   }
 }
 
 void WindowRestoreTracker::OnPresentedForTesting(int window_id) {
-  OnPresented(window_id);
+  OnPresented(window_id, base::TimeTicks::Now());
 }
 
 void WindowRestoreTracker::OnCompositorFramePresented(
     int window_id,
     const viz::FrameTimingDetails& details) {
-  OnPresented(window_id);
+  // TODO(b/353644000): Use details.presentation_feedback.timestamp.
+  OnPresented(window_id, base::TimeTicks::Now());
 }
 
-void WindowRestoreTracker::OnPresented(int window_id) {
+void WindowRestoreTracker::OnPresented(int window_id,
+                                       base::TimeTicks presentation_time) {
   auto iter = windows_.find(window_id);
   if (iter == windows_.end()) {
     return;
@@ -187,7 +190,7 @@ void WindowRestoreTracker::OnPresented(int window_id) {
                              CountWindowsInState(State::kCreated) == 0 &&
                              CountWindowsInState(State::kShown) == 0;
   if (all_presented && on_presented_) {
-    std::move(on_presented_).Run();
+    std::move(on_presented_).Run(presentation_time);
   }
 }
 
@@ -524,30 +527,27 @@ void LoginUnlockThroughputRecorder::OnPostLoginDeferredTaskTimerFired() {
   post_login_deferred_task_runner_->Start();
 }
 
-void LoginUnlockThroughputRecorder::OnAllWindowsCreated() {
-  auto now = base::TimeTicks::Now();
+void LoginUnlockThroughputRecorder::OnAllWindowsCreated(base::TimeTicks time) {
   for (auto& obs : observers_) {
-    obs.OnAllBrowserWindowsCreated(now);
+    obs.OnAllBrowserWindowsCreated(time);
   }
 }
 
-void LoginUnlockThroughputRecorder::OnAllWindowsShown() {
-  auto now = base::TimeTicks::Now();
+void LoginUnlockThroughputRecorder::OnAllWindowsShown(base::TimeTicks time) {
   for (auto& obs : observers_) {
-    obs.OnAllBrowserWindowsShown(now);
+    obs.OnAllBrowserWindowsShown(time);
   }
 }
 
-void LoginUnlockThroughputRecorder::OnAllWindowsPresented() {
-  auto now = base::TimeTicks::Now();
+void LoginUnlockThroughputRecorder::OnAllWindowsPresented(
+    base::TimeTicks time) {
   for (auto& obs : observers_) {
-    obs.OnAllBrowserWindowsPresented(now);
+    obs.OnAllBrowserWindowsPresented(time);
   }
 
   DCHECK(!window_restore_done_);
   window_restore_done_ = true;
   ScheduleWaitForShelfAnimationEndIfNeeded();
 }
-
 
 }  // namespace ash
