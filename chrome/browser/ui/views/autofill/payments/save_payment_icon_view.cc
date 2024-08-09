@@ -70,7 +70,9 @@ void SavePaymentIconView::UpdateImpl() {
 
   bool command_enabled =
       SetCommandEnabled(controller && controller->IsIconVisible());
-  SetVisible(command_enabled);
+  const bool should_show =
+      command_enabled && !delegate()->ShouldHidePageActionIcon(this);
+  SetVisible(should_show);
 
   GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
 
