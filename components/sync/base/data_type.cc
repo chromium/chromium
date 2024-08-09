@@ -230,7 +230,7 @@ constexpr auto kDataTypeInfoMap = std::to_array<DataTypeInfo>(
 static_assert(kDataTypeInfoMap.size() == GetNumDataTypes(),
               "kDataTypeInfoMap should have GetNumDataTypes() elements");
 
-static_assert(53 == syncer::GetNumDataTypes(),
+static_assert(syncer::GetNumDataTypes() == 53,
               "When adding a new type, update enum SyncDataTypes in enums.xml "
               "and suffix SyncDataType in histograms.xml.");
 
