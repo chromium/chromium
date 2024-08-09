@@ -874,9 +874,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return wasPromoTriggered;
     }
 
-    boolean initializePrivacySandbox(Profile profile) {
-        // Initializes Privacy Sandbox related logic
-        recordPrivacySandboxActivityType(profile);
+    private boolean maybeTriggerPrivacySandboxPrompt(Profile profile) {
         boolean wasPromoTriggered = maybeTriggerPSDialogSuppression(profile);
         // TODO(b/350704805): Cleanup - keep wasPromoTriggered out of the nested function calls
         return maybeTriggerTrackingProtectionNoticeAndOnboarding(profile, wasPromoTriggered);
@@ -912,38 +910,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         getToolbarManager().getMenuButtonView(),
                         mAppMenuCoordinator.getAppMenuHandler());
 
-        boolean didTriggerPromo = initializePrivacySandbox(profile);
+        // Initializes Privacy Sandbox related logic
+        recordPrivacySandboxActivityType(profile);
 
-        if (!didTriggerPromo) {
-            Supplier<RationaleDelegate> rationaleUIDelegateSupplier;
-
-            if (NotificationPermissionController.shouldUseBottomSheetRationaleUi()) {
-                rationaleUIDelegateSupplier =
-                        () ->
-                                new NotificationPermissionRationaleBottomSheet(
-                                        mActivity, getBottomSheetController());
-            } else {
-                rationaleUIDelegateSupplier =
-                        () ->
-                                new NotificationPermissionRationaleDialogController(
-                                        mActivity, mModalDialogManagerSupplier.get());
-            }
-
-            mNotificationPermissionController =
-                    new NotificationPermissionController(
-                            mWindowAndroid, rationaleUIDelegateSupplier);
-
-            NotificationPermissionController.attach(
-                    mWindowAndroid, mNotificationPermissionController);
-
-            didTriggerPromo =
-                    mNotificationPermissionController.requestPermissionIfNeeded(
-                            /* contextual= */ false);
-        }
-
-        if (!didTriggerPromo) {
-            didTriggerPromo = triggerPromo(profile, intentWithEffect);
-        }
+        boolean didTriggerPromo = maybeShowRequiredPromptsAndPromos(profile, intentWithEffect);
 
         if (!didTriggerPromo) {
             didTriggerPromo =
@@ -1254,6 +1224,43 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public void onContextMenuCopyLink() {
         // TODO(crbug.com/40732234): Find a better way of passing event for IPH.
         mReadLaterIPHController.onCopyContextMenuItemClicked();
+    }
+
+    /**
+     * Triggers the display of an appropriate required prompt or promo if any.
+     *
+     * <p>Check and trigger here "required prompts", the ones that are very important for Chrome
+     * usage, or for privacy, regulatory etc. reasons. For less critical ones, for example
+     * suggestions to enable features, prefer adding them to {@link #maybeShowPromo}, which can be
+     * skipped via command line, prefs or other Chrome state.
+     *
+     * @return whether a prompt or promo is actually displayed.
+     */
+    private boolean maybeShowRequiredPromptsAndPromos(Profile profile, boolean intentWithEffect) {
+        if (maybeTriggerPrivacySandboxPrompt(profile)) {
+            return true;
+        }
+
+        final Supplier<RationaleDelegate> rationaleUIDelegateSupplier;
+        if (NotificationPermissionController.shouldUseBottomSheetRationaleUi()) {
+            rationaleUIDelegateSupplier =
+                    () ->
+                            new NotificationPermissionRationaleBottomSheet(
+                                    mActivity, getBottomSheetController());
+        } else {
+            rationaleUIDelegateSupplier =
+                    () ->
+                            new NotificationPermissionRationaleDialogController(
+                                    mActivity, mModalDialogManagerSupplier.get());
+        }
+        mNotificationPermissionController =
+                new NotificationPermissionController(mWindowAndroid, rationaleUIDelegateSupplier);
+        NotificationPermissionController.attach(mWindowAndroid, mNotificationPermissionController);
+        if (mNotificationPermissionController.requestPermissionIfNeeded(/* contextual= */ false)) {
+            return true;
+        }
+
+        return triggerPromo(profile, intentWithEffect);
     }
 
     /**
