@@ -43,6 +43,8 @@ class DisplayStyle {
     switch (style_type_) {
       case kPseudoIdBefore:
       case kPseudoIdAfter:
+      case kPseudoIdScrollNextButton:
+      case kPseudoIdScrollPrevButton:
         return ContentBehavesAsNormal();
       case kPseudoIdMarker:
         return content_data_ && content_data_->IsNone();

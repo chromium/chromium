@@ -376,6 +376,10 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
       class_names.Append("::scroll-marker-group");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollMarker) {
       class_names.Append("::scroll-marker");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollNextButton) {
+      class_names.Append("::scroll-next-button");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollPrevButton) {
+      class_names.Append("::scroll-prev-button");
     }
   }
   if (!class_names.empty())
@@ -1816,7 +1820,8 @@ void InspectorHighlight::VisitAndCollectDistanceInfo(Node* node) {
       for (PseudoId pseudo_id :
            {kPseudoIdFirstLetter, kPseudoIdScrollMarkerGroupBefore,
             kPseudoIdBefore, kPseudoIdAfter, kPseudoIdScrollMarkerGroupAfter,
-            kPseudoIdScrollMarker}) {
+            kPseudoIdScrollMarker, kPseudoIdScrollNextButton,
+            kPseudoIdScrollPrevButton}) {
         if (Node* pseudo_node = element->GetPseudoElement(pseudo_id))
           VisitAndCollectDistanceInfo(pseudo_node);
       }

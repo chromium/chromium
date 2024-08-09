@@ -1,0 +1,33 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSS Test: ::scroll-next-button and ::scroll-prev-button invalidation</title>
+<link rel="match" href="scroll-buttons-001-ref.html">
+<link rel="help" href="https://github.com/flackr/carousel/tree/main/scroll-marker">
+<style>
+  :root {
+    --scroll-buttons-background: red;
+  }
+
+  div::scroll-next-button {
+    content: "";
+    background: var(--scroll-buttons-background);
+    display: flex;
+    height: 50px;
+    width: 100px;
+  }
+
+  div::scroll-prev-button {
+    content: "";
+    background: var(--scroll-buttons-background);
+    display: flex;
+    height: 50px;
+    width: 100px;
+  }
+</style>
+<p>Test passes if there is a <strong>filled green rectangle</strong>.
+<div></div>
+<script>
+  document.documentElement.offsetTop;
+  document.documentElement.style.setProperty('--scroll-buttons-background', 'green');
+  document.documentElement.offsetTop;
+</script>
