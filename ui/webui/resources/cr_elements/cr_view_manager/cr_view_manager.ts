@@ -5,15 +5,15 @@
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {CrLazyRenderElement} from '../cr_lazy_render/cr_lazy_render.js';
+import type {CrLazyRenderLitElement} from '../cr_lazy_render/cr_lazy_render_lit.js';
 
 import {getCss} from './cr_view_manager.css.js';
 import {getHtml} from './cr_view_manager.html.js';
 
 function getEffectiveView<T extends HTMLElement>(
-    element: CrLazyRenderElement<T>|T): HTMLElement {
-  return element.matches('cr-lazy-render') ?
-      (element as CrLazyRenderElement<T>).get() :
+    element: CrLazyRenderLitElement<T>|T): HTMLElement {
+  return element.matches('cr-lazy-render, cr-lazy-render-lit') ?
+      (element as CrLazyRenderLitElement<T>).get() :
       element;
 }
 
