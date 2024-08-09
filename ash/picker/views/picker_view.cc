@@ -184,6 +184,7 @@ PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
     case PickerSectionType::kNone:
     case PickerSectionType::kEditorWrite:
     case PickerSectionType::kEditorRewrite:
+    case PickerSectionType::kExamples:
       NOTREACHED_NORETURN();
     case PickerSectionType::kClipboard:
       return PickerCategory::kClipboard;

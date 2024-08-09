@@ -7482,6 +7482,10 @@ New install
         desc="This string appears as the heading text of a section. This section contains several selectable menu items. This section is the last section on page, and contains menu items that do not belong to the previous sections.">
         More
       </message>
+      <message name="IDS_PICKER_EXAMPLES_CATEGORY_TYPE_SECTION_TITLE"
+        desc="This string appears as the heading text of a section. This section contains a list of example queries that the user can do.">
+        A few things to try
+      </message>
       <message name="IDS_PICKER_EDIT_TEXT_CATEGORY_TYPE_SECTION_TITLE"
         desc="This string appears as the heading text of a section. This section contains several selectable menu items related to editing the user's selected text, such as changing the capitalization of the text.">
         Edit text

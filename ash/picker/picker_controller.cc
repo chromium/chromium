@@ -216,13 +216,13 @@ InsertionContent GetInsertionContentForResult(
 }
 
 std::vector<PickerSearchResultsSection> CreateSingleSectionForCategoryResults(
+    PickerSectionType section_type,
     std::vector<PickerSearchResult> results) {
   if (results.empty()) {
     return {};
   }
-  return {PickerSearchResultsSection(PickerSectionType::kNone,
-                                     std::move(results),
-                                     /*has_more_results*/ false)};
+  return {PickerSearchResultsSection(section_type, std::move(results),
+                                     /*has_more_results=*/false)};
 }
 
 std::u16string TransformText(std::u16string_view text,
@@ -390,9 +390,15 @@ void PickerController::GetZeroStateSuggestedResults(
 
 void PickerController::GetResultsForCategory(PickerCategory category,
                                              SearchResultsCallback callback) {
+  const PickerSectionType section_type =
+      (category == PickerCategory::kUnitsMaths ||
+       category == PickerCategory::kDatesTimes)
+          ? PickerSectionType::kExamples
+          : PickerSectionType::kNone;
+
   suggestions_controller_->GetSuggestionsForCategory(
       *model_, category,
-      base::BindRepeating(CreateSingleSectionForCategoryResults)
+      base::BindRepeating(CreateSingleSectionForCategoryResults, section_type)
           .Then(std::move(callback)));
 }
 
