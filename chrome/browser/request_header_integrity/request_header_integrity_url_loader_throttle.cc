@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/request_header_integrity/build_derived_values.h"
 #include "chrome/common/channel_info.h"
 #include "components/google/core/common/google_util.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -19,6 +20,10 @@
 
 #if !defined(CHANNEL_NAME_HEADER_NAME)
 #define CHANNEL_NAME_HEADER_NAME "X-Placeholder-1"
+#endif
+
+#if !defined(LASTCHANGE_YEAR_HEADER_NAME)
+#define LASTCHANGE_YEAR_HEADER_NAME "X-Placeholder-2"
 #endif
 
 namespace request_header_integrity {
@@ -68,6 +73,7 @@ void RequestHeaderIntegrityURLLoaderThrottle::WillStartRequest(
   if (!channel_name.empty()) {
     request->headers.SetHeader(CHANNEL_NAME_HEADER_NAME, channel_name);
   }
+  request->headers.SetHeader(LASTCHANGE_YEAR_HEADER_NAME, LASTCHANGE_YEAR);
 }
 
 // static
