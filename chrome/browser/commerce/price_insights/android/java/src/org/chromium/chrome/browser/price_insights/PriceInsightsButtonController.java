@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
@@ -43,6 +44,7 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
     private final Supplier<Tab> mTabSupplier;
     private final PriceInsightsDelegate mPriceInsightsDelegate;
     private PriceInsightsBottomSheetCoordinator mBottomSheetCoordinator;
+    private PriceInsightsBottomSheetCoordinator mBottomSheetCoordinatorForTesting;
 
     public PriceInsightsButtonController(
             Context context,
@@ -88,7 +90,16 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
 
     @Override
     public void onClick(View view) {
-        if (mBottomSheetCoordinator == null) {
+        // Close content and destroy previous coordinator.
+        if (mBottomSheetCoordinator != null) {
+            mBottomSheetCoordinator.closeContent();
+            mBottomSheetCoordinator = null;
+        }
+
+        // Create a new coordinator and show content.
+        if (mBottomSheetCoordinatorForTesting != null) {
+            mBottomSheetCoordinator = mBottomSheetCoordinatorForTesting;
+        } else {
             mBottomSheetCoordinator =
                     new PriceInsightsBottomSheetCoordinator(
                             mContext,
@@ -124,6 +135,7 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
 
     void setPriceInsightsBottomSheetCoordinatorForTesting(
             PriceInsightsBottomSheetCoordinator coordinator) {
-        mBottomSheetCoordinator = coordinator;
+        mBottomSheetCoordinatorForTesting = coordinator;
+        ResettersForTesting.register(() -> mBottomSheetCoordinatorForTesting = null);
     }
 }
