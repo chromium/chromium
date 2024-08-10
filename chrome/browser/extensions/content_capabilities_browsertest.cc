@@ -67,7 +67,7 @@ class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
         "{\n"
         "  \"name\": \"content_capabilities test extensions\",\n"
         "  \"version\": \"1\",\n"
-        "  \"manifest_version\": 2,\n"
+        "  \"manifest_version\": 3,\n"
         "  \"content_capabilities\": {\n"
         "    \"matches\": %s,\n"
         "    \"permissions\": %s\n"
