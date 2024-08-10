@@ -4305,7 +4305,7 @@ void RenderViewContextMenu::ExecSaveAs() {
     // Handle the save here.
     target_frame_host = pdf_frame_util::GetEmbedderHost(frame_host);
     CHECK(target_frame_host);
-    url = frame_host->GetLastCommittedURL();
+    url = target_frame_host->GetLastCommittedURL();
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
