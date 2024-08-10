@@ -31,7 +31,7 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
       'issueTextSelectionRequest',
       'issueTranslateSelectionRequest',
       'copyText',
-      'recordUkmLensOverlayInteraction',
+      'recordUkmAndTaskCompletionForLensOverlayInteraction',
     ]);
   }
 
@@ -92,8 +92,9 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
     this.methodCalled('copyText', text);
   }
 
-  recordUkmLensOverlayInteraction(userAction: UserAction) {
-    this.methodCalled('recordUkmLensOverlayInteraction', userAction);
+  recordUkmAndTaskCompletionForLensOverlayInteraction(userAction: UserAction) {
+    this.methodCalled(
+        'recordUkmAndTaskCompletionForLensOverlayInteraction', userAction);
   }
 }
 

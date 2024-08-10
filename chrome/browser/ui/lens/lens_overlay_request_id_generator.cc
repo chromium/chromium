@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_request_id_generator.h"
 
+#include "base/containers/span.h"
 #include "base/rand_util.h"
+#include "components/base32/base32.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 
 namespace lens {
@@ -43,6 +45,11 @@ LensOverlayRequestIdGenerator::GetNextRequestId() {
   // Increment the sequence id for the next request.
   sequence_id_++;
   return request_id;
+}
+
+std::string LensOverlayRequestIdGenerator::GetBase32EncodedAnalyticsId() {
+  return base32::Base32Encode(base::as_byte_span(analytics_id_),
+                              base32::Base32EncodePolicy::OMIT_PADDING);
 }
 
 }  // namespace lens

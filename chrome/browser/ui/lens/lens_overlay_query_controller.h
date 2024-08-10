@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_QUERY_CONTROLLER_H_
 
 #include "base/functional/callback.h"
+#include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/profiles/profile.h"
@@ -106,6 +107,10 @@ class LensOverlayQueryController {
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<SkBitmap> region_bytes);
 
+  // Sends a task completion Gen204 ping for certain user actions.
+  virtual void SendTaskCompletionGen204IfEnabled(
+      lens::mojom::UserAction user_action);
+
  protected:
   // Creates an endpoint fetcher for fetching the request data and fetches
   // the request.
@@ -176,8 +181,13 @@ class LensOverlayQueryController {
       int64_t query_start_time_ms,
       std::unique_ptr<EndpointResponse> response);
 
-  // Handles the response from a gen204 request.
-  void OnGen204LoaderComplete(std::unique_ptr<std::string> response_body);
+  // Handles the response from a latency gen204 request.
+  void OnLatencyGen204LoaderComplete(
+      std::unique_ptr<std::string> response_body);
+
+  // Handles the response from a task completion gen204 request.
+  void OnTaskCompletionGen204LoaderComplete(
+      std::unique_ptr<std::string> response_body);
 
   // Runs the full image callback with empty response data, for errors.
   void RunFullImageCallbackForError();
@@ -293,8 +303,11 @@ class LensOverlayQueryController {
   // earlier unfinished requests.
   std::unique_ptr<EndpointFetcher> interaction_endpoint_fetcher_;
 
-  // Loader used for gen204 requests.
-  std::unique_ptr<network::SimpleURLLoader> gen204_loader_;
+  // Loader used for latency gen204 requests.
+  std::unique_ptr<network::SimpleURLLoader> latency_gen204_loader_;
+
+  // Loader used for task completion gen204 requests.
+  std::unique_ptr<network::SimpleURLLoader> task_completion_gen204_loader_;
 
   // Owned by Profile, and thus guaranteed to outlive this instance.
   raw_ptr<variations::VariationsClient> variations_client_;

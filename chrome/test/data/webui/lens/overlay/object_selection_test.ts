@@ -118,7 +118,7 @@ suite('ObjectSelection', function() {
             objects[1]!.geometry.boundingBox, /*expectedIsMaskClick=*/ false);
         assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
         const action = await testBrowserProxy.handler.whenCalled(
-            'recordUkmLensOverlayInteraction');
+            'recordUkmAndTaskCompletionForLensOverlayInteraction');
         assertEquals(UserAction.kObjectClick, action);
         assertEquals(
             1,

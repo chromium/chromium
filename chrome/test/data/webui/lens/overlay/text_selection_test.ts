@@ -170,7 +170,7 @@ suite('TextSelection', function() {
             UserAction.kTextSelection));
     assertEquals('hello', textQuery);
     const action = await testBrowserProxy.handler.whenCalled(
-        'recordUkmLensOverlayInteraction');
+        'recordUkmAndTaskCompletionForLensOverlayInteraction');
     assertEquals(UserAction.kTextSelection, action);
   });
 
@@ -343,7 +343,7 @@ suite('TextSelection', function() {
             'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
             UserAction.kTextSelection));
     const action = await testBrowserProxy.handler.whenCalled(
-        'recordUkmLensOverlayInteraction');
+        'recordUkmAndTaskCompletionForLensOverlayInteraction');
     assertEquals(UserAction.kRegionSelection, action);
   });
 
