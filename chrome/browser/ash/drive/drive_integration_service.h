@@ -119,8 +119,7 @@ class DriveIntegrationService : public KeyedService,
   using GetQuickAccessItemsCallback =
       base::OnceCallback<void(FileError, std::vector<QuickAccessItem>)>;
   using SearchDriveByFileNameCallback =
-      base::OnceCallback<void(FileError,
-                              std::vector<drivefs::mojom::QueryItemPtr>)>;
+      drivefs::mojom::SearchQuery::GetNextPageCallback;
   using GetThumbnailCallback =
       base::OnceCallback<void(const std::optional<std::vector<uint8_t>>&)>;
   using GetReadOnlyAuthenticationTokenCallback =

@@ -113,10 +113,10 @@ void DriveSearchProvider::StopQuery() {
 
 void DriveSearchProvider::OnSearchDriveByFileName(
     drive::FileError error,
-    std::vector<drivefs::mojom::QueryItemPtr> items) {
+    std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (error != drive::FileError::FILE_ERROR_OK) {
+  if (error != drive::FileError::FILE_ERROR_OK || !items.has_value()) {
     Results empty_results;
     SwapResults(&empty_results);
     LogStatus(Status::kFileError);
@@ -128,7 +128,7 @@ void DriveSearchProvider::OnSearchDriveByFileName(
   if (should_filter_shared_files_ &&
       last_query_.size() < kMinQuerySizeForSharedFiles) {
     std::vector<drivefs::mojom::QueryItemPtr> filtered_items;
-    for (auto& item : items) {
+    for (auto& item : *items) {
       if (!item->metadata->shared) {
         filtered_items.push_back(std::move(item));
       }
@@ -147,7 +147,7 @@ void DriveSearchProvider::OnSearchDriveByFileName(
   base::FilePath mount_path = drive_service_->GetMountPointPath();
 
   SearchProvider::Results results;
-  for (const auto& item : items) {
+  for (const auto& item : *items) {
     // Strip leading separators so that the path can be reparented.
     const auto& path = item->path;
     DCHECK(!path.value().empty());

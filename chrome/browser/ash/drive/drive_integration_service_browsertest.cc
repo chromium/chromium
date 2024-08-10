@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -40,13 +41,20 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace drive {
 
 using ::base::test::RunClosure;
 using ::base::test::RunOnceCallback;
 using ::base::test::TestFuture;
-using testing::_;
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::Field;
+using ::testing::Optional;
+using ::testing::Pointee;
+using ::testing::Property;
 
 using DriveIntegrationServiceBrowserTest =
     DriveIntegrationServiceBrowserTestBase;
@@ -134,10 +142,20 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
       drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
       base::BindLambdaForTesting(
           [=](FileError error,
-              std::vector<drivefs::mojom::QueryItemPtr> items) {
-            EXPECT_EQ(2u, items.size());
-            EXPECT_EQ("baz", items[0]->path.BaseName().value());
-            EXPECT_EQ("bar", items[1]->path.BaseName().value());
+              std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
+            EXPECT_THAT(
+                items,
+                Optional(ElementsAre(
+                    Pointee(Field(
+                        "path", &drivefs::mojom::QueryItem::path,
+                        Property(
+                            "BaseName", &base::FilePath::BaseName,
+                            Property("value", &base::FilePath::value, "baz")))),
+                    Pointee(
+                        Field("path", &drivefs::mojom::QueryItem::path,
+                              Property("BaseName", &base::FilePath::BaseName,
+                                       Property("value", &base::FilePath::value,
+                                                "bar")))))));
             quit_closure.Run();
           }));
   run_loop.Run();
