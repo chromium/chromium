@@ -154,6 +154,23 @@ struct HistoryGraph: View {
     /// TODO(b/333894542): Configure audio graph for accessibility and ensure labels
     /// for line marks and rule marks are accessible.
     Chart {
+      ForEach(sortedHistoryDates, id: \.key) { date, price in
+        /// Displaying the area mark under the line mark.
+        AreaMark(
+          x: .value("Date", date),
+          yStart: .value("Minimun price in range", axisTicksY.first ?? 0),
+          yEnd: .value("Price", price.doubleValue)
+        )
+        .foregroundStyle(linearGradient)
+
+        // Displaying the line mark on the graph.
+        LineMark(
+          x: .value("Date", date),
+          y: .value("Price", price.doubleValue)
+        ).foregroundStyle(Color(uiColor: Self.blue600))
+      }
+      .interpolationMethod(.stepEnd)
+
       /// Displaying the dashed line and point mark for selected date on the graph.
       if let selectedDate = selectedDate, let selectedPrice = history[selectedDate] {
         RuleMark(
@@ -164,25 +181,17 @@ struct HistoryGraph: View {
           x: .value("Date", selectedDate),
           y: .value("Price", selectedPrice.doubleValue)
         )
+        .symbol {
+          Circle()
+            .fill(Color(uiColor: Self.blue600))
+            .frame(width: 8, height: 8)
+            .overlay(
+              Circle()
+                .stroke(Color(uiColor: Self.backgroundColor), lineWidth: 2)
+            )
+        }
         .foregroundStyle(Color(uiColor: Self.blue600))
       }
-
-      ForEach(sortedHistoryDates, id: \.key) { date, price in
-        // Displaying the line mark on the graph.
-        LineMark(
-          x: .value("Date", date),
-          y: .value("Price", price.doubleValue)
-        ).foregroundStyle(Color(uiColor: Self.blue600))
-
-        /// Displaying the area mark under the line mark.
-        AreaMark(
-          x: .value("Date", date),
-          yStart: .value("Minimun price in range", axisTicksY.first ?? 0),
-          yEnd: .value("Price", price.doubleValue)
-        )
-        .foregroundStyle(linearGradient)
-      }
-      .interpolationMethod(.stepEnd)
     }
     .chartBackground { chartProxy in
       Color(uiColor: Self.backgroundColor)
