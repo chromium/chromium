@@ -555,11 +555,13 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   const base::Value::Dict* data = message.FindDict("data");
   CHECK(data);
 
+  float size = base::checked_cast<float>(data->FindDouble("size").value());
+  CheckToolSizeIsInRange(size);
+
   const std::string& brush_type_string = *data->FindString("type");
   if (brush_type_string == "eraser") {
     auto& eraser_state = current_tool_state_.emplace<EraserState>();
-    eraser_state.eraser_size = data->FindDouble("size").value();
-    CheckToolSizeIsInRange(eraser_state.eraser_size);
+    eraser_state.eraser_size = size;
     return;
   }
 
@@ -570,19 +572,15 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   int color_r = color->FindInt("r").value();
   int color_g = color->FindInt("g").value();
   int color_b = color->FindInt("b").value();
-  double size = data->FindDouble("size").value();
 
   CheckColorIsWithinRange(color_r);
   CheckColorIsWithinRange(color_g);
   CheckColorIsWithinRange(color_b);
 
-  PdfInkBrush::Params params;
-  params.color = SkColorSetRGB(color_r, color_g, color_b);
-
-  // TODO(crbug.com/341282609): Check that the size value is in range, once
-  // support for the Ink annotation bar is deprecated. The original Ink uses
-  // values from range [0, 1], while Ink2 uses values from [1, 16].
-  params.size = size;
+  PdfInkBrush::Params params = {
+      .color = SkColorSetRGB(color_r, color_g, color_b),
+      .size = size,
+  };
 
   std::optional<PdfInkBrush::Type> brush_type =
       PdfInkBrush::StringToType(brush_type_string);
