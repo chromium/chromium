@@ -275,6 +275,23 @@ class PLATFORM_EXPORT NonThrowableExceptionState final : public ExceptionState {
   const int line_;
 };
 
+class PLATFORM_EXPORT TryCatchScope {
+  STACK_ALLOCATED();
+
+ public:
+  TryCatchScope(ExceptionState& exception_state, v8::Isolate* isolate)
+      : try_catch_(isolate), exception_state_(exception_state) {}
+
+  ~TryCatchScope() {
+    if (try_catch_.HasCaught()) [[unlikely]] {
+      exception_state_.RethrowV8Exception(try_catch_.Exception());
+    }
+  }
+
+  v8::TryCatch try_catch_;
+  ExceptionState& exception_state_;
+};
+
 // Syntax sugar for NonThrowableExceptionState.
 // This can be used as a default value of an ExceptionState parameter like this:
 //

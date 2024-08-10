@@ -924,10 +924,10 @@ def make_v8_to_blink_function(cg_context):
         S("has_deprecated", "bool ${has_deprecated};"),
         S("is_optional", "constexpr bool ${is_optional} = false;"),
         S("is_required", "constexpr bool ${is_required} = true;"),
-        S("try_block", "v8::TryCatch ${try_block}(${isolate});"),
     ])
     bind_local_vars(body, cg_context)
 
+    body.append(T("TryCatchScope try_block(${exception_state}, ${isolate});"))
     if cg_context.dictionary.inherited:
         body.extend([
             T("${base_class_name}::FillMembersFromV8Object"
@@ -946,7 +946,7 @@ def make_v8_to_blink_function(cg_context):
             "${v8_dictionary}, "
             "${v8_own_member_names}[{index}].Get(${isolate}), "
             "{presence_var}, {value_var}, "
-            "${try_block}, ${exception_state})",
+            "${exception_state})",
             native_value_tag=native_value_tag(member.idl_type),
             is_required=("${is_required}"
                          if member.is_required else "${is_optional}"),

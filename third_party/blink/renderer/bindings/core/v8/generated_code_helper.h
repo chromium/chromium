@@ -199,16 +199,14 @@ bool GetDictionaryMemberFromV8Object(v8::Isolate* isolate,
                                      v8::Local<v8::Name> v8_member_name,
                                      bool& presence,
                                      ValueType& value,
-                                     v8::TryCatch& try_block,
                                      ExceptionState& exception_state) {
   v8::Local<v8::Value> v8_value;
   if (!v8_dictionary->Get(current_context, v8_member_name).ToLocal(&v8_value)) {
-    exception_state.RethrowV8Exception(try_block.Exception());
     return false;
   }
 
   if (v8_value->IsUndefined()) {
-    if (is_required) {
+    if (is_required) [[unlikely]] {
       exception_state.ThrowTypeError("Required member is undefined.");
       return false;
     }
