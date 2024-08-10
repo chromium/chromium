@@ -18,6 +18,8 @@
 //   - Use HTTPS URLs when adding new search engines or adding URLs to existing
 //     ones. It's not the 90s anymore.
 
+// LINT.IfChange(prepopulated_engines.json)
+
 {
   "int_variables": {
     // When adding new engines, increment this number and use it as the new
@@ -790,7 +792,7 @@
       "favicon_url": "http://static.mediacentrum.sk/katalog/atlas.sk/images/favicon.ico",
       "search_url": "https://hladaj.atlas.sk/fulltext/?phrase={searchTerms}",
       "alternate_urls": [
-	"http://hladaj.atlas.sk/fulltext/?phrase={searchTerms}"
+        "http://hladaj.atlas.sk/fulltext/?phrase={searchTerms}"
       ],
       "type": "SEARCH_ENGINE_ATLAS",
       "id": 27
@@ -841,7 +843,7 @@
       "favicon_url": "https://www.delfi.lt/favicon.ico",
       "search_url": "https://www.delfi.lt/paieska/?q={searchTerms}",
       "alternate_urls": [
-	"http://www.delfi.lt/paieska/?q={searchTerms}"
+        "http://www.delfi.lt/paieska/?q={searchTerms}"
       ],
       "type": "SEARCH_ENGINE_DELFI",
       "id": 45
@@ -1302,3 +1304,6 @@
     "array_name": "kAllEngines"
   }
 }
+
+// LINT.ThenChange(//depot/google3/chrome/webstore/manifest/prepopulated_engines.json)
+// Override using NO_IFTTT=cl/<number>
