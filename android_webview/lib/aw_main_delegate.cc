@@ -49,6 +49,7 @@
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/variations/variations_ids_provider.h"
 #include "components/version_info/android/channel_getter.h"
+#include "components/viz/common/features.h"
 #include "content/public/app/initialize_mojo_core.h"
 #include "content/public/browser/android/media_url_interceptor_register.h"
 #include "content/public/browser/browser_main_runner.h"
@@ -211,6 +212,11 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
 
     // Enabled by default for webview.
     features.EnableIfNotSet(::features::kWebViewThreadSafeMediaDefault);
+
+    // WebView uses kWebViewFrameRateHints to control this. Not using
+    // AwFieldTrials::RegisterFeatureOverrides to avoid misconfiguring
+    // experimients accidentally enabling kUseFrameIntervalDecider for WebView.
+    features.DisableIfNotSet(::features::kUseFrameIntervalDecider);
   }
 
   android_webview::RegisterPathProvider();

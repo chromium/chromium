@@ -164,6 +164,11 @@ BASE_FEATURE(kWebViewEnableADPF,
 BASE_FEATURE(kWebViewEnableADPFRendererMain,
              "WebViewEnableADPFRendererMain",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable WebView providing frame rate hints to View system.
+BASE_FEATURE(kWebViewFrameRateHints,
+             "WebViewFrameRateHints",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kDrawPredictedInkPoint,
@@ -550,6 +555,15 @@ std::optional<double> SnapshotEvictedRootSurfaceScale() {
 
 bool ShouldLogFrameQuadInfo() {
   return base::FeatureList::IsEnabled(features::kShouldLogFrameQuadInfo);
+}
+
+bool IsUsingFrameIntervalDecider() {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(kWebViewFrameRateHints)) {
+    return true;
+  }
+#endif
+  return base::FeatureList::IsEnabled(kUseFrameIntervalDecider);
 }
 
 #if BUILDFLAG(IS_MAC)

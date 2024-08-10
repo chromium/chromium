@@ -302,7 +302,7 @@ void Display::Initialize(DisplayClient* client,
   if (output_surface_->software_device())
     output_surface_->software_device()->BindToClient(this);
 
-  if (base::FeatureList::IsEnabled(features::kUseFrameIntervalDecider)) {
+  if (features::IsUsingFrameIntervalDecider()) {
     frame_interval_decider_ = std::make_unique<FrameIntervalDecider>();
   } else {
     bool output_surface_supports_set_frame_rate = false;

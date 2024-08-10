@@ -1391,7 +1391,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
 
   const bool compute_video_layer_preferred_interval =
       !features::UseSurfaceLayerForVideo() &&
-      base::FeatureList::IsEnabled(features::kUseFrameIntervalDecider);
+      features::IsUsingFrameIntervalDecider();
 
   if (settings_.enable_compositing_based_throttling)
     throttle_decider_.Prepare();

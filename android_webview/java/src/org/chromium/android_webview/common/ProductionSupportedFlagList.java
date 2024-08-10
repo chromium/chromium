@@ -177,6 +177,9 @@ public final class ProductionSupportedFlagList {
                 VizFeatures.WEBVIEW_ENABLE_ADPF_RENDERER_MAIN,
                 "Include Renderer Main into ADPF session"),
         Flag.baseFeature(
+                VizFeatures.WEBVIEW_FRAME_RATE_HINTS,
+                "Provide frame rate hints to View system if supported by OS"),
+        Flag.baseFeature(
                 VizFeatures.ALLOW_UNDAMAGED_NONROOT_RENDER_PASS_TO_SKIP,
                 "Enable optimization for skipping undamaged nonroot render passes."),
         Flag.baseFeature(
@@ -402,9 +405,6 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_FORCE_DARK_MODE_MATCH_THEME,
                 "Automatically darken page if"
                         + " WebView is set to FORCE_DARK_AUTO and the app has dark theme"),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_FRAME_RATE_HINTS,
-                "Provide frame rate hints to View system if supported by OS"),
         Flag.baseFeature(
                 ContentFeatures.VERIFY_DID_COMMIT_PARAMS,
                 "Enables reporting of browser and renderer navigation inconsistencies on"

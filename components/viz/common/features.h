@@ -59,6 +59,7 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewVulkanIntermediateBuffer);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSurfaceLayerForVideoDefault);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewEnableADPF);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewEnableADPFRendererMain);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewFrameRateHints);
 #endif
 #if BUILDFLAG(IS_APPLE)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kCALayerNewLimit);
@@ -143,6 +144,7 @@ VIZ_COMMON_EXPORT bool IsCVDisplayLinkBeginFrameSourceEnabled();
 VIZ_COMMON_EXPORT bool IsVSyncAlignedPresentEnabled();
 VIZ_COMMON_EXPORT int NumPendingFrameSupported();
 VIZ_COMMON_EXPORT bool ShouldLogFrameQuadInfo();
+VIZ_COMMON_EXPORT bool IsUsingFrameIntervalDecider();
 VIZ_COMMON_EXPORT std::optional<uint64_t>
 NumCooldownFramesForAckOnSurfaceActivationDuringInteraction();
 VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
