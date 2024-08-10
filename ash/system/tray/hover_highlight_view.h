@@ -116,9 +116,6 @@ class ASH_EXPORT HoverHighlightView : public views::Button {
   // Override from Button to also set the tooltip for all child elements.
   void OnSetTooltipText(const std::u16string& tooltip_text) override;
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
  private:
   friend class TrayAccessibilityTest;
 
@@ -136,6 +133,8 @@ class ASH_EXPORT HoverHighlightView : public views::Button {
 
   // views::Button:
   void OnEnabledChanged() override;
+
+  void SetAndUpdateAccessibleDefaultAction();
 
   // Determines whether the view is populated or not. If it is, Reset() should
   // be called before re-populating the view.

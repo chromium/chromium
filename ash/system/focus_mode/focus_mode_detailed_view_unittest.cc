@@ -44,6 +44,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
@@ -148,6 +149,10 @@ class FocusModeDetailedViewTest : public AshTestBase {
 
   bool IsToggleRowSubLabelVisible() {
     return GetToggleRowSubLabel() && GetToggleRowSubLabel()->GetVisible();
+  }
+
+  HoverHighlightView* GetToggleView() {
+    return focus_mode_detailed_view_->toggle_view_;
   }
 
   PillButton* GetToggleRowButton() {
@@ -856,6 +861,36 @@ TEST_F(FocusModeDetailedViewTest, ChipsNotAcceptVerticalScrollGesture) {
   // After scrolling up the focus panel, the visible rect for the scroll view
   // has been changed.
   EXPECT_GT(scroll_view->GetVisibleRect().y(), 0);
+}
+
+TEST_F(FocusModeDetailedViewTest,
+       HoverHighlightViewAccessibleDefaultActionVerb) {
+  auto* hover_highlight_view = GetToggleView();
+  auto* right_view = GetToggleRowButton();
+  ui::AXNodeData data;
+
+  ASSERT_TRUE(hover_highlight_view);
+  ASSERT_TRUE(right_view);
+  ASSERT_TRUE(std::string(right_view->GetClassName()).find("Button") !=
+              std::string::npos);
+
+  hover_highlight_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kClick);
+
+  hover_highlight_view->SetRightViewVisible(false);
+  data = ui::AXNodeData();
+  hover_highlight_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kPress);
+
+  hover_highlight_view->SetRightViewVisible(true);
+  data = ui::AXNodeData();
+  hover_highlight_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kClick);
+
+  hover_highlight_view->Reset();
+  data = ui::AXNodeData();
+  hover_highlight_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kPress);
 }
 
 class FocusModeDetailedViewWithLotsOfTasksTest
