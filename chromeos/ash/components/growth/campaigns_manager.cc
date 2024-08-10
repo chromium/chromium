@@ -306,9 +306,9 @@ void CampaignsManager::OnCampaignsComponentLoaded(
     return;
   }
 
-  if (!oobe_complete_time_for_test_.is_null()) {
+  if (const auto registered_time = GetRegisteredTimeForTesting()) {
     OnOobeTimestampLoaded(std::move(load_callback), path,
-                          oobe_complete_time_for_test_);
+                          registered_time.value());
     return;
   }
 
@@ -392,6 +392,25 @@ void CampaignsManager::SetTrackerInitializedForTesting() {
 const Campaigns* CampaignsManager::GetCampaignsBySlotForTesting(
     Slot slot) const {
   return GetCampaignsBySlot(&campaigns_, slot);
+}
+
+std::optional<base::Time> CampaignsManager::GetRegisteredTimeForTesting() {
+  if (!oobe_complete_time_for_test_.is_null()) {
+    return oobe_complete_time_for_test_;
+  }
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(
+          ash::switches::kGrowthCampaignsRegisteredTimeSecondsSinceUnixEpoch)) {
+    const auto& value = command_line->GetSwitchValueASCII(
+        ash::switches::kGrowthCampaignsRegisteredTimeSecondsSinceUnixEpoch);
+
+    double seconds_since_epoch;
+    CHECK(base::StringToDouble(value, &seconds_since_epoch));
+    return base::Time::FromSecondsSinceUnixEpoch(seconds_since_epoch);
+  }
+
+  return std::nullopt;
 }
 
 void CampaignsManager::RegisterTrialForCampaign(

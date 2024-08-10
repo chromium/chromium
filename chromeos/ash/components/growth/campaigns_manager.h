@@ -113,6 +113,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   void SetOobeCompleteTimeForTesting(base::Time time);
   void SetTrackerInitializedForTesting();
   const Campaigns* GetCampaignsBySlotForTesting(Slot slot) const;
+  std::optional<base::Time> GetRegisteredTimeForTesting();
 
  private:
   // Triggred when campaigns component loaded.

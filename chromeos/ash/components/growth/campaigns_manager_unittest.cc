@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -2473,6 +2474,28 @@ TEST_F(CampaignsManagerTest, GetCampaignReachGroupDismissalCap) {
       /*has_group_id=*/true);
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetTestingRegisteredTimeWithSwitch) {
+  // Timestamp of "2024-08-01".
+  const std::string seconds_since_epoch = "1722495600";
+  const double seconds_since_epoch_double = 1722495600;
+  base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitchASCII(
+      ash::switches::kGrowthCampaignsRegisteredTimeSecondsSinceUnixEpoch,
+      seconds_since_epoch);
+
+  auto registered_time = campaigns_manager_->GetRegisteredTimeForTesting();
+  EXPECT_TRUE(registered_time);
+
+  const auto expected_time =
+      base::Time::FromSecondsSinceUnixEpoch(seconds_since_epoch_double);
+  EXPECT_EQ(expected_time, registered_time);
+}
+
+TEST_F(CampaignsManagerTest, GetTestingRegisteredTimeWithoutSwitch) {
+  auto registered_time = campaigns_manager_->GetRegisteredTimeForTesting();
+  EXPECT_FALSE(registered_time);
 }
 
 }  // namespace growth

@@ -728,6 +728,11 @@ const char kGrowthCampaigns[] = "growth-campaigns";
 // downloading from Omaha).
 const char kGrowthCampaignsPath[] = "growth-campaigns-path";
 
+// Specifies the device registered time in `SecondsSinceUnixEpoch` format for
+// testing.
+const char kGrowthCampaignsRegisteredTimeSecondsSinceUnixEpoch[] =
+    "growth-campaigns-registered-time";
+
 // Indicates that the browser is in "browse without sign-in" (Guest session)
 // mode. Should completely disable extensions, sync and bookmarks.
 const char kGuestSession[] = "bwsi";

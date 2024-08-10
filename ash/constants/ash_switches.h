@@ -233,6 +233,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForestFeatureKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFormFactor[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGrowthCampaigns[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGrowthCampaignsPath[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kGrowthCampaignsRegisteredTimeSecondsSinceUnixEpoch[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGuestSession[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGuestWallpaperLarge[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGuestWallpaperSmall[];
