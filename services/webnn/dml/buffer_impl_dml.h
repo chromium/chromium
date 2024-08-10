@@ -52,7 +52,7 @@ class BufferImplDml final : public WebNNBufferImpl {
   // The fence value used to track progress of GPU execution of commands using
   // this buffer. Comparing it with the command queue's completed fence can
   // indicate whether commands have completed execution.
-  uint64_t last_submission_fence_value_ = UINT64_MAX;
+  uint64_t last_submission_fence_value_ = 0;
 
   base::WeakPtrFactory<BufferImplDml> weak_factory_{this};
 };
