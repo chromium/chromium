@@ -23,6 +23,15 @@ bool IsCloudSharedWithMeQuery(const drivefs::mojom::QueryParametersPtr& query) {
          query->shared_with_me && !query->text_content && !query->title;
 }
 
+void AdjustQueryForOffline(mojom::QueryParameters& query) {
+  query.query_source = drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
+  if (query.text_content) {
+    // Full-text searches not supported offline.
+    std::swap(query.text_content, query.title);
+    query.text_content.reset();
+  }
+}
+
 }  // namespace
 
 DriveFsSearch::DriveFsSearch(
@@ -49,21 +58,20 @@ mojom::QueryParameters::QuerySource DriveFsSearch::PerformSearch(
   }
 
   mojo::Remote<drivefs::mojom::SearchQuery> search;
-  drivefs::mojom::QueryParameters::QuerySource source = query->query_source;
   if (network_connection_tracker_->IsOffline() &&
-      source != drivefs::mojom::QueryParameters::QuerySource::kLocalOnly) {
+      query->query_source !=
+          drivefs::mojom::QueryParameters::QuerySource::kLocalOnly) {
     // No point trying cloud query if we know we are offline.
-    source = drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
-    OnSearchDriveFs(std::move(search), std::move(query), std::move(callback),
-                    drive::FILE_ERROR_NO_CONNECTION, {});
-  } else {
-    drivefs_->StartSearchQuery(search.BindNewPipeAndPassReceiver(),
-                               query.Clone());
-    auto* raw_search = search.get();
-    raw_search->GetNextPage(base::BindOnce(
-        &DriveFsSearch::OnSearchDriveFs, weak_ptr_factory_.GetWeakPtr(),
-        std::move(search), std::move(query), std::move(callback)));
+    AdjustQueryForOffline(*query);
   }
+  drivefs::mojom::QueryParameters::QuerySource source = query->query_source;
+
+  drivefs_->StartSearchQuery(search.BindNewPipeAndPassReceiver(),
+                             query.Clone());
+  auto* raw_search = search.get();
+  raw_search->GetNextPage(base::BindOnce(
+      &DriveFsSearch::OnSearchDriveFs, weak_ptr_factory_.GetWeakPtr(),
+      std::move(search), std::move(query), std::move(callback)));
   return source;
 }
 
@@ -77,13 +85,7 @@ void DriveFsSearch::OnSearchDriveFs(
       query->query_source !=
           drivefs::mojom::QueryParameters::QuerySource::kLocalOnly) {
     // Retry with offline query.
-    query->query_source =
-        drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
-    if (query->text_content) {
-      // Full-text searches not supported offline.
-      std::swap(query->text_content, query->title);
-      query->text_content.reset();
-    }
+    AdjustQueryForOffline(*query);
     PerformSearch(std::move(query), std::move(callback));
     return;
   }
