@@ -104,11 +104,6 @@ gfx::Rect InkRectToEnclosingGfxRect(const InkRect& rect) {
   return gfx::ToEnclosingRect(gfx::RectF(x, y, width, height));
 }
 
-void CheckToolSizeIsInRange(float size) {
-  CHECK_GE(size, 1);
-  CHECK_LE(size, 16);
-}
-
 }  // namespace
 
 PdfInkModule::PdfInkModule(Client& client) : client_(client) {
@@ -556,7 +551,7 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   CHECK(data);
 
   float size = base::checked_cast<float>(data->FindDouble("size").value());
-  CheckToolSizeIsInRange(size);
+  PdfInkBrush::CheckToolSizeIsInRange(size);
 
   const std::string& brush_type_string = *data->FindString("type");
   if (brush_type_string == "eraser") {
