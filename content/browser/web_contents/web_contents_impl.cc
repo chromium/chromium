@@ -4030,7 +4030,8 @@ bool WebContentsImpl::CanEnterFullscreenMode(
   // the screen, or that it was downstream from a WebContents when UI was
   // blocked. Therefore, disqualify it from fullscreen if it or any upstream
   // WebContents has an active blocker.
-  return base::ranges::all_of(GetAllOpeningWebContents(this),
+  return delegate_ &&
+         base::ranges::all_of(GetAllOpeningWebContents(this),
                               [](auto* opener) {
                                 return opener->fullscreen_blocker_count_ == 0;
                               }) &&
