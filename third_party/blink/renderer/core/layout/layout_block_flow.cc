@@ -602,7 +602,7 @@ Node* LayoutBlockFlow::NodeForHitTest() const {
   // If we are in the margins of block elements that are part of a
   // block-in-inline we're actually still inside the enclosing element
   // that was split. Use the appropriate inner node.
-  if (UNLIKELY(IsBlockInInline())) {
+  if (IsBlockInInline()) [[unlikely]] {
     DCHECK(Parent());
     DCHECK(Parent()->IsLayoutInline());
     return Parent()->NodeForHitTest();
@@ -775,7 +775,7 @@ void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
       for (InlineCursor descendants = first_line.CursorForDescendants();
            descendants; descendants.MoveToNext()) {
         const FragmentItem* item = descendants.Current().Item();
-        if (UNLIKELY(item->IsLayoutObjectDestroyedOrMoved())) {
+        if (item->IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
           descendants.MoveToNextSkippingChildren();
           continue;
         }

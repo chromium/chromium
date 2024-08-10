@@ -97,8 +97,8 @@ class CORE_EXPORT LayoutAlgorithm {
     container_builder_.SetIsNewFormattingContext(
         params.space.IsNewFormattingContext());
     container_builder_.SetInitialFragmentGeometry(params.fragment_geometry);
-    if (UNLIKELY(params.space.HasBlockFragmentation() ||
-                 IsBreakInside(params.break_token))) {
+    if (params.space.HasBlockFragmentation() ||
+        IsBreakInside(params.break_token)) [[unlikely]] {
       SetupFragmentBuilderForFragmentation(
           params.space, params.node, params.break_token, &container_builder_);
     }

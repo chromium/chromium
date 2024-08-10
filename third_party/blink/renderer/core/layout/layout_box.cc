@@ -1212,13 +1212,13 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
 
   const bool apply_fixed_size = StyleRef().ApplyControlFixedSize(&element);
   const auto* select = DynamicTo<HTMLSelectElement>(element);
-  if (UNLIKELY(select && select->UsesMenuList() &&
-               !select->IsAppearanceBaseSelect())) {
+  if (select && select->UsesMenuList() && !select->IsAppearanceBaseSelect())
+      [[unlikely]] {
     return apply_fixed_size ? MenuListIntrinsicInlineSize(*select, *this)
                             : kIndefiniteSize;
   }
   const auto* input = DynamicTo<HTMLInputElement>(element);
-  if (UNLIKELY(input)) {
+  if (input) [[unlikely]] {
     if (input->IsTextField() && apply_fixed_size) {
       return TextFieldIntrinsicInlineSize(*input, *this);
     }
@@ -1241,7 +1241,7 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
     return kIndefiniteSize;
   }
   const auto* textarea = DynamicTo<HTMLTextAreaElement>(element);
-  if (UNLIKELY(textarea) && apply_fixed_size) {
+  if (textarea && apply_fixed_size) [[unlikely]] {
     return TextAreaIntrinsicInlineSize(*textarea, *this);
   }
   if (IsSliderContainer(element))
@@ -1942,7 +1942,7 @@ bool LayoutBox::NodeAtPoint(HitTestResult& result,
   if (IsInSelfHitTestingPhase(phase) &&
       VisibleToHitTestRequest(result.GetHitTestRequest())) {
     PhysicalRect bounds_rect;
-    if (UNLIKELY(result.GetHitTestRequest().IsHitTestVisualOverflow())) {
+    if (result.GetHitTestRequest().IsHitTestVisualOverflow()) [[unlikely]] {
       bounds_rect = VisualOverflowRectIncludingFilters();
     } else {
       bounds_rect = PhysicalBorderBoxRect();
@@ -2347,7 +2347,7 @@ PhysicalRect LayoutBox::OverflowClipRect(
                       kExcludeScrollbarGutter);
   }
 
-  if (UNLIKELY(IsA<HTMLInputElement>(GetNode()))) {
+  if (IsA<HTMLInputElement>(GetNode())) [[unlikely]] {
     // We only apply a clip to <input> buttons, and not regular <button>s.
     if (IsTextField() || IsInputButton()) {
       DCHECK(HasControlClip());
@@ -2355,7 +2355,7 @@ PhysicalRect LayoutBox::OverflowClipRect(
       control_clip.Move(location);
       clip_rect.Intersect(control_clip);
     }
-  } else if (UNLIKELY(IsMenuList())) {
+  } else if (IsMenuList()) [[unlikely]] {
     DCHECK(HasControlClip());
     PhysicalRect control_clip = PhysicalContentBoxRect();
     control_clip.Move(location);
@@ -2369,7 +2369,10 @@ PhysicalRect LayoutBox::OverflowClipRect(
 
 bool LayoutBox::HasControlClip() const {
   NOT_DESTROYED();
-  return UNLIKELY(IsTextField() || IsMenuList() || IsInputButton());
+  if (IsTextField() || IsMenuList() || IsInputButton()) [[unlikely]] {
+    return true;
+  }
+  return false;
 }
 
 void LayoutBox::ExcludeScrollbars(
@@ -2912,7 +2915,7 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
 
   if (IsStickyPositioned()) {
     container_offset += StickyPositionOffset();
-  } else if (UNLIKELY(NeedsAnchorPositionScrollAdjustment())) {
+  } else if (NeedsAnchorPositionScrollAdjustment()) [[unlikely]] {
     container_offset += AnchorPositionScrollTranslationOffset();
   }
 
@@ -2987,7 +2990,7 @@ bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
   }
 
   const Node* node = containing_block->GetNode();
-  if (UNLIKELY(node->IsInUserAgentShadowRoot())) {
+  if (node->IsInUserAgentShadowRoot()) [[unlikely]] {
     const Element* host = node->OwnerShadowHost();
     if (const auto* input = DynamicTo<HTMLInputElement>(host)) {
       // In web_tests/fast/forms/range/range-thumb-height-percentage.html, a
@@ -3625,7 +3628,7 @@ void LayoutBox::CopyVisualOverflowFromFragments() {
 void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
   NOT_DESTROYED();
   DCHECK(CanUseFragmentsForVisualOverflow());
-  if (UNLIKELY(!PhysicalFragmentCount())) {
+  if (!PhysicalFragmentCount()) [[unlikely]] {
     DCHECK(IsLayoutTableCol());
     ClearVisualOverflow();
     return;

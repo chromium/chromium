@@ -78,8 +78,8 @@ void LayoutBlockFlow::StyleDidChange(StyleDifference diff,
     // The `initial-letter` creates a special `InlineItem`. When it's turned
     // on/off, its parent IFC should run `CollectInlines()`.
     const ComputedStyle& new_style = StyleRef();
-    if (UNLIKELY(old_style->InitialLetter().IsNormal() !=
-                 new_style.InitialLetter().IsNormal())) {
+    if (old_style->InitialLetter().IsNormal() !=
+        new_style.InitialLetter().IsNormal()) [[unlikely]] {
       if (LayoutObject* parent = Parent()) {
         parent->SetNeedsCollectInlines();
       }

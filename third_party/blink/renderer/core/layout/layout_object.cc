@@ -160,7 +160,7 @@ LayoutObject* FindAncestorByPredicate(const LayoutObject* descendant,
     if (skip_info)
       skip_info->Update(*object);
 
-    if (UNLIKELY(object->IsColumnSpanAll())) {
+    if (object->IsColumnSpanAll()) [[unlikely]] {
       // The containing block chain goes directly from the column spanner to the
       // multi-column container.
       const auto* multicol_container =
@@ -706,8 +706,8 @@ void LayoutObject::AddChild(LayoutObject* new_child,
       children->InsertChildNode(this, table, before_child);
     }
     table->AddChild(new_child);
-  } else if (LIKELY(new_child->IsHorizontalWritingMode()) ||
-             !new_child->IsText()) {
+  } else if (new_child->IsHorizontalWritingMode() || !new_child->IsText())
+      [[likely]] {
     children->InsertChildNode(this, new_child, before_child);
   } else if (IsA<LayoutTextCombine>(*this)) {
     DCHECK(LayoutTextCombine::ShouldBeParentOf(*new_child)) << new_child;
@@ -1291,8 +1291,9 @@ LayoutBox* LayoutObject::ContainingNGBox() const {
     return nullptr;
   // Flow threads should be invisible to LayoutNG, so skip to the multicol
   // container.
-  if (UNLIKELY(containing_block->IsLayoutFlowThread()))
+  if (containing_block->IsLayoutFlowThread()) [[unlikely]] {
     containing_block = To<LayoutBlockFlow>(containing_block->Parent());
+  }
   if (!containing_block->IsLayoutNGObject())
     return nullptr;
   return containing_block;
@@ -1491,8 +1492,8 @@ void LayoutObject::SetNeedsCollectInlines() {
   if (NeedsCollectInlines())
     return;
 
-  if (UNLIKELY(IsSVGChild() && !IsSVGText() && !IsSVGInline() &&
-               !IsSVGInlineText() && !IsSVGForeignObject())) {
+  if (IsSVGChild() && !IsSVGText() && !IsSVGInline() && !IsSVGInlineText() &&
+      !IsSVGForeignObject()) [[unlikely]] {
     return;
   }
 
@@ -1509,7 +1510,7 @@ void LayoutObject::SetChildNeedsCollectInlines() {
   LayoutObject* object = this;
   do {
     // Should not stop at |LayoutFlowThread| as |CollectInlines()| skips them.
-    if (UNLIKELY(object->IsLayoutFlowThread())) {
+    if (object->IsLayoutFlowThread()) [[unlikely]] {
       object = object->Parent();
       continue;
     }
@@ -2691,7 +2692,7 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
     return;
   }
 
-  if (IsText() && Parent() && UNLIKELY(Parent()->IsInitialLetterBox())) {
+  if (IsText() && Parent() && Parent()->IsInitialLetterBox()) [[unlikely]] {
     // Note: `Parent()` can be null for text for generated contents.
     // See "accessibility/css-generated-content.html"
     const ComputedStyle* initial_letter_text_style =
@@ -2701,7 +2702,7 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
     return;
   }
 
-  if (IsText() && UNLIKELY(IsA<LayoutTextCombine>(Parent()))) {
+  if (IsText() && IsA<LayoutTextCombine>(Parent())) [[unlikely]] {
     // See http://crbug.com/1222640
     ComputedStyleBuilder combined_text_style_builder =
         GetDocument()

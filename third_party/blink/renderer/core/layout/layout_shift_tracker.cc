@@ -53,9 +53,10 @@ gfx::PointF StartingPoint(const PhysicalOffset& paint_offset,
                           const PhysicalSize& size) {
   PhysicalOffset starting_point = paint_offset;
   auto writing_direction = box.StyleRef().GetWritingDirection();
-  if (UNLIKELY(writing_direction.IsFlippedBlocks()))
+  if (writing_direction.IsFlippedBlocks()) [[unlikely]] {
     starting_point.left += size.width;
-  if (UNLIKELY(writing_direction.IsRtl())) {
+  }
+  if (writing_direction.IsRtl()) [[unlikely]] {
     if (writing_direction.IsHorizontal())
       starting_point.left += size.width;
     else

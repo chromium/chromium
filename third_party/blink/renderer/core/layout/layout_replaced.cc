@@ -179,8 +179,9 @@ void LayoutReplaced::RecalcVisualOverflow() {
 std::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
     const PhysicalSize* overridden_intrinsic_size) const {
   const BasicShape* object_view_box = StyleRef().ObjectViewBox();
-  if (LIKELY(!object_view_box))
+  if (!object_view_box) [[likely]] {
     return std::nullopt;
+  }
 
   const auto& intrinsic_size =
       overridden_intrinsic_size ? *overridden_intrinsic_size : intrinsic_size_;

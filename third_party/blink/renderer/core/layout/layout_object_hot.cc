@@ -46,7 +46,7 @@ LayoutBox* LayoutObject::DeprecatedEnclosingScrollableBox() const {
 void LayoutObject::SetNeedsOverflowRecalc(
     OverflowRecalcType overflow_recalc_type) {
   NOT_DESTROYED();
-  if (UNLIKELY(IsLayoutFlowThread())) {
+  if (IsLayoutFlowThread()) [[unlikely]] {
     // If we're a flow thread inside an NG multicol container, just redirect to
     // the multicol container, since the overflow recalculation walks down the
     // NG fragment tree, and the flow thread isn't represented there.
@@ -99,7 +99,7 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
         GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
             StyleRef(), child->StyleRef().Display());
 
-    if (UNLIKELY(IsA<LayoutTextCombine>(child))) {
+    if (IsA<LayoutTextCombine>(child)) [[unlikely]] {
       if (blink::IsHorizontalWritingMode(new_style_builder.GetWritingMode())) {
         // |LayoutTextCombine| will be removed when recalculating style for
         // <br> or <wbr>.

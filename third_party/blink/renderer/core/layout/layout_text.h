@@ -479,8 +479,9 @@ inline wtf_size_t LayoutText::FirstInlineFragmentItemIndex() const {
 }
 
 inline void LayoutText::DetachAbstractInlineTextBoxesIfNeeded() {
-  if (UNLIKELY(has_abstract_inline_text_box_))
+  if (has_abstract_inline_text_box_) [[unlikely]] {
     DetachAbstractInlineTextBoxes();
+  }
 }
 
 template <>

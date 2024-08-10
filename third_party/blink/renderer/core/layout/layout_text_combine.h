@@ -139,12 +139,15 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutBlockFlow {
 // static
 inline bool LayoutTextCombine::ShouldBeParentOf(
     const LayoutObject& layout_object) {
-  if (LIKELY(layout_object.IsHorizontalWritingMode()) ||
-      !layout_object.IsText() || layout_object.IsSVGInlineText()) {
+  if (layout_object.IsHorizontalWritingMode() || !layout_object.IsText() ||
+      layout_object.IsSVGInlineText()) [[likely]] {
     return false;
   }
-  return UNLIKELY(layout_object.StyleRef().HasTextCombine()) &&
-         layout_object.IsLayoutNGObject();
+  if (layout_object.StyleRef().HasTextCombine() &&
+      layout_object.IsLayoutNGObject()) [[unlikely]] {
+    return true;
+  }
+  return false;
 }
 
 template <>
