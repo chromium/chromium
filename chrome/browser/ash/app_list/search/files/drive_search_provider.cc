@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/drive/file_errors.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "url/gurl.h"
@@ -116,7 +117,7 @@ void DriveSearchProvider::OnSearchDriveByFileName(
     std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (error != drive::FileError::FILE_ERROR_OK || !items.has_value()) {
+  if (!drive::IsFileErrorOk(error) || !items.has_value()) {
     Results empty_results;
     SwapResults(&empty_results);
     LogStatus(Status::kFileError);
