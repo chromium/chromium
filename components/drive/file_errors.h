@@ -13,6 +13,9 @@ namespace drive {
 // These values are persisted to UMA histograms (see UMA enum DriveFileError).
 // The histogram values are positive (1=OK, 2=FAILED, 3=IN_USE, etc).
 // Entries should not be renumbered and numeric values should never be reused.
+//
+// Consider using `IsFileErrorOk` to check for successful operations, as it
+// includes both `FILE_ERROR_OK` and `FILE_ERROR_OK_WITH_MORE_RESULTS`.
 enum FileError {
   FILE_ERROR_OK = 0,
   FILE_ERROR_FAILED = -1,
@@ -39,6 +42,9 @@ enum FileError {
 };
 
 std::ostream& operator<<(std::ostream& out, FileError error);
+
+// Returns whether a `FileError` represents a successful operation.
+bool IsFileErrorOk(FileError error);
 
 // Returns a string representation of FileError.
 std::string FileErrorToString(FileError error);

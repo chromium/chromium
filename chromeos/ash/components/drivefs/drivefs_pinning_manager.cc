@@ -908,8 +908,7 @@ void PinningManager::OnSearchResult(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(progress_.stage, Stage::kListingFiles);
 
-  if (error != drive::FILE_ERROR_OK &&
-      error != drive::FILE_ERROR_OK_WITH_MORE_RESULTS) {
+  if (!drive::IsFileErrorOk(error)) {
     LOG(ERROR) << "Cannot visit " << dir_id << " " << Quote(dir_path) << ": "
                << error;
     switch (error) {
