@@ -12263,6 +12263,11 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="IsFromMediaCapabilities" enum="Boolean">
+    <summary>
+      Whether called by MediaCapabilities or not.
+    </summary>
+  </metric>
   <metric name="IsTopFrame" enum="Boolean">
     <summary>
       Whether the frame is the main frame.

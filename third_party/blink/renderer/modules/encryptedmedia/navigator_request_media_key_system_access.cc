@@ -75,10 +75,12 @@ MediaKeySystemAccessInitializer::MediaKeySystemAccessInitializer(
     const String& key_system,
     const HeapVector<Member<MediaKeySystemConfiguration>>&
         supported_configurations)
-    : MediaKeySystemAccessInitializerBase(context,
-                                          resolver,
-                                          key_system,
-                                          supported_configurations) {}
+    : MediaKeySystemAccessInitializerBase(
+          context,
+          resolver,
+          key_system,
+          supported_configurations,
+          /*is_from_media_capabilities=*/false) {}
 
 void MediaKeySystemAccessInitializer::RequestSucceeded(
     std::unique_ptr<WebContentDecryptionModuleAccess> access) {

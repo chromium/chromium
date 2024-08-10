@@ -89,11 +89,13 @@ MediaKeySystemAccessInitializerBase::MediaKeySystemAccessInitializerBase(
     ScriptPromiseResolverBase* resolver,
     const String& key_system,
     const HeapVector<Member<MediaKeySystemConfiguration>>&
-        supported_configurations)
+        supported_configurations,
+    bool is_from_media_capabilities)
     : ExecutionContextClient(context),
       resolver_(resolver),
       key_system_(key_system),
-      supported_configurations_(supported_configurations.size()) {
+      supported_configurations_(supported_configurations.size()),
+      is_from_media_capabilities_(is_from_media_capabilities) {
   for (wtf_size_t i = 0; i < supported_configurations.size(); ++i) {
     const MediaKeySystemConfiguration* config = supported_configurations[i];
     WebMediaKeySystemConfiguration web_config;
@@ -226,6 +228,8 @@ void MediaKeySystemAccessInitializerBase::GenerateWarningAndReportMetrics()
       static_cast<int>(has_empty_robustness));
   builder.SetVideoCapabilities_HasHwSecureAllRobustness(
       static_cast<int>(has_hw_secure_all));
+  builder.SetIsFromMediaCapabilities(
+      static_cast<int>(is_from_media_capabilities_));
   builder.Record(DomWindow()->UkmRecorder());
 }
 
