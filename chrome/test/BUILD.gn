@@ -1568,6 +1568,10 @@ if (is_android) {
       sources += [ "../browser/allocation_recorder_browsertest.cc" ]
       deps += [ "//components/allocation_recorder/testing" ]
     }
+
+    if (enable_desktop_android_extensions) {
+      sources += [ "../browser/extensions/desktop_android/desktop_android_extensions_browsertest.cc" ]
+    }
   }
 
   proto_library("persisted_tab_data_test_proto") {
