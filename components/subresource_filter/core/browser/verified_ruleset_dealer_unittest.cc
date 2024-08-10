@@ -85,12 +85,8 @@ std::vector<uint8_t> ReadFileContent(base::File* file) {
   const int64_t file_length = file->GetLength();
   CHECK_LE(0, file_length);
 
-  std::vector<uint8_t> file_content(static_cast<size_t>(file_length), 0);
-  const int read_res =
-      file->Read(0, reinterpret_cast<char*>(&(file_content[0])),
-                 static_cast<int>(file_length));
-  CHECK_EQ(read_res, file_length);
-
+  std::vector<uint8_t> file_content(static_cast<size_t>(file_length));
+  CHECK(file->ReadAndCheck(0, file_content));
   return file_content;
 }
 

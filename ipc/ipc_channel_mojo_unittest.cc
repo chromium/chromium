@@ -15,6 +15,7 @@
 
 #include "base/base_paths.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -433,8 +434,7 @@ class HandleSendingHelper {
   }
 
   static void WriteFile(IPC::Message* message, base::File& file) {
-    std::string content = GetSendingFileContent();
-    file.WriteAtCurrentPos(content.data(), content.size());
+    file.WriteAtCurrentPos(base::as_byte_span(GetSendingFileContent()));
     file.Flush();
     message->WriteAttachment(new IPC::internal::PlatformFileAttachment(
         base::ScopedFD(file.TakePlatformFile())));
@@ -468,7 +468,7 @@ class HandleSendingHelper {
         static_cast<IPC::internal::PlatformFileAttachment*>(attachment.get())
             ->TakePlatformFile());
     std::string content(GetSendingFileContent().size(), ' ');
-    file.Read(0, &content[0], content.size());
+    file.Read(0, base::as_writable_byte_span(content));
     EXPECT_EQ(content, GetSendingFileContent());
   }
 #endif

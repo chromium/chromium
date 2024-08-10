@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/numerics/safe_conversions.h"
+
 namespace mojo {
 
 namespace {
@@ -92,13 +94,16 @@ DataPipeProducer::DataSource::ReadResult FileDataSource::Read(
   if (result.result != MOJO_RESULT_OK)
     return result;
 
-  int bytes_read =
-      file_.Read(static_cast<int64_t>(read_offset), buffer.data(), read_size);
-  if (bytes_read < 0) {
+  std::optional<size_t> bytes_read =
+      file_.Read(static_cast<int64_t>(read_offset),
+                 base::as_writable_bytes(buffer).first(
+                     base::checked_cast<size_t>(read_size)));
+
+  if (!bytes_read.has_value()) {
     result.bytes_read = 0;
     result.result = ConvertFileErrorToMojoResult(file_.GetLastFileError());
   } else {
-    result.bytes_read = bytes_read;
+    result.bytes_read = bytes_read.value();
   }
   return result;
 }

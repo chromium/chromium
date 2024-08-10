@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/ranges/algorithm.h"
@@ -94,13 +95,12 @@ GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
   std::unique_ptr<crypto::SecureHash> secure_hash =
       crypto::SecureHash::Create(crypto::SecureHash::SHA256);
   size_t bytes_read = 0;
-  std::vector<char> buf;
-  buf.resize(kReadFileChunkSize);
+  std::vector<char> buf(kReadFileChunkSize);
 
   while (bytes_read < file_data.size) {
-    int64_t bytes_currently_read =
-        file.ReadAtCurrentPos(&buf[0], kReadFileChunkSize);
-    if (bytes_currently_read == -1) {
+    std::optional<size_t> bytes_currently_read =
+        file.ReadAtCurrentPos(base::as_writable_byte_span(buf));
+    if (!bytes_currently_read.has_value()) {
       // Reset the size to zero since some code assumes an UNKNOWN result is
       // matched with a zero size.
       file_data.size = 0;
@@ -108,13 +108,13 @@ GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
     }
 
     // Use the first read chunk to get the mimetype as necessary.
-    if (detect_mime_type && (bytes_read == 0)) {
+    if (detect_mime_type && bytes_read == 0) {
       file_data.mime_type = GetFileMimeType(
-          path, std::string_view(buf.data(), bytes_currently_read));
+          path, std::string_view(buf.data(), bytes_currently_read.value()));
     }
 
-    secure_hash->Update(buf.data(), bytes_currently_read);
-    bytes_read += bytes_currently_read;
+    secure_hash->Update(buf.data(), bytes_currently_read.value());
+    bytes_read += bytes_currently_read.value();
   }
 
   file_data.hash.resize(crypto::kSHA256Length);

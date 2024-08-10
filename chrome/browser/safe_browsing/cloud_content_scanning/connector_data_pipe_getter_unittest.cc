@@ -15,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
+
 class ConnectorDataPipeGetterTest : public testing::Test {
  public:
   std::optional<base::File> CreateFile(const std::string& content) {
@@ -22,12 +23,12 @@ class ConnectorDataPipeGetterTest : public testing::Test {
     base::FilePath path = temp_dir_.GetPath().AppendASCII("test.txt");
     base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_READ |
                               base::File::FLAG_WRITE);
-    if (!file.IsValid())
+    if (!file.IsValid()) {
       return std::nullopt;
-
-    if (file.WriteAtCurrentPos(content.data(), content.size()) < 0)
+    }
+    if (!file.WriteAtCurrentPosAndCheck(base::as_byte_span(content))) {
       return std::nullopt;
-
+    }
     return file;
   }
 

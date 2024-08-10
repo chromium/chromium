@@ -182,8 +182,7 @@ TEST_P(RequestAsFile, AtStartOfEmptyFile) {
   EXPECT_EQ(static_cast<int64_t>(test.size), info.size);
 
   Vector<uint8_t> read_data(test.size);
-  EXPECT_EQ(static_cast<int>(test.size),
-            file.Read(0, reinterpret_cast<char*>(read_data.data()), test.size));
+  EXPECT_TRUE(file.ReadAndCheck(0, read_data));
   EXPECT_EQ(sliced_data_, read_data);
 }
 
@@ -202,9 +201,7 @@ TEST_P(RequestAsFile, OffsetInEmptyFile) {
     EXPECT_EQ(static_cast<int64_t>(test.size) + 32, info.size);
 
     Vector<uint8_t> read_data(sliced_data_.size());
-    EXPECT_EQ(static_cast<int>(sliced_data_.size()),
-              file.Read(0, reinterpret_cast<char*>(read_data.data()),
-                        sliced_data_.size()));
+    EXPECT_TRUE(file.ReadAndCheck(0, read_data));
     EXPECT_EQ(sliced_data_, read_data);
   }
 }
@@ -219,10 +216,7 @@ TEST_P(RequestAsFile, OffsetInNonEmptyFile) {
   base::CreateTemporaryFile(&path);
   {
     base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_WRITE);
-    EXPECT_EQ(static_cast<int>(expected_data.size()),
-              file.WriteAtCurrentPos(
-                  reinterpret_cast<const char*>(expected_data.data()),
-                  expected_data.size()));
+    EXPECT_TRUE(file.WriteAtCurrentPosAndCheck(expected_data));
   }
 
   base::span(expected_data).subspan(file_offset).copy_prefix_from(sliced_data_);
@@ -241,9 +235,7 @@ TEST_P(RequestAsFile, OffsetInNonEmptyFile) {
   EXPECT_EQ(static_cast<int64_t>(expected_data.size()), info.size);
 
   Vector<uint8_t> read_data(expected_data.size());
-  EXPECT_EQ(static_cast<int>(expected_data.size()),
-            file.Read(0, reinterpret_cast<char*>(read_data.data()),
-                      expected_data.size()));
+  EXPECT_TRUE(file.ReadAndCheck(0, read_data));
   EXPECT_EQ(expected_data, read_data);
 }
 
@@ -292,9 +284,7 @@ TEST_F(BlobBytesProviderTest, RequestAsFile_MultipleChunks) {
   EXPECT_EQ(static_cast<int64_t>(combined_bytes_.size()), info.size);
 
   Vector<uint8_t> read_data(expected_data.size());
-  EXPECT_EQ(static_cast<int>(expected_data.size()),
-            file.Read(0, reinterpret_cast<char*>(read_data.data()),
-                      expected_data.size()));
+  EXPECT_TRUE(file.ReadAndCheck(0, read_data));
   EXPECT_EQ(expected_data, read_data);
 }
 

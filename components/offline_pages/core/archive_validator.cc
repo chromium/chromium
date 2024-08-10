@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -63,18 +64,18 @@ std::pair<int64_t, std::string> ArchiveValidator::GetSizeAndComputeDigest(
   const int kMaxBufferSize = 1024;
   std::vector<char> buffer(kMaxBufferSize);
   int64_t total_read = 0LL;
-  int bytes_read;
-  do {
-    bytes_read = file.ReadAtCurrentPos(buffer.data(), kMaxBufferSize);
-    if (bytes_read > 0) {
-      total_read += bytes_read;
-      archive_validator.Update(buffer.data(), bytes_read);
+  while (true) {
+    std::optional<size_t> bytes_read =
+        file.ReadAtCurrentPos(base::as_writable_byte_span(buffer));
+    if (!bytes_read.has_value()) {
+      return {0LL, std::string()};
     }
-  } while (bytes_read > 0);
-  if (bytes_read < 0)
-    return std::make_pair(0LL, std::string());
-
-  return std::make_pair(total_read, archive_validator.Finish());
+    if (bytes_read.value() == 0) {
+      return {total_read, archive_validator.Finish()};
+    }
+    total_read += bytes_read.value();
+    archive_validator.Update(buffer.data(), bytes_read.value());
+  }
 }
 
 // static

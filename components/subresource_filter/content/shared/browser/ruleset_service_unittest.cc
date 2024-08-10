@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -88,9 +89,7 @@ std::unique_ptr<ScopedFunctionOverride<Fun>> OverrideFunctionForScope(
 std::vector<uint8_t> ReadFileContentsToVector(base::File* file) {
   size_t length = base::checked_cast<size_t>(file->GetLength());
   std::vector<uint8_t> contents(length);
-  static_assert(sizeof(uint8_t) == sizeof(char), "Expected char = byte.");
-  file->Read(0, reinterpret_cast<char*>(contents.data()),
-             base::checked_cast<int>(length));
+  file->Read(0, contents);
   return contents;
 }
 
@@ -436,7 +435,7 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
   void AssertReadonlyRulesetFile(base::File* file) {
     const char kTest[] = "t";
     ASSERT_TRUE(file->IsValid());
-    ASSERT_EQ(-1, file->Write(0, kTest, sizeof(kTest)));
+    ASSERT_FALSE(file->Write(0, base::as_byte_span(kTest)).has_value());
   }
 
   base::TestSimpleTaskRunner* blocking_task_runner() const {

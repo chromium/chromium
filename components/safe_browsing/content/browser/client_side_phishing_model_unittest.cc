@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -457,8 +458,8 @@ TEST_F(ClientSidePhishingModelTest, NotifiesForFile) {
   base::File file(file_path, base::File::FLAG_OPEN_ALWAYS |
                                  base::File::FLAG_READ |
                                  base::File::FLAG_WRITE);
-  const std::string file_contents = "visual model file";
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  const std::string_view file_contents = "visual model file";
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   const std::string model_str = CreateFlatBufferString();
   service()->SetModelStringForTesting(model_str, std::move(file));
@@ -507,8 +508,8 @@ TEST_F(ClientSidePhishingModelTest, DoesNotNotifyOnBadFollowingUpdate) {
   base::File file(file_path, base::File::FLAG_OPEN_ALWAYS |
                                  base::File::FLAG_READ |
                                  base::File::FLAG_WRITE);
-  const std::string file_contents = "visual model file";
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  const std::string_view file_contents = "visual model file";
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   const std::string model_str = CreateFlatBufferString();
   service()->SetModelStringForTesting(model_str, std::move(file));
@@ -572,7 +573,7 @@ TEST_F(ClientSidePhishingModelTest, CanOverrideFlatBufferWithFlag) {
                       base::File::FLAG_WRITE);
 
   const std::string file_contents = CreateFlatBufferString();
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   base::RunLoop run_loop;
   bool called = false;
@@ -621,8 +622,8 @@ TEST_F(ClientSidePhishingModelTest, AcceptsValidFlatbuffer) {
   base::File file(file_path, base::File::FLAG_OPEN_ALWAYS |
                                  base::File::FLAG_READ |
                                  base::File::FLAG_WRITE);
-  const std::string file_contents = "visual model file";
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  const std::string_view file_contents = "visual model file";
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
   service()->SetModelStringForTesting(model_str, std::move(file));
   run_loop.Run();
 
@@ -652,8 +653,8 @@ TEST_F(ClientSidePhishingModelTest, FlatbufferOnFollowingUpdate) {
   base::File file(file_path, base::File::FLAG_OPEN_ALWAYS |
                                  base::File::FLAG_READ |
                                  base::File::FLAG_WRITE);
-  const std::string file_contents = "visual model file";
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  const std::string_view file_contents = "visual model file";
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
   service()->SetModelStringForTesting(model_str1, std::move(file));
 
   run_loop.RunUntilIdle();
@@ -687,8 +688,8 @@ TEST_F(ClientSidePhishingModelTest, FlatbufferOnFollowingUpdate) {
   base::File file2(file_path2, base::File::FLAG_OPEN_ALWAYS |
                                    base::File::FLAG_READ |
                                    base::File::FLAG_WRITE);
-  const std::string file_contents2 = "visual model file";
-  file2.WriteAtCurrentPos(file_contents2.data(), file_contents2.size());
+  const std::string_view file_contents2 = "visual model file";
+  file2.WriteAtCurrentPos(base::as_byte_span(file_contents2));
   service()->SetModelStringForTesting(model_str2, std::move(file2));
 
   run_loop.RunUntilIdle();

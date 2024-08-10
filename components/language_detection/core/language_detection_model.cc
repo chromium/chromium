@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -147,9 +148,8 @@ void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
 #endif
   {
     std::string file_content(model_file.GetLength(), '\0');
-    int bytes_read =
-        model_file.Read(0, std::data(file_content), model_file.GetLength());
-    if (bytes_read != model_file.GetLength()) {
+    if (!model_file.ReadAndCheck(0,
+                                 base::as_writable_byte_span(file_content))) {
       return;
     }
     *options.mutable_base_options()

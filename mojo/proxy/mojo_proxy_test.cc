@@ -16,6 +16,7 @@
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -72,8 +73,9 @@ base::FilePath GetProxyExecutablePath() {
 std::string ReadWholeFile(base::File& file) {
   auto size = base::checked_cast<size_t>(file.GetLength());
   std::vector<char> contents(size);
-  int64_t num_bytes_read = file.Read(0, contents.data(), size);
-  CHECK_EQ(size, base::checked_cast<size_t>(num_bytes_read));
+  std::optional<size_t> num_bytes_read =
+      file.Read(0, base::as_writable_byte_span(contents));
+  CHECK_EQ(size, num_bytes_read.value());
   return std::string{contents.begin(), contents.end()};
 }
 
@@ -118,7 +120,7 @@ class TempFileFactory {
     uint32_t flags = base::File::FLAG_CREATE | base::File::FLAG_READ |
                      base::File::FLAG_WRITE;
     base::File new_file{temp_dir_.GetPath().AppendASCII(name), flags};
-    new_file.Write(0, contents.data(), contents.size());
+    new_file.Write(0, base::as_byte_span(contents));
     return new_file;
   }
 

@@ -252,7 +252,7 @@ class BlobBuilderFromStream::WritePipeToFileHelper
 
   bool Populate(base::span<const char> data,
                 uint64_t bytes_previously_written) override {
-    return file_.WriteAtCurrentPos(data.data(), data.size()) >= 0;
+    return file_.WriteAtCurrentPos(base::as_bytes(data)).has_value();
   }
 
   void InvokeDone(mojo::ScopedDataPipeConsumerHandle pipe,

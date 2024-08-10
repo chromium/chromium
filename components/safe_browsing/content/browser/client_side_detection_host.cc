@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -88,9 +89,7 @@ void WriteFeaturesToDisk(const ClientPhishingRequest& features,
   if (!file.IsValid()) {
     return;
   }
-  std::string serialized_features = features.SerializeAsString();
-  file.WriteAtCurrentPos(serialized_features.data(),
-                         serialized_features.size());
+  file.WriteAtCurrentPos(base::as_byte_span(features.SerializeAsString()));
 }
 
 bool HasDebugFeatureDirectory() {

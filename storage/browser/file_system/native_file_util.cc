@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/time/time.h"
@@ -83,17 +84,22 @@ bool CopyFileAndSync(const base::FilePath& from, const base::FilePath& to) {
   std::vector<char> buffer(kBufferSize);
 
   for (;;) {
-    int bytes_read = infile.ReadAtCurrentPos(&buffer[0], kBufferSize);
-    if (bytes_read < 0)
+    std::optional<size_t> bytes_read =
+        infile.ReadAtCurrentPos(base::as_writable_byte_span(buffer));
+    if (!bytes_read.has_value()) {
       return false;
-    if (bytes_read == 0)
+    }
+    if (bytes_read.value() == 0) {
       break;
-    for (int bytes_written = 0; bytes_written < bytes_read;) {
-      int bytes_written_partial = outfile.WriteAtCurrentPos(
-          &buffer[bytes_written], bytes_read - bytes_written);
-      if (bytes_written_partial < 0)
+    }
+    auto span_to_write = base::as_byte_span(buffer).first(bytes_read.value());
+    while (!span_to_write.empty()) {
+      std::optional<size_t> bytes_written_partial =
+          outfile.WriteAtCurrentPos(span_to_write);
+      if (!bytes_written_partial.has_value()) {
         return false;
-      bytes_written += bytes_written_partial;
+      }
+      span_to_write = span_to_write.subspan(bytes_written_partial.value());
     }
   }
 

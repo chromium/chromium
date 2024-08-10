@@ -103,9 +103,7 @@ class DataPipeProducerTest : public testing::Test {
         base::StringPrintf("tmp%d", tmp_file_id_++));
     base::File temp_file(temp_file_path,
                          base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-    int bytes_written = temp_file.WriteAtCurrentPos(
-        contents.data(), static_cast<int>(contents.size()));
-    CHECK_EQ(static_cast<int>(contents.size()), bytes_written);
+    CHECK(temp_file.WriteAtCurrentPosAndCheck(base::as_byte_span(contents)));
     return temp_file_path;
   }
 

@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/platform_file.h"
 #include "base/files/scoped_temp_dir.h"
@@ -115,8 +116,7 @@ class PlatformHandleTest : public testing::Test,
     base::File test_file(temp_dir_.GetPath().AppendASCII("test"),
                          base::File::FLAG_CREATE | base::File::FLAG_WRITE |
                              base::File::FLAG_READ);
-    test_file.WriteAtCurrentPos(kTestData.data(),
-                                static_cast<int>(kTestData.size()));
+    test_file.WriteAtCurrentPos(base::as_byte_span(kTestData));
 
 #if BUILDFLAG(IS_WIN)
     return PlatformHandle(
@@ -139,7 +139,7 @@ class PlatformHandleTest : public testing::Test,
     base::File file(handle.TakeFD());
 #endif
     std::vector<char> buffer(kTestData.size());
-    file.Read(0, buffer.data(), static_cast<int>(buffer.size()));
+    file.Read(0, base::as_writable_byte_span(buffer));
     std::string contents(buffer.begin(), buffer.end());
 
 // Let |handle| retain ownership.
