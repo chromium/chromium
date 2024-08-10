@@ -1,6 +1,6 @@
 {
-  "version": "40.10",
-  "log_list_timestamp": "2024-08-09T12:55:18Z",
+  "version": "41.1",
+  "log_list_timestamp": "2024-08-10T12:55:09Z",
   "operators": [
     {
       "name": "Google",
@@ -284,22 +284,6 @@
           }
         },
         {
-          "description": "DigiCert 'Wyvern2024h1' Log",
-          "log_id": "tp3cvDwave9vn9YMiLEGe3fwgmiLLXhl0Es5q+knpXU=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEaKZ5FNFY56uqKWl/YO1o6BD2B4TA+1kEWgnJHeFL+83cA/OoKka5hE1pMOwjNcGO/J+0ICTXFayH9x7BCzx2Gg==",
-          "url": "https://wyvern.ct.digicert.com/2024h1/",
-          "mmd": 86400,
-          "state": {
-            "qualified": {
-              "timestamp": "2024-06-16T01:06:40Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2024-01-01T00:00:00Z",
-            "end_exclusive": "2024-07-07T00:00:00Z"
-          }
-        },
-        {
           "description": "DigiCert 'Wyvern2024h2' Log",
           "log_id": "DCrvLEpbmIPU3aOC/lD7UYiz6XMzoexToJ3Jp50NCCA=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEqHMSnFTQen3FtRcrcVKJBJC7QvGd+BzeTM+CPL03G3RMPMejE4cBURMU2qISmITOHL7PT3rvFfrQ7u3tB61xbQ==",
@@ -345,22 +329,6 @@
           "temporal_interval": {
             "start_inclusive": "2025-07-01T00:00:00Z",
             "end_exclusive": "2026-01-07T00:00:00Z"
-          }
-        },
-        {
-          "description": "DigiCert 'Sphinx2024h1' Log",
-          "log_id": "2wds3mqLeOxY1gVklutqJqjFnnISk+isAyfd3onbWio=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAExuQpaZj+KJJXEk2e7Q7nMqLmnCd4pCl8mdXb+iLB3V6n9NjqyNdEjeDxjAoBHdgiqNPrySKONvtKsXCcXcHoMw==",
-          "url": "https://sphinx.ct.digicert.com/2024h1/",
-          "mmd": 86400,
-          "state": {
-            "qualified": {
-              "timestamp": "2024-06-16T01:06:40Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2024-01-01T00:00:00Z",
-            "end_exclusive": "2024-07-07T00:00:00Z"
           }
         },
         {
@@ -436,22 +404,6 @@
           }
         },
         {
-          "description": "Sectigo 'Sabre2024h1'",
-          "log_id": "ouK/1h7eLy8HoNZObTen3GVDsMa1LqLat4r4mm31F9g=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAELAH2zjG8qhRhUf5reoeuptObx4ctClrIT7VU3MmToADuyhy5p7Z7RzvlT6psFhxwLsjsU1pMIUx+JwsTFF78hQ==",
-          "url": "https://sabre2024h1.ct.sectigo.com/",
-          "mmd": 86400,
-          "state": {
-            "usable": {
-              "timestamp": "2023-11-26T12:00:00Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2024-01-01T00:00:00Z",
-            "end_exclusive": "2024-07-01T00:00:00Z"
-          }
-        },
-        {
           "description": "Sectigo 'Sabre2024h2'",
           "log_id": "GZgQcQnw1lIuMIDSnj9ku4NuKMz5D1KO7t/OSj8WtMo=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEehBMiucie20quo76a0qB1YWuA+//S/xNUz23jLt1CcnqFn7BdxbSwkV0bY3E4Yg339TzYGX8oHXwIGaOSswZ2g==",
@@ -497,38 +449,6 @@
           "temporal_interval": {
             "start_inclusive": "2025-07-01T00:00:00Z",
             "end_exclusive": "2026-01-01T00:00:00Z"
-          }
-        },
-        {
-          "description": "Sectigo 'Mammoth2024h1'",
-          "log_id": "KdA6G7Z0qnEc0wNbZVfBT4qni0/oOJRJ7KRT+US9JGg=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEpFmQ83EkJPfDVSdWnKNZHve3n86rThlmTdCK+p1ipCTwOyDkHRRnyPzkN/JLOFRaz59rB5DQDn49TIey6D8HzA==",
-          "url": "https://mammoth2024h1.ct.sectigo.com/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2024-01-29T00:00:00Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2024-01-01T00:00:00Z",
-            "end_exclusive": "2024-07-01T00:00:00Z"
-          }
-        },
-        {
-          "description": "Sectigo 'Mammoth2024h1b'",
-          "log_id": "UIUBWNy2BZXADpKoEQLszf4/a3hYQp9XmDU4ydpSUGM=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEo9UHKHoENK7KvoB5Tz72QfQkBOHWNloaCfLRuoQXrh6hfAAdVHOQdSGo0dpeEOGM7LKKjMjn3c3iB/BOFgJXNw==",
-          "url": "https://mammoth2024h1b.ct.sectigo.com/",
-          "mmd": 86400,
-          "state": {
-            "usable": {
-              "timestamp": "2024-04-28T16:00:00Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2024-01-01T00:00:00Z",
-            "end_exclusive": "2024-07-01T00:00:00Z"
           }
         },
         {
@@ -651,22 +571,6 @@
         "sre@letsencrypt.org"
       ],
       "logs": [
-        {
-          "description": "Let's Encrypt 'Oak2024H1' log",
-          "log_id": "O1N3dT4tuYBOizBbBv5AO2fYT8P0x70ADS1yb+H61Bc=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEVkPXfnvUcre6qVG9NpO36bWSD+pet0Wjkv3JpTyArBog7yUvuOEg96g6LgeN5uuk4n0kY59Gv5RzUo2Wrqkm/Q==",
-          "url": "https://oak.ct.letsencrypt.org/2024h1/",
-          "mmd": 86400,
-          "state": {
-            "usable": {
-              "timestamp": "2022-11-30T17:00:00Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2023-12-20T00:00:00Z",
-            "end_exclusive": "2024-07-20T00:00:00Z"
-          }
-        },
         {
           "description": "Let's Encrypt 'Oak2024H2' log",
           "log_id": "PxdLT9ciR1iUHWUchL4NEu2QN38fhWrrwb8ohez4ZG4=",
