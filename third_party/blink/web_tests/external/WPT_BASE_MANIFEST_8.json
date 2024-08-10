@@ -84751,6 +84751,32 @@
        {}
       ]
      ],
+     "box-decoration-break-clone-024.html": [
+      "a506f259dfe2d98c22910626137a701fa6974adb",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-025.html": [
+      "d1a787f6fd7d0cded0b4b847e7ee5a2bcd78d1ca",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "box-shadow-001.html": [
       "d35aeb682dcfcc77c41f8b09642b3481a4b7f39d",
       [
@@ -184681,6 +184707,32 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "fit-content-max-inline-size.tentative.html": [
+      "3333d55ba20befc05285b884648561e8fd64a41c",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "fit-content-min-inline-size.tentative.html": [
+      "46e2d5d127338fce204f7ed692954bef7e626695",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
          "=="
         ]
        ],
@@ -372569,10 +372621,6 @@
         "be8175e61d48282f046f4747abc1be8709301e0f",
         []
        ],
-       "the-anchor-attribute-xml.tentative-expected.txt": [
-        "442e5308b415d95d554fffc1edfaff132c6cf960",
-        []
-       ],
        "the-lang-attribute-003.html.headers": [
         "0c47ecd4fa74391ca96aba69cb030ca488f6b266",
         []
@@ -379482,7 +379530,7 @@
         []
        ],
        "checkable-active-onblur-with-click-expected.txt": [
-        "56385560f8e976d9da48d688ff34b3671956cccd",
+        "6bdf189cb34338e3794f2ca3acfb234c68eb4b0f",
         []
        ],
        "checkable-active-space-key-being-disabled-expected.txt": [
@@ -385489,7 +385537,7 @@
      []
     ],
     "META.yml": [
-     "c1dd8dddf9eec3ab3fb58df01c549c251f3a3fdf",
+     "94e06fb1ce5df88c5210a7b431d3e8750201e639",
      []
     ],
     "OES_draw_buffers_indexed.idl": [
@@ -412478,14 +412526,6 @@
       []
      ]
     },
-    "idlharness.any.sharedworker-expected.txt": [
-     "44f3d59ad6d057d6189bb0a2255cd2b3d0048a4a",
-     []
-    ],
-    "idlharness.any.worker-expected.txt": [
-     "44f3d59ad6d057d6189bb0a2255cd2b3d0048a4a",
-     []
-    ],
     "open-during-abort-processing-expected.txt": [
      "7d2f149d811d4792676945d5f223047a7887113f",
      []
@@ -412990,10 +413030,6 @@
     ],
     "responseType-document-in-worker-expected.txt": [
      "6a8112b3beeea70511e855e69b468182a9c11028",
-     []
-    ],
-    "responseXML-unavailable-in-worker-expected.txt": [
-     "cebf55d0aa81cb79b89a006f951968cb5056cbdd",
      []
     ],
     "responsetype.any.worker-expected.txt": [
@@ -581012,8 +581048,15 @@
          {}
         ]
        ],
+       "the-anchor-attribute-004.tentative.html": [
+        "388e7177662159488b4070c3493aab93fc2ac36f",
+        [
+         null,
+         {}
+        ]
+       ],
        "the-anchor-attribute-xml.tentative.html": [
-        "c5e6d81826dea22d7eb96d659ac7d55782e4390f",
+        "6e06052988729721dd1c9e9f86c7705d187868f2",
         [
          null,
          {}
@@ -593324,6 +593367,15 @@
          {}
         ]
        ],
+       "control-active-with-multiple-clicks.html": [
+        "1b5c6a3b9398bb708a8445c579b3bf95140760a5",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "forward-focus-to-associated-element.html": [
         "86e3f652af0fb2b21d65d79da0c81a3e1daefdaa",
         [
@@ -593796,6 +593848,13 @@
           {
            "testdriver": true
           }
+         ]
+        ],
+        "selectedoptionelement-attr.tentative.html": [
+         "63b4af3abc8bf7b40c68295fe3d0ff6139c2229a",
+         [
+          null,
+          {}
          ]
         ]
        }
@@ -689911,7 +689970,7 @@
       ]
      ],
      "buffer.https.any.js": [
-      "2242ccdc7a02d7b738be47ece400615d62dd4cb4",
+      "75992f5de85f36972285c1b37b62b0e3134261ee",
       [
        "webnn/conformance_tests/buffer.https.any.html?cpu",
        {
@@ -690114,6 +690173,249 @@
       ],
       [
        "webnn/conformance_tests/buffer.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API buffer operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "byob_readbuffer.https.any.js": [
+      "3b9546c50f0c63da99f0ae4db328f120ad09a8bd",
+      [
+       "webnn/conformance_tests/byob_readbuffer.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API buffer operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/byob_readbuffer.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API buffer operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/byob_readbuffer.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API buffer operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/byob_readbuffer.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API buffer operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/byob_readbuffer.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API buffer operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/byob_readbuffer.https.any.worker.html?npu",
        {
         "script_metadata": [
          [
