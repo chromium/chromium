@@ -110,11 +110,11 @@ constexpr char kManifestTemplate[] = R"(
       "key": "%s",
       "name": "Enterprise Private Reporting API Test",
       "version": "0.1",
-      "manifest_version": 2,
+      "manifest_version": 3,
       "permissions": [
           "enterprise.reportingPrivate"
       ],
-      "background": { "scripts": ["background.js"] }
+      "background": { "service_worker": "background.js" }
     })";
 
 }  // namespace
