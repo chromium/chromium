@@ -5,6 +5,7 @@
 #ifndef UI_COMPOSITOR_PAINT_RECORDER_H_
 #define UI_COMPOSITOR_PAINT_RECORDER_H_
 
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "cc/paint/record_paint_canvas.h"
@@ -32,7 +33,8 @@ class COMPOSITOR_EXPORT PaintRecorder {
                 const gfx::Size& recording_size,
                 float recording_scale_x,
                 float recording_scale_y,
-                PaintCache* cache);
+                PaintCache* cache,
+                const base::Location& from_here = FROM_HERE);
   PaintRecorder(const PaintContext& context, const gfx::Size& recording_size);
 
   PaintRecorder(const PaintRecorder&) = delete;

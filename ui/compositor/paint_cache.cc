@@ -4,6 +4,7 @@
 
 #include "ui/compositor/paint_cache.h"
 
+#include "base/location.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "ui/compositor/paint_context.h"
@@ -30,6 +31,15 @@ void PaintCache::SetPaintRecord(cc::PaintRecord record,
                                 float device_scale_factor) {
   record_ = std::move(record);
   device_scale_factor_ = device_scale_factor;
+}
+
+void PaintCache::SetPaintRecorderLocation(const base::Location& location) {
+  if (recorder_location_.has_value()) {
+    DCHECK_EQ(*recorder_location_, location)
+        << "ui::PaintCache should not be reused by multiple paint recorders";
+  } else {
+    recorder_location_ = location;
+  }
 }
 
 }  // namespace ui
