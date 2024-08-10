@@ -13,12 +13,14 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_handle.h"
@@ -45,6 +47,11 @@ struct DnsConfigOverrides;
 class HostResolverManager;
 class NetLog;
 class URLRequestContext;
+
+template <typename T>
+concept HasConnectionEndpointMetadata = requires(T t) {
+  { t.metadata } -> std::same_as<ConnectionEndpointMetadata&>;
+};
 
 // This class represents the task of resolving hostnames (or IP address
 // literal) to an AddressList object (or other DNS-style results).
@@ -589,9 +596,24 @@ class NET_EXPORT HostResolver {
 
   // Returns whether there is at least one protocol endpoint in `endpoints`, and
   // all such endpoints have ECH parameters. This can be used to implement the
-  // guidance in section 10.1 of draft-ietf-dnsop-svcb-https-11.
-  static bool AllProtocolEndpointsHaveEch(
-      base::span<const HostResolverEndpointResult> endpoints);
+  // guidance in section 3 of RFC9460.
+  template <typename T>
+  static bool AllProtocolEndpointsHaveEch(base::span<const T> endpoints)
+    requires HasConnectionEndpointMetadata<T>
+  {
+    bool has_svcb = false;
+    for (const auto& endpoint : endpoints) {
+      if (!endpoint.metadata.supported_protocol_alpns.empty()) {
+        has_svcb = true;
+        if (endpoint.metadata.ech_config_list.empty()) {
+          return false;  // There is a non-ECH SVCB/HTTPS route.
+        }
+      }
+    }
+    // Either there were no SVCB/HTTPS records (should be SVCB-optional), or
+    // there were and all supported ECH (should be SVCB-reliant).
+    return has_svcb;
+  }
 
   // Returns true if NAT64 can be used in place of an IPv4 address during host
   // resolution.
