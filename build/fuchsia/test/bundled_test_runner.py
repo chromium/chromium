@@ -70,7 +70,7 @@ class _BundledTestRunner(TestRunner):
                                                test.args.split(), test.package,
                                                self._target_id, None,
                                                self._logs_dir, [], None)
-            # It's a little bit wasteful to resolve allthe packages once per
+            # It's a little bit wasteful to resolve all the packages once per
             # test package, but it's easier.
             # pylint: disable=protected-access
             test_runner._package_deps = self._package_deps
@@ -81,15 +81,11 @@ class _BundledTestRunner(TestRunner):
         return CompletedProcess(args='', returncode=returncode)
 
 
-def run_tests(package_deps: List[str],
-              tests: List[TestCase],
-              logs_dir: str = '/tmp/log') -> int:
+def run_tests(tests: List[TestCase]) -> int:
     """Runs multiple tests.
 
        Args:
-         package_deps: Extra far files needed by the tests.
          tests: The definition of each test case.
-         logs_dir: The location for logs.
 
        Note:
          All the packages in tests will always be included, and it's expected
@@ -97,13 +93,12 @@ def run_tests(package_deps: List[str],
          except for the suffix. E.g. test1.far is the far file of
          fuchsia-pkg://fuchsia.com/test1#meta/some.cm.
 
-         Duplicated packages in either package_deps or tests are allowed as long
+         Duplicated packages in either --packages or tests are allowed as long
          as they are targeting the same file; otherwise the test run would
          trigger an assertion failure.
 
-         Far fils in the package_deps can be either absolute paths or relative
-         paths starting from --out-dir.
-    """
+         Far files in the --packages can be either absolute paths or relative
+         paths starting from --out-dir."""
     # The 'bundled-tests' is a place holder and has no specific meaning; the
     # run_test._get_test_runner is overridden.
     sys.argv.append('bundled-tests')
@@ -111,7 +106,8 @@ def run_tests(package_deps: List[str],
     def get_test_runner(runner_args: argparse.Namespace, *_) -> TestRunner:
         # test_args are not used, and each TestCase should have its own args.
         return _BundledTestRunner(runner_args.out_dir, runner_args.target_id,
-                                  package_deps, tests, logs_dir)
+                                  runner_args.packages, tests,
+                                  runner_args.logs_dir)
 
     # pylint: disable=protected-access
     run_test._get_test_runner = get_test_runner

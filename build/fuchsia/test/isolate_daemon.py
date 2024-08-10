@@ -23,7 +23,9 @@ class IsolateDaemon(AbstractContextManager):
     class IsolateDir(AbstractContextManager):
         """Sets up the ffx isolate dir to a temporary folder if it's not set."""
         def __init__(self):
-            if not has_ffx_isolate_dir():
+            if has_ffx_isolate_dir():
+                self._temp_dir = None
+            else:
                 self._temp_dir = tempfile.TemporaryDirectory()
 
         def __enter__(self):
