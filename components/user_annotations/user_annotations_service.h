@@ -15,6 +15,7 @@ class FormData;
 
 namespace optimization_guide::proto {
 class AXTreeUpdate;
+class UserAnnotationsEntry;
 }  // namespace optimization_guide::proto
 
 namespace user_annotations {
@@ -35,7 +36,9 @@ class UserAnnotationsService : public KeyedService {
 
   // Retrieves all entries from the database. Invokes `callback` when complete.
   void RetrieveAllEntries(
-      base::OnceCallback<void(std::vector<Entry>)> callback);
+      base::OnceCallback<
+          void(std::vector<optimization_guide::proto::UserAnnotationsEntry>)>
+          callback);
 
   // KeyedService:
   void Shutdown() override;

@@ -14,6 +14,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/user_annotations/user_annotations_features.h"
 #include "components/user_annotations/user_annotations_types.h"
 #include "content/public/test/browser_test.h"
@@ -148,7 +149,9 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest, FormSubmissionFlow) {
   histogram_tester.ExpectUniqueSample("UserAnnotations.DidAddFormSubmission",
                                       true, 1);
 
-  base::test::TestFuture<std::vector<Entry>> test_future;
+  base::test::TestFuture<
+      std::vector<optimization_guide::proto::UserAnnotationsEntry>>
+      test_future;
   service()->RetrieveAllEntries(test_future.GetCallback());
 
   auto entries = test_future.Take();

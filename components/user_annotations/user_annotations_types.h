@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_TYPES_H_
 #define COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_TYPES_H_
 
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+
 namespace user_annotations {
 
 typedef int64_t EntryID;
@@ -14,11 +16,8 @@ struct Entry {
   // immutable except when retrieving the row from the database.
   EntryID entry_id;
 
-  // The key for this entry. Not necessarily unique.
-  std::u16string key;
-
-  // The value for this entry.
-  std::u16string value;
+  // The proto for this entry.
+  optimization_guide::proto::UserAnnotationsEntry entry_proto;
 };
 
 }  // namespace user_annotations
