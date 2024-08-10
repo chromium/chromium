@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] gruCell float32 tensors with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and and options.layout='rzn'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': DirectML: The gru weight layout (rzn) is not supported."
+Harness: the test ran to completion.
+
