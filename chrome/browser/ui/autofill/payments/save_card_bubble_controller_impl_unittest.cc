@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/manage_cards_prompt_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -53,6 +54,8 @@ namespace autofill {
 namespace {
 
 const base::Time kArbitraryTime = base::Time::FromTimeT(1234567890);
+using SaveCreditCardOptions =
+    payments::PaymentsAutofillClient::SaveCreditCardOptions;
 
 std::unique_ptr<KeyedService> BuildTestPersonalDataManager(
     content::BrowserContext* context) {
@@ -248,10 +251,9 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
     return GetAutofillBubbleHandler()->is_confirmation_bubble_visible();
   }
 
-  void SetLegalMessage(
-      const std::string& message_json,
-      AutofillClient::SaveCreditCardOptions options =
-          AutofillClient::SaveCreditCardOptions().with_show_prompt()) {
+  void SetLegalMessage(const std::string& message_json,
+                       SaveCreditCardOptions options =
+                           SaveCreditCardOptions().with_show_prompt()) {
     std::optional<base::Value> value(base::JSONReader::Read(message_json));
     ASSERT_TRUE(value);
     ASSERT_TRUE(value->is_dict());
@@ -262,19 +264,17 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
                                   base::BindOnce(&UploadSaveCardCallback));
   }
 
-  void ShowLocalBubble(
-      CreditCard* card = nullptr,
-      AutofillClient::SaveCreditCardOptions options =
-          AutofillClient::SaveCreditCardOptions().with_show_prompt()) {
+  void ShowLocalBubble(CreditCard* card = nullptr,
+                       SaveCreditCardOptions options =
+                           SaveCreditCardOptions().with_show_prompt()) {
     controller()->OfferLocalSave(
         card ? CreditCard(*card)
              : autofill::test::GetCreditCard(),  // Visa by default
         options, base::BindOnce(&LocalSaveCardCallback));
   }
 
-  void ShowUploadBubble(
-      AutofillClient::SaveCreditCardOptions options =
-          AutofillClient::SaveCreditCardOptions().with_show_prompt()) {
+  void ShowUploadBubble(SaveCreditCardOptions options =
+                            SaveCreditCardOptions().with_show_prompt()) {
     if (options.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly) {
       SetLegalMessage("{}", options);
       return;
@@ -377,7 +377,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
 
 TEST_F(SaveCardBubbleControllerImplTest,
        PropagateShouldRequestNameFromUserWhenTrue) {
-  ShowUploadBubble(AutofillClient::SaveCreditCardOptions()
+  ShowUploadBubble(SaveCreditCardOptions()
                        .with_should_request_name_from_user(true)
                        .with_show_prompt());
   EXPECT_TRUE(controller()->ShouldRequestNameFromUser());
@@ -385,7 +385,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
 
 TEST_F(SaveCardBubbleControllerImplTest,
        PropagateShouldRequestExpirationDateFromUserWhenFalse) {
-  ShowUploadBubble(AutofillClient::SaveCreditCardOptions()
+  ShowUploadBubble(SaveCreditCardOptions()
                        .with_should_request_name_from_user(true)
                        .with_show_prompt());
 
@@ -394,7 +394,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
 
 TEST_F(SaveCardBubbleControllerImplTest,
        PropagateShouldRequestExpirationDateFromUserWhenTrue) {
-  ShowUploadBubble(AutofillClient::SaveCreditCardOptions()
+  ShowUploadBubble(SaveCreditCardOptions()
                        .with_should_request_name_from_user(true)
                        .with_should_request_expiration_date_from_user(true)
                        .with_show_prompt());
@@ -452,8 +452,7 @@ TEST_P(SaveCreditCardPromptResultMetricTest,
   base::HistogramTester histogram_tester;
   ShowLocalBubble(
       /*card=*/nullptr,
-      /*options=*/AutofillClient::SaveCreditCardOptions().with_show_prompt(
-          true));
+      /*options=*/SaveCreditCardOptions().with_show_prompt(true));
   if (closed_reason_ == PaymentsBubbleClosedReason::kAccepted) {
     controller()->OnSaveButton({});
   }
@@ -474,8 +473,7 @@ TEST_P(SaveCreditCardPromptResultMetricTest,
        EmitsSavePromptResultUploadHasNoCards) {
   personal_data_manager()->test_payments_data_manager().ClearCreditCards();
   base::HistogramTester histogram_tester;
-  ShowUploadBubble(
-      AutofillClient::SaveCreditCardOptions().with_show_prompt(true));
+  ShowUploadBubble(SaveCreditCardOptions().with_show_prompt(true));
   if (closed_reason_ == PaymentsBubbleClosedReason::kAccepted) {
     controller()->OnSaveButton({});
   }
@@ -500,8 +498,7 @@ TEST_P(SaveCreditCardPromptResultMetricTest,
   base::HistogramTester histogram_tester;
   ShowLocalBubble(
       /*card=*/nullptr,
-      /*options=*/AutofillClient::SaveCreditCardOptions().with_show_prompt(
-          true));
+      /*options=*/SaveCreditCardOptions().with_show_prompt(true));
   if (closed_reason_ == PaymentsBubbleClosedReason::kAccepted) {
     controller()->OnSaveButton({});
   }
@@ -523,8 +520,7 @@ TEST_P(SaveCreditCardPromptResultMetricTest,
   personal_data_manager()->test_payments_data_manager().ClearCreditCards();
   AddCreditCard(test::GetCreditCard());
   base::HistogramTester histogram_tester;
-  ShowUploadBubble(
-      AutofillClient::SaveCreditCardOptions().with_show_prompt(true));
+  ShowUploadBubble(SaveCreditCardOptions().with_show_prompt(true));
   if (closed_reason_ == PaymentsBubbleClosedReason::kAccepted) {
     controller()->OnSaveButton({});
   }
@@ -623,7 +619,7 @@ class SaveCardBubbleLoggingTest
         show_type_(std::get<1>(GetParam())) {
     SaveCardOptionParam save_card_option_param = std::get<2>(GetParam());
     save_credit_card_options_ =
-        AutofillClient::SaveCreditCardOptions()
+        SaveCreditCardOptions()
             .with_should_request_name_from_user(
                 save_card_option_param.should_request_name_from_user)
             .with_should_request_expiration_date_from_user(
@@ -665,7 +661,7 @@ class SaveCardBubbleLoggingTest
     }
   }
 
-  AutofillClient::SaveCreditCardOptions GetSaveCreditCardOptions() {
+  SaveCreditCardOptions GetSaveCreditCardOptions() {
     return save_credit_card_options_;
   }
 
@@ -700,7 +696,7 @@ class SaveCardBubbleLoggingTest
   const std::string show_type_;
 
  private:
-  AutofillClient::SaveCreditCardOptions save_credit_card_options_;
+  SaveCreditCardOptions save_credit_card_options_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -826,14 +822,14 @@ class SaveCvcBubbleLoggingTest
     ASSERT_TRUE(show_type_ == "FirstShow" || show_type_ == "Reshows");
     if (save_destination_ == "Upload") {
       ShowUploadBubble(
-          /*options=*/AutofillClient::SaveCreditCardOptions()
+          /*options=*/SaveCreditCardOptions()
               .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly)
               .with_show_prompt(show_prompt));
     } else {
       ASSERT_EQ(save_destination_, "Local");
       ShowLocalBubble(
           /*card=*/nullptr,
-          /*options=*/AutofillClient::SaveCreditCardOptions()
+          /*options=*/SaveCreditCardOptions()
               .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly)
               .with_show_prompt(show_prompt));
     }
@@ -941,7 +937,7 @@ TEST_F(SaveCardBubbleControllerImplTest, LocalCvcOnlySaveDialogContent) {
   // Show the local CVC save bubble.
   ShowLocalBubble(
       /*card=*/nullptr,
-      /*options=*/AutofillClient::SaveCreditCardOptions()
+      /*options=*/SaveCreditCardOptions()
           .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly)
           .with_show_prompt(true));
 
@@ -980,7 +976,7 @@ TEST_F(SaveCardBubbleControllerImplTest, UploadCardSaveBubbleType) {
 TEST_F(SaveCardBubbleControllerImplTest, UploadCvcOnlySaveDialogContent) {
   // Show the server CVC save bubble.
   ShowUploadBubble(
-      /*options=*/AutofillClient::SaveCreditCardOptions()
+      /*options=*/SaveCreditCardOptions()
           .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly)
           .with_show_prompt(true));
 
@@ -1000,7 +996,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   // Show the local card save bubble.
   ShowLocalBubble(
       /*card=*/nullptr,
-      /*options=*/AutofillClient::SaveCreditCardOptions().with_card_save_type(
+      /*options=*/SaveCreditCardOptions().with_card_save_type(
           AutofillClient::CardSaveType::kCardSaveOnly));
   ClickSaveButton();
   CloseAndReshowBubble();
@@ -1022,7 +1018,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   // Show the local CVC save bubble.
   ShowLocalBubble(
       /*card=*/nullptr,
-      /*options=*/AutofillClient::SaveCreditCardOptions().with_card_save_type(
+      /*options=*/SaveCreditCardOptions().with_card_save_type(
           AutofillClient::CardSaveType::kCvcSaveOnly));
   ClickSaveButton();
   CloseAndReshowBubble();
@@ -1161,7 +1157,7 @@ TEST_F(SaveCardBubbleControllerImplTestWithCvCStorageAndFilling,
   // Show the local card save bubble.
   ShowLocalBubble(
       /*card=*/nullptr,
-      /*options=*/AutofillClient::SaveCreditCardOptions()
+      /*options=*/SaveCreditCardOptions()
           .with_card_save_type(AutofillClient::CardSaveType::kCardSaveOnly)
           .with_show_prompt(true));
 
@@ -1177,7 +1173,7 @@ TEST_F(SaveCardBubbleControllerImplTestWithCvCStorageAndFilling,
   // Show the local card save with CVC bubble.
   ShowLocalBubble(
       /*card=*/nullptr,
-      /*options=*/AutofillClient::SaveCreditCardOptions()
+      /*options=*/SaveCreditCardOptions()
           .with_card_save_type(AutofillClient::CardSaveType::kCardSaveWithCvc)
           .with_show_prompt(true));
 
@@ -1193,7 +1189,7 @@ TEST_F(SaveCardBubbleControllerImplTestWithCvCStorageAndFilling,
        UploadCardSaveWithCvcDialogContent) {
   // Show the server card save with CVC bubble.
   ShowUploadBubble(
-      /*options=*/AutofillClient::SaveCreditCardOptions()
+      /*options=*/SaveCreditCardOptions()
           .with_card_save_type(AutofillClient::CardSaveType::kCardSaveWithCvc)
           .with_show_prompt(true));
 

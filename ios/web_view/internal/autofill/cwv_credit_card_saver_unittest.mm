@@ -36,7 +36,7 @@ class CWVCreditCardSaverTest : public TestWithLocaleAndResources {
 // Tests CWVCreditCardSaver properly initializes.
 TEST_F(CWVCreditCardSaverTest, Initialization) {
   autofill::CreditCard credit_card = autofill::test::GetCreditCard();
-  autofill::AutofillClient::SaveCreditCardOptions options;
+  autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions options;
   autofill::LegalMessageLines legal_message_lines = {
       autofill::TestLegalMessageLine("Test line 1",
                                      {autofill::LegalMessageLine::Link(
@@ -66,7 +66,7 @@ TEST_F(CWVCreditCardSaverTest, Initialization) {
 // Tests when user ignores credit card save.
 TEST_F(CWVCreditCardSaverTest, Ignore) {
   autofill::CreditCard credit_card = autofill::test::GetCreditCard();
-  autofill::AutofillClient::SaveCreditCardOptions options;
+  autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions options;
 
   BOOL callback_called = NO;
   autofill::payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
@@ -94,7 +94,7 @@ TEST_F(CWVCreditCardSaverTest, Ignore) {
 // Tests when user declines a save.
 TEST_F(CWVCreditCardSaverTest, Decline) {
   autofill::CreditCard credit_card = autofill::test::GetCreditCard();
-  autofill::AutofillClient::SaveCreditCardOptions options;
+  autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions options;
   autofill::payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
       local_callback;
 
@@ -123,7 +123,7 @@ TEST_F(CWVCreditCardSaverTest, Decline) {
 // Tests when user accepts a save.
 TEST_F(CWVCreditCardSaverTest, Accept) {
   autofill::CreditCard credit_card = autofill::test::GetCreditCard();
-  autofill::AutofillClient::SaveCreditCardOptions options;
+  autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions options;
 
   BOOL callback_called = NO;
   autofill::payments::PaymentsAutofillClient::UploadSaveCardPromptCallback

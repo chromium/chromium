@@ -171,49 +171,6 @@ class AutofillClient {
     kCvcSaveOnly = 2,
   };
 
-  // Used for options of upload prompt.
-  struct SaveCreditCardOptions {
-    SaveCreditCardOptions& with_should_request_name_from_user(bool b) {
-      should_request_name_from_user = b;
-      return *this;
-    }
-
-    SaveCreditCardOptions& with_should_request_expiration_date_from_user(
-        bool b) {
-      should_request_expiration_date_from_user = b;
-      return *this;
-    }
-
-    SaveCreditCardOptions& with_show_prompt(bool b = true) {
-      show_prompt = b;
-      return *this;
-    }
-
-    SaveCreditCardOptions& with_has_multiple_legal_lines(bool b = true) {
-      has_multiple_legal_lines = b;
-      return *this;
-    }
-
-    SaveCreditCardOptions&
-    with_same_last_four_as_server_card_but_different_expiration_date(bool b) {
-      has_same_last_four_as_server_card_but_different_expiration_date = b;
-      return *this;
-    }
-
-    SaveCreditCardOptions& with_card_save_type(CardSaveType b) {
-      card_save_type = b;
-      return *this;
-    }
-
-    bool should_request_name_from_user = false;
-    bool should_request_expiration_date_from_user = false;
-    bool show_prompt = false;
-    bool has_multiple_legal_lines = false;
-    bool has_same_last_four_as_server_card_but_different_expiration_date =
-        false;
-    CardSaveType card_save_type = CardSaveType::kCardSaveOnly;
-  };
-
   // TODO(crbug.com/325440757): Remove after the save-update controller
   // splitting is done or remove this TODO if a new option is added. Used for
   // options of save (and update) address profile prompt.

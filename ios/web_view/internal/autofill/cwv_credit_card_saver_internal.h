@@ -23,14 +23,14 @@ class CreditCard;
 // |saveOptions| Additional options that may apply to this save attempt.
 // |legalMessage| Contains messaging that must be displayed to the user.
 // |savePromptCallback| The callback to run when saving the card.
-- (instancetype)
-    initWithCreditCard:(const autofill::CreditCard&)creditCard
-           saveOptions:
-               (autofill::AutofillClient::SaveCreditCardOptions)saveOptions
-     legalMessageLines:(autofill::LegalMessageLines)legalMessageLines
-    savePromptCallback:
-        (autofill::payments::PaymentsAutofillClient::
-             UploadSaveCardPromptCallback)uploadSavePromptCallback
+- (instancetype)initWithCreditCard:(const autofill::CreditCard&)creditCard
+                       saveOptions:(autofill::payments::PaymentsAutofillClient::
+                                        SaveCreditCardOptions)saveOptions
+                 legalMessageLines:
+                     (autofill::LegalMessageLines)legalMessageLines
+                savePromptCallback:
+                    (autofill::payments::PaymentsAutofillClient::
+                         UploadSaveCardPromptCallback)uploadSavePromptCallback
     NS_DESIGNATED_INITIALIZER;
 
 // Called to notify when upload was completed.

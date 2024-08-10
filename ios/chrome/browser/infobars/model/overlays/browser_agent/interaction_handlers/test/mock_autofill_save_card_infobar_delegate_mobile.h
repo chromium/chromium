@@ -21,7 +21,7 @@ class MockAutofillSaveCardInfoBarDelegateMobile
     : public autofill::AutofillSaveCardInfoBarDelegateIOS {
  public:
   MockAutofillSaveCardInfoBarDelegateMobile(
-      autofill::AutofillClient::SaveCreditCardOptions options,
+      autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions options,
       const autofill::CreditCard& card,
       absl::variant<autofill::payments::PaymentsAutofillClient::
                         LocalSaveCardPromptCallback,

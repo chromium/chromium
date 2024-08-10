@@ -39,7 +39,8 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
 }  // namespace
 
 @implementation CWVCreditCardSaver {
-  autofill::AutofillClient::SaveCreditCardOptions _saveOptions;
+  autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions
+      _saveOptions;
   autofill::payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
       _saveCardCallback;
 
@@ -59,8 +60,8 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
 
 - (instancetype)
     initWithCreditCard:(const autofill::CreditCard&)creditCard
-           saveOptions:
-               (autofill::AutofillClient::SaveCreditCardOptions)saveOptions
+           saveOptions:(autofill::payments::PaymentsAutofillClient::
+                            SaveCreditCardOptions)saveOptions
      legalMessageLines:(autofill::LegalMessageLines)legalMessageLines
     savePromptCallback:(autofill::payments::PaymentsAutofillClient::
                             UploadSaveCardPromptCallback)savePromptCallback {

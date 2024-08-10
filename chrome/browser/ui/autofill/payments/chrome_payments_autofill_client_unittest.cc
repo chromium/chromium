@@ -9,9 +9,11 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -85,7 +87,7 @@ class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
   MOCK_METHOD(void,
               OfferLocalSave,
               (const CreditCard&,
-               AutofillClient::SaveCreditCardOptions,
+               payments::PaymentsAutofillClient::SaveCreditCardOptions,
                payments::PaymentsAutofillClient::LocalSaveCardPromptCallback),
               (override));
 
@@ -227,7 +229,7 @@ TEST_F(ChromePaymentsAutofillClientTest,
 
   chrome_payments_client()->ConfirmSaveCreditCardLocally(
       CreditCard(),
-      ChromeAutofillClient::SaveCreditCardOptions()
+      payments::ChromePaymentsAutofillClient::SaveCreditCardOptions()
           .with_card_save_type(AutofillClient::CardSaveType::kCardSaveOnly)
           .with_show_prompt(true),
       base::DoNothing());
@@ -248,7 +250,7 @@ TEST_F(ChromePaymentsAutofillClientTest,
 
   chrome_payments_client()->ConfirmSaveCreditCardLocally(
       CreditCard(),
-      ChromeAutofillClient::SaveCreditCardOptions()
+      payments::ChromePaymentsAutofillClient::SaveCreditCardOptions()
           .with_card_save_type(AutofillClient::CardSaveType::kCardSaveWithCvc)
           .with_show_prompt(true),
       base::DoNothing());
@@ -259,7 +261,8 @@ TEST_F(ChromePaymentsAutofillClientTest,
   EXPECT_NO_FATAL_FAILURE(
       chrome_payments_client()->ConfirmSaveCreditCardLocally(
           CreditCard(),
-          ChromeAutofillClient::SaveCreditCardOptions().with_show_prompt(true),
+          payments::ChromePaymentsAutofillClient::SaveCreditCardOptions()
+              .with_show_prompt(true),
           base::DoNothing()));
 }
 
@@ -289,7 +292,7 @@ TEST_F(
 
   chrome_payments_client()->ConfirmSaveCreditCardToCloud(
       CreditCard(), LegalMessageLines(),
-      ChromeAutofillClient::SaveCreditCardOptions()
+      payments::ChromePaymentsAutofillClient::SaveCreditCardOptions()
           .with_card_save_type(AutofillClient::CardSaveType::kCardSaveOnly)
           .with_show_prompt(true),
       base::DoNothing());
@@ -320,7 +323,7 @@ TEST_F(ChromePaymentsAutofillClientTest,
 
   chrome_payments_client()->ConfirmSaveCreditCardToCloud(
       CreditCard(), LegalMessageLines(),
-      ChromeAutofillClient::SaveCreditCardOptions()
+      payments::ChromePaymentsAutofillClient::SaveCreditCardOptions()
           .with_card_save_type(AutofillClient::CardSaveType::kCardSaveWithCvc)
           .with_show_prompt(true),
       base::DoNothing());
@@ -331,7 +334,8 @@ TEST_F(ChromePaymentsAutofillClientTest,
   EXPECT_NO_FATAL_FAILURE(
       chrome_payments_client()->ConfirmSaveCreditCardToCloud(
           CreditCard(), LegalMessageLines(),
-          ChromeAutofillClient::SaveCreditCardOptions().with_show_prompt(true),
+          payments::ChromePaymentsAutofillClient::SaveCreditCardOptions()
+              .with_show_prompt(true),
           base::DoNothing()));
 }
 
@@ -438,7 +442,8 @@ TEST_F(ChromePaymentsAutofillClientTest,
   EXPECT_CALL(save_card_bubble_controller(), OfferLocalSave);
 
   chrome_payments_client()->ConfirmSaveCreditCardLocally(
-      CreditCard(), ChromeAutofillClient::SaveCreditCardOptions(),
+      CreditCard(),
+      payments::ChromePaymentsAutofillClient::SaveCreditCardOptions(),
       base::DoNothing());
 }
 

@@ -11,6 +11,7 @@
 #include "build/branding_buildflags.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
@@ -54,7 +55,7 @@ Year SetUpNextYear() {
 }  // namespace
 
 AutofillSaveCardUiInfo AutofillSaveCardUiInfoForUploadSaveForTest(
-    AutofillClient::SaveCreditCardOptions options,
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     bool is_gpay_branded = false) {
   return AutofillSaveCardUiInfo::CreateForUploadSave(
       options, test::GetMaskedServerCard(), LegalMessageLines(), AccountInfo(),

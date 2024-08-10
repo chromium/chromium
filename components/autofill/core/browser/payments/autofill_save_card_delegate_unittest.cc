@@ -56,7 +56,7 @@ class AutofillSaveCardDelegateTest : public ::testing::Test,
   payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
   MakeUploadCallback();
   autofill::AutofillSaveCardDelegate CreateDelegate(
-      AutofillClient::SaveCreditCardOptions options = {});
+      payments::PaymentsAutofillClient::SaveCreditCardOptions options = {});
   bool IsUpload() const { return GetParam(); }
 
   std::vector<SaveCardOfferUserDecision> local_offer_decisions_;
@@ -89,7 +89,7 @@ AutofillSaveCardDelegateTest::MakeUploadCallback() {
 }
 
 autofill::AutofillSaveCardDelegate AutofillSaveCardDelegateTest::CreateDelegate(
-    AutofillClient::SaveCreditCardOptions options) {
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options) {
   if (IsUpload()) {
     return AutofillSaveCardDelegate(MakeUploadCallback(), options);
   }

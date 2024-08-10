@@ -418,7 +418,7 @@ void CreditCardSaveManager::AttemptToOfferCvcUploadSave(
   // legal_message_lines_ to optional.
   client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardToCloud(
       card_save_candidate_, legal_message_lines_,
-      AutofillClient::SaveCreditCardOptions()
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_show_prompt(show_save_prompt_.value())
           .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly),
       base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave,
@@ -712,7 +712,7 @@ void CreditCardSaveManager::OfferCardLocalSave() {
     }
     client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardLocally(
         card_save_candidate_,
-        AutofillClient::SaveCreditCardOptions()
+        payments::PaymentsAutofillClient::SaveCreditCardOptions()
             // TODO(crbug.com/40280819): Refactor SaveCreditCardOptions.
             .with_show_prompt(show_save_prompt_.value_or(true))
             .with_card_save_type(card_save_type),
@@ -728,7 +728,7 @@ void CreditCardSaveManager::OfferCardLocalSave() {
 void CreditCardSaveManager::OfferCvcLocalSave() {
   client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardLocally(
       card_save_candidate_,
-      AutofillClient::SaveCreditCardOptions()
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_show_prompt(show_save_prompt_.value_or(false))
           .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly),
       base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnCvcLocalSave,
@@ -768,7 +768,7 @@ void CreditCardSaveManager::OfferCardUploadSave() {
     }
     client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardToCloud(
         upload_request_.card, legal_message_lines_,
-        AutofillClient::SaveCreditCardOptions()
+        payments::PaymentsAutofillClient::SaveCreditCardOptions()
             .with_has_multiple_legal_lines(legal_message_lines_.size() > 1)
             .with_should_request_name_from_user(should_request_name_from_user_)
             .with_should_request_expiration_date_from_user(

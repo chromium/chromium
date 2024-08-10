@@ -22,7 +22,7 @@ class AutofillSaveCardDelegate {
           payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
           payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
           save_card_callback,
-      AutofillClient::SaveCreditCardOptions options);
+      payments::PaymentsAutofillClient::SaveCreditCardOptions options);
 
   virtual ~AutofillSaveCardDelegate();
 
@@ -75,7 +75,7 @@ class AutofillSaveCardDelegate {
   // If the cardholder name is missing, request the name from the user before
   // saving the card. If the expiration date is missing, request the missing
   // data from the user before saving the card.
-  AutofillClient::SaveCreditCardOptions options_;
+  payments::PaymentsAutofillClient::SaveCreditCardOptions options_;
 
   // Did the user ever explicitly accept or dismiss this UI?
   bool had_user_interaction_;

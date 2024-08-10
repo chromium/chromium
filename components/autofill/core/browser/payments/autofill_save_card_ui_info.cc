@@ -6,7 +6,9 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -24,7 +26,7 @@ AutofillSaveCardUiInfo& AutofillSaveCardUiInfo::operator=(
     AutofillSaveCardUiInfo&& other) = default;
 
 static std::u16string GetConfirmButtonText(
-    const AutofillClient::SaveCreditCardOptions& options) {
+    const payments::PaymentsAutofillClient::SaveCreditCardOptions& options) {
   // Requesting name or expiration date from the user makes the save prompt
   // a 2-step fix flow.
   bool prompt_continue = options.should_request_name_from_user ||
@@ -112,7 +114,7 @@ static AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(
 
 // static
 AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
-    AutofillClient::SaveCreditCardOptions options,
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     const CreditCard& card) {
   int save_card_icon_id;
   int save_card_prompt_title_id;
@@ -168,7 +170,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
 
 // static
 AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
-    AutofillClient::SaveCreditCardOptions options,
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,
     const AccountInfo& displayed_target_account) {
@@ -179,7 +181,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
 
 // static
 AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
-    AutofillClient::SaveCreditCardOptions options,
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,
     const AccountInfo& displayed_target_account,

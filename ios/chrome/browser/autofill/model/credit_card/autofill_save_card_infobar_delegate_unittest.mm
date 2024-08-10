@@ -63,7 +63,8 @@ class AutofillSaveCardInfoBarDelegateTest : public PlatformTest {
           payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
           save_card_callback) {
     auto save_card_delegate = std::make_unique<AutofillSaveCardDelegate>(
-        std::move(save_card_callback), AutofillClient::SaveCreditCardOptions());
+        std::move(save_card_callback),
+        payments::PaymentsAutofillClient::SaveCreditCardOptions());
     return std::make_unique<AutofillSaveCardInfoBarDelegateIOS>(
         AutofillSaveCardUiInfo(), std::move(save_card_delegate));
   }

@@ -16,7 +16,7 @@ AutofillSaveCardDelegateAndroid::AutofillSaveCardDelegateAndroid(
         payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
         payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
         callback,
-    AutofillClient::SaveCreditCardOptions options,
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     content::WebContents* web_contents)
     : AutofillSaveCardDelegate(std::move(callback), options) {
   device_lock_bridge_ = std::make_unique<DeviceLockBridge>();

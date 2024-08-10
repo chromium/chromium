@@ -133,7 +133,7 @@ SaveCardBubbleController* SaveCardBubbleController::Get(
 
 void SaveCardBubbleControllerImpl::OfferLocalSave(
     const CreditCard& card,
-    AutofillClient::SaveCreditCardOptions options,
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
         save_card_prompt_callback) {
   // If the confirmation view is still showing, close it before showing the new
@@ -167,7 +167,7 @@ void SaveCardBubbleControllerImpl::OfferLocalSave(
 void SaveCardBubbleControllerImpl::OfferUploadSave(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,
-    AutofillClient::SaveCreditCardOptions options,
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
         save_card_prompt_callback) {
   // If the confirmation view is still showing, close it before showing the new

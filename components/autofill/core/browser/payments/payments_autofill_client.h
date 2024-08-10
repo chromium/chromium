@@ -122,6 +122,50 @@ class PaymentsAutofillClient : public RiskDataLoader {
     kFido = 2,
   };
 
+  // Used for options of upload prompt.
+  struct SaveCreditCardOptions {
+    SaveCreditCardOptions& with_should_request_name_from_user(bool b) {
+      should_request_name_from_user = b;
+      return *this;
+    }
+
+    SaveCreditCardOptions& with_should_request_expiration_date_from_user(
+        bool b) {
+      should_request_expiration_date_from_user = b;
+      return *this;
+    }
+
+    SaveCreditCardOptions& with_show_prompt(bool b = true) {
+      show_prompt = b;
+      return *this;
+    }
+
+    SaveCreditCardOptions& with_has_multiple_legal_lines(bool b = true) {
+      has_multiple_legal_lines = b;
+      return *this;
+    }
+
+    SaveCreditCardOptions&
+    with_same_last_four_as_server_card_but_different_expiration_date(bool b) {
+      has_same_last_four_as_server_card_but_different_expiration_date = b;
+      return *this;
+    }
+
+    SaveCreditCardOptions& with_card_save_type(AutofillClient::CardSaveType b) {
+      card_save_type = b;
+      return *this;
+    }
+
+    bool should_request_name_from_user = false;
+    bool should_request_expiration_date_from_user = false;
+    bool show_prompt = false;
+    bool has_multiple_legal_lines = false;
+    bool has_same_last_four_as_server_card_but_different_expiration_date =
+        false;
+    AutofillClient::CardSaveType card_save_type =
+        AutofillClient::CardSaveType::kCardSaveOnly;
+  };
+
   // Callback to run if user presses the Save button in the migration dialog.
   // Will pass a vector of GUIDs of cards that the user selected to upload to
   // LocalCardMigrationManager.
@@ -263,7 +307,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // is true; otherwise does not offer to save at all.
   virtual void ConfirmSaveCreditCardLocally(
       const CreditCard& card,
-      AutofillClient::SaveCreditCardOptions options,
+      SaveCreditCardOptions options,
       LocalSaveCardPromptCallback callback);
 
   // Runs `callback` once the user makes a decision with respect to the
@@ -282,7 +326,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual void ConfirmSaveCreditCardToCloud(
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
-      AutofillClient::SaveCreditCardOptions options,
+      SaveCreditCardOptions options,
       UploadSaveCardPromptCallback callback);
 
   // Shows upload result to users. Called after credit card upload is finished.

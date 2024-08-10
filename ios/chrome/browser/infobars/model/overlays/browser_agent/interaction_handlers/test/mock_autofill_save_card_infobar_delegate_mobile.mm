@@ -16,7 +16,8 @@
 
 MockAutofillSaveCardInfoBarDelegateMobile::
     MockAutofillSaveCardInfoBarDelegateMobile(
-        autofill::AutofillClient::SaveCreditCardOptions options,
+        autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions
+            options,
         const autofill::CreditCard& card,
         absl::variant<autofill::payments::PaymentsAutofillClient::
                           LocalSaveCardPromptCallback,
@@ -64,7 +65,7 @@ MockAutofillSaveCardInfoBarDelegateMobileFactory::
   autofill::payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
       local_cb = base::DoNothing();
   return std::make_unique<MockAutofillSaveCardInfoBarDelegateMobile>(
-      autofill::AutofillClient::SaveCreditCardOptions(), card,
+      autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions(), card,
       upload ? Variant(std::move(upload_cb)) : Variant(std::move(local_cb)),
       autofill::LegalMessageLines(
           {autofill::TestLegalMessageLine("Test message")}),

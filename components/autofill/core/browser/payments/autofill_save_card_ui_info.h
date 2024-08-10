@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "ui/gfx/image/image.h"
 
 struct AccountInfo;
@@ -61,12 +61,12 @@ struct AutofillSaveCardUiInfo {
   // Requires that `options.card_save_type` is not equal to
   // `AutofillClient::CardSaveType::kCvcSaveOnly`
   static AutofillSaveCardUiInfo CreateForLocalSave(
-      AutofillClient::SaveCreditCardOptions options,
+      payments::PaymentsAutofillClient::SaveCreditCardOptions options,
       const CreditCard& card);
 
   // Create the ui info for a server save prompt.
   static AutofillSaveCardUiInfo CreateForUploadSave(
-      AutofillClient::SaveCreditCardOptions options,
+      payments::PaymentsAutofillClient::SaveCreditCardOptions options,
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
       const AccountInfo& displayed_target_account);
@@ -77,7 +77,7 @@ struct AutofillSaveCardUiInfo {
   // Requires `options.card_save_type` not equal to
   // `AutofillClient::CardSaveType::kCvcSaveOnly`.
   static AutofillSaveCardUiInfo CreateForUploadSave(
-      AutofillClient::SaveCreditCardOptions options,
+      payments::PaymentsAutofillClient::SaveCreditCardOptions options,
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
       const AccountInfo& displayed_target_account,

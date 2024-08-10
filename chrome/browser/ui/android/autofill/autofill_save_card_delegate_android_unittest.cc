@@ -23,7 +23,8 @@ class AutofillSaveCardDelegateAndroidTest
     ChromeRenderViewHostTestHarness::SetUp();
 
     delegate_ = std::make_unique<AutofillSaveCardDelegateAndroid>(
-        CreateSaveCardCallback(), AutofillClient::SaveCreditCardOptions(),
+        CreateSaveCardCallback(),
+        payments::PaymentsAutofillClient::SaveCreditCardOptions(),
         web_contents());
     auto bridge = std::make_unique<TestDeviceLockBridge>();
     test_bridge_ = bridge.get();

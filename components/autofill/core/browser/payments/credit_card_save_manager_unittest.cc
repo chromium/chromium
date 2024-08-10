@@ -93,6 +93,8 @@ using ::testing::UnorderedElementsAre;
 
 using UkmCardUploadDecisionType = ukm::builders::Autofill_CardUploadDecision;
 using UkmDeveloperEngagementType = ukm::builders::Autofill_DeveloperEngagement;
+using SaveCreditCardOptions =
+    payments::PaymentsAutofillClient::SaveCreditCardOptions;
 
 #if !BUILDFLAG(IS_IOS)
 base::TimeDelta kVeryLargeDelta = base::Days(365) * 75;
@@ -161,14 +163,14 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   MOCK_METHOD(void,
               ConfirmSaveCreditCardLocally,
               (const CreditCard&,
-               AutofillClient::SaveCreditCardOptions,
+               SaveCreditCardOptions,
                payments::PaymentsAutofillClient::LocalSaveCardPromptCallback),
               (override));
   MOCK_METHOD(void,
               ConfirmSaveCreditCardToCloud,
               (const CreditCard&,
                const LegalMessageLines&,
-               AutofillClient::SaveCreditCardOptions,
+               SaveCreditCardOptions,
                payments::PaymentsAutofillClient::UploadSaveCardPromptCallback),
               (override));
   MOCK_METHOD(
@@ -184,13 +186,13 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   // 1) ConfirmSaveCreditCardLocally() was called.
   // 2) The SaveCreditCardOptions::show_prompt matches the `prompt_shown` param.
   void ExpectLocalSaveWithPromptShown(bool prompt_shown) {
-    EXPECT_CALL(*this,
-                ConfirmSaveCreditCardLocally(
-                    /*card=*/_,
-                    /*options=*/
-                    Field(&AutofillClient::SaveCreditCardOptions::show_prompt,
-                          prompt_shown),
-                    /*callback=*/_));
+    EXPECT_CALL(*this, ConfirmSaveCreditCardLocally(
+                           /*card=*/_,
+                           /*options=*/
+                           Field(&payments::PaymentsAutofillClient::
+                                     SaveCreditCardOptions::show_prompt,
+                                 prompt_shown),
+                           /*callback=*/_));
   }
 
   // Used in tests to set what AutofillClient::SaveCardOfferUserDecision the
@@ -200,7 +202,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
     ON_CALL(*this, ConfirmSaveCreditCardLocally)
         .WillByDefault(
             [offer_decision](
-                const CreditCard&, AutofillClient::SaveCreditCardOptions,
+                const CreditCard&, SaveCreditCardOptions,
                 payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
                     callback) { std::move(callback).Run(offer_decision); });
   }
@@ -209,12 +211,12 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   // 1) ConfirmSaveCreditCardToCloud() was called.
   // 2) The SaveCreditCardOptions::show_prompt matches the `prompt_shown` param.
   void ExpectCloudSaveWithPromptShown(bool prompt_shown) {
-    EXPECT_CALL(*this,
-                ConfirmSaveCreditCardToCloud(
-                    _, _,
-                    Field(&AutofillClient::SaveCreditCardOptions::show_prompt,
-                          prompt_shown),
-                    _));
+    EXPECT_CALL(*this, ConfirmSaveCreditCardToCloud(
+                           _, _,
+                           Field(&payments::PaymentsAutofillClient::
+                                     SaveCreditCardOptions::show_prompt,
+                                 prompt_shown),
+                           _));
   }
 
   // Used in tests to set what AutofillClient::SaveCardOfferUserDecision the
@@ -225,7 +227,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
         .WillByDefault(
             [offer_decision](
                 const CreditCard&, const LegalMessageLines&,
-                AutofillClient::SaveCreditCardOptions,
+                SaveCreditCardOptions,
                 payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
                     callback) { std::move(callback).Run(offer_decision, {}); });
   }
@@ -790,16 +792,17 @@ TEST_F(CreditCardSaveManagerTest, LocalCreditCard_WithNonFocusableField) {
 // `kCvcSaveOnly` option.
 TEST_F(CreditCardSaveManagerTest,
        AttemptToOfferCvcLocalSave_ShouldShowSaveCardLocallyWithCvcSaveOnly) {
-  EXPECT_CALL(
-      payments_client(),
-      ConfirmSaveCreditCardLocally(
-          /*card=*/_,
-          /*options=*/
-          AllOf(
-              Field(&AutofillClient::SaveCreditCardOptions::show_prompt, true),
-              Field(&AutofillClient::SaveCreditCardOptions::card_save_type,
-                    AutofillClient::CardSaveType::kCvcSaveOnly)),
-          /*callback=*/_));
+  EXPECT_CALL(payments_client(),
+              ConfirmSaveCreditCardLocally(
+                  /*card=*/_,
+                  /*options=*/
+                  AllOf(Field(&payments::PaymentsAutofillClient::
+                                  SaveCreditCardOptions::show_prompt,
+                              true),
+                        Field(&payments::PaymentsAutofillClient::
+                                  SaveCreditCardOptions::card_save_type,
+                              AutofillClient::CardSaveType::kCvcSaveOnly)),
+                  /*callback=*/_));
 
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(test::GetCreditCard());
 }
@@ -810,15 +813,16 @@ TEST_F(CreditCardSaveManagerTest,
        AttemptToOfferCvcUploadSave_ShouldShowSaveCardWithCvcSaveOnly) {
   CreditCard credit_card = test::WithCvc(test::GetMaskedServerCard());
 
-  EXPECT_CALL(
-      payments_client(),
-      ConfirmSaveCreditCardToCloud(
-          _, _,
-          AllOf(
-              Field(&AutofillClient::SaveCreditCardOptions::show_prompt, true),
-              Field(&AutofillClient::SaveCreditCardOptions::card_save_type,
-                    AutofillClient::CardSaveType::kCvcSaveOnly)),
-          _));
+  EXPECT_CALL(payments_client(),
+              ConfirmSaveCreditCardToCloud(
+                  _, _,
+                  AllOf(Field(&payments::PaymentsAutofillClient::
+                                  SaveCreditCardOptions::show_prompt,
+                              true),
+                        Field(&payments::PaymentsAutofillClient::
+                                  SaveCreditCardOptions::card_save_type,
+                              AutofillClient::CardSaveType::kCvcSaveOnly)),
+                  _));
 
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(credit_card);
 }
@@ -905,7 +909,7 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally)
       .Times(3)
       .WillRepeatedly(
-          [](const CreditCard&, AutofillClient::SaveCreditCardOptions,
+          [](const CreditCard&, SaveCreditCardOptions,
              payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
                  callback) {
             std::move(callback).Run(
@@ -5449,15 +5453,14 @@ TEST_F(CreditCardSaveManagerTest, InvalidLegalMessageInOnDidGetUploadDetails) {
 
   base::HistogramTester histogram_tester;
 
-  EXPECT_CALL(
-      payments_client(),
-      ConfirmSaveCreditCardLocally(
-          /*card=*/_,
-          /*options=*/
-          Field(
-              &AutofillClient::SaveCreditCardOptions::has_multiple_legal_lines,
-              false),
-          /*callback=*/_));
+  EXPECT_CALL(payments_client(),
+              ConfirmSaveCreditCardLocally(
+                  /*card=*/_,
+                  /*options=*/
+                  Field(&payments::PaymentsAutofillClient::
+                            SaveCreditCardOptions::has_multiple_legal_lines,
+                        false),
+                  /*callback=*/_));
 
   FormSubmitted(credit_card_form);
   // Verify that the correct histogram entries were logged.
@@ -5494,14 +5497,13 @@ TEST_F(CreditCardSaveManagerTest, LegalMessageInOnDidGetUploadDetails) {
   test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
   test_api(credit_card_form).field(4).set_value(u"123");
 
-  EXPECT_CALL(
-      payments_client(),
-      ConfirmSaveCreditCardToCloud(
-          _, _,
-          Field(
-              &AutofillClient::SaveCreditCardOptions::has_multiple_legal_lines,
-              true),
-          _));
+  EXPECT_CALL(payments_client(),
+              ConfirmSaveCreditCardToCloud(
+                  _, _,
+                  Field(&payments::PaymentsAutofillClient::
+                            SaveCreditCardOptions::has_multiple_legal_lines,
+                        true),
+                  _));
 
   FormSubmitted(credit_card_form);
 }
@@ -5539,7 +5541,7 @@ TEST_F(CreditCardSaveManagerTest, ExistingServerCard_DifferentExpiration) {
       ConfirmSaveCreditCardToCloud(
           _, _,
           Field(
-              &AutofillClient::SaveCreditCardOptions::
+              &SaveCreditCardOptions::
                   has_same_last_four_as_server_card_but_different_expiration_date,
               true),
           _));
@@ -5755,22 +5757,22 @@ TEST_P(ProceedWithSavingIfApplicableTest, CardWithCorrectSaveCardOption) {
                             : AutofillClient::CardSaveType::kCardSaveOnly;
 
   if (IsCreditCardUpstreamEnabled()) {
-    EXPECT_CALL(
-        payments_client(),
-        ConfirmSaveCreditCardToCloud(
-            _, _,
-            Field(&AutofillClient::SaveCreditCardOptions::card_save_type,
-                  card_save_type),
-            _));
+    EXPECT_CALL(payments_client(),
+                ConfirmSaveCreditCardToCloud(
+                    _, _,
+                    Field(&payments::PaymentsAutofillClient::
+                              SaveCreditCardOptions::card_save_type,
+                          card_save_type),
+                    _));
   } else {
-    EXPECT_CALL(
-        payments_client(),
-        ConfirmSaveCreditCardLocally(
-            /*card=*/_,
-            /*options=*/
-            Field(&AutofillClient::SaveCreditCardOptions::card_save_type,
-                  card_save_type),
-            /*callback=*/_));
+    EXPECT_CALL(payments_client(),
+                ConfirmSaveCreditCardLocally(
+                    /*card=*/_,
+                    /*options=*/
+                    Field(&payments::PaymentsAutofillClient::
+                              SaveCreditCardOptions::card_save_type,
+                          card_save_type),
+                    /*callback=*/_));
   }
 
   FormSubmitted(credit_card_form);

@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -59,7 +60,7 @@ void CardNameFixFlowControllerImpl::OnNameAccepted(const std::u16string& name) {
       AutofillMetrics::CARDHOLDER_NAME_FIX_FLOW_PROMPT_ACCEPTED);
   LogSaveCreditCardPromptResult(
       autofill_metrics::SaveCreditCardPromptResult::kAccepted, true,
-      AutofillClient::SaveCreditCardOptions()
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_should_request_name_from_user(true));
   had_user_interaction_ = true;
   autofill_metrics::LogSaveCardCardholderNameWasEdited(
@@ -74,7 +75,7 @@ void CardNameFixFlowControllerImpl::OnDismissed() {
       AutofillMetrics::CARDHOLDER_NAME_FIX_FLOW_PROMPT_DISMISSED);
   LogSaveCreditCardPromptResult(
       autofill_metrics::SaveCreditCardPromptResult::kDenied, true,
-      AutofillClient::SaveCreditCardOptions()
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_should_request_name_from_user(true));
   had_user_interaction_ = true;
 }
@@ -139,7 +140,7 @@ void CardNameFixFlowControllerImpl::MaybeDestroyCardNameFixFlowView(
     LogSaveCreditCardPromptResult(
         autofill_metrics::SaveCreditCardPromptResult::kInteractedAndIgnored,
         true,
-        AutofillClient::SaveCreditCardOptions()
+        payments::PaymentsAutofillClient::SaveCreditCardOptions()
             .with_should_request_name_from_user(true));
   }
   card_name_fix_flow_view_ = nullptr;

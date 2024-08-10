@@ -42,7 +42,7 @@ void IOSWebViewPaymentsAutofillClient::LoadRiskData(
 void IOSWebViewPaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,
-    AutofillClient::SaveCreditCardOptions options,
+    SaveCreditCardOptions options,
     UploadSaveCardPromptCallback callback) {
   DCHECK(options.show_prompt);
   [bridge_ confirmSaveCreditCardToCloud:card
