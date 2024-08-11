@@ -31,6 +31,8 @@ class PLATFORM_EXPORT PaintChunker final {
   PaintChunker(const PaintChunker&) = delete;
   PaintChunker& operator=(const PaintChunker&) = delete;
 
+  void Trace(Visitor* visitor) const { visitor->Trace(current_properties_); }
+
   // Finishes current chunks if any, and makes it ready to create chunks into
   // the given vector if not null.
   void ResetChunks(PaintChunks*);

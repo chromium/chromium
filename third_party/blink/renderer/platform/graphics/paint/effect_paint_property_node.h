@@ -8,10 +8,10 @@
 #include <algorithm>
 
 #include "components/viz/common/view_transition_element_resource_id.h"
+#include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
-#include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/restriction_target_id.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -21,6 +21,7 @@ namespace blink {
 
 class ClipPaintPropertyNodeOrAlias;
 class PropertyTreeState;
+class TransformPaintPropertyNodeOrAlias;
 
 // Effect nodes are abstraction of isolated groups, along with optional effects
 // that can be applied to the composited output of the group.
@@ -57,15 +58,18 @@ class PLATFORM_EXPORT EffectPaintPropertyNodeOrAlias
 class EffectPaintPropertyNodeAlias final
     : public EffectPaintPropertyNodeOrAlias {
  public:
-  static scoped_refptr<EffectPaintPropertyNodeAlias> Create(
+  static EffectPaintPropertyNodeAlias* Create(
       const EffectPaintPropertyNodeOrAlias& parent) {
-    return base::AdoptRef(new EffectPaintPropertyNodeAlias(parent));
+    return MakeGarbageCollected<EffectPaintPropertyNodeAlias>(kParentAlias,
+                                                              parent);
   }
 
- private:
+  // These are public required by MakeGarbageCollected, but the protected tags
+  // prevent these from being called from outside.
   explicit EffectPaintPropertyNodeAlias(
+      ParentAliasTag,
       const EffectPaintPropertyNodeOrAlias& parent)
-      : EffectPaintPropertyNodeOrAlias(parent, kParentAlias) {}
+      : EffectPaintPropertyNodeOrAlias(kParentAlias, parent) {}
 };
 
 class PLATFORM_EXPORT EffectPaintPropertyNode final
@@ -100,11 +104,10 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
     //    and effects under the same parent.
     // 2. Some effects are spatial (namely blur filter and reflection), the
     //    effect parameters will be specified in the local space.
-    scoped_refptr<const TransformPaintPropertyNodeOrAlias>
-        local_transform_space;
+    Member<const TransformPaintPropertyNodeOrAlias> local_transform_space;
     // The output of the effect can be optionally clipped when composited onto
     // the current backdrop.
-    scoped_refptr<const ClipPaintPropertyNodeOrAlias> output_clip;
+    Member<const ClipPaintPropertyNodeOrAlias> output_clip;
     // Optionally a number of effects can be applied to the composited output.
     // The chain of effects will be applied in the following order:
     // === Begin of effects ===
@@ -151,16 +154,23 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
         float new_opacity,
         CompositingReasons direct_compositing_reasons,
         CompositingReasons new_direct_compositing_reasons);
+
+    void Trace(Visitor*) const;
   };
 
   // This node is really a sentinel, and does not represent a real effect.
   static const EffectPaintPropertyNode& Root();
 
-  static scoped_refptr<EffectPaintPropertyNode> Create(
+  static EffectPaintPropertyNode* Create(
       const EffectPaintPropertyNodeOrAlias& parent,
       State&& state) {
-    return base::AdoptRef(
-        new EffectPaintPropertyNode(&parent, std::move(state)));
+    return MakeGarbageCollected<EffectPaintPropertyNode>(
+        kNonParentAlias, parent, std::move(state));
+  }
+
+  void Trace(Visitor* visitor) const final {
+    PaintPropertyNodeBase::Trace(visitor);
+    visitor->Trace(state_);
   }
 
   PaintPropertyChangeType Update(
@@ -187,7 +197,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
     return *state_.local_transform_space;
   }
   const ClipPaintPropertyNodeOrAlias* OutputClip() const {
-    return state_.output_clip.get();
+    return state_.output_clip.Get();
   }
 
   SkBlendMode BlendMode() const { return state_.blend_mode; }
@@ -326,11 +336,16 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
 
   std::unique_ptr<JSONObject> ToJSON() const final;
 
- private:
-  EffectPaintPropertyNode(const EffectPaintPropertyNodeOrAlias* parent,
+  // These are public required by MakeGarbageCollected, but the protected tags
+  // prevent these from being called from outside.
+  explicit EffectPaintPropertyNode(RootTag);
+  EffectPaintPropertyNode(NonParentAliasTag,
+                          const EffectPaintPropertyNodeOrAlias& parent,
                           State&& state)
-      : EffectPaintPropertyNodeOrAlias(parent), state_(std::move(state)) {}
+      : EffectPaintPropertyNodeOrAlias(kNonParentAlias, parent),
+        state_(std::move(state)) {}
 
+ private:
   State state_;
 };
 

@@ -12,6 +12,9 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -49,8 +52,7 @@ PendingLayer::PendingLayer(const PaintArtifact& artifact,
       solid_color_chunk_index_(
           first_chunk.background_color.is_solid_color ? 0 : kNotFound),
       chunks_(artifact, first_chunk),
-      property_tree_state_(
-          first_chunk.properties.GetPropertyTreeState().Unalias()),
+      property_tree_state_(first_chunk.properties.Unalias()),
       compositing_type_(compositing_type),
       hit_test_opaqueness_(first_chunk.hit_test_opaqueness) {
   DCHECK(!ChunkRequiresOwnLayer() || first_chunk.size() <= 1u);
@@ -69,12 +71,14 @@ PendingLayer::PendingLayer(const PaintArtifact& artifact,
   if (compositing_type == kOther && first_chunk.hit_test_data &&
       first_chunk.hit_test_data->scroll_translation) {
     non_composited_scroll_translations_.push_back(
-        first_chunk.hit_test_data->scroll_translation.get());
+        first_chunk.hit_test_data->scroll_translation.Get());
   }
 }
 
 void PendingLayer::Trace(Visitor* visitor) const {
   visitor->Trace(chunks_);
+  visitor->Trace(property_tree_state_);
+  visitor->Trace(non_composited_scroll_translations_);
   visitor->Trace(content_layer_client_);
 }
 
@@ -442,8 +446,7 @@ bool PendingLayer::PropertyTreeStateChanged(
 
 bool PendingLayer::MightOverlap(const PendingLayer& other) const {
   return GeometryMapper::MightOverlapForCompositing(
-      bounds_, property_tree_state_.GetPropertyTreeState(), other.bounds_,
-      other.property_tree_state_.GetPropertyTreeState());
+      bounds_, property_tree_state_, other.bounds_, other.property_tree_state_);
 }
 
 // Walk the pending layer list and build up a table of transform nodes that
@@ -464,8 +467,9 @@ bool PendingLayer::MightOverlap(const PendingLayer& other) const {
 // This algorithm should be O(t+c+e) where t,c,e are the number of transform,
 // clip, and effect nodes in the full tree.
 void PendingLayer::DecompositeTransforms(PendingLayers& pending_layers) {
-  HashMap<const TransformPaintPropertyNode*, bool> can_be_decomposited;
-  HashSet<const void*> clips_and_effects_seen;
+  HeapHashMap<Member<const TransformPaintPropertyNode>, bool>
+      can_be_decomposited;
+  HeapHashSet<Member<const PaintPropertyNode>> clips_and_effects_seen;
   for (const PendingLayer& pending_layer : pending_layers) {
     const auto& property_state = pending_layer.GetPropertyTreeState();
 

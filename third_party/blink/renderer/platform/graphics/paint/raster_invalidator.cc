@@ -17,6 +17,7 @@
 namespace blink {
 
 void RasterInvalidator::Trace(Visitor* visitor) const {
+  visitor->Trace(layer_state_);
   visitor->Trace(current_paint_artifact_);
   visitor->Trace(old_paint_artifact_);
   visitor->Trace(tracking_);
@@ -224,7 +225,7 @@ void RasterInvalidator::GenerateRasterInvalidations(
     if (!layer_offset_or_state_changed &&
         reason == PaintInvalidationReason::kNone &&
         new_chunk.is_moved_from_cached_subsequence &&
-        !new_chunk.properties.GetPropertyTreeState().Changed(
+        !new_chunk.properties.Changed(
             PaintPropertyChangeType::kChangedOnlySimpleValues, layer_state_)) {
       new_chunks_info.emplace_back(old_chunk_info, it);
     } else {

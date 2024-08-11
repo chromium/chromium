@@ -32,6 +32,8 @@ void FragmentData::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(layer);
   visitor->Trace(sticky_constraints);
   visitor->Trace(additional_fragments);
+  visitor->Trace(paint_properties);
+  visitor->Trace(local_border_box_properties);
 }
 
 FragmentData::RareData& FragmentData::EnsureRareData() {

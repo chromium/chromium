@@ -19,8 +19,7 @@ ChunkToLayerMapper::ChunkToLayerMapper(const PropertyTreeState& layer_state,
       transform_(gfx::Transform::MakeTranslation(-layer_offset)) {}
 
 void ChunkToLayerMapper::SwitchToChunk(const PaintChunk& chunk) {
-  SwitchToChunkWithState(chunk,
-                         chunk.properties.GetPropertyTreeState().Unalias());
+  SwitchToChunkWithState(chunk, chunk.properties.Unalias());
 }
 
 void ChunkToLayerMapper::SwitchToChunkWithState(
@@ -28,7 +27,7 @@ void ChunkToLayerMapper::SwitchToChunkWithState(
     const PropertyTreeState& new_chunk_state) {
   raster_effect_outset_ = chunk.raster_effect_outset;
 
-  DCHECK_EQ(new_chunk_state, chunk.properties.GetPropertyTreeState().Unalias());
+  DCHECK_EQ(new_chunk_state, chunk.properties.Unalias());
   if (new_chunk_state == chunk_state_) {
     return;
   }
