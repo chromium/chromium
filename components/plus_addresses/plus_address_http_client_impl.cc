@@ -487,15 +487,22 @@ void PlusAddressHttpClientImpl::OnPreallocationComplete(
     std::unique_ptr<std::string> response) {
   std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
   loaders_.erase(it);
-  // TODO: crbug.com/324559503 - Add metrics for latency, response code, and
-  // response size.
+  metrics::RecordNetworkRequestLatency(
+      PlusAddressNetworkRequestType::kPreallocate,
+      base::TimeTicks::Now() - request_start);
   std::optional<int> response_code = GetResponseCode(loader.get());
+  if (response_code) {
+    metrics::RecordNetworkRequestResponseCode(
+        PlusAddressNetworkRequestType::kPreallocate, *response_code);
+  }
   if (!response) {
     std::move(on_completed)
         .Run(base::unexpected(
             PlusAddressRequestError::AsNetworkError(response_code)));
     return;
   }
+  metrics::RecordNetworkRequestResponseSize(
+      PlusAddressNetworkRequestType::kPreallocate, response->size());
   data_decoder::DataDecoder::ParseJsonIsolated(
       *response,
       base::BindOnce(&ParsePreallocatedPlusAddresses)

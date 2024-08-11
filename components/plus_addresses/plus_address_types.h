@@ -151,7 +151,8 @@ enum class PlusAddressNetworkRequestType {
   kList = 1,
   kReserve = 2,
   kCreate = 3,
-  kMaxValue = kCreate,
+  kPreallocate = 4,
+  kMaxValue = kPreallocate,
 };
 
 std::ostream& operator<<(std::ostream& os,

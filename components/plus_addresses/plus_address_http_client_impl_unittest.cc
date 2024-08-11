@@ -470,6 +470,7 @@ TEST_F(PlusAddressHttpClientRequests,
 // received, parsed, and triggers the callback properly.
 TEST_F(PlusAddressHttpClientRequests,
        PreallocatePlusAddresses_SuccessResponse) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<PlusAddressHttpClient::PreallocatePlusAddressesResult>
       future;
   client().PreallocatePlusAddresses(future.GetCallback());
@@ -486,6 +487,15 @@ TEST_F(PlusAddressHttpClientRequests,
       kFullPreallocateEndpoint, json));
   ASSERT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(), std::vector({address1, address2}));
+
+  histogram_tester.ExpectTotalCount(
+      LatencyHistogramFor(PlusAddressNetworkRequestType::kPreallocate), 1);
+  histogram_tester.ExpectUniqueSample(
+      ResponseCodeHistogramFor(PlusAddressNetworkRequestType::kPreallocate),
+      net::HTTP_OK, 1);
+  histogram_tester.ExpectTotalCount(
+      ResponseByteSizeHistogramFor(PlusAddressNetworkRequestType::kPreallocate),
+      1);
 }
 
 // Tests that a malformed server response from the preallocation endpoint is

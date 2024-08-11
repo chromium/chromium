@@ -33,6 +33,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Create" summary="Create a Plus Address after reservation"/>
   <variant name="GetOrCreate" summary="Get or create a Plus Address"/>
   <variant name="List" summary="Retrieve all Plus Addresses"/>
+  <variant name="Preallocate" summary="Preallocate plus addresses"/>
   <variant name="Reserve" summary="Reserve a Plus Address"/>
 </variants>
 
