@@ -44,9 +44,9 @@ crbug.com/40937352 external/wpt/css/css-color/parsing/color-valid-relative-color
 crbug.com/40937352 external/wpt/css/css-color/parsing/color-computed-relative-color.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/nearest-direct.tentative.html [ Failure ]
-virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/nearest-ignores-nearest-name.tentative.html [ Failure ]
-virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/normal-goes-up.tentative.html [ Failure ]
+crbug.com/358461186 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/nearest-direct.tentative.html [ Failure ]
+crbug.com/358461186 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/nearest-ignores-nearest-name.tentative.html [ Failure ]
+crbug.com/358461186 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/normal-goes-up.tentative.html [ Failure ]
 crbug.com/358461184 virtual/threaded/external/wpt/css/css-view-transitions/nested/nearest-nested.tentative.html [ Failure ]
 crbug.com/358461184 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/compute-explicit-name-non-existent.tentative.html [ Failure ]
 crbug.com/358399788 virtual/threaded/external/wpt/css/css-view-transitions/nested/contain-nested.tentative.html [ Failure ]
