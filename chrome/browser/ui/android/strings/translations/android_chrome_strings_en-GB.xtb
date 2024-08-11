@@ -1583,7 +1583,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> downloads restored</translation>
 <translation id="8368001212524806591">Track price</translation>
 <translation id="8378850197701296741">You have bookmarks, history and other settings from <ph name="FROM_ACCOUNT" />.</translation>
-<translation id="8382640928718131148">Tabs that you haven't used for <ph name="DAYS_INACTIVE" /> days are moved here and closed after <ph name="DAYS_ARCHIVED" /> days. You can change this at any time in <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8387617938027387193">Verify that it’s you</translation>
 <translation id="8393700583063109961">Send message</translation>
 <translation id="8402673309244746971">Go to Following</translation>

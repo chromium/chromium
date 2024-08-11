@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Көрсетілетін атауын көшіру</translation>
 <translation id="1062407476771304334">Ауыстыру</translation>
 <translation id="1062628064301375934">Интернетті оңашалауға көмектесіңіз</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome 1 сайт рұқсаттарын өшірді}other{Chrome {NUM_SITES} сайт рұқсаттарын өшірді}}</translation>
 <translation id="1066964438793906105">Зиянды бағдарламаға сканерлеу</translation>
 <translation id="1067661089446014701">Қосымша қауіпсіздік үшін, құрылғыдағы құпия сөздерді Google аккаунтына сақтамас бұрын шифрлауға болады.</translation>
 <translation id="1067922213147265141">Басқа Google қызметтері</translation>
@@ -4917,6 +4916,7 @@
 <translation id="4538792345715658285">Кәсіпорын саясаты бойынша орнатылған.</translation>
 <translation id="4540409690203718935">Google Password Manager қолжетімді емес. Бірнеше минуттан кейін қайталап көріңіз.</translation>
 <translation id="4541123282641193691">Аккаунтыңыз расталмады. Әрекетті қайталаңыз немесе Chromebook құрылғыңызды қайта жүктеңіз.</translation>
+<translation id="4541505619120536051">Әрдайым ашу</translation>
 <translation id="4541662893742891060">Бұл профильге қосылу мүмкін емес. Техникалық қолдау керек болса, операторға хабарласыңыз.</translation>
 <translation id="4541706525461326392">Профиль өшірілуде. Бұл бірнеше минутқа созылуы мүмкін.</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> және <ph name="WEBSITE_2" /> веб-сайттарындағы деректеріңізді оқу</translation>
@@ -5251,7 +5251,6 @@
 <translation id="4794910597689955457">Ашу үшін <ph name="NUM_OF_FILES" /> файлды <ph name="CLOUD_PROVIDER" /> қызметіне жылжыту керек пе?</translation>
 <translation id="479536056609751218">Веб-бет, HTML ғана</translation>
 <translation id="4795670271446126525">Дүлей толқын</translation>
-<translation id="4796142525425001238">Әрқашан қалпына келтіру</translation>
 <translation id="4797314204379834752">Тапсырмаларды реттеу, онлайн сауда және т.б. үшін қойынды топтарын пайдаланып көріңіз.</translation>
 <translation id="479863874072008121">Құрылғыларды басқару</translation>
 <translation id="479989351350248267">іздеу</translation>
@@ -5829,7 +5828,6 @@
 <translation id="5210365745912300556">Қойындыны жабу</translation>
 <translation id="5213114823401215820">Жабылған топты қайта ашу</translation>
 <translation id="5213481667492808996">"<ph name="NAME" />" деректер қызметі пайдалануға дайын</translation>
-<translation id="5213658238771284310">Іске қосқаннан кейін сеансты қалпына келтіру</translation>
 <translation id="5213891612754844763">Прокси-сервер параметрлерін көрсету</translation>
 <translation id="5214639857958972833">"<ph name="BOOKMARK_TITLE" />" бетбелгісі жасалды.</translation>
 <translation id="5215450412607891876">Кеңейтілген қауіпсіздік жаңартуларын қосыңыз</translation>
@@ -6203,7 +6201,6 @@
 <translation id="5488093641312826914">"<ph name="COPIED_ITEM_NAME" />" көшірілді</translation>
 <translation id="5488508217173274228">Синхрондауды шифрлау опциялары</translation>
 <translation id="5489077378642700219">Веб-сайттан (<ph name="WEBSITE" />) хабарландырулар жіберілуіне рұқсат етпеу, бірақ кейінірек сұрау</translation>
-<translation id="5489435190927933437"><ph name="DOMAIN" /> үшін сақталған құпия сөздер</translation>
 <translation id="5490432419156082418">Мекенжайлар және басқа ақпарат</translation>
 <translation id="5490721031479690399">Bluetooth құрылғысын ажырату</translation>
 <translation id="5490798133083738649">Linux жүйесіне микрофонды пайдалануға рұқсат ету</translation>
@@ -6337,7 +6334,6 @@
 <translation id="5582839680698949063">Басты мәзір</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Пайдаланушы аты сақталсын ба?</translation>
-<translation id="5584091888252706332">Іске қосу кезінде</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Бұл – құрылғыңыз бен оны пайдалану туралы жалпы ақпарат (мысалы, батарея зарядының деңгейі, жүйе мен қолданбаларды пайдалану тарихы, қателер). Деректер Android жүйесін жақсарту үшін пайдаланылады, ал кейбір жиынтық ақпараттар Google қолданбалары мен Android әзірлеушілері сияқты серіктестерге олардың қолданбалары мен өнімдерін жетілдіруге көмектеседі.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Бұл мүмкіндікті өшіріп қойсаңыз, құрылғының маңызды қызметтерге (мысалы, жүйелік жаңарту және қауіпсіздік үшін) қажетті ақпаратты жіберу мүмкіндігіне әсер етпейді.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Иесі функцияны "Параметрлер &gt; Кеңейтілген &gt; Диагностикалық және пайдалану деректерін Google қызметіне автоматты жіберу" тармағы арқылы басқара алады.<ph name="END_PARAGRAPH3" />
@@ -9351,7 +9347,6 @@
 <translation id="7815680994978050279">Қауіпті жүктеп алу әрекеті бөгелді</translation>
 <translation id="7817361223956157679">Экрандағы пернетақта Linux қолданбаларында жұмыс істемейді.</translation>
 <translation id="7818135753970109980">Жаңа тақырып қосылды (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Өшіріп қосқаннан кейін, қолданбаларда, веб-сайттарда және ашық терезелерде тоқтаған жеріңізден жалғастырыңыз.</translation>
 <translation id="7819605256207059717">Ұйымыңыз бөгеген.</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> файлын осы құрылғыны пайдаланатын басқа адамдар құпия сөздеріңізді көре алмайтындай етіп жою</translation>
 <translation id="7820561748632634942">Қосымша ауыстырғыштар тағайындалсын ба?</translation>
@@ -10160,6 +10155,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Қосымша анықтама үшін мына бетке өтіңіз: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Welcome Recap</translation>
 <translation id="8386091599636877289">Саясат табылмады.</translation>
 <translation id="8387361103813440603">Геодеректеріңізді көруге рұқсаты жоқтар</translation>
 <translation id="8387617938027387193">Жеке басыңызды растаңыз</translation>

@@ -1583,7 +1583,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> deskarga leheneratu dira</translation>
 <translation id="8368001212524806591">Egin prezioen jarraipena</translation>
 <translation id="8378850197701296741"><ph name="FROM_ACCOUNT" /> kontuko laster-markak, historia eta beste ezarpen batzuk dituzu.</translation>
-<translation id="8382640928718131148"><ph name="DAYS_INACTIVE" /> egunetan erabili ez dituzun fitxak hona ekartzen dira, eta <ph name="DAYS_ARCHIVED" /> eguneko epean ixten. Hori aldatzeko, joan <ph name="SETTINGS_TITLE" /> atalera.</translation>
 <translation id="8387617938027387193">Egiaztatu zeu zarela</translation>
 <translation id="8393700583063109961">Bidali mezua</translation>
 <translation id="8402673309244746971">Joan hurrengora</translation>

@@ -456,6 +456,7 @@
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">तपाईंको CVC तपाईंको कार्डको पछाडिको भागमा छ। यो सिग्नेचर बक्सको सिरानको दायाँतिर रहेको पछिल्ला ३ अङ्कको कोड हो।</translation>
 <translation id="1810391395243432441">स्क्रिन लकका सहायताले पासवर्डहरू सुरक्षित राख्नुहोस्</translation>
+<translation id="1810597570737826742">{count,plural, =1{{count} मध्ये {position} औँ प्लस एड्रेस}other{{count} वटामध्ये {position} औँ प्लस एड्रेस}}</translation>
 <translation id="1812527064848182527">ल्यान्डस्केप</translation>
 <translation id="1812975699435941848">स्वास्थ्य शिक्षा तथा चिकित्सा प्रशिक्षण</translation>
 <translation id="1816436748874040213">साझा ट्याबहरू स्क्रोल तथा जुम गर्ने अनुमति माग्छ</translation>

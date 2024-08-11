@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Copier le nom à afficher</translation>
 <translation id="1062407476771304334">Remplacer</translation>
 <translation id="1062628064301375934">Aidez-nous à créer un Web plus privé</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome a supprimé les autorisations pour 1 site}one{Chrome a supprimé les autorisations pour {NUM_SITES} site}other{Chrome a supprimé les autorisations pour {NUM_SITES} sites}}</translation>
 <translation id="1066964438793906105">Rechercher des logiciels malveillants</translation>
 <translation id="1067661089446014701">Pour renforcer la sécurité, vous pouvez chiffrer les mots de passe sur votre appareil avant qu'ils soient enregistrés dans votre compte Google</translation>
 <translation id="1067922213147265141">Autres services Google</translation>
@@ -4921,6 +4920,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4538792345715658285">Installée conformément à une règle d'entreprise</translation>
 <translation id="4540409690203718935">Impossible d'accéder au Gestionnaire de mots de passe de Google. Réessayez dans quelques minutes.</translation>
 <translation id="4541123282641193691">Impossible de valider votre compte. Veuillez réessayer ou redémarrer votre Chromebook.</translation>
+<translation id="4541505619120536051">Toujours ouvrir</translation>
 <translation id="4541662893742891060">Impossible de se connecter à ce profil. Pour obtenir de l'aide, veuillez contacter votre opérateur.</translation>
 <translation id="4541706525461326392">Suppression du profil… Cela peut prendre quelques minutes.</translation>
 <translation id="4542520061254486227">Lire vos données sur <ph name="WEBSITE_1" /> et <ph name="WEBSITE_2" /></translation>
@@ -5255,7 +5255,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4794910597689955457">Déplacer <ph name="NUM_OF_FILES" /> fichiers vers <ph name="CLOUD_PROVIDER" /> et les ouvrir ?</translation>
 <translation id="479536056609751218">Page Web, HTML uniquement</translation>
 <translation id="4795670271446126525">Vagues déferlantes</translation>
-<translation id="4796142525425001238">Toujours restaurer</translation>
 <translation id="4797314204379834752">Utilisez les groupes d'onglets pour organiser vos tâches, faire des achats en ligne, etc.</translation>
 <translation id="479863874072008121">Gérer les appareils</translation>
 <translation id="479989351350248267">rechercher</translation>
@@ -5833,7 +5832,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5210365745912300556">Fermer l'onglet</translation>
 <translation id="5213114823401215820">Rouvrir le groupe fermé</translation>
 <translation id="5213481667492808996">Votre service de données "<ph name="NAME" />" est disponible</translation>
-<translation id="5213658238771284310">Restaurer la session au démarrage</translation>
 <translation id="5213891612754844763">Afficher les paramètres de proxy</translation>
 <translation id="5214639857958972833">Favori "<ph name="BOOKMARK_TITLE" />" créé.</translation>
 <translation id="5215450412607891876">Activez les mises à jour de sécurité étendues</translation>
@@ -6207,7 +6205,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5488093641312826914">"<ph name="COPIED_ITEM_NAME" />" copié</translation>
 <translation id="5488508217173274228">Options de chiffrement des données synchronisées</translation>
 <translation id="5489077378642700219">Ne pas autoriser les notifications de <ph name="WEBSITE" />, mais demander plus tard</translation>
-<translation id="5489435190927933437">Mots de passe enregistrés pour <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Adresses et autres</translation>
 <translation id="5490721031479690399">Déconnecter l'appareil Bluetooth</translation>
 <translation id="5490798133083738649">Autoriser Linux à accéder au micro</translation>
@@ -6341,7 +6338,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5582839680698949063">Menu principal</translation>
 <translation id="5583640892426849032">Retour</translation>
 <translation id="5584088138253955452">Enregistrer le nom d'utilisateur ?</translation>
-<translation id="5584091888252706332">Au démarrage</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Ces informations d'ordre général concernent votre appareil et l'usage qui en est fait (comme le niveau de batterie, les erreurs, et l'activité du système et des applications). Elles serviront à améliorer Android, et certaines informations agrégées aideront également nos développeurs d'applications et nos partenaires, tels que les développeurs Android, à améliorer leurs applications et leurs produits.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Notez que la désactivation de cette fonctionnalité n'empêche pas votre appareil d'envoyer les informations nécessaires pour bénéficier de services essentiels, tels que les mises à jour du système et les fonctions de sécurité.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Le propriétaire de l'appareil peut contrôler cette fonctionnalité dans Paramètres &gt; Avancés &gt; Envoyer automatiquement des données de diagnostic et d'utilisation à Google.<ph name="END_PARAGRAPH3" />
@@ -9363,7 +9359,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7815680994978050279">Téléchargement dangereux bloqué</translation>
 <translation id="7817361223956157679">Le clavier à l'écran n'est pas compatible avec les applications Linux pour le moment</translation>
 <translation id="7818135753970109980">Nouveau thème (<ph name="EXTENSION_NAME" />) ajouté.</translation>
-<translation id="7819087895293765164">Après avoir redémarré, reprenez là où vous en étiez dans des applis, sites Web et fenêtres ouvertes</translation>
 <translation id="7819605256207059717">Bloqué par votre organisation</translation>
 <translation id="7820400255539998692">Supprimez <ph name="FILENAME" /> afin que les autres utilisateurs de cet appareil ne puissent pas voir vos mots de passe</translation>
 <translation id="7820561748632634942">Associer d'autres contacteurs ?</translation>
@@ -10173,6 +10168,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Pour obtenir de l'aide, rendez-vous sur g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Récap de bienvenue</translation>
 <translation id="8386091599636877289">Règle introuvable.</translation>
 <translation id="8387361103813440603">Non autorisé à connaître votre position</translation>
 <translation id="8387617938027387193">Confirmez votre identité</translation>

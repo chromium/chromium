@@ -1584,7 +1584,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> downloads restaurados</translation>
 <translation id="8368001212524806591">Monitorar preço</translation>
 <translation id="8378850197701296741">Você tem dados de favoritos, histórico e outras configurações da conta <ph name="FROM_ACCOUNT" />.</translation>
-<translation id="8382640928718131148">As guias que você não usa há <ph name="DAYS_INACTIVE" /> dias são movidas para cá e fechadas depois de <ph name="DAYS_ARCHIVED" /> dias. Você pode mudar essa opção quando quiser nas <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8387617938027387193">Confirme que é você</translation>
 <translation id="8393700583063109961">Enviar mensagem</translation>
 <translation id="8402673309244746971">Acessar "Seguindo"</translation>

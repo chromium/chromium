@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Weergavenaam kopiëren</translation>
 <translation id="1062407476771304334">Vervangen</translation>
 <translation id="1062628064301375934">Help ons het web meer privé te maken</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome heeft rechten verwijderd voor 1 site}other{Chrome heeft rechten verwijderd voor {NUM_SITES} sites}}</translation>
 <translation id="1066964438793906105">Scannen op malware</translation>
 <translation id="1067661089446014701">Voor extra beveiliging kun je wachtwoorden op je apparaat versleutelen voordat ze worden opgeslagen in je Google-account</translation>
 <translation id="1067922213147265141">Andere Google-services</translation>
@@ -4922,6 +4921,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4538792345715658285">Geïnstalleerd door bedrijfsbeleid.</translation>
 <translation id="4540409690203718935">Kan Google Wachtwoordmanager niet bereiken. Probeer het over enkele minuten opnieuw.</translation>
 <translation id="4541123282641193691">Kan je account niet verifiëren. Probeer het opnieuw of start je Chromebook opnieuw op.</translation>
+<translation id="4541505619120536051">Altijd openen</translation>
 <translation id="4541662893742891060">Kan geen verbinding maken met dit profiel. Neem contact op met je provider voor technische support.</translation>
 <translation id="4541706525461326392">Profiel verwijderen. Dit kan een paar minuten duren.</translation>
 <translation id="4542520061254486227">Je gegevens voor <ph name="WEBSITE_1" /> en <ph name="WEBSITE_2" /> lezen</translation>
@@ -5256,7 +5256,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4794910597689955457"><ph name="NUM_OF_FILES" /> bestanden naar <ph name="CLOUD_PROVIDER" /> verplaatsen om te openen?</translation>
 <translation id="479536056609751218">Webpagina, alleen HTML</translation>
 <translation id="4795670271446126525">Beukende golven</translation>
-<translation id="4796142525425001238">Altijd herstellen</translation>
 <translation id="4797314204379834752">Gebruik tabbladgroepen om taken in te delen, voor online winkelen en meer</translation>
 <translation id="479863874072008121">Apparaten beheren</translation>
 <translation id="479989351350248267">zoeken</translation>
@@ -5834,7 +5833,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5210365745912300556">Tabblad sluiten</translation>
 <translation id="5213114823401215820">Gesloten groep heropenen</translation>
 <translation id="5213481667492808996">Je dataservice '<ph name="NAME" />' is klaar voor gebruik</translation>
-<translation id="5213658238771284310">Sessie herstellen bij opstarten</translation>
 <translation id="5213891612754844763">Proxyinstellingen bekijken</translation>
 <translation id="5214639857958972833">Bookmark <ph name="BOOKMARK_TITLE" /> gemaakt.</translation>
 <translation id="5215450412607891876">Uitgebreide beveiligingsupdates aanzetten</translation>
@@ -6208,7 +6206,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' gekopieerd</translation>
 <translation id="5488508217173274228">Opties voor versleuteling synchroniseren</translation>
 <translation id="5489077378642700219">Meldingen van <ph name="WEBSITE" /> niet toestaan, maar later vragen</translation>
-<translation id="5489435190927933437">Opgeslagen wachtwoorden voor <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Adressen en meer</translation>
 <translation id="5490721031479690399">Bluetooth-apparaat ontkoppelen</translation>
 <translation id="5490798133083738649">Linux toegang geven tot je microfoon</translation>
@@ -6342,7 +6339,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5582839680698949063">Hoofdmenu</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Gebruikersnaam opslaan?</translation>
-<translation id="5584091888252706332">Bij opstarten</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Dit is algemene informatie over je apparaat en hoe je het gebruikt (zoals batterijniveau, systeem- en app-activiteit en fouten). De gegevens worden gebruikt om Android te verbeteren voor iedereen. Daarnaast helpen bepaalde verzamelde gegevens Google-apps en -partners (zoals Android-ontwikkelaars) bij het verbeteren van hun apps en producten.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ook als je deze functie uitzet, is het mogelijk dat er via dit apparaat informatie wordt verstuurd die nodig is voor essentiële services (zoals systeemupdates en beveiliging).<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />De eigenaar kan deze functie beheren via Instellingen &gt; Geavanceerd &gt; Automatisch diagnostische en gebruiksgegevens sturen naar Google.<ph name="END_PARAGRAPH3" />
@@ -9359,7 +9355,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7815680994978050279">Gevaarlijke download geblokkeerd</translation>
 <translation id="7817361223956157679">Het schermtoetsenbord werkt nog niet in Linux-apps</translation>
 <translation id="7818135753970109980">Nieuw thema toegevoegd (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Ga na opnieuw opstarten verder waar je gebleven was met apps, websites en geopende vensters</translation>
 <translation id="7819605256207059717">Geblokkeerd door je organisatie</translation>
 <translation id="7820400255539998692">Verwijder <ph name="FILENAME" />, zodat je wachtwoorden niet zichtbaar zijn voor anderen die dit apparaat gebruiken</translation>
 <translation id="7820561748632634942">Extra schakelaars toewijzen?</translation>
@@ -10169,6 +10164,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <ph name="END_LIST" />
 <ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />Ga naar g.co/flex/InstallErrors voor meer hulp.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Welkomstsamenvatting</translation>
 <translation id="8386091599636877289">Beleid niet gevonden.</translation>
 <translation id="8387361103813440603">Geen toestemming om je locatie te bekijken</translation>
 <translation id="8387617938027387193">Verifiëren dat jij het bent</translation>

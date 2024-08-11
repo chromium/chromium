@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Дэлгэцийн нэрийг хуулах</translation>
 <translation id="1062407476771304334">Солих</translation>
 <translation id="1062628064301375934">Бидэнд илүү хувийн веб бүтээхэд тусална уу</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome 1 сайтын зөвшөөрлийг хассан}other{Chrome {NUM_SITES} сайтын зөвшөөрлийг хассан}}</translation>
 <translation id="1066964438793906105">Хортой программ байгаа эсэхийг скан хийх</translation>
 <translation id="1067661089446014701">Нэмэлт аюулгүй байдлын үүднээс та төхөөрөмж дээрх нууц үгнүүдээ Google Бүртгэлдээ хадгалахаасаа өмнө шифрлэх боломжтой</translation>
 <translation id="1067922213147265141">Google-н бусад үйлчилгээ</translation>
@@ -4930,6 +4929,7 @@
 <translation id="4538792345715658285">Байгууллагын бодлогоор суулгасан.</translation>
 <translation id="4540409690203718935">Google Нууц үгний менежерт холбогдох боломжгүй байна. Хэдэн минутын дараа дахин оролдоно уу</translation>
 <translation id="4541123282641193691">Таны бүртгэлийг баталгаажуулж чадсангүй. Дахин оролдох эсвэл Chromebook-г дахин эхлүүлнэ үү.</translation>
+<translation id="4541505619120536051">Үргэлж нээх</translation>
 <translation id="4541662893742891060">Энэ профайлд холбогдож чадсангүй. Техникийн тусламж авах бол оператор компанитайгаа холбоо барина уу.</translation>
 <translation id="4541706525461326392">Профайлыг хасаж байна. Үүнд хэдэн минут шаардлагатай байж магадгүй.</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> болон <ph name="WEBSITE_2" /> дээрх өөрийнхөө мэдээллийг уншина уу</translation>
@@ -5264,7 +5264,6 @@
 <translation id="4794910597689955457">Нээхийн тулд <ph name="NUM_OF_FILES" /> файлыг <ph name="CLOUD_PROVIDER" /> руу зөөх үү?</translation>
 <translation id="479536056609751218">Цахим хуудас, зөвхөн HTML</translation>
 <translation id="4795670271446126525">Цохилох давалгаа</translation>
-<translation id="4796142525425001238">Үргэлж сэргээ</translation>
 <translation id="4797314204379834752">Ажлуудыг цэгцлэх, онлайн худалдаа хийх болон бусад зүйлд табын бүлгүүдийг ашиглаж үзнэ үү</translation>
 <translation id="479863874072008121">Төхөөрөмжүүдийг удирдах</translation>
 <translation id="479989351350248267">хайлт</translation>
@@ -5843,7 +5842,6 @@
 <translation id="5210365745912300556">Цонхыг хаа</translation>
 <translation id="5213114823401215820">Хаасан бүлгийг дахин нээх</translation>
 <translation id="5213481667492808996">Таны '<ph name="NAME" />'-н дата үйлчилгээ ашиглахад бэлэн байна</translation>
-<translation id="5213658238771284310">Эхлэх үед харилцан үйлдлийг сэргээх</translation>
 <translation id="5213891612754844763">Прокси тохиргоог харуулах</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' хавчуурга үүсгэсэн.</translation>
 <translation id="5215450412607891876">Аюулгүй байдлын өргөтгөсөн шинэчлэлтийг асаах</translation>
@@ -6218,7 +6216,6 @@
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />'-г хуулсан</translation>
 <translation id="5488508217173274228">Шифрлэлтийн сонголтуудыг синк хийх</translation>
 <translation id="5489077378642700219"><ph name="WEBSITE" />-н мэдэгдлийг бүү зөвшөөр, гэхдээ дараа асуу</translation>
-<translation id="5489435190927933437"><ph name="DOMAIN" />-д хадгалсан нууц үг</translation>
 <translation id="5490432419156082418">Хаяг болон бусад</translation>
 <translation id="5490721031479690399">Bluetooth төхөөрөмжийг салгах</translation>
 <translation id="5490798133083738649">Linux-д таны микрофонд хандахыг зөвшөөрнө үү</translation>
@@ -6352,7 +6349,6 @@
 <translation id="5582839680698949063">Үндсэн цэс</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Хэрэглэгчийн нэрийг хадгалах уу?</translation>
-<translation id="5584091888252706332">Эхлүүлэх</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Энэ нь таны төхөөрөмж болон үүнийг хэрхэн ашигладаг (батарейны түвшин, систем болон аппын үйл ажиллагаа, алдаа гэх мэт) талаарх ерөнхий мэдээлэл юм. Өгөгдлийг Android-г сайжруулах зорилгоор ашиглах бөгөөд зарим хуримтлуулсан мэдээллийг Android хөгжүүлэгч зэрэг Google аппууд болон түншүүдийн апп, бүтээгдэхүүнийг сайжруулахад мөн адил ашиглана.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Энэ онцлогийг унтрааснаар таны төхөөрөмжийн системийн шинэчлэлт болон аюулгүй байдал зэрэг зайлшгүй шаардлагатай үйлчилгээнд мэдээлэл илгээх чадамжид нөлөөлөхгүй.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Эзэмшигч нь энэ онцлогийг Тохиргоо &gt; Дэвшилтэт &gt; Оношилгоо болон ашиглалтын өгөгдлийг Google-д автоматаар илгээх хэсэгт хянаж болно.<ph name="END_PARAGRAPH3" />
@@ -9369,7 +9365,6 @@
 <translation id="7815680994978050279">Аюултай таталтыг блоклосон</translation>
 <translation id="7817361223956157679">Дэлгэцэн дээрх гар Linux апп дээр хараахан ажиллахгүй байна</translation>
 <translation id="7818135753970109980">Шинэ загвар нэмэгдсэн ( <ph name="EXTENSION_NAME" /> )</translation>
-<translation id="7819087895293765164">Дахин эхлүүлснийхээ дараа апп, вебсайт болон нээлттэй цонхнуудад орхисон газраасаа үргэлжлүүлээрэй</translation>
 <translation id="7819605256207059717">Танай байгууллагаас блоклосон</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" />-г устгана уу. Ингэснээр энэ төхөөрөмжийг ашигладаг бусад хэрэглэгч таны нууц үгнүүдийг харах боломжгүй болно</translation>
 <translation id="7820561748632634942">Нэмэлт сэлгүүр оноох уу?</translation>
@@ -10177,6 +10172,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Илүү их тусламж хэрэгтэй бол дараахад зочилно уу: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Угтах тойм</translation>
 <translation id="8386091599636877289">Удирдамж олдсонгүй.</translation>
 <translation id="8387361103813440603">Таны байршлыг харахыг зөвшөөрөөгүй</translation>
 <translation id="8387617938027387193">Өөрийгөө мөн болохыг бататгана уу</translation>

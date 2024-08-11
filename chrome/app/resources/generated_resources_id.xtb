@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Salin nama tampilan</translation>
 <translation id="1062407476771304334">Ganti</translation>
 <translation id="1062628064301375934">Bantu kami membuat web yang lebih pribadi</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome menghapus izin untuk 1 situs}other{Chrome menghapus izin untuk {NUM_SITES} situs}}</translation>
 <translation id="1066964438793906105">Memindai malware</translation>
 <translation id="1067661089446014701">Untuk keamanan tambahan, Anda dapat mengenkripsi sandi di perangkat Anda sebelum disimpan ke Akun Google Anda</translation>
 <translation id="1067922213147265141">Layanan Google lainnya</translation>
@@ -4694,7 +4693,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4358643842961018282">Perangkat Anda sudah menjalankan versi terbaru</translation>
 <translation id="4358995225307748864">Pilih aplikasi yang akan dibuka</translation>
 <translation id="4359408040881008151">Dipasang karena ekstensi dependen.</translation>
-<translation id="4359717112757026264">Pemandangan Kota</translation>
+<translation id="4359717112757026264">Pemandangan kota</translation>
 <translation id="4359809482106103048">Sekilas tentang keamanan</translation>
 <translation id="4361142739114356624">Kunci Pribadi untuk Sertifikat Klien ini tidak ditemukan atau tidak valid</translation>
 <translation id="4361745360460842907">Buka sebagai tab</translation>
@@ -4935,6 +4934,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4538792345715658285">Dipasang oleh kebijakan perusahaan.</translation>
 <translation id="4540409690203718935">Tidak dapat menjangkau Pengelola Sandi Google. Coba lagi dalam beberapa menit</translation>
 <translation id="4541123282641193691">Tidak dapat memverifikasi akun Anda. Coba lagi atau mulai ulang Chromebook.</translation>
+<translation id="4541505619120536051">Selalu buka</translation>
 <translation id="4541662893742891060">Tidak dapat terhubung ke profil ini. Untuk dukungan teknis, hubungi operator Anda.</translation>
 <translation id="4541706525461326392">Menghapus profil. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="4542520061254486227">Membaca data Anda di <ph name="WEBSITE_1" /> dan <ph name="WEBSITE_2" /></translation>
@@ -5269,7 +5269,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4794910597689955457">Pindahkan <ph name="NUM_OF_FILES" /> file ke <ph name="CLOUD_PROVIDER" /> untuk dibuka?</translation>
 <translation id="479536056609751218">Halaman Web, HTML Saja</translation>
 <translation id="4795670271446126525">Deburan ombak</translation>
-<translation id="4796142525425001238">Selalu pulihkan</translation>
 <translation id="4797314204379834752">Coba gunakan grup tab untuk mengatur tugas, berbelanja online, dan lainnya</translation>
 <translation id="479863874072008121">Kelola perangkat</translation>
 <translation id="479989351350248267">search</translation>
@@ -5848,7 +5847,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5210365745912300556">Tutup tab</translation>
 <translation id="5213114823401215820">Buka kembali grup yang tertutup</translation>
 <translation id="5213481667492808996">Layanan data '<ph name="NAME" />' Anda sudah siap digunakan</translation>
-<translation id="5213658238771284310">Pulihkan sesi saat perangkat diaktifkan</translation>
 <translation id="5213891612754844763">Tampilkan setelan proxy</translation>
 <translation id="5214639857958972833">Bookmark '<ph name="BOOKMARK_TITLE" />' dibuat.</translation>
 <translation id="5215450412607891876">Mengaktifkan update keamanan yang diperpanjang</translation>
@@ -6223,7 +6221,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' disalin</translation>
 <translation id="5488508217173274228">Opsi enkripsi sinkronisasi</translation>
 <translation id="5489077378642700219">Jangan izinkan notifikasi dari <ph name="WEBSITE" />, tetapi tanyakan nanti</translation>
-<translation id="5489435190927933437">Sandi yang tersimpan untuk <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Alamat dan Lain-Lain</translation>
 <translation id="5490721031479690399">Putuskan hubungan perangkat Bluetooth</translation>
 <translation id="5490798133083738649">Izinkan Linux mengakses mikrofon Anda</translation>
@@ -6357,7 +6354,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5582839680698949063">Menu utama</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Simpan nama pengguna?</translation>
-<translation id="5584091888252706332">Saat Memulai</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Data ini berisi informasi umum tentang perangkat Anda dan penggunaannya (seperti tingkat daya baterai, aktivitas aplikasi dan sistem, serta error). Data ini akan digunakan untuk meningkatkan performa Android. Beberapa informasi gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android, membuat aplikasi dan produk mereka menjadi lebih baik.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Menonaktifkan fitur ini tidak memengaruhi kemampuan perangkat Anda mengirim informasi yang diperlukan untuk layanan penting seperti update sistem dan keamanan.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Pemilik dapat mengontrol fitur ini dari Setelan &gt; Lanjutan &gt; Otomatis kirimkan data diagnostik dan penggunaan ke Google.<ph name="END_PARAGRAPH3" />
@@ -9375,7 +9371,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7815680994978050279">Download berbahaya diblokir</translation>
 <translation id="7817361223956157679">Keyboard di layar belum berfungsi di aplikasi Linux</translation>
 <translation id="7818135753970109980">Tema baru ditambahkan (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Setelah memulai ulang, lanjutkan dari aplikasi, situs, dan jendela yang terakhir dibuka</translation>
 <translation id="7819605256207059717">Diblokir oleh organisasi Anda</translation>
 <translation id="7820400255539998692">Hapus <ph name="FILENAME" />, agar orang lain yang menggunakan perangkat ini tidak dapat melihat sandi Anda</translation>
 <translation id="7820561748632634942">Tetapkan tombol akses tambahan?</translation>
@@ -10185,6 +10180,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Untuk mendapatkan bantuan lebih lanjut, buka: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Rangkuman Sambutan</translation>
 <translation id="8386091599636877289">Kebijakan tidak ditemukan.</translation>
 <translation id="8387361103813440603">Tidak diizinkan melihat lokasi Anda</translation>
 <translation id="8387617938027387193">Verifikasi diri Anda</translation>

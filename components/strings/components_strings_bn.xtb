@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">মালপত্র অন্য জায়গায় নিয়ে যাওয়ার পরিষেবা</translation>
 <translation id="1270502636509132238">পিক-আপের পদ্ধতি</translation>
 <translation id="1273592791152866347">দাম ট্র্যাক করার ফিচার বন্ধ করা আছে</translation>
+<translation id="1277711244058668002">পছন্দ বোতাম, আপনি কেন এই সাজেশন পছন্দ করলেন, সেই সম্পর্কে মতামত জমা দেওয়ার জন্য কোনও ফর্ম খুলতে Enter প্রেস করুন</translation>
 <translation id="127777513559587977">টিভিতে টক শো</translation>
 <translation id="1281476433249504884">স্ট্যাকার ১</translation>
 <translation id="1281536351321444151">এই IBAN পরবর্তী সময় অটোফিল করতে, আপনার Google অ্যাকাউন্টে এটি সেভ করুন</translation>
@@ -664,6 +665,7 @@
 <translation id="2188375229972301266">নিচে মাল্টিপল পাঞ্চ</translation>
 <translation id="2194856509914051091">যা যা দেখে নেওয়া প্রয়োজন</translation>
 <translation id="2197398642355049178">আপনার বিষয়</translation>
+<translation id="2200678913752027654">অপছন্দ বোতাম, আপনি কেন এই সাজেশন অপছন্দ করলেন, সেই সম্পর্কে বিস্তারিত মতামত জমা দেওয়ার জন্য কোনও ফর্ম খুলতে Enter প্রেস করুন</translation>
 <translation id="2202627062836089804">আপনার কার্ডের পিছনের দিক</translation>
 <translation id="2204482073374652408">আপডেট প্রসেস সম্পূর্ণ হয়েছে!</translation>
 <translation id="2207770355672215546">যেকোনও কার্ডের সাথে, সবসময় অ্যাক্সেস করার অনুমতি দিন</translation>
@@ -2586,6 +2588,7 @@
 <translation id="5887687176710214216">গতকাল শেষবার দেখা হয়েছে</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
 <translation id="5895187275912066135">এই তারিখে ইস্যু করা</translation>
+<translation id="5898767305816764989">পছন্দ বোতাম, আপনি কেন <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> পছন্দ করলেন, সেই সম্পর্কে মতামত জমা দেওয়ার জন্য কোনও ফর্ম খুলতে Enter প্রেস করুন</translation>
 <translation id="5901630391730855834">হলুদ</translation>
 <translation id="5903264686717710770">শিরোনাম:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (সিঙ্ক হয়েছে)</translation>
@@ -3317,6 +3320,7 @@
 অতিরিক্ত বিবরণ:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">আপনার অ্যাডমিনিস্ট্রেটরের বক্তব্য হল: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">অপছন্দ বোতাম, আপনি কেন <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> অপছন্দ করলেন, সেই সম্পর্কে বিস্তারিত মতামত জমা দেওয়ার জন্য কোনও ফর্ম খুলতে Enter প্রেস করুন</translation>
 <translation id="7256634549594854023">রিয়ার ট্রে</translation>
 <translation id="7257453341537973799">কেরিয়ার সংক্রান্ত রিসোর্স ও পরিকল্পনা</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> এ একটি ব্যক্তিগত সংযোগ স্থাপন করা যায়নি কারণ আপনার কম্পিউটারের তারিখ এবং সময় (<ph name="DATE_AND_TIME" />) সঠিক নয়৷</translation>

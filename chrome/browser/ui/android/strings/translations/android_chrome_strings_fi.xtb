@@ -1583,7 +1583,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> latausta palautettu</translation>
 <translation id="8368001212524806591">Seuraa hintaa</translation>
 <translation id="8378850197701296741">Tilillä <ph name="FROM_ACCOUNT" /> on kirjanmerkkejä, historiaa ja muita asetuksia.</translation>
-<translation id="8382640928718131148">Välilehdet, joita et ole käyttänyt <ph name="DAYS_INACTIVE" /> päivään, siirretään tänne ja suljetaan <ph name="DAYS_ARCHIVED" /> päivän kuluttua. Voit vaihtaa valintasi milloin tahansa täältä: <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8387617938027387193">Todenna henkilöllisyytesi</translation>
 <translation id="8393700583063109961">Lähetä viesti</translation>
 <translation id="8402673309244746971">Siirry Seurataan-fiidiin</translation>

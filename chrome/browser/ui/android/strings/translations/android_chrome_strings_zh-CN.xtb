@@ -1581,7 +1581,6 @@
 <translation id="835847953965672673">已恢复 <ph name="NUMBER_OF_DOWNLOADS" /> 项下载内容</translation>
 <translation id="8368001212524806591">跟踪价格</translation>
 <translation id="8378850197701296741">您有来自 <ph name="FROM_ACCOUNT" /> 的书签、历史记录及其他设置。</translation>
-<translation id="8382640928718131148">连续 <ph name="DAYS_INACTIVE" /> 天未使用的标签页会移至此处，并会在 <ph name="DAYS_ARCHIVED" /> 天后关闭。您随时可在<ph name="SETTINGS_TITLE" />中更改此设置。</translation>
 <translation id="8387617938027387193">请验证是您本人在操作</translation>
 <translation id="8393700583063109961">发送消息</translation>
 <translation id="8402673309244746971">前往“已关注”</translation>

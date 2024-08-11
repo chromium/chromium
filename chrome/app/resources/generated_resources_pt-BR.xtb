@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Copiar nome de exibição</translation>
 <translation id="1062407476771304334">Substituir</translation>
 <translation id="1062628064301375934">Ajude a criar uma Web com mais privacidade</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{O Chrome removeu as permissões de 1 site}one{O Chrome removeu as permissões de {NUM_SITES} site}other{O Chrome removeu as permissões de {NUM_SITES} sites}}</translation>
 <translation id="1066964438793906105">Verificar a existência de malware</translation>
 <translation id="1067661089446014701">Para ter mais segurança, você pode criptografar as senhas no dispositivo antes que elas sejam salvas na sua Conta do Google</translation>
 <translation id="1067922213147265141">Outros serviços do Google</translation>
@@ -1215,6 +1214,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="184183613002882946">Não, manter apenas um interruptor</translation>
 <translation id="184273675144259287">Substituir seus apps e arquivos do Linux por um backup anterior</translation>
 <translation id="1842766183094193446">Tem certeza de que quer ativar o modo de demonstração?</translation>
+<translation id="1843048149176045210">Copiar link de download</translation>
 <translation id="1845060436536902492">O leitor de tela no ChromeOS Flex, ChromeVox, é usado principalmente por pessoas cegas ou com baixa visão para ler textos exibidos na tela com um sintetizador de voz ou linha braille. Pressione a barra de espaço para ativar o ChromeVox. Quando o ChromeVox for ativado, vamos oferecer um tour rápido.</translation>
 <translation id="1845727111305721124">Permitir a reprodução de sons</translation>
 <translation id="1846308012215045257">Aperte Ctrl e clique para executar o plug-in <ph name="PLUGIN_NAME" /></translation>
@@ -3174,6 +3174,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3251714896659475029">Permita que <ph name="SUPERVISED_USER_NAME" /> acesse o Google Assistente com a hotword "Ok Google"</translation>
 <translation id="3251759466064201842">&lt;Não faz parte do certificado&gt;</translation>
 <translation id="325238099842880997">Definir regras digitais para ajudar as crianças a brincar, explorar e fazer os trabalhos escolares em casa</translation>
+<translation id="3253083398453405334">Piscar a tela ao receber notificações</translation>
 <translation id="3253225298092156258">Indisponível</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Libere espaço no <ph name="CLOUD_PROVIDER" /> para copiar o arquivo}one{Libere espaço no <ph name="CLOUD_PROVIDER" /> para copiar o arquivo}other{Libere espaço no <ph name="CLOUD_PROVIDER" /> para copiar os arquivos}}</translation>
 <translation id="3253448572569133955">Conta desconhecida</translation>
@@ -3671,6 +3672,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3621807901162200696">Ajudar a melhorar os recursos e o desempenho do ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{um app}one{# app}other{# apps}}</translation>
+<translation id="3622820753353315928">Cor do flash da tela</translation>
 <translation id="362333465072914957">Esperando um certificado CA</translation>
 <translation id="3623598555687153298">Essa ação vai excluir <ph name="TOTAL_USAGE" /> de dados armazenados pelos sites mostrados</translation>
 <translation id="3624567683873126087">Desbloquear dispositivo e fazer login na Conta do Google</translation>
@@ -4936,6 +4938,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4538792345715658285">Instalada pela política empresarial.</translation>
 <translation id="4540409690203718935">Falha no acesso ao Gerenciador de senhas do Google. Tente de novo em alguns minutos</translation>
 <translation id="4541123282641193691">Não foi possível verificar sua conta. Tente novamente ou reinicie o Chromebook.</translation>
+<translation id="4541505619120536051">Sempre abrir</translation>
 <translation id="4541662893742891060">Não é possível se conectar a esse perfil. Entre em contato com sua operadora para receber suporte técnico.</translation>
 <translation id="4541706525461326392">Removendo o perfil. Pode levar alguns minutos..</translation>
 <translation id="4542520061254486227">Leia seus dados em <ph name="WEBSITE_1" /> e <ph name="WEBSITE_2" /></translation>
@@ -5270,7 +5273,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4794910597689955457">Transferir <ph name="NUM_OF_FILES" /> arquivos para abrir no <ph name="CLOUD_PROVIDER" />?</translation>
 <translation id="479536056609751218">Página da web, somente HTML</translation>
 <translation id="4795670271446126525">Ondas batendo</translation>
-<translation id="4796142525425001238">Sempre restaurar</translation>
 <translation id="4797314204379834752">Tente usar grupos de guias para organizar tarefas, fazer compras on-line e muito mais</translation>
 <translation id="479863874072008121">Gerenciar dispositivos</translation>
 <translation id="479989351350248267">pesquisar</translation>
@@ -5849,7 +5851,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5210365745912300556">Fechar guia</translation>
 <translation id="5213114823401215820">Reabrir grupo fechado</translation>
 <translation id="5213481667492808996">Seu serviço de dados "<ph name="NAME" />" está pronto para ser usado</translation>
-<translation id="5213658238771284310">Restaurar sessão na inicialização</translation>
 <translation id="5213891612754844763">Mostrar configurações de proxy</translation>
 <translation id="5214639857958972833">Favorito "<ph name="BOOKMARK_TITLE" />" criado.</translation>
 <translation id="5215450412607891876">Ativar atualizações de segurança estendidas</translation>
@@ -6224,7 +6225,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5488093641312826914">"<ph name="COPIED_ITEM_NAME" />" copiado</translation>
 <translation id="5488508217173274228">Sincronizar opções de criptografia</translation>
 <translation id="5489077378642700219">Não permitir notificações de <ph name="WEBSITE" />, mas perguntar mais tarde</translation>
-<translation id="5489435190927933437">Senhas salvas para <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Endereços e mais</translation>
 <translation id="5490721031479690399">Desconectar dispositivo Bluetooth</translation>
 <translation id="5490798133083738649">Permitir que o Linux acesse o microfone</translation>
@@ -6358,7 +6358,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5582839680698949063">Menu principal</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Salvar nome de usuário?</translation>
-<translation id="5584091888252706332">Inicialização</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Essas são informações gerais sobre seu dispositivo e como você o utiliza (como nível da bateria, atividade do sistema e de apps e erros). Os dados serão usados para melhorar o Android, e algumas informações agregadas também ajudarão apps e parceiros do Google, como desenvolvedores do Android, que poderão melhorar os apps e produtos deles.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />A desativação desse recurso não afeta a capacidade do dispositivo de enviar as informações necessárias para serviços básicos, como atualizações do sistema e segurança.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />O proprietário pode controlar esse recurso em "Configurações" &gt; "Avançado" &gt; "Enviar automaticamente dados de uso e diagnóstico ao Google".<ph name="END_PARAGRAPH3" />
@@ -7178,6 +7177,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6197128521826316819">Criar QR code para esta página</translation>
 <translation id="6198223452299275399">Deslizar entre páginas</translation>
 <translation id="6198252989419008588">Alterar PIN</translation>
+<translation id="61988015556954366">Flash da tela</translation>
 <translation id="6200047250927636406">Descartar arquivo</translation>
 <translation id="6200151268994853226">Gerenciar extensão</translation>
 <translation id="6201608810045805374">Remover essa conta?</translation>
@@ -7535,6 +7535,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> arquivos</translation>
 <translation id="6469557521904094793">Ativar rede celular</translation>
 <translation id="6469702164109431067">Senhas e chaves de acesso</translation>
+<translation id="6470120577693311302">Notificações com flash</translation>
 <translation id="6470823736074966819">Desativar som das notificações</translation>
 <translation id="6472893788822429178">Mostrar botão "Página inicial"</translation>
 <translation id="6473315466413288899">Selecione uma opção</translation>
@@ -7969,6 +7970,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6790820461102226165">Adicionar pessoa...</translation>
 <translation id="6793610798874309813">Seu PIN pode ter 4 caracteres ou mais</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> copiado para a área de transferência</translation>
 <translation id="6794511157503068">Se a chave de acesso de <ph name="APP_NAME" /> estiver em uma chave de segurança USB, insira-a e toque nela agora</translation>
 <translation id="679486139907144816">Para fazer login neste site com uma chave de acesso, ative o Windows Hello nas configurações. Depois, volte a este site e tente de novo.</translation>
 <translation id="6795371939514004514">Com a leitura automática, você navega automaticamente pelos itens na tela. Quando um item estiver destacado, pressione "Selecionar" para ativá-lo.</translation>
@@ -9380,7 +9382,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7815680994978050279">Download perigoso bloqueado</translation>
 <translation id="7817361223956157679">O teclado na tela ainda não funciona com aplicativos do Linux</translation>
 <translation id="7818135753970109980">Novo tema adicionado (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Depois de reiniciar, continue de onde parou em apps, sites e janelas abertas</translation>
 <translation id="7819605256207059717">Bloqueado pela sua organização</translation>
 <translation id="7820400255539998692">Exclua o arquivo <ph name="FILENAME" /> para que outros usuários deste dispositivo não tenham acesso a suas senhas</translation>
 <translation id="7820561748632634942">Atribuir mais interruptores?</translation>
@@ -10190,6 +10191,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para receber mais ajuda, acesse: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Início inteligente</translation>
 <translation id="8386091599636877289">Política não encontrada.</translation>
 <translation id="8387361103813440603">Bloquear o acesso à localização</translation>
 <translation id="8387617938027387193">Confirme que é você</translation>

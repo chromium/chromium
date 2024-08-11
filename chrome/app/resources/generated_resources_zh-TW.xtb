@@ -98,7 +98,6 @@
 <translation id="10619348099955377">複製顯示名稱</translation>
 <translation id="1062407476771304334">取代</translation>
 <translation id="1062628064301375934">協助我們打造更私密的網路</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome 已移除 1 個網站的權限}other{Chrome 已移除 {NUM_SITES} 個網站的權限}}</translation>
 <translation id="1066964438793906105">掃描是否有惡意軟體</translation>
 <translation id="1067661089446014701">為進一步加強安全性，建議先在裝置上將密碼加密，再儲存至你的 Google 帳戶</translation>
 <translation id="1067922213147265141">其他 Google 服務</translation>
@@ -4918,6 +4917,7 @@
 <translation id="4538792345715658285">由公司政策安裝</translation>
 <translation id="4540409690203718935">連不上 Google 密碼管理工具，請過幾分鐘後再試</translation>
 <translation id="4541123282641193691">無法驗證帳戶。請再試一次，或重新啟動 Chromebook。</translation>
+<translation id="4541505619120536051">一律開啟</translation>
 <translation id="4541662893742891060">無法連線至這個設定檔。如需技術支援，請與你的電信業者聯絡。</translation>
 <translation id="4541706525461326392">正在移除設定檔。請稍候片刻。</translation>
 <translation id="4542520061254486227">讀取你在 <ph name="WEBSITE_1" /> 和 <ph name="WEBSITE_2" /> 上產生的資料</translation>
@@ -5252,7 +5252,6 @@
 <translation id="4794910597689955457">要將 <ph name="NUM_OF_FILES" /> 個檔案移到「<ph name="CLOUD_PROVIDER" />」再開啟嗎？</translation>
 <translation id="479536056609751218">僅限網頁的 HTML 部分</translation>
 <translation id="4795670271446126525">洶湧的海浪</translation>
-<translation id="4796142525425001238">一律還原</translation>
 <translation id="4797314204379834752">試著為線上購物等使用分頁群組來規劃工作</translation>
 <translation id="479863874072008121">管理裝置</translation>
 <translation id="479989351350248267">search</translation>
@@ -5830,7 +5829,6 @@
 <translation id="5210365745912300556">關閉分頁</translation>
 <translation id="5213114823401215820">重新開啟先前關閉的群組</translation>
 <translation id="5213481667492808996">現在可以使用「<ph name="NAME" />」的數據服務了</translation>
-<translation id="5213658238771284310">啟動時還原工作階段</translation>
 <translation id="5213891612754844763">顯示 Proxy 設定</translation>
 <translation id="5214639857958972833">已建立「<ph name="BOOKMARK_TITLE" />」書籤。</translation>
 <translation id="5215450412607891876">啟用延長安全性更新</translation>
@@ -6204,7 +6202,6 @@
 <translation id="5488093641312826914">已複製「<ph name="COPIED_ITEM_NAME" />」</translation>
 <translation id="5488508217173274228">同步資料加密的選項</translation>
 <translation id="5489077378642700219">不允許接收來自 <ph name="WEBSITE" /> 的通知，但稍後再詢問</translation>
-<translation id="5489435190927933437">已儲存的 <ph name="DOMAIN" /> 密碼</translation>
 <translation id="5490432419156082418">地址和其他資訊</translation>
 <translation id="5490721031479690399">中斷與藍牙裝置的連線</translation>
 <translation id="5490798133083738649">允許 Linux 存取你的麥克風</translation>
@@ -6338,7 +6335,6 @@
 <translation id="5582839680698949063">主選單</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">要儲存使用者名稱嗎？</translation>
-<translation id="5584091888252706332">起始畫面</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />這會提供裝置和裝置使用情況的一般資訊 (例如電池電量、系統和應用程式活動，以及錯誤資訊)。這些資料會用於改善 Android 使用體驗，而部分匯總資訊還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提高應用程式和產品的品質。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />即使關閉這項功能，你的裝置仍然可以傳送基本服務 (例如系統更新與安全服務) 所需的資訊。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />裝置擁有者如要管理這項功能，可依序前往 [設定] &gt; [進階] &gt; [自動將診斷資料和使用情況資料傳送給 Google]。<ph name="END_PARAGRAPH3" />
@@ -9353,7 +9349,6 @@
 <translation id="7815680994978050279">已封鎖危險下載內容</translation>
 <translation id="7817361223956157679">Linux 應用程式目前不支援螢幕小鍵盤</translation>
 <translation id="7818135753970109980">已新增以下主題：<ph name="EXTENSION_NAME" /></translation>
-<translation id="7819087895293765164">重新啟動後，繼續使用先前的應用程式、網站和已開啟的視窗</translation>
 <translation id="7819605256207059717">遭到貴機構封鎖</translation>
 <translation id="7820400255539998692">請刪除「<ph name="FILENAME" />」，以免這部裝置的其他使用者看到你的密碼</translation>
 <translation id="7820561748632634942">要指派其他外接切換裝置嗎？</translation>
@@ -10163,6 +10158,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如需詳細說明，請前往：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">歡迎回顧</translation>
 <translation id="8386091599636877289">找不到政策。</translation>
 <translation id="8387361103813440603">不得查看你的位置資訊</translation>
 <translation id="8387617938027387193">驗證你的身分</translation>

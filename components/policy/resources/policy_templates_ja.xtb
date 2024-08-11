@@ -3904,27 +3904,6 @@ DevTools の生成 AI 機能は次のとおりです。
 <translation id="4101282687722389021">このエントリが前回更新された時間を示す UTC のタイムスタンプです。このタイムスタンプは整数値には適合しないため、文字列として送信されます。</translation>
 <translation id="4101826711886952606">Home / End の設定で「検索」修飾キーを含むショートカットを使用する</translation>
 <translation id="4102347680024644994">広範な検出と対応（XDR）イベントを報告する</translation>
-<translation id="4104303092334469130">データ漏洩を防止するためのデータ管理ルールのリストを設定します。
-
-      各ルールは以下で構成されます。
-      - ルールをトリガーする条件フィールド。ルールがトリガーされるのは、<ph name="DATA_CONTROLS_SOURCES" />、<ph name="DATA_CONTROLS_DESTINATIONS" />、<ph name="DATA_CONTROLS_AND" />、<ph name="DATA_CONTROLS_OR" />、<ph name="DATA_CONTROLS_NOT" /> フィールドに入力された全フィールドにユーザー アクションが一致する場合のみです。リストのサブフィールドでは、一致するエントリが 1 つあれば（例: 1 つの URL パターンが一致すれば）、ルールがトリガーされる条件が満たされます。
-      - 適用する制限のリスト。制限に応じて、<ph name="DATA_CONTROLS_SOURCES" /> 条件または <ph name="DATA_CONTROLS_DESTINATIONS" /> 条件のみを使用できます。
-
-      ルールでは次の項目を管理できます。
-      - 参照元と参照先の間で共有するクリップボード データ。
-      - ソースタブに基づくスクリーンショットのブロック。
-
-      <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> ポリシーが True に設定されている場合、トリガーされたルールは管理者に報告されます。
-      制限レベルは「BLOCK」、「WARN」、「REPORT」に設定できます。
-      - 制限レベルを「BLOCK」に設定した場合、アクションは許可されません。
-      - 制限レベルを「WARN」に設定した場合、ユーザーに警告が表示されます。ユーザーはアクションを実行するかキャンセルするかを選択できます。
-      - 制限レベルを「REPORT」に設定した場合、ユーザー アクションは中断されませんが、<ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> ポリシーが有効であればレポートが送信されます。
-
-      注:
-      - URL パターンは、https://support.google.com/chrome/a?p=url_blocklist_filter_format の形式で指定します。
-      - <ph name="PRODUCT_OS_NAME" /> 固有のデータ漏洩防止ルールについては、<ph name="DATA_LEAK_PREVENTION_RULES_LIST" /> ポリシーもご覧ください。
-
-      このポリシーを未設定のままにした場合、制限は適用されません。</translation>
 <translation id="4105989332710272578">指定した URL に対して証明書の透明性ポリシーの適用を無効にする</translation>
 <translation id="410740968939768919"><ph name="PRODUCT_OS_NAME" /> のログイン画面で Manifest v2 を使用した拡張機能を許可するかどうかを管理します。
 
@@ -6252,15 +6231,6 @@ Kyber の提供には下位互換性があります。既存の TLS サーバー
       このポリシーを未設定のままにした場合、デバイスが対応していれば標準のバッテリー充電モードが適用され、ユーザーはこの設定を変更できません。
 
       注: カスタムのバッテリー充電モードを選択した場合は、<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> と <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> も指定してください。</translation>
-<translation id="60655674079349516">ユーザーがすべてのブラウザ ウィンドウを終了したときに削除する閲覧データの種類のリストを設定します。
-
-警告: このポリシーを設定すると、ローカルの個人データに影響し、完全に削除される場合があります。個人データが誤って削除されないように、デプロイ前に設定をテストすることをおすすめします。
-
-指定できるデータの種類は、閲覧履歴（<ph name="DATA_TYPE_BROWSING_HISTORY" />）、ダウンロード履歴（<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />）、Cookie（<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />）、キャッシュ（<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />）、自動入力（<ph name="DATA_TYPE_AUTOFILL" />）、パスワード（<ph name="DATA_TYPE_PASSWORD" />）、サイトの設定（<ph name="DATA_TYPE_SITE_SETTINGS" />）、ホストされているアプリデータ（<ph name="DATA_TYPE_HOSTED_APP_DATA" />）です。ただし、このポリシーよりも <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> が優先されます。
-
-Chrome 114 までは、このポリシーを使用するには <ph name="SYNC_DISABLED_POLICY_NAME" /> ポリシーを true に設定する必要がありました。Chrome 115 以降では、このポリシーを設定すると、<ph name="SYNC_DISABLED_POLICY_NAME" /> ポリシーで「<ph name="CHROME_SYNC_NAME" />」を無効にしておらずかつ<ph name="BROWSER_SIGNIN_POLICY_NAME" /> も無効になっていない場合に、それぞれのデータタイプの同期が無効になります。
-
-<ph name="PRODUCT_NAME" /> が正常に終了しなかった場合（ブラウザや OS がクラッシュした場合など）は、次回プロファイルが読み込まれたときに閲覧データが削除されます。</translation>
 <translation id="6066761914755798079"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> では、検索候補を表示する検索エンジンの URL を指定できます。この URL には <ph name="SEARCH_TERM_MARKER" /> という文字列を含めます。この文字列は、クエリの送信時にユーザーが指定した検索キーワードに置き換えられます。
 
       Google の検索 URL は次のように指定できます。<ph name="GOOGLE_SUGGEST_SEARCH_URL" /></translation>

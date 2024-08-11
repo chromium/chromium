@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Copia el nom de visualització</translation>
 <translation id="1062407476771304334">Substitueix</translation>
 <translation id="1062628064301375934">Ajuda'ns a crear un web més privat</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome ha suprimit els permisos d'1 lloc web}other{Chrome ha suprimit els permisos de {NUM_SITES} llocs web}}</translation>
 <translation id="1066964438793906105">Cerca programari maliciós</translation>
 <translation id="1067661089446014701">Per augmentar la seguretat, pots encriptar les contrasenyes al dispositiu abans que es desin al teu Compte de Google</translation>
 <translation id="1067922213147265141">Altres serveis de Google</translation>
@@ -4919,6 +4918,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4538792345715658285">Instal·lat per una política empresarial</translation>
 <translation id="4540409690203718935">No es pot accedir al gestor de contrasenyes de Google. Torna-ho a provar d'aquí a uns quants minuts.</translation>
 <translation id="4541123282641193691">No s'ha pogut verificar el teu compte. Torna-ho a provar o reinicia el Chromebook.</translation>
+<translation id="4541505619120536051">Obre sempre</translation>
 <translation id="4541662893742891060">No es pot connectar a aquest perfil. Per obtenir assistència tècnica, contacta amb el teu operador.</translation>
 <translation id="4541706525461326392">S'està suprimint el perfil. Aquest procés pot tardar uns minuts.</translation>
 <translation id="4542520061254486227">Llegir les dades dels llocs <ph name="WEBSITE_1" /> i <ph name="WEBSITE_2" /></translation>
@@ -5253,7 +5253,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4794910597689955457">Vols moure <ph name="NUM_OF_FILES" /> fitxers a <ph name="CLOUD_PROVIDER" /> per obrir-los?</translation>
 <translation id="479536056609751218">Pàgina web, només HTML</translation>
 <translation id="4795670271446126525">Onades que es rompen</translation>
-<translation id="4796142525425001238">Restaura sempre</translation>
 <translation id="4797314204379834752">Prova de fer servir grups de pestanyes per organitzar tasques, fer compres en línia, etc.</translation>
 <translation id="479863874072008121">Gestiona els dispositius</translation>
 <translation id="479989351350248267">cerca</translation>
@@ -5831,7 +5830,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5210365745912300556">Tanca la pestanya</translation>
 <translation id="5213114823401215820">Torna a obrir el grup tancat</translation>
 <translation id="5213481667492808996">Ja pots utilitzar el servei de dades <ph name="NAME" /></translation>
-<translation id="5213658238771284310">Restaura la sessió a l'inici</translation>
 <translation id="5213891612754844763">Mostra la configuració del servidor intermediari</translation>
 <translation id="5214639857958972833">S'ha creat l'adreça d'interès "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="5215450412607891876">Activa les actualitzacions de seguretat ampliades</translation>
@@ -6206,7 +6204,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5488093641312826914">S'ha copiat <ph name="COPIED_ITEM_NAME" /></translation>
 <translation id="5488508217173274228">Opcions d'encriptació de la sincronització</translation>
 <translation id="5489077378642700219">No permetis les notificacions de <ph name="WEBSITE" />, però demana-ho més endavant</translation>
-<translation id="5489435190927933437">Contrasenyes desades per a <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Adreces i més</translation>
 <translation id="5490721031479690399">Desconnecta el dispositiu Bluetooth</translation>
 <translation id="5490798133083738649">Permet que Linux accedeixi al micròfon</translation>
@@ -6340,7 +6337,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5582839680698949063">Menú principal</translation>
 <translation id="5583640892426849032">Retrocés</translation>
 <translation id="5584088138253955452">Vols desar el nom d'usuari?</translation>
-<translation id="5584091888252706332">A l'inici</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Es tracta d'informació general sobre el dispositiu i sobre com el fas servir, com ara els errors, el nivell de bateria i l'activitat al sistema i en aplicacions. Les dades s'utilitzaran per millorar Android i part de la informació agregada també ajudarà les aplicacions i els partners de Google, com ara els desenvolupadors d'Android, a millorar les seves aplicacions i els seus productes.<ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />Si aquesta funció es desactiva, no afectarà la capacitat del dispositiu d'enviar la informació necessària per rebre serveis bàsics, com ara seguretat i actualitzacions del sistema.<ph name="END_PARAGRAPH2" />
 <ph name="BEGIN_PARAGRAPH3" />El propietari pot controlar aquesta funció des de Configuració &gt; Configuració avançada &gt; Envia automàticament dades de diagnòstic i d'ús a Google.<ph name="END_PARAGRAPH3" />
@@ -9357,7 +9353,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7815680994978050279">S'ha bloquejat una baixada perillosa</translation>
 <translation id="7817361223956157679">El teclat en pantalla encara no funciona en aplicacions per a Linux</translation>
 <translation id="7818135753970109980">S'ha afegit un tema nou (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Després de reiniciar, continua utilitzant les aplicacions, els llocs web i les finestres obertes des d'on ho vas deixar</translation>
 <translation id="7819605256207059717">Bloquejat per la teva organització</translation>
 <translation id="7820400255539998692">Suprimeix <ph name="FILENAME" /> perquè els altres usuaris que utilitzen aquest dispositiu no puguin veure les teves contrasenyes</translation>
 <translation id="7820561748632634942">Vols assignar més interruptors?</translation>
@@ -10168,6 +10163,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Per obtenir més ajuda, ves a g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Recapitulació de benvinguda</translation>
 <translation id="8386091599636877289">No s'ha trobat la política.</translation>
 <translation id="8387361103813440603">Sense permís per veure la teva ubicació</translation>
 <translation id="8387617938027387193">Verifica la teva identitat</translation>

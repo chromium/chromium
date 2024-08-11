@@ -98,7 +98,6 @@
 <translation id="10619348099955377">የማሳያ ስም ቅዳ</translation>
 <translation id="1062407476771304334">ተካ</translation>
 <translation id="1062628064301375934">ተጨማሪ የግል ድር እንድንገነባ ያግዙን</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome ለ1 ጣቢያ ፈቃዶች አስወግዷል}one{Chrome ለ{NUM_SITES} ጣቢያ ፈቃዶች አስወግዷል}other{Chrome ለ{NUM_SITES} ጣቢያዎች ፈቃዶች አስወግዷል}}</translation>
 <translation id="1066964438793906105">ተንኮል አዘል ዌርን ይቃኙ</translation>
 <translation id="1067661089446014701">ለተጨማሪ ደህንነት ሲባል፣ የይለፍ ቃላት ወደ Google መለያዎ ከመቀመጣቸው በፊት በመሣሪያዎ ላይ ማመስጠር ይችላሉ</translation>
 <translation id="1067922213147265141">ሌሎች የGoogle አገልግሎቶች</translation>
@@ -4928,6 +4927,7 @@
 <translation id="4538792345715658285">በድርጅት መመሪያ የተጫነ።</translation>
 <translation id="4540409690203718935">የGoogle የይለፍ ቃል አስተዳዳሪን መድረስ አልተቻለም። በጥቂት ደቂቃዎች ውስጥ እንደገና ይሞክሩ</translation>
 <translation id="4541123282641193691">መለያዎን ማረጋገጥ አልተቻለም። እባክዎ እንደገና ይሞክሩ ወይም የእርስዎን Chromebook እንደገና ያስጀምሩት።</translation>
+<translation id="4541505619120536051">ሁልጊዜ ክፍት ነው</translation>
 <translation id="4541662893742891060">ከዚህ መገለጫ ጋር መገናኘት አልተቻለም። ለቴክኒካዊ ድጋፍ እባክዎ አገልግሎት አቅራቢዎን ያነጋግሩ።</translation>
 <translation id="4541706525461326392">መገለጫን በማስወገድ ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
 <translation id="4542520061254486227">የእርስዎን ውሂብ በ<ph name="WEBSITE_1" /> እና በ<ph name="WEBSITE_2" /> ላይ ያንብቡ</translation>
@@ -5262,7 +5262,6 @@
 <translation id="4794910597689955457">ለመክፈት <ph name="NUM_OF_FILES" /> ፋይሎች ወደ <ph name="CLOUD_PROVIDER" /> ይንቀሳቀሱ?</translation>
 <translation id="479536056609751218">ድረ-ገፅ፣ ኤች ቲ ኤም ኤል ብቻ</translation>
 <translation id="4795670271446126525">የግጭት ሞገዶች</translation>
-<translation id="4796142525425001238">ሁልጊዜ ወደነበረበት መልስ</translation>
 <translation id="4797314204379834752">ተግባራትን ለማደራጀት፣ ለመስመር ላይ ግብይት እና ለሌሎችም የትር ቡድኖችን ለመጠቀም ይሞክሩ</translation>
 <translation id="479863874072008121">መሣሪያዎችን ያቀናብሩ</translation>
 <translation id="479989351350248267">ፈልግ</translation>
@@ -5841,7 +5840,6 @@
 <translation id="5210365745912300556">ትር ዝጋ</translation>
 <translation id="5213114823401215820">የተዘጋ ቡድንን እንደገና ይክፈቱ</translation>
 <translation id="5213481667492808996">የእርስዎ የ«<ph name="NAME" />» ውሂብ አገልግሎት ጥቅም ላይ ለመዋል ዝግጁ ነው</translation>
-<translation id="5213658238771284310">ጅማሪ ላይ ክፍለ ጊዜን ወደነበረበት ይመልሱ</translation>
 <translation id="5213891612754844763">የተኪ ቅንብሮችን አሳይ</translation>
 <translation id="5214639857958972833">«<ph name="BOOKMARK_TITLE" />» ዕልባት ተፈጥሯል።</translation>
 <translation id="5215450412607891876">የተራዘሙ የደህንነት ዝማኔዎችን አብራ</translation>
@@ -6216,7 +6214,6 @@
 <translation id="5488093641312826914">«<ph name="COPIED_ITEM_NAME" />» ተቀድቷል</translation>
 <translation id="5488508217173274228">የስምረት ምስጠራ አማራጮች</translation>
 <translation id="5489077378642700219">ከ<ph name="WEBSITE" /> የሚመጡ ማሳወቂያዎችን አትፍቀድ ነገር ግን በኋላ ጠይቅ</translation>
-<translation id="5489435190927933437">የተቀመጡ የይለፍ ቃላት ለ<ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">አድራሻዎች እና ተጨማሪ</translation>
 <translation id="5490721031479690399">የብሉቱዝ መሣሪያን ግንኙነት አቋርጥ</translation>
 <translation id="5490798133083738649">Linux የእርስዎን ማይክሮፎን እንዲደርስ ይፍቀዱለት</translation>
@@ -6350,7 +6347,6 @@
 <translation id="5582839680698949063">ዋና ምናሌ</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">የተጠቃሚ ስም ይቀመጥ?</translation>
-<translation id="5584091888252706332">በሚነሳበት ጊዜ</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />ይህ የመሣሪያዎ እና እንዴት እንደሚጠቀሙበት አጠቃላይ መረጃ (እንደ የባትሪ ደረጃ፣ የመተግበሪያ አጠቃቀም እና የአውታረ መረብ ተገናኝነት ያለ) ነው። ውሂቡ የGoogle ምርቶችን እና አገልግሎቶችን ለሁሉም ሰው ለማሻሻል ጥቅም ላይ ይውላል። አንዳንድ የተዋሃደ መረጃ እንደ የAndroid ገንቢዎች ያሉ አገሮች እንዲሁም መተግበሪያዎቻቸውን እና ምርቶቻቸውን እንዲያሻሽሉ ያግዛል።<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ይህን ባህሪ ማጥፋት መሣሪያዎ እንደ የስርዓት ዝማኔዎች እና ደህንነት ላሉ መሠረታዊ አገልግሎቶች የሚያስፈልግ መረጃ የመላክ አቅሙ ላይ ተጽዕኖ የለውም።<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />ይህን ባህሪ ከቅንብሮች &gt; የላቁ &gt; ወደ Google የአጠቃቀም እና ምርመራን ውሂብ በራስ ሰር ላክ ላይ ሆኖ ባለቤቱ ሊቆጣጠረው ይችላል።<ph name="END_PARAGRAPH3" />
@@ -9371,7 +9367,6 @@
 <translation id="7815680994978050279">አደገኛ ውርድ ታግዷል</translation>
 <translation id="7817361223956157679">ታይታ የቁልፍ ሰሌዳ በ Linux መተግበሪያዎች ላይ እስካሁን አይሠራም</translation>
 <translation id="7818135753970109980">አዲስ ገጽታ ታክሏል (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">እንደገና ካስጀመሩ በኋላ መተግበሪያዎች፣ ድር ጣቢያዎች እና የተከፈቱ መስኮቶች ላይ ካቆሙበት ይቀጥሉ</translation>
 <translation id="7819605256207059717">በድርጅትዎ ታግዷል</translation>
 <translation id="7820400255539998692">ሌሎች ይህን መሣሪያ የሚጠቀሙ የእርስዎን የይለፍ ቃላት ማየት እንዳይችሉ <ph name="FILENAME" />ን ይሰርዙ</translation>
 <translation id="7820561748632634942">ተጨማሪ መቀየሪያዎች ይመደቡ?</translation>
@@ -10186,6 +10181,7 @@ nil</translation>
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ተጨማሪ እገዛ ለማግኘት የሚከተለውን ይጎብኙ፦ g.co/flex/InstallErrors።<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">እንኳን ወደ Recap በደህና መጡ</translation>
 <translation id="8386091599636877289">መመሪያ አልተገኘም።</translation>
 <translation id="8387361103813440603">አካባቢዎን ለማየት አልተፈቀደም</translation>
 <translation id="8387617938027387193">እርስዎን መሆንዎን ያረጋግጡ</translation>

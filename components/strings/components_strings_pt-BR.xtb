@@ -456,6 +456,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">O CVC é um código composto pelos últimos três dígitos que ficam no canto superior direito do verso do cartão.</translation>
 <translation id="1810391395243432441">Proteger senhas com o bloqueio de tela</translation>
+<translation id="1810597570737826742">{count,plural, =1{{position} de {count} endereço extra}one{{position} de {count} endereço extra}other{{position} de {count} endereços extras}}</translation>
 <translation id="1812527064848182527">paisagem</translation>
 <translation id="1812975699435941848">Educação em saúde e treinamento médico</translation>
 <translation id="1816436748874040213">Pode pedir para rolar a tela e aplicar zoom em guias compartilhadas</translation>

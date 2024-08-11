@@ -98,7 +98,6 @@
 <translation id="10619348099955377">کپی کردن نام نمایشی</translation>
 <translation id="1062407476771304334">جایگزینی</translation>
 <translation id="1062628064301375934">به ما کمک کنید وب را خصوصی‌تر کنیم</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{‏‫Chrome اجازه‌های ۱ سایت را برداشت}one{‏‫Chrome اجازه‌های {NUM_SITES} سایت را برداشت}other{‏‫Chrome اجازه‌های {NUM_SITES} سایت را برداشت}}</translation>
 <translation id="1066964438793906105">اسکن برای یافتن بدافزار</translation>
 <translation id="1067661089446014701">‏برای افزایش ایمنی، می‌توانید گذرواژه‌ها را قبل‌از ذخیره شدن در «حساب Google» در دستگاهتان رمزگذاری کنید</translation>
 <translation id="1067922213147265141">‏سایر سرویس‌های Google</translation>
@@ -1212,6 +1211,7 @@
 <translation id="184183613002882946">نه، همان ۱ کلید کافی است</translation>
 <translation id="184273675144259287">‏برنامه‌ها و فایل‌های Linux خود را با نسخه پشتیبان قبلی جایگزین کنید</translation>
 <translation id="1842766183094193446">مطمئنید می‌خواهید حالت نمایشی را فعال کنید؟</translation>
+<translation id="1843048149176045210">کپی کردن پیوند بارگیری</translation>
 <translation id="1845060436536902492">‏صفحه‌خوان در ChromeOS Flex (یعنی ChromeVox) عمدتاً توسط افراد نابینا یا کم‌بینا استفاده می‌شود تا بتوانند نوشتار نمایش‌داده‌شده در صفحه را با ترکیب‌کننده گفتار یا نمایشگر بریل بخوانند. برای روشن کردن ChromeVox، کلید فاصله را فشار دهید. بعداز فعال شدن ChromeVox، به گشت سریعی هدایت می‌شوید.</translation>
 <translation id="1845727111305721124">اجازه دارد صدا پخش کند</translation>
 <translation id="1846308012215045257">برای اجرای <ph name="PLUGIN_NAME" /> کنترل-کلیک کنید</translation>
@@ -3171,6 +3171,7 @@
 <translation id="3251714896659475029">‏به <ph name="SUPERVISED_USER_NAME" /> اجازه دهید با گفتن «Ok Google» به «دستیار Google» دسترسی پیدا کند</translation>
 <translation id="3251759466064201842">&lt;جزئی از گواهی نیست&gt;</translation>
 <translation id="325238099842880997">تنظیم قوانین پایه دیجیتال برای کمک به فرزندان در زمینه بازی، کاوش، و انجام تکالیف مدرسه در خانه</translation>
+<translation id="3253083398453405334">وقتی اعلان دریافت می‌شود صفحه چشمک می‌زند</translation>
 <translation id="3253225298092156258">موجود نیست</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{برای کپی کردن این فایل در <ph name="CLOUD_PROVIDER" /> فضا آزاد کنید}one{برای کپی کردن این فایل در <ph name="CLOUD_PROVIDER" /> فضا آزاد کنید}other{برای کپی کردن این فایل‌ها در <ph name="CLOUD_PROVIDER" /> فضا آزاد کنید}}</translation>
 <translation id="3253448572569133955">حساب نامشخص</translation>
@@ -3667,6 +3668,7 @@
 <translation id="3621202678540785336">ورودی</translation>
 <translation id="3621807901162200696">‏کمک به بهبود ویژگی‌ها و عملکرد ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{یک برنامه}one{# برنامه}other{# برنامه}}</translation>
+<translation id="3622820753353315928">رنگ چشمک زدن صفحه‌نمایش</translation>
 <translation id="362333465072914957">‏درانتظار CA برای صدور گواهینامه</translation>
 <translation id="3623598555687153298">با این کار <ph name="TOTAL_USAGE" /> از داده‌هایی که سایت‌های نشان‌داده‌شده ذخیره کرده‌اند حذف خواهد شد</translation>
 <translation id="3624567683873126087">‏باز کردن قفل دستگاه و ورود به سیستم حساب Google</translation>
@@ -4932,6 +4934,7 @@
 <translation id="4538792345715658285">نصب شده توسط خط‌مشی سازمانی.</translation>
 <translation id="4540409690203718935">‏دسترسی به «مدیر گذرواژه Google» ممکن نیست. چند دقیقه دیگر دوباره امتحان کنید</translation>
 <translation id="4541123282641193691">‏حسابتان تأیید نشد. لطفاً دوباره امتحان کنید یا Chromebook خود را بازراه‌اندازی کنید.</translation>
+<translation id="4541505619120536051">همیشه باز شود</translation>
 <translation id="4541662893742891060">امکان اتصال به این نمایه وجود ندارد. برای پشتیبانی فنی، لطفاً با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="4541706525461326392">درحال برداشتن نمایه. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="4542520061254486227">خواندن داده‌های شما در <ph name="WEBSITE_1" /> و <ph name="WEBSITE_2" /></translation>
@@ -5266,7 +5269,6 @@
 <translation id="4794910597689955457"><ph name="NUM_OF_FILES" /> فایل برای باز شدن به <ph name="CLOUD_PROVIDER" /> منتقل شود؟</translation>
 <translation id="479536056609751218">‏صفحهٔ وب، فقط HTML</translation>
 <translation id="4795670271446126525">موج‌های خروشان</translation>
-<translation id="4796142525425001238">همیشه بازیابی شود</translation>
 <translation id="4797314204379834752">برای سازمان‌دهی کارها، خرید آنلاین، و کارهای دیگر، از گروه‌های برگه استفاده کنید</translation>
 <translation id="479863874072008121">مدیریت دستگاه‌ها</translation>
 <translation id="479989351350248267">جستجو</translation>
@@ -5845,7 +5847,6 @@
 <translation id="5210365745912300556">بستن برگه</translation>
 <translation id="5213114823401215820">باز کردن مجدد گروه بسته‌شده</translation>
 <translation id="5213481667492808996">سرویس داده «<ph name="NAME" />» شما آماده استفاده است</translation>
-<translation id="5213658238771284310">بازیابی جلسه هنگام راه‌اندازی</translation>
 <translation id="5213891612754844763">نمایش تنظیمات پروکسی</translation>
 <translation id="5214639857958972833">نشانک «<ph name="BOOKMARK_TITLE" />» ایجاد شد.</translation>
 <translation id="5215450412607891876">روشن کردن به‌روزرسانی امنیتی تمدیدشده</translation>
@@ -6220,7 +6221,6 @@
 <translation id="5488093641312826914">«<ph name="COPIED_ITEM_NAME" />» کپی شد</translation>
 <translation id="5488508217173274228">گزینه‌های رمزگذاری همگام‌سازی</translation>
 <translation id="5489077378642700219">اعلان‌های <ph name="WEBSITE" /> مجاز نباشد اما بعداً سؤال شود</translation>
-<translation id="5489435190927933437">گذرواژه‌های ذخیره‌شده برای <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">نشانی‌ها و سایر موارد</translation>
 <translation id="5490721031479690399">قطع اتصال دستگاه بلوتوث</translation>
 <translation id="5490798133083738649">‏اجازه دادن به Linux برای دسترسی به میکروفون</translation>
@@ -6354,7 +6354,6 @@
 <translation id="5582839680698949063">منوی اصلی</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">نام کاربری ذخیره شود؟</translation>
-<translation id="5584091888252706332">هنگام شروع به کار</translation>
 <translation id="5584915726528712820">‏<ph name="BEGIN_PARAGRAPH1" />این اطلاعاتی عمومی درباره دستگاهتان و نحوه استفاده شما از آن است (مثلاً میزان شارژ باتری، فعالیت سیستم و برنامه و خطاها). از این داده‌ها برای بهبود Android استفاده می‌شود و بعضی از اطلاعات جمع‌آوری‌شده به برنامه‌ها و شرکای Google (ازجمله برنامه‌نویسان Android) نیز کمک می‌کند برنامه‌ها و محصولاتشان را بهتر کنند.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />خاموش کردن این ویژگی بر توانایی دستگاهتان در ارسال اطلاعات موردنیاز برای سرویس‌های ضروری (مانند به‌روزرسانی‌های سیستم و امنیت) بی‌تأثیر است.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />مالک می‌تواند این ویژگی را از «تنظیمات &gt; پیشرفته &gt; ارسال خودکار داده‌های تشخیصی و میزان استفاده به Google» کنترل کند.<ph name="END_PARAGRAPH3" />
@@ -7173,6 +7172,7 @@
 <translation id="6197128521826316819">ایجاد رمزینه پاسخ‌سریع برای این صفحه</translation>
 <translation id="6198223452299275399">تند کشیدن بین صفحه‌ها</translation>
 <translation id="6198252989419008588">تغییر دادن پین</translation>
+<translation id="61988015556954366">چشمک‌زنی صفحه</translation>
 <translation id="6200047250927636406">صرف‌نظر کردن از فایل</translation>
 <translation id="6200151268994853226">مدیریت افزونه</translation>
 <translation id="6201608810045805374">این حساب برداشته شود؟</translation>
@@ -7530,6 +7530,7 @@
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> فایل</translation>
 <translation id="6469557521904094793">روشن کردن شبکه تلفن همراه</translation>
 <translation id="6469702164109431067">گذرواژه‌ها و گذرکلیدها</translation>
+<translation id="6470120577693311302">اعلان‌های چشمک‌زن</translation>
 <translation id="6470823736074966819">بی‌صدا کردن اعلان‌ها</translation>
 <translation id="6472893788822429178">نمایش دکمه صفحه اصلی</translation>
 <translation id="6473315466413288899">انتخاب یک گزینه</translation>
@@ -7964,6 +7965,7 @@
 <translation id="6790820461102226165">افزودن شخص...</translation>
 <translation id="6793610798874309813">پین می‌تواند ۴ نویسه یا بیشتر داشته باشد</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395">‫<ph name="DOWNLOAD_URL" /> در بریده‌دان کپی شد</translation>
 <translation id="6794511157503068">‏اگر گذرکلید <ph name="APP_NAME" /> در کلید ایمنی USB قرار دارد، همین‌حالا آن را وارد و لمس کنید</translation>
 <translation id="679486139907144816">‏برای ورود به سیستم این سایت با گذرکلید، باید Windows Hello را در تنظیمات روشن کنید. سپس به این سایت برگردید و دوباره امتحان کنید.</translation>
 <translation id="6795371939514004514">اسکن خودکار به شما اجازه می‌دهد به‌طور خودکار بین موارد موجود در صفحه جابه‌جا شوید. وقتی موردی برجسته می‌شود، با فشار دادن «انتخاب» آن را فعال کنید.</translation>
@@ -8666,7 +8668,7 @@
 <translation id="7311005168897771689">‏زمانی‌که آفلاین هستید به فایل‌های Google Drive خود دسترسی داشته باشید</translation>
 <translation id="7311244614769792472">نتیجه‌ای پیدا نشد</translation>
 <translation id="7312040805247765153">برنامه نصب نشد</translation>
-<translation id="7312210124139670355">سرپرستتان درحال بازنشاندن سیم‌کارت داخلی شما است. ممکن است چند دقیقه طول بکشد.</translation>
+<translation id="7312210124139670355">سرپرستتان درحال بازنشانی سیم‌کارت داخلی شما است. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="7313539585802573958">رنگ‌های نور پس‌زمینه صفحه‌کلید</translation>
 <translation id="7314989823816739632">عاشقانه</translation>
 <translation id="7317831949569936035">ثبت‌نام مدرسه</translation>
@@ -9374,7 +9376,6 @@
 <translation id="7815680994978050279">بارگیری خطرناک مسدود شد</translation>
 <translation id="7817361223956157679">‏صفحه‌کلید مجازی، هنوز در برنامه‌های Linux کار نمی‌کند</translation>
 <translation id="7818135753970109980">طرح‌های زمینه جدید اضافه شده (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">بعداز بازراه‌اندازی، کارتان را در برنامه‌ها، وب‌سایت‌ها، و پنجره‌های باز از همان جایی ادامه دهید که قبلاً متوقف کرده بودید</translation>
 <translation id="7819605256207059717">سازمانتان آن را مسدود کرده است</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> را حذف کنید تا افراد دیگری که از این دستگاه استفاده می‌کنند نتوانند گذرواژه‌های شما را ببینند</translation>
 <translation id="7820561748632634942">کلیدهای بیشتری اختصاص داده شوند؟</translation>
@@ -10184,6 +10185,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />برای راهنمایی بیشتر، از g.co/flex/InstallErrors بازدید کنید.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">‏به Recap خوش آمدید</translation>
 <translation id="8386091599636877289">خط‌مشی یافت نشد.</translation>
 <translation id="8387361103813440603">اجازه ندارد مکانتان را ببیند</translation>
 <translation id="8387617938027387193">تأیید کنید این شمایید</translation>
@@ -10516,7 +10518,7 @@
 <translation id="8643403533759285912">حذف گروه</translation>
 <translation id="8643443571868262066">‏ممکن است <ph name="FILE_NAME" /> خطرناک باشد. برای اسکن کردن به «محافظت پیشرفته Google» ارسال شود؟</translation>
 <translation id="864423554496711319">دستگاه‌های ذخیره‌شده در حسابتان</translation>
-<translation id="8644655801811752511">نمی‌توان این کلید ایمنی را بازنشانی کرد. بازنشاندن این کلید را بلافاصله پس از وارد کردنش امتحان کنید.</translation>
+<translation id="8644655801811752511">نمی‌توان این کلید ایمنی را بازنشانی کرد. بازنشانی این کلید را بلافاصله پس از وارد کردنش امتحان کنید.</translation>
 <translation id="8645354835496065562">دسترسی به حسگر همچنان مجاز باشد</translation>
 <translation id="8645920082661222035">رویدادهای خطرناک را پیش از اینکه اتفاق بیفتند پیش‌بینی می‌کند و درباره آن‌ها به شما هشدار می‌دهد</translation>
 <translation id="8646209145740351125">غیر فعال کردن همگام‌سازی</translation>

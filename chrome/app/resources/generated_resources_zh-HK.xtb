@@ -98,7 +98,6 @@
 <translation id="10619348099955377">複製顯示名稱</translation>
 <translation id="1062407476771304334">取代</translation>
 <translation id="1062628064301375934">協助我們建立更私密的網絡</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome 已移除 1 個網站的權限}other{Chrome 已移除 {NUM_SITES} 個網站的權限}}</translation>
 <translation id="1066964438793906105">掃瞄是否有惡意軟件</translation>
 <translation id="1067661089446014701">為進一步加強安全性，建議先在裝置上將密碼加密，再儲存至您的 Google 帳戶</translation>
 <translation id="1067922213147265141">其他 Google 服務</translation>
@@ -4925,6 +4924,7 @@
 <translation id="4538792345715658285">由公司政策安裝</translation>
 <translation id="4540409690203718935">無法連接「Google 密碼管理工具」，請在幾分鐘後再試一次</translation>
 <translation id="4541123282641193691">無法驗證您的帳戶，請再試一次，或重新啟動 Chromebook。</translation>
+<translation id="4541505619120536051">一律開啟</translation>
 <translation id="4541662893742891060">無法連線至此設定檔。如需技術支援，請聯絡您的流動網絡供應商。</translation>
 <translation id="4541706525461326392">正在移除設定檔。這項操作可能需時數分鐘。</translation>
 <translation id="4542520061254486227">讀取您在 <ph name="WEBSITE_1" /> 和 <ph name="WEBSITE_2" /> 上的資料</translation>
@@ -5259,7 +5259,6 @@
 <translation id="4794910597689955457">要將 <ph name="NUM_OF_FILES" /> 個檔案移到 <ph name="CLOUD_PROVIDER" /> 開啟嗎？</translation>
 <translation id="479536056609751218">只限網頁的 HTML 部分</translation>
 <translation id="4795670271446126525">洶湧的海浪</translation>
-<translation id="4796142525425001238">一律還原</translation>
 <translation id="4797314204379834752">嘗試為網上購物等使用分頁群組來規劃工作</translation>
 <translation id="479863874072008121">管理裝置</translation>
 <translation id="479989351350248267">搜尋</translation>
@@ -5837,7 +5836,6 @@
 <translation id="5210365745912300556">關閉分頁</translation>
 <translation id="5213114823401215820">重新開啟先前關閉的群組</translation>
 <translation id="5213481667492808996">「<ph name="NAME" />」的數據服務現可使用</translation>
-<translation id="5213658238771284310">在啟動時還原工作階段</translation>
 <translation id="5213891612754844763">顯示 Proxy 設定</translation>
 <translation id="5214639857958972833">建立咗「<ph name="BOOKMARK_TITLE" />」書籤。</translation>
 <translation id="5215450412607891876">開啟延長安全更新</translation>
@@ -6211,7 +6209,6 @@
 <translation id="5488093641312826914">已複製「<ph name="COPIED_ITEM_NAME" />」</translation>
 <translation id="5488508217173274228">同步加密選項</translation>
 <translation id="5489077378642700219">唔批准接收嚟自 <ph name="WEBSITE" /> 嘅通知，但遲啲再問我</translation>
-<translation id="5489435190927933437"><ph name="DOMAIN" /> 的已儲存密碼</translation>
 <translation id="5490432419156082418">地址及其他資料</translation>
 <translation id="5490721031479690399">解除連結藍牙裝置</translation>
 <translation id="5490798133083738649">允許 Linux 存取您的麥克風</translation>
@@ -6345,7 +6342,6 @@
 <translation id="5582839680698949063">主選單</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">要儲存使用者名稱嗎？</translation>
-<translation id="5584091888252706332">起始畫面</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />這是裝置的一般資料和使用情况 (例如電量、系統及應用程式活動，以及發生的錯誤)。這些資料將會用來改善 Android。部分彙整資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改良應用程式和產品。<ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />即使關閉此功能，您的裝置仍然可以傳送基本服務 (例如系統更新與安全性) 所需的資料。<ph name="END_PARAGRAPH2" />
 <ph name="BEGIN_PARAGRAPH3" />擁有者可前往「設定」&gt;「進階」&gt;「自動將診斷和使用情況資料傳送給 Google」，以控制此功能。<ph name="END_PARAGRAPH3" />
@@ -9360,7 +9356,6 @@
 <translation id="7815680994978050279">已封鎖危險的下載項目</translation>
 <translation id="7817361223956157679">Linux 應用程式目前不支援屏幕鍵盤</translation>
 <translation id="7818135753970109980">已新增以下主題背景：<ph name="EXTENSION_NAME" /></translation>
-<translation id="7819087895293765164">重新啟動後，繼續之前在應用程式、網站和已開啟的視窗中未完成的操作</translation>
 <translation id="7819605256207059717">已由機構封鎖</translation>
 <translation id="7820400255539998692">請刪除「<ph name="FILENAME" />」，讓此裝置的其他使用者無法查看您的密碼</translation>
 <translation id="7820561748632634942">要指派其他按鈕裝置嗎？</translation>
@@ -10170,6 +10165,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如需詳細說明，請前往：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">歡迎回來</translation>
 <translation id="8386091599636877289">找不到政策。</translation>
 <translation id="8387361103813440603">不允許查看您的位置</translation>
 <translation id="8387617938027387193">驗證您的身分</translation>

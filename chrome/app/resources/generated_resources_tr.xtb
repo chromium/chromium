@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Görünen adı kopyala</translation>
 <translation id="1062407476771304334">Değiştir</translation>
 <translation id="1062628064301375934">Daha gizli bir web inşa etmemize yardımcı olun</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome, 1 sitenin izinlerini kaldırdı}other{Chrome, {NUM_SITES} sitenin izinlerini kaldırdı}}</translation>
 <translation id="1066964438793906105">Kötü amaçlı yazılım taraması yapın</translation>
 <translation id="1067661089446014701">Ek güvenlik için, Google Hesabınıza kaydedilmeden önce şifrelerinizi cihazınızda şifreleyebilirsiniz</translation>
 <translation id="1067922213147265141">Diğer Google hizmetleri</translation>
@@ -4918,6 +4917,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4538792345715658285">Kurumsal politika tarafından yüklenmiş.</translation>
 <translation id="4540409690203718935">Google Şifre Yöneticisi'ne erişilemiyor. Birkaç dakika içinde tekrar deneyin.</translation>
 <translation id="4541123282641193691">Hesabınız doğrulanamadı. Lütfen tekrar deneyin veya Chromebook'unuzu yeniden başlatın.</translation>
+<translation id="4541505619120536051">Her zaman açık</translation>
 <translation id="4541662893742891060">Bu profile bağlanılamıyor. Teknik destek almak için lütfen operatörünüzle iletişime geçin.</translation>
 <translation id="4541706525461326392">Profil kaldırılıyor. Bu işlem birkaç dakika sürebilir.</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> ve <ph name="WEBSITE_2" /> sitelerindeki verilerinizi okuma</translation>
@@ -5252,7 +5252,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4794910597689955457"><ph name="NUM_OF_FILES" /> dosya, <ph name="CLOUD_PROVIDER" /> hedefine taşınıp açılsın mı?</translation>
 <translation id="479536056609751218">Web sayfası, Sadece HTML</translation>
 <translation id="4795670271446126525">Kıyıya vuran dalgalar</translation>
-<translation id="4796142525425001238">Her zaman geri yükle</translation>
 <translation id="4797314204379834752">Görevleri düzenleme, internet alışverişi yapma ve daha fazlasını gerçekleştirmeye yönelik sekme gruplarını kullanmaya başlayın</translation>
 <translation id="479863874072008121">Cihazları yönet</translation>
 <translation id="479989351350248267">ara</translation>
@@ -5831,7 +5830,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5210365745912300556">Sekmeyi kapat</translation>
 <translation id="5213114823401215820">Kapatılan grubu yeniden aç</translation>
 <translation id="5213481667492808996">"<ph name="NAME" />" veri hizmetiniz kullanıma hazır</translation>
-<translation id="5213658238771284310">Başlangıçta oturumu geri yükle</translation>
 <translation id="5213891612754844763">Proxy ayarlarını göster</translation>
 <translation id="5214639857958972833">"<ph name="BOOKMARK_TITLE" />" yer işareti oluşturuldu.</translation>
 <translation id="5215450412607891876">Genişletilmiş güvenlik güncellemelerini etkinleştirin</translation>
@@ -6205,7 +6203,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5488093641312826914">"<ph name="COPIED_ITEM_NAME" />" kopyalandı</translation>
 <translation id="5488508217173274228">Şifreleme seçeneklerini senkronize et</translation>
 <translation id="5489077378642700219"><ph name="WEBSITE" /> bildirimlerine izin verme, ancak daha sonra sor</translation>
-<translation id="5489435190927933437"><ph name="DOMAIN" /> için kaydedilmiş şifreler</translation>
 <translation id="5490432419156082418">Adresler ve Daha Fazlası</translation>
 <translation id="5490721031479690399">Bluetooth cihazının bağlantısını kes</translation>
 <translation id="5490798133083738649">Linux'un mikrofonunuza erişmesine izin verin</translation>
@@ -6339,7 +6336,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5582839680698949063">Ana menü</translation>
 <translation id="5583640892426849032">Geri al tuşu</translation>
 <translation id="5584088138253955452">Kullanıcı adı kaydedilsin mi?</translation>
-<translation id="5584091888252706332">Başlangıçta</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Buradaki bilgiler (pil seviyesi, uygulama etkinliği ve hatalar gibi) cihazınızla ve cihazınızı nasıl kullandığınızla ilgili genel bilgilerdir. Bu bilgiler, Android'i daha iyi hale getirmek amacıyla kullanılır. Bazı birleştirilmiş bilgiler Google uygulamalarını ve Android geliştiricileri gibi iş ortaklarının uygulamalarını ve ürünlerini iyileştirmelerine de yardımcı olur.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Bu özelliğin kapatılması cihazınızın sistem güncellemeleri ve güvenlik gibi önemli hizmetler için gereken bilgileri gönderme özelliğini etkilemez.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Cihaz sahibi bu özelliği Ayarlar &gt; Gelişmiş &gt; Teşhis ve kullanım verilerini Google'a otomatik olarak gönder seçeneğinden kontrol edebilir.<ph name="END_PARAGRAPH3" />
@@ -9358,7 +9354,6 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7815680994978050279">Tehlikeli indirme işlemi engellendi</translation>
 <translation id="7817361223956157679">Dokunmatik klavye henüz Linux uygulamalarında çalışmıyor</translation>
 <translation id="7818135753970109980">Yeni tema eklendi (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Yeniden başlattıktan sonra uygulamalar, web siteleri ve açık pencerelerde kaldığınız yerden devam edin</translation>
 <translation id="7819605256207059717">Kuruluşunuz tarafından engellendi</translation>
 <translation id="7820400255539998692">Bu cihazı kullanan diğer kişilerin şifrelerinizi görmesini önlemek için <ph name="FILENAME" /> dosyasını silin</translation>
 <translation id="7820561748632634942">Daha fazla anahtar atansın mı?</translation>
@@ -10168,6 +10163,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Daha fazla yardım almak için g.co/flex/InstallErrors sayfasını ziyaret edin.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Karşılama Özeti</translation>
 <translation id="8386091599636877289">Politika bulunamadı.</translation>
 <translation id="8387361103813440603">Konumunuzu görmesine izin verilmeyenler</translation>
 <translation id="8387617938027387193">Siz olduğunuzu doğrulayın</translation>

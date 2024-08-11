@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Kopyahin ang display name</translation>
 <translation id="1062407476771304334">Palitan</translation>
 <translation id="1062628064301375934">Tulungan kaming bumuo ng mas pribadong web</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Inalis ng Chrome ang mga pahintulot para sa 1 site}one{Inalis ng Chrome ang mga pahintulot para sa {NUM_SITES} site}other{Inalis ng Chrome ang mga pahintulot para sa {NUM_SITES} na site}}</translation>
 <translation id="1066964438793906105">I-scan kung may malware</translation>
 <translation id="1067661089446014701">Para sa karagdagang kaligtasan, puwede mong i-encrypt ang mga password sa iyong device bago i-save ang mga ito sa Google Account mo</translation>
 <translation id="1067922213147265141">Iba pang serbisyo ng Google</translation>
@@ -4936,6 +4935,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4538792345715658285">Na-install ng patakaran ng enterprise.</translation>
 <translation id="4540409690203718935">Hindi makakonekta sa Google Password Manager. Subukan ulit pagkalipas ng ilang minuto</translation>
 <translation id="4541123282641193691">Hindi ma-verify ang iyong account. Pakisubukan ulit o i-restart ang Chromebook mo.</translation>
+<translation id="4541505619120536051">Palaging buksan</translation>
 <translation id="4541662893742891060">Hindi makakonekta sa profile na ito. Para sa technical support, makipag-ugnayan sa iyong carrier.</translation>
 <translation id="4541706525461326392">Inaalis ang profile. Puwede itong tumagal nang ilang minuto.</translation>
 <translation id="4542520061254486227">Basahin ang iyong data sa <ph name="WEBSITE_1" /> at <ph name="WEBSITE_2" /></translation>
@@ -5270,7 +5270,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4794910597689955457">Ilipat ang <ph name="NUM_OF_FILES" /> (na) file sa <ph name="CLOUD_PROVIDER" /> para buksan?</translation>
 <translation id="479536056609751218">Webpage, HTML Lamang</translation>
 <translation id="4795670271446126525">Mga humahampas na alon</translation>
-<translation id="4796142525425001238">Palaging i-restore</translation>
 <translation id="4797314204379834752">Subukang gumamit ng mga grupo ng tab para isaayos ang mga gawain, para sa online na pamimili, at higit pa</translation>
 <translation id="479863874072008121">Pamahalaan ang mga device</translation>
 <translation id="479989351350248267">search</translation>
@@ -5849,7 +5848,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5210365745912300556">Isara ang tab</translation>
 <translation id="5213114823401215820">Buksan ulit ang nakasarang grupo</translation>
 <translation id="5213481667492808996">Magagamit na ang iyong serbisyo ng data ng '<ph name="NAME" />'</translation>
-<translation id="5213658238771284310">I-restore ang session sa startup</translation>
 <translation id="5213891612754844763">Ipakita ang mga setting ng proxy</translation>
 <translation id="5214639857958972833">Nagawa ang bookmark na '<ph name="BOOKMARK_TITLE" />.'</translation>
 <translation id="5215450412607891876">I-on ang mga pinalawig na update sa seguridad</translation>
@@ -6224,7 +6222,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5488093641312826914">Nakopya ang '<ph name="COPIED_ITEM_NAME" />'</translation>
 <translation id="5488508217173274228">I-sync ang mga opsyon sa pag-encrypt</translation>
 <translation id="5489077378642700219">Huwag payagan ang mga notification mula sa <ph name="WEBSITE" /> pero magtanong sa ibang pagkakataon</translation>
-<translation id="5489435190927933437">Mga naka-save na password para sa <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Mga Address at Higit Pa</translation>
 <translation id="5490721031479690399">Idiskonekta ang Bluetooth device</translation>
 <translation id="5490798133083738649">Payagan ang Linux na ma-access ang iyong mikropono</translation>
@@ -6358,7 +6355,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5582839680698949063">Pangunahing menu</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">I-save ang username?</translation>
-<translation id="5584091888252706332">Sa Startup</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Ito ay pangkalahatang impormasyon tungkol sa iyong device at kung paano mo ito ginagamit (gaya ng antas ng baterya, aktibidad ng system at app, at mga error). Gagamitin ang data para pahusayin ang Android, at makakatulong din ang ilang pinagsama-samang impormasyon sa mga app at partner ng Google, gaya ng mga developer ng Android, na mapahusay ang mga app at produkto ng mga ito.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Kapag na-off ang feature na ito, hindi maaapektuhan ang kakayahan ng iyong device na ipadala ang impormasyong kinakailangan para sa mahahalagang serbisyo gaya ng mga pag-update ng system at seguridad.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Makokontrol ng may-ari ang feature na ito mula sa Mga Setting &gt; Advanced &gt; Awtomatikong ipadala sa Google ang data ng diagnostic at paggamit.<ph name="END_PARAGRAPH3" />
@@ -9379,7 +9375,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7815680994978050279">Na-block ang mapanganib na download</translation>
 <translation id="7817361223956157679">Hindi pa gumagana ang on-screen na keyboard sa mga app ng Linux</translation>
 <translation id="7818135753970109980">Nagdagdag ng bagong tema (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Pagkatapos mag-restart, magpatuloy kung saan ka huminto sa mga app, website, at nakabukas na window</translation>
 <translation id="7819605256207059717">Na-block ng iyong organisasyon</translation>
 <translation id="7820400255539998692">I-delete ang <ph name="FILENAME" />, para hindi makita ng ibang taong gumagamit ng device na ito ang iyong mga password</translation>
 <translation id="7820561748632634942">Magtalaga ng mga karagdagang switch?</translation>
@@ -10189,6 +10184,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para sa higit pang tulong, bisitahin ang: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Welcome Recap</translation>
 <translation id="8386091599636877289">Hindi nakita ang patakaran.</translation>
 <translation id="8387361103813440603">Hindi pinapayagang makita ang iyong lokasyon</translation>
 <translation id="8387617938027387193">I-verify na ikaw ito</translation>

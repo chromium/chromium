@@ -4019,27 +4019,6 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
 <translation id="4101282687722389021">Horodatage UTC de la dernière mise à jour de cette entrée. Il est envoyé sous forme de chaîne, car il ne tiendrait pas dans un entier.</translation>
 <translation id="4101826711886952606">Les paramètres Origine/Fin utilisent le raccourci qui contient la touche de modification de recherche</translation>
 <translation id="4102347680024644994">Signaler les événements de détection et réponse étendues (XDR)</translation>
-<translation id="4104303092334469130">Configure une liste de règles de contrôle des données pour éviter les fuites de données.
-
-      Chaque règle se compose des éléments suivants :
-- Des champs de conditions permettant de déclencher la règle. Une règle ne se déclenche que si une action utilisateur correspond à tous ses champs <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> et <ph name="DATA_CONTROLS_NOT" /> renseignés. Pour les sous-champs de liste, il suffit de faire correspondre une entrée. Par exemple, la règle se déclenche dès qu'un format d'URL correspond.
-      - Une liste de restrictions à appliquer. En fonction de la restriction, seules les conditions <ph name="DATA_CONTROLS_SOURCES" /> ou <ph name="DATA_CONTROLS_DESTINATIONS" /> peuvent être disponibles.
-
-      Les règles peuvent être ajoutées pour :
-- Contrôler les données du presse-papiers partagées entre les sources et les destinations.
-      - Contrôler le blocage des captures d'écran en fonction des onglets sources.
-
-      Si la règle <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> est définie sur "True", les règles déclenchées sont signalées à l'administrateur.
-      Le niveau de restriction peut être défini sur "BLOCK", "WARN" ou "REPORT".
-      - Si le niveau de restriction est défini sur "BLOCK", l'action concernée ne sera pas autorisée.
-      - Si le niveau de restriction est défini sur "WARN", l'utilisateur sera averti et pourra choisir de continuer ou d'annuler l'action.
-      - Si le niveau de restriction est défini sur "REPORT", l'action utilisateur ne sera pas interrompue, mais un rapport sera envoyé si la règle <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> est activée.
-
-      Remarques :
-- Les formats d'URL doivent respecter les conditions énoncées sur https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-- Pour les règles de prévention des fuites de données propres à <ph name="PRODUCT_OS_NAME" />, consultez également la règle <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
-
-      Si la règle n'est pas configurée, aucune restriction ne sera appliquée.</translation>
 <translation id="4105989332710272578">Désactiver l'application des règles de transparence des certificats pour une liste d'URL</translation>
 <translation id="410740968939768919">Contrôle si les extensions Manifest V2 peuvent être utilisées sur l'écran de connexion <ph name="PRODUCT_OS_NAME" />.
 
@@ -6506,15 +6485,6 @@ Cette règle a été abandonnée dans la version M124.</translation>
       Si cette règle n'est pas configurée (et que l'appareil le permet), le mode standard de recharge de la batterie est appliqué, et les utilisateurs ne peuvent pas modifier ce paramètre.
 
       Remarque : Si le mode personnalisé de recharge de la batterie est sélectionné, les règles "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />" et "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />" doivent alors être spécifiées.</translation>
-<translation id="60655674079349516">Configure une liste des types de données de navigation devant être supprimés lorsque l'utilisateur ferme toutes les fenêtres du navigateur.
-
-Avertissement : La définition de cette règle peut affecter les données personnelles locales et entraîner leur suppression définitive. Nous vous recommandons de tester vos paramètres avant de les déployer pour éviter toute suppression accidentelle de données personnelles.
-
-Types de données disponibles : historique de navigation (<ph name="DATA_TYPE_BROWSING_HISTORY" />), historique des téléchargements (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), saisie automatique (<ph name="DATA_TYPE_AUTOFILL" />), mots de passe (<ph name="DATA_TYPE_PASSWORD" />), paramètres des sites (<ph name="DATA_TYPE_SITE_SETTINGS" />) et données des applis hébergées (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Cette règle ne prévaut pas sur <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-
-Jusqu'à Chrome 114, cette règle exigeait que la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> soit définie sur "true". À partir de Chrome 115, si vous configurez cette règle, la synchronisation sera désactivée pour les types de données respectifs si <ph name="CHROME_SYNC_NAME" /> n'est pas désactivé en définissant la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> et que <ph name="BROWSER_SIGNIN_POLICY_NAME" /> n'est pas désactivé.
-
-Si <ph name="PRODUCT_NAME" /> ne se ferme pas correctement, par exemple si le navigateur ou l'OS plante, les données de navigation seront supprimées lors du prochain chargement du profil.</translation>
 <translation id="6066761914755798079">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> vous permet de spécifier l'URL du moteur de recherche pour fournir des suggestions de recherche. L'URL doit inclure la chaîne <ph name="SEARCH_TERM_MARKER" />, qui sera remplacée dans la requête par les termes de recherche de l'utilisateur.
 
       Vous pouvez spécifier cette URL comme suit : <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>

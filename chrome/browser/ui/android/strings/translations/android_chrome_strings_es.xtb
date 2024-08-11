@@ -1583,7 +1583,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> descargas restauradas</translation>
 <translation id="8368001212524806591">Seguir precio</translation>
 <translation id="8378850197701296741">Tienes marcadores, historial, contraseñas y otros ajustes de <ph name="FROM_ACCOUNT" />.</translation>
-<translation id="8382640928718131148">Las pestañas que no hayas usado durante <ph name="DAYS_INACTIVE" /> días se moverán aquí y se cerrarán después de <ph name="DAYS_ARCHIVED" /> días. Puedes cambiar esta opción en cualquier momento en <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8387617938027387193">Verifica que eres tú</translation>
 <translation id="8393700583063109961">Enviar mensaje</translation>
 <translation id="8402673309244746971">Ir a Siguiendo</translation>

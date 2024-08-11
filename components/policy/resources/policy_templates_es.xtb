@@ -1910,6 +1910,7 @@ El usuario podrá seleccionar una imagen de Google Fotos como fondo de pantalla 
       Si se establece la opción <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2), no se permitirá aplicar ninguna variación al navegador. Ten en cuenta que este modo puede evitar que los desarrolladores de <ph name="PRODUCT_NAME" /> proporcionen correcciones críticas de seguridad a su debido tiempo y, por lo tanto, no se recomienda su uso.</translation>
 <translation id="2402537890732357732">Mostrar siempre la etiqueta de gestión</translation>
 <translation id="2402547085566757554">No usar la página Nueva pestaña como página principal</translation>
+<translation id="2405765347317553213">Configuración de Comparación de pestañas</translation>
 <translation id="240713331529749993">Si se define esta política, cada uno de los orígenes especificados en una lista separada por comas se ejecutará en un proceso dedicado en Android. El proceso de cada origen especificado solo podrá contener documentos de ese origen y de sus subdominios. Por ejemplo, si se especifica https://a1.example.com/, se permite https://a2.a1.example.com/ en el mismo proceso, pero no https://example.com o https://b.example.com. Ten en cuenta que Android aísla algunos sitios sensibles de forma predeterminada a partir de la versión 77 de <ph name="PRODUCT_NAME" />. Además, esta política amplía ese modo para aislar otros orígenes específicos.
 
       Desde <ph name="PRODUCT_NAME" /> 77, también puedes especificar un rango de orígenes para aislar usando un comodín. Por ejemplo, al especificar https://[*.]corp.example.com, se otorgará a cada origen del tipo https://corp.example.com su propio proceso dedicado, incluidos https://corp.example.com, https://a1.corp.example.com y https://a2.a1.corp.example.com.
@@ -4033,27 +4034,6 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
 <translation id="4101282687722389021">Marca de tiempo UTC de la última vez que se actualizó esta entrada. Enviada como cadena porque la marca de tiempo no cabe en un número entero.</translation>
 <translation id="4101826711886952606">Los ajustes de Inicio y Fin usan la combinación de teclas que incluye la tecla modificadora Búsqueda</translation>
 <translation id="4102347680024644994">Informar sobre los eventos de detección y respuesta extendidas (XDR)</translation>
-<translation id="4104303092334469130">Configura una lista de reglas de control de datos para evitar que se filtren datos.
-
-      Cada regla consta de los siguientes elementos:
-      - Campos de condición para activar esa regla. Las reglas solo se activarán si la acción del usuario coincide con todos los campos rellenados en sus campos de <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> y <ph name="DATA_CONTROLS_NOT" />. En el caso de los subcampos de la lista, solo es necesario que coincida una entrada; por ejemplo, basta con que coincida un patrón de URL para activar la regla.
-      - Una lista de restricciones que deben aplicarse. En función de la restricción, puede que solo estén disponibles las condiciones <ph name="DATA_CONTROLS_SOURCES" /> o <ph name="DATA_CONTROLS_DESTINATIONS" />.
-
-      Se pueden añadir reglas para:
-      - Controlar los datos del portapapeles compartidos entre las fuentes y los destinos.
-      - Controlar el bloqueo de capturas de pantalla según las pestañas de origen.
-
-      Si se le asigna el valor True a la política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />, se informará al administrador de las reglas activadas.
-      Al nivel de restricción se le puede asignar uno de estos valores: BLOCK, WARN o REPORT.
-      - Si se asigna el valor BLOCK al nivel de restricción, la acción no se permitirá.
-      - Si se asigna el valor WARN al nivel de restricción, se advertirá al usuario, que podrá elegir si continúa con la acción o la cancela.
-      - Si se asigna el valor REPORT al nivel de restricción, la acción del usuario no se interrumpirá, pero se enviará un informe si la política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> está habilitada.
-
-      Notas:
-      - Los patrones de URL deben tener el formato que se indica en esta página: https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-      - Para ver las reglas de prevención de filtraciones de datos específicas de <ph name="PRODUCT_OS_NAME" />, consulta también la política <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
-
-      Si no se asigna ningún valor a esta política, no se aplicará ninguna restricción.</translation>
 <translation id="4105989332710272578">No permite que se aplique la Transparencia en Certificados a una lista de URLs</translation>
 <translation id="410740968939768919">Controla si se pueden usar extensiones de Manifest V2 en la pantalla de inicio de sesión de <ph name="PRODUCT_OS_NAME" />.
 
@@ -5613,6 +5593,15 @@ Las cuentas gestionadas no pueden unirse ni crear grupos familiares, por lo que 
 <translation id="5331746669335642668">La política relativa a la nube de <ph name="PRODUCT_NAME" /> anula la política de la plataforma.</translation>
 <translation id="5334404204520035180">Controlar el uso de la API WebPrinting</translation>
 <translation id="5334501839642146593">Nunca enviar métricas a Google</translation>
+<translation id="5334717773960843025">Comparación de pestañas es una herramienta basada en IA para comparar la información de las pestañas de un usuario. Por ejemplo, la función se puede ofrecer al usuario cuando se abran varias pestañas con productos de una categoría similar.
+
+Si se asigna el valor 0 a esta política, se habilitarán estas funciones para los usuarios y se enviarán los datos pertinentes a Google para ayudar a entrenar o mejorar modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados y materiales originales. Puede que lo revise una persona con el único propósito de mejorar los modelos de IA.
+
+0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1 a esta política, se habilitará esta función para los usuarios, pero no se enviarán datos a Google para entrenar ni mejorar modelos de IA. 1 es el valor predeterminado de los usuarios de empresa que se gestionan en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2 a esta política, se inhabilitarán estas funciones. 2 es el valor predeterminado de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.</translation>
 <translation id="5335910979215357815">Habilitar la API Save and Share para el control de <ph name="PRODUCT_OS_NAME" /> por parte de terceros</translation>
 <translation id="5339096331970464266">Habilitar el teclado virtual de accesibilidad</translation>
 <translation id="5340008866815063393">Habilitar informes de datos sobre políticas</translation>
@@ -6526,15 +6515,6 @@ Esta política está obsoleta a partir de la versión M124.</translation>
       Si no se asigna ningún valor a esta política (si el dispositivo lo admite), se aplicará el modo de carga estándar de la batería y los usuarios no podrán modificarlo.
 
       Nota: Si se selecciona el modo personalizado de carga de la batería, también se deberán especificar <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> y <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.</translation>
-<translation id="60655674079349516">Configura una lista de los tipos de datos de navegación que se deben eliminar cuando el usuario cierra todas las ventanas del navegador.
-
-Advertencia: Si se establece esta política, los datos personales locales pueden verse afectados y eliminarse de forma permanente. Te recomendamos probar la configuración antes de implementarla para evitar la eliminación accidental de datos personales.
-
-Los tipos de datos disponibles son los siguientes: historial de navegación (<ph name="DATA_TYPE_BROWSING_HISTORY" />), historial de descargas (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), caché <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, Autocompletar (<ph name="DATA_TYPE_AUTOFILL" />), contraseñas (<ph name="DATA_TYPE_PASSWORD" />), configuración de sitios (<ph name="DATA_TYPE_SITE_SETTINGS" />) y datos de aplicaciones alojadas (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Esta política no prevalece sobre <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-
-Hasta Chrome 114, esta política requería que se asignara el valor true a la política <ph name="SYNC_DISABLED_POLICY_NAME" />. A partir de Chrome 115, si se define esta política, se inhabilitará la sincronización de los respectivos tipos de datos si no se define la política <ph name="SYNC_DISABLED_POLICY_NAME" /> para inhabilitar <ph name="CHROME_SYNC_NAME" /> ni tampoco se inhabilita <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
-
-Si <ph name="PRODUCT_NAME" /> no se cierra correctamente (por ejemplo, si el navegador o el SO fallan), los datos de navegación se borrarán la próxima vez que se cargue el perfil.</translation>
 <translation id="6066761914755798079">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" />, se especificará la URL que utilizará el buscador para mostrar sugerencias de búsqueda. La URL debe incluir la cadena <ph name="SEARCH_TERM_MARKER" />, que en la consulta se sustituirá por los términos de búsqueda del usuario.
 
       Puedes especificar la URL de la Búsqueda de Google introduciendo lo siguiente: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>

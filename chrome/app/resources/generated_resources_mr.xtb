@@ -98,7 +98,6 @@
 <translation id="10619348099955377">दाखवण्याचे नाव कॉपी करा</translation>
 <translation id="1062407476771304334">पुनर्स्थित करा</translation>
 <translation id="1062628064301375934">आणखी खाजगी वेब तयार करण्यासाठी आम्हाला मदत करा</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome ने १ साइटसाठी परवानग्या काढून टाकल्या}other{Chrome ने {NUM_SITES} साइटसाठी परवानग्या काढून टाकल्या}}</translation>
 <translation id="1066964438793906105">मालवेअरसाठी स्कॅन करा</translation>
 <translation id="1067661089446014701">अतिरिक्त सुरक्षेसाठी, पासवर्ड हे तुमच्या Google खाते यामध्ये सेव्ह केले जाण्यापूर्वी तुम्ही ते तुमच्या डिव्हाइसवर एंक्रिप्ट करू शकता</translation>
 <translation id="1067922213147265141">इतर Google सेवा</translation>
@@ -4935,6 +4934,7 @@
 <translation id="4538792345715658285">एंटरप्राइज धोरणाद्वारे इंस्टॉल केले.</translation>
 <translation id="4540409690203718935">Google Password Manager पर्यंत पोहोचू शकत नाही. काही मिनिटांमध्ये पुन्हा प्रयत्न करा</translation>
 <translation id="4541123282641193691">तुमच्या खात्याची पडताळणी करता आली नाही. कृपया पुन्हा प्रयत्न करा किंवा तुमचे Chromebook रीस्टार्ट करा.</translation>
+<translation id="4541505619120536051">नेहमी उघडे</translation>
 <translation id="4541662893742891060">या प्रोफाइलशी कनेक्ट करता आले नाही. तांत्रिक सपोर्टसाठी, कृपया तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="4541706525461326392">प्रोफाइल काढून टाकत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> आणि <ph name="WEBSITE_2" /> वर तुमचा डेटा वाचा</translation>
@@ -5269,7 +5269,6 @@
 <translation id="4794910597689955457"><ph name="NUM_OF_FILES" /> फाइल उघडण्यासाठी <ph name="CLOUD_PROVIDER" /> वर हलवायच्या आहेत का?</translation>
 <translation id="479536056609751218">वेबपेज, केवळ HTML</translation>
 <translation id="4795670271446126525">उधळणाऱ्या लाटा</translation>
-<translation id="4796142525425001238">नेहमी रिस्टोअर करा</translation>
 <translation id="4797314204379834752">ऑनलाइन शॉपिंग आणि आणखी बऱ्याच गोष्टींसाठीची टास्क व्यवस्थापित करण्यासाठी टॅब गट वापरून पहा</translation>
 <translation id="479863874072008121">डिव्हाइस व्यवस्थापित करा</translation>
 <translation id="479989351350248267">शोध</translation>
@@ -5848,7 +5847,6 @@
 <translation id="5210365745912300556">टॅब बंद करा</translation>
 <translation id="5213114823401215820">बंद केलेला गट पुन्हा उघडा</translation>
 <translation id="5213481667492808996">तुमची '<ph name="NAME" />' डेटा सेवा वापरण्यासाठी तयार आहे</translation>
-<translation id="5213658238771284310">सुरू केल्यावर सेशन रिस्टोअर करा</translation>
 <translation id="5213891612754844763">प्रॉक्सी सेटिग्ज दर्शवा</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' बुकमार्क तयार केले.</translation>
 <translation id="5215450412607891876">विस्तारित सुरक्षा अपडेट सुरू करा</translation>
@@ -6223,7 +6221,6 @@
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' कॉपी केला</translation>
 <translation id="5488508217173274228">सिंक एंक्रिप्शन पर्याय</translation>
 <translation id="5489077378642700219"><ph name="WEBSITE" /> वरील सूचनांना अनुमती देऊ नका, पण नंतर विचारा</translation>
-<translation id="5489435190927933437"><ph name="DOMAIN" /> साठी सेव्ह केलेले पासवर्ड</translation>
 <translation id="5490432419156082418">पत्ते आणि बरेच काही</translation>
 <translation id="5490721031479690399">ब्लूटूथ डिव्हाइस डिस्‍कनेक्‍ट करा</translation>
 <translation id="5490798133083738649">Linux ला तुमचा मायक्रोफोन अ‍ॅक्सेस करण्याची परवानगी द्या</translation>
@@ -6357,7 +6354,6 @@
 <translation id="5582839680698949063">मुख्य मेनू</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">वापरकर्ता नाव सेव्ह करायचे?</translation>
-<translation id="5584091888252706332">सुरू केल्यावर</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />तुमचे डिव्हाइस आणि तुम्ही ते कसे वापरता याविषयी ही सर्वसाधारण माहिती आहे (जसे की, बॅटरी पातळी, सिस्टम आणि ॲप ॲक्टिव्हिटी आणि एरर). डेटाचा वापर Android सुधारित करण्यासाठी केला जाईल आणि काही एकत्रित केलेली माहिती Google ॲप्स आणि Android डेव्हलपरसारख्या भागीदारांना त्यांची ॲप्स आणि उत्पादने आणखी उत्तम बनवण्यातदेखील मदत करेल.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ही वैशिष्ट्ये बंद केल्याने तुमच्या डिव्हाइसच्या सिस्टम अपडेट आणि सुरक्षितता यांसारख्या अत्यावश्यक सेवांसाठी आवश्यक असलेली माहिती पाठवण्याच्या या डिव्हाइसच्या क्षमतेवर परिणाम होत नाही.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />सेटिंग्ज &gt; प्रगत &gt; Google ला आपोआप निदान आणि वापरलेला डेटा पाठवा वरून मालक हे वैशिष्ट्य नियंत्रित करू शकतो.<ph name="END_PARAGRAPH3" />
@@ -9380,7 +9376,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7815680994978050279">धोकादायक डाउनलोड ब्लॉक केले</translation>
 <translation id="7817361223956157679">ऑन-स्क्रीन कीबोर्ड सध्या Linux ॲप्समध्ये काम करत नाही</translation>
 <translation id="7818135753970109980">नवीन थीम जोडली (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">रीस्टार्ट केल्यानंतर, ॲप्स, वेबसाइट आणि उघडलेल्या विंडोसह तुम्ही जेथे सोडले होते तेथून पुढे सुरू ठेवा</translation>
 <translation id="7819605256207059717">तुमच्या संस्थेने ब्लॉक केले आहे</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> हटवा, जेणेकरून हे डिव्हाइस वापरणारे इतर लोक तुमचे पासवर्ड पाहू शकणार नाहीत</translation>
 <translation id="7820561748632634942">अतिरिक्त स्विच असाइन करायचे आहेत का?</translation>
@@ -10190,6 +10185,7 @@ I feel - विटांची इमारत</translation>
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />अधिक मदतीसाठी, पुढील लिंकला भेट द्या: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">स्वागत Recap</translation>
 <translation id="8386091599636877289">धोरण सापडले नाही.</translation>
 <translation id="8387361103813440603">तुमचे स्थान पाहण्याची अनुमती नाही</translation>
 <translation id="8387617938027387193">हे तुम्हीच आहात याची पडताळणी करा</translation>

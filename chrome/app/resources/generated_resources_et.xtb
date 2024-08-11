@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Kopeeri kuvatav nimi</translation>
 <translation id="1062407476771304334">Asenda</translation>
 <translation id="1062628064301375934">Aidake meil luua privaatsem veeb</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome eemaldas 1 saidi load}other{Chrome eemaldas {NUM_SITES} saidi load}}</translation>
 <translation id="1066964438793906105">Otsige pahavara</translation>
 <translation id="1067661089446014701">Turvalisuse suurendamiseks võite oma seadmes paroolid krüpteerida enne, kui need teie Google'i kontole salvestatakse</translation>
 <translation id="1067922213147265141">Muud Google'i teenused</translation>
@@ -4926,6 +4925,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4538792345715658285">Installitud ettevõtte reegli alusel.</translation>
 <translation id="4540409690203718935">Ei saa Google'i paroolihalduriga ühendust. Proovige mõne minuti pärast uuesti</translation>
 <translation id="4541123282641193691">Teie kontot ei õnnestunud kinnitada. Proovige uuesti või taaskäivitage oma Chromebook.</translation>
+<translation id="4541505619120536051">Alati avatud</translation>
 <translation id="4541662893742891060">Selle profiiliga ei saa ühendada. Tehnilise toe saamiseks võtke ühendust operaatoriga.</translation>
 <translation id="4541706525461326392">Profiil eemaldatakse. See võib võtta mõne minuti.</translation>
 <translation id="4542520061254486227">Lugege oma andmeid veebisaitidel <ph name="WEBSITE_1" /> ja <ph name="WEBSITE_2" /></translation>
@@ -5260,7 +5260,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4794910597689955457">Kas teisaldada avamiseks <ph name="NUM_OF_FILES" /> faili teenusesse <ph name="CLOUD_PROVIDER" />?</translation>
 <translation id="479536056609751218">Veebileht, ainult HTML</translation>
 <translation id="4795670271446126525">Murduvad lained</translation>
-<translation id="4796142525425001238">Taasta alati</translation>
 <translation id="4797314204379834752">Proovige vahelehegruppe, et korrastada toiminguid, ostelda veebis ja teha muudki</translation>
 <translation id="479863874072008121">Seadmete haldamine</translation>
 <translation id="479989351350248267">otsing</translation>
@@ -5839,7 +5838,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5210365745912300556">Sule vaheleht</translation>
 <translation id="5213114823401215820">Suletud grupi uuesti avamine</translation>
 <translation id="5213481667492808996">Võrgu „<ph name="NAME" />” andmesideteenus on kasutamiseks valmis</translation>
-<translation id="5213658238771284310">Seansi taastamine käivitamisel</translation>
 <translation id="5213891612754844763">Kuva puhverserveri seaded</translation>
 <translation id="5214639857958972833">Järjehoidja „<ph name="BOOKMARK_TITLE" />” on loodud.</translation>
 <translation id="5215450412607891876">Lülitage sisse pikendatud turvavärskendused</translation>
@@ -6214,7 +6212,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5488093641312826914">„<ph name="COPIED_ITEM_NAME" />” on kopeeritud</translation>
 <translation id="5488508217173274228">Sünkroonitavate andmete krüpteerimise valikud</translation>
 <translation id="5489077378642700219">Ära luba märguandeid veebisaidilt <ph name="WEBSITE" />, kuid küsi hiljem</translation>
-<translation id="5489435190927933437">Domeeni <ph name="DOMAIN" /> jaoks salvestatud paroolid</translation>
 <translation id="5490432419156082418">Aadressid ja muu</translation>
 <translation id="5490721031479690399">Bluetooth-seadmete eemaldamine</translation>
 <translation id="5490798133083738649">Andke Linuxile luba teie mikrofonile juurde pääseda</translation>
@@ -6348,7 +6345,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5582839680698949063">Peamenüü</translation>
 <translation id="5583640892426849032">Tagasilükkeklahv</translation>
 <translation id="5584088138253955452">Kas soovite kasutajanime salvestada?</translation>
-<translation id="5584091888252706332">Käivitamisel</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />See on üldteave seadme ja selle kasutamise kohta (nt aku tase, süsteemi ja rakenduste tegevus ning vead). Neid andmeid kasutatakse Androidi täiustamiseks ning teatud koondteave aitab ka Google'i rakendusi ja partnerite, näiteks Androidi arendajate, tooteid ja teenuseid täiustada.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Funktsiooni väljalülitamine ei mõjuta teie seadme võimet saata hädavajalike teenuste, näiteks süsteemivärskenduste ja turvafunktsioonide jaoks vajalikku teavet.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Omanik saab seda funktsiooni juhtida jaotises Seaded &gt; Täpsemad &gt; Saada Google'ile automaatselt diagnostika- ja kasutusandmeid.<ph name="END_PARAGRAPH3" />
@@ -9367,7 +9363,6 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7815680994978050279">Ohtlik allalaadimine blokeeriti</translation>
 <translation id="7817361223956157679">Ekraanil kuvatav klaviatuur Linuxi rakendustes veel ei tööta</translation>
 <translation id="7818135753970109980">Lisati uus teema (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Saate pärast taaskäivitamist jätkata sealt, kus rakenduste, veebisaitide ja avatud akendega pooleli jäite</translation>
 <translation id="7819605256207059717">Blokeeris teie organisatsioon</translation>
 <translation id="7820400255539998692">Kustutage fail nimega <ph name="FILENAME" />, et teised, kes seda seadet kasutavad, ei näeks teie paroole</translation>
 <translation id="7820561748632634942">Kas määrata täiendavad lülitid?</translation>
@@ -10177,6 +10172,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Lisateabe saamiseks külastage g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Tervituskokkuvõte</translation>
 <translation id="8386091599636877289">Reeglit ei leitud.</translation>
 <translation id="8387361103813440603">Pole lubatud teie asukohta näha</translation>
 <translation id="8387617938027387193">Kinnitage oma isik</translation>

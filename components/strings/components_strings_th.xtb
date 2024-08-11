@@ -456,6 +456,7 @@
 <translation id="180757923930449935">(จำลอง 64 บิต)</translation>
 <translation id="180991881384371158">CVC จะแสดงอยู่บนด้านหลังของบัตร โดยเป็นตัวเลข 3 หลักสุดท้ายที่ด้านขวาบนของช่องลายเซ็น</translation>
 <translation id="1810391395243432441">ปกป้องรหัสผ่านด้วยการล็อกหน้าจอ</translation>
+<translation id="1810597570737826742">{count,plural, =1{ที่อยู่เพิ่มเติม {position} จาก {count} รายการ}other{ที่อยู่เพิ่มเติม {position} จาก {count} รายการ}}</translation>
 <translation id="1812527064848182527">แนวนอน</translation>
 <translation id="1812975699435941848">การศึกษาด้านสุขภาพและการฝึกอบรมทางการแพทย์</translation>
 <translation id="1816436748874040213">สามารถขอเลื่อนและซูมแท็บที่แชร์</translation>

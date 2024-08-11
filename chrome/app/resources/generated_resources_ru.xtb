@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Скопировать отображаемое название</translation>
 <translation id="1062407476771304334">Заменить</translation>
 <translation id="1062628064301375934">Помогите нам обеспечивать конфиденциальность в интернете</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Браузер Chrome отозвал разрешения у 1 сайта}one{Браузер Chrome отозвал разрешения у {NUM_SITES} сайта}few{Браузер Chrome отозвал разрешения у {NUM_SITES} сайтов}many{Браузер Chrome отозвал разрешения у {NUM_SITES} сайтов}other{Браузер Chrome отозвал разрешения у {NUM_SITES} сайта}}</translation>
 <translation id="1066964438793906105">Сканирование на наличие вредоносного ПО</translation>
 <translation id="1067661089446014701">Чтобы повысить безопасность, вы можете включить шифрование паролей на устройстве до их сохранения в вашем аккаунте Google.</translation>
 <translation id="1067922213147265141">Другие сервисы Google</translation>
@@ -4924,6 +4923,7 @@
 <translation id="4538792345715658285">Установлено в соответствии с корпоративным правилом.</translation>
 <translation id="4540409690203718935">Google Менеджер паролей недоступен. Повторите попытку через несколько минут</translation>
 <translation id="4541123282641193691">Не удалось подтвердить аккаунт. Повторите попытку или перезагрузите устройство Chromebook.</translation>
+<translation id="4541505619120536051">Открывать всегда</translation>
 <translation id="4541662893742891060">Не удалось подключиться к этому профилю. За технической поддержкой обратитесь к своему оператору.</translation>
 <translation id="4541706525461326392">Профиль удаляется. Это может занять несколько минут.</translation>
 <translation id="4542520061254486227">Просмотр данных на сайтах <ph name="WEBSITE_1" /> и <ph name="WEBSITE_2" /></translation>
@@ -5258,7 +5258,6 @@
 <translation id="4794910597689955457">Переместить файлы (<ph name="NUM_OF_FILES" />) в сервис "<ph name="CLOUD_PROVIDER" />" перед открытием?</translation>
 <translation id="479536056609751218">Веб-страница, только HTML</translation>
 <translation id="4795670271446126525">Разбивающиеся волны</translation>
-<translation id="4796142525425001238">Всегда</translation>
 <translation id="4797314204379834752">Используйте группы вкладок, чтобы упорядочивать задачи, совершать покупки и не только.</translation>
 <translation id="479863874072008121">Управление устройствами</translation>
 <translation id="479989351350248267">поиск</translation>
@@ -5836,7 +5835,6 @@
 <translation id="5210365745912300556">Закрыть вкладку</translation>
 <translation id="5213114823401215820">Восстановить закрытую группу</translation>
 <translation id="5213481667492808996">Служба передачи данных "<ph name="NAME" />" готова к работе.</translation>
-<translation id="5213658238771284310">Восстанавливать сеанс при запуске</translation>
 <translation id="5213891612754844763">Показать настройки прокси-сервера</translation>
 <translation id="5214639857958972833">Закладка "<ph name="BOOKMARK_TITLE" />" создана.</translation>
 <translation id="5215450412607891876">Включите расширенную поддержку обновлений системы безопасности</translation>
@@ -6211,7 +6209,6 @@
 <translation id="5488093641312826914">Объект "<ph name="COPIED_ITEM_NAME" />" скопирован</translation>
 <translation id="5488508217173274228">Варианты шифрования при синхронизации</translation>
 <translation id="5489077378642700219">Запретить сайту <ph name="WEBSITE" /> отправлять уведомления и спросить ещё раз позже</translation>
-<translation id="5489435190927933437">Сохраненные пароли для домена <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Адреса и другие данные</translation>
 <translation id="5490721031479690399">Отключение устройства Bluetooth</translation>
 <translation id="5490798133083738649">Разрешить Linux доступ к микрофону</translation>
@@ -6345,7 +6342,6 @@
 <translation id="5582839680698949063">Главное меню</translation>
 <translation id="5583640892426849032">Клавиша возврата (Backspace)</translation>
 <translation id="5584088138253955452">Сохранить имя пользователя?</translation>
-<translation id="5584091888252706332">Начальная группа</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Мы будем получать общие сведения о работе и использовании устройства, например об ошибках, уровне заряда батареи и действиях в системе и приложениях. Они помогут нам улучшить Android и другие сервисы Google. Наши партнеры также получат доступ к некоторым обобщенным данным, чтобы совершенствовать свои продукты.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Отключение этой функции не повлияет на возможность устройства отправлять информацию, необходимую для обновления Android и системы безопасности.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Чтобы включить или отключить функцию, нажмите "Настройки &gt; Расширенные настройки &gt; Автоматически отправлять статистику использования и данные диагностики в Google".<ph name="END_PARAGRAPH3" />
@@ -9369,7 +9365,6 @@
 <translation id="7815680994978050279">Заблокировано скачивание опасного файла</translation>
 <translation id="7817361223956157679">Экранная клавиатура пока не работает в приложениях для Linux.</translation>
 <translation id="7818135753970109980">Добавлена новая тема (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">После перезапуска вы сможете продолжить работу с открытыми ранее приложениями, сайтами и окнами</translation>
 <translation id="7819605256207059717">Заблокировано вашей организацией</translation>
 <translation id="7820400255539998692">Чтобы другие пользователи, которые работают с этим устройством, не могли посмотреть ваши пароли, удалите файл <ph name="FILENAME" />.</translation>
 <translation id="7820561748632634942">Назначить дополнительные переключатели?</translation>
@@ -10179,6 +10174,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Более подробная информация доступна на странице g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">С возвращением!</translation>
 <translation id="8386091599636877289">Политика не найдена.</translation>
 <translation id="8387361103813440603">Запретить сайтам определять ваше местоположение</translation>
 <translation id="8387617938027387193">Подтвердите личность</translation>

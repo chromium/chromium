@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">स्थलांतर आणि पुनर्वसन</translation>
 <translation id="1270502636509132238">घेण्याची पद्धत</translation>
 <translation id="1273592791152866347">किमतीचा बंद ठेवणे बंद आहे</translation>
+<translation id="1277711244058668002">थंब्स अप बटण, तुम्हाला ही सूचना आवडली आहे असा फीडबॅक सबमिट करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="127777513559587977">टीव्ही टॉक शो</translation>
 <translation id="1281476433249504884">स्टॅकर १</translation>
 <translation id="1281536351321444151">पुढच्यावेळी हा IBAN ऑटोफिल करण्यासाठी, तो तुमच्या Google खात्यामध्ये सेव्ह करा</translation>
@@ -664,6 +665,7 @@
 <translation id="2188375229972301266">मल्टिपल पंच बॉटम</translation>
 <translation id="2194856509914051091">विचार करण्याच्या गोष्टी</translation>
 <translation id="2197398642355049178">तुमचे विषय</translation>
+<translation id="2200678913752027654">थंब्स डाउन बटण, तुम्हाला ही सूचना का आवडली नाही याबद्दल तपशीलवार फीडबॅक सबमिट करण्यासाठी फॉर्म उघडण्याकरिता एंटर प्रेस करा</translation>
 <translation id="2202627062836089804">तुमच्या कार्डची मागील बाजू</translation>
 <translation id="2204482073374652408">अपडेट करणे संपले!</translation>
 <translation id="2207770355672215546">कोणतेही कार्ड वापरून नेहमी अनुमती द्या</translation>
@@ -2585,6 +2587,7 @@
 <translation id="5887687176710214216">काल शेवटची भेट दिली</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
 <translation id="5895187275912066135">रोजी जारी केले</translation>
+<translation id="5898767305816764989">थंब्स अप बटण, तुम्हाला हे आवडले आहे असा फीडबॅक सबमिट करण्यासाठी एंटर प्रेस करा, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">पिवळा</translation>
 <translation id="5903264686717710770">शीर्षक:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (सिंक केलेले)</translation>
@@ -3318,6 +3321,7 @@
 अतिरिक्त तपशील:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">तुमच्या अ‍ॅडमिनिस्ट्रेटरनुसार: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">थंब्स डाउन बटण, तुम्हाला का आवडले नाही याबद्दल तपशीलवार फीडबॅक सबमिट करण्यासाठी फॉर्म उघडण्याकरिता एंटर प्रेस करा, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">मागील ट्रे</translation>
 <translation id="7257453341537973799">करिअर स्रोत आणि नियोजन</translation>
 <translation id="725866823122871198">तुमच्या कॉंप्युटरची तारीख आणि वेळ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> चुकीची असल्यामुळे (<ph name="DATE_AND_TIME" />)सह खाजगी कनेक्शन इंस्टॉल केले जाऊ शकत नाही.</translation>

@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Afrita skjánafn</translation>
 <translation id="1062407476771304334">Skipta út</translation>
 <translation id="1062628064301375934">Hjálpaðu okkur að skapa vef sem gætir persónuverndar betur</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome fjarlægði heimildir fyrir eitt vefsvæði}one{Chrome fjarlægði heimildir fyrir {NUM_SITES} vefsvæði}other{Chrome fjarlægði heimildir fyrir {NUM_SITES} vefsvæði}}</translation>
 <translation id="1066964438793906105">Leita að spilliforritum</translation>
 <translation id="1067661089446014701">Til að auka öryggi geturðu dulkóðað aðgangsorð í tækinu þínu áður en þau eru vistuð á Google reikningnum þínum</translation>
 <translation id="1067922213147265141">Önnur Google þjónusta</translation>
@@ -4936,6 +4935,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4538792345715658285">Sett upp vegna fyrirtækjastefnu.</translation>
 <translation id="4540409690203718935">Ekki næst í Google-aðgangsorðastjórnun. Reyndu aftur eftir nokkrar mínútur</translation>
 <translation id="4541123282641193691">Ekki tókst að staðfesta reikninginn. Reyndu aftur eða endurræstu Chromebook.</translation>
+<translation id="4541505619120536051">Alltaf opið</translation>
 <translation id="4541662893742891060">Ekki er hægt að tengjast þessum prófíl. Hafðu samband við símafyrirtækið þitt til að fá tæknilega aðstoð.</translation>
 <translation id="4541706525461326392">Fjarlægir prófíl. Þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="4542520061254486227">Lesa gögnin þín á <ph name="WEBSITE_1" /> og <ph name="WEBSITE_2" /></translation>
@@ -5270,7 +5270,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4794910597689955457">Færa <ph name="NUM_OF_FILES" /> skrár í <ph name="CLOUD_PROVIDER" /> til að opna?</translation>
 <translation id="479536056609751218">Vefsíða, aðeins HTML</translation>
 <translation id="4795670271446126525">Brimbrot</translation>
-<translation id="4796142525425001238">Alltaf endurheimta</translation>
 <translation id="4797314204379834752">Prófaðu að nota flipahópa til að skipuleggja verkefni, versla á netinu og fleira</translation>
 <translation id="479863874072008121">Umsjón með tækjum</translation>
 <translation id="479989351350248267">leita</translation>
@@ -5849,7 +5848,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5210365745912300556">Loka flipa</translation>
 <translation id="5213114823401215820">Enduropna lokaðan hóp</translation>
 <translation id="5213481667492808996">Gagnaþjónustan þín hjá <ph name="NAME" /> er tilbúin til notkunar</translation>
-<translation id="5213658238771284310">Endurheimta lotu við ræsingu</translation>
 <translation id="5213891612754844763">Sýna stillingar staðgengilsþjóns</translation>
 <translation id="5214639857958972833">Bókamerkið „<ph name="BOOKMARK_TITLE" />“ búið til.</translation>
 <translation id="5215450412607891876">Kveiktu á framlengdum öryggisuppfærslum</translation>
@@ -6224,7 +6222,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5488093641312826914">„<ph name="COPIED_ITEM_NAME" />“ afritað</translation>
 <translation id="5488508217173274228">Valkostir fyrir dulkóðun samstillingar</translation>
 <translation id="5489077378642700219">Ekki leyfa tilkynningar frá <ph name="WEBSITE" /> en spyrja síðar</translation>
-<translation id="5489435190927933437">Vistuð aðgangsorð fyrir <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Heimilisföng og fleira</translation>
 <translation id="5490721031479690399">Aftengja Bluetooth-tæki</translation>
 <translation id="5490798133083738649">Veittu Linux aðgang að hljóðnemanum</translation>
@@ -6358,7 +6355,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5582839680698949063">Aðalvalmynd</translation>
 <translation id="5583640892426849032">Bakklykill</translation>
 <translation id="5584088138253955452">Vista notandanafn?</translation>
-<translation id="5584091888252706332">Við ræsingu</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Þetta eru almennar upplýsingar um tækið þitt og notkun þína á því (til dæmis stöðu rafhlöðunnar, virkni kerfis og forrita og villur). Gögnin verða notuð til að betrumbæta Android-stýrikerfið og sumar uppsafnaðar upplýsingar geta gagnast samstarfsaðilum okkar, svo sem þróunaraðilum fyrir Android, við að bæta forrit og vörur.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ef slökkt er á þessum eiginleika hefur það ekki áhrif á getu tækisins til að senda þær upplýsingar sem þarf fyrir nauðsynlega þjónustu á borð við uppfærslur á stýrikerfi og öryggisráðstafanir.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Eigandinn getur stjórnað þessum eiginleika með því að fara í Stillingar &gt; Ítarlegt &gt; Senda greiningar- og notkunargögn sjálfkrafa til Google.<ph name="END_PARAGRAPH3" />
@@ -9378,7 +9374,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7815680994978050279">Lokað á hættulegt niðurhal</translation>
 <translation id="7817361223956157679">Skjályklaborðið virkar ekki í Linux-forritum enn sem komið er</translation>
 <translation id="7818135753970109980">Nýju þema bætt við (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Eftir endurræsingu geturðu haldið áfram þar sem frá var horfið með forrit, vefsvæði og opna glugga</translation>
 <translation id="7819605256207059717">Fyrirtækið setti á bannlista</translation>
 <translation id="7820400255539998692">Eyddu <ph name="FILENAME" /> svo aðrir sem nota þetta tæki geti ekki séð aðgangsorðin þín</translation>
 <translation id="7820561748632634942">Úthluta fleiri rofum?</translation>
@@ -10187,6 +10182,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Frekari aðstoð er að finna á: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Velkomin(n) aftur</translation>
 <translation id="8386091599636877289">Regla fannst ekki.</translation>
 <translation id="8387361103813440603">Mega ekki sjá staðsetningu þína</translation>
 <translation id="8387617938027387193">Staðfestu hver þú ert</translation>

@@ -98,7 +98,6 @@
 <translation id="10619348099955377">复制显示名称</translation>
 <translation id="1062407476771304334">替换</translation>
 <translation id="1062628064301375934">帮助我们打造私密性更好的网络环境</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome 撤消了 1 个网站的权限}other{Chrome 撤消了 {NUM_SITES} 个网站的权限}}</translation>
 <translation id="1066964438793906105">不妨扫描以检测是否有恶意软件</translation>
 <translation id="1067661089446014701">为了提高安全性，您可以先在设备上对密码进行加密，然后再将其保存到您的 Google 账号</translation>
 <translation id="1067922213147265141">其他 Google 服务</translation>
@@ -4911,6 +4910,7 @@
 <translation id="4538792345715658285">按企业政策安装。</translation>
 <translation id="4540409690203718935">无法连接到 Google 密码管理工具。请过几分钟后重试</translation>
 <translation id="4541123282641193691">无法验证您的账号。请重试，或重新启动您的 Chromebook。</translation>
+<translation id="4541505619120536051">一律打开</translation>
 <translation id="4541662893742891060">无法关联到此个人资料。如需技术支持，请与您的运营商联系。</translation>
 <translation id="4541706525461326392">正在移除配置文件。这可能需要几分钟的时间。</translation>
 <translation id="4542520061254486227">读取您在 <ph name="WEBSITE_1" /> 和 <ph name="WEBSITE_2" /> 上的数据</translation>
@@ -5245,7 +5245,6 @@
 <translation id="4794910597689955457">将 <ph name="NUM_OF_FILES" /> 个文件移到 <ph name="CLOUD_PROVIDER" />后再打开？</translation>
 <translation id="479536056609751218">网页，仅 HTML</translation>
 <translation id="4795670271446126525">汹涌海浪</translation>
-<translation id="4796142525425001238">一律恢复</translation>
 <translation id="4797314204379834752">尝试使用标签页分组来整理任务，以达成在线购物等目的</translation>
 <translation id="479863874072008121">管理设备</translation>
 <translation id="479989351350248267">搜索</translation>
@@ -5823,7 +5822,6 @@
 <translation id="5210365745912300556">关闭标签页</translation>
 <translation id="5213114823401215820">重新打开已关闭的群组</translation>
 <translation id="5213481667492808996">您可以使用“<ph name="NAME" />”的数据流量服务了</translation>
-<translation id="5213658238771284310">启动时恢复会话</translation>
 <translation id="5213891612754844763">显示代理设置</translation>
 <translation id="5214639857958972833">已创建“<ph name="BOOKMARK_TITLE" />”书签。</translation>
 <translation id="5215450412607891876">开启延长安全更新</translation>
@@ -6197,7 +6195,6 @@
 <translation id="5488093641312826914">已复制“<ph name="COPIED_ITEM_NAME" />”</translation>
 <translation id="5488508217173274228">同步加密选项</translation>
 <translation id="5489077378642700219">不允许接收来自 <ph name="WEBSITE" /> 的通知，但可过段时间再询问</translation>
-<translation id="5489435190927933437">已保存的用于登录 <ph name="DOMAIN" /> 的密码</translation>
 <translation id="5490432419156082418">地址和其他信息</translation>
 <translation id="5490721031479690399">断开蓝牙设备</translation>
 <translation id="5490798133083738649">允许 Linux 使用您的麦克风</translation>
@@ -6331,7 +6328,6 @@
 <translation id="5582839680698949063">主菜单</translation>
 <translation id="5583640892426849032">退格</translation>
 <translation id="5584088138253955452">保存用户名？</translation>
-<translation id="5584091888252706332">启动时</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />这是关于您的设备及其使用情况（例如电池电量、系统与应用活动以及错误）的一般信息。我们会使用这些数据来改善 Android；部分汇总信息也会有助于改善 Google 应用，并会协助我们的合作伙伴（例如 Android 开发者）改善其应用和产品。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />关闭这项功能并不会影响您的设备发送基本服务（例如系统更新和安全防护）所需的信息。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />所有者可以通过“设置”&gt;“高级”&gt;“自动向 Google 发送诊断数据和使用情况数据”来控制这项功能。<ph name="END_PARAGRAPH3" />
@@ -9347,7 +9343,6 @@
 <translation id="7815680994978050279">已屏蔽危险的下载内容</translation>
 <translation id="7817361223956157679">Linux 应用目前不支持屏幕键盘</translation>
 <translation id="7818135753970109980">已添加新主题背景（<ph name="EXTENSION_NAME" />）</translation>
-<translation id="7819087895293765164">重启后，自动进入上次使用的应用/网站/窗口，从上次停下的地方继续浏览或操作</translation>
 <translation id="7819605256207059717">已被贵组织屏蔽</translation>
 <translation id="7820400255539998692">请删除“<ph name="FILENAME" />”，以免使用此设备的他人看到您的密码</translation>
 <translation id="7820561748632634942">分配更多开关？</translation>
@@ -10157,6 +10152,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如需更多帮助，请访问：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">欢迎来到 Recap</translation>
 <translation id="8386091599636877289">找不到此政策。</translation>
 <translation id="8387361103813440603">不允许查看您的位置信息</translation>
 <translation id="8387617938027387193">请验证是您本人在操作</translation>

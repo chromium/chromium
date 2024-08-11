@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Kopijuoti rodomą pavadinimą</translation>
 <translation id="1062407476771304334">Pakeisti</translation>
 <translation id="1062628064301375934">Padėkite mums kurti privatesnį žiniatinklį</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{„Chrome“ pašalino vienos svetainės leidimus}one{„Chrome“ pašalino {NUM_SITES} svetainės leidimus}few{„Chrome“ pašalino {NUM_SITES} svetainių leidimus}many{„Chrome“ pašalino {NUM_SITES} svetainės leidimus}other{„Chrome“ pašalino {NUM_SITES} svetainių leidimus}}</translation>
 <translation id="1066964438793906105">Nuskaityti, ar nėra kenkėjiškų programų</translation>
 <translation id="1067661089446014701">Kad užtikrintumėte geresnę saugą, galite šifruoti slaptažodžius įrenginyje prieš išsaugodami juos „Google“ paskyroje</translation>
 <translation id="1067922213147265141">Kitos „Google“ paslaugos</translation>
@@ -4938,6 +4937,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4538792345715658285">Įdiegta pagal įmonės politiką.</translation>
 <translation id="4540409690203718935">Nepavyksta pasiekti „Google“ slaptažodžių tvarkyklės. Po kelių minučių bandykite dar kartą</translation>
 <translation id="4541123282641193691">Nepavyko patvirtinti paskyros. Bandykite dar kartą arba paleiskite „Chromebook“ iš naujo.</translation>
+<translation id="4541505619120536051">Visada atviras</translation>
 <translation id="4541662893742891060">Nepavyko prisijungti prie šio profilio. Jei reikia techninio palaikymo, susisiekite su operatoriumi.</translation>
 <translation id="4541706525461326392">Pašalinamas profilis. Tai gali užtrukti kelias minutes.</translation>
 <translation id="4542520061254486227">Skaityti duomenis svetainėse <ph name="WEBSITE_1" /> ir <ph name="WEBSITE_2" /></translation>
@@ -5272,7 +5272,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4794910597689955457">Perkelti failus (iš viso: <ph name="NUM_OF_FILES" />) į „<ph name="CLOUD_PROVIDER" />“, kad būtų atidaryti?</translation>
 <translation id="479536056609751218">Tinklalapis, tik HTML</translation>
 <translation id="4795670271446126525">Dūžtančios bangos</translation>
-<translation id="4796142525425001238">Visada atkurti</translation>
 <translation id="4797314204379834752">Pabandykite naudoti skirtukų grupes užduotims tvarkyti, apsipirkdami internetu ir kt.</translation>
 <translation id="479863874072008121">Tvarkyti įrenginius</translation>
 <translation id="479989351350248267">ieškoti</translation>
@@ -5851,7 +5850,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5210365745912300556">Uždaryti skirtuką</translation>
 <translation id="5213114823401215820">Iš naujo atidaryti uždarytą grupę</translation>
 <translation id="5213481667492808996">„<ph name="NAME" />“ duomenų paslauga paruošta naudoti</translation>
-<translation id="5213658238771284310">Atkurti seansą paleidžiant</translation>
 <translation id="5213891612754844763">Rodyti tarpinio serverio nustatymus</translation>
 <translation id="5214639857958972833">Žymė „<ph name="BOOKMARK_TITLE" />“ sukurta.</translation>
 <translation id="5215450412607891876">Išplėstinių saugos naujinių įjungimas</translation>
@@ -6226,7 +6224,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5488093641312826914">Elementas „<ph name="COPIED_ITEM_NAME" />“ nukopijuotas</translation>
 <translation id="5488508217173274228">Sinchronizuoti šifruotės parinktis</translation>
 <translation id="5489077378642700219">Neleisti pranešimų iš <ph name="WEBSITE" />, bet klausti vėliau</translation>
-<translation id="5489435190927933437">Išsaugoti <ph name="DOMAIN" /> slaptažodžiai</translation>
 <translation id="5490432419156082418">Adresai ir dar daugiau</translation>
 <translation id="5490721031479690399">„Bluetooth“ įrenginio atjungimas</translation>
 <translation id="5490798133083738649">Leidimas „Linux“ pasiekti mikrofoną</translation>
@@ -6360,7 +6357,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5582839680698949063">Pagrindinis meniu</translation>
 <translation id="5583640892426849032">Grįžties klavišas</translation>
 <translation id="5584088138253955452">Išsaugoti naudotojo vardą?</translation>
-<translation id="5584091888252706332">Paleidžiant</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Tai yra bendroji informacija apie įrenginį ir jo naudojimą (pvz., akumuliatoriaus įkrovos lygis, sistemos ir programų veikla ir klaidos). Duomenys bus naudojami „Android“ sistemai tobulinti. Be to, tam tikra sukaupta informacija bus naudinga „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams, tobulinant programas ir produktus.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Išjungus šią funkciją vis tiek galima siųsti įrenginio informaciją, reikalingą pagrindinėms paslaugoms, pvz., sistemos naujiniams ir saugai.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Savininkas gali valdyti šią funkciją skiltyje „Nustatymai“ &gt; „Išplėstiniai“ &gt; „Automatiškai siųsti diagnostikos ir naudojimo duomenis „Google“.<ph name="END_PARAGRAPH3" />
@@ -9386,7 +9382,6 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7815680994978050279">Užblokuotas pavojingas atsisiuntimas</translation>
 <translation id="7817361223956157679">Ekrano klaviatūra „Linux“ programose kol kas neveikia</translation>
 <translation id="7818135753970109980">Pridėta nauja tema (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Paleidę iš naujo tęskite nuo ten, kur baigėte, naudodami programas, svetaines ir atidarytus langus</translation>
 <translation id="7819605256207059717">Užblokavo jūsų organizacija</translation>
 <translation id="7820400255539998692">Ištrinkite „<ph name="FILENAME" />“, kad kiti šį įrenginį naudojantys asmenys negalėtų peržiūrėti jūsų slaptažodžių</translation>
 <translation id="7820561748632634942">Priskirti papildomų jungiklių?</translation>
@@ -10196,6 +10191,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Jei reikia daugiau pagalbos, apsilankykite adresu g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Sveiki! Tai – „Recap“</translation>
 <translation id="8386091599636877289">Politika nerasta.</translation>
 <translation id="8387361103813440603">Neleidžiama peržiūrėti vietovės</translation>
 <translation id="8387617938027387193">Jūsų tapatybės patvirtinimas</translation>

@@ -1583,7 +1583,6 @@
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> بارگیری بازیابی شد</translation>
 <translation id="8368001212524806591">پیگیری قیمت</translation>
 <translation id="8378850197701296741">نشانک، سابقه، گذرواژه، و تنظیمات دیگری از <ph name="FROM_ACCOUNT" /> دارید.</translation>
-<translation id="8382640928718131148">برگه‌هایی که به‌مدت <ph name="DAYS_INACTIVE" /> روز از آن‌ها استفاده نکرده‌اید به اینجا منتقل می‌شوند و بعداز <ph name="DAYS_ARCHIVED" /> روز بسته خواهند شد. هرزمان بخواهید می‌توانید این تنظیم را در <ph name="SETTINGS_TITLE" /> تغییر دهید.</translation>
 <translation id="8387617938027387193">تأیید کنید این شمایید</translation>
 <translation id="8393700583063109961">ارسال پیام</translation>
 <translation id="8402673309244746971">رفتن به «دنبال می‌کنید»</translation>

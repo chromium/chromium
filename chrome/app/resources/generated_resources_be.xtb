@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Скапіраваць бачную назву</translation>
 <translation id="1062407476771304334">Замяніць</translation>
 <translation id="1062628064301375934">Дапамажыце нам павысіць прыватнасць прагляду інтэрнэту для ўсіх карыстальнікаў</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome адклікаў дазволы для 1 сайта}one{Chrome адклікаў дазволы для {NUM_SITES} сайта}few{Chrome адклікаў дазволы для {NUM_SITES} сайтаў}many{Chrome адклікаў дазволы для {NUM_SITES} сайтаў}other{Chrome адклікаў дазволы для {NUM_SITES} сайта}}</translation>
 <translation id="1066964438793906105">Сканіраваць для пошуку шкодных праграм</translation>
 <translation id="1067661089446014701">Дзеля дадатковай бяспекі, перш чым захоўваць паролі ва Уліковым запісе Google, вы можаце зашыфроўваць іх на прыладзе</translation>
 <translation id="1067922213147265141">Іншыя сэрвісы Google</translation>
@@ -4921,6 +4920,7 @@
 <translation id="4538792345715658285">Усталявана карпаратыўнай палітыкай.</translation>
 <translation id="4540409690203718935">Не ўдаецца ўвайсці ў Менеджар пароляў Google. Паўтарыце спробу праз некалькі хвілін.</translation>
 <translation id="4541123282641193691">Не ўдалося спраўдзіць уліковы запіс. Паўтарыце спробу або перазапусціце Chromebook.</translation>
+<translation id="4541505619120536051">Адкрываць заўсёды</translation>
 <translation id="4541662893742891060">Не ўдалося падключыцца да гэтага профілю. Па тэхнічную падтрымку звяртайцеся да свайго аператара.</translation>
 <translation id="4541706525461326392">Ідзе выдаленне профілю. Гэта можа заняць некалькі хвілін.</translation>
 <translation id="4542520061254486227">Чытаць вашы даныя на вэб-сайтах <ph name="WEBSITE_1" /> і <ph name="WEBSITE_2" /></translation>
@@ -5255,7 +5255,6 @@
 <translation id="4794910597689955457">Перамясціць файлы (<ph name="NUM_OF_FILES" />) у сэрвіс "<ph name="CLOUD_PROVIDER" />" перад адкрыццём?</translation>
 <translation id="479536056609751218">Вэб-старонка, толькі HTML</translation>
 <translation id="4795670271446126525">Пырскі хваль</translation>
-<translation id="4796142525425001238">Заўсёды аднаўляць</translation>
 <translation id="4797314204379834752">Выкарыстоўвайце групы ўкладак для ўпарадкоўвання задач, купляў у інтэрнэце і не толькі</translation>
 <translation id="479863874072008121">Кіраваць прыладамі</translation>
 <translation id="479989351350248267">пошук</translation>
@@ -5834,7 +5833,6 @@
 <translation id="5210365745912300556">Закрыць укладку</translation>
 <translation id="5213114823401215820">Зноў адкрыць закрытую групу</translation>
 <translation id="5213481667492808996">Сэрвіс перадачы даных "<ph name="NAME" />" гатовы да выкарыстання</translation>
-<translation id="5213658238771284310">Аднаўленне сеанса пасля запуску</translation>
 <translation id="5213891612754844763">Паказаць налады проксі-сервера</translation>
 <translation id="5214639857958972833">Створана закладка "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="5215450412607891876">Уключыце пашыраныя абнаўленні сістэмы бяспекі</translation>
@@ -6208,7 +6206,6 @@
 <translation id="5488093641312826914">Элемент "<ph name="COPIED_ITEM_NAME" />" скапіраваны</translation>
 <translation id="5488508217173274228">Параметры шыфравання для сінхранізацыі</translation>
 <translation id="5489077378642700219">Не дазваляць сайту <ph name="WEBSITE" /> адпраўляць апавяшчэнні, але спытаць яшчэ раз пазней</translation>
-<translation id="5489435190927933437">Захаваныя паролі для сайта <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Адрасы і іншае</translation>
 <translation id="5490721031479690399">Адключыць прыладу Bluetooth</translation>
 <translation id="5490798133083738649">Дазволіць сістэме Linux доступ да мікрафона</translation>
@@ -6342,7 +6339,6 @@
 <translation id="5582839680698949063">Галоўнае меню</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Захаваць імя карыстальніка?</translation>
-<translation id="5584091888252706332">Пры запуску</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Гэта агульная інфармацыя пра вашу прыладу і яе выкарыстанне (напрыклад, узровень зараду акумулятара, дзеянні ў сістэме і праграмах, а таксама памылкі). Даныя будуць выкарыстоўвацца для ўдасканалення сістэмы Android, а пэўная сукупная інфармацыя дапаможа ўдасканаліць праграмы Google і будзе карыснай для партнёраў кампаніі, напрыклад для распрацоўшчыкаў Android, у паляпшэнні праграм і прадуктаў.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Выключэнне гэтай функцыі не ўплывае на адпраўку прыладай інфармацыі, неабходнай для працы асноўных сэрвісаў, такіх як абнаўленне сістэмы і бяспека прылады.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Уладальнік можа кіраваць гэтай функцыяй у меню "Налады &gt; Дадатковыя функцыі &gt; Аўтаматычна адпраўляць у Google даныя па дыягностыцы і выкарыстанні.<ph name="END_PARAGRAPH3" />
@@ -9366,7 +9362,6 @@
 <translation id="7815680994978050279">Небяспечная спампоўка заблакіравана</translation>
 <translation id="7817361223956157679">Экранная клавіятура ў праграмах Linux пакуль што не працуе</translation>
 <translation id="7818135753970109980">Дададзена новая тэма (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Пасля перазапуску вы зможаце працягваць работу з адкрытымі раней праграмамі, вэб-сайтамі і вокнамі</translation>
 <translation id="7819605256207059717">Элемент заблакіраваны вашай арганізацыяй</translation>
 <translation id="7820400255539998692">Выдаліце файл <ph name="FILENAME" />, каб іншыя карыстальнікі прылады не змаглі пабачыць вашы паролі</translation>
 <translation id="7820561748632634942">Прызначыць дадатковыя пераключальнікі?</translation>
@@ -10175,6 +10170,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Дадатковую інфармацыю шукайце на сайце: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Кароткі агляд</translation>
 <translation id="8386091599636877289">Палітыка не знойдзена.</translation>
 <translation id="8387361103813440603">Не дазволена атрымліваць звесткі пра ваша месцазнаходжанне</translation>
 <translation id="8387617938027387193">Прайдзіце спраўджанне асобы</translation>

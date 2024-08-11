@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Copiar nome visible</translation>
 <translation id="1062407476771304334">Substituír</translation>
 <translation id="1062628064301375934">Axúdanos a facer que a Web sexa máis privada</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome quitou os permisos de 1 sitio}other{Chrome quitou os permisos de {NUM_SITES} sitios}}</translation>
 <translation id="1066964438793906105">Busca software malicioso</translation>
 <translation id="1067661089446014701">Para dispoñer dunha maior seguranza, podes encriptar os contrasinais no dispositivo antes de que se garden na túa Conta de Google</translation>
 <translation id="1067922213147265141">Outros servizos de Google</translation>
@@ -4924,6 +4923,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4538792345715658285">Instalada pola política de empresa.</translation>
 <translation id="4540409690203718935">Non se puido acceder ao xestor de contrasinais de Google. Téntao de novo dentro duns minutos</translation>
 <translation id="4541123282641193691">Non se puido verificar a túa conta. Téntao de novo ou reinicia o Chromebook.</translation>
+<translation id="4541505619120536051">Abrir sempre</translation>
 <translation id="4541662893742891060">Non se puido establecer conexión con este perfil. Para obter asistencia técnica, ponte en contacto co teu operador.</translation>
 <translation id="4541706525461326392">Quitando perfil. Esta acción pode tardar uns minutos.</translation>
 <translation id="4542520061254486227">Ler os teus datos de <ph name="WEBSITE_1" /> e <ph name="WEBSITE_2" /></translation>
@@ -5258,7 +5258,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4794910597689955457">Queres mover <ph name="NUM_OF_FILES" /> ficheiros a <ph name="CLOUD_PROVIDER" /> para abrilos?</translation>
 <translation id="479536056609751218">Páxina web, só HTML</translation>
 <translation id="4795670271446126525">Ondas rompendo</translation>
-<translation id="4796142525425001238">Restaurar sempre</translation>
 <translation id="4797314204379834752">Proba a utilizar grupos de pestanas para organizar as tarefas, facer compras en liña e moito máis</translation>
 <translation id="479863874072008121">Xestionar dispositivos</translation>
 <translation id="479989351350248267">search</translation>
@@ -5837,7 +5836,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5210365745912300556">Pechar pestana</translation>
 <translation id="5213114823401215820">Volver abrir grupo pechado</translation>
 <translation id="5213481667492808996">Xa podes usar o servizo de datos <ph name="NAME" /></translation>
-<translation id="5213658238771284310">Restaurar a sesión ao iniciar</translation>
 <translation id="5213891612754844763">Mostrar configuración de proxy</translation>
 <translation id="5214639857958972833">Marcador creado: <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="5215450412607891876">Activar as actualizacións de seguranza ampliadas</translation>
@@ -6212,7 +6210,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5488093641312826914">Copiouse <ph name="COPIED_ITEM_NAME" /></translation>
 <translation id="5488508217173274228">Opcións de encriptación da sincronización</translation>
 <translation id="5489077378642700219">Non permitir notificacións de <ph name="WEBSITE" />, pero preguntar máis tarde</translation>
-<translation id="5489435190927933437">Gardáronse os contrasinais para <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Enderezos e moito máis</translation>
 <translation id="5490721031479690399">Desconectar dispositivo Bluetooth</translation>
 <translation id="5490798133083738649">Permitir que Linux acceda ao micrófono</translation>
@@ -6346,7 +6343,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5582839680698949063">Menú principal</translation>
 <translation id="5583640892426849032">Retroceso</translation>
 <translation id="5584088138253955452">Queres gardar o nome de usuario?</translation>
-<translation id="5584091888252706332">No inicio</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Trátase de información xeral acerca do teu dispositivo e do seu uso, como o nivel de batería, a actividade da aplicación e do sistema, e os erros. Os datos utilizaranse coa finalidade de mellorar Android e algunha información adicional tamén axudará ás aplicacións de Google e aos socios, como os programadores de Android, a mellorar as súas aplicacións e os produtos.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />A desactivación desta función non afecta á capacidade do teu dispositivo de enviar a información necesaria para os servizos esenciais, como a seguranza e as actualizacións do sistema.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />O propietario pode controlar esta función desde Configuración &gt; Avanzada &gt; Enviar de forma automática datos de uso e diagnóstico a Google.<ph name="END_PARAGRAPH3" />
@@ -9361,7 +9357,6 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7815680994978050279">Bloqueouse unha descarga perigosa</translation>
 <translation id="7817361223956157679">O teclado en pantalla aínda non está dispoñible en aplicacións de Linux</translation>
 <translation id="7818135753970109980">Engadiuse un tema novo (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Despois do reinicio, continúa onde o deixaches nas aplicacións, sitios web e ventás abertas</translation>
 <translation id="7819605256207059717">Bloqueado pola túa organización</translation>
 <translation id="7820400255539998692">Elimina "<ph name="FILENAME" />" para que os outros usuarios deste dispositivo non poidan ver os teus contrasinais</translation>
 <translation id="7820561748632634942">Queres asignarlles accións a máis interruptores?</translation>
@@ -10170,6 +10165,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <ph name="END_LIST" />
 <ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />Para obter máis axuda, visita g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Recapitulación de benvida</translation>
 <translation id="8386091599636877289">Non se atopou a política.</translation>
 <translation id="8387361103813440603">Permiso denegado para ver a túa localización</translation>
 <translation id="8387617938027387193">Verifica a túa identidade</translation>

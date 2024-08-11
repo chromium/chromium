@@ -4080,27 +4080,6 @@ Nếu bạn không đặt hoặc để trống chính sách này thì sẽ khôn
 <translation id="4101282687722389021">Dấu thời gian UTC cho lần cập nhật mục này gần đây nhất. Được gửi dưới dạng một chuỗi do dấu thời gian không phù hợp trong một số nguyên</translation>
 <translation id="4101826711886952606">Chế độ cài đặt phím Home/End sử dụng phím tắt chứa phím bổ trợ tìm kiếm</translation>
 <translation id="4102347680024644994">Báo cáo các sự kiện phát hiện và phản hồi mở rộng (XDR)</translation>
-<translation id="4104303092334469130">Định cấu hình danh sách các quy tắc Kiểm soát dữ liệu để ngăn chặn rò rỉ dữ liệu.
-
-      Mỗi quy tắc đều bao gồm nội dung sau:
-      – Trường điều kiện để kích hoạt quy tắc đó. Một quy tắc sẽ chỉ kích hoạt nếu thao tác của người dùng khớp với tất cả các trường được điền sẵn trong trường <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> và <ph name="DATA_CONTROLS_NOT" />. Đối với trường phụ của danh sách, chỉ cần khớp với một mục nhập (ví dụ: chỉ cần khớp với một mẫu URL là có thể kích hoạt quy tắc).
-      – Danh sách các quy định hạn chế sẽ được áp dụng. Tuỳ thuộc vào quy định hạn chế, bạn chỉ có thể sử dụng điều kiện <ph name="DATA_CONTROLS_SOURCES" /> hoặc <ph name="DATA_CONTROLS_DESTINATIONS" />.
-
-      Bạn có thể thêm các quy tắc để:
-      – Kiểm soát dữ liệu trong bảng nhớ tạm được chia sẻ giữa các nguồn và đích.
-      – Kiểm soát việc chặn ảnh chụp màn hình dựa trên thẻ nguồn.
-
-      Nếu bạn đặt chính sách <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> thành True thì các quy tắc đã kích hoạt sẽ được báo cáo cho quản trị viên.
-      Bạn có thể đặt mức hạn chế thành BLOCK (CHẶN), WARN (CẢNH BÁO) hoặc REPORT (BÁO CÁO).
-      – Nếu bạn đặt mức hạn chế thành BLOCK, người dùng sẽ không được phép thực hiện thao tác.
-      – Nếu bạn đặt mức hạn chế thành WARN, người dùng sẽ nhận được cảnh báo và họ có thể chọn tiếp tục hoặc huỷ thao tác.
-      – Nếu bạn đặt mức hạn chế thành REPORT, thao tác của người dùng sẽ không bị gián đoạn. Tuy nhiên, hệ thống sẽ gửi báo cáo nếu bạn bật chính sách <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />.
-
-      Lưu ý:
-      – Định dạng mẫu URL theo định dạng sau (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-      – Đối với các quy tắc ngăn chặn rò rỉ dữ liệu dành riêng cho <ph name="PRODUCT_OS_NAME" />, hãy xem thêm chính sách <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
-
-      Nếu bạn không đặt chính sách này thì sẽ không có mức hạn chế nào được áp dụng.</translation>
 <translation id="4105989332710272578">Tắt buộc thực thi Tính minh bạch của chứng chỉ cho danh sách URL</translation>
 <translation id="410740968939768919">Kiểm soát xem có thể sử dụng tiện ích Manifest v2 trên màn hình đăng nhập của <ph name="PRODUCT_OS_NAME" /> được không.
 
@@ -6625,15 +6604,6 @@ Chính sách này không còn được dùng kể từ M124.</translation>
       Khi bạn không đặt chính sách này (nếu được hỗ trợ trên thiết bị), chế độ sạc pin chuẩn sẽ áp dụng và người dùng sẽ không thể thay đổi chế độ này.
 
       Lưu ý: Nếu bạn chọn chế độ sạc pin Tùy chỉnh, hãy chỉ định cả <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> và <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.</translation>
-<translation id="60655674079349516">Định cấu hình danh sách các loại dữ liệu duyệt web cần xoá khi người dùng đóng tất cả cửa sổ trình duyệt.
-
-Cảnh báo: Nếu bạn đặt chính sách này, thì dữ liệu cá nhân trên máy có thể bị ảnh hưởng và bị xoá vĩnh viễn. Bạn nên kiểm tra chế độ cài đặt trước khi triển khai để tránh trường hợp vô tình xoá dữ liệu cá nhân.
-
-Sau đây là các loại dữ liệu có sẵn: nhật ký duyệt web (<ph name="DATA_TYPE_BROWSING_HISTORY" />), nhật ký tải xuống (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), bộ nhớ đệm (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), dữ liệu tự động điền (<ph name="DATA_TYPE_AUTOFILL" />), mật khẩu (<ph name="DATA_TYPE_PASSWORD" />), các chế độ cài đặt trang web (<ph name="DATA_TYPE_SITE_SETTINGS" />) và dữ liệu ứng dụng đã lưu trữ (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Chính sách này không được ưu tiên hơn <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-
-Cho đến Chrome 114, chính sách này yêu cầu đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> thành true (đúng). Kể từ Chrome 115, việc bạn đặt chính sách này sẽ tắt tính năng đồng bộ hoá đối với các loại dữ liệu tương ứng nếu "<ph name="CHROME_SYNC_NAME" />" không bị tắt bằng cách đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> và <ph name="BROWSER_SIGNIN_POLICY_NAME" /> cũng không bị tắt.
-
-Nếu <ph name="PRODUCT_NAME" /> không thoát đúng cách (ví dụ: nếu trình duyệt hoặc hệ điều hành gặp sự cố), thì dữ liệu duyệt web sẽ bị xoá vào lần tiếp theo tải hồ sơ.</translation>
 <translation id="6066761914755798079">Nếu bạn bật <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, thì thao tác đặt <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> sẽ chỉ định URL của công cụ tìm kiếm sẽ đưa ra đề xuất tìm kiếm. URL phải chứa chuỗi <ph name="SEARCH_TERM_MARKER" />. Chuỗi này sẽ được thay bằng cụm từ tìm kiếm của người dùng trong truy vấn.
 
       Bạn có thể chỉ định URL tìm kiếm của Google là: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>

@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Копіювати відображувану назву</translation>
 <translation id="1062407476771304334">Замінити</translation>
 <translation id="1062628064301375934">Допоможіть нам розробити технології для кращої конфіденційності в мережі</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome скасував дозволи для 1 сайту}one{Chrome скасував дозволи для {NUM_SITES} сайту}few{Chrome скасував дозволи для {NUM_SITES} сайтів}many{Chrome скасував дозволи для {NUM_SITES} сайтів}other{Chrome скасував дозволи для {NUM_SITES} сайту}}</translation>
 <translation id="1066964438793906105">Сканувати на наявність зловмисного програмного забезпечення</translation>
 <translation id="1067661089446014701">Для додаткового захисту ви можете шифрувати паролі на пристрої, перш ніж вони збережуться в обліковому записі Google</translation>
 <translation id="1067922213147265141">Інші сервіси Google</translation>
@@ -4938,6 +4937,7 @@
 <translation id="4538792345715658285">Установлено політикою підприємства.</translation>
 <translation id="4540409690203718935">Не вдалося з’єднатися з Google Менеджером паролів. Спробуйте за кілька хвилин.</translation>
 <translation id="4541123282641193691">Не вдалося підтвердити ваш обліковий запис. Повторіть спробу або перезапустіть Chromebook.</translation>
+<translation id="4541505619120536051">Завжди відкривати</translation>
 <translation id="4541662893742891060">Не вдається підключитися до цього профілю. Щоб отримати технічну підтримку, зв'яжіться з оператором.</translation>
 <translation id="4541706525461326392">Триває видалення профілю. Це може зайняти кілька хвилин.</translation>
 <translation id="4542520061254486227">Переглядати ваші дані на веб-сайтах <ph name="WEBSITE_1" /> і <ph name="WEBSITE_2" /></translation>
@@ -5272,7 +5272,6 @@
 <translation id="4794910597689955457">Перемістити файли (<ph name="NUM_OF_FILES" />) у сервіс <ph name="CLOUD_PROVIDER" />, щоб відкрити їх?</translation>
 <translation id="479536056609751218">Веб-сторінка, тільки HTML</translation>
 <translation id="4795670271446126525">Бурхливі хвилі</translation>
-<translation id="4796142525425001238">Завжди відновлювати</translation>
 <translation id="4797314204379834752">Спробуйте групи вкладок, щоб упорядковувати завдання, здійснювати покупки в Інтернеті тощо</translation>
 <translation id="479863874072008121">Керувати пристроями</translation>
 <translation id="479989351350248267">пошук</translation>
@@ -5850,7 +5849,6 @@
 <translation id="5210365745912300556">Закрити вкладку</translation>
 <translation id="5213114823401215820">Знову відкрити закриту групу</translation>
 <translation id="5213481667492808996">Службу передавання даних "<ph name="NAME" />" активовано</translation>
-<translation id="5213658238771284310">Відновити сеанс після запуску</translation>
 <translation id="5213891612754844763">Показати налаштування проксі</translation>
 <translation id="5214639857958972833">Створено закладку "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="5215450412607891876">Увімкніть розширені оновлення системи безпеки</translation>
@@ -6224,7 +6222,6 @@
 <translation id="5488093641312826914">Елемент "<ph name="COPIED_ITEM_NAME" />" скопійовано</translation>
 <translation id="5488508217173274228">Варіанти шифрування синхронізації</translation>
 <translation id="5489077378642700219">Не дозволяти сповіщення від сайту <ph name="WEBSITE" />, але запитати пізніше</translation>
-<translation id="5489435190927933437">Збережені паролі для <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Адреси й інше</translation>
 <translation id="5490721031479690399">Відключити пристрій Bluetooth</translation>
 <translation id="5490798133083738649">Надати Linux доступ до мікрофона</translation>
@@ -6358,7 +6355,6 @@
 <translation id="5582839680698949063">Головне меню</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Зберегти ім’я користувача?</translation>
-<translation id="5584091888252706332">Автозапуск</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Це загальна інформація про пристрій і його використання (наприклад, дані про рівень заряду акумулятора, систему, історію додатків та помилки). Ці відомості використовуватимуться, щоб покращити Android, а деякі зведені дані корисні для додатків і партнерів Google, як-от розробників Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Якщо вимкнути цю функцію, пристрій усе одно зможе надсилати дані, потрібні для отримання важливих послуг, зокрема оновлень системи та засобів безпеки.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Власник може керувати цією функцією в меню "Налаштування" &gt; "Розширені" &gt; "Автоматично надсилати в Google дані про діагностику та використання".<ph name="END_PARAGRAPH3" />
@@ -9379,7 +9375,6 @@
 <translation id="7815680994978050279">Заблоковано небезпечне завантаження</translation>
 <translation id="7817361223956157679">Додатки Linux ще не підтримують екранну клавіатуру</translation>
 <translation id="7818135753970109980">Додано нову тему (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Після перезапуску продовжте роботу з додатками, веб-сайтами й відкритими вікнами з місця, де зупинилися</translation>
 <translation id="7819605256207059717">Заблоковано вашою організацією</translation>
 <translation id="7820400255539998692">Видаліть файл "<ph name="FILENAME" />", щоб інші користувачі цього пристрою не бачили ваші паролі</translation>
 <translation id="7820561748632634942">Призначити додаткові перемикачі?</translation>
@@ -10189,6 +10184,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Щоб дізнатися більше, перейдіть на сторінку g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">З поверненням</translation>
 <translation id="8386091599636877289">Правило не знайдено.</translation>
 <translation id="8387361103813440603">Заборонено переглядати дані про ваше місцезнаходження</translation>
 <translation id="8387617938027387193">Підтвердьте свою особу</translation>

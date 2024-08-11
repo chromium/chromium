@@ -4085,27 +4085,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="4101282687722389021">Timestamp UTC relativo all'ultimo aggiornamento della voce. Viene inviato sotto forma di stringa perché non rientrerebbe in un numero intero.</translation>
 <translation id="4101826711886952606">Le impostazioni di Inizio/Fine usano la scorciatoia che contiene il tasto di modifica Ricerca</translation>
 <translation id="4102347680024644994">Segnala eventi di rilevamento e risposta estesi (XDR)</translation>
-<translation id="4104303092334469130">Consente di configurare un elenco di regole di controllo dei dati per prevenire le fughe di dati.
-
-      Ciascuna regola prevede quanto segue:
-      - Campi delle condizioni per attivarla. Una regola viene attivata soltanto se un'azione dell'utente corrisponde a tutti i campi compilati nei relativi campi <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> e <ph name="DATA_CONTROLS_NOT" />. Per quanto riguarda i campi secondari dell'elenco, deve corrispondere soltanto una voce; ad esempio, deve corrispondere un solo pattern URL per attivare la regola.
-      - Un elenco di limitazioni da applicare. A seconda della limitazione, potrebbero essere disponibili solo le condizioni <ph name="DATA_CONTROLS_SOURCES" /> o <ph name="DATA_CONTROLS_DESTINATIONS" />.
-
-      È possibile aggiungere regole per:
-      - Controllare i dati degli appunti condivisi tra le origini e le destinazioni.
-      - Controllare il blocco degli screenshot in base alle schede di origine.
-
-      Se il criterio <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> viene impostato su True, le regole attivate vengono segnalate all'amministratore.
-      Il livello di limitazione può essere impostato su BLOCK, WARN o REPORT.
-      - Se il livello di limitazione è impostato su BLOCK, l'azione non sarà consentita.
-      - Se il livello di limitazione è impostato su WARN, l'utente verrà avvisato e potrà scegliere se continuare o annullare l'azione.
-      - Se il livello di limitazione è impostato su REPORT, l'azione dell'utente non verrà interrotta, ma verrà inviata una segnalazione se il criterio <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> è attivo.
-
-      Note:
-      - I pattern URL devono avere il formato indicato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-      - Per conoscere le regole per la prevenzione delle fughe di dati specifiche di <ph name="PRODUCT_OS_NAME" />, vedi anche il criterio <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
-
-      Se il criterio non viene configurato, non verranno applicate limitazioni.</translation>
 <translation id="4105989332710272578">Disattiva l'imposizione di Certificate Transparency per un elenco di URL</translation>
 <translation id="410740968939768919">Controlla se le estensioni Manifest v2 possono essere utilizzate nella schermata di accesso di <ph name="PRODUCT_OS_NAME" />.
 
@@ -6615,15 +6594,6 @@ Questo criterio è stato ritirato a partire dalla versione M124.</translation>
       Se il criterio non viene configurato (se l'impostazione è supportata dal dispositivo), viene applicata la modalità di ricarica standard della batteria e gli utenti non possono modificarlo.
 
       Nota: se viene selezionata la modalità di ricarica personalizzata della batteria, vengono specificati anche i criteri <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> e <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.</translation>
-<translation id="60655674079349516">Consente di configurare un elenco dei tipi di dati di navigazione che dovrebbero essere eliminati alla chiusura di tutte le finestre del browser da parte dell'utente.
-
-Avviso: l'impostazione di questo criterio può influire sulla rimozione definitiva dei dati personali locali. Ti consigliamo di testare le impostazioni prima del deployment per evitare l'eliminazione accidentale di dati personali.
-
-Tra i tipi di dati disponibili ci sono: cronologia di navigazione (<ph name="DATA_TYPE_BROWSING_HISTORY" />), cronologia dei download (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, compilazione automatica (<ph name="DATA_TYPE_AUTOFILL" />), password (<ph name="DATA_TYPE_PASSWORD" />), impostazioni sito (<ph name="DATA_TYPE_SITE_SETTINGS" />) e dati di app ospitate (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Questo criterio non ha la precedenza su <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-
-Fino a Chrome 114, questo criterio richiedeva l'impostazione del criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> su true. A partire da Chrome 115, la configurazione di questo criterio disattiva la sincronizzazione per i rispettivi tipi di dati se "<ph name="CHROME_SYNC_NAME" />" non viene disattivato impostando il criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> e non viene disattivato <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
-
-Se <ph name="PRODUCT_NAME" /> non si chiude correttamente (ad esempio, in caso di arresto anomalo del browser o del sistema operativo), i dati di navigazione verranno cancellati al successivo caricamento del profilo.</translation>
 <translation id="6066761914755798079">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> consente di specificare l'URL del motore di ricerca per fornire suggerimenti per le ricerche. L'URL dovrebbe includere la stringa <ph name="SEARCH_TERM_MARKER" />, sostituita nella query dai termini di ricerca degli utenti.
 
       Puoi specificare l'URL di ricerca di Google come: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>

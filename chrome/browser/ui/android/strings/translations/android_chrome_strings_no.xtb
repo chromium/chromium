@@ -1583,7 +1583,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> nedlastinger er gjenopprettet</translation>
 <translation id="8368001212524806591">Spor prisen</translation>
 <translation id="8378850197701296741">Du har bokmerker, logg, passord og andre innstillinger fra <ph name="FROM_ACCOUNT" />.</translation>
-<translation id="8382640928718131148">Faner du ikke har brukt på <ph name="DAYS_INACTIVE" /> dager, flyttes hit og lukkes etter <ph name="DAYS_ARCHIVED" /> dager. Du kan når som helst endre dette i <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8387617938027387193">Bekreft at det er deg</translation>
 <translation id="8393700583063109961">Send melding</translation>
 <translation id="8402673309244746971">Gå til Følger</translation>

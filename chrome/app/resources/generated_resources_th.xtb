@@ -98,7 +98,6 @@
 <translation id="10619348099955377">คัดลอกชื่อที่แสดง</translation>
 <translation id="1062407476771304334">แทนที่</translation>
 <translation id="1062628064301375934">ช่วยเราสร้างเว็บที่มีความเป็นส่วนตัวมากขึ้น</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome นำสิทธิ์สำหรับ 1 เว็บไซต์ออกแล้ว}other{Chrome นำสิทธิ์สำหรับ {NUM_SITES} เว็บไซต์ออกแล้ว}}</translation>
 <translation id="1066964438793906105">สแกนหามัลแวร์</translation>
 <translation id="1067661089446014701">คุณสามารถเข้ารหัสให้กับรหัสผ่านในอุปกรณ์ก่อนบันทึกลงในบัญชี Google เพื่อเพิ่มความปลอดภัย</translation>
 <translation id="1067922213147265141">บริการอื่นๆ ของ Google</translation>
@@ -1205,6 +1204,7 @@
 <translation id="184183613002882946">ไม่ ใช้สวิตช์เดียว</translation>
 <translation id="184273675144259287">แทนที่แอปและไฟล์ Linux ด้วยข้อมูลสำรองก่อนหน้านี้</translation>
 <translation id="1842766183094193446">คุณแน่ใจไหมว่าต้องการเปิดใช้โหมดสาธิต</translation>
+<translation id="1843048149176045210">คัดลอกลิงก์ดาวน์โหลด</translation>
 <translation id="1845060436536902492">ChromeVox ซึ่งเป็นโปรแกรมอ่านหน้าจอใน ChromeOS Flex นั้นเป็นเครื่องมือที่ผู้ตาบอดหรือมีสายตาเลือนรางใช้เป็นหลักในการอ่านข้อความที่แสดงอยู่บนหน้าจอที่ใช้โปรแกรมสังเคราะห์เสียงพูดหรือจอแสดงผลอักษรเบรลล์ กดแป้นเว้นวรรคเพื่อเปิด ChromeVox เมื่อเปิดใช้งาน ChromeVox ระบบจะแนะนำการใช้งานสั้นๆ</translation>
 <translation id="1845727111305721124">ได้รับอนุญาตให้เล่นเสียง</translation>
 <translation id="1846308012215045257">กด Control และคลิกเพื่อเรียกใช้ <ph name="PLUGIN_NAME" /></translation>
@@ -3159,6 +3159,7 @@
 <translation id="3251714896659475029">ให้ <ph name="SUPERVISED_USER_NAME" /> เข้าถึง Google Assistant เมื่อพูดว่า "Ok Google"</translation>
 <translation id="3251759466064201842">&lt;ไม่ใช่ส่วนหนึ่งของใบรับรอง&gt;</translation>
 <translation id="325238099842880997">กำหนดกฎการใช้งานดิจิทัลพื้นฐานเพื่อช่วยบุตรหลานในการเล่น สำรวจ และทำการบ้านที่บ้าน</translation>
+<translation id="3253083398453405334">กะพริบหน้าจอเมื่อคุณได้รับการแจ้งเตือน</translation>
 <translation id="3253225298092156258">ไม่มีข้อมูล</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{เพิ่มพื้นที่ว่างใน <ph name="CLOUD_PROVIDER" /> เพื่อคัดลอกไฟล์นี้}other{เพิ่มพื้นที่ว่างใน <ph name="CLOUD_PROVIDER" /> เพื่อคัดลอกไฟล์เหล่านี้}}</translation>
 <translation id="3253448572569133955">บัญชีที่ไม่รู้จัก</translation>
@@ -3655,6 +3656,7 @@
 <translation id="3621202678540785336">อินพุต</translation>
 <translation id="3621807901162200696">ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{1 แอป}other{# แอป}}</translation>
+<translation id="3622820753353315928">สีของการกะพริบหน้าจอ</translation>
 <translation id="362333465072914957">กำลังรอให้ CA ออกใบรับรอง</translation>
 <translation id="3623598555687153298">การดำเนินการนี้จะลบข้อมูลซึ่งจัดเก็บโดยเว็บไซต์ที่แสดงรวมทั้งสิ้น <ph name="TOTAL_USAGE" /></translation>
 <translation id="3624567683873126087">ปลดล็อกอุปกรณ์และลงชื่อเข้าใช้บัญชี Google</translation>
@@ -4920,6 +4922,7 @@
 <translation id="4538792345715658285">ติดตั้งโดยนโยบายขององค์กร</translation>
 <translation id="4540409690203718935">เข้าถึงเครื่องมือจัดการรหัสผ่านบน Google ไม่ได้ โปรดลองอีกครั้งในอีกสักครู่</translation>
 <translation id="4541123282641193691">ยืนยันบัญชีไม่ได้ โปรดลองอีกครั้งหรือรีสตาร์ท Chromebook</translation>
+<translation id="4541505619120536051">เปิดตลอดเวลา</translation>
 <translation id="4541662893742891060">เชื่อมต่อโปรไฟล์นี้ไม่ได้ โปรดติดต่อผู้ให้บริการเพื่อรับการสนับสนุนด้านเทคนิค</translation>
 <translation id="4541706525461326392">กำลังนำโปรไฟล์ออก การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="4542520061254486227">อ่านข้อมูลใน <ph name="WEBSITE_1" /> และ <ph name="WEBSITE_2" /></translation>
@@ -5254,7 +5257,6 @@
 <translation id="4794910597689955457">ย้าย <ph name="NUM_OF_FILES" /> ไฟล์ไปที่ <ph name="CLOUD_PROVIDER" /> เพื่อเปิดใช่ไหม</translation>
 <translation id="479536056609751218">หน้าเว็บ HTML เท่านั้น</translation>
 <translation id="4795670271446126525">คลื่นซัด</translation>
-<translation id="4796142525425001238">คืนค่าเสมอ</translation>
 <translation id="4797314204379834752">ลองใช้กลุ่มแท็บเพื่อจัดระเบียบงานต่างๆ เลือกซื้อออนไลน์ และอีกมากมาย</translation>
 <translation id="479863874072008121">จัดการอุปกรณ์</translation>
 <translation id="479989351350248267">ค้นหา</translation>
@@ -5832,7 +5834,6 @@
 <translation id="5210365745912300556">ปิดแท็บ</translation>
 <translation id="5213114823401215820">เปิดกลุ่มที่ปิดไปแล้วอีกครั้ง</translation>
 <translation id="5213481667492808996">บริการอินเทอร์เน็ต "<ph name="NAME" />" พร้อมใช้งานแล้ว</translation>
-<translation id="5213658238771284310">คืนค่าเซสชันเมื่อเริ่มต้นระบบ</translation>
 <translation id="5213891612754844763">แสดงการตั้งค่าพร็อกซี</translation>
 <translation id="5214639857958972833">สร้างบุ๊กมาร์ก "<ph name="BOOKMARK_TITLE" />" แล้ว</translation>
 <translation id="5215450412607891876">เปิดการอัปเดตความปลอดภัยเพิ่มเติม</translation>
@@ -6206,7 +6207,6 @@
 <translation id="5488093641312826914">คัดลอก "<ph name="COPIED_ITEM_NAME" />" แล้ว</translation>
 <translation id="5488508217173274228">ตัวเลือกการซิงค์การเข้ารหัส</translation>
 <translation id="5489077378642700219">ไม่อนุญาตการแจ้งเตือนจาก <ph name="WEBSITE" /> แต่ถามทีหลัง</translation>
-<translation id="5489435190927933437">รหัสผ่านที่บันทึกไว้สำหรับ <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">ที่อยู่และอื่นๆ</translation>
 <translation id="5490721031479690399">ยกเลิกการเชื่อมต่ออุปกรณ์บลูทูธ</translation>
 <translation id="5490798133083738649">อนุญาตให้ Linux เข้าถึงไมโครโฟน</translation>
@@ -6340,7 +6340,6 @@
 <translation id="5582839680698949063">เมนูหลัก</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">บันทึกชื่อผู้ใช้ไหม</translation>
-<translation id="5584091888252706332">เริ่มต้น</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />นี่เป็นข้อมูลทั่วไปเกี่ยวกับอุปกรณ์ของคุณและวิธีที่คุณใช้อุปกรณ์ (เช่น ระดับแบตเตอรี่ กิจกรรมในระบบและแอป และข้อผิดพลาด) ระบบจะใช้ข้อมูลดังกล่าวเพื่อปรับปรุง Android และข้อมูลแบบสรุปรวมบางอย่างจะช่วยให้แอป Google และพาร์ทเนอร์ต่างๆ เช่น นักพัฒนาแอป Android ปรับปรุงแอปและผลิตภัณฑ์ของตนให้ดีขึ้นได้อีกด้วย<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />การปิดฟีเจอร์นี้จะไม่ส่งผลต่อความสามารถของอุปกรณ์ในการส่งข้อมูลที่จำเป็นต้องใช้ในบริการสำคัญอย่างเช่น การอัปเดตระบบ และความปลอดภัย<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />เจ้าของจะควบคุมฟีเจอร์นี้ได้จากการตั้งค่า &gt; ขั้นสูง &gt; ส่งข้อมูลการวินิจฉัยและการใช้งานไปยัง Google โดยอัตโนมัติ<ph name="END_PARAGRAPH3" />
@@ -7156,6 +7155,7 @@
 <translation id="6197128521826316819">สร้างคิวอาร์โค้ดสำหรับหน้านี้</translation>
 <translation id="6198223452299275399">ปัดไปมาระหว่างหน้า</translation>
 <translation id="6198252989419008588">เปลี่ยน PIN</translation>
+<translation id="61988015556954366">การกะพริบหน้าจอ</translation>
 <translation id="6200047250927636406">ทิ้งไฟล์</translation>
 <translation id="6200151268994853226">จัดการส่วนขยาย</translation>
 <translation id="6201608810045805374">นำบัญชีนี้ออกใช่ไหม</translation>
@@ -7513,6 +7513,7 @@
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ไฟล์</translation>
 <translation id="6469557521904094793">เปิดเครือข่ายมือถือ</translation>
 <translation id="6469702164109431067">รหัสผ่านและพาสคีย์</translation>
+<translation id="6470120577693311302">การแจ้งเตือนด้วยแฟลช</translation>
 <translation id="6470823736074966819">ปิดเสียงการแจ้งเตือน</translation>
 <translation id="6472893788822429178">แสดงปุ่มหน้าแรก</translation>
 <translation id="6473315466413288899">เลือกตัวเลือก</translation>
@@ -7945,6 +7946,7 @@
 <translation id="6790820461102226165">เพิ่มบุคคล...</translation>
 <translation id="6793610798874309813">PIN ต้องมีอักขระอย่างน้อย 4 ตัว</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395">คัดลอก <ph name="DOWNLOAD_URL" /> ไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="6794511157503068">หากพาสคีย์สำหรับ <ph name="APP_NAME" /> อยู่ในคีย์ความปลอดภัย USB ให้เสียบและแตะได้เลย</translation>
 <translation id="679486139907144816">หากต้องการลงชื่อเข้าใช้เว็บไซต์นี้ด้วยพาสคีย์ คุณต้องเปิด Windows Hello ในการตั้งค่า จากนั้นกลับมาที่เว็บไซต์นี้แล้วลองอีกครั้ง</translation>
 <translation id="6795371939514004514">การสแกนอัตโนมัติช่วยให้คุณเลื่อนผ่านรายการต่างๆ ในหน้าจอได้โดยอัตโนมัติ เมื่อมีการไฮไลต์รายการ ให้กด "เลือก" เพื่อเปิดใช้งาน</translation>
@@ -9355,7 +9357,6 @@
 <translation id="7815680994978050279">บล็อกการดาวน์โหลดที่เป็นอันตรายแล้ว</translation>
 <translation id="7817361223956157679">แป้นพิมพ์บนหน้าจอยังใช้ไม่ได้ในแอป Linux</translation>
 <translation id="7818135753970109980">เพิ่มธีมใหม่แล้ว (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">หลังจากรีสตาร์ท ให้ดําเนินการต่อจากจุดที่ค้างไว้ในแอป เว็บไซต์ และหน้าต่างที่เปิดอยู่</translation>
 <translation id="7819605256207059717">บล็อกโดยองค์กร</translation>
 <translation id="7820400255539998692">ลบ <ph name="FILENAME" /> เพื่อให้ผู้อื่นที่ใช้อุปกรณ์นี้มองไม่เห็นรหัสผ่าน</translation>
 <translation id="7820561748632634942">กำหนดสวิตช์เพิ่มอีกไหม</translation>
@@ -10165,6 +10166,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ดูความช่วยเหลือเพิ่มเติมได้ที่ g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">สรุปต้อนรับ</translation>
 <translation id="8386091599636877289">ไม่พบนโยบาย</translation>
 <translation id="8387361103813440603">ไม่ได้รับอนุญาตให้ดูตำแหน่งของคุณ</translation>
 <translation id="8387617938027387193">ยืนยันว่าเป็นคุณ</translation>

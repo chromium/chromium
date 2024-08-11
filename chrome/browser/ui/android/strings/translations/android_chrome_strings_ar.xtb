@@ -1587,7 +1587,6 @@
 <translation id="835847953965672673">تمّت استعادة <ph name="NUMBER_OF_DOWNLOADS" /> عملية تنزيل.</translation>
 <translation id="8368001212524806591">تتبُّع السعر</translation>
 <translation id="8378850197701296741">تمت مزامنة الإشارات المرجعية والسجلّ وإعدادات أخرى من <ph name="FROM_ACCOUNT" />.</translation>
-<translation id="8382640928718131148">يتم نقل علامات التبويب التي لم يتم استخدامها لمدة <ph name="DAYS_INACTIVE" /> يوم إلى هذه القائمة، ويتم إغلاقها بعد <ph name="DAYS_ARCHIVED" /> يوم. يمكنك تغيير إعدادات هذه الميزة في أي وقت من خلال <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8387617938027387193">إثبات هويتك</translation>
 <translation id="8393700583063109961">إرسال رسالة</translation>
 <translation id="8402673309244746971">الانتقال إلى "المواقع التي تتابعها"</translation>

@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Kopiér det viste navn</translation>
 <translation id="1062407476771304334">Erstat</translation>
 <translation id="1062628064301375934">Hjælp os med at skabe et mere privat internet</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome har fjernet tilladelser for 1 website}one{Chrome har fjernet tilladelser for {NUM_SITES} website}other{Chrome har fjernet tilladelser for {NUM_SITES} websites}}</translation>
 <translation id="1066964438793906105">Søg efter malware</translation>
 <translation id="1067661089446014701">Øg sikkerheden ved at kryptere adgangskoder på din enhed, før de gemmes på din Google-konto</translation>
 <translation id="1067922213147265141">Andre Google-tjenester</translation>
@@ -4936,6 +4935,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4538792345715658285">Installeret af virksomhedspolitik.</translation>
 <translation id="4540409690203718935">Der kan ikke oprettes forbindelse til Google Adgangskodeadministrator. Prøv igen om et par minutter</translation>
 <translation id="4541123282641193691">Kontoen kunne ikke verificeres. Prøv igen, eller genstart din Chromebook.</translation>
+<translation id="4541505619120536051">Åbn altid</translation>
 <translation id="4541662893742891060">Der kunne ikke oprettes forbindelse til denne profil. Kontakt dit mobilselskab for at få teknisk support.</translation>
 <translation id="4541706525461326392">Profilen fjernes. Dette kan tage et par minutter.</translation>
 <translation id="4542520061254486227">Læs dine data på <ph name="WEBSITE_1" /> og <ph name="WEBSITE_2" /></translation>
@@ -5270,7 +5270,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4794910597689955457">Vil du flytte <ph name="NUM_OF_FILES" /> filer til <ph name="CLOUD_PROVIDER" />, så de kan åbnes?</translation>
 <translation id="479536056609751218">Webside, kun HTML</translation>
 <translation id="4795670271446126525">Bølgebrus</translation>
-<translation id="4796142525425001238">Gendan altid</translation>
 <translation id="4797314204379834752">Prøv at bruge fanegrupper til at organisere opgaver, shoppe og meget mere</translation>
 <translation id="479863874072008121">Administrer enheder</translation>
 <translation id="479989351350248267">søg</translation>
@@ -5849,7 +5848,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5210365745912300556">Luk fanen</translation>
 <translation id="5213114823401215820">Åbn den lukkede gruppe igen</translation>
 <translation id="5213481667492808996">Din datatjeneste fra "<ph name="NAME" />" er klar til brug</translation>
-<translation id="5213658238771284310">Gendan sessionen ved opstart</translation>
 <translation id="5213891612754844763">Vis proxyindstillinger</translation>
 <translation id="5214639857958972833">Bogmærket "<ph name="BOOKMARK_TITLE" />" er oprettet.</translation>
 <translation id="5215450412607891876">Aktivér udvidede sikkerhedsopdateringer</translation>
@@ -6224,7 +6222,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5488093641312826914">"<ph name="COPIED_ITEM_NAME" />" er kopieret</translation>
 <translation id="5488508217173274228">Indstillinger for synkronisering af kryptering</translation>
 <translation id="5489077378642700219">Tillad ikke notifikationer fra <ph name="WEBSITE" />, men spørg senere</translation>
-<translation id="5489435190927933437">Gemte adgangskoder til <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Adresser m.m.</translation>
 <translation id="5490721031479690399">Afbryd forbindelsen til Bluetooth-enhed</translation>
 <translation id="5490798133083738649">Tillad, at Linux får adgang til din mikrofon</translation>
@@ -6358,7 +6355,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5582839680698949063">Hovedmenu</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Vil du gemme brugernavnet?</translation>
-<translation id="5584091888252706332">Ved opstart</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Dette er generelle oplysninger om din enhed og brugen af den (f.eks. batteriniveau, system- og appaktivitet og fejl). Dataene bruges til at forbedre Android, og visse samlede oplysninger kan også hjælpe Google-apps og -partnere som f.eks. Android-udviklere med at forbedre deres apps og produkter.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Hvis denne funktion deaktiveres, påvirker det ikke enhedens evne til at sende de oplysninger, den har brug for i forbindelse med vigtige tjenester som f.eks. systemopdateringer og sikkerhedsfunktioner.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ejeren kan styre funktionen under Indstillinger &gt; Avanceret &gt; Send automatisk diagnostik og brugsdata til Google.<ph name="END_PARAGRAPH3" />
@@ -9378,7 +9374,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7815680994978050279">En farlig download blev blokeret</translation>
 <translation id="7817361223956157679">Skærmtastaturet fungerer endnu ikke i Linux-apps</translation>
 <translation id="7818135753970109980">Nyt tema er tilføjet (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Efter genstart kan du fortsætte, hvor du slap, med apps, websites og åbne vinduer</translation>
 <translation id="7819605256207059717">Blokeret af din organisation</translation>
 <translation id="7820400255539998692">Slet <ph name="FILENAME" />, så andre, der bruger denne enhed, ikke kan se dine adgangskoder</translation>
 <translation id="7820561748632634942">Vil du tildele flere kontakter?</translation>
@@ -10188,6 +10183,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan få yderligere hjælp på g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Velkomstoversigt</translation>
 <translation id="8386091599636877289">Politikken blev ikke fundet.</translation>
 <translation id="8387361103813440603">Har ikke tilladelse til at se din lokation</translation>
 <translation id="8387617938027387193">Verificer din identitet</translation>

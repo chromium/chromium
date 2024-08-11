@@ -1583,7 +1583,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> téléchargements restaurés</translation>
 <translation id="8368001212524806591">Suivre le prix</translation>
 <translation id="8378850197701296741">Vous avez les favoris, l'historique et d'autres paramètres de <ph name="FROM_ACCOUNT" />.</translation>
-<translation id="8382640928718131148">Les onglets que vous n'avez pas utilisés depuis <ph name="DAYS_INACTIVE" /> jours sont déplacés ici et fermés après <ph name="DAYS_ARCHIVED" /> jours. Vous pouvez modifier cette option à tout moment dans <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8387617938027387193">Confirmez que c'est vous</translation>
 <translation id="8393700583063109961">Envoyer un message</translation>
 <translation id="8402673309244746971">Aller au suivant</translation>

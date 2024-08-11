@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">اسباب‌کشی و نقل مکان</translation>
 <translation id="1270502636509132238">روش تحویل گرفتن</translation>
 <translation id="1273592791152866347">پیگیری قیمت خاموش شد</translation>
+<translation id="1277711244058668002">‏دکمه رأی موافق. برای ارسال بازخورد درباره دلیل پسندیدن این پیشنهاد، کلید Enter را فشار دهید</translation>
 <translation id="127777513559587977">برنامه‌های گفتگومحور تلویزیونی</translation>
 <translation id="1281476433249504884">پشته‌ساز ۱</translation>
 <translation id="1281536351321444151">‏اگر می‌خواهید دفعه بعدی این IBAN به‌طور خودکار درج شود، آن را در حساب Google خود ذخیره کنید</translation>
@@ -456,6 +457,7 @@
 <translation id="180757923930449935">(۶۴ بیتی شبیه‌سازی‌شده)</translation>
 <translation id="180991881384371158">‏کد تأیید کارت (CVC) پشت کارتتان درج شده است. این کد همان ۳ رقم آخر درج‌شده در بالا سمت راست چارگوش امضا است.</translation>
 <translation id="1810391395243432441">با قفل صفحه از گذرواژه‌ها محافظت کنید</translation>
+<translation id="1810597570737826742">{count,plural, =1{نشانی {position} از {count} نشانی اضافی}one{نشانی {position} از {count} نشانی اضافی}other{نشانی {position} از {count} نشانی اضافی}}</translation>
 <translation id="1812527064848182527">منظره</translation>
 <translation id="1812975699435941848">آموزش بهداشت و آموزش پزشکی</translation>
 <translation id="1816436748874040213">می‌تواند برای پیمایش و بزرگ‌نمایی برگه‌های هم‌رسانی‌شده درخواست دهد</translation>
@@ -663,6 +665,7 @@
 <translation id="2188375229972301266">چندین سوراخ در پایین</translation>
 <translation id="2194856509914051091">مواردی که باید درنظر داشت</translation>
 <translation id="2197398642355049178">موضوع‌های شما</translation>
+<translation id="2200678913752027654">‏دکمه رأی مخالف. برای باز کردن فرم ارسال بازخورد دقیق درباره دلیل نپسندیدن این پیشنهاد، کلید Enter را فشار دهید</translation>
 <translation id="2202627062836089804">پشت کارت</translation>
 <translation id="2204482073374652408">به‌روزرسانی تکمیل شد!</translation>
 <translation id="2207770355672215546">همیشه مجاز باشد، با هر کارتی</translation>
@@ -2585,6 +2588,7 @@
 <translation id="5887687176710214216">آخرین بازدید: دیروز</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
 <translation id="5895187275912066135">تاریخ صدور</translation>
+<translation id="5898767305816764989">‏دکمه رأی موافق. برای ارسال بازخورد درباره دلیل پسندیدن، کلید Enter را فشار دهید، <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">زرد</translation>
 <translation id="5903264686717710770">عنوان:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (همگام‌سازی‌شده)</translation>
@@ -3317,6 +3321,7 @@
 توضیحات بیشتر:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">پیام سرپرست: «<ph name="CUSTOM_MESSAGE" />»</translation>
+<translation id="7255540419660272073">‏دکمه رأی مخالف. برای باز کردن فرم ارسال بازخورد دقیق درباره دلیل نپسندیدن، کلید Enter را فشار دهید، <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">سینی عقب</translation>
 <translation id="7257453341537973799">برنامه‌ریزی و منابع شغلی</translation>
 <translation id="725866823122871198">اتصال خصوصی به <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> برقرار نمی‌شود زیرا تاریخ و زمان رایانه شما (<ph name="DATE_AND_TIME" />) نادرست است.</translation>

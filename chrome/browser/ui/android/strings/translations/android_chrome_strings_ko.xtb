@@ -1583,7 +1583,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="835847953965672673">다운로드 <ph name="NUMBER_OF_DOWNLOADS" />개 복원됨</translation>
 <translation id="8368001212524806591">가격 추적</translation>
 <translation id="8378850197701296741"><ph name="FROM_ACCOUNT" />에서 가져온 북마크, 방문 기록 및 기타 설정이 있습니다.</translation>
-<translation id="8382640928718131148"><ph name="DAYS_INACTIVE" />일 동안 사용하지 않은 탭은 여기로 이동되며 <ph name="DAYS_ARCHIVED" />일 후에 닫힙니다. 언제든지 <ph name="SETTINGS_TITLE" />에서 변경할 수 있습니다.</translation>
 <translation id="8387617938027387193">본인 인증</translation>
 <translation id="8393700583063109961">메시지 보내기</translation>
 <translation id="8402673309244746971">팔로우 중으로 이동</translation>

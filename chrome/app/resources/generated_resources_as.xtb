@@ -98,7 +98,6 @@
 <translation id="10619348099955377">প্ৰদৰ্শিত নাম প্ৰতিলিপি কৰক</translation>
 <translation id="1062407476771304334">সাল সলনি কৰক</translation>
 <translation id="1062628064301375934">অধিক ব্যক্তিগত ৱেব নিৰ্মাণ কৰাত আমাক সহায় কৰক</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chromeএ ১ টা ছাইটৰ বাবে অনুমতি আঁতৰাইছে}one{Chromeএ {NUM_SITES} টা ছাইটৰ বাবে অনুমতি আঁতৰাইছে}other{Chromeএ {NUM_SITES} টা ছাইটৰ বাবে অনুমতি আঁতৰাইছে}}</translation>
 <translation id="1066964438793906105">মালৱেৰৰ বাবে স্কেন কৰক</translation>
 <translation id="1067661089446014701">অতিৰিক্ত সুৰক্ষাৰ বাবে, আপোনাৰ Google একাউণ্টত ছেভ কৰাৰ পূৰ্বে আপুনি আপোনাৰ ডিভাইচত পাছৱৰ্ডসমূহ এনক্ৰিপ্ট কৰিব পাৰে</translation>
 <translation id="1067922213147265141">অন্য Google সেৱা</translation>
@@ -4935,6 +4934,7 @@
 <translation id="4538792345715658285">এণ্টাৰপ্ৰাইজৰ নীতিয়ে ইনষ্টল কৰিছে।</translation>
 <translation id="4540409690203718935">Google Password Managerৰ সৈতে সংযোগ কৰিব পৰা নাই। কেইমিনিটমানৰ পাছত পুনৰ চেষ্টা কৰক</translation>
 <translation id="4541123282641193691">আপোনাৰ একাউণ্টটো সত্যাপন কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক অথবা আপোনাৰ Chromebook ৰিষ্টাৰ্ট কৰক।</translation>
+<translation id="4541505619120536051">সদায় খোলা</translation>
 <translation id="4541662893742891060">এই প্ৰ'ফাইলটোৰ সৈতে সংযোগ কৰিবলৈ সক্ষম নহ'ল। কাৰিকৰী সহায়ৰ বাবে অনুগ্ৰহ কৰি আপোনাৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="4541706525461326392">প্ৰ’ফাইল আঁতৰাই থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
 <translation id="4542520061254486227">আপোনাৰ ডেটা <ph name="WEBSITE_1" /> আৰু <ph name="WEBSITE_2" />ত পঢ়ক</translation>
@@ -5269,7 +5269,6 @@
 <translation id="4794910597689955457"><ph name="NUM_OF_FILES" /> টা ফাইল খুলিবলৈ <ph name="CLOUD_PROVIDER" />লৈ স্থানান্তৰ কৰিবনে?</translation>
 <translation id="479536056609751218">ৱেবপৃষ্ঠা, কেৱল HTML</translation>
 <translation id="4795670271446126525">বিধ্বস্ত কৰিব পৰা ঢৌ</translation>
-<translation id="4796142525425001238">সদায় পুনঃস্থাপন কৰক</translation>
 <translation id="4797314204379834752">অনলাইন শ্বপিং আৰু বহুতো কাৰ্যৰ বাবে কাৰ্যসমূহ সংগঠিত কৰিবলৈ টেবৰ গোট ব্যৱহাৰ কৰি চাওক</translation>
 <translation id="479863874072008121">ডিভাইচসমূহ পৰিচালনা কৰক</translation>
 <translation id="479989351350248267">সন্ধান কৰক</translation>
@@ -5848,7 +5847,6 @@
 <translation id="5210365745912300556">টেব বন্ধ কৰক</translation>
 <translation id="5213114823401215820">বন্ধ কৰা গোট পুনৰ খোলক</translation>
 <translation id="5213481667492808996">আপোনাৰ '<ph name="NAME" />' ডেটা সেৱাটো ব্যৱহাৰৰ বাবে সাজু</translation>
-<translation id="5213658238771284310">ষ্টাৰ্টআপত ছেশ্বন পুনঃস্থাপন কৰক</translation>
 <translation id="5213891612754844763">প্ৰক্সি ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />'ৰ বুকমাৰ্ক সৃষ্টি কৰা হ’ল।</translation>
 <translation id="5215450412607891876">সুৰক্ষা সম্পৰ্কীয় বৰ্ধিত আপডে’ট অন কৰক</translation>
@@ -6223,7 +6221,6 @@
 <translation id="5488093641312826914">’<ph name="COPIED_ITEM_NAME" />’ প্ৰতিলিপি কৰা হ’ল</translation>
 <translation id="5488508217173274228">ছিংক কৰা ডেটাৰ এনক্ৰিপশ্বন সম্পৰ্কীয় বিকল্পসমূহ</translation>
 <translation id="5489077378642700219"><ph name="WEBSITE" />ৰ পৰা অহা জাননীৰ অনুমতি নিদিব কিন্তু সেয়া পাছত বিচাৰিব</translation>
-<translation id="5489435190927933437"><ph name="DOMAIN" />ৰ বাবে ছেভ কৰি ৰখা পাছৱর্ড</translation>
 <translation id="5490432419156082418">ঠিকনা আৰু অধিক</translation>
 <translation id="5490721031479690399">ব্লুটুথ ডিভাইচৰ পৰা সংযোগ বিচ্ছিন্ন কৰক</translation>
 <translation id="5490798133083738649">Linuxক আপোনাৰ মাইক্ৰ’ফ’ন এক্সেছ কৰিবলৈ দিয়ক</translation>
@@ -6357,7 +6354,6 @@
 <translation id="5582839680698949063">মুখ্য মেনু</translation>
 <translation id="5583640892426849032">বেকস্পেচ</translation>
 <translation id="5584088138253955452">ব্যৱহাৰকাৰীৰ নাম ছেভ কৰিবনে?</translation>
-<translation id="5584091888252706332">আৰম্ভণিত</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />এইয়া হৈছে আপোনাৰ ডিভাইচটোৰ বিষয়ে আৰু ইয়াক আপুনি কেনেদৰে ব্যৱহাৰ কৰে সেই বিষয়ে কিছুমান সাধাৰণ তথ্য (যেনে, বেটাৰীৰ স্তৰ, ছিষ্টেম আৰু এপৰ কাৰ্যকলাপ, আৰু আসোঁৱাহ)। এই ডেটাখিনি Androidক অধিক ব্যৱহাৰোপোযোগী কৰিবলৈ ব্যৱহাৰ কৰা হ’ব আৰু কিছুমান একত্ৰিত তথ্যই Google এপ্‌ আৰু Android বিকাশকৰ্তাৰ দৰে অংশীদাৰকো তেওঁলোকৰ এপ্‌ আৰু প্ৰ’ডাক্টক অধিক ফলপ্ৰসূ কৰাত সহায় কৰিব।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />এই সুবিধাটো বন্ধ কৰিলেও ছিষ্টেম আপডে’ট আৰু সুৰক্ষাৰ দৰে অত্যাৱশ্যকীয় সেৱাসমূহৰ বাবে দৰকাৰী তথ্য আপোনাৰ ডিভাইচটোৱে আদান-প্ৰদান কৰোঁতে কোনো বিঘিনিৰ সৃষ্টি নহয়।.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />গৰাকীজনে এই সুবিধাটো ছেটিং &gt; উন্নত ছেটিং &gt; Googleলৈ স্বয়ংক্রিয়ভাৱে ডাইগন‘ষ্টিক আৰু ব্যৱহাৰৰ ডেটা পঠিয়াওক।<ph name="END_PARAGRAPH3" />
@@ -9380,7 +9376,6 @@
 <translation id="7815680994978050279">ক্ষতিকাৰক সমলৰ ডাউনল’ড অৱৰোধ কৰা হৈছে</translation>
 <translation id="7817361223956157679">অন-স্ক্রীণ কীব’ৰ্ডখনে এতিয়ালৈকে Linux এপত কাম কৰা হোৱা নাই</translation>
 <translation id="7818135753970109980">নতুন থীম যোগ কৰা হৈছে (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">ৰিষ্টাৰ্ট কৰাৰ পাছত, এপ্‌, ৱেবছাইট আৰু খোলা থকা ৱিণ্ড’ত য’ত যি কৰি আছিল তাৰ পৰাই আৰম্ভ কৰক</translation>
 <translation id="7819605256207059717">আপোনাৰ প্ৰতিষ্ঠানে অৱৰোধ কৰিছে</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> মচক, যাতে এই ডিভাইচটো ব্যৱহাৰ কৰা অন্য লোকে আপোনাৰ পাছৱৰ্ডসমূহ চাব নোৱাৰে</translation>
 <translation id="7820561748632634942">অতিৰিক্ত ছুইচ আবণ্টন কৰিবনে?</translation>
@@ -10189,6 +10184,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />অধিক সহায় পাবলৈ ইয়ালৈ যাওক: g.co/flex/InstallErrors।<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">স্বাগতম ৰিকেপ</translation>
 <translation id="8386091599636877289">নীতিটো বিচাৰি পোৱা নগ’ল।</translation>
 <translation id="8387361103813440603">আপোনাৰ অৱস্থান চোৱাৰ অনুমতি নাই</translation>
 <translation id="8387617938027387193">এইয়া আপুনিয়েই বুলি সত্যাপন কৰক</translation>

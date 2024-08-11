@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">বস্তু অনা-নিয়া আৰু থকা ঠাই সলাওঁতে বস্তু স্থানান্তৰণ কৰা সেৱা</translation>
 <translation id="1270502636509132238">পিকআপৰ পদ্ধতি</translation>
 <translation id="1273592791152866347">মূল্য ট্ৰেক কৰাৰ সুবিধা অফ কৰা হৈছে</translation>
+<translation id="1277711244058668002">থাম্বছ আপ বুটাম, আপুনি এই পৰামৰ্শটো ভাল পাইছে বুলি মতামত দাখিল কৰিবলৈ Enter টিপক</translation>
 <translation id="127777513559587977">টিভি টক শ্ব’</translation>
 <translation id="1281476433249504884">ষ্টেকাৰ ১</translation>
 <translation id="1281536351321444151">পৰৱৰ্তী সময়ত এই IBANটো স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিবলৈ, এইটো আপোনাৰ Google একাউণ্টত ছেভ কৰক</translation>
@@ -664,6 +665,7 @@
 <translation id="2188375229972301266">তলৰ অংশত একাধিক পাঞ্চ কৰক</translation>
 <translation id="2194856509914051091">বিবেচনা কৰিব লগা বিষয়</translation>
 <translation id="2197398642355049178">আপোনাৰ বিষয়বস্তু</translation>
+<translation id="2200678913752027654">থাম্বছ ডাউন বুটাম, আপুনি এই পৰামৰ্শটো কিয় ভাল পোৱা নাই তাৰ ওপৰত বিতং মতামত দাখিল কৰাৰ বাবে এখন ফৰ্ম খুলিবলৈ Enter টিপক</translation>
 <translation id="2202627062836089804">আপোনাৰ কাৰ্ডৰ পিছফালে</translation>
 <translation id="2204482073374652408">আপডে’ট কৰা সম্পূৰ্ণ হৈছে!</translation>
 <translation id="2207770355672215546">যিকোনো কাৰ্ডৰ সৈতে, সদায় অনুমতি দিয়ক</translation>
@@ -2582,6 +2584,7 @@
 <translation id="5887687176710214216">শেষবাৰ কালি চাইছিল</translation>
 <translation id="5895138241574237353">ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="5895187275912066135">জাৰি কৰা তাৰিখ</translation>
+<translation id="5898767305816764989">থাম্বছ আপ বুটাম, আপুনি <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> ভাল পাইছে বুলি মতামত দাখিল কৰিবলৈ Enter টিপক</translation>
 <translation id="5901630391730855834">হালধীয়া</translation>
 <translation id="5903264686717710770">শিৰোনাম:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ছিংক কৰা আছে)</translation>
@@ -3313,6 +3316,7 @@
 অতিৰিক্ত বিৱৰণ:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">আপোনাৰ প্ৰশাসকে কৈছে "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">থাম্বছ ডাউন বুটাম, আপুনি <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> কিয় ভাল পোৱা নাই তাৰ ওপৰত বিতং মতামত দাখিল কৰাৰ বাবে এখন ফৰ্ম খুলিবলৈ Enter টিপক</translation>
 <translation id="7256634549594854023">পিছফালৰ ট্ৰে’</translation>
 <translation id="7257453341537973799">জীৱিকা সম্পৰ্কীয় সম্পদ আৰু পৰিকল্পনা</translation>
 <translation id="725866823122871198">আপোনাৰ কম্পিউটাৰৰ তাৰিখ আৰু সময় (<ph name="DATE_AND_TIME" />) ভুল হৈ থকাৰ বাবে <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />ৰ সৈতে ব্যক্তিগত সংযোগ স্থাপন কৰিব নোৱাৰি।</translation>

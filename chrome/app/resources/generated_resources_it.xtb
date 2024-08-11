@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Copia nome visualizzato</translation>
 <translation id="1062407476771304334">Sostituisci</translation>
 <translation id="1062628064301375934">Aiutaci a rendere il web più privato</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome ha rimosso le autorizzazioni per 1 sito}other{Chrome ha rimosso le autorizzazioni per {NUM_SITES} siti}}</translation>
 <translation id="1066964438793906105">Verifica la presenza di malware</translation>
 <translation id="1067661089446014701">Per maggiore sicurezza, puoi criptare le password sul dispositivo prima che vengano salvate nel tuo Account Google</translation>
 <translation id="1067922213147265141">Altri servizi Google</translation>
@@ -4924,6 +4923,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4538792345715658285">Installata per norma aziendale.</translation>
 <translation id="4540409690203718935">Impossibile raggiungere Gestore delle password di Google. Riprova tra qualche minuto</translation>
 <translation id="4541123282641193691">Impossibile verificare l'account. Riprova o riavvia il tuo Chromebook.</translation>
+<translation id="4541505619120536051">Sempre aperta</translation>
 <translation id="4541662893742891060">Impossibile connettersi a questo profilo. Per assistenza tecnica, contatta il tuo operatore.</translation>
 <translation id="4541706525461326392">Rimozione del profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="4542520061254486227">Lettura dei dati su <ph name="WEBSITE_1" /> e <ph name="WEBSITE_2" /></translation>
@@ -5258,7 +5258,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4794910597689955457">Vuoi spostare <ph name="NUM_OF_FILES" /> file in <ph name="CLOUD_PROVIDER" /> per aprirli?</translation>
 <translation id="479536056609751218">Pagina web, solo HTML</translation>
 <translation id="4795670271446126525">Onde che si infrangono</translation>
-<translation id="4796142525425001238">Ripristina sempre</translation>
 <translation id="4797314204379834752">Prova a utilizzare i gruppi di schede per organizzare le attività, fare acquisti online e altro ancora</translation>
 <translation id="479863874072008121">Gestisci dispositivi</translation>
 <translation id="479989351350248267">ricerca</translation>
@@ -5836,7 +5835,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5210365745912300556">Chiudi scheda</translation>
 <translation id="5213114823401215820">Riapri gruppo chiuso</translation>
 <translation id="5213481667492808996">Il tuo servizio dati "<ph name="NAME" />" è pronto all'uso</translation>
-<translation id="5213658238771284310">Ripristina sessione all'avvio</translation>
 <translation id="5213891612754844763">Mostra impostazioni proxy</translation>
 <translation id="5214639857958972833">Preferito "<ph name="BOOKMARK_TITLE" />" creato.</translation>
 <translation id="5215450412607891876">Attiva gli aggiornamenti della sicurezza estesi</translation>
@@ -6211,7 +6209,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5488093641312826914">"<ph name="COPIED_ITEM_NAME" />" copiato</translation>
 <translation id="5488508217173274228">Opzioni crittografia sincronizzazione</translation>
 <translation id="5489077378642700219">Non consentire notifiche da <ph name="WEBSITE" />, ma chiedi più tardi</translation>
-<translation id="5489435190927933437">Password salvate per <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Indirizzi e altro</translation>
 <translation id="5490721031479690399">Disconnettere dispositivo Bluetooth</translation>
 <translation id="5490798133083738649">Consenti a Linux di accedere al microfono</translation>
@@ -6345,7 +6342,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5582839680698949063">Menu principale</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Salvare il nome utente?</translation>
-<translation id="5584091888252706332">All'avvio</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Queste sono informazioni generali sul dispositivo e sulla relativa modalità di utilizzo (ad esempio il livello della batteria, l'attività nelle app e nel sistema e gli errori). I dati vengono utilizzati per migliorare Android e alcune informazioni aggregate sono utili anche per app e partner di Google, ad esempio gli sviluppatori Android, che possono utilizzarle per migliorare i propri prodotti e le proprie app.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />La disattivazione di questa funzione non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e sicurezza.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Il proprietario può controllare questa funzione da Impostazioni &gt; Avanzate &gt; Invia automaticamente a Google dati di diagnostica e utilizzo.<ph name="END_PARAGRAPH3" />
@@ -9364,7 +9360,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7815680994978050279">Download pericoloso bloccato</translation>
 <translation id="7817361223956157679">La tastiera sullo schermo non funziona ancora nelle app Linux</translation>
 <translation id="7818135753970109980">Nuovo tema aggiunto (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Dopo il riavvio, continua da dove avevi interrotto con app, siti web e finestre aperte</translation>
 <translation id="7819605256207059717">Bloccato dalla tua organizzazione</translation>
 <translation id="7820400255539998692">Elimina il file <ph name="FILENAME" /> per evitare che le altre persone che usano questo dispositivo possano vedere le tue password</translation>
 <translation id="7820561748632634942">Vuoi assegnare sensori aggiuntivi?</translation>
@@ -10174,6 +10169,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Per maggiore assistenza, visita il sito g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Riepilogo di benvenuto</translation>
 <translation id="8386091599636877289">Norme non trovate.</translation>
 <translation id="8387361103813440603">Non possono accedere alla tua posizione</translation>
 <translation id="8387617938027387193">Verifica la tua identità</translation>

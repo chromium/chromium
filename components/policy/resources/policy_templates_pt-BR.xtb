@@ -4193,27 +4193,6 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
 <translation id="4101282687722389021">Carimbo de data/hora UTC do último horário em que a entrada foi atualizada. Enviada como uma string, porque o carimbo de data/hora não caberia em um número inteiro.</translation>
 <translation id="4101826711886952606">As configurações Home/End usam o atalho que contém a tecla modificadora de pesquisa</translation>
 <translation id="4102347680024644994">Relatar eventos de detecção e resposta estendidas (XDR, na sigla em inglês)</translation>
-<translation id="4104303092334469130">Configura uma lista de regras de controle de dados para evitar vazamentos.
-
-      Cada regra consiste no seguinte:
-      - Campos de condição que acionam essa regra. Uma regra só será acionada se uma ação do usuário corresponder a todos os campos preenchidos em <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> e <ph name="DATA_CONTROLS_NOT" />. Para subcampos da lista, precisa haver correspondência de pelo menos uma entrada. Por exemplo, apenas um padrão de URL precisa ser correspondente para acionar a regra.
-      - Uma lista de restrições a serem aplicadas. Dependendo da restrição, apenas as condições <ph name="DATA_CONTROLS_SOURCES" /> ou <ph name="DATA_CONTROLS_DESTINATIONS" /> podem estar disponíveis.
-
-      As regras podem ser aplicadas para controlar:
-      - Os dados na área de transferência compartilhados entre as origens e os destinos.
-      - O bloqueio de capturas de tela com base nas guias de origem.
-
-      Se a política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> for definida como "True", as regras acionadas serão informadas ao administrador.
-      O nível de restrição pode ser definido como "BLOCK", "WARN" ou "REPORT" (bloquear, alertar ou informar).
-      - Se a restrição for definida como "BLOCK", a ação não será autorizada.
-      - Se a restrição for definida como "WARN", o usuário será avisado e poderá escolher entre continuar ou cancelar a ação.
-      - Se a restrição for definida como "REPORT", a ação do usuário não será interrompida, mas um relatório será enviado se a política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> estiver ativada.
-
-      Observações:
-      - Formate os padrões de URL da maneira descrita em https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-      - Para regras de prevenção contra vazamento de dados específicas do <ph name="PRODUCT_OS_NAME" />, consulte também a política <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
-
-      Se a política for deixada sem definição, nenhuma restrição será aplicada.</translation>
 <translation id="4105989332710272578">Desativar a aplicação da Transparência dos certificados para uma lista de URLs</translation>
 <translation id="410740968939768919">Controle se as extensões do Manifest v2 podem ser usadas na tela de login do <ph name="PRODUCT_OS_NAME" />.
 
@@ -6131,6 +6110,15 @@ Consulte também https://wiki.samba.org/index.php/Samba_4.6_Features_added/chang
 <translation id="5561811616825571914">Seleciona certificados de cliente automaticamente para esses sites na tela de login</translation>
 <translation id="5561893881195372931">Desativar o alto contraste</translation>
 <translation id="5563240289883266691">Ativar os relatórios de uso de apps Linux</translation>
+<translation id="5564424694465792000">Esta política controla o comportamento de login do navegador. Ela permite especificar se o usuário pode fazer login no <ph name="PRODUCT_NAME" /> com a conta dele e usar serviços relacionados à conta, como a Sincronização do <ph name="PRODUCT_NAME" />.
+
+      Se a política for definida como "Desativar login no navegador", o usuário não poderá fazer login no navegador e usar os serviços da conta. Nesse caso, recursos do navegador como a Sincronização do <ph name="PRODUCT_NAME" /> não poderão ser usados e não estarão disponíveis. No <ph name="IOS_NAME" />, se o usuário já estiver com a conta conectada e a política for desativada, a conta será imediatamente desconectada. Em outras plataformas, a conta será desconectada na próxima vez que o <ph name="PRODUCT_NAME" /> for executado. Em todas as outras plataformas, os dados locais do perfil, como favoritos, senhas etc., serão mantidos e poderão ser usados. O usuário ainda poderá fazer login e usar serviços da Web do Google, como o Gmail.
+
+      Se a política for definida como "Ativar login no navegador", o usuário poderá fazer login. Em todas as plataformas, exceto no <ph name="IOS_NAME" />, a conta do usuário será conectada automaticamente no navegador quando ele fizer login nos serviços da Web do Google, como o Gmail. Estar conectado significa que as informações da conta do usuário serão mantidas pelo navegador. Entretanto, isso não significa que a Sincronização do <ph name="PRODUCT_NAME" /> será ativada por padrão. O usuário precisará ativar esse recurso separadamente. A ativação desta política vai impedir que o usuário desative a configuração que permite o login no navegador. Para controlar a disponibilidade da Sincronização do <ph name="PRODUCT_NAME" />, use a política <ph name="SYNC_POLICY_NAME" />.
+
+      Se ela estiver definida como "Forçar o login no navegador", o usuário verá uma caixa de diálogo de seleção de contas. Ele precisará escolher uma e fazer login para usar o navegador. Isso garante que, para as contas gerenciadas, as políticas associadas à conta sejam aplicadas. O valor padrão da <ph name="GUEST_MODE_POLICY_NAME" /> será definido como "Desativado". Os perfis não conectados serão bloqueados e ficarão inacessíveis após a ativação dessa política. Para mais informações, consulte o artigo da Central de Ajuda: https://support.google.com/chrome/a/answer/7572556. Essa opção não está disponível para <ph name="LINUX_OS_NAME" /> ou <ph name="ANDROID_NAME" />. Nesses dispositivos, ela será substituída por "Ativar login no navegador", caso seja usada.
+
+      Se a política for deixada sem definição, o usuário poderá decidir se quer ativar o login no navegador nas configurações do <ph name="PRODUCT_NAME" /> e usar esse recurso da maneira que achar melhor.</translation>
 <translation id="5565178130821694365">É necessário digitar a senha a cada dois dias (48 horas)</translation>
 <translation id="5566210228171064229">Permitir impressão com e sem PIN</translation>
 <translation id="5569504149646180067">Configura o login automático de usuários em contas protegidas por um provedor de identidade na nuvem da Microsoft®.
@@ -6751,15 +6739,6 @@ Esta política foi descontinuada na versão M124.</translation>
       Se a política não for definida, e se compatível com o dispositivo, o modo padrão de carregamento da bateria será aplicado e os usuários não poderão mudá-lo.
 
       Observação: se o modo personalizado de carregamento da bateria for selecionado, <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> e <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> precisarão ser especificadas.</translation>
-<translation id="60655674079349516">Configurar uma lista de tipos de dados de navegação a serem excluídos quando o usuário fechar todas as janelas do navegador.
-
-Aviso: definir essa política pode afetar e remover permanentemente os dados pessoais locais. Recomendamos testar as configurações antes da implantação para evitar a exclusão acidental de dados pessoais.
-
-Os tipos de dados disponíveis são: histórico de navegação (<ph name="DATA_TYPE_BROWSING_HISTORY" />), histórico de downloads (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), preenchimento automático (<ph name="DATA_TYPE_AUTOFILL" />), senhas (<ph name="DATA_TYPE_PASSWORD" />), configurações de sites (<ph name="DATA_TYPE_SITE_SETTINGS" />) e dados de apps hospedados (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Esta política não tem precedência sobre <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-
-Até o Chrome 114, esta política exigia que a <ph name="SYNC_DISABLED_POLICY_NAME" /> fosse definida como "true" (verdadeira). No Chrome 115 e versões mais recentes, a definição desta política vai desativar a sincronização dos respectivos tipos de dados se a <ph name="CHROME_SYNC_NAME" /> não for desativada pela configuração da <ph name="SYNC_DISABLED_POLICY_NAME" />, e a <ph name="BROWSER_SIGNIN_POLICY_NAME" /> não for desativada.
-
-Se o <ph name="PRODUCT_NAME" /> não for fechado corretamente (por exemplo, se o navegador ou o SO falhar), os dados de navegação serão excluídos da próxima vez que o perfil for carregado.</translation>
 <translation id="6066761914755798079">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> especificará o URL do mecanismo que fornecerá sugestões de pesquisa. O URL precisa incluir a string <ph name="SEARCH_TERM_MARKER" />, que é substituída na consulta pelos termos de pesquisa do usuário.
 
       É possível especificar o URL de pesquisa do Google como: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>

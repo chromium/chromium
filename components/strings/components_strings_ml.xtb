@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">സാധനങ്ങൾ മാറ്റലും സ്ഥലം മാറലും</translation>
 <translation id="1270502636509132238">പിക്കപ്പ് രീതി</translation>
 <translation id="1273592791152866347">നിരക്ക് ട്രാക്ക് ചെയ്യൽ ഓഫാണ്</translation>
+<translation id="1277711244058668002">തംബ്‌സ് അപ്പ് ബട്ടൺ, നിങ്ങൾ ഈ നിർദ്ദേശം ലൈക്ക് ചെയ്യുന്നു എന്ന ഫീഡ്‌ബാക്ക് സമർപ്പിക്കാൻ Enter അമർത്തുക</translation>
 <translation id="127777513559587977">ടി വി ടോക്ക് ഷോകൾ</translation>
 <translation id="1281476433249504884">സ്റ്റാക്കർ 1</translation>
 <translation id="1281536351321444151">അടുത്ത തവണ സ്വയമേവ പൂരിപ്പിക്കാൻ, ഈ IBAN നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കുക</translation>
@@ -456,6 +457,7 @@
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">CVC നിങ്ങളുടെ കാർഡിന്റെ പിൻഭാഗത്താണുള്ളത്. ഒപ്പിടാനുള്ള ബോക്‌സിന്റെ മുകളിൽ വലതുവശത്തുള്ള അവസാന 3 അക്കമാണിത്.</translation>
 <translation id="1810391395243432441">നിങ്ങളുടെ സ്ക്രീൻ ലോക്ക് ഉപയോഗിച്ച് പാസ്‌വേഡുകൾ പരിരക്ഷിക്കുക</translation>
+<translation id="1810597570737826742">{count,plural, =1{{count}-ൽ {position}-ാമത്തെ പ്ലസ് വിലാസം}other{{count}-ൽ {position}-ാമത്തെ പ്ലസ് വിലാസങ്ങൾ}}</translation>
 <translation id="1812527064848182527">ലാൻഡ്‌സ്‌കേപ്പ്</translation>
 <translation id="1812975699435941848">ആരോഗ്യ വിദ്യാഭ്യാസവും മെഡിക്കൽ പരിശീലനവും</translation>
 <translation id="1816436748874040213">പങ്കിട്ട ടാബുകൾ സ്ക്രോൾ ചെയ്യാനും സൂം ചെയ്യാനും ആവശ്യപ്പെടാം</translation>
@@ -663,6 +665,7 @@
 <translation id="2188375229972301266">താഴെ ഒന്നിലധികം പഞ്ച് ചെയ്യുക</translation>
 <translation id="2194856509914051091">പരിഗണിക്കേണ്ട കാര്യങ്ങൾ</translation>
 <translation id="2197398642355049178">നിങ്ങൾക്ക് താൽപ്പര്യമുള്ള വിഷയങ്ങൾ</translation>
+<translation id="2200678913752027654">തംബ്‌സ് ഡൗൺ ബട്ടൺ, നിങ്ങൾ ഈ നിർദ്ദേശം എന്തുകൊണ്ട് ഡിസ്‌ലൈക്ക് ചെയ്യുന്നു എന്നതിനെ കുറിച്ചുള്ള വിശദമായ ഫീഡ്‌ബാക്ക് സമർപ്പിക്കാനുള്ള ഫോം തുറക്കാൻ Enter അമർത്തുക</translation>
 <translation id="2202627062836089804">നിങ്ങളുടെ കാർഡിന്റെ പുറകിൽ</translation>
 <translation id="2204482073374652408">അപ്‌ഡേറ്റ് ചെയ്യൽ പൂർത്തിയായി!</translation>
 <translation id="2207770355672215546">ഏത് കാർഡ് ആണെങ്കിലും എപ്പോഴും അനുവദിക്കുക</translation>
@@ -2584,6 +2587,7 @@
 <translation id="5887687176710214216">അവസാനം സന്ദർശിച്ചത് ഇന്നലെയാണ്</translation>
 <translation id="5895138241574237353">പുനരാരംഭിക്കുക</translation>
 <translation id="5895187275912066135">ഇനിപ്പറയുന്നദിവസം നല്‍‌കി</translation>
+<translation id="5898767305816764989">തംബ്‌സ് അപ്പ് ബട്ടൺ, നിങ്ങൾ <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> ലൈക്ക് ചെയ്യുന്നു എന്ന ഫീഡ്‌ബാക്ക് സമർപ്പിക്കാൻ Enter അമർത്തുക</translation>
 <translation id="5901630391730855834">മഞ്ഞ</translation>
 <translation id="5903264686717710770">ശീര്‍ഷകം:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (സമന്വയിപ്പിച്ചത്)</translation>
@@ -3316,6 +3320,7 @@
 കൂടുതൽ വിശദാംശങ്ങൾ:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">നിങ്ങളുടെ അഡ്‌മിൻ പറയുന്നു: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">തംബ്‌സ് ഡൗൺ ബട്ടൺ, നിങ്ങൾ എന്തുകൊണ്ട് ഡിസ്‌ലൈക്ക് ചെയ്യുന്നു എന്നതിനെ കുറിച്ചുള്ള വിശദമായ ഫീഡ്‌ബാക്ക് സമർപ്പിക്കാനുള്ള ഫോം തുറക്കാൻ Enter അമർത്തുക, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">പിൻഭാഗത്തെ ട്രേ</translation>
 <translation id="7257453341537973799">കരിയർ റിസോഴ്‌സുകളും പ്ലാനിംഗും</translation>
 <translation id="725866823122871198">നിങ്ങളുടെ കമ്പ്യൂട്ടറിന്റെ തീയതിയും സമയവും (<ph name="DATE_AND_TIME" />) തെറ്റായതിനാൽ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> എന്നതിലേക്കുള്ള സ്വകാര്യ കണക്ഷൻ സ്ഥാപിക്കാനാവില്ല.</translation>

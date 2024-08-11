@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Kopier visningsnavnet</translation>
 <translation id="1062407476771304334">Erstatt</translation>
 <translation id="1062628064301375934">Hjelp oss med å bygge et mer privat internett</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome har fjernet tillatelser for 1 nettsted}other{Chrome har fjernet tillatelser for {NUM_SITES} nettsteder}}</translation>
 <translation id="1066964438793906105">Skann etter skadelig programvare</translation>
 <translation id="1067661089446014701">For å øke sikkerheten kan du kryptere passord på enheten før de lagres i Google-kontoen din</translation>
 <translation id="1067922213147265141">Andre Google-tjenester</translation>
@@ -4927,6 +4926,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4538792345715658285">Installert av bedriftsinnstillingen.</translation>
 <translation id="4540409690203718935">Får ikke kontakt med Google Passordlagring. Prøv på nytt om noen minutter</translation>
 <translation id="4541123282641193691">Kunne ikke bekrefte kontoen din. Prøv på nytt, eller start Chromebooken på nytt.</translation>
+<translation id="4541505619120536051">Åpne alltid</translation>
 <translation id="4541662893742891060">Kan ikke koble til denne profilen. Kontakt operatøren din om du trenger teknisk støtte.</translation>
 <translation id="4541706525461326392">Fjerner profilen. Dette kan ta noen minutter.</translation>
 <translation id="4542520061254486227">Les dataene dine på <ph name="WEBSITE_1" /> og <ph name="WEBSITE_2" /></translation>
@@ -5261,7 +5261,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4794910597689955457">Vil du flytte <ph name="NUM_OF_FILES" /> filer til <ph name="CLOUD_PROVIDER" /> for å åpne dem?</translation>
 <translation id="479536056609751218">Nettside – bare HTML</translation>
 <translation id="4795670271446126525">Bølger</translation>
-<translation id="4796142525425001238">Alltid gjenopprett</translation>
 <translation id="4797314204379834752">Prøv å bruke fanegrupper for å organisere gjøremål, til netthandel med mer.</translation>
 <translation id="479863874072008121">Administrer enheter</translation>
 <translation id="479989351350248267">søk</translation>
@@ -5839,7 +5838,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5210365745912300556">Lukk fanen</translation>
 <translation id="5213114823401215820">Åpne den lukkede gruppen igjen</translation>
 <translation id="5213481667492808996">Datatjenesten «<ph name="NAME" />» er klar for bruk</translation>
-<translation id="5213658238771284310">Gjenopprett økten ved oppstart</translation>
 <translation id="5213891612754844763">Vis innstillingene for proxy-tjener</translation>
 <translation id="5214639857958972833">Bokmerket «<ph name="BOOKMARK_TITLE" />» er opprettet.</translation>
 <translation id="5215450412607891876">Slå på forlenget periode for sikkerhetsoppdateringer</translation>
@@ -6212,7 +6210,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5488093641312826914">«<ph name="COPIED_ITEM_NAME" />» er kopiert</translation>
 <translation id="5488508217173274228">Alternativer for kryptering av synkroniserte data</translation>
 <translation id="5489077378642700219">Ikke tillat varsler fra <ph name="WEBSITE" />, men spør senere</translation>
-<translation id="5489435190927933437">Lagrede passord for <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Adresser med mer</translation>
 <translation id="5490721031479690399">Koble fra Bluetooth-enheten</translation>
 <translation id="5490798133083738649">Gi Linux tilgang til mikrofonen din</translation>
@@ -6346,7 +6343,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5582839680698949063">Hovedmeny</translation>
 <translation id="5583640892426849032">Tilbake-tasten</translation>
 <translation id="5584088138253955452">Vil du lagre brukernavnet?</translation>
-<translation id="5584091888252706332">Ved oppstart</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Dette er generell informasjon om enheten din og hvordan du bruker den (for eksempel batterinivå, system- og appaktivitet samt feil). Dataene brukes for å forbedre Android, og enkelte innsamlede data hjelper også Google-apper og -partnere, for eksempel Android-utviklere, med å forbedre apper og produkter.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Selv om denne funksjonen slås av, kan enheten fortsatt sende informasjonen den trenger for å motta nødvendige tjenester, som systemoppdateringer og sikkerhet.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Eieren kan kontrollere funksjonen fra Innstillinger &gt; Avansert &gt; Send diagnostikk og bruksdata til Google automatisk.<ph name="END_PARAGRAPH3" />
@@ -9365,7 +9361,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7815680994978050279">En farlig nedlasting er blokkert</translation>
 <translation id="7817361223956157679">Skjermtastaturet virker ikke i Linux-apper ennå</translation>
 <translation id="7818135753970109980">Nytt tema lagt til (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Etter omstarten kan du fortsette der du slapp, med apper, nettsteder og åpne vinduer</translation>
 <translation id="7819605256207059717">Blokkert av organisasjonen din</translation>
 <translation id="7820400255539998692">Slett <ph name="FILENAME" />, slik at andre som bruker denne enheten, ikke kan se passordene dine</translation>
 <translation id="7820561748632634942">Vil du tilordne flere brytere?</translation>
@@ -10175,6 +10170,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />For å få mer hjelp, se g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Velkomstoppsummering</translation>
 <translation id="8386091599636877289">Fant ikke regelen.</translation>
 <translation id="8387361103813440603">Nettsteder som ikke har lov til å se posisjonen din</translation>
 <translation id="8387617938027387193">Bekreft at det er deg</translation>

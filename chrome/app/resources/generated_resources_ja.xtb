@@ -98,7 +98,6 @@
 <translation id="10619348099955377">表示名をコピー</translation>
 <translation id="1062407476771304334">置換</translation>
 <translation id="1062628064301375934">ウェブのプライバシー強化にご協力ください</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome で 1 件のサイトの権限を削除しました}other{Chrome で {NUM_SITES} 件のサイトの権限を削除しました}}</translation>
 <translation id="1066964438793906105">マルウェアをスキャン</translation>
 <translation id="1067661089446014701">セキュリティ強化のため、Google アカウントに保存する前にデバイス上でパスワードを暗号化できます。</translation>
 <translation id="1067922213147265141">他の Google サービス</translation>
@@ -4911,6 +4910,7 @@
 <translation id="4538792345715658285">会社のポリシーによってインストール済み。</translation>
 <translation id="4540409690203718935">Google パスワード マネージャーにアクセスできません。数分後にもう一度お試しください。</translation>
 <translation id="4541123282641193691">アカウントを確認できませんでした。もう一度お試しになるか、Chromebook を再起動してください。</translation>
+<translation id="4541505619120536051">常に開く</translation>
 <translation id="4541662893742891060">このプロファイルに接続できません。テクニカル サポートについては、ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="4541706525461326392">プロファイルを削除しています。この処理には数分かかることがあります。</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> と <ph name="WEBSITE_2" /> でのユーザーデータの読み取り</translation>
@@ -5245,7 +5245,6 @@
 <translation id="4794910597689955457"><ph name="NUM_OF_FILES" /> 個のファイルを <ph name="CLOUD_PROVIDER" /> に移動して開きますか？</translation>
 <translation id="479536056609751218">ウェブページ、HTML のみ</translation>
 <translation id="4795670271446126525">打ち寄せる波</translation>
-<translation id="4796142525425001238">常に復元</translation>
 <translation id="4797314204379834752">オンライン ショッピングなど、タスクの整理にタブグループを使用できます</translation>
 <translation id="479863874072008121">デバイスを管理</translation>
 <translation id="479989351350248267">検索</translation>
@@ -5822,7 +5821,6 @@
 <translation id="5210365745912300556">タブを閉じる</translation>
 <translation id="5213114823401215820">閉じたグループを開く</translation>
 <translation id="5213481667492808996">「<ph name="NAME" />」データサービスを使用できるようになりました</translation>
-<translation id="5213658238771284310">起動時にセッションを復元する</translation>
 <translation id="5213891612754844763">プロキシ設定を表示</translation>
 <translation id="5214639857958972833">ブックマーク「<ph name="BOOKMARK_TITLE" />」が作成されました。</translation>
 <translation id="5215450412607891876">セキュリティ アップデートの延長を有効化</translation>
@@ -6195,7 +6193,6 @@
 <translation id="5488093641312826914">「<ph name="COPIED_ITEM_NAME" />」がコピーされました</translation>
 <translation id="5488508217173274228">同期データの暗号化オプション</translation>
 <translation id="5489077378642700219"><ph name="WEBSITE" /> からの通知を許可しないが後で確認する</translation>
-<translation id="5489435190927933437"><ph name="DOMAIN" /> 用に保存されているパスワード</translation>
 <translation id="5490432419156082418">住所やその他の情報</translation>
 <translation id="5490721031479690399">Bluetooth デバイスの接続の解除</translation>
 <translation id="5490798133083738649">Linux にマイクへのアクセスを許可する</translation>
@@ -6329,7 +6326,6 @@
 <translation id="5582839680698949063">メインメニュー</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">ユーザー名を保存しますか？</translation>
-<translation id="5584091888252706332">起動時</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />送信されるのは、お使いのデバイスとその使用状況（電池残量、システムとアプリのアクティビティ、エラーなど）に関する一般的な情報です。この情報は Android の改善に使用されます。また一部の集計情報は、Google のアプリのほか、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />この機能をオフにした場合でも、システム アップデートやセキュリティなどの重要なサービスで必要となる情報は、デバイスからこれまでどおり送信されます。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />デバイスの所有者は、[設定] &gt; [詳細設定] &gt; [診断と使用状況のデータを Google に自動送信する] でこの機能を管理できます。<ph name="END_PARAGRAPH3" />
@@ -9344,7 +9340,6 @@
 <translation id="7815680994978050279">危険なダウンロードがブロックされました</translation>
 <translation id="7817361223956157679">画面キーボードは現在のところ Linux アプリでは使用できません</translation>
 <translation id="7818135753970109980">新しいテーマが追加されました（<ph name="EXTENSION_NAME" />）</translation>
-<translation id="7819087895293765164">再起動後に、開いていたアプリ、ウェブサイト、ウィンドウを復元します</translation>
 <translation id="7819605256207059717">組織でブロックされました</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> を削除して、このデバイスを使用する他のユーザーがパスワードを確認できないようにします。</translation>
 <translation id="7820561748632634942">スイッチを追加で割り当てますか？</translation>
@@ -10154,6 +10149,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />詳しくは、g.co/flex/InstallErrors をご覧ください。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">おかえりなさい</translation>
 <translation id="8386091599636877289">ポリシーが見つかりません。</translation>
 <translation id="8387361103813440603">位置情報の取得を許可しないサイト</translation>
 <translation id="8387617938027387193">本人確認</translation>

@@ -158,6 +158,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1270328905573953738">Portes y mudanzas</translation>
 <translation id="1270502636509132238">Método de recogida</translation>
 <translation id="1273592791152866347">Seguimiento de precios desactivado</translation>
+<translation id="1277711244058668002">Botón Me gusta. Pulsa Intro para indicar que te gusta esta sugerencia.</translation>
 <translation id="127777513559587977">Programas de entrevistas en televisión</translation>
 <translation id="1281476433249504884">Apilador 1</translation>
 <translation id="1281536351321444151">Para que el campo del IBAN se autocomplete la próxima vez, guárdalo en tu cuenta de Google</translation>
@@ -663,6 +664,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2188375229972301266">Perforado múltiple en la parte inferior</translation>
 <translation id="2194856509914051091">Notas importantes</translation>
 <translation id="2197398642355049178">Tus temas</translation>
+<translation id="2200678913752027654">Botón No me gusta. Pulsa Intro para abrir un formulario y enviar comentarios detallados sobre por qué no te gusta esta sugerencia.</translation>
 <translation id="2202627062836089804">reverso de tu tarjeta</translation>
 <translation id="2204482073374652408">La actualización ha finalizado.</translation>
 <translation id="2207770355672215546">Permitir siempre con cualquier tarjeta</translation>
@@ -2585,6 +2587,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5887687176710214216">Última visita: ayer</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895187275912066135">Emitido el</translation>
+<translation id="5898767305816764989">Botón Me gusta. Pulsa Intro para indicar que te gusta <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="5901630391730855834">Amarillo</translation>
 <translation id="5903264686717710770">Título:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizado)</translation>
@@ -3317,6 +3320,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 Más información:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Mensaje de tu administrador: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">Botón No me gusta. Pulsa Intro para abrir un formulario en el que puedes enviar comentarios detallados sobre por qué no te gusta <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="7256634549594854023">Bandeja trasera</translation>
 <translation id="7257453341537973799">Recursos y planificación de carrera profesional</translation>
 <translation id="725866823122871198">No se puede establecer una conexión privada con <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque la fecha y la hora de tu ordenador (<ph name="DATE_AND_TIME" />) no son correctas.</translation>

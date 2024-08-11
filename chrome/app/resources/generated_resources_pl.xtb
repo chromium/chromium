@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Skopiuj wyświetlaną nazwę</translation>
 <translation id="1062407476771304334">Zastąp</translation>
 <translation id="1062628064301375934">Pomóż nam zadbać o większą prywatność w sieci</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Przeglądarka Chrome usunęła uprawnienia 1 witryny}few{Przeglądarka Chrome usunęła uprawnienia {NUM_SITES} witryn}many{Przeglądarka Chrome usunęła uprawnienia {NUM_SITES} witryn}other{Przeglądarka Chrome usunęła uprawnienia {NUM_SITES} witryny}}</translation>
 <translation id="1066964438793906105">Skanuj w poszukiwaniu złośliwego oprogramowania</translation>
 <translation id="1067661089446014701">Zanim zapiszesz hasła na koncie Google, zaszyfruj je na urządzeniu, aby zwiększyć ich bezpieczeństwo</translation>
 <translation id="1067922213147265141">Inne usługi Google</translation>
@@ -4908,6 +4907,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4538792345715658285">Zainstalowane na podstawie zasad przedsiębiorstwa.</translation>
 <translation id="4540409690203718935">Nie udało się połączyć z Menedżerem haseł Google. Spróbuj ponownie za kilka minut</translation>
 <translation id="4541123282641193691">Nie udało się zweryfikować Twojego konta. Spróbuj jeszcze raz lub ponownie uruchom Chromebooka.</translation>
+<translation id="4541505619120536051">Zawsze otwieraj</translation>
 <translation id="4541662893742891060">Nie można połączyć z tym profilem. Aby uzyskać pomoc techniczną, skontaktuj się ze swoim operatorem.</translation>
 <translation id="4541706525461326392">Usuwam profil. Może to potrwać kilka minut.</translation>
 <translation id="4542520061254486227">Odczyt Twoich danych na stronie <ph name="WEBSITE_1" /> i <ph name="WEBSITE_2" /></translation>
@@ -5242,7 +5242,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4794910597689955457">Przenieść pliki (<ph name="NUM_OF_FILES" />) do usługi <ph name="CLOUD_PROVIDER" />, aby je otworzyć?</translation>
 <translation id="479536056609751218">Strona internetowa, tylko kod HTML</translation>
 <translation id="4795670271446126525">Rozbijające się fale</translation>
-<translation id="4796142525425001238">Zawsze przywracaj</translation>
 <translation id="4797314204379834752">Grup kart możesz używać np. podczas porządkowania zadań lub robienia zakupów online</translation>
 <translation id="479863874072008121">Zarządzaj urządzeniami</translation>
 <translation id="479989351350248267">search</translation>
@@ -5820,7 +5819,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5210365745912300556">Zamknij kartę</translation>
 <translation id="5213114823401215820">Otwórz ponownie zamkniętą grupę</translation>
 <translation id="5213481667492808996">Usługa transmisji danych „<ph name="NAME" />” jest gotowa do użycia</translation>
-<translation id="5213658238771284310">Przywróć sesję po uruchomieniu</translation>
 <translation id="5213891612754844763">Pokaż ustawienia serwera proxy</translation>
 <translation id="5214639857958972833">Utworzono zakładkę „<ph name="BOOKMARK_TITLE" />”.</translation>
 <translation id="5215450412607891876">Włącz rozszerzone aktualizacje zabezpieczeń</translation>
@@ -6193,7 +6191,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5488093641312826914">Skopiowano: „<ph name="COPIED_ITEM_NAME" />”</translation>
 <translation id="5488508217173274228">Opcje szyfrowania synchronizacji</translation>
 <translation id="5489077378642700219">Nie zezwalaj na powiadomienia z <ph name="WEBSITE" />, ale zapytaj później</translation>
-<translation id="5489435190927933437">Zapisane hasła do <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Adresy i ustawienia</translation>
 <translation id="5490721031479690399">Odłączanie urządzenia Bluetooth</translation>
 <translation id="5490798133083738649">Zezwalaj Linuksowi na dostęp do mikrofonu</translation>
@@ -6327,7 +6324,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5582839680698949063">Menu główne</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Zapisać nazwę użytkownika?</translation>
-<translation id="5584091888252706332">Po uruchomieniu</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Są to ogólne informacje o tym urządzeniu i o jego używaniu (takie jak poziom naładowania baterii, aktywność w systemie i aplikacjach oraz błędy). Wykorzystamy je do ulepszania Androida. Z niektórych zebranych informacji będą też korzystać nasze aplikacje oraz partnerzy, np. deweloperzy aplikacji na Androida, by tworzyć lepsze aplikacje i produkty.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Wyłączenie tej funkcji nie wpływa na możliwość wysyłania przez urządzenie informacji potrzebnych do działania ważnych usług, na przykład zabezpieczeń czy aktualizacji systemu.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Właściciel może włączyć lub wyłączyć tę funkcję, wybierając Ustawienia &gt; Zaawansowane &gt; Automatycznie wysyłaj do Google dane diagnostyczne i informacje o użytkowaniu.<ph name="END_PARAGRAPH3" />
@@ -9351,7 +9347,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7815680994978050279">Zablokowano niebezpieczne pobieranie</translation>
 <translation id="7817361223956157679">W aplikacjach na Linuksa klawiatura ekranowa jeszcze nie działa</translation>
 <translation id="7818135753970109980">Dodano nowy motyw (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Po ponownym uruchomieniu możesz dalej korzystać z aplikacji, stron internetowych i otwartych okien od tego samego miejsca</translation>
 <translation id="7819605256207059717">Zablokowany przez organizację</translation>
 <translation id="7820400255539998692">Usuń plik <ph name="FILENAME" />, aby Twoje hasła nie były widoczne dla innych osób na tym urządzeniu</translation>
 <translation id="7820561748632634942">Przypisać dodatkowe przełączniki?</translation>
@@ -10161,6 +10156,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Dodatkową pomoc znajdziesz na: g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Podsumowanie powitania</translation>
 <translation id="8386091599636877289">Nie znaleziono zasady.</translation>
 <translation id="8387361103813440603">Nie zezwolono na sprawdzanie lokalizacji</translation>
 <translation id="8387617938027387193">Potwierdź, że to Ty</translation>

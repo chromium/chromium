@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Kopiera visningsnamn</translation>
 <translation id="1062407476771304334">Ersätt</translation>
 <translation id="1062628064301375934">Hjälp oss att göra webben mer privat</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome har tagit bort behörigheter för 1 webbplats}other{Chrome har tagit bort behörigheter för {NUM_SITES} webbplatser}}</translation>
 <translation id="1066964438793906105">Sök efter skadlig kod</translation>
 <translation id="1067661089446014701">Du kan öka säkerheten genom att kryptera lösenord på enheten innan de sparas i Google Lösenordshantering.</translation>
 <translation id="1067922213147265141">Andra Google-tjänster</translation>
@@ -4935,6 +4934,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4538792345715658285">Installerad på grund av företagets principer.</translation>
 <translation id="4540409690203718935">Det går inte att nå Google Lösenordshantering. Försök igen om några minuter</translation>
 <translation id="4541123282641193691">Det gick inte att verifiera kontot. Försök igen eller starta om Chromebook.</translation>
+<translation id="4541505619120536051">Alltid öppet</translation>
 <translation id="4541662893742891060">Det gick inte att ansluta till profilen. Kontakta operatören för teknisk support.</translation>
 <translation id="4541706525461326392">Tar bort profilen. Det kan ta några minuter.</translation>
 <translation id="4542520061254486227">Läsa din data på <ph name="WEBSITE_1" /> och <ph name="WEBSITE_2" /></translation>
@@ -5269,7 +5269,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4794910597689955457">Vill du flytta <ph name="NUM_OF_FILES" /> filer till <ph name="CLOUD_PROVIDER" /> och öppna dem?</translation>
 <translation id="479536056609751218">Webbsida, endast HTML</translation>
 <translation id="4795670271446126525">Svallvågor</translation>
-<translation id="4796142525425001238">Återställ alltid</translation>
 <translation id="4797314204379834752">Testa att ordna olika slags uppgifter i flikgrupper, t.ex. för onlineshopping</translation>
 <translation id="479863874072008121">Hantera enheter</translation>
 <translation id="479989351350248267">sök</translation>
@@ -5848,7 +5847,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5210365745912300556">Stäng flik</translation>
 <translation id="5213114823401215820">Öppna stängd grupp igen</translation>
 <translation id="5213481667492808996">Datatjänsten <ph name="NAME" /> är klar att använda</translation>
-<translation id="5213658238771284310">Återställ sessionen vid start</translation>
 <translation id="5213891612754844763">Visa proxyinställningar</translation>
 <translation id="5214639857958972833">Bokmärket <ph name="BOOKMARK_TITLE" /> har skapats.</translation>
 <translation id="5215450412607891876">Aktivera utökade säkerhetsuppdateringar</translation>
@@ -6223,7 +6221,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5488093641312826914"><ph name="COPIED_ITEM_NAME" /> har kopierats</translation>
 <translation id="5488508217173274228">Alternativ för synkroniseringskryptering</translation>
 <translation id="5489077378642700219">Tillåt inte aviseringar från <ph name="WEBSITE" /> men fråga senare</translation>
-<translation id="5489435190927933437">Sparade lösenord för <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Adresser och annat</translation>
 <translation id="5490721031479690399">Koppla från Bluetooth-enhet</translation>
 <translation id="5490798133083738649">Ge Linux åtkomst till mikrofonen</translation>
@@ -6357,7 +6354,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5582839680698949063">Huvudmeny</translation>
 <translation id="5583640892426849032">Backsteg</translation>
 <translation id="5584088138253955452">Vill du spara användarnamnet?</translation>
-<translation id="5584091888252706332">Vid start</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Detta är allmän information om din enhet och hur du använder den (till exempel batterinivå, system- och appaktivitet samt fel). Med hjälp av dessa uppgifter kan vi förbättra Android. Vissa sammanställda uppgifter kan även hjälpa Googles appar och partner, till exempel Android-utvecklare, att förbättra sina appar och produkter.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Möjligheten att skicka information som behövs för viktiga tjänster, t.ex. systemuppdateringar och säkerhetstjänster, påverkas inte om du inaktiverar den här funktionen.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ägaren kan styra denna funktion via Inställningar &gt; Avancerat &gt; Skicka diagnostik- och användningsdata automatiskt till Google.<ph name="END_PARAGRAPH3" />
@@ -9376,7 +9372,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7815680994978050279">En farlig nedladdning blockerades</translation>
 <translation id="7817361223956157679">Skärmtangentbordet fungerar inte i Linux-appar ännu</translation>
 <translation id="7818135753970109980">Ett nytt tema har lagts till (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Efter omstarten kan du fortsätta där du slutade med appar, webbplatser och öppna fönster</translation>
 <translation id="7819605256207059717">Blockerades av organisationen</translation>
 <translation id="7820400255539998692">Radera <ph name="FILENAME" /> så att andra som använder enheten inte kan se lösenorden</translation>
 <translation id="7820561748632634942">Vill du tilldela ytterligare brytare?</translation>
@@ -10186,6 +10181,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Besök g.co/flex/InstallErrors om du vill ha mer hjälp<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Välkommen tillbaka</translation>
 <translation id="8386091599636877289">Policyn hittades inte.</translation>
 <translation id="8387361103813440603">Får inte se var du befinner dig</translation>
 <translation id="8387617938027387193">Verifiera din identitet</translation>

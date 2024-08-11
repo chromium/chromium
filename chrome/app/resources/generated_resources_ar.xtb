@@ -98,7 +98,6 @@
 <translation id="10619348099955377">نسخ الاسم المعروض</translation>
 <translation id="1062407476771304334">استبدال</translation>
 <translation id="1062628064301375934">مساعدتنا في تصميم تجربة تصفُّح أكثر خصوصية</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{‏أزال Chrome أذونات موقع إلكتروني واحد}zero{‏أزال Chrome أذونات {NUM_SITES} موقع إلكتروني}two{‏أزال Chrome أذونات موقعَين إلكترونيَّين ({NUM_SITES})}few{‏أزال Chrome أذونات {NUM_SITES} مواقع إلكترونية}many{‏أزال Chrome أذونات {NUM_SITES} موقعًا إلكترونيًّا}other{‏أزال Chrome أذونات {NUM_SITES} موقع إلكتروني}}</translation>
 <translation id="1066964438793906105">فحص الملف بحثًا عن البرامج الضارة</translation>
 <translation id="1067661089446014701">‏لتوفير مزيد من الأمان، يمكنك تشفير كلمات المرور على جهازك قبل حفظها في حسابك على Google.</translation>
 <translation id="1067922213147265141">‏خدمات Google الأخرى</translation>
@@ -4925,6 +4924,7 @@
 <translation id="4538792345715658285">تمّ التثبيت بموجب سياسة المؤسسة.</translation>
 <translation id="4540409690203718935">‏يتعذّر الوصول إلى "مدير كلمات المرور في Google"، يُرجى إعادة المحاولة بعد بضع دقائق</translation>
 <translation id="4541123282641193691">‏تعذّر التحقق من حسابك. يُرجى المحاولة مرة أخرى أو إعادة تشغيل Chromebook.</translation>
+<translation id="4541505619120536051">مفتوح دائمًا</translation>
 <translation id="4541662893742891060">تعذّر الربط بهذا الملف الشخصي. للحصول على الدعم الفني، يُرجى التواصل مع مشغّل شبكة الجوّال.</translation>
 <translation id="4541706525461326392">جارٍ إزالة الملف الشخصي. قد تستغرق هذه العملية بضع دقائق.</translation>
 <translation id="4542520061254486227">قراءة بياناتك على <ph name="WEBSITE_1" /> و<ph name="WEBSITE_2" /></translation>
@@ -5259,7 +5259,6 @@
 <translation id="4794910597689955457">هل تريد نقل <ph name="NUM_OF_FILES" /> ملف إلى <ph name="CLOUD_PROVIDER" /> وفتحه؟</translation>
 <translation id="479536056609751218">‏صفحة الويب، HTML فقط</translation>
 <translation id="4795670271446126525">أمواج متلاطمة</translation>
-<translation id="4796142525425001238">الاستعادة دائمًا</translation>
 <translation id="4797314204379834752">جرّب استخدام مجموعات علامات التبويب لتنظيم المهام والتسوّق على الإنترنت وغير ذلك.</translation>
 <translation id="479863874072008121">إدارة الأجهزة</translation>
 <translation id="479989351350248267">بحث</translation>
@@ -5838,7 +5837,6 @@
 <translation id="5210365745912300556">إغلاق علامة التبويب</translation>
 <translation id="5213114823401215820">إعادة فتح مجموعة تم إغلاقها</translation>
 <translation id="5213481667492808996">خدمة بيانات "<ph name="NAME" />" جاهزة للاستخدام</translation>
-<translation id="5213658238771284310">استعادة الجلسة عند بدء التشغيل</translation>
 <translation id="5213891612754844763">عرض إعدادات الخادم الوكيل</translation>
 <translation id="5214639857958972833">تم إنشاء إشارة مرجعية بعنوان "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="5215450412607891876">تفعيل تحديثات الأمان الممتدة</translation>
@@ -6213,7 +6211,6 @@
 <translation id="5488093641312826914">تم نسخ العنصر '<ph name="COPIED_ITEM_NAME" />'</translation>
 <translation id="5488508217173274228">خيارات تشفير المزامنة</translation>
 <translation id="5489077378642700219">عدم السماح بالإشعارات من الموقع الإلكتروني <ph name="WEBSITE" /> والسؤال لاحقًا</translation>
-<translation id="5489435190927933437">كلمات المرور المحفوظة لاسم النطاق <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">العناوين والمزيد</translation>
 <translation id="5490721031479690399">قطع الاتصال بجهاز عبر بلوتوث</translation>
 <translation id="5490798133083738649">‏السماح لنظام التشغيل Linux بالوصول إلى الميكروفون</translation>
@@ -6347,7 +6344,6 @@
 <translation id="5582839680698949063">القائمة الرئيسية</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">هل تريد حفظ اسم المستخدم؟</translation>
-<translation id="5584091888252706332">عند بدء التشغيل</translation>
 <translation id="5584915726528712820">‏<ph name="BEGIN_PARAGRAPH1" />هذه معلومات عامة حول جهازك وكيفية استخدامه (مثل مستوى طاقة البطارية والأخطاء التي حدثت بالإضافة إلى العمليات التي تمّت داخل النظام والتطبيقات). وسيتم استخدام البيانات في تحسين Android، كما تساعد بعض المعلومات المجمّعة تطبيقات Google وشركائها، مثل مطوّري برامج Android، لتحسين أداء تطبيقاتهم ومنتجاتهم.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />لن يؤثر إيقاف هذه الميزة في قدرة جهازك على إرسال المعلومات المطلوبة للحصول على خدمات أساسية، مثل تحديثات النظام والأمان.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />يمكن للمالك التحكُّم في هذه الميزة من "الإعدادات" &gt; "إعدادات متقدمة" &gt; إرسال بيانات التشخيص والاستخدام إلى Google تلقائيًا.<ph name="END_PARAGRAPH3" />
@@ -9374,7 +9370,6 @@
 <translation id="7815680994978050279">تم حظر عملية تنزيل خطيرة</translation>
 <translation id="7817361223956157679">‏لا تعمل لوحة المفاتيح على الشاشة على تطبيقات Linux بعد.</translation>
 <translation id="7818135753970109980">تمت إضافة مظهر جديد (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">بعد إعادة التشغيل، يمكنك متابعة استخدام التطبيقات والمواقع الإلكترونية والنوافذ المفتوحة حيث توقفت</translation>
 <translation id="7819605256207059717">حظرت مؤسستك هذا الملف.</translation>
 <translation id="7820400255539998692">يمكنك حذف "<ph name="FILENAME" />" لكي لا يتمكّن مستخدمو هذا الجهاز الآخرون من الاطّلاع على كلمات مرورك.</translation>
 <translation id="7820561748632634942">هل تريد تخصيص مفاتيح تحكّم إضافية؟</translation>
@@ -10185,6 +10180,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />للحصول على مزيد من المساعدة، يُرجى الانتقال إلى g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">الملخّص الترحيبي</translation>
 <translation id="8386091599636877289">تعذَّر العثور على السياسة.</translation>
 <translation id="8387361103813440603">المواقع الإلكترونية التي لا يُسمح لها بالاطّلاع على موقعك الجغرافي</translation>
 <translation id="8387617938027387193">إثبات هويتك</translation>

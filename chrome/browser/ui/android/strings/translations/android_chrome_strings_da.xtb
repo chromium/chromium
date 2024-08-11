@@ -1583,7 +1583,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> downloads blev gendannet</translation>
 <translation id="8368001212524806591">Overvåg pris</translation>
 <translation id="8378850197701296741">Du har bogmærker, historik og andre indstillinger fra <ph name="FROM_ACCOUNT" />.</translation>
-<translation id="8382640928718131148">Faner, du ikke har brugt i <ph name="DAYS_INACTIVE" /> dage, flyttes hertil og lukkes efter <ph name="DAYS_ARCHIVED" /> dage. Du kan til enhver tid ændre dette i <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8387617938027387193">Verificer din identitet</translation>
 <translation id="8393700583063109961">Send en besked</translation>
 <translation id="8402673309244746971">Gå til Følger</translation>

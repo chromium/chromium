@@ -1583,7 +1583,6 @@
 <translation id="835847953965672673">Восстановлено объектов: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="8368001212524806591">Отслеживание цен</translation>
 <translation id="8378850197701296741">В аккаунте <ph name="FROM_ACCOUNT" /> есть закладки, история и другие настройки.</translation>
-<translation id="8382640928718131148">Вкладки, которые вы не использовали в течение <ph name="DAYS_INACTIVE" /> дн., переносятся сюда и закрываются через <ph name="DAYS_ARCHIVED" /> дн. Чтобы изменить этот параметр, перейдите в <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8387617938027387193">Подтвердите личность</translation>
 <translation id="8393700583063109961">Отправить сообщение</translation>
 <translation id="8402673309244746971">Перейти к подпискам</translation>

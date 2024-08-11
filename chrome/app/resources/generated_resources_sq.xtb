@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Kopjo emrin prezantues</translation>
 <translation id="1062407476771304334">Zëvendëso</translation>
 <translation id="1062628064301375934">Na ndihmo të krijojmë një ueb më privat</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome hoqi lejet për 1 sajt}other{Chrome hoqi lejet për {NUM_SITES} sajte}}</translation>
 <translation id="1066964438793906105">Skano për softuerë keqdashës</translation>
 <translation id="1067661089446014701">Për më shumë siguri, mund t'i enkriptosh fjalëkalimet në pajisjen tënde para se të ruhen në "Llogarinë tënde të Google".</translation>
 <translation id="1067922213147265141">Shërbime e tjera të Google</translation>
@@ -4918,6 +4917,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4538792345715658285">U instalua nga politika e ndërmarrjes.</translation>
 <translation id="4540409690203718935">"Menaxheri i fjalëkalimeve i Google" nuk mund të arrihet. Provo përsëri pas disa minutash</translation>
 <translation id="4541123282641193691">Llogaria jote nuk mund të verifikohej. Provo sërish ose rinise pajisjen Chromebook.</translation>
+<translation id="4541505619120536051">Hap gjithmonë</translation>
 <translation id="4541662893742891060">Nuk mund të lidhet me këtë profil. Për mbështetje teknike, kontakto me operatorin tënd celular.</translation>
 <translation id="4541706525461326392">Profili po hiqet. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="4542520061254486227">Lexo të dhënat e tua në <ph name="WEBSITE_1" /> dhe <ph name="WEBSITE_2" /></translation>
@@ -5252,7 +5252,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4794910597689955457">Të zhvendosen <ph name="NUM_OF_FILES" /> skedarë te <ph name="CLOUD_PROVIDER" /> për t'i hapur?</translation>
 <translation id="479536056609751218">Faqe interneti, vetëm HTML</translation>
 <translation id="4795670271446126525">Dallgë që përplasen</translation>
-<translation id="4796142525425001238">Restauro gjithmonë</translation>
 <translation id="4797314204379834752">Provo të përdorësh grupe skedash për të organizuar detyrat, për blerje online dhe të tjera</translation>
 <translation id="479863874072008121">Menaxho pajisjet</translation>
 <translation id="479989351350248267">kërko</translation>
@@ -5830,7 +5829,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5210365745912300556">Mbyll skedën</translation>
 <translation id="5213114823401215820">Rihap grupin e mbyllur</translation>
 <translation id="5213481667492808996">Shërbimi yt i të dhënave të "<ph name="NAME" />" është gati për përdorim</translation>
-<translation id="5213658238771284310">Restauro sesionin në nisje</translation>
 <translation id="5213891612754844763">Shfaq cilësimet e përfaqësuesit</translation>
 <translation id="5214639857958972833">Faqeshënuesi "<ph name="BOOKMARK_TITLE" />" u krijua.</translation>
 <translation id="5215450412607891876">Aktivizo përditësimet e sigurisë për një periudhë të zgjatur</translation>
@@ -6204,7 +6202,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5488093641312826914">"<ph name="COPIED_ITEM_NAME" />" u kopjua</translation>
 <translation id="5488508217173274228">Opsionet e enkriptimit të sinkronizimit</translation>
 <translation id="5489077378642700219">Mos i lejo njoftimet nga <ph name="WEBSITE" />, por pyet më vonë</translation>
-<translation id="5489435190927933437">Fjalëkalimet e ruajtura për <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Adresat dhe të tjera</translation>
 <translation id="5490721031479690399">Shkëput pajisjen me Bluetooth</translation>
 <translation id="5490798133083738649">Lejo që Linux të ketë qasje te mikrofoni yt</translation>
@@ -6338,7 +6335,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5582839680698949063">Menyja kryesore</translation>
 <translation id="5583640892426849032">Hapësirë prapa</translation>
 <translation id="5584088138253955452">Të ruhet emri i përdoruesit?</translation>
-<translation id="5584091888252706332">Në nisje</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Ky është informacion i përgjithshëm për pajisjen tënde dhe se si e përdor (si p.sh. niveli i baterisë, aktiviteti dhe gabimet e sistemit dhe të aplikacioneve). Të dhënat do të përdoren për të përmirësuar Android, ndërsa disa informacione të grumbulluara do të ndihmojnë gjithashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android, për të përmirësuar aplikacionet dhe produktet e tyre.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Çaktivizimi i kësaj veçorie nuk ndikon në aftësinë e pajisjes sate për të dërguar informacionin që nevojitet për shërbime bazë si p.sh. përditësimet dhe siguria e sistemit.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Zotëruesi mund ta kontrollojë këtë veçori nga "Cilësimet &gt; "Të përparuara" &gt; "Dërgoji automatikisht te Google të dhënat diagnostikuese dhe të përdorimit".<ph name="END_PARAGRAPH3" />
@@ -9355,7 +9351,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7815680994978050279">Një shkarkim i rrezikshëm u bllokua</translation>
 <translation id="7817361223956157679">Tastiera në ekran nuk funksionin ende në aplikacionet e Linux</translation>
 <translation id="7818135753970109980">U shtua një temë e re (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Pas rinisjes, vazhdo aty ku e ke lënë me dritaret e hapura, aplikacionet dhe uebsajtet</translation>
 <translation id="7819605256207059717">Bllokuar nga organizata jote</translation>
 <translation id="7820400255539998692">Fshi <ph name="FILENAME" />, në mënyrë që të tjerët që e përdorin këtë pajisje të mos arrijnë t'i shikojnë fjalëkalimet e tua.</translation>
 <translation id="7820561748632634942">Të caktohen çelësa të tjerë?</translation>
@@ -10164,6 +10159,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Për më shumë ndihmë, vizito: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Përmbledhja e mirëseardhjes</translation>
 <translation id="8386091599636877289">Politika nuk u gjet.</translation>
 <translation id="8387361103813440603">Nuk lejohen të shikojnë vendndodhjen tënde</translation>
 <translation id="8387617938027387193">Verifiko që je ti</translation>

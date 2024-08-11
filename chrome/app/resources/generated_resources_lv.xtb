@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Kopēt parādāmo vārdu</translation>
 <translation id="1062407476771304334">Aizstāt</translation>
 <translation id="1062628064301375934">Palīdziet mums uzlabot konfidencialitāti tīmeklī</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Pārlūkā Chrome tika noņemtas atļaujas vienai vietnei}zero{Pārlūkā Chrome tika noņemtas atļaujas {NUM_SITES} vietnēm}one{Pārlūkā Chrome tika noņemtas atļaujas {NUM_SITES} vietnei}other{Pārlūkā Chrome tika noņemtas atļaujas {NUM_SITES} vietnēm}}</translation>
 <translation id="1066964438793906105">Pārbaudīt, vai ietverta ļaunprātīga programmatūra</translation>
 <translation id="1067661089446014701">Lai gādātu par papildu drošību, varat šifrēt paroles savā ierīcē, pirms tās tiek saglabātas jūsu Google kontā.</translation>
 <translation id="1067922213147265141">Citi Google pakalpojumi</translation>
@@ -4921,6 +4920,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4538792345715658285">Instalēts atbilstoši uzņēmuma politikai.</translation>
 <translation id="4540409690203718935">Nevar sasniegt Google paroļu pārvaldnieku. Pēc dažām minūtēm mēģiniet vēlreiz.</translation>
 <translation id="4541123282641193691">Nevarēja verificēt kontu. Mēģiniet vēlreiz vai restartējiet Chromebook datoru.</translation>
+<translation id="4541505619120536051">Vienmēr atvērt</translation>
 <translation id="4541662893742891060">Nevar izveidot savienojumu ar šo profilu. Lai saņemtu tehnisko atbalstu, sazinieties ar mobilo sakaru operatoru.</translation>
 <translation id="4541706525461326392">Notiek profila noņemšana. Tas var ilgt dažas minūtes.</translation>
 <translation id="4542520061254486227">Lasīt jūsu datus vietnēs <ph name="WEBSITE_1" /> un <ph name="WEBSITE_2" /></translation>
@@ -5255,7 +5255,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4794910597689955457">Vai pārvietot <ph name="NUM_OF_FILES" /> failu(-us) uz pakalpojumu<ph name="CLOUD_PROVIDER" />, lai tos atvērtu?</translation>
 <translation id="479536056609751218">Tikai tīmekļa lapa, HTML</translation>
 <translation id="4795670271446126525">Mutuļojoši viļņi</translation>
-<translation id="4796142525425001238">Vienmēr atjaunot</translation>
 <translation id="4797314204379834752">Izmantojiet ciļņu grupas uzdevumu kārtošanai, pirkumiem tiešsaistē un daudzām citām darbībām.</translation>
 <translation id="479863874072008121">Pārvaldīt ierīces</translation>
 <translation id="479989351350248267">meklēt</translation>
@@ -5834,7 +5833,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5210365745912300556">Aizvērt cilni</translation>
 <translation id="5213114823401215820">Atkārtoti atvērt aizvērtu grupu</translation>
 <translation id="5213481667492808996">Jūsu <ph name="NAME" /> datu pakalpojums ir gatavs lietošanai</translation>
-<translation id="5213658238771284310">Atjaunot sesiju palaišanas laikā</translation>
 <translation id="5213891612754844763">Rādīt starpniekservera iestatījumus</translation>
 <translation id="5214639857958972833">Tika izveidota grāmatzīme “<ph name="BOOKMARK_TITLE" />”.</translation>
 <translation id="5215450412607891876">Ieslēdziet paplašinātos drošības atjauninājumus</translation>
@@ -6208,7 +6206,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5488093641312826914">Vienums “<ph name="COPIED_ITEM_NAME" />” ir nokopēts</translation>
 <translation id="5488508217173274228">Sinhronizācijas šifrēšanas opcijas</translation>
 <translation id="5489077378642700219">Neatļaut paziņojumus no vietnes <ph name="WEBSITE" />, bet pajautāt vēlāk</translation>
-<translation id="5489435190927933437">Saglabātās paroles vietnei <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Adreses un citus datus</translation>
 <translation id="5490721031479690399">Atvienot Bluetooth ierīci</translation>
 <translation id="5490798133083738649">Atļauja sistēmai Linux piekļūt mikrofonam</translation>
@@ -6342,7 +6339,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5582839680698949063">Galvenā izvēlne</translation>
 <translation id="5583640892426849032">Atkāpšanās taustiņš</translation>
 <translation id="5584088138253955452">Vai saglabāt lietotājvārdu?</translation>
-<translation id="5584091888252706332">Sākot darbu</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Šī ir vispārīga informācija par jūsu ierīci un tās lietošanu (piemēram, par akumulatora uzlādes līmeni, sistēmas un lietotņu darbībām un kļūdām). Dati tiks izmantoti, lai uzlabotu Android darbību. Daļa vāktās informācijas arī palīdzēs Google lietotnēm un partneriem, piemēram, Android izstrādātājiem, uzlabot lietotnes un produktus.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Izslēdzot šo funkciju, netiks ietekmēta ierīces spēja nosūtīt informāciju, kas nepieciešama būtiskiem pakalpojumiem, piemēram, sistēmas atjauninājumiem un drošībai.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Īpašnieks var kontrolēt šo funkciju, pārejot uz sadaļu Iestatījumi &gt; Papildu &gt; Automātiski sūtīt diagnostikas un lietojuma datus Google serveriem.<ph name="END_PARAGRAPH3" />
@@ -9360,7 +9356,6 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7815680994978050279">Tika bloķēta bīstama lejupielāde</translation>
 <translation id="7817361223956157679">Ekrāna tastatūra vēl nedarbojas Linux lietotnēs.</translation>
 <translation id="7818135753970109980">Ir pievienots jauns motīvs (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Pēc restartēšanas turpiniet darbu no vietas, kur to pārtraucāt, lietotnēs, vietnēs un atvērtajos logos.</translation>
 <translation id="7819605256207059717">Lejupielādi bloķēja organizācija</translation>
 <translation id="7820400255539998692">Izdzēsiet failu <ph name="FILENAME" />, lai citi lietotāji, kuri izmanto šo ierīci, nevarētu skatīt jūsu paroles.</translation>
 <translation id="7820561748632634942">Vai piešķirt papildu slēdžus?</translation>
@@ -10169,6 +10164,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Papildu palīdzību skatiet vietnē g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Kopsavilkums sākumam</translation>
 <translation id="8386091599636877289">Politika netika atrasta.</translation>
 <translation id="8387361103813440603">Nedrīkst skatīt jūsu atrašanās vietu</translation>
 <translation id="8387617938027387193">Apstipriniet, ka tas esat jūs</translation>

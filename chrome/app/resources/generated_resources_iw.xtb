@@ -98,7 +98,6 @@
 <translation id="10619348099955377">העתקת השם המוצג</translation>
 <translation id="1062407476771304334">החלפה</translation>
 <translation id="1062628064301375934">רוצה לעזור לנו לשפר את הפרטיות באינטרנט?</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{‏‫Chrome הסיר את ההרשאות לאתר אחד}one{‏‫Chrome הסיר את ההרשאות ל-{NUM_SITES} אתרים}two{‏‫Chrome הסיר את ההרשאות ל-{NUM_SITES} אתרים}other{‏‫Chrome הסיר את ההרשאות ל-{NUM_SITES} אתרים}}</translation>
 <translation id="1066964438793906105">רצוי להפעיל סריקה לאיתור תוכנות זדוניות</translation>
 <translation id="1067661089446014701">‏כדי לשפר את הבטיחות, אפשר להצפין את הסיסמאות במכשיר שלך לפני שהן נשמרות בחשבון Google</translation>
 <translation id="1067922213147265141">‏שירותי Google אחרים</translation>
@@ -4934,6 +4933,7 @@
 <translation id="4538792345715658285">מותקן לפי מדיניות של ארגון.</translation>
 <translation id="4540409690203718935">‏לא ניתן להתחבר למנהל הסיסמאות של Google. אפשר לנסות שוב בעוד כמה דקות</translation>
 <translation id="4541123282641193691">‏לא ניתן היה לאמת את החשבון שלך. יש לנסות שוב או להפעיל מחדש את ה-Chromebook.</translation>
+<translation id="4541505619120536051">תמיד לפתוח</translation>
 <translation id="4541662893742891060">לא ניתן להתחבר לפרופיל הזה. עליך לפנות לספק לקבלת תמיכה טכנית.</translation>
 <translation id="4541706525461326392">הסרת הפרופיל מתבצעת. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="4542520061254486227">קריאת הנתונים שלך באתרים <ph name="WEBSITE_1" /> ו-<ph name="WEBSITE_2" /></translation>
@@ -5268,7 +5268,6 @@
 <translation id="4794910597689955457">להעביר <ph name="NUM_OF_FILES" /> קבצים אל <ph name="CLOUD_PROVIDER" /> כדי לפתוח אותם?</translation>
 <translation id="479536056609751218">‏דף אינטרנט, HTML בלבד</translation>
 <translation id="4795670271446126525">גלים מתנפצים</translation>
-<translation id="4796142525425001238">תמיד לשחזר</translation>
 <translation id="4797314204379834752">כדאי לנסות להשתמש בקבוצות של כרטיסיות כדי לארגן משימות, לקנות באינטרנט ועוד</translation>
 <translation id="479863874072008121">ניהול מכשירים</translation>
 <translation id="479989351350248267">Search</translation>
@@ -5847,7 +5846,6 @@
 <translation id="5210365745912300556">סגירת כרטיסייה</translation>
 <translation id="5213114823401215820">פתיחה מחדש של קבוצה שנסגרה</translation>
 <translation id="5213481667492808996">שירות הנתונים של '<ph name="NAME" />' מוכן לשימוש</translation>
-<translation id="5213658238771284310">שחזור הסשן במהלך ההפעלה</translation>
 <translation id="5213891612754844763">‏הצגת ההגדרות של שרת ה-proxy</translation>
 <translation id="5214639857958972833">הסימניה '<ph name="BOOKMARK_TITLE" />' נוצרה.</translation>
 <translation id="5215450412607891876">הפעלה של עדכוני האבטחה המורחבים</translation>
@@ -6145,6 +6143,7 @@
 <translation id="5435779377906857208">לאשר תמיד ל-<ph name="HOST" /> גישה למיקום</translation>
 <translation id="5436492226391861498">‏בהמתנה ל-Proxy Tunnel...</translation>
 <translation id="5436510242972373446">חיפוש ב-<ph name="SITE_NAME" />:</translation>
+<translation id="5438014818441491616">עכשיו החלון בצד <ph name="WINDOW_SIDE" /> ברוחב <ph name="WINDOW_SIZE_PERCENT" />, והחלונית בצד <ph name="PANE_SIDE" /> ברוחב <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5440425659852470030">סגירת החלונית הצדדית</translation>
 <translation id="544083962418256601">יצירת קיצורי דרך...</translation>
 <translation id="5441133529460183413">‏אפליקציית האינטרנט הותקנה דרך דפדפן Chrome</translation>
@@ -6221,7 +6220,6 @@
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' הועתק</translation>
 <translation id="5488508217173274228">אפשרויות הצפנת סנכרון</translation>
 <translation id="5489077378642700219">לאתר <ph name="WEBSITE" /> אין אישור לשלוח התראות, אבל יש לשאול בהמשך</translation>
-<translation id="5489435190927933437">סיסמאות שמורות בשביל <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">כתובות ועוד</translation>
 <translation id="5490721031479690399">‏ניתוק התקן Bluetooth</translation>
 <translation id="5490798133083738649">‏מתן הרשאה למערכת Linux לגשת למיקרופון שלך</translation>
@@ -6355,7 +6353,6 @@
 <translation id="5582839680698949063">התפריט הראשי</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">לשמור את שם המשתמש?</translation>
-<translation id="5584091888252706332">כשפותחים את הדפדפן</translation>
 <translation id="5584915726528712820">‏<ph name="BEGIN_PARAGRAPH1" />זהו מידע כללי לגבי המכשיר שלך ועל אופן השימוש שלך בו (כמו רמת טעינת הסוללה, פעילות במערכת ובאפליקציות ושגיאות). הנתונים ישמשו כדי לשפר את Android. כמו כן, חלק מהמידע שיצטבר יעזור ל-Google ולשותפיה, כמו מפתחי Android, לשפר את האפליקציות והמוצרים שלהם.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />כיבוי התכונה הזו לא משפיע על יכולת המכשיר לשלוח את המידע הנחוץ לשירותים חיוניים, כמו עדכוני מערכת ואבטחה.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />הבעלים יכולים לשלוט בתכונה הזו דרך 'הגדרות' &gt; 'מתקדם' &gt; 'שליחה אוטומטית של נתוני אבחון ושימוש אל Google'.<ph name="END_PARAGRAPH3" />
@@ -8552,6 +8549,7 @@
 <translation id="722408235435815623">{MEMBERS,plural, =1{אתר אחד בקבוצה של <ph name="FPS_OWNER" />}one{{MEMBERS} אתרים בקבוצה של <ph name="FPS_OWNER" />}two{{MEMBERS} אתרים בקבוצה של <ph name="FPS_OWNER" />}other{{MEMBERS} אתרים בקבוצה של <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">‏שימוש ב-Windows Hello בזמן מילוי סיסמאות</translation>
 <translation id="7225179976675429563">חסר סוג רשת</translation>
+<translation id="7227235818314667565">ניהול השיתוף</translation>
 <translation id="7227458944009118910">האפליקציות המפורטות בהמשך גם יכולות לטפל בקישורים מסוג פרוטוקול. אפליקציות אחרות יבקשו הרשאה.</translation>
 <translation id="7228056665272655255">כדי להגדיר טביעת אצבע, על הילד או הילדה לגעת בחיישן טביעות האצבע שבפינה הימנית העליונה של המקלדת. נתוני טביעות האצבע של הילד או הילדה נשמרים באופן מאובטח ואף פעם לא נשלחים ממכשיר <ph name="DEVICE_TYPE" /> הזה.</translation>
 <translation id="7228523857728654909">נעילת מסך וכניסה</translation>
@@ -8600,6 +8598,7 @@
 <translation id="7258192266780953209">טרנספורמציות</translation>
 <translation id="7258225044283673131">האפליקציה לא מגיבה. כדי לסגור את האפליקציה, יש לבחור באפשרות "אילוץ סגירה".</translation>
 <translation id="7260186537988033909">הרישום של מכשיר השילוט והקיוסק הושלם</translation>
+<translation id="7261217796641151584">שיתוף קבוצה</translation>
 <translation id="7261612856573623172">קול ברירת המחדל של המרת טקסט לדיבור</translation>
 <translation id="7262004276116528033">שירות הכניסה הזה מתארח ב-<ph name="SAML_DOMAIN" />.</translation>
 <translation id="7264695323040866038">להשתמש תמיד באפליקציה <ph name="APP" /> לפתיחה של קישורים נתמכים באינטרנט?</translation>
@@ -9374,7 +9373,6 @@
 <translation id="7815680994978050279">הורדה מסוכנת נחסמה</translation>
 <translation id="7817361223956157679">‏המקלדת שמופיעה במסך לא עובדת עדיין באפליקציות Linux</translation>
 <translation id="7818135753970109980">עיצוב חדש נוסף (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">אחרי ההפעלה מחדש, אפשר להמשיך מהמקום שבו הפסקת באפליקציות, באתרים ובחלונות פתוחים</translation>
 <translation id="7819605256207059717">נחסם על ידי הארגון שלך</translation>
 <translation id="7820400255539998692">יש למחוק את <ph name="FILENAME" /> כדי שמשתמשים אחרים במכשיר לא יוכלו לראות את הסיסמאות שלך</translation>
 <translation id="7820561748632634942">להקצות עוד מתגים?</translation>
@@ -10185,6 +10183,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />עזרה נוספת זמינה בכתובת: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">איפה היינו?</translation>
 <translation id="8386091599636877289">המדיניות לא נמצאה.</translation>
 <translation id="8387361103813440603">לא מורשים לראות את המיקום</translation>
 <translation id="8387617938027387193">אימות הזהות שלך</translation>
@@ -10538,6 +10537,7 @@
 <translation id="8656888282555543604">הפעלת רישום ברייל ביומן</translation>
 <translation id="8657393004602556571">רוצה למחוק את המשוב?</translation>
 <translation id="8657542881463614516">אפשר להשתמש בתנועת החלקה כדי לעבור בין דפים</translation>
+<translation id="865936634714975126">‏צריך להוסיף פרמטר שאילתה בכתובת ה-URL כדי לבחור סוגים של טעינת דף. לדוגמה: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">אנשי קשר ל<ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">החלון הועבר למטה</translation>
 <translation id="8661290697478713397">פתיחת הקישור בחלון &amp;אנונימי</translation>

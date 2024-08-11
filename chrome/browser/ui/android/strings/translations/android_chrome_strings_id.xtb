@@ -1583,7 +1583,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> download dipulihkan</translation>
 <translation id="8368001212524806591">Pantau harga</translation>
 <translation id="8378850197701296741">Anda memiliki bookmark, histori, dan setelan lain dari <ph name="FROM_ACCOUNT" />.</translation>
-<translation id="8382640928718131148">Tab yang tidak Anda gunakan selama <ph name="DAYS_INACTIVE" /> hari akan dipindahkan ke sini dan ditutup setelah <ph name="DAYS_ARCHIVED" /> hari. Anda dapat mengubahnya kapan saja di <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8387617938027387193">Verifikasi diri Anda</translation>
 <translation id="8393700583063109961">Kirim pesan</translation>
 <translation id="8402673309244746971">Buka feed Mengikuti</translation>

@@ -158,6 +158,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1270328905573953738">Pemindahan &amp; Penempatan Semula</translation>
 <translation id="1270502636509132238">Kaedah Pengambilan</translation>
 <translation id="1273592791152866347">Penjejakan harga dimatikan</translation>
+<translation id="1277711244058668002">Butang menyukai, tekan Enter untuk menyerahkan maklum balas yang menunjukkan bahawa anda menyukai cadangan ini</translation>
 <translation id="127777513559587977">Rancangan Bual TV</translation>
 <translation id="1281476433249504884">Petak 1</translation>
 <translation id="1281536351321444151">Untuk membuat autolengkap IBAN ini pada masa hadapan, simpan maklumat ini dalam Google Account anda</translation>
@@ -664,6 +665,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2188375229972301266">Berbilang tebukan bawah</translation>
 <translation id="2194856509914051091">Perkara yang perlu dipertimbangkan</translation>
 <translation id="2197398642355049178">Topik anda</translation>
+<translation id="2200678913752027654">Butang tidak menyukai, tekan Enter untuk membuka borang dan menyerahkan maklum balas terperinci tentang sebab anda tidak menyukai cadangan ini</translation>
 <translation id="2202627062836089804">bahagian belakang kad anda</translation>
 <translation id="2204482073374652408">Kemaskinian selesai!</translation>
 <translation id="2207770355672215546">Sentiasa benarkan, dengan sebarang kad</translation>
@@ -2587,6 +2589,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5887687176710214216">Terakhir dilawati semalam</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
 <translation id="5895187275912066135">Dikeluarkan Pada</translation>
+<translation id="5898767305816764989">Butang menyukai, tekan Enter untuk menyerahkan maklum balas yang menunjukkan bahawa anda menyukai, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5903264686717710770">Tajuk:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (disegerakkan)</translation>
@@ -3319,6 +3322,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 Butiran tambahan:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Pentadbir anda berkata: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">Butang tidak menyukai, tekan Enter untuk membuka borang dan menyerahkan maklum balas terperinci tentang sebab anda tidak menyukai, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Dulang Belakang</translation>
 <translation id="7257453341537973799">Sumber &amp; Perancangan Kerjaya</translation>
 <translation id="725866823122871198">Sambungan peribadi ke <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tidak boleh diwujudkan kerana tarikh dan masa komputer anda (<ph name="DATE_AND_TIME" />) tidak betul.</translation>

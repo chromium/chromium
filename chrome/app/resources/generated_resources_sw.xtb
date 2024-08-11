@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Nakili jina litakaloonyeshwa</translation>
 <translation id="1062407476771304334">Badilisha</translation>
 <translation id="1062628064301375934">Tusaidie kuunda wavuti wa faragha zaidi</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome imeondoa ruhusa za tovuti 1}other{Chrome imeondoa ruhusa za tovuti {NUM_SITES}}}</translation>
 <translation id="1066964438793906105">Tafuta programu hasidi</translation>
 <translation id="1067661089446014701">Ili kuimarisha usalama, unaweza kusimba manenosiri kwenye kifaa chako kabla hayajahifadhiwa kwenye Akaunti yako ya Google</translation>
 <translation id="1067922213147265141">Huduma zingine za Google</translation>
@@ -4933,6 +4932,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4538792345715658285">Imesanidiwa na sera ya biashara.</translation>
 <translation id="4540409690203718935">Imeshindwa kufikia Kidhibiti cha Manenosiri cha Google. Jaribu tena baada ya dakika chache</translation>
 <translation id="4541123282641193691">Imeshindwa kuthibitisha akaunti yako. Tafadhali jaribu tena au zima kisha uwashe Chromebook yako.</translation>
+<translation id="4541505619120536051">Fungua kila wakati</translation>
 <translation id="4541662893742891060">Imeshindwa kuunganisha kwenye wasifu huu. Wasiliana na mtoa huduma wako ili upate usaidizi wa kiufundi.</translation>
 <translation id="4541706525461326392">Inaondoa wasifu. Hatua hii inaweza kuchukua dakika kadhaa.</translation>
 <translation id="4542520061254486227">Soma data yako kwenye <ph name="WEBSITE_1" /> na <ph name="WEBSITE_2" /></translation>
@@ -5267,7 +5267,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4794910597689955457">Hamisha faili <ph name="NUM_OF_FILES" /> kwenye <ph name="CLOUD_PROVIDER" /> ili kufungua?</translation>
 <translation id="479536056609751218">Ukurasa wavuti, HTML Pekee</translation>
 <translation id="4795670271446126525">Mawimbi yanayogongana</translation>
-<translation id="4796142525425001238">Rejesha kila wakati</translation>
 <translation id="4797314204379834752">Jaribu kutumia vikundi vya vichupo ili uratibu majukumu, ufanye ununuzi wa mtandaoni na zaidi</translation>
 <translation id="479863874072008121">Dhibiti vifaa</translation>
 <translation id="479989351350248267">tafuta</translation>
@@ -5846,7 +5845,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5210365745912300556">Funga kichupo</translation>
 <translation id="5213114823401215820">Fungua tena kikundi kilichofungwa</translation>
 <translation id="5213481667492808996">Huduma yako ya data ya '<ph name="NAME" />' iko tayari kutumiwa</translation>
-<translation id="5213658238771284310">Kurejesha kipindi unapowasha</translation>
 <translation id="5213891612754844763">Onyesha mipangilio ya seva mbadala</translation>
 <translation id="5214639857958972833">Umeweka alamisho la '<ph name="BOOKMARK_TITLE" />'.</translation>
 <translation id="5215450412607891876">Washa mipangilio ya kina ya usalama</translation>
@@ -6221,7 +6219,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' imenakiliwa</translation>
 <translation id="5488508217173274228">Sawazisha chaguo za usimbaji</translation>
 <translation id="5489077378642700219">Zuia arifa za <ph name="WEBSITE" />, lakini niulize baadaye</translation>
-<translation id="5489435190927933437">Manenosiri yaliyohifadhiwa ya <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Anwani na Zaidi</translation>
 <translation id="5490721031479690399">Ondoa kifaa cha Bluetooth</translation>
 <translation id="5490798133083738649">Ruhusu Linux ifikie maikrofoni yako</translation>
@@ -6355,7 +6352,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5582839680698949063">Menyu kuu</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Ungependa kuhifadhi jina la mtumiaji?</translation>
-<translation id="5584091888252706332">Wakati wa kuanza</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Haya ni maelezo ya jumla kuhusu kifaa chako na jinsi unavyokitumia (kama vile kiasi cha chaji ya betri, shughuli za mfumo na programu na hitilafu). Data hii itatumika kuboresha Android na baadhi ya maelezo yaliyojumlishwa yatasaidia programu na washirika wa Google kama vile wasanidi programu wa Android, kuboresha huduma na programu zao.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Hatua ya kuzima kipengele hiki haitaathiri uwezo wa kifaa chako kutuma maelezo yanayotakiwa katika huduma za msingi kama vile usalama na masasisho ya mfumo.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Mmiliki anaweza kudhibiti kipengele hiki katika Mipangilio &gt; Mipangilio ya Kina &gt; Tuma kiotomatiki data ya uchunguzi na matumizi kwa Google.<ph name="END_PARAGRAPH3" />
@@ -9378,7 +9374,6 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7815680994978050279">Upakuaji hatari umezuiwa</translation>
 <translation id="7817361223956157679">Kibodi ya skrini bado haifanyi kazi kwenye programu za Linux</translation>
 <translation id="7818135753970109980">Mandhari mapya yameongezwa (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Baada ya kuzima kisha kuwasha, endelea ulipoachia kwenye programu, tovuti na madirisha uliyofungua</translation>
 <translation id="7819605256207059717">Imezuiwa na shirika lako</translation>
 <translation id="7820400255539998692">Futa <ph name="FILENAME" />, ili watu wengine wanaotumia kifaa hiki wasiweze kuona manenosiri yako</translation>
 <translation id="7820561748632634942">Ungependa kukabidhi swichi za ziada?</translation>
@@ -10188,6 +10183,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Kwa usaidizi zaidi, tembelea: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Muhtasari wa Makaribisho</translation>
 <translation id="8386091599636877289">Imeshindwa kupata sera.</translation>
 <translation id="8387361103813440603">Zisizoruhusiwa kuona mahali ulipo</translation>
 <translation id="8387617938027387193">Thibitisha kuwa ni wewe</translation>

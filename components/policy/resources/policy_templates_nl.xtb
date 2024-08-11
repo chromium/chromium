@@ -4015,27 +4015,6 @@ Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor u
 <translation id="4101282687722389021">UTC-tijdstempel voor de laatste tijd waarop dit item is geüpdatet. Gestuurd als tekenreeks omdat het tijdstempel niet past in een geheel getal.</translation>
 <translation id="4101826711886952606">De instellingen voor Home/End gebruiken de sneltoets met de functietoets Zoeken</translation>
 <translation id="4102347680024644994">Rapporteren over XDR-gebeurtenissen (Extended Detection and Response)</translation>
-<translation id="4104303092334469130">Hiermee stel je een lijst in met regels voor gegevensbeheer om datalekken te voorkomen.
-
-      Elke regel bestaat uit het volgende:
-- Voorwaardevelden die die regel activeren. Een regel wordt alleen geactiveerd als een gebruikersactie overeenkomt met alle ingevulde velden in de velden <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> en <ph name="DATA_CONTROLS_NOT" />. Voor subvelden van een lijst hoeft er maar één item overeen te komen. Zo hoeft er maar één URL-patroon overeen te komen om de regel te activeren.
-      - Een lijst met beperkingen die moeten worden toegepast. Afhankelijk van de beperking zijn misschien alleen <ph name="DATA_CONTROLS_SOURCES" />- of <ph name="DATA_CONTROLS_DESTINATIONS" />-voorwaarden beschikbaar.
-
-      Regels kunnen om deze redenen worden toegevoegd:
-- Bepalen welke klembordgegevens mogen worden gedeeld tussen de bronnen en de bestemmingen.
-      - Bepalen of screenshots worden geblokkeerd op basis van de brontabbladen.
-
-      Als het beleid <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> is ingesteld op Waar, worden geactiveerde regels gemeld aan de beheerder.
-      Het beperkingsniveau kan worden ingesteld op BLOCK, WARN of REPORT.
-      - Als het beperkingsniveau is ingesteld op BLOCK, is de actie niet toegestaan.
-      - Als het beperkingsniveau is ingesteld op WARN, krijgt de gebruiker een waarschuwing en kan die ervoor kiezen door te gaan met de actie of deze te annuleren.
-      - Als het beperkingsniveau is ingesteld op REPORT, wordt de gebruikersactie niet onderbroken maar wordt er een melding gestuurd als het beleid <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> aanstaat.
-
-      Opmerkingen:
-- Gebruik de volgende indeling voor de URL-patronen (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-- Zie ook het beleid <ph name="DATA_LEAK_PREVENTION_RULES_LIST" /> voor regels om datalekken te voorkomen die specifiek zijn voor <ph name="PRODUCT_OS_NAME" />.
-
-      Als je het beleid niet instelt, worden er geen beperkingen toegepast.</translation>
 <translation id="4105989332710272578">Handhaving van Certificaattransparantie voor een lijst met URL's uitzetten</translation>
 <translation id="410740968939768919">Bepaal of Manifest v2-extensies kunnen worden gebruikt op het <ph name="PRODUCT_OS_NAME" />-inlogscherm.
 
@@ -6495,15 +6474,6 @@ Dit beleid is beëindigd vanaf M124.</translation>
       Als je het beleid niet instelt (als dit wordt ondersteund op het apparaat), is de standaard batterijoplaadmodus van toepassing en kunnen gebruikers dit niet wijzigen.
 
       Opmerking: Als de aangepaste batterijoplaadmodus is geselecteerd, moeten <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> en <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> ook worden opgegeven.</translation>
-<translation id="60655674079349516">Hiermee stel je een lijst met typen browsergegevens in die moeten worden verwijderd als de gebruiker alle browservensters sluit.
-
-Waarschuwing: Als je dit beleid instelt, kan dit gevolgen hebben voor lokale persoonsgegevens en kunnen deze definitief worden verwijderd. We raden je aan de instellingen te testen voordat je ze implementeert om te voorkomen dat persoonsgegevens per ongeluk worden verwijderd.
-
-De beschikbare gegevenstypen zijn browsegeschiedenis (<ph name="DATA_TYPE_BROWSING_HISTORY" />), downloadgeschiedenis (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cachegeheugen (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), automatisch invullen (<ph name="DATA_TYPE_AUTOFILL" />), wachtwoorden (<ph name="DATA_TYPE_PASSWORD" />), site-instellingen (<ph name="DATA_TYPE_SITE_SETTINGS" />) en gegevens van gehoste apps (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Dit beleid krijgt geen voorrang op <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-
-Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> worden ingesteld op Waar. Vanaf Chrome 115 geldt dat als je dit beleid instelt, synchronisatie voor de betreffende gegevenstypen wordt uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.
-
-Als <ph name="PRODUCT_NAME" /> niet correct wordt afgesloten (bijvoorbeeld als de browser of het besturingssysteem crasht), worden de browsegegevens gewist wanneer het profiel weer wordt geladen.</translation>
 <translation id="6066761914755798079">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> instelt, wordt de URL gespecificeerd van de zoekmachine die wordt gebruikt om zoeksuggesties te bieden. De URL moet de tekenreeks <ph name="SEARCH_TERM_MARKER" /> bevatten. Deze tekenreeks wordt tijdens de zoekopdracht vervangen door de zoektermen van de gebruiker.
 
       Je kunt de zoek-URL van Google opgeven als: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>

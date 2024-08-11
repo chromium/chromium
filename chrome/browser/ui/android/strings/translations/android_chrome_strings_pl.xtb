@@ -1583,7 +1583,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="835847953965672673">Przywrócone pliki: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="8368001212524806591">Monitorowanie cen</translation>
 <translation id="8378850197701296741">Masz zakładki, historię i inne ustawienia z konta <ph name="FROM_ACCOUNT" />.</translation>
-<translation id="8382640928718131148">Karty, których nie używasz przez <ph name="DAYS_INACTIVE" /> dni, są tutaj przenoszone i zamykane po <ph name="DAYS_ARCHIVED" /> dniach. Możesz to zmienić w dowolnym momencie, klikając <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8387617938027387193">Potwierdź, że to Ty</translation>
 <translation id="8393700583063109961">Wyślij wiadomość</translation>
 <translation id="8402673309244746971">Przejdź do obserwowanych</translation>

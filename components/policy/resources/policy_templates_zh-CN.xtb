@@ -4005,26 +4005,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="4101282687722389021">时间戳（采用世界协调时间），用于表明此条目的上次更新时间。将以字符串的形式发送，因为该时间戳不能表示为整数</translation>
 <translation id="4101826711886952606">Home/End 设置使用包含搜索辅助键的快捷键</translation>
 <translation id="4102347680024644994">报告扩展检测和响应 (XDR) 事件</translation>
-<translation id="4104303092334469130">配置一系列数据控制规则，防止数据泄露。
-
-      每个规则均包含以下内容：- 触发该规则的条件字段。只有当某项用户操作与其 <ph name="DATA_CONTROLS_SOURCES" />、<ph name="DATA_CONTROLS_DESTINATIONS" />、<ph name="DATA_CONTROLS_AND" />、<ph name="DATA_CONTROLS_OR" /> 和 <ph name="DATA_CONTROLS_NOT" /> 字段中填充的所有字段均匹配时，才会触发规则。对于列表子字段，只需匹配 1 个条目，例如只需匹配 1 个网址格式即可触发规则。
-      - 要应用的限制条件列表。可能只有<ph name="DATA_CONTROLS_SOURCES" />或<ph name="DATA_CONTROLS_DESTINATIONS" />条件可用，具体取决于限制。
-
-      您可通过添加规则来实现以下目的：
-      - 控制在来源和目的地之间共享的剪贴板数据。
-      - 根据来源标签页控制屏蔽屏幕截图。
-
-      如果 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 政策设为 True，系统会将触发的规则报告给管理员。
-      限制级别可设为 BLOCK、WARN 或 REPORT。
-      - 如果限制级别设为 BLOCK，系统将不允许执行该操作。
-      - 如果限制级别设为 WARN，用户将收到警告消息，但可选择是继续还是取消该操作。
-      - 如果限制级别设为 REPORT，用户操作将不会中断，但如果启用了 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 政策，系统会发送报告。
-
-      注意：
-      - 所列网址必须采用 https://support.google.com/chrome/a?p=url_blocklist_filter_format 规定的格式。
-      - 对于专门针对 <ph name="PRODUCT_OS_NAME" /> 的数据泄露防范规则，另请参阅 <ph name="DATA_LEAK_PREVENTION_RULES_LIST" /> 政策。
-
-      如果未设置此政策，系统将不会应用任何限制。</translation>
 <translation id="4105989332710272578">对于指定的一系列网址，不强制要求必须符合证书透明度政策</translation>
 <translation id="410740968939768919">控制可否在 <ph name="PRODUCT_OS_NAME" /> 登录页面上使用 Manifest V2 扩展程序。
 
@@ -6463,15 +6443,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果您未设置此政策，系统会采用标准电池充电模式（如果相应设备支持的话），而且用户无法更改相关设置。
 
       注意：如果您选择了自定义电池充电模式，则也要指定 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> 和 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />。</translation>
-<translation id="60655674079349516">以列表形式配置，系统应在用户关闭所有浏览器窗口时删除哪些类型的浏览数据。
-
-警告：设置此政策可能会影响并永久移除本地个人数据。建议您在部署之前测试设置，以免意外删除个人数据。
-
-可用的数据类型包括浏览记录 (<ph name="DATA_TYPE_BROWSING_HISTORY" />)、下载记录 (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />)、Cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />)、缓存 <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、自动填充 (<ph name="DATA_TYPE_AUTOFILL" />)、密码 (<ph name="DATA_TYPE_PASSWORD" />)、网站设置 (<ph name="DATA_TYPE_SITE_SETTINGS" />) 和托管的应用数据 (<ph name="DATA_TYPE_HOSTED_APP_DATA" />)。此政策不会优先于 <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />。
-
-截至 Chrome 114，此政策要求将 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策设为 true。从 Chrome 115 开始，如果既未通过设置 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策停用“<ph name="CHROME_SYNC_NAME" />”，也未停用 <ph name="BROWSER_SIGNIN_POLICY_NAME" />，设置此政策会为相应的数据类型停用同步功能。
-
-如果用户未彻底退出 <ph name="PRODUCT_NAME" />（例如发生浏览器或操作系统崩溃的情况），系统将在下次加载个人资料时清除浏览数据。</translation>
 <translation id="6066761914755798079">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> 来指定用于提供搜索建议的搜索引擎网址。该网址应包含字符串<ph name="SEARCH_TERM_MARKER" />；当用户执行查询时，系统会将此字符串替换成用户的搜索字词。
 
       您可按以下格式指定 Google 的搜索网址：<ph name="GOOGLE_SUGGEST_SEARCH_URL" />。</translation>

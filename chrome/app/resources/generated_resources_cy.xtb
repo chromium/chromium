@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Copïo enw arddangos</translation>
 <translation id="1062407476771304334">Disodli</translation>
 <translation id="1062628064301375934">Helpwch ni i ddatblygu gwe fwy preifat</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Tynnodd Chrome ganiatadau ar gyfer 1 wefan}zero{Tynnodd Chrome ganiatadau ar gyfer {NUM_SITES} gwefan}two{Tynnodd Chrome ganiatadau ar gyfer {NUM_SITES} wefan}few{Tynnodd Chrome ganiatadau ar gyfer {NUM_SITES} gwefan}many{Tynnodd Chrome ganiatadau ar gyfer {NUM_SITES} gwefan}other{Tynnodd Chrome ganiatadau ar gyfer {NUM_SITES} gwefan}}</translation>
 <translation id="1066964438793906105">Sganio am ddrwgwedd</translation>
 <translation id="1067661089446014701">Er mwyn diogelwch ychwanegol, gallwch amgryptio cyfrineiriau ar eich dyfais cyn iddynt gael eu cadw yn eich Cyfrif Google</translation>
 <translation id="1067922213147265141">Gwasanaethau Google eraill</translation>
@@ -4938,6 +4937,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4538792345715658285">Wedi'i osod gan bolisi sefydliad.</translation>
 <translation id="4540409690203718935">Methu â chyrraedd Rheolwr Cyfrineiriau Google. Rhowch gynnig arall arni ymhen ychydig funudau</translation>
 <translation id="4541123282641193691">Methu â dilysu'ch cyfrif. Rhowch gynnig arall arni neu ailgychwynnwch eich Chromebook.</translation>
+<translation id="4541505619120536051">Bob amser ar agor</translation>
 <translation id="4541662893742891060">Methu â chysylltu â'r proffil hwn. I gael cymorth technegol, cysylltwch â'ch cludwr.</translation>
 <translation id="4541706525461326392">Wrthi'n tynnu'r proffil. Gallai hyn gymryd ychydig funudau.</translation>
 <translation id="4542520061254486227">Darllen eich data ar <ph name="WEBSITE_1" /> a <ph name="WEBSITE_2" /></translation>
@@ -5272,7 +5272,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4794910597689955457">Symud <ph name="NUM_OF_FILES" /> ffeil i <ph name="CLOUD_PROVIDER" /> i'w hagor?</translation>
 <translation id="479536056609751218">Tudalen we, HTML yn Unig</translation>
 <translation id="4795670271446126525">Tonnau'n torri</translation>
-<translation id="4796142525425001238">Adfer bob amser</translation>
 <translation id="4797314204379834752">Rhowch gynnig ar ddefnyddio grwpiau tabiau i drefnu tasgau, ar gyfer siopa ar-lein a rhagor</translation>
 <translation id="479863874072008121">Rheoli dyfeisiau</translation>
 <translation id="479989351350248267">chwilio</translation>
@@ -5851,7 +5850,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5210365745912300556">Cau'r tab</translation>
 <translation id="5213114823401215820">Ailagor grŵp sydd wedi'i gau</translation>
 <translation id="5213481667492808996">Mae eich gwasanaeth data '<ph name="NAME" />' bellach yn barod i'w ddefnyddio</translation>
-<translation id="5213658238771284310">Adfer sesiwn wrth gychwyn</translation>
 <translation id="5213891612754844763">Dangos y gosodiadau dirprwyol</translation>
 <translation id="5214639857958972833">Nod tudalen '<ph name="BOOKMARK_TITLE" />' wedi'i greu.</translation>
 <translation id="5215450412607891876">Troi diweddariadau diogelwch estynedig ymlaen</translation>
@@ -6226,7 +6224,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5488093641312826914">Copïwyd '<ph name="COPIED_ITEM_NAME" />'</translation>
 <translation id="5488508217173274228">Dewisiadau amgryptio cysoni</translation>
 <translation id="5489077378642700219">Peidio â chaniatáu hysbysiadau gan <ph name="WEBSITE" /> ond gofyn yn nes ymlaen</translation>
-<translation id="5489435190927933437">Mae cyfrineiriau wedi'u cadw ar gyfer <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Cyfeiriadau a Rhagor</translation>
 <translation id="5490721031479690399">Datgysylltu dyfais Bluetooth</translation>
 <translation id="5490798133083738649">Caniatáu i Linux gael mynediad at eich meicroffon</translation>
@@ -6360,7 +6357,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5582839680698949063">Prif ddewislen</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Cadw'r enw defnyddiwr?</translation>
-<translation id="5584091888252706332">Wrth Gychwyn</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Dyma wybodaeth gyffredinol am eich dyfais a sut rydych yn ei defnyddio (megis lefel batri, gweithgarwch system ac apiau, a gwallau). Defnyddir y data i wella Android, a bydd rhywfaint o wybodaeth gyfun hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android, i wella eu hapiau a'u cynhyrchion.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Nid yw diffodd y nodwedd hon yn effeithio ar allu eich dyfais i anfon y wybodaeth sydd ei hangen ar gyfer gwasanaethau hanfodol megis diweddariadau system a diogelwch.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Gall y perchennog reoli'r nodwedd hon o Gosodiadau &gt; Uwch &gt; Anfon data diagnostig a defnydd at Google yn awtomatig.<ph name="END_PARAGRAPH3" />
@@ -9386,7 +9382,6 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7815680994978050279">Rhwystrwyd lawrlwythiad peryglus</translation>
 <translation id="7817361223956157679">Nid yw'r bysellfwrdd ar y sgrîn yn gweithio mewn apiau Linux eto</translation>
 <translation id="7818135753970109980">Ychwanegwyd Thema Newydd (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Ar ôl ailddechrau, gallwch barhau lle roeddech chi ddiwethaf gydag apiau, gwefannau, a ffenestri agored</translation>
 <translation id="7819605256207059717">Rhwystrwyd gan eich sefydliad</translation>
 <translation id="7820400255539998692">Dilëwch <ph name="FILENAME" />, fel na all eraill sy'n defnyddio'r ddyfais hon weld eich cyfrineiriau</translation>
 <translation id="7820561748632634942">Aseinio switchis ychwanegol?</translation>
@@ -10195,6 +10190,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Am ragor o help, ewch i: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Crynodeb Croeso</translation>
 <translation id="8386091599636877289">Ni chanfuwyd y polisi.</translation>
 <translation id="8387361103813440603">Ni chaniateir i weld eich lleoliad</translation>
 <translation id="8387617938027387193">Cadarnhewch mai chi sydd yno</translation>

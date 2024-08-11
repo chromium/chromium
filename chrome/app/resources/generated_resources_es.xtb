@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Copiar nombre visible</translation>
 <translation id="1062407476771304334">Reemplazar</translation>
 <translation id="1062628064301375934">Ayúdanos a crear una Web más privada</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome ha quitado los permisos de 1 sitio}other{Chrome ha quitado los permisos de {NUM_SITES} sitios}}</translation>
 <translation id="1066964438793906105">Buscar malware</translation>
 <translation id="1067661089446014701">Para mayor seguridad, puedes cifrar las contraseñas en tu dispositivo antes de que se guarden en tu cuenta de Google.</translation>
 <translation id="1067922213147265141">Otros servicios de Google</translation>
@@ -4921,6 +4920,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4538792345715658285">Instalada por una política empresarial</translation>
 <translation id="4540409690203718935">No se puede acceder al Gestor de contraseñas de Google. Vuelve a intentarlo dentro de unos minutos.</translation>
 <translation id="4541123282641193691">No se ha podido verificar tu cuenta. Vuelve a intentarlo o reinicia el Chromebook.</translation>
+<translation id="4541505619120536051">Abrir siempre</translation>
 <translation id="4541662893742891060">No se ha podido conectar a este perfil. Para obtener asistencia técnica, ponte en contacto con tu operador.</translation>
 <translation id="4541706525461326392">Quitando perfil. Este proceso puede durar unos minutos.</translation>
 <translation id="4542520061254486227">Leer tus datos en <ph name="WEBSITE_1" /> y en <ph name="WEBSITE_2" /></translation>
@@ -5255,7 +5255,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4794910597689955457">¿Mover <ph name="NUM_OF_FILES" /> archivos a <ph name="CLOUD_PROVIDER" /> para abrirlos?</translation>
 <translation id="479536056609751218">Página web (solo HTML)</translation>
 <translation id="4795670271446126525">Olas rompiendo</translation>
-<translation id="4796142525425001238">Restaurar siempre</translation>
 <translation id="4797314204379834752">Prueba a usar grupos de pestañas para organizar tareas, comprar online y más</translation>
 <translation id="479863874072008121">Gestionar dispositivos</translation>
 <translation id="479989351350248267">buscar</translation>
@@ -5833,7 +5832,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5210365745912300556">Cerrar pestaña</translation>
 <translation id="5213114823401215820">Volver a abrir grupo cerrado</translation>
 <translation id="5213481667492808996">Ya puedes usar tu servicio de datos de "<ph name="NAME" />"</translation>
-<translation id="5213658238771284310">Restaurar la sesión al iniciar</translation>
 <translation id="5213891612754844763">Mostrar configuración de proxy</translation>
 <translation id="5214639857958972833">Marcador "<ph name="BOOKMARK_TITLE" />" creado.</translation>
 <translation id="5215450412607891876">Activa las actualizaciones de seguridad ampliadas</translation>
@@ -6207,7 +6205,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5488093641312826914">Se ha copiado <ph name="COPIED_ITEM_NAME" /></translation>
 <translation id="5488508217173274228">Opciones de cifrado de sincronización</translation>
 <translation id="5489077378642700219">No permitir las notificaciones de <ph name="WEBSITE" />, pero preguntar más adelante</translation>
-<translation id="5489435190927933437">Contraseñas guardadas de <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Direcciones y más</translation>
 <translation id="5490721031479690399">Desconectar dispositivo Bluetooth</translation>
 <translation id="5490798133083738649">Permitir a Linux acceder a tu micrófono</translation>
@@ -6341,7 +6338,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5582839680698949063">Menú principal</translation>
 <translation id="5583640892426849032">Tecla de retroceso</translation>
 <translation id="5584088138253955452">¿Quieres guardar el nombre de usuario?</translation>
-<translation id="5584091888252706332">Al inicio</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Estos datos incluyen información general sobre tu dispositivo y sobre cómo lo usas (como el nivel de batería, la actividad de las aplicaciones y del sistema, y los errores). Sirven para mejorar Android, y parte de los datos agregados también ayudan a las aplicaciones y partners de Google, como los desarrolladores de Android, a mejorar sus productos y aplicaciones.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Si la opción se desactiva, esto no afectará a la capacidad del dispositivo de enviar la información necesaria para recibir servicios esenciales, como actualizaciones del sistema y funciones de seguridad.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />El propietario puede controlar esta función en Ajustes &gt; Configuración avanzada &gt; Enviar automáticamente los datos de uso y diagnóstico a Google.<ph name="END_PARAGRAPH3" />
@@ -9360,7 +9356,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7815680994978050279">Descarga peligrosa bloqueada</translation>
 <translation id="7817361223956157679">El teclado en pantalla aún no funciona en las aplicaciones de Linux</translation>
 <translation id="7818135753970109980">Nuevo tema añadido (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Después de reiniciar, sigue usando las aplicaciones, los sitios web y las ventanas abiertas donde los dejaste</translation>
 <translation id="7819605256207059717">Bloqueado por tu organización</translation>
 <translation id="7820400255539998692">Elimina <ph name="FILENAME" /> para que otras personas que usen este dispositivo no puedan ver tus contraseñas</translation>
 <translation id="7820561748632634942">¿Asignar más interruptores?</translation>
@@ -10170,6 +10165,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para obtener más ayuda, visita g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Hola de nuevo</translation>
 <translation id="8386091599636877289">No se ha encontrado la política.</translation>
 <translation id="8387361103813440603">No puede ver tu ubicación</translation>
 <translation id="8387617938027387193">Verifica que eres tú</translation>

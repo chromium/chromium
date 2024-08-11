@@ -3925,27 +3925,6 @@
 <translation id="4101282687722389021">這個項目上次進行更新的時間戳記 (世界標準時間)。時間戳記並非整數值，因此會以字串的形式傳送</translation>
 <translation id="4101826711886952606">Home/End 設定採用含有搜尋輔助鍵的快速鍵</translation>
 <translation id="4102347680024644994">回報擴展式偵測及回應 (XDR) 事件</translation>
-<translation id="4104303092334469130">設定資料控管規則清單，避免資料外洩。
-
-      每項規則都包含：
-      - 觸發該規則的條件欄位。只有使用者動作與「<ph name="DATA_CONTROLS_SOURCES" />」、「<ph name="DATA_CONTROLS_DESTINATIONS" />」、「<ph name="DATA_CONTROLS_AND" />」、「<ph name="DATA_CONTROLS_OR" />」和「<ph name="DATA_CONTROLS_NOT" />」欄位中填入的所有欄位相符時，才會觸發規則。如果是清單子欄位，只要一個項目相符即可。例如，只要一個網址模式相符就會觸發規則。
-      - 要套用的限制清單。系統提供的條件只會有「<ph name="DATA_CONTROLS_SOURCES" />」或「<ph name="DATA_CONTROLS_DESTINATIONS" />」(視限級而定)。
-
-      你可以透過新增規則控管下列項目：
-      - 來源與目的地共用的剪貼簿資料。
-      - 根據來源分頁控管是否封鎖螢幕截圖功能。
-
-      如果將 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 政策設為 True，系統會將觸發的規則回報給管理員。
-      限制等級可設為「BLOCK」、「WARN」或「REPORT」。
-      - 如果將限制等級設為「BLOCK」，將無法執行該動作。
-      - 如果將限制等級設為「WARN」，系統會顯示警告訊息，使用者可能可以選擇繼續執行或取消動作。
-      - 如果將限制等級設為「REPORT」，使用者動作不會遭到中斷，但如果有啟用 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 政策，系統會傳送報告。
-
-      注意：
-      - 網址模式的格式必須符合規定，詳情請參閱 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
-      - 有關 <ph name="PRODUCT_OS_NAME" /> 專屬的資料外洩防範規則，請參閱 <ph name="DATA_LEAK_PREVENTION_RULES_LIST" /> 政策。
-
-      如果不設定這項政策，系統不會套用任何限制。</translation>
 <translation id="4105989332710272578">不針對列出的網址強制執行憑證透明化政策</translation>
 <translation id="410740968939768919">控制是否可在 <ph name="PRODUCT_OS_NAME" /> 登入畫面上使用 Manifest V2 擴充功能。
 
@@ -6363,15 +6342,6 @@
       如果在支援的裝置上不設定這項政策，系統會套用標準充電模式，且使用者無法變更設定。
 
       注意：如果已選取自訂充電模式，也必須指定 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> 和 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />。</translation>
-<translation id="60655674079349516">設定應在使用者關閉所有瀏覽器視窗時刪除的瀏覽資料類型清單。
-
-警告：如果設定這項政策，本機個人資料可能受影響，而且會永久移除。建議部署前先測試設定，以免誤刪個人資料。
-
-可用的資料類型為瀏覽記錄 (<ph name="DATA_TYPE_BROWSING_HISTORY" />)、下載記錄 (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />)、Cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />)、快取內容<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、自動填入內容 (<ph name="DATA_TYPE_AUTOFILL" />)、密碼 (<ph name="DATA_TYPE_PASSWORD" />)、網站設定 (<ph name="DATA_TYPE_SITE_SETTINGS" />) 和代管的應用程式資料 (<ph name="DATA_TYPE_HOSTED_APP_DATA" />)。這項政策的優先順序低於 <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />。
-
-在 Chrome 114 以下版本，這項政策需要將 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策設定為 True。從 Chrome 115 版開始，如果未以設定 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策的方式停用「<ph name="CHROME_SYNC_NAME" />」，也沒有停用 <ph name="BROWSER_SIGNIN_POLICY_NAME" />，設定這項政策就會停用個別資料類型的同步處理作業。
-
-如果 <ph name="PRODUCT_NAME" /> 未正常關閉 (例如瀏覽器或作業系統當機)，系統會在下次載入設定檔時清除瀏覽資料。</translation>
 <translation id="6066761914755798079">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> 政策來指定搜尋引擎提供搜尋建議的網址。網址應包含字串 <ph name="SEARCH_TERM_MARKER" />，系統會在查詢中將其替換為使用者的搜尋字詞。
 
       你可以將 Google 的搜尋網址指定為：<ph name="GOOGLE_SUGGEST_SEARCH_URL" />。</translation>

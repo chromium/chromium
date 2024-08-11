@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Копирај го името за приказ</translation>
 <translation id="1062407476771304334">Замени</translation>
 <translation id="1062628064301375934">Помогнете ни да изградиме прелистувач со поголема приватност</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome ги отстрани дозволите за 1 сајт}one{Chrome ги отстрани дозволите за {NUM_SITES} сајт}other{Chrome ги отстрани дозволите за {NUM_SITES} сајта}}</translation>
 <translation id="1066964438793906105">Скенирај за злонамерен софтвер</translation>
 <translation id="1067661089446014701">За дополнителна безбедност, можете да ги шифрирате лозинките на уредот пред да се зачуваат во сметката на Google</translation>
 <translation id="1067922213147265141">Други услуги на Google</translation>
@@ -4936,6 +4935,7 @@
 <translation id="4538792345715658285">Инсталирано од компаниската политика.</translation>
 <translation id="4540409690203718935">Не може да се контактира со Google Password Manager. Обидете се повторно за неколку минути</translation>
 <translation id="4541123282641193691">Вашата сметка не може да се потврди. Обидете се повторно или рестартирајте го вашиот Chromebook.</translation>
+<translation id="4541505619120536051">Секогаш отворај</translation>
 <translation id="4541662893742891060">Не може да се поврзе со профилов. За техничка поддршка, контактирајте со операторот.</translation>
 <translation id="4541706525461326392">Се отстранува профилот. Може да потрае неколку минути.</translation>
 <translation id="4542520061254486227">Читајте ги вашите податоци на <ph name="WEBSITE_1" /> и <ph name="WEBSITE_2" /></translation>
@@ -5270,7 +5270,6 @@
 <translation id="4794910597689955457">Да се преместат <ph name="NUM_OF_FILES" /> датотеки во <ph name="CLOUD_PROVIDER" /> за да се отворат?</translation>
 <translation id="479536056609751218">Веб-страница, само HTML</translation>
 <translation id="4795670271446126525">Удирање на бранови</translation>
-<translation id="4796142525425001238">Секогаш враќај</translation>
 <translation id="4797314204379834752">Пробајте да користите групи картички за да ги организирате задачите, за купување онлајн и друго</translation>
 <translation id="479863874072008121">Управувајте со уредите</translation>
 <translation id="479989351350248267">search</translation>
@@ -5849,7 +5848,6 @@
 <translation id="5210365745912300556">Затвори ја картичката</translation>
 <translation id="5213114823401215820">Повторно отвори ја затворената група</translation>
 <translation id="5213481667492808996">Услугата за мобилен интернет од <ph name="NAME" /> е спремна за употреба</translation>
-<translation id="5213658238771284310">Вратете ја сесијата при вклучување</translation>
 <translation id="5213891612754844763">Покажи ги поставките за прокси</translation>
 <translation id="5214639857958972833">Обележувачот „<ph name="BOOKMARK_TITLE" />“ е создаден.</translation>
 <translation id="5215450412607891876">Вклучете проширени безбедносни ажурирања</translation>
@@ -6224,7 +6222,6 @@
 <translation id="5488093641312826914">Ставката „<ph name="COPIED_ITEM_NAME" />“ е копирана</translation>
 <translation id="5488508217173274228">Опции за шифрирање на синхронизираните податоци</translation>
 <translation id="5489077378642700219">Не дозволувај известувања од <ph name="WEBSITE" />, но прашај подоцна</translation>
-<translation id="5489435190927933437">Зачувани лозинки за <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Адреси и друго</translation>
 <translation id="5490721031479690399">Прекинете ја врската на уредот со Bluetooth</translation>
 <translation id="5490798133083738649">Дозволете Linux да пристапува до микрофонот</translation>
@@ -6358,7 +6355,6 @@
 <translation id="5582839680698949063">Главно мени</translation>
 <translation id="5583640892426849032">Backspace-копче</translation>
 <translation id="5584088138253955452">Да се зачува корисничкото име?</translation>
-<translation id="5584091888252706332">При стартување</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Ова се општи податоци за уредот и неговото користење (како што се нивото на батеријата, активноста на апликациите и системот и грешките). Податоците ќе се користат за подобрување на Android, а дел од прибраните податоци ќе им помагаат и на партнерите и апликациите на Google, како што се програмерите на Android, да ги подобрат нивните апликации и производи.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Исклучувањето на функцијава не влијае врз способноста на уредот да ги испраќа податоците што се потребни за основните услуги, како што се ажурирањата на системот и безбедноста.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Сопственикот може да ја контролира функцијава од „Поставки &gt; Напредно &gt; Автоматски испраќај дијагностички податоци и податоци за користењето во Google“.<ph name="END_PARAGRAPH3" />
@@ -9378,7 +9374,6 @@
 <translation id="7815680994978050279">Блокирано е опасно преземање</translation>
 <translation id="7817361223956157679">Тастатурата на екран сѐ уште не функционира во апликациите на Linux</translation>
 <translation id="7818135753970109980">Додадена е нова тема (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">По рестартирањето, продолжете таму каде што сте застанале со апликациите, веб-сајтовите и отворените прозорци</translation>
 <translation id="7819605256207059717">Блокирана од организацијата</translation>
 <translation id="7820400255539998692">Избришете ја датотеката <ph name="FILENAME" /> за да не може другите лица што го користат уредов да ги видат вашите лозинки</translation>
 <translation id="7820561748632634942">Да се доделат дополнителни прекинувачи?</translation>
@@ -10190,6 +10185,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ако ви треба уште помош, одете на: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Резиме за добредојде</translation>
 <translation id="8386091599636877289">Правилото не е пронајдено.</translation>
 <translation id="8387361103813440603">Не им е дозволено да ја гледаат локацијата</translation>
 <translation id="8387617938027387193">Потврдете дека сте вие</translation>

@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Displey adını kopyalayın</translation>
 <translation id="1062407476771304334">Əvəz edin</translation>
 <translation id="1062628064301375934">Daha şəxsi veb yaratmağımıza kömək edin</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome 1 sayt üçün icazələri sildi}other{Chrome {NUM_SITES} sayt üçün icazələri sildi}}</translation>
 <translation id="1066964438793906105">Zərərli proqram üçün skanlayın</translation>
 <translation id="1067661089446014701">Təhlükəsizliyi artırmaq üçün Google Hesabınızda saxlanmazdan əvvəl cihazınızda parolları şifrələyin</translation>
 <translation id="1067922213147265141">Digər Google xidmətləri</translation>
@@ -4919,6 +4918,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4538792345715658285">Sahibkarlıq qaydaları tərəfindən quraşdırılıb.</translation>
 <translation id="4540409690203718935">Google Parol Menecerinə daxil olmaq mümkün deyil. Bir neçə dəqiqə sonra yenidən cəhd edin</translation>
 <translation id="4541123282641193691">Hesabınızı doğrulamaq mümkün olmadı. Yenidən cəhd edin və ya Chromebook'u yenidən başladın.</translation>
+<translation id="4541505619120536051">Həmişə açın</translation>
 <translation id="4541662893742891060">Bu profilə qoşulmaq olmur. Texniki dəstək üçün operatorunuzla əlaqə saxlayın.</translation>
 <translation id="4541706525461326392">Profil silinir. Bu, bir neçə dəqiqə çəkə bilər.</translation>
 <translation id="4542520061254486227">Datanızı <ph name="WEBSITE_1" /> və <ph name="WEBSITE_2" /> üzərində oxuyun</translation>
@@ -5253,7 +5253,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4794910597689955457">Açmaq üçün <ph name="NUM_OF_FILES" /> fayl <ph name="CLOUD_PROVIDER" /> provayderinə köçürülsün?</translation>
 <translation id="479536056609751218">Veb səhifə, yalnız HTML</translation>
 <translation id="4795670271446126525">Çarpışan dalğalar</translation>
-<translation id="4796142525425001238">Həmişə bərpa edilsin</translation>
 <translation id="4797314204379834752">Tapşırıqları təşkil etmək, onlayn alış-veriş etmək və s. üçün tab qruplarından istifadə etməyə çalışın</translation>
 <translation id="479863874072008121">Cihazları idarə edin</translation>
 <translation id="479989351350248267">axtarın</translation>
@@ -5832,7 +5831,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5210365745912300556">Paneli qapadın</translation>
 <translation id="5213114823401215820">Qapalı qrupu yenidən açın</translation>
 <translation id="5213481667492808996">"<ph name="NAME" />" data xidmətiniz istifadəyə hazırdır</translation>
-<translation id="5213658238771284310">Başladıqda sessiyanı bərpa edin</translation>
 <translation id="5213891612754844763">Proksi ayarlarını göstərin</translation>
 <translation id="5214639857958972833">"<ph name="BOOKMARK_TITLE" />" əlfəcini yaradıldı.</translation>
 <translation id="5215450412607891876">Genişləndirilmiş təhlükəsizlik güncəlləmələrini aktiv edin</translation>
@@ -6207,7 +6205,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5488093641312826914">"<ph name="COPIED_ITEM_NAME" />" kopyalandı</translation>
 <translation id="5488508217173274228">Sinxronizasiyanın şifrələnməsi seçimləri</translation>
 <translation id="5489077378642700219"><ph name="WEBSITE" /> saytından bildirişlərə icazə verməyin, lakin sonra soruşun</translation>
-<translation id="5489435190927933437"><ph name="DOMAIN" /> üçün parolları yadda saxlayın</translation>
 <translation id="5490432419156082418">Ünvanlar və s.</translation>
 <translation id="5490721031479690399">Bluetooth cihazını ayırın</translation>
 <translation id="5490798133083738649">Linux'a mikrofona giriş icazəsi verin</translation>
@@ -6341,7 +6338,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5582839680698949063">Əsas menyu</translation>
 <translation id="5583640892426849032">Geri silmə</translation>
 <translation id="5584088138253955452">İstifadəçi adı yadda saxlansın?</translation>
-<translation id="5584091888252706332">Başlanğıcda</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Bu, cihaz və ondan istifadə (məs., batareya səviyyəsi, sistem və tətbiq fəaliyyəti və xətalar) haqqında ümumi məlumatlardır. Bu datadan Android'in təkmilləşdirilməsi üçün istifadə ediləcək və bəzi toplu məlumatlar da Google tətbiqləri və Android tərtibatçıları kimi partnyotlara tətbiq və məhsullarını təkmilləşdirməkdə kömək edəcək.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Bu funksiyanın deaktiv edilməsi cihazın sistem güncəlləmələri və güvənlik kimi vacib xidmətlər üçün tələb edilən məlumatları göndərməsinə təsir etməyəcək.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Sahibi bu funksiyanı Ayarlar &gt; Qabaqcıl  &gt; Diaqnostikanı və istifadə datasını avtomatik olaraq Google'a göndərin bölməsindən idarə edə bilər.<ph name="END_PARAGRAPH3" />
@@ -9357,7 +9353,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7815680994978050279">Təhlükəli endirmə blok edildi</translation>
 <translation id="7817361223956157679">Ekran klaviaturası Linux tətbiqlərində hələ dəstəklənmir</translation>
 <translation id="7818135753970109980">Yeni tema əlavə edildi (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Yenidən başladıqdan sonra tətbiq, veb-sayt və açıq pəncərələr ilə qaldığınız yerdən davam edin</translation>
 <translation id="7819605256207059717">Təşkilatınız tərəfindən bloklanıb</translation>
 <translation id="7820400255539998692">Bu cihazı istifadə edən başqa şəxslərin parolları görməməsi üçün <ph name="FILENAME" /> faylını silin</translation>
 <translation id="7820561748632634942">Əlavə keçiricilər əldə edilsin?</translation>
@@ -10166,6 +10161,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Yardım üçün bu ünvana daxil olun: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Qarşılama icmalı</translation>
 <translation id="8386091599636877289">Qayda tapılmadı.</translation>
 <translation id="8387361103813440603">Məkanınıza baxmaq icazəsi verilməyib</translation>
 <translation id="8387617938027387193">Kimliyinizi doğrulayın</translation>

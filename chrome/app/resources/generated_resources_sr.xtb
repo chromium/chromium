@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Копирај име за приказ</translation>
 <translation id="1062407476771304334">Замени</translation>
 <translation id="1062628064301375934">Помозите нам да пружимо већу приватност на вебу</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome је уклонио дозволе за 1 сајт}one{Chrome је уклонио дозволе за {NUM_SITES} сајт}few{Chrome је уклонио дозволе за {NUM_SITES} сајта}other{Chrome је уклонио дозволе за {NUM_SITES} сајтова}}</translation>
 <translation id="1066964438793906105">Потражите малвер</translation>
 <translation id="1067661089446014701">Ради додатне заштите можете да шифрујете лозинке на уређају пре него што се сачувају на Google налогу</translation>
 <translation id="1067922213147265141">Друге Google услуге</translation>
@@ -4923,6 +4922,7 @@
 <translation id="4538792345715658285">Инсталирано је према смерницама за предузеће.</translation>
 <translation id="4540409690203718935">Google менаџер лозинки није доступан. Пробајте поново за пар минута</translation>
 <translation id="4541123282641193691">Верификација налога није успела. Пробајте поново или рестартујте Chromebook.</translation>
+<translation id="4541505619120536051">Увек отворено</translation>
 <translation id="4541662893742891060">Повезивање са овим профилом није успело. Обратите се мобилном оператеру ради техничке подршке.</translation>
 <translation id="4541706525461326392">Профил се уклања. То може да потраје неколико минута.</translation>
 <translation id="4542520061254486227">Читање ваших података на <ph name="WEBSITE_1" /> и <ph name="WEBSITE_2" /></translation>
@@ -5257,7 +5257,6 @@
 <translation id="4794910597689955457">Желите да преместите <ph name="NUM_OF_FILES" /> фајл(ов)а у <ph name="CLOUD_PROVIDER" /> да бисте их отворили?</translation>
 <translation id="479536056609751218">Веб-страница, само HTML</translation>
 <translation id="4795670271446126525">Удари таласа</translation>
-<translation id="4796142525425001238">Увек враћај</translation>
 <translation id="4797314204379834752">Пробајте да користите групе картица да бисте организовали задатке за онлајн куповину и друго</translation>
 <translation id="479863874072008121">Управљајте уређајима</translation>
 <translation id="479989351350248267">search</translation>
@@ -5836,7 +5835,6 @@
 <translation id="5210365745912300556">Затвори картицу</translation>
 <translation id="5213114823401215820">Поново отвори затворену групу</translation>
 <translation id="5213481667492808996">Услуга преноса података „<ph name="NAME" />“ је спремна за коришћење</translation>
-<translation id="5213658238771284310">Вратите сесију при покретању</translation>
 <translation id="5213891612754844763">Прикажи подешавања проксија</translation>
 <translation id="5214639857958972833">Направљен је обележивач <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="5215450412607891876">Укључите додатна безбедносна ажурирања</translation>
@@ -6209,7 +6207,6 @@
 <translation id="5488093641312826914">Ставка „<ph name="COPIED_ITEM_NAME" />“ је копирана</translation>
 <translation id="5488508217173274228">Опције шифровања синхронизованих података</translation>
 <translation id="5489077378642700219">Не дозвољавајте обавештења са <ph name="WEBSITE" />, али нека вас питају касније</translation>
-<translation id="5489435190927933437">Сачуване лозинке за <ph name="DOMAIN" /></translation>
 <translation id="5490432419156082418">Адресе и друго</translation>
 <translation id="5490721031479690399">Прекините везу са Bluetooth уређајем</translation>
 <translation id="5490798133083738649">Дозволи Linux-у да приступа микрофону</translation>
@@ -6343,7 +6340,6 @@
 <translation id="5582839680698949063">Главни мени</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Желите ли да сачувате корисничко име?</translation>
-<translation id="5584091888252706332">При покретању</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Ово су уопштене информације о уређају и начину на који се користи (попут нивоа батерије, активности система и апликација, и грешака). Подаци ће се користити за побољшавање Android-а, а неке обједињене информације ће помоћи и Google апликацијама и партнерима, као што су Android програмери, да побољшају своје апликације и производе.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Искључивање ове функције неће утицати на могућност уређаја да шаље информације потребне за неопходне услуге, попут ажурирања система и безбедносних функција.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Власник може да управља овом функцијом у одељку Подешавања &gt; Напредно &gt; Аутоматски шаљи дијагностику и податке о коришћењу Google-у.<ph name="END_PARAGRAPH3" />
@@ -9370,7 +9366,6 @@
 <translation id="7815680994978050279">Опасно преузимање је блокирано</translation>
 <translation id="7817361223956157679">Тастатура на екрану још увек не ради у Linux апликацијама</translation>
 <translation id="7818135753970109980">Додата је нова тема (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">После рестартовања наставите тамо где сте стали помоћу апликација, веб-сајтова и отворених прозора</translation>
 <translation id="7819605256207059717">Блокира организација</translation>
 <translation id="7820400255539998692">Избришите фајл <ph name="FILENAME" /> да други људи који користе овај уређај не би могли да виде ваше лозинке</translation>
 <translation id="7820561748632634942">Желите да доделите додатне прекидаче?</translation>
@@ -10180,6 +10175,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Додатну помоћ потражите на: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Резиме добродошлице</translation>
 <translation id="8386091599636877289">Смернице нису пронађене.</translation>
 <translation id="8387361103813440603">Није им дозвољено да виде вашу локацију</translation>
 <translation id="8387617938027387193">Потврдите идентитет</translation>

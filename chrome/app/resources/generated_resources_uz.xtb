@@ -98,7 +98,6 @@
 <translation id="10619348099955377">Chiqadigan ismni nusxalash</translation>
 <translation id="1062407476771304334">Almashtirish</translation>
 <translation id="1062628064301375934">Internetni yanada shaxsiy qilishimizga yordam bering</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{Chrome 1 ta sayt uchun ruxsatlarni olib tashladi}other{Chrome {NUM_SITES} ta sayt uchun ruxsatlarni olib tashladi}}</translation>
 <translation id="1066964438793906105">Zararli fayllar borligini tekshirish</translation>
 <translation id="1067661089446014701">Xavfsizlik maqsadlarida parollarni Google hisobiga saqlashdan avval qurilmada shifrlash mumkin</translation>
 <translation id="1067922213147265141">Boshqa Google xizmatlari</translation>
@@ -4922,6 +4921,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4538792345715658285">Korporativ siyosatga ko‘ra o‘rnatilgan.</translation>
 <translation id="4540409690203718935">Google Parollar menejeri serveriga ulanmadi. Bir necha daqiqadan keyin qaytadan urining</translation>
 <translation id="4541123282641193691">Hisobingizni tekshirib bo‘lmadi. Qayta urinib ko‘ring yoki Chromebook qurilmangizni o‘chirib yoqing.</translation>
+<translation id="4541505619120536051">Doim ochilsin</translation>
 <translation id="4541662893742891060">Bu profilga ulana olmadi. Texnik yordam uchun mobil aloqa operatoringizga murojaat qiling.</translation>
 <translation id="4541706525461326392">Profil olib tashlanmoqda. Bu bir necha daqiqa vaqt olishi mumkin.</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> va <ph name="WEBSITE_2" /> saytlaridagi ma’lumotlarni ko‘rish</translation>
@@ -5256,7 +5256,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4794910597689955457">Ochish uchun <ph name="NUM_OF_FILES" /> ta fayl <ph name="CLOUD_PROVIDER" /> xizmatiga koʻchirilsinmi?</translation>
 <translation id="479536056609751218">Veb-sahifa, faqat HTML</translation>
 <translation id="4795670271446126525">Dengiz toʻlqinlari</translation>
-<translation id="4796142525425001238">Doim tiklash</translation>
 <translation id="4797314204379834752">Vazifalarni tartiblash, onlayn shopping va hokazo amallar uchun varaqlar guruhidan foydalaning</translation>
 <translation id="479863874072008121">Qurilmalarni boshqarish</translation>
 <translation id="479989351350248267">qidiruv</translation>
@@ -5834,7 +5833,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5210365745912300556">Tabni yopish</translation>
 <translation id="5213114823401215820">Yopilgan guruhni qayta ochish</translation>
 <translation id="5213481667492808996">“<ph name="NAME" />” internet paketingiz faollashtirildi</translation>
-<translation id="5213658238771284310">Tizim ishga tushganda seans tiklansin</translation>
 <translation id="5213891612754844763">Proksi-server sozlamalari</translation>
 <translation id="5214639857958972833">“<ph name="BOOKMARK_TITLE" />” bukmarki yaratildi.</translation>
 <translation id="5215450412607891876">Kengaytirilgan xavfsizlik yangilanishini yoqish</translation>
@@ -6209,7 +6207,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5488093641312826914">“<ph name="COPIED_ITEM_NAME" />” nusxa olindi</translation>
 <translation id="5488508217173274228">Sinxronizatsiyani shifrlash parametrlari</translation>
 <translation id="5489077378642700219"><ph name="WEBSITE" /> saytida bildirishnoma chiqishiga ruxsat berilmasin, lekin keyinroq soʻralsin</translation>
-<translation id="5489435190927933437"><ph name="DOMAIN" /> uchun saqlangan parollar</translation>
 <translation id="5490432419156082418">Mazillar va boshqa ma’lumotlar</translation>
 <translation id="5490721031479690399">Bluetooth qurilmani uzish</translation>
 <translation id="5490798133083738649">Linux mikrofondan foydalanishiga ruxsat berish</translation>
@@ -6343,7 +6340,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5582839680698949063">Asosiy menyu</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Login saqlansinmi?</translation>
-<translation id="5584091888252706332">Boshlanishda</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Bunga qurilma va undan qanday foydalanish haqidagi umumiy axborot, masalan, batareya quvvati darajasi, tizim va ilovalardan qanday foydalanishingiz, ishdan chiqish hisobotlari kiradi. Ba’zi to‘plangan ma’lumotlar Android dasturchilar kabi hamkorlarimizga ham o‘z ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Bu funksiyani faolsizlashtirish tizim yangilanishlari va xavfsizlik kabi asosiy xizmatlarni olish uchun zarur bo‘lgan ma’lumotlarni yuborishga to‘sqinlik qilmaydi.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Qurilma egasi bu funksiyani “Sozlamalar &gt; Kengaytirilgan &gt; Foydalanish statistikasi va ishdan chiqish hisobotlarining Google serverlariga avtomatik yuborilishi” orqali boshqarishi mumkin.<ph name="END_PARAGRAPH3" />
@@ -9360,7 +9356,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7815680994978050279">Xavfli yuklanma bloklandi</translation>
 <translation id="7817361223956157679">Ekran klaviaturasi hozircha Linux ilovalarda ishlamaydi</translation>
 <translation id="7818135753970109980">Yangi mavzu qo‘shildi (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">Qayta ishga tushganda ilovalar, saytlar va ochiq oynalarni kelgan joyidan davom ettirish</translation>
 <translation id="7819605256207059717">Tashkilotingiz bloklagan</translation>
 <translation id="7820400255539998692">Bu qurilmaning boshqa foydalanuvchilari parollaringizni koʻrmasligi uchun <ph name="FILENAME" /> faylini oʻchirib tashlang</translation>
 <translation id="7820561748632634942">Qoʻshimcha kalitlar tayinlansinmi?</translation>
@@ -10169,6 +10164,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Batafsil: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">Davom etamiz</translation>
 <translation id="8386091599636877289">Bu parametr topilmadi.</translation>
 <translation id="8387361103813440603">Joylashuvingizni koʻrish taqiqlangan</translation>
 <translation id="8387617938027387193">Bu siz ekaningizni isbotlang</translation>

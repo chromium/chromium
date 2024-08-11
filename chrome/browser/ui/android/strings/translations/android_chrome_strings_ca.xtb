@@ -1583,7 +1583,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="835847953965672673">S'han restaurat <ph name="NUMBER_OF_DOWNLOADS" /> baixades</translation>
 <translation id="8368001212524806591">Fes un seguiment del preu</translation>
 <translation id="8378850197701296741">Tens les adreces d'interès, l'historial i altres opcions de configuració de <ph name="FROM_ACCOUNT" />.</translation>
-<translation id="8382640928718131148">Les pestanyes que no has utilitzat durant <ph name="DAYS_INACTIVE" /> dies es mouen aquí i es tanquen al cap de <ph name="DAYS_ARCHIVED" /> dies. Pots canviar-ho en qualsevol moment a <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8387617938027387193">Verifica la teva identitat</translation>
 <translation id="8393700583063109961">Envia el missatge</translation>
 <translation id="8402673309244746971">Ves a Seguint</translation>

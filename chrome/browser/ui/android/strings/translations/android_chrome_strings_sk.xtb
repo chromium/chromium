@@ -1583,7 +1583,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="835847953965672673">Boli obnovené stiahnuté súbory (<ph name="NUMBER_OF_DOWNLOADS" />)</translation>
 <translation id="8368001212524806591">Sledovať cenu</translation>
 <translation id="8378850197701296741">Máte záložky, históriu a ďalšie nastavenia z účtu <ph name="FROM_ACCOUNT" />.</translation>
-<translation id="8382640928718131148">Karty, ktoré ste nepoužili <ph name="DAYS_INACTIVE" /> d., sa presunú sem a po <ph name="DAYS_ARCHIVED" /> dňoch sa zavrú. Môžete to kedykoľvek zmeniť v sekcii <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8387617938027387193">Overte, že ste to vy</translation>
 <translation id="8393700583063109961">Odoslať správu</translation>
 <translation id="8402673309244746971">Prejsť na Sledované</translation>

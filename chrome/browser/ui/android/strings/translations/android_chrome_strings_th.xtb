@@ -1583,7 +1583,6 @@
 <translation id="835847953965672673">คืนค่าการดาวน์โหลด <ph name="NUMBER_OF_DOWNLOADS" /> รายการแล้ว</translation>
 <translation id="8368001212524806591">ติดตามราคา</translation>
 <translation id="8378850197701296741">คุณมีบุ๊กมาร์ก ประวัติการเข้าชม และการตั้งค่าอื่นๆ จาก <ph name="FROM_ACCOUNT" /></translation>
-<translation id="8382640928718131148">แท็บที่คุณไม่ได้ใช้งานเป็นระยะเวลา <ph name="DAYS_INACTIVE" /> วันจะย้ายมาที่นี่และปิดหลังจากผ่านไป <ph name="DAYS_ARCHIVED" /> วัน คุณเปลี่ยนตัวเลือกนี้ได้ทุกเมื่อใน<ph name="SETTINGS_TITLE" /></translation>
 <translation id="8387617938027387193">ยืนยันว่าเป็นคุณ</translation>
 <translation id="8393700583063109961">ส่งข้อความ</translation>
 <translation id="8402673309244746971">ไปยังฟีด "กำลังติดตาม"</translation>

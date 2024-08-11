@@ -1583,7 +1583,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="835847953965672673">Broj vraćenih preuzimanja: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="8368001212524806591">Praćenje cijene</translation>
 <translation id="8378850197701296741">Imate oznake, historiju i druge postavke s računa <ph name="FROM_ACCOUNT" />.</translation>
-<translation id="8382640928718131148">Kartice koje niste koristili <ph name="DAYS_INACTIVE" /> dan(a) se premještaju ovdje i zatvaraju nakon <ph name="DAYS_ARCHIVED" /> dana. Možete promijeniti ovo bilo kada odlaskom u <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8387617938027387193">Potvrdite identitet</translation>
 <translation id="8393700583063109961">Pošalji poruku</translation>
 <translation id="8402673309244746971">Idi na Praćenje</translation>

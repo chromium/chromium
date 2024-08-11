@@ -98,7 +98,6 @@
 <translation id="10619348099955377">ڈسپلے کا نام کاپی کریں</translation>
 <translation id="1062407476771304334">بدلیں</translation>
 <translation id="1062628064301375934">مزید نجی ویب بنانے میں ہماری مدد کریں</translation>
-<translation id="106549185038410195">{NUM_SITES,plural, =1{‏‫Chrome نے 1 سائٹ کے لیے اجازتیں ہٹا دیں}other{‏‫Chrome نے {NUM_SITES} سائٹس کے لیے اجازتیں ہٹا دیں}}</translation>
 <translation id="1066964438793906105">میلوئیر کے لیے اسکین کریں</translation>
 <translation id="1067661089446014701">‏اضافی حفاظت کے لیے، آپ اپنے آلہ پر پاس ورڈز کو اپنے Google اکاؤنٹ میں محفوظ کرنے سے پہلے مرموز کر سکتے ہیں</translation>
 <translation id="1067922213147265141">‏دیگر Google سروسز</translation>
@@ -1205,6 +1204,7 @@
 <translation id="184183613002882946">نہیں، 1 سوئچ کے ساتھ قائم رہیں</translation>
 <translation id="184273675144259287">‏اپنی Linux کی ایپس اور فائلز سابقہ بیک اپ سے بدلیں</translation>
 <translation id="1842766183094193446">کیا آپ واقعی ڈیمو موڈ فعال کرنا چاہتے ہیں؟</translation>
+<translation id="1843048149176045210">ڈاؤن لوڈ لنک کاپی کریں</translation>
 <translation id="1845060436536902492">‏ChromeOS Flex، ChromeVox پر اسکرین ریڈر بنیادی طور پر نابینا یا کم بصارت والے لوگ اسپیچ سنتھیسائزر یا بریل ڈسپلے کے ساتھ اسکرین پر دکھائے جانے والے ٹیکسٹ کو پڑھنے کے لیے استعمال کرتے ہیں۔ ChromeVox کو آن کرنے کے لیے اسپیس بار کو دبائیں۔ ChromeVox کے فعال ہو جانے پر، آپ کو ایک فوری ٹؤر سے گزرنا ہوگا۔</translation>
 <translation id="1845727111305721124">آواز چلانے کی اجازت ہے</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> چلانے کیلئے کنٹرول دبا کر کلک کریں</translation>
@@ -3161,6 +3161,7 @@
 <translation id="3251714896659475029">‏<ph name="SUPERVISED_USER_NAME" /> کو "Ok Google" کے ساتھ Google اسسٹنٹ تک رسائی حاصل کرنے دیں</translation>
 <translation id="3251759466064201842">&lt;سرٹیفکیٹ کا حصہ نہیں ہے&gt;</translation>
 <translation id="325238099842880997">بچوں کو گھر میں کھیلنے، دریافت کرنے اور اسکول کا کام کرنے میں مدد کے لئے ڈیجیٹل گراؤنڈ رولز سیٹ کریں</translation>
+<translation id="3253083398453405334">جب آپ کو اطلاعات موصول ہوں تو اسکرین کو فلیش کریں</translation>
 <translation id="3253225298092156258">دستیاب نہیں ہے</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{اس فائل کو کاپی کرنے کے لیے <ph name="CLOUD_PROVIDER" /> میں اسپیس خالی کریں}other{ان فائلز کو کاپی کرنے کے لیے <ph name="CLOUD_PROVIDER" /> میں اسپیس خالی کریں}}</translation>
 <translation id="3253448572569133955">نامعلوم اکاؤنٹ</translation>
@@ -3657,6 +3658,7 @@
 <translation id="3621202678540785336">ان پٹ</translation>
 <translation id="3621807901162200696">‏ChromeOS کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{ایک ایپ}other{# ایپس}}</translation>
+<translation id="3622820753353315928">فلیش اسکرین کا رنگ</translation>
 <translation id="362333465072914957">‏سرٹیفیکیٹ جاری کرنے کے لیے CA کا انتظار</translation>
 <translation id="3623598555687153298">اس سے ڈسپلے کردہ سائٹس کا اسٹور کردہ <ph name="TOTAL_USAGE" /> ڈیٹا ہٹایا جائے گا</translation>
 <translation id="3624567683873126087">‏آلہ کو غیر مقفل کریں اور Google اکاؤنٹ میں سائن ان کریں</translation>
@@ -4922,6 +4924,7 @@
 <translation id="4538792345715658285">انٹرپرائز پالیسی کے ذریعے انسٹال کیا گیا۔</translation>
 <translation id="4540409690203718935">‏‫Google پاس ورڈ مینیجر تک نہیں پہنچ سکتے۔ کچھ منٹ میں دوبارہ کوشش کریں</translation>
 <translation id="4541123282641193691">‏آپ کے اکاؤنٹ کی تصدیق نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں یا اپنا Chromebook ری سٹارٹ کریں۔</translation>
+<translation id="4541505619120536051">ہمیشہ کھولیں</translation>
 <translation id="4541662893742891060">اس پروفائل سے منسلک ہونے سے قاصر۔ تکنیکی سپورٹ کیلئے، براہ کرم اپنے کیریئر سے رابطہ کریں۔</translation>
 <translation id="4541706525461326392">پروفائل ہٹائی جا رہی ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> اور <ph name="WEBSITE_2" /> پر اپنا ڈیٹا پڑھیں</translation>
@@ -5256,7 +5259,6 @@
 <translation id="4794910597689955457">کھولنے کے لیے <ph name="NUM_OF_FILES" /> فائلز کو <ph name="CLOUD_PROVIDER" /> میں منتقل کریں؟</translation>
 <translation id="479536056609751218">‏ویب صفحہ، صرف HTML</translation>
 <translation id="4795670271446126525">کریشنگ لہریں</translation>
-<translation id="4796142525425001238">ہمیشہ بحال کریں</translation>
 <translation id="4797314204379834752">آن لائن خریداری وغیرہ کیلئے ٹاسکس کا نظم کرنے کی خاطر ٹیب گروپس کا استعمال کرنے کی کوشش کریں</translation>
 <translation id="479863874072008121">آلات کا نظم کریں</translation>
 <translation id="479989351350248267">تلاش کریں</translation>
@@ -5834,7 +5836,6 @@
 <translation id="5210365745912300556">ٹیب بند کریں</translation>
 <translation id="5213114823401215820">بند گروپ دوبارہ کھولیں</translation>
 <translation id="5213481667492808996">آپ کی '<ph name="NAME" />' کی ڈیٹا سروس استعمال کیلئے تیار ہے</translation>
-<translation id="5213658238771284310">اسٹارٹ اپ پر سیشن بحال کریں</translation>
 <translation id="5213891612754844763">پراکسی ترتیبات دکھائيں</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' بُک مارک بنایا گیا۔</translation>
 <translation id="5215450412607891876">توسیعی سیکیورٹی اپ ڈیٹس کو آن کریں</translation>
@@ -6207,7 +6208,6 @@
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' کاپی ہو گیا</translation>
 <translation id="5488508217173274228">مرموزکاری کے اختیارات مطابقت پذیر بنائیں</translation>
 <translation id="5489077378642700219"><ph name="WEBSITE" /> اطلاعات کی اجازت نہ دیں لیکن بعد میں پوچھیں</translation>
-<translation id="5489435190927933437"><ph name="DOMAIN" /> کے لئے محفوظ کردہ پاس ورڈز</translation>
 <translation id="5490432419156082418">پتے وغیرہ</translation>
 <translation id="5490721031479690399">بلوٹوتھ آلہ غیر منسلک کریں</translation>
 <translation id="5490798133083738649">‏Linux کو اپنے مائکروفون تک رسائی کی اجازت دیں</translation>
@@ -6341,7 +6341,6 @@
 <translation id="5582839680698949063">اصل مینیو</translation>
 <translation id="5583640892426849032">بیک اسپیس</translation>
 <translation id="5584088138253955452">صارف نام کو محفوظ کریں؟</translation>
-<translation id="5584091888252706332">شروعات میں</translation>
 <translation id="5584915726528712820">‏<ph name="BEGIN_PARAGRAPH1" />یہ آپ کے آلہ اور آپ کے اس کے طریقۂ استعمال (جیسے بیٹری کی سطح، سسٹم، ایپ کی سرگرمی اور خرابیوں) کے بارے میں عام معلومات ہے۔ Android کو بہتر بنانے کی خاطر ڈیٹا کا استعمال کیا جائے گا، اور کچھ مجموعی معلومات سے Google ایپس اور پارٹنرز، جیسے کہ Android ڈیولپرز، کو ان کی ایپس اور پروڈکٹس کو بہتر بنانے میں بھی مدد ملے گی۔<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />اس خصوصیت کو آف کرنے سے سسٹم اپ ڈیٹس اور سیکیورٹی جیسی لازمی سروسز کے لیے درکار معلومات بھیجنے کی آپ کے آلے کی اہلیت متاثر نہیں ہوتی ہے۔<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />مالک ترتیبات &gt; جدید ترین &gt; خودکار طور پر Google کو ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجیں سے اس خصوصیت کو کنٹرول کر سکتا ہے۔<ph name="END_PARAGRAPH3" />
@@ -7160,6 +7159,7 @@
 <translation id="6197128521826316819">‏اس صفحہ کیلئے QR کوڈ تخلیق کریں</translation>
 <translation id="6198223452299275399">صفحات کے درمیان سوائپ کریں</translation>
 <translation id="6198252989419008588">‏PIN تبدیل کریں</translation>
+<translation id="61988015556954366">اسکرین فلیش</translation>
 <translation id="6200047250927636406">فائل مسترد کریں</translation>
 <translation id="6200151268994853226">ایکسٹینشن کا نظم کریں</translation>
 <translation id="6201608810045805374">اس اکاؤنٹ کو ہٹائیں؟</translation>
@@ -7517,6 +7517,7 @@
 <translation id="6468773105221177474">فائلز: <ph name="FILE_COUNT" /></translation>
 <translation id="6469557521904094793">سیلولر نیٹ ورک آن کریں</translation>
 <translation id="6469702164109431067">پاس ورڈز اور پاس کیز</translation>
+<translation id="6470120577693311302">فلیش کرنے والی اطلاعات</translation>
 <translation id="6470823736074966819">اطلاعات کو خاموش کریں</translation>
 <translation id="6472893788822429178">ہوم بٹن دکھائیں</translation>
 <translation id="6473315466413288899">ایک اختیار منتخب کریں</translation>
@@ -7949,6 +7950,7 @@
 <translation id="6790820461102226165">شخص کو شامل کریں…</translation>
 <translation id="6793610798874309813">‏آپ کا PIN ‏4 حروف یا اس سے زیادہ کا ہو سکتا ہے</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> کلپ بورڈ پر کاپی ہو گیا</translation>
 <translation id="6794511157503068">‏اگر <ph name="APP_NAME" /> کے لیے آپ کی پاس کی USB سیکیورٹی کلید پر ہے تو اسے ابھی درج کریں اور ٹچ کریں</translation>
 <translation id="679486139907144816">‏پاس کی کے ساتھ اس سائٹ میں سائن ان کرنے کے لیے، آپ کو ترتیبات میں Windows Hello کو آن کرنا ہوگا۔ پھر اس سائٹ پر واپس جائیں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6795371939514004514">خودکار اسکین سے آپ اسکرین پر موجود ایک آئٹم سے دوسرے آئٹم پر جا سکتے ہیں۔ جب کسی آئٹمز کو نمایاں کیا جاتا ہے تو اسے فعال کرنے کیلئے "منتخب کریں" دبائیں۔</translation>
@@ -9359,7 +9361,6 @@
 <translation id="7815680994978050279">خطرناک ڈاؤن لوڈ مسدود کیا گیا</translation>
 <translation id="7817361223956157679">‏Linux ایپس پر آن اسکرین کی بورڈ ابھی کام نہیں کرتا ہے</translation>
 <translation id="7818135753970109980">نیا تھیم شامل کر دیا گیا (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819087895293765164">ری سٹارٹ کرنے کے بعد، ایپس، ویب سائٹس اور کھلی ونڈوز کے ساتھ وہیں سے جاری رکھیں جہاں آپ نے چھوڑا تھا</translation>
 <translation id="7819605256207059717">آپ کی تنظیم نے مسدود کر دیا</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> کو حذف کریں، تاکہ اس آلے کو استعمال کرنے والے دوسرے لوگ آپ کے پاس ورڈز نہ دیکھ سکیں</translation>
 <translation id="7820561748632634942">اضافی سوئچز تفویض کریں؟</translation>
@@ -10168,6 +10169,7 @@
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />مزید مدد کیلئے، ملاحظہ کریں: g.co/flex/InstallErrors۔<ph name="END_PARAGRAPH2" /></translation>
+<translation id="8383614331548401927">استقبالی خلاصہ</translation>
 <translation id="8386091599636877289">پالیسی نہیں ملی۔</translation>
 <translation id="8387361103813440603">آپ کا مقام دیکھنے کی اجازت نہیں ہے</translation>
 <translation id="8387617938027387193">توثیق کریں کہ یہ آپ ہیں</translation>
