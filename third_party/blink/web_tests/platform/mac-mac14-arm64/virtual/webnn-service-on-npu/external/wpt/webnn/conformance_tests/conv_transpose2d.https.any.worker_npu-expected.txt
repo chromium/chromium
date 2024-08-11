@@ -1,3 +1,15 @@
 This is a testharness.js-based test.
+[FAIL] convTranspose2d float32 4D both input and filter non-constant tensors default options
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] convTranspose2d options.padding is the same upper padding
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=hwoi
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=ohwi
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=hwoi
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=ohwi
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
 Harness: the test ran to completion.
 

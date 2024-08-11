@@ -96174,6 +96174,35 @@
        {}
       ]
      ],
+     "color-layers-no-blend-mode.html": [
+      "2ee8d46c6376a331b157cbe84c4c435a65787aae",
+      [
+       null,
+       [
+        [
+         "/css/css-color/color-layers-no-blend-mode-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            3
+           ],
+           [
+            0,
+            127500
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
      "color-mix-basic-001.html": [
       "c69a292159003c578918bd1be9e495c6cbdb094e",
       [
@@ -314661,6 +314690,10 @@
       "7610a6f1911aecb33cedf7fad16c48977a5d14ba",
       []
      ],
+     "color-layers-no-blend-mode-ref.html": [
+      "7e45ac4f8b7ffd5c4085afe441e05c7c856408d5",
+      []
+     ],
      "color-mix-basic-001-ref.html": [
       "7296d17fba3bd7b45769cbed12e954509ee85eac",
       []
@@ -314896,6 +314929,10 @@
       ],
       "color-computed-relative-color-expected.txt": [
        "2f6e7af107f32535b27196602c3efaed1c15f169",
+       []
+      ],
+      "color-valid-color-layers-function-expected.txt": [
+       "56579feafbf4a7d9cdfc62cbc86954ffaf051f2e",
        []
       ],
       "color-valid-hsl-expected.txt": [
@@ -455806,6 +455843,13 @@
         {}
        ]
       ],
+      "color-invalid-color-layers-function.html": [
+       "2f8879c4eade3ee89f593318444ed38bd0498a3b",
+       [
+        null,
+        {}
+       ]
+      ],
       "color-invalid-color-mix-function.html": [
        "2f815f814007e6035dd2616e152722ad5343bda3",
        [
@@ -455878,6 +455922,13 @@
       ],
       "color-valid-color-function.html": [
        "2a7750539ca6e8efbcc6724adf79c11180faef83",
+       [
+        null,
+        {}
+       ]
+      ],
+      "color-valid-color-layers-function.html": [
+       "3d579983d43774491c046723f6f60289f172e254",
        [
         null,
         {}
