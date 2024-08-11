@@ -88,7 +88,7 @@ void AutofillDriverRouter::TriggerFormExtractionExcept(
         // loop's body for `driver` and hence also for all its ancestors.
         break;
       }
-      driver->TriggerFormExtractionInDriverFrame();
+      driver->TriggerFormExtractionInDriverFrame(/*pass_key=*/{});
     } while ((driver = driver->GetParent()) != nullptr);
   });
 }

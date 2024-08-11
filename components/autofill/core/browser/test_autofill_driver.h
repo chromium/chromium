@@ -90,7 +90,9 @@ class TestAutofillDriverTemplate : public T {
     return isolation_info_;
 #endif
   }
-  void TriggerFormExtractionInDriverFrame() override {}
+  void TriggerFormExtractionInDriverFrame(
+      AutofillDriver::AutofillDriverRouterAndFormForestPassKey pass_key)
+      override {}
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool)> form_extraction_finished_callback)
       override {}

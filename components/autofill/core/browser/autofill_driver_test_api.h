@@ -28,6 +28,10 @@ class AutofillDriverTestApi {
         .SetLifecycleStateAndNotifyObservers(*driver_, new_state);
   }
 
+  void TriggerFormExtractionInDriverFrame() {
+    driver_->TriggerFormExtractionInDriverFrame(/*pass_key=*/{});
+  }
+
  protected:
   raw_ref<AutofillDriver> driver_;
 };

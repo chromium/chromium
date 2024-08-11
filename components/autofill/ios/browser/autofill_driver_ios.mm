@@ -251,7 +251,8 @@ void AutofillDriverIOS::RendererShouldAcceptDataListSuggestion(
     const FieldGlobalId& field_id,
     const std::u16string& value) {}
 
-void AutofillDriverIOS::TriggerFormExtractionInDriverFrame() {
+void AutofillDriverIOS::TriggerFormExtractionInDriverFrame(
+    AutofillDriverRouterAndFormForestPassKey pass_key) {
   if (!is_processed()) {
     return;
   }

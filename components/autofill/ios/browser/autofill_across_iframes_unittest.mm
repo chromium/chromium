@@ -712,7 +712,7 @@ TEST_F(AutofillAcrossIframesTest, TriggerExtractionInFrame) {
     manager.ResetTestState();
 
     // Manually retrigger extraction, and wait for a fresh FormsSeen event.
-    driver->TriggerFormExtractionInDriverFrame();
+    test_api(*driver).TriggerFormExtractionInDriverFrame();
     EXPECT_TRUE(manager.WaitForFormsSeen(1));
   }
 }

@@ -27,6 +27,10 @@ class AutofillClient;
 class AutofillDriverFactory;
 class AutofillManager;
 
+namespace internal {
+class FormForest;
+}
+
 // AutofillDriver is Autofill's lowest-level abstraction of a frame that is
 // shared among all platforms.
 //
@@ -166,6 +170,13 @@ class AutofillDriver {
   // frame.
   virtual bool CanShowAutofillUi() const = 0;
 
+  class AutofillDriverRouterAndFormForestPassKey {
+    friend class AutofillDriverRouter;
+    friend class internal::FormForest;
+    friend class AutofillDriverTestApi;
+    AutofillDriverRouterAndFormForestPassKey() = default;
+  };
+
   // Triggers a form extraction of the new forms in the AutofillAgent. This is
   // necessary when a form is seen in a child frame and it is not known which
   // form is its parent.
@@ -184,7 +195,8 @@ class AutofillDriver {
   // form's FormData::child_frames may be outdated. When a form is now seen in
   // the child frame, it is not known *which form* in the parent frame is its
   // parent form. In this scenario, a form extraction should be triggered.
-  virtual void TriggerFormExtractionInDriverFrame() = 0;
+  virtual void TriggerFormExtractionInDriverFrame(
+      AutofillDriverRouterAndFormForestPassKey pass_key) = 0;
 
   // Triggers a form_extraction on all frames of the same frame tree. Calls
   // `form_extraction_finished_callback` when all frames reported back

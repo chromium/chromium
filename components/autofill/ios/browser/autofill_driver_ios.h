@@ -128,7 +128,8 @@ class AutofillDriverIOS final : public AutofillDriver,
   void RendererShouldAcceptDataListSuggestion(
       const FieldGlobalId& field_id,
       const std::u16string& value) override;
-  void TriggerFormExtractionInDriverFrame() override;
+  void TriggerFormExtractionInDriverFrame(
+      AutofillDriverRouterAndFormForestPassKey pass_key) override;
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool)> form_extraction_finished_callback)
       override;
