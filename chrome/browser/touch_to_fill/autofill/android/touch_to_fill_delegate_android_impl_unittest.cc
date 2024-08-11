@@ -104,7 +104,7 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(bool,
               ShowTouchToFillIban,
               (base::WeakPtr<autofill::TouchToFillDelegate> delegate,
-               base::span<const Iban> ibanns_to_suggest),
+               base::span<const Iban> ibans_to_suggest),
               (override));
   MOCK_METHOD(void,
               HideAutofillSuggestions,
