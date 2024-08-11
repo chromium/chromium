@@ -121,6 +121,17 @@ export class TracingScenariosConfigElement extends CrLitElement {
   protected async onCancelClick_(): Promise<void> {
     await this.initScenariosConfig_();
   }
+
+  protected hasSelectedConfig_(): boolean {
+    return this.currentConfig_.some(scenario => scenario.selected);
+  }
+
+  protected clearAllClick_() {
+    this.currentConfig_.forEach(config => {
+      config.selected = false;
+    });
+    this.isEdited_ = true;
+  }
 }
 
 declare global {

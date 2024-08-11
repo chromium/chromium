@@ -8,6 +8,10 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+:host {
+  padding: 8px 12px;
+}
+
 :host h1 {
   color: var(--cr-primary-text-color);
 }

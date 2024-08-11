@@ -10,6 +10,7 @@ import './tracing_scenarios_config.js';
 import {CrRouter} from '//resources/js/cr_router.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 
 interface Tab {
@@ -24,6 +25,10 @@ export class TraceReportAppElement extends CrLitElement {
 
   override render() {
     return getHtml.bind(this)();
+  }
+
+  static override get styles() {
+    return getCss();
   }
 
   static override get properties() {
