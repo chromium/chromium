@@ -324,6 +324,7 @@ source_set("common") {
 
   deps = [
     "//base",
+    "//build:android_buildflags",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
     "//media/capture:capture_base",
