@@ -2648,7 +2648,7 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/css-color/color-layers-no-blend-mode.html [ Failure ]
+crbug.com/358461408 external/wpt/css/css-color/color-layers-no-blend-mode.html [ Failure ]
 crbug.com/358437643 [ Win11-arm64 ] external/wpt/html/semantics/forms/the-label-element/control-active-with-multiple-clicks.html [ Timeout ]
 crbug.com/358437643 [ Mac ] external/wpt/html/semantics/forms/the-label-element/control-active-with-multiple-clicks.html [ Timeout ]
 crbug.com/358399788 [ Win11-arm64 ] virtual/threaded/external/wpt/css/css-view-transitions/nested/contain-nested.tentative.html [ Failure ]
