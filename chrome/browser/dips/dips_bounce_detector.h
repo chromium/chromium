@@ -181,8 +181,8 @@ class DIPSRedirectContext {
   size_t redirect_prefix_count_ = 0;
 };
 
-// A simplified interface to WebContents and DIPSService that can be faked in
-// tests. Needed to allow unit testing DIPSBounceDetector.
+// A simplified interface to WebContents and DIPSServiceImpl that can be faked
+// in tests. Needed to allow unit testing DIPSBounceDetector.
 // TODO: crbug.com/324573484 - rename to remove association with DIPS.
 class DIPSBounceDetectorDelegate {
  public:
@@ -469,7 +469,7 @@ class DIPSWebContentsObserver
 
  private:
   DIPSWebContentsObserver(content::WebContents* web_contents,
-                          DIPSService* dips_service);
+                          DIPSServiceImpl* dips_service);
   // So WebContentsUserData::CreateForWebContents() can call the constructor.
   friend class content::WebContentsUserData<DIPSWebContentsObserver>;
 
@@ -537,10 +537,10 @@ class DIPSWebContentsObserver
   // End DedicatedWorkerService.Observer overrides.
 
   raw_ptr<RedirectChainDetector> detector_;
-  // raw_ptr<> is safe here because DIPSService is a KeyedService, associated
-  // with the BrowserContext/Profile which will outlive the WebContents that
-  // DIPSWebContentsObserver is observing.
-  raw_ptr<DIPSService> dips_service_;
+  // raw_ptr<> is safe here because DIPSServiceImpl is a KeyedService,
+  // associated with the BrowserContext/Profile which will outlive the
+  // WebContents that DIPSWebContentsObserver is observing.
+  raw_ptr<DIPSServiceImpl> dips_service_;
   raw_ref<base::Clock> clock_{*base::DefaultClock::GetInstance()};
   DIPSIssueReportingCallback issue_reporting_callback_;
 

@@ -17,7 +17,7 @@
 
 class DIPSCleanupServiceTest : public testing::Test {
  protected:
-  void WaitOnStorage(DIPSService* service) {
+  void WaitOnStorage(DIPSServiceImpl* service) {
     service->storage()->FlushPostedTasksForTesting();
   }
 
@@ -50,7 +50,7 @@ TEST_F(DIPSCleanupServiceTest, DeleteDbFilesIfFeatureDisabled) {
     std::unique_ptr<TestingProfile> profile =
         TestingProfile::Builder().SetPath(data_path).Build();
 
-    DIPSService* dips_service = DIPSService::Get(profile.get());
+    DIPSServiceImpl* dips_service = DIPSServiceImpl::Get(profile.get());
     ASSERT_NE(dips_service, nullptr);
     ASSERT_EQ(DIPSCleanupService::Get(profile.get()), nullptr);
 
@@ -73,7 +73,7 @@ TEST_F(DIPSCleanupServiceTest, DeleteDbFilesIfFeatureDisabled) {
     DIPSCleanupService* cleanup_service =
         DIPSCleanupService::Get(profile.get());
     ASSERT_NE(cleanup_service, nullptr);
-    ASSERT_EQ(DIPSService::Get(profile.get()), nullptr);
+    ASSERT_EQ(DIPSServiceImpl::Get(profile.get()), nullptr);
 
     cleanup_service->WaitOnCleanupForTesting();
     EXPECT_FALSE(base::PathExists(GetDIPSFilePath(profile.get())));

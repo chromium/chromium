@@ -38,7 +38,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
-#include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
@@ -493,8 +492,8 @@ class DIPSBounceDetectorBrowserTest
   // are never notified). Such tests should pass `wait`=false.
   void EndRedirectChain(bool wait = true) {
     WebContents* web_contents = GetActiveWebContents();
-    DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
-        web_contents->GetBrowserContext());
+    DIPSService* dips_service =
+        DIPSService::Get(web_contents->GetBrowserContext());
     GURL expected_url = web_contents->GetLastCommittedURL();
 
     RedirectChainObserver chain_observer(dips_service, expected_url);
@@ -3652,7 +3651,8 @@ IN_PROC_BROWSER_TEST_P(DIPSPrivacySandboxDataPreservationTest,
               ElementsAre(url::Origin::Create(attribution_url)));
 
   // Make the attribution site eligible for DIPS deletion.
-  DIPSService* dips = DIPSService::Get(web_contents->GetBrowserContext());
+  DIPSServiceImpl* dips =
+      DIPSServiceImpl::Get(web_contents->GetBrowserContext());
   ASSERT_TRUE(dips != nullptr);
   base::test::TestFuture<void> record_bounce;
   dips->storage()

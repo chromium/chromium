@@ -16,7 +16,7 @@
 OpenerHeuristicService::OpenerHeuristicService(
     base::PassKey<OpenerHeuristicServiceFactory>,
     content::BrowserContext* context)
-    : dips_(DIPSService::Get(context)),
+    : dips_(DIPSServiceImpl::Get(context)),
       cookie_settings_(CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(context))),
       tracking_protection_settings_(

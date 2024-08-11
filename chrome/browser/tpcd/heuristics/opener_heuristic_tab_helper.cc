@@ -66,7 +66,8 @@ void OpenerHeuristicTabHelper::InitPopup(
   popup_observer_ =
       std::make_unique<PopupObserver>(web_contents(), popup_url, opener);
 
-  DIPSService* dips = DIPSService::Get(web_contents()->GetBrowserContext());
+  DIPSServiceImpl* dips =
+      DIPSServiceImpl::Get(web_contents()->GetBrowserContext());
   if (!dips) {
     // If DIPS is disabled, we can't look up past interaction.
     // TODO(rtarpine): consider falling back to SiteEngagementService.
@@ -318,7 +319,8 @@ void OpenerHeuristicTabHelper::OnCookiesAccessed(
 void OpenerHeuristicTabHelper::OnCookiesAccessed(
     const ukm::SourceId& source_id,
     const content::CookieAccessDetails& details) {
-  DIPSService* dips = DIPSService::Get(web_contents()->GetBrowserContext());
+  DIPSServiceImpl* dips =
+      DIPSServiceImpl::Get(web_contents()->GetBrowserContext());
   if (!dips) {
     // If DIPS is disabled, we can't look up past popup events.
     // TODO(rtarpine): consider falling back to SiteEngagementService.
@@ -369,8 +371,8 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevelAndCreateGrant(
   uint64_t access_id = base::RandUint64();
 
   if (should_record_popup_and_maybe_grant) {
-    if (DIPSService* dips =
-            DIPSService::Get(web_contents()->GetBrowserContext())) {
+    if (DIPSServiceImpl* dips =
+            DIPSServiceImpl::Get(web_contents()->GetBrowserContext())) {
       dips->storage()
           ->AsyncCall(&DIPSStorage::WritePopup)
           .WithArgs(GetSiteForDIPS(opener_url_), GetSiteForDIPS(popup_url),

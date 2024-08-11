@@ -26,7 +26,7 @@ PageVisitInfo::PageVisitInfo(PageVisitInfo&& other) = default;
 
 DipsNavigationFlowDetector::DipsNavigationFlowDetector(
     content::WebContents* web_contents,
-    DIPSService* dips_service)
+    DIPSServiceImpl* dips_service)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<DipsNavigationFlowDetector>(*web_contents),
       current_page_visit_info_(PageVisitInfo()),
@@ -37,8 +37,8 @@ DipsNavigationFlowDetector::~DipsNavigationFlowDetector() = default;
 /* static */
 void DipsNavigationFlowDetector::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  DIPSService* dips_service =
-      DIPSService::Get(web_contents->GetBrowserContext());
+  DIPSServiceImpl* dips_service =
+      DIPSServiceImpl::Get(web_contents->GetBrowserContext());
   if (!dips_service) {
     return;
   }

@@ -11,9 +11,9 @@
 #include "content/public/common/content_features.h"
 
 /* static */
-DIPSService* DIPSServiceFactory::GetForBrowserContext(
+DIPSServiceImpl* DIPSServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<DIPSService*>(
+  return static_cast<DIPSServiceImpl*>(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
@@ -32,7 +32,7 @@ ProfileSelections DIPSServiceFactory::CreateProfileSelections() {
 }
 
 DIPSServiceFactory::DIPSServiceFactory()
-    : ProfileKeyedServiceFactory("DIPSService", CreateProfileSelections()) {
+    : ProfileKeyedServiceFactory("DIPSServiceImpl", CreateProfileSelections()) {
   DependsOn(CookieSettingsFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
@@ -41,5 +41,5 @@ DIPSServiceFactory::~DIPSServiceFactory() = default;
 
 KeyedService* DIPSServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new DIPSService(context);
+  return new DIPSServiceImpl(context);
 }
