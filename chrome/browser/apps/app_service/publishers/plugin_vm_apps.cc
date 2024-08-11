@@ -96,7 +96,7 @@ apps::AppPtr CreatePluginVmApp(Profile* profile, bool allowed) {
 
   // Show when installed, even if disabled by policy, to give users the choice
   // to uninstall and free up space.
-  app->show_in_management =
+  app->show_in_management = app->allow_uninstall =
       plugin_vm::PluginVmFeatures::Get()->IsConfigured(profile);
   return app;
 }
@@ -365,7 +365,7 @@ void PluginVmApps::OnPluginVmAvailabilityChanged(bool is_allowed,
   auto app =
       std::make_unique<App>(AppType::kPluginVm, plugin_vm::kPluginVmShelfAppId);
   SetAppAllowed(is_allowed, *app);
-  app->show_in_management = is_configured;
+  app->show_in_management = app->allow_uninstall = is_configured;
   AppPublisher::Publish(std::move(app));
 }
 
