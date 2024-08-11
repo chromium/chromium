@@ -2648,6 +2648,16 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/dom/events/scrolling/wheel-event-transactions-basic.html?include=scroll-over-scrollable-child [ Timeout ]
+external/wpt/dom/events/scrolling/wheel-event-transactions-basic.html?include=target-basic [ Timeout ]
+external/wpt/dom/events/scrolling/wheel-event-transactions-basic.html?include=transaction-not-bound-to-scroll-frame [ Timeout ]
+external/wpt/dom/events/scrolling/wheel-event-transactions-target-display-change.html?include=contents [ Timeout ]
+external/wpt/dom/events/scrolling/wheel-event-transactions-target-display-change.html?include=none [ Timeout ]
+external/wpt/dom/events/scrolling/wheel-event-transactions-target-elements.html [ Timeout ]
+external/wpt/dom/events/scrolling/wheel-event-transactions-target-move.html [ Timeout ]
+external/wpt/dom/events/scrolling/wheel-event-transactions-target-removal.html [ Timeout ]
+external/wpt/dom/events/scrolling/wheel-event-transactions-target-resize.html?include=passive-false [ Timeout ]
+external/wpt/dom/events/scrolling/wheel-event-transactions-target-resize.html?include=passive-true [ Timeout ]
 crbug.com/358461408 external/wpt/css/css-color/color-layers-no-blend-mode.html [ Failure ]
 crbug.com/358437643 [ Win11-arm64 ] external/wpt/html/semantics/forms/the-label-element/control-active-with-multiple-clicks.html [ Timeout ]
 crbug.com/358437643 [ Mac ] external/wpt/html/semantics/forms/the-label-element/control-active-with-multiple-clicks.html [ Timeout ]

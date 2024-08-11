@@ -493732,6 +493732,93 @@
         null,
         {}
        ]
+      ],
+      "wheel-event-transactions-basic.html": [
+       "1b9df69ec77f883685166ef7963b0c8a1911fd73",
+       [
+        "dom/events/scrolling/wheel-event-transactions-basic.html?include=scroll-over-scrollable-child",
+        {
+         "testdriver": true
+        }
+       ],
+       [
+        "dom/events/scrolling/wheel-event-transactions-basic.html?include=target-basic",
+        {
+         "testdriver": true
+        }
+       ],
+       [
+        "dom/events/scrolling/wheel-event-transactions-basic.html?include=transaction-not-bound-to-scroll-frame",
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "wheel-event-transactions-multiple-action-chains.html": [
+       "3b46b2f99a9c994864e53b9ea0d5fa9cbc9921a4",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "wheel-event-transactions-target-display-change.html": [
+       "6ca3c78b74cefe8b82735d32d9aee2688f10f208",
+       [
+        "dom/events/scrolling/wheel-event-transactions-target-display-change.html?include=contents",
+        {
+         "testdriver": true
+        }
+       ],
+       [
+        "dom/events/scrolling/wheel-event-transactions-target-display-change.html?include=none",
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "wheel-event-transactions-target-elements.html": [
+       "0109b7b6b18b92404868b20c89cc69d8ee142985",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "wheel-event-transactions-target-move.html": [
+       "a739d1cd5479ad5c414ff7bb2169911678bea8e1",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "wheel-event-transactions-target-removal.html": [
+       "f81efd22e22b92d732a785146b8d37de44f744b4",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "wheel-event-transactions-target-resize.html": [
+       "eb7431fca475db37f0ff217f37c132f5b1c251f2",
+       [
+        "dom/events/scrolling/wheel-event-transactions-target-resize.html?include=passive-false",
+        {
+         "testdriver": true
+        }
+       ],
+       [
+        "dom/events/scrolling/wheel-event-transactions-target-resize.html?include=passive-true",
+        {
+         "testdriver": true
+        }
+       ]
       ]
      },
      "shadow-relatedTarget.html": [
