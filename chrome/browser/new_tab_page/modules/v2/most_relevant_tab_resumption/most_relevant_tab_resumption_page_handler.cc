@@ -301,9 +301,11 @@ void MostRelevantTabResumptionPageHandler::OnURLVisitAggregatesFetched(
     GetTabsCallback callback,
     visited_url_ranking::ResultStatus status,
     std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates) {
-  if (status != visited_url_ranking::ResultStatus::kSuccess) {
+  if (status == visited_url_ranking::ResultStatus::kError) {
     std::move(callback).Run({});
+    return;
   }
+
   auto* visited_url_ranking_service =
       visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
           profile_);
@@ -321,6 +323,11 @@ void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
     std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates) {
   base::UmaHistogramEnumeration("NewTabPage.TabResumption.ResultStatus",
                                 status);
+  if (status == visited_url_ranking::ResultStatus::kError) {
+    std::move(callback).Run({});
+    return;
+  }
+
   std::vector<history::mojom::TabPtr> tabs_mojom;
   for (const auto& url_visit_aggregate : url_visit_aggregates) {
     const URLVisitAggregate::TabData* tab_data =
