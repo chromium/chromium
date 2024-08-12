@@ -117,7 +117,7 @@ if ((is_apple || (is_win && is_component_build)) &&
     # On iOS, the runtime library need to be code signed (adhoc signature)
     # starting with Xcode 8, so use an action instead of a copy on iOS.
     action("copy_sanitizer_runtime") {
-      script = "//build/config/ios/codesign.py"
+      script = "//build/config/apple/codesign.py"
       sources = [ _clang_rt_dso_full_path ]
       outputs = [ "$root_out_dir/" + get_path_info(sources[0], "file") ]
       args = [

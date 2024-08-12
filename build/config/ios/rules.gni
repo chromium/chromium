@@ -270,7 +270,7 @@ template("create_signed_bundle") {
       deps = []
     }
 
-    post_processing_script = "//build/config/ios/codesign.py"
+    post_processing_script = "//build/config/apple/codesign.py"
     post_processing_sources = [ _bundle_binary_path ]
     if (_enable_entitlements) {
       if (defined(invoker.entitlements_target)) {
@@ -781,7 +781,7 @@ template("ios_app_bundle") {
     _gen_info_plist_outputs = get_target_outputs(":$_generate_info_plist")
     _info_plist_path = _gen_info_plist_outputs[0]
 
-    script = "//build/config/ios/codesign.py"
+    script = "//build/config/apple/codesign.py"
     deps = [ ":$_generate_info_plist" ]
     if (defined(invoker.entitlements_target)) {
       deps += [ invoker.entitlements_target ]

@@ -257,7 +257,7 @@ template("fuzzer_test") {
               target_name + "_codesign_supporting_files_" + _deps_type_label
           action_foreach(_codesign_action_name) {
             testonly = true
-            script = "//build/config/ios/codesign.py"
+            script = "//build/config/apple/codesign.py"
             sources = _files_to_sign
             _codesign_output_path =
                 "${root_build_dir}/codesign/{{source_file_part}}"
