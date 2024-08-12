@@ -1622,6 +1622,7 @@
   },
   {
     "prefix": "shared-storage-fenced-frame-mparch",
+    "owners": ["cammie@chromium.org", "yaoxia@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/shared-storage",
@@ -1635,7 +1636,8 @@
     "expires": "Jan 31, 2025"
   },
   {
-    "prefix": "shared-storage-fenced-frame-mparch-selecturl-limit",
+    "prefix": "shared-storage-selecturl-limit",
+    "owners": ["cammie@chromium.org", "yaoxia@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/shared-storage-selecturl-limit/"
