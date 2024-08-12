@@ -1772,10 +1772,10 @@ void AuthenticatorCommonImpl::ContinueReportAfterRpIdCheck(
         req_state_->relying_party_id, options->current_user_details->user_id,
         options->current_user_details->name,
         options->current_user_details->display_name);
-  } else {
+  } else if (options->unknown_credential_id) {
     GetWebAuthenticationDelegate()->DeletePasskey(
         WebContents::FromRenderFrameHost(GetRenderFrameHost()),
-        options->unknown_credential_id, req_state_->relying_party_id);
+        *options->unknown_credential_id, req_state_->relying_party_id);
   }
   CompleteReportRequest(blink::mojom::AuthenticatorStatus::SUCCESS, nullptr);
 }

@@ -601,7 +601,7 @@ struct WebAuthnDOMExceptionDetails {
 // Parameters passed into calls to Report.
 struct PublicKeyCredentialReportOptions {
   string relying_party_id;
-  array<uint8> unknown_credential_id;
+  array<uint8>? unknown_credential_id;
   AllAcceptedCredentialsOptions? all_accepted_credentials;
   CurrentUserDetailsOptions? current_user_details;
 };

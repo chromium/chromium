@@ -1054,8 +1054,11 @@ TypeConverter<PublicKeyCredentialReportOptionsPtr,
     mojo_options->relying_party_id = options.rpId();
   }
   if (options.hasUnknownCredentialId()) {
-    mojo_options->unknown_credential_id =
-        ConvertTo<Vector<uint8_t>>(options.unknownCredentialId());
+    Vector<char> decoded_cred_id;
+    // The fact that this decodes successfully has already been tested.
+    CHECK(WTF::Base64UnpaddedURLDecode(options.unknownCredentialId(),
+                                       decoded_cred_id));
+    mojo_options->unknown_credential_id = WTF::Vector<uint8_t>(decoded_cred_id);
   }
   if (options.hasAllAcceptedCredentials()) {
     mojo_options->all_accepted_credentials =

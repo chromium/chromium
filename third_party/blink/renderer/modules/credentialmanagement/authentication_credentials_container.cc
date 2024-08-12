@@ -2003,6 +2003,14 @@ ScriptPromise<IDLUndefined> AuthenticationCredentialsContainer::report(
         resolver->RejectWithTypeError("Invalid base64url string for userId.");
         return promise;
       }
+    } else if (options->publicKey()->hasUnknownCredentialId()) {
+      Vector<char> decoded_cred_id;
+      if (!WTF::Base64UnpaddedURLDecode(
+              options->publicKey()->unknownCredentialId(), decoded_cred_id)) {
+        resolver->RejectWithTypeError(
+            "Invalid base64url string for unknownCredentialId.");
+        return promise;
+      }
     }
     mojo_options =
         MojoPublicKeyCredentialReportOptions::From(*options->publicKey());

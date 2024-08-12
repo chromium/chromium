@@ -524,8 +524,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportGPMPasskeys) {
   navigator.credentials.report({
     publicKey: {
       rpId: "www.example.com",
-      unknownCredentialId:
-        new Uint8Array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]),
+      unknownCredentialId: "AQIDBAUGBwgJCgsMDQ4PEA",
     }
   }).then(c => 'webauthn: OK', e => 'error ' + e);
   )"));
@@ -649,6 +648,21 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportInvalidStrings) {
   )")
           .ExtractString(),
       testing::HasSubstr("Invalid base64url string for userId."));
+
+  // This should fail with a TypeError due to an invalid base64url
+  // string in the unknownCredentialId report.
+  EXPECT_THAT(
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      R"(
+  navigator.credentials.report({
+    publicKey: {
+      rpId: "www.example.com",
+      unknownCredentialId: "A+/+A",
+    }
+  }).then(c => 'webauthn: OK', e => 'error ' + e);
+  )")
+          .ExtractString(),
+      testing::HasSubstr("Invalid base64url string for unknownCredentialId."));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
