@@ -43124,6 +43124,314 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAuthn.Dialog.Cancelled">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user cancelled the request while the WebAuthn dialog is
+    shown.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.ICloudShown" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed an ICloud Keychain Window to complete a
+    get assertion request.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.GpmAndICloud"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options from GPM and
+    iCloud in the WebAuthn selection dialog. The dialog may also contain an
+    entry point to hybrid flow.
+  </description>
+</action>
+
+<action
+    name="WebAuthn.GetAssertion.MultipleOptionsShown.GpmAndICloudAndProfile"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options from GPM,
+    iCloud and Chrome profile in the WebAuthn selection dialog. The dialog may
+    also contain an entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.GpmAndProfile"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options from GPM and
+    Chrome profile in the WebAuthn selection dialog. The dialog may also contain
+    an entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.GpmAndWin"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options from GPM and
+    Windows in the WebAuthn selection dialog. The dialog may also contain an
+    entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.GpmOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options only from
+    GPM in the WebAuthn selection dialog. The dialog may also contain an entry
+    point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.ICloudAndProfile"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options from iCloud
+    and Chrome profile in the WebAuthn selection dialog. The dialog may also
+    contain an entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.ICloudOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options only from
+    iCloud in the WebAuthn selection dialog. The dialog may also contain an
+    entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.Others"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options stored other
+    than GPM, iCloud, Windows or Chrome Profile in the WebAuthn selection
+    dialog.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.ProfileOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed only options from the Chrome profile in
+    the WebAuthn selection dialog. The dialog may also contain an entry point to
+    hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.WinOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options only from
+    Windows in the WebAuthn selection dialog. The dialog may also contain an
+    entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.PriorityOptionShown.GpmOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a single preferred WebAuthn credential
+    from GPM in the WebAuthn selection dialog. The dialog may also contain an
+    entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.PriorityOptionShown.ICloudOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a single preferred WebAuthn credential
+    from Windows in the WebAuthn selection dialog. The dialog may also contain
+    an entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.PriorityOptionShown.ProfileOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a single preferred WebAuthn credential
+    from Profile in the WebAuthn selection dialog. The dialog may also contain
+    an entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.PriorityOptionShown.WinOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a single preferred WebAuthn credential
+    from Windows in the WebAuthn selection dialog. The dialog may also contain
+    an entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.ICloud.Cancelled">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user cancelled a request in the ICloud Keychain Window.
+  </description>
+</action>
+
+<action name="WebAuthn.ICloud.Success">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when a request is successful (e.g. UV completed via biometrics) in
+    the ICloud Keychain Window.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.ICloudShown" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed an ICloud Keychain Window to complete a
+    make credential request.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.GpmAndICloud"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in GPM or
+    iCloud in the selection dialog. The dialog may also contain an entry point
+    to hybrid flow.
+  </description>
+</action>
+
+<action
+    name="WebAuthn.MakeCredential.MultipleOptionsShown.GpmAndICloudAndProfile"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in GPM, iCloud
+    or Chrome profile in the selection dialog. The dialog may also contain an
+    entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.GpmAndProfile"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in GPM or
+    Profile in the selection dialog. The dialog may also contain an entry point
+    to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.GpmAndWin"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in GPM or
+    Windows in the selection dialog. The dialog may also contain an entry point
+    to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.GpmOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in GPM in the
+    selection dialog. The dialog may also contain an entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.ICloudAndProfile"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in iCloud or
+    Chrome profile in the selection dialog. The dialog may also contain an entry
+    point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.ICloudOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in iCloud in
+    the selection dialog. The dialog may also contain an entry point to hybrid
+    flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.Others"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys somewhere else
+    other than GPM, iCloud, Windows or Chrome Profile in the selection dialog.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.ProfileOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in Chrome
+    profile in the selection dialog. The dialog may also contain an entry point
+    to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.WinOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in Windows
+    only in the selection dialog. The dialog may also contain an entry point to
+    hybrid flow.
+  </description>
+</action>
+
 <action name="WebsiteSettings_CookiesDialogOpened">
   <obsolete>
     Superseded by the WebsiteSettings.Action histogram on 2014-10-30.

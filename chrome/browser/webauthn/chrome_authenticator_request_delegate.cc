@@ -121,6 +121,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/base64.h"
+#include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
 #include "device/fido/mac/authenticator.h"
 #include "device/fido/mac/credential_metadata.h"
@@ -973,6 +974,9 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
             kWebAuthnTouchIdLastUsed,
             base::UnlocalizedTimeFormatWithPattern(
                 base::Time::Now(), "yyyy-MM-dd", icu::TimeZone::getGMT()));
+  }
+  if (authenticator_type == device::AuthenticatorType::kICloudKeychain) {
+    webauthn::user_actions::RecordICloudSuccess();
   }
 
   dialog_controller_->RecordMacOsSuccessHistogram(request_type,

@@ -5315,6 +5315,8 @@ static_library("ui") {
       "webauthn/sheet_models.h",
       "webauthn/transport_hover_list_model.cc",
       "webauthn/transport_hover_list_model.h",
+      "webauthn/user_actions.cc",
+      "webauthn/user_actions.h",
       "webauthn/webauthn_ui_helpers.cc",
       "webauthn/webauthn_ui_helpers.h",
       "webui/side_panel/customize_chrome/customize_chrome_section.h",

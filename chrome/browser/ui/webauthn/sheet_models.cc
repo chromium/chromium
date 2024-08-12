@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/grit/browser_resources.h"
@@ -180,6 +181,7 @@ void AuthenticatorSheetModelBase::OnAccept() {
 void AuthenticatorSheetModelBase::OnCancel() {
   if (dialog_model()) {
     dialog_model()->CancelAuthenticatorRequest();
+    webauthn::user_actions::RecordCancelClick();
   }
 }
 
@@ -197,6 +199,8 @@ AuthenticatorMechanismSelectorSheetModel::
     : AuthenticatorSheetModelBase(dialog_model) {
   lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
                                 IDR_WEBAUTHN_PASSKEY_DARK);
+  webauthn::user_actions::RecordMultipleOptionsShown(dialog_model->mechanisms,
+                                                     /*is_create=*/true);
 }
 
 std::u16string AuthenticatorMechanismSelectorSheetModel::GetStepTitle() const {
@@ -1517,6 +1521,8 @@ AuthenticatorMultiSourcePickerSheetModel::
   lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
                                 IDR_WEBAUTHN_PASSKEY_DARK);
 
+  webauthn::user_actions::RecordMultipleOptionsShown(dialog_model->mechanisms,
+                                                     /*is_create=*/false);
   if (base::ranges::any_of(dialog_model->mechanisms,
                            &IsLocalPasskeyOrEnclaveAuthenticator)) {
     primary_passkeys_label_ =
@@ -1601,6 +1607,8 @@ AuthenticatorPriorityMechanismSheetModel::
                                   OtherMechanismButtonVisibility::kVisible) {
   lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
                                 IDR_WEBAUTHN_PASSKEY_DARK);
+
+  webauthn::user_actions::RecordPriorityOptionShown(dialog_model->mechanisms);
 }
 AuthenticatorPriorityMechanismSheetModel::
     ~AuthenticatorPriorityMechanismSheetModel() = default;

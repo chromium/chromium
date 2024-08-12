@@ -33,6 +33,7 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_window.h"
+#include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/change_pin_controller_impl.h"
@@ -1289,6 +1290,7 @@ void AuthenticatorRequestDialogController::OnUserConsentDenied() {
   }
 
   if (ephemeral_state_.did_dispatch_to_icloud_keychain_) {
+    webauthn::user_actions::RecordICloudCancelled();
     // If we dispatched automatically to iCloud Keychain and the
     // user clicked cancel, give them the option to try something else.
     bool did_trigger_automatically =
@@ -2653,6 +2655,9 @@ void AuthenticatorRequestDialogController::
   if (platform_authenticator_it->type ==
       device::AuthenticatorType::kICloudKeychain) {
     ephemeral_state_.did_dispatch_to_icloud_keychain_ = true;
+    webauthn::user_actions::RecordICloudShown(
+        transport_availability_.request_type ==
+        device::FidoRequestType::kMakeCredential);
   }
 
   DispatchRequestAsync(&*platform_authenticator_it);
