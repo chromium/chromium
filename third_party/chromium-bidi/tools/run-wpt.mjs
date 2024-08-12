@@ -207,7 +207,8 @@ if (RUN_TESTS === 'true') {
     }
 
     const headlessSuffix = HEADLESS === 'true' ? '-headless' : '';
-    const chromeDriverLogName = `${CHROMEDRIVER_LOG_NAME}${headlessSuffix}.log`;
+    const timestamp = `-${new Date().toISOString().replace(/[:]/g, '-')}`;
+    const chromeDriverLogName = `${CHROMEDRIVER_LOG_NAME}${headlessSuffix}${timestamp}.log`;
     const chromeDriverLogs = join('logs', chromeDriverLogName);
 
     log('Using chromedriver with mapper...');
