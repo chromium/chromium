@@ -1181,6 +1181,7 @@
   {
     "prefix": "force-renderer-accessibility",
     "platforms": ["Linux", "Mac", "Win"],
+    "owners": ["dtseng@chromium.org", "aleventhal@chromium.org"],
     "bases": ["accessibility/accessibility-beforematch-marker-crash.html",
               "accessibility/accessibility-node-appendChild-crash.html",
               "accessibility/details-summary-crash.html",
@@ -1202,8 +1203,9 @@
     "expires": "Jul 1, 2025"
   },
   {
-  "prefix": "force-renderer-accessibility-parser-yield-and-delay-often",
+    "prefix": "force-renderer-accessibility-and-delay",
     "platforms": ["Linux"],
+    "owners": ["dtseng@chromium.org", "aleventhal@chromium.org"],
     "bases": ["external/wpt/accessibility/crashtests/removed-from-flat-tree.html"],
     "args": ["--force-renderer-accessibility",
              "--enable-blink-features=HTMLParserYieldAndDelayOftenForTesting"],
