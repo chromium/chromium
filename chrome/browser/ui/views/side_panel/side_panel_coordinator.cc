@@ -105,8 +105,8 @@ std::unique_ptr<views::ToggleImageButton> CreatePinToggleButton(
 
   int dip_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
-  const gfx::VectorIcon& pin_icon = kKeepIcon;
-  const gfx::VectorIcon& unpin_icon = kKeepFilledIcon;
+  const gfx::VectorIcon& pin_icon = kKeepPinChromeRefreshIcon;
+  const gfx::VectorIcon& unpin_icon = kKeepPinFilledChromeRefreshIcon;
   views::SetImageFromVectorIconWithColorId(
       button.get(), pin_icon, kColorSidePanelHeaderButtonIcon,
       kColorSidePanelHeaderButtonIconDisabled, dip_size);
