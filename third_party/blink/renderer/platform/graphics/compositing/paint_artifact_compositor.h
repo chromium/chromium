@@ -63,7 +63,7 @@ class LayerListBuilder {
 // a kDstIn blend effect. This is why two stable cc effect IDs are provided.
 // Even if the mask layer is not present, it's important for the isolation
 // effect node to be stable, to minimize render surface damage.
-class SynthesizedClip : private cc::ContentLayerClient {
+class SynthesizedClip : public cc::ContentLayerClient {
  public:
   SynthesizedClip() : layer_(nullptr) {
     mask_isolation_id_ =

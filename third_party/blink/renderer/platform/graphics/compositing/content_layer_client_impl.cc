@@ -100,6 +100,7 @@ void ContentLayerClientImpl::AppendAdditionalInfoAsJSON(
 void ContentLayerClientImpl::UpdateCcPictureLayer(
     const PendingLayer& pending_layer) {
   const auto& paint_chunks = pending_layer.Chunks();
+  CHECK_EQ(cc_picture_layer_->client(), this);
 #if EXPENSIVE_DCHECKS_ARE_ON()
   paint_chunk_debug_data_ = std::make_unique<JSONArray>();
   for (auto it = paint_chunks.begin(); it != paint_chunks.end(); ++it) {

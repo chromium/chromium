@@ -308,6 +308,8 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
       return;
     }
 
+    CHECK_EQ(layer_->client(), this);
+
     overlay_->PaintOverlayPage();
 
     // The emulation scale factor is baked in the contents of the overlay layer,

@@ -727,6 +727,7 @@ void SynthesizedClip::UpdateLayer(const ClipPaintPropertyNode& clip,
     // See: cc::LayerTreeHostImpl::IsInitialScrollHitTestReliable().
     layer_->SetHitTestable(true);
   }
+  CHECK_EQ(layer_->client(), this);
 
   const auto& path = clip.ClipPath();
   SkRRect new_rrect(clip.PaintClipRect());

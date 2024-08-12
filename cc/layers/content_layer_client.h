@@ -14,6 +14,11 @@ namespace cc {
 
 class CC_EXPORT ContentLayerClient {
  public:
+  // Normally a ContentLayerClient implementation instance and a PictureLayer
+  // hold references to each other, making copy and move operations unsafe.
+  ContentLayerClient(const ContentLayerClient&) = delete;
+  ContentLayerClient& operator=(const ContentLayerClient&) = delete;
+
   // Paints the content area for the layer into a DisplayItemList.
   virtual scoped_refptr<DisplayItemList> PaintContentsToDisplayList() = 0;
 
@@ -22,7 +27,8 @@ class CC_EXPORT ContentLayerClient {
   virtual bool FillsBoundsCompletely() const = 0;
 
  protected:
-  virtual ~ContentLayerClient() {}
+  ContentLayerClient() = default;
+  virtual ~ContentLayerClient() = default;
 };
 
 }  // namespace cc

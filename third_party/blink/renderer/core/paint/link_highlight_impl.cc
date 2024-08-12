@@ -103,7 +103,7 @@ LinkHighlightImpl::LinkHighlightImpl(Node* node)
       start_time_(base::TimeTicks::Now()),
       element_id_(NewElementId()) {
   DCHECK(node_);
-  fragments_.emplace_back();
+  fragments_.push_back(std::make_unique<LinkHighlightFragment>());
 
   compositor_animation_ = CompositorAnimation::Create();
   DCHECK(compositor_animation_);
@@ -266,7 +266,11 @@ void LinkHighlightImpl::UpdateAfterPrePaint() {
 
   wtf_size_t fragment_count = object->FragmentList().size();
   if (fragment_count != fragments_.size()) {
+    wtf_size_t i = fragments_.size();
     fragments_.resize(fragment_count);
+    for (; i < fragment_count; ++i) {
+      fragments_[i] = std::make_unique<LinkHighlightFragment>();
+    }
     SetNeedsRepaintAndCompositingUpdate();
   }
 }
@@ -331,14 +335,15 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
     }
 
     DCHECK_LT(index, fragments_.size());
-    auto& link_highlight_fragment = fragments_[index];
+    auto& link_highlight_fragment = *fragments_[index];
     link_highlight_fragment.SetColor(color);
 
     auto bounding_rect = gfx::ToEnclosingRect(new_path.BoundingRect());
     new_path.Translate(-gfx::Vector2dF(bounding_rect.OffsetFromOrigin()));
 
-    cc::Layer* layer = link_highlight_fragment.Layer();
-    DCHECK(layer);
+    cc::PictureLayer* layer = link_highlight_fragment.Layer();
+    CHECK(layer);
+    CHECK_EQ(&link_highlight_fragment, layer->client());
     if (link_highlight_fragment.GetPath() != new_path) {
       link_highlight_fragment.SetPath(new_path);
       layer->SetBounds(bounding_rect.size());
