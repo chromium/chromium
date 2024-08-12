@@ -122,6 +122,9 @@ class PickerClientImpl
                  WindowOpenDisposition disposition) override;
   };
 
+  void StartCrosSearchInternal(std::u16string query,
+                               std::optional<ash::PickerCategory> category,
+                               CrosSearchResultsCallback callback);
   void OnCrosSearchResultsUpdated(
       CrosSearchResultsCallback callback,
       ash::AppListSearchResultType result_type,

@@ -14,6 +14,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/picker/picker_controller.h"
+#include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/public/cpp/picker/picker_web_paste_target.h"
 #include "base/check.h"
@@ -22,11 +23,13 @@
 #include "base/files/file_enumerator.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/ranges/algorithm.h"
 #include "base/ranges/functional.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/files/drive_search_provider.h"
@@ -257,6 +260,19 @@ PickerClientImpl::~PickerClientImpl() {
 
 void PickerClientImpl::StartCrosSearch(
     const std::u16string& query,
+    std::optional<ash::PickerCategory> category,
+    CrosSearchResultsCallback callback) {
+  // This method is called during keydown events - avoid slow synchronous work.
+  // As `AutocompleteController::Start` is slow, post a task to avoid
+  // introducing keydown latency.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&PickerClientImpl::StartCrosSearchInternal,
+                                weak_factory_.GetWeakPtr(), query,
+                                std::move(category), std::move(callback)));
+}
+
+void PickerClientImpl::StartCrosSearchInternal(
+    std::u16string query,
     std::optional<ash::PickerCategory> category,
     CrosSearchResultsCallback callback) {
   ranker_categories_ = CreateRankerCategories();
