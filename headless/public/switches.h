@@ -83,6 +83,10 @@ inline constexpr char kFontRenderHinting[] = "font-render-hinting";
 inline constexpr char kForceNewBrowsingInstance[] =
     "force-new-browsing-instance";
 
+// Force reporting destination attested for headless shell.
+inline constexpr char kForceReportingDestinationAttested[] =
+    "force-reporting-destination-attested";
+
 // Forces Incognito mode even if user data directory is specified using the
 // --user-data-dir switch.
 inline constexpr char kIncognito[] = "incognito";

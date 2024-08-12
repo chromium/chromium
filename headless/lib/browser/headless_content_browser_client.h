@@ -80,6 +80,12 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
                                  const url::Origin& top_frame_origin,
                                  const url::Origin& api_origin) override;
 
+  bool IsPrivacySandboxReportingDestinationAttested(
+      content::BrowserContext* browser_context,
+      const url::Origin& destination_origin,
+      content::PrivacySandboxInvokingAPI invoking_api,
+      bool post_impression_reporting) override;
+
   bool IsSharedStorageAllowed(
       content::BrowserContext* browser_context,
       content::RenderFrameHost* rfh,
