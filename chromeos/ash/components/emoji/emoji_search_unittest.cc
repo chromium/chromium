@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/emoji/emoji_search.h"
 
 #include "base/containers/span.h"
+#include "build/branding_buildflags.h"
 #include "chromeos/ash/components/emoji/grit/emoji.h"
 #include "ui/base/resource/mock_resource_bundle_delegate.h"
 
@@ -62,6 +63,9 @@ TEST_F(EmojiSearchTest, FindsSmilingEmojiInJapaneseLocale) {
             IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
             R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
             "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_EN_INTERNAL, R"([])"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
         FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
                      R"([{"group":"Arrows","emoji":[{"base":
             {"string":"←","name":"leftwards arrow"}}]}])"},
@@ -100,6 +104,9 @@ TEST_F(EmojiSearchTest, FindsSymbolInJapaneseLocale) {
             IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
             R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
             "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_EN_INTERNAL, R"([])"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
         FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
                      R"([{"group":"Arrows","emoji":[{"base":
             {"string":"←","name":"leftwards arrow"}}]}])"},
@@ -135,6 +142,9 @@ TEST_F(EmojiSearchTest, CanSearchMultipleLocales) {
             IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
             R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
             "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_EN_INTERNAL, R"([])"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
         FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
                      R"([{"group":"Miscellaneous","emoji":[{"base":
             {"string":"♭","name":"music flat sign","keywords":["music"]}}]}])"},
@@ -174,6 +184,9 @@ TEST_F(EmojiSearchTest, FindsSmilingEmoji) {
             IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
             R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
             "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_EN_INTERNAL, R"([])"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
         FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
                      R"([{"group":"Arrows","emoji":[{"base":
             {"string":"←","name":"leftwards arrow"}}]}])"},
@@ -190,6 +203,37 @@ TEST_F(EmojiSearchTest, FindsSmilingEmoji) {
   EXPECT_THAT(result.symbols, IsEmpty());
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(EmojiSearchTest, FindsSmilingEmojiViaInternalEnString) {
+  ScopedFakeResourceBundleDelegate mock_resource_delegate(
+      {{FakeResource{
+            IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START,
+            R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
+            "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+        FakeResource{
+            IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
+            R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
+            "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_EN_INTERNAL,
+                     R"([{"emoji":[{"base":{"string":"😀",
+            "keywords":["lulz"]}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
+                     R"([{"group":"Arrows","emoji":[{"base":
+            {"string":"←","name":"leftwards arrow"}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON,
+                     R"-([{"group":"Classic","emoji":[
+              {"base":{"string":":-)","name":"smiley face "}}]}])-"}}});
+
+  EmojiSearch search;
+
+  EmojiSearchResult result = search.SearchEmoji("lulz", {{"en"}});
+
+  EXPECT_THAT(result.emojis, ElementsAre(FieldsAre(Gt(0), "😀")));
+  EXPECT_THAT(result.emoticons, IsEmpty());
+  EXPECT_THAT(result.symbols, IsEmpty());
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 TEST_F(EmojiSearchTest, MultiKeywordPartialMatch) {
   ScopedFakeResourceBundleDelegate mock_resource_delegate(
       {{FakeResource{
@@ -200,6 +244,9 @@ TEST_F(EmojiSearchTest, MultiKeywordPartialMatch) {
             IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
             R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
             "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_EN_INTERNAL, R"([])"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
         FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
                      R"([{"group":"Arrows","emoji":[{"base":
             {"string":"←","name":"leftwards arrow"}}]}])"},
@@ -226,6 +273,9 @@ TEST_F(EmojiSearchTest, FindsSmilingEmoticon) {
             IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
             R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
             "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_EN_INTERNAL, R"([])"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
         FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
                      R"([{"group":"Arrows","emoji":[{"base":
             {"string":"←","name":"leftwards arrow"}}]}])"},
@@ -252,6 +302,9 @@ TEST_F(EmojiSearchTest, FindsSymbol) {
             IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
             R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
             "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_EN_INTERNAL, R"([])"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
         FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
                      R"([{"group":"Arrows","emoji":[{"base":
             {"string":"←","name":"leftwards arrow"}}]}])"},
@@ -277,6 +330,9 @@ TEST_F(EmojiSearchTest, IgnoresCase) {
             IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
             R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
             "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_EN_INTERNAL, R"([])"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
         FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
                      R"([{"group":"Arrows","emoji":[{"base":
             {"string":"←","name":"leftwards arrow"}}]}])"},
@@ -303,6 +359,9 @@ TEST_F(EmojiSearchTest, WholeNameScoresHigherThanPartialMatch) {
             IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
             R"([{"emoji":[{"base":{"string":"😀a","name":"grinning face",
             "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_EN_INTERNAL, R"([])"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
         FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
                      R"([{"group":"Arrows","emoji":[{"base":
             {"string":"←","name":"leftwards arrow"}}]}])"},
@@ -330,6 +389,9 @@ TEST_F(EmojiSearchTest, NameMatchScoresHigherThanKeyword) {
             IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
             R"([{"emoji":[{"base":{"string":"😀a","name":"grinning face",
             "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_EN_INTERNAL, R"([])"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
         FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
                      R"([{"group":"Arrows","emoji":[{"base":
             {"string":"←","name":"leftwards arrow"}}]}])"},
@@ -358,6 +420,9 @@ TEST_F(EmojiSearchTest, KeywordPartialScoresHigherThanFullKeywordMatch) {
             R"([{"emoji":[{"base":{"string":"😀a","name":"something else",
             "keywords":["face","grin","grinning facewithsomethingelse",":D",
             ":smile:"]}}]}])"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_EN_INTERNAL, R"([])"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
         FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
                      R"([{"group":"Arrows","emoji":[{"base":
             {"string":"←","name":"leftwards arrow"}}]}])"},

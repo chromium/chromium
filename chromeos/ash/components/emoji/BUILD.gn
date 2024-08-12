@@ -20,6 +20,7 @@ source_set("unit_tests") {
     ":emoji",
     ":resources",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//testing/gtest",
     "//ui/base:test_support",
   ]
@@ -671,6 +672,7 @@ source_set("emoji") {
   deps = [
     ":resources",
     "//base",
+    "//build:branding_buildflags",
     "//ui/base",
   ]
   sources = [

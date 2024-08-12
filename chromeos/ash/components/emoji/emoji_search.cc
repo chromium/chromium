@@ -26,8 +26,8 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "chromeos/ash/components/emoji/grit/emoji.h"
-#include "emoji_search.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -400,6 +400,10 @@ void EmojiSearch::LoadLanguage(std::string_view language_code) {
                            new_data.emoticons);
       AddNamesFromFileToMap(IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON,
                             new_data.names);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      // English has special internal emoji strings.
+      AddDataFromFileToMap(IDR_EMOJI_PICKER_EN_INTERNAL, new_data.emojis);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     }
   }
 
