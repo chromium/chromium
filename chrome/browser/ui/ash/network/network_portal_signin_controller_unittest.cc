@@ -347,12 +347,8 @@ TEST_P(NetworkPortalSigninControllerTest, IncognitoDisabledByPolicy) {
       GetPrefs(), policy::IncognitoModeAvailability::kDisabled);
   EXPECT_EQ(GetSigninMode(), SigninMode::kIncognitoDisabledByPolicy);
   ShowSignin();
-  if (CaptivePortalPopupWindowEnabled()) {
-    EXPECT_TRUE(IsWindowForSigninDefault(expected_url));
-  } else {
-    EXPECT_EQ(controller_->tab_url(), expected_url);
-    EXPECT_FALSE(controller_->incognito());
-  }
+  EXPECT_EQ(controller_->tab_url(), expected_url);
+  EXPECT_FALSE(controller_->incognito());
 }
 
 TEST_P(NetworkPortalSigninControllerTest,

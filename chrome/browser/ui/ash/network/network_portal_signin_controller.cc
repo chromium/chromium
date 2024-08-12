@@ -174,14 +174,7 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
       break;
     }
     case SigninMode::kIncognitoDisabledByPolicy:
-      if (chromeos::features::IsCaptivePortalPopupWindowEnabled()) {
-        // Since the signin window enables extensions and disables navigation,
-        // no special handling is required when Incognito browsing is disabled
-        // by policy.
-        ShowSigninWindow(url);
-      } else {
-        ShowTab(ProfileManager::GetActiveUserProfile(), url);
-      }
+      ShowTab(ProfileManager::GetActiveUserProfile(), url);
       break;
     case SigninMode::kIncognitoDisabledByParentalControls: {
       // Supervised users require SupervisedUserNavigationThrottle which is
