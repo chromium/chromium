@@ -434,6 +434,10 @@ void FilePathWatcherFSEvents::DispatchEvents(
                     /*error=*/false);
       continue;
     }
+    if (!event_in_scope) {
+      continue;
+    }
+
     // Use `GetChangeType` to determine which of the remaining change
     // event types is reported (created, modified, or deleted).
     FilePathWatcher::ChangeType change_type = GetChangeType(event_flags);
