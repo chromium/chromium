@@ -1227,7 +1227,7 @@ constexpr base::FeatureParam<base::TimeDelta>
         base::Seconds(30)};
 
 // Enables or disables Focus Mode feature on ChromeOS.
-BASE_FEATURE(kFocusMode, "FocusMode", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFocusMode, "FocusMode", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Focus Mode YTM integration on ChromeOS.
 BASE_FEATURE(kFocusModeYTM, "FocusModeYTM", base::FEATURE_DISABLED_BY_DEFAULT);
