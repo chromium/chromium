@@ -195,6 +195,13 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   // Returns a WatcherEntry for this, must be called on the original sequence.
   InotifyReader::WatcherEntry GetWatcherEntry();
 
+  void UpdateInotifyCountHighWaterMark() {
+    int current_inotify_count =
+        watches_.size() + recursive_watches_by_path_.size();
+    inotify_count_high_water_mark_ =
+        std::max(inotify_count_high_water_mark_, current_inotify_count);
+  }
+
  private:
   // Start watching |path| for changes and notify |delegate| on each change.
   // Returns true if watch for |path| has been added successfully.
@@ -301,6 +308,8 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   std::unordered_map<InotifyReader::Watch, base::FilePath>
       recursive_paths_by_watch_;
   std::map<base::FilePath, InotifyReader::Watch> recursive_watches_by_path_;
+
+  int inotify_count_high_water_mark_ = 0;
 
   base::WeakPtrFactory<FilePathWatcherImpl> weak_factory_{this};
 };
@@ -853,6 +862,7 @@ bool FilePathWatcherImpl::WatchWithChangeInfo(
     watches_.emplace_back(comps[i]);
   }
   watches_.emplace_back(base::FilePath::StringType());
+  UpdateInotifyCountHighWaterMark();
 
   if (!UpdateWatches()) {
     RecordWatchWithChangeInfoResultUma(
@@ -886,6 +896,8 @@ void FilePathWatcherImpl::Cancel() {
   watches_.clear();
   target_.clear();
   RemoveRecursiveWatches();
+
+  RecordInotifyWatchCountUma(inotify_count_high_water_mark_);
 }
 
 bool FilePathWatcherImpl::UpdateWatches() {
@@ -1060,6 +1072,8 @@ void FilePathWatcherImpl::TrackWatchForRecursion(InotifyReader::Watch watch,
   DUMP_WILL_BE_CHECK(!Contains(recursive_watches_by_path_, path));
   recursive_paths_by_watch_[watch] = path;
   recursive_watches_by_path_[path] = watch;
+
+  UpdateInotifyCountHighWaterMark();
 }
 
 void FilePathWatcherImpl::RemoveRecursiveWatches() {
