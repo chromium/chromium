@@ -36,6 +36,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -201,13 +202,19 @@ void AccountSelectionModalView::InitDialogWidget() {
 
 std::unique_ptr<views::View>
 AccountSelectionModalView::CreatePlaceholderAccountRow() {
+  const SkColor kPlaceholderColor =
+      color_utils::IsDark(web_contents_->GetColorProvider().GetColor(
+          ui::kColorDialogBackground))
+          ? gfx::kGoogleGrey800
+          : gfx::kGoogleGrey200;
+
   std::unique_ptr<views::View> placeholder_account_icon =
       std::make_unique<views::View>();
   placeholder_account_icon->SetPreferredSize(
       gfx::Size(kModalAvatarSize, kModalAvatarSize));
   placeholder_account_icon->SizeToPreferredSize();
-  placeholder_account_icon->SetBackground(views::CreateRoundedRectBackground(
-      gfx::kGoogleGrey200, kModalAvatarSize));
+  placeholder_account_icon->SetBackground(
+      views::CreateRoundedRectBackground(kPlaceholderColor, kModalAvatarSize));
 
   constexpr int kPlaceholderAccountRowPadding = 16;
   auto row = std::make_unique<views::View>();
@@ -239,7 +246,7 @@ AccountSelectionModalView::CreatePlaceholderAccountRow() {
       gfx::Size(kPlaceholderAccountNameWidth, kPlaceholderTextHeight));
   placeholder_account_name->SizeToPreferredSize();
   placeholder_account_name->SetBackground(views::CreateRoundedRectBackground(
-      gfx::kGoogleGrey200, kPlaceholderRadius));
+      kPlaceholderColor, kPlaceholderRadius));
 
   views::View* placeholder_account_email =
       text_column->AddChildView(std::make_unique<views::View>());
@@ -247,7 +254,7 @@ AccountSelectionModalView::CreatePlaceholderAccountRow() {
       gfx::Size(kPlaceholderAccountEmailWidth, kPlaceholderTextHeight));
   placeholder_account_email->SizeToPreferredSize();
   placeholder_account_email->SetBackground(views::CreateRoundedRectBackground(
-      gfx::kGoogleGrey200, kPlaceholderRadius));
+      kPlaceholderColor, kPlaceholderRadius));
 
   return row;
 }
