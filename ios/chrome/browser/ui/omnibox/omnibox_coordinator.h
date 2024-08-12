@@ -78,6 +78,10 @@ class OmniboxClient;
 // Use this method to resign `textField` as the first responder.
 - (void)endEditing;
 
+/// Sets the thumbnail image used for image search. Set to`nil` to hide the
+/// thumbnail.
+- (void)setThumbnailImage:(UIImage*)image;
+
 // Returns the toolbar omnibox consumer.
 - (id<ToolbarOmniboxConsumer>)toolbarOmniboxConsumer;
 @end

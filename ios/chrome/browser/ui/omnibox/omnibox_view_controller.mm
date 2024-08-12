@@ -246,6 +246,10 @@ using base::UserMetricsAction;
   self.textField.placeholder = l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
 }
 
+- (void)setThumbnailImage:(UIImage*)image {
+  [self.view setThumbnailImage:image];
+}
+
 #pragma mark - OmniboxTextFieldDelegate
 
 - (BOOL)textField:(UITextField*)textField

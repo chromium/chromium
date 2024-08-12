@@ -90,6 +90,10 @@ class OmniboxTextChangeDelegate;
 // Restores the chrome post-scribble.
 - (void)cleanupOmniboxAfterScribble;
 
+/// Sets the thumbnail image used for image search. Set to`nil` to hide the
+/// thumbnail.
+- (void)setThumbnailImage:(UIImage*)image;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_VIEW_CONTROLLER_H_

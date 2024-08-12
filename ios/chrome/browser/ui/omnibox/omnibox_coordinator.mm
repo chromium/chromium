@@ -317,6 +317,10 @@
   return self.viewController.viewContainingTextField;
 }
 
+- (void)setThumbnailImage:(UIImage*)image {
+  [self.viewController setThumbnailImage:image];
+}
+
 #pragma mark Scribble
 
 - (void)focusOmniboxForScribble {
