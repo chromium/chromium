@@ -36,6 +36,7 @@ PlusAddressBlocklistData::~PlusAddressBlocklistData() = default;
 
 bool PlusAddressBlocklistData::PopulateDataFromComponent(
     const std::string& binary_pb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (binary_pb.empty()) {
     // TODO(crbug.com/324556906): Emit parsing metrics.
     return false;
@@ -54,10 +55,12 @@ bool PlusAddressBlocklistData::PopulateDataFromComponent(
 }
 
 const re2::RE2* PlusAddressBlocklistData::GetExclusionPattern() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return exclusion_pattern_.get();
 }
 
 const re2::RE2* PlusAddressBlocklistData::GetExceptionPattern() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return exception_pattern_.get();
 }
 

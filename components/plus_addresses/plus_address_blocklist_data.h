@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/sequence_checker.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace plus_addresses {
@@ -15,7 +16,6 @@ namespace plus_addresses {
 // Addresses should not be offered. The data to populate it is read from the
 // Component Updater, which fetches it periodically from Google to get the
 // most up-to-date patterns.
-// TODO(crbug.com/324556906) Add sequence checker.
 class PlusAddressBlocklistData final {
  public:
   static PlusAddressBlocklistData& GetInstance();
@@ -39,8 +39,12 @@ class PlusAddressBlocklistData final {
   const re2::RE2* GetExceptionPattern() const;
 
  private:
-  std::unique_ptr<re2::RE2> exclusion_pattern_;
-  std::unique_ptr<re2::RE2> exception_pattern_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  std::unique_ptr<re2::RE2> exclusion_pattern_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<re2::RE2> exception_pattern_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 }  // namespace plus_addresses
 
