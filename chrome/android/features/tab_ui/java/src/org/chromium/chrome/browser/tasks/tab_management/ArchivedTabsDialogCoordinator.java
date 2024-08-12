@@ -60,6 +60,7 @@ import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -200,7 +201,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             new TabListEditorCoordinator.LifecycleObserver() {
                 @Override
                 public void willHide() {
-                    mRecyclerView.removeOnScrollListener(mRecyclerScrollListener);
+                    mDialogRecyclerView.removeOnScrollListener(mRecyclerScrollListener);
                     mSnackbarManager.popParentViewFromOverrideStack(mSnackbarOverrideToken);
                     // In case we were hidden by TabListEditor in some other case, force the
                     // animation to finish.
@@ -244,7 +245,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private final @NonNull ViewGroup mTabSwitcherView;
     private final @NonNull FadingShadowView mShadowView;
 
-    private RecyclerView mRecyclerView;
+    private TabListRecyclerView mDialogRecyclerView;
+    private WeakReference<TabListRecyclerView> mTabSwitcherRecyclerView;
     private @TabActionState int mTabActionState = TabActionState.CLOSABLE;
     private TabListEditorCoordinator mTabListEditorCoordinator;
     private OnTabSelectingListener mOnTabSelectingListener;
@@ -337,6 +339,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     public void show(OnTabSelectingListener onTabSelectingListener) {
         if (mIsShowing) return;
         mIsShowing = true;
+        mTabSwitcherRecyclerView =
+                new WeakReference<>(mTabSwitcherView.findViewById(R.id.tab_list_recycler_view));
+        mTabSwitcherRecyclerView.get().setBlockTouchInput(true);
 
         boolean tabListFirstShown = false;
         if (mTabListEditorCoordinator == null) {
@@ -356,9 +361,10 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 R.string.accessibility_archived_tabs_dialog,
                 R.string.accessibility_archived_tabs_dialog_back_button);
 
-        mRecyclerView = mDialogView.findViewById(R.id.tab_list_recycler_view);
-        mRecyclerView.addOnScrollListener(mRecyclerScrollListener);
-        mShadowView.setVisibility(mRecyclerView.canScrollVertically(1) ? View.VISIBLE : View.GONE);
+        mDialogRecyclerView = mDialogView.findViewById(R.id.tab_list_recycler_view);
+        mDialogRecyclerView.addOnScrollListener(mRecyclerScrollListener);
+        mShadowView.setVisibility(
+                mDialogRecyclerView.canScrollVertically(1) ? View.VISIBLE : View.GONE);
 
         // Register the dialog to handle back press events.
         mBackPressManager.addHandler(controller, BackPressHandler.Type.ARCHIVED_TABS_DIALOG);
@@ -417,6 +423,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     }
 
     private void animateOut(int duration, Runnable animationFinishCallback) {
+        mDialogRecyclerView.setBlockTouchInput(true);
         // TODO(crbug.com/358430208): Use AnimatorSet here.
         mDialogView
                 .animate()
@@ -434,6 +441,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                             @Override
                             public void onAnimationEnd(@NonNull Animator animator) {
                                 animationFinishCallback.run();
+                                mDialogRecyclerView.setBlockTouchInput(false);
                             }
                         })
                 .start();
@@ -458,6 +466,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mArchivedTabModel.getTabCountSupplier().removeObserver(mTabCountObserver);
         mSnackbarOverrideToken = TokenHolder.INVALID_TOKEN;
         mIsShowing = false;
+        mTabSwitcherRecyclerView.get().setBlockTouchInput(false);
+        mTabSwitcherRecyclerView.clear();
     }
 
     void moveToState(@TabActionState int tabActionState) {
