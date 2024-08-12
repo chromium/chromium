@@ -138,7 +138,7 @@ IOSChromeMetricsServiceClient::IOSChromeMetricsServiceClient(
     : metrics_state_manager_(state_manager),
       synthetic_trial_registry_(synthetic_trial_registry),
       stability_metrics_provider_(nullptr) {
-  notification_listeners_active_ = RegisterForNotifications();
+  RegisterForNotifications();
 
   // The IncognitoSessionTracker may be null during unit tests.
   if (IncognitoSessionTracker* tracker =
@@ -468,7 +468,7 @@ void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
   std::move(collect_final_metrics_done_callback_).Run();
 }
 
-bool IOSChromeMetricsServiceClient::RegisterForNotifications() {
+void IOSChromeMetricsServiceClient::RegisterForNotifications() {
   tab_parented_subscription_ =
       TabParentingGlobalObserver::GetInstance()->RegisterCallback(
           base::BindRepeating(&IOSChromeMetricsServiceClient::OnTabParented,
@@ -479,25 +479,27 @@ bool IOSChromeMetricsServiceClient::RegisterForNotifications() {
               &IOSChromeMetricsServiceClient::OnURLOpenedFromOmnibox,
               base::Unretained(this)));
 
-  std::vector<ChromeBrowserState*> loaded_browser_states =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
-  bool all_profiles_succeeded = true;
+  ChromeBrowserStateManager* browser_state_manager =
+      GetApplicationContext()->GetChromeBrowserStateManager();
 
-  // If this function is called too early (before browser_state is fully
-  // initialized), the event listener will not be registered correctly.
-  DCHECK_GT(loaded_browser_states.size(), 0u);
-  for (ChromeBrowserState* browser_state : loaded_browser_states) {
-    if (!RegisterForBrowserStateEvents(browser_state)) {
-      all_profiles_succeeded = false;
-    }
+  browser_state_manager_observation_.Observe(browser_state_manager);
+  for (auto* browser_state : browser_state_manager->GetLoadedBrowserStates()) {
+    OnChromeBrowserStateLoaded(browser_state_manager, browser_state);
   }
-  return all_profiles_succeeded;
 }
 
 bool IOSChromeMetricsServiceClient::RegisterForBrowserStateEvents(
     ChromeBrowserState* browser_state) {
+  // IOSChromeMetricsServiceClient may be created as part of the initialisation
+  // of a ChromeBrowserState, it is possible for this method to be called twice
+  // (once from the constructor and once from ChromeBrowserStateManager once it
+  // is done loading the BrowserState). Ignore the superfluous notification.
+  auto iterator = observed_chrome_browser_states_.find(browser_state);
+  if (iterator != observed_chrome_browser_states_.end()) {
+    return true;
+  }
+
+  observed_chrome_browser_states_.insert(browser_state);
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForBrowserState(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS);
@@ -570,6 +572,26 @@ void IOSChromeMetricsServiceClient::OnUkmAllowedStateChanged(
 
   // Signal service manager to enable/disable UKM based on new state.
   UpdateRunningServices();
+}
+
+void IOSChromeMetricsServiceClient::OnChromeBrowserStateManagerDestroyed(
+    ChromeBrowserStateManager* manager) {
+  browser_state_manager_observation_.Reset();
+}
+
+void IOSChromeMetricsServiceClient::OnChromeBrowserStateCreated(
+    ChromeBrowserStateManager* manager,
+    ChromeBrowserState* browser_state) {
+  // Nothing to do, the ChromeBrowserState is not fully loaded, and it is
+  // not possible to access the KeyedService yet.
+}
+
+void IOSChromeMetricsServiceClient::OnChromeBrowserStateLoaded(
+    ChromeBrowserStateManager* manager,
+    ChromeBrowserState* browser_state) {
+  if (!RegisterForBrowserStateEvents(browser_state)) {
+    notification_listeners_active_ = false;
+  }
 }
 
 bool IOSChromeMetricsServiceClient::IsUkmAllowedForAllProfiles() {

@@ -25,11 +25,17 @@
 #include "components/ukm/observers/history_delete_observer.h"
 #include "components/ukm/observers/ukm_consent_state_observer.h"
 #include "components/variations/synthetic_trial_registry.h"
+#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager_observer.h"
 #include "ios/web/public/deprecated/global_web_state_observer.h"
 
 class ChromeBrowserState;
 class IOSChromeStabilityMetricsProvider;
 class PrefRegistrySimple;
+
+// TODO(crbug.com/358356195): Remove this typedef when this header is updated
+// to use ProfileManagerIOS.
+class ProfileManagerIOS;
+using ChromeBrowserStateManager = ProfileManagerIOS;
 
 namespace metrics {
 class MetricsService;
@@ -49,7 +55,8 @@ class UkmService;
 class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
                                       public ukm::HistoryDeleteObserver,
                                       public ukm::UkmConsentStateObserver,
-                                      public web::GlobalWebStateObserver {
+                                      public web::GlobalWebStateObserver,
+                                      public ChromeBrowserStateManagerObserver {
  public:
   IOSChromeMetricsServiceClient(const IOSChromeMetricsServiceClient&) = delete;
   IOSChromeMetricsServiceClient& operator=(
@@ -100,6 +107,14 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   void WebStateDidStartLoading(web::WebState* web_state) override;
   void WebStateDidStopLoading(web::WebState* web_state) override;
 
+  // ChromeBrowserStateManagerObserver:
+  void OnChromeBrowserStateManagerDestroyed(
+      ChromeBrowserStateManager* manager) override;
+  void OnChromeBrowserStateCreated(ChromeBrowserStateManager* manager,
+                                   ChromeBrowserState* browser_state) override;
+  void OnChromeBrowserStateLoaded(ChromeBrowserStateManager* manager,
+                                  ChromeBrowserState* browser_state) override;
+
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
 
   // Determine what to do with a file based on filename. Visible for testing.
@@ -130,8 +145,7 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // user is performing work. This is useful to allow some features to sleep,
   // until the machine becomes active, such as precluding UMA uploads unless
   // there was recent activity.
-  // Returns true if registration was successful.
-  bool RegisterForNotifications();
+  void RegisterForNotifications();
 
   // Register to observe events on a browser state's services.
   // Returns true if registration was successful.
@@ -163,8 +177,14 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // The UkmService that `this` is a client of.
   std::unique_ptr<ukm::UkmService> ukm_service_;
 
+  // Observation of the ChromeBrowserStateManager.
+  base::ScopedObservation<ChromeBrowserStateManager,
+                          ChromeBrowserStateManagerObserver>
+      browser_state_manager_observation_{this};
+  std::set<ChromeBrowserState*> observed_chrome_browser_states_;
+
   // Whether we registered all notification listeners successfully.
-  bool notification_listeners_active_;
+  bool notification_listeners_active_ = true;
 
   // The IOSChromeStabilityMetricsProvider instance that was registered with
   // MetricsService. Has the same lifetime as `metrics_service_`.
