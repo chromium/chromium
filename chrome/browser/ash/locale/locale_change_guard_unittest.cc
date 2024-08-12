@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/browser/ash/locale_change_guard.h"
+#include "chrome/browser/ash/locale/locale_change_guard.h"
 
 #include <stddef.h>
 #include <string.h>

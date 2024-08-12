@@ -12526,6 +12526,7 @@ if (is_chromeos) {
         "//chrome/browser:main_extra_parts",
         "//chrome/browser/ash/crosapi",
         "//chrome/browser/ash/crosapi:test_support",
+        "//chrome/browser/ash/locale",
         "//chrome/browser/ash/login/signin",
         "//chrome/browser/ash/schedqos",
         "//chromeos/services/machine_learning/public/cpp:stub",

@@ -1,0 +1,71 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("locale") {
+  sources = [
+    "locale_change_guard.cc",
+    "locale_change_guard.h",
+    "startup_settings_cache.cc",
+    "startup_settings_cache.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/app:command_ids",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/base",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/language/core/browser",
+    "//components/language/core/common",
+    "//components/session_manager/core",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "locale_change_guard_unittest.cc",
+    "startup_settings_cache_unittest.cc",
+  ]
+
+  deps = [
+    ":locale",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/common",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "startup_settings_cache_browsertest.cc" ]
+
+  deps = [
+    ":locale",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/language/core/browser",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//ui/accessibility",
+  ]
+}
