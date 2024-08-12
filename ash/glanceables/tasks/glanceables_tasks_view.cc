@@ -69,10 +69,6 @@ namespace {
 
 constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 2);
 
-// The interior margin should be 12, but space needs to be left for the focus in
-// the child views.
-constexpr int kTotalInteriorMargin = 12;
-
 constexpr int kListViewBetweenChildSpacing = 4;
 constexpr int kMaximumTasks = 100;
 
@@ -82,9 +78,6 @@ constexpr base::TimeDelta kBubbleCollapseAnimationDuration =
     base::Milliseconds(250);
 constexpr gfx::Tween::Type kBubbleAnimationTweenType =
     gfx::Tween::FAST_OUT_SLOW_IN;
-
-// This should be the same value as the one in ash/style/combobox.cc
-constexpr gfx::Insets kComboboxBorderInsets = gfx::Insets::TLBR(4, 10, 4, 4);
 
 constexpr char kTasksManagementPage[] = "https://tasks.google.com/";
 
@@ -193,26 +186,6 @@ GlanceablesTasksView::GlanceablesTasksView(
   header_icon->SetID(
       base::to_underlying(GlanceablesViewId::kTimeManagementBubbleHeaderIcon));
 
-  auto text_on_combobox =
-      combobox_view()->GetTextForRow(GetComboboxSelectedIndex());
-  combobox_replacement_label_ = header_view()->AddChildView(
-      std::make_unique<views::Label>(text_on_combobox));
-  combobox_replacement_label_->SetProperty(views::kMarginsKey,
-                                           kComboboxBorderInsets);
-  combobox_replacement_label_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                               views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kPreferred));
-  combobox_replacement_label_->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_LEFT);
-  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
-                                        *combobox_replacement_label_);
-  combobox_replacement_label_->SetAutoColorReadabilityEnabled(false);
-  combobox_replacement_label_->SetEnabledColorId(
-      cros_tokens::kCrosSysOnSurface);
-  combobox_replacement_label_->SetVisible(false);
-
   list_footer_view()->SetTitleText(l10n_util::GetStringUTF16(
       IDS_GLANCEABLES_LIST_FOOTER_SEE_ALL_TASKS_LABEL));
   list_footer_view()->SetSeeAllAccessibleName(l10n_util::GetStringUTF16(
@@ -286,12 +259,6 @@ gfx::Size GlanceablesTasksView::CalculatePreferredSize(
       available_size);
 }
 
-int GlanceablesTasksView::GetCollapsedStatePreferredHeight() const {
-  return kTotalInteriorMargin * 2 +
-         combobox_replacement_label_->GetLineHeight() +
-         kComboboxBorderInsets.height();
-}
-
 void GlanceablesTasksView::AnimationEnded(const gfx::Animation* animation) {
   running_resize_animation_.reset();
   GlanceablesTimeManagementBubbleView::AnimationEnded(animation);
@@ -320,38 +287,6 @@ void GlanceablesTasksView::UpdateTaskLists(
       base::BindOnce(&GlanceablesTasksView::UpdateTasksInTaskList,
                      weak_ptr_factory_.GetWeakPtr(), active_task_list->id,
                      active_task_list->title, ListShownContext::kInitialList));
-}
-
-void GlanceablesTasksView::SetExpandState(bool is_expanded,
-                                          bool expand_by_overscroll) {
-  if (is_expanded_ == is_expanded) {
-    return;
-  }
-
-  is_expanded_ = is_expanded;
-  expand_button()->SetExpanded(is_expanded);
-
-  progress_bar()->SetVisible(is_expanded_);
-  content_scroll_view()->SetVisible(is_expanded_);
-  combobox_view()->SetVisible(is_expanded_);
-  combobox_replacement_label_->SetVisible(!is_expanded_);
-
-  if (is_expanded) {
-    if (expand_by_overscroll) {
-      content_scroll_view()->LockScroll();
-    } else {
-      content_scroll_view()->UnlockScroll();
-    }
-  }
-
-  UpdateInteriorMargin();
-
-  for (auto& observer : observers_) {
-    observer.OnExpandStateChanged(Context::kTasks, is_expanded_,
-                                  expand_by_overscroll);
-  }
-
-  AnimateResize(ResizeAnimation::Type::kContainerExpandStateChanged);
 }
 
 void GlanceablesTasksView::OnFooterButtonPressed() {
@@ -416,8 +351,7 @@ void GlanceablesTasksView::SelectedListChanged() {
     return;
   }
 
-  combobox_replacement_label_->SetText(
-      combobox_view()->GetTextForRow(GetComboboxSelectedIndex()));
+  UpdateComboboxReplacementLabelText();
 
   weak_ptr_factory_.InvalidateWeakPtrs();
   tasks_requested_time_ = base::TimeTicks::Now();

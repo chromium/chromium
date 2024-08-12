@@ -49,8 +49,6 @@ class ASH_EXPORT GlanceablesTasksView
       const views::SizeBounds& available_size) const override;
 
   // GlanceablesTimeManagementBubbleView:
-  void SetExpandState(bool is_expanded, bool expand_by_overscroll) override;
-  int GetCollapsedStatePreferredHeight() const override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
   // Invalidates any pending tasks, or tasks lists requests. Called when the
@@ -79,6 +77,7 @@ class ASH_EXPORT GlanceablesTasksView
   // GlanceablesTimeManagementBubbleView:
   void OnFooterButtonPressed() override;
   void SelectedListChanged() override;
+  void AnimateResize(ResizeAnimation::Type resize_type) override;
 
   // Handles press behavior for `add_new_task_button_`.
   void AddNewTaskButtonPressed();
@@ -156,10 +155,6 @@ class ASH_EXPORT GlanceablesTasksView
   // states by calling with `is_loading` = false.
   void SetIsLoading(bool is_loading);
 
-  // Triggers tasks bubble resize animation to new preferred size, if an
-  // animation is required.
-  void AnimateResize(ResizeAnimation::Type resize_type);
-
   // Animates visibility updates for a task view. It assumes that at most one
   // task view changes visibility at the time - currently, this is exclusively
   // used for task view added to the list in response to the user clicking the
@@ -182,10 +177,6 @@ class ASH_EXPORT GlanceablesTasksView
   bool first_task_list_shown_ = false;
 
   // Owned by views hierarchy.
-  // This is a simple label that copies the label style on
-  // `task_list_combo_box_view_` so that it can visually replace it when
-  // `task_list_combo_box_view_` is hidden.
-  raw_ptr<views::Label> combobox_replacement_label_ = nullptr;
   raw_ptr<views::LabelButton> add_new_task_button_ = nullptr;
 
   // An invisible view added at the last element to the task list container to

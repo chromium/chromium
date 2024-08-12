@@ -68,7 +68,6 @@ constexpr gfx::RoundedCornersF kComboboxRoundedCorners =
     gfx::RoundedCornersF(12, 12, 12, 4);
 constexpr gfx::RoundedCornersF kMenuRoundedCorners =
     gfx::RoundedCornersF(4, 12, 12, 12);
-constexpr gfx::Insets kComboboxBorderInsets = gfx::Insets::TLBR(4, 10, 4, 4);
 constexpr gfx::Insets kMenuBorderInsets = gfx::Insets::TLBR(16, 0, 12, 0);
 constexpr gfx::Insets kMenuItemInnerPadding = gfx::Insets::VH(8, 16);
 constexpr int kArrowIconSize = 20;

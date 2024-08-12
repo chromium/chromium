@@ -10,6 +10,7 @@
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/style/combobox.h"
+#include "ash/style/typography.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -21,6 +22,7 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget.h"
@@ -126,7 +128,7 @@ int GlanceablesTimeManagementBubbleView::ResizeAnimation::GetCurrentHeight()
 GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
     Context context,
     std::unique_ptr<ui::ComboboxModel> combobox_model)
-    : combobox_model_(std::move(combobox_model)) {
+    : context_(context), combobox_model_(std::move(combobox_model)) {
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
 
   UpdateInteriorMargin();
@@ -155,6 +157,26 @@ GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
           .WithWeight(1));
 
   CreateComboBoxView();
+
+  auto text_on_combobox =
+      combobox_view_->GetTextForRow(GetComboboxSelectedIndex());
+  combobox_replacement_label_ = header_view_->AddChildView(
+      std::make_unique<views::Label>(text_on_combobox));
+  combobox_replacement_label_->SetProperty(views::kMarginsKey,
+                                           Combobox::kComboboxBorderInsets);
+  combobox_replacement_label_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred));
+  combobox_replacement_label_->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_LEFT);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
+                                        *combobox_replacement_label_);
+  combobox_replacement_label_->SetAutoColorReadabilityEnabled(false);
+  combobox_replacement_label_->SetEnabledColorId(
+      cros_tokens::kCrosSysOnSurface);
+  combobox_replacement_label_->SetVisible(false);
 
   expand_button_ = header_container->AddChildView(
       std::make_unique<GlanceablesExpandButton>());
@@ -216,6 +238,45 @@ void GlanceablesTimeManagementBubbleView::Layout(PassKey) {
   }
 }
 
+void GlanceablesTimeManagementBubbleView::SetExpandState(
+    bool is_expanded,
+    bool expand_by_overscroll) {
+  if (is_expanded_ == is_expanded) {
+    return;
+  }
+
+  is_expanded_ = is_expanded;
+  expand_button_->SetExpanded(is_expanded);
+
+  progress_bar_->SetVisible(is_expanded_);
+  content_scroll_view_->SetVisible(is_expanded_);
+  combobox_view_->SetVisible(is_expanded_);
+  combobox_replacement_label_->SetVisible(!is_expanded_);
+
+  if (is_expanded) {
+    if (expand_by_overscroll) {
+      content_scroll_view_->LockScroll();
+    } else {
+      content_scroll_view_->UnlockScroll();
+    }
+  }
+
+  UpdateInteriorMargin();
+
+  for (auto& observer : observers_) {
+    observer.OnExpandStateChanged(context_, is_expanded_, expand_by_overscroll);
+  }
+
+  AnimateResize(ResizeAnimation::Type::kContainerExpandStateChanged);
+}
+
+int GlanceablesTimeManagementBubbleView::GetCollapsedStatePreferredHeight()
+    const {
+  return kTotalInteriorMargin * 2 +
+         combobox_replacement_label_->GetLineHeight() +
+         Combobox::kComboboxBorderInsets.height();
+}
+
 void GlanceablesTimeManagementBubbleView::SetAnimationEndedClosureForTest(
     base::OnceClosure closure) {
   resize_animation_ended_closure_ = std::move(closure);
@@ -246,6 +307,11 @@ void GlanceablesTimeManagementBubbleView::CreateComboBoxView() {
 size_t GlanceablesTimeManagementBubbleView::GetComboboxSelectedIndex() const {
   CHECK(combobox_view_->GetSelectedIndex().has_value());
   return combobox_view_->GetSelectedIndex().value();
+}
+
+void GlanceablesTimeManagementBubbleView::UpdateComboboxReplacementLabelText() {
+  combobox_replacement_label_->SetText(
+      combobox_view_->GetTextForRow(GetComboboxSelectedIndex()));
 }
 
 void GlanceablesTimeManagementBubbleView::SetUpResizeThroughputTracker(

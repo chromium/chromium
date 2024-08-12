@@ -76,12 +76,12 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
   // `expand_by_overscroll` indicates whether the expand state change is
   // triggered by overscroll. More information can be found in
   // `GlanceablesContentsScrollView` class.
-  virtual void SetExpandState(bool is_expanded, bool expand_by_overscroll) = 0;
+  void SetExpandState(bool is_expanded, bool expand_by_overscroll);
 
   // Returns the preferred height of `this` in the collapsed state. This is used
   // to calculate the available size for glanceables. This should be constant
   // after the view is laid out.
-  virtual int GetCollapsedStatePreferredHeight() const = 0;
+  int GetCollapsedStatePreferredHeight() const;
 
   // Returns the expanded/collapsed state of the bubble view.
   bool IsExpanded() const { return is_expanded_; }
@@ -144,6 +144,10 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
   // Called when the selected list changed in `combobox_view_`.
   virtual void SelectedListChanged() = 0;
 
+  // Triggers bubble view resize animation to new preferred size, if an
+  // animation is required.
+  virtual void AnimateResize(ResizeAnimation::Type resize_type) = 0;
+
   // Updates the interior margin according to the current view state.
   void UpdateInteriorMargin();
 
@@ -152,6 +156,9 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
 
   // Returns the index that `combobox_view_` is currently selected.
   size_t GetComboboxSelectedIndex() const;
+
+  // Updates the text on `combobox_replacement_label_`.
+  void UpdateComboboxReplacementLabelText();
 
   void SetUpResizeThroughputTracker(const std::string& histogram_name);
 
@@ -174,11 +181,6 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
 
   ui::ComboboxModel* combobox_model() { return combobox_model_.get(); }
 
-  // Whether the view is expanded and showing the contents in contents scroll
-  // view.
-  // TODO(b/333770880): Move this to private after refactoring if possible.
-  bool is_expanded_ = true;
-
   // Linear animation that drive time management bubble resize animation - the
   // animation updates the time management bubble view preferred size, which
   // causes layout updates. Runs when the bubble preferred size changes.
@@ -190,9 +192,18 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
   // Toggles `is_expanded_` and updates the layout.
   void ToggleExpandState();
 
+  const Context context_;
+
+  // Whether the view is expanded and showing the contents in contents scroll
+  // view.
+  bool is_expanded_ = true;
+
   // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView> header_view_ = nullptr;
   raw_ptr<Combobox> combobox_view_ = nullptr;
+  // This is a simple label that copies the label style on `combo_box_view_` so
+  // that it can visually replace it when `combo_box_view_` is hidden.
+  raw_ptr<views::Label> combobox_replacement_label_ = nullptr;
   raw_ptr<GlanceablesExpandButton> expand_button_ = nullptr;
   raw_ptr<GlanceablesProgressBarView> progress_bar_ = nullptr;
   raw_ptr<GlanceablesContentsScrollView> content_scroll_view_ = nullptr;

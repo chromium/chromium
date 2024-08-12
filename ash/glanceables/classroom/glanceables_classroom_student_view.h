@@ -59,10 +59,6 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   // Clears any student glanceables state from user `pref_services`.
   static void ClearUserStatePrefs(PrefService* pref_service);
 
-  // GlanceablesTimeManagementBubbleView:
-  void SetExpandState(bool is_expanded, bool expand_by_overscroll) override;
-  int GetCollapsedStatePreferredHeight() const override;
-
   // Invalidates any pending assignments requests. Called when the
   // glanceables bubble widget starts closing to avoid unnecessary UI updates.
   void CancelUpdates();
@@ -71,10 +67,10 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   // GlanceablesTimeManagementBubbleView:
   void OnFooterButtonPressed() override;
   void SelectedListChanged() override;
+  void AnimateResize(ResizeAnimation::Type resize_type) override;
 
   // Triggers classroom bubble resize animation to new preferred size, if an
   // animation is required.
-  void AnimateResize();
 
   // Opens classroom url.
   void OpenUrl(const GURL& url) const;
@@ -100,9 +96,6 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   void AnnounceListStateOnComboBoxAccessibility();
 
   // Owned by views hierarchy.
-  // This is a simple label that copies the label style on `combo_box_view_` so
-  // that it can visually replace it when `combo_box_view_` is hidden.
-  raw_ptr<views::Label> combobox_replacement_label_ = nullptr;
   raw_ptr<views::Label> empty_list_label_ = nullptr;
 
   // Total number of assignments in the selected assignment list.

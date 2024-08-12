@@ -102,16 +102,9 @@ constexpr char kCollapseAnimationSmoothnessHistogramName[] =
 
 constexpr size_t kMaxAssignments = 100;
 
-// The interior margin should be 12, but space needs to be left for the focus in
-// the child views.
-constexpr int kTotalInteriorMargin = 12;
-
 constexpr auto kEmptyListLabelMargins = gfx::Insets::TLBR(24, 0, 32, 0);
 constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 2);
 constexpr auto kFooterMargins = gfx::Insets::TLBR(12, 2, 0, 0);
-
-// This should be the same value as the one in ash/style/combobox.cc
-constexpr gfx::Insets kComboboxBorderInsets = gfx::Insets::TLBR(4, 10, 4, 4);
 
 std::u16string GetAssignmentListName(size_t index) {
   CHECK(index >= 0 || index < kStudentAssignmentsListTypeOrdered.size());
@@ -173,25 +166,6 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
 
   combobox_view()->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_GLANCEABLES_CLASSROOM_DROPDOWN_ACCESSIBLE_NAME));
-  auto text_on_combobox =
-      combobox_view()->GetTextForRow(GetComboboxSelectedIndex());
-  combobox_replacement_label_ = header_view()->AddChildView(
-      std::make_unique<views::Label>(text_on_combobox));
-  combobox_replacement_label_->SetProperty(views::kMarginsKey,
-                                           kComboboxBorderInsets);
-  combobox_replacement_label_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                               views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kPreferred));
-  combobox_replacement_label_->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_LEFT);
-  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
-                                        *combobox_replacement_label_);
-  combobox_replacement_label_->SetAutoColorReadabilityEnabled(false);
-  combobox_replacement_label_->SetEnabledColorId(
-      cros_tokens::kCrosSysOnSurface);
-  combobox_replacement_label_->SetVisible(false);
 
   expand_button()->SetExpandedStateTooltipStringId(
       IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_EXPAND_TOOLTIP);
@@ -247,47 +221,8 @@ void GlanceablesClassroomStudentView::ClearUserStatePrefs(
   pref_service->ClearPref(kLastSelectedAssignmentsListPref);
 }
 
-int GlanceablesClassroomStudentView::GetCollapsedStatePreferredHeight() const {
-  return kTotalInteriorMargin * 2 +
-         combobox_replacement_label_->GetLineHeight() +
-         kComboboxBorderInsets.height();
-}
-
 void GlanceablesClassroomStudentView::CancelUpdates() {
   weak_ptr_factory_.InvalidateWeakPtrs();
-}
-
-void GlanceablesClassroomStudentView::SetExpandState(
-    bool is_expanded,
-    bool expand_by_overscroll) {
-  if (is_expanded_ == is_expanded) {
-    return;
-  }
-
-  is_expanded_ = is_expanded;
-  expand_button()->SetExpanded(is_expanded);
-
-  progress_bar()->SetVisible(is_expanded_);
-  content_scroll_view()->SetVisible(is_expanded_);
-  combobox_view()->SetVisible(is_expanded_);
-  combobox_replacement_label_->SetVisible(!is_expanded_);
-
-  if (is_expanded) {
-    if (expand_by_overscroll) {
-      content_scroll_view()->LockScroll();
-    } else {
-      content_scroll_view()->UnlockScroll();
-    }
-  }
-
-  UpdateInteriorMargin();
-
-  for (auto& observer : observers_) {
-    observer.OnExpandStateChanged(Context::kClassroom, is_expanded_,
-                                  expand_by_overscroll);
-  }
-
-  AnimateResize();
 }
 
 void GlanceablesClassroomStudentView::OnFooterButtonPressed() {
@@ -342,8 +277,7 @@ void GlanceablesClassroomStudentView::SelectedAssignmentListChanged(
         selected_index < kStudentAssignmentsListTypeOrdered.size());
   selected_list_type_ = kStudentAssignmentsListTypeOrdered[selected_index];
 
-  combobox_replacement_label_->SetText(
-      combobox_view()->GetTextForRow(selected_index));
+  UpdateComboboxReplacementLabelText();
 
   if (!initial_update) {
     base::RecordAction(
@@ -400,7 +334,8 @@ void GlanceablesClassroomStudentView::SelectedListChanged() {
   SelectedAssignmentListChanged(/*initial_update=*/false);
 }
 
-void GlanceablesClassroomStudentView::AnimateResize() {
+void GlanceablesClassroomStudentView::AnimateResize(
+    ResizeAnimation::Type resize_type) {
   const int current_height = size().height();
   if (current_height == 0) {
     return;
