@@ -26,8 +26,10 @@
 #include "base/time/time.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -47,6 +49,23 @@ const size_t kOhttpHeaderSize = 55;   // bytes
 const char kTrustedSignalsUrl[] = "https://url.test/";
 const char kOriginFooUrl[] = "https://foo.test/";
 const char kOriginBarUrl[] = "https://bar.test/";
+
+// These keys were randomly generated as follows:
+// EVP_HPKE_KEY keys;
+// EVP_HPKE_KEY_generate(&keys, EVP_hpke_x25519_hkdf_sha256());
+// and then EVP_HPKE_KEY_public_key and EVP_HPKE_KEY_private_key were used to
+// extract the keys.
+const uint8_t kTestPrivateKey[] = {
+    0xff, 0x1f, 0x47, 0xb1, 0x68, 0xb6, 0xb9, 0xea, 0x65, 0xf7, 0x97,
+    0x4f, 0xf2, 0x2e, 0xf2, 0x36, 0x94, 0xe2, 0xf6, 0xb6, 0x8d, 0x66,
+    0xf3, 0xa7, 0x64, 0x14, 0x28, 0xd4, 0x45, 0x35, 0x01, 0x8f,
+};
+
+const uint8_t kTestPublicKey[] = {
+    0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b, 0x99, 0x59, 0x70,
+    0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
+    0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
+};
 
 // GzipCompress() doesn't support writing to a vector, only a std::string. This
 // wrapper provides that capability, at the cost of an extra copy.
@@ -132,14 +151,70 @@ std::string BuildResponseBody(const std::string& hex_string,
   return response_body;
 }
 
+// Encrypt the response body string by creating a fake encrypted request using a
+// public key and saving the encryption context. Return a pair consisting of the
+// encrypted response body string and the encryption context. The context will
+// be passed to `ParseResponseToSignalsFetchResult` and used in
+// `CreateClientObliviousResponse()` for response decryption.
+std::pair<std::string, quiche::ObliviousHttpRequest::Context>
+EncryptResponseBodyHelper(const std::string& response_body) {
+  // Fake a encrypted request.
+  int key_id = 0x00;
+  std::string public_key =
+      std::string(reinterpret_cast<const char*>(&kTestPublicKey[0]),
+                  sizeof(kTestPublicKey));
+  auto request_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+      key_id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+      EVP_HPKE_AES_256_GCM);
+  EXPECT_TRUE(request_key_config.ok()) << request_key_config.status();
+
+  auto fake_request =
+      quiche::ObliviousHttpRequest::CreateClientObliviousRequest(
+          "Fake request.", public_key, request_key_config.value(),
+          kTrustedSignalsKVv2EncryptionRequestMediaType);
+  std::string fake_request_body = fake_request->EncapsulateAndSerialize();
+  auto request_context = std::move(fake_request).value().ReleaseContext();
+  EXPECT_TRUE(fake_request.ok()) << fake_request.status();
+
+  // Decrypt the request and get the context.
+  auto response_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+      key_id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+      EVP_HPKE_AES_256_GCM);
+  EXPECT_TRUE(response_key_config.ok()) << response_key_config.status();
+
+  auto ohttp_gateway =
+      quiche::ObliviousHttpGateway::Create(
+          std::string(reinterpret_cast<const char*>(&kTestPrivateKey[0]),
+                      sizeof(kTestPrivateKey)),
+          response_key_config.value())
+          .value();
+  auto received_request = ohttp_gateway.DecryptObliviousHttpRequest(
+      fake_request_body, kTrustedSignalsKVv2EncryptionRequestMediaType);
+  EXPECT_TRUE(received_request.ok()) << received_request.status();
+
+  auto response_context = std::move(received_request).value().ReleaseContext();
+
+  // Encrypt the response body.
+  auto maybe_response = ohttp_gateway.CreateObliviousHttpResponse(
+      response_body, response_context,
+      kTrustedSignalsKVv2EncryptionResponseMediaType);
+  EXPECT_TRUE(maybe_response.ok()) << maybe_response.status();
+
+  return std::pair(maybe_response->EncapsulateAndSerialize(),
+                   std::move(request_context));
+}
+
 std::string GetErrorMessageFromParseResponseToSignalsFetchResult(
     std::string& hex,
     uint8_t compress_scheme = 0x00) {
+  std::string response_body = BuildResponseBody(hex, compress_scheme);
+  auto helper_result = EncryptResponseBodyHelper(response_body);
+
   base::expected<std::map<int, CompressionGroupResult>,
                  TrustedSignalsKVv2ResponseParser::ErrorInfo>
       result =
           TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
-              BuildResponseBody(hex, compress_scheme));
+              helper_result.first, helper_result.second);
   EXPECT_FALSE(result.has_value());
 
   return std::move(result.error().error_msg);
@@ -227,11 +302,38 @@ TEST(TrustedSignalsKVv2RequestHelperTest,
       url::Origin::Create(GURL(kOriginBarUrl)),
       blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode);
 
+  // Generate public key.
+  int public_key_id = 0x00;
+  mojom::TrustedSignalsPublicKeyPtr public_key =
+      mojom::TrustedSignalsPublicKey::New(
+          std::string(reinterpret_cast<const char*>(&kTestPublicKey[0]),
+                      sizeof(kTestPublicKey)),
+          public_key_id);
+
   std::unique_ptr<TrustedSignalsKVv2RequestHelper> helper =
-      helper_builder->Build();
+      helper_builder->Build(std::move(public_key));
 
   std::string post_body = helper->TakePostRequestBody();
-  std::vector<uint8_t> body_bytes(post_body.begin(), post_body.end());
+
+  // Decrypt post body.
+  auto config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+      public_key_id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+      EVP_HPKE_AES_256_GCM);
+  EXPECT_TRUE(config.ok()) << config.status();
+
+  auto ohttp_gateway =
+      quiche::ObliviousHttpGateway::Create(
+          std::string(reinterpret_cast<const char*>(&kTestPrivateKey[0]),
+                      sizeof(kTestPrivateKey)),
+          config.value())
+          .value();
+
+  auto decrypt_body = ohttp_gateway.DecryptObliviousHttpRequest(
+      post_body, kTrustedSignalsKVv2EncryptionRequestMediaType);
+  EXPECT_TRUE(decrypt_body.ok()) << decrypt_body.status();
+
+  auto plain_body = decrypt_body->GetPlaintextData();
+  std::vector<uint8_t> body_bytes(plain_body.begin(), plain_body.end());
 
   // Test if body_bytes size is padded.
   size_t request_length = kOhttpHeaderSize + body_bytes.size();
@@ -631,10 +733,13 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
   std::string response_body = BuildResponseBody(
       base::HexEncode(std::move(maybe_body_bytes).value()), 0x02);
 
+  // Encrypt response body.
+  auto helper_result = EncryptResponseBodyHelper(response_body);
+
   // Check SignalsFetchResult.
   TrustedSignalsKVv2ResponseParser::SignalsFetchResult maybe_fetch_result =
       TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
-          response_body);
+          helper_result.first, helper_result.second);
   EXPECT_TRUE(maybe_fetch_result.has_value());
   TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap fetch_result =
       std::move(maybe_fetch_result).value();
@@ -711,13 +816,43 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest,
       expected_bidding_signals, expected_data_version);
 }
 
+TEST_F(TrustedSignalsKVv2ResponseParserTest, ResponseDecryptionFailure) {
+  // Failed to decrypt response body
+  // Use a different ID to obtain a public key that differs from the one used in
+  // `EncryptResponseBodyHelper()`.
+  int key_id = 0x01;
+  std::string public_key =
+      std::string(reinterpret_cast<const char*>(&kTestPublicKey[0]),
+                  sizeof(kTestPublicKey));
+  auto config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+                    key_id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
+                    EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
+                    .value();
+
+  auto request = quiche::ObliviousHttpRequest::CreateClientObliviousRequest(
+                     "Fake request.", public_key, config,
+                     kTrustedSignalsKVv2EncryptionRequestMediaType)
+                     .value();
+  auto wrong_context = std::move(request).ReleaseContext();
+
+  std::string response_body = "Response body.";
+  auto helper_result = EncryptResponseBodyHelper(response_body);
+  EXPECT_EQ("Failed to decrypt response body.",
+            TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
+                helper_result.first, wrong_context)
+                .error()
+                .error_msg);
+}
+
 TEST_F(TrustedSignalsKVv2ResponseParserTest, SignalsFetchResultParseFailure) {
   std::string hex_string;
 
   // Response shorter than framing header with 4 bytes hex string.
+  std::string response_body = std::string({0xA, 0xA, 0xA, 0xA});
+  auto helper_result = EncryptResponseBodyHelper(response_body);
   EXPECT_EQ("Response shorter than framing header.",
             TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
-                std::string({0xA, 0xA, 0xA, 0xA}))
+                helper_result.first, helper_result.second)
                 .error()
                 .error_msg);
 
@@ -804,11 +939,12 @@ TEST_F(TrustedSignalsKVv2ResponseParserTest, SignalsFetchResultParseFailure) {
       cbor::Writer::Write(body_value);
   EXPECT_TRUE(maybe_body_bytes.has_value());
 
-  std::string response_body = BuildResponseBody(
+  response_body = BuildResponseBody(
       base::HexEncode(std::move(maybe_body_bytes).value()), 0x00);
+  helper_result = EncryptResponseBodyHelper(response_body);
   EXPECT_EQ("Compression group id \"0\" is already in used.",
             TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
-                response_body)
+                helper_result.first, helper_result.second)
                 .error()
                 .error_msg);
 

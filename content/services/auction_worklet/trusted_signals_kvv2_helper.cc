@@ -62,7 +62,9 @@ void AddPostRequestConstants(cbor::Value::MapValue& request_map_value) {
   return;
 }
 
-std::string CreateRequestBody(cbor::Value::MapValue request_map_value) {
+quiche::ObliviousHttpRequest CreateOHttpRequest(
+    mojom::TrustedSignalsPublicKeyPtr public_key,
+    cbor::Value::MapValue request_map_value) {
   cbor::Value cbor_value(request_map_value);
   std::optional<std::vector<uint8_t>> maybe_cbor_bytes =
       cbor::Writer::Write(cbor_value);
@@ -90,7 +92,19 @@ std::string CreateRequestBody(cbor::Value::MapValue request_map_value) {
   // Add CBOR string.
   writer.Write(base::as_bytes(base::make_span(*maybe_cbor_bytes)));
 
-  return request_body;
+  // Add encryption for request body.
+  auto maybe_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+      public_key->id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+      EVP_HPKE_AES_256_GCM);
+  CHECK(maybe_key_config.ok()) << maybe_key_config.status();
+
+  auto maybe_request =
+      quiche::ObliviousHttpRequest::CreateClientObliviousRequest(
+          std::move(request_body), public_key->key, maybe_key_config.value(),
+          kTrustedSignalsKVv2EncryptionRequestMediaType);
+  CHECK(maybe_request.ok()) << maybe_request.status();
+
+  return std::move(maybe_request).value();
 }
 
 // Creates a single entry for the "arguments" array of a partition, with a
@@ -398,8 +412,10 @@ SerializeKeyGroupOutputsMap(AuctionV8Helper* v8_helper,
 }  // namespace
 
 TrustedSignalsKVv2RequestHelper::TrustedSignalsKVv2RequestHelper(
-    std::string post_request_body)
-    : post_request_body_(std::move(post_request_body)) {}
+    std::string post_request_body,
+    quiche::ObliviousHttpRequest::Context context)
+    : post_request_body_(std::move(post_request_body)),
+      context_(std::move(context)) {}
 
 TrustedSignalsKVv2RequestHelper::TrustedSignalsKVv2RequestHelper(
     TrustedSignalsKVv2RequestHelper&&) = default;
@@ -411,6 +427,11 @@ TrustedSignalsKVv2RequestHelper::~TrustedSignalsKVv2RequestHelper() = default;
 
 std::string TrustedSignalsKVv2RequestHelper::TakePostRequestBody() {
   return std::move(post_request_body_);
+}
+
+quiche::ObliviousHttpRequest::Context
+TrustedSignalsKVv2RequestHelper::TakeOHttpRequestContext() {
+  return std::move(context_);
 }
 
 TrustedSignalsKVv2RequestHelperBuilder ::
@@ -554,7 +575,8 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::AddTrustedSignalsRequest(
 }
 
 std::unique_ptr<TrustedSignalsKVv2RequestHelper>
-TrustedBiddingSignalsKVv2RequestHelperBuilder::Build() {
+TrustedBiddingSignalsKVv2RequestHelperBuilder::Build(
+    mojom::TrustedSignalsPublicKeyPtr public_key) {
   cbor::Value::MapValue request_map_value;
   AddPostRequestConstants(request_map_value);
 
@@ -574,10 +596,12 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::Build() {
 
   request_map_value.try_emplace(cbor::Value("partitions"),
                                 cbor::Value(std::move(partition_array)));
-  std::string request_body = CreateRequestBody(std::move(request_map_value));
+  quiche::ObliviousHttpRequest request =
+      CreateOHttpRequest(std::move(public_key), std::move(request_map_value));
 
+  std::string encrypted_request = request.EncapsulateAndSerialize();
   return std::make_unique<TrustedSignalsKVv2RequestHelper>(
-      std::move(request_body));
+      std::move(encrypted_request), std::move(request).ReleaseContext());
 }
 
 cbor::Value::MapValue
@@ -632,8 +656,20 @@ CompressionGroupResult::~CompressionGroupResult() = default;
 
 TrustedSignalsKVv2ResponseParser::SignalsFetchResult
 TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
-    std::string_view body_string) {
-  base::span<const uint8_t> body_span = base::as_byte_span(body_string);
+    const std::string& body_string,
+    quiche::ObliviousHttpRequest::Context& context) {
+  // Decrypt response body with saved context from request encryption process.
+  auto maybe_body =
+      quiche::ObliviousHttpResponse::CreateClientObliviousResponse(
+          body_string, context, kTrustedSignalsKVv2EncryptionResponseMediaType);
+
+  if (!maybe_body.ok()) {
+    return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+        "Failed to decrypt response body."));
+  }
+
+  base::span<const uint8_t> body_span =
+      base::as_byte_span(maybe_body->GetPlaintextData());
   auto extract_result =
       ExtractCompressionSchemaAndCborStringFromResponseBody(body_span);
 
@@ -715,7 +751,7 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
 
     if (group.second.compression_scheme ==
         auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone) {
-      content_bytes = base::as_bytes(base::make_span(group.second.content));
+      content_bytes = base::as_byte_span(group.second.content);
     } else if (group.second.compression_scheme ==
                auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip) {
       bool is_decompressed = compression::GzipUncompress(group.second.content,
@@ -724,7 +760,7 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
         return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
             "Failed to decompress content string with Gzip."));
       }
-      content_bytes = base::as_bytes(base::make_span(decompressed_string));
+      content_bytes = base::as_byte_span(decompressed_string);
     }
 
     std::optional<cbor::Value> maybe_content =
