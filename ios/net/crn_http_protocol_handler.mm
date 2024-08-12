@@ -195,7 +195,7 @@ class HttpProtocolHandlerCore
   void StartReading();
   void AllocateReadBuffer(int last_read_data_size);
 
-  THREAD_CHECKER(thread_checker_);
+  base::ThreadChecker thread_checker_;
 
   // The NSURLProtocol client.
   id<CRNNetworkClientProtocol> client_ = nil;
@@ -242,7 +242,7 @@ HttpProtocolHandlerCore::HttpProtocolHandlerCore(NSURLSessionTask* task)
 void HttpProtocolHandlerCore::HandleStreamEvent(NSStream* stream,
                                                 NSStreamEvent event) {
   DVLOG(2) << "HandleStreamEvent " << stream << " event " << event;
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(http_body_stream_ == stream);
   DCHECK(http_body_stream_delegate_);
   switch (event) {
@@ -308,7 +308,7 @@ void HttpProtocolHandlerCore::OnReceivedRedirect(
     URLRequest* request,
     const RedirectInfo& redirect_info,
     bool* /* defer_redirect */) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
 
   // Cancel the request and notify UIWebView.
   // If we did nothing, the network stack would follow the redirect
@@ -381,7 +381,7 @@ void HttpProtocolHandlerCore::OnReceivedRedirect(
 void HttpProtocolHandlerCore::OnAuthRequired(
     URLRequest* request,
     const AuthChallengeInfo& auth_info) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   if (net_request_ != nullptr) {
     net_request_->CancelAuth();
   }
@@ -390,7 +390,7 @@ void HttpProtocolHandlerCore::OnAuthRequired(
 void HttpProtocolHandlerCore::OnCertificateRequested(
     URLRequest* request,
     SSLCertRequestInfo* cert_request_info) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
 
   // TODO(ios): The network stack does not support SSL client authentication
   // on iOS yet. The request has to be canceled for now.
@@ -400,7 +400,7 @@ void HttpProtocolHandlerCore::OnCertificateRequested(
 }
 
 void HttpProtocolHandlerCore::CancelAfterSSLError(void) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   if (net_request_ != nullptr) {
     // Cancel the request.
     net_request_->Cancel();
@@ -415,14 +415,14 @@ void HttpProtocolHandlerCore::OnSSLCertificateError(URLRequest* request,
                                                     int net_error,
                                                     const SSLInfo& ssl_info,
                                                     bool fatal) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
 
   CancelAfterSSLError();
 }
 
 void HttpProtocolHandlerCore::OnResponseStarted(URLRequest* request,
                                                 int net_error) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_NE(net::ERR_IO_PENDING, net_error);
 
   if (net_request_ == nullptr)
@@ -437,7 +437,7 @@ void HttpProtocolHandlerCore::OnResponseStarted(URLRequest* request,
 }
 
 void HttpProtocolHandlerCore::StartReading() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   if (net_request_ == nullptr)
     return;
 
@@ -467,7 +467,7 @@ void HttpProtocolHandlerCore::StartReading() {
 void HttpProtocolHandlerCore::OnReadCompleted(URLRequest* request,
                                               int bytes_read) {
   DCHECK_NE(net::ERR_IO_PENDING, bytes_read);
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
 
   if (net_request_ == nullptr)
     return;
@@ -520,7 +520,7 @@ void HttpProtocolHandlerCore::AllocateReadBuffer(int last_read_data_size) {
 }
 
 HttpProtocolHandlerCore::~HttpProtocolHandlerCore() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!net_request_);
   DCHECK(!http_body_stream_delegate_);
 }
@@ -537,7 +537,7 @@ void HttpProtocolHandlerCore::Destruct(const HttpProtocolHandlerCore* x) {
 }
 
 void HttpProtocolHandlerCore::SetLoadFlags() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   int load_flags = LOAD_NORMAL;
 
   switch ([request_ cachePolicy]) {
@@ -564,7 +564,7 @@ void HttpProtocolHandlerCore::SetLoadFlags() {
 }
 
 void HttpProtocolHandlerCore::Start(id<CRNNetworkClientProtocol> base_client) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!client_);
   DCHECK(base_client);
   client_ = base_client;
@@ -647,7 +647,7 @@ void HttpProtocolHandlerCore::Start(id<CRNNetworkClientProtocol> base_client) {
 }
 
 void HttpProtocolHandlerCore::Cancel() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   if (net_request_ == nullptr)
     return;
 
@@ -657,7 +657,7 @@ void HttpProtocolHandlerCore::Cancel() {
 }
 
 void HttpProtocolHandlerCore::StopNetRequest() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
 
   if (g_metrics_delegate) {
     auto metrics = std::make_unique<net::MetricsDelegate::Metrics>();
@@ -679,7 +679,7 @@ void HttpProtocolHandlerCore::StopNetRequest() {
 void HttpProtocolHandlerCore::StopListeningStream(NSStream* stream) {
   DVLOG(1) << "StopListeningStream " << stream << " delegate "
            << [stream delegate];
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(stream);
   DCHECK(http_body_stream_delegate_);
   DCHECK([stream delegate] == http_body_stream_delegate_);
@@ -711,7 +711,7 @@ void HttpProtocolHandlerCore::StopListeningStream(NSStream* stream) {
 }
 
 NSInteger HttpProtocolHandlerCore::IOSErrorCode(int os_error) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   switch (os_error) {
     case ERR_SSL_PROTOCOL_ERROR:
       return NSURLErrorClientCertificateRequired;
@@ -728,7 +728,7 @@ NSInteger HttpProtocolHandlerCore::IOSErrorCode(int os_error) {
 void HttpProtocolHandlerCore::StopRequestWithError(NSInteger ns_error_code,
                                                    int net_error_code) {
   DCHECK(net_request_ != nullptr);
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
 
   // Don't show an error message on ERR_ABORTED because this is error is often
   // fired when switching profiles.
@@ -742,7 +742,7 @@ void HttpProtocolHandlerCore::StopRequestWithError(NSInteger ns_error_code,
 
 void HttpProtocolHandlerCore::StripPostSpecificHeaders(
     NSMutableURLRequest* request) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(request);
   [request setValue:nil forHTTPHeaderField:base::SysUTF8ToNSString(
       HttpRequestHeaders::kContentLength)];
