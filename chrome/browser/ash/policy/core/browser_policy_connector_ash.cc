@@ -358,7 +358,8 @@ void BrowserPolicyConnectorAsh::Init(
       DeviceDlcPredownloadListPolicyHandler::Create();
 
   device_restriction_schedule_controller_ =
-      std::make_unique<DeviceRestrictionScheduleController>();
+      std::make_unique<DeviceRestrictionScheduleController>(
+          CHECK_DEREF(local_state));
 }
 
 void BrowserPolicyConnectorAsh::OnBrowserStarted() {

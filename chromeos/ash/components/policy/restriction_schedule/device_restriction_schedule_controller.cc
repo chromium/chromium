@@ -4,13 +4,20 @@
 
 #include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller.h"
 
+#include "base/functional/bind.h"
 #include "chromeos/constants/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace policy {
 
-DeviceRestrictionScheduleController::DeviceRestrictionScheduleController() =
-    default;
+DeviceRestrictionScheduleController::DeviceRestrictionScheduleController(
+    PrefService& pref_service) {
+  registrar_.Init(&pref_service);
+  registrar_.Add(
+      chromeos::prefs::kDeviceRestrictionSchedule,
+      base::BindRepeating(&DeviceRestrictionScheduleController::OnPolicyUpdated,
+                          weak_factory_.GetWeakPtr()));
+}
 
 DeviceRestrictionScheduleController::~DeviceRestrictionScheduleController() =
     default;
@@ -19,6 +26,10 @@ DeviceRestrictionScheduleController::~DeviceRestrictionScheduleController() =
 void DeviceRestrictionScheduleController::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterListPref(chromeos::prefs::kDeviceRestrictionSchedule);
+}
+
+void DeviceRestrictionScheduleController::OnPolicyUpdated() {
+  // TODO(b/355636599): Implement function.
 }
 
 }  // namespace policy
