@@ -18,10 +18,10 @@ source_set("ui") {
   deps = [
     ":constants",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/incognito_interstitial/ui_bundled/resources",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements:elements",
     "//ios/chrome/browser/shared/ui/util:util",
-    "//ios/chrome/browser/incognito_interstitial/ui_bundled/resources",
     "//ios/chrome/browser/ui/ntp/incognito",
     "//ios/chrome/common/ui/colors:colors",
     "//ios/chrome/common/ui/promo_style:promo_style",

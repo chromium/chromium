@@ -90,8 +90,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "badge_mediator_unittest.mm" ]
   deps = [
-    ":ui_bundled",
     ":public",
+    ":ui_bundled",
     ":util",
     "//base/test:test_support",
     "//ios/chrome/browser/infobars/model",

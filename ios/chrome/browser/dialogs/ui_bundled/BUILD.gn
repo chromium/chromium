@@ -22,8 +22,8 @@ source_set("unit_tests") {
   sources = [ "java_script_dialog_blocking_state_unittest.mm" ]
 
   deps = [
-    ":ui_bundled",
     ":java_script_blocking_fake_web_state",
+    ":ui_bundled",
     "//ios/web",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

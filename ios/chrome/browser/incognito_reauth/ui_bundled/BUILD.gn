@@ -51,8 +51,8 @@ source_set("incognito_reauth_scene_agent") {
   ]
   deps = [
     ":incognito_reauth_commands",
-    ":ui",
     ":incognito_reauth_util",
+    ":ui",
     "//base",
     "//components/pref_registry",
     "//components/prefs",

@@ -15,11 +15,11 @@ source_set("progress_dialog") {
     "//components/autofill/core/browser",
     "//ios/chrome/browser/alert_view/ui_bundled",
     "//ios/chrome/browser/autofill/model:model_internal",
+    "//ios/chrome/browser/autofill/ui_bundled:coordinator",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/autofill/ui_bundled:coordinator",
   ]
   frameworks = [ "UIKit.framework" ]
 }
