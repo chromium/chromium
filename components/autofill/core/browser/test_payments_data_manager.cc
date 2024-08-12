@@ -300,8 +300,7 @@ void TestPaymentsDataManager::AddCardArtImage(const GURL& url,
 
 void TestPaymentsDataManager::AddVirtualCardUsageData(
     const VirtualCardUsageData& usage_data) {
-  autofill_virtual_card_usage_data_.push_back(
-      std::make_unique<VirtualCardUsageData>(usage_data));
+  autofill_virtual_card_usage_data_.push_back(usage_data);
   NotifyObservers();
 }
 

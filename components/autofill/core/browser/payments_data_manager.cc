@@ -1157,17 +1157,12 @@ bool PaymentsDataManager::IsPaymentCvcStorageEnabled() {
          prefs::IsPaymentCvcStorageEnabled(pref_service_);
 }
 
-std::vector<VirtualCardUsageData*>
+base::span<const VirtualCardUsageData>
 PaymentsDataManager::GetVirtualCardUsageData() const {
   if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
     return {};
   }
-  std::vector<VirtualCardUsageData*> result;
-  result.reserve(autofill_virtual_card_usage_data_.size());
-  for (const auto& data : autofill_virtual_card_usage_data_) {
-    result.push_back(data.get());
-  }
-  return result;
+  return autofill_virtual_card_usage_data_;
 }
 
 std::vector<CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest(

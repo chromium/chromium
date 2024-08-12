@@ -72,16 +72,9 @@ class AutofillWalletUsageDataSyncBridgeTest : public testing::Test {
   }
 
   std::vector<VirtualCardUsageData> GetVirtualCardUsageDataFromTable() {
-    std::vector<std::unique_ptr<VirtualCardUsageData>> table_data;
-    table()->GetAllVirtualCardUsageData(&table_data);
-
-    // In tests, it's more convenient to work without `std::unique_ptr`.
-    std::vector<VirtualCardUsageData> usage_data;
-    for (const std::unique_ptr<VirtualCardUsageData>& data : table_data) {
-      usage_data.push_back(std::move(*data));
-    }
-
-    return usage_data;
+    std::vector<VirtualCardUsageData> table_data;
+    table()->GetAllVirtualCardUsageData(table_data);
+    return table_data;
   }
 
   EntityData SpecificsToEntity(const AutofillWalletUsageSpecifics& specifics) {

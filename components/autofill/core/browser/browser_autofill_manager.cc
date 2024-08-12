@@ -13,6 +13,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <string>
 #include <string_view>
@@ -2825,41 +2826,35 @@ BrowserAutofillManager::GetVirtualCreditCardsForStandaloneCvcField(
     const url::Origin& origin) const {
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
       virtual_card_guid_to_last_four_map;
-  const std::vector<CreditCard*> cards = client()
-                                             .GetPersonalDataManager()
-                                             ->payments_data_manager()
-                                             .GetCreditCards();
-  const std::vector<VirtualCardUsageData*> usage_data =
-      client()
-          .GetPersonalDataManager()
-          ->payments_data_manager()
-          .GetVirtualCardUsageData();
+  const PaymentsDataManager& data_manager =
+      client().GetPersonalDataManager()->payments_data_manager();
 
-  for (const CreditCard* credit_card : cards) {
+  base::span<const VirtualCardUsageData> usage_data =
+      data_manager.GetVirtualCardUsageData();
+  for (const CreditCard* credit_card : data_manager.GetCreditCards()) {
     // As we only provide virtual card suggestions for standalone CVC fields,
     // check if the card is an enrolled virtual card.
     if (credit_card->virtual_card_enrollment_state() !=
         CreditCard::VirtualCardEnrollmentState::kEnrolled) {
       continue;
     }
-    // Check if card has virtual card usage data on the url origin.
-    auto usage_data_iter = base::ranges::find_if(
-        usage_data,
-        [&origin, &credit_card](VirtualCardUsageData* virtual_card_usage_data) {
-          return virtual_card_usage_data->instrument_id().value() ==
-                     credit_card->instrument_id() &&
-                 virtual_card_usage_data->merchant_origin() == origin;
-        });
 
-    // If card has eligible usage data, check if last four is in the url DOM.
-    if (usage_data_iter != usage_data.end()) {
+    auto matches_card_and_origin = [&](VirtualCardUsageData ud) {
+      return ud.instrument_id().value() == credit_card->instrument_id() &&
+             ud.merchant_origin() == origin;
+    };
+
+    // If `credit_card` has eligible usage data on `origin`, check if the last
+    // four digits of `credit_card`'s number occur in the DOM.
+    if (auto it = std::ranges::find_if(usage_data, matches_card_and_origin);
+        it != usage_data.end()) {
       VirtualCardUsageData::VirtualCardLastFour virtual_card_last_four =
-          (*usage_data_iter)->virtual_card_last_four();
+          it->virtual_card_last_four();
       if (base::Contains(four_digit_combinations_in_dom_,
                          base::UTF16ToUTF8(virtual_card_last_four.value()))) {
         // Card has usage data on webpage and last four is present in DOM.
-        virtual_card_guid_to_last_four_map.insert(
-            {credit_card->guid(), virtual_card_last_four});
+        virtual_card_guid_to_last_four_map[credit_card->guid()] =
+            virtual_card_last_four;
       }
     }
   }

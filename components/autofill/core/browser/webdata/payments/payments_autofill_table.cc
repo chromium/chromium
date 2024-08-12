@@ -353,19 +353,17 @@ void BindPaymentInstrumentToStatement(
       s, index++, payment_instrument.SerializeAsString(), encryptor);
 }
 
-std::unique_ptr<VirtualCardUsageData> GetVirtualCardUsageDataFromStatement(
-    sql::Statement& s) {
+VirtualCardUsageData GetVirtualCardUsageDataFromStatement(sql::Statement& s) {
   int index = 0;
   std::string id = s.ColumnString(index++);
   int64_t instrument_id = s.ColumnInt64(index++);
   std::string merchant_domain = s.ColumnString(index++);
   std::u16string last_four = s.ColumnString16(index++);
 
-  return std::make_unique<VirtualCardUsageData>(
-      VirtualCardUsageData::UsageDataId(id),
-      VirtualCardUsageData::InstrumentId(instrument_id),
-      VirtualCardUsageData::VirtualCardLastFour(last_four),
-      url::Origin::Create(GURL(merchant_domain)));
+  return {VirtualCardUsageData::UsageDataId(id),
+          VirtualCardUsageData::InstrumentId(instrument_id),
+          VirtualCardUsageData::VirtualCardLastFour(last_four),
+          url::Origin::Create(GURL(merchant_domain))};
 }
 
 std::string DecryptStringFromColumn(sql::Statement& s,
@@ -1489,7 +1487,7 @@ bool PaymentsAutofillTable::GetAutofillOffers(
 
 bool PaymentsAutofillTable::AddOrUpdateVirtualCardUsageData(
     const VirtualCardUsageData& virtual_card_usage_data) {
-  std::unique_ptr<VirtualCardUsageData> existing_data =
+  std::optional<VirtualCardUsageData> existing_data =
       GetVirtualCardUsageData(*virtual_card_usage_data.usage_data_id());
   sql::Statement s;
   if (!existing_data) {
@@ -1503,7 +1501,8 @@ bool PaymentsAutofillTable::AddOrUpdateVirtualCardUsageData(
   return s.Run();
 }
 
-std::unique_ptr<VirtualCardUsageData> PaymentsAutofillTable::GetVirtualCardUsageData(
+std::optional<VirtualCardUsageData>
+PaymentsAutofillTable::GetVirtualCardUsageData(
     const std::string& usage_data_id) {
   sql::Statement s;
   SelectBuilder(db_, s, kVirtualCardUsageDataTable,
@@ -1511,7 +1510,7 @@ std::unique_ptr<VirtualCardUsageData> PaymentsAutofillTable::GetVirtualCardUsage
                 "WHERE id = ?");
   s.BindString(0, usage_data_id);
   if (!s.Step()) {
-    return nullptr;
+    return std::nullopt;
   }
   return GetVirtualCardUsageDataFromStatement(s);
 }
@@ -1548,15 +1547,14 @@ void PaymentsAutofillTable::SetVirtualCardUsageData(
 }
 
 bool PaymentsAutofillTable::GetAllVirtualCardUsageData(
-    std::vector<std::unique_ptr<VirtualCardUsageData>>*
-        virtual_card_usage_data) {
-  virtual_card_usage_data->clear();
+    std::vector<VirtualCardUsageData>& virtual_card_usage_data) {
+  virtual_card_usage_data.clear();
 
   sql::Statement s;
   SelectBuilder(db_, s, kVirtualCardUsageDataTable,
                 {kId, kInstrumentId, kMerchantDomain, kLastFour});
   while (s.Step()) {
-    virtual_card_usage_data->push_back(GetVirtualCardUsageDataFromStatement(s));
+    virtual_card_usage_data.push_back(GetVirtualCardUsageDataFromStatement(s));
   }
 
   return s.Succeeded();

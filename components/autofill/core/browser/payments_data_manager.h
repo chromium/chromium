@@ -224,7 +224,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       const GURL& card_art_url) const;
 
   // Returns all virtual card usage data linked to the credit card.
-  virtual std::vector<VirtualCardUsageData*> GetVirtualCardUsageData() const;
+  virtual base::span<const VirtualCardUsageData> GetVirtualCardUsageData()
+      const;
 
   // Returns the credit cards to suggest to the user. Those have been deduped
   // and ordered by frecency with the expired cards put at the end of the
@@ -232,6 +233,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // cards using the legacy ranking algorithm.
   std::vector<CreditCard*> GetCreditCardsToSuggest(
       bool should_use_legacy_algorithm = false) const;
+
   // Adds `iban` to the web database as a local IBAN. Returns the guid of
   // `iban` if the add is successful, or an empty string otherwise.
   // Below conditions should be met before adding `iban` to the database:
@@ -545,8 +547,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Virtual card usage data, which contains information regarding usages of a
   // virtual card related to a specific merchant website.
-  std::vector<std::unique_ptr<VirtualCardUsageData>>
-      autofill_virtual_card_usage_data_;
+  std::vector<VirtualCardUsageData> autofill_virtual_card_usage_data_;
 
   // The customized card art images for the URL.
   std::map<GURL, std::unique_ptr<gfx::Image>> credit_card_art_images_;

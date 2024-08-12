@@ -1544,9 +1544,9 @@ TEST_F(PaymentsAutofillTableTest, SetAndGetVirtualCardUsageData) {
 
   table_->SetVirtualCardUsageData(virtual_card_usage_data);
 
-  std::vector<std::unique_ptr<VirtualCardUsageData>> output_data;
+  std::vector<VirtualCardUsageData> output_data;
 
-  EXPECT_TRUE(table_->GetAllVirtualCardUsageData(&output_data));
+  EXPECT_TRUE(table_->GetAllVirtualCardUsageData(output_data));
   EXPECT_EQ(virtual_card_usage_data.size(), output_data.size());
 
   for (const auto& data : virtual_card_usage_data) {
@@ -1558,11 +1558,11 @@ TEST_F(PaymentsAutofillTableTest, SetAndGetVirtualCardUsageData) {
     EXPECT_NE(it, output_data.end());
 
     // All corresponding fields must be equal.
-    EXPECT_EQ(data.usage_data_id(), (*it)->usage_data_id());
-    EXPECT_EQ(data.instrument_id(), (*it)->instrument_id());
-    EXPECT_EQ(data.virtual_card_last_four(), (*it)->virtual_card_last_four());
+    EXPECT_EQ(data.usage_data_id(), it->usage_data_id());
+    EXPECT_EQ(data.instrument_id(), it->instrument_id());
+    EXPECT_EQ(data.virtual_card_last_four(), it->virtual_card_last_four());
     EXPECT_EQ(data.merchant_origin().Serialize(),
-              (*it)->merchant_origin().Serialize());
+              it->merchant_origin().Serialize());
   }
 }
 
@@ -1574,7 +1574,7 @@ TEST_F(PaymentsAutofillTableTest, AddUpdateRemoveVirtualCardUsageData) {
 
   // Get the inserted VirtualCardUsageData.
   std::string usage_data_id = *virtual_card_usage_data.usage_data_id();
-  std::unique_ptr<VirtualCardUsageData> usage_data =
+  std::optional<VirtualCardUsageData> usage_data =
       table_->GetVirtualCardUsageData(usage_data_id);
   ASSERT_TRUE(usage_data);
   EXPECT_EQ(virtual_card_usage_data, *usage_data);
@@ -1603,8 +1603,8 @@ TEST_F(PaymentsAutofillTableTest, RemoveAllVirtualCardUsageData) {
 
   EXPECT_TRUE(table_->RemoveAllVirtualCardUsageData());
 
-  std::vector<std::unique_ptr<VirtualCardUsageData>> usage_data;
-  EXPECT_TRUE(table_->GetAllVirtualCardUsageData(&usage_data));
+  std::vector<VirtualCardUsageData> usage_data;
+  EXPECT_TRUE(table_->GetAllVirtualCardUsageData(usage_data));
   EXPECT_TRUE(usage_data.empty());
 }
 

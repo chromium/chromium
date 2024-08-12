@@ -226,10 +226,9 @@ void AutofillWalletUsageDataSyncBridge::LoadMetadata() {
 std::unique_ptr<syncer::MutableDataBatch>
 AutofillWalletUsageDataSyncBridge::GetDataAndFilter(
     base::RepeatingCallback<bool(const std::string&)> filter) {
-  std::vector<std::unique_ptr<VirtualCardUsageData>>
-      virtual_card_usage_data_list;
+  std::vector<VirtualCardUsageData> virtual_card_usage_data_list;
   if (!GetAutofillTable()->GetAllVirtualCardUsageData(
-          &virtual_card_usage_data_list)) {
+          virtual_card_usage_data_list)) {
     change_processor()->ReportError(
         {FROM_HERE,
          "Failed to load Autofill Wallet usage data data from table."});
@@ -237,11 +236,11 @@ AutofillWalletUsageDataSyncBridge::GetDataAndFilter(
   }
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const std::unique_ptr<VirtualCardUsageData>& virtual_card_usage_data :
+  for (const VirtualCardUsageData& virtual_card_usage_data :
        virtual_card_usage_data_list) {
-    if (filter.Run(*virtual_card_usage_data->usage_data_id())) {
+    if (filter.Run(*virtual_card_usage_data.usage_data_id())) {
       AutofillWalletUsageData usage_data =
-          AutofillWalletUsageData::ForVirtualCard(*virtual_card_usage_data);
+          AutofillWalletUsageData::ForVirtualCard(virtual_card_usage_data);
       auto entity_data = std::make_unique<syncer::EntityData>();
       sync_pb::AutofillWalletUsageSpecifics* usage_specifics =
           entity_data->specifics.mutable_autofill_wallet_usage();

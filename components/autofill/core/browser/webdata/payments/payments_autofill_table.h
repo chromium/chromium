@@ -502,14 +502,13 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // table
   bool AddOrUpdateVirtualCardUsageData(
       const VirtualCardUsageData& virtual_card_usage_data);
-  std::unique_ptr<VirtualCardUsageData> GetVirtualCardUsageData(
+  std::optional<VirtualCardUsageData> GetVirtualCardUsageData(
       const std::string& usage_data_id);
   bool RemoveVirtualCardUsageData(const std::string& usage_data_id);
   void SetVirtualCardUsageData(
       const std::vector<VirtualCardUsageData>& virtual_card_usage_data);
   bool GetAllVirtualCardUsageData(
-      std::vector<std::unique_ptr<VirtualCardUsageData>>*
-          virtual_card_usage_data);
+      std::vector<VirtualCardUsageData>& virtual_card_usage_data);
   bool RemoveAllVirtualCardUsageData();
 
   // Deletes all data from the server card tables. Returns true if any data was
