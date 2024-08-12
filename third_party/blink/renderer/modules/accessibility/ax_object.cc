@@ -5417,9 +5417,18 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
   //   <input role="combobox">
   // ax::mojom::blink::Role::kComboBoxMenuButton:
   //   <div tabindex=0 role="combobox">Select</div>
+  // Note: make sure to exclude this aria role if the element is a <select>,
+  // where this role would be redundant and may cause problems for screen
+  // readers.
   if (role == ax::mojom::blink::Role::kComboBoxGrouping) {
     if (IsAtomicTextField()) {
       role = ax::mojom::blink::Role::kTextFieldWithComboBox;
+    } else if (auto* select_element =
+                   DynamicTo<HTMLSelectElement>(*GetNode())) {
+      if (select_element->UsesMenuList() && !select_element->IsMultiple()) {
+        // This is a select element. Don't set the aria role for it.
+        role = ax::mojom::blink::Role::kUnknown;
+      }
     } else if (GetElement() &&
                GetElement()->SupportsFocus(
                    Element::UpdateBehavior::kNoneForAccessibility)) {

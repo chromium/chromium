@@ -3141,6 +3141,8 @@ data/accessibility/html/combobox-optgroup-expected-mac.txt
 data/accessibility/html/combobox-optgroup-expected-uia-win.txt
 data/accessibility/html/combobox-optgroup-expected-win.txt
 data/accessibility/html/combobox-optgroup.html
+data/accessibility/html/combobox-with-redundant-aria-role-expected-blink.txt
+data/accessibility/html/combobox-with-redundant-aria-role.html
 data/accessibility/html/contenteditable-br-expected-blink.txt
 data/accessibility/html/contenteditable-br.html
 data/accessibility/html/contenteditable-descendants-expected-android-assist-data.txt

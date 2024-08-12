@@ -576,6 +576,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityComboboxWithRedundantAriaRole) {
+  RunHtmlTest(FILE_PATH_LITERAL("combobox-with-redundant-aria-role.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilitySlotDisplayContents) {
   RunHtmlTest(FILE_PATH_LITERAL("slot-display-contents.html"));
 }
