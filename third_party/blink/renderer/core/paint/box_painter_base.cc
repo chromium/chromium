@@ -778,19 +778,26 @@ bool WillDrawImage(
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::RectF& image_rect) {
   Node* generating_node = GeneratingNode(node);
-  if (!generating_node || !style_image.IsImageResource())
+
+  //  StyleFetchedImage and StyleImageSet are the only two that could be passed
+  //  here that could have a non-null CachedImage.
+  if (!generating_node || !style_image.CachedImage() ||
+      (!style_image.IsImageResource() && !style_image.IsImageResourceSet())) {
     return false;
+  }
+
   const gfx::Rect enclosing_rect = gfx::ToEnclosingRect(image_rect);
+
   bool image_may_be_lcp_candidate =
       PaintTimingDetector::NotifyBackgroundImagePaint(
-          *generating_node, image, To<StyleFetchedImage>(style_image),
-          current_paint_chunk_properties, enclosing_rect);
+          *generating_node, image, style_image, current_paint_chunk_properties,
+          enclosing_rect);
 
   LocalDOMWindow* window = node->GetDocument().domWindow();
   DCHECK(window);
   ImageElementTiming::From(*window).NotifyBackgroundImagePainted(
-      *generating_node, To<StyleFetchedImage>(style_image),
-      current_paint_chunk_properties, enclosing_rect);
+      *generating_node, style_image, current_paint_chunk_properties,
+      enclosing_rect);
   return image_may_be_lcp_candidate;
 }
 
@@ -860,6 +867,7 @@ inline bool PaintFastBottomLayer(const Document& document,
   FloatRoundedRect color_border =
       info.is_rounded_fill ? border_rect
                            : FloatRoundedRect(ToPixelSnappedRect(rect));
+
   // When the layer has an image, figure out whether it is covered by a single
   // tile. The border for painting images may not be the same as the color due
   // to optimizations for the image painting destination that avoid painting

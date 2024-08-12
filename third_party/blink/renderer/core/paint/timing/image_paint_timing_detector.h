@@ -37,7 +37,7 @@ class PropertyTreeStateOrAlias;
 class TracedValue;
 class Image;
 class PaintTimingCallbackManager;
-class StyleFetchedImage;
+class StyleImage;
 
 // TODO(crbug/960502): we should limit the access of these properties.
 // TODO(yoav): Rename all mentions of "image" to "media"
@@ -164,7 +164,7 @@ class CORE_EXPORT ImageRecordsManager {
                                    unsigned current_frame_index);
   void OnImageLoaded(MediaRecordIdHash,
                      unsigned current_frame_index,
-                     const StyleFetchedImage*);
+                     const StyleImage*);
 
   // Receives a candidate image painted under opacity 0 but without nested
   // opacity. May update |largest_ignored_image_| if the new candidate has a
@@ -274,7 +274,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
                    const gfx::Size& intrinsic_size,
                    const MediaTiming&,
                    const PropertyTreeStateOrAlias& current_paint_properties,
-                   const StyleFetchedImage*,
+                   const StyleImage*,
                    const gfx::Rect& image_border,
                    const bool is_loaded_after_mouseover);
   void NotifyImageFinished(const LayoutObject&, const MediaTiming*);

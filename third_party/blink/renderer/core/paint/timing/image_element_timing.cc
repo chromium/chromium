@@ -83,7 +83,7 @@ void ImageElementTiming::NotifyBackgroundImageFinished(
 }
 
 base::TimeTicks ImageElementTiming::GetBackgroundImageLoadTime(
-    const StyleFetchedImage* style_image) {
+    const StyleImage* style_image) {
   const auto it = background_image_timestamps_.find(style_image);
   if (it == background_image_timestamps_.end())
     return base::TimeTicks();
@@ -195,7 +195,7 @@ void ImageElementTiming::NotifyImagePaintedInternal(
 
 void ImageElementTiming::NotifyBackgroundImagePainted(
     Node& node,
-    const StyleFetchedImage& background_image,
+    const StyleImage& background_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::Rect& image_border) {
   const LayoutObject* layout_object = node.GetLayoutObject();

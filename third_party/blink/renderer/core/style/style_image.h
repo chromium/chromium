@@ -187,6 +187,10 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
     return is_lazyload_possibly_deferred_;
   }
 
+  virtual bool IsLoadedAfterMouseover() const { return false; }
+
+  virtual bool IsOriginClean() const { return true; }
+
   virtual void Trace(Visitor* visitor) const {}
 
  protected:

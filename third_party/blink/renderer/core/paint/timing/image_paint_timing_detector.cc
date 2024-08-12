@@ -286,7 +286,7 @@ bool ImagePaintTimingDetector::RecordImage(
     const gfx::Size& intrinsic_size,
     const MediaTiming& media_timing,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
-    const StyleFetchedImage* style_image,
+    const StyleImage* style_image,
     const gfx::Rect& image_border,
     const bool is_loaded_after_mouseover) {
   Node* node = object.GetNode();
@@ -471,7 +471,7 @@ bool ImageRecordsManager::OnFirstAnimatedFramePainted(
 
 void ImageRecordsManager::OnImageLoaded(MediaRecordIdHash record_id_hash,
                                         unsigned current_frame_index,
-                                        const StyleFetchedImage* style_image) {
+                                        const StyleImage* style_image) {
   ImageRecord* record = GetPendingImage(record_id_hash);
   DCHECK(record);
   if (!style_image) {

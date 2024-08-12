@@ -42,7 +42,10 @@ class CSSImageSetValue;
 // alternatives via the referenced CSSImageSetValue.
 class StyleImageSet final : public StyleImage {
  public:
-  StyleImageSet(StyleImage* best_fit_image, CSSImageSetValue* image_set_val);
+  StyleImageSet(StyleImage* best_fit_image,
+                CSSImageSetValue* image_set_val,
+                bool is_lcp_mouseover_dispatched_recently,
+                bool is_origin_clean);
   ~StyleImageSet() override;
 
   CSSValue* CssValue() const override;
@@ -57,6 +60,10 @@ class StyleImageSet final : public StyleImage {
   bool IsLoaded() const override;
   bool ErrorOccurred() const override;
   bool IsAccessAllowed(String& failing_url) const override;
+  bool IsLoadedAfterMouseover() const override {
+    return is_loaded_after_mouseover_;
+  }
+  bool IsOriginClean() const override { return is_origin_clean_; }
 
   IntrinsicSizingInfo GetNaturalSizingInfo(
       float multiplier,
@@ -91,6 +98,10 @@ class StyleImageSet final : public StyleImage {
   Member<StyleImage> best_fit_image_;
 
   Member<CSSImageSetValue> image_set_value_;  // Not retained; it owns us.
+
+  bool is_loaded_after_mouseover_;
+
+  bool is_origin_clean_;
 };
 
 template <>

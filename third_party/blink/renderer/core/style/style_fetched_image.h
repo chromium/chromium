@@ -91,9 +91,11 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
 
   void Trace(Visitor*) const override;
 
-  bool IsOriginClean() const { return origin_clean_; }
+  bool IsOriginClean() const override { return origin_clean_; }
 
-  bool IsLoadedAfterMouseover() const { return is_loaded_after_mouseover_; }
+  bool IsLoadedAfterMouseover() const override {
+    return is_loaded_after_mouseover_;
+  }
 
  private:
   bool IsEqual(const StyleImage&) const override;

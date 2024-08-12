@@ -176,10 +176,9 @@ void PaintTimingDetector::NotifyPaintFinished() {
 bool PaintTimingDetector::NotifyBackgroundImagePaint(
     const Node& node,
     const Image& image,
-    const StyleFetchedImage& style_image,
+    const StyleImage& style_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::Rect& image_border) {
-  DCHECK(style_image.CachedImage());
   LayoutObject* object = node.GetLayoutObject();
   if (!object) {
     return false;
