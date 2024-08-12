@@ -35,12 +35,6 @@ namespace {
 const uint8_t kUpnOid[] = {0x2b, 0x6,  0x1,  0x4, 0x1,
                            0x82, 0x37, 0x14, 0x2, 0x3};
 
-base::span<const uint8_t> SECItemAsSpan(const SECItem& item) {
-  // SAFETY: item is an NSS SECItem struct that represents an array of bytes
-  // pointed to by `data` of length `len`.
-  return UNSAFE_BUFFERS(base::make_span(item.data, item.len));
-}
-
 std::string DecodeAVAValue(CERTAVA* ava) {
   SECItem* decode_item = CERT_DecodeAVAValue(&ava->value);
   if (!decode_item)
@@ -140,6 +134,12 @@ std::string GetDefaultNickname(CERTCertificate* nss_cert, CertType type) {
 }
 
 }  // namespace
+
+base::span<const uint8_t> SECItemAsSpan(const SECItem& item) {
+  // SAFETY: item is an NSS SECItem struct that represents an array of bytes
+  // pointed to by `data` of length `len`.
+  return UNSAFE_BUFFERS(base::make_span(item.data, item.len));
+}
 
 base::span<const uint8_t> CERTCertificateAsSpan(
     const CERTCertificate* nss_cert) {

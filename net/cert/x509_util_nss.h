@@ -27,6 +27,9 @@ namespace net::x509_util {
 NET_EXPORT base::span<const uint8_t> CERTCertificateAsSpan(
     const CERTCertificate* nss_cert);
 
+// Returns a span containing the data pointed to by SECItem `item`.
+NET_EXPORT base::span<const uint8_t> SECItemAsSpan(const SECItem& item);
+
 // Returns true if two certificate handles refer to identical certificates.
 NET_EXPORT bool IsSameCertificate(CERTCertificate* a, CERTCertificate* b);
 NET_EXPORT bool IsSameCertificate(CERTCertificate* a, const X509Certificate* b);
