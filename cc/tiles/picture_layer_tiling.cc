@@ -603,6 +603,12 @@ void PictureLayerTiling::UpdateRequiredStatesOnTile(Tile* tile) const {
       tile, [this](const Tile* tile) { return IsTileVisible(tile); }));
 }
 
+PictureLayerTiling::CoverageIterator PictureLayerTiling::Cover(
+    const gfx::Rect& rect,
+    float scale) const {
+  return CoverageIterator(this, scale, rect);
+}
+
 PrioritizedTile PictureLayerTiling::MakePrioritizedTile(
     Tile* tile,
     PriorityRectType priority_rect_type,

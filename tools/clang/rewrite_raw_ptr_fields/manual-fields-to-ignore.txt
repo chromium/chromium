@@ -332,7 +332,7 @@ cc::GlobalMetricsTrackers::scroll_jank_dropped_frame_tracker
 cc::GlobalMetricsTrackers::scroll_jank_ukm_reporter
 cc::CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::owner_
 cc::CompositorFrameReporter::ProcessedVizBreakdown::Iterator::owner_
-cc::PictureLayerTilingSet::CoverageIterator::set_
+cc::TilingSetCoverageIterator::tilings_
 cc::PrioritizedTile::tile_
 cc::PrioritizedTile::source_tiling_
 cc::LayerTreeHostImpl::FrameData::render_surface_list

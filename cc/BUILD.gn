@@ -342,6 +342,8 @@ cc_component("cc") {
     "tiles/tiles_with_resource_iterator.cc",
     "tiles/tiles_with_resource_iterator.h",
     "tiles/tiling_coverage_iterator.h",
+    "tiles/tiling_internal.h",
+    "tiles/tiling_set_coverage_iterator.h",
     "tiles/tiling_set_eviction_queue.cc",
     "tiles/tiling_set_eviction_queue.h",
     "tiles/tiling_set_raster_queue_all.cc",

@@ -14,6 +14,7 @@
 #include "cc/base/tiling_data.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/tile_index.h"
+#include "cc/tiles/tiling_internal.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -21,21 +22,6 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace cc {
-
-namespace internal {
-
-// For a type to be used as a tiling by TilingCoverageIterator it must present
-// a nested Tile type and a few common methods.
-template <typename T>
-concept Tiling = requires(const T t, const TileIndex& index) {
-  typename T::Tile;
-  { t.TileAt(index) } -> std::same_as<typename T::Tile*>;
-  { t.tiling_data() } -> std::same_as<const TilingData*>;
-  { t.raster_size() } -> std::same_as<gfx::Size>;
-  { t.raster_transform() } -> std::same_as<const gfx::AxisTransform2d&>;
-};
-
-}  // namespace internal
 
 // TilingCoverageIterator iterates over a generic tiling to expose the minimal
 // set of tiles required to cover a given content rectangle.

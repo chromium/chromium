@@ -264,6 +264,10 @@ class CC_EXPORT PictureLayerTiling {
 
   void UpdateRequiredStatesOnTile(Tile* tile) const;
 
+  // Creates a coverage iterator to iterate over a minimal set of tiles from
+  // this tiling to cover `rect`, which has been pre-scaled by `scale`.
+  CoverageIterator Cover(const gfx::Rect& rect, float scale) const;
+
  protected:
   friend class PrioritizedTile;
   friend class TileIterator;
