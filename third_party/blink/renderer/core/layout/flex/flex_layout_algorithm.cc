@@ -734,30 +734,14 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       return layout_result->IntrinsicBlockSize();
     };
 
-    // TODO(ikilpatrick): Pre-resolve the auto-min-length, and pass to the
-    // min/max sizes functions.
-    MinMaxSizes min_max_sizes_in_main_axis_direction{main_axis_border_padding,
-                                                     LayoutUnit::Max()};
-    MinMaxSizes min_max_sizes_in_cross_axis_direction{LayoutUnit(),
-                                                      LayoutUnit::Max()};
-    const Length& max_property_in_main_axis = is_horizontal_flow_
-                                                  ? child.Style().MaxWidth()
-                                                  : child.Style().MaxHeight();
-    if (is_main_axis_inline_axis) {
-      min_max_sizes_in_main_axis_direction.max_size = ResolveMaxInlineLength(
-          flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          MinMaxSizesFunc, max_property_in_main_axis);
-      min_max_sizes_in_cross_axis_direction = ComputeMinMaxBlockSizes(
-          flex_basis_space, child, border_padding_in_child_writing_mode,
-          /* auto_min_length */ nullptr, BlockSizeFunc);
-    } else {
-      min_max_sizes_in_main_axis_direction.max_size = ResolveMaxBlockLength(
-          flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          max_property_in_main_axis, BlockSizeFunc);
-      min_max_sizes_in_cross_axis_direction = ComputeMinMaxInlineSizes(
-          flex_basis_space, child, border_padding_in_child_writing_mode,
-          /* auto_min_length */ nullptr, MinMaxSizesFunc);
-    }
+    const MinMaxSizes min_max_sizes_in_cross_axis_direction =
+        is_main_axis_inline_axis
+            ? ComputeMinMaxBlockSizes(
+                  flex_basis_space, child, border_padding_in_child_writing_mode,
+                  /* auto_min_length */ nullptr, BlockSizeFunc)
+            : ComputeMinMaxInlineSizes(
+                  flex_basis_space, child, border_padding_in_child_writing_mode,
+                  /* auto_min_length */ nullptr, MinMaxSizesFunc);
 
     const Length& flex_basis = child_style.FlexBasis();
     if (is_column_ && flex_basis.MayHavePercentDependence()) {
@@ -821,7 +805,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         if (child_style.BoxSizing() == EBoxSizing::kContentBox) {
           auto_flex_basis_size -= main_axis_border_padding;
         }
-        DCHECK_GE(auto_flex_basis_size, 0);
+        DCHECK_GE(auto_flex_basis_size, LayoutUnit());
         auto_flex_basis_length = Length::Fixed(auto_flex_basis_size);
       }
 
@@ -853,8 +837,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     const LayoutUnit flex_base_content_size =
         flex_base_border_box - main_axis_border_padding;
 
-    const Length& min = is_horizontal_flow_ ? child.Style().MinWidth()
-                                            : child.Style().MinHeight();
+    std::optional<Length> auto_min_length;
     if (algorithm_.ShouldApplyMinSizeAutoForChild(*child.GetLayoutBox())) {
       const LayoutUnit content_size_suggestion = ([&]() -> LayoutUnit {
         const LayoutUnit intrinsic_size =
@@ -901,33 +884,27 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
                                                 : resolved_size;
       })();
 
-      min_max_sizes_in_main_axis_direction.min_size =
-          std::min({specified_size_suggestion, content_size_suggestion,
-                    min_max_sizes_in_main_axis_direction.max_size});
-    } else if (is_main_axis_inline_axis) {
-      min_max_sizes_in_main_axis_direction.min_size = ResolveMinInlineLength(
-          flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          MinMaxSizesFunc, min);
-    } else {
-      min_max_sizes_in_main_axis_direction.min_size = ResolveMinBlockLength(
-          flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          BlockSizeFunc, min);
-    }
-    // Flex needs to never give a table a flexed main size that is less than its
-    // min-content size, so floor the min main-axis size by min-content size.
-    if (child.IsTable()) {
-      if (is_main_axis_inline_axis) {
-        min_max_sizes_in_main_axis_direction.Encompass(
-            MinMaxSizesFunc(SizeType::kIntrinsic).sizes.min_size);
-      } else {
-        min_max_sizes_in_main_axis_direction.Encompass(
-            BlockSizeFunc(SizeType::kIntrinsic));
+      LayoutUnit auto_min_size =
+          std::min(specified_size_suggestion, content_size_suggestion);
+      if (child_style.BoxSizing() == EBoxSizing::kContentBox) {
+        auto_min_size -= main_axis_border_padding;
       }
+      DCHECK_GE(auto_min_size, LayoutUnit());
+      auto_min_length = Length::Fixed(auto_min_size);
     }
 
+    MinMaxSizes min_max_sizes_in_main_axis_direction =
+        is_main_axis_inline_axis
+            ? ComputeMinMaxInlineSizes(
+                  flex_basis_space, child, border_padding_in_child_writing_mode,
+                  base::OptionalToPtr(auto_min_length), MinMaxSizesFunc)
+            : ComputeMinMaxBlockSizes(
+                  flex_basis_space, child, border_padding_in_child_writing_mode,
+                  base::OptionalToPtr(auto_min_length), BlockSizeFunc);
+
     min_max_sizes_in_main_axis_direction -= main_axis_border_padding;
-    DCHECK_GE(min_max_sizes_in_main_axis_direction.min_size, 0);
-    DCHECK_GE(min_max_sizes_in_main_axis_direction.max_size, 0);
+    DCHECK_GE(min_max_sizes_in_main_axis_direction.min_size, LayoutUnit());
+    DCHECK_GE(min_max_sizes_in_main_axis_direction.max_size, LayoutUnit());
 
     const BoxStrut scrollbars = ComputeScrollbarsForNonAnonymous(child);
 
