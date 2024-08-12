@@ -7498,13 +7498,16 @@ New install
         desc="This string appears as the label text of a button. The button is part of a truncated list of search results. Clicking the button will show all the search results.">
         Show all
       </message>
-      <message name="IDS_PICKER_SEE_MORE_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible text for a button that shows all results for a section.">
-        Show all <ph name="SECTION_NAME">$1<ex>Drive Files</ex></ph>
+      <message name="IDS_PICKER_SEE_MORE_BUTTON_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader to describe a button. The button is part of a truncated list of search results of a particular category (e.g. Google Drive files). The placeholder is the name of the category. Clicking the button will show all the search results for that particular category of results.">
+        Show all <ph name="CATEGORY_NAME">$1<ex>Drive Files</ex></ph>
       </message>
-      <message name="IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible text for a button which opens a panel with more emojis, symbols and emoticons.">
+      <message name="IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME"
+        desc="This string is appears as the tooltip of a button. The button is part of a row of emojis. Clicking the button will show more emojis.">
         Show more emojis
       </message>
-      <message name="IDS_PICKER_MORE_EMOJIS_AND_GIFS_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible text for a button which opens a panel with more emojis, symbols and emoticons.">
+      <message name="IDS_PICKER_MORE_EMOJIS_AND_GIFS_BUTTON_ACCESSIBLE_NAME"
+        desc="This string is appears as the tooltip of a button. The button is part of a row of emojis. Clicking the button will show more emojis and GIFs.">
         Show more emojis and GIFs
       </message>
       <message name="IDS_PICKER_NO_RESULTS_TEXT"
@@ -7530,14 +7533,17 @@ New install
         desc="This string appears as the label of a button in a feature tour dialog. When selected, this button closes the dialog and activates the feature.">
         Get started
       </message>
-      <message name="IDS_PICKER_LIST_ITEM_ACCESSIBLE_NAME" translateable="false" desc="Text for screenreaders describing a search result containing primary and secondary text. The commas are significant as they will introduce a pause in the spoken text.">
+      <message name="IDS_PICKER_LIST_ITEM_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader to describe a search result. The search result contains two lines of text: a primary text (e.g. the title of a page) and a secondary text (e.g. the URL of a page). The commas are significant as they will introduce a pause in the spoken text. This string is used inside the placeholder of another message.">
         <ph name="PRIMARY_TEXT">$1<ex>The Chromium Projects</ex></ph>, <ph name="SECONDARY_TEXT">$2<ex>www.chromium.org</ex></ph>
       </message>
-      <message name="IDS_PICKER_LIST_ITEM_INSERT_ACTION_ACCESSIBLE_NAME" translateable="false" desc="Text for screenreaders describing a button to insert a search result.">
-        Insert <ph name="ITEM_TEXT">$1<ex>The Chromium Projects</ex></ph>
+      <message name="IDS_PICKER_LIST_ITEM_INSERT_ACTION_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader to describe a search result. 'Insert' indicates that selecting this search result will insert the contents of the result into a textfield. The placeholder contains the contents of the search result.">
+        Insert <ph name="SEARCH_RESULT_TEXT">$1<ex>The Chromium Projects, www.chromium.org</ex></ph>
       </message>
-      <message name="IDS_PICKER_LIST_ITEM_OPEN_ACTION_ACCESSIBLE_NAME" translateable="false" desc="Text for screenreaders describing a button to open a search result.">
-        Open <ph name="ITEM_TEXT">$1<ex>The Chromium Projects</ex></ph>
+      <message name="IDS_PICKER_LIST_ITEM_OPEN_ACTION_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader to describe a search result. 'Open' indicates that selecting this search result will open the result in a separate window. The placeholder contains the contents of the search result.">
+        Open <ph name="SEARCH_RESULT_TEXT">$1<ex>The Chromium Projects, www.chromium.org</ex></ph>
       </message>
       <message name="IDS_PICKER_NO_RESULTS_FOR_BROWSING_HISTORY_LABEL_TEXT"
         desc="This string appears on a page that shows suggested results from the user's browsing history. The string is shown below an illustration banner. It indicates that there are no suggested browsing history results available.">
@@ -7563,22 +7569,30 @@ New install
         desc="This string appears in a popup bubble to indicate that the user just turned off their keyboard's Caps Lock.">
         Caps Lock off
       </message>
-      <message name="IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME" translateable="false" desc="The accessible text for the emoji bar grid.">
+      <message name="IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader for a grid of emojis.">
         Emojis
       </message>
-      <message name="IDS_PICKER_EMOJI_BAR_WITH_GIFS_GRID_ACCESSIBLE_NAME" translateable="false" desc="The accessible text for the emoji bar grid.">
+      <message name="IDS_PICKER_EMOJI_BAR_WITH_GIFS_GRID_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader for a grid of emojis and GIFs.">
         Emojis and GIFs
       </message>
-      <message name="IDS_PICKER_EMOJI_ITEM_ACCESSIBLE_NAME" translateable="false" desc="The tooltip text for an emoji result.">
-        <ph name="ITEM_TEXT">$1<ex>Face with Tears of Joy</ex></ph> emoji
+      <message name="IDS_PICKER_EMOJI_ITEM_ACCESSIBLE_NAME"
+        desc="This string appears as the tooltip of an emoji. The placeholder is the official name of the emoji. The 'emoji' part is important in order to distinguish between this emoji and an emoticon of the same name.">
+        <ph name="EMOJI_NAME">$1<ex>Face with Tears of Joy</ex></ph> emoji
       </message>
-      <message name="IDS_PICKER_EMOTICON_ITEM_ACCESSIBLE_NAME" translateable="false" desc="The tooltip text for an emoticon result.">
-        <ph name="ITEM_TEXT">$1<ex>sparkles</ex></ph> emoticon
+      <message name="IDS_PICKER_EMOTICON_ITEM_ACCESSIBLE_NAME"
+        desc="This string appears as the tooltip of an emoticon. The placeholder is the official name of the emoticon. The 'emoticon' part is important in order to distinguish between this emoticon and an emoji of the same name.">
+        <ph name="EMOTICON_NAME">$1<ex>sparkles</ex></ph> emoticon
       </message>
-      <message name="IDS_PICKER_EMOJI_SEARCH_RESULTS_ACCESSIBILITY_ANNOUNCEMENT_TEXT" translateable="false" desc="The accessibility announcement when there are no results in the main section but there are emoji results.">
-        <ph name="NUM_RESULTS">$1<ex>5</ex></ph> emojis. No other results.
+      <message name="IDS_PICKER_EMOJI_SEARCH_RESULTS_ACCESSIBILITY_ANNOUNCEMENT_TEXT"
+        desc="This string is read out by a screen reader when a search query has no other search results except emojis. The emoji results are displayed elsewhere. [ICU Syntax]">
+        {NUM_RESULTS, plural,
+         =1 {1 emoji. No other results.}
+         other {# emojis. No other results.}}
       </message>
-      <message name="IDS_PICKER_INSERTION_ANNOUNCEMENT_TEXT" translateable="false" desc="The accessibility announcement when a result is inserted.">
+      <message name="IDS_PICKER_INSERTION_ANNOUNCEMENT_TEXT"
+        desc="This string is read out by a screen reader when the user selects a search result to insert into an input field. The contents are the search results are read out before this announcement.">
         Inserting selected result
       </message>
 

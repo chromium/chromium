@@ -273,9 +273,9 @@ void PickerSearchResultsView::UpdateAccessibleName() {
   const std::u16string accessible_name =
       num_emoji_results_displayed_ == 0
           ? l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT)
-          : l10n_util::GetStringFUTF16(
+          : l10n_util::GetPluralStringFUTF16(
                 IDS_PICKER_EMOJI_SEARCH_RESULTS_ACCESSIBILITY_ANNOUNCEMENT_TEXT,
-                base::NumberToString16(num_emoji_results_displayed_));
+                num_emoji_results_displayed_);
   if (GetAccessibleName() == accessible_name) {
     return;
   }
