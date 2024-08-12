@@ -52,6 +52,15 @@ extern const base::FeatureParam<bool> kVisitedURLRankingDeduplicationFallback;
 extern const base::FeatureParam<bool>
     kVisitedURLRankingDeduplicationUpdateScheme;
 
+// Parameter determining if the URL path should be removed when computing the
+// URL deduplication key.
+extern const base::FeatureParam<bool> kVisitedURLRankingDeduplicationClearPath;
+
+// Parameter determining if the page's title should be included when computing
+// the URL deduplication key.
+extern const base::FeatureParam<bool>
+    kVisitedURLRankingDeduplicationIncludeTitle;
+
 // Parameter determining which prefixes should be excluded. i.e.
 // "www.google.com" would become "google.com" if "www." is excluded.
 extern const base::FeatureParam<std::string>

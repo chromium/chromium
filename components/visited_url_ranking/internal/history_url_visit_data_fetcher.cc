@@ -112,6 +112,7 @@ void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
     }
 
     auto url_key = ComputeURLMergeKey(annotated_visit.url_row.url(),
+                                      annotated_visit.url_row.title(),
                                       config.deduplication_helper);
     if (url_annotations.find(url_key) == url_annotations.end()) {
       // `GetAnnotatedVisits` returns a reverse-chronological sorted list of

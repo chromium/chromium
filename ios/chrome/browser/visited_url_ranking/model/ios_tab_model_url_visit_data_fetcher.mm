@@ -87,7 +87,8 @@ void IOSTabModelURLVisitDataFetcher::FetchURLVisitData(
         continue;
       }
 
-      auto url_key = ComputeURLMergeKey(url, config.deduplication_helper);
+      auto url_key = ComputeURLMergeKey(url, web_state->GetTitle(),
+                                        config.deduplication_helper);
       auto it = url_visit_tab_data_map.find(url_key);
       bool tab_data_map_already_has_url_entry =
           (it != url_visit_tab_data_map.end());

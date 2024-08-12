@@ -28,9 +28,9 @@ class URLDeduplicationHelper {
 
   // Returns a unique identifier for a given URL (i.e. deduplication key) such
   // that related URLs will generate the same key and so clients may recognize
-  // that two similar looking URLs belong to / represent the same visit or
-  // visit intention/goal.
-  std::string ComputeURLDeduplicationKey(GURL url);
+  // that two similar looking URLs represent the same visit or visit intention.
+  std::string ComputeURLDeduplicationKey(const GURL& url,
+                                         const std::string& title);
 
   void AddStripHandler(std::unique_ptr<URLStripHandler> handler) {
     strip_handlers_.push_back(std::move(handler));

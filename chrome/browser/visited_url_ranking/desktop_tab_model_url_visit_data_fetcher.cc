@@ -75,6 +75,7 @@ void DesktopTabModelURLVisitDataFetcher::FetchURLVisitData(
       }
 
       auto url_key = ComputeURLMergeKey(web_contents->GetLastCommittedURL(),
+                                        web_contents->GetTitle(),
                                         config.deduplication_helper);
       auto it = url_visit_tab_data_map.find(url_key);
       bool tab_data_map_already_has_url_entry =
