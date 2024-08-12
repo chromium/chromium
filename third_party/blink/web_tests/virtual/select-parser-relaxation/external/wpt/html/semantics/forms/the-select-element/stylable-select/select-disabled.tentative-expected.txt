@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] custombutton: <select disabled> should prevent focus and activation with appearance:base-select.
+  promise_test: Unhandled rejection with value: object "Error: element click intercepted error"
+Harness: the test ran to completion.
+
