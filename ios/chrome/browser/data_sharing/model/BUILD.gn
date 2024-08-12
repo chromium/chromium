@@ -4,12 +4,17 @@
 
 source_set("model") {
   sources = [
+    "data_sharing_sdk_delegate_ios.h",
+    "data_sharing_sdk_delegate_ios.mm",
     "data_sharing_service_factory.h",
     "data_sharing_service_factory.mm",
+    "data_sharing_ui_delegate_ios.h",
+    "data_sharing_ui_delegate_ios.mm",
   ]
   public_deps = [
     "//base",
     "//components/keyed_service/ios",
+    "//third_party/abseil-cpp:absl",
   ]
   deps = [
     "//components/data_sharing/internal",

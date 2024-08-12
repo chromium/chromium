@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_DATA_SHARING_PUBLIC_DATA_SHARING_UI_DELEGATE_H_
 #define COMPONENTS_DATA_SHARING_PUBLIC_DATA_SHARING_UI_DELEGATE_H_
 
+class GURL;
+
 namespace data_sharing {
 
 // An interface for the data sharing service to communicate with UI elements.
