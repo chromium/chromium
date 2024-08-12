@@ -319,10 +319,6 @@ void PepperWebPluginImpl::PrintEnd() {
     instance_->PrintEnd();
 }
 
-bool PepperWebPluginImpl::IsPlaceholder() {
-  return false;
-}
-
 void PepperWebPluginImpl::DidLoseMouseLock() {
   if (instance_)
     instance_->OnMouseLockLost();

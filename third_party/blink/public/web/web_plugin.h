@@ -247,10 +247,6 @@ class WebPlugin {
   virtual bool CanRotateView() { return false; }
   // Rotates the plugin's view of its content.
   virtual void RotateView(RotationType type) {}
-  // Check whether a plugin can be interacted with. A positive return value
-  // means the plugin has not loaded and hence cannot be interacted with.
-  // The plugin could, however, load successfully later.
-  virtual bool IsPlaceholder() { return true; }
   // Check whether a plugin failed to load, with there being no possibility of
   // it loading later.
   virtual bool IsErrorPlaceholder() { return false; }
