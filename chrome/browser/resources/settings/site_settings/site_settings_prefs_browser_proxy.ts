@@ -509,6 +509,14 @@ export interface SiteSettingsPrefsBrowserProxy {
    * level.
    */
   getOsGlobalPermissionStatus(): Promise<Record<ContentSettingsTypes, string>>;
+
+  /**
+   * Attempts to open a system setting page that allows to modify the system
+   * wide block for a given permission type. If this is not possible, the call
+   * will fail silently and no window will open.
+   * @param contentType The permission type.
+   */
+  openSystemPermissionSettings(contentType: string): void;
 }
 
 export class SiteSettingsPrefsBrowserProxyImpl implements
@@ -683,6 +691,10 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
 
   getOsGlobalPermissionStatus() {
     return sendWithPromise('getOsGlobalPermissionStatus');
+  }
+
+  openSystemPermissionSettings(contentType: string) {
+    chrome.send('openSystemPermissionSettings', [contentType]);
   }
 
   static getInstance(): SiteSettingsPrefsBrowserProxy {

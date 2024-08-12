@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -777,6 +778,11 @@ void SiteSettingsHandler::RegisterMessages() {
       "getOsGlobalPermissionStatus",
       base::BindRepeating(
           &SiteSettingsHandler::HandleGetOSGlobalPermissionStatus,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "openSystemPermissionSettings",
+      base::BindRepeating(
+          &SiteSettingsHandler::HandleOpenSystemPermissionSettings,
           base::Unretained(this)));
 }
 
@@ -2291,6 +2297,16 @@ void SiteSettingsHandler::HandleGetOSGlobalPermissionStatus(
   AllowJavascript();
   ResolveJavascriptCallback(base::Value(callback_id),
                             GetOSGlobalPermissionStatus());
+}
+
+void SiteSettingsHandler::HandleOpenSystemPermissionSettings(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const ContentSettingsType permission_type =
+      site_settings::ContentSettingsTypeFromGroupName(args[0].GetString());
+
+  content::WebContents* web_contents = CHECK_DEREF(web_ui()).GetWebContents();
+  system_permission_settings::OpenSystemSettings(web_contents, permission_type);
 }
 
 void SiteSettingsHandler::RemoveNonModelData(

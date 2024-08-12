@@ -222,6 +222,9 @@ class SiteSettingsHandler
   // Gets warning strings for content types that are blocked at the OS level.
   void HandleGetOSGlobalPermissionStatus(const base::Value::List& args);
 
+  // Attempts to open the the OS permission settings.
+  void HandleOpenSystemPermissionSettings(const base::Value::List& args);
+
   void ClearAllSitesMapForTesting();
 
   void SetModelForTesting(

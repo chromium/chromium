@@ -73,6 +73,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       'getFpsMembershipLabel',
       'getNumCookiesString',
       'getOsGlobalPermissionStatus',
+      'openSystemPermissionSettings',
       'getExtensionName',
       'getFileSystemGrants',
       'revokeFileSystemGrant',
@@ -634,6 +635,10 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   getOsGlobalPermissionStatus() {
     this.methodCalled('getOsGlobalPermissionStatus');
     return Promise.resolve({} as Record<ContentSettingsTypes, string>);
+  }
+
+  openSystemPermissionSettings(contentType: string): void {
+    this.methodCalled('openSystemPermissionSettings', contentType);
   }
 
   getExtensionName(id: string) {

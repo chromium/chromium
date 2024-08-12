@@ -322,7 +322,7 @@ void OpenSystemSettings(Profile* profile, ContentType type) {
     }
     case ContentType::MEDIASTREAM_MIC: {
       settings_path =
-          chromeos::settings::mojom::kPrivacyHubGeolocationSubpagePath;
+          chromeos::settings::mojom::kPrivacyHubMicrophoneSubpagePath;
       break;
     }
     case ContentType::GEOLOCATION: {

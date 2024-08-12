@@ -50,6 +50,7 @@
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/permissions/system/mock_platform_handle.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
@@ -6476,6 +6477,37 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Combine(testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
+
+class SiteSettingsOpenSystemSettingsTest
+    : public SiteSettingsHandlerBaseTest,
+      public testing::WithParamInterface<ContentSettingsType> {
+ public:
+  SiteSettingsOpenSystemSettingsTest() {
+    system_permission_settings::SetInstanceForTesting(&mock_platform_handle);
+  }
+  ~SiteSettingsOpenSystemSettingsTest() {
+    system_permission_settings::SetInstanceForTesting(nullptr);
+  }
+
+  ContentSettingsType PermissionType() const { return GetParam(); }
+
+  NiceMock<system_permission_settings::MockPlatformHandle> mock_platform_handle;
+};
+
+TEST_P(SiteSettingsOpenSystemSettingsTest, OpenSystemSettings) {
+  base::Value permission_type(
+      site_settings::ContentSettingsTypeToGroupName(PermissionType()));
+  auto args = base::Value::List().Append(std::move(permission_type));
+  EXPECT_CALL(mock_platform_handle, OpenSystemSettings(_, PermissionType()));
+  handler()->HandleOpenSystemPermissionSettings(args);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SiteSettingsOpenSystemSettingsTest,
+    testing::Values(ContentSettingsType::MEDIASTREAM_CAMERA,
+                    ContentSettingsType::MEDIASTREAM_MIC,
+                    ContentSettingsType::GEOLOCATION));
 #endif
 
 }  // namespace settings
