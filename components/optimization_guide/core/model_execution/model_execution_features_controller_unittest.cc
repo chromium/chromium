@@ -35,8 +35,10 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
 
   void SetUp() override {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    local_state_ = std::make_unique<TestingPrefServiceSimple>();
     prefs::RegisterProfilePrefs(pref_service_->registry());
     model_execution::prefs::RegisterProfilePrefs(pref_service_->registry());
+    model_execution::prefs::RegisterLocalStatePrefs(local_state_->registry());
   }
 
   void CreateController(
@@ -44,7 +46,7 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
           ModelExecutionFeaturesController::DogfoodStatus::NON_DOGFOOD) {
     controller_ = std::make_unique<ModelExecutionFeaturesController>(
         pref_service_.get(), identity_test_env_.identity_manager(),
-        dogfood_status);
+        local_state_.get(), dogfood_status);
   }
 
   void EnableSignIn() {
@@ -93,11 +95,13 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
   PrefService* pref_service() { return pref_service_.get(); }
+  PrefService* local_state() { return local_state_.get(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  std::unique_ptr<TestingPrefServiceSimple> local_state_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<ModelExecutionFeaturesController> controller_;
@@ -416,5 +420,47 @@ TEST_F(ModelExecutionFeaturesControllerTest,
       1);
 #endif
 }
+
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+TEST_F(ModelExecutionFeaturesControllerTest,
+       HistorySearchVisibilityWithPerformanceClass) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::internal::kHistorySearchSettingsVisibility,
+        {{"PerformanceClassListForHistorySearch", "3,4,5"}}}},
+      {});
+
+  CreateController();
+
+  EnableSignIn();
+
+  // Not visible - performance class not in the list
+  local_state()->SetInteger(
+      model_execution::prefs::localstate::kOnDevicePerformanceClass, 2);
+  EXPECT_FALSE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
+  histogram_tester()->ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.SettingsVisibilityResult.HistorySearch",
+      ModelExecutionFeaturesController::SettingsVisibilityResult::
+          kNotVisibleHardwareUnsupported,
+      1);
+
+  // Visible - performance class in the list.
+  local_state()->SetInteger(
+      model_execution::prefs::localstate::kOnDevicePerformanceClass, 4);
+  EXPECT_TRUE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
+  histogram_tester()->ExpectBucketCount(
+      "OptimizationGuide.ModelExecution.SettingsVisibilityResult.HistorySearch",
+      ModelExecutionFeaturesController::SettingsVisibilityResult::
+          kVisibleFieldTrialEnabled,
+      1);
+
+  histogram_tester()->ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.SettingsVisibilityResult.HistorySearch",
+      2);
+}
+#endif
 
 }  // namespace optimization_guide

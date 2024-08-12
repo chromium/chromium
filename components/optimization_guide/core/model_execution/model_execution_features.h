@@ -7,7 +7,9 @@
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
@@ -22,6 +24,11 @@ BASE_DECLARE_FEATURE(kComposeSettingsVisibility);
 BASE_DECLARE_FEATURE(kTabOrganizationSettingsVisibility);
 BASE_DECLARE_FEATURE(kWallpaperSearchSettingsVisibility);
 BASE_DECLARE_FEATURE(kHistorySearchSettingsVisibility);
+
+// Comma-separated list of performance classes (e.g. "3,4,5") accepted by
+// History Search. Use "*" if there is no performance class requirement.
+extern const base::FeatureParam<std::string>
+    kPerformanceClassListForHistorySearch;
 
 // Features that determine when a feature has graduated from experimental. These
 // should not be enabled at the same time as their respective settings
