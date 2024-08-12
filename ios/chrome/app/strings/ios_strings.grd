@@ -908,8 +908,8 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CLEAR_SAVED_PASSWORDS" desc="Label for the option in settings to clear saved passwords. In titlecase. [Length: 20em] [iOS only]">
         Saved Passwords
       </message>
-      <message name="IDS_IOS_CLOSE_TABS" translateable="false" desc="Label for the option in settings to close open tabs. In titlecase. [Length: 20em] [iOS only]">
-        **Tabs**
+      <message name="IDS_IOS_CLOSE_TABS" desc="Label for the option in settings to close open tabs. In titlecase. [Length: 20em] [iOS only]">
+        Tabs
       </message>
       <message name="IDS_IOS_COMPROMISED_PASSWORD_ISSUES_DESCRIPTION" desc="Header displayed on the password manager screen displaying credentials that have been leaked or phished [iOS only]">
         Some of your saved passwords were exposed in a non-Google data breach. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
@@ -1326,11 +1326,11 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DELETE_BROWSING_DATA_CANCEL" desc="Label for the option to cancel and dismiss deleting browsing data. [iOS only]">
         Cancel
       </message>
-      <message name="IDS_IOS_DELETE_BROWSING_DATA_CONFIRM" translateable="false" desc="Label for the option to confirm selection of browsing data types to be deleted. [iOS only]">
-        **Confirm**
+      <message name="IDS_IOS_DELETE_BROWSING_DATA_CONFIRM" desc="Label for the option to confirm selection of browsing data types to be deleted. [iOS only]">
+        Confirm
       </message>
-      <message name="IDS_IOS_DELETE_BROWSING_DATA_PAGE_FOOTER" translateable="false" desc="The text is displayed in a footer in the delete browsing data page which allows selection of data types to be deleted. The link ‘sign out of Chrome’ opens a dialog where the user can confirm if they want to sign out of Chrome.">
-        **Deleting your browsing data doesn't sign you out of your Google Account. To do so, <ph name="BEGIN_LINK">BEGIN_LINK</ph>sign out of Chrome<ph name="END_LINK">END_LINK</ph>.**
+      <message name="IDS_IOS_DELETE_BROWSING_DATA_PAGE_FOOTER" desc="The text is displayed in a footer in the delete browsing data page which allows selection of data types to be deleted. The link ‘sign out of Chrome’ opens a dialog where the user can confirm if they want to sign out of Chrome.">
+        Deleting your browsing data doesn't sign you out of your Google Account. To do so, <ph name="BEGIN_LINK">BEGIN_LINK</ph>sign out of Chrome<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES" desc="Summary of the addresses to be deleted when deleting browsing data. [iOS only]">
        {COUNT, plural,

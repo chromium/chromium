@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -420,8 +421,10 @@ id<GREYMatcher> SignOutLinkMatcher() {
       @"Signin.SignoutProfile histogram is logged at the start of the test.");
 
   // Tap on the "sign out of Chrome" link.
+  // As the sign out link can be split into two lines we need a more precise
+  // point tap to avoid failure on larger screens.
   [[EarlGrey selectElementWithMatcher:SignOutLinkMatcher()]
-      performAction:grey_tap()];
+      performAction:chrome_test_util::TapAtPointPercentage(0.95, 0.05)];
 
   // Dismiss the sign outsnackbar, so that it can't obstruct other UI items.
   [SigninEarlGreyUI dismissSignoutSnackbar];
