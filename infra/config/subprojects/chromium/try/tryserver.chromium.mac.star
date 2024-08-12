@@ -209,6 +209,8 @@ try_.builder(
         ],
     ),
     builderless = True,
+    cores = None,
+    cpu = cpu.ARM64,
 )
 
 try_.builder(
