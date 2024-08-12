@@ -51,6 +51,10 @@ strum = "0.25.0"
 strum_macros = "0.25.3"
 wycheproof = "0.4"
 
+[dependencies.png]
+version = "0.17"
+features = ["unstable"]  # For `std::simd`.
+
 [dependencies.tinyvec]
 version = "1.6.0"
 features = ["rustc_1_55"]

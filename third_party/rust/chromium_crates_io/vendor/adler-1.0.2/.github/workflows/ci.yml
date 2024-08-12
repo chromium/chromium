@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - master
+    - staging
+    - trying
+  pull_request:
+    branches:
+    - master
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "--deny warnings"
+  MSRV: 1.31.0
+  NO_STD_TARGET: thumbv6m-none-eabi
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        rust:
+          - stable
+          - nightly
+        os:
+          - ubuntu-latest
+          - macOS-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: ${{ matrix.rust }}
+        override: true
+    - name: Build
+      run: cargo build --all --all-targets
+    - name: Run tests
+      run: |
+        cargo test --all --all-targets
+        cargo test --all --no-default-features
+
+  no-std:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+        target: ${{ env.NO_STD_TARGET }}
+    - name: Build
+      run: cargo build --verbose --no-default-features --target ${{ env.NO_STD_TARGET }}
+
+  msrv:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: ${{ env.MSRV }}
+        override: true
+    - name: Build
+      run: cargo build --verbose
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+        components: rustfmt
+    - name: Check code formatting
+      run: cargo fmt -- --check

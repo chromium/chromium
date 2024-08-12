@@ -64,6 +64,18 @@ Full description of the audit criteria can be found at
 https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-4
 """
 
+[[audits.adler]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "1.0.2"
+notes = '''
+Grepped for `-i cipher`, `-i crypto`, `'\bfs\b'`, `'\bnet\b'`, `'\bunsafe\b'`
+and there were no hits (except in comments and in the `README.md` file).
+
+Note that some additional, internal notes about an older version of this crate
+can be found at go/image-crate-chromium-security-review.
+'''
+
 [[audits.aho-corasick]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -181,6 +193,21 @@ who = "Adam Langley <agl@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
 version = "0.13.1"
 notes = "Skimmed the uses of `std` to ensure that nothing untoward is happening. Code uses `forbid(unsafe_code)` and, indeed, there are no uses of `unsafe`"
+
+[[audits.bitflags]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+version = "1.3.2"
+notes = """
+Security review of earlier versions of the crate can be found at
+(Google-internal, sorry): go/image-crate-chromium-security-review
+
+The crate exposes a function marked as `unsafe`, but doesn't use any
+`unsafe` blocks (except for tests of the single `unsafe` function).  I
+think this justifies marking this crate as `ub-risk-1`.
+
+Additional review comments can be found at https://crrev.com/c/4723145/31
+"""
 
 [[audits.bitflags]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
@@ -489,6 +516,17 @@ Reviewed in https://crrev.com/c/5171063
 Previously reviewed during security review and the audit is grandparented in.
 """
 
+[[audits.crc32fast]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "1.4.2"
+notes = """
+Security review of earlier versions of the crate can be found at
+(Google-internal, sorry): go/image-crate-chromium-security-review
+
+Audit comments for 1.4.2 can be found at https://crrev.com/c/4723145.
+"""
+
 [[audits.cxx]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -690,6 +728,18 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.12.0 -> 1.13.0"
 
+[[audits.fdeflate]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.3.4"
+notes = '''
+Grepped for `-i cipher`, `-i crypto`, `'\bfs\b'`, `'\bnet\b'`, `'\bunsafe\b'`
+and there were no hits.
+
+Note that some additional, internal notes about an older version of this crate
+can be found at go/image-crate-chromium-security-review.
+'''
+
 [[audits.fend-core]]
 who = "jiwan@chromium.org"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
@@ -709,6 +759,40 @@ delta = "1.4.8 -> 1.4.9"
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.4.9 -> 1.5.0"
+
+[[audits.flate2]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "1.0.30"
+notes = '''
+WARNING: This certification is a result of a **partial** audit.  The
+`any_zlib` code has **not** been audited.  Ability to track partial
+audits is tracked in https://github.com/mozilla/cargo-vet/issues/380
+Chromium does use the `any_zlib` feature(s).  Accidentally depending on
+this feature in the future is prevented using the `ban_features` feature
+of `gnrt` - see:
+https://crrev.com/c/4723145/31/third_party/rust/chromium_crates_io/gnrt_config.toml
+
+Security review of earlier versions of the crate can be found at
+(Google-internal, sorry): go/image-crate-chromium-security-review
+
+I grepped for `-i cipher`, `-i crypto`, `'\bfs\b'`, `'\bnet\b'`, `'\bunsafe\b'`.
+
+All `unsafe` in `flate2` is gated behind `#[cfg(feature = "any_zlib")]`:
+
+* The code under `src/ffi/...` will not be used because the `mod c`
+  declaration in `src/ffi/mod.rs` depends on the `any_zlib` config
+* 7 uses of `unsafe` in `src/mem.rs` also all depend on the
+  `any_zlib` config:
+    - 2 in `fn set_dictionary` (under `impl Compress`)
+    - 2 in `fn set_level` (under `impl Compress`)
+    - 3 in `fn set_dictionary` (under `impl Decompress`)
+
+All hits of `'\bfs\b'` are in comments, or example code, or test code
+(but not in product code).
+
+There were no hits of `-i cipher`, `-i crypto`, `'\bnet\b'`.
+'''
 
 [[audits.font-types]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
@@ -897,6 +981,21 @@ Reviewed in https://chromium-review.googlesource.com/c/chromium/src/+/4977110
 - Safe traits that can cause soundness bugs.
 """
 
+[[audits.miniz_oxide]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.7.4"
+notes = '''
+Grepped for `-i cipher`, `-i crypto`, `'\bfs\b'`, `'\bnet\b'`, `'\bunsafe\b'`
+and there were no hits, except for some mentions of "unsafe" in the `README.md`
+and in a comment in `src/deflate/core.rs`.  The comment discusses whether a
+function should be treated as unsafe, but there is no actual `unsafe` code, so
+the crate meets the `ub-risk-0` criteria.
+
+Note that some additional, internal notes about an older version of this crate
+can be found at go/image-crate-chromium-security-review.
+'''
+
 [[audits.nom]]
 who = "danakj@chromium.org"
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-1"]
@@ -904,6 +1003,20 @@ version = "7.1.3"
 notes = """
 Reviewed in https://chromium-review.googlesource.com/c/chromium/src/+/5046153
 """
+
+[[audits.png]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.17.13"
+notes = '''
+Grepped for `-i cipher`, `-i crypto`, `'\bfs\b'`, `'\bnet\b'`, `'\bunsafe\b'`
+and there were no hits except for reasonable, client-controlled usage of
+`std::fs::File` in tests in `src/encoder.rs`, tests in `src/decoder/stream.rs`,
+and in some example code.
+
+Note that some additional, internal notes about an older version of this crate
+can be found at go/image-crate-chromium-security-review.
+'''
 
 [[audits.ppv-lite86]]
 who = "danakj@chromium.org"
@@ -1500,6 +1613,17 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "0.2.0 -> 0.2.1"
 notes = """
 Reviewed in https://crrev.com/c/5385822
+"""
+
+[[audits.simd-adler32]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "0.3.7"
+notes = """
+Security review of earlier versions of the crate can be found at
+(Google-internal, sorry): go/image-crate-chromium-security-review
+
+Audit comments for 1.3.2 can be found at https://crrev.com/c/4723145.
 """
 
 [[audits.skrifa]]

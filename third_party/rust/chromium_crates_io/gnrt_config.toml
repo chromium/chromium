@@ -126,6 +126,14 @@ remove_build_rs = true
 shipped = false
 bin_targets = ["cxxbridge"]
 
+[crate.flate2]
+ban_features = [
+    # `any_zlib` feature is banned because Chromium does not use the `zlib`
+    # backend (and because this backend's extensive `unsafe` usage hasn't been
+    # audited).
+    'any_zlib',
+]
+
 [crate.hex]
 group = 'test'
 
