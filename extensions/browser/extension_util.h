@@ -12,7 +12,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
-#include "extensions/common/mojom/host_id.mojom.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -22,10 +21,6 @@ class FilePath;
 namespace gfx {
 class ImageSkia;
 }  // namespace gfx
-
-namespace guest_view {
-class GuestViewBase;
-}  // namespace guest_view
 
 namespace content {
 class BrowserContext;
@@ -45,16 +40,6 @@ namespace util {
 // TODO(crbug.com/40893821): Move functions from
 // chrome/browser/extensions/extension_util.h/cc that are only dependent on
 // extensions/ here.
-
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
-// Returns a HostID type based on the given GuestViewBase.
-mojom::HostID::HostType HostIdTypeFromGuestView(
-    const guest_view::GuestViewBase& guest);
-
-// Returns a HostID instance based on the given GuestViewBase.
-mojom::HostID GenerateHostIdFromGuestView(
-    const guest_view::GuestViewBase& guest);
-#endif
 
 // Returns true if the extension can be enabled in incognito mode.
 bool CanBeIncognitoEnabled(const Extension* extension);

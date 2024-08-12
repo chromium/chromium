@@ -25,17 +25,12 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
-#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
-#include "components/guest_view/browser/guest_view_base.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
@@ -62,33 +57,6 @@ bool IsSigninProfileTestExtensionOnTestImage(const Extension* extension) {
 #endif
 
 }  // namespace
-
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
-mojom::HostID::HostType HostIdTypeFromGuestView(
-    const guest_view::GuestViewBase& guest) {
-  if (guest.IsOwnedByWebUI()) {
-    return mojom::HostID::HostType::kWebUi;
-  }
-
-  if (guest.IsOwnedByControlledFrameEmbedder()) {
-    return mojom::HostID::HostType::kControlledFrameEmbedder;
-  }
-
-  // Note: We return a type of kExtensions for all cases where
-  // |guest.IsOwnedByExtension()| are true, as well as some additional cases
-  // where that call is false but also |guest.IsOwnedByWebUI()| and
-  // |guest.IsOwnedByControlledFrameEmbedder()| are false. Those appear to be
-  // when the provided extension identifier is blank. Future work in this area
-  // could improve the checks here so all the cases are declared relative to
-  // what the GuestView instance asserts itself to be.
-  return mojom::HostID::HostType::kExtensions;
-}
-
-mojom::HostID GenerateHostIdFromGuestView(
-    const guest_view::GuestViewBase& guest) {
-  return mojom::HostID(HostIdTypeFromGuestView(guest), guest.owner_host());
-}
-#endif
 
 bool CanBeIncognitoEnabled(const Extension* extension) {
   return IncognitoInfo::IsIncognitoAllowed(extension) &&
