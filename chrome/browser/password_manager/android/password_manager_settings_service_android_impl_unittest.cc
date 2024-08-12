@@ -75,7 +75,7 @@ class PasswordManagerSettingsServiceAndroidImplBaseTest : public testing::Test {
   void ExpectSettingsRetrievalFromBackend();
 
   Consumer* updater_bridge_consumer() { return settings_service_.get(); }
-  PasswordManagerSettingsService* settings_service() {
+  password_manager::PasswordManagerSettingsService* settings_service() {
     return settings_service_.get();
   }
   TestingPrefServiceSimple* pref_service() { return &test_pref_service_; }

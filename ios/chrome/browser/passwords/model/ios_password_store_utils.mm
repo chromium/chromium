@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_reuse_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_password_manager_settings_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
@@ -57,12 +58,16 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
     password_manager::PasswordReuseManager* password_reuse_manager =
         IOSChromePasswordReuseManagerFactory::GetForBrowserState(
             browser_state_);
+    password_manager::PasswordManagerSettingsService* settings =
+        IOSPasswordManagerSettingsServiceFactory::GetForBrowserState(
+            browser_state_);
+
     PrefService* pref_service = browser_state_->GetPrefs();
 
     metrics_reporter_ = std::make_unique<
         password_manager::StoreMetricsReporter>(
         profile_store, account_store, sync_service, pref_service,
-        password_reuse_manager,
+        password_reuse_manager, settings,
         base::BindOnce(
             &StoreMetricReporterHelper::RemoveInstanceFromBrowserStateUserData,
             weak_ptr_factory_.GetWeakPtr()));

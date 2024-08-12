@@ -21,6 +21,7 @@ class SyncService;
 
 namespace password_manager {
 
+class PasswordManagerSettingsService;
 class PasswordReuseManager;
 
 // Instantiate this object to report metrics about the contents of the password
@@ -44,7 +45,8 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
                        const syncer::SyncService* sync_service,
                        PrefService* prefs,
                        PasswordReuseManager* password_reuse_manager,
-                       base::OnceClosure done_call);
+                       PasswordManagerSettingsService* settings,
+                       base::OnceClosure done_callback);
   StoreMetricsReporter(const StoreMetricsReporter&) = delete;
   StoreMetricsReporter& operator=(const StoreMetricsReporter&) = delete;
   StoreMetricsReporter(StoreMetricsReporter&&) = delete;

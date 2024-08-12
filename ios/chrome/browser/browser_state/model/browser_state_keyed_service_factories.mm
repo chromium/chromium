@@ -78,6 +78,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_reuse_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_sender_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_password_manager_settings_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_password_requirements_service_factory.h"
 #import "ios/chrome/browser/passwords/model/password_manager_log_router_factory.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
@@ -260,6 +261,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   IOSChromeSafetyCheckManagerFactory::GetInstance();
   IOSChromeTabRestoreServiceFactory::GetInstance();
   IOSPasskeyModelFactory::GetInstance();
+  IOSPasswordManagerSettingsServiceFactory::GetInstance();
   IOSPasswordRequirementsServiceFactory::GetInstance();
   IOSProfileSessionDurationsServiceFactory::GetInstance();
   IOSSharingMessageBridgeFactory::GetInstance();

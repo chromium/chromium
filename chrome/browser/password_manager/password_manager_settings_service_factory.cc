@@ -5,10 +5,10 @@
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/password_manager/password_manager_settings_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
+#include "components/password_manager/core/browser/password_manager_settings_service_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
@@ -18,9 +18,9 @@
 #endif
 
 // static
-PasswordManagerSettingsService*
+password_manager::PasswordManagerSettingsService*
 PasswordManagerSettingsServiceFactory::GetForProfile(Profile* profile) {
-  return static_cast<PasswordManagerSettingsService*>(
+  return static_cast<password_manager::PasswordManagerSettingsService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
@@ -70,6 +70,6 @@ PasswordManagerSettingsServiceFactory::BuildServiceInstanceForBrowserContext(
         profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
   }
 #endif
-  return std::make_unique<PasswordManagerSettingsServiceImpl>(
+  return std::make_unique<password_manager::PasswordManagerSettingsServiceImpl>(
       profile->GetPrefs());
 }

@@ -6315,7 +6315,6 @@ test("unit_tests") {
       "../browser/content_extraction/inner_text_unittest.cc",
       "../browser/metrics/power/battery_discharge_reporter_unittest.cc",
       "../browser/page_load_metrics/observers/non_tab_webui_page_load_metrics_observer_unittest.cc",
-      "../browser/password_manager/password_manager_settings_service_impl_unittest.cc",
       "../browser/performance_manager/metrics/metrics_provider_desktop_unittest.cc",
       "../browser/picture_in_picture/auto_pip_setting_helper_unittest.cc",
       "../browser/picture_in_picture/auto_pip_setting_overlay_view_unittest.cc",

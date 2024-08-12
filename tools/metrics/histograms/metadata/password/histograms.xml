@@ -867,6 +867,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.AutoSignin" enum="BooleanEnabled"
+    expires_after="2024-12-08">
+  <owner>vasilii@chromium.org</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    The state of the Auto Sign-in setting in the profile. Recorded 30 seconds
+    after PasswordStore is created at most once per day for regular profiles.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.AutoSigninFirstRunDialog"
     enum="AutoSigninFirstRun" expires_after="2024-12-08">
   <owner>vasilii@chromium.org</owner>

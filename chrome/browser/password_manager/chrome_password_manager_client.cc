@@ -246,7 +246,7 @@ bool ChromePasswordManagerClient::IsSavingAndFillingEnabled(
     // page, and there is no API to access (or dismiss) UI bubbles/infobars.
     return false;
   }
-  PasswordManagerSettingsService* settings_service =
+  password_manager::PasswordManagerSettingsService* settings_service =
       PasswordManagerSettingsServiceFactory::GetForProfile(profile_);
   return settings_service->IsSettingEnabled(
              PasswordManagerSetting::kOfferToSavePasswords) &&
@@ -282,7 +282,7 @@ bool ChromePasswordManagerClient::IsAutoSignInEnabled() const {
     return false;
   }
 #endif
-  PasswordManagerSettingsService* settings_service =
+  password_manager::PasswordManagerSettingsService* settings_service =
       PasswordManagerSettingsServiceFactory::GetForProfile(profile_);
   return settings_service->IsSettingEnabled(
       PasswordManagerSetting::kAutoSignIn);

@@ -349,14 +349,14 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
         profile(), base::BindRepeating([](content::BrowserContext* context)
                                            -> std::unique_ptr<KeyedService> {
           return std::make_unique<
-              NiceMock<MockPasswordManagerSettingsService>>();
+              NiceMock<password_manager::MockPasswordManagerSettingsService>>();
         }));
   }
 
  protected:
   ChromePasswordManagerClient* GetClient();
-  MockPasswordManagerSettingsService& settings_service() {
-    return static_cast<MockPasswordManagerSettingsService&>(
+  password_manager::MockPasswordManagerSettingsService& settings_service() {
+    return static_cast<password_manager::MockPasswordManagerSettingsService&>(
         *PasswordManagerSettingsServiceFactory::GetForProfile(profile()));
   }
   syncer::TestSyncService* sync_service() {
@@ -1222,7 +1222,8 @@ void ChromePasswordManagerClientAndroidTest::SetUp() {
       GetBrowserContext(),
       base::BindRepeating([](content::BrowserContext* context)
                               -> std::unique_ptr<KeyedService> {
-        return std::make_unique<NiceMock<MockPasswordManagerSettingsService>>();
+        return std::make_unique<
+            NiceMock<password_manager::MockPasswordManagerSettingsService>>();
       }));
 }
 
