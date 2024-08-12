@@ -71,7 +71,7 @@ struct Annotation {
   Annotation(AnnotationType type) : type(type) {}
 
   AnnotationType type;
-  llvm::StringRef identifier;
+  std::string identifier;
 };
 
 // TODO(crbug.com/40272746): Use a set instead, because having duplicated
@@ -203,11 +203,7 @@ static llvm::DenseMap<llvm::StringRef, GroupedFunctionAnnotation>
         },
         {
             "std::search",
-            GroupedFunctionAnnotation()
-                .Arg({Annotation(AnnotationType::kContainer, "a")})
-                .Arg({Annotation(AnnotationType::kContainer, "a")})
-                .Arg({Annotation(AnnotationType::kContainer, "b")})
-                .Arg({Annotation(AnnotationType::kContainer, "b")}),
+            {},
         },
         {
             "std::swap",
@@ -311,8 +307,9 @@ static llvm::DenseMap<
                 },
                 {
                     "insert",
-                    GroupedFunctionAnnotation().Function(
-                        Annotation(AnnotationType::kInvalidate)),
+                    GroupedFunctionAnnotation()
+                        .Function(Annotation(AnnotationType::kInvalidate))
+                        .Function(Annotation(AnnotationType::kContainer)),
                 },
                 {
                     "insert_range",
@@ -1155,8 +1152,12 @@ class InvalidIteratorAnalysis
         GetHardcodedFunctionAnnotation(
             *callee, clang::isa<clang::CXXMemberCallExpr>(expr));
 
-    return MergeGroupedFunctionAnnotations(annotated_grouped_annotation,
-                                           hardcoded_grouped_annotation);
+    auto merged_grouped_annotation = MergeGroupedFunctionAnnotations(
+        annotated_grouped_annotation, hardcoded_grouped_annotation);
+
+    ApplyIdentifiersFromTemplate(merged_grouped_annotation, callee);
+
+    return merged_grouped_annotation;
   }
 
   GroupedFunctionAnnotation GetHardcodedFunctionAnnotation(
@@ -1259,6 +1260,47 @@ class InvalidIteratorAnalysis
 
     return GroupedFunctionAnnotation{function_annotations, return_annotations,
                                      arguments_annotations};
+  }
+
+  void ApplyIdentifiersFromTemplate(
+      GroupedFunctionAnnotation& grouped_annotation,
+      const clang::FunctionDecl* callee) {
+    clang::FunctionTemplateDecl* templ = callee->getPrimaryTemplate();
+
+    if (!templ) {
+      return;
+    }
+
+    const clang::FunctionDecl* callee_decl = templ->getTemplatedDecl();
+
+    for (size_t i = 0; i < callee_decl->getNumParams(); i++) {
+      auto* param = callee_decl->getParamDecl(i);
+
+      // We are only interested to parameters that actually belong to the
+      // template.
+      if (!clang::isa<clang::TemplateTypeParmType>(param->getType())) {
+        continue;
+      }
+
+      // We want to apply template identifiers just for annotations that already
+      // exist.
+      if (grouped_annotation.args_annotations.size() <= i) {
+        break;
+      }
+
+      std::string identifier = param->getType().getAsString();
+
+      for (auto& annotation : grouped_annotation.args_annotations[i]) {
+        // The template identifier is applied only if the annotation is of type
+        // `kContainer` and if it doesn't have an identifier yet.
+        if (annotation.type != AnnotationType::kContainer ||
+            annotation.identifier != "") {
+          continue;
+        }
+
+        annotation.identifier = identifier;
+      }
+    }
   }
 
   // Retrieve types annotations from the context and save them in
