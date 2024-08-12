@@ -1278,6 +1278,45 @@ TEST_F(HTMLPemissionElementIntersectionTest, IntersectionChanged) {
 }
 
 TEST_F(HTMLPemissionElementIntersectionTest,
+       IntersectionVisibleOverlapsRecentAttachedInterval) {
+  SimRequest main_resource("https://example.test/", "text/html");
+  LoadURL("https://example.test/");
+  main_resource.Complete(R"HTML(
+    <div id='heading' style='height: 700px;'></div>
+    <permission id='camera' type='camera'>
+  )HTML");
+
+  Compositor().BeginFrame();
+  auto* permission_element = To<HTMLPermissionElement>(
+      GetDocument().QuerySelector(AtomicString("permission")));
+  WaitForIntersectionVisibilityChanged(
+      permission_element,
+      HTMLPermissionElement::IntersectionVisibility::kOutOfViewportOrClipped);
+  permission_element->DisableClickingTemporarily(
+      HTMLPermissionElement::DisableReason::kRecentlyAttachedToLayoutTree,
+      base::Milliseconds(600));
+  DeferredChecker checker(permission_element);
+
+  checker.CheckClickingEnabledAfterDelay(base::Milliseconds(300),
+                                         /*expected_enabled*/ false);
+  // The `kIntersectionRecentlyFullyVisible` cooldown time which is overlapping
+  // `kRecentlyAttachedToLayoutTree` will not extend the cooldown time, just
+  // change the disable reason.
+  GetDocument().View()->LayoutViewport()->ScrollBy(
+      ScrollOffset(0, kViewportHeight), mojom::blink::ScrollType::kUser);
+  WaitForIntersectionVisibilityChanged(
+      permission_element,
+      HTMLPermissionElement::IntersectionVisibility::kFullyVisible);
+  permission_element->EnableClicking(
+      HTMLPermissionElement::DisableReason::kIntersectionWithViewportChanged);
+  EXPECT_FALSE(permission_element->IsClickingEnabled());
+  EXPECT_FALSE(permission_element->isValid());
+  checker.CheckClickingEnabledAfterDelay(base::Milliseconds(300),
+                                         /*expected_enabled*/ true);
+  EXPECT_TRUE(permission_element->isValid());
+}
+
+TEST_F(HTMLPemissionElementIntersectionTest,
        IntersectionChangedDisableEnableDisable) {
   SimRequest main_resource("https://example.test/", "text/html");
   LoadURL("https://example.test/");
@@ -1438,6 +1477,7 @@ TEST_F(HTMLPemissionElementLayoutChangeTest, InvalidatePEPCAfterMoveContainer) {
   auto* child_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
   auto* permission_element = CreatePermissionElement(
       *child_frame->GetFrame()->GetDocument(), "camera");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(permission_element->IsClickingEnabled());
   DeferredChecker checker(permission_element);
   checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,

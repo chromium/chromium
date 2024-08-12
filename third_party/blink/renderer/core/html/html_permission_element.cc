@@ -371,7 +371,7 @@ void HTMLPermissionElement::DetachLayoutTree(bool performing_reattach) {
   if (disable_reason_expire_timer_.IsActive()) {
     disable_reason_expire_timer_.Stop();
   }
-  intersection_rect_ = gfx::Rect();
+  intersection_rect_ = std::nullopt;
   if (auto* view = GetDocument().View()) {
     view->UnregisterFromLifecycleNotifications(this);
   }
@@ -695,11 +695,12 @@ void HTMLPermissionElement::DidRecalcStyle(const StyleRecalcChange change) {
                            kDefaultDisableTimeout);
   gfx::Rect intersection_rect =
       ComputeIntersectionRectWithViewport(GetDocument().GetPage());
-  if (intersection_rect_ != intersection_rect) {
-    intersection_rect_ = intersection_rect;
+  if (intersection_rect_.has_value() &&
+      intersection_rect_.value() != intersection_rect) {
     DisableClickingTemporarily(DisableReason::kIntersectionWithViewportChanged,
                                kDefaultDisableTimeout);
   }
+  intersection_rect_ = intersection_rect;
 }
 
 void HTMLPermissionElement::DefaultEventHandler(Event& event) {
@@ -1094,14 +1095,17 @@ void HTMLPermissionElement::OnIntersectionChanged(
   }
   intersection_visibility_ = intersection_visibility;
   switch (intersection_visibility_) {
-    case IntersectionVisibility::kFullyVisible:
+    case IntersectionVisibility::kFullyVisible: {
+      std::optional<base::TimeDelta> interval =
+          GetRecentlyAttachedTimeoutRemaining();
       DisableClickingTemporarily(
           DisableReason::kIntersectionRecentlyFullyVisible,
-          kDefaultDisableTimeout);
+          interval ? interval.value() : kDefaultDisableTimeout);
       EnableClicking(DisableReason::kIntersectionVisibilityOccludedOrDistorted);
       EnableClicking(
           DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped);
       break;
+    }
     case IntersectionVisibility::kOccludedOrDistorted:
       DisableClickingIndefinitely(
           DisableReason::kIntersectionVisibilityOccludedOrDistorted);
@@ -1294,11 +1298,12 @@ void HTMLPermissionElement::DidFinishLifecycleUpdate(
   // the element has been moved or resized.
   gfx::Rect intersection_rect = ComputeIntersectionRectWithViewport(
       local_frame_view.GetFrame().GetPage());
-  if (intersection_rect_ != intersection_rect) {
-    intersection_rect_ = intersection_rect;
+  if (intersection_rect_.has_value() &&
+      intersection_rect_.value() != intersection_rect) {
     DisableClickingTemporarily(DisableReason::kIntersectionWithViewportChanged,
                                kDefaultDisableTimeout);
   }
+  intersection_rect_ = intersection_rect;
 }
 
 gfx::Rect HTMLPermissionElement::ComputeIntersectionRectWithViewport(
@@ -1315,6 +1320,18 @@ gfx::Rect HTMLPermissionElement::ComputeIntersectionRectWithViewport(
   // mutate `rect` to visible rect in the root frame's coordinate space.
   layout_object->MapToVisualRectInAncestorSpace(/*ancestor*/ nullptr, rect);
   return IntersectRects(viewport_in_root_frame, ToEnclosingRect(rect));
+}
+
+std::optional<base::TimeDelta>
+HTMLPermissionElement::GetRecentlyAttachedTimeoutRemaining() const {
+  base::TimeTicks now = base::TimeTicks::Now();
+  auto it = clicking_disabled_reasons_.find(
+      DisableReason::kRecentlyAttachedToLayoutTree);
+  if (it == clicking_disabled_reasons_.end()) {
+    return std::nullopt;
+  }
+
+  return it->value - now;
 }
 
 }  // namespace blink
