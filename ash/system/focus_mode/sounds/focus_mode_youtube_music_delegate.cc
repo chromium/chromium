@@ -294,7 +294,7 @@ void FocusModeYouTubeMusicDelegate::OnNextTrackDone(
   if (playback_context.has_value()) {
     result = Track(
         /*title=*/playback_context->track_title,
-        /*artist=*/std::string(),
+        /*artist=*/playback_context->track_artists,
         /*source=*/
         base::StringPrintf(kYouTubeMusicSourceFormat, playlist_id.c_str()),
         /*thumbnail_url=*/playback_context->track_image.url,
