@@ -162,6 +162,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   void OnInsertCompleted(const PickerRichMedia& media,
                          PickerInsertMediaRequest::Result result);
   PrefService* GetPrefs();
+  void StartEmojiSearchInternal(std::u16string query,
+                                EmojiSearchResultsCallback callback);
 
   std::optional<PickerWebPasteTarget> GetWebPasteTarget();
 

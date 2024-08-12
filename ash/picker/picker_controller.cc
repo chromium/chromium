@@ -54,10 +54,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/hash/sha1.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -425,6 +427,19 @@ void PickerController::StopSearch() {
 
 void PickerController::StartEmojiSearch(std::u16string_view query,
                                         EmojiSearchResultsCallback callback) {
+  // This method is called during keydown events - avoid slow synchronous work.
+  // As emoji search is currently synchronous, and the resulting callback
+  // (called synchronously) updates the emoji bar, which is slow, post a task to
+  // avoid introducing keydown latency.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&PickerController::StartEmojiSearchInternal,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                std::u16string(query), std::move(callback)));
+}
+
+void PickerController::StartEmojiSearchInternal(
+    std::u16string query,
+    EmojiSearchResultsCallback callback) {
   search_controller_->StartEmojiSearch(query, std::move(callback));
 }
 
