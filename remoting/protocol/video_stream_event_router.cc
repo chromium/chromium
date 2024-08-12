@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 
 namespace remoting::protocol {
 
@@ -45,15 +46,14 @@ void VideoStreamEventRouter::SetVideoChannelStateObserver(
   // Clear out the single stream observer in case the mode changed.
   single_stream_state_observer_ = nullptr;
 
-  auto screen_id_index = stream_name.find_last_of('_');
-  if (screen_id_index == std::string::npos) {
+  auto parts = base::RSplitStringOnce(stream_name, '_');
+  if (!parts) {
     LOG(ERROR) << "Unexpected stream name format: " << stream_name;
     return;
   }
 
   int64_t screen_id;
-  if (!base::StringToInt64(stream_name.substr(screen_id_index + 1),
-                           &screen_id)) {
+  if (!base::StringToInt64(parts->second, &screen_id)) {
     LOG(ERROR) << "Failed to extract screen id from: " << stream_name;
     return;
   }
