@@ -628,8 +628,7 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
         [NSString stringWithFormat:@"%@", self.locationLabel.text];
   }
 
-  if (self.contextualPanelEntrypointView &&
-      !self.contextualPanelEntrypointView.hidden) {
+  if (IsContextualPanelEnabled() && self.contextualPanelEntrypointView) {
     [self.accessibleElements addObject:self.contextualPanelEntrypointView];
   }
 

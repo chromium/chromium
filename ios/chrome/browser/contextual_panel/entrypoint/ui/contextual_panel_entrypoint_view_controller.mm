@@ -107,6 +107,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   // Set the view as hidden when created as it should only appear when the
   // entrypoint should be shown.
   self.view.hidden = YES;
+  self.view.isAccessibilityElement = NO;
   _entrypointDisplayed = NO;
 
   _entrypointContainer = [self configuredEntrypointContainer];
@@ -120,6 +121,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   [_entrypointContainer addSubview:_entrypointItemsWrapper];
   [_entrypointItemsWrapper addSubview:_imageView];
   [_entrypointItemsWrapper addSubview:_label];
+
+  _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 
   [self activateInitialConstraints];
 
@@ -146,6 +149,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
     [self.mutator dismissIPHAnimated:NO];
   }
   self.view.hidden = !display || !_entrypointDisplayed;
+  _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 }
 
 - (CGPoint)helpAnchorUsingBottomOmnibox:(BOOL)isBottomOmnibox {
@@ -238,6 +242,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   label.font = [self entrypointLabelFont];
   label.numberOfLines = 1;
   label.accessibilityIdentifier = kContextualPanelEntrypointLabelIdentifier;
+  label.isAccessibilityElement = NO;
   [label
       setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
                                       forAxis:UILayoutConstraintAxisHorizontal];
@@ -440,6 +445,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   self.view.transform = CGAffineTransformMakeScale(0.95, 0.95);
 
   self.view.hidden = !_entrypointDisplayed;
+  _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 
   [UIView animateWithDuration:kEntrypointDisplayingAnimationTime
                         delay:0
@@ -458,6 +464,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
   _entrypointDisplayed = NO;
   self.view.hidden = YES;
+  _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 
   [self.mutator setLocationBarLabelCenteredBetweenContent:NO];
 
@@ -562,6 +569,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
                               0);
     self.view.alpha = alphaValue;
   }
+
+  _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 }
 
 #pragma mark - UIView
