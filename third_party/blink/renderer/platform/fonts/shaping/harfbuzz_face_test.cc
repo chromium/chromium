@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
 namespace blink {
 
@@ -247,5 +248,36 @@ TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestVSOverrideVariantEmoji) {
       GetGlyphForEmojiVSFromFontWithBaseCharOnly(character, variation_selector);
   EXPECT_EQ(glyph_from_font_without_vs, kUnmatchedVSGlyphId);
 }
+
+// Test emoji variation selectors support in system fallback. We are only
+// enabling this feature on Windows, Android and Mac platforms.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+TEST(HarfBuzzFaceTest, HarfBuzzGetNominalGlyph_TestSystemFallbackEmojiVS) {
+  ScopedFontVariationSequencesForTest scoped_variation_sequences_feature(true);
+  ScopedFontVariantEmojiForTest scoped_variant_emoji_feature(true);
+  ScopedSystemFallbackEmojiVSSupportForTest scoped_system_emoji_vs_feature(
+      true);
+
+  HarfBuzzFace::SetVariationSelectorMode(kUseSpecifiedVariationSelector);
+  HarfBuzzFace::SetIsSystemFallbackStage(true);
+
+  UChar32 character = kShakingFaceEmoji;
+
+  hb_codepoint_t glyph_from_font_with_vs15 = GetGlyphForEmojiVSFromFontWithVS15(
+      character, kVariationSelector15Character);
+  EXPECT_TRUE(glyph_from_font_with_vs15);
+  EXPECT_NE(glyph_from_font_with_vs15, kUnmatchedVSGlyphId);
+
+  hb_codepoint_t glyph_from_font_with_vs16 = GetGlyphForEmojiVSFromFontWithVS16(
+      character, kVariationSelector16Character);
+  EXPECT_TRUE(glyph_from_font_with_vs16);
+  EXPECT_NE(glyph_from_font_with_vs16, kUnmatchedVSGlyphId);
+
+  hb_codepoint_t glyph_from_font_without_vs =
+      GetGlyphForEmojiVSFromFontWithBaseCharOnly(character, 0);
+  EXPECT_TRUE(glyph_from_font_without_vs);
+  EXPECT_NE(glyph_from_font_without_vs, kUnmatchedVSGlyphId);
+}
+#endif
 
 }  // namespace blink

@@ -24,13 +24,12 @@
 
 🌱🌲🌳🌴🌵🌷🌸🌹🌺🌻🌼💐🌾🌿🍀🍁🍂🍃🍄🌰☺️😀👪♐☔☃️™️
 #emoji_emoji:
-"Segoe UI Emoji" : 26,
-"Times New Roman" : 4
+"Segoe UI Emoji" : 30
 
 ☔︎♐︎☺☺︎☃☃︎☯︎☯™™︎00︎
 #text_emoji:
-"Segoe UI Symbol" : 10,
-"Times New Roman" : 9
+"Segoe UI Symbol" : 16,
+"Times New Roman" : 3
 
 𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏
 #egyptian_hieroglyphs:
