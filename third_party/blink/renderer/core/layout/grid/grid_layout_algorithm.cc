@@ -39,13 +39,11 @@ GridLayoutAlgorithm::GridLayoutAlgorithm(const LayoutAlgorithmParams& params)
 
     const MinMaxSizes sizes = ComputeMinMaxInlineSizes(
         constraint_space, node, container_builder_.BorderPadding(),
-        /* auto_min_length */ nullptr,
-        [&border_scrollbar_padding](SizeType) -> MinMaxSizesResult {
+        /* auto_min_length */ nullptr, [](SizeType) -> MinMaxSizesResult {
           // If we've reached here we are inside the |ComputeMinMaxSizes| pass,
           // and also have something like "min-width: min-content". This is
-          // cyclic. Just return the border/scrollbar/padding as our
-          // "intrinsic" size.
-          return {{border_scrollbar_padding, border_scrollbar_padding},
+          // cyclic. Just return indefinite.
+          return {{kIndefiniteSize, kIndefiniteSize},
                   /* depends_on_block_constraints */ false};
         });
 
