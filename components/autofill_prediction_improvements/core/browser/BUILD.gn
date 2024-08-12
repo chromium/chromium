@@ -7,6 +7,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 static_library("browser") {
   sources = [
     "autofill_prediction_improvements_client.h",
+    "autofill_prediction_improvements_filling_engine.cc",
+    "autofill_prediction_improvements_filling_engine.h",
     "autofill_prediction_improvements_manager.cc",
     "autofill_prediction_improvements_manager.h",
   ]
@@ -16,5 +18,22 @@ static_library("browser") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/keyed_service/core",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/user_annotations",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "autofill_prediction_improvements_filling_engine_unittest.cc" ]
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//components/autofill/core/common",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/user_annotations:test_support",
+    "//testing/gtest",
   ]
 }

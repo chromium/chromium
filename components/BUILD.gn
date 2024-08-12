@@ -7,6 +7,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
+import("//components/autofill_prediction_improvements/features.gni")
 import("//components/compose/features.gni")
 import("//components/nacl/features.gni")
 import("//components/optimization_guide/features.gni")
@@ -836,6 +837,12 @@ test("components_unittests") {
       "//components/metrics/structured/mojom:unit_tests",
       "//components/user_notes/browser:unit_tests",
       "//components/user_notes/storage:unit_tests",
+    ]
+  }
+
+  if (enable_autofill_prediction_improvements) {
+    deps += [
+      "//components/autofill_prediction_improvements/core/browser:unit_tests",
     ]
   }
 
