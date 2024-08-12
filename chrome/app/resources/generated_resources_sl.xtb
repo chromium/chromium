@@ -1216,6 +1216,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="184183613002882946">Ne, obdrži eno stikalo</translation>
 <translation id="184273675144259287">Nadomestite aplikacije in datoteke za Linux s prejšnjo varnostno kopijo</translation>
 <translation id="1842766183094193446">Ali ste prepričani, da želite omogočiti predstavitveni način?</translation>
+<translation id="1843048149176045210">Kopiraj povezavo za prenos</translation>
 <translation id="1845060436536902492">Bralnik zaslona v sistemu ChromeOS Flex ali ChromeVox uporabljajo predvsem slepi in slabovidni uporabniki za branje besedila, prikazanega na zaslonu, s sintetizatorjem govora ali na zaslonu braille. Pritisnite preslednico, če želite vklopiti ChromeVox. Ko bo ChromeVox aktiviran, bo prikazana kratka predstavitev.</translation>
 <translation id="1845727111305721124">Dovoljeno je predvajanje zvoka</translation>
 <translation id="1846308012215045257">Pridržite tipko »control« in kliknite za zagon vtičnika <ph name="PLUGIN_NAME" /></translation>
@@ -3176,6 +3177,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3251714896659475029">Dovolite, da otrok <ph name="SUPERVISED_USER_NAME" /> dostopa do Pomočnika Google z ukazom »Hey Google«</translation>
 <translation id="3251759466064201842">&lt;Ni del potrdila&gt;</translation>
 <translation id="325238099842880997">Nastavite digitalna pravila, s pomočjo katerih se bodo otroci lahko igrali, bodo lahko raziskovali in doma opravili šolske obveznosti.</translation>
+<translation id="3253083398453405334">Utripanje zaslona ob prejemu obvestil</translation>
 <translation id="3253225298092156258">Ni na voljo</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Če želite kopirati to datoteko, sprostite prostor v storitvi <ph name="CLOUD_PROVIDER" />.}one{Če želite kopirati te datoteke, sprostite prostor v storitvi <ph name="CLOUD_PROVIDER" />.}two{Če želite kopirati te datoteke, sprostite prostor v storitvi <ph name="CLOUD_PROVIDER" />.}few{Če želite kopirati te datoteke, sprostite prostor v storitvi <ph name="CLOUD_PROVIDER" />.}other{Če želite kopirati te datoteke, sprostite prostor v storitvi <ph name="CLOUD_PROVIDER" />.}}</translation>
 <translation id="3253448572569133955">Neznan račun</translation>
@@ -3672,6 +3674,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3621202678540785336">Vhod</translation>
 <translation id="3621807901162200696">Pomagajte izboljšati funkcije sistema Chrome OS in njegovo delovanje</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikacijo}one{# aplikacijo}two{# aplikaciji}few{# aplikacije}other{# aplikacij}}</translation>
+<translation id="3622820753353315928">Barva utripanja zaslona</translation>
 <translation id="362333465072914957">Čakanje, da overitelj potrdil izda potrdilo</translation>
 <translation id="3623598555687153298">S tem boste izbrisali <ph name="TOTAL_USAGE" /> podatkov, ki so jih shranila prikazana spletna mesta</translation>
 <translation id="3624567683873126087">Odklepanje naprave in prijava v Google Račun</translation>
@@ -7177,6 +7180,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6197128521826316819">Ustvari kodo QR za to stran</translation>
 <translation id="6198223452299275399">Pomikanje med stranmi z vlečenjem</translation>
 <translation id="6198252989419008588">Spremeni PIN</translation>
+<translation id="61988015556954366">Utripanje zaslona</translation>
 <translation id="6200047250927636406">Zavrzi datoteko</translation>
 <translation id="6200151268994853226">Upravljanje razširitve</translation>
 <translation id="6201608810045805374">Želite odstraniti ta račun?</translation>
@@ -7534,6 +7538,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6468773105221177474">Št. datotek: <ph name="FILE_COUNT" /></translation>
 <translation id="6469557521904094793">Vklop mobilnega omrežja</translation>
 <translation id="6469702164109431067">Gesla in ključi za dostop</translation>
+<translation id="6470120577693311302">Obveščanje z utripanjem</translation>
 <translation id="6470823736074966819">Izklop zvoka obvestil</translation>
 <translation id="6472893788822429178">Pokaži gumb »Domov«</translation>
 <translation id="6473315466413288899">Izberite možnost</translation>
@@ -7972,6 +7977,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6790820461102226165">Dodajanje osebe ...</translation>
 <translation id="6793610798874309813">Koda PIN lahko vsebuje največ 4 znake</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395">URL <ph name="DOWNLOAD_URL" /> je kopiran v odložišče</translation>
 <translation id="6794511157503068">Če je ključ za dostop za aplikacijo <ph name="APP_NAME" /> na varnostnem ključu USB, ga vstavite in se ga dotaknite</translation>
 <translation id="679486139907144816">Če se želite na to spletno mesto prijaviti s ključem za dostop, morate v nastavitvah vklopiti funkcijo Windows Hello. Nato se vrnite na to spletno mesto in poskusite znova.</translation>
 <translation id="6795371939514004514">Samodejno iskanje vam omogoča samodejno premikanje med elementi na zaslonu. Ko je element označen, pritisnite »Izberi«, če ga želite aktivirati.</translation>

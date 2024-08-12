@@ -1704,21 +1704,21 @@
 <translation id="2269319728625047531">在登入期間允許顯示同步處理同意聲明</translation>
 <translation id="2269837888511509900">啟用共用使用者憑證功能</translation>
 <translation id="2270747976331889601">啟用本機信任錨點的傳輸層安全標準 (TLS) 1.3 安全功能。</translation>
-<translation id="2273993844348404990">這項政策提供網站清單，指定使用者可以在網址列中使用快捷字詞，快速搜尋哪些網站的內容。使用者只要在網址列中輸入快捷字詞或 @&lt;快捷字詞&gt; (例如 @work)，接著按下空格鍵或 Tab 鍵，即可啟動搜尋。
+<translation id="2273993844348404990">這項政策提供網站清單，指定使用者可以在網址列中使用搜尋捷徑，快速搜尋哪些網站的內容。使用者只要在網址列中輸入搜尋捷徑或 @&lt;搜尋捷徑&gt; (例如 @work)，接著按下空格鍵或 Tab 鍵，即可啟動搜尋。
 
 每個網站的必填欄位如下：「<ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />」、「<ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />」、「<ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />」。
 
 「<ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />」欄位對應至要在網址列中向使用者顯示的網站或搜尋引擎名稱。
 
-「<ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />」可包含純文字和半形字元，但不得含有空格，開頭也不能是 @ 符號。快捷字詞也不得重複。
+「<ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />」可包含純文字和半形字元，但不得含有空格，開頭也不能是 @ 符號。搜尋捷徑也不得重複。
 
-每個項目的「<ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />」欄位會指定系統在執行對應關鍵字搜尋時使用的搜尋引擎網址。網址必須含有「<ph name="SEARCH_TERM_MARKER" />」字串，系統會在使用者查詢時將字串替換成搜尋字詞。系統會忽略無效項目和含有重複快捷字詞的項目。
+每個項目的「<ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />」欄位會指定系統在執行對應關鍵字搜尋時使用的搜尋引擎網址。網址必須含有「<ph name="SEARCH_TERM_MARKER" />」字串，系統會在使用者查詢時將字串替換成搜尋字詞。系統會忽略無效項目和含有重複搜尋捷徑的項目。
 
 使用者輸入「@」時，網址列會顯示精選的網站搜尋項目 (最多可設定三個精選項目)。
 
-使用者無法編輯或停用政策設定的網站搜尋項目，但可以新增使用相同網址的快捷字詞。此外，使用者無法使用先前透過這項政策建立的快捷字詞，設定新的網站搜尋項目。
+使用者無法編輯或停用政策設定的網站搜尋項目，但可以新增使用相同網址的搜尋捷徑。此外，使用者無法使用先前透過這項政策建立的搜尋捷徑，設定新的網站搜尋項目。
 
-如果與使用者先前建立的快捷字詞發生衝突，系統會優先採用使用者設定的快捷字詞。不過，使用者仍可在搜尋列中輸入「@」，選用政策建立的快捷字詞。舉例來說，假設使用者已將「work」定義為網址 1 的快捷字詞，而這項政策將「work」定義為網址 2 的快捷字詞，則在搜尋列中輸入「work」會搜尋網址 1，而輸入「@work」會搜尋網址 2。
+如果與使用者先前建立的搜尋捷徑發生衝突，系統會優先採用使用者設定的搜尋捷徑。不過，使用者仍可在搜尋列中輸入「@」，選用政策建立的搜尋捷徑。舉例來說，假設使用者已將「work」定義為網址 1 的搜尋捷徑，而這項政策將「work」定義為網址 2 的搜尋捷徑，則在搜尋列中輸入「work」會搜尋網址 1，而輸入「@work」會搜尋網址 2。
 
 在 <ph name="MS_WIN_NAME" /> 上，這項政策適用的執行個體必須加入 <ph name="MS_AD_NAME" /> 網域或 <ph name="MS_AAD_NAME" />，或者註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />。
 
@@ -1873,6 +1873,7 @@
       如果設為 <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (值為 2)，使用者無法將任何變化版本套用到瀏覽器。請注意，這個模式可能會讓 <ph name="PRODUCT_NAME" /> 開發人員無法及時提供重大安全性修正項目，因此不建議使用。</translation>
 <translation id="2402537890732357732">一律顯示管理標籤</translation>
 <translation id="2402547085566757554">不要將新分頁設為首頁</translation>
+<translation id="2405765347317553213">分頁比較設定</translation>
 <translation id="240713331529749993">如果設定這項政策，那麼在 Android 裝置上，逗號分隔清單中指定的每個來源就會在獨立程序中執行。每個指定來源的程序都只能容納來自相同來源及其子網域的文件。舉例來說，如果指定 https://a1.example.com/，https://a2.a1.example.com/ 就能使用同一個程序，但是 https://example.com 和 https://b.example.com 並不能使用同一個程序。請注意，自 <ph name="PRODUCT_NAME" /> 第 77 版起，Android 平台預設會隔離某些敏感網站，而這項政策會將這個模式擴大應用至隔離其他特定來源。
 
       自 <ph name="PRODUCT_NAME" /> 第 77 版起，你也可以使用萬用字元來指定要隔離的來源範圍。舉例來說，如果指定 https://[*.]corp.example.com，則 https://corp.example.com 底下的每個來源都會在獨立程序中執行，其中包括 https://corp.example.com 本身、https://a1.corp.example.com 和 https://a2.a1.corp.example.com。
@@ -5453,6 +5454,15 @@
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" /> 雲端政策會覆寫平台政策。</translation>
 <translation id="5334404204520035180">控管 WebPrinting API 的使用情形</translation>
 <translation id="5334501839642146593">一律不傳送指標資料給 Google</translation>
+<translation id="5334717773960843025">「分頁比較」是 AI 輔助的工具，可用來比較使用者多個分頁中的資訊。舉例來說，當使用者開啟多個分頁，且當中產品屬於相似類別時，這項功能就可以派上用場。
+
+0 = 為使用者啟用這項功能，並將相關資料傳送給 Google，協助訓練或改善 AI 模型。相關資料可能包括提示、輸入內容、輸出內容和來源材料 (視功能而定)。為改善 AI 模型，我們可能會將這些資料送交人工審查。
+
+預設值為 0，但以下註明的情形除外。
+
+1 = 為使用者啟用這項功能，但不傳送資料給 Google 做為訓練或改善 AI 模型之用。如果是 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企業版使用者，則預設值為 1。
+
+2 = 停用這項功能。如果是 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版帳戶，預設值為 2。</translation>
 <translation id="5335910979215357815">為第三方 <ph name="PRODUCT_OS_NAME" /> 控制項啟用 Save and Share API。</translation>
 <translation id="5339096331970464266">啟用無障礙虛擬鍵盤</translation>
 <translation id="5340008866815063393">啟用政策資料報告功能</translation>
@@ -5748,6 +5758,15 @@
 <translation id="5561811616825571914">在登入畫面自動為這些網站選取用戶端憑證</translation>
 <translation id="5561893881195372931">停用高對比模式</translation>
 <translation id="5563240289883266691">啟用 Linux 應用程式使用情形報告功能</translation>
+<translation id="5564424694465792000">你可以使用這項政策控制瀏覽器的登入行為，指定使用者能否以帳戶登入 <ph name="PRODUCT_NAME" /> 及使用帳戶相關服務，例如 <ph name="PRODUCT_NAME" /> 同步功能。
+
+      如果將這項政策設為「禁止登入瀏覽器」，使用者將無法登入瀏覽器，也無法使用帳戶相關服務，屆時使用者無法使用瀏覽器層級的功能，例如 <ph name="PRODUCT_NAME" /> 同步功能。如果將這項政策設為「停用」，在 <ph name="IOS_NAME" /> 上已登入瀏覽器的使用者會立即遭登出。如果是其他平台，已登入的使用者會在下次執行 <ph name="PRODUCT_NAME" /> 時遭登出，但他們在所有平台上的本機設定檔資料 (例如書籤、密碼等) 都會保留下來，並能繼續使用。使用者仍然可以登入並使用 Gmail 等 Google 網路服務。
+
+      這項政策如果設為「允許登入瀏覽器」，使用者就可以登入瀏覽器。在 <ph name="IOS_NAME" /> 以外的所有平台上，使用者只要登入 Gmail 等 Google 網路服務，就會自動登入瀏覽器。登入瀏覽器即表示使用者的帳戶資訊會保留在瀏覽器中。不過，<ph name="PRODUCT_NAME" /> 同步功能不會因此預設為開啟，使用者必須另行啟用。啟用這項政策後，使用者將無法關閉登入瀏覽器的設定。如要控制能否使用 <ph name="PRODUCT_NAME" /> 同步功能，請使用 <ph name="SYNC_POLICY_NAME" /> 政策。
+
+      如果將這項政策設為「強制登入瀏覽器」，瀏覽器會顯示帳戶選取對話方塊，同時要求使用者必須選擇帳戶並登入才能使用，確保受管理的帳戶會套用並強制執行與其相關的政策。<ph name="GUEST_MODE_POLICY_NAME" /> 的預設值將設為已停用。請注意，啟用這項政策後，系統將鎖定未登入的現有設定檔，屆時將無法再使用。詳情請參閱說明中心文章：https://support.google.com/chrome/a/answer/7572556。這個選項不支援 <ph name="LINUX_OS_NAME" /> 和 <ph name="ANDROID_NAME" />。如果你採用這個選項，系統將改為使用「允許登入瀏覽器」。
+
+      如果不設定這項政策，使用者可自行決定是否在 <ph name="PRODUCT_NAME" /> 設定中啟用瀏覽器登入選項。</translation>
 <translation id="5565178130821694365">每兩天 (48 小時) 須輸入一次密碼</translation>
 <translation id="5566210228171064229">不論是否使用 PIN 碼，都允許列印</translation>
 <translation id="5569504149646180067">設定讓使用者自動登入 Microsoft® 雲端識別資訊提供者服務支援的帳戶。

@@ -158,6 +158,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1270328905573953738">Flytning</translation>
 <translation id="1270502636509132238">Afhentningsmetode</translation>
 <translation id="1273592791152866347">Prisovervågning er deaktiveret</translation>
+<translation id="1277711244058668002">Like-knap, tryk på Enter for at indsende feedback om, at du kan lide dette forslag</translation>
 <translation id="127777513559587977">Tv-talkshows</translation>
 <translation id="1281476433249504884">Stabler 1</translation>
 <translation id="1281536351321444151">Hvis du vil udfylde dette IBAN-nummer automatisk næste gang, skal du gemme det på din Google-konto</translation>
@@ -663,6 +664,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2188375229972301266">Flere huller nederst</translation>
 <translation id="2194856509914051091">Vigtige oplysninger</translation>
 <translation id="2197398642355049178">Dine emner</translation>
+<translation id="2200678913752027654">Dislike-knap, tryk på Enter for at åbne en formular, hvor du kan indsende detaljeret feedback om, hvorfor du ikke kan lide dette forslag</translation>
 <translation id="2202627062836089804">bagsiden af dit kort</translation>
 <translation id="2204482073374652408">Opdateringen er fuldført.</translation>
 <translation id="2207770355672215546">Tillad altid adgang med alle kort</translation>
@@ -2585,6 +2587,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5887687176710214216">Senest besøgt i går</translation>
 <translation id="5895138241574237353">Genstart</translation>
 <translation id="5895187275912066135">Udstedt den</translation>
+<translation id="5898767305816764989">Like-knap, tryk på Enter for at indsende feedback om, at du kan lide, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5903264686717710770">Titel:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synkroniseret)</translation>
@@ -3317,6 +3320,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 Yderligere oplysninger:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Din administrator siger: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">Dislike-knap, tryk på Enter for at åbne en formular, hvor du kan indsende detaljeret feedback om, hvorfor du ikke kan lide, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Bagerste bakke</translation>
 <translation id="7257453341537973799">Karriereressourcer og -planlægning</translation>
 <translation id="725866823122871198">Der kunne ikke oprettes en privat forbindelse til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, da dato og tid (<ph name="DATE_AND_TIME" />) på din enhed er forkerte.</translation>

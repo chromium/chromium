@@ -123,10 +123,12 @@
 <translation id="1605658421715042784">Salin Imej</translation>
 <translation id="1608337082864370066">Cari Imej yang Disalin</translation>
 <translation id="1612730193129642006">Tunjukkan Grid Tab</translation>
+<translation id="1612754831519568745">Penyemakan Imbas Selamat anda dimatikan pada masa ini. Dapatkan perlindungan daripada laman, muat turun dan sambungan berbahaya.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Pilih “Tambahkan pada Google Calendar“ atau “Tambahkan pada Apple Calendar“.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> Kata Laluan yang Digunakan Semula</translation>
 <translation id="1636234353664774105">Dapatkan arah menuju destinasi anda dengan bimbingan sepanjang jalan menggunakan ciri navigasi</translation>
+<translation id="1641068175940982148">Buka <ph name="GROUP_TITLE" />, Kumpulan <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">Penyemakan Imbas Selamat</translation>
 <translation id="1641316430523156212">Ikut</translation>
 <translation id="1644574205037202324">Sejarah</translation>
@@ -402,6 +404,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2952246431280799028">Sentuh &amp; Tahan alamat.</translation>
 <translation id="2952278131021475699">Carian Kamera Lens</translation>
 <translation id="2958718410589002129">Kata laluan</translation>
+<translation id="2963044753825419640">Membenarkan laman web dan apl untuk meningkatkan akaun sedia ada untuk menggunakan kunci laluan apabila tersedia secara automatik</translation>
 <translation id="2964349545761222050">Sekat Kuki Pihak Ketiga</translation>
 <translation id="2965328226365382335">15 Minit Terakhir</translation>
 <translation id="2969979262385602596">Gagal melog masuk. Sila cuba sebentar lagi.</translation>
@@ -759,6 +762,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Hanya pada peranti ini, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Tab Inkognito Baharu</translation>
 <translation id="4766112107778026136">Discover &amp; Mengikuti</translation>
+<translation id="4769198578611055647">Membantu anda mengakses kunci laluan yang disimpan pada mana-mana peranti</translation>
 <translation id="4775879719735953715">Penyemak Imbas Lalai</translation>
 <translation id="4779732376610430319">Akses Tetapan...</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -803,6 +807,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4922154083994158612">Lagi Keselamatan?</translation>
 <translation id="4930714375720679147">Hidupkan</translation>
 <translation id="4937410517508563815">Simpan kata laluan dalam akaun</translation>
+<translation id="4937488522718608601">Buka Kumpulan Tab</translation>
 <translation id="4938338714234463591">Tindakan ini akan membolehkan anda menggunakan suara anda dengan ciri tertentu pada laman web.</translation>
 <translation id="4941089862236492464">Maaf, terdapat masalah mengongsi item anda.</translation>
 <translation id="4942382218961352935">Disemak Sebentar Tadi</translation>
@@ -1041,6 +1046,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6067849159007176401">Tambahkan Perlindungan Penyemakan Imbas</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) tidak dapat dimuat naik</translation>
 <translation id="6084848228346514841">Pilih Tab</translation>
+<translation id="6089212833343035912">PIN Google Password Manager</translation>
 <translation id="6100617279104942061">Log masuk sebagai <ph name="USER_EMAIL" />. Membuka tetapan.</translation>
 <translation id="6103540626693881831">Penyulitan pada Peranti</translation>
 <translation id="6119050551270742952">Halaman web semasa dalam mod Inkognito</translation>
@@ -1261,6 +1267,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7022197654033719543">Maklumat Laman</translation>
 <translation id="7029809446516969842">Kata laluan</translation>
 <translation id="704692552158601232">Apl Penyemak Imbas Lalai</translation>
+<translation id="7051147526307793383">Benarkan Peningkatan Kunci Laluan Automatik</translation>
 <translation id="7055240621761583113">Autolengkap kata laluan</translation>
 <translation id="7063811929043357292">Akaun anda diuruskan oleh ibu/bapa anda.
 <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
@@ -1336,6 +1343,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7470908168505178757">Kumpulan Tab. Dikuncupkan.</translation>
 <translation id="7472734401283673885">Nama Syarikat</translation>
 <translation id="7473891865547856676">Tidak, Terima Kasih</translation>
+<translation id="7477974514217962959">{count,plural, =1{1 Kumpulan Tab Telah Ditutup dan Disimpan}other{{count} Kumpulan Tab Telah Ditutup dan Disimpan}}</translation>
 <translation id="7488874549363591659">Diserahkan</translation>
 <translation id="7491131399623468277">Pergi ke Tetapan…</translation>
 <translation id="749854780843431406">Anda boleh membuka tab baharu daripada butang <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />.</translation>

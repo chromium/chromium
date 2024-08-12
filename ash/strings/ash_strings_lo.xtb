@@ -249,6 +249,7 @@
 <translation id="1831565490995294689">ເລືອກເພື່ອເປີດ <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838011306813517425">ການຕັ້ງຄ່າໂໝດໂຟກັສ</translation>
 <translation id="1838895407229022812">ແສງກາງຄືນປິດຢູ່.</translation>
+<translation id="1840920496749066704">°C</translation>
 <translation id="1854180393107901205">ຢຸດ​ການ​ຄາສທ໌</translation>
 <translation id="1862077610023398675">ເຊື່ອງການຄວບຄຸມ</translation>
 <translation id="1862380676329487333">ອັບເດດ ແລະ ອອກຈາກລະບົບ</translation>
@@ -317,7 +318,9 @@
 <translation id="2135456203358955318">ແວ່ນຂະຫຍາຍທີ່ຕັ້ງໄວ້ແລ້ວ</translation>
 <translation id="2148716181193084225">ມື້​ນີ້</translation>
 <translation id="2149229036084364364">ໄປຫາແທຣັກກ່ອນໜ້າ</translation>
+<translation id="2152796271648108398">ສະພາບອາກາດປັດຈຸບັນ</translation>
 <translation id="2152895518047545149">ບໍ່ໜ້າຈະມີຫຍັງຂາດຫາຍໄປ. ດີຫຼາຍ!</translation>
+<translation id="2159568970844941445">ບໍ່ມີຮູບພາບໃນ Files</translation>
 <translation id="2161132820593978283">ລອງໃຊ້ການວາງເຟຣມກ້ອງຖ່າຍຮູບເພື່ອໃຫ້ທ່ານຢູ່ກາງຈໍໃນເວລາໂທວິດີໂອ ເປີດໃຊ້ມັນໃນການຕັ້ງຄ່າດ່ວນ.</translation>
 <translation id="216955976692983107">ປັບຂະໜາດໜ້າຈໍແບບຮຽງຕໍ່ກັນໄປທາງຂວາ</translation>
 <translation id="2185166372312820725">ໄປຫາແຖບກ່ອນນີ້</translation>
@@ -614,6 +617,7 @@
 <translation id="3264031581203585083">ເຊື່ອງການແນະນຳທັງໝົດຂອງ Google Drive</translation>
 <translation id="3265032511221679826">ເປີດສິດເຂົ້າເຖິງສະຖານທີ່ແບບລະອຽດບໍ?</translation>
 <translation id="3269597722229482060">ຄລິກຂວາ</translation>
+<translation id="3273040715184276344">ປິດ Caps Lock</translation>
 <translation id="3274634049061007184">ເບິ່ງແອັບຂອງໂທລະສັບທ່ານ</translation>
 <translation id="3289364673986435196">ເມນູເປີດປິດ</translation>
 <translation id="3289544412142055976">ຕອນນີ້ບໍ່ຮອງຮັບແອັບ Linux ເທື່ອ</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4868492592575313542">ເປີດນຳໃຊ້ແລ້ວ</translation>
 <translation id="4871905435473761992">ສະແດງລາຍລະອຽດຮັອດສະປອດ. ເຄືອຂ່າຍມືຖືຂອງທ່ານບໍ່ຮອງຮັບຮັອດສະປອດ.</translation>
 <translation id="4872237917498892622">Alt+ຊອກຫາ ຫຼື Shift</translation>
+<translation id="4872724534194216608">ຊອກຫາເພື່ອຄິດໄລ່</translation>
 <translation id="4872852897273142380">ໂຟກັສ ຫຼື ໄຮໄລ້ແຖບບຸກມາກ (ຫາກສະແດງຢູ່)</translation>
 <translation id="4876935764454575645">ການເລືອກສຽງ</translation>
 <translation id="4881323000405981760">ແອັບ Linux ບໍ່ຮອງຮັບເອັບເຟັກ</translation>
@@ -1201,6 +1206,7 @@
 <translation id="523505283826916779">ການ​ຕັ້ງຄ່າ​ການ​ເຂົ້າ​ເຖິງ</translation>
 <translation id="5238719049014159442">ເປີດ/ປິດຕົວເປີດໃຊ້</translation>
 <translation id="5240725217819182328">ການເຂົ້າເຖິງດ່ວນຫາໜ້າ ຫຼື ຄຳສັ່ງສະເພາະຢູ່ພາຍໃນແອັບທີ່ຕິດຕັ້ງໄວ້</translation>
+<translation id="5243355658487390559">ຊອກຫາວັນທີ</translation>
 <translation id="5245201184978705914">ບໍ່ສາມາດສ້າງການຖອດຂໍ້ຄວາມຈາກສຽງໄດ້</translation>
 <translation id="5251174953851719648">ໂຫຼດເນື້ອຫາຄືນໃໝ່</translation>
 <translation id="5253783950165989294">ເຊື່ອມຕໍ່ຫາອຸປະກອນຊື່ <ph name="DEVICE_NAME" /> ແລ້ວ, ແບັດເຕີຣີ <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -1245,6 +1251,7 @@
 <translation id="5369717264580061086">ເບິ່ງໄຟລ໌ໃນແອັບໄຟລ໌</translation>
 <translation id="5377367976106153749">ເປີດໃຊ້ສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບບໍ?</translation>
 <translation id="5379115545237091094">ພະຍາຍາມຫຼາຍເທື່ອເກີນໄປ</translation>
+<translation id="5383434787520761436">ບໍ່ມີໄຟລ໌ໃນ Google Drive</translation>
 <translation id="5391307769715781764">ແທນທີ່ໂຕະທີ່ບັນທຶກໄວ້ບໍ?</translation>
 <translation id="5392327145184648521">ກຳລັງຄິດໄລ່ % ແບັດເຕີຣີ...</translation>
 <translation id="5393156353051693207">ແຕະໃສ່ບ່ອນໃດກໍໄດ້ຄ້າງໄວ້ເພື່ອຈັດຮຽງແອັບຂອງທ່ານຄືນໃໝ່</translation>
@@ -1595,6 +1602,7 @@
 <translation id="6565007273808762236">ການເຊື່ອມຕໍ່ eSIM ບໍ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="6570831796530454248">{0,plural, =1{ອັບເດດອຸປະກອນພາຍໃນໜຶ່ງຊົ່ວໂມງ}other{ອັບເດດອຸປະກອນພາຍໃນ # ຊົ່ວໂມງ}}</translation>
 <translation id="6570902864550063460">ກຳລັງສາກຜ່ານ USB</translation>
+<translation id="6571006437522772306">ຊອກຫາໃນ Files</translation>
 <translation id="6574587113394758819">ການແຈ້ງເຕືອນ <ph name="APP_TITLE" /> ຖືກເຊື່ອງໄວ້ເນື່ອງຈາກເປີດໃຊ້ການປົກປ້ອງການເບິ່ງຢູ່</translation>
 <translation id="6574622320167699133">ປົດລັອກໂດຍໂທລະສັບຂອງທ່ານແລ້ວ. ແຕະ ຫຼື ຄລິກເພື່ອເຂົ້າ.</translation>
 <translation id="6578407462441924264">ບໍ່ມີຊື່</translation>
@@ -1632,6 +1640,7 @@
 <translation id="6682029141988159141">ວາງເນື້ອຫາຈາກຄລິບບອດ</translation>
 <translation id="6683022854667115063">ຫູຟັງ</translation>
 <translation id="6686023075541098243">ຕັ້ງຄ່າການເບິ່ງການແຈ້ງເຕືອນຂອງໂທລະສັບທ່ານ</translation>
+<translation id="6694973220096431421">ຊອກຫາໃນ Google Drive</translation>
 <translation id="6696025732084565524">ແປ້ນພິມທີ່ສາມາດແຍກອອກໄດ້ຂອງທ່ານຈຳເປັນຕ້ອງມີການອັບເດດສຳຄັນ</translation>
 <translation id="6697913454192220372">ເພີ່ມໂຕະໃໝ່</translation>
 <translation id="6700713906295497288">ປຸ່ມເມນູ IME</translation>
@@ -1677,6 +1686,7 @@
 <translation id="6852628153543175788">ເພີ່ມ 10 ນາທີ</translation>
 <translation id="6855029042976311970">ແກ້ໄຂຕອນນີ້</translation>
 <translation id="6856708615407876657">ສະຫຼັບໝວດໝູ່ຜົນການຊອກຫາ</translation>
+<translation id="6856756288284651804">ອັບເດດ Chromebook ແລ້ວ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ວິ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ຍັງເຫຼືອໜຶ່ງຕົວເລກ}other{ຍັງເຫຼືອ # ຕົວເລກ}}</translation>
 <translation id="6867938213751067702">ຢຸດດາວໂຫຼດ <ph name="FILENAME" /> ຊົ່ວຄາວແລ້ວ</translation>
@@ -1754,6 +1764,7 @@
 <translation id="7143207342074048698">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="7144942256906679589">ສະຖານະແບັດເຕີຣີ</translation>
 <translation id="7145639536026937076">ແບັດເຕີຣີເຫຼືອ <ph name="PERCENTAGE" />% ແລະ ກຳລັງສາກ. ຕົວປະຢັດແບັດເຕີຣີເປີດຢູ່.</translation>
+<translation id="7147587499155271409">ບໍ່ມີປະຫວັດການທ່ອງເວັບ</translation>
 <translation id="7149149900052329230">ຈັດການໄຟລ໌ໃນເຄື່ອງ ແລະ ໄຟລ໌ Google Drive ຂອງທ່ານ, ທັງໝົດໃນແອັບໄຟລ໌.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1787,6 +1798,7 @@
 <translation id="73289266812733869">ບໍ່ໄດ້ເລືອກໄວ້</translation>
 <translation id="7330397557116570022">ເຂົ້າໄປຊ່ອງຂໍ້ຄວາມເພື່ອໃຊ້ການປ້ອນຂໍ້ມູນດ້ວຍສຽງ</translation>
 <translation id="7331646370422660166">Alt + ລູກສອນລົງ</translation>
+<translation id="7336943714413713812">ຊອກຫາປະຫວັດການທ່ອງເວັບ</translation>
 <translation id="7337660433630200387">ເພີ່ມ 10 ນທ</translation>
 <translation id="7340731148882810149">ເມນູການຄລິກອັດຕະໂນມັດ</translation>
 <translation id="7346909386216857016">ຕົກລົງ, ເຂົ້າໃຈແລ້ວ</translation>
@@ -1889,6 +1901,7 @@
 <translation id="7670953955701272011">ເປີດວັນທີນີ້ໃນ Google ປະຕິທິນ</translation>
 <translation id="7671610481353807627">ແອັບແມ່ນຈັດຮຽງຕາມສີ</translation>
 <translation id="7672095158465655885">ເຊື່ອມຕໍ່ຫາ <ph name="NAME" /> ແລ້ວ, <ph name="SUBTEXT" /></translation>
+<translation id="7680417644536099065">ເປີດ Caps Lock</translation>
 <translation id="7682351277038250258">ວາງເນື້ອຫາຈາກຄລິບບອດເປັນຂໍ້ຄວາມທຳມະດາ</translation>
 <translation id="7684531502177797067">ຕັ້ງການປ້ອນຂໍ້ມູນຈາກກ້ອງຖ່າຍຮູບເປັນ <ph name="CAMERA_NAME" /> ແລ້ວ.</translation>
 <translation id="7687172143976244806">ທ່ານໄດ້ເປີດ</translation>
@@ -2141,6 +2154,7 @@
 <translation id="8553395910833293175">ມອບໝາຍໃຫ້ໂຕະທັງໝົດແລ້ວ.</translation>
 <translation id="8555757996376137129">ລຶບໂຕະປັດຈຸບັນອອກ</translation>
 <translation id="8559845965695780508"><ph name="USER" /> ໄດ້ແກ້ໄຂ</translation>
+<translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">ນີ້ແມ່ນການແນະນຳບາງຢ່າງໃຫ້ລອງ</translation>
 <translation id="857201607579416096">ຍ້າຍເມນູໄປແຈລຸ່ມສຸດເບື້ອງຂວາຂອງໜ້າຈໍ.</translation>
 <translation id="8581946341807941670">ກົດ <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> ແລ້ວຄລິກລິ້ງ</translation>
@@ -2251,6 +2265,7 @@
 <translation id="8951539504029375108">ມີພຽງອຸປະກອນ Thunderbolt ທີ່ໄດ້ຮັບການຮອງຮັບເທົ່ານັ້ນຈຶ່ງຈະໃຊ້ຮ່ວມກັບ Chromebook ຂອງທ່ານໄດ້</translation>
 <translation id="8956420987536947088">ເປີດໜ້າຈໍ ແລະ ແອັບກ່ອນໜ້າຂອງທ່ານ</translation>
 <translation id="8959380109429710384">ທ່ານກົດຄີລັດສຳລັບແວ່ນຂະຫຍາຍເຕັມຈໍ. ໃຊ້ Ctrl + Alt + ລູກສອນ ເພື່ອຍ້າຍໄປອ້ອມຮອບມຸມມອງທີ່ຊູມເຂົ້າ.</translation>
+<translation id="896335827708646237">ເປີດການຕັ້ງຄ່າດ່ວນສຳລັບການຊ່ວຍເຂົ້າເຖິງ</translation>
 <translation id="8964525410783593407">1ຊມ</translation>
 <translation id="8973885907461690937">ວາງໂຟກັສໃສ່ໄອຄອນເມນູ</translation>
 <translation id="8980862970816311842">ຍ້າຍໄອຄອນແອັບເຂົ້າ/ອອກຈາກໂຟນເດີໃນຕາຕະລາງແອັບ</translation>
@@ -2286,6 +2301,7 @@
 <translation id="9089416786594320554">ວິ​ທີ​ການ​ປ້ອນເຂົ້າ</translation>
 <translation id="9091406374499386796">ຊອກຫາໄຟລ໌, ແອັບ ແລະ ອື່ນໆຂອງທ່ານໃນຕົວເປີດໃຊ້. ນອກຈາກນັ້ນ, ທ່ານຍັງສາມາດຫາຄຳຕອບສຳລັບຄຳຖາມກ່ຽວກັບ <ph name="PRODUCT_NAME" /> ຂອງທ່ານໄດ້ນຳ.</translation>
 <translation id="9091626656156419976">ລຶບຈໍສະແດງຜົນ <ph name="DISPLAY_NAME" /> ອອກແລ້ວ</translation>
+<translation id="9098750710832798892">ບໍ່ມີລາຍການທີ່ສຳເນົາໃສ່ຄລິບບອດຂອງທ່ານ</translation>
 <translation id="9098969848082897657">ປິດສຽງໂທລະສັບ</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ຫຼື <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">ຍົກເລີກຄຳສັ່ງຫຼ້າສຸດ</translation>
@@ -2295,6 +2311,7 @@
 <translation id="9139720510312328767">ລຶບຕົວອັກສອນຖັດໄປ</translation>
 <translation id="9148058034647219655">ອອກ</translation>
 <translation id="9151906066336345901">End</translation>
+<translation id="9159421884295554245">ຊອກຫາໃນຄລິບບອດ</translation>
 <translation id="9161053988251441839">ແອັບທີ່ແນະນຳ</translation>
 <translation id="9168436347345867845">ເຮັດໃນພາຍຫຼັງ</translation>
 <translation id="9178475906033259337">ກຳລັງສະແດງຜົນການຊອກຫາ 1 ລາຍການສຳລັບ <ph name="QUERY" /></translation>

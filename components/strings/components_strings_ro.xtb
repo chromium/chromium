@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">Mutare și relocare</translation>
 <translation id="1270502636509132238">Metodă de preluare</translation>
 <translation id="1273592791152866347">Urmărirea prețului este dezactivată</translation>
+<translation id="1277711244058668002">Butonul Îmi place; apasă pe Enter pentru a arăta că îți place această sugestie</translation>
 <translation id="127777513559587977">Talk-show-uri</translation>
 <translation id="1281476433249504884">Receptorul de hârtie 1</translation>
 <translation id="1281536351321444151">Pentru a completa automat acest IBAN data viitoare, salvează-l în Contul Google</translation>
@@ -456,6 +457,7 @@
 <translation id="180757923930449935">(simulare pe 64 de biți)</translation>
 <translation id="180991881384371158">Codul CVC se află pe spatele cardului. Constă din ultimele trei cifre din partea dreaptă sus a bandei de semnătură.</translation>
 <translation id="1810391395243432441">Protejează-ți parolele cu blocarea ecranului</translation>
+<translation id="1810597570737826742">{count,plural, =1{{position} din {count} adresă}few{{position} din {count} adrese}other{{position} din {count} de adrese}}</translation>
 <translation id="1812527064848182527">peisaj</translation>
 <translation id="1812975699435941848">Educație sanitară și pregătire medicală</translation>
 <translation id="1816436748874040213">Poate solicita permisiunea de a derula și de a face zoom în filele la care s-a permis accesul</translation>
@@ -663,6 +665,7 @@
 <translation id="2188375229972301266">Perforare multiplă în partea de jos</translation>
 <translation id="2194856509914051091">De reținut</translation>
 <translation id="2197398642355049178">Subiectele tale</translation>
+<translation id="2200678913752027654">Butonul Nu îmi place; apasă pe Enter pentru a deschide un formular și a trimite feedback detaliat despre motivul pentru care nu îți place această sugestie</translation>
 <translation id="2202627062836089804">spatele cardului</translation>
 <translation id="2204482073374652408">Actualizarea s-a finalizat!</translation>
 <translation id="2207770355672215546">Permite întotdeauna, cu orice card</translation>
@@ -2585,6 +2588,7 @@
 <translation id="5887687176710214216">Accesat ultima dată ieri</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
 <translation id="5895187275912066135">Emis la</translation>
+<translation id="5898767305816764989">Butonul Îmi place; apasă pe Enter pentru a arăta că îți place, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Galben</translation>
 <translation id="5903264686717710770">Titlul:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizat)</translation>
@@ -3317,6 +3321,7 @@
 Detalii suplimentare:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Administratorul rostește <ph name="CUSTOM_MESSAGE" />.</translation>
+<translation id="7255540419660272073">Butonul Nu îmi place; apasă pe Enter pentru a deschide un formular și a trimite feedback detaliat despre motivul pentru care nu îți place, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Tava posterioară</translation>
 <translation id="7257453341537973799">Resurse și planificare a carierei</translation>
 <translation id="725866823122871198">O conexiune privată la <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> nu poate fi stabilită, deoarece data și ora computerului (<ph name="DATE_AND_TIME" />) sunt incorecte.</translation>

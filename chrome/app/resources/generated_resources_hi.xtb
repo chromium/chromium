@@ -526,7 +526,7 @@
 <translation id="1383381142702995121">इस एक्सटेंशन को मैनेज करें</translation>
 <translation id="1383597849754832576">स्पीच फ़ाइलें डाउनलोड नहीं की जा सकतीं. कुछ देर बाद कोशिश करें.</translation>
 <translation id="1383861834909034572">पूरा होने पर खुल रहा है</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">खोजें</translation>
 <translation id="1384849755549338773">अन्य भाषाओं वाली वेबसाइटों को Google Translate की सुविधा दें</translation>
 <translation id="1384959399684842514">डाउनलोड रोका गया</translation>
 <translation id="1388253969141979417">आपका माइक्रोफ़ोन इस्तेमाल करने की अनुमति है</translation>
@@ -1214,6 +1214,7 @@
 <translation id="184183613002882946">नहीं, मुझे एक ही स्विच इस्तेमाल करना है</translation>
 <translation id="184273675144259287">अपने Linux ऐप्लिकेशन और फ़ाइलों को पिछले बैकअप से बदलें</translation>
 <translation id="1842766183094193446">क्या आप वाकई 'डेमो मोड' चालू करना चाहते हैं?</translation>
+<translation id="1843048149176045210">डाउनलोड करने का लिंक कॉपी करें</translation>
 <translation id="1845060436536902492">ChromeOS Flex, ChromeVox पर स्क्रीन रीडर का इस्तेमाल मुख्य रूप से दृष्टिहीन और कम दृष्टि वाले लोग करते हैं. इसमें उन्हें स्क्रीन पर दिखाए जा रहे टेक्स्ट को स्पीच सिंथेसाइज़र या ब्रेल डिसप्ले की मदद से पढ़ने की सुविधा मिलती है. ChromeVox चालू करने के लिए, स्पेस बार दबाएं. ChromeVox के चालू होने पर, आपको इसके बारे में फटाफट से जानकारी दी जाएगी.</translation>
 <translation id="1845727111305721124">आवाज़ चलाने की अनुमति है</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> को चलाने के लिए कंट्रोल दबाए रखते हुए क्लिक करें</translation>
@@ -3175,6 +3176,7 @@
 <translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> को "Ok Google" बोलकर Google Assistant ऐक्सेस करने की अनुमति दें</translation>
 <translation id="3251759466064201842">&lt;प्रमाणपत्र का भाग नहीं है&gt;</translation>
 <translation id="325238099842880997">घर पर खेलने, नई चीज़ें सीखने, और स्कूल का काम करने में मदद करने में बच्चों की मदद करने के बुनियादी नियम तय करें.</translation>
+<translation id="3253083398453405334">सूचनाएं मिलने पर स्क्रीन का फ़्लैश चालू करें</translation>
 <translation id="3253225298092156258">उपलब्ध नहीं है</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{इस फ़ाइल को कॉपी करने के लिए, <ph name="CLOUD_PROVIDER" /> में स्टोरेज खाली करें}one{इस फ़ाइल को कॉपी करने के लिए, <ph name="CLOUD_PROVIDER" /> में स्टोरेज खाली करें}other{इन फ़ाइलों को कॉपी करने के लिए, <ph name="CLOUD_PROVIDER" /> में स्टोरेज खाली करें}}</translation>
 <translation id="3253448572569133955">अनजान खाता</translation>
@@ -3671,6 +3673,7 @@
 <translation id="3621202678540785336">इनपुट</translation>
 <translation id="3621807901162200696">ChromeOS की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में मदद करें</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{एक ऐप्लिकेशन}one{# ऐप्लिकेशन}other{# ऐप्लिकेशन}}</translation>
+<translation id="3622820753353315928">स्क्रीन के फ़्लैश का रंग</translation>
 <translation id="362333465072914957">प्रमाणपत्र जारी करने के लिए सीए का इंतज़ार</translation>
 <translation id="3623598555687153298">इससे, देखी गई साइटों के सेव किए गए कुल डेटा में से <ph name="TOTAL_USAGE" /> डेटा मिट जाएगा</translation>
 <translation id="3624567683873126087">डिवाइस अनलॉक करें और 'Google खाते' में साइन इन करें</translation>
@@ -7174,6 +7177,7 @@
 <translation id="6197128521826316819">इस पेज के लिए क्यूआर कोड बनाएं</translation>
 <translation id="6198223452299275399">पेजों के बीच स्वाइप करना</translation>
 <translation id="6198252989419008588">पिन बदलें</translation>
+<translation id="61988015556954366">स्क्रीन का फ़्लैश</translation>
 <translation id="6200047250927636406">फ़ाइल खारिज करें</translation>
 <translation id="6200151268994853226">एक्सटेंशन मैनेज करें</translation>
 <translation id="6201608810045805374">क्या आपको यह खाता हटाना है?</translation>
@@ -7531,6 +7535,7 @@
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> फ़ाइलें</translation>
 <translation id="6469557521904094793">सेल्युलर नेटवर्क चालू करें</translation>
 <translation id="6469702164109431067">पासवर्ड और पासकी</translation>
+<translation id="6470120577693311302">फ़्लैश के साथ मिलने वाली सूचनाएं</translation>
 <translation id="6470823736074966819">सूचनाएं म्यूट करें</translation>
 <translation id="6472893788822429178">होम बटन दिखाएं</translation>
 <translation id="6473315466413288899">कोई विकल्प चुनें</translation>
@@ -7965,6 +7970,7 @@
 <translation id="6790820461102226165">व्‍यक्ति जोड़ें...</translation>
 <translation id="6793610798874309813">पिन में चार या उससे ज़्यादा वर्ण हो सकते हैं</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> को क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="6794511157503068">अगर <ph name="APP_NAME" /> के लिए आपकी पासकी, यूएसबी वाली सुरक्षा कुंजी पर है, तो उसे अभी लगाएं और छुएं</translation>
 <translation id="679486139907144816">पासकी से इस साइट में साइन इन करने के लिए, सेटिंग में जाकर Windows Hello को चालू करें. इसके बाद, इस साइट पर वापस आकर फिर से कोशिश करें.</translation>
 <translation id="6795371939514004514">अपने-आप स्कैन होने की सुविधा, आपको स्क्रीन पर दिए अलग-अलग आइटम पर अपने-आप जाने देती है. जब किसी आइटम को हाइलाइट किया गया हो, तो इसे चालू करने के लिए, “चुनें” को दबाएं.</translation>

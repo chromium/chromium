@@ -456,6 +456,7 @@
 <translation id="180757923930449935">(බිටු 64 ක අනුකරණය විය)</translation>
 <translation id="180991881384371158">ඔබේ CVC ඔබේ කාඩ්පතෙහි පිටුපස ඇත. එය අත්සන් කොටුවෙහි ඉහළ දකුණේ ඇති අවසාන සංඛ්‍යා 3 වේ.</translation>
 <translation id="1810391395243432441">ඔබේ තිර අගුල සමග මුරපද ආරක්ෂා කරන්න</translation>
+<translation id="1810597570737826742">{count,plural, =1{ප්ලස් ලිපින {count}න් {position}}one{ප්ලස් ලිපින {count}න් {position}}other{ප්ලස් ලිපින {count}න් {position}}}</translation>
 <translation id="1812527064848182527">භූ දර්ශනය</translation>
 <translation id="1812975699435941848">සෞඛ්‍ය අධ්‍යාපනය සහ වෛද්‍ය පුහුණුව</translation>
 <translation id="1816436748874040213">බෙදා ගත් පටිති අනුචලනය කිරීමට සහ විශාලනය කිරීමට විමසිය හැක</translation>

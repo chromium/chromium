@@ -637,6 +637,7 @@
 <translation id="4422041425070339732">lejupvērstais bulttaustiņš</translation>
 <translation id="4425149324548788773">Mans disks</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ir izslēgts</translation>
+<translation id="4428840632568803690"><ph name="SPEAKER_LABEL" />. runātājs</translation>
 <translation id="4429881212383817840">Kerberos biļetes termiņš drīz beigsies</translation>
 <translation id="4431821876790500265">Skatīt pārskatu</translation>
 <translation id="4443192710976771874">sarkana</translation>
@@ -1294,6 +1295,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7802764839223122985">Nav norādīts taustiņš. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Nē, paldies</translation>
 <translation id="7805768142964895445">Statuss</translation>
+<translation id="7811024689617730980">Atlasiet automātiskās atiestatīšanas datumu no 1. līdz 31. (ieskaitot).</translation>
 <translation id="7813073042185856802">kalns</translation>
 <translation id="7819857487979277519">PSK (WPA vai RSN)</translation>
 <translation id="7824219488248240180">postimpresionisms</translation>

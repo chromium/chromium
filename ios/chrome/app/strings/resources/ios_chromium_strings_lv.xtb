@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">Lai pārlūkā Chromium atspējotu funkciju Lockdown Mode, izslēdziet to savā iPhone tālrunī.</translation>
 <translation id="159029779861043703">Pārlūkā Chromium jūsu sensitīvie dati tiek aizsargāti, izmantojot sejas ID.</translation>
 <translation id="1591119736686995611">Pārlūkā Chromium atver ciļņu režģi.</translation>
+<translation id="16001233025397167">Drošības pārbaudes funkcija aizsargā pret datu aizsardzības pārkāpumiem, nedrošām vietnēm un citiem apdraudējumiem. Saņemiet brīdinājumus par visām ar konfidencialitāti vai drošību saistītām problēmām, kas konstatētas pārlūkā Chromium.</translation>
 <translation id="1611584326765829247">Izmantojiet pārlūku Chromium sūtījumu izsekošanai</translation>
 <translation id="1617663976202781617">Chromium sinhronizācijas dati</translation>
 <translation id="1647558790457890304">Chromium iestatījumi</translation>
@@ -56,6 +57,7 @@
 <translation id="2426113998523353159">Saskaņā ar jūsu organizācijas prasībām, lai izmantotu pārlūku Chromium, jums ir jāpierakstās.</translation>
 <translation id="2450140762465183767">Tagad varat izmantot Chromium ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
 <translation id="2478931088402984578">Atlasiet <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
+<translation id="2497941343438581585">Izmantojiet Chromium pirkumu iespējas</translation>
 <translation id="252374538254180121">Chromium iestatīšana par noklusējuma pārlūku</translation>
 <translation id="2574528844022712255">Skatīt Chromium grāmatzīmes</translation>
 <translation id="2590893390871230428">Sinhronizēt jūsu Chromium datus</translation>
@@ -103,6 +105,7 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chromium lietošanas
 <translation id="3855938650519180865">Jaunumi pārlūkā Chromium</translation>
 <translation id="3886689467633467988">Pierakstieties šajā vietnē un pārlūkā Chromium, lai visās savās ierīcēs iegūtu savas grāmatzīmes un citu saturu.</translation>
 <translation id="3904484643286601695">Jebkurā brīdi Chromium iestatījumos varat atjaunināt atlasi.</translation>
+<translation id="3983291422281996849">Iestatiet Chromium kā noklusējuma pārlūku, lai ērti izsekotu cenas un gūtu cenu ieskatus par precēm, kuras vēlaties iegādāties.</translation>
 <translation id="4005283307739974863">Tiek atvērta un veikta drošības pārbaude pārlūkā Chromium.</translation>
 <translation id="4043291146360695975">Paroles tiek saglabātas tikai šīs ierīces paroļu pārvaldniekā</translation>
 <translation id="4099085513035183040">Netiek atbalstīta pārlūkā Chromium Beta.</translation>
@@ -133,6 +136,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chromium datus
 <translation id="4736424910885271643">Jūsu konts tiek pārvaldīts domēnā <ph name="HOSTED_DOMAIN" />, tāpēc jūsu Chromium dati no šīs ierīces tiks dzēsti.</translation>
 <translation id="4790638144988730920">Varat turpināt izmantot Google kontā saglabātos Chromium datus.</translation>
 <translation id="4828317641996116749">Pārlūkprogrammā Chromium nevarēja pārbaudīt visas paroles. Vēlāk mēģiniet vēlreiz.</translation>
+<translation id="4904452304169763785">Brīdinājumi par visām ar konfidencialitāti vai drošību saistītām problēmām, kas konstatētas pārlūkā Chromium</translation>
 <translation id="4962295957157529683">Pabeidziet citā atvērtā Chromium logā iesākto darbu.</translation>
 <translation id="4985291216379576555">Bezsaistē, pārlūkā Chromium nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="4996471330284142407">Izmantojiet vairāk iespēju vienkāršajā un drošajā pārlūkā Chromium, kas tagad ir vēl ātrāks.</translation>
@@ -176,6 +180,7 @@ Svarīga informācija
   • Ja pārlūks Chromium avarē, informācija par avāriju var ietvert noteiktu personas informāciju.
 
   • Ja sinhronizēsiet vēsturi ar savu Google kontu, metrikā var būt ietverta arī informācija par jūsu apmeklētajiem vietrāžiem URL.<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">Saņemiet brīdinājumus par visām ar konfidencialitāti vai drošību saistītām problēmām, kas tiek automātiski noteiktas pārlūkā Chromium.</translation>
 <translation id="5945387852661427312">Jūs pierakstāties kontā, kas tiek pārvaldīts domēnā <ph name="DOMAIN" />, un sniedzat tā administratoram kontroli pār saviem Chromium datiem. Jūsu dati tiks neatgriezeniski saistīti ar šo kontu. Izrakstoties no pārlūka Chromium, jūsu dati tiks dzēsti no šīs ierīces, taču tie tiks saglabāti jūsu Google kontā.</translation>
 <translation id="5951593919357934226">Izmantojiet pārlūku Chromium pilnvērtīgi.</translation>
 <translation id="5983312940147103417">Uzlabojiet pārlūku Chromium</translation>

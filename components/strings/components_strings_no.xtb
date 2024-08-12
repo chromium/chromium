@@ -158,6 +158,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1270328905573953738">Flyttetjenester</translation>
 <translation id="1270502636509132238">Hentemåte</translation>
 <translation id="1273592791152866347">Prissporing er av</translation>
+<translation id="1277711244058668002">Tommel opp-knapp – trykk på Enter for å sende inn tilbakemelding om at du liker dette forslaget</translation>
 <translation id="127777513559587977">Snakkeprogrammer på TV</translation>
 <translation id="1281476433249504884">Hylle 1</translation>
 <translation id="1281536351321444151">For å fylle ut dette IBAN-nummeret automatisk neste gang, lagre det i Google-kontoen din</translation>
@@ -456,6 +457,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="180757923930449935">(64-biters emulert)</translation>
 <translation id="180991881384371158">CVC-koden står på baksiden av kortet. Det er de siste tre sifrene øverst til høyre i signaturfeltet.</translation>
 <translation id="1810391395243432441">Beskytt passord med skjermlåsen</translation>
+<translation id="1810597570737826742">{count,plural, =1{{position} av {count} plussadresse}other{{position} av {count} plussadresser}}</translation>
 <translation id="1812527064848182527">liggende</translation>
 <translation id="1812975699435941848">Helseutdanning og medisinsk opplæring</translation>
 <translation id="1816436748874040213">Kan be om å få rulle og zoome på delte faner</translation>
@@ -663,6 +665,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2188375229972301266">Flere hull bunn</translation>
 <translation id="2194856509914051091">Ting å tenke på</translation>
 <translation id="2197398642355049178">Emnene dine</translation>
+<translation id="2200678913752027654">Tommel ned-knapp – trykk på Enter for å åpne et skjema der du kan gi en detaljert tilbakemelding om hvorfor du ikke liker dette forslaget</translation>
 <translation id="2202627062836089804">baksiden av kortet</translation>
 <translation id="2204482073374652408">Fullført oppdatering!</translation>
 <translation id="2207770355672215546">Tillat alltid med alle kort</translation>
@@ -2585,6 +2588,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5887687176710214216">Sist besøkt i går</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
 <translation id="5895187275912066135">Utstedt</translation>
+<translation id="5898767305816764989">Tommel opp-knapp – trykk på Enter for å sende inn tilbakemelding om at du liker <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5903264686717710770">Tittel:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synkronisert)</translation>
@@ -3316,6 +3320,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7251437084390964440">Nettverkskonfigurasjonen overholder ikke ONC-standarden. Deler av konfigurasjonen kan muligens ikke importeres. Mer informasjon:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Administratoren din sier «<ph name="CUSTOM_MESSAGE" />».</translation>
+<translation id="7255540419660272073">Tommel ned-knapp – trykk på Enter for å åpne et skjema der du kan gi en detaljert tilbakemelding om hvorfor du ikke liker <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Bakskuff</translation>
 <translation id="7257453341537973799">Karriereressurser og -planlegging</translation>
 <translation id="725866823122871198">En privat forbindelse til <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kan ikke opprettes fordi datoen og klokkeslettet (<ph name="DATE_AND_TIME" />) på datamaskinen er feil.</translation>

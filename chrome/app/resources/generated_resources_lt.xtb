@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">Naudoti mikrofoną ir kamerą</translation>
 <translation id="1005333234656240382">Įgalinti ADB derinimą?</translation>
 <translation id="1005671386794704751">Rožinė</translation>
+<translation id="1005919400326853998">Peržiūrėti išsamią „<ph name="CERT_NAME" />“ sertifikato informaciją naujame dialogo lange</translation>
 <translation id="1006033052970139968">Prieiga prie mikrofono leidžiama programoms, svetainėms, turinčioms mikrofono leidimą, ir sistemos paslaugoms</translation>
 <translation id="1006873397406093306">Šis plėtinys gali skaityti ir keisti jūsų duomenis svetainėse. Galite valdyti, kurias svetaines gali pasiekti plėtinys.</translation>
 <translation id="1007057452468855774">Įjungti „Google Play“ parduotuvę</translation>
@@ -2755,6 +2756,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2926708162326352948">Tema atnaujinta į „Įkeltas vaizdas“</translation>
 <translation id="2927017729816812676">Talpyklos saugykla</translation>
 <translation id="2928795416630981206">Leidžiama stebėti fotoaparato poziciją</translation>
+<translation id="2929345818093040583">{NUM_SITES,plural, =1{„Chrome“ pašalino leidimus iš vienos svetainės}one{„Chrome“ pašalino leidimus iš {NUM_SITES} svetainės}few{„Chrome“ pašalino leidimus iš {NUM_SITES} svetainių}many{„Chrome“ pašalino leidimus iš {NUM_SITES} svetainės}other{„Chrome“ pašalino leidimus iš {NUM_SITES} svetainių}}</translation>
 <translation id="2931157624143513983">Pritaikyti pagal spausdinti skirtą sritį</translation>
 <translation id="2931342457001070961">Neprijungta jokių mikrofonų</translation>
 <translation id="2932085390869194046">Siūlyti slaptažodį...</translation>
@@ -3202,6 +3204,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3269093882174072735">Įkelti vaizdą</translation>
 <translation id="326911502853238749">Nerodyti: <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Įjunkite sinchronizavimą, kad galėtumėte sukurti atsarginę duomenų kopiją ir naudoti ją bet kuriame įrenginyje</translation>
+<translation id="3269209112443570745">Naujiena! Paprastas būdas ieškoti to, kas rodoma ekrane</translation>
 <translation id="3269612321104318480">Šviesi žalsvai melsva ir balta</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Failas}one{# failas}few{# failai}many{# failo}other{# failų}}</translation>
 <translation id="326999365752735949">Atsisiuntimo skirt.</translation>
@@ -3672,6 +3675,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3621202678540785336">Įvestis</translation>
 <translation id="3621807901162200696">Padėti tobulinti „Chrome“ OS funkcijas ir našumą</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{programą}one{# programą}few{# programas}many{# programos}other{# programų}}</translation>
+<translation id="3622716124581627104">Nustatykite daiktus ar vietas ir kopijuokite arba verskite tekstą. Kai naudojate „Google Lens“, puslapio ekrano kopija siunčiama „Google“. <ph name="LEARN_MORE" /></translation>
 <translation id="362333465072914957">Laukiama, kol sertifikavimo institucija išduos sertifikatą</translation>
 <translation id="3623598555687153298">Bus ištrinta <ph name="TOTAL_USAGE" /> pateiktų svetainių saugomų duomenų</translation>
 <translation id="3624567683873126087">Atrakinti įrenginį ir prisijungti prie „Google“ paskyros</translation>
@@ -4081,6 +4085,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="3894983081771074056">Klaviatūros ir pelės veikimas, kalbos nuostatos ir kt.</translation>
 <translation id="3895076768659607631">&amp;Paieškos variklių tvarkymas...</translation>
 <translation id="3895090224522145010">„Kerberos“ naudotojo vardas</translation>
+<translation id="3895097816015686240">Atidarykite ankstesnius langus bei skirtukus ir lengvai tęskite nuo ten, kur baigėte</translation>
 <translation id="389521680295183045">Svetainės gali prašyti leisti sužinoti, kada aktyviai naudojate įrenginį</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{vaizdą}one{# vaizdą}few{# vaizdus}many{# vaizdo}other{# vaizdų}}</translation>
 <translation id="3897746662269329507">„<ph name="DEVICE_TYPE" />“ sukurtas žaidimams. Toliau bus atidaryta programa „Explore“, kur galėsite pasiekti daug naujausių žaidimų, peržiūrėti žaidimų pasiūlymus ir atrasti su įrenginiu teikiamas žaidimų funkcijas.</translation>
@@ -5315,6 +5320,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4823484602432206655">Skaityti ir keisti naudotojo bei įrenginio nustatymus</translation>
 <translation id="4824037980212326045">„Linux“ atsarginės kopijos kūrimas ir atkūrimas</translation>
 <translation id="4824958205181053313">Atšaukti sinchronizavimą?</translation>
+<translation id="4825462365587146530">Naujame skirtuke sužinokite daugiau apie „Chrome Root Store“.</translation>
 <translation id="4825532258163983651">Nepavyko ištrinti slaptažodžio</translation>
 <translation id="4827134188176577524">„Chrome Root Store“ yra sertifikatų iš sertifikavimo institucijų, kuriomis pasitiki
       „Chrome Root Program“, ir jie nuolat peržiūrimi.</translation>
@@ -11039,6 +11045,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8991766915726096402">Vietinių duomenų atkūrimas</translation>
 <translation id="8992671062738341478">„<ph name="WINDOW_TITLE" />“ – atminties sąnaudos – <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Jei pamiršite „<ph name="DEVICE_TYPE" />“ slaptažodį, vis tiek galėsite atkurti vietinius duomenis. Turėsite prisijungti prie „Google“ paskyros arba naudoti paskyros atkūrimo funkciją.</translation>
+<translation id="8993198843374358393">Kopijuoti sertifikato maišą, skirtą „<ph name="CERT_NAME" />“</translation>
 <translation id="8993737615451556423">Teikiami skaitymo balsu spartinimo, lėtinimo ir pristabdymo valdikliai</translation>
 <translation id="899384117894244799">Riboto naudotojo profilio pašalinimas</translation>
 <translation id="8993853206419610596">Išskleisti visas užklausas</translation>
@@ -11246,6 +11253,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="9128317794749765148">Nepavyko užbaigti nustatymo proceso</translation>
 <translation id="9128335130883257666">Atidaryti nustatymų puslapį, skirtą <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="9128870381267983090">Prisijungti prie tinklo</translation>
+<translation id="9129562557082598582">Eksportuoti viską: <ph name="CERT_GROUP" /></translation>
 <translation id="9130015405878219958">Įvestas neteisingas režimas.</translation>
 <translation id="9130208109420587135">Redaguoti grupės pavadinimą „<ph name="NAME" />“</translation>
 <translation id="9130364135697530260">Šios svetainės įterptas turinys negali naudoti savo išsaugotos informacijos apie jus</translation>

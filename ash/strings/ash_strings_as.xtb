@@ -668,6 +668,7 @@
 <translation id="3439896670700055005">কেশ্ব কৰা সমল ব্যৱহাৰ নকৰাকৈ আপোনাৰ বৰ্তমানৰ পৃষ্ঠাটো পুনৰ ল’ড কৰক</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">আপোনাৰ মাউছ কাষ্টমাইজ কৰক</translation>
+<translation id="3444385531800624797">ফলাফল ল’ড হৈ আছে</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="3445925074670675829">ইউএছবি চি ডিভাইচ</translation>
 <translation id="3454555520521576458">আকাৰ সলনি কৰিব পৰা</translation>
@@ -1212,6 +1213,7 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> নামৰ ডিভাইচটোৰ সৈতে সংযুক্ত হৈ আছে, <ph name="BATTERY_PERCENTAGE" />% বেটাৰী</translation>
 <translation id="5258528442992323769">ছেভ কৰি থোৱা কোনো ডেস্ক নাই</translation>
 <translation id="5260676007519551770">ডেস্ক ৪</translation>
+<translation id="5265391159779542051">ফলাফল ল’ড হৈছে</translation>
 <translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">ষ্টাইলাছ সঁজুলি ট’গল কৰক</translation>
 <translation id="5278086053818066789">ChromeVox (কথিত মতামত) অন/অফ কৰক</translation>
@@ -1507,6 +1509,7 @@
 <translation id="6210042900243040400">আগতে <ph name="EMAIL" />ত ছেভ হৈ থকা <ph name="NAME" /> সংযোগ কৰক</translation>
 <translation id="6213808132343683860">আংশিক স্ক্ৰীনশ্বট লওক অথবা স্ক্ৰীন ৰেকৰ্ডিং কৰক</translation>
 <translation id="621606890568890214">Google Classroom বিস্তাৰ কৰক</translation>
+<translation id="6216759484154215561">ব্ৰাউজাৰত অধিক জানক লিংকটো খোলা হৈছে</translation>
 <translation id="6220928844947387476">আপুনি এতিয়া একে সময়তে নিজক আৰু আপোনাৰ স্ক্ৰীনখন ৰেকৰ্ড কৰিব পাৰে</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6228457605945141550">উজ্জ্বলতা কমাওক</translation>
@@ -2217,6 +2220,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">একেবাৰে তলৰ সোঁ কোণ, লঞ্চাৰ, ঠিকনাৰ বাৰ, বুকমাৰ্কৰ বাৰ, খোলা থকা ৱেবছাইট আৰু ডাউনল’ডৰ মাজত আগলৈ লৈ যাওক</translation>
 <translation id="8792626944327216835">মাইক্ৰ'ফ'ন</translation>
+<translation id="8797381270745758905">পুনৰ চেষ্টা কৰাৰ লিংকটো সক্ৰিয় কৰা হৈছে</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> ফ’ল্ডাৰ</translation>
 <translation id="880709030178078220">"সহায়"</translation>

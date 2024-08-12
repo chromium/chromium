@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">Korzystanie z Twojego mikrofonu i kamery</translation>
 <translation id="1005333234656240382">Włączyć debugowanie ADB?</translation>
 <translation id="1005671386794704751">Pudrowy róż</translation>
+<translation id="1005919400326853998">Wyświetl szczegóły certyfikatu <ph name="CERT_NAME" /> w nowym oknie</translation>
 <translation id="1006033052970139968">Dostęp do mikrofonu jest dozwolony w przypadku aplikacji i stron, które mają odpowiednie uprawnienia, oraz usług systemowych</translation>
 <translation id="1006873397406093306">To rozszerzenie może odczytywać i zmieniać Twoje dane na stronach. Możesz określić, do których stron rozszerzenie ma dostęp.</translation>
 <translation id="1007057452468855774">Włącz Sklep Google Play</translation>
@@ -2725,6 +2726,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2926708162326352948">Motyw został zaktualizowany do przesłanego obrazu</translation>
 <translation id="2927017729816812676">Pamięć podręczna</translation>
 <translation id="2928795416630981206">Zezwolono na śledzenie pozycji kamery</translation>
+<translation id="2929345818093040583">{NUM_SITES,plural, =1{Przeglądarka Chrome usunęła uprawnienia z 1 witryny}few{Przeglądarka Chrome usunęła uprawnienia z {NUM_SITES} witryn}many{Przeglądarka Chrome usunęła uprawnienia z {NUM_SITES} witryn}other{Przeglądarka Chrome usunęła uprawnienia z {NUM_SITES} witryny}}</translation>
 <translation id="2931157624143513983">Dopasuj do możliwego do zadrukowania obszaru</translation>
 <translation id="2931342457001070961">Nie podłączono mikrofonu</translation>
 <translation id="2932085390869194046">Zaproponuj hasło...</translation>
@@ -3171,6 +3173,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3269093882174072735">Wczytaj obraz</translation>
 <translation id="326911502853238749">Nie pokazuj: <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Włącz synchronizację, aby tworzyć kopie zapasowe swoich danych i używać ich na dowolnym urządzeniu</translation>
+<translation id="3269209112443570745">Nowość! Łatwy sposób na wyszukiwanie tego, co widzisz na ekranie</translation>
 <translation id="3269612321104318480">Jasny morski i biały</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Plik}few{# pliki}many{# plików}other{# pliku}}</translation>
 <translation id="326999365752735949">Pobieram zmiany</translation>
@@ -3639,6 +3642,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3621202678540785336">Urządzenie wejściowe</translation>
 <translation id="3621807901162200696">Pomóż w ulepszaniu funkcji i działania Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikację}few{# aplikacje}many{# aplikacji}other{# aplikacji}}</translation>
+<translation id="3622716124581627104">Rozpoznawaj obiekty lub miejsca i kopiuj lub tłumacz tekst. Gdy używasz Obiektywu Google, do Google jest wysyłany zrzut ekranu ze strony. <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">Kolor błysku na ekranie</translation>
 <translation id="362333465072914957">Czekam na wygenerowanie certyfikatu CA</translation>
 <translation id="3623598555687153298">Spowoduje to usunięcie <ph name="TOTAL_USAGE" /> danych zapisanych przez wyświetlone strony</translation>
@@ -4050,6 +4054,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="3894983081771074056">Działanie klawiatury i myszy, preferencje dotyczące języka i inne ustawienia</translation>
 <translation id="3895076768659607631">&amp;Zarządzaj wyszukiwarkami…</translation>
 <translation id="3895090224522145010">Nazwa użytkownika Kerberos</translation>
+<translation id="3895097816015686240">Otwórz poprzednie okna i karty, aby łatwo kontynuować od tego samego miejsca</translation>
 <translation id="389521680295183045">Witryny mogą prosić o pozwolenie na sprawdzanie, kiedy używasz urządzenia</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{obraz}few{# obrazy}many{# obrazów}other{# obrazu}}</translation>
 <translation id="3897746662269329507">Urządzenie <ph name="DEVICE_TYPE" /> zostało stworzone z myślą o grach. Za chwilę otworzy się aplikacja Odkrywaj, w której możesz korzystać z setek najnowszych gier, sprawdzać oferty specjalne i poznawać funkcje urządzenia.</translation>
@@ -5285,6 +5290,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4823484602432206655">Odczyt i zmiana ustawień użytkownika oraz urządzenia</translation>
 <translation id="4824037980212326045">Tworzenie i przywracanie kopii zapasowej Linuksa</translation>
 <translation id="4824958205181053313">Anulować synchronizację?</translation>
+<translation id="4825462365587146530">Więcej informacji o Chrome Root Store znajdziesz w nowej karcie.</translation>
 <translation id="4825532258163983651">Nie udało się usunąć klucza</translation>
 <translation id="4827134188176577524">Sklep Chrome Root Store zawiera certyfikaty urzędów certyfikacji zaufanych w programie certyfikatów głównych Chrome i jest regularnie sprawdzany.</translation>
 <translation id="4827283332383516812">Usuń kartę</translation>
@@ -11001,6 +11007,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8991766915726096402">Odzyskiwanie danych lokalnych</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> – wykorzystanie pamięci – <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Jeśli zapomnisz hasło do urządzenia <ph name="DEVICE_TYPE" />, nadal możesz przywrócić dane lokalne. Musisz zalogować się na swoje konto Google lub skorzystać z funkcji odzyskiwania konta.</translation>
+<translation id="8993198843374358393">Skopiuj hasz certyfikatu <ph name="CERT_NAME" /></translation>
 <translation id="8993737615451556423">Elementy sterujące umożliwiają przyspieszenie, spowolnienie i wstrzymanie głosu</translation>
 <translation id="899384117894244799">Usuwanie użytkownika z ograniczonym dostępem</translation>
 <translation id="8993853206419610596">Rozwiń wszystkie żądania</translation>
@@ -11205,6 +11212,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9128317794749765148">Nie udało się ukończyć konfiguracji</translation>
 <translation id="9128335130883257666">Otwórz stronę ustawień metody wprowadzania: <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="9128870381267983090">Połącz z siecią</translation>
+<translation id="9129562557082598582">Eksportuj wszystkie <ph name="CERT_GROUP" /></translation>
 <translation id="9130015405878219958">Wprowadzono nieprawidłowy tryb.</translation>
 <translation id="9130208109420587135">Edytuj nazwę grupy <ph name="NAME" /></translation>
 <translation id="9130364135697530260">Umieszczone treści na tej stronie mogą używać informacji, które o Tobie zapisały</translation>

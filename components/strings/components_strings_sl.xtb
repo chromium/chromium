@@ -158,6 +158,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1270328905573953738">Selitve</translation>
 <translation id="1270502636509132238">Način prevzema</translation>
 <translation id="1273592791152866347">Spremljanje cene je izklopljeno</translation>
+<translation id="1277711244058668002">Gumb za Všeč mi je, pritisnite Enter, če želite poslati povratne informacije, da vam je ta predlog všeč</translation>
 <translation id="127777513559587977">Televizijske pogovorne oddaje</translation>
 <translation id="1281476433249504884">Zlagalnik 1</translation>
 <translation id="1281536351321444151">Če želite, da se številka IBAN naslednjič izpolni samodejno, jo shranite v računu Google</translation>
@@ -456,6 +457,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">CVC je na hrbtni strani kartice. To so zadnje tri številke v zgornjem desnem kotu polja s podpisom.</translation>
 <translation id="1810391395243432441">Zaščita gesel z zaklepanjem zaslona</translation>
+<translation id="1810597570737826742">{count,plural, =1{{position} od {count} in naslov}one{{position} od {count} in naslovi}two{{position} od {count} in naslovi}few{{position} od {count} in naslovi}other{{position} od {count} in naslovi}}</translation>
 <translation id="1812527064848182527">ležeče</translation>
 <translation id="1812975699435941848">Zdravstvena vzgoja in izobraževanje</translation>
 <translation id="1816436748874040213">Lahko zahteva pomikanje in povečavo/pomanjšavo deljenih zavihkov</translation>
@@ -663,6 +665,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2188375229972301266">Večkratno luknjanje spodaj</translation>
 <translation id="2194856509914051091">Kaj morate upoštevati</translation>
 <translation id="2197398642355049178">Vaše teme</translation>
+<translation id="2200678913752027654">Gumb za Ni mi všeč, pritisnite Enter, če želite odpreti obrazec za pošiljanje podrobnih povratnih informacij o tem, zakaj vam ta predlog ni všeč</translation>
 <translation id="2202627062836089804">hrbtni strani kartice</translation>
 <translation id="2204482073374652408">Posodabljanje je končano.</translation>
 <translation id="2207770355672215546">Vedno dovoli s katero koli kartico</translation>
@@ -2585,6 +2588,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5887687176710214216">Nazadnje obiskano včeraj</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
 <translation id="5895187275912066135">Izdano dne</translation>
+<translation id="5898767305816764989">Gumb za Všeč mi je pritisnite Enter, če želite poslati povratne informacije, ki so vam všeč, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Rumena</translation>
 <translation id="5903264686717710770">Naslov:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinhronizirano)</translation>
@@ -3317,6 +3321,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 Dodatne podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Sporočilo skrbnika: »<ph name="CUSTOM_MESSAGE" />«</translation>
+<translation id="7255540419660272073">Gumb za Ni mi všeč, pritisnite Enter, če želite odpreti obrazec za pošiljanje podrobnih povratnih informacij o tem, zakaj vam ni všeč, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Zadnji pladenj</translation>
 <translation id="7257453341537973799">Viri in načrtovanje poklicne poti</translation>
 <translation id="725866823122871198">Zasebne povezave z domeno <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ni mogoče vzpostaviti, ker sta datum in ura (<ph name="DATE_AND_TIME" />) v računalniku nepravilna.</translation>

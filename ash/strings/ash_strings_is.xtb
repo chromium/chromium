@@ -10,7 +10,7 @@
 <translation id="1032891413405719768">Lítil hleðsla á pennarafhlöðu</translation>
 <translation id="1036073649888683237">Opnaðu stillingar til að stjórna tilkynningum</translation>
 <translation id="1036348656032585052">Slökkva</translation>
-<translation id="1036672894875463507">Ég er Google hjálparinn þinn og er þér til aðstoðar í dag!
+<translation id="1036672894875463507">Ég er Google-hjálparinn þinn og er þér til aðstoðar í dag!
 Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> bætt við</translation>
 <translation id="1038106730571050514">Sýna tillögur</translation>
@@ -428,7 +428,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="254900897760075745">Afrita valið efni á klippiborð</translation>
 <translation id="2549711466868162843">Bæta lýsingu</translation>
 <translation id="2549985041256363841">Hefja upptöku</translation>
-<translation id="255671100581129685">Google hjálparinn er ekki í boði í opinberri lotu.</translation>
+<translation id="255671100581129685">Google-hjálparinn er ekki í boði í opinberri lotu.</translation>
 <translation id="256712445991462162">stækkunargler í föstum glugga</translation>
 <translation id="2573588302192866788">Ekki tókst að tengjast <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Lokað er á margar innskráningar</translation>
@@ -1061,7 +1061,7 @@ Eitt tæki er tengt.</translation>
 <translation id="4776584068981882959">Enn tókst ekki að staðfesta aðgangsorðið þitt. Reyndu aftur.</translation>
 <translation id="4776917500594043016">Aðgangsorð fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
-<translation id="4778095205580009397">Google hjálparinn er ekki í boði í prufuútgáfu.</translation>
+<translation id="4778095205580009397">Google-hjálparinn er ekki í boði í prufuútgáfu.</translation>
 <translation id="4789348252524569426">Ekki er hægt að setja upp raddskrár. Þú þarft að uppfæra tækið. Endurræstu tækið og reyndu aftur.</translation>
 <translation id="478959186716341421">Sendir út</translation>
 <translation id="4798403412327076414">Þú sérð glugga og forrit sem voru opin við næstu innskráningu</translation>
@@ -1330,7 +1330,7 @@ Engin tæki eru tengd.</translation>
 <translation id="5677928146339483299">Lokað fyrir aðgang</translation>
 <translation id="5678564054339031017">Sýna næstu viku</translation>
 <translation id="5679050765726761783">Afllítill straumbreytir tengdur</translation>
-<translation id="5682642926269496722">Google hjálparinn er ekki í boði fyrir núverandi notandareikning.</translation>
+<translation id="5682642926269496722">Google-hjálparinn er ekki í boði fyrir núverandi notandareikning.</translation>
 <translation id="5682844616152977671"><ph name="RELATIVE_DATE" /> <ph name="TIME" /></translation>
 <translation id="5689233503102158537">alt + bakklykill</translation>
 <translation id="5689633613396158040">Næturljós auðveldar þér að horfa á skjáinn og lesa af honum í lítilli birtu. Ýttu til að breyta klukkan hvað næturljósið kviknar eða til að slökkva alveg á því.</translation>
@@ -1468,7 +1468,7 @@ Engin tæki eru tengd.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6119972796024789243">Litaleiðrétting</translation>
 <translation id="6121838516699723042">Staðfesta niðurhal <ph name="FILENAME" /></translation>
-<translation id="612734058257491180">Google hjálparinn er ekki í boði í gestalotu.</translation>
+<translation id="612734058257491180">Google-hjálparinn er ekki í boði í gestalotu.</translation>
 <translation id="6127370444807669747">Prófaðu YouTube Music Premium til að fá sérsniðna spilunarlista og tónlist sem auðveldar þér að einbeita þér</translation>
 <translation id="6127395413317891856">Þú ert ekki á netinu. Athugaðu nettenginguna og reyndu aftur.</translation>
 <translation id="6129953537138746214">Bil</translation>
@@ -1971,7 +1971,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7926080067315048321">Sjá öll verkefni í Google-verkefnum á netinu</translation>
 <translation id="7930731167419639574">Úrvinnsla á tali fer núna fram í tækinu og raddinnsláttur virkar án nettengingar</translation>
 <translation id="7932451802722951285">Opna í Google dagatali</translation>
-<translation id="7933084174919150729">Google hjálparinn er aðeins í boði fyrir aðalprófíl.</translation>
+<translation id="7933084174919150729">Google-hjálparinn er aðeins í boði fyrir aðalprófíl.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> og <ph name="SECOND_PARENT_EMAIL" /> stjórna þessum reikningi</translation>
 <translation id="793716872548410480">Ýttu á <ph name="SHORTCUT_KEY_NAME" /> + V til að skoða klippiborðið. Síðustu 5 atriðin sem þú afritaðir eru vistuð á klippiborðinu.</translation>
 <translation id="7942330802915522974">Skref <ph name="STEP" /> af <ph name="TOTAL_STEPS" /> í kynningu. Þú finnur forritið Skrár í ræsiforritinu. Hafðu umsjón með staðbundnum skrám og Google Drive-skránum þínum í forritinu Skrár.</translation>
@@ -2239,7 +2239,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="890616557918890486">Breyta uppruna</translation>
 <translation id="8909138438987180327">Rafhlaða í <ph name="PERCENTAGE" />%.</translation>
 <translation id="8921554779039049422">H+</translation>
-<translation id="8921624153894383499">Google hjálparinn talar ekki þetta tungumál</translation>
+<translation id="8921624153894383499">Google-hjálparinn talar ekki þetta tungumál</translation>
 <translation id="8926951137623668982">Hilla alltaf falin</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 skrá}one{# skrá}other{# skrár}}</translation>
 <translation id="8936501819958976551">óvirkt</translation>

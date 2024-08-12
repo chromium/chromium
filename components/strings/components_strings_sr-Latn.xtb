@@ -76,6 +76,7 @@
 <translation id="1142713751288681188">Tip papira</translation>
 <translation id="1144136880160289237">Još nemate nijednu aktivnu temu</translation>
 <translation id="1149617035358809955">da proveri da li ste to vi da bi mogao da unese informacije o plaćanju</translation>
+<translation id="115055975835908275">Zatvorite promociju</translation>
 <translation id="1150565364351027703">Naočari za sunce</translation>
 <translation id="1150979032973867961">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; operativni sistem računara nema poverenja u njegov bezbednosni sertifikat. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
 <translation id="1151972924205500581">Lozinka je obavezna</translation>
@@ -871,6 +872,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2565789370591907825">Zaključavanje i korišćenje tastature</translation>
 <translation id="2570734079541893434">Upravljajte podešavanjima</translation>
 <translation id="257136025287118539">Administrator premešta fajlove u <ph name="CLOUD_PROVIDER" />. Možete da izmenite ove fajlove kada se otpremanje završi.</translation>
+<translation id="2571488850200220306">Iz bezbednosnih razloga uređaj može da vidi i OS uređaja, verziju pregledača i koji softver je instaliran</translation>
 <translation id="2573170131138724450">Televizori</translation>
 <translation id="257674075312929031">Grupa</translation>
 <translation id="2586657967955657006">Memorija</translation>
@@ -1006,6 +1008,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2903493209154104877">Adrese</translation>
 <translation id="290376772003165898">Ova stranica nije na jeziku <ph name="LANGUAGE" />?</translation>
 <translation id="2905107382358353958">Obaveštenje o novom podešavanju plaćanja</translation>
+<translation id="2909693957408648848">Promocija</translation>
 <translation id="2909946352844186028">Otkrivena je promena na mreži.</translation>
 <translation id="2911255567212929079">Mašinsko učenje i veštačka inteligencija</translation>
 <translation id="2911973620368911614">ID korisnika za računovodstveni zadatak</translation>
@@ -2776,6 +2779,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6240964651812394252">Da biste koristili Google menadžer lozinki sa operativnim sistemom, ponovo pokrenite Chrome i dozvolite pristup menadžeru lozinki na računaru. Kartice će se ponovo otvoriti posle ponovnog pokretanja.</translation>
 <translation id="6241121617266208201">Sakrij predloge</translation>
 <translation id="624499991300733384">Usluga slaganja za štampanje</translation>
+<translation id="6246868321321344665">Organizacija može da vidi podatke pregledanja, poput lozinki i istorije, i na poslovnom i na ličnom profilu</translation>
 <translation id="6250932670816326647">Proizvodi za kupanje i negu tela</translation>
 <translation id="6251906504834538140">{0,plural, =1{Premeštanje fajla je blokirano}one{Premeštanje <ph name="FILE_COUNT" /> fajla je blokirano}few{Premeštanje <ph name="FILE_COUNT" /> fajla je blokirano}other{Premeštanje <ph name="FILE_COUNT" /> fajlova je blokirano}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali fajlovima koje ste preuzeli u Chrome-u</translation>
@@ -4316,6 +4320,7 @@ Dodatni detalji:
 <translation id="9101450247048146228">Korišćenje i kretanje kamere (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">1. fioka</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> obično koristi šifrovanje da bi zaštitio informacije. Kada je Chromium ovog puta pokušao da se poveže sa <ph name="SITE" />, veb-sajt je vratio neobične i netačne akreditive. Ili napadač pokušava da se predstavi kao <ph name="SITE" /> ili je ekran za WiFi prijavljivanje prekinuo vezu. Informacije su i dalje bezbedne zato što je Chromium prekinuo vezu pre nego što su razmenjeni bilo kakvi podaci.</translation>
+<translation id="9107199998619088551"><ph name="MANAGER" /> upravlja vašim profilom</translation>
 <translation id="9107467864910557787">Pregledačem upravlja <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Smernice za administratore onemogućavaju deljenje sadržaja ekrana sa aplikacijom <ph name="APPLICATION_TITLE" /> kada je vidljiv poverljivi sadržaj</translation>
 <translation id="9114524666733003316">Kartica se potvrđuje...</translation>

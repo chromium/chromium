@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">הובלות והעתקת מקום מגורים</translation>
 <translation id="1270502636509132238">שיטת איסוף</translation>
 <translation id="1273592791152866347">המעקב אחר מחירים מושבת</translation>
+<translation id="1277711244058668002">‏לחצן 'אהבתי', מקישים על Enter כדי לשלוח משוב שאהבת את ההצעה</translation>
 <translation id="127777513559587977">תוכניות אירוח בטלוויזיה</translation>
 <translation id="1281476433249504884">מערים 1</translation>
 <translation id="1281536351321444151">‏כדי שמספר ה-IBAN הזה ימולא בשבילך אוטומטית בפעם הבאה, כדאי לשמור אותו בחשבון שלך ב-Google</translation>
@@ -456,6 +457,7 @@
 <translation id="180757923930449935">(64‎-bit emulated)</translation>
 <translation id="180991881384371158">‏קוד האימות (CVC) מופיע בגב הכרטיס. אלה 3 הספרות האחרונות שמופיעות בצד הימני של תיבת החתימה.</translation>
 <translation id="1810391395243432441">הגנה על סיסמאות באמצעות נעילת המסך</translation>
+<translation id="1810597570737826742">{count,plural, =1{‫{position} מתוך כתובת חלופית אחת ({count})}one{‫{position} מתוך {count} כתובות חלופיות}two{‫{position} מתוך {count} כתובות חלופיות}other{‫{position} מתוך {count} כתובות חלופיות}}</translation>
 <translation id="1812527064848182527">לרוחב</translation>
 <translation id="1812975699435941848">לימודי בריאות והכשרה רפואית</translation>
 <translation id="1816436748874040213">האתר יכול לבקש הרשאה לגלול ולשנות את מרחק התצוגה של הכרטיסיות המשותפות</translation>
@@ -663,6 +665,7 @@
 <translation id="2188375229972301266">ניקובים מרובים בחלק התחתון</translation>
 <translation id="2194856509914051091">מה כדאי לקחת בחשבון</translation>
 <translation id="2197398642355049178">הנושאים שלך</translation>
+<translation id="2200678913752027654">‏לחצן 'לא אהבתי', מקישים על Enter כדי לפתוח טופס לשליחה של משוב מפורט על הסיבה לכך שלא אהבת את ההצעה הזו</translation>
 <translation id="2202627062836089804">גב הכרטיס</translation>
 <translation id="2204482073374652408">העדכון הסתיים.</translation>
 <translation id="2207770355672215546">ללא הגבלה, עם כל כרטיס</translation>
@@ -1507,6 +1510,7 @@
 <translation id="3792100426446126328">‏<ph name="NAME" /> ‏(<ph name="WIDTH" />x<ph name="HEIGHT" /> אינץ')</translation>
 <translation id="3792826587784915501">סרטי אינדי וקאלט</translation>
 <translation id="3793574014653384240">כמות הקריסות שאירעו לאחרונה והסיבות שהובילו לקריסות האלה</translation>
+<translation id="3796417399166194741">‏האתר <ph name="SITE" /> מונע מ-Chrome ליצור חיבור מאובטח</translation>
 <translation id="3799805948399000906">גופן שהתבקש</translation>
 <translation id="3801265110651850478">‏שליחה של בקשת Do Not Track יחד עם תנועת הגלישה שלך</translation>
 <translation id="380329542618494757">שם</translation>
@@ -2589,6 +2593,7 @@ Del</translation>
 <translation id="5887687176710214216">הכניסה האחרונה בוצעה אתמול</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
 <translation id="5895187275912066135">הונפק בתאריך</translation>
+<translation id="5898767305816764989">‏לחצן 'אהבתי', מקישים על Enter כדי לשלוח משוב שאהבת את <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">צהוב</translation>
 <translation id="5903264686717710770">כותרת:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (מסונכרנים)</translation>
@@ -2706,6 +2711,7 @@ Del</translation>
 <translation id="6106989379647458772">ייתכן שדף האינטרנט בכתובת <ph name="PAGE" /> אינו פעיל זמנית, או שהוא הועבר לכתובת אינטרנט קבועה אחרת.</translation>
 <translation id="6107012941649240045">מונפק ל</translation>
 <translation id="6107924765192360631">כדי לקבל הצעות לכתיבה, פשוט צריך להתחיל עם כמה מילים או טיוטה ראשונית.</translation>
+<translation id="6108580855199168381">פרטי אישור</translation>
 <translation id="6108702513636120202">‏מנוע החיפוש שלך ב-Chromium</translation>
 <translation id="6108849843016142864">זוחלים ודו-חיים</translation>
 <translation id="610911394827799129">‏ייתכן שיהיה אפשר לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -3320,6 +3326,7 @@ Del</translation>
 פרטים נוספים:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">הודעה ממנהל המערכת: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">‏לחצן 'לא אהבתי', מקישים על Enter כדי לפתוח טופס לשליחה של משוב מפורט על הסיבה לכך שלא אהבת את <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">המגש האחורי</translation>
 <translation id="7257453341537973799">משאבים ותכנון לקריירה</translation>
 <translation id="725866823122871198">לא ניתן ליצור חיבור פרטי אל <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> מפני שהתאריך והשעה (<ph name="DATE_AND_TIME" />) במחשב שלך שגויים.</translation>
@@ -3477,6 +3484,12 @@ Del</translation>
 <translation id="7535087603100972091">ערך</translation>
 <translation id="753556296624075801">‏מופעל על ידי Google</translation>
 <translation id="7537536606612762813">חובה</translation>
+<translation id="7541586907443866208">‏תוקפים יוכלו לראות ולשנות את כל הנתונים שנשלחים בינך לבין האתר הזה.
+    &lt;ul&gt;
+    &lt;li&gt;אם יש כרגע חיבור לרשת ציבורית, כמו רשת Wi-Fi של נמל תעופה או מלון, כדאי לנסות שוב כשיהיה חיבור לרשת מהימנה (למשל, בבית או בעבודה).&lt;/li&gt;
+    &lt;li&gt;אם בעל האתר מוכר לך, כדאי לבקש ממנו לפתור את הבעיה.&lt;/li&gt;
+    &lt;/ul&gt;
+    <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7542995811387359312">מילוי אוטומטי של פרטי כרטיס אשראי מושבת כיוון שטופס זה אינו משתמש בחיבור מאובטח.</translation>
 <translation id="7543525346216957623">יש לבקש רשות מההורים</translation>
 <translation id="7546409722674205727">האפליקציה <ph name="APP_NAME" /> נפתחת</translation>

@@ -1212,6 +1212,7 @@
 <translation id="184183613002882946">否，只使用 1 個按鈕裝置</translation>
 <translation id="184273675144259287">以先前的備份取代您的 Linux 應用程式和檔案</translation>
 <translation id="1842766183094193446">您確定要啟用示範模式嗎？</translation>
+<translation id="1843048149176045210">複製下載連結</translation>
 <translation id="1845060436536902492">ChromeOS Flex 的螢幕閱讀器 ChromeVox 主要供失明和低視力人士使用，可協助他們透過語音合成器或點字顯示器閱讀螢幕上顯示的文字。按一下空白鍵即可啟用 ChromeVox。ChromeVox 啟動後，系統會提供快速導覽。</translation>
 <translation id="1845727111305721124">已允許播放音效</translation>
 <translation id="1846308012215045257">按住 Ctrl 鍵並按一下即可執行 <ph name="PLUGIN_NAME" /></translation>
@@ -3170,6 +3171,7 @@
 <translation id="3251714896659475029">讓<ph name="SUPERVISED_USER_NAME" />透過「Ok Google」語音指令存取「Google 助理」</translation>
 <translation id="3251759466064201842">&lt;不是憑證的一部分&gt;</translation>
 <translation id="325238099842880997">設定數碼裝置基本使用規則，協助子女遊玩、探索和在家完成作業</translation>
+<translation id="3253083398453405334">收到通知時閃爍螢幕</translation>
 <translation id="3253225298092156258">無法使用</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{<ph name="CLOUD_PROVIDER" /> 需騰出空間，才能複製此檔案}other{<ph name="CLOUD_PROVIDER" /> 需騰出空間，才能複製這些檔案}}</translation>
 <translation id="3253448572569133955">不明帳戶</translation>
@@ -3666,6 +3668,7 @@
 <translation id="3621202678540785336">輸入</translation>
 <translation id="3621807901162200696">協助改善 Chrome OS 的功能和效能</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{1 個應用程式}other{# 個應用程式}}</translation>
+<translation id="3622820753353315928">閃爍螢幕顏色</translation>
 <translation id="362333465072914957">正在等待 CA 發出憑證</translation>
 <translation id="3623598555687153298">此操作會移除顯示網站所儲存的資料，共 <ph name="TOTAL_USAGE" /></translation>
 <translation id="3624567683873126087">解鎖裝置和登入 Google 帳戶</translation>
@@ -7157,6 +7160,7 @@
 <translation id="6197128521826316819">為此頁面建立 QR 碼</translation>
 <translation id="6198223452299275399">滑動瀏覽頁面</translation>
 <translation id="6198252989419008588">變更 PIN</translation>
+<translation id="61988015556954366">螢幕閃光</translation>
 <translation id="6200047250927636406">捨棄檔案</translation>
 <translation id="6200151268994853226">管理擴充程式</translation>
 <translation id="6201608810045805374">要移除此帳戶嗎？</translation>
@@ -7514,6 +7518,7 @@
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> 個檔案</translation>
 <translation id="6469557521904094793">開啟流動網絡</translation>
 <translation id="6469702164109431067">密碼和密鑰</translation>
+<translation id="6470120577693311302">閃光燈通知</translation>
 <translation id="6470823736074966819">忽略通知</translation>
 <translation id="6472893788822429178">顯示 [主頁] 按鈕</translation>
 <translation id="6473315466413288899">選取一個選項</translation>
@@ -7946,6 +7951,7 @@
 <translation id="6790820461102226165">新增使用者…</translation>
 <translation id="6793610798874309813">PIN 可以使用 4 個或更多字元</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> 已複製到剪貼簿</translation>
 <translation id="6794511157503068">如果 <ph name="APP_NAME" /> 的密鑰存放在 USB 安全密鑰上，請立即插入並安全密鑰</translation>
 <translation id="679486139907144816">如要使用密鑰登入此網站，您需要在設定中開啟 Windows Hello，然後返回此網站並再試一次。</translation>
 <translation id="6795371939514004514">自動掃瞄功能會自動在畫面上的項目間移動。選取項目，然後按下「選取」即可啟動該項目。</translation>

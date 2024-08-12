@@ -123,10 +123,12 @@
 <translation id="1605658421715042784">Kopiuj obraz</translation>
 <translation id="1608337082864370066">Wyszukaj skopiowany obraz</translation>
 <translation id="1612730193129642006">Pokaż układ kart</translation>
+<translation id="1612754831519568745">Bezpieczne przeglądanie jest obecnie wyłączone. Uzyskaj ochronę przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Wybierz „Dodaj do Kalendarza Google” lub „Dodaj do Kalendarza Apple”.</translation>
 <translation id="1626771852476987600">Ponownie użyte hasła: <ph name="COUNT" /></translation>
 <translation id="1636234353664774105">Korzystaj ze szczegółowych wskazówek dojazdu dostępnych w funkcji nawigacji</translation>
+<translation id="1641068175940982148">Otwórz grupę <ph name="GROUP_TITLE" />, zawartość: <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">Bezpieczne przeglądanie</translation>
 <translation id="1641316430523156212">Obserwuj</translation>
 <translation id="1644574205037202324">Historia</translation>
@@ -402,6 +404,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2952246431280799028">Naciśnij i przytrzymaj adres.</translation>
 <translation id="2952278131021475699">Wyszukiwanie za pomocą aparatu i Obiektywu</translation>
 <translation id="2958718410589002129">Hasła</translation>
+<translation id="2963044753825419640">Zezwalaj witrynom i aplikacjom na automatyczne uaktualnianie istniejących kont, aby używać kluczy, gdy są dostępne</translation>
 <translation id="2964349545761222050">Blokowanie plików cookie innych firm</translation>
 <translation id="2965328226365382335">Ostatnie 15 minut</translation>
 <translation id="2969979262385602596">Nie udało się zalogować. Spróbuj ponownie później.</translation>
@@ -759,6 +762,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Tylko na tym urządzeniu, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Nowa karta incognito</translation>
 <translation id="4766112107778026136">Odkrywanie i obserwowanie</translation>
+<translation id="4769198578611055647">Ułatwia dostęp do zapisanych kluczy dostępu na dowolnym urządzeniu</translation>
 <translation id="4775879719735953715">Domyślna przeglądarka</translation>
 <translation id="4779732376610430319">Otwórz Ustawienia…</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -803,6 +807,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4922154083994158612">Więcej ustawień bezpieczeństwa?</translation>
 <translation id="4930714375720679147">Włącz</translation>
 <translation id="4937410517508563815">Zapisuj hasła na koncie</translation>
+<translation id="4937488522718608601">Otwórz grupy kart</translation>
 <translation id="4938338714234463591">Pozwoli Ci to obsługiwać głosowo niektóre funkcje witryn.</translation>
 <translation id="4941089862236492464">Niestety, wystąpił problem z udostępnieniem tej rzeczy.</translation>
 <translation id="4942382218961352935">Sprawdzono przed chwilą</translation>
@@ -1041,6 +1046,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6067849159007176401">Dodaj Bezpieczne przeglądanie</translation>
 <translation id="607620096698446287">Nie udało się przesłać pliku <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6084848228346514841">Wybierz karty</translation>
+<translation id="6089212833343035912">Kod PIN Menedżera haseł Google</translation>
 <translation id="6100617279104942061">Zalogowano jako <ph name="USER_EMAIL" />. Otwiera ustawienia.</translation>
 <translation id="6103540626693881831">Szyfrowanie na urządzeniu</translation>
 <translation id="6119050551270742952">Bieżąca strona jest w trybie incognito</translation>
@@ -1261,6 +1267,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7022197654033719543">Informacje o witrynie</translation>
 <translation id="7029809446516969842">Hasła</translation>
 <translation id="704692552158601232">Domyślna przeglądarka</translation>
+<translation id="7051147526307793383">Zezwalaj na automatyczne uaktualnienia kluczy dostępu</translation>
 <translation id="7055240621761583113">Automatycznie uzupełnij hasło</translation>
 <translation id="7063811929043357292">Twoim kontem zarządza rodzic.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -1336,6 +1343,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7470908168505178757">Grupa kart. Zwinięta.</translation>
 <translation id="7472734401283673885">Nazwa firmy</translation>
 <translation id="7473891865547856676">Nie, dziękuję</translation>
+<translation id="7477974514217962959">{count,plural, =1{Zamknięto i zapisano 1 grupę kart}few{Zamknięto i zapisano {count} grupy kart}many{Zamknięto i zapisano {count} grup kart}other{Zamknięto i zapisano {count} grupy kart}}</translation>
 <translation id="7488874549363591659">Dostarczono</translation>
 <translation id="7491131399623468277">Otwórz ustawienia…</translation>
 <translation id="749854780843431406">Aby otworzyć nową kartę, kliknij przycisk <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />.</translation>

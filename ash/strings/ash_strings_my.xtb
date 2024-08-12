@@ -664,6 +664,7 @@
 <translation id="3439896670700055005">ကက်ရှ်ယူထားသော အကြောင်းအရာ မသုံးဘဲ လက်ရှိစာမျက်နှာကို ပြန်လည်စတင်ရန်</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">သင့်မောက်စ်ကို စိတ်ကြိုက်ပြင်ခြင်း</translation>
+<translation id="3444385531800624797">ရလဒ်များ ဖွင့်နေသည်</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> မိနစ်</translation>
 <translation id="3445925074670675829">USB-C ကိရိယာ</translation>
 <translation id="3454555520521576458">အရွယ်အစားပြင်နိုင်သည်</translation>
@@ -1206,6 +1207,7 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> စက်သို့ ချိတ်ဆက်ထားသည်၊ ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">သိမ်းထားသည့် မျက်နှာပြင်များ မရှိပါ</translation>
 <translation id="5260676007519551770">စာရေးခုံ ၄</translation>
+<translation id="5265391159779542051">ရလဒ်များ ဖွင့်လိုက်ပါပြီ</translation>
 <translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">စတိုင်လပ်စ် တူးလ်များ ပြပါ/ဖျောက်ပါ</translation>
 <translation id="5278086053818066789">ChromeVox (စကားပြော တုံ့ပြန်ချက်) ဖွင့်/ပိတ်ရန်</translation>
@@ -1500,6 +1502,7 @@
 <translation id="6210042900243040400">ယခင်က <ph name="EMAIL" /> သို့ သိမ်းထားသော <ph name="NAME" /> သို့ ချိတ်ဆက်ပါ</translation>
 <translation id="6213808132343683860">ဖန်သားပြင်ဓာတ်ပုံ (သို့) ဖန်သားပြင်ရိုက်ကူးမှု တစ်စိတ်တစ်ပိုင်း ရယူရန်</translation>
 <translation id="621606890568890214">Google Classroom ကို ပိုပြပါ</translation>
+<translation id="6216759484154215561">ဘရောင်ဇာတွင် ပိုမိုလေ့လာရန်လင့်ခ် ဖွင့်လိုက်ပါပြီ</translation>
 <translation id="6220928844947387476">သင့်စခရင်နှင့် သင့်ကို တစ်ချိန်တည်း ယခု မှတ်တမ်းတင်နိုင်ပါပြီ</translation>
 <translation id="622484624075952240">အောက်သို့</translation>
 <translation id="6228457605945141550">တောက်ပမှုကို လျှော့ချရန်</translation>
@@ -2203,6 +2206,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />။ <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">ညာဘက်အောက်ခြေထောင့်၊ Launcher၊ လိပ်စာဘား၊ လိပ်စာစာရင်းဘား၊ ဖွင့်ထားသည့်ဝဘ်ဆိုက်နှင့် ဒေါင်းလုဒ်များကြား ရှေ့သို့ရွှေ့ရန်</translation>
 <translation id="8792626944327216835">မိုက်ခရိုဖုန်း</translation>
+<translation id="8797381270745758905">ထပ်စမ်းရန်လင့်ခ်ကို စဖွင့်လိုက်ပါပြီ</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">ဖိုလ်ဒါ <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"အကူအညီယူရန်"</translation>

@@ -462,6 +462,7 @@
 <translation id="346423161771747987">Nykyinen</translation>
 <translation id="346539236881580388">Uusi otos</translation>
 <translation id="3484914941826596830">Älä irrota ulkoista laitetta äläkä sammuta tietokonetta sillä aikaa kun laiteohjelmisto päivittyy. Voit pienentää ikkunan. Päivityksessä voi mennä muutama minuutti, eikä ulkoinen laite välttämättä toimi sen aikana.</translation>
+<translation id="3485555238092220889">saavutettavuustoiminto</translation>
 <translation id="3486220673238053218">määritelmä</translation>
 <translation id="3487866404496702283">Palaute mahi-ominaisuudesta</translation>
 <translation id="3488065109653206955">Osittain aktivoitu</translation>
@@ -1282,7 +1283,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">näppäimistön valo</translation>
-<translation id="7730077286107534951">Joitakin tili- ja järjestelmätietoja voidaan lähettää Googlelle. Tietojen avulla ratkomme teknisiä ongelmia ja kehitämme palveluitamme <ph name="BEGIN_LINK2" />tietosuojakäytännön<ph name="END_LINK2" /> ja <ph name="BEGIN_LINK3" />käyttöehtojen<ph name="END_LINK3" /> mukaisesti. Jos haluat pyytää sisältöön muutoksia, siirry <ph name="BEGIN_LINK1" />lakiasioiden ohjesivulle<ph name="END_LINK1" />.</translation>
+<translation id="7730077286107534951">Joitakin tili- ja järjestelmätietoja voidaan lähettää Googlelle. Tietojen avulla ratkomme teknisiä ongelmia ja kehitämme palveluitamme <ph name="BEGIN_LINK2" />tietosuojakäytännön<ph name="END_LINK2" /> ja <ph name="BEGIN_LINK3" />käyttöehtojen<ph name="END_LINK3" /> mukaisesti. Jos haluat pyytää sisältöön muutoksia, siirry <ph name="BEGIN_LINK1" />oikeudelliseen ohjeeseen<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Syklien määrä</translation>
 <translation id="7746357909584236306">muokattavissa</translation>
 <translation id="7747039790905080783">Esijaettu avain</translation>

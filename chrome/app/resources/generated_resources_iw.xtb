@@ -1212,6 +1212,7 @@
 <translation id="184183613002882946">לא, מספיק לי מתג אחד</translation>
 <translation id="184273675144259287">‏החלפת הקבצים והאפליקציות של Linux בגיבוי קודם</translation>
 <translation id="1842766183094193446">להפעיל מצב הדגמה?</translation>
+<translation id="1843048149176045210">העתקת הקישור להורדה</translation>
 <translation id="1845060436536902492">‏קורא המסך ב-ChromeOS Flex,‏ ChromeVox, משמש בעיקר עיוורים ולקויי ראייה כדי לקרוא טקסט שמוצג במסך באמצעות סינתיסייזר דיבור או צג ברייל. כדי להפעיל את ChromeVox, מקישים על מקש הרווח. לאחר הפעלת ChromeVox, יופעל סיור היכרות קצר.</translation>
 <translation id="1845727111305721124">מורשים להשמיע צלילים</translation>
 <translation id="1846308012215045257">‏כדי להפעיל את <ph name="PLUGIN_NAME" />, יש ללחוץ עליו תוך כדי הקשה על Control</translation>
@@ -2654,6 +2655,7 @@
 <translation id="2853121255651601031">הסיסמה נשמרה</translation>
 <translation id="2855243985454069333">מחיקת ההיסטוריה בכל המכשירים המסונכרנים</translation>
 <translation id="2855812646048059450">כניסה דרך <ph name="CREDENTIAL_PROVIDER" /></translation>
+<translation id="28559674945112027">מצב קפדני</translation>
 <translation id="2856776373509145513">יצירת קונטיינר חדש</translation>
 <translation id="2856907950922663165">‏להשבית את ההצפנה של כתובות ה-URL?</translation>
 <translation id="2859741939921354763">ייבוא סיסמאות אל <ph name="BRAND" /></translation>
@@ -3171,6 +3173,7 @@
 <translation id="3251714896659475029">‏הרשאה ל<ph name="SUPERVISED_USER_NAME" /> להפעיל את Google Assistant באמצעות הפנייה “Hey Google”</translation>
 <translation id="3251759466064201842">&lt;לא חלק מהאישור&gt;</translation>
 <translation id="325238099842880997">מומלץ להגדיר כללים דיגיטליים כדי לעזור לילדים לשחק, לחקור ולעשות שיעורי בית</translation>
+<translation id="3253083398453405334">המסך יהבהב כשיתקבלו התראות</translation>
 <translation id="3253225298092156258">רשת לא זמינה</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{צריך לפנות מקום ב-<ph name="CLOUD_PROVIDER" /> כדי להעתיק את הקובץ הזה}one{צריך לפנות מקום ב-<ph name="CLOUD_PROVIDER" /> כדי להעתיק את הקבצים האלה}two{צריך לפנות מקום ב-<ph name="CLOUD_PROVIDER" /> כדי להעתיק את הקבצים האלה}other{צריך לפנות מקום ב-<ph name="CLOUD_PROVIDER" /> כדי להעתיק את הקבצים האלה}}</translation>
 <translation id="3253448572569133955">חשבון לא ידוע</translation>
@@ -3667,6 +3670,7 @@
 <translation id="3621202678540785336">קלט</translation>
 <translation id="3621807901162200696">‏עזרה בשיפור התכונות והביצועים של ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{אפליקציה}one{# אפליקציות}two{# אפליקציות}other{# אפליקציות}}</translation>
+<translation id="3622820753353315928">צבע המסך בזמן הבהוב</translation>
 <translation id="362333465072914957">‏בהמתנה להנפקת אישור על ידי ה-CA</translation>
 <translation id="3623598555687153298">הפעולה הזו תגרום למחיקת <ph name="TOTAL_USAGE" /> של נתונים שאוחסנו על ידי האתרים המוצגים</translation>
 <translation id="3624567683873126087">‏ביטול נעילת המכשיר וכניסה אל חשבון Google</translation>
@@ -6409,6 +6413,7 @@
 <translation id="5623282979409330487">האתר הזה ניגש לחיישני התנועה.</translation>
 <translation id="5623842676595125836">יומן</translation>
 <translation id="5624120631404540903">ניהול סיסמאות</translation>
+<translation id="5624959475330585145">צריך לבקש אישור לפני שימוש בחיבורים לא מאובטחים</translation>
 <translation id="5625225435499354052">‏עריכה ב-Google Pay</translation>
 <translation id="5626134646977739690">שם:</translation>
 <translation id="5627832140542566187">כיוון המסך</translation>
@@ -7170,6 +7175,7 @@
 <translation id="6197128521826316819">‏יצירת קוד QR לדף הזה</translation>
 <translation id="6198223452299275399">החלקה בין דפים</translation>
 <translation id="6198252989419008588">שינוי קוד אימות</translation>
+<translation id="61988015556954366">הבהוב מסך</translation>
 <translation id="6200047250927636406">מחיקת הקובץ</translation>
 <translation id="6200151268994853226">ניהול התוספים</translation>
 <translation id="6201608810045805374">להסיר את החשבון הזה?</translation>
@@ -7527,6 +7533,7 @@
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> קבצים</translation>
 <translation id="6469557521904094793">הפעלת רשת סלולרית</translation>
 <translation id="6469702164109431067">סיסמאות ומפתחות גישה</translation>
+<translation id="6470120577693311302">הבהוב על התראות</translation>
 <translation id="6470823736074966819">השתקת ההתראות</translation>
 <translation id="6472893788822429178">הצגת לחצן 'דף הבית'</translation>
 <translation id="6473315466413288899">יש לבחור אפשרות</translation>
@@ -7963,6 +7970,7 @@
 <translation id="6790820461102226165">הוספת משתמש...</translation>
 <translation id="6793610798874309813">קוד האימות צריך להיות באורך של 4 תווים לפחות</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395">הקישור <ph name="DOWNLOAD_URL" /> הועתק ללוח</translation>
 <translation id="6794511157503068">‏אם מפתח הגישה אל <ph name="APP_NAME" /> שמור במפתח אבטחה בחיבור USB, צריך להכניס אותו ולגעת בו עכשיו.</translation>
 <translation id="679486139907144816">‏כדי להיכנס לאתר הזה עם מפתח גישה, צריך להפעיל את Windows Hello בהגדרות. אחר כך יש לחזור לאתר הזה ולנסות שוב.</translation>
 <translation id="6795371939514004514">בעזרת סריקות אוטומטיות אפשר לעבור אוטומטית בין פריטים שמופיעים במסך. כשפריט כלשהו מודגש, מקישים על "בחירה" כדי להפעיל אותו.</translation>
@@ -9645,6 +9653,7 @@
 <translation id="8008356846765065031">האינטרנט מנותק. יש לבדוק את חיבור האינטרנט.</translation>
 <translation id="8008704580256716350">קובץ חשוד חסום</translation>
 <translation id="8009225694047762179">ניהול סיסמאות</translation>
+<translation id="8010081455002666927">זיהוי אוטומטי</translation>
 <translation id="8011372169388649948">הסימנייה '<ph name="BOOKMARK_TITLE" />' הועברה.</translation>
 <translation id="8012188750847319132">‏מקש Caps Lock</translation>
 <translation id="8012463809859447963">פרטי הרשת לשיתוף אינטרנט מיידי בין מכשירים</translation>
@@ -11053,6 +11062,7 @@
 <translation id="9009707268312089299">‏יובאו מ-Windows</translation>
 <translation id="9009708085379296446">האם התכוונת לשנות את הדף הזה?</translation>
 <translation id="9010845741772269259">הוספת אמצעי תשלום</translation>
+<translation id="901087299639956505">מצב מאוזן</translation>
 <translation id="9011163749350026987">הצגה תמיד של הסמל</translation>
 <translation id="9011262023858991985">הכרטיסייה הזו מועברת</translation>
 <translation id="9011393886518328654">נתוני גרסה</translation>

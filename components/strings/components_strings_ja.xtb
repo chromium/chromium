@@ -76,6 +76,7 @@
 <translation id="1142713751288681188">用紙の種類</translation>
 <translation id="1144136880160289237">アクティブなトピックはまだありません</translation>
 <translation id="1149617035358809955">お支払い情報を入力できるよう、本人確認を行ってください</translation>
+<translation id="115055975835908275">プロモーションを閉じる</translation>
 <translation id="1150565364351027703">サングラス</translation>
 <translation id="1150979032973867961">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は、ご使用のパソコンのオペレーティング システムによって信頼されているものではありません。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="1151972924205500581">パスワードを入力してください</translation>
@@ -158,6 +159,7 @@
 <translation id="1270328905573953738">引越し、移転</translation>
 <translation id="1270502636509132238">受け取り方法</translation>
 <translation id="1273592791152866347">価格トラッキングをオフにしました</translation>
+<translation id="1277711244058668002">高評価ボタンです。Enter キーを押すとフィードバック フォームが開き、この提案をどのように気に入ったかを記入して送信できます</translation>
 <translation id="127777513559587977">トーク番組</translation>
 <translation id="1281476433249504884">スタッカー 1</translation>
 <translation id="1281536351321444151">次回からこの IBAN を自動入力するには、Google アカウントに保存してください</translation>
@@ -456,6 +458,7 @@
 <translation id="180757923930449935">（64 ビット エミュレーション）</translation>
 <translation id="180991881384371158">CVC コードはカードの裏面に記載されています。署名ボックスの右上にある末尾 3 桁のコードです。</translation>
 <translation id="1810391395243432441">画面ロックを使用したパスワードの保護</translation>
+<translation id="1810597570737826742">{count,plural, =1{{count} 個中 {position} 番目の追加住所項目}other{{count} 個中 {position} 番目の追加住所項目}}</translation>
 <translation id="1812527064848182527">横向き</translation>
 <translation id="1812975699435941848">健康教育、医療トレーニング</translation>
 <translation id="1816436748874040213">共有タブのスクロールとズームを要求できる</translation>
@@ -663,6 +666,7 @@
 <translation id="2188375229972301266">多穴パンチ（下）</translation>
 <translation id="2194856509914051091">留意事項</translation>
 <translation id="2197398642355049178">トピック</translation>
+<translation id="2200678913752027654">低評価ボタンです。Enter キーを押すとフィードバック フォームが開き、この提案を気に入らない理由を記入して送信できます</translation>
 <translation id="2202627062836089804">カードの裏面</translation>
 <translation id="2204482073374652408">更新が完了しました。</translation>
 <translation id="2207770355672215546">すべてのカードで常に許可</translation>
@@ -868,6 +872,7 @@
 <translation id="2565789370591907825">キーボードのロックと使用</translation>
 <translation id="2570734079541893434">設定を管理</translation>
 <translation id="257136025287118539">管理者がファイルを <ph name="CLOUD_PROVIDER" />に移動しています。ファイルの変更はアップロードの完了後に行うことができます。</translation>
+<translation id="2571488850200220306">セキュリティ確保の目的で、デバイスの OS、ブラウザのバージョン、インストールされているソフトウェアも確認される可能性があります</translation>
 <translation id="2573170131138724450">テレビ</translation>
 <translation id="257674075312929031">グループ化</translation>
 <translation id="2586657967955657006">クリップボード</translation>
@@ -1003,6 +1008,7 @@
 <translation id="2903493209154104877">住所</translation>
 <translation id="290376772003165898"><ph name="LANGUAGE" />のページではない場合</translation>
 <translation id="2905107382358353958">新しいお支払い設定に関するアラート</translation>
+<translation id="2909693957408648848">プロモーション</translation>
 <translation id="2909946352844186028">ネットワークの変更が検出されました。</translation>
 <translation id="2911255567212929079">機械学習、人工知能</translation>
 <translation id="2911973620368911614">ジョブ管理ユーザー ID</translation>
@@ -2585,6 +2591,7 @@
 <translation id="5887687176710214216">最終アクセス日: 昨日</translation>
 <translation id="5895138241574237353">再起動</translation>
 <translation id="5895187275912066135">発行日</translation>
+<translation id="5898767305816764989">高評価ボタンです。Enter キーを押すとフィードバック フォームが開き、<ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> をどのように気に入ったかを記入して送信できます</translation>
 <translation id="5901630391730855834">黄</translation>
 <translation id="5903264686717710770">タイトル:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" />（同期済み）</translation>
@@ -2773,6 +2780,7 @@
 <translation id="6240964651812394252">お使いのオペレーティング システムで Google パスワード マネージャーを使用するには、Chrome を再起動してパソコンのパスワード マネージャーへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
 <translation id="6241121617266208201">候補を非表示にする</translation>
 <translation id="624499991300733384">印刷コンポジター サービス</translation>
+<translation id="6246868321321344665">仕事用プロファイルと個人用プロファイルの両方の閲覧データ（パスワードや履歴など）が組織によって確認される可能性があります</translation>
 <translation id="6250932670816326647">バス、ボディ商品</translation>
 <translation id="6251906504834538140">{0,plural, =1{ファイルの移動がブロックされています}other{<ph name="FILE_COUNT" /> 個のファイルの移動がブロックされています}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome でダウンロードしたファイルを管理します</translation>
@@ -3317,6 +3325,7 @@
 詳細:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">管理者からのメッセージ:「<ph name="CUSTOM_MESSAGE" />」</translation>
+<translation id="7255540419660272073">低評価ボタンです。Enter キーを押すとフィードバック フォームが開き、<ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> を気に入らない理由を記入して送信できます</translation>
 <translation id="7256634549594854023">背面トレイ</translation>
 <translation id="7257453341537973799">キャリア設計、プランニング</translation>
 <translation id="725866823122871198">パソコンの日時（<ph name="DATE_AND_TIME" />）が正しくないため、<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> へのプライベート接続を確立できません。</translation>
@@ -4313,6 +4322,7 @@
 <translation id="9101450247048146228">カメラの使用と移動（<ph name="CAMERAS_COUNT" />）</translation>
 <translation id="9101630580131696064">トレイ 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> では通常、暗号化して情報を保護しています。今回、Chromium から <ph name="SITE" /> への接続試行時に、このウェブサイトからいつもとは異なる誤った認証情報が返されました。悪意のあるユーザーが <ph name="SITE" /> になりすまそうとしているか、Wi-Fi ログイン画面で接続が中断された可能性があります。データのやり取りが行われる前に Chromium によって接続が停止されたため、情報は引き続き保護されています。</translation>
+<translation id="9107199998619088551">プロファイルは <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="9107467864910557787">ご使用のブラウザは <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="91108059142052966">管理者のポリシーによって、機密コンテンツが表示されているときは、<ph name="APPLICATION_TITLE" /> との画面共有が無効になります</translation>
 <translation id="9114524666733003316">カードを確認しています…</translation>

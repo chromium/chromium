@@ -458,6 +458,7 @@
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">आपका सीवीसी आपके कार्ड के पीछे वाले हिस्से पर होता है. यह सिग्नेचर बॉक्स के ऊपर दाईं ओर मौजूद, आखिर के तीन अंकों का कोड होता है.</translation>
 <translation id="1810391395243432441">स्क्रीन लॉक की मदद से पासवर्ड सुरक्षित रखें</translation>
+<translation id="1810597570737826742">{count,plural, =1{{count} प्लस अड्रेस में {position} अड्रेस}one{{count} प्लस अड्रेस में {position} अड्रेस}other{{count} प्लस अड्रेस में {position} अड्रेस}}</translation>
 <translation id="1812527064848182527">लैंडस्केप</translation>
 <translation id="1812975699435941848">स्वास्थ्य शिक्षा और मेडिकल ट्रेनिंग</translation>
 <translation id="1816436748874040213">साइट को शेयर किए गए टैब में स्क्रोल और ज़ूम करने की अनुमति का अनुरोध करें</translation>

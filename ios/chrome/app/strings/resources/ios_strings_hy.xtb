@@ -127,6 +127,7 @@
 <translation id="1622717322707146952">Ընտրեք «Ավելացնել Google Օրացույցում» կամ «Ավելացնել Apple Calendar-ում»։</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> կրկնվող գաղտնաբառ</translation>
 <translation id="1636234353664774105">Գծել երթուղիներ դեպի նպատակակետ քայլ առ քայլ ցուցումների միջոցով՝ օգտագործելով նավիգացիան</translation>
+<translation id="1641068175940982148">Բացել <ph name="GROUP_TITLE" /> խումբը, պարունակում է <ph name="NUMBER_OF_TABS" /> ներդիր, <ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">Անվտանգ դիտարկում</translation>
 <translation id="1641316430523156212">Հետևել</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
@@ -402,12 +403,14 @@
 <translation id="2952246431280799028">Հպեք հասցեի և պահեք։</translation>
 <translation id="2952278131021475699">Որոնում տեսախցիկի միջոցով</translation>
 <translation id="2958718410589002129">Գաղտնաբառեր</translation>
+<translation id="2963044753825419640">Թույլ տվեք հավելվածներին ու կայքերին ավտոմատ արդիացնել ընթացիկ հաշիվները՝ հասանելիության դեպքում մուտքի բանալիներն օգտագործելու համար</translation>
 <translation id="2964349545761222050">Երրորդ կողմի քուքիների արգելափակում</translation>
 <translation id="2965328226365382335">Վերջին 15 րոպեն</translation>
 <translation id="2969979262385602596">Չհաջողվեց մուտք գործել: Փորձեք մի փոքր ուշ:</translation>
 <translation id="2975121486251958312">Հասանելի է միայն ինկոգնիտո ռեժիմը</translation>
 <translation id="2982481275546140226">Մաքրել տվյալները</translation>
 <translation id="298306318844797842">Ավելացնել վճարման եղանակ...</translation>
+<translation id="2984370252102312100">Բաց ներդիրներ և ներդիրների խմբեր</translation>
 <translation id="2989805286512600854">Բացել նոր ներդիրում</translation>
 <translation id="300455800299409273">Թաքցնել «Շարունակել այս ներդիրի դիտումը» պարամետրը</translation>
 <translation id="3010025794097054078">Պաշտպանեք ձեզ տվյալների արտահոսքից, վտանգավոր կայքերից և այլ խնդիրներից։</translation>
@@ -758,6 +761,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Միայն այս սարքում, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="4766112107778026136">Discover և բաժանորդագրություններ</translation>
+<translation id="4769198578611055647">Սրա օգնությամբ կարող եք օգտագործել պահված մուտքի բանալիները ցանկացած սարքում</translation>
 <translation id="4775879719735953715">Կանխադրված դիտարկիչ</translation>
 <translation id="4779732376610430319">Անցնել կարգավորումներ...</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -896,6 +900,7 @@
 <translation id="5415289094036440596">Մուտքի բանալիներով հնարավոր չէ կիսվել</translation>
 <translation id="5416022985862681400">Վերջին 7 օրը</translation>
 <translation id="5416455648658732408">Տեղափոխել ներդիրների խումբ</translation>
+<translation id="5419613306346207284">Ներդիրների խմբեր բոլոր սարքերից</translation>
 <translation id="5423269318075950257">Հետևեք գներին</translation>
 <translation id="5431252637281434233">Դուք դուրս կգաք հաշվից</translation>
 <translation id="543338862236136125">Փոխել գաղտնաբառը</translation>
@@ -1039,6 +1044,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6067849159007176401">Միացրեք Ապահով դիտարկումը</translation>
 <translation id="607620096698446287">Չհաջողվեց վերբեռնել <ph name="FILENAME" /> ֆայլը (<ph name="FILESIZE" />)</translation>
 <translation id="6084848228346514841">Ընտրեք ներդիրներ</translation>
+<translation id="6089212833343035912">Google գաղտնաբառերի կառավարչի PIN կոդ</translation>
 <translation id="6100617279104942061">Դուք մուտք եք գործել որպես <ph name="USER_EMAIL" />։ Բացում է կարգավորումները։</translation>
 <translation id="6103540626693881831">Գաղտնագրում սարքում</translation>
 <translation id="6119050551270742952">Ընթացիկ կայքէջը ինկոգնիտո ռեժիմում է բացված</translation>
@@ -1259,6 +1265,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7022197654033719543">Տեղեկություններ կայքի մասին</translation>
 <translation id="7029809446516969842">Գաղտնաբառեր</translation>
 <translation id="704692552158601232">Դիտարկիչի կանխադրված հավելված</translation>
+<translation id="7051147526307793383">Թույլատրել մուտքի բանալիների ավտոմատ արդիացումը</translation>
 <translation id="7055240621761583113">Ինքնալրացնել գաղտնաբառը</translation>
 <translation id="7063811929043357292">Ձեր հաշիվը կառավարում է ձեր ծնողը։
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>

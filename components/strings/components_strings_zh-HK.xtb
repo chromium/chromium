@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">搬屋和搬遷</translation>
 <translation id="1270502636509132238">取貨方式</translation>
 <translation id="1273592791152866347">已關閉價格追蹤</translation>
+<translation id="1277711244058668002">鍾意掣，㩒 Enter 鍵就可以俾意見，表示你鍾意呢個建議</translation>
 <translation id="127777513559587977">電視清談節目</translation>
 <translation id="1281476433249504884">堆疊器 1</translation>
 <translation id="1281536351321444151">如要下次自動填入此 IBAN，請先儲存至 Google 帳戶</translation>
@@ -456,6 +457,7 @@
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">CVC 喺信用卡嘅背面，即係簽名欄右上方嘅最後 3 位數字。</translation>
 <translation id="1810391395243432441">使用螢幕鎖定功能保護密碼</translation>
+<translation id="1810597570737826742">{count,plural, =1{第 {position} 個附加地址，總共有 {count} 個}other{第 {position} 個附加地址，總共有 {count} 個}}</translation>
 <translation id="1812527064848182527">橫向</translation>
 <translation id="1812975699435941848">健康教育和醫療培訓</translation>
 <translation id="1816436748874040213">可要求捲動和縮放已分享的分頁</translation>
@@ -663,6 +665,7 @@
 <translation id="2188375229972301266">多孔 (底部)</translation>
 <translation id="2194856509914051091">考慮因素</translation>
 <translation id="2197398642355049178">您的主題</translation>
+<translation id="2200678913752027654">唔鍾意掣，㩒 Enter 鍵就可以打開意見表格，詳細解釋唔鍾意呢個建議嘅原因</translation>
 <translation id="2202627062836089804">信用卡背面</translation>
 <translation id="2204482073374652408">更新完成！</translation>
 <translation id="2207770355672215546">一律允許 (不限卡)</translation>
@@ -2584,6 +2587,7 @@
 <translation id="5887687176710214216">上次瀏覽日期：昨天</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5895187275912066135">發行日期</translation>
+<translation id="5898767305816764989">鍾意掣，㩒 Enter 鍵就可以俾意見，表示你鍾意「<ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />」</translation>
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5903264686717710770">標題：</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (已同步)</translation>
@@ -3316,6 +3320,7 @@
 其他詳細資料：
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">管理員訊息：「<ph name="CUSTOM_MESSAGE" />」</translation>
+<translation id="7255540419660272073">唔鍾意掣，㩒 Enter 鍵就可以打開意見表格，詳細解釋唔鍾意「<ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />」嘅原因</translation>
 <translation id="7256634549594854023">後端托盤</translation>
 <translation id="7257453341537973799">就業資源和職業生涯規劃</translation>
 <translation id="725866823122871198">您電腦的日期和時間 (<ph name="DATE_AND_TIME" />) 不正確，因此無法建立私人連線至 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />。</translation>

@@ -158,6 +158,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1270328905573953738">Muutto ja muuttokuljetukset</translation>
 <translation id="1270502636509132238">Noutotapa</translation>
 <translation id="1273592791152866347">Hintaseuranta pois päältä</translation>
+<translation id="1277711244058668002">Tykkään-painike, paina Enter lähettääksesi palautetta, että pidät tästä ehdotuksesta</translation>
 <translation id="127777513559587977">Television keskusteluohjelmat</translation>
 <translation id="1281476433249504884">Pinoaja 1</translation>
 <translation id="1281536351321444151">Jos haluat täyttää IBAN-numeron automaattisesti seuraavalla kerralla, tallenna se Google-tilillesi</translation>
@@ -456,6 +457,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="180757923930449935">(64-bittinen emuloitu)</translation>
 <translation id="180991881384371158">CVC on kortin takaosassa. Koodi on allekirjoituskentän oikeassa yläkulmassa olevat kolme viimeistä numeroa.</translation>
 <translation id="1810391395243432441">Suojaa salasanoja näytön lukituksella</translation>
+<translation id="1810597570737826742">{count,plural, =1{{position}/{count} lisäosoite}other{{position}/{count} lisäosoitetta}}</translation>
 <translation id="1812527064848182527">vaakasuunta</translation>
 <translation id="1812975699435941848">Terveystieto ja lääketieteellinen koulutus</translation>
 <translation id="1816436748874040213">Saa pyytää vierittämään ja zoomaamaan jaettuja välilehtiä</translation>
@@ -663,6 +665,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2188375229972301266">Useita reikiä alareunassa</translation>
 <translation id="2194856509914051091">Huomioitavaa</translation>
 <translation id="2197398642355049178">Omat aiheesi</translation>
+<translation id="2200678913752027654">En tykkää ‐painike, paina Enter avataksesi lomakkeen, jolla voit antaa yksityiskohtaista palautetta siitä, miksi et tykkää tästä ehdotuksesta</translation>
 <translation id="2202627062836089804">kortin takaosa</translation>
 <translation id="2204482073374652408">Päivitys valmis!</translation>
 <translation id="2207770355672215546">Salli aina, millä tahansa kortilla</translation>
@@ -2586,6 +2589,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5887687176710214216">Avattu viimeksi eilen</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
 <translation id="5895187275912066135">Myönnetty</translation>
+<translation id="5898767305816764989">Tykkään-painike, paina Enter lähettääksesi palautetta, että pidät tästä: <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Keltainen</translation>
 <translation id="5903264686717710770">Otsikko:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synkronoitu)</translation>
@@ -3318,6 +3322,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 Lisätietoja:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Järjestelmänvalvojan viesti: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">En tykkää ‐painike, paina Enter avataksesi lomakkeen, jolla voit antaa yksityiskohtaista palautetta siitä, miksi et tykkää tästä: <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Takalokero</translation>
 <translation id="7257453341537973799">Ammatinvalinta ja urasuunnittelu</translation>
 <translation id="725866823122871198">Verkkotunnukseen <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ei voi muodostaa salattua yhteyttä, koska tietokoneesi aika ja päivämäärä (<ph name="DATE_AND_TIME" />) ovat virheelliset.</translation>

@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">Gunakan mikrofon dan kamera anda</translation>
 <translation id="1005333234656240382">Dayakan penyahpepijatan ADB?</translation>
 <translation id="1005671386794704751">Ros</translation>
+<translation id="1005919400326853998">Lihat butiran sijil untuk <ph name="CERT_NAME" /> dalam dialog baharu</translation>
 <translation id="1006033052970139968">Akses mikrofon dibenarkan untuk apl, laman web dengan kebenaran mikrofon dan perkhidmatan sistem</translation>
 <translation id="1006873397406093306">Sambungan ini boleh membaca dan menukar data anda pada tapak. Anda boleh mengawal tapak yang boleh diakses oleh sambungan itu.</translation>
 <translation id="1007057452468855774">Hidupkan Google Play Store</translation>
@@ -2461,6 +2462,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="272741954544380994">Cari Imej dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Jangan ingatkan saya lagi</translation>
 <translation id="2727712005121231835">Saiz Sebenar</translation>
+<translation id="2727713483500953825">Pilih imej/teks untuk membuat carian dengan Lens</translation>
 <translation id="2727744317940422214">Maaf, kesilapan telah berlaku. Sila failkan maklum balas dengan #bruschetta dalam perihalan. Kod ralat ialah <ph name="ERROR" />. Pembersihan gagal dilaksanakan, anda mungkin perlu membuat pembersihan secara manual.</translation>
 <translation id="2729327310379176711">Chrome sedang mencari cara baharu untuk mengurangkan penjejakan dan memastikan anda lebih selamat semasa anda menyemak imbas. Chrome juga <ph name="ESTIMATE_INTERESTS_LINK" /> dan membenarkan anda mengurusnya. Kemudian, laman yang anda lawati boleh menanyakan Chrome tentang minat anda untuk memaparkan iklan kepada anda.</translation>
 <translation id="2729577602370119849">Akses dan urus pencetak dengan mudah</translation>
@@ -2753,6 +2755,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2926708162326352948">Tema dikemaskinikan kepada imej yang dimuat naik</translation>
 <translation id="2927017729816812676">Storan Cache</translation>
 <translation id="2928795416630981206">Dibenarkan untuk menjejak kedudukan kamera anda</translation>
+<translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome telah mengalih keluar kebenaran daripada 1 laman}other{Chrome telah mengalih keluar kebenaran daripada {NUM_SITES} laman}}</translation>
 <translation id="2931157624143513983">Muatkan mengikut kawasan boleh cetak</translation>
 <translation id="2931342457001070961">Tiada mikrofon yang disambungkan</translation>
 <translation id="2932085390869194046">Cadangkan Kata Laluan...</translation>
@@ -3201,6 +3204,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3269093882174072735">Muatkan imej</translation>
 <translation id="326911502853238749">Jangan tunjukkan <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Hidupkan penyegerakan untuk menyandarkan bahan anda dan menggunakan bahan itu pada mana-mana peranti</translation>
+<translation id="3269209112443570745">Baharu! Cara mudah untuk mencari sesuatu pada skrin anda</translation>
 <translation id="3269612321104318480">Hijau kebiruan muda dan putih</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fail}other{# fail}}</translation>
 <translation id="326999365752735949">Memuat turun beza</translation>
@@ -3671,11 +3675,13 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3621202678540785336">Input</translation>
 <translation id="3621807901162200696">Bantu kami memperbaik ciri dan prestasi Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{satu apl}other{# apl}}</translation>
+<translation id="3622716124581627104">Kenal pasti perkara atau tempat dan salin atau terjemahkan teks. Apabila anda menggunakan Google Lens, tangkapan skrin halaman dihantar kepada Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">Warna denyaran skrin</translation>
 <translation id="362333465072914957">Menunggu CA mengeluarkan sijil</translation>
 <translation id="3623598555687153298">Tindakan ini akan memadamkan <ph name="TOTAL_USAGE" /> daripada data yang disimpan oleh laman yang dipaparkan</translation>
 <translation id="3624567683873126087">Buka kunci peranti dan log masuk ke Google Account</translation>
 <translation id="3624583033347146597">Buat pilihan kuki pihak ketiga anda</translation>
+<translation id="3625345586754200168">Cuba Lens</translation>
 <translation id="3625481642044239431">Fail tidak sah dipilih. Cuba lagi.</translation>
 <translation id="3626296069957678981">Gunakan bateri Dell yang serasi untuk mengecas Chromebook ini.</translation>
 <translation id="3627320433825461852">Tinggal kurang 1 minit</translation>
@@ -4081,6 +4087,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="3894983081771074056">Gelagat papan kekunci dan tetikus, pilihan bahasa dan banyak lagi</translation>
 <translation id="3895076768659607631">&amp;Urus Enjin Carian...</translation>
 <translation id="3895090224522145010">Nama pengguna Kerberos</translation>
+<translation id="3895097816015686240">Buka tetingkap dan tab anda sebelum ini untuk meneruskan dari tempat anda berhenti dengan mudah</translation>
 <translation id="389521680295183045">Laman boleh meminta untuk mengetahui waktu anda aktif menggunakan peranti</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{satu imej}other{# imej}}</translation>
 <translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> anda dibina untuk permainan. Seterusnya apl Teroka akan dibuka, yang membolehkan anda mengakses ratusan permainan terbaharu, melihat tawaran permainan dan menemukan ciri permainan yang disertakan dengan peranti anda.</translation>
@@ -4832,6 +4839,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4450974146388585462">Diagnosis</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> mengesan TPM aktif yang dapat menyimpan data anda dengan lebih selamat.</translation>
 <translation id="4452898361839215358">atau pilih PPD. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Cari sebarang imej atau teks dengan Lens</translation>
 <translation id="4453430595102511050">Sentuh penderia cap jari di penjuru kanan sebelah atas papan kekunci anda. Data cap jari anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="4453946976636652378">Cari <ph name="SEARCH_ENGINE_NAME" /> atau taipkan URL</translation>
 <translation id="4457472090507035117">Pilih suara semasa:</translation>
@@ -5315,6 +5323,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4823484602432206655">Baca dan tukar pengguna dan tetapan peranti</translation>
 <translation id="4824037980212326045">Sandaran dan pemulihan Linux</translation>
 <translation id="4824958205181053313">Batalkan penyegerakan?</translation>
+<translation id="4825462365587146530">Ketahui lebih lanjut tentang Gedung Akar Chrome dalam tab baharu.</translation>
 <translation id="4825532258163983651">Tidak dapat memadamkan kunci laluan</translation>
 <translation id="4827134188176577524">Gedung Akar Chrome mengandungi sijil daripada pihak berkuasa sijil
       Chrome Root Program dan masih disemak secara berterusan.</translation>
@@ -6990,6 +6999,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6059276912018042191">Tab Chrome baru-baru ini</translation>
 <translation id="6059652578941944813">Hierarki Sijil</translation>
 <translation id="6059925163896151826">Peranti USB</translation>
+<translation id="6060842547856900641">Buka Lens</translation>
 <translation id="6061408389284235459">Pemberitahuan telah dihantar kepada <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Buat Kod QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" />Suara yang serupa atau rakaman suara mungkin dapat mengakses hasil persendirian <ph name="SUPERVISED_USER_NAME" />. Untuk menjimatkan bateri, dalam tetapan Assistant <ph name="SUPERVISED_USER_NAME" />, anda boleh memilih untuk menghidupkan “Ok Google” hanya semasa peranti ini disambungkan kepada sumber kuasa.</translation>
@@ -11033,6 +11043,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8991766915726096402">Pemulihan Data Setempat</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Penggunaan memori - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Jika anda terlupa kata laluan <ph name="DEVICE_TYPE" />, anda masih boleh memulihkan data setempat anda. Anda perlu log masuk ke Google Account anda atau menggunakan pemulihan akaun.</translation>
+<translation id="8993198843374358393">Salin cincangan sijil untuk <ph name="CERT_NAME" /></translation>
 <translation id="8993737615451556423">Menyediakan kawalan untuk mempercepat, memperlahan dan menjeda suara membaca</translation>
 <translation id="899384117894244799">Alih keluar pengguna yang disekat</translation>
 <translation id="8993853206419610596">Kembangkan semua permintaan</translation>
@@ -11240,6 +11251,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="9128317794749765148">Persediaan tidak dapat diselesaikan</translation>
 <translation id="9128335130883257666">Buka halaman tetapan untuk <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="9128870381267983090">Sambung ke rangkaian</translation>
+<translation id="9129562557082598582">Eksport semua <ph name="CERT_GROUP" /></translation>
 <translation id="9130015405878219958">Mod tidak sah dimasukkan.</translation>
 <translation id="9130208109420587135">Edit nama kumpulan <ph name="NAME" /></translation>
 <translation id="9130364135697530260">Kandungan terbenam pada laman ini boleh menggunakan maklumat yang disimpan tentang anda</translation>

@@ -1214,6 +1214,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="184183613002882946">Nei, halda áfram með einn rofa</translation>
 <translation id="184273675144259287">Skipta Linux-forritunum og -skránum út fyrir eldra afrit</translation>
 <translation id="1842766183094193446">Ertu viss um að þú viljir kveikja á kynningarstillingu?</translation>
+<translation id="1843048149176045210">Afrita niðurhalstengil</translation>
 <translation id="1845060436536902492">Skjálesarinn í ChromeOS Flex, ChromeVox, er aðallega notaður af fólki sem er blint eða með lélega sjón til að lesa texta sem birtur er á skjánum með talgervli eða blindraletri. Ýttu á bilslána til að kveikja á ChromeVox. Þegar kveikt hefur verið á ChromeVox er þér boðið upp á stutta kynningu.</translation>
 <translation id="1845727111305721124">Mega spila hljóð</translation>
 <translation id="1846308012215045257">Ýttu á Ctrl og smelltu til að keyra <ph name="PLUGIN_NAME" /></translation>
@@ -1870,7 +1871,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2304820083631266885">Pláneta</translation>
 <translation id="2306794767168143227">Vista í <ph name="BRAND" /> í þessu tæki</translation>
 <translation id="2307462900900812319">Stilla net</translation>
-<translation id="2307553512430195144">Ef þú samþykkir verður Google hjálparinn í biðstöðu þar til hann greinir „Ok, Google“ og greinir þegar <ph name="SUPERVISED_USER_NAME" /> talar með Voice Match.
+<translation id="2307553512430195144">Ef þú samþykkir verður Google-hjálparinn í biðstöðu þar til hann greinir „Ok, Google“ og greinir þegar <ph name="SUPERVISED_USER_NAME" /> talar með Voice Match.
     <ph name="BR" />
     Voice Match aðstoðar Google hjálpara við að þekkja rödd <ph name="SUPERVISED_USER_NAME" /> í <ph name="DEVICE_TYPE" /> og aðgreina hana frá öðrum röddum.
     <ph name="BR" />
@@ -3174,6 +3175,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3251714896659475029">Leyfa <ph name="SUPERVISED_USER_NAME" /> að opna Google hjálparann með því að segja: „Ok Google“</translation>
 <translation id="3251759466064201842">&lt;Ekki hluti af vottorði&gt;</translation>
 <translation id="325238099842880997">Settu stafrænar reglur til að hjálpa barninu þínu að læra heima, leika sér og skoða.</translation>
+<translation id="3253083398453405334">Láttu skjáinn blikka þegar tilkynningar berast</translation>
 <translation id="3253225298092156258">Ekki tiltækt</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Losaðu um geymslurými í <ph name="CLOUD_PROVIDER" /> til að afrita þessa skrá}one{Losaðu um geymslurými í <ph name="CLOUD_PROVIDER" /> til að afrita þessar skrár}other{Losaðu um geymslurými í <ph name="CLOUD_PROVIDER" /> til að afrita þessar skrár}}</translation>
 <translation id="3253448572569133955">Óþekktur reikningur</translation>
@@ -3670,6 +3672,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3621202678540785336">Inntak</translation>
 <translation id="3621807901162200696">Hjálpa til við að bæta eiginleika og afköst ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{forrit}one{# forrit}other{# forrit}}</translation>
+<translation id="3622820753353315928">Litur blikks á skjá</translation>
 <translation id="362333465072914957">Bíður eftir útgáfu vottorðs frá útgefanda</translation>
 <translation id="3623598555687153298">Þetta eyðir <ph name="TOTAL_USAGE" /> af gögnum sem vefsvæði sem eru birt geyma</translation>
 <translation id="3624567683873126087">Opnaðu tækið og skráðu þig inn á Google-reikning</translation>
@@ -7173,6 +7176,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6197128521826316819">Búa til QR-kóða fyrir þessa síðu</translation>
 <translation id="6198223452299275399">Strjúktu á milli síðna</translation>
 <translation id="6198252989419008588">Breyta PIN-númeri</translation>
+<translation id="61988015556954366">Skjár blikkar</translation>
 <translation id="6200047250927636406">Fleygja skrá</translation>
 <translation id="6200151268994853226">Stjórna viðbót</translation>
 <translation id="6201608810045805374">Fjarlægja þennan reikning?</translation>
@@ -7530,6 +7534,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> skrár</translation>
 <translation id="6469557521904094793">Kveikja á farsímakerfi</translation>
 <translation id="6469702164109431067">Aðgangsorð og aðgangslyklar</translation>
+<translation id="6470120577693311302">Flass-tilkynningar</translation>
 <translation id="6470823736074966819">Þagga tilkynningar</translation>
 <translation id="6472893788822429178">Sýna heimahnapp</translation>
 <translation id="6473315466413288899">Veldu kost</translation>
@@ -7964,6 +7969,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6790820461102226165">Bæta notanda við...</translation>
 <translation id="6793610798874309813">PIN-númerið getur verið 4 stafir eða lengra</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> afritað á klippiborð</translation>
 <translation id="6794511157503068">Ef aðgangslykillinn þinn fyrir <ph name="APP_NAME" /> er á USB-öryggislykli skaltu stinga honum inn og virkja lykilinn</translation>
 <translation id="679486139907144816">Til að geta skráð þig inn á þetta vefsvæði með aðgangslykli þarftu að kveikja á Windows Hello í stillingunum. Komdu svo aftur á þetta vefsvæði og reyndu aftur.</translation>
 <translation id="6795371939514004514">Notaðu sjálfvirka skönnun til að fletta sjálfkrafa á milli atriða á skjánum. Ýttu á „Velja“ til að virkja atriði þegar atriðið er yfirstrikað.</translation>
@@ -11307,7 +11313,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="9180380851667544951">Vefsvæði getur deilt skjánum þínum</translation>
 <translation id="9180847522826713506">Til að skoða aðgangsorð eða bæta við glósu um það skaltu smella á lykilstáknið</translation>
 <translation id="9182556968660520230">Ekki leyfa vefsvæðum að spila varið efni</translation>
-<translation id="9183302530794969518">Google skjöl</translation>
+<translation id="9183302530794969518">Google-skjöl</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Forrit}one{# forrit}other{# forrit}}</translation>
 <translation id="9186963452600581158">Skráðu þig inn með Google reikningi barnsins</translation>
 <translation id="9187967020623675250">Lyklarnir passa ekki saman. Ýttu á hvaða lykil sem er til að <ph name="RESPONSE" />.</translation>

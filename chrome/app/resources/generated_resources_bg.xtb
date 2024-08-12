@@ -2456,6 +2456,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="272741954544380994">Търсене на изображението с <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Без повторно напомняне</translation>
 <translation id="2727712005121231835">Действителен размер</translation>
+<translation id="2727713483500953825">Изберете изображения/текст, за да търсите с Обектив</translation>
 <translation id="2727744317940422214">За съжаление, нещо се обърка. Моля, изпратете отзиви, като включите #bruschetta в описанието. Кодът на грешката е <ph name="ERROR" />. Изчистването не бе успешно. Може да се наложи да го направите ръчно.</translation>
 <translation id="2729327310379176711">Chrome намира нови начини да намали проследяването и да ви осигури още по-голяма безопасност, докато сърфирате. Също така браузърът <ph name="ESTIMATE_INTERESTS_LINK" /> и ви дава възможност да ги управлявате. След това посещаваните от вас сайтове могат да поискат от Chrome интересите ви, за да ви показват реклами.</translation>
 <translation id="2729577602370119849">Лесно осъществявайте достъп до принтерите и ги управлявайте</translation>
@@ -3669,6 +3670,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3623598555687153298">Съхраняваните от показаните сайтове данни в размер на <ph name="TOTAL_USAGE" /> ще бъдат изтрити</translation>
 <translation id="3624567683873126087">Отключване на устройството и влизане в профила в Google</translation>
 <translation id="3624583033347146597">Изберете предпочитанията си за „бисквитките“ на трети страни</translation>
+<translation id="3625345586754200168">Изпробвайте Обектив</translation>
 <translation id="3625481642044239431">Избран е невалиден файл. Опитайте отново.</translation>
 <translation id="3626296069957678981">За да заредите този Chromebook, използвайте съвместима батерия от Dell.</translation>
 <translation id="3627320433825461852">Остава по-малко от 1 минута</translation>
@@ -4826,6 +4828,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4450974146388585462">Диагностициране</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> откри активен TPM, който може да съхранява данните ви по-сигурно.</translation>
 <translation id="4452898361839215358">или изберете PPD файл. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Търсете изображения или текст с Обектив</translation>
 <translation id="4453430595102511050">Докоснете сензора за отпечатъци в горния десен ъгъл на клавиатурата. Данните за отпечатъка ви се съхраняват надеждно и никога не напускат устройството ви <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Търсете с(ъс) <ph name="SEARCH_ENGINE_NAME" /> или въведете URL адрес</translation>
 <translation id="4457472090507035117">Изберете текущия глас:</translation>
@@ -6985,6 +6988,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6059276912018042191">Скорошни раздели на Chrome</translation>
 <translation id="6059652578941944813">Йерархия на сертификатите</translation>
 <translation id="6059925163896151826">USB устройства</translation>
+<translation id="6060842547856900641">Отваряне на Обектив</translation>
 <translation id="6061408389284235459">До <ph name="DEVICE_NAME" /> бе изпратено известие</translation>
 <translation id="6063284707309177505">Създаване на QR код</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Забележка<ph name="END_BOLD" />: Възможно е да бъде осъществен достъп до персоналните резултати на <ph name="SUPERVISED_USER_NAME" /> и от човек с подобен глас или чрез запис. С цел икономия на батерията от настройките на Асистент в профила на <ph name="SUPERVISED_USER_NAME" /> можете да изберете „Ok Google“ да активира услугата само когато устройството е свързано с източник на захранване.</translation>

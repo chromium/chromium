@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">ቤት እና ሰፈር መቀየር</translation>
 <translation id="1270502636509132238">የመውሰጃ ስልት</translation>
 <translation id="1273592791152866347">የዋጋ ክትትል ጠፍቷል</translation>
+<translation id="1277711244058668002">አሪፍ አዝራር፣ ይህን ጥቆማ እንደወደዱት ግብረመልስ ለማስገባት አስገባን ይጫኑ</translation>
 <translation id="127777513559587977">የቲቪ የጭውውት ትርዒቶች</translation>
 <translation id="1281476433249504884">ቁልል 1</translation>
 <translation id="1281536351321444151">በቀጣዩ ጊዜ ይህንን አይቢኤኤን በራስ-ሙላ ለመሙላት በGoogle መለያዎ ውስጥ ያስቀምጡት</translation>
@@ -456,6 +457,7 @@
 <translation id="180757923930449935">(64-ቢት የተመሳሰለ)</translation>
 <translation id="180991881384371158">ካርድ ማረጋገጫ ኮድዎ በካርድዎ ጀርባ ላይ ነው። ከፊርማ ሳጥኑ አናት በስተቀኝ በኩል የመጨረሻዎቹ 3 አሃዞች ናቸው።</translation>
 <translation id="1810391395243432441">በማያ ገፅ መቆለፊያዎ ለይለፍ ቃላት ጥበቃ ያድርጉ</translation>
+<translation id="1810597570737826742">{count,plural, =1{{position} ከ{count} ተጨማሪ አድራሻዎች}one{{position} ከ{count} ተጨማሪ አድራሻ}other{{position} ከ{count} ተጨማሪ አድራሻዎች}}</translation>
 <translation id="1812527064848182527">የመሬት ገጽታ</translation>
 <translation id="1812975699435941848">የጤና ትምህርት እና የህክምና ስልጠና</translation>
 <translation id="1816436748874040213">የተጋሩ ትሮችን ለማሸብለል እና ለማጉላት መጠየቅ ይችላል</translation>
@@ -663,6 +665,7 @@
 <translation id="2188375229972301266">በርካታ ብስ ግርጌ</translation>
 <translation id="2194856509914051091">ከግምት ውስጥ መግባት ያለባቸው ነገሮች</translation>
 <translation id="2197398642355049178">ርዕሶችዎ</translation>
+<translation id="2200678913752027654">ደባሪ ነው አዝራር፣ ይህን ጥቆማ ለምን እንዳልወደዱት በዝርዝር የተቀመጠ ግብረመልስ ለማስገባት የሚሆን ቅጽ ለመክፈት አስገባን ይጫኑ</translation>
 <translation id="2202627062836089804">የካርድዎ በስተጀርባ</translation>
 <translation id="2204482073374652408">ማዘመን ጨርሷል!</translation>
 <translation id="2207770355672215546">በማንኛውም ካርድ ሁልጊዜ ፍቀድ</translation>
@@ -2584,6 +2587,7 @@
 <translation id="5887687176710214216">ለመጨረሻ ጊዜ የተጎበኘው ትላንትና</translation>
 <translation id="5895138241574237353">እንደገና ጀምር</translation>
 <translation id="5895187275912066135">በዚህ ቀን ቀርቧል</translation>
+<translation id="5898767305816764989">አሪፍ አዝራር፣ የሚወዱትን ግብረመልስ ለማስገባት አስገባን ይጫኑ፣ <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">ቢጫ</translation>
 <translation id="5903264686717710770">ርዕስ፡-</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ሰምሯል)</translation>
@@ -3316,6 +3320,7 @@
 ተጨማሪ ዝርዝሮች፦
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">የእርስዎ አስተዳዳሪ «<ph name="CUSTOM_MESSAGE" />» ይላል</translation>
+<translation id="7255540419660272073">ደባሪ ነው አዝራር፣ ለምን እንዳልወደዱት በዝርዝር የተቀመጠ ግብረመልስ ለማስገባት የሚሆን ቅጽ ለመክፈት አስገባን ይጫኑ፣ <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">የኋላ መሳቢያ</translation>
 <translation id="7257453341537973799">የስራ ፍለጋ መርጃዎች እና ዕቅድ ማውጣት</translation>
 <translation id="725866823122871198">የእርስዎ የኮምፒዩተር ቀን እና ሰዓት (<ph name="DATE_AND_TIME" />) ልክ ስላልሆኑ የግል ግንኙነት ወደ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ሊመሰረት አይችልም።</translation>

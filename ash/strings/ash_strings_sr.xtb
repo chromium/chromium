@@ -668,6 +668,7 @@
 <translation id="3439896670700055005">Поново учитај актуелну страницу без коришћења кешираног садржаја</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">Прилагодите миш</translation>
+<translation id="3444385531800624797">Резултати се учитавају</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3445925074670675829">Уређај са USB прикључком типа C</translation>
 <translation id="3454555520521576458">Променљиве величине</translation>
@@ -1213,6 +1214,7 @@
 <translation id="5253783950165989294">Повезани сте са уређајем под називом <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% батерије</translation>
 <translation id="5258528442992323769">Нема сачуваних радних површина</translation>
 <translation id="5260676007519551770">Радна површина 4</translation>
+<translation id="5265391159779542051">Резултати су учитани</translation>
 <translation id="5270547718570958938">Google календар</translation>
 <translation id="5277869901083657836">Укључи/искључи алатке за писаљку</translation>
 <translation id="5278086053818066789">Укључи или искључи ChromeVox (говорне повратне информације)</translation>
@@ -1508,6 +1510,7 @@
 <translation id="6210042900243040400">Повежите уређај <ph name="NAME" /> претходно сачуван на <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Направите снимак дела екрана или снимите видео дела екрана</translation>
 <translation id="621606890568890214">Прошири Google учионицу</translation>
+<translation id="6216759484154215561">Линк Сазнајте више је отворен у прегледачу</translation>
 <translation id="6220928844947387476">Сада истовремено можете да снимате себе и екран</translation>
 <translation id="622484624075952240">Надоле</translation>
 <translation id="6228457605945141550">Смањите осветљеност</translation>
@@ -2219,6 +2222,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">Крећите се унапред из доњег десног угла на покретач, траку за адресу, траку са обележивачима, веб-сајт који је отворен и преузимања</translation>
 <translation id="8792626944327216835">микрофон</translation>
+<translation id="8797381270745758905">Линк за поновни покушај је активиран</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Фолдер <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">„Помоћ“</translation>

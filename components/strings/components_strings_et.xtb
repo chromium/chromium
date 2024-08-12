@@ -158,6 +158,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1270328905573953738">Kolimine</translation>
 <translation id="1270502636509132238">Kättesaamisviis</translation>
 <translation id="1273592791152866347">Hinna jälgimine on välja lülitatud</translation>
+<translation id="1277711244058668002">Nupp Meeldib; vajutage sisestusklahvi, et esitada tagasiside, mille kohaselt soovitus meeldib teile</translation>
 <translation id="127777513559587977">Televestlussaated</translation>
 <translation id="1281476433249504884">Virnastaja 1</translation>
 <translation id="1281536351321444151">Selleks et kasutada järgmisel korral selle IBAN-i jaoks automaattäidet, salvestage see oma Google'i kontol</translation>
@@ -456,6 +457,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">CVC asub kaardi tagaküljel. See on allkirjaväljast paremal ülal asuv kolmekohaline kood.</translation>
 <translation id="1810391395243432441">Kaitske paroole oma ekraanilukuga</translation>
+<translation id="1810597570737826742">{count,plural, =1{{position} Plus Code'i aadress {count}-st}other{{position} Plus Code'i aadress {count}-st}}</translation>
 <translation id="1812527064848182527">horisontaalpaigutus</translation>
 <translation id="1812975699435941848">Arstiharidus ja meditsiiniõpe</translation>
 <translation id="1816436748874040213">Saab küsida luba jagatud vahelehtede kerimiseks ja suumimiseks</translation>
@@ -663,6 +665,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2188375229972301266">Mitu auku all</translation>
 <translation id="2194856509914051091">Olulised aspektid</translation>
 <translation id="2197398642355049178">Teie teemad</translation>
+<translation id="2200678913752027654">Nupp Ei meeldi; vajutage sisestusklahvi, et avada tagasiside vorm, kus saate üksikasjalikult põhjendada, miks soovitus teile ei meeldi</translation>
 <translation id="2202627062836089804">kaardi tagaküljel</translation>
 <translation id="2204482073374652408">Värskendamine lõpetatud!</translation>
 <translation id="2207770355672215546">Luba alati iga kaardiga</translation>
@@ -774,6 +777,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="239429038616798445">See tarneviis pole saadaval. Proovige mõnda teist tarneviisi.</translation>
 <translation id="2395840535409704129">Veesport</translation>
 <translation id="2396249848217231973">&amp;Võta kustutamine tagasi</translation>
+<translation id="2399344929880464793">See IBAN salvestati teie Google'i kontole, nii et saate seda kõigis Google'i teenustes kasutada.</translation>
 <translation id="2399868464369312507">Google Chrome üritab muuta makseviise.</translation>
 <translation id="2400600116338235695">Saab küsida luba jadaportidega ühenduse loomiseks</translation>
 <translation id="2404884497378469141">Proovige oma failid uuesti kopeerida</translation>
@@ -1045,6 +1049,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2967098518029543669">salvestage see oma Google'i kontole</translation>
 <translation id="297173220375858963">Kompaktkirjastamine</translation>
 <translation id="2972581237482394796">&amp;Tee uuesti</translation>
+<translation id="2974468223369775963">Seda IBAN-it ei saanud teie Google'i kontole salvestada. See salvestati selles seadmes hoopis Chrome'i. Kui kasutate seda IBAN-it järgmine kord, küsib Chrome teilt seda uuesti.</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, praegu valitud. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Lukustada ja kasutada teie klaviatuuri</translation>
 <translation id="2978824962390592855">Ooper</translation>
@@ -2585,6 +2590,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5887687176710214216">Viimati külastati eile</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>
 <translation id="5895187275912066135">Väljastamiskuupäev</translation>
+<translation id="5898767305816764989">Nupp Meeldib; vajutage sisestusklahvi, et esitada tagasiside, mille kohaselt <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> meeldib teile</translation>
 <translation id="5901630391730855834">Kollane</translation>
 <translation id="5903264686717710770">Pealkiri:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sünkroonitud)</translation>
@@ -3029,6 +3035,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6704458454638854812">Atribuut „custom_size“ on määratud, oodati nime „custom“.</translation>
 <translation id="6706005862292023715">Kardinad ja aknakatted</translation>
 <translation id="6706210727756204531">Ulatus</translation>
+<translation id="6706678697074905703">Seda IBAN-it ei saanud teie Google'i kontole salvestada. See salvestati selles seadmes hoopis Chrome'i.</translation>
 <translation id="6709133671862442373">Uudised</translation>
 <translation id="6710213216561001401">Eelmine</translation>
 <translation id="6710594484020273272">&lt;Sisestage otsingutermin&gt;</translation>
@@ -3317,6 +3324,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 Lisateave:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Teie administraator ütleb: „<ph name="CUSTOM_MESSAGE" />”</translation>
+<translation id="7255540419660272073">Nupp Ei meeldi; vajutage sisestusklahvi, et avada tagasiside vorm, kus saate üksikasjalikult põhjendada, miks <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> teile ei meeldi</translation>
 <translation id="7256634549594854023">Tagumine salv</translation>
 <translation id="7257453341537973799">Karjääriressursid ja -plaanimine</translation>
 <translation id="725866823122871198">Privaatset ühendust ei saa domeeniga <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> luua, kuna arvuti kuupäev ja kellaaeg (<ph name="DATE_AND_TIME" />) on valed.</translation>
@@ -3826,6 +3834,7 @@ Lisateave:
 <translation id="8183800802493617952">Peredele suunatud mängud ja tegevused</translation>
 <translation id="8184538546369750125">Kasuta globaalset vaikeseadet (luba)</translation>
 <translation id="8186706823560132848">Tarkvara</translation>
+<translation id="8188830160449823068">IBAN salvestati ainult seadmesse</translation>
 <translation id="8189557652711717875">Teie valitavat otsingumootorit kasutatakse funktsioonide jaoks, nagu otsimine aadressiribalt ja veebilehtedel olevatelt piltidelt.</translation>
 <translation id="8190193880870196235">Haldab laiendus</translation>
 <translation id="8194412401381329820">Te ei saa seda hallatud konto lehte haldamata seadmes kasutada. Selle lehe kasutamisel lukustatakse kõik hallatud kontod, v.a need, mida haldab sama juriidiline isik, kes haldab ka seda seadet (siduskontod).</translation>

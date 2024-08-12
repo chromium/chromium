@@ -76,6 +76,7 @@
 <translation id="1142713751288681188">용지 종류</translation>
 <translation id="1144136880160289237">아직 활성 주제가 없습니다.</translation>
 <translation id="1149617035358809955">본인 인증을 해야 결제 정보를 입력할 수 있습니다.</translation>
+<translation id="115055975835908275">프로모션 닫기</translation>
 <translation id="1150565364351027703">선글라스</translation>
 <translation id="1150979032973867961">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 컴퓨터의 운영체제에서 신뢰하는 보안 인증서가 아닙니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="1151972924205500581">비밀번호를 입력해야 합니다.</translation>
@@ -158,6 +159,7 @@
 <translation id="1270328905573953738">이사 및 이전</translation>
 <translation id="1270502636509132238">픽업 방법</translation>
 <translation id="1273592791152866347">가격 추적 사용 중지됨</translation>
+<translation id="1277711244058668002">좋아요 버튼, 이 추천이 마음에 든다는 의견을 제출하려면 Enter 키를 누르세요.</translation>
 <translation id="127777513559587977">TV 토크쇼</translation>
 <translation id="1281476433249504884">스태커 1</translation>
 <translation id="1281536351321444151">다음번에 이 IBAN을 자동 완성하려면 Google 계정에 저장하세요.</translation>
@@ -456,6 +458,7 @@
 <translation id="180757923930449935">(64비트 에뮬레이션됨)</translation>
 <translation id="180991881384371158">CVC는 카드 뒷면에 있습니다. 서명란 오른쪽 상단의 마지막 3자리 숫자입니다.</translation>
 <translation id="1810391395243432441">화면 잠금으로 비밀번호 보호</translation>
+<translation id="1810597570737826742">{count,plural, =1{플러스 주소 {count}개 중 {position}번째}other{플러스 주소 {count}개 중 {position}번째}}</translation>
 <translation id="1812527064848182527">가로 모드</translation>
 <translation id="1812975699435941848">건강 교육 및 의료 훈련</translation>
 <translation id="1816436748874040213">공유한 탭의 스크롤 및 확대/축소를 요청할 수 있음</translation>
@@ -663,6 +666,7 @@
 <translation id="2188375229972301266">하단 다공 펀칭</translation>
 <translation id="2194856509914051091">고려사항</translation>
 <translation id="2197398642355049178">내 주제</translation>
+<translation id="2200678913752027654">싫어요 버튼, 양식을 열어 이 추천이 마음에 들지 않는 이유에 관한 자세한 의견을 제출하려면 Enter 키를 누르세요.</translation>
 <translation id="2202627062836089804">카드 뒷면</translation>
 <translation id="2204482073374652408">업데이트 완료됨</translation>
 <translation id="2207770355672215546">모든 카드에서 항상 허용</translation>
@@ -868,6 +872,7 @@
 <translation id="2565789370591907825">키보드 잠금 및 사용</translation>
 <translation id="2570734079541893434">설정 관리</translation>
 <translation id="257136025287118539">관리자가 파일을 <ph name="CLOUD_PROVIDER" /> 폴더로 이동하는 중입니다. 업로드가 완료되면 파일을 수정할 수 있습니다.</translation>
+<translation id="2571488850200220306">보안을 위해 기기의 OS, 브라우저 버전, 설치된 소프트웨어도 확인할 수 있습니다.</translation>
 <translation id="2573170131138724450">TV</translation>
 <translation id="257674075312929031">그룹화</translation>
 <translation id="2586657967955657006">클립보드</translation>
@@ -1003,6 +1008,7 @@
 <translation id="2903493209154104877">주소</translation>
 <translation id="290376772003165898">페이지 언어가 <ph name="LANGUAGE" />가 아닌가요?</translation>
 <translation id="2905107382358353958">새 결제 설정에 대한 알림</translation>
+<translation id="2909693957408648848">프로모션</translation>
 <translation id="2909946352844186028">네트워크 변경이 감지되었습니다.</translation>
 <translation id="2911255567212929079">머신러닝 및 인공지능</translation>
 <translation id="2911973620368911614">작업 계정 사용자 ID</translation>
@@ -2585,6 +2591,7 @@
 <translation id="5887687176710214216">최근 방문: 어제</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5895187275912066135">발급일:</translation>
+<translation id="5898767305816764989">좋아요 버튼, 다음 추천이 마음에 든다는 의견을 제출하려면 Enter 키를 누르세요. <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">노란색</translation>
 <translation id="5903264686717710770">직책:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" />(동기화됨)</translation>
@@ -2773,6 +2780,7 @@
 <translation id="6240964651812394252">운영체제에서 Google 비밀번호 관리자를 사용하려면 Chrome을 다시 실행하고 비밀번호 관리자에 대한 컴퓨터의 액세스를 허용하세요. 탭을 다시 실행하면 탭이 다시 열립니다.</translation>
 <translation id="6241121617266208201">추천 숨기기</translation>
 <translation id="624499991300733384">인쇄 합성 서비스</translation>
+<translation id="6246868321321344665">조직에서 직장 프로필과 개인 프로필 모두의 비밀번호, 방문 기록과 같은 인터넷 사용 기록을 볼 수 있습니다.</translation>
 <translation id="6250932670816326647">목욕 및 바디 제품</translation>
 <translation id="6251906504834538140">{0,plural, =1{파일 이동 차단됨}other{파일 <ph name="FILE_COUNT" />개의 이동 차단됨}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome에서 다운로드한 파일 관리</translation>
@@ -3317,6 +3325,7 @@
 추가 세부정보:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">관리자의 메시지: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">싫어요 버튼, 양식을 열어 다음 추천이 마음에 들지 않는 이유에 관한 자세한 의견을 제출하려면 Enter 키를 누르세요. <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">후면 트레이</translation>
 <translation id="7257453341537973799">이직 정보 및 계획</translation>
 <translation id="725866823122871198">컴퓨터의 날짜와 시간(<ph name="DATE_AND_TIME" />)이 잘못되어 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />에 대한 비공개 연결을 설정할 수 없습니다.</translation>
@@ -4308,6 +4317,7 @@
 <translation id="9101450247048146228">카메라 사용 및 이동(<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">트레이 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" />에서는 사용자 정보를 보호하기 위해 일반적으로 암호화를 사용합니다. 이번에 Chromium에서 <ph name="SITE" />에 연결을 시도했을 때 웹사이트에서 비정상적이고 잘못된 사용자 인증 정보를 반환했습니다. 이는 공격자가 <ph name="SITE" />인 것처럼 가장하려고 하거나 Wi-Fi 로그인 화면이 연결을 방해했기 때문일 수 있습니다. 데이터 교환이 발생하기 전에 Chromium에서 연결을 중단했으므로 사용자 정보는 안전합니다.</translation>
+<translation id="9107199998619088551"><ph name="MANAGER" />에서 프로필을 관리합니다.</translation>
 <translation id="9107467864910557787">내 브라우저는 <ph name="MANAGER" />에서 관리합니다</translation>
 <translation id="91108059142052966">관리자 정책에 따라 기밀 콘텐츠가 보일 때 <ph name="APPLICATION_TITLE" />과(와)의 화면 공유가 중지됩니다.</translation>
 <translation id="9114524666733003316">카드 확인 중...</translation>

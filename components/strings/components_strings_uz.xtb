@@ -158,6 +158,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1270328905573953738">Koʻchish va koʻchirish</translation>
 <translation id="1270502636509132238">Olib ketish usuli</translation>
 <translation id="1273592791152866347">Narxni kuzatish oʻchiq</translation>
+<translation id="1277711244058668002">Yoqdi tugmasi, bu taklif nega yoqqani haqida fikr-mulohaza yuborish uchun Enter tugmasini bosing</translation>
 <translation id="127777513559587977">TV tok-shoulari</translation>
 <translation id="1281476433249504884">Taxlovchi 1</translation>
 <translation id="1281536351321444151">Bu IBAN raqami keyingi safar avtomatik kiritilishi uchun uni Google hisobiga saqlang</translation>
@@ -455,6 +456,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="180757923930449935">(64-bit emulyatsiya)</translation>
 <translation id="180991881384371158">CVC – kartangizning orqa tomonida. U 3 ta oxirgi raqam boʻlib, imzo katagining yuqori oʻng tomonida joylashgan.</translation>
 <translation id="1810391395243432441">Parollarni ekran qulfingiz bilan himoyalang</translation>
+<translation id="1810597570737826742">{count,plural, =1{Plus manzil: {position}/{count}}other{Plus manzil: {position}/{count}}}</translation>
 <translation id="1812527064848182527">yotiq</translation>
 <translation id="1812975699435941848">Tibbiy taʼlim</translation>
 <translation id="1816436748874040213">Sayt ulashilgan varaqlarda zum oʻzgartirish va varaqlashga ruxsat soʻrashi mumkin</translation>
@@ -662,6 +664,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2188375229972301266">Quyidan bir nechta teshik ochish</translation>
 <translation id="2194856509914051091">Bularni hisobga olish kerak</translation>
 <translation id="2197398642355049178">Mavzularingiz</translation>
+<translation id="2200678913752027654">Salbiy baho tugmasi, bu taklif nega yoqmagani haqida batafsil fikr-mulohaza yuborish shaklini ochish uchun Enter tugmasini bosing</translation>
 <translation id="2202627062836089804">kartangiz orqasidagi</translation>
 <translation id="2204482073374652408">Yangilandi!</translation>
 <translation id="2207770355672215546">Istalgan kartaga doimiy ruxsat berish</translation>
@@ -2580,6 +2583,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5887687176710214216">Oxirgi tashrif: kecha</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
 <translation id="5895187275912066135">Berilgan vaqti</translation>
+<translation id="5898767305816764989">Yoqdi tugmasi, nima yoqqani haqida fikr-mulohaza yuborish uchun Enter tugmasini bosing, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Sariq</translation>
 <translation id="5903264686717710770">Nomi:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinxronlandi)</translation>
@@ -3311,6 +3315,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 Batafsil axborot:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Administrator xabari: “<ph name="CUSTOM_MESSAGE" />”</translation>
+<translation id="7255540419660272073">Salbiy baho tugmasi, nima yoqmagani haqida batafsil fikr-mulohaza yuborish shaklini ochish uchun Enter tugmasini bosing, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Orqa tarnov</translation>
 <translation id="7257453341537973799">Ish resurslari va rejalashtirish</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeni bilan tizimdagi sana va vaqt sozlamalari (<ph name="DATE_AND_TIME" />) noto‘g‘ri bo‘lganligi uchun havfsiz aloqa o‘rnatib bo'lmadi.</translation>

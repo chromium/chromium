@@ -408,6 +408,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="2975121486251958312">Vain incognito-tila on käytettävissä</translation>
 <translation id="2982481275546140226">Tyhjennä tiedot</translation>
 <translation id="298306318844797842">Lisää maksutapa…</translation>
+<translation id="2984370252102312100">Avoimet välilehdet ja välilehtiryhmät</translation>
 <translation id="2989805286512600854">Avaa uudessa välilehdessä</translation>
 <translation id="300455800299409273">Piilota "Jatka tällä välilehdellä"</translation>
 <translation id="3010025794097054078">Suojaudu esimerkiksi tietoturvaloukkauksilta ja vaarallisilta sivustoilta.</translation>
@@ -896,6 +897,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5415289094036440596">Avainkoodeja ei voi jakaa</translation>
 <translation id="5416022985862681400">Viimeiset 7 päivää</translation>
 <translation id="5416455648658732408">Siirrä välilehtiryhmään</translation>
+<translation id="5419613306346207284">Välilehtiryhmät kaikilta laitteilta</translation>
 <translation id="5423269318075950257">Hintaseuranta</translation>
 <translation id="5431252637281434233">Sinut kirjataan ulos</translation>
 <translation id="543338862236136125">Muokkaa salasanaa</translation>

@@ -1203,6 +1203,7 @@
 <translation id="184183613002882946">1 つのスイッチをそのまま使用する</translation>
 <translation id="184273675144259287">Linux のアプリとファイルを以前のバックアップで置き換えます</translation>
 <translation id="1842766183094193446">デモモードを有効にしてもよろしいですか？</translation>
+<translation id="1843048149176045210">ダウンロード リンクをコピー</translation>
 <translation id="1845060436536902492">ChromeVox は ChromeOS Flex のスクリーン リーダーで、主に目の不自由な方やロービジョンの方が、画面に表示されたテキストを音声合成や点字ディスプレイを使って読む際に使用することを想定しています。ChromeVox をオンにするには、Space キーを押します。ChromeVox がオンになると、クイックツアーが表示されます。</translation>
 <translation id="1845727111305721124">音声の再生を許可するサイト</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> を実行するには Control キーを押しながらクリックします</translation>
@@ -2441,6 +2442,7 @@
 <translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> で画像を検索</translation>
 <translation id="2727633948226935816">今後表示しない</translation>
 <translation id="2727712005121231835">実際のサイズ</translation>
+<translation id="2727713483500953825">画像やテキストを選択して Google レンズで検索できます</translation>
 <translation id="2727744317940422214">エラーが発生しました。説明に #bruschetta と入力してフィードバックを送信してください。エラーコード: <ph name="ERROR" />。クリーンアップできませんでした。手動でのクリーンアップが必要な場合があります。</translation>
 <translation id="2729327310379176711">Chrome では、ブラウジング時のトラッキングを抑制して、セキュリティを強化する新しい方法を検討しています。また、<ph name="ESTIMATE_INTERESTS_LINK" />して管理できるようにします。これにより、アクセスしたサイトでユーザーの興味 / 関心を Chrome にリクエストして、広告を表示することができます。</translation>
 <translation id="2729577602370119849">プリンタに簡単にアクセスして管理</translation>
@@ -3152,6 +3154,7 @@
 <translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> さんが「OK Google」と話しかけて Google アシスタントにアクセスできるようにする</translation>
 <translation id="3251759466064201842">&lt;証明書に含まれていません&gt;</translation>
 <translation id="325238099842880997">お子様がゲームやインターネット、自宅学習にデバイスを利用する際のデジタルルールを設定できます</translation>
+<translation id="3253083398453405334">通知の受信時に画面を点滅させます</translation>
 <translation id="3253225298092156258">利用できません</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{このファイルをコピーするには、<ph name="CLOUD_PROVIDER" /> の空き容量を増やしてください}other{これらのファイルをコピーするには、<ph name="CLOUD_PROVIDER" /> の空き容量を増やしてください}}</translation>
 <translation id="3253448572569133955">不明なアカウント</translation>
@@ -3647,10 +3650,12 @@
 <translation id="3621202678540785336">入力</translation>
 <translation id="3621807901162200696">Chrome OS の機能とパフォーマンスの改善に協力する</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{アプリ}other{# 件のアプリ}}</translation>
+<translation id="3622820753353315928">画面の点滅の色</translation>
 <translation id="362333465072914957">CA による証明書の発行を待機しています</translation>
 <translation id="3623598555687153298">表示中のサイトにより保存された <ph name="TOTAL_USAGE" /> のデータが削除されます</translation>
 <translation id="3624567683873126087">デバイスのロックを解除して Google アカウントにログインする</translation>
 <translation id="3624583033347146597">サードパーティ Cookie の設定を選択してください</translation>
+<translation id="3625345586754200168">レンズを使ってみる</translation>
 <translation id="3625481642044239431">無効なファイルが選択されています。もう一度お試しください。</translation>
 <translation id="3626296069957678981">この Chromebook を充電するには、対応する Dell のバッテリーを使用してください。</translation>
 <translation id="3627320433825461852">あと 1 分未満</translation>
@@ -4805,6 +4810,7 @@
 <translation id="4450974146388585462">診断</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> が、データをより安全に保存できる有効な TPM を検出しました。</translation>
 <translation id="4452898361839215358">または、PPD を選択します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Google レンズで画像やテキストを検索できます</translation>
 <translation id="4453430595102511050">キーボードの右上にある指紋認証センサーをタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> で検索するか、URL を入力してください</translation>
 <translation id="4457472090507035117">現在の音声を選択:</translation>
@@ -6959,6 +6965,7 @@
 <translation id="6059276912018042191">最近使った Chrome タブ</translation>
 <translation id="6059652578941944813">証明書の階層</translation>
 <translation id="6059925163896151826">USB デバイス</translation>
+<translation id="6060842547856900641">レンズを開く</translation>
 <translation id="6061408389284235459"><ph name="DEVICE_NAME" /> に通知を送信しました</translation>
 <translation id="6063284707309177505">QR コードを作成</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> よく似た音声や録音した音声でも、<ph name="SUPERVISED_USER_NAME" /> さんのアカウントに基づく情報にアクセスできることがあります。バッテリー消費を抑えるには、<ph name="SUPERVISED_USER_NAME" /> さんの [アシスタントの設定] で、このデバイスが電源に接続されている場合のみ「OK Google」をオンにするよう選択できます。</translation>
@@ -7144,6 +7151,7 @@
 <translation id="6197128521826316819">このページの QR コードを作成</translation>
 <translation id="6198223452299275399">ページ間をスワイプ</translation>
 <translation id="6198252989419008588">PIN を変更</translation>
+<translation id="61988015556954366">画面の点滅</translation>
 <translation id="6200047250927636406">ファイルを破棄</translation>
 <translation id="6200151268994853226">拡張機能を管理</translation>
 <translation id="6201608810045805374">このアカウントを削除しますか？</translation>
@@ -7501,6 +7509,7 @@
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> 個のファイル</translation>
 <translation id="6469557521904094793">モバイル ネットワークをオンにする</translation>
 <translation id="6469702164109431067">パスワードとパスキー</translation>
+<translation id="6470120577693311302">点滅による通知</translation>
 <translation id="6470823736074966819">通知をミュートする</translation>
 <translation id="6472893788822429178">ホーム ボタンを表示する</translation>
 <translation id="6473315466413288899">オプションを選択</translation>
@@ -7931,6 +7940,7 @@
 <translation id="6790820461102226165">ユーザーを追加...</translation>
 <translation id="6793610798874309813">PIN は 4 文字以上で入力してください</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395">「<ph name="DOWNLOAD_URL" />」をクリップボードにコピーしました</translation>
 <translation id="6794511157503068"><ph name="APP_NAME" /> のパスキーが USB セキュリティ キーにある場合は、挿入してタップしてください</translation>
 <translation id="679486139907144816">パスキーでこのサイトにログインするには、設定で Windows Hello をオンにしてください。その後、このサイトに戻って、もう一度お試しください。</translation>
 <translation id="6795371939514004514">自動スキャンを使用すると、画面上のアイテム間を自動的に移動できます。アイテムがハイライト表示されているときに「選択」を押すとアクティブになります。</translation>

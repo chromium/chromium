@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">การย้ายและเปลี่ยนสถานที่</translation>
 <translation id="1270502636509132238">วิธีการรับสินค้า</translation>
 <translation id="1273592791152866347">การติดตามราคาปิดอยู่</translation>
+<translation id="1277711244058668002">ปุ่มชอบ กด Enter เพื่อส่งความคิดเห็นว่าคุณชอบคำแนะนำนี้</translation>
 <translation id="127777513559587977">ทอล์คโชว์ทางทีวี</translation>
 <translation id="1281476433249504884">สแต็กเกอร์ 1</translation>
 <translation id="1281536351321444151">หากต้องการป้อน IBAN นี้โดยอัตโนมัติในครั้งถัดไป ให้บันทึกไว้ในบัญชี Google</translation>
@@ -664,6 +665,7 @@
 <translation id="2188375229972301266">เจาะรูด้านล่างหลายรู</translation>
 <translation id="2194856509914051091">สิ่งที่ควรพิจารณา</translation>
 <translation id="2197398642355049178">หัวข้อของคุณ</translation>
+<translation id="2200678913752027654">ปุ่มไม่ชอบ กด Enter เพื่อเปิดแบบฟอร์มสำหรับส่งความคิดเห็นโดยละเอียดเกี่ยวกับสาเหตุที่คุณไม่ชอบคำแนะนำนี้</translation>
 <translation id="2202627062836089804">ด้านหลังบัตร</translation>
 <translation id="2204482073374652408">อัปเดตเสร็จเรียบร้อย</translation>
 <translation id="2207770355672215546">อนุญาตเสมอโดยใช้บัตรใดก็ได้</translation>
@@ -2585,6 +2587,7 @@
 <translation id="5887687176710214216">เข้าชมล่าสุดเมื่อวาน</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
 <translation id="5895187275912066135">ออกเมื่อ</translation>
+<translation id="5898767305816764989">ปุ่มชอบ กด Enter เพื่อส่งความคิดเห็นว่าคุณชอบ<ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">สีเหลือง</translation>
 <translation id="5903264686717710770">ชื่อ:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ซิงค์แล้ว)</translation>
@@ -3317,6 +3320,7 @@
 รายละเอียดเพิ่มเติม:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">ผู้ดูแลระบบบอกว่า "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">ปุ่มไม่ชอบ กด Enter เพื่อเปิดแบบฟอร์มสำหรับส่งความคิดเห็นโดยละเอียดเกี่ยวกับสาเหตุที่คุณไม่ชอบ<ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">ถาดหลัง</translation>
 <translation id="7257453341537973799">การวางแผนและแหล่งข้อมูลตำแหน่งงาน</translation>
 <translation id="725866823122871198">ไม่สามารถเริ่มการเชื่อมต่อส่วนตัวกับ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ได้เนื่องจากวันที่และเวลาของคอมพิวเตอร์ (<ph name="DATE_AND_TIME" />) ไม่ถูกต้อง</translation>

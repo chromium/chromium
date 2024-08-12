@@ -462,6 +462,7 @@
 <translation id="346423161771747987">זרם</translation>
 <translation id="346539236881580388">צילום חוזר</translation>
 <translation id="3484914941826596830">במהלך עדכון הקושחה אין לנתק את המכשיר החיצוני הזה או לכבות את המחשב. אפשר למזער את החלון הזה. העדכון הזה עשוי לקחת כמה דקות ויכול להיות שהמכשיר החיצוני לא יפעל במהלכו.</translation>
+<translation id="3485555238092220889">פעולת נגישות</translation>
 <translation id="3486220673238053218">הגדרה</translation>
 <translation id="3487866404496702283">‏משוב על תכונת Mahi</translation>
 <translation id="3488065109653206955">מופעל חלקית</translation>
@@ -637,6 +638,7 @@
 <translation id="4422041425070339732">חץ למטה</translation>
 <translation id="4425149324548788773">האחסון שלי</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> מושבת</translation>
+<translation id="4428840632568803690">דובר <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">‏התוקף של כרטיס Kerberos עומד לפוג בקרוב</translation>
 <translation id="4431821876790500265">לעיון בדוח</translation>
 <translation id="4443192710976771874">אדום</translation>
@@ -1298,6 +1300,7 @@
 <translation id="7802764839223122985">המקש חסר. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7805768142964895445">סטטוס</translation>
+<translation id="7811024689617730980">צריך לבחור יום איפוס אוטומטי שנע בין 1 ל-31, כולל</translation>
 <translation id="7813073042185856802">הר</translation>
 <translation id="7819857487979277519">‏PSK ‏(WPA או RSN)</translation>
 <translation id="7824219488248240180">פוסט-אימפרסיוניסטי</translation>

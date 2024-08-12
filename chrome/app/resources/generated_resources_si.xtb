@@ -1202,6 +1202,7 @@
 <translation id="184183613002882946">එපා, 1 ස්විචයක් සමග සිටින්න</translation>
 <translation id="184273675144259287">ඔබේ ලිනක්ස් යෙදුම් සහ ගොනු පෙර උපස්ථයකින් ප්‍රතිස්ථාපන කරන්න</translation>
 <translation id="1842766183094193446">ඔබට ආදර්ශන ප්‍රකාරය සබල කිරීමට අවශ්‍ය බව සහතිකද?</translation>
+<translation id="1843048149176045210">බාගැනීමේ සබැඳිය පිටපත් කරන්න</translation>
 <translation id="1845060436536902492">කථන සංශ්ලේෂකයක් හෝ බ්‍රෙයිලි සංදර්ශකයක් මගින් තිරය මත සංදර්ශන කෙරෙන පාඨය කියවීමට ChromeOS Flex මත තිර කියවනය, ChromeVox, මූලික වශයෙන් භාවිත කරනු ලබන්නේ අන්ධභාවය සහ අඩු පෙනීම ඇති පුද්ගලයින් විසිනි. ChromeVox සක්‍රීය කිරීමට හිඩැස් තීරුව ඔබන්න. ChromeVox ක්‍රියාත්මක වූ විට, ඔබ ඉක්මන් සංචාරයක් හරහා යයි.</translation>
 <translation id="1845727111305721124">හඬ වාදනය කිරීමට ඉඩ දේ</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> ධාවනය කිරීමට පාලන-ක්ලික් කරන්න</translation>
@@ -3160,6 +3161,7 @@
 <translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> හට “Hey Google” සමගින් Google සහායක වෙත පිවිසීමට ඉඩ දෙන්න</translation>
 <translation id="3251759466064201842">&lt;සහතිකයේ කොටසක් නොවේ&gt;</translation>
 <translation id="325238099842880997">නිවසේදී සෙල්ලම් කිරීමට, ගවේෂණය කිරීමට සහ පාසැල් වැඩ කිරීමට ළමයින්ට උපකාර කිරීම සඳහා ඩිජිටල් බිම් නීති සකස් කරන්න</translation>
+<translation id="3253083398453405334">ඔබට දැනුම්දීම් ලැබුණු විට තිරය ෆ්ලෑෂ් කරන්න</translation>
 <translation id="3253225298092156258">නොතිබේ</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{මෙම ගොනුව පිටපත් කිරීමට <ph name="CLOUD_PROVIDER" /> තුළ ඉඩ නිදහස් කරන්න}one{මෙම ගොනු පිටපත් කිරීමට <ph name="CLOUD_PROVIDER" /> තුළ ඉඩ නිදහස් කරන්න}other{මෙම ගොනු පිටපත් කිරීමට <ph name="CLOUD_PROVIDER" /> තුළ ඉඩ නිදහස් කරන්න}}</translation>
 <translation id="3253448572569133955">නොදන්නා ගිණුම</translation>
@@ -3656,6 +3658,7 @@
 <translation id="3621202678540785336">ආදානය</translation>
 <translation id="3621807901162200696">ChromeOS විශේෂාංග සහ ක්‍රියාකාරිත්වය වැඩි දියුණු කිරීමට උදවු කරන්න</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{යෙදුමක්}one{යෙදුම් #}other{යෙදුම් #}}</translation>
+<translation id="3622820753353315928">ෆ්ලෑෂ් තිර වර්ණය</translation>
 <translation id="362333465072914957">CA විසින් සහතිකයක් නිකුත් වීම බලාපොරොත්තු වේ</translation>
 <translation id="3623598555687153298">මෙය සංදර්ශන වන අඩවිවලින් ගබඩා කරනු ලැබූ <ph name="TOTAL_USAGE" /> ක දත්ත මකා දමයි</translation>
 <translation id="3624567683873126087">උපාංගය අගුලු හැර Google ගිණුමට පුරන්න</translation>
@@ -7160,6 +7163,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6197128521826316819">මෙම පිටුව සඳහා QR කේතය තනන්න</translation>
 <translation id="6198223452299275399">පිටු අතර ස්වයිප් කරන්න</translation>
 <translation id="6198252989419008588">PIN අංකය වෙනස් කරන්න</translation>
+<translation id="61988015556954366">තිර ෆ්ලෑෂ්</translation>
 <translation id="6200047250927636406">ගොනුව ඉවත ලන්න</translation>
 <translation id="6200151268994853226">දිගුව කළමනාකරණය කරන්න</translation>
 <translation id="6201608810045805374">මෙම ගිණුම ඉවත් කරන්නද?</translation>
@@ -7517,6 +7521,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6468773105221177474">ගොනු <ph name="FILE_COUNT" /></translation>
 <translation id="6469557521904094793">සෙලියුලර් ජාලය සක්‍රීය කරන්න</translation>
 <translation id="6469702164109431067">මුරපද සහ මුරයතුරු</translation>
+<translation id="6470120577693311302">ෆ්ලෑෂ් දැනුම්දීම්</translation>
 <translation id="6470823736074966819">දැනුම්දීම් නිහඬ කරන්න</translation>
 <translation id="6472893788822429178">මුල්පිටු බොත්තම පෙන්වන්න</translation>
 <translation id="6473315466413288899">විකල්පයක් තෝරන්න</translation>
@@ -7949,6 +7954,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6790820461102226165">පුද්ගලයා එක් කරන්න...</translation>
 <translation id="6793610798874309813">ඔබේ PIN අංකය අනුලකුණු 4ක් හෝ ඊට වැඩි විය හැක</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> පසුරු පුවරුවට පිටපත් කරන ලදි</translation>
 <translation id="6794511157503068"><ph name="APP_NAME" /> සඳහා ඔබේ මුරයතුර USB ආරක්‍ෂිත යතුරක තිබේ නම්, දැන් එය ඇතුළු කර ස්පර්ශ කරන්න</translation>
 <translation id="679486139907144816">මුරයතුරක් සමග මෙම අඩවියට පුරනය වීම සඳහා, ඔබට සැකසීම් තුළ Windows Hello ක්‍රියාත්මක කිරීමට අවශ්‍ය වේ. ඉන්පසු මෙම අඩවියට ආපසු ගොස් නැවත උත්සාහ කරන්න.</translation>
 <translation id="6795371939514004514">ස්වයංක්‍රිය ස්කෑන් කිරීම තිරය මත ඇති අයිතම හරහා ස්වයංක්‍රියව යාමට ඔබට ඉඩ සලසයි. අයිතමයක් උද්දීපනය කළ විට, එය සක්‍රිය කිරීමට “තෝරන්න” ඔබන්න.</translation>

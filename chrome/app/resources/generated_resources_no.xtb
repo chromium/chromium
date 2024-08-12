@@ -1208,6 +1208,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="184183613002882946">Nei, bruk kun én bryter</translation>
 <translation id="184273675144259287">Erstatt Linux-appene og -filene dine med en tidligere sikkerhetskopi</translation>
 <translation id="1842766183094193446">Er du sikker på at du vil slå på demomodus?</translation>
+<translation id="1843048149176045210">Kopier nedlastingslinken</translation>
 <translation id="1845060436536902492">Skjermleseren på ChromeOS Flex, ChromeVox, brukes hovedsakelig av blinde eller svaksynte for å lese tekst som vises på skjermen, via talesyntetisering eller en leselist. Trykk på mellomromstasten for å slå på ChromeVox. Når ChromeVox er aktivert, får du en rask innføring.</translation>
 <translation id="1845727111305721124">Nettsteder som har lov til å spille av lyd</translation>
 <translation id="1846308012215045257">Control-klikk for å kjøre <ph name="PLUGIN_NAME" /></translation>
@@ -3167,6 +3168,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3251714896659475029">La <ph name="SUPERVISED_USER_NAME" /> bruke Google-assistenten ved å si «Hey Google»</translation>
 <translation id="3251759466064201842">&lt;Ikke del av sertifikat&gt;</translation>
 <translation id="325238099842880997">Angi digitale grunnregler for å hjelpe barn å leke, utforske og gjøre skolearbeid hjemme</translation>
+<translation id="3253083398453405334">Få skjermen til å blinke når du mottar varsler</translation>
 <translation id="3253225298092156258">Ikke tilgjengelig</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Frigjør plass i <ph name="CLOUD_PROVIDER" /> for å kopiere denne filen}other{Frigjør plass i <ph name="CLOUD_PROVIDER" /> for å kopiere disse filene}}</translation>
 <translation id="3253448572569133955">Ukjent konto</translation>
@@ -3663,6 +3665,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3621202678540785336">Inndata</translation>
 <translation id="3621807901162200696">Bidra til å gjøre funksjonene og ytelsen til ChromeOS bedre</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{en app}other{# apper}}</translation>
+<translation id="3622820753353315928">Skjermblinkfarge</translation>
 <translation id="362333465072914957">Venter på at sertifiseringsinstansen skal utstede et sertifikat</translation>
 <translation id="3623598555687153298">Dette medfører sletting av <ph name="TOTAL_USAGE" /> data som er lagret av nettstedene som vises</translation>
 <translation id="3624567683873126087">Lås opp enheten og logg på Google-kontoen din</translation>
@@ -7161,6 +7164,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6197128521826316819">Opprett en QR-kode for denne siden</translation>
 <translation id="6198223452299275399">Sveip mellom sider</translation>
 <translation id="6198252989419008588">Endre personlig kode</translation>
+<translation id="61988015556954366">Skjermblink</translation>
 <translation id="6200047250927636406">Forkast filen</translation>
 <translation id="6200151268994853226">Administrer utvidelsen</translation>
 <translation id="6201608810045805374">Vil du fjerne denne kontoen?</translation>
@@ -7518,6 +7522,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> filer</translation>
 <translation id="6469557521904094793">Slå på mobildata</translation>
 <translation id="6469702164109431067">Passord og passnøkler</translation>
+<translation id="6470120577693311302">Blitsvarsler</translation>
 <translation id="6470823736074966819">Ignorer varsler</translation>
 <translation id="6472893788822429178">Vis startsideknapp</translation>
 <translation id="6473315466413288899">Velg et alternativ</translation>
@@ -7950,6 +7955,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6790820461102226165">Legg til person …</translation>
 <translation id="6793610798874309813">PIN-koden din må bestå av minst 4 tegn</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> er kopiert til utklippstavlen</translation>
 <translation id="6794511157503068">Hvis passnøkkelen for <ph name="APP_NAME" /> ligger på en USB-sikkerhetsnøkkel, setter du den inn og trykker på den nå</translation>
 <translation id="679486139907144816">For å logge på dette nettstedet med en passnøkkel må du slå på Windows Hello i innstillingene. Gå deretter tilbake til dette nettstedet, og prøv igjen.</translation>
 <translation id="6795371939514004514">Med automatisk skanning kan du gå gjennom elementer på skjermen automatisk. Når et element er fremhevet, trykker du på «Velg» for å aktivere det.</translation>

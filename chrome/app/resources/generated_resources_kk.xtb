@@ -1201,6 +1201,7 @@
 <translation id="184183613002882946">Жоқ, 1 ауыстырғыш жетеді</translation>
 <translation id="184273675144259287">Linux қолданбалары мен файлдарын алдыңғы сақтық көшірмемен ауыстыру</translation>
 <translation id="1842766183094193446">Демо режимін шынымен қосқыңыз келе ме?</translation>
+<translation id="1843048149176045210">Жүктеп алу сілтемесін көшіру</translation>
 <translation id="1845060436536902492">ChromeOS Flex жүйесіндегі ChromeVox экран оқу құралын негізінен көзі көрмейтін немесе нашар көретін адамдар сөз синтезаторы немесе Брайль дисплейі арқылы экранда көрсетілген мәтінді оқу үшін пайдаланады. ChromeVox-ты қосу үшін бос орын түймесін басыңыз. ChromeVox іске қосылған кезде, сіз жылдам бейнесаяхаттан өтесіз.</translation>
 <translation id="1845727111305721124">Дыбысты ойнатуға рұқсаты барлар</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> плагинін іске қосу үшін Control түймесін басыңыз</translation>
@@ -3155,6 +3156,7 @@
 <translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> Google Assistant-ке "Ok Google" деу арқылы кіруге рұқсат беру</translation>
 <translation id="3251759466064201842">&lt;Сертификаттың бөлігі емес&gt;</translation>
 <translation id="325238099842880997">Балалардың ойнауына, желіні шарлауына және оқу жұмыстарына көмектесу үшін цифрлық құрылғыларды пайдаланудың негізгі ережелерін белгілеңіз.</translation>
+<translation id="3253083398453405334">Хабарландыру келгенін экран жарқылы арқылы біле аласыз.</translation>
 <translation id="3253225298092156258">Қолжетімді емес</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Бұл файлды көшіру үшін <ph name="CLOUD_PROVIDER" /> қызметінде орын босатыңыз.}other{Бұл файлдарды көшіру үшін <ph name="CLOUD_PROVIDER" /> қызметінде орын босатыңыз.}}</translation>
 <translation id="3253448572569133955">Белгісіз аккаунт</translation>
@@ -3651,6 +3653,7 @@
 <translation id="3621202678540785336">Енгізу</translation>
 <translation id="3621807901162200696">ChromeOS функциялары мен өнімділігін жақсартуға көмектесу</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{қолданба}other{# қолданба}}</translation>
+<translation id="3622820753353315928">Экран жарқылының түсі</translation>
 <translation id="362333465072914957">Сертификат шығуы үшін CA күтілуде</translation>
 <translation id="3623598555687153298">Бұл көрсетілген сайттарда сақталған <ph name="TOTAL_USAGE" /> деректерді жояды.</translation>
 <translation id="3624567683873126087">Құрылғының құлпын ашу және Google аккаунтына кіру</translation>
@@ -7149,6 +7152,7 @@
 <translation id="6197128521826316819">Осы бетке QR кодын жасау</translation>
 <translation id="6198223452299275399">Беттер арасында сырғыту</translation>
 <translation id="6198252989419008588">PIN кодын өзгерту</translation>
+<translation id="61988015556954366">Экран жарқылы</translation>
 <translation id="6200047250927636406">Файлды қабылдамау</translation>
 <translation id="6200151268994853226">Кеңейтімді басқару</translation>
 <translation id="6201608810045805374">Бұл аккаунт өшірілсін бе?</translation>
@@ -7506,6 +7510,7 @@
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> файл</translation>
 <translation id="6469557521904094793">Ұялы байланыс желісін қосу</translation>
 <translation id="6469702164109431067">Құпия сөздер мен кіру кілттері</translation>
+<translation id="6470120577693311302">Жарқылды хабарландырулар</translation>
 <translation id="6470823736074966819">Хабарландырулардың дыбысын өшіру</translation>
 <translation id="6472893788822429178">"Негізгі бет" түймесін көрсету</translation>
 <translation id="6473315466413288899">Опция таңдаңыз</translation>
@@ -7938,6 +7943,7 @@
 <translation id="6790820461102226165">Адам қосу…</translation>
 <translation id="6793610798874309813">PIN коды 4 таңбаға тең болуы не одан асуы керек.</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> буферге көшірілді.</translation>
 <translation id="6794511157503068"><ph name="APP_NAME" /> кіру кілті USB қауіпсіздік кілтінде болса, салып, оны қазір түртіңіз.</translation>
 <translation id="679486139907144816">Бұл сайтқа кіру кілтімен кіру үшін параметрлерде Windows Hello-ды қосыңыз. Одан кейін осы сайтқа оралып, әрекетті қайталаңыз.</translation>
 <translation id="6795371939514004514">Автосканерлеу функциясы экрандағы элементтер арасында автоматты түрде жылжуға мүмкіндік береді. Элемент ерекшеленген кезде, оны іске қосу үшін "Таңдау" пернесін басыңыз.</translation>

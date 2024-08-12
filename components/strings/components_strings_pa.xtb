@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">ਇੱਕ ਥਾਂ ਤੋਂ ਦੂਜੀ ਥਾਂ 'ਤੇ ਲਿਜਾਉਣਾ ਅਤੇ ਪੁਨਰ ਸਥਾਪਨ</translation>
 <translation id="1270502636509132238">ਪਿਕਅੱਪ ਵਿਧੀ</translation>
 <translation id="1273592791152866347">ਕੀਮਤ ਟਰੈਕਿੰਗ ਬੰਦ ਹੈ</translation>
+<translation id="1277711244058668002">'ਸਲਾਹੋ' ਬਟਨ, ਤੁਹਾਨੂੰ ਇਹ ਸੁਝਾਅ ਪਸੰਦ ਆਇਆ, ਇਸ ਬਾਰੇ ਵਿਚਾਰ ਸਪੁਰਦ ਕਰਨ ਲਈ 'ਦਾਖਲ ਕਰੋ' ਦਬਾਓ</translation>
 <translation id="127777513559587977">ਟੀਵੀ ਟਾਕ ਸ਼ੋਅ</translation>
 <translation id="1281476433249504884">ਸਟੈਕਰ 1</translation>
 <translation id="1281536351321444151">ਇਸ IBAN ਨੂੰ ਅਗਲੀ ਵਾਰ ਆਟੋਫਿਲ ਕਰਨ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -664,6 +665,7 @@
 <translation id="2188375229972301266">ਹੇਠਾਂ ਇੱਕ ਤੋਂ ਵੱਧ ਮੋਰੀਆਂ</translation>
 <translation id="2194856509914051091">ਵਿਚਾਰੇ ਜਾਣ ਵਾਲੀਆਂ ਚੀਜ਼ਾਂ</translation>
 <translation id="2197398642355049178">ਤੁਹਾਡੇ ਵਿਸ਼ੇ</translation>
+<translation id="2200678913752027654">'ਨਾ ਸਲਾਹੋ' ਬਟਨ, ਤੁਹਾਨੂੰ ਇਹ ਸੁਝਾਅ ਨਾਪਸੰਦ ਕਿਉਂ ਹੈ, ਇਸ ਬਾਰੇ ਵੇਰਵੇ ਸਹਿਤ ਵਿਚਾਰ ਸਪੁਰਦ ਕਰਨ ਲਈ ਫ਼ਾਰਮ ਖੋਲ੍ਹਣ ਵਾਸਤੇ 'ਦਾਖਲ ਕਰੋ' ਦਬਾਓ</translation>
 <translation id="2202627062836089804">ਤੁਹਾਡੇ ਕਾਰਡ ਦੇ ਪਿਛਲੇ ਪਾਸੇ</translation>
 <translation id="2204482073374652408">ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਹੋਈ!</translation>
 <translation id="2207770355672215546">ਹਮੇਸ਼ਾਂ ਆਗਿਆ ਦਿਓ, ਕਿਸੇ ਵੀ ਕਾਰਡ ਨਾਲ</translation>
@@ -2583,6 +2585,7 @@
 <translation id="5887687176710214216">ਪਿਛਲੀ ਵਾਰ ਕੱਲ੍ਹ ਦੇਖੀ ਗਈ</translation>
 <translation id="5895138241574237353">ਰੀਸਟਾਰਟ ਕਰੋ</translation>
 <translation id="5895187275912066135">ਨੂੰ ਜਾਰੀ ਕੀਤਾ</translation>
+<translation id="5898767305816764989">'ਸਲਾਹੋ' ਬਟਨ, ਤੁਹਾਨੂੰ <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> ਪਸੰਦ ਆਇਆ, ਇਸ ਬਾਰੇ ਵਿਚਾਰ ਸਪੁਰਦ ਕਰਨ ਲਈ 'ਦਾਖਲ ਕਰੋ' ਦਬਾਓ</translation>
 <translation id="5901630391730855834">ਪੀਲਾ</translation>
 <translation id="5903264686717710770">ਸਿਰਲੇਖ:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ਸਿੰਕ ਕੀਤਾ)</translation>
@@ -3314,6 +3317,7 @@
 ਵਧੀਕ ਵੇਰਵੇ:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਕਹਿੰਦਾ ਹੈ: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">'ਨਾ ਸਲਾਹੋ' ਬਟਨ, ਤੁਹਾਨੂੰ <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> ਨਾਪਸੰਦ ਕਿਉਂ ਹੈ, ਇਸ ਬਾਰੇ ਵੇਰਵੇ ਸਹਿਤ ਵਿਚਾਰ ਸਪੁਰਦ ਕਰਨ ਲਈ ਫ਼ਾਰਮ ਖੋਲ੍ਹਣ ਵਾਸਤੇ 'ਦਾਖਲ ਕਰੋ' ਦਬਾਓ</translation>
 <translation id="7256634549594854023">ਪਿਛਲੀ ਟ੍ਰੇਅ</translation>
 <translation id="7257453341537973799">ਕਰੀਅਰ ਸੰਬੰਧੀ ਸਰੋਤ ਅਤੇ ਯੋਜਨਾਬੰਦੀ</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ਲਈ ਨਿੱਜੀ ਕਨੈਕਸ਼ਨ ਨੂੰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਦੀ ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ (<ph name="DATE_AND_TIME" />) ਗਲਤ ਹੈ।</translation>

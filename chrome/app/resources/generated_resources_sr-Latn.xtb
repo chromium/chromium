@@ -2446,6 +2446,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="272741954544380994">Traži sliku uz <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Ne podsećaj me više</translation>
 <translation id="2727712005121231835">Stvarna veličina</translation>
+<translation id="2727713483500953825">Izaberite slike ili tekst za pretragu pomoću Objektiva</translation>
 <translation id="2727744317940422214">Žao nam je, došlo je do greške. Pošaljite povratne informacije i navedite #bruschetta u opisu. Kôd greške je <ph name="ERROR" />. Čišćenje nije uspelo. Možda ćete morati da to uradite ručno.</translation>
 <translation id="2729327310379176711">Chrome pronalazi nove načine da smanji praćenje i dodatno vas zaštiti dok pregledate. Chrome takođe <ph name="ESTIMATE_INTERESTS_LINK" /> i omogućava vam da upravljate njima. Sajtovi koje posećujete zatim mogu da traže od Chrome-a vaša interesovanja da bi vam prikazivali oglase.</translation>
 <translation id="2729577602370119849">Lako pristupajte štampačima i upravljajte njima</translation>
@@ -3661,6 +3662,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3623598555687153298">Ovim brišete <ph name="TOTAL_USAGE" /> podataka koje čuvaju prikazani sajtovi</translation>
 <translation id="3624567683873126087">Otključajte uređaj i prijavite se na Google nalog</translation>
 <translation id="3624583033347146597">Odaberite podešavanja kolačića treće strane</translation>
+<translation id="3625345586754200168">Isprobaj Objektiv</translation>
 <translation id="3625481642044239431">Izabrali ste nevažeću datoteku. Probajte ponovo.</translation>
 <translation id="3626296069957678981">Da biste napunili ovaj Chromebook, koristite kompatibilnu bateriju proizvođača Dell.</translation>
 <translation id="3627320433825461852">Ostalo je manje od 1 minuta</translation>
@@ -4817,6 +4819,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4450974146388585462">Dijagnostikuj</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> je otkriven na aktivnom TPM-u koji može bezbednije da čuva podatke.</translation>
 <translation id="4452898361839215358">ili izaberite PPD. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Pretražite bilo koju sliku ili tekst pomoću Objektiva</translation>
 <translation id="4453430595102511050">Dodirnite senzor za otisak prsta u gornjem desnom uglu tastature. Podaci o otisku prsta se bezbedno čuvaju na <ph name="DEVICE_TYPE" /> uređaju i uvek ostaju na njemu.</translation>
 <translation id="4453946976636652378">Pretražite <ph name="SEARCH_ENGINE_NAME" /> ili unesite URL</translation>
 <translation id="4457472090507035117">Izaberite aktuelni glas:</translation>
@@ -6974,6 +6977,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6059276912018042191">Nedavne Chrome kartice</translation>
 <translation id="6059652578941944813">Hijerarhija sertifikata</translation>
 <translation id="6059925163896151826">USB uređaji</translation>
+<translation id="6060842547856900641">Otvori Objektiv</translation>
 <translation id="6061408389284235459">Obaveštenje je poslato na uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Napravi QR kôd</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Napomena<ph name="END_BOLD" />: Neko sa sličnim glasom ili snimkom možda može da pristupa ličnim rezultatima deteta <ph name="SUPERVISED_USER_NAME" />. Radi uštede baterije u podešavanjima Pomoćnika deteta <ph name="SUPERVISED_USER_NAME" /> možete da izaberete da funkcija „Hej Google“ bude aktivna samo kad je uređaj povezan sa izvorom napajanja.</translation>

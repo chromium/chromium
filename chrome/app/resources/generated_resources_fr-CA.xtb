@@ -1205,6 +1205,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="184183613002882946">Non, conserver un seul commutateur</translation>
 <translation id="184273675144259287">Remplacer vos applications et vos fichiers Linux par une sauvegarde précédente</translation>
 <translation id="1842766183094193446">Voulez-vous vraiment activer le mode Démo?</translation>
+<translation id="1843048149176045210">Copier le lien de téléchargement</translation>
 <translation id="1845060436536902492">Le lecteur d'écran sur ChromeOS Flex, ChromeVox, est principalement utilisé par les personnes aveugles ou ayant une basse vision pour lire le texte affiché à l'écran avec un synthétiseur vocal ou un afficheur braille. Appuyez sur la barre d'espacement pour activer ChromeVox. Lorsque ChromeVox est activé, une présentation rapide s'affiche.</translation>
 <translation id="1845727111305721124">Autorisés à faire jouer des sons</translation>
 <translation id="1846308012215045257">Cliquez en appuyant sur Ctrl pour exécuter le plugiciel <ph name="PLUGIN_NAME" />.</translation>
@@ -3163,6 +3164,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3251714896659475029">Autoriser l'accès de <ph name="SUPERVISED_USER_NAME" /> à l'Assistant Google avec la commande rapide « Ok Google »</translation>
 <translation id="3251759466064201842">&lt;Ne fait pas partie du certificat&gt;</translation>
 <translation id="325238099842880997">Définissez des règles numériques de base pour aider les enfants à jouer, à explorer et à faire leurs devoirs à la maison</translation>
+<translation id="3253083398453405334">L'écran clignote lorsque vous recevez des notifications</translation>
 <translation id="3253225298092156258">Non accessible</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Libérez de l'espace dans <ph name="CLOUD_PROVIDER" /> pour copier ce fichier}one{Libérez de l'espace dans <ph name="CLOUD_PROVIDER" /> pour copier ce fichier}other{Libérez de l'espace dans <ph name="CLOUD_PROVIDER" /> pour copier ces fichiers}}</translation>
 <translation id="3253448572569133955">Compte inconnu</translation>
@@ -3659,6 +3661,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3621202678540785336">Entrée</translation>
 <translation id="3621807901162200696">Contribuer à améliorer les fonctionnalités et les performances de Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{une application}one{# application}other{# applications}}</translation>
+<translation id="3622820753353315928">Couleur du clignotement d'écran</translation>
 <translation id="362333465072914957">En attente de la publication du certificat par l'autorité correspondante</translation>
 <translation id="3623598555687153298">Cette action supprimera <ph name="TOTAL_USAGE" /> de données stockées par les sites affichés</translation>
 <translation id="3624567683873126087">Déverrouiller l'appareil et se connecter au compte Google</translation>
@@ -7160,6 +7163,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6197128521826316819">Créer un code QR pour cette page</translation>
 <translation id="6198223452299275399">Naviguer d'une page à l'autre</translation>
 <translation id="6198252989419008588">Modifier le NIP</translation>
+<translation id="61988015556954366">Clignotement d'écran</translation>
 <translation id="6200047250927636406">Supprimer le fichier</translation>
 <translation id="6200151268994853226">Gérer l'extension</translation>
 <translation id="6201608810045805374">Retirer ce compte?</translation>
@@ -7517,6 +7521,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> fichiers</translation>
 <translation id="6469557521904094793">Activer la connexion cellulaire</translation>
 <translation id="6469702164109431067">Mots de passe et clés d'accès</translation>
+<translation id="6470120577693311302">Notifications lumineuses</translation>
 <translation id="6470823736074966819">Ignorer les notifications</translation>
 <translation id="6472893788822429178">Afficher le bouton Accueil</translation>
 <translation id="6473315466413288899">Choisir une option</translation>
@@ -7951,6 +7956,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6790820461102226165">Ajouter un personne...</translation>
 <translation id="6793610798874309813">Votre NIP peut comporter quatre caractères ou plus</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> copiée dans le presse-papiers</translation>
 <translation id="6794511157503068">Si votre clé d'accès pour <ph name="APP_NAME" /> se trouve sur une clé de sécurité USB, insérez-la et touchez-la maintenant</translation>
 <translation id="679486139907144816">Pour vous connecter à ce site avec une clé d'accès, vous devez activer Windows Hello dans les paramètres. Revenez ensuite sur ce site et réessayez.</translation>
 <translation id="6795371939514004514">La recherche automatique vous permet de vous déplacer automatiquement entre les éléments affichés à l'écran. Lorsqu'un élément est mis en évidence, appuyez sur le commutateur « Sélectionner » pour l'activer.</translation>

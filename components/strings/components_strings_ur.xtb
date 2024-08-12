@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">منتقلی اور تبدیلیٔ مقام</translation>
 <translation id="1270502636509132238">پِک اپ کا طریقہ</translation>
 <translation id="1273592791152866347">قیمت کی ٹریکنگ آف ہے</translation>
+<translation id="1277711244058668002">‏اظہار پسندیدگی کا بٹن، اس حوالے سے تاثرات جمع کرانے کیلئے Enter دبائیں کہ آپ اس تجویز کو کیوں پسند کرتے ہیں</translation>
 <translation id="127777513559587977">‏TV ٹاک شوز</translation>
 <translation id="1281476433249504884">اسٹیکر 1</translation>
 <translation id="1281536351321444151">‏اگلی بار اس IBAN کو آٹو فل کرنے کے لیے، اسے اپنے Google اکاؤنٹ میں محفوظ کریں</translation>
@@ -664,6 +665,7 @@
 <translation id="2188375229972301266">نیچے متعدد سوراخ</translation>
 <translation id="2194856509914051091">قابل غور چیزیں</translation>
 <translation id="2197398642355049178">آپ کے موضوعات</translation>
+<translation id="2200678913752027654">‏اظہار ناپسندیدگی کا بٹن، آپ اس تجویز کو کیوں ناپسند کرتے ہیں، اس سے متعلق مفصل تاثرات جمع کرانے کی ایک فارم کھولنے کیلئے Enter دبائیں</translation>
 <translation id="2202627062836089804">آپ کے کارڈ کے پیچھے</translation>
 <translation id="2204482073374652408">اپ ڈیٹ مکمل ہو گئی!</translation>
 <translation id="2207770355672215546">ہمیشہ اجازت دیں، کوئی بھی کارڈ ہو</translation>
@@ -2587,6 +2589,7 @@
 <translation id="5887687176710214216">آخری بار گزشتہ کل چیک کیا گیا</translation>
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
 <translation id="5895187275912066135">تاریخ اجراء</translation>
+<translation id="5898767305816764989">‏اظہار پسندیدگی کا بٹن، اپنے پسندیدہ تاثرات جمع کرانے کیلئے Enter دبائیں، <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">پیلا</translation>
 <translation id="5903264686717710770">عنوان:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (مطابقت پذیری کردہ)</translation>
@@ -3320,6 +3323,7 @@
 اضافی معلومات:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">آپ کے منتظم کے مطابق: "<ph name="CUSTOM_MESSAGE" />"</translation>
+<translation id="7255540419660272073">‏اظہار ناپسندیدگی کا بٹن، آپ کیوں ناپسند کرتے ہیں، اس سے متعلق مفصل تاثرات جمع کرانے کی ایک فارم کھولنے کیلئے Enter دبائیں، <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">پچھلا ٹرے</translation>
 <translation id="7257453341537973799">کیریئر کے وسائل اور پلاننگ</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> سے ایک نجی کنکشن تشکیل نہیں دیا جا سکتا ہے کیونکہ آپ کے کمپیوٹر کی تاریخ اور وقت (<ph name="DATE_AND_TIME" />) غلط ہیں۔</translation>

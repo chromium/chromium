@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">Переезды</translation>
 <translation id="1270502636509132238">Способ получения</translation>
 <translation id="1273592791152866347">Цена больше не отслеживается.</translation>
+<translation id="1277711244058668002">Кнопка "Нравится". Нажмите Ввод, чтобы рассказать, почему вам нравится эта подсказка.</translation>
 <translation id="127777513559587977">Телевизионные ток-шоу</translation>
 <translation id="1281476433249504884">Укладчик 1</translation>
 <translation id="1281536351321444151">Чтобы в следующий раз этот код IBAN можно было указать автоматически, сохраните его в аккаунте Google.</translation>
@@ -456,6 +457,7 @@
 <translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">CVC-код находится на обратной стороне вашей карты. Это 3 цифры в правом верхнем углу поля для подписи.</translation>
 <translation id="1810391395243432441">Защитите пароли при помощи блокировки экрана</translation>
+<translation id="1810597570737826742">{count,plural, =1{Место {position} в списке из {count} дополнительного адреса}one{Место {position} в списке из {count} дополнительного адреса}few{Место {position} в списке из {count} дополнительных адресов}many{Место {position} в списке из {count} дополнительных адресов}other{Место {position} в списке из {count} дополнительного адреса}}</translation>
 <translation id="1812527064848182527">горизонтальная ориентация</translation>
 <translation id="1812975699435941848">Санитарное просвещение и медицинское образование</translation>
 <translation id="1816436748874040213">Может запрашивать разрешение на изменение масштаба и прокрутку содержимого демонстрируемых вкладок</translation>
@@ -663,6 +665,7 @@
 <translation id="2188375229972301266">Несколько отверстий снизу</translation>
 <translation id="2194856509914051091">Важная информация</translation>
 <translation id="2197398642355049178">Ваши темы</translation>
+<translation id="2200678913752027654">Кнопка "Не нравится". Нажмите Ввод, чтобы открыть форму и подробно описать, почему вам не нравится эта подсказка.</translation>
 <translation id="2202627062836089804">на задней стороне карты</translation>
 <translation id="2204482073374652408">Обновлено</translation>
 <translation id="2207770355672215546">Разрешать всегда с любой картой</translation>
@@ -2584,6 +2587,7 @@
 <translation id="5887687176710214216">Последнее посещение: вчера</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
 <translation id="5895187275912066135">Дата выдачи</translation>
+<translation id="5898767305816764989">Кнопка "Нравится". Нажмите Ввод, чтобы рассказать, почему вам нравится <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="5901630391730855834">Желтый</translation>
 <translation id="5903264686717710770">Заголовок:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (данные синхронизируются)</translation>
@@ -3316,6 +3320,7 @@
 Подробнее:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Сообщение от администратора: "<ph name="CUSTOM_MESSAGE" />".</translation>
+<translation id="7255540419660272073">Кнопка "Не нравится". Нажмите Ввод, чтобы открыть форму и подробно описать, почему вам не нравится <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="7256634549594854023">Задний лоток</translation>
 <translation id="7257453341537973799">Планирование карьеры и посвященные ей ресурсы</translation>
 <translation id="725866823122871198">Не удалось установить защищенное соединение с доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> из-за неверных настроек системных часов и календаря (<ph name="DATE_AND_TIME" />).</translation>

@@ -127,6 +127,7 @@
 <translation id="1622717322707146952">“Google Calendar-ലേക്ക് ചേർക്കുക“ അല്ലെങ്കിൽ “Apple Calendar-ലേക്ക് ചേർക്കുക“ തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="1626771852476987600">ആവർത്തിച്ച് ഉപയോഗിക്കുന്ന <ph name="COUNT" /> പാസ്‌വേഡുകൾ</translation>
 <translation id="1636234353664774105">നാവിഗേഷൻ ഫീച്ചർ ഉപയോഗിച്ച്, ടേൺ ബൈ ടേൺ മാർഗ്ഗനിർദ്ദേശത്തോടെ നിങ്ങളുടെ ലക്ഷ്യസ്ഥാനത്തേക്കുള്ള വഴികൾ നേടുക</translation>
+<translation id="1641068175940982148"><ph name="NUMBER_OF_TABS" /> ടാബുകളുടെ ഗ്രൂപ്പായ <ph name="GROUP_TITLE" /> തുറക്കുക, <ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">സുരക്ഷിത ബ്രൗസിംഗ്</translation>
 <translation id="1641316430523156212">ഫോളോ ചെയ്യുക</translation>
 <translation id="1644574205037202324">ചരിത്രം</translation>
@@ -402,6 +403,7 @@
 <translation id="2952246431280799028">വിലാസം സ്‌പർശിച്ച് പിടിക്കുക.</translation>
 <translation id="2952278131021475699">Lens ക്യാമറ ഉപയോഗിച്ചുള്ള തിരയൽ</translation>
 <translation id="2958718410589002129">പാസ്‌വേഡുകൾ</translation>
+<translation id="2963044753825419640">ലഭ്യമാകുമ്പോൾ പാസ്‌കീകൾ ഉപയോഗിക്കാൻ, നിലവിലുള്ള അക്കൗണ്ടുകളെ സ്വയമേവ അപ്‌ഗ്രേഡ് ചെയ്യാൻ വെബ്‌സൈറ്റുകളെയും ആപ്പുകളെയും അനുവദിക്കുക</translation>
 <translation id="2964349545761222050">മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="2965328226365382335">അവസാന 15 മിനിറ്റ്</translation>
 <translation id="2969979262385602596">സൈൻ ഇൻ ചെയ്യുന്നത് പരാജയപ്പെട്ടു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -759,6 +761,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, ഈ ഉപകരണത്തിൽ മാത്രം, <ph name="URL" /></translation>
 <translation id="4751645464639803239">പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="4766112107778026136">Discover, പിന്തുടരുന്നവ</translation>
+<translation id="4769198578611055647">സംരക്ഷിച്ച പാസ്‌കീകൾ ഏതൊരു ഉപകരണത്തിലും ആക്‌സസ് ചെയ്യാൻ സഹായിക്കുന്നു</translation>
 <translation id="4775879719735953715">സ്ഥിരസ്ഥിതി ബ്രൌസര്‍</translation>
 <translation id="4779732376610430319">ക്രമീകരണത്തിലേക്ക് പോകുക...</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1041,6 +1044,7 @@
 <translation id="6067849159007176401">ബ്രൗസിംഗ് പരിരക്ഷ ചേർക്കുക</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) അപ്‌ലോഡ് ചെയ്യാനായില്ല</translation>
 <translation id="6084848228346514841">ടാബുകൾ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="6089212833343035912">Google Password Manager പിൻ</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. ക്രമീകരണം തുറക്കുന്നു.</translation>
 <translation id="6103540626693881831">ഉപകരണത്തിലെ എൻക്രിപ്ഷൻ</translation>
 <translation id="6119050551270742952">നിലവിലെ വെബ്‌പേജ് അദൃശ്യ മോഡിലാണ്</translation>
@@ -1261,6 +1265,7 @@
 <translation id="7022197654033719543">സൈറ്റ് വിവരങ്ങൾ</translation>
 <translation id="7029809446516969842">പാസ്‌വേഡുകള്‍</translation>
 <translation id="704692552158601232">ഡിഫോൾട്ട് ബ്രൗസർ ആപ്പ്</translation>
+<translation id="7051147526307793383">സ്വയമേവയുള്ള പാസ്‌കീ അപ്‌ഗ്രേഡുകൾ അനുവദിക്കുക</translation>
 <translation id="7055240621761583113">പാസ്‌വേഡ് സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="7063811929043357292">നിങ്ങളുടെ അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ രക്ഷിതാവാണ്.
 <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>

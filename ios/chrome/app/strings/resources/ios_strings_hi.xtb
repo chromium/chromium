@@ -79,7 +79,7 @@
 <translation id="1375321115329958930">सेव किए गए पासवर्ड</translation>
 <translation id="1377321085342047638">कार्ड नंबर</translation>
 <translation id="1377508275003315939">पासवर्ड</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">खोजें</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> के तौर पर जारी रखें</translation>
 <translation id="1388866984373351434">ब्राउज़िंग डेटा</translation>
 <translation id="1400642268715879018">पिछले चार हफ़्ते</translation>
@@ -408,6 +408,7 @@
 <translation id="2975121486251958312">सिर्फ़ गुप्त मोड उपलब्ध है</translation>
 <translation id="2982481275546140226">डेटा हटाएं</translation>
 <translation id="298306318844797842">भुगतान विधि जोड़ें...</translation>
+<translation id="2984370252102312100">टैब और टैब ग्रुप खोलें</translation>
 <translation id="2989805286512600854">नए टैब में खोलें</translation>
 <translation id="300455800299409273">"इस टैब का इस्तेमाल करके जारी रखें" को छिपाएं</translation>
 <translation id="3010025794097054078">डेटा के गलत इस्तेमाल, असुरक्षित वेबसाइटों वगैरह से सुरक्षित रहें.</translation>
@@ -896,6 +897,7 @@
 <translation id="5415289094036440596">पासकी शेयर नहीं की जा सकतीं</translation>
 <translation id="5416022985862681400">पिछले 7 दिन</translation>
 <translation id="5416455648658732408">टैब ग्रुप पर ले जाएं</translation>
+<translation id="5419613306346207284">सभी डिवाइसों के टैब ग्रुप</translation>
 <translation id="5423269318075950257">कीमत ट्रैक करें</translation>
 <translation id="5431252637281434233">आपको साइन आउट कर दिया जाएगा</translation>
 <translation id="543338862236136125">पासवर्ड में बदलाव करें</translation>

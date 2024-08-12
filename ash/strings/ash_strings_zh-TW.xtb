@@ -249,6 +249,7 @@
 <translation id="1831565490995294689">選取即可開啟<ph name="APP_TO_OPEN" />。</translation>
 <translation id="1838011306813517425">專注模式設定</translation>
 <translation id="1838895407229022812">夜燈模式已關閉。</translation>
+<translation id="1840920496749066704">°C</translation>
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1862077610023398675">隱藏控制選項</translation>
 <translation id="1862380676329487333">更新並登出</translation>
@@ -317,7 +318,9 @@
 <translation id="2135456203358955318">置頂放大鏡</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="2149229036084364364">播放上一首曲目</translation>
+<translation id="2152796271648108398">目前天氣</translation>
 <translation id="2152895518047545149">你沒有缺交任何作業，表現真好！</translation>
+<translation id="2159568970844941445">「檔案」中沒有任何圖片</translation>
 <translation id="2161132820593978283">試用相機取景功能，讓你在視訊通話時處於畫面中央。你可以在「快速設定」中開啟這項功能。</translation>
 <translation id="216955976692983107">向右調整並排視窗的大小</translation>
 <translation id="2185166372312820725">前往上一個分頁</translation>
@@ -614,6 +617,7 @@
 <translation id="3264031581203585083">隱藏所有 Google 雲端硬碟建議</translation>
 <translation id="3265032511221679826">要開啟精確位置存取權嗎？</translation>
 <translation id="3269597722229482060">按一下滑鼠右鍵</translation>
+<translation id="3273040715184276344">大寫鎖定模式已關閉</translation>
 <translation id="3274634049061007184">查看手機的應用程式</translation>
 <translation id="3289364673986435196">電源鍵選單</translation>
 <translation id="3289544412142055976">目前不支援 Linux 應用程式</translation>
@@ -1085,6 +1089,7 @@
 <translation id="4868492592575313542">已啟用</translation>
 <translation id="4871905435473761992">顯示無線基地台詳細資料。你的行動網路不支援無線基地台。</translation>
 <translation id="4872237917498892622">Alt + 搜尋鍵或 Shift 鍵</translation>
+<translation id="4872724534194216608">透過搜尋進行計算</translation>
 <translation id="4872852897273142380">將焦點移至書籤列或醒目顯示書籤列 (假設不是隱藏狀態)</translation>
 <translation id="4876935764454575645">音訊選項</translation>
 <translation id="4881323000405981760">Linux 應用程式不支援特效</translation>
@@ -1198,6 +1203,7 @@
 <translation id="523505283826916779">無障礙設定</translation>
 <translation id="5238719049014159442">開啟/關閉啟動器</translation>
 <translation id="5240725217819182328">快速存取特定頁面或在已安裝應用程式中執行操作</translation>
+<translation id="5243355658487390559">搜尋日期</translation>
 <translation id="5245201184978705914">無法產生轉錄稿</translation>
 <translation id="5251174953851719648">重新整理內容</translation>
 <translation id="5253783950165989294">已連線至名為「<ph name="DEVICE_NAME" />」的裝置，電池電力：<ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -1242,6 +1248,7 @@
 <translation id="5369717264580061086">使用「檔案」應用程式預覽檔案</translation>
 <translation id="5377367976106153749">要允許存取攝影機嗎？</translation>
 <translation id="5379115545237091094">嘗試次數過多</translation>
+<translation id="5383434787520761436">沒有任何 Google 雲端硬碟檔案</translation>
 <translation id="5391307769715781764">要取代已儲存的桌面嗎？</translation>
 <translation id="5392327145184648521">正在計算電量百分比...</translation>
 <translation id="5393156353051693207">按住任一處即可將應用程式重新排序</translation>
@@ -1591,6 +1598,7 @@
 <translation id="6565007273808762236">無法建立 eSIM 卡連線</translation>
 <translation id="6570831796530454248">{0,plural, =1{請在 1 小時內更新裝置}other{請在 # 小時內更新裝置}}</translation>
 <translation id="6570902864550063460">正在透過 USB 充電</translation>
+<translation id="6571006437522772306">搜尋「檔案」</translation>
 <translation id="6574587113394758819">檢視防護功能已開啟，因此系統隱藏了 <ph name="APP_TITLE" /> 的通知</translation>
 <translation id="6574622320167699133">已由手機解鎖，按一下或輕觸即可繼續使用。</translation>
 <translation id="6578407462441924264">未命名</translation>
@@ -1628,6 +1636,7 @@
 <translation id="6682029141988159141">貼上剪貼簿中的內容</translation>
 <translation id="6683022854667115063">耳罩式耳機</translation>
 <translation id="6686023075541098243">配置以下設定：查看手機的通知</translation>
+<translation id="6694973220096431421">搜尋 Google 雲端硬碟</translation>
 <translation id="6696025732084565524">你的卸除式鍵盤需安裝重大更新</translation>
 <translation id="6697913454192220372">新增桌面</translation>
 <translation id="6700713906295497288">IME 選單按鈕</translation>
@@ -1673,6 +1682,7 @@
 <translation id="6852628153543175788">延長 10 分鐘</translation>
 <translation id="6855029042976311970">剛剛編輯過</translation>
 <translation id="6856708615407876657">切換搜尋結果類別</translation>
+<translation id="6856756288284651804">Chromebook 已更新</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{剩餘一個位數}other{剩餘 # 個位數}}</translation>
 <translation id="6867938213751067702">已暫停下載 <ph name="FILENAME" /></translation>
@@ -1750,6 +1760,7 @@
 <translation id="7143207342074048698">連線中</translation>
 <translation id="7144942256906679589">電池狀態</translation>
 <translation id="7145639536026937076">電量：<ph name="PERCENTAGE" />% (充電中)。省電模式已開啟。</translation>
+<translation id="7147587499155271409">沒有任何瀏覽記錄</translation>
 <translation id="7149149900052329230">只要使用「檔案」應用程式，就能管理本機檔案和 Google 雲端硬碟檔案。</translation>
 <translation id="7165278925115064263">Alt + Shift + K 鍵</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />，
@@ -1783,6 +1794,7 @@
 <translation id="73289266812733869">已取消選取</translation>
 <translation id="7330397557116570022">必須點選文字欄位，才能使用語音輸入功能</translation>
 <translation id="7331646370422660166">alt + 向下鍵</translation>
+<translation id="7336943714413713812">搜尋瀏覽記錄</translation>
 <translation id="7337660433630200387">+10 分鐘</translation>
 <translation id="7340731148882810149">自動點擊選單</translation>
 <translation id="7346909386216857016">好，我知道了</translation>
@@ -1885,6 +1897,7 @@
 <translation id="7670953955701272011">在 Google 日曆中開啟此日期</translation>
 <translation id="7671610481353807627">依顏色將應用程式排序</translation>
 <translation id="7672095158465655885">已連上「<ph name="NAME" />」，<ph name="SUBTEXT" /></translation>
+<translation id="7680417644536099065">大寫鎖定模式已開啟</translation>
 <translation id="7682351277038250258">以純文字格式貼上剪貼簿中的內容</translation>
 <translation id="7684531502177797067">攝影機輸入裝置設為「<ph name="CAMERA_NAME" />」。</translation>
 <translation id="7687172143976244806">你開啟過</translation>
@@ -2137,6 +2150,7 @@
 <translation id="8553395910833293175">已指派給所有桌面。</translation>
 <translation id="8555757996376137129">移除目前的桌面</translation>
 <translation id="8559845965695780508"><ph name="USER" />編輯過</translation>
+<translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">試試以下幾項搜尋建議</translation>
 <translation id="857201607579416096">已將選單移至畫面右下角。</translation>
 <translation id="8581946341807941670">按下 <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> 鍵，然後點選連結</translation>
@@ -2246,6 +2260,7 @@
 <translation id="8951539504029375108">只有得到認證的 Thunderbolt 裝置能夠與 Chromebook 相容</translation>
 <translation id="8956420987536947088">開啟先前的視窗和應用程式</translation>
 <translation id="8959380109429710384">你按下了全螢幕放大鏡的鍵盤快速鍵。使用 Ctrl + Alt + 方向鍵即可在放大的檢視畫面中四處移動。</translation>
+<translation id="896335827708646237">開啟無障礙快速設定</translation>
 <translation id="8964525410783593407">1 小時</translation>
 <translation id="8973885907461690937">將焦點移至選單圖示</translation>
 <translation id="8980862970816311842">將應用程式圖示移入或移出應用程式排列顯示畫面中的資料夾</translation>
@@ -2281,6 +2296,7 @@
 <translation id="9089416786594320554">輸入法</translation>
 <translation id="9091406374499386796">你可以在啟動器中搜尋檔案、應用程式等內容，也可以尋找與 <ph name="PRODUCT_NAME" /> 相關的問題解答。</translation>
 <translation id="9091626656156419976">「<ph name="DISPLAY_NAME" />」螢幕已移除</translation>
+<translation id="9098750710832798892">未將任何項目複製到「剪貼簿」</translation>
 <translation id="9098969848082897657">將手機設為靜音</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> 或 <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">復原上一個動作</translation>
@@ -2290,6 +2306,7 @@
 <translation id="9139720510312328767">刪除下一個字母</translation>
 <translation id="9148058034647219655">結束</translation>
 <translation id="9151906066336345901">end 鍵</translation>
+<translation id="9159421884295554245">搜尋「剪貼簿」</translation>
 <translation id="9161053988251441839">建議使用的應用程式</translation>
 <translation id="9168436347345867845">稍後再說</translation>
 <translation id="9178475906033259337">目前正顯示 1 項與「<ph name="QUERY" />」相符的搜尋結果</translation>

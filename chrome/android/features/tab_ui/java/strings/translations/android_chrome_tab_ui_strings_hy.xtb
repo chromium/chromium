@@ -38,8 +38,10 @@
 <translation id="2662028055331606429">Գնահատական՝ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Անցնել կայք</translation>
 <translation id="2677748264148917807">Դուրս գալ էջից</translation>
+<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ներդիր ավելացվել է, <ph name="ANY_CHANGED" /> ներդիր փոփոխվել է, <ph name="ANY_CLOSED" />-ը՝ փակվել}one{<ph name="MANY_ADDED" /> ներդիր ավելացվել է, <ph name="ANY_CHANGED" /> ներդիր փոփոխվել է, <ph name="ANY_CLOSED" />-ը՝ փակվել}other{<ph name="MANY_ADDED" /> ներդիր ավելացվել է, <ph name="ANY_CHANGED" /> ներդիր փոփոխվել է, <ph name="ANY_CLOSED" />-ը՝ փակվել}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Ստեղծվել է <ph name="NUM_HOURS_ONE" /> ժամ առաջ}one{Ստեղծվել է <ph name="NUM_HOURS_MANY" /> ժամ առաջ}other{Ստեղծվել է <ph name="NUM_HOURS_MANY" /> ժամ առաջ}}</translation>
 <translation id="2801787514987684416">Դիտե՞լ խանութի մասին տեղեկությունները։</translation>
+<translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ներդիր փակվել է}one{<ph name="MANY_CLOSED" /> ներդիր փակվել է}other{<ph name="MANY_CLOSED" /> ներդիր փակվել է}}</translation>
 <translation id="2894757982205307093">Նոր ներդիր խմբում</translation>
 <translation id="2928243913527329289">Google | Այս խանութի մասին</translation>
 <translation id="2977480621796371840">Հեռացնել խմբից</translation>
@@ -50,6 +52,7 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> գնիջեցում <ph name="PRODUCT_NAME" />-ի համար</translation>
 <translation id="3078350928901129212">Ներդիրների խմբի <ph name="COLOR_NAME" /> գույնի պատկերակ</translation>
 <translation id="3194464645767632461">գնահատական</translation>
+<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ներդիր ավելացվել է, <ph name="ANY_CHANGED" />-ը՝ փոփոխվել}one{<ph name="MANY_ADDED" /> ներդիր ավելացվել է, <ph name="ANY_CHANGED" />-ը՝ փոփոխվել}other{<ph name="MANY_ADDED" /> ներդիր ավելացվել է, <ph name="ANY_CHANGED" />-ը՝ փոփոխվել}}</translation>
 <translation id="3291470810748040983">Դուք ծանուցում կստանաք, երբ բացված ներդիրում ավելի ցածր գին հայտնաբերվի</translation>
 <translation id="3322827343001922122">Բացել «<ph name="TITLE_OF_GROUP" />» ներդիրների խմբի գործողությունների ընտրացանկը</translation>
 <translation id="3328308545011660196">Հուշում․ <ph name="NUMBER_OF_TABS" /> ներդիր նմանություն ունեն։ Խմբավորե՞լ դրանք։</translation>
@@ -71,6 +74,7 @@
 <translation id="4159784952369912983">Մանուշակագույն</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Ծավալել <ph name="TABS_COUNT_ONE" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}one{Ծավալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}other{Ծավալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}}</translation>
 <translation id="427987768447457592">Ներդիրների նոր խումբ</translation>
+<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ներդիր փոփոխվել է, <ph name="ANY_CLOSED" />-ը՝ փակվել}one{<ph name="MANY_CHANGED" /> ներդիր փոփոխվել է, <ph name="ANY_CLOSED" />-ը՝ փակվել}other{<ph name="MANY_CHANGED" /> ներդիր փոփոխվել է, <ph name="ANY_CLOSED" />-ը՝ փակվել}}</translation>
 <translation id="4371591986692297148">Ակտիվ չէ</translation>
 <translation id="4460014764210899310">Ապախմբավորել</translation>
 <translation id="4590027107044272416">Այժմ կարող եք նոր ներդիր բացել այստեղ</translation>
@@ -92,6 +96,7 @@
 <translation id="5076161749301278626">Ցուցադրե՞լ խանութի մասին կարծիքները</translation>
 <translation id="5082793167783849073">Արագ համեմատեք էջերը՝ խումբ կազմելով: Սկսելու համար հպեք և պահեք հղումը:</translation>
 <translation id="5094423602314093681">Հեռացնե՞լ ներդիր(ներ)ը և ջնջե՞լ խումբը</translation>
+<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ներդիր ավելացվել է}one{<ph name="MANY_ADDED" /> ներդիր ավելացվել է}other{<ph name="MANY_ADDED" /> ներդիր ավելացվել է}}</translation>
 <translation id="5161254044473106830">Վերնագիրը պարտադիր է</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Փակել <ph name="TABS_COUNT_ONE" /> ներդիրից բաղկացած խումբը։}one{Փակել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}other{Փակել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}}</translation>
 <translation id="5339733443032484186">Ձեր վերջին ներդիրը</translation>
@@ -100,6 +105,7 @@
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Փակել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Փակել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}other{Փակել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}}</translation>
 <translation id="5556417849629758491">Դիտել խանութի մասին տեղեկությունները, գործողությունը հասանելի է էկրանի վերին մասում</translation>
+<translation id="5627941783489838464">Ներդիրների մասին թարմացումներ չկան</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Վերականգնել ներդիրը}one{Վերականգնել ներդիրները}other{Վերականգնել ներդիրները}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> հղում Chrome-ից}one{<ph name="TABS_COUNT_MANY" /> հղում Chrome-ից}other{<ph name="TABS_COUNT_MANY" /> հղում Chrome-ից}}</translation>
 <translation id="575494663145460764">Ստանա՞լ ծանուցումներ գների իջեցման մասին</translation>
@@ -124,6 +130,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Տեղափոխել ներդիրը ձախ</translation>
 <translation id="6615455863669487791">Ցույց տալ</translation>
+<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ներդիր փոփոխվել է}one{<ph name="MANY_CHANGED" /> ներդիր փոփոխվել է}other{<ph name="MANY_CHANGED" /> ներդիր փոփոխվել է}}</translation>
 <translation id="6694634756612002311">Կառավարել հասանելիության պարամետրերը</translation>
 <translation id="6744956528665271406">Փոփոխել խմբի գույնը</translation>
 <translation id="6856809498882026482">Թաքցնել մի քանի ներդիրի ընտրության ռեժիմը</translation>
@@ -165,6 +172,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Փակել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը}one{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը}other{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}}</translation>
 <translation id="8398929769197326728">Նոր պանակ – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
+<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ներդիր ավելացվել է, <ph name="ANY_CLOSED" />-ը՝ փոփոխվել}one{<ph name="MANY_ADDED" /> ներդիր ավելացվել է, <ph name="ANY_CLOSED" />-ը՝ փոփոխվել}other{<ph name="MANY_ADDED" /> ներդիր ավելացվել է, <ph name="ANY_CLOSED" />-ը՝ փոփոխվել}}</translation>
 <translation id="8631711675211020168">Բոլորին անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և այն կջնջվի բոլոր սարքերից</translation>
 <translation id="8633025649649592204">Վերջին գործողությունները</translation>
 <translation id="870736955561925754">Փակե՞լ ներդիրը և ջնջել խումբը</translation>

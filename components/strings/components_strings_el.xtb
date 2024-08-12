@@ -158,6 +158,7 @@
 <translation id="1270328905573953738">Μετακομίσεις και μετεγκαταστάσεις</translation>
 <translation id="1270502636509132238">Τρόπος παραλαβής</translation>
 <translation id="1273592791152866347">Η παρακολούθηση τιμής είναι ανενεργή</translation>
+<translation id="1277711244058668002">Κουμπί Μου αρέσει, πατήστε Enter για να υποβάλετε σχόλια ότι σας αρέσει αυτή η πρόταση</translation>
 <translation id="127777513559587977">Τηλεοπτικά talk show</translation>
 <translation id="1281476433249504884">Μονάδα στοίβαξης 1</translation>
 <translation id="1281536351321444151">Για να συμπληρωθεί αυτόματα αυτό το IBAN την επόμενη φορά, αποθηκεύστε το στον Λογαριασμό σας Google</translation>
@@ -456,6 +457,7 @@
 <translation id="180757923930449935">(Προσομοίωση 64-bit)</translation>
 <translation id="180991881384371158">Ο κωδικός CVC βρίσκεται στο πίσω μέρος της κάρτας σας. Είναι τα 3 τελευταία ψηφία στην επάνω δεξιά γωνία του πλαισίου υπογραφής.</translation>
 <translation id="1810391395243432441">Προστασία κωδικών πρόσβασης με το κλείδωμα οθόνης</translation>
+<translation id="1810597570737826742">{count,plural, =1{{position} από {count} και διεύθυνση}other{{position} από {count} και διευθύνσεις}}</translation>
 <translation id="1812527064848182527">οριζόντιος προσανατολισμός</translation>
 <translation id="1812975699435941848">Εκπαίδευση υγείας και Ιατρική εκπαίδευση</translation>
 <translation id="1816436748874040213">Μπορεί να ζητήσει να γίνει κύλιση και εστίαση στις κοινόχρηστες καρτέλες</translation>
@@ -663,6 +665,7 @@
 <translation id="2188375229972301266">Πολλαπλό τρύπημα στο κάτω μέρος</translation>
 <translation id="2194856509914051091">Λάβετε υπόψη τα εξής</translation>
 <translation id="2197398642355049178">Τα θέματά σας</translation>
+<translation id="2200678913752027654">Κουμπί Δεν εγκρίνω. Πατήστε Enter για να ανοίξετε μια φόρμα για την υποβολή λεπτομερών σχολίων σχετικά με τους λόγους για τους οποίους δεν σας αρέσει αυτή η πρόταση</translation>
 <translation id="2202627062836089804">πίσω μέρος της κάρτας σας</translation>
 <translation id="2204482073374652408">Η ενημέρωση ολοκληρώθηκε!</translation>
 <translation id="2207770355672215546">Να επιτρέπεται πάντα, με οποιαδήποτε κάρτα</translation>
@@ -2586,6 +2589,7 @@
 <translation id="5887687176710214216">Τελευταία επίσκεψη χθες</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
 <translation id="5895187275912066135">Εκδόθηκε την</translation>
+<translation id="5898767305816764989">Κουμπί Μου αρέσει, πατήστε Enter για να υποβάλετε σχόλια ότι σας αρέσει, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Κίτρινο</translation>
 <translation id="5903264686717710770">Τίτλος:</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (συγχρονισμένο)</translation>
@@ -3318,6 +3322,7 @@
 Πρόσθετες λεπτομέρειες:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7251635775446614726">Ο διαχειριστής σας λέει: <ph name="CUSTOM_MESSAGE" />.</translation>
+<translation id="7255540419660272073">Κουμπί Δεν εγκρίνω, πατήστε Enter για να ανοίξετε μια φόρμα για την υποβολή λεπτομερών σχολίων σχετικά με τους λόγους για τους οποίους δεν σας αρέσει, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Πίσω τροφοδότης χαρτιού</translation>
 <translation id="7257453341537973799">Πόροι και σχεδιασμός καριέρας</translation>
 <translation id="725866823122871198">Δεν είναι δυνατή η επίτευξη ιδιωτικής σύνδεσης με τον τομέα <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> επειδή η ημερομηνία και η ώρα (<ph name="DATE_AND_TIME" />) του υπολογιστή σας είναι λανθασμένες.</translation>

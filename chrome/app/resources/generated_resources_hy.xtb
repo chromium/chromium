@@ -1206,6 +1206,7 @@
 <translation id="184183613002882946">Ոչ, կարիք չկա</translation>
 <translation id="184273675144259287">Փոխարինեք ձեր Լինուքսի հավելվածներն ու ֆայլերը նախորդ կրկնօրինակներով</translation>
 <translation id="1842766183094193446">Միացնե՞լ ցուցադրական ռեժիմը</translation>
+<translation id="1843048149176045210">Պատճենել ներբեռնման հղումը</translation>
 <translation id="1845060436536902492">ChromeOS Flex-ում ChromeVox Էկրանի ընթերցիչը հիմնականում օգտագործում են տեսողության խնդիրներ ունեցող կամ կույր մարդիկ՝ բրայլյան կամ խոսքի սինթեզատորով էկրանին ցուցադրվող տեքստը կարդալու համար։ Սեղմեք բացատի ստեղնը՝ ChromeVox-ը բացելու համար։ Երբ ChromeVox-ը միանա, դուք կանցնեք արագ ուղեցույցով։</translation>
 <translation id="1845727111305721124">Թույլատրվում է նվագարկել</translation>
 <translation id="1846308012215045257">Ctrl ստեղնը պահեք և մկնիկով սեղմեք՝ <ph name="PLUGIN_NAME" />-ն աշխատեցնելու համար</translation>
@@ -3160,6 +3161,7 @@
 <translation id="3251714896659475029">Թույլատրեք <ph name="SUPERVISED_USER_NAME" />-ին բացել Google Օգնականը «Ok Google» հրահանգի միջոցով</translation>
 <translation id="3251759466064201842">&lt;Վկայագրի մաս չի կազմում&gt;</translation>
 <translation id="325238099842880997">Սահմանեք հիմնական կանոններ՝ ընտրելով երեխայի համար սովորելու, խաղալու և տնային աշխատանքներ անելու ժամեր։</translation>
+<translation id="3253083398453405334">Էկրանը թարթում է, երբ ծանուցումներ եք ստանում</translation>
 <translation id="3253225298092156258">Հասանելի չէ</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Տարածք ազատեք <ph name="CLOUD_PROVIDER" />-ում՝ այս ֆայլը պատճենելու համար}one{Տարածք ազատեք <ph name="CLOUD_PROVIDER" />-ում՝ այս ֆայլը պատճենելու համար}other{Տարածք ազատեք <ph name="CLOUD_PROVIDER" />-ում՝ այս ֆայլերը պատճենելու համար}}</translation>
 <translation id="3253448572569133955">Անհայտ հաշիվ</translation>
@@ -3186,6 +3188,7 @@
 <translation id="3269093882174072735">Բեռնել պատկերը</translation>
 <translation id="326911502853238749">Չցուցադրել <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Միացրեք համաժամացումը՝ ձեր տվյալները պահուստավորելու և ցանկացած սարքում օգտագործելու համար</translation>
+<translation id="3269209112443570745">Նորույթ․ էկրանին բովանդակություն որոնելու հեշտ եղանակ</translation>
 <translation id="3269612321104318480">Բաց փիրուզագույն և սպիտակ</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
 <translation id="326999365752735949">Diff-ի ներբեռնում</translation>
@@ -3654,6 +3657,8 @@
 <translation id="3621202678540785336">Ներածում</translation>
 <translation id="3621807901162200696">Օգնել ավելի լավը դարձնել ChromeOS-ի գործառույթներն ու աշխատանքը</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{հավելված}one{# հավելված}other{# հավելված}}</translation>
+<translation id="3622716124581627104">Նույնականացրեք իրեր կամ վայրեր և պատճենեք կամ թարգմանեք տեքստեր։ Երբ օգտագործում եք Google Տեսապակին, էջի սքրինշոթն ուղարկվում է Google-ին։ <ph name="LEARN_MORE" /></translation>
+<translation id="3622820753353315928">Էկրանի թարթման գույնը</translation>
 <translation id="362333465072914957">Սպասում ենք հավաստագրման կենտրոնի կողմից հավաստագրի տրամադրմանը</translation>
 <translation id="3623598555687153298"><ph name="TOTAL_USAGE" /> ծավալով տվյալները, որոնք պահվել են ցուցադրված կայքերի կողմից, կջնջվեն</translation>
 <translation id="3624567683873126087">Ապակողպել սարքը և մտնել Google հաշիվ</translation>
@@ -7153,6 +7158,7 @@
 <translation id="6197128521826316819">Ստեղծել QR կոդ այս էջի համար</translation>
 <translation id="6198223452299275399">Թերթեք էջերը</translation>
 <translation id="6198252989419008588">Փոխել PIN-ը</translation>
+<translation id="61988015556954366">Էկրանի թարթում</translation>
 <translation id="6200047250927636406">Հեռացնել ֆայլը</translation>
 <translation id="6200151268994853226">Կառավարել ընդլայնումը</translation>
 <translation id="6201608810045805374">Հեռացնե՞լ հաշիվը</translation>
@@ -7510,6 +7516,7 @@
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ֆայլ</translation>
 <translation id="6469557521904094793">Միացնել բջջային ցանցը</translation>
 <translation id="6469702164109431067">Գաղտնաբառեր և մուտքի բանալիներ</translation>
+<translation id="6470120577693311302">Թարթող ծանուցումներ</translation>
 <translation id="6470823736074966819">Անջատել ծանուցումների ձայնը</translation>
 <translation id="6472893788822429178">Ցույց տալ Սկիզբ կոճակը</translation>
 <translation id="6473315466413288899">Ընտրեք տարբերակ</translation>
@@ -7944,6 +7951,7 @@
 <translation id="6790820461102226165">Ավելացնել անձ…</translation>
 <translation id="6793610798874309813">Ձեր PIN կոդը կարող է պարունակել 4 կամ ավելի նիշ</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> հղումը պատճենվեց սեղմատախտակին</translation>
 <translation id="6794511157503068">Եթե <ph name="APP_NAME" /> հավելվածի ձեր մուտքի բանալին USB անվտանգության բանալու մեջ է, ապա տեղադրեք և միացրեք այն</translation>
 <translation id="679486139907144816">Այս կայք մուտքի բանալու միջոցով մուտք գործելու համար կարգավորումներում միացրեք Windows Hello-ն։ Այնուհետև վերադարձեք այս կայք և նորից փորձեք։</translation>
 <translation id="6795371939514004514">Ավտոմատ սկանավորումը թույլ է տալիս էկրանին ավտոմատ կերպով անցնել մեկ տարրից մյուսին։ Երբ որևէ տարր ընդգծված է, սեղմեք «Ընտրել»՝ այն ակտիվացնելու համար։</translation>

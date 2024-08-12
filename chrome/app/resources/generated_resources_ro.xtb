@@ -1205,6 +1205,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="184183613002882946">Nu, folosește un singur comutator</translation>
 <translation id="184273675144259287">Înlocuiește aplicațiile și fișierele Linux cu cele dintr-un backup anterior</translation>
 <translation id="1842766183094193446">Sigur vrei să activezi modul demonstrativ?</translation>
+<translation id="1843048149176045210">Copiază linkul de descărcare</translation>
 <translation id="1845060436536902492">Cititorul de ecran din ChromeOS Flex, ChromeVox, este folosit în principal de persoane oarbe sau cu vedere slabă pentru a citi textul afișat pe ecran cu un sintetizator vocal sau un afișaj Braille. Apasă pe bara de spațiu pentru a activa ChromeVox. Când ChromeVox este activat, vei face un tur rapid.</translation>
 <translation id="1845727111305721124">Au permisiunea de a reda sunet</translation>
 <translation id="1846308012215045257">Dă control-clic pentru a rula <ph name="PLUGIN_NAME" /></translation>
@@ -3160,6 +3161,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3251714896659475029">Permite accesul lui <ph name="SUPERVISED_USER_NAME" /> la Asistentul Google cu „Ok Google”</translation>
 <translation id="3251759466064201842">&lt;Nu face parte dintr-un certificat&gt;</translation>
 <translation id="325238099842880997">Stabilește reguli digitale de bază pentru a-i ajuta pe copii să se joace, să exploreze și să-și facă temele acasă</translation>
+<translation id="3253083398453405334">Iluminează intermitent ecranul când primești notificări</translation>
 <translation id="3253225298092156258">Indisponibilă</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Eliberează spațiu în <ph name="CLOUD_PROVIDER" /> pentru a copia fișierul}few{Eliberează spațiu în <ph name="CLOUD_PROVIDER" /> pentru a copia fișierele}other{Eliberează spațiu în <ph name="CLOUD_PROVIDER" /> pentru a copia fișierele}}</translation>
 <translation id="3253448572569133955">Cont necunoscut</translation>
@@ -3656,6 +3658,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3621202678540785336">Intrări</translation>
 <translation id="3621807901162200696">Contribuie la îmbunătățirea funcțiilor și a performanței sistemului de operare Chrome</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{o aplicație}few{# aplicații}other{# de aplicații}}</translation>
+<translation id="3622820753353315928">Luminare intermitentă colorată a ecranului</translation>
 <translation id="362333465072914957">Se așteaptă emiterea unui certificat de către CA</translation>
 <translation id="3623598555687153298">Astfel, se vor șterge <ph name="TOTAL_USAGE" /> din datele stocate de site-urile afișate</translation>
 <translation id="3624567683873126087">Deblochează dispozitivul și conectează-te la Contul Google</translation>
@@ -7157,6 +7160,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6197128521826316819">Creează un cod QR pentru această pagină</translation>
 <translation id="6198223452299275399">Glisează pentru a comuta între pagini</translation>
 <translation id="6198252989419008588">Schimbă codul PIN</translation>
+<translation id="61988015556954366">Iluminarea ecranului</translation>
 <translation id="6200047250927636406">Șterge fișierul</translation>
 <translation id="6200151268994853226">Gestionează extensia</translation>
 <translation id="6201608810045805374">Elimini acest cont?</translation>
@@ -7514,6 +7518,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> fișiere</translation>
 <translation id="6469557521904094793">Activează rețeaua mobilă</translation>
 <translation id="6469702164109431067">Parole și chei de acces</translation>
+<translation id="6470120577693311302">Notificări flash</translation>
 <translation id="6470823736074966819">Dezactivează sunetul notificărilor</translation>
 <translation id="6472893788822429178">Afișează butonul Pagina principală</translation>
 <translation id="6473315466413288899">Selectează o opțiune</translation>
@@ -7948,6 +7953,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6790820461102226165">Adaugă o persoană...</translation>
 <translation id="6793610798874309813">Codul PIN poate avea 4 caractere sau mai multe</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> s-a copiat în clipboard</translation>
 <translation id="6794511157503068">În cazul în care cheia de acces pentru <ph name="APP_NAME" /> se găsește pe o cheie de securitate USB, introdu-o și atinge-o acum</translation>
 <translation id="679486139907144816">Pentru a te conecta la acest site cu o cheie de acces, trebuie să activezi Windows Hello în setări. Apoi revino la site și încearcă din nou.</translation>
 <translation id="6795371939514004514">Scanarea automată îți dă posibilitatea să treci automat de la un element de pe ecran la altul. Atunci când un element este evidențiat, apasă pe Selectează pentru a-l activa.</translation>

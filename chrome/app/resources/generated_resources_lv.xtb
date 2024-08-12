@@ -2644,6 +2644,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2853121255651601031">Parole saglabāta</translation>
 <translation id="2855243985454069333">Tiks dzēsta vēsture no visām sinhronizētajām ierīcēm</translation>
 <translation id="2855812646048059450">Pierakstīties, izmantojot <ph name="CREDENTIAL_PROVIDER" /> kontu</translation>
+<translation id="28559674945112027">Stingrais režīms</translation>
 <translation id="2856776373509145513">Jauna konteinera izveide</translation>
 <translation id="2856907950922663165">Vai izslēgt URL šifrēšanu?</translation>
 <translation id="2859741939921354763">Importējiet paroles pakalpojumā <ph name="BRAND" />.</translation>
@@ -6393,6 +6394,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5623282979409330487">Šī vietne var piekļūt jūsu kustību sensoriem.</translation>
 <translation id="5623842676595125836">Žurnāls</translation>
 <translation id="5624120631404540903">Pārvaldīt paroles</translation>
+<translation id="5624959475330585145">Jautāt pirms nedrošu savienojumu izveides</translation>
 <translation id="5625225435499354052">Rediģēt pakalpojumā Google Pay</translation>
 <translation id="5626134646977739690">Nosaukums:</translation>
 <translation id="5627832140542566187">Displeja virziens</translation>
@@ -9628,6 +9630,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8008356846765065031">Internets atvienots. Pārbaudiet interneta savienojumu.</translation>
 <translation id="8008704580256716350">Bloķēts aizdomīgs fails</translation>
 <translation id="8009225694047762179">Pārvaldīt paroles</translation>
+<translation id="8010081455002666927">Noteikt automātiski</translation>
 <translation id="8011372169388649948">Pārvietota grāmatzīme: <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="8012188750847319132">burtslēga taustiņš</translation>
 <translation id="8012463809859447963">Detalizēta informācija par tūlītējo tīklāju</translation>
@@ -11034,6 +11037,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="9009707268312089299">Importēts no operētājsistēmas Windows</translation>
 <translation id="9009708085379296446">Vai vēlējāties mainīt šo lapu?</translation>
 <translation id="9010845741772269259">Pievienot maksājuma veidus</translation>
+<translation id="901087299639956505">Līdzsvarotais režīms</translation>
 <translation id="9011163749350026987">Vienmēr rādīt ikonu</translation>
 <translation id="9011262023858991985">Notiek šīs cilnes apraide</translation>
 <translation id="9011393886518328654">Piezīmes par izdevumu</translation>
