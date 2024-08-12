@@ -30,7 +30,6 @@ public class IncognitoNewTabPageStation extends PageStation {
     @Override
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
-        elements.declareView(URL_BAR);
         elements.declareView(ICON);
         elements.declareView(GONE_INCOGNITO_TEXT);
         elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedSupplier));

@@ -21,6 +21,7 @@ import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -145,12 +146,9 @@ public class PageStation extends Station {
     protected final String mExpectedUrlSubstring;
     protected final String mExpectedTitle;
 
-    public static final ViewSpec TOOLBAR = viewSpec(withId(R.id.toolbar));
-    public static final ViewSpec HOME_BUTTON = TOOLBAR.descendant(withId(R.id.home_button));
-    public static final ViewSpec URL_BAR = TOOLBAR.descendant(withId(R.id.url_bar));
-    public static final ViewSpec TAB_SWITCHER_BUTTON =
-            TOOLBAR.descendant(withId(R.id.tab_switcher_button));
-    public static final ViewSpec MENU_BUTTON = TOOLBAR.descendant(withId(R.id.menu_button));
+    public static final ViewSpec HOME_BUTTON = viewSpec(withId(R.id.home_button));
+    public static final ViewSpec TAB_SWITCHER_BUTTON = viewSpec(withId(R.id.tab_switcher_button));
+    public static final ViewSpec MENU_BUTTON = viewSpec(withId(R.id.menu_button));
 
     protected ActivityElement<ChromeTabbedActivity> mActivityElement;
     protected Supplier<Tab> mActivityTabSupplier;
@@ -207,9 +205,13 @@ public class PageStation extends Station {
     public void declareElements(Elements.Builder elements) {
         mActivityElement = elements.declareActivity(ChromeTabbedActivity.class);
 
-        elements.declareView(HOME_BUTTON);
-        elements.declareView(TAB_SWITCHER_BUTTON);
-        elements.declareView(MENU_BUTTON);
+        // TODO(crbug.com/41497463): These should be scoped, but for now they need to be unscoped
+        // since they unintentionally still exist in the non-Hub tab switcher. They are mostly
+        // occluded by the tab switcher toolbar, but at least the tab_switcher_button is still
+        // visible.
+        elements.declareView(HOME_BUTTON, ViewElement.unscopedOption());
+        elements.declareView(TAB_SWITCHER_BUTTON, ViewElement.unscopedOption());
+        elements.declareView(MENU_BUTTON, ViewElement.unscopedOption());
 
         if (mNumTabsBeingOpened > 0) {
             elements.declareEnterCondition(
@@ -316,7 +318,7 @@ public class PageStation extends Station {
     public PageAppMenuFacility<PageStation> openGenericAppMenu() {
         recheckActiveConditions();
 
-        return enterFacilitySync(new PageAppMenuFacility<>(), MENU_BUTTON::click);
+        return enterFacilitySync(new PageAppMenuFacility<PageStation>(), MENU_BUTTON::click);
     }
 
     /** Opens the tab switcher by pressing the toolbar tab switcher button. */

@@ -44,9 +44,12 @@ import org.chromium.chrome.test.transit.tabmodel.TabModelSelectorCondition;
 public abstract class HubBaseStation extends Station {
     public static final ViewSpec HUB_TOOLBAR = viewSpec(withId(R.id.hub_toolbar));
     public static final ViewSpec HUB_PANE_HOST = viewSpec(withId(R.id.hub_pane_host));
-    public static final ViewSpec HUB_MENU_BUTTON = HUB_TOOLBAR.descendant(withId(R.id.menu_button));
+    public static final ViewSpec HUB_MENU_BUTTON =
+            viewSpec(
+                    isDescendantOfA(withId(R.id.hub_toolbar)),
+                    withId(org.chromium.chrome.R.id.menu_button));
     public static final ViewSpec HUB_PANE_SWITCHER =
-            HUB_TOOLBAR.descendant(withId(R.id.pane_switcher));
+            viewSpec(allOf(isDescendantOfA(withId(R.id.hub_toolbar)), withId(R.id.pane_switcher)));
 
     public static final ViewSpec REGULAR_TOGGLE_TAB_BUTTON =
             viewSpec(withContentDescription(R.string.accessibility_tab_switcher_standard_stack));
