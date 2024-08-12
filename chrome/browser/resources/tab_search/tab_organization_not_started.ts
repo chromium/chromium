@@ -56,7 +56,7 @@ export class TabOrganizationNotStartedElement extends
     super.connectedCallback();
 
     this.syncBrowserProxy_.getSignInState().then(this.setSignedIn_.bind(this));
-    this.addWebUiListener('has-accoun-changed', this.setSignedIn_.bind(this));
+    this.addWebUiListener('account-info-changed', this.setSignedIn_.bind(this));
   }
 
   getTitle(): string {
