@@ -106,13 +106,8 @@ SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     TabGroupServiceWrapper* wrapper_service)
     : token_(token),
       web_contents_(web_contents),
-      favicon_driver_(
-          favicon::ContentFaviconDriver::FromWebContents(web_contents)),
       wrapper_service_(wrapper_service) {
   Observe(web_contents_);
-  if (favicon_driver_) {
-    favicon_driver_->AddObserver(this);
-  }
 }
 
 SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
@@ -122,20 +117,12 @@ SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     TabGroupServiceWrapper* wrapper_service)
     : token_(token),
       web_contents_(web_contents),
-      favicon_driver_(
-          favicon::ContentFaviconDriver::FromWebContents(web_contents)),
       wrapper_service_(wrapper_service),
       handle_from_sync_update_(navigation_handle) {
   Observe(web_contents_);
-  if (favicon_driver_) {
-    favicon_driver_->AddObserver(this);
-  }
 }
 
 SavedTabGroupWebContentsListener::~SavedTabGroupWebContentsListener() {
-  if (favicon_driver_) {
-    favicon_driver_->RemoveObserver(this);
-  }
   TabGroupSyncTabState::Reset(web_contents());
 }
 
@@ -201,42 +188,6 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
 void SavedTabGroupWebContentsListener::DidGetUserInteraction(
     const blink::WebInputEvent& event) {
   TabGroupSyncTabState::Reset(web_contents());
-}
-
-void SavedTabGroupWebContentsListener::TitleWasSet(
-    content::NavigationEntry* entry) {
-  // Don't update the title if the URL should not be synced.
-  if (!SavedTabGroupUtils::IsURLValidForSavedTabGroups(entry->GetURL())) {
-    return;
-  }
-
-  std::optional<SavedTabGroup> group = saved_group();
-  wrapper_service_->UpdateTab(group->local_group_id().value(), token_,
-                              entry->GetTitleForDisplay(), entry->GetURL(),
-                              /*position=*/std::nullopt);
-}
-
-void SavedTabGroupWebContentsListener::OnFaviconUpdated(
-    favicon::FaviconDriver* favicon_driver,
-    FaviconDriverObserver::NotificationIconType notification_icon_type,
-    const GURL& icon_url,
-    bool icon_url_changed,
-    const gfx::Image& image) {
-  // Don't update the favicon if the URL should not be synced.
-  if (!SavedTabGroupUtils::IsURLValidForSavedTabGroups(
-          favicon_driver->GetActiveURL())) {
-    return;
-  }
-
-  std::optional<SavedTabGroup> group = saved_group();
-  SavedTabGroupTab* tab = group->GetTab(token_);
-
-  wrapper_service_->SetFaviconForTab(
-      group->local_group_id().value(), token_,
-      favicon::TabFaviconFromWebContents(web_contents_));
-  wrapper_service_->UpdateTab(group->local_group_id().value(), token_,
-                              tab->title(), tab->url(),
-                              /*position=*/std::nullopt);
 }
 
 void SavedTabGroupWebContentsListener::UpdateTabRedirectChain(
