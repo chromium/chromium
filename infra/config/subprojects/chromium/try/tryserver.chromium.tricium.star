@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders used by Tricium for Chromium."""
 
-load("//lib/builders.star", "os", "siso")
+load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/try.star", "SOURCELESS_BUILDER_CACHE", "try_")
@@ -140,6 +140,7 @@ try_.builder(
     ),
     cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     ssd = True,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     # TODO(gbiv): Determine why this needs a system xcode and things like `Mac
