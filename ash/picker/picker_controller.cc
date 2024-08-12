@@ -671,7 +671,7 @@ void PickerController::CloseCapsLockStateView() {
 }
 
 void PickerController::OnFeatureTourLearnMore() {
-  OpenLink(GURL("about:blank"));
+  OpenLink(GURL("https://support.google.com/chromebook?p=dugong"));
 }
 
 void PickerController::OnFeatureTourCompleted(
