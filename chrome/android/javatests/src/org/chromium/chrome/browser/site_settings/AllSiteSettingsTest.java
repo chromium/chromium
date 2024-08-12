@@ -35,9 +35,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
-import org.chromium.chrome.browser.privacy_sandbox.FakeTrackingProtectionBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
-import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -78,8 +76,6 @@ public class AllSiteSettingsTest {
 
     @Rule public JniMocker mocker = new JniMocker();
 
-    private FakeTrackingProtectionBridge mFakeTrackingProtectionBridge;
-
     private static BrowserContextHandle getBrowserContextHandle() {
         return ProfileManager.getLastUsedRegularProfile();
     }
@@ -88,8 +84,6 @@ public class AllSiteSettingsTest {
     public void setUp() throws TimeoutException {
         SiteSettingsTestUtils.cleanUpCookiesAndPermissions();
         MockitoAnnotations.initMocks(this);
-        mFakeTrackingProtectionBridge = new FakeTrackingProtectionBridge();
-        mocker.mock(TrackingProtectionBridgeJni.TEST_HOOKS, mFakeTrackingProtectionBridge);
     }
 
     @Test

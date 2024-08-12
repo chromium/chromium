@@ -97,8 +97,6 @@ import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.privacy_sandbox.FakeTrackingProtectionBridge;
-import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
@@ -185,8 +183,6 @@ public class SiteSettingsTest {
 
     @Rule public JniMocker mocker = new JniMocker();
 
-    private FakeTrackingProtectionBridge mFakeTrackingProtectionBridge;
-
     private PermissionUpdateWaiter mPermissionUpdateWaiter;
 
     private static final String[] NULL_ARRAY = new String[0];
@@ -224,8 +220,6 @@ public class SiteSettingsTest {
         // Clean up cookies and permissions to ensure tests run in a clean environment.
         cleanUpCookiesAndPermissions();
         MockitoAnnotations.initMocks(this);
-        mFakeTrackingProtectionBridge = new FakeTrackingProtectionBridge();
-        mocker.mock(TrackingProtectionBridgeJni.TEST_HOOKS, mFakeTrackingProtectionBridge);
     }
 
     @After
