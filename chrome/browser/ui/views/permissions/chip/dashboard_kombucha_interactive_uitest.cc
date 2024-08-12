@@ -495,6 +495,9 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       ExecuteJs(kWebContentsElementId, "requestMicrophone"),
       WaitForStateChange(kWebContentsElementId, GetMicStreamStateChange()),
       WaitForShow(PermissionChipView::kIndicatorChipElementId),
+      CheckViewProperty(PermissionChipView::kIndicatorChipElementId,
+                        &PermissionChipView::GetText,
+                        l10n_util::GetStringUTF16(IDS_MICROPHONE_IN_USE)),
       ExecuteJs(kWebContentsElementId, "stopMic"),
       WaitForHide(PermissionChipView::kIndicatorChipElementId));
 }
