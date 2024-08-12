@@ -80,6 +80,8 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
   // Ignore this bubble for accessibility purposes. The contents of the preview
   // bubble are announced via the item view that triggered the bubble.
   SetAccessibleWindowRole(ax::mojom::Role::kNone);
+  // Highlighting of the anchor is done by the anchor itself.
+  set_highlight_button_when_shown(false);
 
   views::Builder<PickerPreviewBubbleView>(this)
       .set_margins(kMargins)
