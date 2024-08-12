@@ -437,7 +437,7 @@ class BisectException(Exception):
     return '[Bisect Exception]: %s\n' % self.args[0]
 
 
-def RunGsutilCommand(args, can_fail=False, verbose=False):
+def RunGsutilCommand(args, can_fail=False, ignore_fail=False):
   if not GSUTILS_PATH:
     raise BisectException('gsutils is not found in path.')
   if is_verbose:
@@ -464,10 +464,52 @@ def RunGsutilCommand(args, can_fail=False, verbose=False):
       sys.exit(1)
     elif can_fail:
       return stderr
+    elif ignore_fail:
+      return stdout
     else:
       raise Exception('Error running the gsutil command:\n%s\n%s' %
                       (args, stderr))
   return stdout
+
+
+def GsutilList(*urls, ignore_fail=False):
+  """List GCloud Storage with URLs and return a list of paths.
+
+  This method lists all archive builds in a GCS bucket; it filters out invalid
+  archive builds or files.
+
+  Arguments:
+    * urls - one or more gs:// URLs
+    * ignore_fail - ignore gsutil command errors, e.g., 'matched no objects'
+
+  Return:
+    * list of paths that match the given URLs
+  """
+  # Get a directory listing with file sizes. Typical output looks like:
+  #         7  2023-11-27T21:08:36Z  gs://.../LAST_CHANGE
+  # 144486938  2023-03-07T14:41:25Z  gs://.../full-build-win32_1113893.zip
+  # TOTAL: 114167 objects, 15913845813421 bytes (14.47 TiB)
+  # This lets us ignore empty .zip files that will otherwise cause errors.
+  stdout = RunGsutilCommand(['ls', '-l', *urls], ignore_fail=ignore_fail)
+  # Trim off the summary line that only happens with -l
+  lines = []
+  for line in stdout.splitlines():
+    parts = line.split(maxsplit=2)
+    if not parts[-1].startswith('gs://'):
+      continue
+    # Check whether there is a size field. For release builds the listing
+    # will be directories so there will be no size field.
+    if len(parts) > 1:
+      if ANDROID_INVALID_BUCKET in line:
+        continue
+      size = int(parts[0])
+      # Empty .zip files are 22 bytes. Ignore anything less than 1,000 bytes,
+      # but keep the LAST_CHANGE file since the code seems to expect that.
+      if parts[-1].endswith('LAST_CHANGE') or size > 1000:
+        lines.append(parts[-1])
+    else:
+      lines.append(parts[-1])
+  return lines
 
 
 class ArchiveBuild(abc.ABC):
@@ -631,74 +673,105 @@ class ArchiveBuild(abc.ABC):
 
 class ReleaseBuild(ArchiveBuild):
 
+  def __init__(self, options):
+    super().__init__(options)
+    self.good_revision = LooseVersion(self.good_revision)
+    self.bad_revision = LooseVersion(self.bad_revision)
+
   @property
   def build_type(self):
     return 'release'
 
   def _get_release_bucket(self):
-    if 'android' in self.platform:
-      if self.signed:
-        return ANDROID_RELEASE_BASE_URL_SIGNED
-      else:
-        return ANDROID_RELEASE_BASE_URL
     return RELEASE_BASE_URL
 
-  def _get_rev_list(self):
-    # Download the revlist and filter for just the range between good and bad.
-    minrev = min(self.good_revision, self.bad_revision)
-    maxrev = max(self.good_revision, self.bad_revision)
-    # Check against a version number that is many years in the future in order
-    # to detect when a revision number is passed instead of a version number.
-    if maxrev > LooseVersion('2000'):
-      raise BisectException('Max version of %s is too high. Be sure to use a '
-                            'version number, not revision number with release '
-                            'builds.' % maxrev)
-    build_numbers = PathContext.GsutilList(self._get_release_bucket())
+  def _get_rev_list(self, min_rev=None, max_rev=None):
+    # Get all build numbers in the build bucket.
+    build_numbers = []
     revision_re = re.compile(r'(\d+\.\d\.\d{4}\.\d+)')
-    build_numbers = [b for b in build_numbers if revision_re.search(b)]
+    for path in GsutilList(self._get_release_bucket()):
+      match = revision_re.search(path)
+      if match:
+        build_numbers.append(LooseVersion(match[1]))
+    # Filter the versions between min_rev and max_rev.
+    build_numbers = [
+        x for x in build_numbers
+        if (not min_rev or min_rev <= x) and (not max_rev or x <= max_rev)
+    ]
+    # Check if target archive build exists in batches.
+    # batch size is limited by maximum length for the command line. Which is
+    # 32,768 characters on Windows, which should be enough up to 400 files.
+    batch_size = 100
     final_list = []
-    parsed_build_numbers = [LooseVersion(x) for x in build_numbers]
-    parsed_build_numbers = sorted(parsed_build_numbers)
-    start = bisect.bisect_left(parsed_build_numbers, minrev)
-    end = bisect.bisect_right(parsed_build_numbers, maxrev)
-    # Each call to GsutilExists takes about one second so give an estimate of
-    # the wait time.
-    build_count = end - start
-    print('Checking the existence of %d builds. This will take about %.1f '
-          'minutes' % (build_count, build_count / 60.0))
-    for build_number in parsed_build_numbers[start:end]:
-      path = (self._get_release_bucket() + '/' + str(build_number) + '/' +
-              self.listing_platform_dir + self.archive_name)
-      if PathContext.GsutilExists(path):
-        final_list.append(str(build_number))
-    print('Found %d builds' % len(final_list))
+    for batch in (build_numbers[i:i + batch_size]
+                  for i in range(0, len(build_numbers), batch_size)):
+      sys.stdout.write('\rFetching revisions at marker %s' % batch[0])
+      sys.stdout.flush()
+      # List the files that exists with listing_platform_dir and archive_name.
+      # Gsutil could fail because some of the path not exists. It's safe to
+      # ignore them.
+      for path in GsutilList(*[self._get_archive_path(x) for x in batch],
+                             ignore_fail=True):
+        match = revision_re.search(path)
+        if match:
+          final_list.append(LooseVersion(match[1]))
+    sys.stdout.write('\r')
+    sys.stdout.flush()
     return final_list
 
-  def _get_listing_url(self, marker=None):
-    marker_param = ''
-    if marker:
-      marker_param = '&marker=' + str(marker)
-    return (RELEASE_BASE_URL + '/?prefix=' + self.listing_platform_dir +
-            marker_param)
+  def _get_listing_url(self):
+    return self._get_release_bucket()
 
-  def get_rev_list(self):
-    # The original implementation of GetReleaseBuildsList doesn't support cache
-    return self._get_rev_list()
+  def _get_archive_path(self, build_number):
+    return '/'.join((self._get_release_bucket(), str(build_number),
+                     self.listing_platform_dir.rstrip('/'), self.archive_name))
 
   @property
   def _rev_list_cache_key(self):
+    return self._get_archive_path('**')
+
+  def _save_rev_list_cache(self, revisions):
+    # LooseVersion is not json-able, convert it back to string format.
+    super()._save_rev_list_cache([str(x) for x in revisions])
+
+  def _load_rev_list_cache(self):
+    # Convert to LooseVersion that revisions can be correctly compared.
+    revisions = super()._load_rev_list_cache()
+    return [LooseVersion(x) for x in revisions]
+
+
+class AndroidReleaseBuild(ReleaseBuild):
+
+  def __init__(self, options, device=None):
+    super().__init__(options)
+    self.apk = options.apk
+    self.signed = options.signed
+    self.device = device
+    self.archive_name = GetAndroidApkFilename(self)
+
+  def _get_release_bucket(self):
+    if self.signed:
+      return ANDROID_RELEASE_BASE_URL_SIGNED
+    else:
+      return ANDROID_RELEASE_BASE_URL
+
+
+class ArchiveBuildWithCommitPosition(ArchiveBuild):
+  """Class for ArchiveBuilds that organized based on commit position."""
+
+  def get_last_change_url(self):
     return None
-
-
-class OfficialBuild(ArchiveBuild):
 
   def __init__(self, options):
     super().__init__(options)
     # convert good and bad to commit position as int.
+    self.good_revision = GetRevision(self.good_revision)
     if not options.bad:
       self.bad_revision = GetChromiumRevision(self.get_last_change_url())
-    self.good_revision = GetRevision(self.good_revision)
     self.bad_revision = GetRevision(self.bad_revision)
+
+
+class OfficialBuild(ArchiveBuildWithCommitPosition):
 
   @property
   def build_type(self):
@@ -719,12 +792,12 @@ class OfficialBuild(ArchiveBuild):
     maxrev = max(self.good_revision, self.bad_revision)
     perf_bucket = '%s/%s' % (PERF_BASE_URL, self.listing_platform_dir)
     revision_re = re.compile(r'%s_(\d+)\.zip' % (self.archive_extract_dir))
-    revision_files = PathContext.GsutilList(perf_bucket)
+    revision_files = GsutilList(perf_bucket)
     revision_numbers = []
     for revision_file in revision_files:
-      revision_num = re.match(revision_re, revision_file)
+      revision_num = revision_re.search(revision_file)
       if revision_num:
-        revision_numbers.append(int(revision_num.groups()[0]))
+        revision_numbers.append(int(revision_num[1]))
     final_list = []
     for revision_number in sorted(revision_numbers):
       if revision_number > maxrev:
@@ -738,21 +811,12 @@ class OfficialBuild(ArchiveBuild):
   def _rev_list_cache_key(self):
     return self._get_listing_url()
 
-  def get_last_change_url(self):
-    return None
 
-
-
-class SnapshotBuild(ArchiveBuild):
+class SnapshotBuild(ArchiveBuildWithCommitPosition):
 
   def __init__(self, options):
     super().__init__(options)
     self.base_url = CHROMIUM_BASE_URL
-    # convert good and bad to commit position as int.
-    if not options.bad:
-      self.bad_revision = GetChromiumRevision(self.get_last_change_url())
-    self.good_revision = GetRevision(self.good_revision)
-    self.bad_revision = GetRevision(self.bad_revision)
 
   @property
   def build_type(self):
@@ -947,8 +1011,10 @@ class ASANBuild(SnapshotBuild):
     return (revisions, next_marker, githash_svn_dict)
 
 
-def create_archive_build(options):
+def create_archive_build(options, device=None):
   if options.release_builds:
+    if 'android' in options.archive:
+      return AndroidReleaseBuild(options, device)
     return ReleaseBuild(options)
   elif options.official_builds:
     return OfficialBuild(options)
@@ -1195,44 +1261,6 @@ class PathContext(object):
       else:
         return ANDROID_RELEASE_BASE_URL
     return RELEASE_BASE_URL
-
-  @staticmethod
-  def GsutilExists(query):
-    output = RunGsutilCommand(['stat', query], can_fail=True)
-    if output.startswith(query):
-      return True
-    elif 'No URLs matched' in output:
-      return False
-    else:
-      raise Exception('Error running the gsutil command: %s' % output)
-
-  @staticmethod
-  def GsutilList(query):
-    # Get a directory listing with file sizes. Typical output looks like:
-    #         7  2023-11-27T21:08:36Z  gs://.../LAST_CHANGE
-    # 144486938  2023-03-07T14:41:25Z  gs://.../full-build-win32_1113893.zip
-    # TOTAL: 114167 objects, 15913845813421 bytes (14.47 TiB)
-    # This lets us ignore empty .zip files that will otherwise cause errors.
-    stdout = RunGsutilCommand(['ls', '-l', query])
-    # Trim off the summary line that only happens with -l
-    temp = stdout.splitlines()[:-1]
-    lines = []
-    for line in temp:
-      parts = line.split()
-      # Check whether there is a size field. For release builds the listing
-      # will be directories so there will be no size field.
-      if len(parts) > 1:
-        if ANDROID_INVALID_BUCKET in line:
-          continue
-        size = int(parts[0])
-        # Empty .zip files are 22 bytes. Ignore anything less than 1,000 bytes,
-        # but keep the LAST_CHANGE file since the code seems to expect that.
-        if parts[-1].endswith('LAST_CHANGE') or size > 1000:
-          lines.append(parts[-1])
-      else:
-        lines.append(parts[-1])
-    results = [url[len(query):].strip('/') for url in lines]
-    return results
 
 
 def IsMac():
@@ -2378,8 +2406,8 @@ def main():
 
   # Create the context. Initialize 0 for the revisions as they are set below.
   context = PathContext(opts, device)
-  # Create the ArchiveBuild object.
-  archive_build = create_archive_build(opts)
+  # Create the AbstractBuild object.
+  archive_build = create_archive_build(opts, device)
 
   if context.is_release:
     if opts.archive.startswith('android-'):
@@ -2392,13 +2420,9 @@ def main():
               '. Switch to using --apk=chrome_stable or one of the other '
               'channels if you see `RuntimeError: We don\'t have enough builds '
               'to bisect. revlist: []`.\n')
-  else:
-    # For official and snapshot, we convert good and bad to commit position
-    # as int.
-    if not opts.bad:
-      context.bad_revision = GetChromiumRevision(context.GetLastChangeURL())
-    context.good_revision = GetRevision(context.good_revision)
-    context.bad_revision = GetRevision(context.bad_revision)
+  # We might converted good and bad to commit position as int.
+  context.good_revision = archive_build.good_revision
+  context.bad_revision = archive_build.bad_revision
 
   context.deploy_chrome_path = deploy_chrome_path
 

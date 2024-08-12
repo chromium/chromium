@@ -20,6 +20,7 @@ else:
   # SetupEnvironment for gsutil to connect to real server.
   options, _ = bisect_builds.ParseCommandLine(['-a', 'linux64'])
   bisect_builds.SetupEnvironment(options)
+  bisect_builds.SetupAndroidEnvironment()
 
   # Mock object that always wraps for the spec.
   # This will pass the call through and ignore the return_value and side_effect.
@@ -214,7 +215,7 @@ class ArchiveBuildTest(unittest.TestCase):
 
   @unittest.skipIf('NO_MOCK_SERVER' not in os.environ,
                    'The test is to ensure NO_MOCK_SERVER working correctly')
-  @maybe_patch.object(bisect_builds, 'GetRevisionFromVersion', return_value=123)
+  @maybe_patch('bisect-builds.GetRevisionFromVersion', return_value=123)
   def test_no_mock(self, mock_GetRevisionFromVersion):
     self.assertEqual(bisect_builds.GetRevisionFromVersion('127.0.6533.74'),
                      1313161)
@@ -225,31 +226,96 @@ class ReleaseBuildTest(unittest.TestCase):
 
   def test_should_look_up_path_context(self):
     options, args = bisect_builds.ParseCommandLine(
-        ['-a', 'linux64', '-g', '127.0.6533.74', '-b', '127.0.6533.88'])
+        ['-r', '-a', 'linux64', '-g', '127.0.6533.74', '-b', '127.0.6533.88'])
     self.assertEqual(options.archive, 'linux64')
-    build = bisect_builds.ReleaseBuild(options)
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ReleaseBuild)
     self.assertEqual(build.binary_name, 'chrome')
     self.assertEqual(build.listing_platform_dir, 'linux64/')
     self.assertEqual(build.archive_name, 'chrome-linux64.zip')
     self.assertEqual(build.archive_extract_dir, 'chrome-linux64')
 
-  @maybe_patch.object(
-      bisect_builds.PathContext,
-      'GsutilList',
-      return_value=['127.0.6533.74', '127.0.6533.75', '127.0.6533.76'])
-  @maybe_patch.object(bisect_builds.PathContext,
-                      'GsutilExists',
-                      side_effect=[True, True, True])
-  def test_get_rev_list(self, mock_GsutilExits, mock_GsutilList):
+  @maybe_patch(
+      'bisect-builds.GsutilList',
+      return_value=[
+          'gs://chrome-unsigned/desktop-5c0tCh/%s/linux64/chrome-linux64.zip' %
+          x for x in ['127.0.6533.74', '127.0.6533.75', '127.0.6533.76']
+      ])
+  def test_get_rev_list(self, mock_GsutilList):
     options, args = bisect_builds.ParseCommandLine(
-        ['-a', 'linux64', '-g', '127.0.6533.74', '-b', '127.0.6533.76'])
-    build = bisect_builds.ReleaseBuild(options)
+        ['-r', '-a', 'linux64', '-g', '127.0.6533.74', '-b', '127.0.6533.76'])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ReleaseBuild)
     self.assertEqual(build.get_rev_list(),
                      ['127.0.6533.74', '127.0.6533.75', '127.0.6533.76'])
-    mock_GsutilList.assert_called_once_with(
-        'gs://chrome-unsigned/desktop-5c0tCh')
-    mock_GsutilExits.assert_any_call('gs://chrome-unsigned/desktop-5c0tCh/' +
-                                     '127.0.6533.74/linux64/chrome-linux64.zip')
+    mock_GsutilList.assert_any_call('gs://chrome-unsigned/desktop-5c0tCh')
+    mock_GsutilList.assert_any_call(*[
+        'gs://chrome-unsigned/desktop-5c0tCh/%s/linux64/chrome-linux64.zip' % x
+        for x in ['127.0.6533.74', '127.0.6533.75', '127.0.6533.76']
+    ],
+                                    ignore_fail=True)
+    self.assertEqual(mock_GsutilList.call_count, 2)
+
+  @patch('bisect-builds.GsutilList',
+         return_value=['127.0.6533.74', '127.0.6533.75', '127.0.6533.76'])
+  def test_should_save_and_load_cache(self, mock_GsutilList):
+    options, args = bisect_builds.ParseCommandLine([
+        '-r', '-a', 'linux64', '-g', '127.0.6533.74', '-b', '127.0.6533.76',
+        '--use-local-cache'
+    ])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ReleaseBuild)
+    # Load the non-existent cache and write to it.
+    cached_data = []
+    write_mock = MagicMock()
+    write_mock.__enter__().write.side_effect = lambda d: cached_data.append(d)
+    with patch('builtins.open',
+               side_effect=[FileNotFoundError, FileNotFoundError, write_mock]):
+      self.assertEqual(build.get_rev_list(),
+                       ['127.0.6533.74', '127.0.6533.75', '127.0.6533.76'])
+      mock_GsutilList.assert_called()
+    cached_json = json.loads(''.join(cached_data))
+    self.assertDictEqual(
+        cached_json, {
+            build._rev_list_cache_key:
+            ['127.0.6533.74', '127.0.6533.75', '127.0.6533.76']
+        })
+    # Load cache with cached data.
+    mock_GsutilList.reset_mock()
+    with patch('builtins.open', mock_open(read_data=''.join(cached_data))):
+      self.assertEqual(build.get_rev_list(),
+                       ['127.0.6533.74', '127.0.6533.75', '127.0.6533.76'])
+      mock_GsutilList.assert_not_called()
+
+
+class AndroidReleaseBuildTest(unittest.TestCase):
+
+  @maybe_patch(
+      'bisect-builds.GsutilList',
+      return_value=[
+          'gs://chrome-signed/android-B0urB0N/%s/arm_64/MonochromeStable.apk' %
+          x for x in ['127.0.6533.76', '127.0.6533.78', '127.0.6533.79']
+      ])
+  @maybe_patch('bisect-builds._GetMappingFromAndroidApk',
+               return_value=bisect_builds.MONOCHROME_APK_FILENAMES)
+  def test_get_android_rev_list(self, mock_GetMapping, mock_GsutilList):
+    options, args = bisect_builds.ParseCommandLine([
+        '-r', '-a', 'android-arm64', '--apk', 'chrome_stable', '-g',
+        '127.0.6533.76', '-b', '127.0.6533.79', '--signed'
+    ])
+    device = Mock()
+    device.build_version_sdk = 31  # version_codes.S
+    build = bisect_builds.create_archive_build(options, device)
+    self.assertIsInstance(build, bisect_builds.AndroidReleaseBuild)
+    self.assertEqual(build.get_rev_list(),
+                     ['127.0.6533.76', '127.0.6533.78', '127.0.6533.79'])
+    mock_GsutilList.assert_any_call('gs://chrome-signed/android-B0urB0N')
+    mock_GsutilList.assert_any_call(*[
+        'gs://chrome-signed/android-B0urB0N/%s/arm_64/MonochromeStable.apk' % x
+        for x in ['127.0.6533.76', '127.0.6533.78', '127.0.6533.79']
+    ],
+                                    ignore_fail=True)
+    self.assertEqual(mock_GsutilList.call_count, 2)
 
 
 class OfficialBuildTest(unittest.TestCase):
@@ -280,12 +346,11 @@ class OfficialBuildTest(unittest.TestCase):
     self.assertEqual(build.archive_name, 'chrome-perf-linux.zip')
     self.assertEqual(build.archive_extract_dir, 'full-build-linux')
 
-  @maybe_patch.object(bisect_builds.PathContext,
-                      'GsutilList',
-                      return_value=[
-                          'full-build-linux_%d.zip' % x
-                          for x in range(1313161, 1313164)
-                      ])
+  @maybe_patch('bisect-builds.GsutilList',
+               return_value=[
+                   'full-build-linux_%d.zip' % x
+                   for x in range(1313161, 1313164)
+               ])
   def test_get_rev_list(self, mock_GsutilList):
     options, args = bisect_builds.ParseCommandLine(
         ['-a', 'linux64', '-g', '1313161', '-b', '1313163'])
