@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_BOOT_TIMES_RECORDER_TAB_HELPER_H_
-#define CHROME_BROWSER_ASH_BOOT_TIMES_RECORDER_TAB_HELPER_H_
+#ifndef CHROME_BROWSER_ASH_BOOT_TIMES_RECORDER_BOOT_TIMES_RECORDER_TAB_HELPER_H_
+#define CHROME_BROWSER_ASH_BOOT_TIMES_RECORDER_BOOT_TIMES_RECORDER_TAB_HELPER_H_
 
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -49,4 +49,4 @@ class BootTimesRecorderTabHelper
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_BOOT_TIMES_RECORDER_TAB_HELPER_H_
+#endif  // CHROME_BROWSER_ASH_BOOT_TIMES_RECORDER_BOOT_TIMES_RECORDER_TAB_HELPER_H_

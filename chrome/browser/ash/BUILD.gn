@@ -23,10 +23,6 @@ static_library("ash") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   sources = [
-    "boot_times_recorder.cc",
-    "boot_times_recorder.h",
-    "boot_times_recorder_tab_helper.cc",
-    "boot_times_recorder_tab_helper.h",
     "browser_context_keyed_service_factories.cc",
     "browser_context_keyed_service_factories.h",
     "camera_presence_notifier.cc",
@@ -322,6 +318,7 @@ static_library("ash") {
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/search/local_image_search",
     "//chrome/browser/ash/arc/input_overlay/db/proto",
+    "//chrome/browser/ash/boot_times_recorder",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
     "//chrome/browser/ash/camera_mic",

@@ -12523,6 +12523,7 @@ if (is_chromeos) {
       deps += [
         "//ash:test_support",
         "//chrome/browser:main_extra_parts",
+        "//chrome/browser/ash/boot_times_recorder",
         "//chrome/browser/ash/crosapi",
         "//chrome/browser/ash/crosapi:test_support",
         "//chrome/browser/ash/locale",

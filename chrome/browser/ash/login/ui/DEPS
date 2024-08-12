@@ -20,7 +20,7 @@ include_rules = [
   "+chrome/browser/ash/attestation",
   "+chrome/browser/ash/auth",
   "+chrome/browser/ash/base",
-  "+chrome/browser/ash/boot_times_recorder.h",
+  "+chrome/browser/ash/boot_times_recorder",
   "+chrome/browser/ash/customization",
   "+chrome/browser/ash/extensions/login_screen_ui",
   "+chrome/browser/ash/first_run",

@@ -23,7 +23,7 @@ include_rules = [
   "+chrome/browser/ash/app_mode",
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/base",
-  "+chrome/browser/ash/boot_times_recorder.h",
+  "+chrome/browser/ash/boot_times_recorder",
   "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/customization",
   "+chrome/browser/ash/drive",

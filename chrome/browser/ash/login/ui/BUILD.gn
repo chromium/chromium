@@ -97,6 +97,7 @@ static_library("ui") {
     "//chrome/browser/ash/arc/optin",
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/base",
+    "//chrome/browser/ash/boot_times_recorder",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/nearby",
