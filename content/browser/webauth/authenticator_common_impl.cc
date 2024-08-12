@@ -1756,14 +1756,21 @@ void AuthenticatorCommonImpl::ContinueReportAfterRpIdCheck(
     return;
   }
   req_state_->remote_rp_id_validation.reset();
-
   if (rp_id_validation_result != blink::mojom::AuthenticatorStatus::SUCCESS) {
     CompleteReportRequest(rp_id_validation_result);
     return;
   }
-  GetWebAuthenticationDelegate()->DeletePasskey(
-      WebContents::FromRenderFrameHost(GetRenderFrameHost()),
-      options->unknown_credential_id, req_state_->relying_party_id);
+  if (options->all_accepted_credentials) {
+    GetWebAuthenticationDelegate()->DeleteUnacceptedPasskeys(
+        WebContents::FromRenderFrameHost(GetRenderFrameHost()),
+        req_state_->relying_party_id,
+        options->all_accepted_credentials->user_id,
+        options->all_accepted_credentials->all_accepted_credentials_ids);
+  } else {
+    GetWebAuthenticationDelegate()->DeletePasskey(
+        WebContents::FromRenderFrameHost(GetRenderFrameHost()),
+        options->unknown_credential_id, req_state_->relying_party_id);
+  }
   CompleteReportRequest(blink::mojom::AuthenticatorStatus::SUCCESS, nullptr);
 }
 

@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_all_accepted_credentials_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs.h"
@@ -1955,9 +1956,40 @@ ScriptPromise<IDLUndefined> AuthenticationCredentialsContainer::report(
   }
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   mojom::blink::PublicKeyCredentialReportOptionsPtr mojo_options;
   if (options->hasPublicKey()) {
+    if (options->publicKey()->hasAllAcceptedCredentials() &&
+        options->publicKey()->hasUnknownCredentialId()) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Multiple reports at the same time are not supported for this "
+          "credential type."));
+      return promise;
+    }
+
+    if (options->publicKey()->hasAllAcceptedCredentials()) {
+      const AllAcceptedCredentialsOptions& credentials_options =
+          *options->publicKey()->allAcceptedCredentials();
+
+      Vector<char> decoded_user_id;
+      if (!WTF::Base64UnpaddedURLDecode(credentials_options.userId(),
+                                        decoded_user_id)) {
+        resolver->RejectWithTypeError("Invalid base64url string for userId.");
+        return promise;
+      }
+
+      for (WTF::String credential_id :
+           credentials_options.allAcceptedCredentialsIds()) {
+        Vector<char> decoded_cred_id;
+        if (!WTF::Base64UnpaddedURLDecode(credential_id, decoded_cred_id)) {
+          resolver->RejectWithTypeError(
+              "Invalid base64url string for allAcceptedCredentialsIds.");
+          return promise;
+        }
+      }
+    }
     mojo_options =
         MojoPublicKeyCredentialReportOptions::From(*options->publicKey());
   }
@@ -1976,7 +2008,7 @@ ScriptPromise<IDLUndefined> AuthenticationCredentialsContainer::report(
   } else {
     resolver->Resolve();
   }
-  return resolver->Promise();
+  return promise;
 }
 
 void AuthenticationCredentialsContainer::Trace(Visitor* visitor) const {

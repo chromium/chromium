@@ -536,6 +536,102 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportGPMPasskeys) {
       passkey_model->GetPasskeysForRelyingPartyId("www.example.com").empty());
 }
 
+IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportAllAcceptedGPMPasskeys) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+  // Set up GPM Passkey.
+  auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
+      PasskeyModelFactory::GetForProfile(browser()->profile()));
+  passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
+      kCredentialID, kUserId1, kUsername1, kDisplayName1));
+  passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
+      kCredentialID2, kUserId2, kUsername2, kDisplayName2));
+
+  // Reports the user ID and credential ID matching the created passkey #1.
+  // The passkey will not be deleted.
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      R"(
+  navigator.credentials.report({
+    publicKey: {
+      rpId: "www.example.com",
+      allAcceptedCredentials:{
+        userId: "AQIDBA",
+        allAcceptedCredentialsIds: ["AQIDBAUGBwgJCgsMDQ4PEA"],
+      }
+    }
+  }).then(c => 'webauthn: OK', e => 'error ' + e);
+  )"));
+
+  // Check that the passkey with kCredentialID was not deleted.
+  EXPECT_TRUE(passkey_model->GetPasskeyByCredentialId(
+      "www.example.com",
+      std::string(reinterpret_cast<const char*>(kCredentialID), 16)));
+
+  // Reports the user ID that matches passkey #2 with an empty
+  // allCurrentCredentialsIds. The passkey will be deleted.
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      R"(
+  navigator.credentials.report({
+    publicKey: {
+      rpId: "www.example.com",
+      allAcceptedCredentials:{
+        userId: "BQYHCA",
+        allAcceptedCredentialsIds: [],
+      }
+    }
+  }).then(c => 'webauthn: OK', e => 'error ' + e);
+  )"));
+
+  // Check that the passkey with kCredentialID2 was deleted.
+  EXPECT_FALSE(passkey_model->GetPasskeyByCredentialId(
+      "www.example.com",
+      std::string(reinterpret_cast<const char*>(kCredentialID2), 16)));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportInvalidStrings) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+  // This should fail with a TypeError due to an invalid base64url
+  // string in the user_id.
+  EXPECT_THAT(
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), R"(
+  navigator.credentials.report({
+    publicKey: {
+      rpId: "www.example.com",
+      allAcceptedCredentials:{
+        userId: "a/+c+/c",
+        allAcceptedCredentialsIds: ["AQIDBAUGBwgJCgsMDQ4PEA"],
+      }
+    }
+  }).then(c => 'webauthn: OK', e => 'error ' + e);
+  )")
+          .ExtractString(),
+      testing::HasSubstr("Invalid base64url string for userId."));
+
+  // This should fail with a TypeError due to an invalid base64url
+  // string in the allAcceptedCredentials list.
+  EXPECT_THAT(
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), R"(
+  navigator.credentials.report({
+    publicKey: {
+      rpId: "www.example.com",
+      allAcceptedCredentials:{
+        userId: "BQYHCA",
+        allAcceptedCredentialsIds: ["/a+/b+/c"],
+      }
+    }
+  }).then(c => 'webauthn: OK', e => 'error ' + e);
+  )")
+          .ExtractString(),
+      testing::HasSubstr(
+          "Invalid base64url string for allAcceptedCredentialsIds."));
+}
+
 class WebAuthnHintsTest : public WebAuthnBrowserTest {
   class Observer : public ChromeAuthenticatorRequestDelegate::TestObserver {
    public:

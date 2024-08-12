@@ -14,6 +14,7 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_all_accepted_credentials_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs.h"
@@ -52,6 +53,8 @@
 #include "third_party/boringssl/src/include/openssl/sha.h"
 namespace mojo {
 
+using blink::mojom::blink::AllAcceptedCredentialsOptions;
+using blink::mojom::blink::AllAcceptedCredentialsOptionsPtr;
 using blink::mojom::blink::AttestationConveyancePreference;
 using blink::mojom::blink::AuthenticationExtensionsClientInputs;
 using blink::mojom::blink::AuthenticationExtensionsClientInputsPtr;
@@ -1051,6 +1054,37 @@ TypeConverter<PublicKeyCredentialReportOptionsPtr,
     mojo_options->unknown_credential_id =
         ConvertTo<Vector<uint8_t>>(options.unknownCredentialId());
   }
+  if (options.hasAllAcceptedCredentials()) {
+    mojo_options->all_accepted_credentials =
+        AllAcceptedCredentialsOptions::From(*options.allAcceptedCredentials());
+  }
   return mojo_options;
 }
+
+// static
+AllAcceptedCredentialsOptionsPtr
+TypeConverter<AllAcceptedCredentialsOptionsPtr,
+              blink::AllAcceptedCredentialsOptions>::
+    Convert(const blink::AllAcceptedCredentialsOptions& options) {
+  auto mojo_options = blink::mojom::blink::AllAcceptedCredentialsOptions::New();
+
+  Vector<char> decoded_user_id;
+  // The fact that this decodes successfully has already been tested.
+  CHECK(WTF::Base64UnpaddedURLDecode(options.userId(), decoded_user_id));
+  mojo_options->user_id = WTF::Vector<uint8_t>(decoded_user_id);
+
+  WTF::Vector<Vector<uint8_t>> all_accepted_credential_ids(
+      options.allAcceptedCredentialsIds().size());
+  for (WTF::String credential_id : options.allAcceptedCredentialsIds()) {
+    Vector<char> decoded_cred_id;
+    // The fact that this decodes successfully has already been tested.
+    CHECK(WTF::Base64UnpaddedURLDecode(credential_id, decoded_cred_id));
+    all_accepted_credential_ids.push_back(
+        WTF::Vector<uint8_t>(decoded_cred_id));
+  }
+  mojo_options->all_accepted_credentials_ids =
+      std::move(all_accepted_credential_ids);
+  return mojo_options;
+}
+
 }  // namespace mojo

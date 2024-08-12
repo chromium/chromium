@@ -140,6 +140,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_text_model_info.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_all_accepted_credentials_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_all_accepted_credentials_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_analyser_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_analyser_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_android_pay_method_data.cc",

@@ -599,9 +599,16 @@ struct WebAuthnDOMExceptionDetails {
 };
 
 // Parameters passed into calls to Report.
-struct PublicKeyCredentialReportOptions{
+struct PublicKeyCredentialReportOptions {
   string relying_party_id;
   array<uint8> unknown_credential_id;
+  AllAcceptedCredentialsOptions? all_accepted_credentials;
+};
+
+// Parameters passed into calls to report all accepted credentials.
+struct AllAcceptedCredentialsOptions {
+  array<uint8> user_id;
+  array<array<uint8>> all_accepted_credentials_ids;
 };
 
 // Interface to direct authenticators to create or use a public key credential.

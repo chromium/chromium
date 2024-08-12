@@ -623,7 +623,6 @@ void ChromeWebAuthenticationDelegate::DeletePasskey(
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
 
-  CHECK(passkey_store);
   std::string credential_id(passkey_credential_id.begin(),
                             passkey_credential_id.end());
   std::optional<sync_pb::WebauthnCredentialSpecifics> credential_specifics =
@@ -634,6 +633,26 @@ void ChromeWebAuthenticationDelegate::DeletePasskey(
         PasswordsClientUIDelegateFromWebContents(web_contents);
     if (manage_passwords_ui_controller) {
       manage_passwords_ui_controller->OnPasskeyDeleted();
+    }
+  }
+}
+
+void ChromeWebAuthenticationDelegate::DeleteUnacceptedPasskeys(
+    content::WebContents* web_contents,
+    const std::string& relying_party_id,
+    const std::vector<uint8_t>& user_id,
+    const std::vector<std::vector<uint8_t>>& all_accepted_credentials_ids) {
+  webauthn::PasskeyModel* passkey_store =
+      PasskeyModelFactory::GetInstance()->GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  for (auto passkey :
+       passkey_store->GetPasskeysForRelyingPartyId(relying_party_id)) {
+    if (std::vector<uint8_t>(passkey.user_id().begin(),
+                             passkey.user_id().end()) == user_id &&
+        !base::Contains(all_accepted_credentials_ids,
+                        std::vector<uint8_t>(passkey.credential_id().begin(),
+                                             passkey.credential_id().end()))) {
+      passkey_store->DeletePasskey(passkey.credential_id(), FROM_HERE);
     }
   }
 }
