@@ -17,7 +17,6 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/pref_names.h"
-#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,8 +53,9 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
   }
 
   std::unique_ptr<FamilyLinkUserLogRecord> CreateFamilyLinkUserLogRecord() {
-    SupervisedUserURLFilter filter(pref_service_,
-                                   std::make_unique<FakeURLFilterDelegate>());
+    SupervisedUserURLFilter filter(
+        pref_service_,
+        base::BindRepeating([](const GURL& url) { return false; }));
     filter.SetURLCheckerClient(
         std::make_unique<safe_search_api::FakeURLCheckerClient>());
 
@@ -89,8 +89,9 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
     CreateSupervisedUser(/*is_subject_to_parental_controls=*/true,
                          /*is_opted_in_to_parental_supervision=*/false);
 
-    SupervisedUserURLFilter filter(pref_service_,
-                                   std::make_unique<FakeURLFilterDelegate>());
+    SupervisedUserURLFilter filter(
+        pref_service_,
+        base::BindRepeating([](const GURL& url) { return false; }));
     filter.SetURLCheckerClient(
         std::make_unique<safe_search_api::FakeURLCheckerClient>());
 

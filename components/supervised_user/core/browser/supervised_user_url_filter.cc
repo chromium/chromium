@@ -235,10 +235,10 @@ std::optional<FilteringSubdomainConflictType> AddConflict(
 
 SupervisedUserURLFilter::SupervisedUserURLFilter(
     PrefService& user_prefs,
-    std::unique_ptr<Delegate> delegate)
+    ValidateURLSupportCallback check_webstore_url_callback)
     : default_behavior_(FilteringBehavior::kAllow),
       user_prefs_(user_prefs),
-      delegate_(std::move(delegate)) {}
+      check_webstore_url_callback_(std::move(check_webstore_url_callback)) {}
 
 SupervisedUserURLFilter::~SupervisedUserURLFilter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -450,12 +450,12 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(const GURL& url) {
 
 bool SupervisedUserURLFilter::IsExemptedFromGuardianApproval(
     const GURL& effective_url) {
-  DCHECK(delegate_);
+  DCHECK(!check_webstore_url_callback_.is_null());
   return IsNonStandardUrlScheme(effective_url) ||
          IsAlwaysAllowedHost(effective_url) ||
          IsAlwaysAllowedUrlPrefix(effective_url) ||
          IsPlayStoreTermsOfServiceUrl(effective_url) ||
-         delegate_->SupportsWebstoreURL(effective_url);
+         check_webstore_url_callback_.Run(effective_url);
 }
 
 bool SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(

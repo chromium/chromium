@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
-
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
@@ -15,7 +14,6 @@
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
-#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -32,7 +30,7 @@ class MockSupervisedUserURLFilter
   explicit MockSupervisedUserURLFilter(PrefService& prefs)
       : supervised_user::SupervisedUserURLFilter(
             prefs,
-            std::make_unique<FakeURLFilterDelegate>()) {}
+            base::BindRepeating([](const GURL& url) { return false; })) {}
 
   MOCK_METHOD(FilteringBehavior,
               GetFilteringBehaviorForURL,

@@ -8,22 +8,14 @@
 
 namespace supervised_user {
 
-bool FakeURLFilterDelegate::SupportsWebstoreURL(const GURL& url) const {
-  return false;
-}
-
-std::string FakePlatformDelegate::GetCountryCode() const {
+std::string FakeURLFilterDelegate::GetCountryCode() const {
   // Country code information is not used in tests.
   return std::string();
 }
 
-version_info::Channel FakePlatformDelegate::GetChannel() const {
+version_info::Channel FakeURLFilterDelegate::GetChannel() const {
   // Channel information is not used in tests.
   return version_info::Channel::UNKNOWN;
-}
-
-void FakePlatformDelegate::CloseIncognitoTabs() {
-  return;
 }
 
 }  // namespace supervised_user

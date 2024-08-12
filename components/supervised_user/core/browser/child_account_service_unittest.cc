@@ -52,6 +52,12 @@ class MockPermissionRequestCreator : public PermissionRequestCreator {
                               SuccessCallback callback) override {}
 };
 
+class MockSupervisedUserservicePlatformDelegate
+    : public SupervisedUserService::PlatformDelegate {
+ public:
+  MOCK_METHOD(void, CloseIncognitoTabs, (), (override));
+};
+
 class ChildAccountServiceTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -82,8 +88,10 @@ class ChildAccountServiceTest : public ::testing::Test {
         identity_test_environment_->identity_manager(),
         test_url_loader_factory_.GetSafeWeakWrapper(), syncable_pref_service_,
         settings_service_, &sync_service_,
+        /*check_webstore_url_callback=*/
+        base::BindRepeating([](const GURL& url) { return false; }),
         std::make_unique<FakeURLFilterDelegate>(),
-        std::make_unique<FakePlatformDelegate>(),
+        std::make_unique<MockSupervisedUserservicePlatformDelegate>(),
         /*can_show_first_time_interstitial_banner=*/false);
 
     list_family_members_service_ = std::make_unique<ListFamilyMembersService>(

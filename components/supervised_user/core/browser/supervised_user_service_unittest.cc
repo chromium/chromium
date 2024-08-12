@@ -49,6 +49,11 @@ const char kExampleUrl1[] = "http://www.example1.com/123";
 
 }  // namespace
 
+class MockPlatformDelegate : public SupervisedUserService::PlatformDelegate {
+ public:
+  MOCK_METHOD(void, CloseIncognitoTabs, (), (override));
+};
+
 class SupervisedUserServiceTestBase : public ::testing::Test {
  public:
   explicit SupervisedUserServiceTestBase(bool is_supervised) {
@@ -65,8 +70,10 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
         identity_test_env_.identity_manager(),
         test_url_loader_factory_.GetSafeWeakWrapper(), syncable_pref_service_,
         settings_service_, &sync_service_,
+        /*check_webstore_url_callback=*/
+        base::BindRepeating([](const GURL& url) { return false; }),
         std::make_unique<FakeURLFilterDelegate>(),
-        std::make_unique<FakePlatformDelegate>(),
+        std::make_unique<MockPlatformDelegate>(),
         /*can_show_first_time_interstitial_banner=*/true);
 
     service_->Init();

@@ -19,7 +19,6 @@
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
-#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -34,8 +33,9 @@ static const char* kExampleURL = "https://example.com/";
 class MockSupervisedUserURLFilter : public SupervisedUserURLFilter {
  public:
   explicit MockSupervisedUserURLFilter(PrefService& prefs)
-      : SupervisedUserURLFilter(prefs,
-                                std::make_unique<FakeURLFilterDelegate>()) {}
+      : SupervisedUserURLFilter(
+            prefs,
+            base::BindRepeating([](const GURL& url) { return false; })) {}
 
   MOCK_METHOD(bool,
               GetFilteringBehaviorForURLWithAsyncChecks,

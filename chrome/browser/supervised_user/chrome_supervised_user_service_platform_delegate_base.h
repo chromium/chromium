@@ -20,10 +20,6 @@ class ChromeSupervisedUserServicePlatformDelegateBase
   explicit ChromeSupervisedUserServicePlatformDelegateBase(Profile& profile);
   ~ChromeSupervisedUserServicePlatformDelegateBase() override;
 
-  // supervised_user::SupervisedUserService::PlatformDelegate::
-  std::string GetCountryCode() const override;
-  version_info::Channel GetChannel() const override;
-
   // ProfileObserver::
   void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
 
