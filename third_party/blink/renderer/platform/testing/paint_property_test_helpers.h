@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
-#include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
+#include "third_party/blink/renderer/platform/graphics/paint/ref_counted_property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -66,7 +66,7 @@ constexpr int c0_id = 1;
 constexpr int e0_id = 1;
 constexpr int t0_id = 1;
 
-inline EffectPaintPropertyNode* CreateOpacityEffect(
+inline scoped_refptr<EffectPaintPropertyNode> CreateOpacityEffect(
     const EffectPaintPropertyNodeOrAlias& parent,
     const TransformPaintPropertyNodeOrAlias& local_transform_space,
     const ClipPaintPropertyNodeOrAlias* output_clip,
@@ -82,7 +82,7 @@ inline EffectPaintPropertyNode* CreateOpacityEffect(
   return EffectPaintPropertyNode::Create(parent, std::move(state));
 }
 
-inline EffectPaintPropertyNode* CreateOpacityEffect(
+inline scoped_refptr<EffectPaintPropertyNode> CreateOpacityEffect(
     const EffectPaintPropertyNodeOrAlias& parent,
     float opacity,
     CompositingReasons compositing_reasons = CompositingReason::kNone) {
@@ -91,7 +91,7 @@ inline EffectPaintPropertyNode* CreateOpacityEffect(
                              compositing_reasons);
 }
 
-inline EffectPaintPropertyNode* CreateAnimatingOpacityEffect(
+inline scoped_refptr<EffectPaintPropertyNode> CreateAnimatingOpacityEffect(
     const EffectPaintPropertyNodeOrAlias& parent,
     float opacity = 1.f,
     const ClipPaintPropertyNodeOrAlias* output_clip = nullptr) {
@@ -105,7 +105,7 @@ inline EffectPaintPropertyNode* CreateAnimatingOpacityEffect(
   return EffectPaintPropertyNode::Create(parent, std::move(state));
 }
 
-inline EffectPaintPropertyNode* CreateFilterEffect(
+inline scoped_refptr<EffectPaintPropertyNode> CreateFilterEffect(
     const EffectPaintPropertyNodeOrAlias& parent,
     const TransformPaintPropertyNodeOrAlias& local_transform_space,
     const ClipPaintPropertyNodeOrAlias* output_clip,
@@ -121,7 +121,7 @@ inline EffectPaintPropertyNode* CreateFilterEffect(
   return EffectPaintPropertyNode::Create(parent, std::move(state));
 }
 
-inline EffectPaintPropertyNode* CreateFilterEffect(
+inline scoped_refptr<EffectPaintPropertyNode> CreateFilterEffect(
     const EffectPaintPropertyNodeOrAlias& parent,
     CompositorFilterOperations filter,
     CompositingReasons compositing_reasons = CompositingReason::kNone) {
@@ -130,7 +130,7 @@ inline EffectPaintPropertyNode* CreateFilterEffect(
                             compositing_reasons);
 }
 
-inline EffectPaintPropertyNode* CreateAnimatingFilterEffect(
+inline scoped_refptr<EffectPaintPropertyNode> CreateAnimatingFilterEffect(
     const EffectPaintPropertyNodeOrAlias& parent,
     CompositorFilterOperations filter = CompositorFilterOperations(),
     const ClipPaintPropertyNodeOrAlias* output_clip = nullptr) {
@@ -144,7 +144,7 @@ inline EffectPaintPropertyNode* CreateAnimatingFilterEffect(
   return EffectPaintPropertyNode::Create(parent, std::move(state));
 }
 
-inline EffectPaintPropertyNode* CreateBackdropFilterEffect(
+inline scoped_refptr<EffectPaintPropertyNode> CreateBackdropFilterEffect(
     const EffectPaintPropertyNodeOrAlias& parent,
     const TransformPaintPropertyNodeOrAlias& local_transform_space,
     const ClipPaintPropertyNodeOrAlias* output_clip,
@@ -167,7 +167,7 @@ inline EffectPaintPropertyNode* CreateBackdropFilterEffect(
   return EffectPaintPropertyNode::Create(parent, std::move(state));
 }
 
-inline EffectPaintPropertyNode* CreateBackdropFilterEffect(
+inline scoped_refptr<EffectPaintPropertyNode> CreateBackdropFilterEffect(
     const EffectPaintPropertyNodeOrAlias& parent,
     CompositorFilterOperations backdrop_filter,
     CompositingReasons compositing_reasons =
@@ -178,7 +178,8 @@ inline EffectPaintPropertyNode* CreateBackdropFilterEffect(
                                     backdrop_filter, 1.0f, compositing_reasons);
 }
 
-inline EffectPaintPropertyNode* CreateAnimatingBackdropFilterEffect(
+inline scoped_refptr<EffectPaintPropertyNode>
+CreateAnimatingBackdropFilterEffect(
     const EffectPaintPropertyNodeOrAlias& parent,
     CompositorFilterOperations backdrop_filter = CompositorFilterOperations(),
     const ClipPaintPropertyNodeOrAlias* output_clip = nullptr) {
@@ -197,27 +198,27 @@ inline EffectPaintPropertyNode* CreateAnimatingBackdropFilterEffect(
   return EffectPaintPropertyNode::Create(parent, std::move(state));
 }
 
-inline ClipPaintPropertyNode* CreateClip(
+inline scoped_refptr<ClipPaintPropertyNode> CreateClip(
     const ClipPaintPropertyNodeOrAlias& parent,
     const TransformPaintPropertyNodeOrAlias& local_transform_space,
     const gfx::RectF& layout_clip_rect,
     const FloatRoundedRect& paint_clip_rect) {
-  ClipPaintPropertyNode::State state(local_transform_space, layout_clip_rect,
+  ClipPaintPropertyNode::State state(&local_transform_space, layout_clip_rect,
                                      paint_clip_rect);
   return ClipPaintPropertyNode::Create(parent, std::move(state));
 }
 
-inline ClipPaintPropertyNode* CreateClip(
+inline scoped_refptr<ClipPaintPropertyNode> CreateClip(
     const ClipPaintPropertyNodeOrAlias& parent,
     const TransformPaintPropertyNodeOrAlias& local_transform_space,
     const FloatRoundedRect& clip_rect) {
   return CreateClip(parent, local_transform_space, clip_rect.Rect(), clip_rect);
 }
 
-inline ClipPaintPropertyNode* CreatePixelMovingFilterClipExpander(
+inline scoped_refptr<ClipPaintPropertyNode> CreatePixelMovingFilterClipExpander(
     const ClipPaintPropertyNodeOrAlias& parent,
     const EffectPaintPropertyNode& pixel_moving_filter) {
-  ClipPaintPropertyNode::State state(pixel_moving_filter.LocalTransformSpace(),
+  ClipPaintPropertyNode::State state(&pixel_moving_filter.LocalTransformSpace(),
                                      &pixel_moving_filter);
   return ClipPaintPropertyNode::Create(parent, std::move(state));
 }
@@ -226,7 +227,7 @@ inline void UpdateClip(ClipPaintPropertyNode& clip,
                        const gfx::RectF& layout_clip_rect,
                        const FloatRoundedRect& paint_clip_rect) {
   clip.Update(*clip.Parent(),
-              ClipPaintPropertyNode::State(clip.LocalTransformSpace(),
+              ClipPaintPropertyNode::State(&clip.LocalTransformSpace(),
                                            layout_clip_rect, paint_clip_rect));
 }
 
@@ -235,17 +236,17 @@ inline void UpdateClip(ClipPaintPropertyNode& clip,
   UpdateClip(clip, clip_rect.Rect(), clip_rect);
 }
 
-inline ClipPaintPropertyNode* CreateClipPathClip(
+inline scoped_refptr<ClipPaintPropertyNode> CreateClipPathClip(
     const ClipPaintPropertyNodeOrAlias& parent,
     const TransformPaintPropertyNodeOrAlias& local_transform_space,
     const FloatRoundedRect& clip_rect) {
-  ClipPaintPropertyNode::State state(local_transform_space, clip_rect.Rect(),
+  ClipPaintPropertyNode::State state(&local_transform_space, clip_rect.Rect(),
                                      clip_rect);
   state.clip_path = Path();
   return ClipPaintPropertyNode::Create(parent, std::move(state));
 }
 
-inline TransformPaintPropertyNode* Create2DTranslation(
+inline scoped_refptr<TransformPaintPropertyNode> Create2DTranslation(
     const TransformPaintPropertyNodeOrAlias& parent,
     float x,
     float y) {
@@ -254,7 +255,7 @@ inline TransformPaintPropertyNode* Create2DTranslation(
                   {gfx::Transform::MakeTranslation(x, y)}});
 }
 
-inline TransformPaintPropertyNode* CreateFixedPositionTranslation(
+inline scoped_refptr<TransformPaintPropertyNode> CreateFixedPositionTranslation(
     const TransformPaintPropertyNodeOrAlias& parent,
     float offset_x,
     float offset_y,
@@ -266,7 +267,7 @@ inline TransformPaintPropertyNode* CreateFixedPositionTranslation(
   return TransformPaintPropertyNode::Create(parent, std::move(state));
 }
 
-inline TransformPaintPropertyNode* CreateTransform(
+inline scoped_refptr<TransformPaintPropertyNode> CreateTransform(
     const TransformPaintPropertyNodeOrAlias& parent,
     const gfx::Transform& matrix,
     const gfx::Point3F& origin = gfx::Point3F(),
@@ -276,7 +277,7 @@ inline TransformPaintPropertyNode* CreateTransform(
   return TransformPaintPropertyNode::Create(parent, std::move(state));
 }
 
-inline TransformPaintPropertyNode* CreateAnimatingTransform(
+inline scoped_refptr<TransformPaintPropertyNode> CreateAnimatingTransform(
     const TransformPaintPropertyNodeOrAlias& parent,
     const gfx::Transform& matrix = gfx::Transform(),
     const gfx::Point3F& origin = gfx::Point3F()) {
@@ -288,7 +289,7 @@ inline TransformPaintPropertyNode* CreateAnimatingTransform(
   return TransformPaintPropertyNode::Create(parent, std::move(state));
 }
 
-inline TransformPaintPropertyNode* CreateScrollTranslation(
+inline scoped_refptr<TransformPaintPropertyNode> CreateScrollTranslation(
     const TransformPaintPropertyNodeOrAlias& parent,
     float offset_x,
     float offset_y,
@@ -301,7 +302,7 @@ inline TransformPaintPropertyNode* CreateScrollTranslation(
   return TransformPaintPropertyNode::Create(parent, std::move(state));
 }
 
-inline TransformPaintPropertyNode* CreateScrollTranslation(
+inline scoped_refptr<TransformPaintPropertyNode> CreateScrollTranslation(
     const TransformPaintPropertyNodeOrAlias& parent_transform,
     const ScrollPaintPropertyNode& parent_scroll,
     float offset_x,
@@ -337,7 +338,8 @@ inline const ScrollPaintPropertyNode& DefaultParentScroll(
               .ScrollNode();
 }
 
-inline TransformPaintPropertyNode* CreateCompositedScrollTranslation(
+inline scoped_refptr<TransformPaintPropertyNode>
+CreateCompositedScrollTranslation(
     const TransformPaintPropertyNodeOrAlias& parent_transform,
     float offset_x,
     float offset_y,
@@ -346,7 +348,8 @@ inline TransformPaintPropertyNode* CreateCompositedScrollTranslation(
                                  CompositingReason::kOverflowScrolling);
 }
 
-inline TransformPaintPropertyNode* CreateCompositedScrollTranslation(
+inline scoped_refptr<TransformPaintPropertyNode>
+CreateCompositedScrollTranslation(
     const TransformPaintPropertyNodeOrAlias& parent_transform,
     const ScrollPaintPropertyNode& parent_scroll,
     float offset_x,
@@ -362,7 +365,7 @@ inline TransformPaintPropertyNode* CreateCompositedScrollTranslation(
       main_thread_reasons);
 }
 
-inline PropertyTreeState CreateScrollTranslationState(
+inline RefCountedPropertyTreeState CreateScrollTranslationState(
     const PropertyTreeState& parent_state,
     const ScrollPaintPropertyNode& parent_scroll,
     float offset_x,
@@ -372,7 +375,7 @@ inline PropertyTreeState CreateScrollTranslationState(
     CompositingReasons compositing_reasons = CompositingReason::kNone,
     MainThreadScrollingReasons main_thread_reasons =
         cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText) {
-  PropertyTreeState state(PropertyTreeState::Root());
+  RefCountedPropertyTreeState state(PropertyTreeState::Root());
   state.SetClip(*CreateClip(parent_state.Clip(), parent_state.Transform(),
                             FloatRoundedRect(container_rect)));
   state.SetTransform(*CreateScrollTranslation(
@@ -382,7 +385,7 @@ inline PropertyTreeState CreateScrollTranslationState(
   return state;
 }
 
-inline PropertyTreeState CreateScrollTranslationState(
+inline RefCountedPropertyTreeState CreateScrollTranslationState(
     const PropertyTreeState& parent_state,
     float offset_x,
     float offset_y,
@@ -397,7 +400,7 @@ inline PropertyTreeState CreateScrollTranslationState(
       main_thread_reasons);
 }
 
-inline PropertyTreeState CreateCompositedScrollTranslationState(
+inline RefCountedPropertyTreeState CreateCompositedScrollTranslationState(
     const PropertyTreeState& parent_state,
     const ScrollPaintPropertyNode& parent_scroll,
     float offset_x,
@@ -412,7 +415,7 @@ inline PropertyTreeState CreateCompositedScrollTranslationState(
                                       main_thread_reasons);
 }
 
-inline PropertyTreeState CreateCompositedScrollTranslationState(
+inline RefCountedPropertyTreeState CreateCompositedScrollTranslationState(
     const PropertyTreeState& parent_state,
     float offset_x,
     float offset_y,

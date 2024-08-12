@@ -1140,6 +1140,7 @@ component("platform") {
     "graphics/paint/raster_invalidation_tracking.h",
     "graphics/paint/raster_invalidator.cc",
     "graphics/paint/raster_invalidator.h",
+    "graphics/paint/ref_counted_property_tree_state.h",
     "graphics/paint/region_capture_data.cc",
     "graphics/paint/region_capture_data.h",
     "graphics/paint/scoped_display_item_fragment.h",

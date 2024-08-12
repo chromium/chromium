@@ -186,10 +186,10 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
   auto container_properties =
       container->FirstFragment().LocalBorderBoxProperties();
   auto content_properties = container->FirstFragment().ContentsProperties();
-  auto* scroll_hit_test = MakeGarbageCollected<HitTestData>();
-  scroll_hit_test->scroll_translation =
+  HitTestData scroll_hit_test;
+  scroll_hit_test.scroll_translation =
       container->FirstFragment().PaintProperties()->ScrollTranslation();
-  scroll_hit_test->scroll_hit_test_rect = gfx::Rect(0, 0, 150, 150);
+  scroll_hit_test.scroll_hit_test_rect = gfx::Rect(0, 0, 150, 150);
 
   if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
     EXPECT_THAT(
@@ -203,7 +203,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
             IsPaintChunk(
                 1, 1,
                 PaintChunk::Id(container->Id(), DisplayItem::kScrollHitTest),
-                container_properties, scroll_hit_test,
+                container_properties, &scroll_hit_test,
                 gfx::Rect(0, 0, 150, 150)),
             IsPaintChunk(
                 1, 1,
@@ -234,7 +234,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
             IsPaintChunk(
                 1, 1,
                 PaintChunk::Id(container->Id(), DisplayItem::kScrollHitTest),
-                container_properties, scroll_hit_test,
+                container_properties, &scroll_hit_test,
                 gfx::Rect(0, 0, 150, 150)),
             IsPaintChunk(
                 1, 1,
@@ -287,7 +287,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
             IsPaintChunk(
                 1, 1,
                 PaintChunk::Id(container->Id(), DisplayItem::kScrollHitTest),
-                container_properties, scroll_hit_test,
+                container_properties, &scroll_hit_test,
                 gfx::Rect(0, 0, 150, 150)),
             IsPaintChunk(
                 1, 1,
@@ -323,7 +323,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
             IsPaintChunk(
                 1, 1,
                 PaintChunk::Id(container->Id(), DisplayItem::kScrollHitTest),
-                container_properties, scroll_hit_test,
+                container_properties, &scroll_hit_test,
                 gfx::Rect(0, 0, 150, 150)),
             IsPaintChunk(
                 1, 1,

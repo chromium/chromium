@@ -47,7 +47,7 @@ PaintController::PaintController(Usage usage)
 PaintController::~PaintController() {
 #if DCHECK_IS_ON()
   if (usage_ == kMultiplePaints) {
-    // The committed_ flag should have been cleared by FinishCycle().
+    // And the committed_ flag should have been cleared by FinishCycle().
     DCHECK(!committed_);
   }
 #endif
@@ -56,7 +56,6 @@ PaintController::~PaintController() {
 void PaintController::Trace(Visitor* visitor) const {
   visitor->Trace(current_paint_artifact_);
   visitor->Trace(new_paint_artifact_);
-  visitor->Trace(paint_chunker_);
   visitor->Trace(clients_to_validate_);
   visitor->Trace(under_invalidation_checker_);
 }

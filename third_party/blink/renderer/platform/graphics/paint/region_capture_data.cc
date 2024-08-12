@@ -9,13 +9,12 @@
 
 namespace blink {
 
-String RegionCaptureData::ToString() const {
+PLATFORM_EXPORT String ToString(const RegionCaptureData& data) {
   StringBuilder sb;
   sb.Append("{");
-  for (auto it = map.begin(); it != map.end(); ++it) {
-    if (it != map.begin()) {
+  for (auto it = data.begin(); it != data.end(); ++it) {
+    if (it != data.begin())
       sb.Append(", ");
-    }
     sb.Append("{");
     sb.Append(it->first->ToString().c_str());
     sb.Append(": ");

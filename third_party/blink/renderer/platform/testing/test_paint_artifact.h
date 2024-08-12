@@ -56,6 +56,10 @@ class TestPaintArtifact {
       const EffectPaintPropertyNodeOrAlias& effect) {
     return Properties(PropertyTreeStateOrAlias(transform, clip, effect));
   }
+  TestPaintArtifact& Properties(
+      const RefCountedPropertyTreeStateOrAlias& properties) {
+    return Properties(properties.GetPropertyTreeState());
+  }
 
   // Shorthands of Chunk().Properties(...).
   TestPaintArtifact& Chunk(const TransformPaintPropertyNodeOrAlias& transform,
@@ -66,6 +70,10 @@ class TestPaintArtifact {
   TestPaintArtifact& Chunk(const PropertyTreeStateOrAlias& properties) {
     return Chunk().Properties(properties);
   }
+  TestPaintArtifact& Chunk(
+      const RefCountedPropertyTreeStateOrAlias& properties) {
+    return Chunk().Properties(properties);
+  }
 
   TestPaintArtifact& ScrollHitTestChunk(
       const DisplayItemClient&,
@@ -73,6 +81,10 @@ class TestPaintArtifact {
   TestPaintArtifact& ScrollHitTestChunk(
       const PropertyTreeState& contents_state) {
     return ScrollHitTestChunk(NewClient(), contents_state);
+  }
+  TestPaintArtifact& ScrollHitTestChunk(
+      const RefCountedPropertyTreeState& contents_state) {
+    return ScrollHitTestChunk(contents_state.GetPropertyTreeState());
   }
 
   TestPaintArtifact& ScrollingContentsChunk(const DisplayItemClient&,
@@ -82,9 +94,19 @@ class TestPaintArtifact {
                                             bool opaque = false) {
     return ScrollingContentsChunk(NewClient(), state, opaque);
   }
+  TestPaintArtifact& ScrollingContentsChunk(
+      const RefCountedPropertyTreeState& state,
+      bool opaque = false) {
+    return ScrollingContentsChunk(state.GetPropertyTreeState(), opaque);
+  }
 
   TestPaintArtifact& ScrollChunks(const PropertyTreeState& contents_state,
                                   bool contents_opaque = false);
+  TestPaintArtifact& ScrollChunks(
+      const RefCountedPropertyTreeState& contents_state,
+      bool contents_opaque = false) {
+    return ScrollChunks(contents_state.GetPropertyTreeState(), contents_opaque);
+  }
 
   // Add display item in the chunk. Each display item will have a different
   // automatically created client.
