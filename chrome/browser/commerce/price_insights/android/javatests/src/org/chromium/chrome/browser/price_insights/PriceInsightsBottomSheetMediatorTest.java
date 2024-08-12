@@ -16,8 +16,11 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_HISTORY_CHART;
+
 import android.content.Context;
 import android.content.res.Resources;
+import android.view.View;
 import android.view.View.OnClickListener;
 
 import org.junit.Before;
@@ -44,12 +47,13 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfoCallback;
+import org.chromium.components.commerce.core.ShoppingService.PricePoint;
 import org.chromium.components.commerce.core.ShoppingService.ProductInfo;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 
 /** Tests for {@link PriceInsightsBottomSheetMediator}. */
@@ -68,6 +72,7 @@ public class PriceInsightsBottomSheetMediatorTest {
     @Mock private Resources mMockResources;
     @Mock private BookmarkId mMockBookmarkId;
     @Mock private PriceInsightsDelegate mMockPriceInsightsDelegate;
+    @Mock private View mMockPriceHistoryChart;
 
     private static final String PRODUCT_TITLE = "Testing Sneaker";
     private static final String PRICE_TRACKING_DESCRIPTION =
@@ -76,6 +81,17 @@ public class PriceInsightsBottomSheetMediatorTest {
     private static final String PRICE_TRACKING_ENABLED_BUTTON_TEXT = "Tracking";
     private static final String PRICE_HISTORY_TITLE = "Price history across the web";
     private static final String OPEN_URL_TITLE = "Search buying options";
+    private static final PriceInsightsInfo PRICE_INSIGHTS_INFO =
+            new PriceInsightsInfo(
+                    Optional.empty(),
+                    "USD",
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Arrays.asList(new PricePoint("08-08-2024", 65000000L)),
+                    Optional.of(JUnitTestGURLs.EXAMPLE_URL),
+                    0,
+                    false);
 
     private PriceInsightsBottomSheetMediator mPriceInsightsMediator;
     private PropertyModel mPropertyModel =
@@ -217,11 +233,16 @@ public class PriceInsightsBottomSheetMediatorTest {
 
     @Test
     public void testRequestShowContent_PriceHistory() {
+        doReturn(mMockPriceHistoryChart)
+                .when(mMockPriceInsightsDelegate)
+                .getPriceHistoryChartForPriceInsightsInfo(PRICE_INSIGHTS_INFO);
+        setShoppingServiceGetPriceInsightsInfoForUrl();
         mPriceInsightsMediator.requestShowContent();
 
         assertEquals(
                 PRICE_HISTORY_TITLE,
                 mPropertyModel.get(PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE));
+        assertEquals(mMockPriceHistoryChart, mPropertyModel.get(PRICE_HISTORY_CHART));
     }
 
     @Test
@@ -280,22 +301,10 @@ public class PriceInsightsBottomSheetMediatorTest {
     }
 
     private void setShoppingServiceGetPriceInsightsInfoForUrl() {
-        PriceInsightsInfo priceInsightsInfo =
-                new PriceInsightsInfo(
-                        Optional.empty(),
-                        "",
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        new ArrayList<>(),
-                        Optional.of(JUnitTestGURLs.EXAMPLE_URL),
-                        0,
-                        false);
-
         doAnswer(
                         (InvocationOnMock invocation) -> {
                             ((PriceInsightsInfoCallback) invocation.getArgument(1))
-                                    .onResult(JUnitTestGURLs.EXAMPLE_URL, priceInsightsInfo);
+                                    .onResult(JUnitTestGURLs.EXAMPLE_URL, PRICE_INSIGHTS_INFO);
                             return null;
                         })
                 .when(mMockShoppingService)

@@ -56,10 +56,6 @@ public class PriceInsightsBottomSheetMediator {
 
         updatePriceTrackingButtonModel();
 
-        mPropertyModel.set(
-                PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE,
-                mContext.getResources().getString(R.string.price_history_title));
-
         ShoppingServiceFactory.getForProfile(mTab.getProfile())
                 .getPriceInsightsInfoForUrl(
                         mTab.getUrl(),
@@ -160,7 +156,20 @@ public class PriceInsightsBottomSheetMediator {
     }
 
     private void updatePriceInsightsInfo(PriceInsightsInfo info) {
-        if (info == null || info.jackpotUrl == null || info.jackpotUrl.isEmpty()) {
+        if (info == null
+                || info.currencyCode.isEmpty()
+                || info.catalogHistoryPrices == null
+                || info.catalogHistoryPrices.isEmpty()) {
+            return;
+        }
+        mPropertyModel.set(
+                PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE,
+                mContext.getResources().getString(R.string.price_history_title));
+        mPropertyModel.set(
+                PriceInsightsBottomSheetProperties.PRICE_HISTORY_CHART,
+                mPriceInsightsDelegate.getPriceHistoryChartForPriceInsightsInfo(info));
+
+        if (info.jackpotUrl == null || info.jackpotUrl.isEmpty()) {
             return;
         }
         mPropertyModel.set(

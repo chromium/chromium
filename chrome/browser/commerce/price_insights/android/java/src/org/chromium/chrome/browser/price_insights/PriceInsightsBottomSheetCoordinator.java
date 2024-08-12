@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -45,6 +46,14 @@ public class PriceInsightsBottomSheetCoordinator {
          * @param callback The callback when price tracking state is set success or not.
          */
         void setPriceTrackingStateForTab(Tab tab, boolean enabled, Callback<Boolean> callback);
+
+        /**
+         * Get the view of the price history chart given the price insights info.
+         *
+         * @param info The price insights info data.
+         * @return The view of the price history chart.
+         */
+        View getPriceHistoryChartForPriceInsightsInfo(PriceInsightsInfo info);
     }
 
     private final Context mContext;

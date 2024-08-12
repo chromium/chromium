@@ -47,10 +47,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfoCallback;
+import org.chromium.components.commerce.core.ShoppingService.PricePoint;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 
 /** Tests for {@link PriceInsightsBottomSheetCoordinator}. */
@@ -76,8 +77,20 @@ public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivity
     private static final String PRICE_TRACKING_DISABLED_BUTTON_TEXT = "Track";
     private static final String PRICE_HISTORY_TITLE = "Price history across the web";
     private static final String OPEN_URL_TITLE = "Search buying options";
+    private static final PriceInsightsInfo PRICE_INSIGHTS_INFO =
+            new PriceInsightsInfo(
+                    Optional.empty(),
+                    "USD",
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Arrays.asList(new PricePoint("08-08-2024", 65000000L)),
+                    Optional.of(JUnitTestGURLs.EXAMPLE_URL),
+                    0,
+                    false);
 
     private Activity mActivity;
+    private View mMockPriceHistoryChart;
     private PriceInsightsBottomSheetCoordinator mPriceInsightsCoordinator;
 
     @Before
@@ -87,6 +100,10 @@ public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivity
         doReturn(PRODUCT_TITLE).when(mMockTab).getTitle();
         setShoppingServiceGetPriceInsightsInfoForUrl();
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
+        mMockPriceHistoryChart = new View(mActivity);
+        doReturn(mMockPriceHistoryChart)
+                .when(mMockPriceInsightsDelegate)
+                .getPriceHistoryChartForPriceInsightsInfo(PRICE_INSIGHTS_INFO);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -176,22 +193,10 @@ public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivity
     }
 
     private void setShoppingServiceGetPriceInsightsInfoForUrl() {
-        PriceInsightsInfo priceInsightsInfo =
-                new PriceInsightsInfo(
-                        Optional.empty(),
-                        "",
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        new ArrayList<>(),
-                        Optional.of(JUnitTestGURLs.EXAMPLE_URL),
-                        0,
-                        false);
-
         doAnswer(
                         (InvocationOnMock invocation) -> {
                             ((PriceInsightsInfoCallback) invocation.getArgument(1))
-                                    .onResult(JUnitTestGURLs.EXAMPLE_URL, priceInsightsInfo);
+                                    .onResult(JUnitTestGURLs.EXAMPLE_URL, PRICE_INSIGHTS_INFO);
                             return null;
                         })
                 .when(mMockShoppingService)
