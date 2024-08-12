@@ -281,7 +281,7 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
   ChromeBrowserState* browserState =
       sceneState.browserProviderInterface.mainBrowserProvider.browser
           ->GetBrowserState();
-  if ([self isContentNotificationAvailable:browserState]) {
+  if (IsContentNotificationEnabled(browserState)) {
     ContentNotificationService* contentNotificationService =
         ContentNotificationServiceFactory::GetForBrowserState(browserState);
     int maxNauSentPerSession = base::GetFieldTrialParamByFeatureAsInt(
