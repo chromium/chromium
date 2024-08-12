@@ -3229,8 +3229,11 @@ TEST_F(ShellSurfaceTest, ShadowRoundedCorners) {
   constexpr gfx::Point kOrigin(20, 20);
   constexpr int kWindowCornerRadius = 12;
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      chromeos::features::kRoundedWindows);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {chromeos::features::kRoundedWindows,
+       chromeos::features::kFeatureManagementRoundedWindows},
+      /*disabled_features=*/{});
 
   std::unique_ptr<ShellSurface> shell_surface =
       test::ShellSurfaceBuilder({256, 256})

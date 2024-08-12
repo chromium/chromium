@@ -19500,6 +19500,7 @@
                     "name": "RoundedWindowsEnabled",
                     "enable_features": [
                         "ArcRoundedWindowCompat",
+                        "FeatureManagementRoundedWindows",
                         "RoundedWindows"
                     ]
                 }

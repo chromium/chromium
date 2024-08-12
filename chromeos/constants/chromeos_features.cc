@@ -212,6 +212,12 @@ BASE_FEATURE(kFeatureManagementDisableChromeCompose,
              "FeatureManagementDisableChromeCompose",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables rounded windows. This flag is intended to be controlled by the
+// feature management module.
+BASE_FEATURE(kFeatureManagementRoundedWindows,
+             "FeatureManagementRoundedWindows",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether PreinstalledWebApps should only install core apps.
 BASE_FEATURE(kPreinstalledWebAppsCoreOnly,
              "PreinstalledWebAppsCoreOnly",
@@ -508,9 +514,8 @@ bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() {
 }
 
 bool IsRoundedWindowsEnabled() {
-  // Rounded windows are under the Jelly feature.
-  return base::FeatureList::IsEnabled(kRoundedWindows) &&
-         base::FeatureList::IsEnabled(kJelly);
+  return base::FeatureList::IsEnabled(kFeatureManagementRoundedWindows) &&
+         base::FeatureList::IsEnabled(kRoundedWindows);
 }
 
 bool IsPkcs12ToChapsDualWriteEnabled() {
@@ -526,8 +531,9 @@ int RoundedWindowsRadius() {
     return 0;
   }
 
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kRoundedWindows, kRoundedWindowsRadius, /*default_value=*/12);
+  return base::GetFieldTrialParamByFeatureAsInt(kRoundedWindows,
+                                                kRoundedWindowsRadius,
+                                                /*default_value=*/12);
 }
 
 }  // namespace chromeos::features
