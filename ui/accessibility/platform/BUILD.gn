@@ -34,39 +34,26 @@ component("platform") {
   visibility = [ "//ui/accessibility" ]
 
   sources = [
-    # Used by web_ax_platform_tree_manager_delegate.cc.
-    "ax_platform_tree_manager_delegate.h",
-
-    # Used by browser_accessibility_state_impl.cc.
+    "ax_node_id_delegate.h",
     "ax_platform.cc",
     "ax_platform.h",
     "ax_platform_node.cc",
     "ax_platform_node.h",
+    "ax_platform_node_base.cc",
+    "ax_platform_node_base.h",
     "ax_platform_node_delegate.cc",
     "ax_platform_node_delegate.h",
     "ax_platform_node_id.h",
+    "ax_platform_tree_manager.cc",
+    "ax_platform_tree_manager.h",
+    "ax_platform_tree_manager_delegate.h",
+    "ax_unique_id.cc",
+    "ax_unique_id.h",
     "child_iterator.h",
     "child_iterator_base.cc",
     "child_iterator_base.h",
-
-    # Used by browser_accessibility_manager.cc.
-    "ax_node_id_delegate.h",
-    "ax_platform_tree_manager.cc",
-    "ax_platform_tree_manager.h",
-
-    # Used by browser_accessibility.cc.
-    "ax_unique_id.cc",
-    "ax_unique_id.h",
-
-    # Used by accessibility_tree_formatter_blink.cc.
     "compute_attributes.cc",
     "compute_attributes.h",
-
-    # Used by //ui/views/views/ax_virtual_view.h.
-    "ax_platform_node_base.cc",
-    "ax_platform_node_base.h",
-
-    # Used by DumpAccTree testsuite and a11y tools
     "inspect/ax_api_type.cc",
     "inspect/ax_api_type.h",
     "inspect/ax_event_recorder.cc",
@@ -126,7 +113,6 @@ component("platform") {
 
   if (is_android || is_chromeos_ash) {
     sources += [
-      # Used by //ui/accessibility:ax_assistant.
       "ax_android_constants.cc",
       "ax_android_constants.h",
     ]
