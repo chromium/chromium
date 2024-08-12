@@ -112,7 +112,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* showDownload= */ true,
                         /* isIncognito= */ false,
                         /* isOffTheRecord= */ false,
-                        /* isAuthView= */ true,
+                        /* isAuthTab= */ true,
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,
                         /* hasClientPackage= */ false);

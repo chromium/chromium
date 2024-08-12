@@ -1540,7 +1540,7 @@ message StartUp {
     HOME_SCREEN_SHORTCUT = 16;
     SHARE_INTENT = 17;
     NFC = 18;
-    AUTH_VIEW = 19;
+    AUTH_TAB = 19;
   }
 
   optional int64 activity_id = 1;

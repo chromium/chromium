@@ -7568,9 +7568,9 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"cct-auth-view", flag_descriptions::kCCTAuthViewName,
-     flag_descriptions::kCCTAuthViewDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCCTAuthView)},
+    {"cct-auth-tab", flag_descriptions::kCCTAuthTabName,
+     flag_descriptions::kCCTAuthTabDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTAuthTab)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

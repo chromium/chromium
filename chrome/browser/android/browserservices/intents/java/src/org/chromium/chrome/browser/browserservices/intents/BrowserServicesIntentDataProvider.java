@@ -653,7 +653,7 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /** Return {@code true} if the service was launched for authentication. */
-    public boolean isAuthView() {
+    public boolean isAuthTab() {
         return false;
     }
 }

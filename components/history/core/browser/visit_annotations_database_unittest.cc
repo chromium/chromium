@@ -182,7 +182,7 @@ TEST_F(VisitAnnotationsDatabaseTest,
            SessionID::FromSerializedValue(15), 107, 108, 109, 404},
           false, true, true, false, true, false),
       MakeContextAnnotations(
-          {VisitContextAnnotations::BrowserType::kAuthView,
+          {VisitContextAnnotations::BrowserType::kAuthTab,
            SessionID::FromSerializedValue(16),
            SessionID::FromSerializedValue(17), 110, 111, 112, 404},
           false, false, false, false, false, false)};

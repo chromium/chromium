@@ -250,7 +250,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                     new BrandingController(
                             activity, appId, browserName, new ChromePureJavaExceptionReporter());
         }
-        // TODO(353517557): Do initialization necessary for ActivityType.AUTH_VIEW
+        // TODO(353517557): Do initialization necessary for ActivityType.AUTH_TAB
 
         mTabController = tabController;
         mMinimizeDelegateSupplier = minimizeDelegateSupplier;
@@ -394,7 +394,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     protected boolean isContextualSearchEnabled() {
-        if (mIntentDataProvider.get().isAuthView()) return false;
+        if (mIntentDataProvider.get().isAuthTab()) return false;
         return super.isContextualSearchEnabled();
     }
 
@@ -505,7 +505,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     protected boolean showWebSearchInActionMode() {
-        return !mIntentDataProvider.get().isAuthView();
+        return !mIntentDataProvider.get().isAuthTab();
     }
 
     @Override

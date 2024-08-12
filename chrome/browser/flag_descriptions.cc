@@ -4258,9 +4258,8 @@ const char kBackToHomeAnimationDescription[] =
 const char kBoardingPassDetectorName[] = "Boarding Pass Detector";
 const char kBoardingPassDetectorDescription[] = "Enable Boarding Pass Detector";
 
-const char kCCTAuthViewName[] = "CCT Auth View";
-const char kCCTAuthViewDescription[] =
-    "Enable AuthView Custom Tabs used for authentication";
+const char kCCTAuthTabName[] = "CCT Auth Tab";
+const char kCCTAuthTabDescription[] = "Enable AuthTab used for authentication";
 
 const char kCCTBeforeUnloadName[] = "CCT before unload";
 const char kCCTBeforeUnloadDescription[] =

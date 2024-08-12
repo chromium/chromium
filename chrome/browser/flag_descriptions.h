@@ -2486,8 +2486,8 @@ extern const char kBackToHomeAnimationDescription[];
 extern const char kBoardingPassDetectorName[];
 extern const char kBoardingPassDetectorDescription[];
 
-extern const char kCCTAuthViewName[];
-extern const char kCCTAuthViewDescription[];
+extern const char kCCTAuthTabName[];
+extern const char kCCTAuthTabDescription[];
 
 extern const char kCCTBeforeUnloadName[];
 extern const char kCCTBeforeUnloadDescription[];

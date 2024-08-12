@@ -61,7 +61,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     private final boolean mIsOpenedByChrome;
     private final boolean mIsIncognitoBranded;
     private final boolean mIsOffTheRecord;
-    private final boolean mIsAuthView;
+    private final boolean mIsAuthTab;
     private final boolean mIsStartIconMenu;
 
     private final List<String> mMenuEntries;
@@ -88,7 +88,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             boolean showDownload,
             boolean isIncognitoBranded,
             boolean isOffTheRecord,
-            boolean isAuthView,
+            boolean isAuthTab,
             boolean isStartIconMenu,
             Supplier<ReadAloudController> readAloudControllerSupplier,
             boolean hasClientPackage) {
@@ -107,12 +107,12 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         mUiType = uiType;
         mMenuEntries = menuEntries;
         mIsOpenedByChrome = isOpenedByChrome;
-        mShowShare = showShare && !isAuthView;
+        mShowShare = showShare && !isAuthTab;
         mShowStar = showStar;
         mShowDownload = showDownload;
         mIsIncognitoBranded = isIncognitoBranded;
         mIsOffTheRecord = isOffTheRecord;
-        mIsAuthView = isAuthView;
+        mIsAuthTab = isAuthTab;
         mIsStartIconMenu = isStartIconMenu;
         mHasClientPackage = hasClientPackage;
     }
@@ -156,13 +156,13 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 updateDirectShareMenuItem(menu.findItem(R.id.direct_share_menu_id));
             }
 
-            boolean openInChromeItemVisible = !mIsAuthView;
-            boolean bookmarkItemVisible = mShowStar && !mIsAuthView;
-            boolean downloadItemVisible = mShowDownload && !mIsAuthView;
-            boolean addToHomeScreenVisible = !mIsAuthView;
+            boolean openInChromeItemVisible = !mIsAuthTab;
+            boolean bookmarkItemVisible = mShowStar && !mIsAuthTab;
+            boolean downloadItemVisible = mShowDownload && !mIsAuthTab;
+            boolean addToHomeScreenVisible = !mIsAuthTab;
             boolean requestDesktopSiteVisible = true;
             boolean tryAddingReadAloud = ReadAloudFeatures.isEnabledForOverflowMenuInCCT();
-            boolean historyItemVisible = !mIsAuthView;
+            boolean historyItemVisible = !mIsAuthTab;
             if (!HistoryManager.isAppSpecificHistoryEnabled() || !mHasClientPackage) {
                 historyItemVisible = false;
             }

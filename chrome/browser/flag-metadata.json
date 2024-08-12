@@ -1345,7 +1345,7 @@
     "expiry_milestone": 132
   },
   {
-    "name": "cct-auth-view",
+    "name": "cct-auth-tab",
     "owners": [ "sinansahin@google.com", "chrome-connective-tissue@google.com"],
     "expiry_milestone": 150
   },

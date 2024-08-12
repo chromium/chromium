@@ -557,7 +557,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 mIntentDataProvider.shouldShowDownloadButton(),
                 mIntentDataProvider.getCustomTabMode() == CustomTabProfileType.INCOGNITO,
                 mIntentDataProvider.isOffTheRecord(),
-                mIntentDataProvider.isAuthView(),
+                mIntentDataProvider.isAuthTab(),
                 isMenuIconAtStart,
                 mBaseCustomTabRootUiCoordinator.getReadAloudControllerSupplier(),
                 mIntentDataProvider.getClientPackageNameIdentitySharing() != null);

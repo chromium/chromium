@@ -583,7 +583,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         mActivityType =
                 isTwa
                         ? ActivityType.TRUSTED_WEB_ACTIVITY
-                        : isAuthView() ? ActivityType.AUTH_VIEW : ActivityType.CUSTOM_TAB;
+                        : isAuthTab() ? ActivityType.AUTH_TAB : ActivityType.CUSTOM_TAB;
         mTrustedWebActivityAdditionalOrigins =
                 IntentUtils.safeGetStringArrayListExtra(
                         intent, TrustedWebActivityIntentBuilder.EXTRA_ADDITIONAL_TRUSTED_ORIGINS);
@@ -1561,10 +1561,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    public boolean isAuthView() {
+    public boolean isAuthTab() {
         // TODO(crbug.com/345627627): Remove this and set this to return true in a new
         //     intent data provider.
-        boolean isAuthView = false;
-        return ChromeFeatureList.sCctAuthView.isEnabled() && isAuthView;
+        boolean isAuthTab = false;
+        return ChromeFeatureList.sCctAuthTab.isEnabled() && isAuthTab;
     }
 }

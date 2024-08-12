@@ -54,9 +54,9 @@ enum class ActivityType {
   //   https://chromium.googlesource.com/chromium/src/+/refs/heads/main/chrome/android/webapk/README.md
   kWebApk,
 
-  // Chrome is running embedded in another application as auth-dedicated view.
+  // Chrome is running embedded in another application as auth-dedicated tab.
   // TODO(b/353517557): Add a link to a developer guide
-  kAuthView,
+  kAuthTab,
 
   // Chrome has started running, but no tab has yet become visible (for example:
   // warm-up,
