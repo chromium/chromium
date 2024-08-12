@@ -747,7 +747,8 @@
                   '|services/resource_coordinator/',
     },
     'chrome_intelligence': {
-      'filepath': 'history_clusters'\
+      'filepath': 'autofill_prediction_improvements'\
+                  '|history_clusters'\
                   '|history_embeddings'\
                   '|image_service'\
                   '|ios/chrome/browser/text_selection'\
