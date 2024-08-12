@@ -19,23 +19,14 @@
 <message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_1" desc="Text in image displaying: Track this Package?  for the feature: PackageTracking in What's New. [iOS only]">
         Track this Package?
 </message>
-<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_2" desc="Text in image displaying: Chrome can help you track this package on the New Tab page. for the feature: PackageTracking in What's New. [iOS only]">
-        Chrome can help you track this package on the New Tab page.
-</message>
-<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_3" desc="Text in image displaying: Track for the feature: PackageTracking in What's New. [iOS only]">
+<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_2" desc="Text in image displaying: Track for the feature: PackageTracking in What's New. [iOS only]">
         Track
 </message>
-<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_4" desc="Text in image displaying: Your Shipment for the feature: PackageTracking in What's New. [iOS only]">
-        Your Shipment
+<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_3" desc="Text in image displaying: Your shipment for the feature: PackageTracking in What's New. [iOS only]">
+        Your shipment
 </message>
-<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_5" desc="Text in image displaying: 1ZX32F000348211000 for the feature: PackageTracking in What's New. [iOS only]">
-        1ZX32F000348211000
-</message>
-<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_6" desc="Text in image displaying: Estimated delivery for the feature: PackageTracking in What's New. [iOS only]">
+<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_4" desc="Text in image displaying: Estimated delivery for the feature: PackageTracking in What's New. [iOS only]">
         Estimated delivery
-</message>
-<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_7" desc="Text in image displaying: Wednesday, May 01 by 7:00 P.M. for the feature: PackageTracking in What's New. [iOS only]">
-        Wednesday, May 01 by 7:00 P.M.
 </message>
 <message name="IDS_IOS_WHATS_NEW_PASSWORDSHARING_TITLE" desc="PasswordSharing Title displayed in What's New. [iOS only]">
         Share Passwords with your Family Group
