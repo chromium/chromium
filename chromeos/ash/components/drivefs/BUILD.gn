@@ -21,6 +21,8 @@ component("drivefs") {
     "drivefs_pinning_manager.h",
     "drivefs_search.cc",
     "drivefs_search.h",
+    "drivefs_search_query.cc",
+    "drivefs_search_query.h",
     "drivefs_session.cc",
     "drivefs_session.h",
     "drivefs_util.h",

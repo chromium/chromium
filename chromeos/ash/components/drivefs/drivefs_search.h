@@ -5,18 +5,13 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_SEARCH_H_
 #define CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_SEARCH_H_
 
-#include <memory>
-#include <optional>
-#include <string>
-#include <vector>
-
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace network {
 class NetworkConnectionTracker;
@@ -42,14 +37,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSearch {
       mojom::QueryParametersPtr query,
       mojom::SearchQuery::GetNextPageCallback callback);
 
- private:
-  void OnSearchDriveFs(
-      mojo::Remote<drivefs::mojom::SearchQuery> search,
-      drivefs::mojom::QueryParametersPtr query,
-      mojom::SearchQuery::GetNextPageCallback callback,
-      drive::FileError error,
-      std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+  // Used by `DriveFsSearchQuery`.
+  // TODO: b/357980197 - Move these out to a delegate interface, and consider
+  // abstracting away the offline / cached query adjustment.
+  bool IsOffline();
 
+  void UpdateLastSharedWithMeResponse();
+  bool WithinQueryCacheTtl();
+
+  void StartMojoSearchQuery(mojo::PendingReceiver<mojom::SearchQuery> query,
+                            mojom::QueryParametersPtr query_params);
+
+ private:
   const raw_ptr<mojom::DriveFs, DanglingUntriaged> drivefs_;
   const raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
   const raw_ptr<const base::Clock> clock_;

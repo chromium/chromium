@@ -1,0 +1,117 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromeos/ash/components/drivefs/drivefs_search_query.h"
+
+#include <optional>
+#include <utility>
+#include <vector>
+
+#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/drivefs/drivefs_search.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "components/drive/file_errors.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
+namespace drivefs {
+
+namespace {
+
+bool IsCloudSharedWithMeQuery(const drivefs::mojom::QueryParametersPtr& query) {
+  return query->query_source ==
+             drivefs::mojom::QueryParameters::QuerySource::kCloudOnly &&
+         query->shared_with_me && !query->text_content && !query->title;
+}
+
+}  // namespace
+
+DriveFsSearchQuery::DriveFsSearchQuery(
+    base::WeakPtr<DriveFsSearch> parent_search,
+    mojom::QueryParametersPtr query)
+    : parent_search_(std::move(parent_search)), query_(std::move(query)) {
+  Init();
+}
+
+DriveFsSearchQuery::~DriveFsSearchQuery() = default;
+
+mojom::QueryParameters::QuerySource DriveFsSearchQuery::source() {
+  return query_->query_source;
+}
+
+void DriveFsSearchQuery::Init() {
+  remote_.reset();
+
+  if (parent_search_ == nullptr) {
+    return;
+  }
+
+  // The only cacheable query is 'shared with me'.
+  if (IsCloudSharedWithMeQuery(query_)) {
+    // Check if we should have the response cached.
+    if (parent_search_->WithinQueryCacheTtl()) {
+      query_->query_source =
+          drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
+    }
+  }
+
+  if (parent_search_->IsOffline() &&
+      query_->query_source !=
+          drivefs::mojom::QueryParameters::QuerySource::kLocalOnly) {
+    // No point trying cloud query if we know we are offline.
+    AdjustQueryForOffline();
+  }
+
+  parent_search_->StartMojoSearchQuery(remote_.BindNewPipeAndPassReceiver(),
+                                       query_.Clone());
+}
+
+void DriveFsSearchQuery::GetNextPage(
+    mojom::SearchQuery::GetNextPageCallback callback) {
+  // `remote_` might not be bound if `parent_search_` was null when `Init()` was
+  // called.
+  if (remote_.is_bound()) {
+    remote_->GetNextPage(base::BindOnce(&DriveFsSearchQuery::OnGetNextPage,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        std::move(callback)));
+  }
+}
+
+void DriveFsSearchQuery::OnGetNextPage(
+    mojom::SearchQuery::GetNextPageCallback callback,
+    drive::FileError error,
+    std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
+  if (error == drive::FILE_ERROR_NO_CONNECTION &&
+      query_->query_source !=
+          drivefs::mojom::QueryParameters::QuerySource::kLocalOnly) {
+    // Retry with offline query.
+    // This is incorrect if we have already returned results, as it would result
+    // in a mix of cloud and local results with duplicates.
+    // TODO: b/357980197 - Fix pagination for non-local results.
+    AdjustQueryForOffline();
+    Init();
+    GetNextPage(std::move(callback));
+    return;
+  }
+
+  if (parent_search_ != nullptr && error == drive::FILE_ERROR_OK &&
+      IsCloudSharedWithMeQuery(query_)) {
+    // Mark that DriveFS should have cached the required info.
+    parent_search_->UpdateLastSharedWithMeResponse();
+  }
+
+  std::move(callback).Run(error, std::move(items));
+}
+
+void DriveFsSearchQuery::AdjustQueryForOffline() {
+  query_->query_source =
+      drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
+  if (query_->text_content) {
+    // Full-text searches not supported offline.
+    std::swap(query_->text_content, query_->title);
+    query_->text_content.reset();
+  }
+}
+
+}  // namespace drivefs
