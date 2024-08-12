@@ -195,7 +195,7 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, Blocklist) {
   RenderViewHostTestHarness::web_contents()->Stop();
 
   histogram_tester.ExpectUniqueSample(
-      "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction",
+      "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction2",
       PolicyBlocklistNavigationThrottle::RequestThrottleAction::kBlock, 1);
   histogram_tester.ExpectUniqueTimeSample(
       "Navigation.Throttles.PolicyBlocklist.DeferDurationTime",
@@ -221,7 +221,7 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, Allowlist) {
   RenderViewHostTestHarness::web_contents()->Stop();
 
   histogram_tester.ExpectUniqueSample(
-      "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction",
+      "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction2",
       PolicyBlocklistNavigationThrottle::RequestThrottleAction::kProceed, 1);
   histogram_tester.ExpectUniqueTimeSample(
       "Navigation.Throttles.PolicyBlocklist.DeferDurationTime",
@@ -248,7 +248,7 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Safe) {
   RenderViewHostTestHarness::web_contents()->Stop();
 
   histogram_tester.ExpectUniqueSample(
-      "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction",
+      "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction2",
       PolicyBlocklistNavigationThrottle::RequestThrottleAction::kDefer, 1);
   histogram_tester.ExpectTotalCount(
       "Navigation.Throttles.PolicyBlocklist.DeferDurationTime", 1);
@@ -274,7 +274,7 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Porn) {
   RenderViewHostTestHarness::web_contents()->Stop();
 
   histogram_tester.ExpectUniqueSample(
-      "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction",
+      "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction2",
       PolicyBlocklistNavigationThrottle::RequestThrottleAction::kDefer, 1);
   histogram_tester.ExpectTotalCount(
       "Navigation.Throttles.PolicyBlocklist.DeferDurationTime", 1);

@@ -1971,7 +1971,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.Throttles.PolicyBlocklist.RequestThrottleAction"
+<histogram name="Navigation.Throttles.PolicyBlocklist.RequestThrottleAction2"
     enum="PolicyBlocklistRequestThrottleAction" expires_after="2025-02-02">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
