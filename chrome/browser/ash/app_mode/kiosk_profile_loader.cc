@@ -41,10 +41,10 @@ namespace ash {
 
 namespace {
 
-enum class MountedState { kMounted, kNotMounted };
+enum class MountedState { kMounted, kNotMounted, kServiceUnavailable };
 
 using CryptohomeMountStateCallback =
-    base::OnceCallback<void(std::optional<MountedState> result)>;
+    base::OnceCallback<void(MountedState result)>;
 
 bool IsTestOrLinuxChromeOS() {
   // This code should only run in Chrome OS, so not `IsRunningOnChromeOS()`
@@ -69,10 +69,9 @@ KioskAppLaunchError::Error LoginFailureToKioskLaunchError(
   }
 }
 
-std::optional<MountedState> ToResult(
-    std::optional<user_data_auth::IsMountedReply> reply) {
+MountedState ToResult(std::optional<user_data_auth::IsMountedReply> reply) {
   if (!reply.has_value()) {
-    return std::nullopt;
+    return MountedState::kServiceUnavailable;
   }
   if (IsTestOrLinuxChromeOS()) {
     // In tests and in linux-chromeos there is no real cryptohome, and the fake
@@ -88,7 +87,7 @@ void CheckCryptohomeMountState(CryptohomeMountStateCallback on_done) {
   UserDataAuthClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
       [](CryptohomeMountStateCallback on_done, bool service_is_ready) {
         if (!service_is_ready || !UserDataAuthClient::Get()) {
-          return std::move(on_done).Run(std::nullopt);
+          return std::move(on_done).Run(MountedState::kServiceUnavailable);
         }
 
         UserDataAuthClient::Get()->IsMounted(
@@ -105,7 +104,10 @@ std::unique_ptr<CancellableJob> CheckCryptohome(
   return RunUpToNTimes<MountedState>(
       /*n=*/5,
       /*job=*/base::BindRepeating(&CheckCryptohomeMountState),
-      /*on_done=*/std::move(on_done));
+      /*should_retry=*/base::BindRepeating([](const MountedState& result) {
+        return result == MountedState::kServiceUnavailable;
+      }),
+      std::move(on_done));
 }
 
 class SigninPerformer : public LoginPerformer::Delegate, public CancellableJob {
@@ -295,17 +297,16 @@ KioskProfileLoader::~KioskProfileLoader() = default;
 void KioskProfileLoader::CheckCryptohomeIsNotMounted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_step_ = CheckCryptohome(base::BindOnce(
-      [](KioskProfileLoader* self, std::optional<MountedState> result) {
-        if (!result.has_value()) {
-          return self->ReturnError(
-              KioskAppLaunchError::Error::kCryptohomedNotRunning);
-        }
-        switch (result.value()) {
+      [](KioskProfileLoader* self, MountedState result) {
+        switch (result) {
           case MountedState::kNotMounted:
             return self->LoginAsKioskAccount();
           case MountedState::kMounted:
             return self->ReturnError(
                 KioskAppLaunchError::Error::kAlreadyMounted);
+          case MountedState::kServiceUnavailable:
+            return self->ReturnError(
+                KioskAppLaunchError::Error::kCryptohomedNotRunning);
         }
       },
       // Safe because `this` owns `current_step_`
