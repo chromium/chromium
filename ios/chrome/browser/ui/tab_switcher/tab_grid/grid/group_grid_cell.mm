@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/group_tab_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_snapshots_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -252,6 +253,10 @@ const CGFloat kGroupColorViewSize = 18;
   [_groupSnapshotsView
       configureTabGroupSnapshotsViewWithTabGroupInfos:groupTabInfos
                                                  size:totalTabsCount];
+}
+
+- (NSArray<UIView*>*)allGroupTabViews {
+  return [_groupSnapshotsView allGroupTabViews];
 }
 
 - (void)setTabsCount:(NSInteger)tabsCount {

@@ -41,6 +41,10 @@
 - (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos
                     totalTabsCount:(NSInteger)totalTabsCount;
 
+// Returns all tab views that compose this tab group view in the order they're
+// presented.
+- (NSArray<UIView*>*)allGroupTabViews;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GROUP_GRID_CELL_H_

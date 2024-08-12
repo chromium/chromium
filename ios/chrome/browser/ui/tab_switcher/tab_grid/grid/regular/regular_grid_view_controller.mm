@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/inactive_tabs_button_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/tabs_closure_animation.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_ui_swift.h"
@@ -22,11 +23,43 @@
 #import "ios/web/public/web_state_id.h"
 
 using base::apple::ObjCCast;
+using base::apple::ObjCCastStrict;
 
 namespace {
 
 constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
     base::Seconds(0.3);
+
+// Returns the views to animate a tab group closure. If the entire group is to
+// be closed, i.e. all tabs of `group_grid_cell` are in
+// `indexes_in_group_to_close`, then returns the entire tab group grid cell. If
+// only some tabs of the group are to be closed, then it returns only the views
+// inside the group view that correspond to the tabs to be closed.
+NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
+    GroupGridCell* group_grid_cell,
+    std::set<int> indexes_in_group_to_close) {
+  CHECK(!indexes_in_group_to_close.empty());
+
+  // If the entire group is going to be closed, then animate the entire grid
+  // cell.
+  if ((long)indexes_in_group_to_close.size() == group_grid_cell.tabsCount) {
+    return @[ group_grid_cell ];
+  }
+
+  // If only some of the tabs inside the tab group are going to be closed, then
+  // animate the corresponding views inside the tab group cell.
+  // TODO(crbug.com/354112735): The last view can represent a tab or a counter.
+  // We should adjust the animation to only animate the last view if it
+  // represents a tab or if the tab counter will disappear after the animation.
+  NSArray<UIView*>* all_views = [group_grid_cell allGroupTabViews];
+  NSMutableArray<UIView*>* all_views_to_close = [[NSMutableArray alloc] init];
+  for (NSUInteger index = 0; index < all_views.count; index++) {
+    if (indexes_in_group_to_close.contains(index)) {
+      [all_views_to_close addObject:[all_views objectAtIndex:index]];
+    }
+  }
+  return all_views_to_close;
+}
 
 }  // namespace
 
@@ -73,14 +106,11 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
     } else if (item.type == GridItemType::kGroup &&
                groupsWithTabsToClose.contains(
                    item.tabGroupItem.tabGroup->tab_group_id())) {
-      // If the entire group is going to be deleted, then animate the entire
-      // grid cell.
-      if ((NSInteger)
-              groupsWithTabsToClose[item.tabGroupItem.tabGroup->tab_group_id()]
-                  .size() == item.tabGroupItem.numberOfTabsInGroup) {
-        [gridCells addObject:collectionViewCell];
-      }
-      // TODO(crbug.com/354112735): Animate screenshots inside GroupTabView.
+      [gridCells addObjectsFromArray:
+                     GetTabGroupViewsToAnimateClosure(
+                         ObjCCastStrict<GroupGridCell>(collectionViewCell),
+                         groupsWithTabsToClose[item.tabGroupItem.tabGroup
+                                                   ->tab_group_id()])];
     }
   }
 
