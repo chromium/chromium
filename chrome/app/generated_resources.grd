@@ -15144,6 +15144,19 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Unnamed media source
       </message>
 
+      <message name="IDS_DESKTOP_MEDIA_PICKER_DELEGATED_SOURCE_LIST_WINDOW_TEXT" desc="Select window label text." >
+        To share your window, use your system's window picker
+      </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_DELEGATED_SOURCE_LIST_WINDOW_BUTTON" desc="Select window button text." >
+        Choose a window
+      </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_DELEGATED_SOURCE_LIST_SCREEN_TEXT" desc="Select screen label text." >
+        To share your screen, use your system's screen picker
+      </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_DELEGATED_SOURCE_LIST_SCREEN_BUTTON" desc="Select screen button text." >
+        Choose a screen
+      </message>
+
       <message name="IDS_SHARE_THIS_TAB_DIALOG_TITLE" desc="Title for the tab-sharing dialog shown when a getDisplayMedia capture is constrained to share only the current tab.">
         Allow <ph name="APP_NAME">$1</ph> to see this tab?
       </message>

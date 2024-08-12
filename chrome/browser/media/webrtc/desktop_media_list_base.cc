@@ -110,6 +110,7 @@ void DesktopMediaListBase::ClearDelegatedSourceListSelection() {
 
 void DesktopMediaListBase::FocusList() {}
 void DesktopMediaListBase::HideList() {}
+void DesktopMediaListBase::ShowDelegatedList() {}
 
 DesktopMediaListBase::SourceDescription::SourceDescription(
     DesktopMediaID id,

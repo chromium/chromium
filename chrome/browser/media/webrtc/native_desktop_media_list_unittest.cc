@@ -378,7 +378,8 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
 #endif  // BUILDFLAG(IS_WIN)
     model_ = std::make_unique<NativeDesktopMediaList>(
         DesktopMediaList::Type::kWindow,
-        base::WrapUnique(window_capturer_.get()), add_current_process_windows);
+        base::WrapUnique(window_capturer_.get()), add_current_process_windows,
+        /*auto_show_delegated_source_list=*/true);
   }
 
   void UpdateModel() {

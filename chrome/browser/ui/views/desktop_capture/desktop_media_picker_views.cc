@@ -468,7 +468,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         const bool supports_reselect_button =
             list_controller->SupportsReselectButton();
         screen_scroll_view->SetContents(list_controller->CreateView(
-            kGenericScreenStyle, kSingleScreenStyle, screen_title_text));
+            kGenericScreenStyle, kSingleScreenStyle, screen_title_text,
+            DesktopMediaList::Type::kScreen));
         // If the DisplayMediaPickerRedesign flag is active, clip max height to
         // 1.5 item heights to allow space for the audio-toggle controller.
         screen_scroll_view->ClipHeightTo(
@@ -506,7 +507,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         const bool supports_reselect_button =
             list_controller->SupportsReselectButton();
         window_scroll_view->SetContents(list_controller->CreateView(
-            kWindowStyle, kWindowStyle, window_title_text));
+            kWindowStyle, kWindowStyle, window_title_text,
+            DesktopMediaList::Type::kWindow));
         window_scroll_view->ClipHeightTo(kWindowStyle.item_size.height(),
                                          kWindowStyle.item_size.height() * 2);
         window_scroll_view->SetHorizontalScrollBarMode(
@@ -561,7 +563,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         const bool supports_reselect_button =
             list_controller->SupportsReselectButton();
         window_scroll_view->SetContents(list_controller->CreateView(
-            kCurrentTabStyle, kCurrentTabStyle, title));
+            kCurrentTabStyle, kCurrentTabStyle, title,
+            DesktopMediaList::Type::kCurrentTab));
         window_scroll_view->ClipHeightTo(
             kCurrentTabStyle.item_size.height(),
             kCurrentTabStyle.item_size.height() * 2);

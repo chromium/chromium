@@ -33,7 +33,8 @@ class NativeDesktopMediaList final : public DesktopMediaListBase {
 
   NativeDesktopMediaList(DesktopMediaList::Type type,
                          std::unique_ptr<ThumbnailCapturer> capturer,
-                         bool add_current_process_windows);
+                         bool add_current_process_windows,
+                         bool auto_show_delegated_source_list);
 
   NativeDesktopMediaList(const NativeDesktopMediaList&) = delete;
   NativeDesktopMediaList& operator=(const NativeDesktopMediaList&) = delete;
@@ -46,6 +47,7 @@ class NativeDesktopMediaList final : public DesktopMediaListBase {
   void ClearDelegatedSourceListSelection() override;
   void FocusList() override;
   void HideList() override;
+  void ShowDelegatedList() override;
 
   scoped_refptr<base::SingleThreadTaskRunner> GetCapturerTaskRunnerForTesting()
       const;

@@ -942,6 +942,30 @@ TEST_F(DelegatedSourceListTest, EnsureFocus) {
   EXPECT_TRUE(media_lists_[DesktopMediaList::Type::kWindow]->is_focused());
 }
 
+#if BUILDFLAG(IS_MAC)
+
+// Ensures that the first (only) source from a delegated source list is
+// selected.
+TEST_F(DelegatedSourceListTest, TestSelection) {
+  SetSourceTypes(
+      {DesktopMediaList::Type::kWebContents},
+      {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
+  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true);
+
+  // Add the one entry that is expected for a delegated source list and switch
+  // to it. Note that since this is a delegated source, we must select its pane
+  // before the observer will be set for adding items to the list.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  media_lists_[DesktopMediaList::Type::kScreen]->AddSourceByFullMediaID(
+      DesktopMediaID(GetSourceIdType(DesktopMediaList::Type::kScreen), 10));
+
+  // On MacOS, the added source is automatically selected.
+  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
+  EXPECT_EQ(10, test_api_.GetSelectedSourceId().value());
+}
+
+#else
+
 // Ensures that the first (only) source from a delegated source list is selected
 // after being notified that it has made a selection.
 TEST_F(DelegatedSourceListTest, TestSelection) {
@@ -966,6 +990,8 @@ TEST_F(DelegatedSourceListTest, TestSelection) {
   ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
   EXPECT_EQ(10, test_api_.GetSelectedSourceId().value());
 }
+
+#endif  // BUILDFLAG(IS_MACOS)
 
 // Creates a single pane picker and verifies that when it gets notified that the
 // delegated source list is dismissed that it finishes without a selection.
@@ -1049,6 +1075,32 @@ TEST_F(DelegatedSourceListTest, EnsureNoWebContentsSelected) {
             test_api_.GetSelectedSourceListType());
   ASSERT_FALSE(test_api_.GetSelectedSourceId().has_value());
 }
+
+#if BUILDFLAG(IS_MAC)
+
+// The delegated picker experience on MacOS (using SCContentSharingPicker)
+// starts the capture immediately after the user has made their choice, so
+// the reselect button is not enabled for any capture type
+TEST_F(DelegatedSourceListTest, ReselectButtonPresence) {
+  SetSourceTypes(
+      {DesktopMediaList::Type::kWebContents},
+      {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
+  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true);
+
+  // Ensure that we don't have a reselect button for the non-delegated type.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
+  EXPECT_EQ(nullptr, test_api_.GetReselectButton());
+
+  // Ensure that we don't have a reselect button for the screen delegated type.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  ASSERT_EQ(nullptr, test_api_.GetReselectButton());
+
+  // Ensure that we don't have a reselect button for window delegated type.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
+  ASSERT_EQ(nullptr, test_api_.GetReselectButton());
+}
+
+#else
 
 // Verify that the reselect button is only present on the delegated source list
 // type panes.
@@ -1151,4 +1203,5 @@ TEST_F(DelegatedSourceListTest, ReselectTriggersShowDelegatedSourceList) {
                    ->clear_delegated_source_list_selection_count());
 }
 
+#endif  // BUILDFLAG(IS_MAC)
 }  // namespace views
