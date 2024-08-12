@@ -92,6 +92,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_change_manager.mojom-forward.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -524,7 +525,7 @@ struct AttributionManagerImpl::PendingReportTimings {
 };
 
 struct AttributionManagerImpl::SourceOrTriggerRFH {
-  SourceOrTrigger source_or_trigger;
+  absl::variant<StorableSource, AttributionTrigger> source_or_trigger;
   GlobalRenderFrameHostId rfh_id;
 };
 
