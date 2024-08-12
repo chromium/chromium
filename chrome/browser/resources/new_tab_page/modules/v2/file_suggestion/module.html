@@ -15,10 +15,12 @@
     <a class="file" href="${item.itemUrl.url}" data-index="${index}"
         @click="${this.onFileClick_}">
       <div id="hover-layer"></div>
-      <img is="cr-auto-img"
+      <icon-container class="icon-container">
+        <img is="cr-auto-img"
           class="file-icon"
           draggable="false"
           .autoSrc="${this.getImageSrc_(item)}">
+      </icon-container>
       <div class="file-info">
         <div class="file-title">${item.title}</div>
         <div class="file-description">${item.justificationText}</div>

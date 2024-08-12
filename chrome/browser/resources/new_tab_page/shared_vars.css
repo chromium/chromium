@@ -16,6 +16,7 @@ html {
   --google-red-800: rgb(var(--google-red-800-rgb));
   --ntp-focus-shadow: 0 0 0 2px var(--color-new-tab-page-focus-ring);
   --ntp-module-first-element-top-padding: 4px;
+  --ntp-module-icon-size: 48px;
   --ntp-module-item-border-radius: 4px;
   --ntp-module-line-height: 20px;
   --ntp-module-text-size: 13px;
