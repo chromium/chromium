@@ -238,13 +238,6 @@ bool IOSTranslateDriver::HasCurrentPage() const {
   return (web_state_->GetNavigationManager()->GetVisibleItem() != nullptr);
 }
 
-void IOSTranslateDriver::OpenUrlInNewTab(const GURL& url) {
-  web::WebState::OpenURLParams params(url, web::Referrer(),
-                                      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                      ui::PAGE_TRANSITION_LINK, false);
-  web_state_->OpenURL(params);
-}
-
 void IOSTranslateDriver::TranslationDidSucceed(
     const std::string& source_lang,
     const std::string& target_lang,
