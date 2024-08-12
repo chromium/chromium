@@ -3195,7 +3195,9 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
 
   // Must be after inert computation, because focusability depends on that, but
   // before the included in tree computation, which depends on focusability.
+  CHECK(!IsDetached());
   cached_can_set_focus_attribute_ = ComputeCanSetFocusAttribute();
+  CHECK(!IsDetached());
 
   // Must be computed before is_used_for_label_or_description computation.
   bool was_included_in_tree = IsIncludedInTree();
@@ -3856,6 +3858,8 @@ bool AXObject::IsExcludedByFormControlsFilter() const {
 }
 
 bool AXObject::ComputeIsIgnoredButIncludedInTree() {
+  CHECK(!IsDetached());
+
   // If an inline text box is ignored, it is never included in the tree.
   if (IsAXInlineTextBox()) {
     return false;
