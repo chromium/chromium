@@ -64,7 +64,8 @@ enum class ASH_EXPORT TypographyToken {
   kCrosAnnotation2,
 
   kCrosLabel1,
-  kCrosLabel2
+  kCrosLabel2,
+  kMaxValue = kCrosLabel2,
 };
 
 class ASH_EXPORT TypographyProvider {
