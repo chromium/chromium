@@ -576,6 +576,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.MainIntentIsColdStart" enum="Boolean"
+    expires_after="2025-02-08">
+  <owner>nafisabedin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records whether Chrome started cold or warm when the main Chrome launcher
+    icon is used to start the app i.e. LaunchCauseType is MAIN_LAUNCHER_ICON or
+    MAIN_LAUNCHER_ICON_SHORTCUT.
+
+    Utilizes ColdStartTracker to determine if a start was cold based on process
+    creation reason. Therefore, it is recommended to limit analysis of the data
+    to Android P+ because on prior versions the cold start detection is
+    time-based and therefore less robust.
+  </summary>
+</histogram>
+
 <histogram name="Startup.Android.PrivacySandbox.AdsNoticeCCTAppIDCheck"
     enum="Boolean" expires_after="2024-12-08">
   <owner>jacobstanley@google.com</owner>

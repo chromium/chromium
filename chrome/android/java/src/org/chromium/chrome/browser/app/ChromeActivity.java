@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.CloseListenerManager;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
+import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
@@ -1187,7 +1188,17 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         RecordUserAction.record("MobileComeToForeground");
         getLaunchCauseMetrics().setActivityId(mActivityId);
-        getLaunchCauseMetrics().recordLaunchCause();
+        int launchCause = getLaunchCauseMetrics().recordLaunchCause();
+
+        boolean isMainIntentLaunch =
+                (launchCause == LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON
+                        || launchCause
+                                == LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT);
+        if (isMainIntentLaunch) {
+            RecordHistogram.recordBooleanHistogram(
+                    "Startup.Android.MainIntentIsColdStart",
+                    ColdStartTracker.wasColdOnFirstActivityCreationOrNow());
+        }
 
         Tab tab = getActivityTab();
         if (tab != null) {

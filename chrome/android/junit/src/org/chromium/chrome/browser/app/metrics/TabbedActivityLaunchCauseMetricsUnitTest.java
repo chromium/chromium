@@ -69,8 +69,9 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         // Tests the case where Chrome is backgrounded either by the intent picker, or by
         // cross-channel Open In Browser.
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         ++count;
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU, launchCause);
         Assert.assertEquals(
                 count,
                 histogramCountForValue(LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU));
@@ -84,14 +85,16 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
 
         // Ensures we record this metric even when Chrome has already recorded a launch.
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        launchCause = metrics.recordLaunchCause();
         ++count;
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU, launchCause);
         Assert.assertEquals(
                 count,
                 histogramCountForValue(LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU));
 
         // Ensures we don't record this metric again without a new Intent having been received.
-        metrics.recordLaunchCause();
+        launchCause = metrics.recordLaunchCause();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.OTHER, launchCause);
         Assert.assertEquals(
                 count,
                 histogramCountForValue(LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU));
@@ -102,7 +105,8 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
                         LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM);
         intent.putExtra(IntentHandler.EXTRA_FROM_OPEN_IN_BROWSER, false);
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        launchCause = metrics.recordLaunchCause();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.OTHER, launchCause);
         Assert.assertEquals(
                 total,
                 RecordHistogram.getHistogramTotalCountForTesting(
@@ -120,8 +124,10 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         ++count;
+        Assert.assertEquals(
+                LaunchCauseMetrics.LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT, launchCause);
         Assert.assertEquals(
                 count,
                 histogramCountForValue(
@@ -129,7 +135,9 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
 
         // Ensures we don't record this metric when Chrome has already recorded a launch.
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        launchCause = metrics.recordLaunchCause();
+        Assert.assertEquals(
+                LaunchCauseMetrics.LaunchCause.OTHER, launchCause);
         Assert.assertEquals(
                 count,
                 histogramCountForValue(
@@ -147,8 +155,9 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         ++count;
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.NOTIFICATION, launchCause);
         Assert.assertEquals(
                 count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.NOTIFICATION));
 
@@ -160,8 +169,9 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         ApplicationStatus.onStateChangeForTesting(chromeActivity, ActivityState.RESUMED);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        launchCause = metrics.recordLaunchCause();
         ++count;
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.NOTIFICATION, launchCause);
         Assert.assertEquals(
                 count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.NOTIFICATION));
     }
@@ -177,8 +187,9 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         ++count;
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.HOME_SCREEN_WIDGET, launchCause);
         Assert.assertEquals(
                 count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.HOME_SCREEN_WIDGET));
     }
@@ -194,8 +205,9 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         ++count;
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.NOTIFICATION, launchCause);
         Assert.assertEquals(
                 count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.NOTIFICATION));
     }
@@ -209,8 +221,9 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         ++count;
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.EXTERNAL_VIEW_INTENT, launchCause);
         Assert.assertEquals(
                 count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.EXTERNAL_VIEW_INTENT));
     }
@@ -227,8 +240,9 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         ++count;
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.OTHER_CHROME, launchCause);
         Assert.assertEquals(
                 count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER_CHROME));
     }
@@ -247,8 +261,9 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         ++count;
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.OTHER_CHROME, launchCause);
         Assert.assertEquals(
                 count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER_CHROME));
     }
@@ -264,8 +279,9 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         ++count;
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.HOME_SCREEN_SHORTCUT, launchCause);
         Assert.assertEquals(
                 count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.HOME_SCREEN_SHORTCUT));
     }
@@ -279,8 +295,9 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         ++count;
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.SHARE_INTENT, launchCause);
         Assert.assertEquals(
                 count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.SHARE_INTENT));
     }
@@ -295,8 +312,9 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         ++count;
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.NFC, launchCause);
         Assert.assertEquals(count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.NFC));
     }
 }
