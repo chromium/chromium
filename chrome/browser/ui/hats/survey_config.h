@@ -76,6 +76,7 @@ extern const char
 extern const char kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial[];
 extern const char kHatsSurveyTriggerWallpaperSearch[];
 extern const char kHatsSurveyTriggerWhatsNew[];
+extern const char kHatsSurveyTriggerWhatsNewV2[];
 #else
 extern const char kHatsSurveyTriggerAndroidStartupSurvey[];
 extern const char kHatsSurveyTriggerQuickDelete[];

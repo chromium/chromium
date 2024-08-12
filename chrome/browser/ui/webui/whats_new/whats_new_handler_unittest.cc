@@ -12,12 +12,14 @@
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new.mojom.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/user_education/common/user_education_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -151,6 +153,27 @@ TEST_F(WhatsNewHandlerTest, HistogramsAreEmitted) {
                    "UserEducation.WhatsNew.ModuleLinkClicked.AnotherFeature"));
   histogram_tester_.ExpectTotalCount(
       "UserEducation.WhatsNew.ModuleLinkClicked.AnotherFeature", 1);
+}
+
+TEST_F(WhatsNewHandlerTest, V2SurveyIsTriggered) {
+  // Avoid creating actual url with WhatsNewRegistry
+  whats_new::DisableRemoteContentForTests();
+
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {base::test::FeatureRefAndParams(
+           user_education::features::kWhatsNewVersion2, {}),
+       base::test::FeatureRefAndParams(
+           features::kHappinessTrackingSurveysForDesktopWhatsNewV2,
+           {{"whats-new-v2-time", "20s"}})},
+      {});
+
+  base::MockCallback<WhatsNewHandler::GetServerUrlCallback> callback;
+  EXPECT_CALL(callback, Run).Times(1);
+  EXPECT_CALL(*mock_hats_service(), LaunchDelayedSurveyForWebContents).Times(1);
+
+  handler_->GetServerUrl(callback.Get());
+  mock_page_.FlushForTesting();
 }
 
 class WhatsNewHandlerTestWithCountry
