@@ -266,6 +266,7 @@ void AddAmdGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
       "/usr/lib64/libEGL.so.1",
       "/usr/lib64/libGLESv2.so.2",
       "/usr/lib64/libglapi.so.0",
+      "/usr/lib64/libgallium_dri.so",
       "/usr/lib64/dri/r300_dri.so",
       "/usr/lib64/dri/r600_dri.so",
       "/usr/lib64/dri/radeonsi_dri.so",
@@ -304,6 +305,7 @@ void AddNvidiaGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
       // To support threads in mesa we use --gpu-sandbox-start-early and
       // that requires the following libs and files to be accessible.
       "/etc/ld.so.cache",
+      "/usr/lib64/libgallium_dri.so",
       "/usr/lib64/dri/nouveau_dri.so",
       "/usr/lib64/dri/radeonsi_dri.so",
       "/usr/lib64/dri/swrast_dri.so",
@@ -329,6 +331,7 @@ void AddIntelGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   static const char* const kReadOnlyList[] = {
       // To support threads in mesa we use --gpu-sandbox-start-early and
       // that requires the following libs and files to be accessible.
+      "/usr/lib64/libgallium_dri.so",
       "/usr/lib64/libEGL.so.1", "/usr/lib64/libGLESv2.so.2",
       "/usr/lib64/libelf.so.1", "/usr/lib64/libglapi.so.0",
       "/usr/lib64/libdrm_amdgpu.so.1", "/usr/lib64/libdrm_radeon.so.1",
@@ -367,6 +370,7 @@ void AddVirtIOGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
       "/usr/lib64/libGLdispatch.so.0",
       "/usr/lib64/libglapi.so.0",
       "/usr/lib64/libc++.so.1",
+      "/usr/lib64/libgallium_dri.so",
       // If kms_swrast_dri is not usable, swrast_dri is used instead.
       "/usr/lib64/dri/swrast_dri.so",
       "/usr/lib64/dri/kms_swrast_dri.so",
@@ -574,6 +578,7 @@ void LoadArmGpuLibraries() {
     if (!is_mali && !is_tegra &&
         (nullptr != dlopen("libglapi.so.0", dlopen_flag))) {
       const char* driver_paths[] = {
+        "/usr/lib64/libgallium_dri.so",
 #if defined(DRI_DRIVER_DIR)
         DRI_DRIVER_DIR "/msm_dri.so",
         DRI_DRIVER_DIR "/panfrost_dri.so",
