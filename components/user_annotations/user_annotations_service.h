@@ -7,7 +7,6 @@
 
 #include "base/functional/callback.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/proto/features/compose.pb.h"
 
 namespace autofill {
 class FormData;
