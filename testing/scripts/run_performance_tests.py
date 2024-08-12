@@ -687,21 +687,74 @@ class CrossbenchTest(object):
   CHROME_BROWSER = '--browser=%s'
   ANDROID_HJSON = '{browser:"%s", driver:{type:"Android", adb_bin:"%s"}}'
   STORY_LABEL = 'default'
+  BENCHMARK_FILESERVERS = {'speedometer_3.0': 'third_party/speedometer/v3.0'}
 
   def __init__(self, options, isolated_out_dir):
+    binary_manager.InitDependencyManager(None)
     self.options = options
     self.isolated_out_dir = isolated_out_dir
-    self.network = []
+    self.url = []
     browser_arg = self._get_browser_arg(options.passthrough_args)
     self.is_android = self._is_android(browser_arg)
     self._find_browser(browser_arg)
     self.driver_path_arg = self._find_chromedriver(browser_arg)
+    self.network = self._get_network_arg(options.passthrough_args,
+                                         self.is_android)
 
   def _get_browser_arg(self, args):
-    browser_args = [arg for arg in args if arg.startswith('--browser=')]
-    if len(browser_args) != 1:
-      raise ValueError('Expects exactly one --browser=... arg on command line')
-    return browser_args[0].split('=', 1)[1]
+    browser_arg = self._get_arg(args, '--browser=', must_exists=True)
+    return browser_arg.split('=', 1)[1]
+
+  def _get_network_arg(self, args, is_android):
+    if _arg := self._get_arg(args, '--network='):
+      return [_arg]
+    if _arg := self._get_arg(args, '--fileserver'):
+      return self._create_fileserver_network(_arg)
+    if is_android or self._get_arg(args, '--wpr'):
+      return self._create_wpr_network(args)
+    return []
+
+  def _create_fileserver_network(self, arg):
+    if '=' in arg:
+      fileserver_path = arg.split('=', 1)[1]
+    else:
+      benchmark = self.options.benchmarks
+      if benchmark not in self.BENCHMARK_FILESERVERS:
+        raise ValueError(f'fileserver does not support {benchmark}')
+      fileserver_path = self.BENCHMARK_FILESERVERS.get(benchmark)
+    # The fileserver localhost port number is set to 8000. See:
+    # third_party/crossbench/crossbench/network/local_fileserver.py
+    self.url = ['--url=http://localhost:8000']
+    fileserver_relative_path = CHROMIUM_SRC_DIR / fileserver_path
+    # Replacing --fileserver with --network.
+    self.options.passthrough_args.remove(arg)
+    return [f'--network={fileserver_relative_path}']
+
+  def _create_wpr_network(self, args):
+    wpr_arg = self._get_arg(args, '--wpr')
+    if wpr_arg and '=' in wpr_arg:
+      wpr_name = wpr_arg.split('=', 1)[1]
+    else:
+      # TODO: Use update_wpr library when it supports Crossbench archive files.
+      wpr_name = 'crossbench_android_speedometer_3.0_000.wprgo'
+    archive = PAGE_SETS_DATA / wpr_name
+    if not (wpr_go := binary_manager.FetchPath(
+        'wpr_go', os_name='linux', arch='x86_64')):
+      raise ValueError(f'wpr_go not found: {wpr_go}')
+    wpr_config = f'{{type:"wpr", path:"{archive}", wpr_go_bin:"{wpr_go}"}}'
+    if wpr_arg:
+      # Replacing --wpr with --network.
+      self.options.passthrough_args.remove(wpr_arg)
+    return [f'--network={wpr_config}']
+
+  def _get_arg(self, args, arg, must_exists=False):
+    if _args := [a for a in args if a.startswith(arg)]:
+      if len(_args) != 1:
+        raise ValueError(f'Expects exactly one {arg} on command line')
+      return _args[0]
+    if must_exists:
+      raise ValueError(f'{arg} argument is missing!')
+    return []
 
   def _is_android(self, browser_arg):
     """Is the test running on an Android device.
@@ -718,7 +771,6 @@ class CrossbenchTest(object):
     options = browser_options.BrowserFinderOptions()
     options.chrome_root = CHROMIUM_SRC_DIR
     parser = options.CreateParser()
-    binary_manager.InitDependencyManager(None)
     parser.parse_args([self.CHROME_BROWSER % browser_arg])
     possible_browser = browser_finder.FindBrowser(options)
     if not possible_browser:
@@ -727,15 +779,6 @@ class CrossbenchTest(object):
       browser_app = possible_browser.settings.package
       android_json = self.ANDROID_HJSON % (browser_app, ADB_TOOL)
       self.browser = self.CHROME_BROWSER % android_json
-
-      # Using WPR because of lack of network access on lab Android phones.
-      # TODO: Use update_wpr library when it supports Crossbench archive files.
-      archive = PAGE_SETS_DATA / 'crossbench_android_speedometer_3.0_000.wprgo'
-      if not (wpr_go := binary_manager.FetchPath(
-          'wpr_go', os_name='linux', arch='x86_64')):
-        raise ValueError(f'wpr_go not found: {wpr_go}')
-      wpr_config = f'{{type:"wpr", path:"{archive}", wpr_go_bin:"{wpr_go}"}}'
-      self.network = [f'--network={wpr_config}']
     else:
       self.browser = self.CHROME_BROWSER % possible_browser._local_executable
 
@@ -769,7 +812,8 @@ class CrossbenchTest(object):
   def _generate_command_list(self, benchmark, benchmark_args, working_dir):
     return ([sys.executable] + [self.options.executable] + [benchmark] +
             [self.OUTDIR % working_dir] + [self.browser] + benchmark_args +
-            self.driver_path_arg + self.network + self._get_default_args())
+            self.driver_path_arg + self.network + self.url +
+            self._get_default_args())
 
   def execute_benchmark(self,
                         benchmark,
