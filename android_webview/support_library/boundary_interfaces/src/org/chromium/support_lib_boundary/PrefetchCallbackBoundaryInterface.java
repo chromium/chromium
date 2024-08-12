@@ -16,5 +16,9 @@ public interface PrefetchCallbackBoundaryInterface {
 
     void onPrefetchDeterminedHead();
 
-    void onPrefetchFailure(@Nullable String failureMessage);
+    void onPrefetchFailed(@Nullable String failureMessage);
+
+    void onPrefetchServed();
+
+    void onPrefetchServeFailed(@Nullable String failureMessage);
 }
