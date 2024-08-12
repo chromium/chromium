@@ -21,7 +21,7 @@ TEST_F(MainThreadScrollingReasonTest, AsText) {
           MainThreadScrollingReason::kRepaintReasons));
   EXPECT_EQ(
       "Scrollbar scrolling, "
-      "Non fast scrollable region, "
+      "Main thread scroll hit test region, "
       "Failed hit test",
       MainThreadScrollingReason::AsText(
           MainThreadScrollingReason::kHitTestReasons));

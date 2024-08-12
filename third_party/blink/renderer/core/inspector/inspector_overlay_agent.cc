@@ -629,8 +629,8 @@ protocol::Response InspectorOverlayAgent::setShowScrollBottleneckRects(
     cc::LayerTreeDebugState debug_state = *widget->GetLayerTreeDebugState();
     debug_state.show_touch_event_handler_rects = show;
     debug_state.show_wheel_event_handler_rects = show;
-    debug_state.show_non_fast_scrollable_rects = show;
-    debug_state.show_main_thread_scrolling_reason_rects = show;
+    debug_state.show_main_thread_scroll_hit_test_rects = show;
+    debug_state.show_main_thread_scroll_repaint_rects = show;
     widget->SetLayerTreeDebugState(debug_state);
   }
   return protocol::Response::Success();

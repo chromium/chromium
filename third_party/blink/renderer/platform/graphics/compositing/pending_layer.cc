@@ -387,8 +387,8 @@ std::optional<PropertyTreeState> PendingLayer::CanUpcastWith(
   }
 
   // In HitTestOpaqueness, additionally check scroll translations to ensure
-  // they will be covered by the NonFastScrollableRegion of the merged layer if
-  // either of the scroll translations is not composited.
+  // they will be covered by the MainThreadScrollHitTestRegion of the merged
+  // layer if either of the scroll translations is not composited.
   const auto& home_scroll_translation =
       property_tree_state_.Transform().NearestScrollTranslationNode();
   const auto& guest_scroll_translation =

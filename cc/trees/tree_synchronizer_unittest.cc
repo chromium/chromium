@@ -112,8 +112,8 @@ void ExpectTreesAreIdentical(Layer* root_layer,
     EXPECT_EQ(layer->id(), layer_impl->id());
     EXPECT_EQ(layer_impl->layer_tree_impl(), tree_impl);
 
-    EXPECT_EQ(layer->non_fast_scrollable_region(),
-              layer_impl->non_fast_scrollable_region());
+    EXPECT_EQ(layer->main_thread_scroll_hit_test_region(),
+              layer_impl->main_thread_scroll_hit_test_region());
   }
 }
 

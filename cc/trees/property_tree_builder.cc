@@ -717,7 +717,7 @@ void PropertyTreeBuilderContext::AddScrollNodeIfNeeded(
 
   bool is_root = !layer->parent();
   bool scrollable = layer->scrollable();
-  CHECK(layer->non_fast_scrollable_region().IsEmpty());
+  CHECK(layer->main_thread_scroll_hit_test_region().IsEmpty());
   bool requires_node = is_root || scrollable;
 
   int node_id;

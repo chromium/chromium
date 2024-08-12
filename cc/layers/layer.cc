@@ -1115,14 +1115,16 @@ bool Layer::IsScrollbarLayerForTesting() const {
   return false;
 }
 
-void Layer::SetNonFastScrollableRegion(const Region& region) {
+void Layer::SetMainThreadScrollHitTestRegion(const Region& region) {
   DCHECK(IsPropertyChangeAllowed());
   const auto& rare_inputs = inputs_.Read(*this).rare_inputs;
   if (!rare_inputs && region.IsEmpty())
     return;
-  if (rare_inputs && rare_inputs->non_fast_scrollable_region == region)
+  if (rare_inputs &&
+      rare_inputs->main_thread_scroll_hit_test_region == region) {
     return;
-  EnsureRareInputs().non_fast_scrollable_region = region;
+  }
+  EnsureRareInputs().main_thread_scroll_hit_test_region = region;
   SetPropertyTreesNeedRebuild();
   SetNeedsCommit();
 }
@@ -1460,8 +1462,8 @@ void Layer::PushPropertiesTo(LayerImpl* layer,
   layer->UpdateDebugInfo(debug_info_.Write(*this).get());
 
   if (inputs.rare_inputs) {
-    layer->SetNonFastScrollableRegion(
-        inputs.rare_inputs->non_fast_scrollable_region);
+    layer->SetMainThreadScrollHitTestRegion(
+        inputs.rare_inputs->main_thread_scroll_hit_test_region);
     layer->SetCaptureBounds(inputs.rare_inputs->capture_bounds);
     layer->SetWheelEventHandlerRegion(inputs.rare_inputs->wheel_event_region);
   } else {

@@ -657,8 +657,9 @@ class CC_EXPORT LayerTreeImpl {
   // scrollable layer or the first layer opaque to hit test, if one was hit.
   std::vector<const LayerImpl*> FindLayersUpToFirstScrollableOrOpaqueToHitTest(
       const gfx::PointF& screen_space_point);
-  bool PointHitsNonFastScrollableRegion(const gfx::PointF& scree_space_point,
-                                        const LayerImpl& layer) const;
+  bool PointHitsMainThreadScrollHitTestRegion(
+      const gfx::PointF& scree_space_point,
+      const LayerImpl& layer) const;
 
   // Returns the ElementId representing a frame's document at the given point.
   // In cases where cc doesn't have enough information to perform accurate

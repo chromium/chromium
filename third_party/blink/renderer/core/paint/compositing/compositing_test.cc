@@ -574,7 +574,7 @@ TEST_P(CompositingTest, ContainPaintLayerBounds) {
 }
 
 // https://crbug.com/1422877:
-TEST_P(CompositingTest, CompositedOverlayScrollbarUnderNonNonFastBorderRadius) {
+TEST_P(CompositingTest, CompositedOverlayScrollbarUnderNonFastBorderRadius) {
   ScopedMockOverlayScrollbars mock_overlay_scrollbars;
 
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
@@ -856,7 +856,7 @@ TEST_P(CompositingTest,
   EXPECT_TRUE(CcLayerByDOMElementId("absolute"));  // Overlaps with #fixed.
   if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
     // Not merged because that would miss #relative's scroll state without a
-    // NonFastScrollableRegion.
+    // MainThreadScrollHitTestRegion.
     EXPECT_TRUE(CcLayerByDOMElementId("relative"));
   } else {
     // Merged into #absolute.

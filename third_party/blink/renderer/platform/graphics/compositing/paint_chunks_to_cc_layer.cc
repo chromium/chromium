@@ -1157,7 +1157,7 @@ class LayerPropertiesUpdater {
   const ScrollPaintPropertyNode* last_disable_cursor_control_scroll_ = nullptr;
 
   cc::Region wheel_event_region_;
-  cc::Region non_fast_scrollable_region_;
+  cc::Region main_thread_scroll_hit_test_region_;
   viz::RegionCaptureBounds capture_bounds_;
 };
 
@@ -1249,7 +1249,7 @@ void LayerPropertiesUpdater::UpdateScrollHitTestData(
   if (rect.IsEmpty()) {
     return;
   }
-  non_fast_scrollable_region_.Union(rect);
+  main_thread_scroll_hit_test_region_.Union(rect);
 
   // The scroll hit test rect of scrollbar or resizer also contributes to the
   // touch action region.
@@ -1285,7 +1285,7 @@ void LayerPropertiesUpdater::UpdateForNonCompositedScrollbar(
   if (rect.IsEmpty()) {
     return;
   }
-  non_fast_scrollable_region_.Union(rect);
+  main_thread_scroll_hit_test_region_.Union(rect);
   touch_action_region_.Union(TouchAction::kNone, rect);
 }
 
@@ -1364,7 +1364,8 @@ void LayerPropertiesUpdater::Update() {
   if (!selection_only_) {
     layer_.SetTouchActionRegion(std::move(touch_action_region_));
     layer_.SetWheelEventRegion(std::move(wheel_event_region_));
-    layer_.SetNonFastScrollableRegion(std::move(non_fast_scrollable_region_));
+    layer_.SetMainThreadScrollHitTestRegion(
+        std::move(main_thread_scroll_hit_test_region_));
     layer_.SetCaptureBounds(std::move(capture_bounds_));
   }
 

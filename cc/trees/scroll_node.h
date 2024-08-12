@@ -35,6 +35,8 @@ struct CC_EXPORT ScrollNode {
   // The node index of the parent node in the scroll tree node vector.
   int parent_id = kInvalidPropertyNodeId;
 
+  // This will be renamed to main_thread_repaint_reasons when we clean up
+  // blink killswitch ExcludePopupMainThreadScrollingReason.
   uint32_t main_thread_scrolling_reasons =
       MainThreadScrollingReason::kNotScrollingOnMain;
 

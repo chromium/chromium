@@ -474,14 +474,15 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   virtual bool IsScrollbarLayerForTesting() const;
 
   // For layer list mode only.
-  // Set or get an area of this layer within which initiating a scroll can not
-  // be done from the compositor thread. Within this area, if the user attempts
-  // to start a scroll, the events must be sent to the main thread and processed
+  // Set or get an area of this layer within which a scroll hit-test can not be
+  // done from the compositor thread. Within this area, if the user attempts to
+  // start a scroll, the events must be sent to the main thread and processed
   // there.
-  void SetNonFastScrollableRegion(const Region& non_fast_scrollable_region);
-  const Region& non_fast_scrollable_region() const {
+  void SetMainThreadScrollHitTestRegion(
+      const Region& main_thread_scroll_hit_test_region);
+  const Region& main_thread_scroll_hit_test_region() const {
     if (const auto& rare_inputs = inputs_.Read(*this).rare_inputs)
-      return rare_inputs->non_fast_scrollable_region;
+      return rare_inputs->main_thread_scroll_hit_test_region;
     return Region::Empty();
   }
 
@@ -969,7 +970,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // struct, consider the memory implications versus simply adding to Inputs.
   struct RareInputs {
     viz::RegionCaptureBounds capture_bounds;
-    Region non_fast_scrollable_region;
+    Region main_thread_scroll_hit_test_region;
     Region wheel_event_region;
   };
 

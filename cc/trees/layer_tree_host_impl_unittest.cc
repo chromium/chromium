@@ -1442,10 +1442,7 @@ TEST_P(LayerTreeHostImplTest, TargetMainThreadScroller) {
     GetInputHandler().ScrollEnd();
   }
 
-  // Now add a MainThreadScrollingReason. Trying to target the node this time
-  // should result in a failed ScrollBegin with the appropriate return value,
-  // unless scroll unification is enabled - since all nodes can be scrolled
-  // from the compositor in that mode.
+  // Now add a main-thread repaint reason. ScrollBegin should still succeed.
   host_impl_->OuterViewportScrollNode()->main_thread_scrolling_reasons =
       MainThreadScrollingReason::kPreferNonCompositedScrolling;
 
@@ -2020,17 +2017,16 @@ TEST_P(LayerTreeHostImplTestInvokePresentationCallbacks,
             mock_details.presentation_feedback.timestamp);
 }
 
-TEST_P(LayerTreeHostImplTest, NonFastScrollableRegionBasic) {
+TEST_P(LayerTreeHostImplTest, MainThreadScrollHitTestRegionBasic) {
   SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
 
   LayerImpl* outer_scroll = OuterViewportScrollLayer();
-  outer_scroll->SetNonFastScrollableRegion(gfx::Rect(0, 0, 50, 50));
+  outer_scroll->SetMainThreadScrollHitTestRegion(gfx::Rect(0, 0, 50, 50));
 
   DrawFrame();
 
-  // All scroll types inside the non-fast scrollable region should fail. When
-  // scroll unification is enabled, these scrolls succeed but request a main
-  // thread hit test.
+  // All scroll types inside the MainThreadScrollHitTestRegion should fail.
+  // These scrolls succeed but request a main thread hit test.
   InputHandler::ScrollStatus status = GetInputHandler().ScrollBegin(
       BeginState(gfx::Point(25, 25), gfx::Vector2d(0, 10),
                  ui::ScrollInputType::kWheel)
@@ -2039,7 +2035,7 @@ TEST_P(LayerTreeHostImplTest, NonFastScrollableRegionBasic) {
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
   EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
             status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+  EXPECT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
             status.main_thread_hit_test_reasons);
 
   status = GetInputHandler().ScrollBegin(
@@ -2050,7 +2046,7 @@ TEST_P(LayerTreeHostImplTest, NonFastScrollableRegionBasic) {
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
   EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
             status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+  EXPECT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
             status.main_thread_hit_test_reasons);
 
   // All scroll types outside this region should succeed.
@@ -2086,7 +2082,7 @@ TEST_P(LayerTreeHostImplTest, NonFastScrollableRegionBasic) {
   GetInputHandler().ScrollEnd();
 }
 
-TEST_P(LayerTreeHostImplTest, NonFastScrollRegionInNonScrollingRoot) {
+TEST_P(LayerTreeHostImplTest, MainThreadScrollHitTestRegionInNonScrollingRoot) {
   LayerImpl* root_layer = SetupDefaultRootLayer(gfx::Size(50, 50));
   auto AddNewLayer = [&]() {
     LayerImpl* layer = AddLayerInActiveTree();
@@ -2104,32 +2100,32 @@ TEST_P(LayerTreeHostImplTest, NonFastScrollRegionInNonScrollingRoot) {
   InputHandler::ScrollStatus status;
 
   for (LayerImpl* layer : layers) {
-    layer->SetNonFastScrollableRegion(gfx::Rect(10, 10, 20, 20));
+    layer->SetMainThreadScrollHitTestRegion(gfx::Rect(10, 10, 20, 20));
     status = input_handler.ScrollBegin(begin_state.get(),
                                        ui::ScrollInputType::kWheel);
     input_handler.ScrollEnd();
-    layer->SetNonFastScrollableRegion(Region());
+    layer->SetMainThreadScrollHitTestRegion(Region());
 
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
               status.main_thread_repaint_reasons);
-    EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+    EXPECT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
               status.main_thread_hit_test_reasons);
   }
 }
 
-TEST_P(LayerTreeHostImplTest, NonFastScrollableRegionWithOffset) {
+TEST_P(LayerTreeHostImplTest, MainThreadScrollHitTestRegionWithOffset) {
   SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
 
   LayerImpl* outer_scroll = OuterViewportScrollLayer();
-  outer_scroll->SetNonFastScrollableRegion(gfx::Rect(0, 0, 50, 50));
+  outer_scroll->SetMainThreadScrollHitTestRegion(gfx::Rect(0, 0, 50, 50));
   SetPostTranslation(outer_scroll, gfx::Vector2dF(-25, 0));
   outer_scroll->SetDrawsContent(true);
 
   DrawFrame();
 
-  // This point would fall into the non-fast scrollable region except that we've
-  // moved the layer left by 25 pixels.
+  // This point would fall into the MainThreadScrollHitTestRegion except that
+  // we've moved the layer left by 25 pixels.
   InputHandler::ScrollStatus status = GetInputHandler().ScrollBegin(
       BeginState(gfx::Point(40, 10), gfx::Vector2d(0, 1),
                  ui::ScrollInputType::kWheel)
@@ -2146,7 +2142,7 @@ TEST_P(LayerTreeHostImplTest, NonFastScrollableRegionWithOffset) {
                                      .get());
   GetInputHandler().ScrollEnd();
 
-  // This point is still inside the non-fast region.
+  // This point is still inside the MainThreadScrollHitTestRegion.
   status = GetInputHandler().ScrollBegin(
       BeginState(gfx::Point(10, 10), gfx::Vector2d(0, 1),
                  ui::ScrollInputType::kWheel)
@@ -2155,13 +2151,13 @@ TEST_P(LayerTreeHostImplTest, NonFastScrollableRegionWithOffset) {
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
   EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
             status.main_thread_repaint_reasons);
-  EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+  EXPECT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
             status.main_thread_hit_test_reasons);
 }
 
 // Tests the following tricky case:
 // - Scrolling Layer A with scrolling children:
-//    - Ordinary Layer B with NonFastScrollableRegion
+//    - Ordinary Layer B with MainThreadScrollHitTestRegion
 //    - Ordinary Layer C
 //
 //                   +---------+
@@ -2179,13 +2175,14 @@ TEST_P(LayerTreeHostImplTest, NonFastScrollableRegionWithOffset) {
 // we try scrolling over C, we need to check if we intersect the NFSR on B
 // because C may not be fully opaque to hit testing (e.g. the layer may be for
 // |pointer-events:none| or be a squashing layer with "holes").
-TEST_P(LayerTreeHostImplTest, LayerOverlapsNonFastScrollableRegionInLayer) {
+TEST_P(LayerTreeHostImplTest,
+       LayerOverlapsMainThreadScrollHitTestRegionInLayer) {
   SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
 
   // The viewport will be layer A in the description above.
   LayerImpl* outer_scroll = OuterViewportScrollLayer();
 
-  // Layer B is a 50x50 layer filled with a non fast scrollable region. It
+  // Layer B is a 50x50 layer filled with a MainThreadScrollHitTestRegion. It
   // occupies the right half of the viewport.
   auto* layer_b = AddLayer<LayerImpl>(host_impl_->active_tree());
   layer_b->SetBounds(gfx::Size(50, 100));
@@ -2193,10 +2190,10 @@ TEST_P(LayerTreeHostImplTest, LayerOverlapsNonFastScrollableRegionInLayer) {
   layer_b->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(outer_scroll, layer_b);
   layer_b->SetOffsetToTransformParent(gfx::Vector2dF(50, 0));
-  layer_b->SetNonFastScrollableRegion(gfx::Rect(0, 0, 50, 100));
+  layer_b->SetMainThreadScrollHitTestRegion(gfx::Rect(0, 0, 50, 100));
 
   // Do a sanity check - scrolling over layer b should cause main thread
-  // scrolling/hit testing because of the non fast scrolling region.
+  // hit testing because of the MainThreadScrollHitTestRegion.
   {
     ASSERT_EQ(layer_b, host_impl_->active_tree()->FindLayerThatIsHitByPoint(
                            gfx::PointF(60, 50)));
@@ -2208,7 +2205,7 @@ TEST_P(LayerTreeHostImplTest, LayerOverlapsNonFastScrollableRegionInLayer) {
     ASSERT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
     ASSERT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
               status.main_thread_repaint_reasons);
-    ASSERT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+    ASSERT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
               status.main_thread_hit_test_reasons);
     GetInputHandler().ScrollEnd();
   }
@@ -2247,8 +2244,8 @@ TEST_P(LayerTreeHostImplTest, LayerOverlapsNonFastScrollableRegionInLayer) {
   // Now perform the real test - scrolling in the overlapping region should
   // fallback to the main thread. In this case, we really do need to know
   // whether the point hits a "hit-test transparent" part of Layer C because if
-  // it does it'll hit the NonFastScrollingRegion but if it doesn't it targets
-  // Layer C which scrolls the viewport.
+  // it does it'll hit the MainThreadScrollHitTestRegion but if it doesn't it
+  // targets Layer C which scrolls the viewport.
   {
     ASSERT_EQ(layer_c, host_impl_->active_tree()->FindLayerThatIsHitByPoint(
                            gfx::PointF(60, 50)));
@@ -2260,7 +2257,7 @@ TEST_P(LayerTreeHostImplTest, LayerOverlapsNonFastScrollableRegionInLayer) {
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
               status.main_thread_repaint_reasons);
-    EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+    EXPECT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
               status.main_thread_hit_test_reasons);
     GetInputHandler().ScrollEnd();
   }
@@ -2280,7 +2277,7 @@ TEST_P(LayerTreeHostImplTest, LayerOverlapsNonFastScrollableRegionInLayer) {
 //
 // - Scrolling Layer A with scrolling child:
 //    - Ordinary Layer C
-// - Ordinary layer B with a NonFastScrollableRegion
+// - Ordinary layer B with a MainThreadScrollHitTestRegion
 //
 //                   +---------+
 //         +---------|         |+
@@ -2298,7 +2295,7 @@ TEST_P(LayerTreeHostImplTest, LayerOverlapsNonFastScrollableRegionInLayer) {
 // opaque to hit testing (e.g. the layer may be for |pointer-events:none| or be
 // a squashing layer with "holes").
 TEST_P(LayerTreeHostImplTest,
-       LayerOverlapsNonFastScrollableRegionInNonScrollAncestorLayer) {
+       LayerOverlapsMainThreadScrollHitTestRegionInNonScrollAncestorLayer) {
   SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
   LayerImpl* outer_scroll = OuterViewportScrollLayer();
 
@@ -2386,7 +2383,7 @@ TEST_P(LayerTreeHostImplTest,
 }
 
 // - Scrolling Layer A with scrolling child:
-//    - Ordinary Layer B with NonFastScrollableRegion
+//    - Ordinary Layer B with MainThreadScrollHitTestRegion
 // - Fixed (scrolls with inner viewport) ordinary Layer C.
 //
 //         +---------+---------++
@@ -2405,14 +2402,14 @@ TEST_P(LayerTreeHostImplTest,
 // but uses a fixed Layer C to exercise the case where we hit the viewport via
 // the inner viewport.
 TEST_P(LayerTreeHostImplTest,
-       FixedLayerOverlapsNonFastScrollableRegionInLayer) {
+       FixedLayerOverlapsMainThreadScrollHitTestRegionInLayer) {
   SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
 
   // The viewport will be layer A in the description above.
   LayerImpl* outer_scroll = OuterViewportScrollLayer();
   LayerImpl* inner_scroll = InnerViewportScrollLayer();
 
-  // Layer B is a 50x50 layer filled with a non fast scrollable region. It
+  // Layer B is a 50x50 layer filled with a MainThreadScrollHitTestRegion. It
   // occupies the right half of the viewport.
   auto* layer_b = AddLayer<LayerImpl>(host_impl_->active_tree());
   layer_b->SetBounds(gfx::Size(50, 100));
@@ -2420,10 +2417,10 @@ TEST_P(LayerTreeHostImplTest,
   layer_b->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(outer_scroll, layer_b);
   layer_b->SetOffsetToTransformParent(gfx::Vector2dF(50, 0));
-  layer_b->SetNonFastScrollableRegion(gfx::Rect(0, 0, 50, 100));
+  layer_b->SetMainThreadScrollHitTestRegion(gfx::Rect(0, 0, 50, 100));
 
   // Do a sanity check - scrolling over layer b should cause main thread
-  // scrolling/hit testing because of the non fast scrolling region.
+  // hit testing because of the MainThreadScrollHitTestRegion.
   {
     ASSERT_EQ(layer_b, host_impl_->active_tree()->FindLayerThatIsHitByPoint(
                            gfx::PointF(60, 50)));
@@ -2435,7 +2432,7 @@ TEST_P(LayerTreeHostImplTest,
     ASSERT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
     ASSERT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
               status.main_thread_repaint_reasons);
-    ASSERT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+    ASSERT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
               status.main_thread_hit_test_reasons);
     GetInputHandler().ScrollEnd();
   }
@@ -2474,8 +2471,8 @@ TEST_P(LayerTreeHostImplTest,
   // Now perform the real test - scrolling in the overlapping region should
   // fallback to the main thread. In this case, we really do need to know
   // whether the point hits a "hit-test transparent" part of Layer C because if
-  // it does it'll hit the NonFastScrollingRegion but if it doesn't it targets
-  // Layer C which scrolls the viewport.
+  // it does it'll hit the MainThreadScrollHitTestRegion but if it doesn't it
+  // targets Layer C which scrolls the viewport.
   {
     ASSERT_EQ(layer_c, host_impl_->active_tree()->FindLayerThatIsHitByPoint(
                            gfx::PointF(60, 50)));
@@ -2487,7 +2484,7 @@ TEST_P(LayerTreeHostImplTest,
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
               status.main_thread_repaint_reasons);
-    EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+    EXPECT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
               status.main_thread_hit_test_reasons);
     GetInputHandler().ScrollEnd();
   }
@@ -2517,7 +2514,7 @@ TEST_P(LayerTreeHostImplTest, FixedLayerOverNonFixedLayer) {
   LayerImpl* outer_scroll = OuterViewportScrollLayer();
   LayerImpl* inner_scroll = InnerViewportScrollLayer();
 
-  // Layer B is a 50x50 layer filled with a non fast scrollable region. It
+  // Layer B is a 50x50 layer filled with a MainThreadScrollHitTestRegion. It
   // occupies the right half of the viewport.
   auto* layer_b = AddLayer<LayerImpl>(host_impl_->active_tree());
   layer_b->SetBounds(gfx::Size(50, 100));
@@ -3516,9 +3513,7 @@ TEST_P(LayerTreeHostImplTest, ScrollWithUserUnscrollableLayers) {
   EXPECT_POINTF_EQ(gfx::PointF(10, 20), CurrentScrollOffset(overflow));
 }
 
-// Test that if a scroll node doesn't have an associated Layer, scrolling
-// is forced to the main thread. With scroll unification, this kind of scroll
-// is now handled on the impl thread but will force a repaint on each scroll.
+// Test that if a scroll node doesn't have an associated Layer.
 TEST_P(LayerTreeHostImplTest, ScrollNodeWithoutScrollLayer) {
   SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
   ScrollNode* scroll_node = host_impl_->OuterViewportScrollNode();
@@ -3536,9 +3531,9 @@ TEST_P(LayerTreeHostImplTest, ScrollNodeWithoutScrollLayer) {
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
   EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
             status.main_thread_repaint_reasons);
-  // We don't have a layer for the scroller but we didn't hit a non-fast
-  // scrolling region or fail hit testing the layer - we don't need a main
-  // thread hit test in this case.
+  // We don't have a layer for the scroller but we didn't hit a
+  // MainThreadScrollHitTestRegion or fail hit testing the layer - we don't
+  // need a main thread hit test in this case.
   EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
             status.main_thread_hit_test_reasons);
 }
@@ -5850,8 +5845,7 @@ TEST_P(LayerTreeHostImplTest, ScrollHitTestOnScrollbar) {
     GetInputHandler().ScrollEnd();
   }
 
-  // Touch scroll on root scrollbar should process on impl thread
-  // (main thread pre-unification).
+  // Touch scroll on root scrollbar should process on impl thread.
   {
     InputHandler::ScrollStatus status = GetInputHandler().ScrollBegin(
         BeginState(gfx::Point(1, 1), gfx::Vector2dF(),
@@ -5880,8 +5874,7 @@ TEST_P(LayerTreeHostImplTest, ScrollHitTestOnScrollbar) {
     GetInputHandler().ScrollEnd();
   }
 
-  // Touch scroll on scrollbar should process on impl thread
-  // (main thread pre-unification).
+  // Touch scroll on scrollbar should process on impl thread.
   {
     InputHandler::ScrollStatus status = GetInputHandler().ScrollBegin(
         BeginState(gfx::Point(51, 51), gfx::Vector2dF(),
@@ -18000,15 +17993,16 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
     SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
   }
 
-  void CreateUncompositedScrollerAndNonFastScrollableRegion() {
-    // Create an uncompositd scroll node that corresponds to a non fast
-    // scrollable region on the outer viewport scroll layer.
+  void CreateNonCompositedScrollerAndMainThreadScrollHitTestRegion() {
+    // Create an non-compositd scroll node that corresponds to a
+    // MainThreadScrollHitTestRegion on the outer viewport scroll layer.
     gfx::Size scrollable_content_bounds(100, 100);
     gfx::Size container_bounds(50, 50);
-    CreateScrollNodeForUncompositedScroller(
+    CreateScrollNodeForNonCompositedScroller(
         GetPropertyTrees(), host_impl_->OuterViewportScrollNode()->id,
         ScrollerElementId(), scrollable_content_bounds, container_bounds);
-    OuterViewportScrollLayer()->SetNonFastScrollableRegion(gfx::Rect(50, 50));
+    OuterViewportScrollLayer()->SetMainThreadScrollHitTestRegion(
+        gfx::Rect(50, 50));
 
     host_impl_->active_tree()->set_needs_update_draw_properties();
     UpdateDrawProperties(host_impl_->active_tree());
@@ -18152,7 +18146,7 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
   base::TimeDelta kFrameInterval = base::Milliseconds(16);
 
   // Parameterized test body. Defined inline with tests.
-  void TestUncompositedScrollingState(bool mutates_transform_tree);
+  void TestNonCompositedScrollingState(bool mutates_transform_tree);
 
  private:
   raw_ptr<LayerImpl> scroller_layer_ = nullptr;
@@ -18166,20 +18160,20 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
 
 INSTANTIATE_COMMIT_TO_TREE_TEST_P(UnifiedScrollingTest);
 
-// A ScrollBegin that hits a non fast scrollable region must return a request
+// A ScrollBegin that hits a MainThreadScrollHitTestRegion must return a request
 // for a main thread hit test.
-TEST_P(UnifiedScrollingTest, UnifiedScrollNonFastScrollableRegion) {
-  CreateUncompositedScrollerAndNonFastScrollableRegion();
+TEST_P(UnifiedScrollingTest, UnifiedScrollMainThreadScrollHitTestRegion) {
+  CreateNonCompositedScrollerAndMainThreadScrollHitTestRegion();
 
-  // When ScrollUnification is turned on, scrolling inside a non-fast
-  // scrollable region should request a main thread hit test. It's the client's
-  // responsibility to request a hit test from Blink. It can then call
-  // ScrollBegin again, providing the element_id to scroll.
+  // Scrolling inside a MainThreadScrollHitTestRegion should request a main
+  // thread hit test. It's the client's responsibility to request a hit test
+  // from Blink. It can then call ScrollBegin again, providing the element_id
+  // to scroll.
   {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
 
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+    EXPECT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
               status.main_thread_hit_test_reasons);
 
     // The scroll hasn't started yet though.
@@ -18226,7 +18220,7 @@ TEST_P(UnifiedScrollingTest, UnifiedScrollNonFastScrollableRegion) {
 // the hit tested scroller is fully scrolled and cannot consume the scroll, we
 // should chain up to its ancestor.
 TEST_P(UnifiedScrollingTest, MainThreadHitTestLatchBubbling) {
-  CreateUncompositedScrollerAndNonFastScrollableRegion();
+  CreateNonCompositedScrollerAndMainThreadScrollHitTestRegion();
 
   // Start with the scroller fully scrolled.
   {
@@ -18239,7 +18233,7 @@ TEST_P(UnifiedScrollingTest, MainThreadHitTestLatchBubbling) {
 
   {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
-    ASSERT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+    ASSERT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
               status.main_thread_hit_test_reasons);
     status = ContinuedScrollBegin(ScrollerElementId());
 
@@ -18258,7 +18252,7 @@ INSTANTIATE_COMMIT_TO_TREE_TEST_P(UnifiedScrollingDeathTest);
 // test makes sure that that's enforced with a CHECK.
 TEST_P(UnifiedScrollingDeathTest, EmptyMainThreadHitTest) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");
-  CreateUncompositedScrollerAndNonFastScrollableRegion();
+  CreateNonCompositedScrollerAndMainThreadScrollHitTestRegion();
   {
     ElementId kInvalidId;
     DCHECK(!kInvalidId);
@@ -18273,7 +18267,7 @@ TEST_P(UnifiedScrollingDeathTest, EmptyMainThreadHitTest) {
 // A main thread hit test that returns a scroll node we can't find should be
 // dropped.
 TEST_P(UnifiedScrollingTest, MainThreadHitTestScrollNodeNotFound) {
-  CreateUncompositedScrollerAndNonFastScrollableRegion();
+  CreateNonCompositedScrollerAndMainThreadScrollHitTestRegion();
 
   {
     ElementId kMixed(42);
@@ -18303,9 +18297,8 @@ TEST_P(UnifiedScrollingTest,
   CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain);
   CreateLayerCoveringWholeViewportEscapingScrollers(HitTestOpaqueness::kMixed);
 
-  // When ScrollUnification is turned on, scrolling over a squashing-like layer
-  // that cannot be reliably hit tested on the compositor should request a main
-  // thread hit test.
+  // Scrolling over a squashing-like layer that cannot be reliably hit tested
+  // on the compositor should request a main thread hit test.
   {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
@@ -18469,7 +18462,7 @@ TEST_P(UnifiedScrollingTest, ScrollbarLayerClippedByRoundedCorner) {
 
 // This tests whether or not various kinds of scrolling mutates the transform
 // tree or not. It is parameterized and used by tests below.
-void UnifiedScrollingTest::TestUncompositedScrollingState(
+void UnifiedScrollingTest::TestNonCompositedScrollingState(
     bool mutates_transform_tree) {
   const ScrollTree& scroll_tree = GetPropertyTrees()->scroll_tree();
   TransformTree& transform_tree = GetPropertyTrees()->transform_tree_mutable();
@@ -18561,7 +18554,7 @@ TEST_P(UnifiedScrollingTest, MainThreadReasonsScrollDoesntAffectTransform) {
   CreateScroller(
       MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects);
 
-  TestUncompositedScrollingState(/*mutates_transform_tree=*/false);
+  TestNonCompositedScrollingState(/*mutates_transform_tree=*/false);
 
   ASSERT_EQ(ScrollerNode()->main_thread_scrolling_reasons,
             MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects);
@@ -18589,13 +18582,13 @@ TEST_P(UnifiedScrollingTest, MainThreadReasonsScrollDoesntAffectTransform) {
   ScrollEnd();
 }
 
-// When scrolling an uncomposited scroller, we shouldn't modify the transform
+// When scrolling an non-composited scroller, we shouldn't modify the transform
 // tree. If a scroller is promoted mid-scroll it should start mutating the
 // transform tree.
-TEST_P(UnifiedScrollingTest, UncompositedScrollerDoesntAffectTransform) {
-  CreateUncompositedScrollerAndNonFastScrollableRegion();
+TEST_P(UnifiedScrollingTest, NonCompositedScrollerDoesntAffectTransform) {
+  CreateNonCompositedScrollerAndMainThreadScrollHitTestRegion();
 
-  TestUncompositedScrollingState(/*mutates_transform_tree=*/false);
+  TestNonCompositedScrollingState(/*mutates_transform_tree=*/false);
 
   ASSERT_FALSE(ScrollerNode()->is_composited);
   TransformTree& tree = GetPropertyTrees()->transform_tree_mutable();
@@ -18626,7 +18619,7 @@ TEST_P(UnifiedScrollingTest, CompositedWithSquashedLayerMutatesTransform) {
   CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain);
   CreateLayerCoveringWholeViewportEscapingScrollers(HitTestOpaqueness::kMixed);
 
-  TestUncompositedScrollingState(/*mutates_transform_tree=*/true);
+  TestNonCompositedScrollingState(/*mutates_transform_tree=*/true);
 
   ScrollEnd();
 }

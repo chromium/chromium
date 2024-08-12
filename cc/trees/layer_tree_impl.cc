@@ -2701,17 +2701,18 @@ LayerTreeImpl::FindLayersUpToFirstScrollableOrOpaqueToHitTest(
   return layers;
 }
 
-bool LayerTreeImpl::PointHitsNonFastScrollableRegion(
+bool LayerTreeImpl::PointHitsMainThreadScrollHitTestRegion(
     const gfx::PointF& screen_space_point,
     const LayerImpl& layer) const {
   // We assume the layer has already been hit tested.
   DCHECK(PointHitsLayer(&layer, screen_space_point, nullptr));
 
-  if (layer.non_fast_scrollable_region().IsEmpty())
+  if (layer.main_thread_scroll_hit_test_region().IsEmpty()) {
     return false;
+  }
 
   return PointHitsRegion(screen_space_point, layer.ScreenSpaceTransform(),
-                         layer.non_fast_scrollable_region(), &layer);
+                         layer.main_thread_scroll_hit_test_region(), &layer);
 }
 
 static ElementId GetFrameElementIdForLayer(const LayerImpl* layer) {

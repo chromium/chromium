@@ -267,7 +267,7 @@ class CC_EXPORT LayerImpl {
     // The bounds of elements marked for potential region capture, stored in
     // the coordinate space of this layer.
     viz::RegionCaptureBounds capture_bounds;
-    Region non_fast_scrollable_region;
+    Region main_thread_scroll_hit_test_region;
     Region wheel_event_handler_region;
   };
 
@@ -280,13 +280,14 @@ class CC_EXPORT LayerImpl {
 
   void ResetRareProperties() { rare_properties_.reset(); }
 
-  void SetNonFastScrollableRegion(const Region& region) {
+  void SetMainThreadScrollHitTestRegion(const Region& region) {
     if (rare_properties_ || !region.IsEmpty())
-      EnsureRareProperties().non_fast_scrollable_region = region;
+      EnsureRareProperties().main_thread_scroll_hit_test_region = region;
   }
-  const Region& non_fast_scrollable_region() const {
-    return rare_properties_ ? rare_properties_->non_fast_scrollable_region
-                            : Region::Empty();
+  const Region& main_thread_scroll_hit_test_region() const {
+    return rare_properties_
+               ? rare_properties_->main_thread_scroll_hit_test_region
+               : Region::Empty();
   }
 
   void SetTouchActionRegion(TouchActionRegion);

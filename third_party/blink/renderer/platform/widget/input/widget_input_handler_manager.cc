@@ -778,9 +778,9 @@ static void WaitForInputProcessedFromMain(base::WeakPtr<WidgetBase> widget) {
   // the call will force a commit and redraw and callback when the
   // CompositorFrame has been displayed in the display service. Some examples of
   // non-trivial effects that require waiting that long: committing
-  // NonFastScrollRegions to the compositor, sending touch-action rects to the
-  // browser, and sending updated surface information to the display compositor
-  // for up-to-date OOPIF hit-testing.
+  // MainThreadScrollHitTestRegion to the compositor, sending touch-action rects
+  // to the browser, and sending updated surface information to the display
+  // compositor for up-to-date OOPIF hit-testing.
 
   widget->RequestPresentationAfterScrollAnimationEnd(
       std::move(redraw_complete_callback));

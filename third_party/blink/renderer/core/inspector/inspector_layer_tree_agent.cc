@@ -106,9 +106,9 @@ static std::unique_ptr<Array<protocol::LayerTree::ScrollRect>>
 BuildScrollRectsForLayer(const cc::Layer* layer) {
   auto scroll_rects =
       std::make_unique<protocol::Array<protocol::LayerTree::ScrollRect>>();
-  const cc::Region& non_fast_scrollable_rects =
-      layer->non_fast_scrollable_region();
-  for (gfx::Rect rect : non_fast_scrollable_rects) {
+  for (gfx::Rect rect : layer->main_thread_scroll_hit_test_region()) {
+    // TODO(crbug.com/41495630): Now main thread scroll hit test and
+    // RepaintsOnScroll are different things.
     scroll_rects->emplace_back(BuildScrollRect(
         rect, protocol::LayerTree::ScrollRect::TypeEnum::RepaintsOnScroll));
   }
