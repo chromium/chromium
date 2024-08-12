@@ -14,7 +14,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.content.browser.webid.IdentityCredentialsDelegateImpl;
+import org.chromium.content.browser.webid.IdentityCredentialsDelegate;
 import org.chromium.content_public.browser.webid.DigitalIdentityRequestStatusForMetrics;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -22,14 +22,13 @@ import org.chromium.ui.base.WindowAndroid;
 public class DigitalIdentityProvider {
     private static final String TAG = "DigitalIdentityProvider";
     private long mDigitalIdentityProvider;
-    private static IdentityCredentialsDelegateImpl sCredentials =
-            new IdentityCredentialsDelegateImpl();
+    private static IdentityCredentialsDelegate sCredentials = new IdentityCredentialsDelegate();
 
     private DigitalIdentityProvider(long digitalIdentityProvider) {
         mDigitalIdentityProvider = digitalIdentityProvider;
     }
 
-    public static void setDelegateForTesting(IdentityCredentialsDelegateImpl mock) {
+    public static void setDelegateForTesting(IdentityCredentialsDelegate mock) {
         var oldValue = sCredentials;
         sCredentials = mock;
         ResettersForTesting.register(() -> sCredentials = oldValue);

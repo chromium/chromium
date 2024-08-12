@@ -27,7 +27,7 @@ import org.chromium.base.Promise;
 
 import java.util.Arrays;
 
-public class IdentityCredentialsDelegateImpl {
+public class IdentityCredentialsDelegate {
     private static final String TAG = "IdentityCredentials";
 
     public Promise<String> get(String origin, String request) {

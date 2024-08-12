@@ -423,7 +423,7 @@ android_library("content_full_java") {
 }
 
 android_library("identity_credentials_public_impl_java") {
-  sources = [ "java/src/org/chromium/content/browser/webid/IdentityCredentialsDelegateImpl.java" ]
+  sources = [ "java/src/org/chromium/content/browser/webid/IdentityCredentialsDelegate.java" ]
   deps = [
     "$google_play_services_package:google_play_services_identity_credentials_java",
     "$google_play_services_package:google_play_services_tasks_java",
