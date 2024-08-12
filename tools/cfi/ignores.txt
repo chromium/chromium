@@ -250,6 +250,10 @@ src:*third_party/breakpad/breakpad/src/common/linux/libcurl_wrapper.cc
 src:*third_party/crashpad/crashpad/snapshot/crashpad_info_client_options_test.cc
 src:*third_party/skia/src/ports/SkFontHost_FreeType.cpp
 
+# WebRTC / PipeWire
+fun:*pw_registry_bind*
+fun:*pw_core_get_registry*
+
 ######### Function pointers cast to incorrect type signatures
 
 # libicu is currently compiled such that in libicu the 'UChar' type is a
