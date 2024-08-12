@@ -367,6 +367,11 @@ class AutofillCapturedSitesInteractiveTest
                                features::kAutofillSkipPreFilledFields});
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");
+    // SelectParserRelaxation affects the results from the test data because the
+    // test data may have unclosed <select> tags. Since SelectParserRelaxation
+    // is not enabled by default, we are disabling it for these tests.
+    command_line->AppendSwitchASCII("disable-blink-features",
+                                    "SelectParserRelaxation");
     AutofillUiTest::SetUpCommandLine(command_line);
     SetUpHostResolverRules(command_line);
     captured_sites_test_utils::TestRecipeReplayer::SetUpCommandLine(
