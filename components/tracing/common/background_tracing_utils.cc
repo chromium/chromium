@@ -212,6 +212,12 @@ bool SetupPresetTracingFromFieldTrial() {
     manager.AddPresetScenarios(
         std::move(*field_tracing_config),
         content::BackgroundTracingManager::NO_DATA_FILTERING);
+    const auto& enabled_scenarios =
+        tracing::BackgroundTracingStateManager::GetInstance()
+            .enabled_scenarios();
+    if (!enabled_scenarios.empty()) {
+      return manager.SetEnabledScenarios(enabled_scenarios);
+    }
     return true;
   }
   return false;
