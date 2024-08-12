@@ -121,7 +121,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     private void maybeCreateHistoryTabHelper(Tab tab) {
-        if (!HistoryManager.isAppSpecificHistoryEnabled()) return;
+        if (!HistoryManager.isAppSpecificHistoryEnabled() || mIntentDataProvider.isAuthTab()) {
+            return;
+        }
         String appId = mIntentDataProvider.getClientPackageNameIdentitySharing();
         if (appId != null) HistoryTabHelper.from(tab).setAppId(appId, tab.getWebContents());
     }
