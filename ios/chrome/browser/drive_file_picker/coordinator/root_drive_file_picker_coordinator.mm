@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
-#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller.h"
+#import "ios/chrome/browser/drive_file_picker/ui/root_drive_file_picker_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
@@ -25,7 +25,7 @@
 @implementation RootDriveFilePickerCoordinator {
   DriveFilePickerNavigationController* _navigationController;
   DriveFilePickerMediator* _mediator;
-  DriveFilePickerTableViewController* _viewController;
+  RootDriveFilePickerTableViewController* _viewController;
   // WebState for which the Drive file picker is presented.
   base::WeakPtr<web::WebState> _webState;
 }
@@ -42,7 +42,7 @@
 }
 
 - (void)start {
-  _viewController = [[DriveFilePickerTableViewController alloc] init];
+  _viewController = [[RootDriveFilePickerTableViewController alloc] init];
   _navigationController = [[DriveFilePickerNavigationController alloc]
       initWithRootViewController:_viewController];
   _mediator =
