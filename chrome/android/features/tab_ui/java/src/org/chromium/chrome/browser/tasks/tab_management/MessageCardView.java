@@ -91,9 +91,11 @@ class MessageCardView extends LinearLayout {
 
     /**
      * Set icon drawable.
+     *
      * @param iconDrawable Drawable to be shown.
      */
     void setIcon(Drawable iconDrawable) {
+        mIcon.setVisibility(View.VISIBLE);
         mIcon.setImageDrawable(iconDrawable);
     }
 
