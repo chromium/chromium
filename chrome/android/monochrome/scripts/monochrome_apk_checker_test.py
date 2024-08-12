@@ -102,13 +102,7 @@ def DumpAPK(apk):
 
 
 def DeobfuscateFilename(obfuscated_filename, pathmap):
-  path = pathmap.get(obfuscated_filename, obfuscated_filename)
-  # Undo asset path prefixing. https://crbug.com/357131361
-  if path.endswith('+'):
-    suffix_idx = path.rfind('+', 0, len(path) - 1)
-    if suffix_idx != -1:
-      path = path[:suffix_idx]
-  return path
+  return pathmap.get(obfuscated_filename, obfuscated_filename)
 
 
 class MonochromeApkCheckerTest(typ.TestCase):

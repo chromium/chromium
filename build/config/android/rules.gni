@@ -1924,23 +1924,13 @@ if (!is_robolectric && enable_java_templates) {
       }
 
       if (invoker.use_final_fields) {
-        forward_variables_from(invoker,
-                               [
-                                 "deps",
-                                 "inputs",
-                               ])
+        forward_variables_from(invoker, [ "deps" ])
         defines += [ "USE_FINAL" ]
         defines += [ "_MIN_SDK_VERSION=${invoker.min_sdk_version}" ]
         defines += [ "_VERSION_CODE=${invoker.version_code}" ]
         if (defined(invoker.resources_version_variable)) {
           defines += [
             "_RESOURCES_VERSION_VARIABLE=${invoker.resources_version_variable}",
-          ]
-        }
-        if (defined(invoker.apk_assets_suffixed_list)) {
-          defines += [
-            "_APK_ASSETS_SUFFIXED_LIST=${invoker.apk_assets_suffixed_list}",
-            "_APK_ASSETS_SUFFIX=${invoker.apk_assets_suffix}",
           ]
         }
       } else if (is_cronet_build && !is_java_debug) {
@@ -2110,9 +2100,6 @@ if (!is_robolectric && enable_java_templates) {
   #     matches the given config.
   #   expected_proguard_config_base: Treat expected_proguard_config as a diff
   #     with this file as the base.
-  #   suffix_apk_assets_used_by: Prefixes android assets used by the given apk
-  #     with $package_name. Adds the list of renamed packages to
-  #     BuildConfig.java.
   template("android_apk_or_module") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     _template_name = target_name
@@ -2647,14 +2634,7 @@ if (!is_robolectric && enable_java_templates) {
           resources_version_variable =
               "org.chromium.base.R.string.product_version"
         }
-        if (defined(invoker.suffix_apk_assets_used_by)) {
-          deps = [ ":$_build_config_target" ]
-          inputs = [ _build_config ]
-          apk_assets_suffixed_list =
-              "@FileArg(${_rebased_build_config}:apk_assets_suffixed_list)"
-          apk_assets_suffix =
-              "@FileArg(${_rebased_build_config}:apk_assets_suffix)"
-        }
+        deps = [ ":$_build_config_target" ]
       }
       _srcjar_deps += [ ":${_template_name}__build_config_srcjar" ]
     }
@@ -2704,7 +2684,6 @@ if (!is_robolectric && enable_java_templates) {
                                "secondary_abi_loadable_modules",
                                "secondary_native_lib_placeholders",
                                "sources",
-                               "suffix_apk_assets_used_by",
                                "library_always_compress",
                              ])
       version_code = _version_code
@@ -3341,7 +3320,6 @@ if (!is_robolectric && enable_java_templates) {
             "srcjar_deps",
             "static_library_provider",
             "static_library_provider_use_secondary_abi",
-            "suffix_apk_assets_used_by",
             "target_sdk_version",
             "testonly",
             "uncompress_dex",
@@ -3482,7 +3460,6 @@ if (!is_robolectric && enable_java_templates) {
             "static_library_provider_use_secondary_abi",
             "strip_resource_names",
             "strip_unused_resources",
-            "suffix_apk_assets_used_by",
             "target_sdk_version",
             "testonly",
             "library_always_compress",
@@ -4985,7 +4962,7 @@ if (!is_robolectric && enable_java_templates) {
             rebase_path(_module.build_config, root_build_dir)
         args += [
           "--uncompressed-assets=@FileArg(" +
-              "$_rebased_build_config:deps_info:uncompressed_assets)",
+              "$_rebased_build_config:uncompressed_assets)",
           "--rtxt-in-paths=@FileArg(" +
               "$_rebased_build_config:deps_info:r_text_path)",
           "--pathmap-in-paths=@FileArg(" +

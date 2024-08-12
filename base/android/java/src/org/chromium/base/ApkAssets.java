@@ -12,10 +12,7 @@ import android.text.TextUtils;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import org.chromium.build.BuildConfig;
-
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * A utility class to retrieve references to uncompressed assets insides the apk. A reference is
@@ -31,8 +28,7 @@ public class ApkAssets {
     private static String sLastError;
 
     @CalledByNative
-    public static long[] open(String apkSubpath, String splitName) {
-        apkSubpath = maybeAddSuffix(apkSubpath);
+    public static long[] open(String fileName, String splitName) {
         sLastError = null;
         AssetFileDescriptor afd = null;
         try {
@@ -41,13 +37,12 @@ public class ApkAssets {
                 context = BundleUtils.createIsolatedSplitContext(context, splitName);
             }
             AssetManager manager = context.getAssets();
-            afd = manager.openNonAssetFd(apkSubpath);
+            afd = manager.openNonAssetFd(fileName);
             return new long[] {
                 afd.getParcelFileDescriptor().detachFd(), afd.getStartOffset(), afd.getLength()
             };
         } catch (IOException e) {
-            sLastError =
-                    "Error while loading asset " + apkSubpath + " from " + splitName + ": " + e;
+            sLastError = "Error while loading asset " + fileName + " from " + splitName + ": " + e;
             // As a general rule there's no point logging here because the caller should handle
             // receiving an fd of -1 sensibly, and the log message is either mirrored later, or
             // unwanted (in the case where a missing file is expected), or wanted but will be
@@ -58,7 +53,7 @@ public class ApkAssets {
             // For that reason, we only suppress the message when the exception message doesn't look
             // informative (Android framework passes the filename as the message on actual file not
             // found, and the empty string also wouldn't give any useful information for debugging).
-            if (!e.getMessage().equals("") && !e.getMessage().equals(apkSubpath)) {
+            if (!e.getMessage().equals("") && !e.getMessage().equals(fileName)) {
                 Log.e(TAG, sLastError);
             }
             return new long[] {-1, -1, -1};
@@ -71,23 +66,6 @@ public class ApkAssets {
                 Log.e(TAG, "Unable to close AssetFileDescriptor", e2);
             }
         }
-    }
-
-    private static String maybeAddSuffix(String apkSubpath) {
-        if (BuildConfig.APK_ASSETS_SUFFIX != null
-                && Arrays.binarySearch(BuildConfig.APK_ASSETS_SUFFIXED_LIST, apkSubpath) >= 0) {
-            apkSubpath += BuildConfig.APK_ASSETS_SUFFIX;
-        }
-        return apkSubpath;
-    }
-
-    public static boolean exists(String apkSubpath) {
-        AssetManager manager = ContextUtils.getApplicationContext().getAssets();
-        try (AssetFileDescriptor afd = manager.openNonAssetFd(maybeAddSuffix(apkSubpath))) {
-            return true;
-        } catch (IOException e2) {
-        }
-        return false;
     }
 
     @CalledByNative

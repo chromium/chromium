@@ -353,20 +353,6 @@ template("write_build_config") {
     if (defined(invoker.treat_as_locale_paks) && invoker.treat_as_locale_paks) {
       args += [ "--treat-as-locale-paks" ]
     }
-    if (defined(invoker.suffix_apk_assets_used_by)) {
-      _dep_label = invoker.suffix_apk_assets_used_by
-      _dep_gen_dir = get_label_info(_dep_label, "target_gen_dir")
-      _dep_name = get_label_info(_dep_label, "name")
-      _dep_config = "$_dep_gen_dir/$_dep_name.build_config.json"
-      if (_dep_config != invoker.build_config) {
-        inputs += [ _dep_config ]
-        deps += [ "$_dep_label$build_config_target_suffix" ]
-      }
-      args += [
-        "--suffix-apk-assets-used-by",
-        rebase_path(_dep_config, root_build_dir),
-      ]
-    }
 
     if (defined(invoker.merged_android_manifest)) {
       args += [
@@ -2701,8 +2687,8 @@ if (enable_java_templates) {
             "--jar-files=@FileArg($_rebased_build_config:deps_info:unprocessed_jar_path)",
             "--jar-files=@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
             "--in-res-info-path=@FileArg($_rebased_build_config:deps_info:res_size_info)",
-            "--assets=@FileArg($_rebased_build_config:deps_info:assets)",
-            "--uncompressed-assets=@FileArg($_rebased_build_config:deps_info:uncompressed_assets)",
+            "--assets=@FileArg($_rebased_build_config:assets)",
+            "--uncompressed-assets=@FileArg($_rebased_build_config:uncompressed_assets)",
           ]
         }
       } else {
@@ -2717,8 +2703,8 @@ if (enable_java_templates) {
           "--jar-files=@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
           "--in-res-info-path",
           rebase_path(invoker.res_size_info_path, root_build_dir),
-          "--assets=@FileArg($_rebased_build_config:deps_info:assets)",
-          "--uncompressed-assets=@FileArg($_rebased_build_config:deps_info:uncompressed_assets)",
+          "--assets=@FileArg($_rebased_build_config:assets)",
+          "--uncompressed-assets=@FileArg($_rebased_build_config:uncompressed_assets)",
         ]
       }
     }
@@ -2832,8 +2818,8 @@ if (enable_java_templates) {
       _inputs += [ invoker.build_config ]
       _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
       _args += [
-        "--assets=@FileArg($_rebased_build_config:deps_info:assets)",
-        "--uncompressed-assets=@FileArg($_rebased_build_config:deps_info:uncompressed_assets)",
+        "--assets=@FileArg($_rebased_build_config:assets)",
+        "--uncompressed-assets=@FileArg($_rebased_build_config:uncompressed_assets)",
       ]
       if (!_is_robolectric_apk) {
         _args += [ "--java-resources=@FileArg($_rebased_build_config:java_resources_jars)" ]
@@ -3776,7 +3762,6 @@ if (enable_java_templates) {
                                "proguard_mapping_path",
                                "public_target_label",
                                "r_text_path",
-                               "suffix_apk_assets_used_by",
                                "type",
                                "version_code",
                                "version_name",
@@ -4506,9 +4491,9 @@ template("create_android_app_bundle_module") {
     rebase_path(invoker.module_zip_path, root_build_dir),
     "--resource-apk=@FileArg(" +
         "$_rebased_build_config:deps_info:proto_resources_path)",
-    "--assets=@FileArg($_rebased_build_config:deps_info:assets)",
+    "--assets=@FileArg($_rebased_build_config:assets)",
     "--uncompressed-assets=@FileArg(" +
-        "$_rebased_build_config:deps_info:uncompressed_assets)",
+        "$_rebased_build_config:uncompressed_assets)",
     "--native-libs=@FileArg($_rebased_build_config:native:libraries)",
     "--native-libs=@FileArg($_rebased_build_config:native:loadable_modules)",
     "--native-lib-placeholders=@FileArg($_rebased_build_config" +
