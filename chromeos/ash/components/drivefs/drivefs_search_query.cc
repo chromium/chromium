@@ -82,13 +82,10 @@ void DriveFsSearchQuery::OnGetNextPage(
     mojom::SearchQuery::GetNextPageCallback callback,
     drive::FileError error,
     std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
-  if (error == drive::FILE_ERROR_NO_CONNECTION &&
+  if (!first_page_returned_ && error == drive::FILE_ERROR_NO_CONNECTION &&
       query_->query_source !=
           drivefs::mojom::QueryParameters::QuerySource::kLocalOnly) {
-    // Retry with offline query.
-    // This is incorrect if we have already returned results, as it would result
-    // in a mix of cloud and local results with duplicates.
-    // TODO: b/357980197 - Fix pagination for non-local results.
+    // Retry with offline query only if we have never returned any pages.
     AdjustQueryForOffline();
     Init();
     GetNextPage(std::move(callback));
@@ -99,6 +96,10 @@ void DriveFsSearchQuery::OnGetNextPage(
       IsCloudSharedWithMeQuery(query_)) {
     // Mark that DriveFS should have cached the required info.
     delegate_->UpdateLastSharedWithMeResponse();
+  }
+
+  if (drive::IsFileErrorOk(error)) {
+    first_page_returned_ = true;
   }
 
   std::move(callback).Run(error, std::move(items));

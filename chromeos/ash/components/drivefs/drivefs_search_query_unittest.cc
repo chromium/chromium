@@ -25,6 +25,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::Eq;
 using ::testing::Field;
 using ::testing::FieldsAre;
 using ::testing::Optional;
@@ -141,6 +142,52 @@ TEST_F(DriveFsSearchQueryTest, Search_Fail) {
               FieldsAre(drive::FileError::FILE_ERROR_ACCESS_DENIED, _));
 }
 
+TEST_F(DriveFsSearchQueryTest, SearchWithMultiplePages) {
+  testing::NiceMock<MockDelegate> delegate;
+  MockMojomQuery mojom_query;
+
+  EXPECT_CALL(delegate, StartMojoSearchQuery)
+      .WillOnce([&](mojo::PendingReceiver<mojom::SearchQuery> query,
+                    mojom::QueryParametersPtr query_params) {
+        mojom_query.Bind(std::move(query));
+      });
+
+  mojom::QueryParametersPtr params = mojom::QueryParameters::New();
+  params->query_source = mojom::QueryParameters::QuerySource::kLocalOnly;
+
+  DriveFsSearchQuery query(delegate.GetWeakPtr(), std::move(params));
+  EXPECT_EQ(query.source(), mojom::QueryParameters::QuerySource::kLocalOnly);
+
+  base::test::TestFuture<drive::FileError,
+                         std::optional<std::vector<mojom::QueryItemPtr>>>
+      next_page_future;
+  query.GetNextPage(next_page_future.GetCallback());
+  mojom_query.TakeCallback().Run(
+      drive::FileError::FILE_ERROR_OK_WITH_MORE_RESULTS, PopulateSearch(3));
+  EXPECT_THAT(next_page_future.Take(),
+              FieldsAre(drive::FileError::FILE_ERROR_OK_WITH_MORE_RESULTS,
+                        Optional(SizeIs(3))));
+
+  query.GetNextPage(next_page_future.GetCallback());
+  mojom_query.TakeCallback().Run(
+      drive::FileError::FILE_ERROR_OK_WITH_MORE_RESULTS, PopulateSearch(3));
+  EXPECT_THAT(next_page_future.Take(),
+              FieldsAre(drive::FileError::FILE_ERROR_OK_WITH_MORE_RESULTS,
+                        Optional(SizeIs(3))));
+
+  query.GetNextPage(next_page_future.GetCallback());
+  mojom_query.TakeCallback().Run(drive::FileError::FILE_ERROR_OK,
+                                 PopulateSearch(1));
+  EXPECT_THAT(next_page_future.Take(),
+              FieldsAre(drive::FileError::FILE_ERROR_OK, Optional(SizeIs(1))));
+
+  query.GetNextPage(next_page_future.GetCallback());
+  mojom_query.TakeCallback().Run(drive::FileError::FILE_ERROR_OK,
+                                 PopulateSearch(0));
+  EXPECT_THAT(next_page_future.Take(),
+              FieldsAre(drive::FileError::FILE_ERROR_OK, Optional(SizeIs(0))));
+}
+
 TEST_F(DriveFsSearchQueryTest, OnlineToOffline) {
   testing::NiceMock<MockDelegate> delegate;
   MockMojomQuery mojom_query;
@@ -159,7 +206,7 @@ TEST_F(DriveFsSearchQueryTest, OnlineToOffline) {
   EXPECT_EQ(query.source(), mojom::QueryParameters::QuerySource::kLocalOnly);
 }
 
-TEST_F(DriveFsSearchQueryTest, Search_OnlineToOfflineFallback) {
+TEST_F(DriveFsSearchQueryTest, Search_OnlineToOfflineFallbackFirstPage) {
   testing::NiceMock<MockDelegate> delegate;
   MockMojomQuery cloud_mojom_query;
   MockMojomQuery local_mojom_query;
@@ -213,6 +260,115 @@ TEST_F(DriveFsSearchQueryTest, Search_OnlineToOfflineFallback) {
 
   EXPECT_THAT(next_page_future.Take(),
               FieldsAre(drive::FileError::FILE_ERROR_OK, Optional(SizeIs(3))));
+}
+
+TEST_F(DriveFsSearchQueryTest,
+       Search_OnlineToOfflineFallbackErrorThenFirstPage) {
+  testing::NiceMock<MockDelegate> delegate;
+  MockMojomQuery cloud_mojom_query;
+  MockMojomQuery local_mojom_query;
+
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(
+        delegate,
+        StartMojoSearchQuery(
+            _, Pointee(AllOf(
+                   Field("query_source", &mojom::QueryParameters::query_source,
+                         mojom::QueryParameters::QuerySource::kCloudOnly),
+                   Field("text_content", &mojom::QueryParameters::text_content,
+                         "foobar")))))
+        .WillOnce([&](mojo::PendingReceiver<mojom::SearchQuery> query,
+                      mojom::QueryParametersPtr query_params) {
+          cloud_mojom_query.Bind(std::move(query));
+        });
+    EXPECT_CALL(
+        delegate,
+        StartMojoSearchQuery(
+            _, Pointee(AllOf(
+                   Field("query_source", &mojom::QueryParameters::query_source,
+                         mojom::QueryParameters::QuerySource::kLocalOnly),
+                   Field("title", &mojom::QueryParameters::title, "foobar")))))
+        .WillOnce([&](mojo::PendingReceiver<mojom::SearchQuery> query,
+                      mojom::QueryParametersPtr query_params) {
+          local_mojom_query.Bind(std::move(query));
+        });
+  }
+
+  mojom::QueryParametersPtr params = mojom::QueryParameters::New();
+  params->query_source = mojom::QueryParameters::QuerySource::kCloudOnly;
+  params->text_content = "foobar";
+
+  DriveFsSearchQuery query(delegate.GetWeakPtr(), std::move(params));
+  EXPECT_EQ(query.source(), mojom::QueryParameters::QuerySource::kCloudOnly);
+
+  base::test::TestFuture<drive::FileError,
+                         std::optional<std::vector<mojom::QueryItemPtr>>>
+      next_page_future;
+  query.GetNextPage(next_page_future.GetCallback());
+  cloud_mojom_query.TakeCallback().Run(drive::FileError::FILE_ERROR_IN_USE,
+                                       std::nullopt);
+  EXPECT_THAT(next_page_future.Take(),
+              FieldsAre(drive::FileError::FILE_ERROR_IN_USE, Eq(std::nullopt)));
+  EXPECT_EQ(query.source(), mojom::QueryParameters::QuerySource::kCloudOnly);
+
+  query.GetNextPage(next_page_future.GetCallback());
+  cloud_mojom_query.TakeCallback().Run(
+      drive::FileError::FILE_ERROR_NO_CONNECTION, std::nullopt);
+
+  MockMojomQuery::GetNextPageCallback local_mojom_callback =
+      local_mojom_query.TakeCallback();
+  EXPECT_EQ(query.source(), mojom::QueryParameters::QuerySource::kLocalOnly);
+  std::move(local_mojom_callback)
+      .Run(drive::FileError::FILE_ERROR_OK, PopulateSearch(3));
+
+  EXPECT_THAT(next_page_future.Take(),
+              FieldsAre(drive::FileError::FILE_ERROR_OK, Optional(SizeIs(3))));
+}
+
+TEST_F(DriveFsSearchQueryTest,
+       OnlineSearchDoesNotFallBackToOfflineAfterFirstPage) {
+  testing::NiceMock<MockDelegate> delegate;
+  MockMojomQuery mojom_query;
+
+  EXPECT_CALL(
+      delegate,
+      StartMojoSearchQuery(
+          _, Pointee(AllOf(
+                 Field("query_source", &mojom::QueryParameters::query_source,
+                       mojom::QueryParameters::QuerySource::kCloudOnly),
+                 Field("text_content", &mojom::QueryParameters::text_content,
+                       "foobar")))))
+      .WillOnce([&](mojo::PendingReceiver<mojom::SearchQuery> query,
+                    mojom::QueryParametersPtr query_params) {
+        mojom_query.Bind(std::move(query));
+      });
+
+  mojom::QueryParametersPtr params = mojom::QueryParameters::New();
+  params->query_source = mojom::QueryParameters::QuerySource::kCloudOnly;
+  params->text_content = "foobar";
+
+  DriveFsSearchQuery query(delegate.GetWeakPtr(), std::move(params));
+  EXPECT_EQ(query.source(), mojom::QueryParameters::QuerySource::kCloudOnly);
+
+  base::test::TestFuture<drive::FileError,
+                         std::optional<std::vector<mojom::QueryItemPtr>>>
+      next_page_future;
+  query.GetNextPage(next_page_future.GetCallback());
+  mojom_query.TakeCallback().Run(
+      drive::FileError::FILE_ERROR_OK_WITH_MORE_RESULTS, PopulateSearch(3));
+  EXPECT_THAT(next_page_future.Take(),
+              FieldsAre(drive::FileError::FILE_ERROR_OK_WITH_MORE_RESULTS,
+                        Optional(SizeIs(3))));
+  EXPECT_EQ(query.source(), mojom::QueryParameters::QuerySource::kCloudOnly);
+
+  query.GetNextPage(next_page_future.GetCallback());
+  mojom_query.TakeCallback().Run(drive::FileError::FILE_ERROR_NO_CONNECTION,
+                                 std::nullopt);
+  EXPECT_THAT(
+      next_page_future.Take(),
+      FieldsAre(drive::FileError::FILE_ERROR_NO_CONNECTION, Eq(std::nullopt)));
+  EXPECT_EQ(query.source(), mojom::QueryParameters::QuerySource::kCloudOnly);
 }
 
 TEST_F(DriveFsSearchQueryTest, SharedWithMeCaching_WithinTtl) {

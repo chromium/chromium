@@ -32,9 +32,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSearchQuery {
 
   mojom::QueryParameters::QuerySource source();
 
-  // THIS SHOULD NOT BE CALLED MORE THAN ONCE.
-  // TODO: b/357980197 - Fix pagination for non-local results.
-  //
   // The supplied callback may not be called if the remote is not bound, or the
   // remote is disconnected.
   // Use
@@ -55,6 +52,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSearchQuery {
 
   // Adjusts `query_` for an offline search. Does not re-initialize `remote_`.
   void AdjustQueryForOffline();
+
+  // Whether this search query has ever returned a page from `GetNextPage`.
+  // Used for tracking whether we should retry this query if we are offline.
+  bool first_page_returned_ = false;
 
   base::WeakPtr<DriveFsSearchQueryDelegate> delegate_;
 
