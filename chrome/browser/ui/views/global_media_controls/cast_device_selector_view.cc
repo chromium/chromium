@@ -35,7 +35,7 @@ constexpr int kCloseButtonIconSize = 16;
 constexpr int kDeviceEntryIconSize = 20;
 
 constexpr gfx::Insets kBackgroundInsets = gfx::Insets::VH(16, 8);
-constexpr gfx::Insets kCastToRowInsets = gfx::Insets::VH(0, 8);
+constexpr gfx::Insets kCastHeaderRowInsets = gfx::Insets::VH(0, 8);
 constexpr gfx::Insets kIssueHoverButtonInsets = gfx::Insets::VH(6, 16);
 
 }  // namespace
@@ -122,17 +122,18 @@ CastDeviceSelectorView::CastDeviceSelectorView(
       views::BoxLayout::Orientation::kVertical, kBackgroundInsets,
       kBackgroundSeparator));
 
-  // |cast_to_row| holds the cast to label and the close button.
-  auto* cast_to_row = AddChildView(std::make_unique<views::BoxLayoutView>());
-  cast_to_row->SetInsideBorderInsets(kCastToRowInsets);
+  // |cast_header_row| holds the cast header label and the close button.
+  auto* cast_header_row =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  cast_header_row->SetInsideBorderInsets(kCastHeaderRowInsets);
 
-  // Create the cast to label.
-  views::Label* cast_to_label =
-      cast_to_row->AddChildView(std::make_unique<views::Label>(
-          l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_CAST_TO_TEXT),
+  // Create the cast header label.
+  views::Label* cast_header_label =
+      cast_header_row->AddChildView(std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_CAST_HEADER_TEXT),
           views::style::CONTEXT_LABEL, views::style::STYLE_HEADLINE_5));
-  cast_to_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  cast_to_row->SetFlexForView(cast_to_label, 1);
+  cast_header_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  cast_header_row->SetFlexForView(cast_header_label, 1);
 
   // Create the close button.
   auto close_button =
@@ -145,7 +146,7 @@ CastDeviceSelectorView::CastDeviceSelectorView(
           media_color_theme_.secondary_foreground_color_id,
           media_color_theme_.secondary_foreground_color_id,
           media_color_theme_.focus_ring_color_id);
-  close_button_ = cast_to_row->AddChildView(std::move(close_button));
+  close_button_ = cast_header_row->AddChildView(std::move(close_button));
 
   // Create the container view to hold available devices.
   device_container_view_ =
