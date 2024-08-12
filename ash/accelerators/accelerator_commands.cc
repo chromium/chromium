@@ -102,6 +102,7 @@
 #include "chromeos/ui/wm/desks/chromeos_desks_histogram_enums.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/session_manager_types.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
@@ -1418,6 +1419,16 @@ void ToggleClipboardHistory(bool is_plain_text_paste) {
 }
 
 void TogglePicker(base::TimeTicks accelerator_timestamp) {
+  const bool outside_user_session =
+      !Shell::Get()->session_controller()->IsActiveUserSessionStarted();
+  const bool is_oobe = Shell::Get()->session_controller()->GetSessionState() ==
+                       session_manager::SessionState::OOBE;
+  const bool is_modal_window = Shell::IsSystemModalWindowOpen();
+  if (outside_user_session || is_oobe || is_modal_window) {
+    ToggleCapsLock();
+    return;
+  }
+
   CHECK(Shell::Get()->picker_controller());
   if (auto* picker_controller = Shell::Get()->picker_controller()) {
     picker_controller->ToggleWidget(accelerator_timestamp);
