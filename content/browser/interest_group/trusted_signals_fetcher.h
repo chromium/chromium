@@ -40,6 +40,11 @@ namespace content {
 // implementation. Need to actually implement the API.
 class CONTENT_EXPORT TrustedSignalsFetcher {
  public:
+  static constexpr std::string_view kRequestMediaType =
+      "message/ad-auction-trusted-signals-request";
+  static constexpr std::string_view kResponseMediaType =
+      "message/ad-auction-trusted-signals-response";
+
   // All the data needed to request a particular bidding signals partition.
   //
   // TODO(https://crbug.com/333445540): Consider making some of these fields
@@ -169,6 +174,8 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
 
   void OnRequestComplete(std::unique_ptr<std::string> response_body);
 
+  // The URL being fetched. Cached for using in error strings.
+  GURL trusted_signals_url_;
   Callback callback_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 };

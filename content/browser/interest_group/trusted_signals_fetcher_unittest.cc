@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -25,10 +26,12 @@
 #include "base/values.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -38,9 +41,41 @@ namespace {
 
 class TrustedSignalsFetcherTest : public testing::Test {
  public:
+  // This is the expected request body that corresponds to the request returned
+  // by CreateBasicBiddingSignalsRequest(). It is the deterministic CBOR
+  // representation of the following, with a prefix and padding added:
+  // {
+  //   "acceptCompression": [ "none", "gzip" ],
+  //   "partitions": [
+  //     {
+  //       "compressionGroupId": 0,
+  //       "id": 0,
+  //       "metadata": { "hostname": "host.test" },
+  //       "arguments": [
+  //         {
+  //           "tags": [ "interestGroupNames" ],
+  //           "data": [ "group1" ]
+  //         },
+  //         {
+  //           "tags": [ "keys" ],
+  //           "data": [ "key1" ]
+  //         }
+  //       ]
+  //     }
+  //   ]
+  // }
+  const std::string_view kBasicBiddingSignalsRequestBody =
+      "00000000A9A26A706172746974696F6E7381A462696400686D65746164617461A168686F"
+      "73746E616D6569686F73742E7465737469617267756D656E747382A26464617461816667"
+      "726F75703164746167738172696E74657265737447726F75704E616D6573A26464617461"
+      "81646B657931647461677381646B65797372636F6D7072657373696F6E47726F75704964"
+      "0071616363657074436F6D7072657373696F6E82646E6F6E6564677A6970000000000000"
+      "000000000000000000000000000000000000000000";
+
   TrustedSignalsFetcherTest() {
     embedded_test_server_.SetSSLConfig(
         net::EmbeddedTestServer::CERT_TEST_NAMES);
+    embedded_test_server_.AddDefaultHandlers();
     embedded_test_server_.RegisterRequestHandler(
         base::BindRepeating(&TrustedSignalsFetcherTest::HandleSignalsRequest,
                             base::Unretained(this)));
@@ -54,7 +89,8 @@ class TrustedSignalsFetcherTest : public testing::Test {
   }
 
   GURL TrustedBiddingSignalsUrl() const {
-    return embedded_test_server_.GetURL("a.test", kTrustedBiddingSignalsPath);
+    return embedded_test_server_.GetURL(kTrustedSignalsHost,
+                                        kTrustedBiddingSignalsPath);
   }
 
   // Creates a simple request with one compression group with a single
@@ -77,12 +113,14 @@ class TrustedSignalsFetcherTest : public testing::Test {
   TrustedSignalsFetcher::SignalsFetchResult
   RequestBiddingSignalsAndWaitForResult(
       const std::map<int, std::vector<TrustedSignalsFetcher::BiddingPartition>>&
-          compression_groups) {
+          compression_groups,
+      std::optional<GURL> signals_url = std::nullopt) {
     base::RunLoop run_loop;
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchBiddingSignals(
-        url_loader_factory_.get(), TrustedBiddingSignalsUrl(),
+        url_loader_factory_.get(),
+        signals_url ? *signals_url : TrustedBiddingSignalsUrl(),
         compression_groups,
         base::BindLambdaForTesting(
             [&](TrustedSignalsFetcher::SignalsFetchResult result) {
@@ -120,11 +158,22 @@ class TrustedSignalsFetcherTest : public testing::Test {
     base::AutoLock auto_lock(lock_);
     if (request.relative_url == kTrustedBiddingSignalsPath) {
       EXPECT_FALSE(bidding_request_body_.has_value());
+      EXPECT_THAT(
+          request.headers,
+          testing::Contains(std::pair(
+              "Content-Type", TrustedSignalsFetcher::kRequestMediaType)));
+      EXPECT_THAT(request.headers,
+                  testing::Contains(std::pair(
+                      "Accept", TrustedSignalsFetcher::kResponseMediaType)));
       EXPECT_TRUE(request.has_content);
       EXPECT_EQ(request.method_string, net::HttpRequestHeaders::kPostMethod);
       bidding_request_body_ = request.content;
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_content_type(response_mime_type_);
+      response->set_code(response_status_code_);
       // TODO(crbug.com/333445540): Return a response body, once
       // TrustedSignalsFetcher supports response body parsing.
+      return response;
     }
 
     return nullptr;
@@ -136,6 +185,12 @@ class TrustedSignalsFetcherTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::IO};
 
   const std::string kTrustedBiddingSignalsPath = "/bidder-signals";
+  const std::string kTrustedSignalsHost = "a.test";
+
+  // Values returned for requests to the test server for
+  // `kTrustedBiddingSignalsPath`.
+  std::string response_mime_type_{TrustedSignalsFetcher::kResponseMediaType};
+  net::HttpStatusCode response_status_code_{net::HTTP_OK};
 
   base::Lock lock_;
   std::optional<std::string> bidding_request_body_ GUARDED_BY(lock_);
@@ -149,6 +204,47 @@ class TrustedSignalsFetcherTest : public testing::Test {
           /*network_service=*/nullptr,
           /*is_trusted=*/true)};
 };
+
+TEST_F(TrustedSignalsFetcherTest, BiddingSignals404) {
+  auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
+  response_status_code_ = net::HTTP_NOT_FOUND;
+  auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(
+      result.error().error_msg,
+      base::StringPrintf(
+          "Failed to load %s error = net::ERR_HTTP_RESPONSE_CODE_FAILURE.",
+          TrustedBiddingSignalsUrl().spec().c_str()));
+  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+}
+
+TEST_F(TrustedSignalsFetcherTest, BiddingSignalsRedirect) {
+  auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
+  GURL server_redirect_url = embedded_test_server_.GetURL(
+      kTrustedSignalsHost,
+      "/server-redirect?" + TrustedBiddingSignalsUrl().spec());
+  auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request,
+                                                      server_redirect_url);
+  ASSERT_FALSE(result.has_value());
+  // RedirectMode::kError results in ERR_FAILED errors on redirects, which
+  // results in rather unhelpful error messages.
+  EXPECT_EQ(result.error().error_msg,
+            base::StringPrintf("Failed to load %s error = net::ERR_FAILED.",
+                               server_redirect_url.spec().c_str()));
+}
+
+TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMimeType) {
+  auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
+  // Use the request media type instead of the response one.
+  response_mime_type_ = TrustedSignalsFetcher::kRequestMediaType;
+  auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(
+      result.error().error_msg,
+      base::StringPrintf("Rejecting load of %s due to unexpected MIME type.",
+                         TrustedBiddingSignalsUrl().spec().c_str()));
+  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+}
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsNoKeys) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
@@ -190,39 +286,8 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsNoKeys) {
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsOneKey) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
-
-  // The expected request body is the deterministic CBOR representation of the
-  // following, with a prefix and padding added:
-  // {
-  //   "acceptCompression": [ "none", "gzip" ],
-  //   "partitions": [
-  //     {
-  //       "compressionGroupId": 0,
-  //       "id": 0,
-  //       "metadata": { "hostname": "host.test" },
-  //       "arguments": [
-  //         {
-  //           "tags": [ "interestGroupNames" ],
-  //           "data": [ "group1" ]
-  //         },
-  //         {
-  //           "tags": [ "keys" ],
-  //           "data": [ "key1" ]
-  //         }
-  //       ]
-  //     }
-  //   ]
-  // }
-  const std::string_view kExpectedRequestBody =
-      "00000000A9A26A706172746974696F6E7381A462696400686D65746164617461A168686F"
-      "73746E616D6569686F73742E7465737469617267756D656E747382A26464617461816667"
-      "726F75703164746167738172696E74657265737447726F75704E616D6573A26464617461"
-      "81646B657931647461677381646B65797372636F6D7072657373696F6E47726F75704964"
-      "0071616363657074436F6D7072657373696F6E82646E6F6E6564677A6970000000000000"
-      "000000000000000000000000000000000000000000";
-
   auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
-  ValidateRequestBody(kExpectedRequestBody);
+  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleKeys) {

@@ -19,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
+#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -29,6 +30,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -266,20 +268,24 @@ void TrustedSignalsFetcher::StartRequest(
     Callback callback) {
   DCHECK(!simple_url_loader_);
   DCHECK(!callback_);
+  trusted_signals_url_ = trusted_signals_url;
   callback_ = std::move(callback);
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->url = trusted_signals_url;
   resource_request->mode = network::mojom::RequestMode::kNoCors;
+  resource_request->redirect_mode = network::mojom::RedirectMode::kError;
+  resource_request->headers.SetHeader("Accept", kResponseMediaType);
 
-  // TODO(crbug.com/333445540): Set reasonable initiator, isolation info, accept
-  // header, client security state, content-type, redirect mode, and credentials
-  // mode, and select reasonable maximum body size.
+  // TODO(crbug.com/333445540): Set reasonable initiator, isolation info, client
+  // security state, and credentials mode, and select reasonable maximum body
+  // size. Also hook up to devtools.
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);
-  simple_url_loader_->AttachStringForUpload(std::move(request_body));
+  simple_url_loader_->AttachStringForUpload(std::move(request_body),
+                                            kRequestMediaType);
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory,
       base::BindOnce(&TrustedSignalsFetcher::OnRequestComplete,
@@ -288,8 +294,21 @@ void TrustedSignalsFetcher::StartRequest(
 
 void TrustedSignalsFetcher::OnRequestComplete(
     std::unique_ptr<std::string> response_body) {
-  // TODO(crbug.com/333445540): Validate content type, return reasonable failure
-  // string on error, and parse the response.
+  if (!response_body) {
+    std::move(callback_).Run(base::unexpected(ErrorInfo(base::StringPrintf(
+        "Failed to load %s error = %s.", trusted_signals_url_.spec().c_str(),
+        net::ErrorToString(simple_url_loader_->NetError()).c_str()))));
+    return;
+  }
+
+  if (simple_url_loader_->ResponseInfo()->mime_type != kResponseMediaType) {
+    std::move(callback_).Run(base::unexpected(ErrorInfo(
+        base::StringPrintf("Rejecting load of %s due to unexpected MIME type.",
+                           trusted_signals_url_.spec().c_str()))));
+    return;
+  }
+
+  // TODO(crbug.com/333445540): Parse the response.
   std::move(callback_).Run(
       base::unexpected(ErrorInfo("Response parsing not yet implemented")));
 }
