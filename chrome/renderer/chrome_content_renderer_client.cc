@@ -118,6 +118,7 @@
 #include "components/web_cache/renderer/web_cache_impl.h"
 #include "components/webapps/renderer/web_page_metadata_agent.h"
 #include "content/public/common/content_constants.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/url_constants.h"
@@ -864,6 +865,10 @@ bool ChromeContentRendererClient::IsPluginHandledExternally(
 }
 
 bool ChromeContentRendererClient::IsDomStorageDisabled() const {
+  if (!base::FeatureList::IsEnabled(features::kPdfEnforcements)) {
+    return false;
+  }
+
 #if BUILDFLAG(ENABLE_PDF) && BUILDFLAG(ENABLE_EXTENSIONS)
   // PDF renderers shouldn't need to access DOM storage interfaces. Note that
   // it's still possible to access localStorage or sessionStorage in a PDF
