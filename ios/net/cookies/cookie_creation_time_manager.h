@@ -46,7 +46,7 @@ class CookieCreationTimeManager {
  private:
   std::unordered_map<std::string, base::Time> creation_times_;
   std::set<base::Time> unique_times_;
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<CookieCreationTimeManager> weak_factory_;
 };
 
