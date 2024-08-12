@@ -5368,7 +5368,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
           Name Group
       </message>
       <message name="IDS_IOS_TAB_GROUP_SNACKBAR_ACTION" desc="Button to access the Tab Groups panel. [iOS only]">
-        Open Tab Groups
+        View
       </message>
       <message name="IDS_IOS_TAB_GROUP_SNACKBAR_LABEL" desc="Explanation text informing the user about closed and saved tab groups. [iOS only]">
          {count, plural,
