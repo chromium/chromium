@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 
+#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_item.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
@@ -28,6 +30,15 @@
       tab_helper->StopChoosingFiles();
     }
     _webState = nullptr;
+  }
+}
+
+- (void)selectDriveItem:(DriveItem*)driveItem {
+  switch (driveItem.type) {
+    case DriveItemType::kFile:
+    case DriveItemType::kFolder:
+      [self.delegate browseDriveFolderWithMediator:self
+                                       driveFolder:driveItem.title];
   }
 }
 

@@ -18,6 +18,8 @@
 @property(nonatomic, weak) id<DriveFilePickerMutator> mutator;
 // Drive file picker handler.
 @property(nonatomic, weak) id<DriveFilePickerCommands> driveFilePickerHandler;
+// The title of the currently represented folder.
+@property(nonatomic, strong) NSString* folderTitle;
 
 @end
 

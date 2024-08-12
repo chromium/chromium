@@ -30,28 +30,33 @@
   // A child `BrowseDriveFilePickerCoordinator` created and started to browse an
   // inner folder.
   BrowseDriveFilePickerCoordinator* _childBrowseCoordinator;
+
+  // The folder associated to the current `BrowseDriveFilePickerCoordinator`.
+  NSString* _folder;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
 
-- (instancetype)initWithBaseNavigationViewController:
-                    (UINavigationController*)baseNavigationController
-                                             browser:(Browser*)browser
-                                            webState:
-                                                (base::WeakPtr<web::WebState>)
-                                                    webState {
+- (instancetype)
+    initWithBaseNavigationViewController:
+        (UINavigationController*)baseNavigationController
+                                 browser:(Browser*)browser
+                                webState:(base::WeakPtr<web::WebState>)webState
+                                  folder:(NSString*)folder {
   self = [super initWithBaseViewController:baseNavigationController
                                    browser:browser];
   if (self) {
     CHECK(webState);
     _baseNavigationController = baseNavigationController;
     _webState = webState;
+    _folder = folder;
   }
   return self;
 }
 
 - (void)start {
   _viewController = [[DriveFilePickerTableViewController alloc] init];
+  _viewController.folderTitle = _folder;
   _mediator =
       [[DriveFilePickerMediator alloc] initWithWebState:_webState.get()];
 
@@ -82,7 +87,8 @@
   _childBrowseCoordinator = [[BrowseDriveFilePickerCoordinator alloc]
       initWithBaseNavigationViewController:_baseNavigationController
                                    browser:self.browser
-                                  webState:_webState];
+                                  webState:_webState
+                                    folder:driveFolder];
   [_childBrowseCoordinator start];
 }
 

@@ -65,6 +65,7 @@
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
   _viewController.driveFilePickerHandler = driveFilePickerHandler;
   _viewController.mutator = _mediator;
+  _mediator.delegate = self;
   _navigationController.driveFilePickerHandler = driveFilePickerHandler;
 
   [self.baseViewController presentViewController:_navigationController
@@ -107,7 +108,8 @@
       [[BrowseDriveFilePickerCoordinator alloc]
           initWithBaseNavigationViewController:_navigationController
                                        browser:self.browser
-                                      webState:_webState];
+                                      webState:_webState
+                                        folder:driveFolder];
   [browseCoordinator start];
   [self.childCoordinators addObject:browseCoordinator];
 }

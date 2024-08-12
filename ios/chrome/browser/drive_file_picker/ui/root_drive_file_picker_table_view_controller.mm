@@ -69,7 +69,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 @end
 
 @implementation RootDriveFilePickerTableViewController {
-  UITableViewDiffableDataSource<NSString*, NSString*>* _diffableDataSource;
+  UITableViewDiffableDataSource<NSString*, DriveItem*>* _diffableDataSource;
 }
 
 - (instancetype)init {
@@ -161,6 +161,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   // TODO(crbug.com/344812396): Submit the file selection.
 }
 
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  DriveItem* driveItem =
+      [_diffableDataSource itemIdentifierForIndexPath:indexPath];
+  [self.mutator selectDriveItem:driveItem];
+}
 #pragma mark - Private
 
 // Configures the toolbar with 3 buttons, filterButton <---->

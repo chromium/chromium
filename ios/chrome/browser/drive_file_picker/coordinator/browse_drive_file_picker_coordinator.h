@@ -15,12 +15,14 @@ class WebState;
 // Coordinator of the Browse Drive file picker.
 @interface BrowseDriveFilePickerCoordinator : ChromeCoordinator
 
-// Creates a coordinator that uses `viewController`, `browser` and `webState`.
+// Creates a coordinator that uses `viewController`, `browser`, `webState` and
+// `folder`.
 - (instancetype)
     initWithBaseNavigationViewController:
         (UINavigationController*)baseNavigationController
                                  browser:(Browser*)browser
                                 webState:(base::WeakPtr<web::WebState>)webState
+                                  folder:(NSString*)folder
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
