@@ -819,7 +819,9 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
       // Mark everything dirty so that the serializer sees all changes.
       ChildrenChangedWithCleanLayout(original_parent);
       ChildrenChangedWithCleanLayout(ax_unparented->ParentObjectIfPresent());
-      object_cache_->MarkAXObjectDirtyWithCleanLayout(ax_unparented);
+      if (!ax_unparented->IsDetached()) {
+        object_cache_->MarkAXObjectDirtyWithCleanLayout(ax_unparented);
+      }
     }
   }
 
