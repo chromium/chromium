@@ -50,15 +50,17 @@ class LenientMockDataWriter : public SiteDataWriter {
   LenientMockDataWriter(const LenientMockDataWriter& other) = delete;
   LenientMockDataWriter& operator=(const LenientMockDataWriter&) = delete;
 
-  MOCK_METHOD1(NotifySiteLoaded, void(TabVisibility));
-  MOCK_METHOD1(NotifySiteUnloaded, void(TabVisibility));
-  MOCK_METHOD1(NotifySiteForegrounded, void(bool));
-  MOCK_METHOD1(NotifySiteBackgrounded, void(bool));
-  MOCK_METHOD0(NotifyUpdatesFaviconInBackground, void());
-  MOCK_METHOD0(NotifyUpdatesTitleInBackground, void());
-  MOCK_METHOD0(NotifyUsesAudioInBackground, void());
-  MOCK_METHOD3(NotifyLoadTimePerformanceMeasurement,
-               void(base::TimeDelta, base::TimeDelta, uint64_t));
+  MOCK_METHOD(void, NotifySiteLoaded, (TabVisibility), (override));
+  MOCK_METHOD(void, NotifySiteUnloaded, (TabVisibility), (override));
+  MOCK_METHOD(void, NotifySiteForegrounded, (bool), (override));
+  MOCK_METHOD(void, NotifySiteBackgrounded, (bool), (override));
+  MOCK_METHOD(void, NotifyUpdatesFaviconInBackground, (), (override));
+  MOCK_METHOD(void, NotifyUpdatesTitleInBackground, (), (override));
+  MOCK_METHOD(void, NotifyUsesAudioInBackground, (), (override));
+  MOCK_METHOD(void,
+              NotifyLoadTimePerformanceMeasurement,
+              (base::TimeDelta, base::TimeDelta, uint64_t),
+              (override));
 
   // Used to record the destruction of this object.
   void SetOnDestroyIndicator(bool* on_destroy_indicator) {

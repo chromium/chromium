@@ -30,19 +30,16 @@ class MockSiteDataStore : public testing::NoopSiteDataStore {
 
   ~MockSiteDataStore() override = default;
 
-  // Note: As move-only parameters (e.g. OnceCallback) aren't supported by mock
-  // methods, add On... methods to pass a non-const reference to OnceCallback.
-  void ReadSiteDataFromStore(
-      const url::Origin& origin,
-      SiteDataStore::ReadSiteDataFromStoreCallback callback) override {
-    OnReadSiteDataFromStore(std::move(origin), callback);
-  }
-  MOCK_METHOD2(OnReadSiteDataFromStore,
-               void(const url::Origin&,
-                    SiteDataStore::ReadSiteDataFromStoreCallback&));
+  MOCK_METHOD(void,
+              ReadSiteDataFromStore,
+              (const url::Origin&,
+               SiteDataStore::ReadSiteDataFromStoreCallback),
+              (override));
 
-  MOCK_METHOD2(WriteSiteDataIntoStore,
-               void(const url::Origin&, const SiteDataProto&));
+  MOCK_METHOD(void,
+              WriteSiteDataIntoStore,
+              (const url::Origin&, const SiteDataProto&),
+              (override));
 };
 
 void InitializeSiteDataProto(SiteDataProto* site_data) {
@@ -146,14 +143,14 @@ TEST_F(SiteDataReaderTest, FreeingReaderDoesntCauseWriteOperation) {
   InitializeSiteDataProto(&proto);
   auto read_from_store_mock_impl =
       [&](const url::Origin& origin,
-          SiteDataStore::ReadSiteDataFromStoreCallback& callback) {
+          SiteDataStore::ReadSiteDataFromStoreCallback callback) {
         std::move(callback).Run(std::optional<SiteDataProto>(proto));
       };
 
-  EXPECT_CALL(data_store, OnReadSiteDataFromStore(
-                              ::testing::Property(&url::Origin::Serialize,
-                                                  kOrigin.Serialize()),
-                              ::testing::_))
+  EXPECT_CALL(data_store,
+              ReadSiteDataFromStore(::testing::Property(&url::Origin::Serialize,
+                                                        kOrigin.Serialize()),
+                                    ::testing::_))
       .WillOnce(::testing::Invoke(read_from_store_mock_impl));
 
   scoped_refptr<internal::SiteDataImpl> impl(
@@ -177,10 +174,10 @@ TEST_F(SiteDataReaderTest, OnDataLoadedCallbackInvoked) {
   ::testing::StrictMock<MockSiteDataStore> data_store;
 
   // Create the impl.
-  EXPECT_CALL(data_store, OnReadSiteDataFromStore(
-                              ::testing::Property(&url::Origin::Serialize,
-                                                  kOrigin.Serialize()),
-                              ::testing::_));
+  EXPECT_CALL(data_store,
+              ReadSiteDataFromStore(::testing::Property(&url::Origin::Serialize,
+                                                        kOrigin.Serialize()),
+                                    ::testing::_));
   scoped_refptr<internal::SiteDataImpl> impl = base::WrapRefCounted(
       new internal::SiteDataImpl(kOrigin, delegate_.GetWeakPtr(), &data_store));
 
@@ -208,10 +205,10 @@ TEST_F(SiteDataReaderTest, DestroyingReaderCancelsPendingCallbacks) {
   ::testing::StrictMock<MockSiteDataStore> data_store;
 
   // Create the impl.
-  EXPECT_CALL(data_store, OnReadSiteDataFromStore(
-                              ::testing::Property(&url::Origin::Serialize,
-                                                  kOrigin.Serialize()),
-                              ::testing::_));
+  EXPECT_CALL(data_store,
+              ReadSiteDataFromStore(::testing::Property(&url::Origin::Serialize,
+                                                        kOrigin.Serialize()),
+                                    ::testing::_));
   scoped_refptr<internal::SiteDataImpl> impl = base::WrapRefCounted(
       new internal::SiteDataImpl(kOrigin, delegate_.GetWeakPtr(), &data_store));
 

@@ -21,10 +21,11 @@ class DummyObserver : public base::CheckedObserver {
   DummyObserver() = default;
   ~DummyObserver() override = default;
 
-  MOCK_METHOD1(NotifyAlwaysConst, void(const DummyNode*));
-  MOCK_METHOD1(NotifyOnlyOnChangesConst, void(const DummyNode*));
-  MOCK_METHOD2(NotifyOnlyOnChangesWithPreviousValueConst,
-               void(const DummyNode*, bool));
+  MOCK_METHOD(void, NotifyAlwaysConst, (const DummyNode*));
+  MOCK_METHOD(void, NotifyOnlyOnChangesConst, (const DummyNode*));
+  MOCK_METHOD(void,
+              NotifyOnlyOnChangesWithPreviousValueConst,
+              (const DummyNode*, bool));
 };
 
 class DummyNode {

@@ -33,8 +33,11 @@ class LenientMockObserver : public PerformanceManagerMainThreadObserver {
   LenientMockObserver() = default;
   ~LenientMockObserver() override = default;
 
-  MOCK_METHOD1(OnPageNodeCreatedForWebContents, void(content::WebContents*));
-  MOCK_METHOD0(OnBeforePerformanceManagerDestroyed, void());
+  MOCK_METHOD(void,
+              OnPageNodeCreatedForWebContents,
+              (content::WebContents*),
+              (override));
+  MOCK_METHOD(void, OnBeforePerformanceManagerDestroyed, (), (override));
 };
 
 using MockObserver = ::testing::StrictMock<LenientMockObserver>;
@@ -52,8 +55,9 @@ class LenientMockMechanism : public PerformanceManagerMainThreadMechanism {
   }
 
  private:
-  MOCK_METHOD1(OnCreateThrottlesForNavigation,
-               void(content::NavigationHandle*));
+  MOCK_METHOD(void,
+              OnCreateThrottlesForNavigation,
+              (content::NavigationHandle*));
 
   // PerformanceManagerMainThreadMechanism implementation:
   // GMock doesn't support move-only types, so we use a custom wrapper to work
@@ -146,9 +150,9 @@ class LenientOwned : public PerformanceManagerOwned {
   LenientOwned& operator=(const LenientOwned) = delete;
 
   // PerformanceManagerOwned implementation:
-  MOCK_METHOD0(OnPassedToPM, void());
-  MOCK_METHOD0(OnTakenFromPM, void());
-  MOCK_METHOD0(OnDestructor, void());
+  MOCK_METHOD(void, OnPassedToPM, (), (override));
+  MOCK_METHOD(void, OnTakenFromPM, (), (override));
+  MOCK_METHOD(void, OnDestructor, ());
 };
 
 using Owned = testing::StrictMock<LenientOwned>;

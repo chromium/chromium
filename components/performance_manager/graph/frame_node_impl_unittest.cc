@@ -140,29 +140,59 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
   LenientMockObserver() = default;
   ~LenientMockObserver() override = default;
 
-  MOCK_METHOD1(OnFrameNodeAdded, void(const FrameNode*));
-  MOCK_METHOD1(OnBeforeFrameNodeRemoved, void(const FrameNode*));
-  MOCK_METHOD1(OnIsCurrentChanged, void(const FrameNode*));
-  MOCK_METHOD1(OnNetworkAlmostIdleChanged, void(const FrameNode*));
-  MOCK_METHOD1(OnFrameLifecycleStateChanged, void(const FrameNode*));
-  MOCK_METHOD2(OnURLChanged, void(const FrameNode*, const GURL&));
-  MOCK_METHOD2(OnOriginChanged,
-               void(const FrameNode*, const std::optional<url::Origin>&));
-  MOCK_METHOD1(OnIsAdFrameChanged, void(const FrameNode*));
-  MOCK_METHOD1(OnFrameIsHoldingWebLockChanged, void(const FrameNode*));
-  MOCK_METHOD1(OnFrameIsHoldingIndexedDBLockChanged, void(const FrameNode*));
-  MOCK_METHOD2(OnPriorityAndReasonChanged,
-               void(const FrameNode*, const PriorityAndReason& previous_value));
-  MOCK_METHOD1(OnHadUserActivationChanged, void(const FrameNode*));
-  MOCK_METHOD1(OnHadFormInteractionChanged, void(const FrameNode*));
-  MOCK_METHOD1(OnHadUserEditsChanged, void(const FrameNode*));
-  MOCK_METHOD1(OnIsAudibleChanged, void(const FrameNode*));
-  MOCK_METHOD1(OnIsCapturingMediaStreamChanged, void(const FrameNode*));
-  MOCK_METHOD1(OnViewportIntersectionStateChanged, void(const FrameNode*));
-  MOCK_METHOD2(OnFrameVisibilityChanged,
-               void(const FrameNode*, FrameNode::Visibility));
-  MOCK_METHOD1(OnNonPersistentNotificationCreated, void(const FrameNode*));
-  MOCK_METHOD2(OnFirstContentfulPaint, void(const FrameNode*, base::TimeDelta));
+  MOCK_METHOD(void, OnFrameNodeAdded, (const FrameNode*), (override));
+  MOCK_METHOD(void, OnBeforeFrameNodeRemoved, (const FrameNode*), (override));
+  MOCK_METHOD(void, OnIsCurrentChanged, (const FrameNode*), (override));
+  MOCK_METHOD(void, OnNetworkAlmostIdleChanged, (const FrameNode*), (override));
+  MOCK_METHOD(void,
+              OnFrameLifecycleStateChanged,
+              (const FrameNode*),
+              (override));
+  MOCK_METHOD(void, OnURLChanged, (const FrameNode*, const GURL&), (override));
+  MOCK_METHOD(void,
+              OnOriginChanged,
+              (const FrameNode*, const std::optional<url::Origin>&),
+              (override));
+  MOCK_METHOD(void, OnIsAdFrameChanged, (const FrameNode*), (override));
+  MOCK_METHOD(void,
+              OnFrameIsHoldingWebLockChanged,
+              (const FrameNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnFrameIsHoldingIndexedDBLockChanged,
+              (const FrameNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnPriorityAndReasonChanged,
+              (const FrameNode*, const PriorityAndReason& previous_value),
+              (override));
+  MOCK_METHOD(void, OnHadUserActivationChanged, (const FrameNode*), (override));
+  MOCK_METHOD(void,
+              OnHadFormInteractionChanged,
+              (const FrameNode*),
+              (override));
+  MOCK_METHOD(void, OnHadUserEditsChanged, (const FrameNode*), (override));
+  MOCK_METHOD(void, OnIsAudibleChanged, (const FrameNode*), (override));
+  MOCK_METHOD(void,
+              OnIsCapturingMediaStreamChanged,
+              (const FrameNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnViewportIntersectionStateChanged,
+              (const FrameNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnFrameVisibilityChanged,
+              (const FrameNode*, FrameNode::Visibility),
+              (override));
+  MOCK_METHOD(void,
+              OnNonPersistentNotificationCreated,
+              (const FrameNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnFirstContentfulPaint,
+              (const FrameNode*, base::TimeDelta),
+              (override));
 
   void SetCreatedFrameNode(const FrameNode* frame_node) {
     created_frame_node_ = frame_node;
@@ -636,14 +666,21 @@ class LenientMockPageObserver : public PageNode::ObserverDefaultImpl {
   LenientMockPageObserver() = default;
   ~LenientMockPageObserver() override = default;
 
-  MOCK_METHOD1(OnBeforePageNodeRemoved, void(const PageNode* page_node));
+  MOCK_METHOD(void,
+              OnBeforePageNodeRemoved,
+              (const PageNode* page_node),
+              (override));
 
   // Note that embedder functionality is actually tested in the
   // performance_manager_browsertest.
-  MOCK_METHOD2(OnOpenerFrameNodeChanged,
-               void(const PageNode*, const FrameNode*));
-  MOCK_METHOD3(OnEmbedderFrameNodeChanged,
-               void(const PageNode*, const FrameNode*, EmbeddingType));
+  MOCK_METHOD(void,
+              OnOpenerFrameNodeChanged,
+              (const PageNode*, const FrameNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnEmbedderFrameNodeChanged,
+              (const PageNode*, const FrameNode*, EmbeddingType),
+              (override));
 };
 
 using MockPageObserver = ::testing::StrictMock<LenientMockPageObserver>;

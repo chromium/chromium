@@ -34,8 +34,11 @@ class MockSiteCache : public testing::NoopSiteDataStore {
 
   ~MockSiteCache() override = default;
 
-  MOCK_METHOD1(RemoveSiteDataFromStore, void(const std::vector<url::Origin>&));
-  MOCK_METHOD0(ClearStore, void());
+  MOCK_METHOD(void,
+              RemoveSiteDataFromStore,
+              (const std::vector<url::Origin>&),
+              (override));
+  MOCK_METHOD(void, ClearStore, (), (override));
 };
 
 }  // namespace

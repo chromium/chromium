@@ -352,7 +352,7 @@ class LenientMockPageNodeObserver : public PageNode::ObserverDefaultImpl {
   LenientMockPageNodeObserver& operator=(const LenientMockPageNodeObserver&) =
       delete;
 
-  MOCK_METHOD1(OnFaviconUpdated, void(const PageNode*));
+  MOCK_METHOD(void, OnFaviconUpdated, (const PageNode*), (override));
 };
 using MockPageNodeObserver = ::testing::StrictMock<LenientMockPageNodeObserver>;
 

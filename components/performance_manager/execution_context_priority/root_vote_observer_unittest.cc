@@ -29,8 +29,10 @@ class LenientMockFrameNodeObserver : public FrameNode::ObserverDefaultImpl {
       delete;
   ~LenientMockFrameNodeObserver() override = default;
 
-  MOCK_METHOD2(OnPriorityAndReasonChanged,
-               void(const FrameNode*, const PriorityAndReason&));
+  MOCK_METHOD(void,
+              OnPriorityAndReasonChanged,
+              (const FrameNode*, const PriorityAndReason&),
+              (override));
 };
 
 using MockFrameNodeObserver =

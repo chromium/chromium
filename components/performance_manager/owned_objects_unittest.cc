@@ -21,9 +21,9 @@ class Owned {
   Owned(const Owned&) = delete;
   Owned& operator=(const Owned) = delete;
 
-  MOCK_METHOD1(OnPassedTo, void(void*));
-  MOCK_METHOD1(OnTakenFrom, void(void*));
-  MOCK_METHOD0(OnDestructor, void());
+  MOCK_METHOD(void, OnPassedTo, (void*));
+  MOCK_METHOD(void, OnTakenFrom, (void*));
+  MOCK_METHOD(void, OnDestructor, ());
 };
 
 }  // namespace

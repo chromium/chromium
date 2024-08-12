@@ -246,32 +246,50 @@ class LenientMockObserver : public PageNodeImpl::Observer {
   LenientMockObserver() {}
   ~LenientMockObserver() override {}
 
-  MOCK_METHOD1(OnPageNodeAdded, void(const PageNode*));
-  MOCK_METHOD1(OnBeforePageNodeRemoved, void(const PageNode*));
+  MOCK_METHOD(void, OnPageNodeAdded, (const PageNode*), (override));
+  MOCK_METHOD(void, OnBeforePageNodeRemoved, (const PageNode*), (override));
   // Note that opener/embedder functionality is actually tested in the
   // FrameNodeImpl and GraphImpl unittests.
-  MOCK_METHOD2(OnOpenerFrameNodeChanged,
-               void(const PageNode*, const FrameNode*));
-  MOCK_METHOD3(OnEmbedderFrameNodeChanged,
-               void(const PageNode*, const FrameNode*, EmbeddingType));
-  MOCK_METHOD2(OnTypeChanged, void(const PageNode*, PageType));
-  MOCK_METHOD1(OnIsFocusedChanged, void(const PageNode*));
-  MOCK_METHOD1(OnIsVisibleChanged, void(const PageNode*));
-  MOCK_METHOD1(OnIsAudibleChanged, void(const PageNode*));
-  MOCK_METHOD1(OnHasPictureInPictureChanged, void(const PageNode*));
-  MOCK_METHOD2(OnLoadingStateChanged,
-               void(const PageNode*, PageNode::LoadingState));
-  MOCK_METHOD1(OnUkmSourceIdChanged, void(const PageNode*));
-  MOCK_METHOD1(OnPageLifecycleStateChanged, void(const PageNode*));
-  MOCK_METHOD1(OnPageIsHoldingWebLockChanged, void(const PageNode*));
-  MOCK_METHOD1(OnPageIsHoldingIndexedDBLockChanged, void(const PageNode*));
-  MOCK_METHOD1(OnMainFrameUrlChanged, void(const PageNode*));
-  MOCK_METHOD1(OnMainFrameDocumentChanged, void(const PageNode*));
-  MOCK_METHOD1(OnTitleUpdated, void(const PageNode*));
-  MOCK_METHOD1(OnFaviconUpdated, void(const PageNode*));
-  MOCK_METHOD1(OnHadFormInteractionChanged, void(const PageNode*));
-  MOCK_METHOD1(OnHadUserEditsChanged, void(const PageNode*));
-  MOCK_METHOD2(OnAboutToBeDiscarded, void(const PageNode*, const PageNode*));
+  MOCK_METHOD(void,
+              OnOpenerFrameNodeChanged,
+              (const PageNode*, const FrameNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnEmbedderFrameNodeChanged,
+              (const PageNode*, const FrameNode*, EmbeddingType),
+              (override));
+  MOCK_METHOD(void, OnTypeChanged, (const PageNode*, PageType), (override));
+  MOCK_METHOD(void, OnIsFocusedChanged, (const PageNode*), (override));
+  MOCK_METHOD(void, OnIsVisibleChanged, (const PageNode*), (override));
+  MOCK_METHOD(void, OnIsAudibleChanged, (const PageNode*), (override));
+  MOCK_METHOD(void,
+              OnHasPictureInPictureChanged,
+              (const PageNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnLoadingStateChanged,
+              (const PageNode*, PageNode::LoadingState),
+              (override));
+  MOCK_METHOD(void, OnUkmSourceIdChanged, (const PageNode*), (override));
+  MOCK_METHOD(void, OnPageLifecycleStateChanged, (const PageNode*), (override));
+  MOCK_METHOD(void,
+              OnPageIsHoldingWebLockChanged,
+              (const PageNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnPageIsHoldingIndexedDBLockChanged,
+              (const PageNode*),
+              (override));
+  MOCK_METHOD(void, OnMainFrameUrlChanged, (const PageNode*), (override));
+  MOCK_METHOD(void, OnMainFrameDocumentChanged, (const PageNode*), (override));
+  MOCK_METHOD(void, OnTitleUpdated, (const PageNode*), (override));
+  MOCK_METHOD(void, OnFaviconUpdated, (const PageNode*), (override));
+  MOCK_METHOD(void, OnHadFormInteractionChanged, (const PageNode*), (override));
+  MOCK_METHOD(void, OnHadUserEditsChanged, (const PageNode*), (override));
+  MOCK_METHOD(void,
+              OnAboutToBeDiscarded,
+              (const PageNode*, const PageNode*),
+              (override));
 
   void SetNotifiedPageNode(const PageNode* page_node) {
     notified_page_node_ = page_node;
