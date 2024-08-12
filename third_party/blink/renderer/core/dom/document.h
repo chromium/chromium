@@ -1841,7 +1841,6 @@ class CORE_EXPORT Document : public ContainerNode,
   }
   // To be called from MutationEventSuppressionScope.
   void SetSuppressMutationEvents(bool suppress) {
-    CHECK_NE(suppress, suppress_mutation_events_);
     suppress_mutation_events_ = suppress;
   }
 
