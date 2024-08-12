@@ -88,6 +88,14 @@ class _ResourceSourceMapper:
     ret = self._res_info.get(path)
     if ret:
       return ret
+    # Undo asset path prefixing. https://crbug.com/357131361
+    if path.endswith('+'):
+      suffix_idx = path.rfind('+', 0, len(path) - 1)
+      if suffix_idx != -1:
+        path = path[:suffix_idx]
+      ret = self._res_info.get(path)
+      if ret:
+        return ret
     # Android build tools may append extra -v flags for the root dir.
     path = self._pattern_version_suffix.sub('/', path)
     ret = self._res_info.get(path)
