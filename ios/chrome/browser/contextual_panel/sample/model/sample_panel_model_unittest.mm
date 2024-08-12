@@ -50,11 +50,12 @@ TEST_F(SamplePanelModelTest, TestFetchConfiguration) {
   SamplePanelItemConfiguration* config =
       static_cast<SamplePanelItemConfiguration*>(returned_configuration_.get());
   EXPECT_EQ("sample_config", config->sample_name);
-  EXPECT_EQ("Large entrypoint", config->entrypoint_message);
+  EXPECT_EQ("Large entry point", config->entrypoint_message);
   EXPECT_EQ("chrome_product", config->entrypoint_image_name);
-  EXPECT_EQ("Sample entrypoint", config->accessibility_label);
-  EXPECT_EQ("Sample IPH", config->iph_title);
-  EXPECT_EQ("Sample rich IPH for the CP, which should appear 3 times a day.",
+  EXPECT_EQ("Large entry point", config->accessibility_label);
+  EXPECT_EQ("Sample bubble", config->iph_title);
+  EXPECT_EQ("Sample rich in-product help for the Contextual Panel, which "
+            "should appear multiple times a day.",
             config->iph_text);
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   EXPECT_EQ("chrome_search_engine_choice_icon", config->iph_image_name);

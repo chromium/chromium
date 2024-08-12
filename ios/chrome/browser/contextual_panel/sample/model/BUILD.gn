@@ -15,6 +15,7 @@ source_set("model") {
     "//components/feature_engagement/public",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url",

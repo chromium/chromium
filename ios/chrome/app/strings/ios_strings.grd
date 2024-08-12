@@ -1224,6 +1224,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTEXT_MENU_SEARCHWEBFORIMAGE" desc="Context menu text for option to perform a search for image [Length: 25em] [iOS only]">
         Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for This Image
       </message>
+      <message name="IDS_IOS_CONTEXTUAL_PANEL_SAMPLE_MODEL_ENTRYPOINT_MESSAGE" desc="Message appearing as the entry point for the Contextual Panel's sample model, used as a demo of the entrypoint (appears in the omnibox)">
+        Large entry point
+      </message>
+            <message name="IDS_IOS_CONTEXTUAL_PANEL_SAMPLE_MODEL_ENTRYPOINT_IPH_TITLE" desc="The title for the in-product help bubble of the Contextual Panel's sample model entry point, used for demo purposes">
+        Sample bubble
+      </message>
+            <message name="IDS_IOS_CONTEXTUAL_PANEL_SAMPLE_MODEL_ENTRYPOINT_IPH_TEXT" desc="The body text for the in-product help bubble of the Contextual Panel's sample model entry point, used for demo purposes">
+        Sample rich in-product help for the Contextual Panel, which should appear multiple times a day.
+      </message>
       <message name="IDS_IOS_COOKIES_ALLOW_ALL" desc="Label that informs the user that no cookies are blocked">
         Allow All
       </message>
