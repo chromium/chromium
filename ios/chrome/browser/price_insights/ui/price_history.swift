@@ -120,14 +120,6 @@ struct HistoryGraph: View {
   /// The width of the entire chart.
   @State private var chartWidth: CGFloat?
 
-  /// If the user is currently dragging on the graph. This lets the hover code
-  /// know if the user is also dragging for any necessary adjustments.
-  @State private var dragging = false
-
-  //. If the user is currently hovering over the graph. This lets the drag code
-  /// know if the user is also hovering for any necessary adjustments.
-  @State private var hovering = false
-
   /// Color scheme environment value .
   @Environment(\.colorScheme) var colorScheme
 
@@ -225,29 +217,15 @@ struct HistoryGraph: View {
           .onContinuousHover(perform: { phase in
             switch phase {
             case .active(let location):
-              hovering = true
               updateSelectionData(location: location, geometry: geometry, chart: proxy)
             case .ended:
-              hovering = false
-              if dragging {
-                return
-              }
-              selectedDate = nil
+              break
             }
           })
           .gesture(
             DragGesture()
               .onChanged { value in
-                dragging = true
                 updateSelectionData(location: value.location, geometry: geometry, chart: proxy)
-              }
-              .onEnded { _ in
-                dragging = false
-                if hovering {
-                  return
-                }
-                selectedDate = nil
-                UserMetricsUtils.recordAction("Commerce.PriceInsights.HistoryGraphInteraction")
               }
           )
       }
@@ -268,6 +246,11 @@ struct HistoryGraph: View {
       }
     )
     .edgesIgnoringSafeArea(.all)
+    .onAppear {
+      if selectedDate == nil {
+        selectedDate = sortedHistoryDates.last?.key
+      }
+    }
   }
 
   /// Updates the selected data when the given `location` is selected inside the given
