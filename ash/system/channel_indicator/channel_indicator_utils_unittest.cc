@@ -26,16 +26,10 @@ const char16_t* kTestButtonStr = u"Beta 123.45.6789.10";
 
 }  // namespace
 
-class ChannelIndicatorUtilsTest
-    : public AshTestBase,
-      public testing::WithParamInterface</*IsJellyEnabled()=*/bool> {
+class ChannelIndicatorUtilsTest : public AshTestBase {
  public:
   ChannelIndicatorUtilsTest() {
-    if (IsJellyEnabled()) {
-      feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
-    } else {
-      feature_list_.InitAndDisableFeature(chromeos::features::kJelly);
-    }
+    feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
   }
   ChannelIndicatorUtilsTest(const ChannelIndicatorUtilsTest&) = delete;
   ChannelIndicatorUtilsTest& operator=(const ChannelIndicatorUtilsTest&) =
@@ -52,17 +46,11 @@ class ChannelIndicatorUtilsTest
     AshTestBase::SetUp(std::move(shell_delegate));
   }
 
-  bool IsJellyEnabled() const { return GetParam(); }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(Jelly,
-                         ChannelIndicatorUtilsTest,
-                         testing::Bool() /* IsJellyEnabled() */);
-
-TEST_P(ChannelIndicatorUtilsTest, IsDisplayableChannel) {
+TEST_F(ChannelIndicatorUtilsTest, IsDisplayableChannel) {
   EXPECT_FALSE(channel_indicator_utils::IsDisplayableChannel(
       version_info::Channel::UNKNOWN));
   EXPECT_TRUE(channel_indicator_utils::IsDisplayableChannel(
@@ -75,7 +63,7 @@ TEST_P(ChannelIndicatorUtilsTest, IsDisplayableChannel) {
       version_info::Channel::STABLE));
 }
 
-TEST_P(ChannelIndicatorUtilsTest, GetChannelNameStringResourceID) {
+TEST_F(ChannelIndicatorUtilsTest, GetChannelNameStringResourceID) {
   // Non-displayable channel should yield a resource_id of -1.
   EXPECT_EQ(channel_indicator_utils::GetChannelNameStringResourceID(
                 version_info::Channel::STABLE, false),
@@ -97,49 +85,25 @@ TEST_P(ChannelIndicatorUtilsTest, GetChannelNameStringResourceID) {
             IDS_ASH_STATUS_TRAY_CHANNEL_BETA_CHANNEL);
 }
 
-TEST_P(ChannelIndicatorUtilsTest, GetColors) {
-  if (IsJellyEnabled()) {
-    // Non-displayable channel should yield fg/bg `ColorId` of `ui::ColorId()`.
-    EXPECT_EQ(
-        channel_indicator_utils::GetFgColorJelly(version_info::Channel::STABLE),
-        ui::ColorId());
-    EXPECT_EQ(
-        channel_indicator_utils::GetBgColorJelly(version_info::Channel::STABLE),
-        ui::ColorId());
+TEST_F(ChannelIndicatorUtilsTest, GetColors) {
+  // Non-displayable channel should yield fg/bg `ColorId` of `ui::ColorId()`.
+  EXPECT_EQ(
+      channel_indicator_utils::GetFgColorJelly(version_info::Channel::STABLE),
+      ui::ColorId());
+  EXPECT_EQ(
+      channel_indicator_utils::GetBgColorJelly(version_info::Channel::STABLE),
+      ui::ColorId());
 
-    // Displayable channel should yield valid, fg/bg `ColorId`s.
-    EXPECT_EQ(
-        channel_indicator_utils::GetFgColorJelly(version_info::Channel::BETA),
-        cros_tokens::kCrosSysOnProgressContainer);
-    EXPECT_EQ(
-        channel_indicator_utils::GetBgColorJelly(version_info::Channel::BETA),
-        cros_tokens::kCrosSysProgressContainer);
-    return;
-  }
-
-  // Non-displayable channel should yield fg/bg colors of 0.
-  EXPECT_EQ(channel_indicator_utils::GetFgColor(version_info::Channel::STABLE),
-            SkColorSetRGB(0x00, 0x00, 0x00));
-  EXPECT_EQ(channel_indicator_utils::GetBgColor(version_info::Channel::STABLE),
-            SkColorSetRGB(0x00, 0x00, 0x00));
-
-  // Displayable channel should yield valid, nonzero fg/bg colors. Check with
-  // dark mode not enabled first.
-  DarkLightModeController::Get()->SetDarkModeEnabledForTest(false);
-  EXPECT_EQ(channel_indicator_utils::GetFgColor(version_info::Channel::BETA),
-            gfx::kGoogleBlue900);
-  EXPECT_EQ(channel_indicator_utils::GetBgColor(version_info::Channel::BETA),
-            gfx::kGoogleBlue200);
-
-  // Check with dark mode enabled.
-  DarkLightModeController::Get()->SetDarkModeEnabledForTest(true);
-  EXPECT_EQ(channel_indicator_utils::GetFgColor(version_info::Channel::BETA),
-            gfx::kGoogleBlue200);
-  EXPECT_EQ(channel_indicator_utils::GetBgColor(version_info::Channel::BETA),
-            SkColorSetA(gfx::kGoogleBlue300, 0x55));
+  // Displayable channel should yield valid, fg/bg `ColorId`s.
+  EXPECT_EQ(
+      channel_indicator_utils::GetFgColorJelly(version_info::Channel::BETA),
+      cros_tokens::kCrosSysOnProgressContainer);
+  EXPECT_EQ(
+      channel_indicator_utils::GetBgColorJelly(version_info::Channel::BETA),
+      cros_tokens::kCrosSysProgressContainer);
 }
 
-TEST_P(ChannelIndicatorUtilsTest, GetFullReleaseTrackString) {
+TEST_F(ChannelIndicatorUtilsTest, GetFullReleaseTrackString) {
   // Channel is not displayable, no string.
   EXPECT_TRUE(channel_indicator_utils::GetFullReleaseTrackString(
                   version_info::Channel::STABLE)

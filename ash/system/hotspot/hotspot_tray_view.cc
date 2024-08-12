@@ -93,10 +93,6 @@ void HotspotTrayView::HandleLocaleChange() {
 }
 
 void HotspotTrayView::UpdateLabelOrImageViewColor(bool active) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return;
-  }
-
   TrayItemView::UpdateLabelOrImageViewColor(active);
   UpdateIconImage();
 }

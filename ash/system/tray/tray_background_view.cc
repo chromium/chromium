@@ -278,14 +278,6 @@ TrayBackgroundView::TrayBackgroundView(
       std::make_unique<TrayButtonControllerDelegate>(this, catalog_name)));
   SetNotifyEnterExitOnChild(true);
 
-  // Override the settings of inkdrop ripple only since others like Highlight
-  // has been set up in the base class ActionableView.
-  if (!chromeos::features::IsJellyEnabled()) {
-    StyleUtil::SetRippleParams(this, GetBackgroundInsets());
-    views::InkDrop::Get(this)->SetMode(
-        views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
-  }
-
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetInstallFocusRingOnFocus(true);
 
@@ -380,12 +372,6 @@ void TrayBackgroundView::SetRoundedCornerBehavior(
     RoundedCornerBehavior corner_behavior) {
   corner_behavior_ = corner_behavior;
   UpdateBackground();
-
-  // The ink drop doesn't automatically pick up on rounded corner changes, so
-  // we need to manually notify it here.
-  if (!chromeos::features::IsJellyEnabled()) {
-    views::InkDrop::Get(this)->GetInkDrop()->HostSizeChanged(size());
-  }
 }
 
 gfx::RoundedCornersF TrayBackgroundView::GetRoundedCorners() {
@@ -634,11 +620,6 @@ std::unique_ptr<ui::Layer> TrayBackgroundView::RecreateLayer() {
 void TrayBackgroundView::OnThemeChanged() {
   views::Button::OnThemeChanged();
   UpdateBackground();
-  if (!chromeos::features::IsJellyEnabled()) {
-    StyleUtil::ConfigureInkDropAttributes(
-        this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity |
-                  StyleUtil::kHighlightOpacity);
-  }
 }
 
 void TrayBackgroundView::OnVirtualKeyboardVisibilityChanged() {
@@ -805,14 +786,7 @@ void TrayBackgroundView::SetIsActive(bool is_active) {
   }
   is_active_ = is_active;
   UpdateBackgroundColor(is_active);
-  if (chromeos::features::IsJellyEnabled()) {
-    UpdateTrayItemColor(is_active);
-  } else {
-    views::InkDrop::Get(this)->AnimateToState(
-        is_active_ ? views::InkDropState::ACTIVATED
-                   : views::InkDropState::DEACTIVATED,
-        nullptr);
-  }
+  UpdateTrayItemColor(is_active);
 }
 
 views::View* TrayBackgroundView::GetBubbleAnchor() const {
@@ -1054,9 +1028,6 @@ bool TrayBackgroundView::CacheBubbleViewForHide() const {
 }
 
 void TrayBackgroundView::UpdateBackgroundColor(bool active) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return;
-  }
   auto* widget = GetWidget();
   if (!widget) {
     return;
@@ -1077,10 +1048,8 @@ void TrayBackgroundView::UpdateBackgroundColor(bool active) {
 
 void TrayBackgroundView::AddRippleLayer() {
   ripple_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
-  ripple_layer_->SetColor(GetColorProvider()->GetColor(
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnPrimaryContainer)
-          : ui::kColorIcon));
+  ripple_layer_->SetColor(
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnPrimaryContainer));
   layer()->parent()->Add(ripple_layer_.get());
 }
 

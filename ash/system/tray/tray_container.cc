@@ -94,10 +94,6 @@ void TrayContainer::SetSpacingBetweenChildren(int space_dip) {
 void TrayContainer::OnPaint(gfx::Canvas* canvas) {
   views::View::OnPaint(canvas);
 
-  if (!chromeos::features::IsJellyEnabled()) {
-    return;
-  }
-
   // We only add highlight border to the system tray when the shlef background
   // is transparent: 1)the shelf is in tablet mode but not in app mode OR 2)the
   // shelf is in the non-logged in page.
