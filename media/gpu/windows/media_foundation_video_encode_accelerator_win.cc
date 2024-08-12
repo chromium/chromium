@@ -2496,6 +2496,11 @@ void MediaFoundationVideoEncodeAccelerator::MediaEventHandler(
       }
       break;
     }
+    case MEError: {
+      NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
+                         "Media Foundation encountered a critical failure."});
+      break;
+    }
     default:
       break;
   }
