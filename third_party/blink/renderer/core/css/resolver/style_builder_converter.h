@@ -365,8 +365,8 @@ class StyleBuilderConverter {
 
   static ScopedCSSName* ConvertViewTransitionName(StyleResolverState&,
                                                   const CSSValue&);
-  static Vector<AtomicString> ConvertViewTransitionClass(StyleResolverState&,
-                                                         const CSSValue&);
+  static ScopedCSSNameList* ConvertViewTransitionClass(StyleResolverState&,
+                                                       const CSSValue&);
   static StyleViewTransitionGroup ConvertViewTransitionGroup(
       StyleResolverState&,
       const CSSValue&);

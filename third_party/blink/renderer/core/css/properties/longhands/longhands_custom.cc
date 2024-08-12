@@ -6992,12 +6992,16 @@ const CSSValue* ViewTransitionClass::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.ViewTransitionClass().empty()) {
+  const auto& view_transition_class = style.ViewTransitionClass();
+  if (!view_transition_class || view_transition_class->GetNames().empty()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
   CSSValueList* ident_list = CSSValueList::CreateSpaceSeparated();
-  for (const auto& class_name : style.ViewTransitionClass()) {
-    ident_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(class_name));
+  for (const auto& class_name : view_transition_class->GetNames()) {
+    auto* value =
+        MakeGarbageCollected<CSSCustomIdentValue>(class_name->GetName());
+    value->EnsureScopedValue(class_name->GetTreeScope());
+    ident_list->Append(*value);
   }
   return ident_list;
 }

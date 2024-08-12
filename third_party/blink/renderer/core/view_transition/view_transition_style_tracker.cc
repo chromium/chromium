@@ -393,6 +393,23 @@ float DevicePixelRatioFromDocument(Document& document) {
       .device_scale_factor;
 }
 
+Vector<AtomicString> GetDocumentScopedClassList(Element* element) {
+  auto class_list = element->ComputedStyleRef().ViewTransitionClass();
+  if (!class_list || class_list->GetNames().empty() ||
+      class_list->GetNames().front()->GetTreeScope() !=
+          element->GetDocument().GetTreeScope()) {
+    return Vector<AtomicString>();
+  }
+  Vector<AtomicString> result;
+  result.ReserveInitialCapacity(class_list->GetNames().size());
+  for (const auto& scoped_name : class_list->GetNames()) {
+    CHECK(scoped_name->GetTreeScope() == element->GetDocument().GetTreeScope());
+    result.emplace_back(scoped_name->GetName());
+  }
+
+  return result;
+}
+
 }  // namespace
 
 class ViewTransitionStyleTracker::ImageWrapperPseudoElement
@@ -846,8 +863,7 @@ bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
     element_data->target_element = element;
     element_data->element_index = next_index++;
     element_data->old_snapshot_id = snapshot_id;
-    element_data->class_list =
-        element->ComputedStyleRef().ViewTransitionClass();
+    element_data->class_list = GetDocumentScopedClassList(element);
 
     // This is guaranteed to be in order if valid, as transition_names is
     // already sorted.
@@ -1008,8 +1024,7 @@ bool ViewTransitionStyleTracker::Start() {
     DCHECK(!element_data->target_element);
     element_data->target_element = element;
     element_data->new_snapshot_id = snapshot_id;
-    element_data->class_list =
-        element->ComputedStyleRef().ViewTransitionClass();
+    element_data->class_list = GetDocumentScopedClassList(element);
 
     // The parent is guaranteed to be in the list already, as transition_names
     // is sorted by paint order.

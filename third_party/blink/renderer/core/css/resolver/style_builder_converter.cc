@@ -2370,19 +2370,20 @@ ScopedCSSName* StyleBuilderConverter::ConvertViewTransitionName(
   return ConvertNoneOrCustomIdent(state, value);
 }
 
-Vector<AtomicString> StyleBuilderConverter::ConvertViewTransitionClass(
+ScopedCSSNameList* StyleBuilderConverter::ConvertViewTransitionClass(
     StyleResolverState& state,
     const CSSValue& value) {
-  Vector<AtomicString> result;
-  if (auto* id = DynamicTo<CSSIdentifierValue>(value);
-      id && id->GetValueID() == CSSValueID::kNone) {
-    return result;
+  DCHECK(value.IsScopedValue());
+  if (IsA<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
+    return nullptr;
   }
-  for (const Member<const CSSValue>& class_name : To<CSSValueList>(value)) {
-    result.push_back(To<CSSCustomIdentValue>(*class_name).Value());
+  DCHECK(value.IsBaseValueList());
+  HeapVector<Member<const ScopedCSSName>> names;
+  for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
+    names.push_back(ConvertNoneOrCustomIdent(state, *item));
   }
-  CHECK(!result.empty());
-  return result;
+  return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
 }
 
 StyleColor ResolveColorValue(const CSSValue& value,
