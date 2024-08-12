@@ -81,12 +81,13 @@ export class TabOrganizationResultsElement extends CrLitElement {
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('session')) {
-      this.updateScroll_();
-    }
-
     if (changedProperties.has('availableHeight')) {
       this.onAvailableHeightChange_();
+    }
+
+    if (changedProperties.has('session') ||
+        changedProperties.has('multiTabOrganization')) {
+      this.updateScroll_();
     }
   }
 
@@ -123,9 +124,8 @@ export class TabOrganizationResultsElement extends CrLitElement {
     scrollable.classList.toggle('is-scrolled', scrollable.scrollTop > 0);
     scrollable.classList.toggle(
         'scrolled-to-bottom',
-        scrollable.clientHeight === 0 ||
-            scrollable.scrollTop + scrollable.clientHeight >=
-                scrollable.scrollHeight);
+        scrollable.scrollTop + this.getMaxScrollableHeight_() >=
+            scrollable.scrollHeight);
   }
 
   protected missingActiveTab_(): boolean {
@@ -170,10 +170,14 @@ export class TabOrganizationResultsElement extends CrLitElement {
     return mojoString16ToString(organization.name);
   }
 
-  private onAvailableHeightChange_() {
-    const maxHeight = Math.max(
+  private getMaxScrollableHeight_(): number {
+    return Math.max(
         MINIMUM_SCROLLABLE_MAX_HEIGHT,
         (this.availableHeight - NON_SCROLLABLE_VERTICAL_SPACING));
+  }
+
+  private onAvailableHeightChange_() {
+    const maxHeight = this.getMaxScrollableHeight_();
     this.$.scrollable.style.maxHeight = maxHeight + 'px';
     this.updateScroll_();
   }
