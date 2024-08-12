@@ -277,6 +277,9 @@ TEST_F(GeneratedHttpsFirstModePrefTest, UpdatePref_HttpsFirstModeNewSettings) {
 // Check that the management state (e.g. enterprise controlled pref) of the
 // underlying preference is applied to the generated preference.
 TEST_F(GeneratedHttpsFirstModePrefTest, ManagementState) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kHttpsFirstBalancedMode);
+
   GeneratedHttpsFirstModePref pref(profile());
   EXPECT_EQ(pref.GetPrefObject().enforcement, settings_api::Enforcement::kNone);
   EXPECT_EQ(pref.GetPrefObject().controlled_by,
@@ -306,4 +309,88 @@ TEST_F(GeneratedHttpsFirstModePrefTest, ManagementState) {
                              static_cast<int>(HttpsFirstModeSetting::kDisabled))
                              .get()),
             settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
+}
+
+// Variant of ManagementState, but with the Balanced Mode feature flag enabled.
+// The full set of Settings are available (Full, Balanced, and Disabled) and
+// both underlying prefs can be controlled by enetprise policy.
+TEST_F(GeneratedHttpsFirstModePrefTest,
+       ManagementState_HttpsFirstModeNewSettings) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpsFirstBalancedMode);
+
+  GeneratedHttpsFirstModePref pref(profile());
+  EXPECT_EQ(pref.GetPrefObject().enforcement, settings_api::Enforcement::kNone);
+  EXPECT_EQ(pref.GetPrefObject().controlled_by,
+            settings_api::ControlledBy::kNone);
+
+  // Emulate a recommended "force_enabled" policy value, where the fully enabled
+  // pref has a recommended value of "true".
+  prefs()->SetRecommendedPref(prefs::kHttpsOnlyModeEnabled,
+                              std::make_unique<base::Value>(true));
+  prefs()->SetRecommendedPref(prefs::kHttpsFirstBalancedMode,
+                              std::make_unique<base::Value>(false));
+  EXPECT_EQ(pref.GetPrefObject().enforcement,
+            settings_api::Enforcement::kRecommended);
+  EXPECT_EQ(static_cast<HttpsFirstModeSetting>(
+                pref.GetPrefObject().recommended_value->GetInt()),
+            HttpsFirstModeSetting::kEnabledFull);
+
+  // Emulate a recommended "force_balanced_enabled" policy value, where the
+  // recommended prefs have fully enabled as false and balanced as true.
+  prefs()->SetRecommendedPref(prefs::kHttpsOnlyModeEnabled,
+                              std::make_unique<base::Value>(false));
+  prefs()->SetRecommendedPref(prefs::kHttpsFirstBalancedMode,
+                              std::make_unique<base::Value>(true));
+  EXPECT_EQ(pref.GetPrefObject().enforcement,
+            settings_api::Enforcement::kRecommended);
+  EXPECT_EQ(static_cast<HttpsFirstModeSetting>(
+                pref.GetPrefObject().recommended_value->GetInt()),
+            HttpsFirstModeSetting::kEnabledBalanced);
+
+  // Emulate an enforced "force_enabled" policy value.
+  prefs()->SetManagedPref(prefs::kHttpsOnlyModeEnabled,
+                          std::make_unique<base::Value>(true));
+  prefs()->SetManagedPref(prefs::kHttpsFirstBalancedMode,
+                          std::make_unique<base::Value>(false));
+  EXPECT_EQ(pref.GetPrefObject().enforcement,
+            settings_api::Enforcement::kEnforced);
+  EXPECT_EQ(pref.GetPrefObject().controlled_by,
+            settings_api::ControlledBy::kDevicePolicy);
+  EXPECT_EQ(
+      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
+      HttpsFirstModeSetting::kEnabledFull);
+
+  // Emulate an enforced "force_balanced_enabled" policy value.
+  prefs()->SetManagedPref(prefs::kHttpsOnlyModeEnabled,
+                          std::make_unique<base::Value>(false));
+  prefs()->SetManagedPref(prefs::kHttpsFirstBalancedMode,
+                          std::make_unique<base::Value>(true));
+  EXPECT_EQ(pref.GetPrefObject().enforcement,
+            settings_api::Enforcement::kEnforced);
+  EXPECT_EQ(pref.GetPrefObject().controlled_by,
+            settings_api::ControlledBy::kDevicePolicy);
+  EXPECT_EQ(
+      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
+      HttpsFirstModeSetting::kEnabledBalanced);
+
+  // Check that the generated pref cannot be changed when the backing pref is
+  // managed.
+  EXPECT_EQ(pref.SetPref(std::make_unique<base::Value>(
+                             static_cast<int>(HttpsFirstModeSetting::kDisabled))
+                             .get()),
+            settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
+
+  // Emulate an enforced "disallowed" policy value.
+  prefs()->SetManagedPref(prefs::kHttpsOnlyModeEnabled,
+                          std::make_unique<base::Value>(false));
+  prefs()->SetManagedPref(prefs::kHttpsFirstBalancedMode,
+                          std::make_unique<base::Value>(false));
+  EXPECT_EQ(pref.GetPrefObject().enforcement,
+            settings_api::Enforcement::kEnforced);
+  EXPECT_EQ(pref.GetPrefObject().controlled_by,
+            settings_api::ControlledBy::kDevicePolicy);
+  EXPECT_EQ(
+      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
+      HttpsFirstModeSetting::kDisabled);
 }
