@@ -25,8 +25,7 @@ class PageSpecificContentSettingsTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
-        std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-            web_contents()));
+        std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
 
     permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
         web_contents());

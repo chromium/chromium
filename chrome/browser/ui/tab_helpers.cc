@@ -346,8 +346,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   // observer list.
   content_settings::PageSpecificContentSettings::CreateForWebContents(
       web_contents,
-      std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-          web_contents));
+      std::make_unique<PageSpecificContentSettingsDelegate>(web_contents));
 
   // RedirectChainDetector comes before common tab helpers since
   // DIPSWebContentsObserver has it as a dependency.

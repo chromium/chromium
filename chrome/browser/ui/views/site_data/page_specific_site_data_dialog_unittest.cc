@@ -85,8 +85,7 @@ class PageSpecificSiteDataDialogUnitTest
     NavigateAndCommit(GURL(kCurrentUrl));
     content_settings::PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
-        std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-            web_contents()));
+        std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
 
     profile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,

@@ -658,7 +658,7 @@ void ChromeContentBrowserClient::BindHostReceiverForRenderer(
           receiver.As<content_settings::mojom::ContentSettingsManager>()) {
     content_settings::ContentSettingsManagerImpl::Create(
         render_process_host, std::move(host_receiver),
-        std::make_unique<chrome::ContentSettingsManagerDelegate>());
+        std::make_unique<ContentSettingsManagerDelegate>());
     return;
   }
 

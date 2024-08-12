@@ -474,7 +474,7 @@ void BackgroundLoaderOffliner::ResetLoader() {
       Profile::FromBrowserContext(browser_context_));
   content_settings::PageSpecificContentSettings::CreateForWebContents(
       loader_->web_contents(),
-      std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
+      std::make_unique<PageSpecificContentSettingsDelegate>(
           loader_->web_contents()));
 }
 

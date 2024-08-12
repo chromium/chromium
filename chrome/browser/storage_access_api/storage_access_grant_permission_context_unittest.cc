@@ -125,8 +125,7 @@ class StorageAccessGrantPermissionContextTest
 
     content_settings::PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
-        std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-            web_contents()));
+        std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
 
     CHECK_DEREF(DIPSService::Get(browser_context()))
         .RecordInteractionForTesting(GetRequesterURL());

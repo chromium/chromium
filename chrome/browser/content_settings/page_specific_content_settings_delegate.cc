@@ -47,8 +47,6 @@
 
 using content_settings::PageSpecificContentSettings;
 
-namespace chrome {
-
 PageSpecificContentSettingsDelegate::PageSpecificContentSettingsDelegate(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents) {
@@ -313,5 +311,3 @@ void PageSpecificContentSettingsDelegate::PrimaryPageChanged(
     content::Page& page) {
   ClearPendingProtocolHandler();
 }
-
-}  // namespace chrome
