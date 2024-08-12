@@ -18,10 +18,7 @@
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_client.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/browser_state/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_service_client.h"
@@ -112,20 +109,11 @@ bool IOSChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive() {
 
 // static
 bool IOSChromeMetricsServicesManagerClient::AreIncognitoTabsPresent() {
-  std::vector<ChromeBrowserState*> browser_states =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
-
-  for (ChromeBrowserState* browser_state : browser_states) {
-    BrowserList* browser_list =
-        BrowserListFactory::GetForBrowserState(browser_state);
-    for (Browser* browser :
-         browser_list->BrowsersOfType(BrowserList::BrowserType::kIncognito)) {
-      if (!browser->GetWebStateList()->empty()) {
-        return true;
-      }
-    }
+  // The IncognitoSessionTracker may be null during unit tests.
+  if (IncognitoSessionTracker* tracker =
+          GetApplicationContext()->GetIncognitoSessionTracker()) {
+    return tracker->HasIncognitoSessionTabs();
   }
+
   return false;
 }

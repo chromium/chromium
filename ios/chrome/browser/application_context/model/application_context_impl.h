@@ -85,8 +85,7 @@ class ApplicationContextImpl : public ApplicationContext {
   id<SingleSignOnService> GetSingleSignOnService() override;
   SystemIdentityManager* GetSystemIdentityManager() override;
   AccountProfileMapper* GetAccountProfileMapper() override;
-  segmentation_platform::OTRWebStateObserver*
-  GetSegmentationOTRWebStateObserver() override;
+  IncognitoSessionTracker* GetIncognitoSessionTracker() override;
   PushNotificationService* GetPushNotificationService() override;
   UpgradeCenter* GetUpgradeCenter() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
@@ -159,9 +158,7 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<SystemIdentityManager> system_identity_manager_;
   std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
 
-  std::unique_ptr<segmentation_platform::OTRWebStateObserver>
-      segmentation_otr_web_state_observer_;
-
+  std::unique_ptr<IncognitoSessionTracker> incognito_session_tracker_;
   std::unique_ptr<PushNotificationService> push_notification_service_;
 
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;

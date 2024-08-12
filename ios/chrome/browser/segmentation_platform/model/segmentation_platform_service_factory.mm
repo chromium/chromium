@@ -28,12 +28,12 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/segmentation_platform/model/otr_web_state_observer.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_config.h"
 #import "ios/chrome/browser/segmentation_platform/model/ukm_database_client.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/incognito_session_tracker.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -44,8 +44,8 @@ namespace {
 const base::FilePath::CharType kSegmentationPlatformStorageDirName[] =
     FILE_PATH_LITERAL("Segmentation Platform");
 
-const char kSegmentationPlatformProfileObserverKey[] =
-    "segmentation_platform_profile_observer";
+const char kSegmentationPlatformServiceSubscription[] =
+    "segmentation_platform_incognito_tracker_subscription";
 const char kSegmentationDeviceSwitcherUserDataKey[] =
     "segmentation_device_switcher_data";
 const char kSegmentationTabRankDispatcherUserDataKey[] =
@@ -73,36 +73,24 @@ std::unique_ptr<processing::InputDelegateHolder> SetUpInputDelegates(
   return input_delegate_holder;
 }
 
-// Observes existance of Incognito tabs in the application.
-class IncognitoObserver : public OTRWebStateObserver::ObserverClient,
-                          public base::SupportsUserData::Data {
+// Allows attaching a base::CallbackListSubscription as to a
+// SegmentationPlatformService instance.
+class SegmentationPlatformServiceSubscription
+    : public base::SupportsUserData::Data {
  public:
-  IncognitoObserver(SegmentationPlatformService* service,
-                    OTRWebStateObserver* otr_observer)
-      : service_(service) {
-    observation_.Observe(otr_observer);
-  }
-
-  // OTRWebStateObserver::ObserverClient:
-  void OnOTRWebStateCountChanged(bool otr_state_exists) override {
-    const bool enable_metrics = !otr_state_exists;
-    service_->EnableMetrics(enable_metrics);
-  }
+  SegmentationPlatformServiceSubscription(
+      base::CallbackListSubscription subscription)
+      : subscription_(std::move(subscription)) {}
 
  private:
-  base::ScopedObservation<OTRWebStateObserver,
-                          OTRWebStateObserver::ObserverClient>
-      observation_{this};
-  const raw_ptr<SegmentationPlatformService> service_;
+  base::CallbackListSubscription subscription_;
 };
 
 std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
     web::BrowserState* context) {
+  DCHECK(context);
+  DCHECK(!context->IsOffTheRecord());
   if (!base::FeatureList::IsEnabled(features::kSegmentationPlatformFeature)) {
-    return nullptr;
-  }
-
-  if (!context || context->IsOffTheRecord()) {
     return nullptr;
   }
 
@@ -157,14 +145,22 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   auto service =
       std::make_unique<SegmentationPlatformServiceImpl>(std::move(params));
 
-  auto* otr_observer =
-      GetApplicationContext()->GetSegmentationOTRWebStateObserver();
-  // Can be null in tests.
-  if (otr_observer) {
+  // The IncognitoSessionTracker can be null during tests.
+  if (IncognitoSessionTracker* tracker =
+          GetApplicationContext()->GetIncognitoSessionTracker()) {
+    // Usage of base::Unretained(...) is safe since the callback subscription
+    // is owned by the SegmentationPlatformServiceSubscription attached to the
+    // SegmentationPlatformService and deleted before the object itself.
     service->SetUserData(
-        kSegmentationPlatformProfileObserverKey,
-        std::make_unique<IncognitoObserver>(service.get(), otr_observer));
+        kSegmentationPlatformServiceSubscription,
+        std::make_unique<SegmentationPlatformServiceSubscription>(
+            tracker->RegisterCallback(base::BindRepeating(
+                [](SegmentationPlatformService* service, bool has_otr_tabs) {
+                  service->EnableMetrics(!has_otr_tabs);
+                },
+                base::Unretained(service.get())))));
   }
+
   service->SetUserData(
       kSegmentationDeviceSwitcherUserDataKey,
       std::make_unique<DeviceSwitcherResultDispatcher>(

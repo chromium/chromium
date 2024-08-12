@@ -12,6 +12,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -24,7 +25,6 @@
 #include "components/ukm/observers/history_delete_observer.h"
 #include "components/ukm/observers/ukm_consent_state_observer.h"
 #include "components/variations/synthetic_trial_registry.h"
-#include "ios/chrome/browser/metrics/model/incognito_web_state_observer.h"
 #include "ios/web/public/deprecated/global_web_state_observer.h"
 
 class ChromeBrowserState;
@@ -46,8 +46,7 @@ class UkmService;
 
 // IOSChromeMetricsServiceClient provides an implementation of
 // MetricsServiceClient that depends on //ios/chrome/.
-class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
-                                      public metrics::MetricsServiceClient,
+class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
                                       public ukm::HistoryDeleteObserver,
                                       public ukm::UkmConsentStateObserver,
                                       public web::GlobalWebStateObserver {
@@ -100,10 +99,6 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   // web::GlobalWebStateObserver:
   void WebStateDidStartLoading(web::WebState* web_state) override;
   void WebStateDidStopLoading(web::WebState* web_state) override;
-
-  // IncognitoWebStateObserver:
-  void OnIncognitoWebStateAdded() override;
-  void OnIncognitoWebStateRemoved() override;
 
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
 
@@ -184,6 +179,10 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   // Subscription for receiving callbacks that a URL was opened from the
   // omnibox.
   base::CallbackListSubscription omnibox_url_opened_subscription_;
+
+  // Subscription for receiving callbacks when the number of incognito tabs
+  // open in the application transition from 0 to 1 or 1 to 0.
+  base::CallbackListSubscription incognito_session_tracker_subscription_;
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_MODEL_IOS_CHROME_METRICS_SERVICE_CLIENT_H_

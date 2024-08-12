@@ -52,10 +52,6 @@ namespace os_crypt_async {
 class OSCryptAsync;
 }
 
-namespace segmentation_platform {
-class OTRWebStateObserver;
-}
-
 namespace ukm {
 class UkmRecorder;
 }
@@ -67,6 +63,7 @@ class VariationsService;
 class AccountProfileMapper;
 class ApplicationContext;
 class BrowserPolicyConnectorIOS;
+class IncognitoSessionTracker;
 class IOSChromeIOThread;
 class PrefService;
 
@@ -185,9 +182,8 @@ class ApplicationContext {
   // Returns the AccountProfileMapper instance used by this application.
   virtual AccountProfileMapper* GetAccountProfileMapper() = 0;
 
-  // Returns the application's OTRWebStateObserver for segmentation platform.
-  virtual segmentation_platform::OTRWebStateObserver*
-  GetSegmentationOTRWebStateObserver() = 0;
+  // Returns the application's IncognitoSessionTracker instance.
+  virtual IncognitoSessionTracker* GetIncognitoSessionTracker() = 0;
 
   // Returns the application's PushNotificationService that handles all
   // interactions with the push notification server

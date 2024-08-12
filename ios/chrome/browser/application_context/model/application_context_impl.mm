@@ -56,9 +56,9 @@
 #import "ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.h"
 #import "ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
-#import "ios/chrome/browser/segmentation_platform/model/otr_web_state_observer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -189,13 +189,6 @@ void ApplicationContextImpl::PreMainMessageLoopRun() {
 void ApplicationContextImpl::StartTearDown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   tearing_down_ = true;
-
-  // Destroy the segmentation OTR observer before
-  // `chrome_browser_state_manager_`. `segmentation_otr_web_state_observer_` may
-  // not be initialized when segmentation platform feature is disabled
-  if (segmentation_otr_web_state_observer_) {
-    segmentation_otr_web_state_observer_->TearDown();
-  }
 
   // We need to destroy the MetricsServicesManager and NetworkTimeTracker before
   // the IO thread gets destroyed, since the destructor can call the URLFetcher
@@ -531,15 +524,13 @@ AccountProfileMapper* ApplicationContextImpl::GetAccountProfileMapper() {
   return account_profile_mapper_.get();
 }
 
-segmentation_platform::OTRWebStateObserver*
-ApplicationContextImpl::GetSegmentationOTRWebStateObserver() {
+IncognitoSessionTracker* ApplicationContextImpl::GetIncognitoSessionTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!segmentation_otr_web_state_observer_) {
-    segmentation_otr_web_state_observer_ =
-        std::make_unique<segmentation_platform::OTRWebStateObserver>(
-            GetChromeBrowserStateManager());
+  if (!incognito_session_tracker_) {
+    incognito_session_tracker_ = std::make_unique<IncognitoSessionTracker>(
+        GetChromeBrowserStateManager());
   }
-  return segmentation_otr_web_state_observer_.get();
+  return incognito_session_tracker_.get();
 }
 
 PushNotificationService* ApplicationContextImpl::GetPushNotificationService() {

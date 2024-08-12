@@ -80,6 +80,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/browser_state/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -138,6 +139,17 @@ IOSChromeMetricsServiceClient::IOSChromeMetricsServiceClient(
       synthetic_trial_registry_(synthetic_trial_registry),
       stability_metrics_provider_(nullptr) {
   notification_listeners_active_ = RegisterForNotifications();
+
+  // The IncognitoSessionTracker may be null during unit tests.
+  if (IncognitoSessionTracker* tracker =
+          GetApplicationContext()->GetIncognitoSessionTracker()) {
+    // Using base::Unretained(this) is safe since destroying the subscription
+    // will invalidate the callback and the subscription is owned by this.
+    incognito_session_tracker_subscription_ =
+        tracker->RegisterCallback(base::IgnoreArgs<bool>(base::BindRepeating(
+            &IOSChromeMetricsServiceClient::UpdateRunningServices,
+            base::Unretained(this))));
+  }
 }
 
 IOSChromeMetricsServiceClient::~IOSChromeMetricsServiceClient() {
@@ -556,16 +568,6 @@ void IOSChromeMetricsServiceClient::OnUkmAllowedStateChanged(
   // Broadcast UKM consent state change.
   ukm_service_->OnUkmAllowedStateChanged(consent_state);
 
-  // Signal service manager to enable/disable UKM based on new state.
-  UpdateRunningServices();
-}
-
-void IOSChromeMetricsServiceClient::OnIncognitoWebStateAdded() {
-  // Signal service manager to enable/disable UKM based on new state.
-  UpdateRunningServices();
-}
-
-void IOSChromeMetricsServiceClient::OnIncognitoWebStateRemoved() {
   // Signal service manager to enable/disable UKM based on new state.
   UpdateRunningServices();
 }

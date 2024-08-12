@@ -285,8 +285,8 @@ AccountProfileMapper* TestingApplicationContext::GetAccountProfileMapper() {
   return account_profile_mapper_.get();
 }
 
-segmentation_platform::OTRWebStateObserver*
-TestingApplicationContext::GetSegmentationOTRWebStateObserver() {
+IncognitoSessionTracker*
+TestingApplicationContext::GetIncognitoSessionTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return nullptr;
 }
