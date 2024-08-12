@@ -118,7 +118,7 @@ public class DisplayCutoutTabHelper implements UserData {
 
         @Override
         public boolean isDrawEdgeToEdgeEnabled() {
-            return EdgeToEdgeUtils.isLegacyWebsiteOptInEnabled();
+            return EdgeToEdgeUtils.isEnabled();
         }
     }
 

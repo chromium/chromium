@@ -193,6 +193,9 @@ public class EdgeToEdgeUtils {
         if (tab == null || tab.isNativePage()) {
             return ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled();
         }
+        if (!isLegacyWebsiteOptInEnabled()) {
+            return false;
+        }
         return value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT;
     }
 
