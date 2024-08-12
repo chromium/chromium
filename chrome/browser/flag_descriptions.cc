@@ -2429,9 +2429,8 @@ const char kMojoLinuxChannelSharedMemDescription[] =
     "If enabled Mojo on Linux based platforms can use shared memory as an "
     "alternate channel for most messages.";
 
-const char kMostVisitedTilesSelectExistingTabName[] =
-    "Most Visited Tiles Select Existing Tabs";
-const char kMostVisitedTilesSelectExistingTabDescription[] =
+const char kMostVisitedTilesReselectName[] = "Most Visited Tiles Reselect";
+const char kMostVisitedTilesReselectDescription[] =
     "When MV tiles is clicked, scans for a tab with a matching URL. "
     "If found, selects the tab and closes the NTP. Else opens into NTP.";
 

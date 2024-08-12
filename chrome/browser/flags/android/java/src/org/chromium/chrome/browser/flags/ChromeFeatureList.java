@@ -356,8 +356,7 @@ public abstract class ChromeFeatureList {
     public static final String MAYLAUNCHURL_USES_SEPARATE_STORAGE_PARTITION =
             "MayLaunchUrlUsesSeparateStoragePartition";
     public static final String MESSAGES_FOR_ANDROID_ADS_BLOCKED = "MessagesForAndroidAdsBlocked";
-    public static final String MOST_VISITED_TILES_SELECT_EXISTING_TAB =
-            "MostVisitedTilesSelectExistingTab";
+    public static final String MOST_VISITED_TILES_RESELECT = "MostVisitedTilesReselect";
     public static final String MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP =
             "MultiInstanceApplicationStatusCleanup";
     public static final String NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND =
@@ -633,8 +632,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sLogoPolishAnimationKillSwitch =
             newCachedFlag(LOGO_POLISH_ANIMATION_KILL_SWITCH, true);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
-    public static final CachedFlag sMostVisitedTilesSelectExistingTab =
-            newCachedFlag(MOST_VISITED_TILES_SELECT_EXISTING_TAB, false);
+    public static final CachedFlag sMostVisitedTilesReselect =
+            newCachedFlag(MOST_VISITED_TILES_RESELECT, false);
     public static final CachedFlag sMultiInstanceApplicationStatusCleanup =
             newCachedFlag(MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP, false);
     public static final CachedFlag sNavBarColorMatchesTabBackground =
@@ -763,7 +762,7 @@ public abstract class ChromeFeatureList {
                     sLogoPolish,
                     sLogoPolishAnimationKillSwitch,
                     sMagicStackAndroid,
-                    sMostVisitedTilesSelectExistingTab,
+                    sMostVisitedTilesReselect,
                     sMultiInstanceApplicationStatusCleanup,
                     sNavBarColorMatchesTabBackground,
                     sNewTabPageAndroidTriggerForPrerender2,

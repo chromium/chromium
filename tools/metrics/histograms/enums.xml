@@ -20098,6 +20098,7 @@ from previous Chrome versions.
   <int value="-118897826" label="IntensiveWakeUpThrottling:enabled"/>
   <int value="-116692797" label="HTTPAuthCommittedInterstitials:enabled"/>
   <int value="-115834377" label="EnableUnifiedMultiDeviceSetup:disabled"/>
+  <int value="-115541486" label="MostVisitedTilesReselect:enabled"/>
   <int value="-115261987" label="DesksTemplates:disabled"/>
   <int value="-114925604" label="WebAppSyncGeneratedIconBackgroundFix:enabled"/>
   <int value="-114807608" label="TerminalSystemApp:disabled"/>
@@ -22450,6 +22451,7 @@ from previous Chrome versions.
   <int value="870299555" label="ThreadingOptimizationsOnIo:enabled"/>
   <int value="870568550" label="LimitAltTabToActiveDesk:disabled"/>
   <int value="870664435" label="DownloadProgressInfoBar:disabled"/>
+  <int value="871071097" label="MostVisitedTilesReselect:disabled"/>
   <int value="871435095" label="EnableAggregatedMlAppRanking:disabled"/>
   <int value="871713352" label="ImprovedLanguageSettings:enabled"/>
   <int value="872509587" label="ArcWindowPredictor:enabled"/>

@@ -81,7 +81,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
             recordOpenedTile(item);
         }
 
-        if (ChromeFeatureList.sMostVisitedTilesSelectExistingTab.isEnabled()) {
+        if (ChromeFeatureList.sMostVisitedTilesReselect.isEnabled()) {
             if (mNavigationDelegate.maybeSelectTabWithUrl(url)) {
                 return;
             }

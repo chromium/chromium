@@ -82,8 +82,8 @@ public class TileGroupDelegateImplUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_SELECT_EXISTING_TAB})
-    public void testOpenMostVisitedItem_DisableSelectExisting() {
+    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
+    public void testOpenMostVisitedItem_DisableReselect() {
         GURL url = JUnitTestGURLs.URL_1;
         mTileGroupDelegateImpl.openMostVisitedItem(
                 WindowOpenDisposition.CURRENT_TAB, makeTile("Foo", url, 0));
@@ -95,8 +95,8 @@ public class TileGroupDelegateImplUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_SELECT_EXISTING_TAB})
-    public void testOpenMostVisitedItem_EnableSelectExistingTriggered() {
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
+    public void testOpenMostVisitedItem_EnableReselectTriggered() {
         GURL url = JUnitTestGURLs.URL_1;
         // Attempt to select tab with `url` but fail.
         doReturn(false).when(mNavigationDelegate).maybeSelectTabWithUrl(anyString());
@@ -110,8 +110,8 @@ public class TileGroupDelegateImplUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_SELECT_EXISTING_TAB})
-    public void testOpenMostVisitedItem_EnableSelectExistingFallback() {
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
+    public void testOpenMostVisitedItem_EnableReselectFallback() {
         GURL url = JUnitTestGURLs.URL_1;
         // Attempt to select tab with `url` and succeed.
         doReturn(true).when(mNavigationDelegate).maybeSelectTabWithUrl(anyString());

@@ -7453,11 +7453,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDelayTempStripRemovalDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDelayTempStripRemoval)},
 
-    {"enable-most-visited-tiles-select-existing-tab",
-     flag_descriptions::kMostVisitedTilesSelectExistingTabName,
-     flag_descriptions::kMostVisitedTilesSelectExistingTabDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kMostVisitedTilesSelectExistingTab)},
+    {"enable-most-visited-tiles-reselect",
+     flag_descriptions::kMostVisitedTilesReselectName,
+     flag_descriptions::kMostVisitedTilesReselectDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kMostVisitedTilesReselect)},
 
     {"toolbar-phone-cleanup", flag_descriptions::kToolbarPhoneCleanupName,
      flag_descriptions::kToolbarPhoneCleanupDescription, kOsAndroid,

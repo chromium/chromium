@@ -3597,7 +3597,7 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-most-visited-tiles-select-existing-tab",
+    "name": "enable-most-visited-tiles-reselect",
     "owners": [ "clank-start@google.com", "huangs@google.com" ],
     "expiry_milestone": 135
   },
