@@ -323,6 +323,7 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
     if (desk_preview_->HasFocus() || desk_action_view_->ChildHasFocus()) {
       return true;
     }
+
     return desk_profile_button_ && desk_profile_button_->HasFocus();
   };
 

@@ -16,6 +16,7 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -244,21 +245,34 @@ views::MenuItemView* DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
     CHECK(!bar_view->IsZeroState());
   }
 
-  // Hover over the mini view to show the context menu button.
   CHECK_LE(index, bar_view->mini_views().size());
   DeskMiniView* mini_view = bar_view->mini_views()[index];
-  event_generator.MoveMouseToInHost(
-      mini_view->GetBoundsInScreen().CenterPoint());
 
-  // The menu button container should be visible, along with the button itself.
-  CHECK(mini_view->desk_action_view()->GetVisible());
-  DeskActionButton* menu_button =
-      mini_view->desk_action_view()->context_menu_button();
-  CHECK(menu_button);
-  CHECK(menu_button->GetVisible());
+  // If we have previously been using touch controls, open the menu using a long
+  // press on the mini view. Otherwise, hover over the mini view to get the
+  // action buttons to show, then click the menu button.
+  if (!aura::client::GetCursorClient(root)->IsCursorVisible()) {
+    // Long press until the context menu opens.
+    LongGestureTap(
+        mini_view->desk_action_view()->GetBoundsInScreen().CenterPoint(),
+        &event_generator);
+  } else {
+    // Hover over the mini view to show the context menu button.
+    event_generator.MoveMouseToInHost(
+        mini_view->GetBoundsInScreen().CenterPoint());
 
-  // Click the button to open the context menu.
-  click_on_view(menu_button);
+    // The menu button container should be visible, along with the button
+    // itself.
+    CHECK(mini_view->desk_action_view()->GetVisible());
+    DeskActionButton* menu_button =
+        mini_view->desk_action_view()->context_menu_button();
+    CHECK(menu_button);
+    CHECK(menu_button->GetVisible());
+
+    // Click the button to open the context menu.
+    click_on_view(menu_button);
+  }
+
   DeskActionContextMenu* menu = mini_view->context_menu();
   CHECK(menu);
   return GetDeskActionContextMenuItem(menu, command_id);
