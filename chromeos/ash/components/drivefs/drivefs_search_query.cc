@@ -10,7 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/ash/components/drivefs/drivefs_search.h"
+#include "chromeos/ash/components/drivefs/drivefs_search_query_delegate.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -28,9 +28,9 @@ bool IsCloudSharedWithMeQuery(const drivefs::mojom::QueryParametersPtr& query) {
 }  // namespace
 
 DriveFsSearchQuery::DriveFsSearchQuery(
-    base::WeakPtr<DriveFsSearch> parent_search,
+    base::WeakPtr<DriveFsSearchQueryDelegate> delegate,
     mojom::QueryParametersPtr query)
-    : parent_search_(std::move(parent_search)), query_(std::move(query)) {
+    : delegate_(std::move(delegate)), query_(std::move(query)) {
   Init();
 }
 
@@ -43,33 +43,33 @@ mojom::QueryParameters::QuerySource DriveFsSearchQuery::source() {
 void DriveFsSearchQuery::Init() {
   remote_.reset();
 
-  if (parent_search_ == nullptr) {
+  if (delegate_ == nullptr) {
     return;
   }
 
   // The only cacheable query is 'shared with me'.
   if (IsCloudSharedWithMeQuery(query_)) {
     // Check if we should have the response cached.
-    if (parent_search_->WithinQueryCacheTtl()) {
+    if (delegate_->WithinQueryCacheTtl()) {
       query_->query_source =
           drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
     }
   }
 
-  if (parent_search_->IsOffline() &&
+  if (delegate_->IsOffline() &&
       query_->query_source !=
           drivefs::mojom::QueryParameters::QuerySource::kLocalOnly) {
     // No point trying cloud query if we know we are offline.
     AdjustQueryForOffline();
   }
 
-  parent_search_->StartMojoSearchQuery(remote_.BindNewPipeAndPassReceiver(),
-                                       query_.Clone());
+  delegate_->StartMojoSearchQuery(remote_.BindNewPipeAndPassReceiver(),
+                                  query_.Clone());
 }
 
 void DriveFsSearchQuery::GetNextPage(
     mojom::SearchQuery::GetNextPageCallback callback) {
-  // `remote_` might not be bound if `parent_search_` was null when `Init()` was
+  // `remote_` might not be bound if `delegate_` was null when `Init()` was
   // called.
   if (remote_.is_bound()) {
     remote_->GetNextPage(base::BindOnce(&DriveFsSearchQuery::OnGetNextPage,
@@ -95,10 +95,10 @@ void DriveFsSearchQuery::OnGetNextPage(
     return;
   }
 
-  if (parent_search_ != nullptr && error == drive::FILE_ERROR_OK &&
+  if (delegate_ != nullptr && error == drive::FILE_ERROR_OK &&
       IsCloudSharedWithMeQuery(query_)) {
     // Mark that DriveFS should have cached the required info.
-    parent_search_->UpdateLastSharedWithMeResponse();
+    delegate_->UpdateLastSharedWithMeResponse();
   }
 
   std::move(callback).Run(error, std::move(items));

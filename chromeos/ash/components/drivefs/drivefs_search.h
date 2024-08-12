@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/drivefs/drivefs_search_query_delegate.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -20,7 +21,8 @@ class NetworkConnectionTracker;
 namespace drivefs {
 
 // Handles search queries to DriveFS.
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSearch {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSearch
+    : public DriveFsSearchQueryDelegate {
  public:
   DriveFsSearch(mojom::DriveFs* drivefs,
                 network::NetworkConnectionTracker* network_connection_tracker,
@@ -29,7 +31,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSearch {
   DriveFsSearch(const DriveFsSearch&) = delete;
   DriveFsSearch& operator=(const DriveFsSearch&) = delete;
 
-  ~DriveFsSearch();
+  ~DriveFsSearch() override;
 
   // Starts DriveFs search query and returns whether it will be
   // performed localy or remotely. Assumes DriveFS to be mounted.
@@ -37,16 +39,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSearch {
       mojom::QueryParametersPtr query,
       mojom::SearchQuery::GetNextPageCallback callback);
 
-  // Used by `DriveFsSearchQuery`.
-  // TODO: b/357980197 - Move these out to a delegate interface, and consider
-  // abstracting away the offline / cached query adjustment.
-  bool IsOffline();
+  // `DriveFsSearchQueryDelegate` overrides:
+  bool IsOffline() override;
 
-  void UpdateLastSharedWithMeResponse();
-  bool WithinQueryCacheTtl();
+  void UpdateLastSharedWithMeResponse() override;
+  bool WithinQueryCacheTtl() override;
 
   void StartMojoSearchQuery(mojo::PendingReceiver<mojom::SearchQuery> query,
-                            mojom::QueryParametersPtr query_params);
+                            mojom::QueryParametersPtr query_params) override;
 
  private:
   const raw_ptr<mojom::DriveFs, DanglingUntriaged> drivefs_;

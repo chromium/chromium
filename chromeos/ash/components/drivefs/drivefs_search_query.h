@@ -16,17 +16,15 @@
 
 namespace drivefs {
 
-class DriveFsSearch;
+class DriveFsSearchQueryDelegate;
 
 // A single search query to DriveFS.
 // Destroy this class to stop any searches.
 //
 // Currently only used by `DriveFsSearch`.
-// TODO: b/357980197 - Add tests for this after `parent_search` is abstracted to
-// a delegate interface.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSearchQuery {
  public:
-  DriveFsSearchQuery(base::WeakPtr<DriveFsSearch> parent_search,
+  DriveFsSearchQuery(base::WeakPtr<DriveFsSearchQueryDelegate> delegate,
                      mojom::QueryParametersPtr query);
   DriveFsSearchQuery(const DriveFsSearchQuery&) = delete;
   DriveFsSearchQuery& operator=(const DriveFsSearchQuery&) = delete;
@@ -58,7 +56,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSearchQuery {
   // Adjusts `query_` for an offline search. Does not re-initialize `remote_`.
   void AdjustQueryForOffline();
 
-  base::WeakPtr<DriveFsSearch> parent_search_;
+  base::WeakPtr<DriveFsSearchQueryDelegate> delegate_;
 
   mojom::QueryParametersPtr query_;
 
