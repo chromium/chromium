@@ -28,6 +28,7 @@ class AuthenticationExtensionsPRFValues;
 class AuthenticatorSelectionCriteria;
 class CableAuthenticationData;
 class Credential;
+class CurrentUserDetailsOptions;
 class DigitalCredentialProvider;
 class IdentityCredentialDisconnectOptions;
 class IdentityProviderConfig;
@@ -311,6 +312,14 @@ struct MODULES_EXPORT
                   blink::AllAcceptedCredentialsOptions> {
   static blink::mojom::blink::AllAcceptedCredentialsOptionsPtr Convert(
       const blink::AllAcceptedCredentialsOptions&);
+};
+
+template <>
+struct MODULES_EXPORT
+    TypeConverter<blink::mojom::blink::CurrentUserDetailsOptionsPtr,
+                  blink::CurrentUserDetailsOptions> {
+  static blink::mojom::blink::CurrentUserDetailsOptionsPtr Convert(
+      const blink::CurrentUserDetailsOptions&);
 };
 
 }  // namespace mojo

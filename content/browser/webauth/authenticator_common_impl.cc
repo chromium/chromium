@@ -1766,6 +1766,12 @@ void AuthenticatorCommonImpl::ContinueReportAfterRpIdCheck(
         req_state_->relying_party_id,
         options->all_accepted_credentials->user_id,
         options->all_accepted_credentials->all_accepted_credentials_ids);
+  } else if (options->current_user_details) {
+    GetWebAuthenticationDelegate()->UpdateUserPasskeys(
+        WebContents::FromRenderFrameHost(GetRenderFrameHost()),
+        req_state_->relying_party_id, options->current_user_details->user_id,
+        options->current_user_details->name,
+        options->current_user_details->display_name);
   } else {
     GetWebAuthenticationDelegate()->DeletePasskey(
         WebContents::FromRenderFrameHost(GetRenderFrameHost()),

@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_supplemental_pub_keys_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_current_user_details_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_disconnect_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_mode.h"
@@ -67,6 +68,8 @@ using blink::mojom::blink::CableAuthenticationPtr;
 using blink::mojom::blink::CredentialInfo;
 using blink::mojom::blink::CredentialInfoPtr;
 using blink::mojom::blink::CredentialType;
+using blink::mojom::blink::CurrentUserDetailsOptions;
+using blink::mojom::blink::CurrentUserDetailsOptionsPtr;
 using blink::mojom::blink::Hint;
 using blink::mojom::blink::IdentityCredentialDisconnectOptions;
 using blink::mojom::blink::IdentityCredentialDisconnectOptionsPtr;
@@ -1058,6 +1061,10 @@ TypeConverter<PublicKeyCredentialReportOptionsPtr,
     mojo_options->all_accepted_credentials =
         AllAcceptedCredentialsOptions::From(*options.allAcceptedCredentials());
   }
+  if (options.hasCurrentUserDetails()) {
+    mojo_options->current_user_details =
+        CurrentUserDetailsOptions::From(*options.currentUserDetails());
+  }
   return mojo_options;
 }
 
@@ -1084,6 +1091,21 @@ TypeConverter<AllAcceptedCredentialsOptionsPtr,
   }
   mojo_options->all_accepted_credentials_ids =
       std::move(all_accepted_credential_ids);
+  return mojo_options;
+}
+
+// static
+CurrentUserDetailsOptionsPtr
+TypeConverter<CurrentUserDetailsOptionsPtr, blink::CurrentUserDetailsOptions>::
+    Convert(const blink::CurrentUserDetailsOptions& options) {
+  auto mojo_options = blink::mojom::blink::CurrentUserDetailsOptions::New();
+
+  Vector<char> decoded_user_id;
+  // The fact that this decodes successfully has already been tested.
+  CHECK(WTF::Base64UnpaddedURLDecode(options.userId(), decoded_user_id));
+  mojo_options->user_id = WTF::Vector<uint8_t>(decoded_user_id);
+  mojo_options->name = options.name();
+  mojo_options->display_name = options.displayName();
   return mojo_options;
 }
 

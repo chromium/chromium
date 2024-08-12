@@ -362,6 +362,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_credential_report_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_current_user_details_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_current_user_details_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decrypt_config.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decrypt_config.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_delay_options.cc",

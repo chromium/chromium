@@ -657,6 +657,27 @@ void ChromeWebAuthenticationDelegate::DeleteUnacceptedPasskeys(
   }
 }
 
+void ChromeWebAuthenticationDelegate::UpdateUserPasskeys(
+    content::WebContents* web_contents,
+    const std::string& relying_party_id,
+    std::vector<uint8_t>& user_id,
+    const std::string& name,
+    const std::string& display_name) {
+  webauthn::PasskeyModel* passkey_store =
+      PasskeyModelFactory::GetInstance()->GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+
+  for (const auto& passkey :
+       passkey_store->GetPasskeysForRelyingPartyId(relying_party_id)) {
+    if (std::vector<uint8_t>(passkey.user_id().begin(),
+                             passkey.user_id().end()) == user_id) {
+      passkey_store->UpdatePasskey(
+          passkey.credential_id(),
+          {.user_name = name, .user_display_name = display_name});
+    }
+  }
+}
+
 #if BUILDFLAG(IS_MAC)
 // static
 ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfig

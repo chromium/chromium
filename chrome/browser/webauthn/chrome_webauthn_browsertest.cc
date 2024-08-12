@@ -630,6 +630,63 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportInvalidStrings) {
           .ExtractString(),
       testing::HasSubstr(
           "Invalid base64url string for allAcceptedCredentialsIds."));
+
+  // This should fail with a TypeError due to an invalid base64url
+  // string in the user_id of a currentUserDetails report.
+  EXPECT_THAT(
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      R"(
+  navigator.credentials.report({
+    publicKey: {
+      rpId: "www.example.com",
+      currentUserDetails:{
+        userId: "A+/+A",
+        name: "Pepito",
+        displayName: "Pepito The Cat",
+      }
+    }
+  }).then(c => 'webauthn: OK', e => 'error ' + e);
+  )")
+          .ExtractString(),
+      testing::HasSubstr("Invalid base64url string for userId."));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
+                       ReportCurrentUserDetailsGPMPasskeys) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+  // Set up GPM Passkey.
+  auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
+      PasskeyModelFactory::GetForProfile(browser()->profile()));
+  passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
+      kCredentialID, kUserId1, kUsername1, kDisplayName1));
+
+  // Reports the user ID that matches the passkey created with the
+  // current user details.
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      R"(
+  navigator.credentials.report({
+    publicKey: {
+      rpId: "www.example.com",
+      currentUserDetails:{
+        userId: "AQIDBA",
+        name: "Pepito",
+        displayName: "Pepito The Cat",
+      }
+    }
+  }).then(c => 'webauthn: OK', e => 'error ' + e);
+  )"));
+
+  auto passkey = passkey_model->GetPasskeyByCredentialId(
+      "www.example.com",
+      std::string(reinterpret_cast<const char*>(kCredentialID), 16));
+
+  // Check if the name and displayName of the passkey reported was updated.
+  EXPECT_EQ(passkey->user_name(), "Pepito");
+  EXPECT_EQ(passkey->user_display_name(), "Pepito The Cat");
 }
 
 class WebAuthnHintsTest : public WebAuthnBrowserTest {

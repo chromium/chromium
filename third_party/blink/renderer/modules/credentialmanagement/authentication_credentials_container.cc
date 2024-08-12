@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_properties_output.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_report_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_current_user_details_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
@@ -1960,8 +1961,13 @@ ScriptPromise<IDLUndefined> AuthenticationCredentialsContainer::report(
 
   mojom::blink::PublicKeyCredentialReportOptionsPtr mojo_options;
   if (options->hasPublicKey()) {
-    if (options->publicKey()->hasAllAcceptedCredentials() &&
-        options->publicKey()->hasUnknownCredentialId()) {
+    int report_count = options->publicKey()->hasAllAcceptedCredentials() +
+                       options->publicKey()->hasUnknownCredentialId() +
+                       options->publicKey()->hasCurrentUserDetails();
+    // This checks if there are more than two reports simultaneously; if so, the
+    // call is rejected. This will be removed once each report has its own
+    // method.
+    if (report_count > 1) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
           "Multiple reports at the same time are not supported for this "
@@ -1988,6 +1994,14 @@ ScriptPromise<IDLUndefined> AuthenticationCredentialsContainer::report(
               "Invalid base64url string for allAcceptedCredentialsIds.");
           return promise;
         }
+      }
+    } else if (options->publicKey()->hasCurrentUserDetails()) {
+      Vector<char> decoded_user_id;
+      if (!WTF::Base64UnpaddedURLDecode(
+              options->publicKey()->currentUserDetails()->userId(),
+              decoded_user_id)) {
+        resolver->RejectWithTypeError("Invalid base64url string for userId.");
+        return promise;
       }
     }
     mojo_options =
