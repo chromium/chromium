@@ -2014,8 +2014,50 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_HISTORY_SYNC_TITLE" desc="Title of a page that asks users to start syncing their tabs and browsing history, so they can get back to sites they visited more quickly without having to type them, for example by seeing these sites suggested in the Omnibox.">
         Save Time, Type Less
       </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_TITLE" desc="The title of the Shortcuts toggle in the Home Customization menu's main page.">
+        Discover Feed
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_PAGE_HEADER" desc="The header text for the Magic Stack page in the Home Customization menu.">
+        Choose what cards you see on your new tab page.
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE" desc="The subtitle of the Shortcuts toggle in the Home Customization menu's main page.">
+        The most relevant features for you at different times.
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE_PARCEL_TRACKING" desc="The subtitle text for the Parcel Tracking toggle in the Home Customization menu.">
+        Your tracked packages and delivery updates.
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE_SAFETY_CHECK" desc="The subtitle text for the Safety Check toggle in the Home Customization menu.">
+        Know if you have the safest settings or need to review anything.
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE_SET_UP_LIST" desc="The subtitle text for the Set Up List toggle in the Home Customization menu.">
+        Set up tips that help you get the most out of Chrome.
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE_TAB_RESUMPTION" desc="The subtitle text for the Tab Resumption toggle in the Home Customization menu.">
+        Your last open tab across all your devices.
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE" desc="The title of the Shortcuts toggle in the Home Customization menu's main page.">
+        Cards
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE_PARCEL_TRACKING" desc="The title text for the Parcel Tracking toggle in the Home Customization menu.">
+        Package Tracking
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE_SAFETY_CHECK" desc="The title text for the Safety Check toggle in the Home Customization menu.">
+        Safety Check
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE_SET_UP_LIST" desc="The title text for the Set Up List toggle in the Home Customization menu.">
+        Get Set Up
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE_TAB_RESUMPTION" desc="The title text for the Tab Resumption toggle in the Home Customization menu.">
+        Continue with This Tab
+      </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE" desc="The title of the top toolbar for the main page of the Home customization menu.">
         Customize Home Page
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_MOST_VISITED_SUBTITLE" desc="The subtitle of the Most Visited toggle in the Home Customization menu's main page.">
+        Shortcuts to sites you've visited lately on this device.
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_MOST_VISITED_TITLE" desc="The title of the Most Visited toggle in the Home Customization menu's main page.">
+        Site Shortcuts
       </message>
       <message name="IDS_IOS_HTTP_LOGIN_DIALOG_PASSWORD_PLACEHOLDER" desc="The placeholder text for the password on the http login dialog [Length: 20em] [iOS only]">
         Password

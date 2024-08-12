@@ -385,6 +385,12 @@ Things to consider:
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_CHROME_DATA" desc="Turns off and on all the sync data (like bookmarks, history and others). [iOS only]">
         Sync Your Chrome Data
       </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_PAGE_HEADER" desc="The header text for the Discover page in the Home Customization menu.">
+        A custom feed made for you by Google. Including News, Sports and Weather.
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_SUBTITLE" desc="The subtitle of the Discover toggle in the Home Customization menu's main page.">
+        A custom feed made for you by Google.
+      </message>
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_KEEP_USING_YOUR_CHROME_DATA_MESSAGE" desc="The error message in the identity error info bar related to keep using your Chromium data in your Google account. [iOS only]">
         Keep using the Chrome data in your Google Account
       </message>
