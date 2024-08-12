@@ -35,8 +35,8 @@ class ScopedFakeResourceBundleDelegate {
         "en-US", &delegate_, ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
 
     for (const auto& [resource, data] : resources) {
-      EXPECT_CALL(delegate_, LoadDataResourceString(resource))
-          .WillRepeatedly(Return(data));
+      ON_CALL(delegate_, LoadDataResourceString(resource))
+          .WillByDefault(Return(data));
     }
   }
 
@@ -46,7 +46,7 @@ class ScopedFakeResourceBundleDelegate {
   }
 
  private:
-  ui::MockResourceBundleDelegate delegate_;
+  testing::NiceMock<ui::MockResourceBundleDelegate> delegate_;
   raw_ptr<ui::ResourceBundle> original_resource_bundle_;
 };
 
