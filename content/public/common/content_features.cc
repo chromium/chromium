@@ -631,6 +631,15 @@ BASE_FEATURE(kOverscrollHistoryNavigation,
              "OverscrollHistoryNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables additional ChildProcessSecurityPolicy enforcements for PDF renderer
+// processes, including blocking storage and cookie access for them.
+//
+// TODO(https://crbug.com/40205612): Remove this kill switch once the PDF
+// enforcements are verified not to cause problems.
+BASE_FEATURE(kPdfEnforcements,
+             "PdfEnforcements",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Whether web apps can run periodic tasks upon network connectivity.
 BASE_FEATURE(kPeriodicBackgroundSync,
              "PeriodicBackgroundSync",

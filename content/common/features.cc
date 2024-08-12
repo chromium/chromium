@@ -381,15 +381,6 @@ BASE_FEATURE(kOptimizeImmHideCalls,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Enables additional ChildProcessSecurityPolicy enforcements for PDF renderer
-// processes, including blocking storage and cookie access for them.
-//
-// TODO(https://crbug.com/40205612): Remove this kill switch once the PDF
-// enforcements are verified not to cause problems.
-BASE_FEATURE(kPdfEnforcements,
-             "PdfEnforcements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This feature enables Permissions Policy verification in the Browser process
 // in content/. Additionally only for //chrome Permissions Policy verification
 // is enabled in components/permissions/permission_context_base.cc
