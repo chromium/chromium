@@ -230,6 +230,12 @@ void MLBuffer::WriteBufferImpl(base::span<const uint8_t> src_data,
     return;
   }
 
+  // Return early since empty written data can be ignored with no observable
+  // effect.
+  if (src_data.size() == 0) {
+    return;
+  }
+
   // Copy src data.
   remote_buffer_->WriteBuffer(src_data);
 }
