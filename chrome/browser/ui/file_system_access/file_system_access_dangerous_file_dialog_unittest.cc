@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/file_system_access/file_system_access_dangerous_file_dialog.h"
+#include "chrome/browser/ui/file_system_access/file_system_access_dangerous_file_dialog.h"
 
 #include <optional>
 

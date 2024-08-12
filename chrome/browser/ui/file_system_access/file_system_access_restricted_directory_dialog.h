@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_DIALOG_H_
-#define CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_DIALOG_H_
+#define CHROME_BROWSER_UI_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_DIALOG_H_
 
 #include "content/public/browser/file_system_access_permission_context.h"
 
@@ -21,8 +21,6 @@ class Origin;
 
 // A dialog that informs the user that they can't give a website access to a
 // specific folder. `callback` is called when the dialog is dismissed.
-// TODO(crbug.com/40234828): Consider moving this out of ui/views since
-// this no longer uses views code.
 void ShowFileSystemAccessRestrictedDirectoryDialog(
     const url::Origin& origin,
     content::FileSystemAccessPermissionContext::HandleType handle_type,
@@ -39,4 +37,4 @@ CreateFileSystemAccessRestrictedDirectoryDialogForTesting(
         void(content::FileSystemAccessPermissionContext::SensitiveEntryResult)>
         callback);
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_DIALOG_H_

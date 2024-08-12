@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_DIALOG_H_
-#define CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_DIALOG_H_
+#define CHROME_BROWSER_UI_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_DIALOG_H_
 
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 
@@ -22,8 +22,6 @@ class DialogModel;
 // Shows a dialog asking the user if they want to give write access to the file
 // or directory identified by `request`. `callback` will be called with the
 // users choice, either GRANTED or DISMISSED.
-// TODO(crbug.com/40234828): Consider moving this out of ui/views since
-// this no longer uses views code.
 void ShowFileSystemAccessPermissionDialog(
     const FileSystemAccessPermissionRequestManager::RequestData& request,
     base::OnceCallback<void(permissions::PermissionAction result)> callback,
@@ -34,4 +32,4 @@ CreateFileSystemAccessPermissionDialogForTesting(
     const FileSystemAccessPermissionRequestManager::RequestData& request,
     base::OnceCallback<void(permissions::PermissionAction result)> callback);
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_DIALOG_H_
