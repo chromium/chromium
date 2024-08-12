@@ -435,12 +435,20 @@ TabDragController::Liveness TabDragController::Init(
     ref->detach_behavior_ = NOT_DETACHABLE;
   }
 #else
-  // If the dragged tabstrip exists in a PWA, and any of the dragged views
-  // are the Pinned Home tab, then the tabs should not be detachable from
-  // the window.
+  // Tabs should not be detachable from the window if any of the following are
+  // true:
+  // 1. The app window is locked for OnTask. Not applicable for web browser
+  //    scenarios.
+  // 2. The dragged tab strip exists in a PWA, and any of the dragged views
+  //    are the Pinned Home tab.
   Browser* source_browser = BrowserView::GetBrowserViewForNativeWindow(
                                 source_context->GetWidget()->GetNativeWindow())
                                 ->browser();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (source_browser->IsLockedForOnTask()) {
+    ref->detach_behavior_ = NOT_DETACHABLE;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (source_browser->app_controller() &&
       source_browser->app_controller()->has_tab_strip() &&
       web_app::HasPinnedHomeTab(source_browser->tab_strip_model())) {
@@ -450,7 +458,7 @@ TabDragController::Liveness TabDragController::Init(
       }
     }
   }
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
   const gfx::Point start_point_in_source_context =
       views::View::ConvertPointFromScreen(source_context,
