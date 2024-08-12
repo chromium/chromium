@@ -12,6 +12,7 @@ unzipping, and opening Chromium for you. After testing the specific revision,
 it will ask you whether it is good or bad before continuing the search.
 """
 
+import abc
 import base64
 import bisect
 import importlib
@@ -360,7 +361,8 @@ PATH_CONTEXT = {
             'archive_name': 'lacros.zip',
             'archive_extract_dir': 'chrome-lacros-arm64'
         }
-    }
+    },
+    'asan': {},
 }
 
 CHROME_APK_FILENAMES = {
@@ -468,6 +470,446 @@ def RunGsutilCommand(args, can_fail=False, verbose=False):
   return stdout
 
 
+class ArchiveBuild(abc.ABC):
+  """Base class for a archived build."""
+
+  def __init__(self, options):
+    self.platform = options.archive
+    # FIXME: The current implementation of get_rev_list assuming the revision is
+    # int, while ReleaseBuild supports version strings.
+    self.good_revision = options.good
+    self.bad_revision = options.bad
+    self.use_local_cache = options.use_local_cache
+
+    path_context = PATH_CONTEXT[self.build_type].get(self.platform, {})
+    self.binary_name = path_context.get('binary_name')
+    self.listing_platform_dir = path_context.get('listing_platform_dir')
+    self.archive_name = path_context.get('archive_name')
+    self.archive_extract_dir = path_context.get('archive_extract_dir')
+
+    self.githash_svn_dict = {}
+
+  @property
+  @abc.abstractmethod
+  def build_type(self):
+    raise NotImplemented()
+
+  @abc.abstractmethod
+  def _get_rev_list(self):
+    """The actual method to get revision list without cache."""
+    raise NotImplemented()
+
+  @abc.abstractmethod
+  def _get_listing_url(self, marker=None):
+    """Returns the URL for a directory listing, with an optional marker."""
+    raise NotImplemented()
+
+  def get_last_change_url(self):
+    return None
+
+  def get_rev_list(self):
+    """Gets the list of revision numbers between self.good_revision and
+    self.bad_revision. The result might be cached when use_local_cache."""
+
+    cache = {}
+    # The cache is stored in the same directory as bisect-builds.py
+    cache_filename = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                                  '.bisect-builds-cache.json')
+    cache_dict_key = self._get_listing_url()
+
+    def _LoadBucketFromCache():
+      if self.use_local_cache:
+        try:
+          with open(cache_filename) as cache_file:
+            for (key, value) in json.load(cache_file).items():
+              cache[key] = value
+            revisions = cache.get(cache_dict_key, [])
+            githash_svn_dict = cache.get('githash_svn_dict', {})
+            if revisions:
+              print('Loaded revisions %d-%d from %s' %
+                    (revisions[0], revisions[-1], cache_filename))
+            return (revisions, githash_svn_dict)
+        except (EnvironmentError, ValueError):
+          pass
+      return ([], {})
+
+    def _SaveBucketToCache():
+      """Save the list of revisions and the git-svn mappings to a file.
+      The list of revisions is assumed to be sorted."""
+      if self.use_local_cache:
+        cache[cache_dict_key] = revlist_all
+        cache['githash_svn_dict'] = self.githash_svn_dict
+        try:
+          with open(cache_filename, 'w') as cache_file:
+            json.dump(cache, cache_file)
+          print('Saved revisions %d-%d to %s' %
+                (revlist_all[0], revlist_all[-1], cache_filename))
+        except EnvironmentError:
+          pass
+
+    # Download the revlist and filter for just the range between good and bad.
+    minrev = min(self.good_revision, self.bad_revision)
+    maxrev = max(self.good_revision, self.bad_revision)
+
+    (revlist_all, self.githash_svn_dict) = _LoadBucketFromCache()
+    last_known_rev = revlist_all[-1] if revlist_all else 0
+    if last_known_rev < maxrev:
+      revlist_all.extend(list(map(int, self._get_rev_list(last_known_rev))))
+      revlist_all.sort()
+      _SaveBucketToCache()
+
+    revlist = [x for x in revlist_all if x >= int(minrev) and x <= int(maxrev)]
+    if len(revlist) < 2:  # Don't have enough builds to bisect.
+      last_known_rev = revlist_all[-1] if revlist_all else 0
+      first_known_rev = revlist_all[0] if revlist_all else 0
+      # Check for specifying a number before the available range.
+      if maxrev < first_known_rev:
+        msg = (
+            'First available bisect revision for %s is %d. Be sure to specify '
+            'revision numbers, not branch numbers.' %
+            (self.platform, first_known_rev))
+        raise (RuntimeError(msg))
+
+      # Check for specifying a number beyond the available range.
+      if maxrev > last_known_rev:
+        # Check for the special case of linux where bisect builds stopped at
+        # revision 382086, around March 2016.
+        if self.platform == 'linux':
+          msg = ('Last available bisect revision for %s is %d. Try linux64 '
+                 'instead.' % (self.platform, last_known_rev))
+        else:
+          msg = ('Last available bisect revision for %s is %d. Try a different '
+                 'good/bad range.' % (self.platform, last_known_rev))
+        raise (RuntimeError(msg))
+
+      # Otherwise give a generic message.
+      msg = 'We don\'t have enough builds to bisect. revlist: %s' % revlist
+      raise RuntimeError(msg)
+    # Set good and bad revisions to be legit revisions.
+    if revlist:
+      if self.good_revision < self.bad_revision:
+        self.good_revision = revlist[0]
+        self.bad_revision = revlist[-1]
+      else:
+        self.bad_revision = revlist[0]
+        self.good_revision = revlist[-1]
+
+    return revlist
+
+
+class ReleaseBuild(ArchiveBuild):
+
+  @property
+  def build_type(self):
+    return 'release'
+
+  def _get_release_bucket(self):
+    if 'android' in self.platform:
+      if self.signed:
+        return ANDROID_RELEASE_BASE_URL_SIGNED
+      else:
+        return ANDROID_RELEASE_BASE_URL
+    return RELEASE_BASE_URL
+
+  def _get_rev_list(self):
+    # Download the revlist and filter for just the range between good and bad.
+    minrev = min(self.good_revision, self.bad_revision)
+    maxrev = max(self.good_revision, self.bad_revision)
+    # Check against a version number that is many years in the future in order
+    # to detect when a revision number is passed instead of a version number.
+    if maxrev > LooseVersion('2000'):
+      raise BisectException('Max version of %s is too high. Be sure to use a '
+                            'version number, not revision number with release '
+                            'builds.' % maxrev)
+    build_numbers = PathContext.GsutilList(self._get_release_bucket())
+    revision_re = re.compile(r'(\d+\.\d\.\d{4}\.\d+)')
+    build_numbers = [b for b in build_numbers if revision_re.search(b)]
+    final_list = []
+    parsed_build_numbers = [LooseVersion(x) for x in build_numbers]
+    parsed_build_numbers = sorted(parsed_build_numbers)
+    start = bisect.bisect_left(parsed_build_numbers, minrev)
+    end = bisect.bisect_right(parsed_build_numbers, maxrev)
+    # Each call to GsutilExists takes about one second so give an estimate of
+    # the wait time.
+    build_count = end - start
+    print('Checking the existence of %d builds. This will take about %.1f '
+          'minutes' % (build_count, build_count / 60.0))
+    for build_number in parsed_build_numbers[start:end]:
+      path = (self._get_release_bucket() + '/' + str(build_number) + '/' +
+              self.listing_platform_dir + self.archive_name)
+      if PathContext.GsutilExists(path):
+        final_list.append(str(build_number))
+    print('Found %d builds' % len(final_list))
+    return final_list
+
+  def _get_listing_url(self, marker=None):
+    marker_param = ''
+    if marker:
+      marker_param = '&marker=' + str(marker)
+    return (RELEASE_BASE_URL + '/?prefix=' + self.listing_platform_dir +
+            marker_param)
+
+  def get_rev_list(self):
+    # The original implementation of GetReleaseBuildsList doesn't support cache
+    return self._get_rev_list()
+
+
+class OfficialBuild(ArchiveBuild):
+
+  def __init__(self, options):
+    super().__init__(options)
+    # convert good and bad to commit position as int.
+    if not options.bad:
+      self.bad_revision = GetChromiumRevision(self.get_last_change_url())
+    self.good_revision = GetRevision(self.good_revision)
+    self.bad_revision = GetRevision(self.bad_revision)
+
+  @property
+  def build_type(self):
+    return 'official'
+
+  def _get_listing_url(self, marker=None):
+    # This is only used as cache_dict_key for official build, as it's not
+    # download from commondatastorage.
+    marker_param = ''
+    if marker:
+      marker_param = '&marker=' + str(marker)
+    return (PERF_BASE_URL + '/?prefix=' + self.listing_platform_dir +
+            marker_param)
+
+  def _get_rev_list(self, last_known_rev):
+    # For official builds, it's getting the list from perf build bucket.
+    minrev = min(self.good_revision, self.bad_revision)
+    maxrev = max(self.good_revision, self.bad_revision)
+    perf_bucket = '%s/%s' % (PERF_BASE_URL, self.listing_platform_dir)
+    revision_re = re.compile(r'%s_(\d+)\.zip' % (self.archive_extract_dir))
+    revision_files = PathContext.GsutilList(perf_bucket)
+    revision_numbers = []
+    for revision_file in revision_files:
+      revision_num = re.match(revision_re, revision_file)
+      if revision_num:
+        revision_numbers.append(int(revision_num.groups()[0]))
+    final_list = []
+    for revision_number in sorted(revision_numbers):
+      if revision_number > maxrev:
+        break
+      if revision_number < minrev:
+        continue
+      final_list.append(revision_number)
+    return final_list
+
+
+class SnapshotBuild(ArchiveBuild):
+
+  def __init__(self, options):
+    super().__init__(options)
+    self.base_url = CHROMIUM_BASE_URL
+    # convert good and bad to commit position as int.
+    if not options.bad:
+      self.bad_revision = GetChromiumRevision(self.get_last_change_url())
+    self.good_revision = GetRevision(self.good_revision)
+    self.bad_revision = GetRevision(self.bad_revision)
+
+  @property
+  def build_type(self):
+    return 'snapshot'
+
+  def _GetMarkerForRev(self, revision):
+    return '%s%d' % (self.listing_platform_dir, revision)
+
+  def _FetchAndParse(self, url):
+    """Fetches a URL and returns a 2-Tuple of ([revisions], next-marker). If
+    next-marker is not None, then the listing is a partial listing and another
+    fetch should be performed with next-marker being the marker= GET
+    parameter."""
+    handle = urllib.request.urlopen(url)
+    document = ElementTree.parse(handle)
+
+    # All nodes in the tree are namespaced. Get the root's tag name to extract
+    # the namespace. Etree does namespaces as |{namespace}tag|.
+    root_tag = document.getroot().tag
+    end_ns_pos = root_tag.find('}')
+    if end_ns_pos == -1:
+      raise Exception('Could not locate end namespace for directory index')
+    namespace = root_tag[:end_ns_pos + 1]
+
+    # Find the prefix (_listing_platform_dir) and whether or not the list is
+    # truncated.
+    prefix_len = len(document.find(namespace + 'Prefix').text)
+    next_marker = None
+    is_truncated = document.find(namespace + 'IsTruncated')
+    if is_truncated is not None and is_truncated.text.lower() == 'true':
+      next_marker = document.find(namespace + 'NextMarker').text
+    # Get a list of all the revisions.
+    revisions = []
+    githash_svn_dict = {}
+    all_prefixes = document.findall(namespace + 'CommonPrefixes/' + namespace +
+                                    'Prefix')
+    # The <Prefix> nodes have content of the form of
+    # |_listing_platform_dir/revision/|. Strip off the platform dir and the
+    # trailing slash to just have a number.go
+    for prefix in all_prefixes:
+      revnum = prefix.text[prefix_len:-1]
+      try:
+        revnum = int(revnum)
+        revisions.append(revnum)
+      # Notes:
+      # Ignore hash in chromium-browser-snapshots as they are invalid
+      # Resulting in 404 error in fetching pages:
+      # https://chromium.googlesource.com/chromium/src/+/[rev_hash]
+      except ValueError:
+        pass
+    return (revisions, next_marker, githash_svn_dict)
+
+  def get_last_change_url(self):
+    """Returns a URL to the LAST_CHANGE file."""
+    return self.base_url + '/' + self.listing_platform_dir + 'LAST_CHANGE'
+
+  def _get_rev_list(self, last_known_rev):
+    """The actual method to get revision list without cache.
+
+    This works by parsing the Google Storage directory listing into a list of
+    revision numbers.
+    """
+
+    # Fetch the first list of revisions.
+    if last_known_rev:
+      revisions = []
+      # Optimization: Start paging at the last known revision (local cache).
+      next_marker = self._GetMarkerForRev(last_known_rev)
+      # Optimization: Stop paging at the last known revision (remote).
+      last_change_rev = GetChromiumRevision(self.get_last_change_url())
+      if last_known_rev == last_change_rev:
+        return []
+    else:
+      (revisions, next_marker,
+       new_dict) = self._FetchAndParse(self._get_listing_url())
+      self.githash_svn_dict.update(new_dict)
+      last_change_rev = None
+
+    # If the result list was truncated, refetch with the next marker. Do this
+    # until an entire directory listing is done.
+    while next_marker:
+      sys.stdout.write('\rFetching revisions at marker %s' % next_marker)
+      sys.stdout.flush()
+
+      next_url = self._get_listing_url(next_marker)
+      (new_revisions, next_marker, new_dict) = self._FetchAndParse(next_url)
+      revisions.extend(new_revisions)
+      self.githash_svn_dict.update(new_dict)
+      if last_change_rev and last_change_rev in new_revisions:
+        break
+    sys.stdout.write('\r')
+    sys.stdout.flush()
+    return revisions
+
+  def _get_listing_url(self, marker=None):
+    """Returns the URL for a directory listing, with an optional marker."""
+    marker_param = ''
+    if marker:
+      marker_param = '&marker=' + str(marker)
+    return (self.base_url + '/?delimiter=/&prefix=' +
+            self.listing_platform_dir + marker_param)
+
+
+class ASANBuild(SnapshotBuild):
+  """ASANBuilds works like SnapshotBuild which fetch from commondatastorage, but
+  with a different directory format as implemented in _FetchAndParse."""
+
+  def __init__(self, options):
+    super().__init__(options)
+    self.base_url = ASAN_BASE_URL
+    self.asan_build_type = 'release'
+    # convert good and bad to commit position as int.
+    self.good_revision = GetRevision(self.good_revision)
+    self.bad_revision = GetRevision(self.bad_revision)
+
+  @property
+  def build_type(self):
+    return 'asan'
+
+  def GetASANPlatformDir(self):
+    """ASAN builds are in directories like "linux-release", or have filenames
+    like "asan-win32-release-277079.zip". This aligns to our platform names
+    except in the case of Windows where they use "win32" instead of "win"."""
+    if self.platform == 'win':
+      return 'win32'
+    else:
+      return self.platform
+
+  def GetASANBaseName(self):
+    """Returns the base name of the ASAN zip file."""
+    if 'linux' in self.platform:
+      return 'asan-symbolized-%s-%s' % (self.GetASANPlatformDir(),
+                                        self.asan_build_type)
+    else:
+      return 'asan-%s-%s' % (self.GetASANPlatformDir(), self.asan_build_type)
+
+  def get_last_change_url(self):
+    # LAST_CHANGE is not supported in asan build.
+    return None
+
+  def _get_listing_url(self, marker=None):
+    """Returns the URL for a directory listing, with an optional marker."""
+    marker_param = ''
+    if marker:
+      marker_param = '&marker=' + str(marker)
+    prefix = '%s-%s' % (self.GetASANPlatformDir(), self.asan_build_type)
+    return self.base_url + '/?delimiter=&prefix=' + prefix + marker_param
+
+  def _GetMarkerForRev(self, revision):
+    # The build type is hardcoded as release in the original code.
+    return '%s-%s/%s-%d.zip' % (self.GetASANPlatformDir(), self.asan_build_type,
+                                self.GetASANBaseName(), revision)
+
+  def _FetchAndParse(self, url):
+    """Fetches a URL and returns a 2-Tuple of ([revisions], next-marker). If
+    next-marker is not None, then the listing is a partial listing and another
+    fetch should be performed with next-marker being the marker= GET
+    parameter."""
+    handle = urllib.request.urlopen(url)
+    document = ElementTree.parse(handle)
+
+    # All nodes in the tree are namespaced. Get the root's tag name to extract
+    # the namespace. Etree does namespaces as |{namespace}tag|.
+    root_tag = document.getroot().tag
+    end_ns_pos = root_tag.find('}')
+    if end_ns_pos == -1:
+      raise Exception('Could not locate end namespace for directory index')
+    namespace = root_tag[:end_ns_pos + 1]
+
+    next_marker = None
+    is_truncated = document.find(namespace + 'IsTruncated')
+    if is_truncated is not None and is_truncated.text.lower() == 'true':
+      next_marker = document.find(namespace + 'NextMarker').text
+    # Get a list of all the revisions.
+    revisions = []
+    githash_svn_dict = {}
+    asan_regex = re.compile(r'.*%s-(\d+)\.zip$' % (self.GetASANBaseName()))
+    # Non ASAN builds are in a <revision> directory. The ASAN builds are
+    # flat
+    all_prefixes = document.findall(namespace + 'Contents/' + namespace + 'Key')
+    for prefix in all_prefixes:
+      m = asan_regex.match(prefix.text)
+      if m:
+        try:
+          revisions.append(int(m.group(1)))
+        except ValueError:
+          pass
+    return (revisions, next_marker, githash_svn_dict)
+
+
+def create_archive_build(options):
+  if options.release_builds:
+    return ReleaseBuild(options)
+  elif options.official_builds:
+    return OfficialBuild(options)
+  elif options.asan:
+    return ASANBuild(options)
+  else:
+    return SnapshotBuild(options)
+
+
 class PathContext(object):
   """A PathContext is used to carry the information used to construct URLs and
   paths when dealing with the storage server and archives."""
@@ -572,21 +1014,6 @@ class PathContext(object):
     else:
       return self.platform
 
-  def GetListingURL(self, marker=None):
-    """Returns the URL for a directory listing, with an optional marker."""
-    marker_param = ''
-    if marker:
-      marker_param = '&marker=' + str(marker)
-    if self.is_asan:
-      prefix = '%s-%s' % (self.GetASANPlatformDir(), self.build_type)
-      return self.base_url + '/?delimiter=&prefix=' + prefix + marker_param
-    elif self.is_official:
-      return (self.base_url + '/?prefix=' + self._listing_platform_dir +
-              marker_param)
-    else:
-      return (self.base_url + '/?delimiter=/&prefix=' +
-              self._listing_platform_dir + marker_param)
-
   def GetDownloadURL(self, revision):
     """Gets the download URL for a build archive of a specific revision."""
     archive_name = self.archive_name
@@ -649,105 +1076,6 @@ class PathContext(object):
           extract_dir = 'chrome-win'
 
     return os.path.join(extract_dir, self._binary_name)
-
-  def ParseDirectoryIndex(self, last_known_rev):
-    """Parses the Google Storage directory listing into a list of revision
-    numbers."""
-
-    def _GetMarkerForRev(revision):
-      if self.is_asan:
-        return '%s-%s/%s-%d.zip' % (
-            self.GetASANPlatformDir(), self.build_type,
-            self.GetASANBaseName(), revision)
-      return '%s%d' % (self._listing_platform_dir, revision)
-
-    def _FetchAndParse(url):
-      """Fetches a URL and returns a 2-Tuple of ([revisions], next-marker). If
-      next-marker is not None, then the listing is a partial listing and another
-      fetch should be performed with next-marker being the marker= GET
-      parameter."""
-      handle = urllib.request.urlopen(url)
-      document = ElementTree.parse(handle)
-
-      # All nodes in the tree are namespaced. Get the root's tag name to extract
-      # the namespace. Etree does namespaces as |{namespace}tag|.
-      root_tag = document.getroot().tag
-      end_ns_pos = root_tag.find('}')
-      if end_ns_pos == -1:
-        raise Exception('Could not locate end namespace for directory index')
-      namespace = root_tag[:end_ns_pos + 1]
-
-      # Find the prefix (_listing_platform_dir) and whether or not the list is
-      # truncated.
-      prefix_len = len(document.find(namespace + 'Prefix').text)
-      next_marker = None
-      is_truncated = document.find(namespace + 'IsTruncated')
-      if is_truncated is not None and is_truncated.text.lower() == 'true':
-        next_marker = document.find(namespace + 'NextMarker').text
-      # Get a list of all the revisions.
-      revisions = []
-      githash_svn_dict = {}
-      if self.is_asan:
-        asan_regex = re.compile(r'.*%s-(\d+)\.zip$' % (self.GetASANBaseName()))
-        # Non ASAN builds are in a <revision> directory. The ASAN builds are
-        # flat
-        all_prefixes = document.findall(namespace + 'Contents/' +
-                                        namespace + 'Key')
-        for prefix in all_prefixes:
-          m = asan_regex.match(prefix.text)
-          if m:
-            try:
-              revisions.append(int(m.group(1)))
-            except ValueError:
-              pass
-      else:
-        all_prefixes = document.findall(namespace + 'CommonPrefixes/' +
-                                        namespace + 'Prefix')
-        # The <Prefix> nodes have content of the form of
-        # |_listing_platform_dir/revision/|. Strip off the platform dir and the
-        # trailing slash to just have a number.go
-        for prefix in all_prefixes:
-          revnum = prefix.text[prefix_len:-1]
-          try:
-            revnum = int(revnum)
-            revisions.append(revnum)
-          # Notes:
-          # Ignore hash in chromium-browser-snapshots as they are invalid
-          # Resulting in 404 error in fetching pages:
-          # https://chromium.googlesource.com/chromium/src/+/[rev_hash]
-          except ValueError:
-            pass
-      return (revisions, next_marker, githash_svn_dict)
-
-    # Fetch the first list of revisions.
-    if last_known_rev:
-      revisions = []
-      # Optimization: Start paging at the last known revision (local cache).
-      next_marker = _GetMarkerForRev(last_known_rev)
-      # Optimization: Stop paging at the last known revision (remote).
-      last_change_rev = GetChromiumRevision(self, self.GetLastChangeURL())
-      if last_known_rev == last_change_rev:
-        return []
-    else:
-      (revisions, next_marker, new_dict) = _FetchAndParse(self.GetListingURL())
-      self.githash_svn_dict.update(new_dict)
-      last_change_rev = None
-
-    # If the result list was truncated, refetch with the next marker. Do this
-    # until an entire directory listing is done.
-    while next_marker:
-      sys.stdout.write('\rFetching revisions at marker %s' % next_marker)
-      sys.stdout.flush()
-
-      next_url = self.GetListingURL(next_marker)
-      (new_revisions, next_marker, new_dict) = _FetchAndParse(next_url)
-      revisions.extend(new_revisions)
-      self.githash_svn_dict.update(new_dict)
-      if last_change_rev and last_change_rev in new_revisions:
-        break
-    sys.stdout.write('\r')
-    sys.stdout.flush()
-    return revisions
 
   def _GetSVNRevisionFromGitHashWithoutGitCheckout(self, git_sha1, depot):
     json_url = GITHASH_TO_SVN_URL[depot] % git_sha1
@@ -820,112 +1148,8 @@ class PathContext(object):
         return ANDROID_RELEASE_BASE_URL
     return RELEASE_BASE_URL
 
-  def GetRevList(self, archive):
-    """Gets the list of revision numbers between self.good_revision and
-    self.bad_revision."""
-
-    cache = {}
-    # The cache is stored in the same directory as bisect-builds.py
-    cache_filename = os.path.join(
-        os.path.abspath(os.path.dirname(__file__)),
-        '.bisect-builds-cache.json')
-    cache_dict_key = self.GetListingURL()
-
-    def _LoadBucketFromCache():
-      if self.use_local_cache:
-        try:
-          with open(cache_filename) as cache_file:
-            for (key, value) in json.load(cache_file).items():
-              cache[key] = value
-            revisions = cache.get(cache_dict_key, [])
-            githash_svn_dict = cache.get('githash_svn_dict', {})
-            if revisions:
-              print('Loaded revisions %d-%d from %s' %
-                    (revisions[0], revisions[-1], cache_filename))
-            return (revisions, githash_svn_dict)
-        except (EnvironmentError, ValueError):
-          pass
-      return ([], {})
-
-    def _SaveBucketToCache():
-      """Save the list of revisions and the git-svn mappings to a file.
-      The list of revisions is assumed to be sorted."""
-      if self.use_local_cache:
-        cache[cache_dict_key] = revlist_all
-        cache['githash_svn_dict'] = self.githash_svn_dict
-        try:
-          with open(cache_filename, 'w') as cache_file:
-            json.dump(cache, cache_file)
-          print('Saved revisions %d-%d to %s' %
-                (revlist_all[0], revlist_all[-1], cache_filename))
-        except EnvironmentError:
-          pass
-
-    # Download the revlist and filter for just the range between good and bad.
-    minrev = min(self.good_revision, self.bad_revision)
-    maxrev = max(self.good_revision, self.bad_revision)
-
-    (revlist_all, self.githash_svn_dict) = _LoadBucketFromCache()
-    last_known_rev = revlist_all[-1] if revlist_all else 0
-    if last_known_rev < maxrev:
-      if self.is_official:
-        revlist_all.extend(list(map(int, self.GetPerCLRevList())))
-      else:
-        revlist_all.extend(
-            list(map(int, self.ParseDirectoryIndex(last_known_rev))))
-      revlist_all.sort()
-      _SaveBucketToCache()
-
-    revlist = [x for x in revlist_all if x >= int(minrev) and x <= int(maxrev)]
-    if len(revlist) < 2:  # Don't have enough builds to bisect.
-      last_known_rev = revlist_all[-1] if revlist_all else 0
-      first_known_rev = revlist_all[0] if revlist_all else 0
-      # Check for specifying a number before the available range.
-      if maxrev < first_known_rev:
-        msg = (
-            'First available bisect revision for %s is %d. Be sure to specify '
-            'revision numbers, not branch numbers.' %
-            (archive, first_known_rev))
-        raise (RuntimeError(msg))
-
-      # Check for specifying a number beyond the available range.
-      if maxrev > last_known_rev:
-        # Check for the special case of linux where bisect builds stopped at
-        # revision 382086, around March 2016.
-        if archive == 'linux':
-          msg = ('Last available bisect revision for %s is %d. Try linux64 '
-                 'instead.' % (archive, last_known_rev))
-        else:
-          msg = ('Last available bisect revision for %s is %d. Try a different '
-                 'good/bad range.' % (archive, last_known_rev))
-        raise (RuntimeError(msg))
-
-      # Otherwise give a generic message.
-      msg = 'We don\'t have enough builds to bisect. revlist: %s' % revlist
-      raise RuntimeError(msg)
-    # Set good and bad revisions to be legit revisions.
-    if revlist:
-      if self.good_revision < self.bad_revision:
-        self.good_revision = revlist[0]
-        self.bad_revision = revlist[-1]
-      else:
-        self.bad_revision = revlist[0]
-        self.good_revision = revlist[-1]
-
-      # Fix chromium rev so that the deps blink revision matches REVISIONS file.
-      if self.base_url == WEBKIT_BASE_URL:
-        revlist_all.sort()
-        self.good_revision = FixChromiumRevForBlink(revlist,
-                                                    revlist_all,
-                                                    self,
-                                                    self.good_revision)
-        self.bad_revision = FixChromiumRevForBlink(revlist,
-                                                   revlist_all,
-                                                   self,
-                                                   self.bad_revision)
-    return revlist
-
-  def GsutilExists(self, query):
+  @staticmethod
+  def GsutilExists(query):
     output = RunGsutilCommand(['stat', query], can_fail=True)
     if output.startswith(query):
       return True
@@ -934,7 +1158,8 @@ class PathContext(object):
     else:
       raise Exception('Error running the gsutil command: %s' % output)
 
-  def GsutilList(self, query):
+  @staticmethod
+  def GsutilList(query):
     # Get a directory listing with file sizes. Typical output looks like:
     #         7  2023-11-27T21:08:36Z  gs://.../LAST_CHANGE
     # 144486938  2023-03-07T14:41:25Z  gs://.../full-build-win32_1113893.zip
@@ -960,77 +1185,6 @@ class PathContext(object):
         lines.append(parts[-1])
     results = [url[len(query):].strip('/') for url in lines]
     return results
-
-  def GetPerCLRevList(self):
-    """ Gets the list of revision numbers between self.good_revision and
-    self.bad_revision from a perf build."""
-    minrev = min(self.good_revision, self.bad_revision)
-    maxrev = max(self.good_revision, self.bad_revision)
-    perf_bucket = '%s/%s' % (PERF_BASE_URL, self._listing_platform_dir)
-    revision_re = re.compile(r'%s_(\d+)\.zip' % (self._archive_extract_dir))
-    revision_files = self.GsutilList(perf_bucket)
-    revision_numbers = []
-
-    for revision_file in revision_files:
-      revision_num = re.match(revision_re, revision_file)
-      if revision_num:
-        revision_numbers.append(int(revision_num.groups()[0]))
-    final_list = []
-    for revision_number in sorted(revision_numbers):
-      if revision_number > maxrev:
-        break
-      if revision_number < minrev:
-        continue
-      final_list.append(revision_number)
-    return final_list
-
-  def GetPerfCLRevListFromBackup(self):
-    """Checks for builds in older GS folders."""
-    revlist = []
-    # Lacros doesn't have the old backup builds.
-    if 'lacros' in self.platform:
-      return revlist
-    for f in OFFICIAL_BACKUP_BUILDS[self.platform]['listing_platform_dir']:
-      print('Checking "%s" directory for build archives...' % f)
-      self._listing_platform_dir = f
-      revlist = self.GetPerCLRevList()
-      if len(revlist) >= 2:
-        break
-
-    return revlist
-
-  def GetReleaseBuildsList(self):
-    """Gets the list of release build numbers between self.good_revision and
-    self.bad_revision."""
-    # Download the revlist and filter for just the range between good and bad.
-    minrev = min(self.good_revision, self.bad_revision)
-    maxrev = max(self.good_revision, self.bad_revision)
-    # Check against a version number that is many years in the future in order
-    # to detect when a revision number is passed instead of a version number.
-    if maxrev > LooseVersion('2000'):
-      raise BisectException('Max version of %s is too high. Be sure to use a '
-                            'version number, not revision number with release '
-                            'builds.' % maxrev)
-    build_numbers = self.GsutilList(self.GetReleaseBucket())
-    revision_re = re.compile(r'(\d+\.\d\.\d{4}\.\d+)')
-    build_numbers = [b for b in build_numbers if revision_re.search(b)]
-    final_list = []
-    parsed_build_numbers = [LooseVersion(x) for x in build_numbers]
-    parsed_build_numbers = sorted(parsed_build_numbers)
-    start = bisect.bisect_left(parsed_build_numbers, minrev)
-    end = bisect.bisect_right(parsed_build_numbers, maxrev)
-    # Each call to GsutilExists takes about one second so give an estimate of
-    # the wait time.
-    build_count = end - start
-    print('Checking the existence of %d builds. This will take about %.1f '
-          'minutes' % (build_count, build_count / 60.0))
-    for build_number in parsed_build_numbers[start:end]:
-      path = (self.GetReleaseBucket() + '/' + str(build_number) + '/' +
-              self._listing_platform_dir + self.archive_name)
-      if self.GsutilExists(path):
-        final_list.append(str(build_number))
-    print('Found %d builds' % len(final_list))
-    return final_list
 
 
 def IsMac():
@@ -1432,6 +1586,7 @@ def VerifyEndpoint(fetch, context, rev, profile, num_runs, command, try_args,
 
 
 def Bisect(context,
+           archive_build,
            num_runs=1,
            command='%p %a',
            try_args=(),
@@ -1443,6 +1598,8 @@ def Bisect(context,
 
     Args:
       context: PathContext object initialized with user provided parameters.
+      archive_build: ArchiveBuild object initialized with user provided
+               parameters.
       num_runs: Number of times to run each build for asking good/bad.
       try_args: A tuple of arguments to pass to the test application.
       profile: The name of the user profile to run with.
@@ -1475,12 +1632,7 @@ def Bisect(context,
     print()
   _GetDownloadPath = lambda rev: os.path.join(cwd,
       '%s-%s' % (str(rev), context.archive_name))
-  if context.is_release:
-    revlist = context.GetReleaseBuildsList()
-  elif context.is_official:
-    revlist = context.GetRevList(archive)
-  else:
-    revlist = context.GetRevList(archive)
+  revlist = archive_build.get_rev_list()
 
   # Get a list of revisions to bisect across.
   if len(revlist) < 2:  # Don't have enough builds to bisect.
@@ -1717,14 +1869,14 @@ def FixChromiumRevForBlink(revisions_final, revisions, self, rev):
   return rev
 
 
-def GetChromiumRevision(context, url):
+def GetChromiumRevision(url):
   """Returns the chromium revision read from given URL."""
   try:
     # Location of the latest build revision number
     latest_revision = urllib.request.urlopen(url).read()
     if latest_revision.isdigit():
       return int(latest_revision)
-    return context.GetSVNRevisionFromGitHash(latest_revision)
+    return 999999999
   except Exception:
     print('Could not determine latest revision. This could be bad...')
     return 999999999
@@ -1990,7 +2142,7 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
   parser.add_option('-l',
                     '--blink',
                     action='store_true',
-                    help='Use Blink bisect instead of Chromium. ')
+                    help='DEPRECATED: Use Blink bisect instead of Chromium.')
   parser.add_option('-v',
                     '--verbose',
                     action='store_true',
@@ -2150,6 +2302,9 @@ def main():
       print('For release, you can only use chrome version to bisect.')
       return 1
 
+  if opts.blink:
+    raise BisectException("Blink is no longer supported.")
+
   try:
     SetupEnvironment(opts)
   except BisectException as e:
@@ -2170,8 +2325,11 @@ def main():
     if not opts.deploy_chrome_path:
       raise BisectException('Please specify deploy_chrome path.')
     deploy_chrome_path = opts.deploy_chrome_path
+
   # Create the context. Initialize 0 for the revisions as they are set below.
   context = PathContext(opts, device)
+  # Create the ArchiveBuild object.
+  archive_build = create_archive_build(opts)
 
   if context.is_release:
     if opts.archive.startswith('android-'):
@@ -2188,8 +2346,7 @@ def main():
     # For official and snapshot, we convert good and bad to commit position
     # as int.
     if not opts.bad:
-      context.bad_revision = GetChromiumRevision(context,
-                                                 context.GetLastChangeURL())
+      context.bad_revision = GetChromiumRevision(context.GetLastChangeURL())
     context.good_revision = GetRevision(context.good_revision)
     context.bad_revision = GetRevision(context.bad_revision)
 
@@ -2214,8 +2371,8 @@ def main():
   bad_rev = context.bad_revision
 
   (min_chromium_rev, max_chromium_rev,
-   context) = Bisect(context, opts.times, opts.command, args, opts.profile,
-                     evaluator, opts.verify_range, opts.archive)
+   context) = Bisect(context, archive_build, opts.times, opts.command, args,
+                     opts.profile, evaluator, opts.verify_range, opts.archive)
 
   # Get corresponding blink revisions.
   try:
