@@ -169,6 +169,17 @@ void ChromeBrowserStateManagerImpl::AddObserver(
     ChromeBrowserStateManagerObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
+
+  // Notify the observer of any pre-existing ChromeBrowserStates.
+  for (auto& [name, info] : browser_states_) {
+    ChromeBrowserState* browser_state = info.browser_state();
+    DCHECK(browser_state);
+
+    observer->OnChromeBrowserStateCreated(this, browser_state);
+    if (info.is_loaded()) {
+      observer->OnChromeBrowserStateLoaded(this, browser_state);
+    }
+  }
 }
 
 void ChromeBrowserStateManagerImpl::RemoveObserver(
@@ -352,8 +363,8 @@ void ChromeBrowserStateManagerImpl::OnChromeBrowserStateCreationFinished(
   auto callbacks = iter->second.TakeCallbacks();
 
   if (success) {
-    iter->second.SetIsLoaded();
     DoFinalInit(browser_state);
+    iter->second.SetIsLoaded();
   } else {
     browser_state = nullptr;
     browser_states_.erase(iter);

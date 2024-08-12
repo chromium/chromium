@@ -181,7 +181,6 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   base::ScopedObservation<ChromeBrowserStateManager,
                           ChromeBrowserStateManagerObserver>
       browser_state_manager_observation_{this};
-  std::set<ChromeBrowserState*> observed_chrome_browser_states_;
 
   // Whether we registered all notification listeners successfully.
   bool notification_listeners_active_ = true;

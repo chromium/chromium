@@ -34,6 +34,11 @@ TestChromeBrowserStateManager::~TestChromeBrowserStateManager() {
 void TestChromeBrowserStateManager::AddObserver(
     ChromeBrowserStateManagerObserver* observer) {
   observers_.AddObserver(observer);
+
+  for (auto& [key, browser_state] : browser_states_) {
+    observer->OnChromeBrowserStateCreated(this, browser_state.get());
+    observer->OnChromeBrowserStateLoaded(this, browser_state.get());
+  }
 }
 
 void TestChromeBrowserStateManager::RemoveObserver(

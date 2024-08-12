@@ -169,10 +169,10 @@ void IncognitoSessionTracker::Observer::OnBrowserListShutdown(
 
 IncognitoSessionTracker::IncognitoSessionTracker(
     ChromeBrowserStateManager* manager) {
+  // ChromeBrowserStateManager invoke OnChromeBrowserStateLoaded(...) for
+  // all ChromeBrowserState already loaded, so there is no need to maually
+  // iterate over them.
   scoped_manager_observation_.Observe(manager);
-  for (ChromeBrowserState* browser_state : manager->GetLoadedBrowserStates()) {
-    OnChromeBrowserStateLoaded(manager, browser_state);
-  }
 }
 
 IncognitoSessionTracker::~IncognitoSessionTracker() = default;
@@ -207,27 +207,19 @@ void IncognitoSessionTracker::OnChromeBrowserStateLoaded(
     ChromeBrowserStateManager* manager,
     ChromeBrowserState* browser_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // As IncognitoSessionTracker may be created as part of the initialisation
-  // of a ChromeBrowserState, it is possible for this method to be called twice
-  // (once from the constructor and once from ChromeBrowserStateManager once it
-  // is done loading the BrowserState). Ignore the notification if the Observer
-  // already exists.
-  auto iterator = observers_.find(browser_state);
-  if (iterator != observers_.end()) {
-    return;
-  }
-
   // The ChromeBrowserState is fully loaded, we can access its BrowserList
   // and register an Observer. The use of `base::Unretained(this)` is safe
   // as the `IncognitoSessionTracker` owns the `Observer` and the closure
   // cannot outlive `this`.
-  observers_.insert(std::make_pair(
+  auto [_, inserted] = observers_.insert(std::make_pair(
       browser_state,
       std::make_unique<Observer>(
           BrowserListFactory::GetForBrowserState(browser_state),
           base::BindRepeating(
               &IncognitoSessionTracker::OnIncognitoSessionStateChanged,
               base::Unretained(this)))));
+
+  DCHECK(inserted);
 }
 
 void IncognitoSessionTracker::OnIncognitoSessionStateChanged(

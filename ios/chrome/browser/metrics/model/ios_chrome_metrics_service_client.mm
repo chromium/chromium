@@ -479,27 +479,15 @@ void IOSChromeMetricsServiceClient::RegisterForNotifications() {
               &IOSChromeMetricsServiceClient::OnURLOpenedFromOmnibox,
               base::Unretained(this)));
 
-  ChromeBrowserStateManager* browser_state_manager =
-      GetApplicationContext()->GetChromeBrowserStateManager();
-
-  browser_state_manager_observation_.Observe(browser_state_manager);
-  for (auto* browser_state : browser_state_manager->GetLoadedBrowserStates()) {
-    OnChromeBrowserStateLoaded(browser_state_manager, browser_state);
-  }
+  // ChromeBrowserStateManager invoke OnChromeBrowserStateLoaded(...) for
+  // all ChromeBrowserState already loaded, so there is no need to maually
+  // iterate over them.
+  browser_state_manager_observation_.Observe(
+      GetApplicationContext()->GetChromeBrowserStateManager());
 }
 
 bool IOSChromeMetricsServiceClient::RegisterForBrowserStateEvents(
     ChromeBrowserState* browser_state) {
-  // IOSChromeMetricsServiceClient may be created as part of the initialisation
-  // of a ChromeBrowserState, it is possible for this method to be called twice
-  // (once from the constructor and once from ChromeBrowserStateManager once it
-  // is done loading the BrowserState). Ignore the superfluous notification.
-  auto iterator = observed_chrome_browser_states_.find(browser_state);
-  if (iterator != observed_chrome_browser_states_.end()) {
-    return true;
-  }
-
-  observed_chrome_browser_states_.insert(browser_state);
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForBrowserState(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS);

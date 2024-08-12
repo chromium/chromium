@@ -27,6 +27,9 @@ class ProfileManagerObserverIOS : public base::CheckedObserver {
   // Called when a ChromeBrowserState is created, before the initialisation is
   // complete. In most case `OnBrowserStateAdded(...)` is a better event to
   // listen to. Will only be called for non-incognito ChromeBrowserState.
+  //
+  // Invoked automatically for all ChromeBrowserState already created when
+  // an observer is registered with ChromeBrowserStateManager.
   virtual void OnChromeBrowserStateCreated(
       ProfileManagerIOS* manager,
       ChromeBrowserState* browser_state) = 0;
@@ -34,6 +37,9 @@ class ProfileManagerObserverIOS : public base::CheckedObserver {
   // Called when a ChromeBrowserState has been fully loaded and initialised and
   // is available through the ProfileManagerIOS. Will only be called for
   // non-incognito ChromeBrowserState.
+  //
+  // Invoked automatically for all ChromeBrowserState already loaded when
+  // an observer is registered with ChromeBrowserStateManager.
   virtual void OnChromeBrowserStateLoaded(
       ProfileManagerIOS* manager,
       ChromeBrowserState* browser_state) = 0;
