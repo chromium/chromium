@@ -186,6 +186,8 @@
 
   browsing_data::TimePeriod timePeriod = static_cast<browsing_data::TimePeriod>(
       _prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
+  base::Time beginTime = browsing_data::CalculateBeginDeleteTime(timePeriod);
+  base::Time endTime = browsing_data::CalculateEndDeleteTime(timePeriod);
 
   _browsingDataRemover->SetCachedTabsInfo(_cachedTabsInfo);
   bool shouldCloseTabs = _prefs->GetBoolean(browsing_data::prefs::kCloseTabs);
@@ -193,7 +195,8 @@
   if (shouldCloseTabs) {
     __weak QuickDeleteMediator* weakSelf = self;
     removeBrowsingDataCompletionBlock = ^void() {
-      [weakSelf triggerTabsClosureAnimationWithTimePeriod:timePeriod];
+      [weakSelf triggerTabsClosureAnimationWithBeginTime:beginTime
+                                                 endTime:endTime];
     };
   } else {
     __weak id<QuickDeleteConsumer> weakConsumer = self.consumer;
@@ -201,8 +204,8 @@
       [weakConsumer deletionFinished];
     };
   }
-  _browsingDataRemover->Remove(
-      timePeriod, removeMask,
+  _browsingDataRemover->RemoveInRange(
+      beginTime, endTime, removeMask,
       base::BindOnce(removeBrowsingDataCompletionBlock));
 }
 
@@ -272,18 +275,15 @@
 #pragma mark - Private
 
 // Trigger the tab closure animation along with the actual closure of the
-// WebStates within the `timePeriod`.
-- (void)triggerTabsClosureAnimationWithTimePeriod:
-    (browsing_data::TimePeriod)timePeriod {
+// WebStates within [`beginTime`, `endTime`[.
+- (void)triggerTabsClosureAnimationWithBeginTime:(base::Time)beginTime
+                                         endTime:(base::Time)endTime {
   // TODO(crbug.com/354112735): Only trigger the tabs animation when Quick
   // Delete is triggered on top of a tab or the tab grid, i.e. from the three
   // dot menu.
   [_presentationHandler
-      triggerTabsClosureAnimationWithBeginTime:
-          browsing_data::CalculateBeginDeleteTime(timePeriod)
-                                       endTime:browsing_data::
-                                                   CalculateEndDeleteTime(
-                                                       timePeriod)
+      triggerTabsClosureAnimationWithBeginTime:beginTime
+                                       endTime:endTime
                                 cachedTabsInfo:_cachedTabsInfo];
 }
 
