@@ -11,9 +11,12 @@
 @protocol TabsAnimationCommands
 
 // Triggers the tabs closure animation on the tab grid for the WebStates in
-// `tabsToClose. It also closes the WebStates after running the animation.
-- (void)animateTabsClosureForTabs:(std::set<web::WebStateID>)tabsToClose;
-
+// `tabsToClose` and for the groups in `groupsWithTabsToClose`. It also closes
+// the WebStates after running the animation.
+- (void)animateTabsClosureForTabs:(std::set<web::WebStateID>)tabsToClose
+                           groups:
+                               (std::map<tab_groups::TabGroupId, std::set<int>>)
+                                   groupsWithTabsToClose;
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_TABS_ANIMATION_COMMANDS_H_

@@ -7,6 +7,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/task/sequenced_task_runner.h"
+#import "components/tab_groups/tab_group_id.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
@@ -15,11 +17,11 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/tabs_closure_animation.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_ui_swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_preamble_header.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/web/public/web_state_id.h"
 
 using base::apple::ObjCCast;
-using base::apple::ObjCCastStrict;
 
 namespace {
 
@@ -53,19 +55,32 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 
 #pragma mark - Public
 
-- (void)animateTabsClosureForTabs:(std::set<web::WebStateID>)tabsToClose {
-  NSMutableArray<GridCell*>* gridCells = [[NSMutableArray alloc] init];
+- (void)animateTabsClosureForTabs:(std::set<web::WebStateID>)tabsToClose
+                           groups:
+                               (std::map<tab_groups::TabGroupId, std::set<int>>)
+                                   groupsWithTabsToClose {
+  NSMutableArray<UIView*>* gridCells = [[NSMutableArray alloc] init];
 
   for (NSIndexPath* path in self.collectionView.indexPathsForVisibleItems) {
     GridItemIdentifier* item =
         [self.diffableDataSource itemIdentifierForIndexPath:path];
-    // TODO(crbug.com/354112735): Add logic for animation of inactive tabs and
-    // tabs in groups.
+    UICollectionViewCell* collectionViewCell =
+        [self.collectionView cellForItemAtIndexPath:path];
+    // TODO(crbug.com/354112735): Add logic for animation of inactive tabs.
     if (item.type == GridItemType::kTab &&
         tabsToClose.contains(item.tabSwitcherItem.identifier)) {
-      UICollectionViewCell* collectionViewCell =
-          [self.collectionView cellForItemAtIndexPath:path];
-      [gridCells addObject:ObjCCastStrict<GridCell>(collectionViewCell)];
+      [gridCells addObject:collectionViewCell];
+    } else if (item.type == GridItemType::kGroup &&
+               groupsWithTabsToClose.contains(
+                   item.tabGroupItem.tabGroup->tab_group_id())) {
+      // If the entire group is going to be deleted, then animate the entire
+      // grid cell.
+      if ((NSInteger)
+              groupsWithTabsToClose[item.tabGroupItem.tabGroup->tab_group_id()]
+                  .size() == item.tabGroupItem.numberOfTabsInGroup) {
+        [gridCells addObject:collectionViewCell];
+      }
+      // TODO(crbug.com/354112735): Animate screenshots inside GroupTabView.
     }
   }
 

@@ -125,6 +125,7 @@ source_set("util") {
   ]
   deps = [
     "//base",
+    "//components/tab_groups",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",

@@ -46,6 +46,9 @@
     combineTransitionLayout:(LegacyGridTransitionLayout*)primaryLayout
        withTransitionLayout:(LegacyGridTransitionLayout*)secondaryLayout;
 
+// Hides the potentially displayed Tab Group view.
+- (void)hideTabGroup;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_COORDINATOR_SUBCLASSING_H_

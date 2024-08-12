@@ -9,13 +9,11 @@
 
 #import "base/ios/block_types.h"
 
-@class GridCell;
-
 // Creates and triggers the tab closure animation.
 @interface TabsClosureAnimation : NSObject
 
 - (instancetype)initWithWindow:(UIView*)window
-                     gridCells:(NSArray<GridCell*>*)gridCells
+                     gridCells:(NSArray<UIView*>*)gridCells
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

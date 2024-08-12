@@ -287,6 +287,7 @@ const CGFloat kGroupColorViewSize = 18;
 
 - (void)setAlpha:(CGFloat)alpha {
   // Make sure alpha is synchronized with opacity.
+  _opacity = alpha;
   super.alpha = _opacity;
 }
 

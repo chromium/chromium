@@ -59,7 +59,9 @@ source_set("regular_ui") {
 
   deps = [
     "//base",
+    "//components/tab_groups",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",

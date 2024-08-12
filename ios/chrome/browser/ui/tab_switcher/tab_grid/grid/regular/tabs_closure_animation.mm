@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/tabs_closure_animation.h"
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
@@ -16,8 +15,8 @@ constexpr CFTimeInterval kAnimationDuration = 1.3;
 constexpr CFTimeInterval kDisappearingOpacityDuration =
     kAnimationDuration / 3.0;
 
-// Delay for the start of the tab disappearing animation.
-constexpr CFTimeInterval kTabDisappearingAnimationDelay = 0.0;
+// Delay for the start of the grid cell disappearing animation.
+constexpr CFTimeInterval kGridCellDisappearingAnimationDelay = 0.0;
 
 // Delay for the start of the disappearing animation of the wipe effect
 // animation.
@@ -34,8 +33,8 @@ constexpr CGFloat kDisappearinAnimationStartRadius = 0.1;
 // Gradient animation radius at the end of the animation.
 constexpr CGFloat kColorGradientAnimationEndRadius = 2.5;
 
-// Tab disapperating animation radius at the end of the animation.
-constexpr CGFloat kTabDisappearingAnimationEndRadius = 2.8;
+// Grid cell disapperating animation radius at the end of the animation.
+constexpr CGFloat kGridCellDisappearingAnimationEndRadius = 2.8;
 
 // Disapperating animation radius at the end of the wipe effect animation.
 constexpr CGFloat kWipeDisappearingAnimationEndRadius = 1.8;
@@ -199,14 +198,14 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
 
 @implementation TabsClosureAnimation {
   UIView* _window;
-  NSArray<GridCell*>* _gridCells;
+  NSArray<UIView*>* _gridCells;
   CAGradientLayer* _gradientLayer;
 }
 
 #pragma mark - Public
 
 - (instancetype)initWithWindow:(UIView*)window
-                     gridCells:(NSArray<GridCell*>*)gridCells {
+                     gridCells:(NSArray<UIView*>*)gridCells {
   self = [super init];
   if (self) {
     _window = window;
@@ -230,7 +229,7 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
   }];
 
   [self addWipeEffectAnimation];
-  [self addTabsDisapperingAnimation];
+  [self addGridCellDisapperingAnimation];
 
   [CATransaction commit];
 }
@@ -248,22 +247,22 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
 }
 
 // Adds the disappering animation to all views in `_gridCells`.
-- (void)addTabsDisapperingAnimation {
-  for (GridCell* cell : _gridCells) {
-    CAGradientLayer* tabGradientLayer = GetAnimatedDisappearingGradient(
-        _window.frame, kTabDisappearingAnimationEndRadius, kAnimationDuration,
-        kTabDisappearingAnimationDelay);
+- (void)addGridCellDisapperingAnimation {
+  for (UIView* cell : _gridCells) {
+    CAGradientLayer* gridCellGradientLayer = GetAnimatedDisappearingGradient(
+        _window.frame, kGridCellDisappearingAnimationEndRadius,
+        kAnimationDuration, kGridCellDisappearingAnimationDelay);
 
-    // Get position of the tab on the tab grid's coordinate system. The
-    // `tabGradientLayer` position coordinates are in the tab's coordinate
-    // system. As such, we need to adjust the `tabGradientLayer`'s position with
-    // the position of the tab in its superview, the grid view.
+    // Get position of the cell on the tab grid's coordinate system. The
+    // `gridCellGradientLayer` position coordinates are in the cell's coordinate
+    // system. As such, we need to adjust the `gridCellGradientLayer`'s position
+    // with the position of the cell in its superview, the grid view.
     CGRect cellInTabGrid = [_window convertRect:cell.frame
                                        fromView:cell.superview];
-    tabGradientLayer.position =
+    gridCellGradientLayer.position =
         CGPointMake(_window.center.x - cellInTabGrid.origin.x,
                     _window.center.y - cellInTabGrid.origin.y);
-    cell.layer.mask = tabGradientLayer;
+    cell.layer.mask = gridCellGradientLayer;
   }
 }
 
@@ -274,10 +273,10 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
   [_gradientLayer removeFromSuperlayer];
   _gradientLayer = nil;
 
-  // Remove the gradient layer in each tab mask in favor of setting the opacity
-  // to 0.
-  for (GridCell* cell : _gridCells) {
-    cell.opacity = 0;
+  // Remove the gradient layer in each grid cell mask in favor of setting the
+  // opacity to 0.
+  for (UIView* cell : _gridCells) {
+    cell.alpha = 0;
     cell.layer.mask = nil;
   }
 

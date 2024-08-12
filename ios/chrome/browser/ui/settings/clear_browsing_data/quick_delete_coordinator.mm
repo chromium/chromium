@@ -165,9 +165,14 @@
   id<TabsAnimationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabsAnimationCommands);
 
+  // TODO(crbug.com/335387869): Consider only returning tabs not in tab groups.
   std::set<web::WebStateID> tabsToClose = tabs_closure_util::GetTabsToClose(
       self.browser->GetWebStateList(), beginTime, endTime, cachedTabsInfo);
-  [handler animateTabsClosureForTabs:tabsToClose];
+  std::map<tab_groups::TabGroupId, std::set<int>> tabGroupsWithTabsToClose =
+      tabs_closure_util::GetTabGroupsWithTabsToClose(
+          self.browser->GetWebStateList(), beginTime, endTime, cachedTabsInfo);
+  [handler animateTabsClosureForTabs:tabsToClose
+                              groups:tabGroupsWithTabsToClose];
 }
 
 // Disconnects all instances.

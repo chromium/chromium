@@ -188,8 +188,13 @@
 
 #pragma mark - TabsAnimationCommands
 
-- (void)animateTabsClosureForTabs:(std::set<web::WebStateID>)tabsToClose {
-  [_gridViewController animateTabsClosureForTabs:tabsToClose];
+- (void)animateTabsClosureForTabs:(std::set<web::WebStateID>)tabsToClose
+                           groups:
+                               (std::map<tab_groups::TabGroupId, std::set<int>>)
+                                   groupsWithTabsToClose {
+  [self hideTabGroup];  // Make sure that no tab group is being displayed.
+  [_gridViewController animateTabsClosureForTabs:tabsToClose
+                                          groups:groupsWithTabsToClose];
 }
 
 #pragma mark - Public

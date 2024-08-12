@@ -5,11 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_REGULAR_REGULAR_GRID_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_REGULAR_REGULAR_GRID_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller+subclassing.h"
+#import <map>
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller+subclassing.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
 
 @protocol GridCommands;
+namespace tab_groups {
+class TabGroupId;
+}  // namespace tab_groups
 
 // A view controller that contains a grid of regular items.
 @interface RegularGridViewController
@@ -19,8 +23,11 @@
 @property(nonatomic, weak) id<GridCommands> gridHandler;
 
 // Trigger the tabs closure animation along with the actual closure of the
-// WebStates in `tabsToClose`.
-- (void)animateTabsClosureForTabs:(std::set<web::WebStateID>)tabsToClose;
+// WebStates in `tabsToClose` and the groups in `groupsWithTabsToClose`.
+- (void)animateTabsClosureForTabs:(std::set<web::WebStateID>)tabsToClose
+                           groups:
+                               (std::map<tab_groups::TabGroupId, std::set<int>>)
+                                   groupsWithTabsToClose;
 
 @end
 
