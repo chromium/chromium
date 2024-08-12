@@ -92,7 +92,7 @@ class FeaturedSearchProviderTest : public testing::Test {
           "case %" PRIuS ": %s", i, base::UTF16ToUTF8(cases[i].input).c_str()));
       AutocompleteInput input(cases[i].input, metrics::OmniboxEventProto::OTHER,
                               TestSchemeClassifier());
-      input.set_prevent_inline_autocomplete(true);
+      input.set_allow_exact_keyword_match(false);
       provider_->Start(input, false);
       EXPECT_TRUE(provider_->done());
       matches = provider_->matches();

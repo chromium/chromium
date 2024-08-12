@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -63,6 +64,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/metadata/type_conversion.h"
@@ -193,6 +195,8 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
 
   suggestion_view_ = suggestion_and_buttons->AddChildView(
       std::make_unique<OmniboxMatchCellView>(this));
+  suggestion_view_->iph_link_view()->SetCallback(base::BindRepeating(
+      &OmniboxResultView::OpenIphLink, weak_factory_.GetWeakPtr()));
   // Allocate space for the suggestion text only after accounting
   // for the space needed to render the inline action chip row.
   suggestion_view_->SetProperty(
@@ -250,8 +254,7 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
     return nullptr;
   }
 
-  if (OmniboxFieldTrial::IsFeaturedSearchIPHEnabled() &&
-      part_state == OmniboxPartState::IPH) {
+  if (part_state == OmniboxPartState::IPH) {
     return views::CreateThemedRoundedRectBackground(
         GetOmniboxBackgroundColorId(part_state), /*radius=*/8,
         /*for_border_thickness=*/0);
@@ -432,17 +435,9 @@ OmniboxPartState OmniboxResultView::GetThemeState() const {
   // NULL_RESULT_MESSAGE matches are no-op suggestions that only deliver a
   // message. The selected and hovered states imply an action can be taken from
   // that suggestion, so do not allow those states for this result.
-  //
-  // IPH messages originate from the Featured Search Provider and show a
-  // different theme state (colored background).
-  // TODO(crbug.com/333762301): Probably makes sense to find a more sustainable
-  // way to differentiate IPH from the "No Results Found" suggestion. Maybe a
-  // different autocomplete match type.
   if (match_.type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
-    bool is_iph = OmniboxFieldTrial::IsFeaturedSearchIPHEnabled() &&
-                  match_.provider->type() ==
-                      AutocompleteProvider::Type::TYPE_FEATURED_SEARCH;
-    return is_iph ? OmniboxPartState::IPH : OmniboxPartState::NORMAL;
+    return match_.IsIPHSuggestion() ? OmniboxPartState::IPH
+                                    : OmniboxPartState::NORMAL;
   }
 
   if (GetMatchSelected()) {
@@ -614,6 +609,10 @@ void OmniboxResultView::EmitTextChangedAccessiblityEvent() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // OmniboxResultView, private:
+
+void OmniboxResultView::OpenIphLink() {
+  popup_view_->controller()->client()->OpenIphLink(match_.iph_link_url);
+}
 
 gfx::Image OmniboxResultView::GetIcon() const {
   // Usually, use kColorOmniboxResultsIcon[Selected] for icon color. Except for

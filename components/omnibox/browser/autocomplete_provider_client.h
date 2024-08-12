@@ -204,6 +204,9 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // Returns true if history embeddings is enabled and user has opted in.
   virtual bool IsHistoryEmbeddingsEnabled() const;
 
+  // Returns true if history embeddings is enabled and user can opt in/out.
+  virtual bool IsHistoryEmbeddingsSettingVisible() const;
+
   // Returns whether the app is currently in the background state (Mobile only).
   virtual bool in_background_state() const;
 

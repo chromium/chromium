@@ -105,6 +105,9 @@ inline constexpr char kShowGeminiIPH[] = "omnibox.show_gemini_iph";
 inline constexpr char kShowFeaturedEnterpriseSiteSearchIPHPrefName[] =
     "omnibox.show_featured_enterprise_search_iph";
 
+inline constexpr char kShowHistoryEmbeddingsSettingsPromo[] =
+    "omnibox.show_history_embeddings_settings_promo";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Returns the stored visibility preference for |suggestion_group_id|.

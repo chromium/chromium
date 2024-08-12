@@ -723,15 +723,6 @@ void OptimizationGuideKeyedService::
   model_quality_logs_uploader_service_ = std::move(uploader);
 }
 
-bool OptimizationGuideKeyedService::IsSettingVisible(
-    optimization_guide::UserVisibleFeatureKey feature) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!model_execution_features_controller_) {
-    return false;
-  }
-  return model_execution_features_controller_->IsSettingVisible(feature);
-}
-
 bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyEnabledForUser(
     optimization_guide::UserVisibleFeatureKey feature) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -759,6 +750,15 @@ bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyAllowedForFeedback(
   bool is_dogfood_client =
       !!variations_service && variations_service->IsLikelyDogfoodClient();
   return is_dogfood_client && ShouldFeatureBeCurrentlyEnabledForUser(feature);
+}
+
+bool OptimizationGuideKeyedService::IsSettingVisible(
+    optimization_guide::UserVisibleFeatureKey feature) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!model_execution_features_controller_) {
+    return false;
+  }
+  return model_execution_features_controller_->IsSettingVisible(feature);
 }
 
 bool OptimizationGuideKeyedService::ShouldShowExperimentalAIPromo() const {

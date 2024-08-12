@@ -94,6 +94,7 @@ enum class IphType {
   kNone,
   kGemini,
   kFeaturedEnterpriseSearch,
+  kHistoryEmbeddingsSettingsPromo,
 };
 
 // AutocompleteMatch ----------------------------------------------------------
@@ -951,6 +952,12 @@ struct AutocompleteMatch {
 
   // E.g. the gemini IPH match shown at the bottom of the popup.
   IphType iph_type = IphType::kNone;
+
+  // IPH matches aren't clickable like other matches, but may have a next-action
+  // or learn-more type of link. This link is always appended to the end of
+  // their contents/description text.
+  std::u16string iph_link_text;
+  GURL iph_link_url;
 
   // So users of AutocompleteMatch can use the same ellipsis that it uses.
   static const char16_t kEllipsis[];

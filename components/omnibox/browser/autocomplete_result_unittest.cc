@@ -144,6 +144,8 @@ class AutocompleteResultTest : public testing::Test {
 
     // Inline autocompletion.
     std::string inline_autocompletion;
+
+    IphType iph_type = IphType::kNone;
   };
 
   AutocompleteResultTest() {
@@ -251,6 +253,7 @@ AutocompleteMatch AutocompleteResultTest::PopulateAutocompleteMatch(
     match.suggestion_group_id = data.suggestion_group_id.value();
   }
   match.inline_autocompletion = base::UTF8ToUTF16(data.inline_autocompletion);
+  match.iph_type = data.iph_type;
   return match;
 }
 
@@ -2653,7 +2656,9 @@ TEST_F(AutocompleteResultTest, Desktop_ZpsGroupingIPH) {
        false,
        {},
        AutocompleteMatchType::NULL_RESULT_MESSAGE,
-       group2},
+       group2,
+       "",
+       IphType::kFeaturedEnterpriseSearch},
   };
   ACMatches matches;
   PopulateAutocompleteMatches(data, std::size(data), &matches);

@@ -99,6 +99,8 @@ class OmniboxResultView : public views::View {
  private:
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, DeleteSuggestion);
 
+  void OpenIphLink();
+
   gfx::Image GetIcon() const;
 
   // Updates the highlight state of the row, as well as conditionally shows
