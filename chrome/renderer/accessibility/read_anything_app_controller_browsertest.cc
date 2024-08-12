@@ -57,6 +57,10 @@ class MockReadAnythingUntrustedPageHandler
               (const ui::AXTreeID& target_tree_id, ui::AXNodeID target_node_id),
               (override));
   MOCK_METHOD(void,
+              ScrollToTargetNode,
+              (const ui::AXTreeID& target_tree_id, ui::AXNodeID target_node_id),
+              (override));
+  MOCK_METHOD(void,
               OnSelectionChange,
               (const ui::AXTreeID& target_tree_id,
                ui::AXNodeID anchor_node_id,
@@ -426,6 +430,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   void RequestImageDataUrl(ui::AXNodeID node_id) {
     controller_->RequestImageDataUrl(node_id);
   }
+
+  void OnScrolledToBottom() { controller_->OnScrolledToBottom(); }
 
   void OnSelectionChange(ui::AXNodeID anchor_node_id,
                          int anchor_offset,
@@ -2046,6 +2052,68 @@ TEST_F(ReadAnythingAppControllerTest, OnLinkClicked_DistillationInProgress) {
   // If distillation is in progress, OnLinkClicked should not be called.
   EXPECT_CALL(page_handler_, OnLinkClicked).Times(0);
   OnLinkClicked(2);
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerTest, ScrollToTargetNode_ScrollsIfGoogleDocs) {
+  ui::AXNodeData root;
+  ui::AXNodeData node;
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update, id_1);
+
+  root.id = 1;
+  root.AddStringAttribute(
+      ax::mojom::StringAttribute::kUrl,
+      "https://docs.google.com/document/d/"
+      "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
+      "edit?ouid=103677288878638916900&usp=docs_home&ths=true");
+  node.id = 2;
+  root.child_ids = {node.id};
+  update.nodes = {root, node};
+  update.root_id = root.id;
+
+  AccessibilityEventReceived({update});
+  EXPECT_TRUE(IsUrlInformationSet(id_1));
+  OnAXTreeDistilled({1});
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  OnActiveAXTreeIDChanged(id_1);
+  EXPECT_TRUE(IsGoogleDocs());
+
+  ui::AXNodeID ax_node_id = 4;
+  EXPECT_CALL(page_handler_, ScrollToTargetNode(id_1, ax_node_id)).Times(1);
+  OnScrolledToBottom();
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       ScrollToTargetNode_DoesNotScrollIfNotGoogleDocs) {
+  ui::AXNodeData root;
+  ui::AXNodeData node;
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update, id_1);
+
+  root.id = 1;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                          "https://www.google.com/");
+  node.id = 2;
+  root.child_ids = {node.id};
+  update.nodes = {root, node};
+  update.root_id = root.id;
+
+  AccessibilityEventReceived({update});
+  EXPECT_TRUE(IsUrlInformationSet(id_1));
+  OnAXTreeDistilled({1});
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  OnActiveAXTreeIDChanged(id_1);
+  EXPECT_FALSE(IsGoogleDocs());
+
+  ui::AXNodeID ax_node_id = 4;
+  EXPECT_CALL(page_handler_, ScrollToTargetNode(id_1, ax_node_id)).Times(0);
+  OnScrolledToBottom();
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
 }
