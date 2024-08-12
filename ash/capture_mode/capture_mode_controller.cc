@@ -662,7 +662,9 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
 
 void CaptureModeController::StartSunfishSession() {
   DCHECK(features::IsSunfishFeatureEnabled());
-  // TODO(b/357658506): Hook this up to start a new session.
+  StartInternal(SessionType::kReal, CaptureModeEntryType::kSunfish);
+  // TODO(b/357658506): Implement sunfish behavior. Currently this will start
+  // what looks like the default capture mode session.
 }
 
 void CaptureModeController::Stop() {
@@ -2158,6 +2160,9 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
   } else if (entry_type == CaptureModeEntryType::kGameDashboard) {
     CHECK(features::IsGameDashboardEnabled());
     behavior_type = BehaviorType::kGameDashboard;
+  } else if (entry_type == CaptureModeEntryType::kSunfish) {
+    DCHECK(features::IsSunfishFeatureEnabled());
+    behavior_type = BehaviorType::kSunfish;
   }
 
   RecordCaptureModeEntryType(entry_type);

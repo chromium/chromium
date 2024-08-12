@@ -3693,6 +3693,7 @@ test("ash_unittests") {
     "capture_mode/capture_mode_game_dashboard_unittests.cc",
     "capture_mode/capture_mode_unittests.cc",
     "capture_mode/gif_recording_unittests.cc",
+    "capture_mode/sunfish_unittest.cc",
     "child_accounts/parent_access_controller_impl_unittest.cc",
     "clipboard/clipboard_history_controller_unittest.cc",
     "clipboard/clipboard_history_item_unittest.cc",

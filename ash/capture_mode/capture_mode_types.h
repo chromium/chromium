@@ -90,6 +90,7 @@ enum class BehaviorType {
   kDefault,
   kProjector,
   kGameDashboard,
+  kSunfish,
 };
 
 // Converts the enum class `RecordingType` to its integer value.
