@@ -49,9 +49,11 @@
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/menu_list_inner_element.h"
 #include "third_party/blink/renderer/core/html/forms/popup_menu.h"
+#include "third_party/blink/renderer/core/html/html_hr_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
@@ -89,6 +91,14 @@ bool CanAssignToSelectSlot(const Node& node) {
   return node.HasTagName(html_names::kOptionTag) ||
          node.HasTagName(html_names::kOptgroupTag) ||
          node.HasTagName(html_names::kHrTag);
+}
+
+bool CanAssignToCustomizableSelectSlot(const Node& node) {
+  // Elements which are valid in <select>'s new content model as proposed for
+  // customizable select.
+  return IsA<HTMLOptionElement>(node) || IsA<HTMLOptGroupElement>(node) ||
+         IsA<HTMLHRElement>(node) || IsA<HTMLDataListElement>(node) ||
+         IsA<HTMLSpanElement>(node) || IsA<HTMLDivElement>(node);
 }
 
 }  // anonymous namespace
@@ -1690,7 +1700,10 @@ void ListBoxSelectType::CreateShadowSubtree(ShadowRoot& root) {
 void ListBoxSelectType::ManuallyAssignSlots() {
   VectorOf<Node> option_nodes;
   for (Node& child : NodeTraversal::ChildrenOf(*select_)) {
-    if (child.IsSlotable() && CanAssignToSelectSlot(child)) {
+    if (child.IsSlotable() &&
+        (CanAssignToSelectSlot(child) ||
+         (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+          CanAssignToCustomizableSelectSlot(child)))) {
       option_nodes.push_back(child);
     }
   }
