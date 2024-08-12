@@ -500,7 +500,7 @@
     ],
 
     'mac_clang_tot_official': [
-      'clang_tot', 'official', 'no_widevine_cdm_host_verification',
+      'clang_tot', 'official', 'no_widevine_cdm_host_verification', 'x64'
     ],
 
     'official_android_arm32_pgo': [
