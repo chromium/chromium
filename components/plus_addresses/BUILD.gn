@@ -150,6 +150,8 @@ static_library("test_support") {
     "mock_plus_address_http_client.cc",
     "mock_plus_address_http_client.h",
     "plus_address_http_client_impl_test_api.h",
+    "plus_address_test_environment.cc",
+    "plus_address_test_environment.h",
     "plus_address_test_utils.cc",
     "plus_address_test_utils.h",
   ]
@@ -164,5 +166,9 @@ static_library("test_support") {
   public_deps = [
     ":plus_addresses",
     ":types",
+    "//components/affiliations/core/browser:test_support",
+    "//components/plus_addresses/settings:test_support",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
   ]
 }

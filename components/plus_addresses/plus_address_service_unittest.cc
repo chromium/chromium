@@ -31,6 +31,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_http_client_impl.h"
+#include "components/plus_addresses/plus_address_test_environment.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
@@ -169,11 +170,20 @@ class PlusAddressServiceTest : public ::testing::Test {
   const url::Origin kNoSubdomainOrigin =
       url::Origin::Create(GURL("https://test.example"));
 
-  signin::IdentityTestEnvironment& identity_env() { return identity_test_env_; }
+  affiliations::MockAffiliationService& affiliation_service() {
+    return plus_environment_.affiliation_service();
+  }
+
+  signin::IdentityTestEnvironment& identity_env() {
+    return plus_environment_.identity_env();
+  }
   signin::IdentityManager* identity_manager() {
-    return identity_test_env_.identity_manager();
+    return identity_env().identity_manager();
   }
   PlusAddressService& service() { return *service_; }
+  FakePlusAddressSettingService& setting_service() {
+    return plus_environment_.setting_service();
+  }
   const scoped_refptr<network::SharedURLLoaderFactory>&
   shared_loader_factory() {
     return test_shared_loader_factory_;
@@ -183,21 +193,16 @@ class PlusAddressServiceTest : public ::testing::Test {
     return test_url_loader_factory_;
   }
 
-  affiliations::MockAffiliationService* mock_affiliation_service() {
-    return &mock_affiliation_service_;
-  }
-
-  FakePlusAddressSettingService& setting_service() { return setting_service_; }
 
   // Forces (re-)initialization of the `PlusAddressService`, which can be useful
   // when classes override feature parameters.
   void InitService() {
-    service_.emplace(identity_manager(), &setting_service_,
+    service_.emplace(identity_manager(), &setting_service(),
                      std::make_unique<PlusAddressHttpClientImpl>(
                          identity_manager(), shared_loader_factory()),
                      /*webdata_service=*/nullptr,
                      /*affiliation_service=*/
-                     &mock_affiliation_service_,
+                     &affiliation_service(),
                      /*feature_enabled_for_profile_check=*/
                      base::BindRepeating(&base::FeatureList::IsEnabled));
   }
@@ -205,9 +210,7 @@ class PlusAddressServiceTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  signin::IdentityTestEnvironment identity_test_env_;
-  FakePlusAddressSettingService setting_service_;
-  NiceMock<affiliations::MockAffiliationService> mock_affiliation_service_;
+  test::PlusAddressTestEnvironment plus_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   data_decoder::test::InProcessDataDecoder decoder_;
@@ -853,7 +856,7 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
             /*identity_manager=*/identity_test_env_.identity_manager(),
             /*url_loader_factory=*/nullptr),
         plus_webdata_service_,
-        /*affiliation_service=*/&mock_affiliation_service_,
+        /*affiliation_service=*/&affiliation_service_,
         /*feature_enabled_for_profile_check=*/
         base::BindRepeating(&base::FeatureList::IsEnabled));
   }
@@ -871,7 +874,7 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
   FakePlusAddressSettingService setting_service_;
   scoped_refptr<WebDatabaseService> webdatabase_service_;
   scoped_refptr<PlusAddressWebDataService> plus_webdata_service_;
-  NiceMock<affiliations::MockAffiliationService> mock_affiliation_service_;
+  NiceMock<affiliations::MockAffiliationService> affiliation_service_;
   // Except briefly during initialisation, it always has a value.
   std::optional<PlusAddressService> service_;
 };
@@ -1605,12 +1608,12 @@ TEST_F(PlusAddressAffiliationsTest, GetAffiliatedPSLSuggestions) {
   ASSERT_THAT(service().GetPlusProfiles(),
               UnorderedElementsAre(profile1, profile2, profile3));
 
-  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
       .WillOnce(RunOnceCallback<0>(std::vector<std::string>{"example.com"}));
 
   // Empty affiliation group.
   affiliations::GroupedFacets group;
-  EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
       .WillOnce(
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
@@ -1639,7 +1642,7 @@ TEST_F(PlusAddressAffiliationsTest, GetAffiliatedGroupSuggestions) {
   service().SavePlusProfile(group_profile);
   ASSERT_THAT(service().GetPlusProfiles(), ElementsAre(group_profile));
 
-  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
       .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
 
   // Prepares the `group_profile` facet to be returned as part of the
@@ -1647,7 +1650,7 @@ TEST_F(PlusAddressAffiliationsTest, GetAffiliatedGroupSuggestions) {
   affiliations::GroupedFacets group;
   group.facets.emplace_back(absl::get<FacetURI>(group_profile.facet));
 
-  EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
       .WillOnce(
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
@@ -1668,11 +1671,11 @@ TEST_F(PlusAddressAffiliationsTest,
   service().SavePlusProfile(group_profile);
   ASSERT_THAT(service().GetPlusProfiles(), ElementsAre(group_profile));
 
-  ON_CALL(*mock_affiliation_service(), GetPSLExtensions)
+  ON_CALL(affiliation_service(), GetPSLExtensions)
       .WillByDefault(RunOnceCallback<0>(std::vector<std::string>()));
   affiliations::GroupedFacets group;
   group.facets.emplace_back(absl::get<FacetURI>(group_profile.facet));
-  ON_CALL(*mock_affiliation_service(), GetGroupingInfo)
+  ON_CALL(affiliation_service(), GetGroupingInfo)
       .WillByDefault(
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
@@ -1688,10 +1691,10 @@ TEST_F(PlusAddressAffiliationsTest,
 // record.
 TEST_F(PlusAddressAffiliationsTest,
        GetSuggestionsDoesNotOfferCreationWhenOffTheRecord) {
-  ON_CALL(*mock_affiliation_service(), GetPSLExtensions)
+  ON_CALL(affiliation_service(), GetPSLExtensions)
       .WillByDefault(RunOnceCallback<0>(std::vector<std::string>()));
   affiliations::GroupedFacets group;
-  ON_CALL(*mock_affiliation_service(), GetGroupingInfo)
+  ON_CALL(affiliation_service(), GetGroupingInfo)
       .WillByDefault(
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
@@ -1707,10 +1710,10 @@ TEST_F(PlusAddressAffiliationsTest,
        GetSuggestionsDoesNotOfferCreationWhenToggleIsOff) {
   base::test::ScopedFeatureList feature_list{
       features::kPlusAddressGlobalToggle};
-  ON_CALL(*mock_affiliation_service(), GetPSLExtensions)
+  ON_CALL(affiliation_service(), GetPSLExtensions)
       .WillByDefault(RunOnceCallback<0>(std::vector<std::string>()));
   affiliations::GroupedFacets group;
-  ON_CALL(*mock_affiliation_service(), GetGroupingInfo)
+  ON_CALL(affiliation_service(), GetGroupingInfo)
       .WillByDefault(
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
   setting_service().set_is_plus_addresses_enabled(false);
@@ -1733,11 +1736,11 @@ TEST_F(PlusAddressAffiliationsTest,
   service().SavePlusProfile(group_profile);
   ASSERT_THAT(service().GetPlusProfiles(), ElementsAre(group_profile));
 
-  ON_CALL(*mock_affiliation_service(), GetPSLExtensions)
+  ON_CALL(affiliation_service(), GetPSLExtensions)
       .WillByDefault(RunOnceCallback<0>(std::vector<std::string>()));
   affiliations::GroupedFacets group;
   group.facets.emplace_back(absl::get<FacetURI>(group_profile.facet));
-  ON_CALL(*mock_affiliation_service(), GetGroupingInfo)
+  ON_CALL(affiliation_service(), GetGroupingInfo)
       .WillByDefault(
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
   setting_service().set_is_plus_addresses_enabled(false);
@@ -1763,14 +1766,14 @@ TEST_F(PlusAddressAffiliationsTest, GetEmptyAffiliatedSuggestionMatches) {
   ASSERT_THAT(service().GetPlusProfiles(),
               UnorderedElementsAre(stored_profile1, stored_profile2));
 
-  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
       .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
 
   affiliations::GroupedFacets group;
   group.facets.emplace_back(
       FacetURI::FromCanonicalSpec("https://group.affiliated.com"));
 
-  EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
       .WillOnce(
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
@@ -1799,12 +1802,12 @@ TEST_F(PlusAddressAffiliationsTest, GetAffiliatedPSLProfiles) {
   ASSERT_THAT(service().GetPlusProfiles(),
               UnorderedElementsAre(profile1, profile2, profile3));
 
-  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
       .WillOnce(RunOnceCallback<0>(std::vector<std::string>{"example.com"}));
 
   // Empty affiliation group.
   affiliations::GroupedFacets group;
-  EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
       .WillOnce(
           RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
 
@@ -1827,7 +1830,7 @@ TEST_F(PlusAddressAffiliationsTest,
   service().SavePlusProfile(group_profile);
   ASSERT_THAT(service().GetPlusProfiles(), UnorderedElementsAre(group_profile));
 
-  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
       .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
 
   // Prepares the `group_profile` facet to be returned as part of the
