@@ -255,6 +255,9 @@
   };
 
   [_tabGroupConfirmationCoordinator start];
+
+  self.tabStripViewController.tabGroupConfirmationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabGroupConfirmationCommands);
 }
 
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate

@@ -11,6 +11,7 @@
 
 class Browser;
 enum class TabGroupActionType;
+@protocol TabGroupConfirmationCommands;
 
 // An action block type that takes no argument and returns nothing. A tab group
 // is modified inside the block.
@@ -18,7 +19,8 @@ typedef void (^TabGroupActionBlock)();
 
 // Coordinator for displaying an action sheet to confirm the action to a tab
 // group.
-@interface TabGroupConfirmationCoordinator : ChromeCoordinator
+@interface TabGroupConfirmationCoordinator<TabGroupConfirmationCommands>
+    : ChromeCoordinator
 
 // The action that a tab group is going to take.
 @property(nonatomic, strong) TabGroupActionBlock action;

@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_UI_SWIFT_BRIDGE_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_UI_SWIFT_BRIDGE_H_
 
+#import "ios/chrome/browser/shared/public/commands/tab_group_confirmation_commands.h"
 #import "ios/chrome/browser/shared/public/metrics/histogram_functions_bridge.h"
 #import "ios/chrome/browser/shared/public/metrics/user_metrics_bridge.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"

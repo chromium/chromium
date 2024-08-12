@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_group_confirmation_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
@@ -286,6 +287,9 @@
     [weakSelf takeActionForActionType:actionType weakGroup:weakGroup];
   };
   [_tabGroupConfirmationCoordinator start];
+
+  self.gridViewController.tabGroupConfirmationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabGroupConfirmationCommands);
 }
 
 - (void)showTabGroupConfirmationForAction:(TabGroupActionType)actionType
@@ -302,6 +306,9 @@
     [weakSelf takeActionForActionType:actionType weakGroup:weakGroup];
   };
   [_tabGroupConfirmationCoordinator start];
+
+  self.gridViewController.tabGroupConfirmationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabGroupConfirmationCommands);
 }
 
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate

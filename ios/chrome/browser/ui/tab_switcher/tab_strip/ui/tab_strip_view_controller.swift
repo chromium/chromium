@@ -81,6 +81,9 @@ class TabStripViewController: UIViewController,
   /// Provides context menu for tab strip items.
   public weak var contextMenuProvider: TabStripContextMenuProvider?
 
+  /// Handler for tab group confirmation commands.
+  public weak var tabGroupConfirmationHandler: TabGroupConfirmationCommands?
+
   /// The LayoutGuideCenter.
   @objc public var layoutGuideCenter: LayoutGuideCenter? {
     didSet {
@@ -190,6 +193,9 @@ class TabStripViewController: UIViewController,
   override func viewWillTransition(
     to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator
   ) {
+    // Dismisses the confirmation dialog for tab group if it's displayed.
+    tabGroupConfirmationHandler?.dismissTabGroupConfirmation()
+
     super.viewWillTransition(to: size, with: coordinator)
     weak var weakSelf = self
     coordinator.animate(alongsideTransition: nil) { _ in

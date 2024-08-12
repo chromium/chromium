@@ -24,6 +24,7 @@
 @protocol TabContextMenuProvider;
 @protocol TabCollectionDragDropHandler;
 @protocol TabGridCommands;
+@protocol TabGroupConfirmationCommands;
 @class TabGridTransitionItem;
 class TabGroup;
 
@@ -144,6 +145,9 @@ class WebStateID;
     BOOL gridScrollsToTopEnabled;
 // Tab Grid handler.
 @property(nonatomic, weak) id<TabGridCommands> tabGridHandler;
+// Handler for tab group confirmation commands.
+@property(nonatomic, weak) id<TabGroupConfirmationCommands>
+    tabGroupConfirmationHandler;
 
 // Returns the layout of the grid for use in an animated transition.
 - (LegacyGridTransitionLayout*)transitionLayout;
