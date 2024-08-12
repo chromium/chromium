@@ -265,4 +265,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
 
   // WebView does not currently support the Permissions API (crbug.com/490120)
   aw_feature_overrides.DisableFeature(::features::kWebPermissionsApi);
+
+  // TODO(crbug.com/356827071): Enable the feature for WebView.
+  // Disable PlzDedicatedWorker as a workaround for crbug.com/356827071.
+  // Otherwise, importScripts fails on WebView.
+  aw_feature_overrides.DisableFeature(blink::features::kPlzDedicatedWorker);
 }
