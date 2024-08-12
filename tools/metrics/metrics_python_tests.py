@@ -36,6 +36,7 @@ sys.exit(
             'common/codegen_shared_test.py',
             'dwa/dwa_model_test.py',
             'dwa/dwa_xml_validations_test.py',
+            'dwa/gen_builders_test.py',
             'ukm/gen_builders_test.py',
             'ukm/ukm_model_test.py',
             'ukm/xml_validations_test.py',
