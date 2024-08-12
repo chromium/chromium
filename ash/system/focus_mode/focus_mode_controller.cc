@@ -222,23 +222,24 @@ void FocusModeController::OnActiveUserSessionChanged(
 }
 
 void FocusModeController::OnSelectedPlaylistChanged() {
-  if (!in_focus_session()) {
-    // If a user swaps playlists or deselects the playlist, we should close the
-    // previous media widget.
-    if (media_widget_) {
-      CloseMediaWidget();
-    }
-    return;
-  }
-
-  focus_mode_metrics_recorder_->SetHasSelectedSoundType(
-      focus_mode_sounds_controller_->selected_playlist());
-
+  // If a user swaps playlists or deselects the playlist, we should close the
+  // previous media widget. The reason we don't just reuse the existing widget
+  // with a new playlist is that we need to refresh the web view source title so
+  // that it's populated correctly in the media controls.
   if (media_widget_) {
     CloseMediaWidget();
   }
 
-  MaybeCreateMediaWidget();
+  if (focus_mode_metrics_recorder_) {
+    focus_mode_metrics_recorder_->SetHasSelectedSoundType(
+        focus_mode_sounds_controller_->selected_playlist());
+  }
+
+  // Only attempt to create the media widget if we are in an active focus
+  // session.
+  if (in_focus_session()) {
+    MaybeCreateMediaWidget();
+  }
 }
 
 void FocusModeController::OnSelectedTaskChanged(
