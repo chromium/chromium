@@ -830,20 +830,12 @@ def _set_builder_config_property(ctx):
                 any([s.key.id in mega_cq_excluded_gardener_rotations for s in rotations])
             )
             if rotations and not mirroring_builders and not is_excluded:
-                # TODO(crbug.com/356418711): Make this fail() regardless of project.
-                if settings.project.startswith("chrome"):
-                    print("{} is on a sheriff/gardener rotation, but lacks a matching trybot".format(builder.name))
-                else:
-                    fail("{} is on a sheriff/gardener rotation, but lacks a matching trybot".format(builder.name))
+                fail("{} is on a sheriff/gardener rotation, but lacks a matching trybot".format(builder.name))
 
             if (bucket_name == "try" and not mirrors and
                 builder_properties.get("builder_group") not in standalone_trybot_excluded_builder_groups and
                 builder.name not in standalone_trybot_excluded_builders):
-                # TODO(crbug.com/356418711): Make this fail() regardless of project.
-                if settings.project.startswith("chrome"):
-                    print(builder.name + " must not be a stand-alone trybot. Please add a corresponding CI bot for it to mirror.")
-                else:
-                    fail(builder.name + " must not be a stand-alone trybot. Please add a corresponding CI bot for it to mirror.")
+                fail(builder.name + " must not be a stand-alone trybot. Please add a corresponding CI bot for it to mirror.")
 
             # Put most gardened CI bots' trybots onto the mega CQ. We skip a
             # trybot if any of the following are true:

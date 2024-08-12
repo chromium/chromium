@@ -97,17 +97,9 @@ def _get_gn_args_resolver():
             config["gn_args"] = gn_args
 
             if "target_os" not in gn_args:
-                # TODO(crbug.com/356418711): Make this fail() regardless of project.
-                if settings.project.startswith("chrome"):
-                    print("target_os is required for gn_args: {}".format(gn_config_node.key.id))
-                else:
-                    fail("target_os is required for gn_args: {}".format(gn_config_node.key.id))
+                fail("target_os is required for gn_args: {}".format(gn_config_node.key.id))
             if "target_cpu" not in gn_args:
-                # TODO(crbug.com/356418711): Make this fail() regardless of project.
-                if settings.project.startswith("chrome"):
-                    print("target_cpu is required for gn_arg: {}".format(gn_config_node.key.id))
-                else:
-                    fail("target_cpu is required for gn_arg: {}".format(gn_config_node.key.id))
+                fail("target_cpu is required for gn_arg: {}".format(gn_config_node.key.id))
 
         return config
 
