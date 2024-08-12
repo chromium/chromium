@@ -166,17 +166,21 @@ foreach(locale, locales_with_pseudolocales) {
     # 1. Locale settings (e.g. default encoding, accept-languages per locale).
     # 2. Blink strings for UI elements, e.g. drop-down lists.
     # 3. //ui strings used to configure e.g. preferred font family.
+    # 4. //ui/strings/ax_strings are used for accessibility-related strings, of
+    # which fuchsia only uses a subset.
 
     sources = [
       "$root_gen_dir/components/strings/components_locale_settings_${locale}.pak",
       "$root_gen_dir/third_party/blink/public/strings/blink_strings_${locale}.pak",
       "$root_gen_dir/ui/strings/app_locale_settings_${locale}.pak",
+      "$root_gen_dir/ui/strings/ax_strings_${locale}.pak",
     ]
 
     deps = [
       "//components/strings:components_locale_settings",
       "//third_party/blink/public/strings",
       "//ui/strings:app_locale_settings",
+      "//ui/strings:ax_strings",
     ]
 
     output = "$root_gen_dir/locales/${locale}.pak"

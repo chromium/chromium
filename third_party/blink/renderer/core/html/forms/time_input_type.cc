@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 

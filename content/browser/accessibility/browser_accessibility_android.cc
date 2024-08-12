@@ -18,7 +18,6 @@
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "skia/ext/skia_utils_base.h"
-#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/android/accessibility_state.h"
 #include "ui/accessibility/ax_assistant_structure.h"

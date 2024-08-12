@@ -25,12 +25,12 @@
 
 #include "third_party/blink/renderer/core/html/forms/date_time_field_elements.h"
 
-#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_field_element.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_fields_state.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 

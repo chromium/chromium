@@ -99,7 +99,7 @@ component("ax_base") {
     "ax_updates_and_events.h",
   ]
 
-  if (!is_chromeos) {
+  if (!is_chromeos && !is_fuchsia) {
     sources += [
       "ax_enum_localization_util.cc",
       "ax_enum_localization_util.h",

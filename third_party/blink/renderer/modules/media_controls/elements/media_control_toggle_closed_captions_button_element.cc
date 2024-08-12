@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/media_controls/media_controls_text_track_manager.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 
