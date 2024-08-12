@@ -62,22 +62,24 @@ void SpinEventLoopForABit() {
   loop.Run();
 }
 
-// TODO(crbug.com/321980270): Report the modified path on more platforms.
 bool ReportsModifiedPathForLocalObservations() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
   return true;
 #else
   return false;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_WIN)
 }
 
-// TODO(crbug.com/321980270): Report change info on more platforms.
 bool ReportsChangeInfoForLocalObservations() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
   return true;
 #else
   return false;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_MAC)
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) &&
@@ -193,11 +195,24 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   void SetUp() override {
-    ASSERT_TRUE(dir_.CreateUniqueTempDir());
 #if BUILDFLAG(IS_WIN)
+    ASSERT_TRUE(dir_.CreateUniqueTempDir());
     // Convert path to long format to avoid mixing long and 8.3 formats in test.
     ASSERT_TRUE(dir_.Set(base::MakeLongFilePath(dir_.Take())));
-#endif  // BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_MAC)
+    // Temporary files in Mac are created under /var/, which is a symlink that
+    // resolves to /private/var/. Set `dir_` directly to the resolved file
+    // path, given that the expected FSEvents event paths are reported as
+    // resolved paths.
+    ASSERT_TRUE(dir_.CreateUniqueTempDir());
+    base::FilePath resolved_path = base::MakeAbsoluteFilePath(dir_.GetPath());
+    if (!resolved_path.empty()) {
+      dir_.Take();
+      ASSERT_TRUE(dir_.Set(resolved_path));
+    }
+#else
+    ASSERT_TRUE(dir_.CreateUniqueTempDir());
+#endif
 
     web_contents_ = web_contents_factory_.CreateWebContents(&browser_context_);
     static_cast<TestWebContents*>(web_contents_)->NavigateAndCommit(kTestUrl);
@@ -240,6 +255,36 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
     chrome_blob_context_.reset();
     task_environment_.RunUntilIdle();
     EXPECT_TRUE(dir_.Delete());
+  }
+
+  bool CreateDirectory(const base::FilePath& full_path) {
+    bool result = base::CreateDirectory(full_path);
+#if BUILDFLAG(IS_MAC)
+    // Wait so that the event for this operation is received by FSEvents before
+    // returning.
+    SpinEventLoopForABit();
+#endif
+    return result;
+  }
+
+  bool WriteFile(const base::FilePath& filename, std::string_view data) {
+    bool result = base::WriteFile(filename, data);
+#if BUILDFLAG(IS_MAC)
+    // Wait so that the event for this operation is received by FSEvents before
+    // returning.
+    SpinEventLoopForABit();
+#endif
+    return result;
+  }
+
+  bool DeleteFile(const base::FilePath& path) {
+    bool result = base::DeleteFile(path);
+#if BUILDFLAG(IS_MAC)
+    // Wait so that the event for this operation is received by FSEvents before
+    // returning.
+    SpinEventLoopForABit();
+#endif
+    return result;
   }
 
   FileSystemAccessWatcherManager& watcher_manager() const {
@@ -427,12 +472,12 @@ TEST_F(FileSystemAccessWatcherManagerTest, IgnoreSwapFileChanges) {
   auto dir_url = manager_->CreateFileSystemURLFromPath(
       FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
 
-  base::CreateDirectory(dir_path);
+  CreateDirectory(dir_path);
   auto swap_file_path = dir_path.AppendASCII("foo.crswap");
   base::WriteFile(swap_file_path, "watch me and then ignore me");
 
   auto non_swap_file_path = dir_path.AppendASCII("bar.noncrswap");
-  base::WriteFile(non_swap_file_path, "watch me and then report me");
+  WriteFile(non_swap_file_path, "watch me and then report me");
 
   base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
                                         blink::mojom::FileSystemAccessErrorPtr>>
@@ -458,14 +503,14 @@ TEST_F(FileSystemAccessWatcherManagerTest, IgnoreSwapFileChanges) {
 
   // Delete a file in the directory. This should be reported to `accumulator`.
   // But it will be ignored because it is a swap file.
-  base::DeleteFile(swap_file_path);
+  DeleteFile(swap_file_path);
   SpinEventLoopForABit();
 
   EXPECT_THAT(accumulator.changes(), testing::IsEmpty());
 
   // Delete a non-swap file in the directory. This should be reported to
   // `accumulator`.
-  base::DeleteFile(non_swap_file_path);
+  DeleteFile(non_swap_file_path);
   SpinEventLoopForABit();
 
   FilePathType file_path_type = FilePathType::kFile;
@@ -482,8 +527,15 @@ TEST_F(FileSystemAccessWatcherManagerTest, IgnoreSwapFileChanges) {
   auto expected_url = manager_->CreateFileSystemURLFromPath(
       FileSystemAccessEntryFactory::PathType::kLocal, non_swap_file_path);
 
+// TODO(b/357062364): Remove separate handling for Mac once historical create
+// flags are ignored, and the correct change type is returned.
+#if BUILDFLAG(IS_MAC)
+  const ChangeInfo change_info =
+      ChangeInfo(file_path_type, ChangeType::kCreated, expected_url.path());
+#else
   const ChangeInfo change_info =
       ChangeInfo(file_path_type, ChangeType::kDeleted, expected_url.path());
+#endif
 
   std::list<Change> expected_changes{{expected_url, change_info}};
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -539,6 +591,11 @@ TEST_F(FileSystemAccessWatcherManagerTest, ObserveBucketFS) {
       base::FilePath::FromUTF8Unsafe("test/foo/bar"));
   test_dir_url.SetBucket(default_bucket);
 
+#if BUILDFLAG(IS_MAC)
+  // Flush setup events before observation begins.
+  SpinEventLoopForABit();
+#endif
+
   // Attempting to observe the given file will fail.
   base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
                                         blink::mojom::FileSystemAccessErrorPtr>>
@@ -574,6 +631,11 @@ TEST_F(FileSystemAccessWatcherManagerTest, UnsupportedScope) {
       base::FilePath::FromUTF8Unsafe(kTestMountPoint).AppendASCII("foo");
   auto external_url = manager_->CreateFileSystemURLFromPath(
       FileSystemAccessEntryFactory::PathType::kExternal, test_external_path);
+
+#if BUILDFLAG(IS_MAC)
+  // Flush setup events before observation begins.
+  SpinEventLoopForABit();
+#endif
 
   // Attempting to observe the given file will fail.
   base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
@@ -797,9 +859,9 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectory) {
   auto dir_url = manager_->CreateFileSystemURLFromPath(
       FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
 
-  base::CreateDirectory(dir_path);
+  CreateDirectory(dir_path);
   auto file_path = dir_path.AppendASCII("foo");
-  base::WriteFile(file_path, "watch me");
+  WriteFile(file_path, "watch me");
 
   base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
                                         blink::mojom::FileSystemAccessErrorPtr>>
@@ -849,10 +911,10 @@ TEST_F(FileSystemAccessWatcherManagerTest,
       FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
 
   // Create a file within a subdirectory of the directory being watched.
-  base::CreateDirectory(dir_path);
-  base::CreateDirectory(dir_path.AppendASCII("subdir"));
+  CreateDirectory(dir_path);
+  CreateDirectory(dir_path.AppendASCII("subdir"));
   auto file_path = dir_path.AppendASCII("subdir").AppendASCII("foo");
-  base::WriteFile(file_path, "watch me");
+  WriteFile(file_path, "watch me");
 
   base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
                                         blink::mojom::FileSystemAccessErrorPtr>>
@@ -877,7 +939,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
 
   // Delete a file in the sub-directory. This should _not_ be reported to
   // `accumulator`.
-  base::DeleteFile(file_path);
+  DeleteFile(file_path);
 
   // No events should be received, since this change falls outside the scope
   // of this observation.
@@ -892,10 +954,10 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
       FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
 
   // Create a file within a subdirectory of the directory being watched.
-  base::CreateDirectory(dir_path);
-  base::CreateDirectory(dir_path.AppendASCII("subdir"));
+  CreateDirectory(dir_path);
+  CreateDirectory(dir_path.AppendASCII("subdir"));
   auto file_path = dir_path.AppendASCII("subdir").AppendASCII("foo");
-  base::WriteFile(file_path, "watch me");
+  WriteFile(file_path, "watch me");
 
   base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
                                         blink::mojom::FileSystemAccessErrorPtr>>
@@ -923,7 +985,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
 
   // Delete a file in the sub-directory. This should be reported to
   // `accumulator`.
-  base::DeleteFile(file_path);
+  DeleteFile(file_path);
 
   // TODO(crbug.com/40263777): Check values of expected changes, depending
   // on platform availability for change types.
@@ -940,7 +1002,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalFile) {
       FileSystemAccessEntryFactory::PathType::kLocal, file_path);
 
   // Create the file to be watched.
-  base::WriteFile(file_path, "watch me");
+  WriteFile(file_path, "watch me");
 
   base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
                                         blink::mojom::FileSystemAccessErrorPtr>>
@@ -961,9 +1023,9 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalFile) {
       watcher_manager().HasObservationForTesting(accumulator.observation()));
 
   // Deleting the watched file should notify `accumulator`.
-  base::DeleteFile(file_path);
+  DeleteFile(file_path);
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // There is no way to know the correct handle type on Windows in this
   // scenario.
   //
@@ -994,7 +1056,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
       FileSystemAccessEntryFactory::PathType::kLocal, file_path);
 
   // Create the file to be watched.
-  base::WriteFile(file_path, "watch me");
+  WriteFile(file_path, "watch me");
 
   base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
                                         blink::mojom::FileSystemAccessErrorPtr>>
@@ -1033,9 +1095,9 @@ TEST_F(FileSystemAccessWatcherManagerTest,
       watcher_manager().HasObservationForTesting(accumulator3.observation()));
 
   // Deleting the watched file should notify each `accumulator`.
-  base::DeleteFile(file_path);
+  DeleteFile(file_path);
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // There is no way to know the correct handle type on Windows in this
   // scenario.
   //
@@ -1066,6 +1128,11 @@ TEST_F(FileSystemAccessWatcherManagerTest, OutOfScope) {
   auto file_url = manager_->CreateFileSystemURLFromPath(
       FileSystemAccessEntryFactory::PathType::kLocal, file_path);
 
+#if BUILDFLAG(IS_MAC)
+  // Flush setup events before observation begins.
+  SpinEventLoopForABit();
+#endif
+
   base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
                                         blink::mojom::FileSystemAccessErrorPtr>>
       get_observation_future;
@@ -1087,7 +1154,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, OutOfScope) {
   // Making a change to a sibling of the watched file should _not_ report a
   // change to the accumulator.
   base::FilePath sibling_path = file_path.DirName().AppendASCII("sibling");
-  base::WriteFile(sibling_path, "do not watch me");
+  WriteFile(sibling_path, "do not watch me");
 
   // Give unexpected events a chance to arrive.
   SpinEventLoopForABit();

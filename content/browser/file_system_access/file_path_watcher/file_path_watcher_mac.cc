@@ -44,6 +44,14 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
     return impl_->Watch(path, type, callback);
   }
 
+  bool WatchWithChangeInfo(
+      const base::FilePath& path,
+      const WatchOptions& options,
+      const FilePathWatcher::CallbackWithChangeInfo& callback) override {
+    impl_ = std::make_unique<FilePathWatcherFSEvents>();
+    return impl_->WatchWithChangeInfo(path, options, callback);
+  }
+
   void Cancel() override {
     if (impl_.get()) {
       impl_->Cancel();
