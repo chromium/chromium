@@ -448,9 +448,7 @@
     "ios-simulator reclient staging": "reclient/ios-simulator reclient staging/gn-args.json",
     "ios-simulator reclient staging untrusted": "reclient/ios-simulator reclient staging untrusted/gn-args.json",
     "mac-arm64-rel reclient staging": "reclient/mac-arm64-rel reclient staging/gn-args.json",
-    "mac-arm64-rel reclient staging untrusted": "reclient/mac-arm64-rel reclient staging untrusted/gn-args.json",
-    "mac-arm64-rel reclient test": "reclient/mac-arm64-rel reclient test/gn-args.json",
-    "mac-arm64-rel reclient test untrusted": "reclient/mac-arm64-rel reclient test untrusted/gn-args.json"
+    "mac-arm64-rel reclient staging untrusted": "reclient/mac-arm64-rel reclient staging untrusted/gn-args.json"
   },
   "chromium.rust": {
     "android-rust-arm32-rel": "ci/android-rust-arm32-rel/gn-args.json",

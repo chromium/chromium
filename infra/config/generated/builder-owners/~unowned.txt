@@ -195,8 +195,6 @@ reclient/ios-simulator reclient staging
 reclient/ios-simulator reclient staging untrusted
 reclient/mac-arm64-rel reclient staging
 reclient/mac-arm64-rel reclient staging untrusted
-reclient/mac-arm64-rel reclient test
-reclient/mac-arm64-rel reclient test untrusted
 reviver/android-coverage-launcher
 reviver/android-device-launcher
 reviver/android-launcher

@@ -498,42 +498,6 @@ fyi_reclient_staging_builder(
     },
 )
 
-fyi_reclient_test_builder(
-    name = "mac-arm64-rel reclient test",
-    builder_spec = builder_config.copy_from(
-        "ci/mac-arm64-rel",
-        lambda spec: structs.evolve(
-            spec,
-            gclient_config = structs.extend(
-                spec.gclient_config,
-                apply_configs = [
-                    "reclient_test",
-                ],
-            ),
-            build_gs_bucket = "chromium-fyi-archive",
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "arm64",
-            "gpu_tests",
-            "release_builder",
-            "remoteexec",
-            "minimal_symbols",
-            "mac",
-        ],
-    ),
-    builderless = True,
-    cores = None,
-    os = os.MAC_DEFAULT,
-    cpu = cpu.ARM64,
-    console_view_category = "mac",
-    priority = 35,
-    reclient_bootstrap_env = {
-        "GLOG_vmodule": "depsscannerclient.go=2,main.go=2",
-    },
-)
-
 ci.builder(
     name = "Comparison Linux (reclient vs reclient remote links)",
     executable = "recipe:reclient_reclient_comparison",
