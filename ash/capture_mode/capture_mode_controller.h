@@ -289,6 +289,9 @@ class ASH_EXPORT CaptureModeController
   // otherwise.
   bool IsRootOneDriveFilesPath(const base::FilePath& path) const;
 
+  // Calls the delegate to instantiate `SearchResultsView`.
+  std::unique_ptr<AshWebView> CreateSearchResultsView() const;
+
   // Returns the current parent window for the on-capture-surface widgets such
   // as `CaptureModeCameraController::camera_preview_widget_` and
   // `CaptureModeDemoToolsController::key_combo_widget_`.

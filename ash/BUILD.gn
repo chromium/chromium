@@ -476,6 +476,8 @@ component("ash") {
     "capture_mode/pointer_highlight_layer.h",
     "capture_mode/recording_type_menu_view.cc",
     "capture_mode/recording_type_menu_view.h",
+    "capture_mode/search_results_panel.cc",
+    "capture_mode/search_results_panel.h",
     "capture_mode/stop_recording_button_tray.cc",
     "capture_mode/stop_recording_button_tray.h",
     "capture_mode/user_nudge_controller.cc",

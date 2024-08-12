@@ -6,6 +6,7 @@
 
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/fake_video_source_provider.h"
+#include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/files/file_util.h"
@@ -211,7 +212,8 @@ base::FilePath TestCaptureModeDelegate::RedirectFilePath(
 
 std::unique_ptr<AshWebView> TestCaptureModeDelegate::CreateSearchResultsView()
     const {
-  return nullptr;
+  // In ash unit and pixel tests we only need an `AshWebView` instance.
+  return AshWebViewFactory::Get()->Create(AshWebView::InitParams());
 }
 
 }  // namespace ash

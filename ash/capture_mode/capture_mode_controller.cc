@@ -18,6 +18,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/null_capture_mode_session.h"
+#include "ash/capture_mode/search_results_panel.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
@@ -909,6 +910,11 @@ bool CaptureModeController::IsLinuxFilesPath(const base::FilePath& path) const {
 bool CaptureModeController::IsRootOneDriveFilesPath(
     const base::FilePath& path) const {
   return path == delegate_->GetOneDriveMountPointPath();
+}
+
+std::unique_ptr<AshWebView> CaptureModeController::CreateSearchResultsView()
+    const {
+  return delegate_->CreateSearchResultsView();
 }
 
 aura::Window* CaptureModeController::GetOnCaptureSurfaceWidgetParentWindow()
