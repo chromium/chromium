@@ -20,19 +20,21 @@ import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 
 // Connects to AwNetLogService service.
 @JNINamespace("android_webview")
 public class AwNetLogsConnection {
     private static final String TAG = "AwNetLogsConnection";
 
-    /** True if a NetLog observer is active. */
-    private static boolean sIsLogging;
+    // True if we should be logging. //
+    private static boolean sLoggingEnabled;
 
     public static void startConnectNetLogService() {
-        if (sIsLogging) {
-            return;
-        }
+        ThreadUtils.assertOnUiThread();
+        sLoggingEnabled = true;
         final Context context = ContextUtils.getApplicationContext();
         final Intent intent = new Intent();
         intent.setClassName(AwBrowserProcess.getWebViewPackageName(), ServiceNames.NET_LOG_SERVICE);
@@ -40,23 +42,42 @@ public class AwNetLogsConnection {
                 new ServiceConnection() {
                     @Override
                     public void onServiceConnected(ComponentName className, IBinder service) {
-                        try {
-                            String packageName = context.getPackageName();
-                            final long creationTime = System.currentTimeMillis();
-                            INetLogService netLogService = INetLogService.Stub.asInterface(service);
-                            ParcelFileDescriptor parcelFileDescriptor =
-                                    netLogService.streamLog(creationTime, packageName);
-                            if (parcelFileDescriptor != null) {
-                                int fd = parcelFileDescriptor.detachFd();
-                                AwNetLogsConnectionJni.get().startNetLogs(fd);
-                                sIsLogging = true;
-                            }
-                        } catch (RemoteException e) {
-                            Log.e(TAG, "Failed to get ParcelFileDescriptor from NetLogService", e);
-                            return;
-                        } finally {
-                            context.unbindService(this);
-                        }
+                        ThreadUtils.runOnUiThread(
+                                () -> {
+                                    if (!sLoggingEnabled) {
+                                        context.unbindService(this);
+                                        return;
+                                    }
+                                    PostTask.postTask(
+                                            TaskTraits.BEST_EFFORT,
+                                            () -> {
+                                                try {
+                                                    String packageName = context.getPackageName();
+                                                    final long creationTime =
+                                                            System.currentTimeMillis();
+                                                    INetLogService netLogService =
+                                                            INetLogService.Stub.asInterface(
+                                                                    service);
+                                                    ParcelFileDescriptor parcelFileDescriptor =
+                                                            netLogService.streamLog(
+                                                                    creationTime, packageName);
+                                                    if (parcelFileDescriptor != null) {
+                                                        int fd = parcelFileDescriptor.detachFd();
+                                                        AwNetLogsConnectionJni.get()
+                                                                .startNetLogs(fd);
+                                                    }
+                                                } catch (RemoteException e) {
+                                                    Log.e(
+                                                            TAG,
+                                                            "Failed to get ParcelFileDescriptor"
+                                                                    + " from NetLogService",
+                                                            e);
+                                                    return;
+                                                } finally {
+                                                    context.unbindService(this);
+                                                }
+                                            });
+                                });
                     }
 
                     @Override
@@ -72,10 +93,11 @@ public class AwNetLogsConnection {
     }
 
     public static void stopNetLogService() {
-        if (sIsLogging) {
+        ThreadUtils.assertOnUiThread();
+        if (sLoggingEnabled) {
             AwNetLogsConnectionJni.get().stopNetLogs();
         }
-        sIsLogging = false;
+        sLoggingEnabled = false;
     }
 
     @NativeMethods
