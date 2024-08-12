@@ -35,7 +35,8 @@ class UserAnnotationsService : public KeyedService {
       const autofill::FormData& form_data);
 
   // Retrieves all entries from the database. Invokes `callback` when complete.
-  void RetrieveAllEntries(
+  // Virtual for testing.
+  virtual void RetrieveAllEntries(
       base::OnceCallback<
           void(std::vector<optimization_guide::proto::UserAnnotationsEntry>)>
           callback);

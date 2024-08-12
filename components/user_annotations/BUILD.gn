@@ -19,10 +19,21 @@ static_library("user_annotations") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "test_user_annotations_service.cc",
+    "test_user_annotations_service.h",
+  ]
+
+  deps = [ ":user_annotations" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "user_annotations_service_unittest.cc" ]
   deps = [
+    ":test_support",
     ":user_annotations",
     "//base/test:test_support",
     "//testing/gtest",
