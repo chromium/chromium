@@ -107,7 +107,7 @@ void RecordNumberOfContributionMergeKeysHistogram(
   constexpr std::string_view kMergeKeysHistogramBase =
       "PrivacySandbox.PrivateAggregation.Host.NumContributionMergeKeysInPipe";
 
-  base::UmaHistogramCounts10000(std::string(kMergeKeysHistogramBase),
+  base::UmaHistogramCounts10000(kMergeKeysHistogramBase,
                                 num_merge_keys_sent_or_truncated);
   switch (api) {
     case PrivateAggregationBudgetKey::Api::kProtectedAudience:

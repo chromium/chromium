@@ -11,14 +11,12 @@
 namespace ash {
 
 void RecordExtendedUpdatesDialogEvent(ExtendedUpdatesDialogEvent event) {
-  base::UmaHistogramEnumeration(std::string(kExtendedUpdatesDialogEventMetric),
-                                event);
+  base::UmaHistogramEnumeration(kExtendedUpdatesDialogEventMetric, event);
 }
 
 void RecordExtendedUpdatesEntryPointEvent(
     ExtendedUpdatesEntryPointEvent event) {
-  base::UmaHistogramEnumeration(
-      std::string(kExtendedUpdatesEntryPointEventMetric), event);
+  base::UmaHistogramEnumeration(kExtendedUpdatesEntryPointEventMetric, event);
 }
 
 }  // namespace ash

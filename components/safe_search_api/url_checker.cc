@@ -86,19 +86,19 @@ bool URLChecker::CheckURL(const GURL& url, CheckCallback callback) {
                << " safe; certain: " << !result.uncertain;
       std::move(callback).Run(url, result.classification, result.uncertain);
 
-      base::UmaHistogramEnumeration(std::string(kCacheHitMetricKey),
+      base::UmaHistogramEnumeration(kCacheHitMetricKey,
                                     CacheAccessStatus::kHit);
       return true;
     }
     DVLOG(1) << "Outdated cache entry for " << url.spec() << ", purging";
     cache_.Erase(cache_it);
-    base::UmaHistogramEnumeration(std::string(kCacheHitMetricKey),
+    base::UmaHistogramEnumeration(kCacheHitMetricKey,
                                   CacheAccessStatus::kOutdated);
     MaybeScheduleAsyncCheck(url, std::move(callback));
     return false;
   }
 
-  base::UmaHistogramEnumeration(std::string(kCacheHitMetricKey),
+  base::UmaHistogramEnumeration(kCacheHitMetricKey,
                                 CacheAccessStatus::kNotFound);
   MaybeScheduleAsyncCheck(url, std::move(callback));
   return false;

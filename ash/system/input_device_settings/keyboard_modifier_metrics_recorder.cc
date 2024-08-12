@@ -222,8 +222,7 @@ void KeyboardModifierMetricsRecorder::RecordModifierRemappingHash() {
   // If the computed hash matches the hash when settings are in a default state,
   // the metric should not be published.
   if (hash != kDefaultModifierHash) {
-    base::UmaHistogramSparse(std::string(kModifierMetricHash),
-                             static_cast<int>(hash));
+    base::UmaHistogramSparse(kModifierMetricHash, static_cast<int>(hash));
   }
 }
 

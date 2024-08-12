@@ -55,7 +55,7 @@ void EmitScreenOpenDuration(const NavigationView screen,
     return;
   }
 
-  base::UmaHistogramLongTimes100(std::string(iter->second), time_elapsed);
+  base::UmaHistogramLongTimes100(iter->second, time_elapsed);
 }
 
 }  // namespace
