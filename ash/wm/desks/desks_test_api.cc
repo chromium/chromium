@@ -199,7 +199,12 @@ const ui::SimpleMenuModel& DesksTestApi::GetContextMenuModelForDesk(
 // static
 bool DesksTestApi::IsContextMenuRunningForDesk(DeskBarViewBase::Type type,
                                                int index) {
-  return GetContextMenuForDesk(type, index)->context_menu_runner_->IsRunning();
+  DeskMiniView* mini_view = GetDeskBarView(type)->mini_views()[index];
+  DeskActionContextMenu* menu = mini_view->context_menu();
+  if (!menu) {
+    return false;
+  }
+  return menu->context_menu_runner_->IsRunning();
 }
 
 // static

@@ -73,7 +73,8 @@ class DesksTestApi {
   static void SetDeskBarUiUpdateCallback(DeskBarViewBase* desk_bar_view,
                                          base::OnceClosure done);
 
-  // Desk context menu related.
+  // Desk context menu related. `GetContextMenuForDesk()` and
+  // `GetContextMenuModelForDesk()` open a context menu.
   static DeskActionContextMenu* GetContextMenuForDesk(
       DeskBarViewBase::Type type,
       int index);

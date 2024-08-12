@@ -1882,7 +1882,10 @@ TEST_F(SavedDeskTest, EnteringInTabletMode) {
 
 // Tests that the library buttons and save desk buttons are hidden when
 // transitioning from clamshell to tablet mode.
-TEST_F(SavedDeskTest, ClamshellToTabletMode) {
+TEST_F(SavedDeskTest, ClamshellToTabletModeOld) {
+  base::test::ScopedFeatureList disable;
+  disable.InitAndDisableFeature(features::kSavedDeskUiRevamp);
+
   // Create a window and add a test entry. Otherwise the templates UI wouldn't
   // show up.
   auto test_window_1 = CreateAppWindow();
@@ -1908,6 +1911,52 @@ TEST_F(SavedDeskTest, ClamshellToTabletMode) {
   EXPECT_FALSE(library_button->GetVisible());
   EXPECT_FALSE(
       GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
+}
+
+// Tests that the library button and save desk options in the desk context menu
+// are hidden when transitioning from clamshell to tablet mode.
+TEST_F(SavedDeskTest, ClamshellToTabletMode) {
+  base::test::ScopedFeatureList enable{features::kSavedDeskUiRevamp};
+
+  // Add one desk so we start overview with expanded desk bar, which is needed
+  // to open the context menu.
+  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kKeyboard);
+
+  // Create a window and add a test entry. Otherwise the library button wouldn't
+  // show up.
+  auto test_window = CreateAppWindow();
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
+           DeskTemplateType::kTemplate);
+
+  // Tests that on entering overview, the library button is visible.
+  ToggleOverview();
+  auto* library_button = GetLibraryButtonForRoot(Shell::GetPrimaryRootWindow());
+  EXPECT_TRUE(library_button->GetVisible());
+
+  // Tests that after opening the context menu, there is a save desk as template
+  // option.
+  DeskActionContextMenu* clamshell_context_menu =
+      DesksTestApi::GetContextMenuForDesk(DeskBarViewBase::Type::kOverview,
+                                          /*index=*/0);
+  EXPECT_TRUE(DesksTestApi::GetDeskActionContextMenuItem(
+      clamshell_context_menu,
+      DeskActionContextMenu::CommandId::kSaveAsTemplate));
+
+  // Tests that after transitioning, we remain in overview mode and the library
+  // button is invisible and the context menu has closed.
+  EnterTabletMode();
+  ASSERT_TRUE(GetOverviewSession());
+  EXPECT_FALSE(library_button->GetVisible());
+  EXPECT_FALSE(DesksTestApi::IsContextMenuRunningForDesk(
+      DeskBarViewBase::Type::kOverview, /*index=*/0));
+
+  // Tests that after reopening the context menu, there is no save desk as
+  // template option.
+  DeskActionContextMenu* tablet_context_menu =
+      DesksTestApi::GetContextMenuForDesk(DeskBarViewBase::Type::kOverview,
+                                          /*index=*/0);
+  EXPECT_FALSE(DesksTestApi::GetDeskActionContextMenuItem(
+      tablet_context_menu, DeskActionContextMenu::CommandId::kSaveAsTemplate));
 }
 
 // Tests that the saved desk library gets hidden when transitioning to tablet
