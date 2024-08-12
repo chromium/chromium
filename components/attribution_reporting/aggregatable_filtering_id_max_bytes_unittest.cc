@@ -70,6 +70,11 @@ TEST(AggregatableFilteringIdsMaxBytes, Parse) {
           R"json({"aggregatable_filtering_id_max_bytes":3})json",
           ValueIs(Property(&AggregatableFilteringIdsMaxBytes::value, 3u)),
       },
+      {
+          "valid_trailing_zero",
+          R"json({"aggregatable_filtering_id_max_bytes":3.0})json",
+          ValueIs(Property(&AggregatableFilteringIdsMaxBytes::value, 3u)),
+      },
   };
 
   for (const auto& test_case : kTestCases) {

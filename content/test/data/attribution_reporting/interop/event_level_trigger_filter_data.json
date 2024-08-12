@@ -176,7 +176,8 @@
                       "source_type": ["navigation"]
                     },
                     "not_filters": {
-                      "_lookback_window": 31,
+                      // ensure validity of trailing zero
+                      "_lookback_window": 31.0,
                       "product": ["789"]
                     }
                   },

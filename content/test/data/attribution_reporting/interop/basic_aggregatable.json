@@ -45,7 +45,7 @@
                   }
                 ],
                 "aggregatable_values": {
-                  "a": 123
+                  "a": 123.0 // ensure validity of trailing zero
                 }
               }
             }

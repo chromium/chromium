@@ -16,7 +16,7 @@
               "Attribution-Reporting-Register-Source": {
                 "destination": "https://destination.test",
                 "trigger_data_matching": "exact",
-                "trigger_data": [123]
+                "trigger_data": [123.0] // ensure validity of trailing zero
               }
             }
           }

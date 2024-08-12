@@ -73,7 +73,8 @@
                   "a": { "value": 321, "filtering_id": "65535" },
                   "b": 654
                 },
-                "aggregatable_filtering_id_max_bytes": 2
+                // ensure validity of trailing zero
+                "aggregatable_filtering_id_max_bytes": 2.0
               }
             }
           }

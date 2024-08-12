@@ -71,6 +71,16 @@ TEST(MaxEventLevelReportsTest, Parse) {
           R"json({"max_event_level_reports": 21})json",
           ErrorIs(SourceRegistrationError::kMaxEventLevelReportsValueInvalid),
       },
+      {
+          "non_integer",
+          R"json({"max_event_level_reports": 5.1})json",
+          ErrorIs(SourceRegistrationError::kMaxEventLevelReportsValueInvalid),
+      },
+      {
+          "integer_with_trailing_zero",
+          R"json({"max_event_level_reports": 5.0})json",
+          ValueIs(5),
+      },
   };
 
   for (const auto& test_case : kTestCases) {

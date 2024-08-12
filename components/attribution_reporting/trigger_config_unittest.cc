@@ -323,6 +323,12 @@ TEST(TriggerSpecsTest, Parse) {
               ValueIs(ElementsAre(Key(4294967295))),
       },
       {
+          .desc = "trigger_data_value_trailing_zero",
+          .json = R"json({"trigger_data": [2.0]})json",
+          .matches_full_flex = ValueIs(ElementsAre(Key(2))),
+          .matches_top_level_trigger_data = ValueIs(ElementsAre(Key(2))),
+      },
+      {
           .desc = "trigger_data_value_duplicate",
           .json = R"json({"trigger_data": [1, 3, 1, 2]})json",
           .matches_full_flex =

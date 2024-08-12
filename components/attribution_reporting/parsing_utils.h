@@ -95,6 +95,9 @@ void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
                                  base::TimeDelta value);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::expected<int, ParseError> ParseInt(const base::Value&);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<uint32_t, ParseError> ParseUint32(const base::Value&);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)

@@ -241,8 +241,14 @@ TEST(EventReportWindowsTest, Parse) {
                                                     SourceType::kNavigation)),
       },
       {
+          "event_report_window_valid_int_trailing_zero",
+          R"json({"event_report_window": 86401.0})json",
+          ValueIs(*EventReportWindows::FromDefaults(base::Seconds(86401),
+                                                    SourceType::kNavigation)),
+      },
+      {
           "event_report_window_wrong_type",
-          R"json({"event_report_window":86401.1})json",
+          R"json({"event_report_window": false})json",
           ErrorIs(SourceRegistrationError::kEventReportWindowValueInvalid),
       },
       {
@@ -288,6 +294,14 @@ TEST(EventReportWindowsTest, Parse) {
           R"json({"event_report_windows":{
             "start_time":"0",
             "end_times":[96000,172800]
+          }})json",
+          ErrorIs(SourceRegistrationError::kEventReportWindowsStartTimeInvalid),
+      },
+      {
+          "event_report_windows_start_time_not_int",
+          R"json({"event_report_windows":{
+            "start_time": 3600.1,
+            "end_times": [96000, 172800]
           }})json",
           ErrorIs(SourceRegistrationError::kEventReportWindowsStartTimeInvalid),
       },
@@ -348,6 +362,15 @@ TEST(EventReportWindowsTest, Parse) {
           R"json({"event_report_windows":{
             "start_time":0,
             "end_times":["3600"]
+          }})json",
+          ErrorIs(
+              SourceRegistrationError::kEventReportWindowsEndTimeValueInvalid),
+      },
+      {
+          "event_report_windows_end_times_value_not_int",
+          R"json({"event_report_windows":{
+            "start_time": 0,
+            "end_times": [3600.1]
           }})json",
           ErrorIs(
               SourceRegistrationError::kEventReportWindowsEndTimeValueInvalid),
@@ -425,6 +448,18 @@ TEST(EventReportWindowsTest, Parse) {
           }})json",
           ValueIs(AllOf(
               Property(&EventReportWindows::start_time, base::Seconds(0)),
+              Property(&EventReportWindows::end_times,
+                       ElementsAre(base::Seconds(3600), base::Seconds(10800),
+                                   base::Seconds(21600))))),
+      },
+      {
+          "event_report_windows_valid_trailing_zero",
+          R"json({"event_report_windows":{
+            "start_time": 1.0,
+            "end_times": [3600.0, 10800, 21600]
+          }})json",
+          ValueIs(AllOf(
+              Property(&EventReportWindows::start_time, base::Seconds(1)),
               Property(&EventReportWindows::end_times,
                        ElementsAre(base::Seconds(3600), base::Seconds(10800),
                                    base::Seconds(21600))))),

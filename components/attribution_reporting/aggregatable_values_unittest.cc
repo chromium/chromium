@@ -66,8 +66,8 @@ TEST(AggregatableValuesTest, Parse_FilteringIdsEnabled) {
           ErrorIs(TriggerRegistrationError::kAggregatableValuesWrongType),
       },
       {
-          "value_not_int",
-          R"json({"a": true})json",
+          "value_wrong_type",
+          R"json({"a": "1"})json",
           ErrorIs(TriggerRegistrationError::kAggregatableValuesValueInvalid),
       },
       {
@@ -81,6 +81,11 @@ TEST(AggregatableValuesTest, Parse_FilteringIdsEnabled) {
           ErrorIs(TriggerRegistrationError::kAggregatableValuesValueInvalid),
       },
       {
+          "value_not_integer",
+          R"json({"a": 1.5})json",
+          ErrorIs(TriggerRegistrationError::kAggregatableValuesValueInvalid),
+      },
+      {
           "valid",
           R"json({"a": 1, "b": 65536})json",
           ValueIs(ElementsAre(AllOf(
@@ -90,6 +95,14 @@ TEST(AggregatableValuesTest, Parse_FilteringIdsEnabled) {
                                    Pair("b", *AggregatableValuesValue::Create(
                                                  65536, kDefaultFilteringId)))),
               Property(&AggregatableValues::filters, FilterPair())))),
+      },
+      {
+          "valid_trailing_zero",
+          R"json({"a": 2.0})json",
+          ValueIs(ElementsAre(
+              Property(&AggregatableValues::values,
+                       ElementsAre(Pair("a", *AggregatableValuesValue::Create(
+                                                 2, kDefaultFilteringId)))))),
       },
       {
           "valid_with_dictionary_value",
@@ -249,8 +262,8 @@ TEST(AggregatableValuesTest, Parse_FilteringIdsDisabled) {
           ErrorIs(TriggerRegistrationError::kAggregatableValuesWrongType),
       },
       {
-          "value_not_int",
-          R"json({"a": true})json",
+          "value_wrong_type",
+          R"json({"a": "1"})json",
           ErrorIs(TriggerRegistrationError::kAggregatableValuesValueInvalid),
       },
       {
@@ -264,6 +277,11 @@ TEST(AggregatableValuesTest, Parse_FilteringIdsDisabled) {
           ErrorIs(TriggerRegistrationError::kAggregatableValuesValueInvalid),
       },
       {
+          "value_not_integer",
+          R"json({"a": 1.5})json",
+          ErrorIs(TriggerRegistrationError::kAggregatableValuesValueInvalid),
+      },
+      {
           "valid",
           R"json({"a": 1, "b": 65536})json",
           ValueIs(ElementsAre(AllOf(
@@ -273,6 +291,14 @@ TEST(AggregatableValuesTest, Parse_FilteringIdsDisabled) {
                                    Pair("b", *AggregatableValuesValue::Create(
                                                  65536, kDefaultFilteringId)))),
               Property(&AggregatableValues::filters, FilterPair())))),
+      },
+      {
+          "valid_trailing_zero",
+          R"json({"a": 2.0})json",
+          ValueIs(ElementsAre(
+              Property(&AggregatableValues::values,
+                       ElementsAre(Pair("a", *AggregatableValuesValue::Create(
+                                                 2, kDefaultFilteringId)))))),
       },
       {
           "invalid_dictionary_value_not_supported",

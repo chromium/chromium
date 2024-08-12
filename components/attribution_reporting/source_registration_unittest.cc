@@ -148,7 +148,17 @@ TEST(SourceRegistrationTest, Parse) {
           ValueIs(Field(&SourceRegistration::expiry, base::Seconds(172800))),
       },
       {
+          "expiry_valid_int_trailing_zero",
+          R"json({"expiry":172800.0,"destination":"https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::expiry, base::Seconds(172800))),
+      },
+      {
           "expiry_wrong_type",
+          R"json({"expiry":false,"destination":"https://d.example"})json",
+          ErrorIs(SourceRegistrationError::kExpiryValueInvalid),
+      },
+      {
+          "expiry_not_int",
           R"json({"expiry":1728000.1,"destination":"https://d.example"})json",
           ErrorIs(SourceRegistrationError::kExpiryValueInvalid),
       },
@@ -237,7 +247,21 @@ TEST(SourceRegistrationTest, Parse) {
                         base::Seconds(86401))),
       },
       {
+          "aggregatable_report_window_valid_int_trailing_zero",
+          R"json({"aggregatable_report_window":86401.0,
+          "destination":"https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::aggregatable_report_window,
+                        base::Seconds(86401))),
+      },
+      {
           "aggregatable_report_window_wrong_type",
+          R"json({"aggregatable_report_window":false,
+          "destination":"https://d.example"})json",
+          ErrorIs(
+              SourceRegistrationError::kAggregatableReportWindowValueInvalid),
+      },
+      {
+          "aggregatable_report_window_not_int",
           R"json({"aggregatable_report_window":86401.1,
           "destination":"https://d.example"})json",
           ErrorIs(

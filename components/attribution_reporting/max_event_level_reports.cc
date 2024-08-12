@@ -8,8 +8,10 @@
 
 #include "base/check.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 
@@ -44,13 +46,16 @@ MaxEventLevelReports::Parse(const base::Value::Dict& dict,
     return MaxEventLevelReports(source_type);
   }
 
-  std::optional<int> i = value->GetIfInt();
-  if (!i.has_value() || !IsMaxEventLevelReportsValid(*i)) {
+  ASSIGN_OR_RETURN(int i, ParseInt(*value), [](ParseError) {
+    return SourceRegistrationError::kMaxEventLevelReportsValueInvalid;
+  });
+
+  if (!IsMaxEventLevelReportsValid(i)) {
     return base::unexpected(
         SourceRegistrationError::kMaxEventLevelReportsValueInvalid);
   }
 
-  return MaxEventLevelReports(*i);
+  return MaxEventLevelReports(i);
 }
 
 // static
