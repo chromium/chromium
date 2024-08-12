@@ -11,12 +11,22 @@ package lens;
 // Supported filter types.
 enum LensOverlayFilterType {
   UNKNOWN_FILTER_TYPE = 0;
+  TRANSLATE = 2;
   AUTO_FILTER = 7;
 }
 
 // Supported filter types.
 message AppliedFilter {
   optional LensOverlayFilterType filter_type = 1;
+
+  message Translate {
+    optional string target_language = 1;
+    optional string source_language = 2 [default = "auto"];
+  }
+
+  oneof filter_payload {
+    Translate translate = 3;
+  }
 }
 
 // Supported filter types.
