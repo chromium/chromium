@@ -16,6 +16,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
+import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable.TabSwitcherDrawableLocation;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.listmenu.ListMenuButton;
 
@@ -46,7 +47,9 @@ public class ToggleTabStackButton extends ListMenuButton {
 
         mTabSwitcherButtonDrawable =
                 TabSwitcherDrawable.createTabSwitcherDrawable(
-                        getContext(), BrandedColorScheme.APP_DEFAULT);
+                        getContext(),
+                        BrandedColorScheme.APP_DEFAULT,
+                        TabSwitcherDrawableLocation.TAB_TOOLBAR);
         setImageDrawable(mTabSwitcherButtonDrawable);
     }
 
@@ -60,6 +63,10 @@ public class ToggleTabStackButton extends ListMenuButton {
     void setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
         mTabSwitcherButtonDrawable.setTint(
                 ThemeUtils.getThemedToolbarIconTint(getContext(), brandedColorScheme));
+        mTabSwitcherButtonDrawable.setNotificationBackground(brandedColorScheme);
+        if (mIsIncognitoSupplier != null) {
+            mTabSwitcherButtonDrawable.setIncognitoStatus(mIsIncognitoSupplier.get());
+        }
     }
 
     /**
@@ -110,5 +117,9 @@ public class ToggleTabStackButton extends ListMenuButton {
         mTabSwitcherButtonDrawable.draw(canvas);
         // restore alpha.
         getDrawable().setAlpha(previousAlpha);
+    }
+
+    public TabSwitcherDrawable getTabSwitcherDrawableForTesting() {
+        return mTabSwitcherButtonDrawable;
     }
 }

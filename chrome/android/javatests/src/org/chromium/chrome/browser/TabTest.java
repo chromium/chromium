@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
-import org.chromium.base.test.util.RequiresRestart;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -38,6 +37,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.SadTab;
@@ -200,7 +200,8 @@ public class TabTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
-    @RequiresRestart("crbug.com/358190587, causes BlankCTATabInitialStateRule state reset to fail flakily.")
+    @RequiresRestart(
+            "crbug.com/358190587, causes BlankCTATabInitialStateRule state reset to fail flakily.")
     public void testNativePageTabAttachment() {
         sActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
         RecentTabsPageTestUtils.waitForRecentTabsPageLoaded(mTab);

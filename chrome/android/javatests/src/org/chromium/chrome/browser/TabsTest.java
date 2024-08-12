@@ -96,7 +96,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @DoNotBatch(
         reason =
                 "https://crbug.com/1347598: Side effects are causing flakes in CI and failures"
-                    + " locally. Unbatched to isolate flakes before batching again.")
+                        + " locally. Unbatched to isolate flakes before batching again.")
 public class TabsTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =

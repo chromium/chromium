@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 
 import androidx.annotation.DrawableRes;
@@ -21,6 +22,9 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
+import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable.TabSwitcherDrawableLocation;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -78,6 +82,12 @@ public class HubToolbarViewRenderTest {
         DisplayButtonData displayButtonData =
                 new ResourceButtonData(
                         R.string.button_new_tab, R.string.button_new_tab, drawableRes);
+        return new DelegateButtonData(displayButtonData, onPress);
+    }
+
+    private FullButtonData makeButtonData(Drawable drawable, @Nullable Runnable onPress) {
+        DisplayButtonData displayButtonData =
+                new DrawableButtonData(R.string.button_new_tab, R.string.button_new_tab, drawable);
         return new DelegateButtonData(displayButtonData, onPress);
     }
 
@@ -173,5 +183,68 @@ public class HubToolbarViewRenderTest {
                             HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA, paneSwitcherButtonData);
                 });
         mRenderTestRule.render(mToolbar, "menuButtonHidden");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testTabSwitcherDrawable_toggleNotificationStatus() throws Exception {
+        TabSwitcherDrawable tabSwitcherDrawable =
+                TabSwitcherDrawable.createTabSwitcherDrawable(
+                        mActivity,
+                        BrandedColorScheme.APP_DEFAULT,
+                        TabSwitcherDrawableLocation.HUB_TOOLBAR);
+        tabSwitcherDrawable.updateForTabCount(/* tabCount= */ 1, /* incognito= */ false);
+        tabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+
+        FullButtonData actionButtonData = enabledButtonData(R.drawable.new_tab_icon);
+        List<FullButtonData> paneSwitcherButtonData = new ArrayList<>();
+        paneSwitcherButtonData.add(makeButtonData(tabSwitcherDrawable, () -> {}));
+        paneSwitcherButtonData.add(enabledButtonData(R.drawable.incognito_small));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, actionButtonData);
+                    mPropertyModel.set(HubToolbarProperties.MENU_BUTTON_VISIBLE, true);
+                    mPropertyModel.set(HubToolbarProperties.PANE_SWITCHER_INDEX, 0);
+                    mPropertyModel.set(
+                            HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA, paneSwitcherButtonData);
+                });
+        mRenderTestRule.render(mToolbar, "onGTSTabSwitcherDrawableNotificationOn");
+
+        tabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ false);
+        mRenderTestRule.render(mToolbar, "onGTSTabSwitcherDrawableNotificationOff");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testTabSwitcherDrawable_toggleNotificationStatusIncognito() throws Exception {
+        TabSwitcherDrawable tabSwitcherDrawable =
+                TabSwitcherDrawable.createTabSwitcherDrawable(
+                        mActivity,
+                        BrandedColorScheme.INCOGNITO,
+                        TabSwitcherDrawableLocation.HUB_TOOLBAR);
+        tabSwitcherDrawable.updateForTabCount(/* tabCount= */ 1, /* incognito= */ true);
+        tabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+
+        FullButtonData actionButtonData = enabledButtonData(R.drawable.new_tab_icon);
+        List<FullButtonData> paneSwitcherButtonData = new ArrayList<>();
+        paneSwitcherButtonData.add(makeButtonData(tabSwitcherDrawable, () -> {}));
+        paneSwitcherButtonData.add(enabledButtonData(R.drawable.incognito_small));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, actionButtonData);
+                    mPropertyModel.set(HubToolbarProperties.MENU_BUTTON_VISIBLE, true);
+                    mPropertyModel.set(HubToolbarProperties.PANE_SWITCHER_INDEX, 1);
+                    mPropertyModel.set(
+                            HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA, paneSwitcherButtonData);
+                    mPropertyModel.set(HubToolbarProperties.COLOR_SCHEME, HubColorScheme.INCOGNITO);
+                });
+        mRenderTestRule.render(mToolbar, "onIncognitoTabSwitcherDrawableNotificationOn");
+
+        tabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ false);
+        mRenderTestRule.render(mToolbar, "onIncognitoTabSwitcherDrawableNotificationOff");
     }
 }

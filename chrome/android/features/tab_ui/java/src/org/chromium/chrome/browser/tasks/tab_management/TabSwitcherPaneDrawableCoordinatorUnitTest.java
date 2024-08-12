@@ -21,6 +21,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /**
@@ -39,6 +40,8 @@ public class TabSwitcherPaneDrawableCoordinatorUnitTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
+        // Needed for TabSwitcherDrawable to inflate correctly with SemanticColorUtils.
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
         mCoordinator = new TabSwitcherPaneDrawableCoordinator(mContext, mTabModelSelector);
     }
 
