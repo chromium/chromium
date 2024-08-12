@@ -4529,14 +4529,17 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.ServiceWorkerBackground.Registration_FailStatus"
-    enum="ServiceWorkerStatusCode" expires_after="2024-12-08">
+<histogram name="Extensions.ServiceWorkerBackground.Registration_FailStatus2"
+    enum="ServiceWorkerStatusCode" expires_after="2025-02-15">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Tracks when a background service worker fails to register what is the
     ServiceWorkerStatusCode that occurred. Logged each time a service worker
     fails to register.
+
+    Note: incremented Aug, 2024 due to the implementation of worker registration
+    retries which could change the number of emits of this metric.
   </summary>
 </histogram>
 
