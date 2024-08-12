@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.components.search_engines;
 
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -10,6 +12,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Promise;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 
 import java.util.ArrayList;
@@ -26,13 +30,21 @@ import java.util.Optional;
 public class SearchEngineChoiceService {
     private static SearchEngineChoiceService sInstance;
 
-    private SearchEngineCountryDelegate mDelegate;
+    /**
+     * Gets reset to {@code null} after the device country is obtained.
+     *
+     * <p>TODO(b/355054098): Rely on disconnections inside the delegate instead of giving it up to
+     * garbage collection. This will allow reconnecting if we need the delegate for other purposes.
+     */
+    private @Nullable SearchEngineCountryDelegate mDelegate;
+
     private final List<Long> mPtrToNativeCallbacks = new ArrayList<>();
     // To understand whether we already got a reply from `SearchEngineCountryDelegate`, we need to
     // differentiate between "null result" and "no result yet", thus the optional.
     private @Nullable Optional<String> mPlayCountryRequestResult;
 
     /** Returns the instance of the singleton. Creates the instance if needed. */
+    @MainThread
     public static SearchEngineChoiceService getInstance() {
         ThreadUtils.checkUiThread();
         if (sInstance == null) {
@@ -48,22 +60,45 @@ public class SearchEngineChoiceService {
     public static void setInstanceForTests(SearchEngineChoiceService instance) {
         ThreadUtils.checkUiThread();
         sInstance = instance;
+        if (instance != null) {
+            ResettersForTesting.register(() -> setInstanceForTests(null)); // IN-TEST
+        }
     }
 
     @VisibleForTesting
-    public SearchEngineChoiceService(SearchEngineCountryDelegate delegate) {
+    public SearchEngineChoiceService(@NonNull SearchEngineCountryDelegate delegate) {
         ThreadUtils.checkUiThread();
         mDelegate = delegate;
 
         mDelegate
                 .getDeviceCountry()
                 .then(
-                        (deviceCountry) -> {
-                            processResponseFromPlayApi(deviceCountry);
-                        },
-                        (exception) -> {
-                            processResponseFromPlayApi(null);
-                        });
+                        this::processResponseFromPlayApi,
+                        unusedException -> processResponseFromPlayApi(null));
+    }
+
+    /**
+     * Returns whether the app should attempt to prompt the user to complete their choices of system
+     * default apps.
+     *
+     * <p>This call might be relying on cached data, and {@link #shouldShowDeviceChoiceDialog}
+     * should be called afterwards to ensure that the dialog is actually required.
+     */
+    @MainThread
+    public boolean isDeviceChoiceDialogEligible() {
+        if (mDelegate == null) return false;
+        return mDelegate.isDeviceChoiceDialogEligible();
+    }
+
+    /**
+     * Returns a {@link Promise} that will be fulfilled with whether the app should prompt the user
+     * to complete their choices of default system apps.
+     */
+    @MainThread
+    public Promise<Boolean> shouldShowDeviceChoiceDialog() {
+        ThreadUtils.checkUiThread();
+        if (mDelegate == null) return Promise.rejected();
+        return mDelegate.shouldShowDeviceChoiceDialog();
     }
 
     @CalledByNative
