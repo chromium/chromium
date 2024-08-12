@@ -28,12 +28,30 @@ enum class ComputeAnswerStatus {
   EXECUTION_CANCELLED,
 };
 
-// Holds potentially multiple answers with scores from the model and
-// associations to source context (not implemented yet).
+// Holds an answer from the model and associations to source context.
 struct AnswererResult {
+  AnswererResult();
+  AnswererResult(ComputeAnswerStatus status,
+                 std::string query,
+                 optimization_guide::proto::Answer answer,
+                 std::string url,
+                 std::vector<std::string> text_directives);
+  AnswererResult(ComputeAnswerStatus status,
+                 std::string query,
+                 optimization_guide::proto::Answer answer);
+  AnswererResult(const AnswererResult&);
+  ~AnswererResult();
+
   ComputeAnswerStatus status;
   std::string query;
   optimization_guide::proto::Answer answer;
+  // URL source of the answer.
+  std::string url;
+  // Scroll-to-text directives constructed from cited passages.
+  // See https://wicg.github.io/scroll-to-text-fragment/#syntax.
+  // Format: `#:~:text=start_text,end_text`.
+  // There is one text directive for each cited passage.
+  std::vector<std::string> text_directives;
 };
 
 using ComputeAnswerCallback = base::OnceCallback<void(AnswererResult result)>;
