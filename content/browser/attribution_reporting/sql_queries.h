@@ -22,15 +22,14 @@ inline constexpr const char kMinPrioritySql[] =
 // property is only guaranteed because of the use of AUTOINCREMENT on the
 // source_id column, which prevents reuse upon row deletion.
 inline constexpr const char kGetMatchingSourcesSql[] =
-    "SELECT I.source_id,I.num_attributions,"
-    "I.num_aggregatable_attribution_reports "
+    "SELECT I.priority,I.source_id,I.num_attributions>0 OR "
+    "I.num_aggregatable_attribution_reports>0 "
     "FROM sources I "
     "JOIN source_destinations D "
     "ON D.source_id=I.source_id AND D.destination_site=? "
     "WHERE I.reporting_origin=? "
     "AND(I.event_level_active=1 OR I.aggregatable_active=1)"
-    "AND I.expiry_time>? "
-    "ORDER BY I.priority DESC,I.source_id DESC";
+    "AND I.expiry_time>?";
 
 inline constexpr const char kSelectExpiredSourcesSql[] =
     "SELECT source_id FROM sources "

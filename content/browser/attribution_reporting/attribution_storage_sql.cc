@@ -825,22 +825,48 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
     return statement.Succeeded();
   }
 
-  // The first one returned will be attributed; it has the highest priority.
-  source_id_to_attribute = StoredSource::Id(statement.ColumnInt64(0));
+  // Otherwise, the highest-priority one will be attributed.
+  // Any others will be deleted or deactivated based on whether they have
+  // reports associated with them.
 
-  // Any others will be deleted or deactivated.
+  struct MatchingSourceData {
+    int64_t priority;
+    StoredSource::Id id;
+    bool has_reports;
+
+    explicit MatchingSourceData(sql::Statement& stmt)
+        : priority(stmt.ColumnInt64(0)),
+          id(stmt.ColumnInt64(1)),
+          has_reports(stmt.ColumnBool(2)) {}
+
+    bool operator>(const MatchingSourceData& other) const {
+      return std::make_pair(priority, id) >
+             std::make_pair(other.priority, other.id);
+    }
+  };
+
+  MatchingSourceData highest_prio_source(statement);
+
   while (statement.Step()) {
-    StoredSource::Id source_id(statement.ColumnInt64(0));
-    int num_attributions = statement.ColumnInt(1);
-    int num_aggregatable_attribution_reports = statement.ColumnInt64(2);
+    MatchingSourceData source(statement);
 
-    if (num_attributions > 0 || num_aggregatable_attribution_reports > 0) {
-      source_ids_to_deactivate.push_back(source_id);
+    if (source > highest_prio_source) {
+      std::swap(source, highest_prio_source);
+    }
+
+    if (source.has_reports) {
+      source_ids_to_deactivate.push_back(source.id);
     } else {
-      source_ids_to_delete.push_back(source_id);
+      source_ids_to_delete.push_back(source.id);
     }
   }
-  return statement.Succeeded();
+
+  if (!statement.Succeeded()) {
+    return false;
+  }
+
+  source_id_to_attribute = highest_prio_source.id;
+  return true;
 }
 
 bool AttributionStorageSql::IncrementNumAttributions(StoredSource::Id id) {
