@@ -37,7 +37,7 @@ include_rules = [
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/hats",
   "+chrome/browser/ash/lock_screen_apps",
-  "+chrome/browser/ash/logging.h",
+  "+chrome/browser/ash/logging",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/net",
   "+chrome/browser/ash/phonehub",

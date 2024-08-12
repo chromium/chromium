@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGGING_H_
-#define CHROME_BROWSER_ASH_LOGGING_H_
+#ifndef CHROME_BROWSER_ASH_LOGGING_LOGGING_H_
+#define CHROME_BROWSER_ASH_LOGGING_LOGGING_H_
 
 namespace base {
 class CommandLine;
@@ -19,4 +19,4 @@ void ForceLogRedirectionForTesting();
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGGING_H_
+#endif  // CHROME_BROWSER_ASH_LOGGING_LOGGING_H_

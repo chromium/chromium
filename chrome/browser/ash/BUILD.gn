@@ -39,8 +39,6 @@ static_library("ash") {
     "http_auth_dialog.h",
     "idle_detector.cc",
     "idle_detector.h",
-    "logging.cc",
-    "logging.h",
     "note_taking/note_taking_controller_client.cc",
     "note_taking/note_taking_controller_client.h",
     "note_taking/note_taking_helper.cc",
@@ -861,6 +859,7 @@ static_library("ash") {
     "//chrome/browser/ash/language_packs",
     "//chrome/browser/ash/locale",
     "//chrome/browser/ash/lock_screen_apps",
+    "//chrome/browser/ash/logging",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/auth",
     "//chrome/browser/ash/login/demo_mode",
@@ -2346,7 +2345,6 @@ source_set("browser_tests") {
 
   sources = [
     "first_web_contents_profiler_ash_browsertest.cc",
-    "logging_browsertest.cc",
     "note_taking/note_taking_helper_browsertest.cc",
     "wmp_browsertest.cc",
   ]
@@ -2434,6 +2432,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/kerberos:browser_tests",
     "//chrome/browser/ash/locale:browser_tests",
     "//chrome/browser/ash/lock_screen_apps:browser_tests",
+    "//chrome/browser/ash/logging:browser_tests",
     "//chrome/browser/ash/login:browser_tests",
     "//chrome/browser/ash/magic_boost:browser_tests",
     "//chrome/browser/ash/mahi:browser_tests",
