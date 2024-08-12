@@ -76,6 +76,8 @@ dependencies {
     compile 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     compile 'androidx.media:media:{{androidx_dependency_version}}'
     compile 'androidx.mediarouter:mediarouter:{{androidx_dependency_version}}'
+    compile 'androidx.pdf:pdf-viewer:{{androidx_dependency_version}}'
+    compile 'androidx.pdf:pdf-viewer-fragment:{{androidx_dependency_version}}'
     compile 'androidx.preference:preference:{{androidx_dependency_version}}'
     // Privacy Sandbox is less stable than others. Use only release versions.
     compile 'androidx.privacysandbox.ads:ads-adservices:1.1.0-beta07'
