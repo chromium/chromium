@@ -15,10 +15,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager_observer.h"
+#include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 
 class PrefService;
 

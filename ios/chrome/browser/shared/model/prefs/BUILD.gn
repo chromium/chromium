@@ -106,6 +106,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/safety_check/model:constants",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/tips_notifications/model:client",

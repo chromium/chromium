@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
-
 #include <stddef.h>
 
 #include <memory>
@@ -21,6 +19,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 
 namespace {
 const char kActiveTimeKey[] = "active_time";
