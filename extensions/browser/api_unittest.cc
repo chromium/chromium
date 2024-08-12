@@ -21,7 +21,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
-#include "extensions/common/manifest_handlers/background_info.h"
 
 namespace utils = extensions::api_test_utils;
 
@@ -45,15 +44,11 @@ void ApiUnitTest::TearDown() {
   ExtensionsTest::TearDown();
 }
 
-void ApiUnitTest::CreateBackgroundPage() {
+void ApiUnitTest::CreateExtensionPage() {
   if (!contents_) {
-    GURL url = BackgroundInfo::GetBackgroundURL(extension());
-    if (url.is_empty()) {
-      url = GURL(url::kAboutBlankURL);
-    }
     contents_ = content::WebContents::Create(content::WebContents::CreateParams(
-        browser_context(),
-        content::SiteInstance::CreateForURL(browser_context(), url)));
+        browser_context(), content::SiteInstance::CreateForURL(
+                               browser_context(), GURL(url::kAboutBlankURL))));
   }
 }
 
