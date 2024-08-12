@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//components/plus_addresses/buildflags.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 source_set("types") {
   sources = [
@@ -44,6 +45,10 @@ source_set("prefs") {
   ]
 }
 
+proto_library("plus_address_blocklist_proto") {
+  sources = [ "blocked_facets.proto" ]
+}
+
 source_set("blocklist_data") {
   sources = [
     "plus_address_blocklist_data.cc",
@@ -53,6 +58,7 @@ source_set("blocklist_data") {
     "//base",
     "//third_party/re2",
   ]
+  public_deps = [ ":plus_address_blocklist_proto" ]
 }
 
 source_set("plus_addresses") {
@@ -125,6 +131,7 @@ source_set("unit_tests") {
   sources = [
     "affiliations/plus_address_affiliation_match_helper_unittest.cc",
     "affiliations/plus_address_affiliation_source_adapter_unittest.cc",
+    "plus_address_blocklist_data_unittest.cc",
     "plus_address_http_client_impl_unittest.cc",
     "plus_address_jit_allocator_unittest.cc",
     "plus_address_parsing_utils_unittest.cc",
@@ -133,6 +140,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":blocklist_data",
     ":features",
     ":parsing",
     ":plus_addresses",

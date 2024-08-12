@@ -37,6 +37,10 @@ class PlusAddressBlocklistData final {
   // Returns a regular expression that specifies which domains should be exempt
   // from a blocklist rule.
   const re2::RE2* GetExceptionPattern() const;
+
+ private:
+  std::unique_ptr<re2::RE2> exclusion_pattern_;
+  std::unique_ptr<re2::RE2> exception_pattern_;
 };
 }  // namespace plus_addresses
 
