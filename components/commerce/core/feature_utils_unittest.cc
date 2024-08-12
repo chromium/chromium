@@ -51,7 +51,7 @@ TEST_F(FeatureUtilsTest, CanManageProductSpecificationsSets_NullParams) {
 TEST_F(FeatureUtilsTest, CanManageProductSpecificationsSets_HasSets_NoFlag) {
   std::vector<ProductSpecificationsSet> sets;
   sets.push_back(ProductSpecificationsSet(
-      "10000000-0000-0000-0000-000000000000", 0, 0, {}, ""));
+      "10000000-0000-0000-0000-000000000000", 0, 0, std::vector<GURL>{}, ""));
   ON_CALL(*specifications_service_, GetAllProductSpecifications())
       .WillByDefault(testing::Return(sets));
 
@@ -67,7 +67,7 @@ TEST_F(FeatureUtilsTest,
   test_features_.InitAndEnableFeature(kProductSpecifications);
   std::vector<ProductSpecificationsSet> sets;
   sets.push_back(ProductSpecificationsSet(
-      "10000000-0000-0000-0000-000000000000", 0, 0, {}, ""));
+      "10000000-0000-0000-0000-000000000000", 0, 0, std::vector<GURL>{}, ""));
   ON_CALL(*specifications_service_, GetAllProductSpecifications())
       .WillByDefault(testing::Return(sets));
 

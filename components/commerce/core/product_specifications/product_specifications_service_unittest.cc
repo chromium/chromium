@@ -399,6 +399,16 @@ class ProductSpecificationsServiceSyncDisabledTest
   std::unique_ptr<ProductSpecificationsSet> initial_set_;
 };
 
+class ProductSpecificationsServiceWithTitleTest
+    : public ProductSpecificationsServiceTest {
+ public:
+  void SetUp() override {
+    ProductSpecificationsServiceTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        commerce::kProductSpecificationsSyncTitle);
+  }
+};
+
 TEST_F(ProductSpecificationsServiceTest, TestGetProductSpecifications) {
   DisableMultiSpecFlag();
   for (const sync_pb::ProductComparisonSpecifics& specifics :
@@ -1233,6 +1243,28 @@ TEST_F(ProductSpecificationsServiceTest,
   EXPECT_EQ("test_name", iter->name());
   EXPECT_EQ(1u, iter->urls().size());
   EXPECT_EQ("https://a.example.com/", iter->urls()[0].spec());
+}
+
+TEST_F(ProductSpecificationsServiceWithTitleTest, TestTitle) {
+  const ProductSpecificationsSet added_set_with_titles =
+      service()
+          ->AddProductSpecificationsSet(
+              kProductSpecsName,
+              {UrlInfo(GURL(kProductOneUrl), u"product one title"),
+               UrlInfo(GURL(kProductTwoUrl), u"product two title")})
+          .value();
+  std::optional<ProductSpecificationsSet> set_with_titles =
+      service()->GetSetByUuid(added_set_with_titles.uuid());
+  EXPECT_TRUE(set_with_titles.has_value());
+  for (const auto& expected_title :
+       {u"product one title", u"product two title"}) {
+    const auto iter =
+        base::ranges::find_if(set_with_titles->url_infos(),
+                              [&expected_title](const UrlInfo& query_url_info) {
+                                return query_url_info.title == expected_title;
+                              });
+    EXPECT_TRUE(iter != set_with_titles->url_infos().end());
+  }
 }
 
 }  // namespace commerce
