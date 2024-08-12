@@ -685,7 +685,7 @@ export class PowerBookmarksListElement extends PolymerElement {
         'power-bookmark-row')];
     if (children.length > 0) {
       Promise.all(children.map(el => el.updateComplete))
-          .then(this.notifyBookmarksListResize_);
+          .then(() => this.notifyBookmarksListResize_());
     }
   }
 
