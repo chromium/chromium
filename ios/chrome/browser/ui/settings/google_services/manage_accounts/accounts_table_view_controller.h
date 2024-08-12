@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
 @protocol AccountsModelIdentityDataSource;
+@protocol AccountsMutator;
 @protocol ApplicationCommands;
 @protocol SettingsCommands;
 
@@ -22,6 +23,9 @@
 // Model delegate.
 @property(nonatomic, weak) id<AccountsModelIdentityDataSource>
     modelIdentityDataSource;
+
+// Mutator.
+@property(nonatomic, weak) id<AccountsMutator> mutator;
 
 // If `closeSettingsOnAddAccount` is YES, then this account table view
 // controller will close the settings view when an account is added.

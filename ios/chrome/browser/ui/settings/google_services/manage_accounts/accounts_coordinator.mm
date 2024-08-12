@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -15,14 +17,18 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_mediator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/legacy_accounts_table_view_controller.h"
 
-@interface AccountsCoordinator () <SettingsNavigationControllerDelegate>
+@interface AccountsCoordinator () <AccountsMediatorDelegate,
+                                   SettingsNavigationControllerDelegate>
 @end
 
 @implementation AccountsCoordinator {
@@ -91,7 +97,12 @@
                                                       ->GetCommandDispatcher(),
                                                   ApplicationCommands)];
     _viewController = viewController;
+    _mediator.consumer = viewController;
+    _mediator.delegate = self;
     _viewController.modelIdentityDataSource = _mediator;
+    AccountsTableViewController* accountsTableViewController =
+        base::apple::ObjCCast<AccountsTableViewController>(_viewController);
+    accountsTableViewController.mutator = _mediator;
   } else {
     LegacyAccountsTableViewController* viewController =
         [[LegacyAccountsTableViewController alloc]
@@ -131,6 +142,11 @@
 
 - (void)stop {
   [super stop];
+  AccountsTableViewController* accountsTableViewController =
+      base::apple::ObjCCast<AccountsTableViewController>(_viewController);
+  if (accountsTableViewController) {
+    accountsTableViewController.mutator = nil;
+  }
   _viewController.modelIdentityDataSource = nil;
   _viewController = nil;
   _mediator.consumer = nil;
@@ -152,6 +168,13 @@
 
 - (void)settingsWasDismissed {
   [self stop];
+}
+
+#pragma mark - AccountsMediatorDelegate
+
+- (void)handleRemoveIdentity:(id<SystemIdentity>)identity {
+  GetApplicationContext()->GetSystemIdentityManager()->ForgetIdentity(
+      identity, base::DoNothing());
 }
 
 @end

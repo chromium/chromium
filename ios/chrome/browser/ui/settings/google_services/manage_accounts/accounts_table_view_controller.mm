@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_model_identity_data_source.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_mutator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/identity_view_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -152,9 +153,15 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
       [self.tableViewModel itemTypeForIndexPath:indexPath]);
   switch (itemType) {
     case ItemTypeAccount:
-      NOTREACHED_NORETURN();
+      return;
     case ItemTypeRemoveAccount:
-      // TODO (crbug.com/349071402): implement remove account.
+      NSIndexPath* accountItemIndexPath =
+          [NSIndexPath indexPathForRow:0 inSection:indexPath.section];
+      TableViewAccountItem* accountItem =
+          base::apple::ObjCCastStrict<TableViewAccountItem>(
+              [self.tableViewModel itemAtIndexPath:accountItemIndexPath]);
+      [self.mutator requestRemoveIdentityWithGaiaID:
+                        [self gaiaIDWithAccountItem:accountItem]];
       break;
   }
 
@@ -172,7 +179,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 }
 
 - (void)updateErrorSectionModelAndReloadViewIfNeeded:(BOOL)reloadViewIfNeeded {
-  NOTREACHED();
+  return;
 }
 
 - (void)updateIdentityViewItem:(IdentityViewItem*)identityViewItem {
@@ -190,6 +197,17 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 
 - (void)popView {
   // TODO (crbug.com/349071402): implement popView on sign-out.
+}
+
+#pragma mark - AccountsConsumer
+
+- (NSString*)gaiaIDWithAccountItem:(TableViewItem*)accountItem {
+  for (NSString* gaiaID in _identityMap) {
+    if ([_identityMap[gaiaID] isEqual:accountItem]) {
+      return gaiaID;
+    }
+  }
+  return nil;
 }
 
 @end

@@ -8,6 +8,7 @@ source_set("manage_accounts") {
     "accounts_coordinator.mm",
     "accounts_mediator.h",
     "accounts_mediator.mm",
+    "accounts_mediator_delegate.h",
   ]
   deps = [
     ":constants",
@@ -55,6 +56,7 @@ source_set("manage_accounts_ui") {
   sources = [
     "accounts_consumer.h",
     "accounts_model_identity_data_source.h",
+    "accounts_mutator.h",
     "accounts_table_view_controller.h",
     "accounts_table_view_controller.mm",
     "identity_view_item.h",

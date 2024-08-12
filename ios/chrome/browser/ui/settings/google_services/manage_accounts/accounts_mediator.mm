@@ -130,6 +130,12 @@
   return identityViewItemsForAccounts;
 }
 
+#pragma mark - AccountsMutator
+
+- (void)requestRemoveIdentityWithGaiaID:(NSString*)gaiaID {
+  [self.delegate handleRemoveIdentity:[self identityWithGaiaID:gaiaID]];
+}
+
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
