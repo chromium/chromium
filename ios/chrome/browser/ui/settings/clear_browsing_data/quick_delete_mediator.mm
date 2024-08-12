@@ -24,6 +24,14 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+namespace {
+
+// Delay to observe when triggering further actions after browsing data removal
+// has completed so the progress UI state is not flashed.
+constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
+
+}  // namespace
+
 @interface QuickDeleteMediator () <IdentityManagerObserverBridgeDelegate,
                                    PrefObserverDelegate>
 @end
@@ -189,24 +197,37 @@
   base::Time beginTime = browsing_data::CalculateBeginDeleteTime(timePeriod);
   base::Time endTime = browsing_data::CalculateEndDeleteTime(timePeriod);
 
-  _browsingDataRemover->SetCachedTabsInfo(_cachedTabsInfo);
   bool shouldCloseTabs = _prefs->GetBoolean(browsing_data::prefs::kCloseTabs);
-  void (^removeBrowsingDataCompletionBlock)(void);
+
+  base::OnceClosure removeBrowsingDataCompletion;
   if (shouldCloseTabs) {
-    __weak QuickDeleteMediator* weakSelf = self;
-    removeBrowsingDataCompletionBlock = ^void() {
-      [weakSelf triggerTabsClosureAnimationWithBeginTime:beginTime
-                                                 endTime:endTime];
-    };
+    __weak __typeof(self) weakSelf = self;
+    removeBrowsingDataCompletion = base::BindOnce(
+        [](__typeof(self) strongSelf, base::Time beginTime,
+           base::Time endTime) {
+          [strongSelf triggerTabsClosureAnimationWithBeginTime:beginTime
+                                                       endTime:endTime];
+        },
+        weakSelf, beginTime, endTime);
   } else {
-    __weak id<QuickDeleteConsumer> weakConsumer = self.consumer;
-    removeBrowsingDataCompletionBlock = ^void() {
-      [weakConsumer deletionFinished];
-    };
+    __weak __typeof(self.consumer) weakConsumer = self.consumer;
+    removeBrowsingDataCompletion = base::BindOnce(
+        [](__typeof(self.consumer) strongConsumer) {
+          [strongConsumer deletionFinished];
+        },
+        weakConsumer);
   }
-  _browsingDataRemover->RemoveInRange(
-      beginTime, endTime, removeMask,
-      base::BindOnce(removeBrowsingDataCompletionBlock));
+
+  base::OnceClosure delayedCompletion = base::BindOnce(
+      [](base::OnceClosure completion) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE, std::move(completion),
+            kBrowsingDataRemoveCompletionDelay);
+      },
+      std::move(removeBrowsingDataCompletion));
+
+  _browsingDataRemover->RemoveInRange(beginTime, endTime, removeMask,
+                                      std::move(delayedCompletion));
 }
 
 - (void)updateHistorySelection:(BOOL)selected {
@@ -300,7 +321,7 @@
 
 // Creates a counter for the browsing data type defined by the `prefName`.
 - (void)createCounter:(std::string)prefName {
-  __weak QuickDeleteMediator* weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   std::unique_ptr<BrowsingDataCounterWrapper> counter = [_counterWrapperProducer
       createCounterWrapperWithPrefName:prefName
                       updateUiCallback:
