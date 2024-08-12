@@ -2664,6 +2664,14 @@ inline constexpr char kKerberosEnabled[] = "kerberos.enabled";
 inline constexpr char kIsolatedWebAppInstallForceList[] =
     "profile.isolated_web_app.install.forcelist";
 
+// An integer pref that remembers how many force install initializations are
+// pending. If more than `kIsolatedWebAppForceInstallMaxRetryTreshold`
+// initializations are pending, the initialization is delayed for
+// `kIsolatedWebAppForceInstallEmergencyDelay` time (More details in
+// go/iwa-install-emergency-mechanism).
+inline constexpr char kIsolatedWebAppPendingInitializationCount[] =
+    "profile.isolated_web_app.install.pending_initialization_count";
+
 // Holds URL patterns that specify origins that will be allowed to call
 // `subApps.{add|remove|list}())` without prior user gesture and that will skip
 // the user dialog authorization.
