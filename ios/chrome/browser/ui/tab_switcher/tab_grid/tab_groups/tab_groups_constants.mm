@@ -8,6 +8,8 @@ NSString* const kCreateTabGroupViewIdentifier =
     @"kCreateTabGroupViewIdentifier";
 NSString* const kCreateTabGroupTextFieldIdentifier =
     @"kCreateTabGroupTextFieldIdentifier";
+NSString* const kCreateTabGroupTextFieldClearButtonIdentifier =
+    @"kCreateTabGroupTextFieldClearButtonIdentifier";
 NSString* const kCreateTabGroupCreateButtonIdentifier =
     @"kCreateTabGroupCreateButtonIdentifier";
 NSString* const kCreateTabGroupCancelButtonIdentifier =

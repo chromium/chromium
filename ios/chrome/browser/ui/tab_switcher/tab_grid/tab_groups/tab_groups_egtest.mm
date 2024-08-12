@@ -74,6 +74,14 @@ id<GREYMatcher> GroupCreationViewMatcher() {
                     grey_sufficientlyVisible(), nil);
 }
 
+// Returns the matcher for the tab group creation view text field's clear
+// button.
+id<GREYMatcher> ClearTextButtonMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kCreateTabGroupTextFieldClearButtonIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
 // Returns the matcher for `Create Group` button.
 id<GREYMatcher> CreateGroupButtonInGroupCreation() {
   return grey_allOf(grey_accessibilityID(kCreateTabGroupCreateButtonIdentifier),
@@ -408,6 +416,34 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
       waitForUIElementToDisappearWithMatcher:GroupCreationViewMatcher()];
   [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name, 0)]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests clearing the text field in Tab Group creation flow.
+- (void)testClearTextTabGroupCreation {
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Open the creation view.
+  OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
+  SetTabGroupCreationName(kGroup1Name);
+
+  // Clear the text field.
+  [[EarlGrey selectElementWithMatcher:ClearTextButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Valid the creation.
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Check that there is no group named kGroup1Name but one with the number of
+  // tabs.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:GroupCreationViewMatcher()];
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name, 0)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(
+                                          l10n_util::GetPluralNSStringF(
+                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
+                                          1)] assertWithMatcher:grey_notNil()];
 }
 
 // Tests the group creation based on the context menu a tab cell in the grid.

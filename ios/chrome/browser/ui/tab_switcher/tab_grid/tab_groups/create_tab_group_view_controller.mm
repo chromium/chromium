@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_tab_info.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_or_edit_tab_group_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/group_tab_view.h"
@@ -234,6 +235,10 @@ const CGFloat kClearButtonWidthAndHeight = 40;
                forState:UIControlStateNormal];
   [clearButton setTintColor:[[UIColor colorNamed:kSolidBlackColor]
                                 colorWithAlphaComponent:kClearButtonAlpha]];
+  clearButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_ACCNAME_CLEAR_TEXT);
+  clearButton.accessibilityIdentifier =
+      kCreateTabGroupTextFieldClearButtonIdentifier;
   [clearButton addTarget:self
                   action:@selector(clearTextField)
         forControlEvents:UIControlEventTouchUpInside];
