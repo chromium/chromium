@@ -80,14 +80,13 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
                         ui::PageTransition::PAGE_TRANSITION_LINK);
   Navigate(&params);
   EXPECT_EQ(params.browser, browser);
+  EXPECT_EQ(params.tabstrip_index, -1);
 
-  // Navigate to a new tab. The contents should be opened in a separate browser
-  // associated with the original profile.
+  // Navigate to a new tab. The contents should be opened in the same tab.
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
-  EXPECT_NE(params.browser, browser);
-  Profile* original_profile = browser->profile()->GetOriginalProfile();
-  EXPECT_EQ(params.browser->profile(), original_profile);
+  EXPECT_EQ(params.browser, browser);
+  EXPECT_EQ(params.tabstrip_index, -1);
 }
 
 }  // namespace chromeos

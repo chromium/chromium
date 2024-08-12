@@ -584,12 +584,8 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
       params->disposition != WindowOpenDisposition::CURRENT_TAB &&
       !IncognitoModeForced(params->initiating_profile)) {
     // Navigation outside of the current tab or the initial popup window from a
-    // captive portal signin window should open from the original profile.
-    params->initiating_profile =
-        params->initiating_profile->GetOriginalProfile();
-    params->browser =
-        GetOrCreateBrowser(params->initiating_profile, params->user_gesture);
-    source_browser = params->browser;
+    // captive portal signin window should be prevented.
+    params->disposition = WindowOpenDisposition::CURRENT_TAB;
   }
 #endif
 
