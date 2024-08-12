@@ -747,6 +747,72 @@ source_set("browser_sources") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "api/declarative_net_request/test_utils.cc",
+    "api/declarative_net_request/test_utils.h",
+    "api/idle/test_idle_provider.cc",
+    "api/idle/test_idle_provider.h",
+    "api/sockets_udp/test_udp_echo_server.cc",
+    "api/sockets_udp/test_udp_echo_server.h",
+    "background_script_executor.cc",
+    "background_script_executor.h",
+    "browsertest_util.cc",
+    "browsertest_util.h",
+    "extension_host_test_helper.cc",
+    "extension_host_test_helper.h",
+    "mock_display_info_provider.cc",
+    "mock_display_info_provider.h",
+    "mock_screen.cc",
+    "mock_screen.h",
+    "preload_check_test_util.cc",
+    "preload_check_test_util.h",
+    "script_result_queue.cc",
+    "script_result_queue.h",
+    "service_worker/service_worker_test_utils.cc",
+    "service_worker/service_worker_test_utils.h",
+    "test_event_router_observer.cc",
+    "test_event_router_observer.h",
+    "test_extension_console_observer.cc",
+    "test_extension_console_observer.h",
+    "updater/extension_cache_fake.cc",
+    "updater/extension_cache_fake.h",
+    "updater/extension_downloader_test_helper.cc",
+    "updater/extension_downloader_test_helper.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/value_store:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/browser/updater:updater",
+    "//extensions/common",
+    "//extensions/common:test_support",
+    "//extensions/common/api:api",
+    "//net/traffic_annotation:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base/idle:idle",
+  ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "api/feedback_private/mock_feedback_service.cc",
+      "api/feedback_private/mock_feedback_service.h",
+    ]
+    deps += [
+      "//components/crash/core/app:app",
+      "//net:test_support",
+    ]
+  }
+}
+
 # TODO(https://crbug.com/356905053): Gradually include more of these sources
 # in the desktop-android build.
 if (enable_extensions) {
@@ -846,72 +912,6 @@ if (enable_extensions) {
   }
 
   # The set of sources that are needed for both browser and unit tests.
-  source_set("test_support") {
-    testonly = true
-    sources = [
-      "api/declarative_net_request/test_utils.cc",
-      "api/declarative_net_request/test_utils.h",
-      "api/idle/test_idle_provider.cc",
-      "api/idle/test_idle_provider.h",
-      "api/sockets_udp/test_udp_echo_server.cc",
-      "api/sockets_udp/test_udp_echo_server.h",
-      "background_script_executor.cc",
-      "background_script_executor.h",
-      "browsertest_util.cc",
-      "browsertest_util.h",
-      "extension_host_test_helper.cc",
-      "extension_host_test_helper.h",
-      "mock_display_info_provider.cc",
-      "mock_display_info_provider.h",
-      "mock_screen.cc",
-      "mock_screen.h",
-      "preload_check_test_util.cc",
-      "preload_check_test_util.h",
-      "script_result_queue.cc",
-      "script_result_queue.h",
-      "service_worker/service_worker_test_utils.cc",
-      "service_worker/service_worker_test_utils.h",
-      "test_event_router_observer.cc",
-      "test_event_router_observer.h",
-      "test_extension_console_observer.cc",
-      "test_extension_console_observer.h",
-      "updater/extension_cache_fake.cc",
-      "updater/extension_cache_fake.h",
-      "updater/extension_downloader_test_helper.cc",
-      "updater/extension_downloader_test_helper.h",
-    ]
-
-    deps = [
-      "//base",
-      "//base/test:test_support",
-      "//components/value_store:test_support",
-      "//content/public/browser",
-      "//content/test:test_support",
-      "//extensions/browser",
-      "//extensions/browser/updater:updater",
-      "//extensions/common",
-      "//extensions/common:test_support",
-      "//extensions/common/api:api",
-      "//net/traffic_annotation:test_support",
-      "//services/data_decoder/public/cpp:test_support",
-      "//services/network:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//ui/base/idle:idle",
-    ]
-
-    if (is_chromeos_ash) {
-      sources += [
-        "api/feedback_private/mock_feedback_service.cc",
-        "api/feedback_private/mock_feedback_service.h",
-      ]
-      deps += [
-        "//components/crash/core/app:app",
-        "//net:test_support",
-      ]
-    }
-  }
-
   # The set of all unittests for anything defined under the //extensions/browser
   # module. Note that, unlike the production build targets above, this is a
   # monolithic target that includes all tests for both the core system and

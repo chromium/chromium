@@ -312,6 +312,16 @@ static_library("test_support") {
     ]
   }
 
+  # TODO(https://crbug.com/356905053): Continue pulling more common test
+  # support pieces into here and eventually merge this with the
+  # `enable_extensions` block above.
+  if (enable_desktop_android_extensions) {
+    deps += [
+      "//extensions/browser:test_support",
+      "//extensions/common:test_support",
+    ]
+  }
+
   if (toolkit_views) {
     sources += [
       "../browser/ui/views/external_protocol_dialog_test_harness.cc",

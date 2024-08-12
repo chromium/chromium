@@ -564,6 +564,29 @@ static_library("common") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "api/declarative_net_request/test_utils.cc",
+    "api/declarative_net_request/test_utils.h",
+    "api/extension_action/action_info_test_util.cc",
+    "api/extension_action/action_info_test_util.h",
+    "warnings_test_util.cc",
+    "warnings_test_util.h",
+  ]
+
+  deps = [
+    ":common",
+    "//base",
+    "//base/test:test_support",
+    "//components/version_info:channel",
+    "//extensions/common/api",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 # TODO(https://crbug.com/356905053): Gradually include more of these sources
 # in the desktop-android build.
 if (enable_extensions) {
@@ -582,29 +605,6 @@ if (enable_extensions) {
       "//extensions:extensions_resources",
       "//extensions/common/api",
       "//extensions/common/api:extensions_features",
-    ]
-  }
-
-  source_set("test_support") {
-    testonly = true
-
-    sources = [
-      "api/declarative_net_request/test_utils.cc",
-      "api/declarative_net_request/test_utils.h",
-      "api/extension_action/action_info_test_util.cc",
-      "api/extension_action/action_info_test_util.h",
-      "warnings_test_util.cc",
-      "warnings_test_util.h",
-    ]
-
-    deps = [
-      ":common",
-      "//base",
-      "//base/test:test_support",
-      "//components/version_info:channel",
-      "//extensions/common/api",
-      "//testing/gmock",
-      "//testing/gtest",
     ]
   }
 
