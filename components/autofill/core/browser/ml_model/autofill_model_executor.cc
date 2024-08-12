@@ -24,12 +24,13 @@ AutofillModelExecutor::~AutofillModelExecutor() = default;
 
 bool AutofillModelExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
-    const ModelInput& input) {
+    const AutofillModelEncoder::ModelInput& input) {
   CHECK(base::FeatureList::IsEnabled(features::kAutofillModelPredictions));
   CHECK_EQ(2u, input_tensors.size());
   CHECK_EQ(kTfLiteFloat32, input_tensors[0]->type);
   CHECK_EQ(kTfLiteBool, input_tensors[1]->type);
-  size_t fields_count = std::min(input.size(), kModelExecutorMaxNumberOfFields);
+  size_t fields_count =
+      std::min(input.size(), AutofillModelEncoder::kModelMaxNumberOfFields);
   // `input_tensors[0]` is a 3D vector. The first dimension is used for
   // batching, which the ML model declares with size 1 so only one form
   // is consumed at a time. The second and third dimensions hold the
@@ -37,16 +38,15 @@ bool AutofillModelExecutor::Preprocess(
   {
     CHECK_EQ(input_tensors[0]->dims->size, 3);
     CHECK_EQ(input_tensors[0]->dims->data[1],
-             static_cast<int>(kModelExecutorMaxNumberOfFields));
+             static_cast<int>(AutofillModelEncoder::kModelMaxNumberOfFields));
     CHECK_EQ(input_tensors[0]->dims->data[2],
              static_cast<int>(AutofillModelEncoder::kOutputSequenceLength));
     // Initialize with vectors having the first element = 1 which is what the
     // model expects for empty fields.
-    std::vector<float> empty_field(
-        AutofillModelEncoder::kOutputSequenceLength);
+    std::vector<float> empty_field(AutofillModelEncoder::kOutputSequenceLength);
     empty_field[0] = 1;
     std::vector<std::vector<float>> encoded_input(
-        kModelExecutorMaxNumberOfFields, empty_field);
+        AutofillModelEncoder::kModelMaxNumberOfFields, empty_field);
 
     for (size_t i = 0; i < fields_count; ++i) {
       base::ranges::transform(input[i], encoded_input[i].begin(),
@@ -55,11 +55,10 @@ bool AutofillModelExecutor::Preprocess(
                               });
     }
     // Populate tensors with the vectorized field labels.
-    for (size_t i = 0; i < kModelExecutorMaxNumberOfFields; ++i) {
-      base::ranges::copy(
-          encoded_input[i],
-          tflite::GetTensorData<float>(input_tensors[0]) +
-              i * AutofillModelEncoder::kOutputSequenceLength);
+    for (size_t i = 0; i < AutofillModelEncoder::kModelMaxNumberOfFields; ++i) {
+      base::ranges::copy(encoded_input[i],
+                         tflite::GetTensorData<float>(input_tensors[0]) +
+                             i * AutofillModelEncoder::kOutputSequenceLength);
     }
   }
   // `input_tensors[1]` is a 2D vector of boolean values. The first dimension
@@ -69,14 +68,14 @@ bool AutofillModelExecutor::Preprocess(
   // in this index or not.
   {
     CHECK_EQ(input_tensors[1]->dims->size, 2);
-    for (size_t i = 0; i < kModelExecutorMaxNumberOfFields; ++i) {
+    for (size_t i = 0; i < AutofillModelEncoder::kModelMaxNumberOfFields; ++i) {
       tflite::GetTensorData<bool>(input_tensors[1])[i] = i < fields_count;
     }
   }
   return true;
 }
 
-std::optional<AutofillModelExecutor::ModelOutput>
+std::optional<AutofillModelEncoder::ModelOutput>
 AutofillModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
   // `output_tensors` is a 3D vector of floats. The first dimension is used
@@ -86,10 +85,10 @@ AutofillModelExecutor::Postprocess(
   CHECK_EQ(1u, output_tensors.size());
   CHECK_EQ(kTfLiteFloat32, output_tensors[0]->type);
   CHECK_EQ(output_tensors[0]->dims->data[1],
-           static_cast<int>(kModelExecutorMaxNumberOfFields));
+           static_cast<int>(AutofillModelEncoder::kModelMaxNumberOfFields));
   const size_t num_outputs = output_tensors[0]->dims->data[2];
-  ModelOutput model_predictions;
-  for (size_t i = 0; i < kModelExecutorMaxNumberOfFields; ++i) {
+  AutofillModelEncoder::ModelOutput model_predictions;
+  for (size_t i = 0; i < AutofillModelEncoder::kModelMaxNumberOfFields; ++i) {
     model_predictions[i].resize(num_outputs);
     const float* data_bgn =
         tflite::GetTensorData<float>(output_tensors[0]) + i * num_outputs;

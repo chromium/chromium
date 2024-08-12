@@ -44,9 +44,8 @@ std::optional<optimization_guide::proto::Any> CreateModelMetadata() {
 
 AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
     optimization_guide::OptimizationGuideModelProvider* model_provider)
-    : optimization_guide::ModelHandler<
-          AutofillModelExecutor::ModelOutput,
-          const AutofillModelExecutor::ModelInput&>(
+    : optimization_guide::ModelHandler<AutofillModelEncoder::ModelOutput,
+                                       const AutofillModelEncoder::ModelInput&>(
           model_provider,
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
@@ -72,14 +71,14 @@ void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
     std::move(callback).Run(std::move(form_structure));
     return;
   }
-  AutofillModelExecutor::ModelInput encoded_input =
+  AutofillModelEncoder::ModelInput encoded_input =
       state_->encoder.EncodeForm(*form_structure);
   ExecuteModelWithInput(
       base::BindOnce(
           [](base::WeakPtr<AutofillMlPredictionModelHandler> self,
              std::unique_ptr<FormStructure> form_structure,
              base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback,
-             const std::optional<AutofillModelExecutor::ModelOutput>& output) {
+             const std::optional<AutofillModelEncoder::ModelOutput>& output) {
             if (self && output) {
               self->AssignMostLikelyTypes(*form_structure, *output);
             }
@@ -107,8 +106,8 @@ void AutofillMlPredictionModelHandler::OnModelUpdated(
   CHECK_EQ(optimization_target,
            optimization_guide::proto::OptimizationTarget::
                OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION);
-  optimization_guide::ModelHandler<AutofillModelExecutor::ModelOutput,
-                                   const AutofillModelExecutor::ModelInput&>::
+  optimization_guide::ModelHandler<AutofillModelEncoder::ModelOutput,
+                                   const AutofillModelEncoder::ModelInput&>::
       OnModelUpdated(optimization_target, model_info);
   if (!model_info.has_value()) {
     // The model was unloaded.
@@ -130,8 +129,9 @@ void AutofillMlPredictionModelHandler::OnModelUpdated(
 
 void AutofillMlPredictionModelHandler::AssignMostLikelyTypes(
     FormStructure& form,
-    const AutofillModelExecutor::ModelOutput& output) const {
-  // The ML model can process at most `kModelExecutorMaxNumberOfFields`.
+    const AutofillModelEncoder::ModelOutput& output) const {
+  // The ML model can process at most
+  // `AutofillModelEncoder::kModelMaxNumberOfFields`.
   size_t relevant_fields = std::min(form.field_count(), output.size());
   for (size_t i = 0; i < relevant_fields; i++) {
     form.field(i)->set_heuristic_type(HeuristicSource::kMachineLearning,
