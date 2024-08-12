@@ -1429,7 +1429,6 @@ if (use_blink && !is_cronet_build) {
       "//third_party/blink/web_tests/rootscroller/",
       "//third_party/blink/web_tests/screen_orientation/",
       "//third_party/blink/web_tests/scrollbars/",
-      "//third_party/blink/web_tests/scrollingcoordinator/",
       "//third_party/blink/web_tests/security/",
       "//third_party/blink/web_tests/handwriting/",
       "//third_party/blink/web_tests/shadow-dom/",

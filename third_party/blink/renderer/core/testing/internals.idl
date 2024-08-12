@@ -201,9 +201,7 @@ interface Internals {
 
     [RaisesException] DOMString layerTreeAsText(Document document, optional unsigned short flags);
 
-    DOMString scrollingStateTreeAsText(Document document);
     [RaisesException] DOMString mainThreadScrollingReasons(Document document);
-    [RaisesException] DOMRectList nonFastScrollableRects(Document document);
 
     void evictAllResources();
 
