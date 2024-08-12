@@ -13,11 +13,10 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
-namespace {
-base::TimeDelta kScrollTimeInterval = base::Seconds(1);
-}
-
 namespace ash {
+namespace {
+base::TimeDelta g_scroll_time_interval = base::Seconds(1);
+}
 
 ScrollArrowButton::ScrollArrowButton(base::RepeatingClosure on_scroll,
                                      bool is_left_arrow,
@@ -58,7 +57,7 @@ void ScrollArrowButton::OnDeskHoverStart() {
   if (timer_.IsRunning())
     return;
 
-  timer_.Start(FROM_HERE, kScrollTimeInterval, on_scroll_);
+  timer_.Start(FROM_HERE, g_scroll_time_interval, on_scroll_);
   on_scroll_.Run();
 }
 
@@ -73,11 +72,17 @@ void ScrollArrowButton::OnStateChanged() {
     // of the scroll arrow button will be set to |FALSE|, at the same time, the
     // state of the button will be set to |STATE_NORMAL|. In this case, stopping
     // timer will be called before starting timer.
-    timer_.Start(FROM_HERE, kScrollTimeInterval, on_scroll_);
+    timer_.Start(FROM_HERE, g_scroll_time_interval, on_scroll_);
     on_scroll_.Run();
   } else {
     timer_.Stop();
   }
+}
+
+// static
+base::AutoReset<base::TimeDelta>
+ScrollArrowButton::SetScrollTimeIntervalForTest(base::TimeDelta interval) {
+  return {&g_scroll_time_interval, interval};
 }
 
 BEGIN_METADATA(ScrollArrowButton)

@@ -97,6 +97,12 @@ class DesksTestApi {
       DeskActionContextMenu::CommandId command_id);
 
   static void MaybeCloseContextMenuForGrid(OverviewGrid* overview_grid);
+
+  static base::TimeDelta GetCloseAllWindowCloseTimeout();
+  static base::AutoReset<base::TimeDelta> SetCloseAllWindowCloseTimeout(
+      base::TimeDelta interval);
+  static base::AutoReset<base::TimeDelta> SetScrollTimeInterval(
+      base::TimeDelta interval);
 };
 
 }  // namespace ash

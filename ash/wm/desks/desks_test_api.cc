@@ -290,4 +290,21 @@ void DesksTestApi::MaybeCloseContextMenuForGrid(OverviewGrid* overview_grid) {
   }
 }
 
+// static
+base::TimeDelta DesksTestApi::GetCloseAllWindowCloseTimeout() {
+  return DesksController::GetCloseAllWindowCloseTimeoutForTest();
+}
+
+// static
+base::AutoReset<base::TimeDelta> DesksTestApi::SetCloseAllWindowCloseTimeout(
+    base::TimeDelta interval) {
+  return DesksController::SetCloseAllWindowCloseTimeoutForTest(interval);
+}
+
+// static
+base::AutoReset<base::TimeDelta> DesksTestApi::SetScrollTimeInterval(
+    base::TimeDelta interval) {
+  return ScrollArrowButton::SetScrollTimeIntervalForTest(interval);
+}
+
 }  // namespace ash

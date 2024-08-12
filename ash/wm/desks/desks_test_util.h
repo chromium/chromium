@@ -79,13 +79,23 @@ const CloseButton* GetCloseDeskButtonForMiniView(const DeskMiniView* mini_view);
 // Returns the visibility state of the desk action interface for the mini view.
 bool GetDeskActionVisibilityForMiniView(const DeskMiniView* mini_view);
 
-// Wait for `milliseconds` to be finished.
+// Wait for `milliseconds` to be finished. Use this as a last resort as it will
+// flake or lengthen tests, especially if `milliseconds` is long (> 100ms). Do
+// not hard code timeouts in the code without having some way to override from
+// tests. See `DesksTestApi::SetCloseAllWindowCloseTimeout(). Or use a proper
+// waiter like `DeskSwitchAnimationWaiter`.
 void WaitForMilliseconds(int milliseconds);
 
 // Long press at `screen_location` through a touch pressed event.
 void LongGestureTap(const gfx::Point& screen_location,
                     ui::test::EventGenerator* event_generator,
                     bool release_touch = true);
+
+// Performs two actions:
+//   1) Simulate waiting for the close all toast to disappear by running the
+//   expire callback directly.
+//   2) Wait for the windows to maybe be forcefully closed.
+void SimulateWaitForCloseAll();
 
 }  // namespace ash
 

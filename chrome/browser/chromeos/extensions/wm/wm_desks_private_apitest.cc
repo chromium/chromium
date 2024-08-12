@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, LaunchAndAttemptUndo) {
 
   ash::WaitForMilliseconds(
       ash::ToastData::kDefaultToastDuration.InMilliseconds() +
-      ash::DesksController::kCloseAllWindowCloseTimeout.InMilliseconds());
+      ash::DesksTestApi::GetCloseAllWindowCloseTimeout().InMilliseconds());
 
   EXPECT_FALSE(ash::DesksTestApi::DesksControllerCanUndoDeskRemoval());
   histogram_tester.ExpectBucketCount("Ash.DeskApi.RemoveDesk.Result", 1, 1);
