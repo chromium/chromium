@@ -128,8 +128,6 @@ feedback::FeedbackSource ToChromeFeedbackSource(
   switch (source) {
     case ash::ShellDelegate::FeedbackSource::kBirch:
       return feedback::FeedbackSource::kFeedbackSourceBirch;
-    case ash::ShellDelegate::FeedbackSource::kFocusMode:
-      return feedback::FeedbackSource::kFeedbackSourceFocusMode;
     case ash::ShellDelegate::FeedbackSource::kGameDashboard:
       return feedback::FeedbackSource::kFeedbackSourceGameDashboard;
     case ash::ShellDelegate::FeedbackSource::kOverview:
