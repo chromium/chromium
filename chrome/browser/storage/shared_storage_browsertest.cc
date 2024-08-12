@@ -191,17 +191,17 @@ MakeFilter(std::vector<std::string> possible_last_messages) {
 }
 
 std::string GetSharedStorageDisabledErrorMessage() {
-  return base::StrCat({"a JavaScript error: \"OperationError: ",
+  return base::StrCat({"a JavaScript error: \"Error: ",
                        content::GetSharedStorageDisabledMessage()});
 }
 
 std::string GetSharedStorageSelectURLDisabledErrorMessage() {
-  return base::StrCat({"a JavaScript error: \"OperationError: ",
+  return base::StrCat({"a JavaScript error: \"Error: ",
                        content::GetSharedStorageSelectURLDisabledMessage()});
 }
 
 std::string GetSharedStorageAddModuleDisabledErrorMessage() {
-  return base::StrCat({"a JavaScript error: \"OperationError: ",
+  return base::StrCat({"a JavaScript error: \"Error: ",
                        content::GetSharedStorageAddModuleDisabledMessage()});
 }
 
@@ -738,7 +738,7 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
   }
 
   std::string ExpectedSharedStorageDisabledMessage() {
-    return "OperationError: " + content::GetSharedStorageDisabledMessage();
+    return "Error: " + content::GetSharedStorageDisabledMessage();
   }
 
  protected:
@@ -2229,11 +2229,11 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       content::JsReplace("sharedStorage.worklet.addModule($1)", invalid_url));
 
   EXPECT_EQ(
-      base::StrCat({"a JavaScript error: \"DataError: The module script url is "
-                    "invalid.\n",
-                    "    at __const_std::string&_script__:1:24):\n",
-                    "        {sharedStorage.worklet.addModule(\"", invalid_url,
-                    "\")\n", "                               ^^^^^\n"}),
+      base::StrCat(
+          {"a JavaScript error: \"Error: The module script url is invalid.\n",
+           "    at __const_std::string&_script__:1:24):\n",
+           "        {sharedStorage.worklet.addModule(\"", invalid_url, "\")\n",
+           "                               ^^^^^\n"}),
       result.error);
 
   WaitForHistograms({kErrorTypeHistogram});
@@ -2253,7 +2253,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
 
   EXPECT_EQ(
-      base::StrCat({"a JavaScript error: \"DataError: Only same origin module ",
+      base::StrCat({"a JavaScript error: \"Error: Only same origin module ",
                     "script is allowed.",
                     "\n    at __const_std::string&_script__:1:24):\n        ",
                     "{sharedStorage.worklet.addModule(\"",
@@ -2278,7 +2278,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
 
   EXPECT_EQ(
-      base::StrCat({"a JavaScript error: \"OperationError: Failed to load ",
+      base::StrCat({"a JavaScript error: \"Error: Failed to load ",
                     script_url.spec(), " HTTP status = 404 Not Found.\"\n"}),
       result.error);
 
@@ -2299,9 +2299,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
 
   EXPECT_EQ(
-      base::StrCat(
-          {"a JavaScript error: \"OperationError: Unexpected redirect on ",
-           script_url.spec(), ".\"\n"}),
+      base::StrCat({"a JavaScript error: \"Error: Unexpected redirect on ",
+                    script_url.spec(), ".\"\n"}),
       result.error);
 
   WaitForHistograms({kErrorTypeHistogram});
