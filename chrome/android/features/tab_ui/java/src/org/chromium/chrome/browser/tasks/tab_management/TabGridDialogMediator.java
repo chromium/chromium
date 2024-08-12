@@ -66,11 +66,9 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -830,17 +828,12 @@ public class TabGridDialogMediator
                 mTabCreatorManager.getTabCreator(filter.isIncognito()).launchNtp();
                 return;
             }
-            List<Tab> relatedTabs = getRelatedTabs(currentTab.getId());
 
-            assert relatedTabs.size() > 0;
-
-            Tab parentTabToAttach = relatedTabs.get(relatedTabs.size() - 1);
-            mTabCreatorManager
-                    .getTabCreator(currentTab.isIncognito())
-                    .createNewTab(
-                            new LoadUrlParams(UrlConstants.NTP_URL),
-                            TabLaunchType.FROM_TAB_GROUP_UI,
-                            parentTabToAttach);
+            TabUiUtils.openNtpInGroup(
+                    (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                    mTabCreatorManager.getTabCreator(filter.isIncognito()),
+                    currentTab.getId(),
+                    TabLaunchType.FROM_TAB_GROUP_UI);
             RecordUserAction.record("MobileNewTabOpened." + mComponentName);
         };
     }

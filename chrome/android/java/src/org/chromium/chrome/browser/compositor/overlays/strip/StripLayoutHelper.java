@@ -1963,9 +1963,10 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         if (mTabGroupContextMenuCoordinator == null) {
             mTabGroupContextMenuCoordinator =
                     new TabGroupContextMenuCoordinator(
-                            /* onItemClicked= */ null,
                             () -> mModel,
                             mTabGroupModelFilter,
+                            mActionConfirmationManager,
+                            mTabCreator,
                             TabGroupSyncFeatures.isTabGroupSyncEnabled(mModel.getProfile()));
         }
         mTabGroupContextMenuCoordinator.showMenu(

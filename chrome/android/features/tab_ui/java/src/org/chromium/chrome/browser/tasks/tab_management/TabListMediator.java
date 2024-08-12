@@ -2984,7 +2984,10 @@ class TabListMediator {
             renameTabGroup(tabId);
         } else if (menuId == R.id.ungroup_tab) {
             RecordUserAction.record("TabGroupItemMenu.Ungroup");
-            ungroupTabGroup(tabId);
+            TabUiUtils.ungroupTabGroup(
+                    (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                    mActionConfirmationManager,
+                    tabId);
         } else if (menuId == R.id.delete_shared_group) {
             RecordUserAction.record("TabGroupItemMenu.DeleteShared");
             TabUiUtils.deleteSharedTabGroup(
@@ -3065,32 +3068,6 @@ class TabListMediator {
                 };
 
         tabGroupVisualDataDialogManager.showDialog(rootId, filter, dialogController);
-    }
-
-    private void ungroupTabGroup(int tabId) {
-        TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
-        int rootId = tabModel.getTabById(tabId).getRootId();
-        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-        List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
-        boolean isIncognito = filter.getTabModel().isIncognito();
-
-        if (isIncognito) {
-            for (Tab tab : tabs) {
-                filter.moveTabOutOfGroup(tab.getId());
-            }
-        } else {
-            // Present a confirmation dialog to the user before ungrouping the tab group.
-            Callback<Integer> onResult =
-                    (@ConfirmationResult Integer result) -> {
-                        if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
-                            for (Tab tab : tabs) {
-                                filter.moveTabOutOfGroup(tab.getId());
-                            }
-                        }
-                    };
-
-            mActionConfirmationManager.processUngroupAttempt(onResult);
-        }
     }
 
     private String getActionButtonDescriptionString(

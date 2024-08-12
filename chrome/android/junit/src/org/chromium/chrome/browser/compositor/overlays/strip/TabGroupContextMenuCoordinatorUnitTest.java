@@ -6,6 +6,11 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -17,25 +22,39 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator.OnItemClickedCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataTextInputLayout;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+
+import java.util.Arrays;
+import java.util.List;
 
 /** Unit tests for {@link TabGroupContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -53,26 +72,35 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     private Activity mActivity;
     private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
+    private OnItemClickedCallback mOnItemClickedCallback;
+    private int mTabId;
     @Mock private View mMenuView;
-    @Mock private OnItemClickedCallback mOnItemClickedCallback;
     @Mock private Supplier<TabModel> mTabModelSupplier;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private TabModel mTabModel;
+    @Mock private Profile mProfile;
+    @Mock private ActionConfirmationManager mActionConfirmationManager;
+    @Mock private TabCreator mTabCreator;
+    @Captor private ArgumentCaptor<Callback<Integer>> mConfirmationResultCaptor;
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         LayoutInflater inflater = LayoutInflater.from(mActivity);
         mMenuView = inflater.inflate(R.layout.tab_strip_group_menu_layout, null);
+        mOnItemClickedCallback =
+                TabGroupContextMenuCoordinator.getMenuItemClickedCallback(
+                        mTabGroupModelFilter, mActionConfirmationManager, mTabCreator);
         mTabGroupContextMenuCoordinator =
                 new TabGroupContextMenuCoordinator(
-                        mOnItemClickedCallback,
                         mTabModelSupplier,
                         mTabGroupModelFilter,
+                        mActionConfirmationManager,
+                        mTabCreator,
                         /* shouldShowDeleteGroup= */ true);
     }
 
     @Test
+    @Feature("Tab Strip Group Context Menu")
     public void testListMenuItems() {
         ModelList modelList = new ModelList();
         mTabGroupContextMenuCoordinator.buildMenuActionItems(
@@ -92,6 +120,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    @Feature("Tab Strip Group Context Menu")
     public void testListMenuItems_Incognito() {
         ModelList modelList = new ModelList();
         mTabGroupContextMenuCoordinator.buildMenuActionItems(
@@ -108,6 +137,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    @Feature("Tab Strip Group Context Menu")
     public void testCustomMenuItems() {
         mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
 
@@ -120,6 +150,81 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         ColorPickerCoordinator colorPickerCoordinator =
                 mTabGroupContextMenuCoordinator.getColorPickerCoordinatorForTesting();
         assertNotNull(colorPickerCoordinator);
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    public void testMenuItemClicked_Ungroup() {
+        // Initialize.
+        setUpTabGroupModelFilter();
+
+        // Verify tab group is ungrouped.
+        mOnItemClickedCallback.onClick(R.id.ungroup_tab, mTabId);
+        verify(mActionConfirmationManager)
+                .processUngroupAttempt(mConfirmationResultCaptor.capture());
+        mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
+        verify(mTabGroupModelFilter).moveTabOutOfGroup(mTabId);
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    public void testItemClicked_CloseGroup() {
+        // Initialize.
+        List<Tab> tabsInGroup = setUpTabGroupModelFilter();
+
+        // Verify tab group closed.
+        mOnItemClickedCallback.onClick(R.id.close_tab, mTabId);
+        verify(mTabGroupModelFilter)
+                .closeTabs(
+                        argThat(
+                                params ->
+                                        params.tabs.get(0) == tabsInGroup.get(0)
+                                                && params.allowUndo
+                                                && params.hideTabGroups));
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    public void testMenuItemClicked_DeleteGroup() {
+        // Initialize.
+        List<Tab> tabsInGroup = setUpTabGroupModelFilter();
+
+        // Verify tab group deleted.
+        mOnItemClickedCallback.onClick(R.id.delete_tab, mTabId);
+        verify(mActionConfirmationManager)
+                .processDeleteGroupAttempt(mConfirmationResultCaptor.capture());
+        mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
+        verify(mTabGroupModelFilter)
+                .closeTabs(
+                        argThat(
+                                params ->
+                                        params.tabs.get(0) == tabsInGroup.get(0)
+                                                && !params.allowUndo
+                                                && !params.hideTabGroups));
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    public void testMenuItemClicked_NewTabInGroup() {
+        // Initialize.
+        List<Tab> tabsInGroup = setUpTabGroupModelFilter();
+
+        // Verify new tab opened in group.
+        mOnItemClickedCallback.onClick(R.id.open_new_tab_in_group, mTabId);
+        verify(mTabCreator)
+                .createNewTab(any(), eq(TabLaunchType.FROM_CHROME_UI), eq(tabsInGroup.get(0)));
+    }
+
+    private List<Tab> setUpTabGroupModelFilter() {
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
+        tabModel.addTab(mTabId);
+        Tab tab = tabModel.getTabById(mTabId);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(tabModel);
+        when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
+        List<Tab> tabsInGroup = Arrays.asList(tab);
+        when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(mTabId))).thenReturn(tabsInGroup);
+        when(mTabGroupModelFilter.getRelatedTabList(eq(mTabId))).thenReturn(tabsInGroup);
+        return tabsInGroup;
     }
 
     private void verifyNormalListItems(ModelList modelList) {

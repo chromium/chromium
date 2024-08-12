@@ -11,13 +11,17 @@ import android.view.ViewStub;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerType;
@@ -46,22 +50,24 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     private TabGroupModelFilter mTabGroupModelFilter;
     private int mGroupRootId;
     private Context mContext;
-    private static final String TAG = "TabGroupContextMenu";
 
     /**
-     * @param onItemClicked A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
      * @param tabGroupModelFilter The {@link TabGroupModelFilter} to act on.
+     * @param actionConfirmationManager Used to show a confirmation dialog.
+     * @param tabCreator The {@link TabCreator} to use to create new tab.
      * @param isTabGroupSyncEnabled Whether tab group sync is enabled.
      */
     public TabGroupContextMenuCoordinator(
-            OnItemClickedCallback onItemClicked,
             Supplier<TabModel> tabModelSupplier,
             TabGroupModelFilter tabGroupModelFilter,
+            ActionConfirmationManager actionConfirmationManager,
+            TabCreator tabCreator,
             boolean isTabGroupSyncEnabled) {
         super(
                 R.layout.tab_strip_group_menu_layout,
-                onItemClicked,
+                getMenuItemClickedCallback(
+                        tabGroupModelFilter, actionConfirmationManager, tabCreator),
                 tabModelSupplier,
                 isTabGroupSyncEnabled,
                 /* identityManager= */ null,
@@ -70,9 +76,38 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         mTabGroupModelFilter = tabGroupModelFilter;
     }
 
+    @VisibleForTesting
+    static OnItemClickedCallback getMenuItemClickedCallback(
+            TabGroupModelFilter tabGroupModelFilter,
+            ActionConfirmationManager actionConfirmationManager,
+            TabCreator tabCreator) {
+        return (menuId, tabId) -> {
+            if (menuId == org.chromium.chrome.R.id.ungroup_tab) {
+                TabUiUtils.ungroupTabGroup(tabGroupModelFilter, actionConfirmationManager, tabId);
+            } else if (menuId == org.chromium.chrome.R.id.close_tab) {
+                TabUiUtils.closeTabGroup(
+                        tabGroupModelFilter,
+                        actionConfirmationManager,
+                        tabId,
+                        /* hideTabGroups= */ true,
+                        /* didCloseCallback= */ null);
+            } else if (menuId == org.chromium.chrome.R.id.delete_tab) {
+                TabUiUtils.closeTabGroup(
+                        tabGroupModelFilter,
+                        actionConfirmationManager,
+                        tabId,
+                        /* hideTabGroups= */ false,
+                        /* didCloseCallback= */ null);
+            } else if (menuId == org.chromium.chrome.R.id.open_new_tab_in_group) {
+                TabUiUtils.openNtpInGroup(
+                        tabGroupModelFilter, tabCreator, tabId, TabLaunchType.FROM_CHROME_UI);
+            }
+        };
+    }
+
     // TODO(crbug.com/357878838): Pass the activity through constructor and make it a class
-    // variable and try to test the real `createAndShowMenu` method and remove the `mIsInTesting`
-    // variable.
+    // variable and try to test the real `createAndShowMenu` method and remove the `IS_FOR_TEST`
+    // check.
     /**
      * Show the context menu of the tab group.
      *

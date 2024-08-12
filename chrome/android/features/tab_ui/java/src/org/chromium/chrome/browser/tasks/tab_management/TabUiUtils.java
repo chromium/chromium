@@ -14,19 +14,23 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.List;
 import java.util.Objects;
@@ -101,6 +105,69 @@ public class TabUiUtils {
         if (didChangeColor) {
             filter.setTabGroupColor(rootId, newGroupColor);
         }
+    }
+
+    /**
+     * Ungroups a tab group and maybe shows a confirmation dialog.
+     *
+     * @param filter The {@link TabGroupModelFilter} to act on.
+     * @param actionConfirmationManager The {@link ActionConfirmationManager} to use to confirm
+     *     actions.
+     * @param tabId The ID of one of the tabs in the tab group.
+     */
+    public static void ungroupTabGroup(
+            TabGroupModelFilter filter,
+            ActionConfirmationManager actionConfirmationManager,
+            int tabId) {
+        TabModel tabModel = filter.getTabModel();
+        int rootId = tabModel.getTabById(tabId).getRootId();
+        boolean isIncognito = filter.getTabModel().isIncognito();
+        List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
+        List<Integer> tabIds = tabs.stream().map(Tab::getId).collect(Collectors.toList());
+
+        if (isIncognito) {
+            for (Tab tab : tabs) {
+                filter.moveTabOutOfGroup(tab.getId());
+            }
+        } else {
+            // Present a confirmation dialog to the user before ungrouping the tab group.
+            Callback<Integer> onResult =
+                    (@ConfirmationResult Integer result) -> {
+                        if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                            List<Tab> tabsToUngroup =
+                                    tabIds.stream()
+                                            .map(filter.getTabModel()::getTabById)
+                                            .filter(Objects::nonNull)
+                                            .filter(
+                                                    tab ->
+                                                            !tab.isClosing()
+                                                                    && filter.isTabInTabGroup(tab))
+                                            .collect(Collectors.toList());
+                            for (Tab tab : tabsToUngroup) {
+                                filter.moveTabOutOfGroup(tab.getId());
+                            }
+                        }
+                    };
+
+            actionConfirmationManager.processUngroupAttempt(onResult);
+        }
+    }
+
+    /**
+     * Opens a new tab page in the last position of the tab group and selects the new tab.
+     *
+     * @param filter The {@link TabGroupModelFilter} to act on.
+     * @param tabCreator The {@link TabCreator} to use to create new tab.
+     * @param tabId The ID of one of the tabs in the tab group.
+     * @param type The launch type of the new tab.
+     */
+    public static void openNtpInGroup(
+            TabGroupModelFilter filter, TabCreator tabCreator, int tabId, @TabLaunchType int type) {
+        List<Tab> relatedTabs = filter.getRelatedTabList(tabId);
+        assert relatedTabs.size() > 0;
+
+        Tab parentTabToAttach = relatedTabs.get(relatedTabs.size() - 1);
+        tabCreator.createNewTab(new LoadUrlParams(UrlConstants.NTP_URL), type, parentTabToAttach);
     }
 
     /**
