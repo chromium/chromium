@@ -76,8 +76,8 @@ void MergeWithDifferentContainersInvalidateAll() {
 
   v1.clear();
 
-  // This should be invalid, but the tool lost track of the container in the
-  // merge above.
+  // It is invalid because the iterator could still point to `v1`, which is
+  // invalidated by `v1.clear()`.
   *it = 20;
 }
 
@@ -100,11 +100,11 @@ void MergeWithSameContainerValueIteratorChecked() {
     }
   }
 
-  // it is valid here because we would have returned from the function in the
+  // It is valid here because we would have returned from the function in the
   // previous conditional blocks if not.
   *it;
   v1.clear();
 
-  // it just got invalidated by `v1.clear()`.
+  // It just got invalidated by `v1.clear()`.
   *it = 20;
 }

@@ -4,4 +4,7 @@ simple-invalid-iterators.cpp:9:31: error: [iterator-checker] Potentially invalid
 simple-invalid-iterators.cpp:31:5: error: [iterator-checker] Potentially invalid iterator used.
   ++it;
     ^
-2 errors generated.
+simple-invalid-iterators.cpp:38:12: error: [iterator-checker] Potentially iterator mismatch.
+  v2.erase(it);
+           ^
+3 errors generated.
