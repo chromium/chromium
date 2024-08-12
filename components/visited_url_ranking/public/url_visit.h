@@ -129,6 +129,16 @@ struct URLVisitAggregate {
     // The number of history visits associated with the URL visit aggregate in a
     // time period.
     size_t visit_count = 1;
+
+    // The number of history visits that took place on the same time group as
+    // the current visit. See `url_visit_util.h|cc` for details on the
+    // definition of a time group.
+    size_t same_time_group_visit_count = 0;
+
+    // The number of history visits that took place on the same day group as the
+    // current visit. See `url_visit_util.h|cc` for details on the definition of
+    // a day group.
+    size_t same_day_group_visit_count = 0;
   };
 
   explicit URLVisitAggregate(std::string key_arg);

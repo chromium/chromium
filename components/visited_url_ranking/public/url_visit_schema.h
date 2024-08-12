@@ -35,9 +35,11 @@ enum URLVisitAggregateRankingModelInputSignals {
   kSeenCountLast30Days = 20,
   kActivatedCountLast30Days = 21,
   kDismissedCountLast30Days = 22,
+  kSameTimeGroupVisitCount = 23,
+  kSameDayGroupVisitCount = 24,
 };
 
-static constexpr size_t kNumInputs = 23;
+static constexpr size_t kNumInputs = 25;
 
 // Represents a field's metadata and is leveraged for the processing and
 // serialization of `URLVisitAggregate` fields participating in ML models.
