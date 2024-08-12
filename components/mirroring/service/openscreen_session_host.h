@@ -16,6 +16,7 @@
 #include "components/mirroring/mojom/session_parameters.mojom.h"
 #include "components/mirroring/service/media_remoter.h"
 #include "components/mirroring/service/mirror_settings.h"
+#include "components/mirroring/service/mirroring_logger.h"
 #include "components/mirroring/service/openscreen_message_port.h"
 #include "components/mirroring/service/openscreen_stats_client.h"
 #include "components/mirroring/service/rpc_dispatcher.h"
@@ -150,11 +151,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // to software rendering being used.
   void OnAsyncInitialized(const SupportedProfiles& profiles);
 
-  // Notify `observer_` of a relevant logging message.
-  void LogInfoMessage(const std::string& message);
-
   // Notify `observer_` that error occurred and close the session.
-  void ReportAndLogError(mojom::SessionError error, const std::string& message);
+  void ReportAndLogError(mojom::SessionError error, std::string_view message);
 
   // Stops the current streaming session. If not called from StopSession(), a
   // new streaming session will start later after exchanging OFFER/ANSWER
@@ -247,6 +245,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // Implements an Open Screen message port and wraps inbound and outbound mojom
   // channels.
   OpenscreenMessagePort message_port_;
+
+  // Utility object for logging.
+  MirroringLogger logger_;
 
   // Used to initialize video and audio capture clients.
   MirrorSettings mirror_settings_;

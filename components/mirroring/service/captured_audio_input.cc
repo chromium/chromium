@@ -6,14 +6,20 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "components/mirroring/mojom/session_observer.mojom.h"
 #include "media/mojo/common/input_error_code_converter.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace mirroring {
 
-CapturedAudioInput::CapturedAudioInput(StreamCreatorCallback callback)
-    : stream_creator_callback_(std::move(callback)) {
+CapturedAudioInput::CapturedAudioInput(
+    StreamCreatorCallback callback,
+    mojo::Remote<mojom::SessionObserver>& observer)
+    : stream_creator_callback_(std::move(callback)),
+      logger_("CapturedAudioInput", observer) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(!stream_creator_callback_.is_null());
 }
@@ -28,6 +34,9 @@ void CapturedAudioInput::CreateStream(media::AudioInputIPCDelegate* delegate,
   DCHECK(!automatic_gain_control);  // Invalid to be true for screen capture.
   DCHECK(delegate);
   DCHECK(!delegate_);
+  logger_.LogInfo(base::StrCat(
+      {"CreateStream; params = ", params.AsHumanReadableString(),
+       " total_segments = ", base::NumberToString(total_segments)}));
   delegate_ = delegate;
   stream_creator_callback_.Run(
       stream_creator_client_receiver_.BindNewPipeAndPassRemote(), params,
@@ -43,11 +52,13 @@ void CapturedAudioInput::RecordStream() {
 void CapturedAudioInput::SetVolume(double volume) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(stream_.is_bound());
+  logger_.LogInfo("SetVolume to " + base::NumberToString(volume));
   stream_->SetVolume(volume);
 }
 
 void CapturedAudioInput::CloseStream() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  logger_.LogInfo("CloseStream");
   delegate_ = nullptr;
   stream_client_receiver_.reset();
   stream_.reset();
@@ -86,13 +97,16 @@ void CapturedAudioInput::StreamCreated(
 void CapturedAudioInput::OnError(media::mojom::InputStreamErrorCode code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
-
+  logger_.LogError("InputStreamErrorCode " +
+                   base::NumberToString(static_cast<int>(code)));
   delegate_->OnError(media::ConvertToCaptureCallbackCode(code));
 }
 
 void CapturedAudioInput::OnMutedStateChanged(bool is_muted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
+  logger_.LogInfo("OnMuteStateChanged; is_muted = " +
+                  base::NumberToString(is_muted));
   delegate_->OnMuted(is_muted);
 }
 
