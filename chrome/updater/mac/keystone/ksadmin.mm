@@ -338,7 +338,8 @@ void KSAdminApp::MaybeInstallUpdater(UpdaterScope scope) const {
     install_command.AppendSwitch(kSystemSwitch);
   }
   int exit_code = -1;
-  if (base::LaunchProcess(install_command, {}).WaitForExit(&exit_code)) {
+  const base::Process process = base::LaunchProcess(install_command, {});
+  if (process.IsValid() && process.WaitForExit(&exit_code)) {
     VLOG(0) << "Installer returned " << exit_code << ".";
   } else {
     VLOG(0) << "Failed to wait for the installer to exit.";

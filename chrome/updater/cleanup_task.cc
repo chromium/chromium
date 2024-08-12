@@ -121,9 +121,11 @@ void CleanupOldUpdaterVersions(UpdaterScope scope) {
         const base::FilePath version_executable_path =
             item.Append(GetExecutableRelativePath());
         if (base::PathExists(version_executable_path)) {
-          base::LaunchProcess(
-              GetUninstallSelfCommandLine(scope, version_executable_path), {})
-              .WaitForExitWithTimeout(base::Minutes(5), nullptr);
+          const base::Process process = base::LaunchProcess(
+              GetUninstallSelfCommandLine(scope, version_executable_path), {});
+          if (process.IsValid()) {
+            process.WaitForExitWithTimeout(base::Minutes(5), nullptr);
+          }
         }
 
         // Recursively delete the directory in case uninstall fails.

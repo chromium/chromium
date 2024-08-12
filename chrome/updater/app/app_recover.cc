@@ -140,7 +140,10 @@ int AppRecover::ReinstallUpdater() const {
   if (IsSystemInstall(updater_scope())) {
     uninstall_command.AppendSwitch(kSystemSwitch);
   }
-  if (!base::LaunchProcess(uninstall_command, {}).WaitForExit(&exit_code)) {
+  const base::Process uninstall_process =
+      base::LaunchProcess(uninstall_command, {});
+  if (!uninstall_process.IsValid() ||
+      !uninstall_process.WaitForExit(&exit_code)) {
     VLOG(0) << "Failed to wait for the uninstaller to exit.";
     return kErrorWaitFailedUninstall;
   }
@@ -154,7 +157,9 @@ int AppRecover::ReinstallUpdater() const {
   if (IsSystemInstall(updater_scope())) {
     install_command.AppendSwitch(kSystemSwitch);
   }
-  if (!base::LaunchProcess(install_command, {}).WaitForExit(&exit_code)) {
+  const base::Process install_process =
+      base::LaunchProcess(install_command, {});
+  if (!install_process.IsValid() || !install_process.WaitForExit(&exit_code)) {
     VLOG(0) << "Failed to wait for the installer to exit.";
     return kErrorWaitFailedInstall;
   }
