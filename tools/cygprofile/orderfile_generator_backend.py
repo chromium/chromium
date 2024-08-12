@@ -107,24 +107,20 @@ def _GetFileExtension(file_name):
 class StepRecorder:
   """Records steps and timings."""
 
-  def __init__(self, buildbot):
+  def __init__(self):
     self.timings = []
     self._previous_step = ('', 0.0)
-    self._buildbot = buildbot
     self._error_recorded = False
 
   def BeginStep(self, name):
-    """Marks a beginning of the next step in the script.
-
-    On buildbot, this prints a specially formatted name that will show up
-    in the waterfall. Otherwise, just prints the step name.
+    """Marks a beginning of the next step in the generator.
 
     Args:
       name: The name of the step.
     """
     self.EndStep()
     self._previous_step = (name, time.time())
-    print('Running step: ', name)
+    logging.info('Running step: %s', name)
 
   def EndStep(self):
     """Records successful completion of the current step.
@@ -133,7 +129,7 @@ class StepRecorder:
     """
     if self._previous_step[0]:
       elapsed = time.time() - self._previous_step[1]
-      print('Step %s took %f seconds' % (self._previous_step[0], elapsed))
+      logging.info('Step %s took %f seconds', self._previous_step[0], elapsed)
       self.timings.append((self._previous_step[0], elapsed))
 
     self._previous_step = ('', 0.0)
@@ -141,15 +137,14 @@ class StepRecorder:
   def FailStep(self, message=None):
     """Marks that a particular step has failed.
 
-    On buildbot, this will mark the current step as failed on the waterfall.
-    Otherwise we will just print an optional failure message.
+    Also prints an optional failure message.
 
     Args:
       message: An optional explanation as to why the step failed.
     """
-    print('STEP FAILED!!')
+    logging.error('STEP FAILED!!')
     if message:
-      print(message)
+      logging.error(message)
     self._error_recorded = True
     self.EndStep()
 
@@ -177,7 +172,7 @@ class StepRecorder:
     Raises:
       CommandError: An error executing the specified command.
     """
-    print('Executing %s in %s' % (' '.join(cmd), cwd))
+    logging.info('Executing %s in %s', ' '.join(cmd), cwd)
     process = subprocess.run(
         cmd,
         capture_output=capture_output,
@@ -192,7 +187,7 @@ class StepRecorder:
         self.FailStep()
       raise CommandError('Exception executing command %s' % ' '.join(cmd))
     if capture_output:
-      print(f'Output:\n{process.stdout}')
+      logging.error('Output:\n%s', process.stdout)
     return process
 
 
@@ -461,8 +456,8 @@ class OrderfileUpdater:
           'gclient', 'setdep', '-r', f'orderfile_binaries@{"?".join(values)}'
       ]
       self._step_recorder.RunCommand(setdep_cmd, cwd=self._repository_root)
-    print('Download: https://sandbox.google.com/storage/%s/%s' %
-          (bucket, _GenerateHash(filename)))
+    logging.info('Download: https://sandbox.google.com/storage/%s/%s', bucket,
+                 _GenerateHash(filename))
 
   def _GitStash(self):
     """Git stash the current clank tree.
@@ -600,7 +595,7 @@ class OrderfileGenerator:
     self._order_outlined_functions = not options.noorder_outlined_functions
 
     self._output_data = {}
-    self._step_recorder = StepRecorder(options.buildbot)
+    self._step_recorder = StepRecorder()
     self._compiler = None
     if orderfile_updater_class is None:
       orderfile_updater_class = OrderfileUpdater
@@ -733,8 +728,8 @@ class OrderfileGenerator:
     if not os.path.exists(self._DIRECTORY_FOR_DEBUG_FILES):
       os.makedirs(self._DIRECTORY_FOR_DEBUG_FILES)
     shutil.copy(file_name, self._DIRECTORY_FOR_DEBUG_FILES)
-    print('File: %s, saved in: %s, sha1sum: %s' %
-          (file_name, self._DIRECTORY_FOR_DEBUG_FILES, file_sha1))
+    logging.info('File: %s, saved in: %s, sha1sum: %s', file_name,
+                 self._DIRECTORY_FOR_DEBUG_FILES, file_sha1)
 
   def _SaveForDebugging(self, filename: str):
     """Uploads the file to cloud storage or saves to a temporary location."""
@@ -742,9 +737,9 @@ class OrderfileGenerator:
       file_sha1 = _GenerateHash(filename)
       self._SaveFileLocally(filename, file_sha1)
     else:
-      print('Uploading file for debugging: ' + filename)
-      self._orderfile_updater.UploadToCloudStorage(
-          filename, use_debug_location=True)
+      logging.info('Uploading file for debugging: %s', filename)
+      self._orderfile_updater.UploadToCloudStorage(filename,
+                                                   use_debug_location=True)
 
   def _SaveForDebuggingWithOverwrite(self, file_name):
     """Uploads and overwrites the file in cloud storage or copies locally.
@@ -758,14 +753,14 @@ class OrderfileGenerator:
     if not self._options.buildbot:
       self._SaveFileLocally(file_name, file_sha1)
     else:
-      print('Uploading file for debugging: %s, sha1sum: %s' % (file_name,
-                                                               file_sha1))
-      upload_location = '%s/%s' % (
-          self._CLOUD_STORAGE_BUCKET_FOR_DEBUG, os.path.basename(file_name))
-      self._step_recorder.RunCommand([
-          'gsutil.py', 'cp', file_name, 'gs://' + upload_location])
-      print('Uploaded to: https://sandbox.google.com/storage/' +
-            upload_location)
+      logging.info('Uploading file for debugging: %s, sha1sum: %s', file_name,
+                   file_sha1)
+      upload_location = '%s/%s' % (self._CLOUD_STORAGE_BUCKET_FOR_DEBUG,
+                                   os.path.basename(file_name))
+      self._step_recorder.RunCommand(
+          ['gsutil.py', 'cp', file_name, 'gs://' + upload_location])
+      logging.info('Uploaded to: https://sandbox.google.com/storage/%s',
+                   upload_location)
 
   def _MaybeArchiveOrderfile(self, filename, use_new_cloud: bool = False):
     """In buildbot configuration, uploads the generated orderfile to
@@ -1231,7 +1226,7 @@ def CreateOrderfile(options, orderfile_updater_class=None):
     if options.json_file:
       with open(options.json_file, 'w') as f:
         f.write(json_output)
-    print(json_output)
+    logging.info('\n%s\n', json_output)
   return False
 
 
