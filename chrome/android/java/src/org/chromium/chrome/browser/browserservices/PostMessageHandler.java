@@ -66,6 +66,11 @@ public class PostMessageHandler implements OriginVerificationListener {
                         return;
                     }
 
+                    if (mWebContents == null || mWebContents.isDestroyed()) {
+                        Log.e(TAG, "Discarding postMessage as web contents has been destroyed.");
+                        return;
+                    }
+
                     Bundle bundle = null;
                     GURL url = mWebContents.getMainFrame().getLastCommittedURL();
                     if (url != null) {
