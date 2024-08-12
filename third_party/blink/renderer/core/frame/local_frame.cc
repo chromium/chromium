@@ -4000,9 +4000,6 @@ void LocalFrame::ScheduleNextServiceForScrollSnapshotClients() {
 }
 
 void LocalFrame::CheckPositionAnchorsForCssVisibilityChanges() {
-  if (!RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
-    return;
-  }
   for (auto& client : scroll_snapshot_clients_) {
     if (AnchorPositionScrollData* scroll_data =
             DynamicTo<AnchorPositionScrollData>(client.Get())) {
@@ -4014,9 +4011,6 @@ void LocalFrame::CheckPositionAnchorsForCssVisibilityChanges() {
 }
 
 void LocalFrame::CheckPositionAnchorsForChainedVisibilityChanges() {
-  if (!RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
-    return;
-  }
   AnchorPositionVisibilityObserver::UpdateForChainedAnchorVisibility(
       scroll_snapshot_clients_);
 }

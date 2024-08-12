@@ -1265,7 +1265,6 @@ Element* Element::anchorElement() const {
 
 void Element::setAnchorElement(Element* new_element) {
   CHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
-  CHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
   SetElementAttribute(html_names::kAnchorAttr, new_element);
   EnsureAnchorElementObserver().Notify();
 }
@@ -10270,7 +10269,6 @@ AnchorPositionScrollData* Element::GetAnchorPositionScrollData() const {
 }
 
 void Element::IncrementImplicitlyAnchoredElementCount() {
-  DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
   if (!HasImplicitlyAnchoredElement() && GetLayoutObject()) {
     // Invalidate layout to populate itself into Physical/LogicalAnchorQuery.
     GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
@@ -10303,9 +10301,6 @@ AnchorElementObserver& Element::EnsureAnchorElementObserver() {
 }
 
 Element* Element::ImplicitAnchorElement() const {
-  if (!RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
-    return nullptr;
-  }
   if (Element* anchor = anchorElement()) {
     DCHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
     return anchor;

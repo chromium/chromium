@@ -247,8 +247,6 @@ TEST_F(CustomPropertyTest, HasInitialValue) {
 }
 
 TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLength) {
-  ScopedCSSAnchorPositioningForTest enabled_scope(true);
-
   RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
   CustomProperty property(AtomicString("--x"), GetDocument());
 
@@ -261,8 +259,6 @@ TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLength) {
 }
 
 TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLengthPercentage) {
-  ScopedCSSAnchorPositioningForTest enabled_scope(true);
-
   RegisterProperty(GetDocument(), "--x", "<length-percentage>", "0px", false);
   CustomProperty property(AtomicString("--x"), GetDocument());
 

@@ -2982,8 +2982,6 @@ TEST_F(StyleResolverTest, LegacyOverlapBorderImageWidth_Last_Style) {
 }
 
 TEST_F(StyleResolverTest, PositionTryStylesBasic_Cascade) {
-  ScopedCSSAnchorPositioningForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       @position-try --f1 { left: 100px; }
@@ -3028,8 +3026,6 @@ TEST_F(StyleResolverTest, PositionTryStylesBasic_Cascade) {
 }
 
 TEST_F(StyleResolverTest, PositionTryStylesResolveLogicalProperties_Cascade) {
-  ScopedCSSAnchorPositioningForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       @position-try --f1 { inset-inline-start: 100px; }
@@ -3075,8 +3071,6 @@ TEST_F(StyleResolverTest, PositionTryStylesResolveLogicalProperties_Cascade) {
 }
 
 TEST_F(StyleResolverTest, PositionTryStylesResolveRelativeLengthUnits_Cascade) {
-  ScopedCSSAnchorPositioningForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       @position-try --f1 { top: 2em; }
@@ -3104,8 +3098,6 @@ TEST_F(StyleResolverTest, PositionTryStylesResolveRelativeLengthUnits_Cascade) {
 }
 
 TEST_F(StyleResolverTest, PositionTryStylesInBeforePseudoElement_Cascade) {
-  ScopedCSSAnchorPositioningForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       @position-try --f1 { top: 50px; }
@@ -3137,8 +3129,6 @@ TEST_F(StyleResolverTest, PositionTryStylesInBeforePseudoElement_Cascade) {
 }
 
 TEST_F(StyleResolverTest, PositionTryStylesCSSWideKeywords_Cascade) {
-  ScopedCSSAnchorPositioningForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       /* 'revert' and 'revert-layer' are already rejected by parser */
@@ -3196,8 +3186,6 @@ TEST_F(StyleResolverTest, PositionTryStylesCSSWideKeywords_Cascade) {
 }
 
 TEST_F(StyleResolverTest, PositionTryPropertyValueChange_Cascade) {
-  ScopedCSSAnchorPositioningForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       @position-try --foo { top: 100px }
@@ -3246,8 +3234,6 @@ TEST_F(StyleResolverTest, PositionTryPropertyValueChange_Cascade) {
 }
 
 TEST_F(StyleResolverTest, PositionTry_PaintInvalidation) {
-  ScopedCSSAnchorPositioningForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       @position-try --f1 { left: 2222222px; }

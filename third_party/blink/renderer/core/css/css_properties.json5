@@ -1838,7 +1838,6 @@
       converter: "ConvertAnchorName",
       keywords: ["none"],
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSAnchorPositioning",
       valid_for_permission_element: true,
       invalidate: ["layout"],
     },
@@ -4554,7 +4553,6 @@
       converter: "ConvertPositionAnchor",
       keywords: ["auto"],
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSAnchorPositioning",
       valid_for_permission_element: true,
       valid_for_position_try: true,
       // Needs to be applied before position-area which in turn needs to be applied
@@ -4592,7 +4590,6 @@
       typedom_types: ["Keyword"],
       default_value: "normal",
       invalidate: ["layout", "paint"],
-      runtime_flag: "CSSPositionTryOrder",
     },
     {
       name: "position-visibility",
@@ -4608,7 +4605,6 @@
       keywords: ["always", "anchors-visible", "no-overflow"],
       typedom_types: ["Keyword"],
       invalidate: ["layout", "paint"],
-      runtime_flag: "CSSPositionVisibility",
     },
     {
       name: "quotes",
@@ -8198,7 +8194,6 @@
       name: "position-try",
       longhands: ["position-try-order", "position-try-options"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSPositionTryOrder",
     },
     {
       // Variant of the "position-try" shorthand which has the new

@@ -406,9 +406,6 @@ void UpdatePositionVisibilityAfterLayout(
     const OutOfFlowLayoutPart::OffsetInfo& offset_info,
     const BlockNode& node,
     const LogicalAnchorQuery* anchor_query) {
-  if (!RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
-    return;
-  }
   if (!anchor_query) {
     return;
   }
@@ -1954,7 +1951,6 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
 
   unsigned attempts_left = kMaxTryAttempts;
   bool has_no_overflow_visibility =
-      RuntimeEnabledFeatures::CSSPositionVisibilityEnabled() &&
       node_info.node.Style().HasPositionVisibility(
           PositionVisibility::kNoOverflow);
   // If `position-try-fallbacks` or `position-visibility: no-overflow` exists,

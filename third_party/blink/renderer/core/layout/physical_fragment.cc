@@ -559,7 +559,6 @@ PhysicalFragment::OofData* PhysicalFragment::OofDataFromBuilder(
   }
 
   if (const LogicalAnchorQuery* anchor_query = builder->AnchorQuery()) {
-    DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
     if (!oof_data) {
       oof_data = MakeGarbageCollected<OofData>();
     }

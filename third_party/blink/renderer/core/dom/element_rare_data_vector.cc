@@ -423,7 +423,6 @@ AnchorElementObserver& ElementRareDataVector::EnsureAnchorElementObserver(
   DCHECK(!GetAnchorElementObserver() ||
          GetAnchorElementObserver()->GetSourceElement() == new_source_element);
   CHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
-  CHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
   return EnsureField<AnchorElementObserver>(FieldId::kAnchorElementObserver,
                                             new_source_element);
 }

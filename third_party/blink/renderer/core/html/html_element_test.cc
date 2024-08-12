@@ -254,8 +254,6 @@ TEST_F(HTMLElementTest,
 }
 
 TEST_F(HTMLElementTest, HasImplicitlyAnchoredElement) {
-  ScopedCSSAnchorPositioningForTest scoped_feature(true);
-
   SetBodyInnerHTML(R"HTML(
     <div id="anchor1"></div>
     <div id="anchor2"></div>
@@ -285,8 +283,6 @@ TEST_F(HTMLElementTest, HasImplicitlyAnchoredElement) {
 }
 
 TEST_F(HTMLElementTest, HasImplicitlyAnchoredElementViaElementAttr) {
-  ScopedCSSAnchorPositioningForTest scoped_feature(true);
-
   SetBodyInnerHTML(R"HTML(
     <div id="anchor1"></div>
     <div id="anchor2"></div>
@@ -322,8 +318,6 @@ TEST_F(HTMLElementTest, HasImplicitlyAnchoredElementViaElementAttr) {
 }
 
 TEST_F(HTMLElementTest, ImplicitAnchorIdChange) {
-  ScopedCSSAnchorPositioningForTest scoped_feature(true);
-
   SetBodyInnerHTML(R"HTML(
     <div id="anchor1"></div>
     <div id="anchor2"></div>
@@ -348,8 +342,6 @@ TEST_F(HTMLElementTest, ImplicitAnchorIdChange) {
 }
 
 TEST_F(HTMLElementTest, ImplicitlyAnchoredElementRemoved) {
-  ScopedCSSAnchorPositioningForTest scoped_feature(true);
-
   SetBodyInnerHTML(R"HTML(
     <div id="anchor"></div>
     <div id="target1" anchor="anchor"></div>
@@ -377,8 +369,6 @@ TEST_F(HTMLElementTest, ImplicitlyAnchoredElementRemoved) {
 }
 
 TEST_F(HTMLElementTest, ImplicitlyAnchorElementConnected) {
-  ScopedCSSAnchorPositioningForTest scoped_feature(true);
-
   SetBodyInnerHTML("<div id=anchor></div>");
 
   Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
@@ -451,21 +441,6 @@ TEST_F(HTMLElementTest, DialogTopLayerRemovalTiming) {
   EXPECT_TRUE(target->IsInTopLayer());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(target->IsInTopLayer());
-}
-
-TEST_F(HTMLElementTest, AnchorAttrWithFeatureDisabled) {
-  ScopedHTMLSelectListElementForTest select_list_disabled(false);
-  ScopedCSSAnchorPositioningForTest anchor_pos_disabled(false);
-
-  SetBodyInnerHTML("<div id=anchor><div anchor=anchor id=target></div></div>");
-
-  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
-  Element* target = GetDocument().getElementById(AtomicString("target"));
-
-  // Shouldn't hook up objects related to anchor attr when the feature is
-  // disabled.
-  EXPECT_FALSE(anchor->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(target->HasAnchorElementObserverForTesting());
 }
 
 }  // namespace blink

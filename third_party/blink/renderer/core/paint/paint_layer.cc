@@ -1218,14 +1218,12 @@ PaintLayer* PaintLayer::HitTestLayer(
 
   std::optional<CheckAncestorPositionVisibilityScope>
       check_position_visibility_scope;
-  if (RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
-    if (InvisibleForPositionVisibility() ||
-        HasAncestorInvisibleForPositionVisibility()) {
-      return nullptr;
-    }
-    if (GetLayoutObject().IsStackingContext()) {
-      check_position_visibility_scope.emplace(*this);
-    }
+  if (InvisibleForPositionVisibility() ||
+      HasAncestorInvisibleForPositionVisibility()) {
+    return nullptr;
+  }
+  if (GetLayoutObject().IsStackingContext()) {
+    check_position_visibility_scope.emplace(*this);
   }
 
   // TODO(vmpstr): We need to add a simple document flag which says whether
@@ -2434,9 +2432,6 @@ void PaintLayer::SetPreviousPaintResult(PaintResult result) {
 void PaintLayer::SetInvisibleForPositionVisibility(
     LayerPositionVisibility visibility,
     bool invisible) {
-  if (!RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
-    return;
-  }
   bool already_invisible = InvisibleForPositionVisibility();
   if (invisible) {
     invisible_for_position_visibility_ |= static_cast<int>(visibility);
@@ -2468,7 +2463,6 @@ void PaintLayer::SetInvisibleForPositionVisibility(
 }
 
 bool PaintLayer::HasAncestorInvisibleForPositionVisibility() const {
-  CHECK(RuntimeEnabledFeatures::CSSPositionVisibilityEnabled());
   if (!CheckAncestorPositionVisibilityScope::ShouldCheck()) {
     return false;
   }

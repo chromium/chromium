@@ -4263,13 +4263,10 @@ bool IsBaselineKeyword(CSSValueID id) {
 }
 
 bool IsSelfPositionKeyword(CSSValueID id) {
-  if (IdentMatches<CSSValueID::kStart, CSSValueID::kEnd, CSSValueID::kCenter,
-                   CSSValueID::kSelfStart, CSSValueID::kSelfEnd,
-                   CSSValueID::kFlexStart, CSSValueID::kFlexEnd>(id)) {
-    return true;
-  }
-  return RuntimeEnabledFeatures::CSSAnchorPositioningEnabled() &&
-         id == CSSValueID::kAnchorCenter;
+  return IdentMatches<CSSValueID::kStart, CSSValueID::kEnd, CSSValueID::kCenter,
+                      CSSValueID::kSelfStart, CSSValueID::kSelfEnd,
+                      CSSValueID::kFlexStart, CSSValueID::kFlexEnd,
+                      CSSValueID::kAnchorCenter>(id);
 }
 
 bool IsSelfPositionOrLeftOrRightKeyword(CSSValueID id) {

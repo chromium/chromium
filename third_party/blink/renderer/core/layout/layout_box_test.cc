@@ -1807,8 +1807,6 @@ TEST_F(LayoutBoxTest, HitTestResizerStackedWithTextAreaChild) {
 }
 
 TEST_F(LayoutBoxTest, AnchorInFragmentedContainingBlock) {
-  ScopedCSSAnchorPositioningForTest enabled(true);
-
   // Create a 3-column multicol layout with a fragmented containing block,
   // and a fragmented anchor element that starts from the second fragment.
   InsertStyleElement(R"CSS(
@@ -1853,8 +1851,6 @@ TEST_F(LayoutBoxTest, AnchorInFragmentedContainingBlock) {
 }
 
 TEST_F(LayoutBoxTest, AnchorInInlineContainingBlock) {
-  ScopedCSSAnchorPositioningForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <div>
       <span id="not-implicit-anchor">not implicit anchor</span>
@@ -1875,8 +1871,6 @@ TEST_F(LayoutBoxTest, AnchorInInlineContainingBlock) {
 }
 
 TEST_F(LayoutBoxTest, AnchorInInlineContainingBlockWithNameConflicts) {
-  ScopedCSSAnchorPositioningForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <div>
       <span style="position: relative">

@@ -6851,8 +6851,6 @@ TEST_F(StyleEngineTest, InitialStyleCount_EnsureComputedStyle) {
 }
 
 TEST_F(StyleEngineTest, UseCountCSSAnchorPositioning) {
-  ScopedCSSAnchorPositioningForTest enabled(true);
-
   EXPECT_FALSE(IsUseCounted(WebFeature::kCSSAnchorPositioning));
 
   SetBodyInnerHTML("<style>#foo { top: anchor(top); }");

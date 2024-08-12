@@ -370,8 +370,6 @@ TEST_F(CSSToLengthConversionDataTest, ConversionWithoutPrimaryFont) {
 }
 
 TEST_F(CSSToLengthConversionDataTest, AnchorFunction) {
-  ScopedCSSAnchorPositioningForTest anchor_feature(true);
-
   TestAnchorEvaluator anchor_evaluator(/* result */ LayoutUnit(60.0));
   CSSToLengthConversionData data =
       ConversionData({.anchor_evaluator = &anchor_evaluator});
@@ -383,8 +381,6 @@ TEST_F(CSSToLengthConversionDataTest, AnchorFunction) {
 }
 
 TEST_F(CSSToLengthConversionDataTest, AnchorFunctionFallback) {
-  ScopedCSSAnchorPositioningForTest anchor_feature(true);
-
   TestAnchorEvaluator anchor_evaluator(/* result */ std::nullopt);
   CSSToLengthConversionData data =
       ConversionData({.anchor_evaluator = &anchor_evaluator});
@@ -399,8 +395,6 @@ TEST_F(CSSToLengthConversionDataTest, AnchorFunctionFallback) {
 }
 
 TEST_F(CSSToLengthConversionDataTest, AnchorSizeFunction) {
-  ScopedCSSAnchorPositioningForTest anchor_feature(true);
-
   TestAnchorEvaluator anchor_evaluator(/* result */ LayoutUnit(60.0));
   CSSToLengthConversionData data =
       ConversionData({.anchor_evaluator = &anchor_evaluator});
@@ -414,8 +408,6 @@ TEST_F(CSSToLengthConversionDataTest, AnchorSizeFunction) {
 }
 
 TEST_F(CSSToLengthConversionDataTest, AnchorSizeFunctionFallback) {
-  ScopedCSSAnchorPositioningForTest anchor_feature(true);
-
   TestAnchorEvaluator anchor_evaluator(/* result */ std::nullopt);
   CSSToLengthConversionData data =
       ConversionData({.anchor_evaluator = &anchor_evaluator});
@@ -432,8 +424,6 @@ TEST_F(CSSToLengthConversionDataTest, AnchorSizeFunctionFallback) {
 }
 
 TEST_F(CSSToLengthConversionDataTest, AnchorWithinOtherFunction) {
-  ScopedCSSAnchorPositioningForTest anchor_feature(true);
-
   TestAnchorEvaluator anchor_evaluator(/* result */ std::nullopt);
   CSSToLengthConversionData data =
       ConversionData({.anchor_evaluator = &anchor_evaluator});
@@ -464,8 +454,6 @@ TEST_F(CSSToLengthConversionDataTest, AnchorWithinOtherFunction) {
 }
 
 TEST_F(CSSToLengthConversionDataTest, AnchorFunctionPercentageFallback) {
-  ScopedCSSAnchorPositioningForTest anchor_feature(true);
-
   TestAnchorEvaluator anchor_evaluator(/* result */ std::nullopt);
   CSSToLengthConversionData data =
       ConversionData({.anchor_evaluator = &anchor_evaluator});
@@ -490,8 +478,6 @@ TEST_F(CSSToLengthConversionDataTest, AnchorFunctionPercentageFallback) {
 
 TEST_F(CSSToLengthConversionDataTest,
        AnchorFunctionPercentageFallbackNotTaken) {
-  ScopedCSSAnchorPositioningForTest anchor_feature(true);
-
   TestAnchorEvaluator anchor_evaluator(/* result */ LayoutUnit(60.0));
   CSSToLengthConversionData data =
       ConversionData({.anchor_evaluator = &anchor_evaluator});
@@ -507,8 +493,6 @@ TEST_F(CSSToLengthConversionDataTest,
 }
 
 TEST_F(CSSToLengthConversionDataTest, AnchorFunctionFallbackNullEvaluator) {
-  ScopedCSSAnchorPositioningForTest anchor_feature(true);
-
   CSSToLengthConversionData data =
       ConversionData({.anchor_evaluator = nullptr});
 
@@ -518,8 +502,6 @@ TEST_F(CSSToLengthConversionDataTest, AnchorFunctionFallbackNullEvaluator) {
 }
 
 TEST_F(CSSToLengthConversionDataTest, AnchorFunctionLengthPercentageFallback) {
-  ScopedCSSAnchorPositioningForTest anchor_feature(true);
-
   TestAnchorEvaluator anchor_evaluator(/* result */ std::nullopt);
   CSSToLengthConversionData data =
       ConversionData({.anchor_evaluator = &anchor_evaluator});

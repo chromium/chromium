@@ -854,17 +854,9 @@
       name: "CSSAdvancedAttrFunction",
     },
     {
-      // Allows positioning a positioned element relative to another one.
-      // https://drafts.csswg.org/css-anchor-1/
-      name: "CSSAnchorPositioning",
-      implied_by: ["HTMLSelectListElement"],
-      status: "stable",
-    },
-    {
       // Support for the anchor-scope property.
       // https://drafts.csswg.org/css-anchor-position-1/#anchor-scope
       name: "CSSAnchorScope",
-      depends_on: ["CSSAnchorPositioning"],
       status: "experimental",
     },
     {
@@ -999,7 +991,6 @@
       // This is enabled by default for now, but deprecated in M129. The plan is
       // to disable it starting in M131.
       name: "CSSInsetAreaProperty",
-      depends_on: ["CSSAnchorPositioning"],
       status: "stable",
     },
     {
@@ -1051,7 +1042,6 @@
       // property. This is shipped in M129, and (depending on the status of the
       // CSSInsetAreaProperty feature) can be removed in M131.
       name: "CSSPositionAreaProperty",
-      depends_on: ["CSSAnchorPositioning"],
       status: "stable",
     },
     {
@@ -1069,7 +1059,6 @@
       // position-try-options has been renamed to position-try-fallbacks.
       // This feature was shipped in M128, so this flag can be removed in M130.
       name: "CSSPositionTryFallbacks",
-      depends_on: ["CSSAnchorPositioning"],
       status: "stable",
     },
     {
@@ -1079,21 +1068,6 @@
       // This feature was disabled in M128, so this flag (and the code to
       // implement `position-try-options`) can be removed in M130.
       name: "CSSPositionTryOptions",
-      depends_on: ["CSSAnchorPositioning"],
-    },
-    {
-      // Support the position-try-order property.
-      // https://drafts.csswg.org/css-anchor-position-1/#position-try-order-property
-      name: "CSSPositionTryOrder",
-      implied_by: ["CSSAnchorPositioning"],
-    },
-    {
-      // Support the position-visibility property for anchor positioning.
-      // https://drafts.csswg.org/css-anchor-position-1/#position-visibility
-      // TODO(crbug.com/332933527): Support anchors-valid and no-overflow. For
-      // now, this only supports always and anchors-visible.
-      name: "CSSPositionVisibility",
-      implied_by: ["CSSAnchorPositioning"],
     },
     // https://drafts.csswg.org/css-values-5/#progress
     // progress(), media-progress(), container-progress()
@@ -2248,7 +2222,6 @@
     // popover API.
     {
       name: "HTMLAnchorAttribute",
-      depends_on: ["CSSAnchorPositioning"],
       status: "experimental",
     },
     // Adds support for the experimental `interesttarget`
@@ -2519,7 +2492,6 @@
     },
     {
       name: "LastSuccessfulPositionOption",
-      depends_on: ["CSSAnchorPositioning"],
       status: "stable",
     },
     {

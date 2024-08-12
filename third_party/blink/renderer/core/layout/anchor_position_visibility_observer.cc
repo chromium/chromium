@@ -16,9 +16,7 @@ namespace blink {
 
 AnchorPositionVisibilityObserver::AnchorPositionVisibilityObserver(
     Element& anchored_element)
-    : anchored_element_(anchored_element) {
-  CHECK(RuntimeEnabledFeatures::CSSPositionVisibilityEnabled());
-}
+    : anchored_element_(anchored_element) {}
 
 void AnchorPositionVisibilityObserver::MonitorAnchor(const Element* anchor) {
   if (anchor_element_) {

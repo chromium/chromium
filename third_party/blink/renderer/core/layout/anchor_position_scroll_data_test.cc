@@ -14,10 +14,9 @@
 
 namespace blink {
 
-class AnchorPositionScrollDataTest : public RenderingTest,
-                                     private ScopedCSSAnchorPositioningForTest {
+class AnchorPositionScrollDataTest : public RenderingTest {
  public:
-  AnchorPositionScrollDataTest() : ScopedCSSAnchorPositioningForTest(true) {}
+  AnchorPositionScrollDataTest() = default;
 
   void SimulateFrame() {
     // Advance time by 100 ms.
