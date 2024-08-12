@@ -337,8 +337,8 @@ const CSSValue* AnimationComposition::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeCommaSeparatedList<
-      CSSParserTokenStream, CSSIdentifierValue*(CSSParserTokenStream&)>(
+  return css_parsing_utils::ConsumeCommaSeparatedList<CSSIdentifierValue*(
+      CSSParserTokenStream&)>(
       css_parsing_utils::ConsumeIdent<CSSValueID::kReplace, CSSValueID::kAdd,
                                       CSSValueID::kAccumulate>,
       stream);
@@ -397,8 +397,8 @@ const CSSValue* AnimationDirection::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext&,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeCommaSeparatedList<
-      CSSParserTokenStream, CSSIdentifierValue*(CSSParserTokenStream&)>(
+  return css_parsing_utils::ConsumeCommaSeparatedList<CSSIdentifierValue*(
+      CSSParserTokenStream&)>(
       css_parsing_utils::ConsumeIdent<
           CSSValueID::kNormal, CSSValueID::kAlternate, CSSValueID::kReverse,
           CSSValueID::kAlternateReverse>,
@@ -443,8 +443,8 @@ const CSSValue* AnimationFillMode::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext&,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeCommaSeparatedList<
-      CSSParserTokenStream, CSSIdentifierValue*(CSSParserTokenStream&)>(
+  return css_parsing_utils::ConsumeCommaSeparatedList<CSSIdentifierValue*(
+      CSSParserTokenStream&)>(
       css_parsing_utils::ConsumeIdent<CSSValueID::kNone, CSSValueID::kForwards,
                                       CSSValueID::kBackwards,
                                       CSSValueID::kBoth>,
@@ -524,8 +524,8 @@ const CSSValue* AnimationPlayState::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext&,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeCommaSeparatedList<
-      CSSParserTokenStream, CSSIdentifierValue*(CSSParserTokenStream&)>(
+  return css_parsing_utils::ConsumeCommaSeparatedList<CSSIdentifierValue*(
+      CSSParserTokenStream&)>(
       css_parsing_utils::ConsumeIdent<CSSValueID::kRunning,
                                       CSSValueID::kPaused>,
       stream);
@@ -931,8 +931,8 @@ const CSSValue* BackgroundPositionX::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumePositionLonghand<
-          CSSValueID::kLeft, CSSValueID::kRight, CSSParserTokenStream>,
+      css_parsing_utils::ConsumePositionLonghand<CSSValueID::kLeft,
+                                                 CSSValueID::kRight>,
       stream, context);
 }
 
@@ -951,8 +951,8 @@ const CSSValue* BackgroundPositionY::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumePositionLonghand<
-          CSSValueID::kTop, CSSValueID::kBottom, CSSParserTokenStream>,
+      css_parsing_utils::ConsumePositionLonghand<CSSValueID::kTop,
+                                                 CSSValueID::kBottom>,
       stream, context);
 }
 
@@ -9628,8 +9628,7 @@ const CSSValue* ViewTimelineInset::ParseSingleValue(
     const CSSParserLocalContext&) const {
   using css_parsing_utils::ConsumeCommaSeparatedList;
   using css_parsing_utils::ConsumeSingleTimelineInset;
-  return ConsumeCommaSeparatedList(
-      ConsumeSingleTimelineInset<CSSParserTokenStream>, stream, context);
+  return ConsumeCommaSeparatedList(ConsumeSingleTimelineInset, stream, context);
 }
 
 const CSSValue* ViewTimelineInset::CSSValueFromComputedStyleInternal(
@@ -10250,8 +10249,8 @@ const CSSValue* WebkitMaskPositionX::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumePositionLonghand<
-          CSSValueID::kLeft, CSSValueID::kRight, CSSParserTokenStream>,
+      css_parsing_utils::ConsumePositionLonghand<CSSValueID::kLeft,
+                                                 CSSValueID::kRight>,
       Stream, context);
 }
 
@@ -10275,8 +10274,8 @@ const CSSValue* WebkitMaskPositionY::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumePositionLonghand<
-          CSSValueID::kTop, CSSValueID::kBottom, CSSParserTokenStream>,
+      css_parsing_utils::ConsumePositionLonghand<CSSValueID::kTop,
+                                                 CSSValueID::kBottom>,
       stream, context);
 }
 
