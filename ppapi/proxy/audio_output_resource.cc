@@ -238,7 +238,8 @@ void AudioOutputResource::Run() {
 
   while (true) {
     int pending_data = 0;
-    size_t bytes_read = socket_->Receive(&pending_data, sizeof(pending_data));
+    size_t bytes_read =
+        socket_->Receive(base::byte_span_from_ref(pending_data));
     if (bytes_read != sizeof(pending_data)) {
       DCHECK_EQ(bytes_read, 0U);
       break;
@@ -264,7 +265,7 @@ void AudioOutputResource::Run() {
     // used to ensure the other end is getting the buffer it expects.  For more
     // details on how this works see AudioSyncReader::WaitUntilDataIsReady().
     ++buffer_index;
-    size_t bytes_sent = socket_->Send(&buffer_index, sizeof(buffer_index));
+    size_t bytes_sent = socket_->Send(base::byte_span_from_ref(buffer_index));
     if (bytes_sent != sizeof(buffer_index)) {
       DCHECK_EQ(bytes_sent, 0U);
       break;
