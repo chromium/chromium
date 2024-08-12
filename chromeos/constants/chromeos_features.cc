@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "chromeos/constants/chromeos_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_params_proxy.h"
@@ -68,6 +69,11 @@ BASE_FEATURE(kBlinkExtensionKiosk,
 // Feature flag used to gate preinstallation of the container app.
 BASE_FEATURE(kContainerAppPreinstall,
              "ContainerAppPreinstall",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Feature flag used to gate debugging preinstallation of the container app.
+BASE_FEATURE(kContainerAppPreinstallDebug,
+             "ContainerAppPreinstallDebug",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables handling of key press event in background.
@@ -187,13 +193,11 @@ BASE_FEATURE(kOrcaUseL10nStrings,
              "OrcaUseL10nStrings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Feature management flag used to gate preinstallation of the container app.
 // This flag is meant to be enabled by the feature management module.
 BASE_FEATURE(kFeatureManagementContainerAppPreinstall,
              "FeatureManagementContainerAppPreinstall",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Controls enabling / disabling the history embedding feature from the
 // feature management module.
@@ -331,10 +335,22 @@ bool IsContainerAppPreinstallEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsContainerAppPreinstallEnabled();
 #else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  return base::FeatureList::IsEnabled(
-             kFeatureManagementContainerAppPreinstall) &&
+  return (base::FeatureList::IsEnabled(
+              kFeatureManagementContainerAppPreinstall) ||
+          IsContainerAppPreinstallDebugEnabled()) &&
          base::FeatureList::IsEnabled(kContainerAppPreinstall);
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+}
+
+bool IsContainerAppPreinstallDebugEnabled() {
+  // NOTE: Feature management takes precedence over debugging.
+  if (base::FeatureList::IsEnabled(kFeatureManagementContainerAppPreinstall)) {
+    return false;
+  }
+  if (!base::FeatureList::IsEnabled(kContainerAppPreinstallDebug)) {
+    return false;
+  }
+  return switches::IsContainerAppPreinstallDebugKeyMatched();
 }
 
 bool IsCrosComponentsEnabled() {
