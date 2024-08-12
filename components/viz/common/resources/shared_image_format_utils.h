@@ -7,8 +7,6 @@
 
 #include "base/component_export.h"
 #include "components/viz/common/resources/shared_image_format.h"
-#include "third_party/skia/include/core/SkColorType.h"
-#include "ui/gfx/buffer_types.h"
 
 namespace gpu {
 class ClientSharedImage;
@@ -21,9 +19,15 @@ namespace cc {
 class PerfContextProvider;
 }
 
+namespace gfx {
+enum class BufferFormat : uint8_t;
+}
+
 namespace media {
 class VideoFrame;
 }
+
+enum SkColorType : int;
 
 namespace viz {
 

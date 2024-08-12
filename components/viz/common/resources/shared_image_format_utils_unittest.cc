@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/viz/common/resources/shared_image_format_utils.h"
+
 #include <vector>
 
-#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColorType.h"
 
 namespace viz {
 namespace {
