@@ -5,6 +5,7 @@
 #ifndef BASE_STRINGS_STRING_SPLIT_H_
 #define BASE_STRINGS_STRING_SPLIT_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -14,6 +15,30 @@
 #include "build/build_config.h"
 
 namespace base {
+
+// Splits a string at the first instance of `separator`, returning a pair of
+// `std::string_view`: `first` is the (potentially empty) part that comes before
+// the separator, and `second` is the (potentially empty) part that comes after.
+// If `separator` is not in `input`, returns `std::nullopt`.
+BASE_EXPORT std::optional<std::pair<std::string_view, std::string_view>>
+SplitStringOnce(std::string_view input, char separator);
+
+// Similar to the above, but splits the string at the first instance of any
+// separator in `separators`.
+BASE_EXPORT std::optional<std::pair<std::string_view, std::string_view>>
+SplitStringOnce(std::string_view input, std::string_view separators);
+
+// Splits a string at the last instance of `separator`, returning a pair of
+// `std::string_view`: `first` is the (potentially empty) part that comes before
+// the separator, and `second` is the (potentially empty) part that comes after.
+// If `separator` is not in `input`, returns `std::nullopt`.
+BASE_EXPORT std::optional<std::pair<std::string_view, std::string_view>>
+RSplitStringOnce(std::string_view input, char separator);
+
+// Similar to the above, but splits the string at the last instance of any
+// separator in `separators`.
+BASE_EXPORT std::optional<std::pair<std::string_view, std::string_view>>
+RSplitStringOnce(std::string_view input, std::string_view separators);
 
 enum WhitespaceHandling {
   KEEP_WHITESPACE,

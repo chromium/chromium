@@ -17,6 +17,17 @@ namespace base {
 
 namespace {
 
+// Helper for the various *SplitStringOnce implementations. When returning a
+// pair of `std::string_view`, does not include the character at `position`.
+std::optional<std::pair<std::string_view, std::string_view>>
+SplitStringAtExclusive(std::string_view input, size_t position) {
+  if (position == std::string_view::npos) {
+    return std::nullopt;
+  }
+
+  return std::pair(input.substr(0, position), input.substr(position + 1));
+}
+
 bool AppendStringKeyValue(std::string_view input,
                           char delimiter,
                           StringPairs* result) {
@@ -49,6 +60,30 @@ bool AppendStringKeyValue(std::string_view input,
 }
 
 }  // namespace
+
+std::optional<std::pair<std::string_view, std::string_view>> SplitStringOnce(
+    std::string_view input,
+    char separator) {
+  return SplitStringAtExclusive(input, input.find(separator));
+}
+
+std::optional<std::pair<std::string_view, std::string_view>> SplitStringOnce(
+    std::string_view input,
+    std::string_view separators) {
+  return SplitStringAtExclusive(input, input.find_first_of(separators));
+}
+
+std::optional<std::pair<std::string_view, std::string_view>> RSplitStringOnce(
+    std::string_view input,
+    char separator) {
+  return SplitStringAtExclusive(input, input.rfind(separator));
+}
+
+std::optional<std::pair<std::string_view, std::string_view>> RSplitStringOnce(
+    std::string_view input,
+    std::string_view separators) {
+  return SplitStringAtExclusive(input, input.find_last_of(separators));
+}
 
 std::vector<std::string> SplitString(std::string_view input,
                                      std::string_view separators,
