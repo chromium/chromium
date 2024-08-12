@@ -253,14 +253,6 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   } else {
     GetViewAccessibility().SetName(app_name_view_->GetText());
   }
-
-  OnTextChanged();
-  summary_text_changed_callback_ =
-      summary_text_view_->AddTextChangedCallback(base::BindRepeating(
-          &NotificationHeaderView::OnTextChanged, base::Unretained(this)));
-  timestamp_changed_callback_ =
-      timestamp_view_->AddTextChangedCallback(base::BindRepeating(
-          &NotificationHeaderView::OnTextChanged, base::Unretained(this)));
 }
 
 NotificationHeaderView::~NotificationHeaderView() = default;
@@ -324,6 +316,12 @@ void NotificationHeaderView::SetOverflowIndicator(int count) {
       IDS_MESSAGE_CENTER_LIST_NOTIFICATION_HEADER_OVERFLOW_INDICATOR, count));
   has_progress_ = false;
   UpdateSummaryTextAndTimestampVisibility();
+}
+
+void NotificationHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  Button::GetAccessibleNodeData(node_data);
+  node_data->SetDescription(summary_text_view_->GetText() + u" " +
+                            timestamp_view_->GetText());
 }
 
 void NotificationHeaderView::OnThemeChanged() {
@@ -501,11 +499,6 @@ void NotificationHeaderView::UpdateExpandedCollapsedAccessibleState() const {
   } else {
     GetViewAccessibility().SetIsCollapsed();
   }
-}
-
-void NotificationHeaderView::OnTextChanged() {
-  GetViewAccessibility().SetDescription(summary_text_view_->GetText() + u" " +
-                                        timestamp_view_->GetText());
 }
 
 BEGIN_METADATA(NotificationHeaderView)

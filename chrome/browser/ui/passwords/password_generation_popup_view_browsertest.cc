@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/passwords/password_generation_popup_controller_impl.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view_tester.h"
 #include "chrome/browser/ui/views/passwords/password_generation_popup_view_views.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
@@ -202,30 +201,6 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
   node_data = ui::AXNodeData();
   GetPasswordViewAccessibility(popup_view).GetAccessibleNodeData(&node_data);
   EXPECT_FALSE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
-                       HeaderAccessibilityProperties) {
-  auto* client = ChromePasswordManagerClient::FromWebContents(WebContents());
-  client->SetCurrentTargetFrameForTesting(WebContents()->GetPrimaryMainFrame());
-  client->ShowPasswordEditingPopup(gfx::RectF(0, 0, 10, 10), FormData(),
-                                   FieldRendererId(100), u"password123");
-  // Avoid dangling pointers on shutdown.
-  client->SetCurrentTargetFrameForTesting(nullptr);
-  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
-      client->generation_popup_controller();
-
-  PasswordGenerationPopupViewViews* popup_view =
-      static_cast<PasswordGenerationPopupViewViews*>(controller->view());
-
-  const std::u16string expected_cached_description = l10n_util::GetStringFUTF16(
-      IDS_PASSWORD_GENERATION_HELP_TEXT_TRUSTED_ADVICE,
-      l10n_util::GetStringUTF16(
-          IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT),
-      u"");
-
-  EXPECT_EQ(GetPasswordViewAccessibility(popup_view).GetCachedDescription(),
-            expected_cached_description);
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)

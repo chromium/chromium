@@ -309,9 +309,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetTableRowCount(int row_count);
   void SetTableColumnCount(int column_count);
 
-  void ClearDescriptionAndDescriptionFrom();
-  void RemoveDescription();
-
   void SetDescription(const std::string& description,
                       const ax::mojom::DescriptionFrom description_from =
                           ax::mojom::DescriptionFrom::kAriaDescription);

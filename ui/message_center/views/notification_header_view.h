@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -85,6 +84,7 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
   void SetIsInGroupChildNotification(bool is_in_group_child_notification);
 
   // views::View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
 
   views::ImageView* expand_button() { return expand_button_; }
@@ -119,8 +119,6 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
 
   void UpdateExpandedCollapsedAccessibleState() const;
 
-  void OnTextChanged();
-
   // Color used for labels and buttons in this view.
   std::optional<SkColor> color_;
 
@@ -147,9 +145,6 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
 
   // Whether this view is used for a group child notification.
   bool is_in_group_child_notification_ = false;
-
-  base::CallbackListSubscription summary_text_changed_callback_;
-  base::CallbackListSubscription timestamp_changed_callback_;
 };
 
 BEGIN_VIEW_BUILDER(MESSAGE_CENTER_EXPORT, NotificationHeaderView, views::Button)
