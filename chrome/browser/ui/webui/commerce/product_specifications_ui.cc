@@ -80,9 +80,9 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       IDR_COMMERCE_PRODUCT_SPECIFICATIONS_DISCLOSURE_PRODUCT_SPECIFICATIONS_DISCLOSURE_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      // Disclosure strings:
       {"acceptDisclosure", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ACCEPT},
       {"declineDisclosure", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_DECLINE},
-      {"delete", IDS_PRODUCT_SPECIFICATIONS_DELETE},
       {"disclosureAboutItem", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ABOUT_ITEM},
       {"disclosureAccountItem",
        IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ACCOUNT_ITEM},
@@ -90,34 +90,32 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"disclosureItemsHeader",
        IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ITEMS_HEADER},
       {"disclosureTitle", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_TITLE},
-      {"emptyMenu", IDS_PRODUCT_SPECIFICATIONS_EMPTY_SELECTION_MENU},
-      {"emptyProductSelector",
-       IDS_PRODUCT_SPECIFICATIONS_EMPTY_PRODUCT_SELECTOR},
-      {"emptyStateDescription",
-       IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE_DESCRIPTION},
-      {"emptyStateTitle", IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE},
-      {"experimentalFeatureDisclaimer", IDS_PRODUCT_SPECIFICATIONS_DISCLAIMER},
+
+      // Main UI strings:
+      {"delete", IDS_COMPARE_DELETE},
+      {"emptyMenu", IDS_COMPARE_EMPTY_SELECTION_MENU},
+      {"emptyProductSelector", IDS_COMPARE_EMPTY_PRODUCT_SELECTOR},
+      {"emptyStateDescription", IDS_COMPARE_EMPTY_STATE_TITLE_DESCRIPTION},
+      {"emptyStateTitle", IDS_COMPARE_EMPTY_STATE_TITLE},
+      {"experimentalFeatureDisclaimer", IDS_COMPARE_DISCLAIMER},
       {"learnMore", IDS_LEARN_MORE},
-      {"learnMoreA11yLabel", IDS_PRODUCT_SPECIFICATIONS_LEARN_MORE_A11Y_LABEL},
-      {"offlineMessage", IDS_PRODUCT_SPECIFICATIONS_OFFLINE_TOAST_MESSAGE},
-      {"priceRowTitle", IDS_PRODUCT_SPECIFICATIONS_PRICE_ROW_TITLE},
-      {"productSummaryRowTitle",
-       IDS_PRODUCT_SPECIFICATIONS_PRODUCT_SUMMARY_ROW_TITLE},
-      {"recentlyViewedTabs",
-       IDS_PRODUCT_SPECIFICATIONS_RECENTLY_VIEWED_TABS_SECTION},
-      {"removeColumn", IDS_PRODUCT_SPECIFICATIONS_REMOVE_COLUMN},
-      {"renameGroup", IDS_PRODUCT_SPECIFICATIONS_RENAME_GROUP},
-      {"seeAll", IDS_PRODUCT_SPECIFICATIONS_SEE_ALL},
-      {"suggestedTabs", IDS_PRODUCT_SPECIFICATIONS_SUGGESTIONS_SECTION},
+      {"learnMoreA11yLabel", IDS_COMPARE_LEARN_MORE_A11Y_LABEL},
+      {"offlineMessage", IDS_COMPARE_OFFLINE_TOAST_MESSAGE},
+      {"pageTitle", IDS_COMPARE_DEFAULT_PAGE_TITLE},
+      {"priceRowTitle", IDS_COMPARE_PRICE_ROW_TITLE},
+      {"productSummaryRowTitle", IDS_COMPARE_PRODUCT_SUMMARY_ROW_TITLE},
+      {"recentlyViewedTabs", IDS_COMPARE_RECENTLY_VIEWED_TABS_SECTION},
+      {"removeColumn", IDS_COMPARE_REMOVE_COLUMN},
+      {"renameGroup", IDS_COMPARE_RENAME},
+      {"seeAll", IDS_COMPARE_SEE_ALL},
+      {"suggestedTabs", IDS_COMPARE_SUGGESTIONS_SECTION},
       {"thumbsDown", IDS_THUMBS_DOWN},
       {"thumbsUp", IDS_THUMBS_UP},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
-  source->AddString("pageTitle", "Product Specifications");
   source->AddString("productSpecificationsManagementUrl",
                     kChromeUICompareListsUrl);
-  source->AddString("summaryTitle", "Summary");
 }
 
 void ProductSpecificationsUI::BindInterface(

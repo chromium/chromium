@@ -512,13 +512,57 @@
     Shopping list
   </message>
 
-  <!-- For Product Specifications -->
-  <message name="IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE_DESCRIPTION" translateable="false" desc="The description of the prompt that shows for Product Specifications when no products have been selected.">
-    Something will show here once you select something from the dropdown under this
+  <!-- For Compare -->
+  <message name="IDS_COMPARE_DEFAULT_PAGE_TITLE" desc="The default page title for the tab compare feature.">
+    Compare
   </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE" translateable="false" desc="The title of the prompt that shows for Product Specifications when no products have been selected.">
+  <message name="IDS_COMPARE_DELETE" desc="The title of the menu item for deleting the tab compare table.">
+    Delete comparison table
+  </message>
+  <message name="IDS_COMPARE_DISCLAIMER" desc="Disclaimer text shown in tab compare UIs.">
+    This is an experimental feature and won't always get it right.
+  </message>
+  <message name="IDS_COMPARE_EMPTY_PRODUCT_SELECTOR" desc="The text displayed in the product selector when there is no currently selected product.">
+    Add a tab
+  </message>
+  <message name="IDS_COMPARE_EMPTY_SELECTION_MENU" desc="The text that is displayed when the product selection menu has nothing to show.">
+    First, open tabs and visit sites
+  </message>
+  <message name="IDS_COMPARE_EMPTY_STATE_TITLE" desc="The title of the prompt that shows for tab compare when no products have been selected.">
     Missing some info
   </message>
+  <message name="IDS_COMPARE_EMPTY_STATE_TITLE_DESCRIPTION" desc="The description of the prompt that shows for tab compare when no products have been selected.">
+    Something will show here once you select something from the dropdown under this
+  </message>
+  <message name="IDS_COMPARE_LEARN_MORE_A11Y_LABEL" desc="Accessibility label for a link labeled 'Learn more' that links to a help article about tab compare.">
+    Learn more about Compare.
+  </message>
+  <message name="IDS_COMPARE_OFFLINE_TOAST_MESSAGE" desc="The message that shows when tab compare is offline.">
+    Check your connection and try again.
+  </message>
+  <message name="IDS_COMPARE_PRICE_ROW_TITLE" desc="The title for the product price row in the tab compare table.">
+    Price
+  </message>
+  <message name="IDS_COMPARE_PRODUCT_SUMMARY_ROW_TITLE" desc="The title for the product summary row in the tab compare table.">
+    Summary
+  </message>
+  <message name="IDS_COMPARE_RECENTLY_VIEWED_TABS_SECTION" desc="The title of the section in the product selection drop-down in the tab compare UI that shows a list of recently viewed tabs.">
+    Recently Viewed
+  </message>
+  <message name="IDS_COMPARE_REMOVE_COLUMN" desc="The title of the menu item for removing a column in the tab compare table.">
+    Remove column
+  </message>
+  <message name="IDS_COMPARE_RENAME" desc="The title of the menu item for renaming the tab compare table.">
+    Rename table
+  </message>
+  <message name="IDS_COMPARE_SEE_ALL" desc="The title of the menu item for viewing all tab compare tables.">
+    See all comparison tables
+  </message>
+  <message name="IDS_COMPARE_SUGGESTIONS_SECTION" desc="The title of the section in the product selection drop-down in the tab compare UI that shows a list of tabs suggested by the browser to be put into the table.">
+    Suggestions
+  </message>
+
+  <!-- For Product Specifications -->
   <message name="IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT_DEFAULT" translateable="false" desc="The default text for the Product Specifications entry point button.">
     Analyze pages?
   </message>
@@ -528,20 +572,8 @@
   <message name="IDS_PRODUCT_SPECIFICATIONS_HISTORY_MENU_ITEM" translateable="false" desc="The title of the link in the history UI that navigates the user to a page showing the lists being maintained by the product specifications feature.">
     Product specifications lists
   </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_SUGGESTIONS_SECTION" translateable="false" desc="The title of the section in the product selection drop-down in the product specifications UI that shows a list of tabs suggested by the browser to be put into the table.">
-    Suggestions
-  </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_RECENTLY_VIEWED_TABS_SECTION" translateable="false" desc="The title of the section in the product selection drop-down in the product specifications UI that shows a list of recently viewed tabs.">
-    Recently Viewed
-  </message>
   <message name="IDS_TOOLTIP_PRODUCT_SPECIFICATIONS_ENTRY_POINT_CLOSE" translateable="false" desc="The tooltip text for the close button within the Product Specifications entry point button.">
     Dismiss suggestion
-  </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_EMPTY_PRODUCT_SELECTOR" translateable="false" desc="The text displayed in the product selector when there is no currently selected product.">
-    Add a tab
-  </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_EMPTY_SELECTION_MENU" translateable="false" desc="The text that shows when the product selection menu has nothing to show.">
-    First, read this then add tabs.
   </message>
   <message name="IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT" translateable="false" desc="The default text for the Product Specifications page action chip before adding the current page.">
     Add to analysis?
@@ -555,33 +587,7 @@
   <message name="IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED" translateable="false" desc="The text for the Product Specifications page action chip with a placeholder for what the specifications are for, after adding the current page.">
     Added to <ph name="SPECIFICATION">$1<ex>analysis</ex></ph>
   </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_PRICE_ROW_TITLE" translateable="false" desc="The title for the product price row in the product specifications table.">
-    Price
-  </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_PRODUCT_SUMMARY_ROW_TITLE" translateable="false" desc="The title for the product summary row in the product specifications table.">
-    Summary
-  </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_OFFLINE_TOAST_MESSAGE" translateable="false" desc="The message that shows when product specifications is offline.">
-    Check your connection and try again.
-  </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_RENAME_GROUP" translateable="false" desc="The title of the menu item for renaming the product specification list.">
-    Rename group
-  </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_SEE_ALL" translateable="false" desc="The title of the menu item for viewing all product specification lists.">
-    See all product specification lists
-  </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_DELETE" translateable="false" desc="The title of the menu item for deleting the product specification list.">
-    Delete product specification list
-  </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_REMOVE_COLUMN" translateable="false" desc="The title of the menu item for removing a column in the product specification list.">
-    Remove column
-  </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_DISCLAIMER" translateable="false" desc="Disclaimer text shown in product specifications UIs.">
-    This is an experimental feature and won't always get it right.
-  </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_LEARN_MORE_A11Y_LABEL" translateable="false" desc="Accessibility label for a link labeled 'Learn more' that links to a help article about product specifications.">
-    Learn more about product specifications.
-  </message>
+  
   <message name="IDS_PRODUCT_SPECIFICATIONS_FEEDBACK_PLACEHOLDER" translateable="false" desc="Placeholder text for the product specifications feedback form.">
     Send feedback for Product Specifications.
   </message>
