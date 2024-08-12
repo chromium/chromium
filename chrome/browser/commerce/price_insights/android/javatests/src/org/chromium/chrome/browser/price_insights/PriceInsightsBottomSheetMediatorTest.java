@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_HISTORY_CHART;
@@ -35,6 +36,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -72,6 +74,7 @@ public class PriceInsightsBottomSheetMediatorTest {
     @Mock private Resources mMockResources;
     @Mock private BookmarkId mMockBookmarkId;
     @Mock private PriceInsightsDelegate mMockPriceInsightsDelegate;
+    @Mock private ObservableSupplier<Boolean> mMockPriceTrackingStateSupplier;
     @Mock private View mMockPriceHistoryChart;
 
     private static final String PRODUCT_TITLE = "Testing Sneaker";
@@ -123,6 +126,11 @@ public class PriceInsightsBottomSheetMediatorTest {
 
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
 
+        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
+        doReturn(mMockPriceTrackingStateSupplier)
+                .when(mMockPriceInsightsDelegate)
+                .getPriceTrackingStateSupplier(mMockTab);
+
         mPriceInsightsMediator =
                 new PriceInsightsBottomSheetMediator(
                         mMockContext,
@@ -168,7 +176,7 @@ public class PriceInsightsBottomSheetMediatorTest {
 
     @Test
     public void testRequestShowContent_PriceTrackingEligibleAndDisabled() {
-        doReturn(false).when(mMockPriceInsightsDelegate).isTabPriceTracked(mMockTab);
+        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
         setShoppingServiceGetProductInfoForUrl();
         mPriceInsightsMediator.requestShowContent();
 
@@ -192,7 +200,7 @@ public class PriceInsightsBottomSheetMediatorTest {
 
     @Test
     public void testRequestShowContent_PriceTrackingEligibleAndEnabled() {
-        doReturn(true).when(mMockPriceInsightsDelegate).isTabPriceTracked(mMockTab);
+        doReturn(true).when(mMockPriceTrackingStateSupplier).get();
         setShoppingServiceGetProductInfoForUrl();
         mPriceInsightsMediator.requestShowContent();
 
@@ -216,7 +224,7 @@ public class PriceInsightsBottomSheetMediatorTest {
 
     @Test
     public void testRequestShowContent_PriceTrackingButtonOnClick_Failed() {
-        doReturn(false).when(mMockPriceInsightsDelegate).isTabPriceTracked(mMockTab);
+        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
         setShoppingServiceGetProductInfoForUrl();
         mPriceInsightsMediator.requestShowContent();
 
@@ -270,14 +278,21 @@ public class PriceInsightsBottomSheetMediatorTest {
                         eq(false));
     }
 
+    @Test
+    public void testPriceTrackingStateSupplier() {
+        mPriceInsightsMediator.requestShowContent();
+        verify(mMockPriceTrackingStateSupplier, times(1)).addObserver(any());
+
+        mPriceInsightsMediator.closeContent();
+        verify(mMockPriceTrackingStateSupplier, times(1)).removeObserver(any());
+    }
+
     private void setResultForPriceTrackingUpdate(boolean success) {
         doAnswer(
                         (InvocationOnMock invocation) -> {
                             if (success) {
                                 boolean newState = invocation.getArgument(1);
-                                doReturn(newState)
-                                        .when(mMockPriceInsightsDelegate)
-                                        .isTabPriceTracked(mMockTab);
+                                doReturn(newState).when(mMockPriceTrackingStateSupplier).get();
                             }
                             ((Callback<Boolean>) invocation.getArgument(2)).onResult(success);
                             return null;

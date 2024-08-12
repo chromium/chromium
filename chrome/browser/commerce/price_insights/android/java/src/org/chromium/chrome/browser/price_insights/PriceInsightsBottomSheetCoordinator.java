@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -31,12 +32,12 @@ public class PriceInsightsBottomSheetCoordinator {
     /** Delegate interface for price insights feature. */
     public interface PriceInsightsDelegate {
         /**
-         * Check whether price is tracked for a {@link Tab}.
+         * Get the price tracking state supplier for a {@link Tab}.
          *
          * @param tab Tab whose current URL is checked against.
-         * @return Whether the tab is price tracked or not.
+         * @return The supplier for price tracking state.
          */
-        Boolean isTabPriceTracked(Tab tab);
+        ObservableSupplier<Boolean> getPriceTrackingStateSupplier(Tab tab);
 
         /**
          * Set price tracking state for a {@link Tab}.
@@ -108,6 +109,7 @@ public class PriceInsightsBottomSheetCoordinator {
 
     /** Close the price insights bottom sheet. */
     public void closeContent() {
+        mBottomSheetMediator.closeContent();
         mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ true);
     }
 }

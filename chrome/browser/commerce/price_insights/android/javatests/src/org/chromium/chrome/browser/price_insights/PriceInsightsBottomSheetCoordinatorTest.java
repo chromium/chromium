@@ -35,6 +35,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
@@ -68,6 +69,7 @@ public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivity
     @Mock private ShoppingService mMockShoppingService;
     @Mock private Profile mMockProfile;
     @Mock private PriceInsightsDelegate mMockPriceInsightsDelegate;
+    @Mock private ObservableSupplier<Boolean> mMockPriceTrackingStateSupplier;
 
     @Captor private ArgumentCaptor<PriceInsightsBottomSheetContent> mBottomSheetContentCaptor;
 
@@ -104,6 +106,10 @@ public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivity
         doReturn(mMockPriceHistoryChart)
                 .when(mMockPriceInsightsDelegate)
                 .getPriceHistoryChartForPriceInsightsInfo(PRICE_INSIGHTS_INFO);
+        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
+        doReturn(mMockPriceTrackingStateSupplier)
+                .when(mMockPriceInsightsDelegate)
+                .getPriceTrackingStateSupplier(mMockTab);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
