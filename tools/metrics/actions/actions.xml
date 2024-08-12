@@ -44265,8 +44265,6 @@ should be able to be added at any place in this file.
       label="For Enhanced Safe Browsing Promo feature"/>
   <suffix name="iOSNewTabToolbarItemFeature"
       label="For iOSNewTabToolbarItemFeature feature"/>
-  <suffix name="iOSOmniboxPositionFeature"
-      label="For the iOSOmniboxPositionFeature feature"/>
   <suffix name="iOSOverflowMenuCustomization"
       label="For iOSOverflowMenuCustomization feature"/>
   <suffix name="iOSPageInfoRevamp"
