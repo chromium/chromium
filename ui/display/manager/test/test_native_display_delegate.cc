@@ -161,9 +161,10 @@ void TestNativeDisplayDelegate::Configure(
 
   if (run_async_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), config_success));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), config_requests, config_success));
   } else {
-    std::move(callback).Run(config_success);
+    std::move(callback).Run(config_requests, config_success);
   }
 }
 

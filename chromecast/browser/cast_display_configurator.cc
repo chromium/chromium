@@ -5,6 +5,7 @@
 #include "chromecast/browser/cast_display_configurator.h"
 
 #include <math.h>
+
 #include <algorithm>
 #include <string>
 
@@ -20,6 +21,7 @@
 #include "chromecast/graphics/cast_display_util.h"
 #include "chromecast/graphics/cast_screen.h"
 #include "chromecast/public/graphics_properties_shlib.h"
+#include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -240,19 +242,17 @@ void CastDisplayConfigurator::OnDisplaysAcquired(
   delegate_->Configure(
       config_request,
       base::BindRepeating(&CastDisplayConfigurator::OnDisplayConfigured,
-                          weak_factory_.GetWeakPtr(), display_,
-                          display_->native_mode(), origin),
+                          weak_factory_.GetWeakPtr()),
       {display::ModesetFlag::kTestModeset,
        display::ModesetFlag::kCommitModeset});
 }
 
 void CastDisplayConfigurator::OnDisplayConfigured(
-    display::DisplaySnapshot* display,
-    const display::DisplayMode* mode,
-    const gfx::Point& origin,
+    const std::vector<display::DisplayConfigurationParams>& request_results,
     bool config_success) {
-  DCHECK(display);
-  DCHECK(mode);
+  DCHECK_EQ(request_results.size(), 1u);
+  const auto& result = request_results[0];
+  DCHECK(result.mode);
 
   // Discard events for previous configurations. It is safe to discard since a
   // new configuration round was initiated and we're waiting for another
@@ -260,19 +260,20 @@ void CastDisplayConfigurator::OnDisplayConfigured(
   //
   // This typically only happens when there's crashes and the state updates at
   // the same time old notifications are received.
-  if (display != display_)
+  if (result.id != display_->display_id()) {
     return;
+  }
 
-  const gfx::Rect bounds(origin, mode->size());
+  const gfx::Rect bounds(result.origin, result.mode->size());
   DVLOG(1) << __func__ << " success=" << config_success
            << " bounds=" << bounds.ToString();
   if (config_success) {
     // Need to update the display state otherwise it becomes stale.
-    display_->set_current_mode(mode);
-    display_->set_origin(origin);
+    display_->set_current_mode(result.mode.get());
+    display_->set_origin(result.origin);
 
     UpdateScreen(display_->display_id(), bounds,
-                 GetDeviceScaleFactor(display->native_mode()->size()),
+                 GetDeviceScaleFactor(display_->native_mode()->size()),
                  RotationFromPanelOrientation(display_->panel_orientation()));
   } else {
     LOG(FATAL) << "Failed to configure display";

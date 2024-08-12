@@ -13,7 +13,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/ozone/platform/drm/common/display_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
@@ -23,6 +22,7 @@ using drmModeModeInfo = struct _drmModeModeInfo;
 namespace display {
 struct ColorCalibration;
 struct ColorTemperatureAdjustment;
+struct DisplayConfigurationParams;
 struct GammaAdjustment;
 }  // namespace display
 
@@ -61,7 +61,8 @@ class DrmGpuDisplayManager {
 
   bool ConfigureDisplays(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
-      display::ModesetFlags modeset_flags);
+      display::ModesetFlags modeset_flags,
+      std::vector<display::DisplayConfigurationParams>& out_requests);
   bool SetHdcpKeyProp(int64_t display_id, const std::string& key);
   bool GetHDCPState(int64_t display_id,
                     display::HDCPState* state,

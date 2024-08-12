@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/manager/display_manager_export.h"
-#include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/native_display_observer.h"
 #include "ui/gfx/geometry/point.h"
@@ -24,6 +23,8 @@ namespace display {
 class DisplayMode;
 class DisplaySnapshot;
 class NativeDisplayDelegate;
+
+struct DisplayConfigurationParams;
 
 struct DISPLAY_MANAGER_EXPORT DisplayConfigureRequest {
   DisplayConfigureRequest(DisplaySnapshot* display,
@@ -128,7 +129,9 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   // Upon failure, partitions the original request from Ash into smaller
   // requests where the displays are grouped by the physical connector they
   // connect to and initiates the retry sequence.
-  void OnFirstAttemptConfigured(bool config_success);
+  void OnFirstAttemptConfigured(
+      const std::vector<DisplayConfigurationParams>& request_results,
+      bool config_success);
 
   // Deals with the aftermath of a configuration retry, which attempts to
   // configure a subset of the displays grouped together by the physical
@@ -139,11 +142,15 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   // If any of the display groups entirely fail to modeset (i.e. exhaust all
   // available modes during retry), the configuration will fail as a whole, but
   // will continue to try to modeset the remaining display groups.
-  void OnRetryConfigured(bool config_success);
+  void OnRetryConfigured(
+      const std::vector<DisplayConfigurationParams>& request_results,
+      bool config_success);
 
   // Finalizes the configuration after a modeset attempt was made (as opposed to
   // test-modeset).
-  void OnConfigured(bool config_success);
+  void OnConfigured(
+      const std::vector<DisplayConfigurationParams>& request_results,
+      bool config_success);
 
   // Partition |requests_| by their base connector id (i.e. the physical
   // connector the displays are connected to) and populate the result in

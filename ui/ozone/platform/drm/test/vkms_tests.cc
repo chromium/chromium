@@ -67,10 +67,13 @@ class VKMSTest : public testing::Test {
     }
 
     base::RunLoop run_loop;
-    auto callback = base::BindLambdaForTesting([&run_loop](bool success) {
-      EXPECT_TRUE(success) << "Unable to set up displays.";
-      run_loop.Quit();
-    });
+    auto callback = base::BindLambdaForTesting(
+        [&run_loop](const std::vector<display::DisplayConfigurationParams>&
+                        request_results,
+                    bool success) {
+          EXPECT_TRUE(success) << "Unable to set up displays.";
+          run_loop.Quit();
+        });
     drm_device_->ConfigureNativeDisplays(params,
                                          {display::ModesetFlag::kTestModeset,
                                           display::ModesetFlag::kCommitModeset},

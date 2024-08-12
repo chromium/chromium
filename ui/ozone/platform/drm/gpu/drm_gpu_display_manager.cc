@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/display/display_features.h"
+#include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
@@ -456,7 +457,8 @@ bool DrmGpuDisplayManager::ShouldDisplayEventTriggerConfiguration(
 
 bool DrmGpuDisplayManager::ConfigureDisplays(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
-    display::ModesetFlags modeset_flags) {
+    display::ModesetFlags modeset_flags,
+    std::vector<display::DisplayConfigurationParams>& out_requests) {
   const bool is_commit =
       modeset_flags.Has(display::ModesetFlag::kCommitModeset);
   const bool is_seamless =
@@ -466,6 +468,7 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
     controllers_to_configure = GetLatestModesetTestConfig(config_requests);
   }
 
+  out_requests.clear();
   if (controllers_to_configure.empty()) {
     for (const auto& request : config_requests) {
       int64_t display_id = request.id;
@@ -473,6 +476,7 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
       if (!display) {
         LOG(WARNING) << __func__ << ": there is no display with ID "
                      << display_id;
+        out_requests = config_requests;
         return false;
       }
 
@@ -481,6 +485,7 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
         found_mode = FindModeForDisplay(*request.mode, *display, is_seamless);
 
         if (!found_mode) {
+          out_requests = config_requests;
           return false;
         }
 
@@ -489,6 +494,7 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
         request.mode->set_vsync_rate_min(
             ModeVSyncRateMin(*found_mode, display->vsync_rate_min_from_edid()));
       }
+      out_requests.emplace_back(request);
 
       scoped_refptr<DrmDevice> drm = display->drm();
       ControllerConfigParams params(

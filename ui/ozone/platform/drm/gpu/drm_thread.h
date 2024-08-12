@@ -19,7 +19,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "ui/display/types/display_configuration_params.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/drm/common/display_types.h"
@@ -38,6 +37,7 @@ class FilePath;
 namespace display {
 struct ColorCalibration;
 struct ColorTemperatureAdjustment;
+struct DisplayConfigurationParams;
 struct GammaAdjustment;
 }  // namespace display
 

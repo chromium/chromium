@@ -25,6 +25,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
+#include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/events/ozone/device/device_event.h"
 #include "ui/events/ozone/device/device_manager.h"
@@ -414,7 +415,7 @@ void DrmDisplayHostManager::ConfigureDisplays(
     display::ModesetFlags modeset_flags) {
   for (auto& config : config_requests) {
     if (GetDisplay(config.id)->is_dummy()) {
-      std::move(callback).Run(true);
+      std::move(callback).Run(config_requests, true);
       return;
     }
   }
