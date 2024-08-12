@@ -3294,7 +3294,10 @@ IN_PROC_BROWSER_TEST_P(
 class HttpsUpgradesPrefsBrowserTest : public InProcessBrowserTest {
  public:
   HttpsUpgradesPrefsBrowserTest() {
-    feature_list_.InitAndDisableFeature(features::kHttpsFirstModeIncognito);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kHttpsFirstModeIncognito,
+                               features::kHttpsFirstBalancedMode});
   }
   ~HttpsUpgradesPrefsBrowserTest() override = default;
 

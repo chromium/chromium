@@ -11168,6 +11168,26 @@
             ]
         }
     ],
+    "HttpsFirstBalancedMode": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HttpsFirstBalancedMode",
+                        "HttpsFirstModeInterstitialAugust2024Refresh"
+                    ]
+                }
+            ]
+        }
+    ],
     "HttpsFirstModeIncognitoPhase1": [
         {
             "platforms": [
