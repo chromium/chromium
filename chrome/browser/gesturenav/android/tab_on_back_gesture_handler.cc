@@ -36,9 +36,16 @@ void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
                                             float progress,
                                             int edge,
                                             bool forward) {
-  CHECK(!is_in_progress_, base::NotFatalUntil::M123);
-  is_in_progress_ = true;
+  // Ideally the OS shouldn't start a new gesture without finishing the previous
+  // gesture but we see this pattern on multiple devices.
+  // See crbug.com/41484247.
+  if (is_in_progress_) {
+    base::debug::DumpWithoutCrashing();
+    OnBackCancelled(env);
+    CHECK(!is_in_progress_);
+  }
 
+  is_in_progress_ = true;
   content::WebContents* web_contents = tab_android_->web_contents();
   CHECK(web_contents, base::NotFatalUntil::M123);
   AssertHasWindowAndCompositor(web_contents);
@@ -54,7 +61,7 @@ void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
 void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
                                                float progress,
                                                int edge) {
-  CHECK(is_in_progress_, base::NotFatalUntil::M123);
+  CHECK(is_in_progress_);
 
   content::WebContents* web_contents = tab_android_->web_contents();
   AssertHasWindowAndCompositor(web_contents);
@@ -73,7 +80,7 @@ void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
 }
 
 void TabOnBackGestureHandler::OnBackCancelled(JNIEnv* env) {
-  CHECK(is_in_progress_, base::NotFatalUntil::M123);
+  CHECK(is_in_progress_);
   is_in_progress_ = false;
 
   content::WebContents* web_contents = tab_android_->web_contents();
@@ -84,7 +91,7 @@ void TabOnBackGestureHandler::OnBackCancelled(JNIEnv* env) {
 }
 
 void TabOnBackGestureHandler::OnBackInvoked(JNIEnv* env) {
-  CHECK(is_in_progress_, base::NotFatalUntil::M123);
+  CHECK(is_in_progress_);
   is_in_progress_ = false;
 
   content::WebContents* web_contents = tab_android_->web_contents();
@@ -96,7 +103,6 @@ void TabOnBackGestureHandler::OnBackInvoked(JNIEnv* env) {
 void TabOnBackGestureHandler::Destroy(JNIEnv* env) {
   if (is_in_progress_) {
     OnBackCancelled(env);
-    is_in_progress_ = false;
   }
   delete this;
 }
