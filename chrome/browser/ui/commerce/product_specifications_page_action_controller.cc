@@ -12,6 +12,11 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace {
+// The maximum length of the page action title.
+constexpr int kPageActionTitleMaxLength = 24;
+}  // namespace
+
 namespace commerce {
 
 ProductSpecificationsPageActionController::
@@ -153,7 +158,8 @@ bool ProductSpecificationsPageActionController::IsInRecommendedSet() {
 std::u16string
 ProductSpecificationsPageActionController::GetProductSpecificationsLabel(
     bool is_added) {
-  if (!product_group_for_page_.has_value()) {
+  if (!product_group_for_page_.has_value() ||
+      product_group_for_page_->name.size() > kPageActionTitleMaxLength) {
     return is_added ? l10n_util::GetStringUTF16(
                           IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED_DEFAULT)
                     : l10n_util::GetStringUTF16(
