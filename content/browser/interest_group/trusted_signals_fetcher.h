@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -17,6 +18,7 @@
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -155,6 +157,20 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
       Callback callback);
 
  private:
+  // Create a SimpleURLLoader and starts a request. Once the request body has
+  // been created, everything else (including response body parsing) is
+  // identical for bidding and scoring signals, as only the data inside
+  // compression groups is different for bidding and scoring signals, and that
+  // layer is not parsed by this class.
+  void StartRequest(network::mojom::URLLoaderFactory* url_loader_factory,
+                    const GURL& trusted_signals_url,
+                    std::string request_body,
+                    Callback callback);
+
+  void OnRequestComplete(std::unique_ptr<std::string> response_body);
+
+  Callback callback_;
+  std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 };
 
 }  // namespace content

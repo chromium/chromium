@@ -479,5 +479,6 @@ Refer to README.md for content description and update process.
  <item id="get_locale_oauth2_people_api_call" added_in_milestone="128" type="partial" second_id="oauth2_api_call_flow" content_hash_code="021bb5c6" os_list="chromeos" semantics_fields="1,2,3,4,5,7,8,9" policy_fields="3,7" file_path="chrome/browser/ash/login/screens/locale_switch_screen.cc" />
  <item id="boca_classroom_integration" added_in_milestone="128" content_hash_code="056b9402" os_list="chromeos" file_path="ash/webui/boca_ui/provider/classroom_page_handler_impl.cc" />
  <item id="android_webview_shell" added_in_milestone="129" content_hash_code="0625d0be" os_list="android" file_path="android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserFragment.java" />
+ <item id="trusted_signals_fetcher" added_in_milestone="129" content_hash_code="0757940f" os_list="linux,windows,android,chromeos" file_path="content/browser/interest_group/trusted_signals_fetcher.cc" />
  <item id="plus_address_preallocation" added_in_milestone="129" content_hash_code="05275659" os_list="linux,windows,android,chromeos" file_path="components/plus_addresses/plus_address_http_client_impl.cc" />
 </annotations>
