@@ -1520,6 +1520,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="PageLoad.Clients.NavigationToFirstContentfulPaint.Timeout"
+    enum="Boolean" expires_after="2025-06-01">
+  <owner>awillia@chromium.org</owner>
+  <owner>sergiog@microsoft.com</owner>
+  <owner>src/components/page_load_metrics/OWNERS</owner>
+  <summary>
+    Determines if a navigation has not been completed due to not resulting in
+    painted content before the maximum timeout allowed. The histogram will be
+    emitted with true value once timeout expires and first contentful paint is
+    not reached, and it will be emitted with false value if first contentful
+    paint is reached before expiring the timeout.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.PerformanceManager.LCPToLoadedIdle{LoadedIdleVisibility}"
     units="ms" expires_after="2024-12-05">

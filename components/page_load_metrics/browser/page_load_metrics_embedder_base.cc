@@ -9,6 +9,7 @@
 #include "components/page_load_metrics/browser/observers/assert_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/core/unstarted_page_paint_observer.h"
 #include "components/page_load_metrics/browser/observers/cross_origin_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/early_hints_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/fenced_frames_page_load_metrics_observer.h"
@@ -66,6 +67,7 @@ void PageLoadMetricsEmbedderBase::RegisterObservers(PageLoadTracker* tracker) {
     tracker->AddObserver(
         std::make_unique<UmaFileAndDataPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<PerformanceManagerMetricsObserver>());
+    tracker->AddObserver(std::make_unique<UnstartedPagePaintObserver>());
   }
   // Allow the embedder to register any embedder-specific observers
   RegisterEmbedderObservers(tracker);
