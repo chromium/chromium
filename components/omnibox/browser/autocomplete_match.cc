@@ -540,9 +540,9 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
   if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
       answer_template.has_value()) {
     return AnswerTypeToAnswerIcon(answer_type);
-  } else if (answer.has_value()) {
-    return AnswerTypeToAnswerIcon(answer->type());
   }
+  if (answer.has_value())
+    return AnswerTypeToAnswerIcon(answer->type());
 
   switch (type) {
     case Type::URL_WHAT_YOU_TYPED:
@@ -564,19 +564,14 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::FEATURED_ENTERPRISE_SEARCH:
       return omnibox::kPageChromeRefreshIcon;
 
-    case Type::SEARCH_SUGGEST: {
-      if (IsTrendSuggestion()) {
-        return omnibox::kTrendingUpChromeRefreshIcon;
-      }
-      return vector_icons::kSearchChromeRefreshIcon;
-    }
+    case Type::SEARCH_SUGGEST:
+      return IsTrendSuggestion() ? omnibox::kTrendingUpChromeRefreshIcon
+                                 : vector_icons::kSearchChromeRefreshIcon;
 
-    case Type::PEDAL: {
-      if (takeover_action) {
-        return takeover_action->GetVectorIcon();
-      }
-      ABSL_FALLTHROUGH_INTENDED;
-    }
+    case Type::PEDAL:
+      return takeover_action ? takeover_action->GetVectorIcon()
+                             : vector_icons::kSearchChromeRefreshIcon;
+
     case Type::SEARCH_WHAT_YOU_TYPED:
     case Type::SEARCH_SUGGEST_ENTITY:
     case Type::SEARCH_SUGGEST_PROFILE:
@@ -590,10 +585,9 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       return vector_icons::kSearchChromeRefreshIcon;
 
     case Type::SEARCH_HISTORY:
-    case Type::SEARCH_SUGGEST_PERSONALIZED: {
+    case Type::SEARCH_SUGGEST_PERSONALIZED:
       DCHECK(IsSearchHistoryType(type));
       return vector_icons::kHistoryChromeRefreshIcon;
-    }
 
     case Type::EXTENSION_APP_DEPRECATED:
       return omnibox::kExtensionAppIcon;
@@ -602,22 +596,16 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       return omnibox::kCalculatorChromeRefreshIcon;
 
     case Type::NULL_RESULT_MESSAGE:
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       // Select the icon according to the type of IPH. Otherwise (for No Results
       // Found), fallthrough to use the empty icon.
-      if (IsIPHSuggestion()) {
-        switch (iph_type) {
-          case IphType::kNone:
-            // `IsIPHSuggestion()` would have returned false.
-            NOTREACHED();
-          case IphType::kGemini:
-            return omnibox::kSparkIcon;
-          case IphType::kFeaturedEnterpriseSearch:
-            return omnibox::kEnterpriseIcon;
-        }
+      switch (iph_type) {
+        case IphType::kNone:
+          return empty_icon;
+        case IphType::kGemini:
+          return omnibox::kSparkIcon;
+        case IphType::kFeaturedEnterpriseSearch:
+          return omnibox::kEnterpriseIcon;
       }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      ABSL_FALLTHROUGH_INTENDED;
 
     case Type::SEARCH_SUGGEST_TAIL:
       return empty_icon;
