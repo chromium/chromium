@@ -16,5 +16,5 @@ import maven
 
 
 maven.main(
-    package='org.jetbrains.kotlin:kotlin-stdlib-jdk8',
+    package='org.jetbrains.kotlin:kotlin-stdlib',
     maven_url=maven.APACHE_MAVEN_URL)
