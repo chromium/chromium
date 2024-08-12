@@ -11,6 +11,11 @@ enum class ProfileInitStage {
   // Perform all asynch operation to load profile's preferences from disk.
   InitStageLoadProfile,
 
+  // Profile preferences have been loaded and the ChromeBrowserState object and
+  // all KeyedServices can be used. The app will automatically transition to the
+  // next stage.
+  InitStageProfileLoaded,
+
   // The app is fetching any enterprise policies for the profile. The
   // initialization is blocked on this because the policies might have an effect
   // on later init stages.

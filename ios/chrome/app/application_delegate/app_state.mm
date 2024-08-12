@@ -26,6 +26,7 @@
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/browsing_data/model/sessions_storage_util.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
@@ -73,6 +74,32 @@ void FlushCookieStoreOnIOThread(
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
   getter->GetURLRequestContext()->cookie_store()->FlushStore(
       std::move(closure));
+}
+
+// Return the equivalent ProfileInitStage from app InitStage.
+ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
+  switch (app_init_stage) {
+    case InitStageStart:
+    case InitStageBrowserBasic:
+    case InitStageSafeMode:
+    case InitStageVariationsSeed:
+      NOTREACHED_NORETURN();
+
+    case InitStageBrowserObjectsForBackgroundHandlers:
+      return ProfileInitStage::InitStageProfileLoaded;
+    case InitStageEnterprise:
+      return ProfileInitStage::InitStageEnterprise;
+    case InitStageBrowserObjectsForUI:
+      return ProfileInitStage::InitStagePrepareUI;
+    case InitStageNormalUI:
+      return ProfileInitStage::InitStageUIReady;
+    case InitStageFirstRun:
+      return ProfileInitStage::InitStageFirstRun;
+    case InitStageChoiceScreen:
+      return ProfileInitStage::InitStageChoiceScreen;
+    case InitStageFinal:
+      return ProfileInitStage::InitStageFinal;
+  }
 }
 
 }  // namespace
@@ -618,6 +645,11 @@ void FlushCookieStoreOnIOThread(
 
   self.isIncrementingInitStage = YES;
   self.initStage = initStage;
+  // TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
+  // (app) InitStage are fully decoupled.
+  if (initStage >= InitStageBrowserObjectsForBackgroundHandlers) {
+    self.mainProfile.initStage = ProfileInitStageFromAppInitStage(initStage);
+  }
   self.isIncrementingInitStage = NO;
 
   if (self.needsIncrementInitStage) {

@@ -5,6 +5,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 
 #import "base/test/task_environment.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -32,4 +33,17 @@ TEST_F(ProfileStateTest, browserState) {
   // Destroy the BrowserState and check that the property becomes null.
   browser_state.reset();
   EXPECT_EQ(state.browserState, nullptr);
+}
+
+// Tests that initStage can be set and get correctly.
+TEST_F(ProfileStateTest, initStages) {
+  ProfileState* state = [[ProfileState alloc] init];
+  state.initStage = ProfileInitStage::InitStageFinal;
+  for (ProfileInitStage stage = ProfileInitStage::InitStageLoadProfile;
+       stage < ProfileInitStage::InitStageFinal;
+       stage = static_cast<ProfileInitStage>(static_cast<int>(stage) + 1)) {
+    EXPECT_NE(state.initStage, stage);
+    state.initStage = stage;
+    EXPECT_EQ(state.initStage, stage);
+  }
 }
