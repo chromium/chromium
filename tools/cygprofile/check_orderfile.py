@@ -33,8 +33,6 @@ def _VerifySymbolOrder(orderfile_symbols, symbol_infos, threshold):
   misorder_count = 0
   misordered_syms = []
   for sym in orderfile_symbols:
-    if '.' in sym:
-      continue  # sym is a section name.
     if sym not in name_to_offset:
       missing_count += 1
       continue
