@@ -215,6 +215,11 @@ class TabGridViewBinder {
             }
         } else if (TabProperties.VISIBILITY == propertyKey) {
             view.setVisibility(model.get(TabProperties.VISIBILITY));
+        } else if (TabProperties.TAB_ACTION_STATE == propertyKey) {
+            updateColorForActionButton(
+                    view,
+                    model.get(TabProperties.IS_INCOGNITO),
+                    model.get(TabProperties.IS_SELECTED));
         }
     }
 
