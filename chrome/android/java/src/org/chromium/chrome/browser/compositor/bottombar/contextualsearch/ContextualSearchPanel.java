@@ -141,7 +141,7 @@ public class ContextualSearchPanel extends OverlayPanel {
      * @param toolbarManager The {@link ToolbarManager}, used to query for colors.
      * @param canPromoteToNewTab Whether the panel can be promoted to a new tab.
      * @param currentTabSupplier Supplies the current activity tab.
-     * @param edgeToEdgeControllerSupplier Controller for ddge-to-edge drawing.
+     * @param edgeToEdgeControllerSupplier Controller for edge-to-edge drawing.
      */
     public ContextualSearchPanel(
             @NonNull Context context,
@@ -454,6 +454,16 @@ public class ContextualSearchPanel extends OverlayPanel {
     protected float getMaximizedHeight() {
         // Max height does not cover the entire content screen.
         return getTabHeight() * MAXIMIZED_HEIGHT_FRACTION;
+    }
+
+    @Override
+    public float getBarMarginBottomPx() {
+        // When Edge To Edge is enabled and drawing to the bottom edge, pass in the bottom inset
+        // to pad the search bar (specifically, the caption's bottom padding). Use 0 otherwise.
+        // TODO(crbug.com/332543636) Remove padding when it's no longer needed in EXPANDED and
+        //  MAXIMIZED states
+        @Nullable EdgeToEdgeController edgeToEdgeController = mEdgeToEdgeControllerSupplier.get();
+        return edgeToEdgeController != null ? edgeToEdgeController.getBottomInsetPx() : 0;
     }
 
     @Override
@@ -938,28 +948,9 @@ public class ContextualSearchPanel extends OverlayPanel {
      * they won't actually be displayed on the screen (their snapshots will be displayed instead).
      */
     public ContextualSearchBarControl getSearchBarControl() {
-        // When Edge To Edge is enabled and drawing to the bottom edge, pass in the bottom inset
-        // to pad the search bar (specifically, the caption's bottom padding). Use 0 otherwise.
-        // TODO(crbug.com/332543636) Remove padding when it's no longer needed in EXPANDED and
-        //  MAXIMIZED states
-        @Nullable EdgeToEdgeController edgeToEdgeController = mEdgeToEdgeControllerSupplier.get();
-        int bottomEdgeToEdgePaddingDp =
-                edgeToEdgeController != null ? edgeToEdgeController.getBottomInset() : 0;
-
         if (mSearchBarControl == null) {
             mSearchBarControl =
-                    new ContextualSearchBarControl(
-                            this,
-                            mContext,
-                            mContainerView,
-                            mResourceLoader,
-                            bottomEdgeToEdgePaddingDp);
-        } else {
-            // mSearchBarControl is often created pre-emptively after the previous assignment is
-            // cleaned up. It should be updated with the current edge-to-edge bottom inset, in case
-            // it was created with a different inset on another tab with a different edge-to-edge
-            // status.
-            mSearchBarControl.overrideEdgeToEdgePadding(bottomEdgeToEdgePaddingDp);
+                    new ContextualSearchBarControl(this, mContext, mContainerView, mResourceLoader);
         }
         return mSearchBarControl;
     }

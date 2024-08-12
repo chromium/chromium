@@ -481,6 +481,13 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider {
     }
 
     /**
+     * @return The bottom margin of the Bar in pixels.
+     */
+    public float getBarMarginBottomPx() {
+        return 0;
+    }
+
+    /**
      * @return The height of the Bar in dp.
      */
     public float getBarHeight() {

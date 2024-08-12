@@ -48,6 +48,7 @@ class OverlayPanelLayer : public Layer {
                      int bar_background_color,
                      float bar_margin_side,
                      float bar_margin_top,
+                     float bar_margin_bottom,
                      float bar_height,
                      float bar_offset_y,
                      float bar_text_opacity,
