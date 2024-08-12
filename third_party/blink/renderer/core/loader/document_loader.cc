@@ -2895,10 +2895,13 @@ void DocumentLoader::CommitNavigation() {
   // resulting `document`. The `visited_link_salt_` allows the `document` to
   // hash and identify which links should be styled as :visited. Without the
   // salt, the hashtable is unreadable to the Document.
-  if (visited_link_salt_.has_value() &&
-      base::FeatureList::IsEnabled(
-          blink::features::kPartitionVisitedLinkDatabase)) {
-    document->GetVisitedLinkState().UpdateSalt(visited_link_salt_.value());
+  if (visited_link_salt_.has_value()) {
+    if (base::FeatureList::IsEnabled(
+            blink::features::kPartitionVisitedLinkDatabase) ||
+        base::FeatureList::IsEnabled(
+            blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks)) {
+      document->GetVisitedLinkState().UpdateSalt(visited_link_salt_.value());
+    }
   }
 
   // The navigation API is not initialized on the initial about:blank document

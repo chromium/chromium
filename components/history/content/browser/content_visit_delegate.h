@@ -71,13 +71,16 @@ class ContentVisitDelegate : public VisitDelegate,
   // ensure that only one writer (partitioned or unpartitioned) is constructed
   // and initialized at a time.
   //
-  // If `kPartitionVisitedLinkDatabase` is not enabled, `visitedlink_writer_` is
-  // constructed and initialized, while `partitioned_writer_` is
-  // nullopt. This state is referred to as "unpartitioned".
+  // If neither `kPartitionVisitedLinkDatabase` nor
+  // `kPartitionVisitedLinkDatabaseWithSelfLinks` is enabled,
+  // `visitedlink_writer_` is constructed and initialized, while
+  // `partitioned_writer_` is nullopt. This state is referred to as
+  // "unpartitioned".
   //
-  // If `kPartitionVisitedLinkDatabase` is enabled, `visitedlink_writer_` is
-  // nullopt, while `partitioned_writer_` is constructed and
-  // initialized. This state is referred to as "partitioned".
+  // If either `kPartitionVisitedLinkDatabase` or
+  // `kPartitionVisitedLinkDatabaseWithSelfLinks` is enabled,
+  // `visitedlink_writer_` is nullopt, while `partitioned_writer_` is
+  // constructed and initialized. This state is referred to as "partitioned".
   std::unique_ptr<visitedlink::PartitionedVisitedLinkWriter>
       partitioned_writer_;
   std::unique_ptr<visitedlink::VisitedLinkWriter> visitedlink_writer_;

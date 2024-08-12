@@ -1470,7 +1470,9 @@ std::unique_ptr<VisitedLinkNavigationThrottle>
 MaybeCreateVisitedLinkNavigationThrottleFor(
     content::NavigationHandle* navigation_handle) {
   if (!base::FeatureList::IsEnabled(
-          blink::features::kPartitionVisitedLinkDatabase)) {
+          blink::features::kPartitionVisitedLinkDatabase) &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks)) {
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(

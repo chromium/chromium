@@ -1161,6 +1161,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 #endif
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPartitionVisitedLinkDatabase);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kPartitionVisitedLinkDatabaseWithSelfLinks);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPlzDedicatedWorker);
 
