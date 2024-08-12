@@ -179,7 +179,7 @@
 <translation id="189531189292803889">Dein iPad wurde vor Kurzem wiederhergestellt. Möglicherweise hat sich dadurch dein Standardbrowser geändert.</translation>
 <translation id="1904580727789512086">Die von dir besuchten URLs werden in deinem Google-Konto gespeichert</translation>
 <translation id="1911619930368729126">Auf Google Drive hochladen</translation>
-<translation id="1919752845298942932">Verbindung ist nicht geschützt</translation>
+<translation id="1919752845298942932">Verbindung ist nicht verschlüsselt</translation>
 <translation id="1923342640370224680">Letzte Stunde</translation>
 <translation id="1930989359703290198">Deine Organisation lässt die Anmeldung nur mit bestimmten Konten zu. Unzulässige Konten sind ausgeblendet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Tippe zum Kopieren hier doppelt.</translation>
@@ -475,7 +475,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3377063233124932127">Deine gespeicherten Lesezeichen, Passwörter und mehr werden jetzt oben angezeigt.</translation>
 <translation id="3387261909427947069">Zahlungsmethoden</translation>
 <translation id="3393920035788932672">Pop-ups erlaubt</translation>
-<translation id="3398509000872871492">Verbindung ist geschützt</translation>
+<translation id="3398509000872871492">Verbindung ist verschlüsselt</translation>
 <translation id="3404232721752787413">In Google Fotos speichern</translation>
 <translation id="3404744938087714423">Durch die Abmeldung wird die Synchronisierung deaktiviert.</translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -1440,7 +1440,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8005666035647241369">Im Google Passwortmanager auf diesem Gerät</translation>
 <translation id="8009225694047762179">Passwörter verwalten</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
-<translation id="8016714545083187120">Immer sichere Verbindungen verwenden</translation>
+<translation id="8016714545083187120">Immer verschlüsselte Verbindungen verwenden</translation>
 <translation id="802154636333426148">Downloadfehler</translation>
 <translation id="8023878949384262191">Maximiert den Abschnitt</translation>
 <translation id="8027581147000338959">In neuem Fenster öffnen</translation>

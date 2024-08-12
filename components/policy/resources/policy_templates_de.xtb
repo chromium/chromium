@@ -85,7 +85,7 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
       Ist die Richtlinie deaktiviert, kann die Synchronisierung von SMS nicht eingerichtet werden.
 
       Ist sie nicht konfiguriert, gilt die Standardeinstellung, in der diese Funktion zwar für verwaltete Nutzer nicht zulässig ist, für andere Nutzer jedoch schon.</translation>
-<translation id="1035860095382451169">Schloss-Symbol in der Omnibox für sichere Verbindungen aktivieren</translation>
+<translation id="1035860095382451169">Schloss-Symbol in der Omnibox für verschlüsselte Verbindungen aktivieren</translation>
 <translation id="1037426296070139784">TLS-Zertifikate, die von <ph name="PRODUCT_NAME" /> für die Serverauthentifizierung als nicht vertrauenswürdig eingestuft werden sollen</translation>
 <translation id="1037470927044831850">Zulassen, dass Nutzer auf Websites aufgefordert werden, einen Videostream ihres Bildschirms freizugeben</translation>
 <translation id="1038049732032297658">Dadurch wird die Autokorrektur bei Nutzung der physischen Tastatur aktiviert oder deaktiviert.
@@ -175,7 +175,7 @@ Wenn sie nicht konfiguriert ist, sind keine Ausnahmen zu „<ph name="DEVICE_AUT
 <translation id="1096105751829466145">Standardsuchmaschine</translation>
 <translation id="1099282607296956954">Website-Isolierung für jede Website aktivieren</translation>
 <translation id="1100840127293327071">Option zum standardmäßigen Beibehalten bestehender Browserdaten nicht aktivieren</translation>
-<translation id="1105572260329131950">Standardsymbole für sichere Verbindungen verwenden</translation>
+<translation id="1105572260329131950">Standardsymbole für verschlüsselte Verbindungen verwenden</translation>
 <translation id="1105711894873068933">Wenn <ph name="LACROS_NAME" /> deaktiviert wurde, werden beim nächsten Log-in alle Nutzerdaten entfernt.</translation>
 <translation id="1107538157073168076">Erweiterung „Insights“ deaktivieren</translation>
 <translation id="1110426799149444997"><ph name="GOOGLE_LENS_PRODUCT_NAME" />-Ausschnittsuche deaktivieren.</translation>
@@ -1460,7 +1460,7 @@ Diese Richtlinie ist normalerweise zum Schutz vor Phishing deaktiviert.</transla
 
       Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist die Definition über die Funktion „Schnellinfo“ aktiviert.
       Wenn die Richtlinie deaktiviert ist, ist die Definition über „Schnellinfo“ deaktiviert.</translation>
-<translation id="2095778449451007308">Mit dieser Richtlinie wird festgelegt, ob Nutzer den Nur-HTTPS-Modus („Immer sichere Verbindungen verwenden“) in den Einstellungen aktivieren können. Über den Nur-HTTPS-Modus werden alle Aufrufe von Websites auf HTTPS umgestellt.
+<translation id="2095778449451007308">Mit dieser Richtlinie wird festgelegt, ob Nutzer den Nur-HTTPS-Modus („Immer verschlüsselte Verbindungen verwenden“) in den Einstellungen aktivieren können. Über den Nur-HTTPS-Modus werden alle Aufrufe von Websites auf HTTPS umgestellt.
       Wenn diese Einstellung nicht konfiguriert oder auf „Zugelassen“ festgelegt ist, dürfen Nutzer den Nur-HTTPS-Modus aktivieren.
       Ist sie auf „Nicht zugelassen“ festgelegt, dürfen Nutzer den Nur-HTTPS-Modus nicht aktivieren.
       Wenn diese Einstellung auf „force_enabled“ gesetzt ist, wird der Nur-HTTPS-Modus aktiviert und Nutzer können ihn nicht deaktivieren.
@@ -8168,7 +8168,7 @@ Wichtiger Hinweis: Die durch diese Richtlinie festgelegten Zeitpläne werden mö
 <translation id="7216442368414164495">Ermöglicht Nutzern die Aktivierung erweiterter Berichterstellung bei Verwendung von Safe Browsing</translation>
 <translation id="7218238054592349618">JavaScript-Optimierung auf diesen Websites zulassen</translation>
 <translation id="721970071627370558">Melden des Energiestatus auf Geräten deaktivieren</translation>
-<translation id="7221574724100909818">Schloss-Symbol für sichere Verbindungen verwenden</translation>
+<translation id="7221574724100909818">Schloss-Symbol für verschlüsselte Verbindungen verwenden</translation>
 <translation id="7227348936232766462">Nutzer dürfen Low-Level-Debug-Daten von allen unten verfügbaren Gerätetypen im Nutzerfeedback einbeziehen</translation>
 <translation id="7229365071755865554">Speichern von Passwörtern im Passwortmanager aktivieren</translation>
 <translation id="7229975860249300121">Enthält einen regulären Ausdruck, der festlegt, welche Google-Konten in <ph name="PRODUCT_NAME" /> als primäre Browserkonten eingerichtet werden können, also als das Konto, das bei der Zustimmung zur Synchronisierung ausgewählt wurde.
@@ -9895,9 +9895,9 @@ Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</tran
 <translation id="8643838501942693770">Drittanbieter-Cookies zulassen, aber Nutzern ermöglichen, diese Einstellung zu ändern</translation>
 <translation id="864611373241249369">Wenn <ph name="LACROS_NAME" /> deaktiviert wurde, versuchen wir, alle Daten zu migrieren.</translation>
 <translation id="8648844602494595665">Mit dieser Richtlinie legst du fest, wie das Schloss-Symbol in der Omnibox gehandhabt wird.
-       Ab Chrome M93 gibt es ein neues Omnibox-Symbol für sichere Verbindungen.
-       Wenn die Richtlinie aktiviert ist, verwendet Chrome das bestehende Schloss-Symbol für sichere Verbindungen.
-       Ist die Richtlinie deaktiviert oder nicht konfiguriert, verwendet Chrome das Standardsymbol für sichere Verbindungen.</translation>
+       Ab Chrome M93 gibt es ein neues Omnibox-Symbol für verschlüsselte Verbindungen.
+       Wenn die Richtlinie aktiviert ist, verwendet Chrome das bestehende Schloss-Symbol für verschlüsselte Verbindungen.
+       Ist die Richtlinie deaktiviert oder nicht konfiguriert, verwendet Chrome das Standardsymbol für verschlüsselte Verbindungen.</translation>
 <translation id="8650974590712548439">Windows-Registrierungspfad für Windows-Clients:</translation>
 <translation id="8653085952260859632">Informationen zum Arbeitsspeicher ausgeben</translation>
 <translation id="8653212052128283886">Ansicht des Chrome-Verlaufs in Seitengruppen</translation>

@@ -1730,7 +1730,7 @@
 <translation id="2224444042887712269">這項設定屬於 <ph name="OWNER_EMAIL" />。</translation>
 <translation id="2224551243087462610">編輯資料夾名稱</translation>
 <translation id="2225927550500503913">虛擬卡片已啟用</translation>
-<translation id="2226826835915474236">已停用的快捷字詞</translation>
+<translation id="2226826835915474236">已停用的搜尋捷徑</translation>
 <translation id="2226907662744526012">輸入 PIN 碼後自動解鎖</translation>
 <translation id="2227179592712503583">移除建議</translation>
 <translation id="2229161054156947610">剩下 1 個多小時</translation>
@@ -3239,7 +3239,7 @@
 <translation id="3309330461362844500">憑證設定檔 ID</translation>
 <translation id="3311445899360743395">系統可能會從這部裝置中移除與這個應用程式相關聯的資料。</translation>
 <translation id="3312470654018965389">正在設定 Linux 容器</translation>
-<translation id="3312883087018430408">如要搜尋特定網站或 Chrome，請在網址列輸入相應的快捷字詞，然後按下你慣用的鍵盤快速鍵。舉例來說，如果只要搜尋書籤，請輸入「@bookmarks」，然後按下 Tab 鍵或空白鍵。</translation>
+<translation id="3312883087018430408">如要搜尋特定網站或 Chrome，請在網址列輸入相應的搜尋捷徑，然後按下你慣用的鍵盤快速鍵。舉例來說，如果只要搜尋書籤，請輸入「@bookmarks」，然後按下 Tab 鍵或空白鍵。</translation>
 <translation id="3313622045786997898">憑證簽署值</translation>
 <translation id="3313950410573257029">檢查連線狀態</translation>
 <translation id="3315158641124845231">隱藏 <ph name="PRODUCT_NAME" /></translation>
@@ -4428,7 +4428,7 @@
 <translation id="4166847326079525123">Windows 系統偏好設定中的定位服務已關閉</translation>
 <translation id="4167212649627589331">「<ph name="APP_NAME" />」正在嘗試存取<ph name="DEVICE_NAME" />。如要允許存取，請關閉<ph name="DEVICE_NAME" />隱私權切換鈕。</translation>
 <translation id="4167393659000039775">Google 不會對任何遺失的資料負責，而且 <ph name="DEVICE_OS" /> 可能不適用於未通過核准的型號。如要瞭解詳情，請前往 g.co/flex/InstallGuide。</translation>
-<translation id="4167924027691268367">其他「<ph name="SHORTCUT_TITLE" />」快捷字詞動作</translation>
+<translation id="4167924027691268367">其他「<ph name="SHORTCUT_TITLE" />」搜尋捷徑動作</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> 的部分設定已與你共用。不過只有使用多重登入時，這些設定才會影響你的帳戶。</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />，末四碼為 <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">不允許</translation>
@@ -4652,7 +4652,7 @@
 <translation id="4341905082470253054">正在檢查 TPM 狀態...</translation>
 <translation id="434198521554309404">快速、安全又便利。</translation>
 <translation id="4342417854108207000">允許編輯裝置上的檔案或資料夾</translation>
-<translation id="4343250402091037179">如要搜尋特定網站或 Chrome，請在網址列輸入相應的快捷字詞，然後按下你慣用的鍵盤快速鍵。</translation>
+<translation id="4343250402091037179">如要搜尋特定網站或 Chrome，請在網址列輸入相應的搜尋捷徑，然後按下你慣用的鍵盤快速鍵。</translation>
 <translation id="4343283008857332996">允許系統服務和具有攝影機權限的應用程式與網站存取攝影機。如要使用攝影機，可能要重新啟動應用程式或重新整理頁面。</translation>
 <translation id="4345457680916430965">在 <ph name="APP" /> 中開啟(&amp;O)</translation>
 <translation id="4345587454538109430">設定...</translation>
@@ -5741,7 +5741,7 @@
 <translation id="5154108062446123722">「<ph name="PRINTING_DESTINATION" />」進階設定</translation>
 <translation id="5154702632169343078">主體</translation>
 <translation id="5154917547274118687">記憶體</translation>
-<translation id="5155327081870541046">在網址列中針對想搜尋的網站輸入快捷字詞 (例如「@bookmarks」)，然後按下你慣用的鍵盤快速鍵並輸入搜尋字詞。</translation>
+<translation id="5155327081870541046">在網址列中針對想搜尋的網站輸入搜尋捷徑 (例如「@bookmarks」)，然後按下你慣用的鍵盤快速鍵並輸入搜尋字詞。</translation>
 <translation id="5156638757840305347">游標會在出現或移動時醒目顯示</translation>
 <translation id="5157250307065481244">查看網站詳細資料</translation>
 <translation id="5158206172605340248">重音符號選單已關閉。</translation>
@@ -7159,7 +7159,7 @@
 <translation id="6208725777148613371">無法儲存至「<ph name="WEB_DRIVE" />」- <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">正在更新元件</translation>
 <translation id="6209908325007204267">你的裝置包含 Chrome Enterprise 升級版，但你的使用者名稱未申請企業版帳戶。請透過其他裝置前往 g.co/ChromeEnterpriseAccount 建立企業版帳戶。</translation>
-<translation id="6210282067670792090">請在網址列中輸入相應的鍵盤快速鍵和快捷字詞，以使用搜尋引擎和網站搜尋</translation>
+<translation id="6210282067670792090">請在網址列中輸入相應的鍵盤快速鍵和搜尋捷徑，以使用搜尋引擎和網站搜尋</translation>
 <translation id="6211067089253408231">開啟即時無線基地台</translation>
 <translation id="6211659910592825123">請檢查攝影機</translation>
 <translation id="621172521139737651">{COUNT,plural, =0{在新分頁群組中開啟所有網址(&amp;N)}=1{在新分頁群組中開啟網址(&amp;N)}other{在新分頁群組中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
@@ -8727,7 +8727,7 @@
 <translation id="7385854874724088939">準備列印時出現錯誤，請檢查你的印表機，然後再試一次。</translation>
 <translation id="7387107590792462040">正在安裝，請稍候</translation>
 <translation id="7387273928653486359">可以接受</translation>
-<translation id="7387951778417998929">如要使用非系統預設的搜尋引擎，請在網址列中輸入相應的快捷字詞，然後按下你慣用的鍵盤快速鍵。你也可以在這裡變更你的預設搜尋引擎。</translation>
+<translation id="7387951778417998929">如要使用非系統預設的搜尋引擎，請在網址列中輸入相應的搜尋捷徑，然後按下你慣用的鍵盤快速鍵。你也可以在這裡變更你的預設搜尋引擎。</translation>
 <translation id="7388209873137778229">只顯示支援的裝置。</translation>
 <translation id="7388615499319468910">網站和廣告主可以瞭解廣告成效。這項設定已關閉。</translation>
 <translation id="738903649531469042">將分頁新增至閱讀清單</translation>
@@ -10230,7 +10230,7 @@
 <translation id="845702320058262034">無法連線。請確認手機的藍牙功能已開啟。</translation>
 <translation id="8457251154056341970">這個頁面不會再顯示<ph name="MODULE_NAME" /></translation>
 <translation id="8457451314607652708">匯入書籤</translation>
-<translation id="8458341576712814616">快捷字詞</translation>
+<translation id="8458341576712814616">搜尋捷徑</translation>
 <translation id="8458627787104127436">在新視窗中開啟所有 (<ph name="URL_COUNT" /> 個) 網址</translation>
 <translation id="8459023460357294721">仍要開啟「<ph name="FILE_NAME" />」</translation>
 <translation id="8459333762072051247">登入狀態</translation>
@@ -11031,7 +11031,7 @@
 <translation id="9023909777842748145">即使關閉了這項功能，你的裝置仍然可以傳送基本服務 (例如系統更新和安全防護) 所需的資訊。</translation>
 <translation id="9024127637873500333">在新分頁中開啟(&amp;O)</translation>
 <translation id="9024158959543687197">掛接共用裝置時發生錯誤。請檢查檔案共用網址，然後再試一次。</translation>
-<translation id="9024692527554990034">只要在網址列中輸入快捷字詞，即可快速搜尋特定網站，或使用其他搜尋引擎</translation>
+<translation id="9024692527554990034">只要在網址列中輸入搜尋捷徑，即可快速搜尋特定網站，或使用其他搜尋引擎</translation>
 <translation id="902638246363752736">鍵盤設定</translation>
 <translation id="9026393603776578602">語音輸入</translation>
 <translation id="9026731007018893674">下載</translation>
