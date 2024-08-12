@@ -18,15 +18,15 @@
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_test_environment.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -39,6 +39,7 @@ using autofill::mojom::FocusedFieldType;
 using plus_addresses::FakePlusAddressService;
 using plus_addresses::FakePlusAddressSettingService;
 using plus_addresses::PlusAddressSettingService;
+using plus_addresses::test::PlusAddressTestEnvironment;
 using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
@@ -96,8 +97,8 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
     PlusAddressServiceFactory::GetInstance()->SetTestingFactory(
         GetBrowserContext(),
         base::BindRepeating(&BuildFakePlusAddressService,
-                            identity_test_env_.identity_manager(),
-                            &setting_service_));
+                            plus_environment_.identity_env().identity_manager(),
+                            &plus_environment_.setting_service()));
 
     EXPECT_CALL(mock_pwd_controller_, RegisterFillingSourceObserver)
         .WillOnce(SaveArg<0>(&pwd_source_observer_));
@@ -155,8 +156,7 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
 
   TestAutofillClientInjector<TestContentAutofillClient>
       autofill_client_injector_;
-  signin::IdentityTestEnvironment identity_test_env_;
-  FakePlusAddressSettingService setting_service_;
+  PlusAddressTestEnvironment plus_environment_;
 };
 
 TEST_F(ManualFillingControllerTest, ShowsAccessoryForAutofillOnSearchField) {
