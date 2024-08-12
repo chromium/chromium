@@ -272,12 +272,20 @@ bool ResourceCache::WriteCacheFile(const base::FilePath& path,
                                    const std::string& data) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(cache_dir_.IsParent(path));
-  bool success = DeleteCacheFile(path, false);
-  int size = base::checked_cast<int>(data.size());
-  int bytes_written = base::WriteFile(path, data.data(), size);
-  if (max_cache_size_.has_value())
-    current_cache_size_ += bytes_written;
-  return success && bytes_written == size;
+  bool success = DeleteCacheFile(path, /*recursive=*/false);
+  if (!success) {
+    return false;
+  }
+  if (base::WriteFile(path, data)) {
+    if (max_cache_size_.has_value()) {
+      current_cache_size_ += data.size();
+    }
+    return true;
+  } else {
+    // If we didn't write the entire file remove it.
+    DeleteCacheFile(path, /*recursive=*/false);
+  }
+  return false;
 }
 
 bool ResourceCache::DeleteCacheFile(const base::FilePath& path,
