@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/json/values_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
@@ -72,6 +74,10 @@ MATCHER_P2(IsPreallocatedPlusAddress, end_of_life, address, "") {
              end_of_life;
 }
 
+base::RepeatingCallback<bool()> AlwaysEnabled() {
+  return base::BindRepeating([]() { return true; });
+}
+
 }  // namespace
 
 class PlusAddressPreallocatorTest : public ::testing::Test {
@@ -128,7 +134,7 @@ TEST_F(PlusAddressPreallocatorTest,
   SetPreallocatedAddressesNext(1);
 
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
-                                    &http_client());
+                                    &http_client(), AlwaysEnabled());
 
   EXPECT_THAT(GetPreallocatedAddresses(), SizeIs(2));
   EXPECT_EQ(GetPreallocatedAddressesNext(), 1);
@@ -147,7 +153,7 @@ TEST_F(PlusAddressPreallocatorTest,
   SetPreallocatedAddressesNext(1);
 
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
-                                    &http_client());
+                                    &http_client(), AlwaysEnabled());
 
   EXPECT_THAT(GetPreallocatedAddresses(), IsEmpty());
   EXPECT_EQ(GetPreallocatedAddressesNext(), 0);
@@ -160,7 +166,7 @@ TEST_F(PlusAddressPreallocatorTest,
   SetPreallocatedAddressesNext(-10);
 
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
-                                    &http_client());
+                                    &http_client(), AlwaysEnabled());
   EXPECT_EQ(GetPreallocatedAddressesNext(), 0);
 }
 
@@ -184,7 +190,7 @@ TEST_F(PlusAddressPreallocatorTest,
   SetPreallocatedAddressesNext(4);
 
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
-                                    &http_client());
+                                    &http_client(), AlwaysEnabled());
 
   EXPECT_THAT(GetPreallocatedAddresses(), SizeIs(3));
   EXPECT_EQ(GetPreallocatedAddressesNext(), 1);
@@ -215,7 +221,7 @@ TEST_F(PlusAddressPreallocatorTest, RequestPreallocatedAddressesOnStartup) {
   }
 
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
-                                    &http_client());
+                                    &http_client(), AlwaysEnabled());
   check.Call();
   task_environment().FastForwardBy(
       PlusAddressPreallocator::kDelayUntilServerRequestAfterStartup);
@@ -227,6 +233,63 @@ TEST_F(PlusAddressPreallocatorTest, RequestPreallocatedAddressesOnStartup) {
                                             "plus@plus.com"),
                   IsPreallocatedPlusAddress(base::Time::Now() + base::Days(3),
                                             "plus2@plus.com")));
+}
+
+// Tests that no preallocated plus addresses are requested on startup if the
+// "enabled check" returns false.
+TEST_F(PlusAddressPreallocatorTest,
+       DoNotRequestPreallocatedAddressesOnStartupWhenFeatureIsDisabled) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeatureWithParameters(
+      features::kPlusAddressPreallocation,
+      {{features::kPlusAddressPreallocationMinimumSize.name, "2"}});
+  ASSERT_THAT(GetPreallocatedAddresses(), IsEmpty());
+
+  EXPECT_CALL(http_client(), PreallocatePlusAddresses).Times(0);
+
+  PlusAddressPreallocator allocator(
+      &pref_service(), &setting_service(), &http_client(),
+      /*is_enabled_check*/ base::BindRepeating([]() { return false; }));
+  task_environment().FastForwardBy(
+      PlusAddressPreallocator::kDelayUntilServerRequestAfterStartup);
+}
+
+// Tests that no preallocated plus addresses are requested on startup if the
+// notice screen has not yet been accepted.
+TEST_F(PlusAddressPreallocatorTest,
+       DoNotRequestPreallocatedAddressesOnStartupWhenNoticeNotAccepted) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeatureWithParameters(
+      features::kPlusAddressPreallocation,
+      {{features::kPlusAddressPreallocationMinimumSize.name, "2"}});
+  ASSERT_THAT(GetPreallocatedAddresses(), IsEmpty());
+
+  EXPECT_CALL(http_client(), PreallocatePlusAddresses).Times(0);
+
+  setting_service().set_has_accepted_notice(false);
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), AlwaysEnabled());
+  task_environment().FastForwardBy(
+      PlusAddressPreallocator::kDelayUntilServerRequestAfterStartup);
+}
+
+// Tests that no preallocated plus addresses are requested on startup if the
+// global toggle is off.
+TEST_F(PlusAddressPreallocatorTest,
+       DoNotRequestPreallocatedAddressesOnStartupWhenGlobalToggleOff) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeatureWithParameters(
+      features::kPlusAddressPreallocation,
+      {{features::kPlusAddressPreallocationMinimumSize.name, "2"}});
+  ASSERT_THAT(GetPreallocatedAddresses(), IsEmpty());
+
+  EXPECT_CALL(http_client(), PreallocatePlusAddresses).Times(0);
+
+  setting_service().set_is_plus_addresses_enabled(false);
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), AlwaysEnabled());
+  task_environment().FastForwardBy(
+      PlusAddressPreallocator::kDelayUntilServerRequestAfterStartup);
 }
 
 // Tests that no addresses are requested on startup if there are already enough
@@ -243,7 +306,7 @@ TEST_F(PlusAddressPreallocatorTest,
   EXPECT_CALL(http_client(), PreallocatePlusAddresses).Times(0);
 
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
-                                    &http_client());
+                                    &http_client(), AlwaysEnabled());
   task_environment().FastForwardBy(
       PlusAddressPreallocator::kDelayUntilServerRequestAfterStartup);
 }
@@ -269,7 +332,7 @@ TEST_F(PlusAddressPreallocatorTest, HandleNetworkError) {
   }
 
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
-                                    &http_client());
+                                    &http_client(), AlwaysEnabled());
   task_environment().FastForwardBy(
       PlusAddressPreallocator::kDelayUntilServerRequestAfterStartup);
   check.Call();
@@ -280,7 +343,7 @@ TEST_F(PlusAddressPreallocatorTest, HandleNetworkError) {
 // an error.
 TEST_F(PlusAddressPreallocatorTest, AllocatePlusAddressForOpaqueOrigin) {
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
-                                    &http_client());
+                                    &http_client(), AlwaysEnabled());
   base::MockCallback<PlusAddressRequestCallback> callback;
   EXPECT_CALL(callback,
               Run(PlusProfileOrError(base::unexpected(PlusAddressRequestError(
@@ -327,7 +390,7 @@ TEST_F(PlusAddressPreallocatorTest, AllocatePlusAddress) {
   }
 
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
-                                    &http_client());
+                                    &http_client(), AlwaysEnabled());
   allocator.AllocatePlusAddress(kValidOrigin1, kMode, callback1.Get());
   allocator.AllocatePlusAddress(kValidOrigin2, kMode, callback2.Get());
   allocator.AllocatePlusAddress(kValidOrigin2, kMode, callback3.Get());
@@ -357,7 +420,7 @@ TEST_F(PlusAddressPreallocatorTest,
           .Append(CreatePreallocatedPlusAddress(kFarFuture, kPlusAddress3)));
 
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
-                                    &http_client());
+                                    &http_client(), AlwaysEnabled());
   // No plus addresses are pruned on allocator creation...
   EXPECT_THAT(GetPreallocatedAddresses(), SizeIs(3));
   task_environment().FastForwardBy(base::Days(2));
@@ -430,7 +493,7 @@ TEST_F(PlusAddressPreallocatorTest,
           .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress2)));
 
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
-                                    &http_client());
+                                    &http_client(), AlwaysEnabled());
   task_environment().FastForwardBy(base::Days(2));
   // The outdated plus addresses still exist.
   EXPECT_THAT(GetPreallocatedAddresses(), SizeIs(2));
@@ -488,7 +551,7 @@ TEST_F(PlusAddressPreallocatorTest, RemoveAllocatedPlusAddress) {
   SetPreallocatedAddressesNext(1);
 
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
-                                    &http_client());
+                                    &http_client(), AlwaysEnabled());
   ASSERT_THAT(GetPreallocatedAddresses(), SizeIs(2));
   EXPECT_EQ(GetPreallocatedAddressesNext(), 1);
   allocator.RemoveAllocatedPlusAddress(kPlusAddress1);

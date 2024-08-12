@@ -43,9 +43,15 @@ class PlusAddressPreallocator : public PlusAddressAllocator {
   static constexpr std::string_view kEndOfLifeKey = "eol";
   static constexpr std::string_view kPlusAddressKey = "plus_address";
 
+  // Used to check the `PlusAddressService` is in its "enabled" state - i.e.,
+  // whether the user is signed in, the plus address feature is enabled for the
+  // profile, etc.
+  using IsEnabledCheck = base::RepeatingCallback<bool()>;
+
   PlusAddressPreallocator(PrefService* pref_service,
                           PlusAddressSettingService* setting_service,
-                          PlusAddressHttpClient* http_client);
+                          PlusAddressHttpClient* http_client,
+                          IsEnabledCheck);
   ~PlusAddressPreallocator() override;
 
   // PlusAddressAllocator:
@@ -100,6 +106,8 @@ class PlusAddressPreallocator : public PlusAddressAllocator {
   // Responsible for server communication. Owned by the `PlusAddressService` and
   // outlives `this`.
   const raw_ref<PlusAddressHttpClient> http_client_;
+
+  const IsEnabledCheck is_enabled_check_;
 
   // Whether a request for more pre-allocated plus addresses is ongoing.
   bool is_server_request_ongoing_ = false;

@@ -63,10 +63,12 @@ const std::string& GetPlusAddress(const base::Value& preallocated_address) {
 PlusAddressPreallocator::PlusAddressPreallocator(
     PrefService* pref_service,
     PlusAddressSettingService* setting_service,
-    PlusAddressHttpClient* http_client)
+    PlusAddressHttpClient* http_client,
+    IsEnabledCheck is_enabled_check)
     : pref_service_(CHECK_DEREF(pref_service)),
       settings_(CHECK_DEREF(setting_service)),
-      http_client_(CHECK_DEREF(http_client)) {
+      http_client_(CHECK_DEREF(http_client)),
+      is_enabled_check_(std::move(is_enabled_check)) {
   PrunePreallocatedPlusAddresses();
 
   // If the notice has not been accepted, we do not preemptively pre-allocate.
@@ -137,8 +139,6 @@ void PlusAddressPreallocator::PrunePreallocatedPlusAddresses() {
   FixIndexOfNextPreallocatedAddress();
 }
 
-// TODO: crbug.com/324559503 - Once this method is used by
-// `AllocatePlusAddress`, test that no concurrent requests are performed.
 void PlusAddressPreallocator::MaybeRequestNewPreallocatedPlusAddresses() {
   if (is_server_request_ongoing_) {
     return;
@@ -153,8 +153,10 @@ void PlusAddressPreallocator::MaybeRequestNewPreallocatedPlusAddresses() {
     return;
   }
 
-  // TODO: crbug.com/324559503 - Check whether `PlusAddressService::IsEnabled()`
-  // is true.
+  if (!is_enabled_check_.Run()) {
+    return;
+  }
+
   is_server_request_ongoing_ = true;
   http_client_->PreallocatePlusAddresses(base::BindOnce(
       &PlusAddressPreallocator::OnReceivePreallocatedPlusAddresses,
