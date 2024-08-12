@@ -102,6 +102,50 @@ TEST_F(
   EXPECT_EQ(EnrollmentConfig::GetManualFallbackMode(config.mode),
             EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK);
 }
+
+struct EnrollmentConfigOOBEConfigSourceTestCase {
+  const char* json_source;
+  OOBEConfigSource expected_oobe_config_source;
+};
+
+class EnrollmentConfigOOBEConfigSourceTest
+    : public EnrollmentConfigTest,
+      public testing::WithParamInterface<
+          EnrollmentConfigOOBEConfigSourceTestCase> {};
+
+const EnrollmentConfigOOBEConfigSourceTestCase test_cases[] = {
+    {"", OOBEConfigSource::kNone},
+    {"UNKNOWN_VALUE", OOBEConfigSource::kUnknown},
+    {"REMOTE_DEPLOYMENT", OOBEConfigSource::kRemoteDeployment},
+    {"PACKAGING_TOOL", OOBEConfigSource::kPackagingTool},
+};
+
+TEST_P(EnrollmentConfigOOBEConfigSourceTest,
+       TokenEnrollmentModeWithTokenAndOOBEConfigSource) {
+  EnrollmentConfigOOBEConfigSourceTestCase test_case = GetParam();
+  const char kOOBEConfigFormat[] = R"({
+    "enrollmentToken": "test_enrollment_token",
+    "source": "%s"
+  })";
+  std::string oobe_config =
+      base::StringPrintf(kOOBEConfigFormat, test_case.json_source).c_str();
+  enrollment_test_helper_.SetUpFlexDevice();
+  enrollment_test_helper_.SetUpEnrollmentTokenConfig(oobe_config.c_str());
+  auto state_dict = base::Value::Dict().Set(
+      kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
+  local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
+
+  const EnrollmentConfig config = GetPrescribedConfig();
+
+  EXPECT_EQ(config.mode,
+            EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED);
+  EXPECT_EQ(config.enrollment_token, test::kEnrollmentToken);
+  EXPECT_EQ(config.oobe_config_source, test_case.expected_oobe_config_source);
+}
+
+INSTANTIATE_TEST_SUITE_P(TokenEnrollmentModeWithTokenAndOOBEConfigSource,
+                         EnrollmentConfigOOBEConfigSourceTest,
+                         testing::ValuesIn(test_cases));
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 class EnrollmentConfigZeroTouchTest

@@ -30,6 +30,21 @@ enum class LicenseType {
   kTerminal = 3
 };
 
+// Source of OOBE config, if the device has an OOBE configuration file and
+// that config influences enrollment.
+enum class OOBEConfigSource {
+  // No OOBE config source field (or no OOBE config at all, if this isn't a type
+  // of enrollment driven by OOBE config).
+  kNone = 0,
+  // Unrecognized content present in source field.
+  kUnknown = 1,
+  // OOBE config was created during remote deployment Flex installation.
+  kRemoteDeployment = 2,
+  // OOBE config was written to disk image by the (Flex) image packaging tool,
+  // prior to installation.
+  kPackagingTool = 3,
+};
+
 // A container keeping all parameters relevant to whether and how enterprise
 // enrollment of a device should occur. This configures the behavior of the
 // enrollment flow during OOBE, i.e. whether the enrollment screen starts
@@ -270,6 +285,10 @@ struct EnrollmentConfig {
 
   // Enrollment token to use for authentication (for Flex Auto Enrollment).
   std::string enrollment_token;
+
+  // Source of OOBE config, if the device has an OOBE configuration file and
+  // that config influences enrollment.
+  OOBEConfigSource oobe_config_source;
 
  private:
   // Hold fields to be filled corresponding to ones in `EnrollmentConfig`.
