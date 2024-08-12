@@ -79,15 +79,35 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
   // Goes to the content that is associated with `outline_id`.
   virtual void GoToOutlineContent(int outline_id) = 0;
 
-  // Answers the provided `question`. `current_panel_content` is a boolean to
-  // determine if the question is regarding the current content displayed on
-  // the panel.
+  // Answers the provided `question` with a once callback.
+  // `current_panel_content` is a boolean to determine if the question is
+  // regarding the current content displayed on the panel.
   using MahiAnswerQuestionCallback =
       base::OnceCallback<void(std::optional<std::u16string>,
                               MahiResponseStatus)>;
   virtual void AnswerQuestion(const std::u16string& question,
                               bool current_panel_content,
                               MahiAnswerQuestionCallback callback) = 0;
+
+  // Answers the provided `question` with a repeating callback.
+  // `current_panel_content` is a boolean to determine if the question is
+  // regarding the current content displayed on the panel.
+  using MahiAnswerQuestionCallbackRepeating =
+      base::RepeatingCallback<void(std::optional<std::u16string>,
+                                   MahiResponseStatus)>;
+  virtual void AnswerQuestionRepeating(
+      const std::u16string& question,
+      bool current_panel_content,
+      MahiAnswerQuestionCallbackRepeating callback) = 0;
+
+  // If this function is set to true, then multiple answers can be returned
+  // consecutively from the server after one question is asked. If this is set
+  // to false, then only one answer back from the server is allowed. If this
+  // value is set to true then the MahiAnswerQuestionCallbackRepeating callback
+  // function will be used within the AnswerQuestionRepeating function. Else,
+  // the MahiAnswerQuestionCallback callback will be used within the
+  // AnswerQuestion function.
+  virtual bool AllowRepeatingAnswers() = 0;
 
   // Gets suggested question for the content currently displayed in the panel.
   using MahiGetSuggestedQuestionCallback =

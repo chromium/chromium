@@ -50,6 +50,13 @@ class MockMahiManager : public chromeos::MahiManager {
               GetMediaAppPDFClientId,
               (),
               (const override));
+  MOCK_METHOD(bool, AllowRepeatingAnswers, (), (override));
+  MOCK_METHOD(void,
+              AnswerQuestionRepeating,
+              (const std::u16string&,
+               bool,
+               MahiAnswerQuestionCallbackRepeating),
+              (override));
 };
 
 }  // namespace ash

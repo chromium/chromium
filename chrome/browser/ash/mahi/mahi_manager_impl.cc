@@ -776,6 +776,19 @@ void MahiManagerImpl::OnMahiProviderQAResponse(
   base::UmaHistogramEnumeration(kMahiResponseStatus, latest_response_status_);
 }
 
+// Repeating answers are not allowed for Mahi as all questions must only return
+// one answer.
+bool MahiManagerImpl::AllowRepeatingAnswers() {
+  return false;
+}
+
+// This function will never be called as consecutive answers are not allowed for
+// Mahi.
+void MahiManagerImpl::AnswerQuestionRepeating(
+    const std::u16string& question,
+    bool current_panel_content,
+    MahiAnswerQuestionCallbackRepeating callback) {}
+
 // ScopedMahiBrowserDelegateOverrider----------------------------------------
 
 ScopedMahiBrowserDelegateOverrider::ScopedMahiBrowserDelegateOverrider(

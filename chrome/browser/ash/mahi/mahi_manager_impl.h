@@ -51,6 +51,10 @@ class MahiManagerImpl : public chromeos::MahiManager,
   void AnswerQuestion(const std::u16string& question,
                       bool current_panel_content,
                       MahiAnswerQuestionCallback callback) override;
+  void AnswerQuestionRepeating(
+      const std::u16string& question,
+      bool current_panel_content,
+      MahiAnswerQuestionCallbackRepeating callback) override;
   void GetSuggestedQuestion(MahiGetSuggestedQuestionCallback callback) override;
   void SetCurrentFocusedPageInfo(crosapi::mojom::MahiPageInfoPtr info) override;
   void OnContextMenuClicked(
@@ -64,6 +68,7 @@ class MahiManagerImpl : public chromeos::MahiManager,
       const base::UnguessableToken media_app_client_id) override;
   std::optional<base::UnguessableToken> GetMediaAppPDFClientId() const override;
   void ClearCache() override;
+  bool AllowRepeatingAnswers() override;
 
   // Called when availability for a refresh changes based on the shown content.
   void NotifyRefreshAvailability(bool available);

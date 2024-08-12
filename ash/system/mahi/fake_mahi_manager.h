@@ -54,6 +54,11 @@ class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
                      const gfx::Rect& mahi_menu_bounds) override;
   bool IsEnabled() override;
   void SetMediaAppPDFFocused() override;
+  bool AllowRepeatingAnswers() override;
+  void AnswerQuestionRepeating(
+      const std::u16string& question,
+      bool current_panel_content,
+      MahiAnswerQuestionCallbackRepeating callback) override;
 
   MahiUiController* ui_controller() { return &ui_controller_; }
 
