@@ -31,9 +31,8 @@ BluetoothAdapterFactoryWrapper::~BluetoothAdapterFactoryWrapper() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // All observers should have been removed already.
   DCHECK(adapter_observers_.empty());
-  // Clear adapters.
-  SetAdapterInternal(/*adapter=*/nullptr, /*is_override_adapter=*/true);
-  SetAdapterInternal(/*adapter=*/nullptr, /*is_override_adapter=*/false);
+  // Clear adapter.
+  set_adapter(nullptr);
 }
 
 // static
@@ -44,9 +43,8 @@ BluetoothAdapterFactoryWrapper& BluetoothAdapterFactoryWrapper::Get() {
 
 bool BluetoothAdapterFactoryWrapper::IsLowEnergySupported() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (GetActiveAdapter() || pending_override_adapter_) {
+  if (adapter_ || test_adapter_)
     return true;
-  }
   return BluetoothAdapterFactory::Get()->IsLowEnergySupported();
 }
 
@@ -56,30 +54,27 @@ void BluetoothAdapterFactoryWrapper::AcquireAdapter(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!GetAdapter(service));
 
-  scoped_refptr<BluetoothAdapter> active_adapter = GetActiveAdapter();
-  if (active_adapter) {
-    MaybeAddAdapterObserver(service);
+  MaybeAddAdapterObserver(service);
+  if (adapter_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::move(active_adapter)));
+        FROM_HERE, base::BindOnce(std::move(callback), adapter_));
     return;
   }
 
   // Simulate the normally asynchronous process of acquiring the adapter in
   // tests.
-  if (pending_override_adapter_) {
+  if (test_adapter_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BluetoothAdapterFactoryWrapper::OnGetOverrideAdapter,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       service, pending_override_adapter_));
+        FROM_HERE, base::BindOnce(&BluetoothAdapterFactoryWrapper::OnGetAdapter,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(callback), test_adapter_));
     return;
   }
 
   DCHECK(BluetoothAdapterFactory::Get()->IsLowEnergySupported());
-  BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
-      &BluetoothAdapterFactoryWrapper::OnGetAdapter,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback), service));
+  BluetoothAdapterFactory::Get()->GetAdapter(
+      base::BindOnce(&BluetoothAdapterFactoryWrapper::OnGetAdapter,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void BluetoothAdapterFactoryWrapper::ReleaseAdapter(
@@ -89,70 +84,43 @@ void BluetoothAdapterFactoryWrapper::ReleaseAdapter(
     return;
   }
   RemoveAdapterObserver(service);
-  if (adapter_observers_.empty()) {
-    SetAdapterInternal(/*adapter=*/nullptr, /*is_override_adapter=*/true);
-    SetAdapterInternal(/*adapter=*/nullptr, /*is_override_adapter=*/false);
-  }
+  if (adapter_observers_.empty())
+    set_adapter(nullptr);
 }
 
 BluetoothAdapter* BluetoothAdapterFactoryWrapper::GetAdapter(
     WebBluetoothServiceImpl* service) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (HasAdapter(service)) {
-    return GetActiveAdapter().get();
-  }
-  return nullptr;
-}
-
-scoped_refptr<BluetoothAdapter>
-BluetoothAdapterFactoryWrapper::GetActiveAdapter() {
-  if (override_adapter_) {
-    return override_adapter_;
-  }
-  if (adapter_) {
-    return adapter_;
+    return adapter_.get();
   }
   return nullptr;
 }
 
 void BluetoothAdapterFactoryWrapper::SetBluetoothAdapterOverride(
-    scoped_refptr<BluetoothAdapter> override_adapter) {
+    scoped_refptr<BluetoothAdapter> test_adapter) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // If an adapter has already been acquired allow the adapter to be swapped out
   // synchronously.
-  if (GetActiveAdapter()) {
-    SetAdapterInternal(std::move(override_adapter),
-                       /*is_override_adapter=*/true);
+  if (adapter_) {
+    set_adapter(std::move(test_adapter));
     return;
   }
 
-  pending_override_adapter_ = std::move(override_adapter);
+  test_adapter_ = std::move(test_adapter);
 }
 
 void BluetoothAdapterFactoryWrapper::OnGetAdapter(
     AcquireAdapterCallback continuation,
-    WebBluetoothServiceImpl* service,
     scoped_refptr<BluetoothAdapter> adapter) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  SetAdapterInternal(adapter, /*is_override_adapter=*/false);
-  MaybeAddAdapterObserver(service);
-  std::move(continuation).Run(GetActiveAdapter());
-}
+  // Clear the adapter configured for testing now that it has been acquired.
+  test_adapter_.reset();
 
-void BluetoothAdapterFactoryWrapper::OnGetOverrideAdapter(
-    AcquireAdapterCallback continuation,
-    WebBluetoothServiceImpl* service,
-    scoped_refptr<BluetoothAdapter> override_adapter) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // Clear the adapter configured for override now that it has been acquired.
-  pending_override_adapter_.reset();
-
-  SetAdapterInternal(override_adapter, /*is_override_adapter=*/true);
-  MaybeAddAdapterObserver(service);
-  std::move(continuation).Run(GetActiveAdapter());
+  set_adapter(adapter);
+  std::move(continuation).Run(adapter_);
 }
 
 bool BluetoothAdapterFactoryWrapper::HasAdapter(
@@ -170,9 +138,8 @@ void BluetoothAdapterFactoryWrapper::MaybeAddAdapterObserver(
   // if it gets multiple requests in parallel before the adapter is ready but is
   // guaranteed to only call ReleaseAdapter() once on destruction.
   auto [it, inserted] = adapter_observers_.insert(service);
-  scoped_refptr<BluetoothAdapter> active_adapter = GetActiveAdapter();
-  if (inserted && active_adapter) {
-    active_adapter->AddObserver(service);
+  if (inserted && adapter_) {
+    adapter_->AddObserver(service);
   }
 }
 
@@ -182,41 +149,29 @@ void BluetoothAdapterFactoryWrapper::RemoveAdapterObserver(
 
   size_t removed = adapter_observers_.erase(service);
   DCHECK(removed);
-  scoped_refptr<BluetoothAdapter> active_adapter = GetActiveAdapter();
-  if (active_adapter) {
-    active_adapter->RemoveObserver(service);
+  if (adapter_) {
+    adapter_->RemoveObserver(service);
   }
 }
 
-void BluetoothAdapterFactoryWrapper::SetAdapterInternal(
-    scoped_refptr<BluetoothAdapter> adapter,
-    bool is_override_adapter) {
+void BluetoothAdapterFactoryWrapper::set_adapter(
+    scoped_refptr<BluetoothAdapter> adapter) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // There might be extra unnecessary calls to this method if multiple requests
   // to acquire an adapter were in flight at once.
-  scoped_refptr<BluetoothAdapter> active_adapter = GetActiveAdapter();
-  if (adapter == active_adapter) {
+  if (adapter.get() == adapter_.get())
     return;
-  }
 
-  if (active_adapter) {
+  if (adapter_.get()) {
     for (WebBluetoothServiceImpl* service : adapter_observers_) {
-      active_adapter->RemoveObserver(service);
+      adapter_->RemoveObserver(service);
     }
   }
-
-  if (is_override_adapter) {
-    override_adapter_ = std::move(adapter);
-  } else {
-    adapter_ = std::move(adapter);
-  }
-
-  // Update active adapter as it might have changed.
-  active_adapter = GetActiveAdapter();
-  if (active_adapter) {
+  adapter_ = std::move(adapter);
+  if (adapter_.get()) {
     for (WebBluetoothServiceImpl* service : adapter_observers_) {
-      active_adapter->AddObserver(service);
+      adapter_->AddObserver(service);
     }
   }
 }
