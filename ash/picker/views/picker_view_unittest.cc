@@ -1164,7 +1164,7 @@ TEST_F(PickerViewTest, NoMainResultsAndNoEmojisIsAnnounced) {
   future.Take().Run({});
 
   EXPECT_EQ(picker_view->search_results_view_for_testing().GetAccessibleName(),
-            u"No results found.");
+            l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT));
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 1);
 }
 

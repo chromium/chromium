@@ -721,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   sm_.Call([view]() {
     view->SearchStopped(/*illustration=*/{}, /*description=*/u"");
   });
-  sm_.ExpectSpeechPattern("No results found.");
+  sm_.ExpectSpeechPattern(l10n_util::GetStringUTF8(IDS_PICKER_NO_RESULTS_TEXT));
   sm_.ExpectSpeechPattern("Status");
   sm_.Replay();
 }

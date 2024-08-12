@@ -23,6 +23,7 @@
 #include "ash/picker/views/picker_submenu_controller.h"
 #include "ash/picker/views/picker_traversable_item_container.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/files/file_path.h"
@@ -32,6 +33,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -574,7 +576,8 @@ TEST_F(PickerSearchResultsViewTest,
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_TRUE(view->SearchStopped(/*illustration=*/{}, u""));
 
-  EXPECT_EQ(view->GetAccessibleName(), u"No results found.");
+  EXPECT_EQ(view->GetAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT));
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 1);
 }
 
@@ -612,7 +615,8 @@ TEST_F(PickerSearchResultsViewTest,
   view->SearchStopped(/*illustration=*/{}, u"");
   view->SearchStopped(/*illustration=*/{}, u"");
 
-  EXPECT_EQ(view->GetAccessibleName(), u"No results found.");
+  EXPECT_EQ(view->GetAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT));
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 1);
 }
 
@@ -634,7 +638,8 @@ TEST_F(PickerSearchResultsViewTest,
   view->ClearSearchResults();
   view->SearchStopped(/*illustration=*/{}, u"");
 
-  EXPECT_EQ(view->GetAccessibleName(), u"No results found.");
+  EXPECT_EQ(view->GetAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT));
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 2);
 }
 

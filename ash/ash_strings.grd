@@ -7509,7 +7509,7 @@ New install
       </message>
       <message name="IDS_PICKER_NO_RESULTS_TEXT"
         desc="This string appears a label inside a list of search results. It indicates that there are no search results found for the given query.">
-        No results found.
+        No results found
       </message>
       <message name="IDS_PICKER_INSERT_RESULT_BADGE_LABEL"
         desc="This string appears as the label for a badge in a search result. It indicates that selecting the search result will insert it into the current page. For example, this badge might appear in a search result for an image, which would insert the image into the page. Try to limit translations to 10 characters.">
