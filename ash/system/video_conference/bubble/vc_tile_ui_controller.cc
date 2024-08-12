@@ -32,6 +32,7 @@ VcTileUiController::VcTileUiController(const VcHostedEffect* effect)
     : effect_(effect->get_weak_ptr()) {
   effect_id_ = effect->id();
   effect_state_ = effect->GetWeakState(/*index=*/0);
+  effect_state_label_for_debug_ = effect_state_->label_text();
   auto* dlc_service_client = DlcserviceClient::Get();
   if (!dlc_service_client) {
     // `dlc_service_client` may not exist in tests.
@@ -228,6 +229,10 @@ void VcTileUiController::OnDlcDownloadStateFetched(
   if (!tile_) {
     return;
   }
+
+  CHECK(effect_state_)
+      << "DLC State retrieved, but `effect_state_` is no longer valid for: "
+      << effect_state_label_for_debug_;
 
   VideoConferenceTrayController::Get()->OnDlcDownloadStateFetched(
       /*add_warning=*/download_state == FeatureTile::DownloadState::kError,
