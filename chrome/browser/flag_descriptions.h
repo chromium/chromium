@@ -2773,6 +2773,9 @@ extern const char kReadAloudBackgroundPlaybackDescription[];
 extern const char kReadAloudInCCTName[];
 extern const char kReadAloudInCCTDescription[];
 
+extern const char kReadAloudTapToSeekName[];
+extern const char kReadAloudTapToSeekDescription[];
+
 extern const char kReaderModeHeuristicsName[];
 extern const char kReaderModeHeuristicsDescription[];
 extern const char kReaderModeHeuristicsMarkup[];

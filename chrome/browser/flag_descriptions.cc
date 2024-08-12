@@ -4713,6 +4713,10 @@ const char kReadAloudInCCTName[] = "Read Aloud entrypoint in CCT";
 const char kReadAloudInCCTDescription[] =
     "Controls the Read Aloud entrypoint in the overflow menu for CCT";
 
+const char kReadAloudTapToSeekName[] = "Read Aloud Tap to Seek";
+const char kReadAloudTapToSeekDescription[] =
+    "Controls the Read Aloud Tap to Seek feature";
+
 const char kReadLaterFlagId[] = "read-later";
 const char kReadLaterName[] = "Reading List";
 const char kReadLaterDescription[] =
