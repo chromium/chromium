@@ -871,6 +871,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram base="true" name="Startup.CreateProcessLauncher.{Status}" units="ms"
+    expires_after="2025-02-05">
+  <owner>ganesh@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
+  <summary>
+    Records the time it took for the creation attempt of the ProcessLauncher COM
+    class when {Status}. Only recorded on Windows.
+  </summary>
+  <token key="Status">
+    <variant name="TimedWaitFailed"/>
+    <variant name="TimedWaitSucceeded"/>
+  </token>
+</histogram>
+
 <histogram base="true" name="Startup.DoUpgradeTasks.{Status}" units="ms"
     expires_after="M99">
   <owner>gab@chromium.org</owner>
