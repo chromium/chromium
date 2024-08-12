@@ -36,4 +36,11 @@ declare_args() {
   # A separate control for whether GuestView (and corresponding elements
   # such as WebView, ExtensionOptionsView, etc) are enabled.
   enable_guest_view = enable_extensions
+
+  # A control for whether support for platform apps should be compiled into the
+  # browser.
+  # TODO(https://crbug.com/41407868): This doesn't belong here; extensions code
+  # shouldn't rely on platform apps at all. But at least this lets it be
+  # toggled / if-def'd.
+  enable_platform_apps = enable_extensions
 }

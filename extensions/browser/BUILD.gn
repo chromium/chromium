@@ -662,25 +662,11 @@ source_set("browser_sources") {
     ]
   }
 
-  # TODO(https://crbug.com/356905053): Break this into sections:
-  # * Sources that should be included with desktop_android (but aren't yet)
-  # * Sources that are required for platform_apps
-  # And isolate them into two different blocks.
-  if (enable_extensions) {
+  # TODO(https://crbug.com/41407868): Platform Apps code should not be
+  # included in //extensions code. But, at least this isolates them. Move
+  # more platform app-specific code into this (and related) blocks.
+  if (enable_platform_apps) {
     sources += [
-      "api/device_permissions_manager.cc",
-      "api/device_permissions_manager.h",
-      "api/device_permissions_prompt.cc",
-      "api/device_permissions_prompt.h",
-      "api/hid/hid_api.cc",
-      "api/hid/hid_api.h",
-      "api/hid/hid_connection_resource.cc",
-      "api/hid/hid_connection_resource.h",
-      "api/hid/hid_device_manager.cc",
-      "api/hid/hid_device_manager.h",
-
-      # TODO(https://crbug.com/41407868): Platform Apps code should not be
-      # included in //extensions code.
       "app_window/app_delegate.h",
       "app_window/app_web_contents_helper.cc",
       "app_window/app_web_contents_helper.h",
@@ -699,10 +685,27 @@ source_set("browser_sources") {
       "app_window/size_constraints.h",
     ]
 
-    deps += [
-      "//components/web_modal",
-      "//services/device/public/cpp/hid",
+    deps += [ "//components/web_modal" ]
+  }
+
+  # TODO(https://crbug.com/356905053): The following files don't compile cleanly
+  # with desktop-android. Either make them compile, or determine they should
+  # not be included and place them under a more appropriate if-block.
+  if (enable_extensions) {
+    sources += [
+      "api/device_permissions_manager.cc",
+      "api/device_permissions_manager.h",
+      "api/device_permissions_prompt.cc",
+      "api/device_permissions_prompt.h",
+      "api/hid/hid_api.cc",
+      "api/hid/hid_api.h",
+      "api/hid/hid_connection_resource.cc",
+      "api/hid/hid_connection_resource.h",
+      "api/hid/hid_device_manager.cc",
+      "api/hid/hid_device_manager.h",
     ]
+
+    deps += [ "//services/device/public/cpp/hid" ]
   }
 
   if (is_mac) {

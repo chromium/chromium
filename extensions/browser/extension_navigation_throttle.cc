@@ -41,8 +41,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #endif
 
-// TODO(https://crbug.com/41407868): Update this to `ENABLE_PLATFORM_APPS`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #endif
@@ -64,8 +63,7 @@ bool ShouldBlockNavigationToPlatformAppResource(
   if (view_type == mojom::ViewType::kExtensionBackgroundPage)
     return false;
 
-// TODO(https://crbug.com/41407868): Update this to `ENABLE_PLATFORM_APPS`.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   // Navigation within an app window. The app window must belong to the
   // |platform_app|.
   if (view_type == mojom::ViewType::kAppWindow) {
