@@ -134,6 +134,11 @@ class StructuredLogAdapter(logging.Handler):
 
 
 class WPTAdapter:
+    PORT_NAME_BY_PRODUCT = {
+        'android_webview': 'webview',
+        'chrome_android': 'android',
+    }
+
     def __init__(self, product, port, options, paths):
         self.product = product
         self.port = port
@@ -162,8 +167,8 @@ class WPTAdapter:
         cls._ensure_value(options, 'no_virtual_tests', options.product
                           != 'headless_shell')
 
-        if options.product in {'android_webview', 'chrome_android'}:
-            port_name = options.product
+        if options.product in cls.PORT_NAME_BY_PRODUCT:
+            port_name = cls.PORT_NAME_BY_PRODUCT[options.product]
         port = host.port_factory.get(port_name, options)
         product = make_product(port, options)
         return WPTAdapter(product, port, options, tests)
