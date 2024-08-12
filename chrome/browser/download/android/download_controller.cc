@@ -193,8 +193,8 @@ class DownloadBlocklistChecker
           g_browser_process->safe_browsing_service()->database_manager();
     }
 
-    if (!database_manager_ ||
-        database_manager_->CheckDownloadUrl(url_chain_, this)) {
+    if (!database_manager ||
+        database_manager->CheckDownloadUrl(url_chain_, this)) {
       Log(safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE);
     } else {
       // Add a reference to this object to prevent it from being destroyed
@@ -223,7 +223,6 @@ class DownloadBlocklistChecker
   }
 
   std::vector<GURL> url_chain_;
-  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
 };
 
 void RecordDownloadBlocklistState(download::DownloadItem* item) {
