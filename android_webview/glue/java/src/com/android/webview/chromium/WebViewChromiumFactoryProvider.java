@@ -545,6 +545,17 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     }
 
     /* package */ static void checkStorageIsNotDeviceProtected(Context context) {
+        // The PAC processor service uses WebViewFactoryProvider.getPacProcessor() to
+        // get the JS engine it needs to run PAC scripts. It doesn't use the rest of
+        // WebView and this use case does not really store any meaningful data in the
+        // WebView data directory, but the PAC service needs to be able to run before
+        // the device is unlocked so that other apps running in that state can make
+        // proxy lookups. So, we just skip the check for it and don't care whether it
+        // is using DE or CE storage.
+        if ("com.android.pacprocessor".equals(context.getPackageName())) {
+            return;
+        }
+
         if (context.isDeviceProtectedStorage()) {
             throw new IllegalArgumentException(
                     "WebView cannot be used with device protected storage");
