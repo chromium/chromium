@@ -86,6 +86,9 @@ extern const char kAriaElementReflectionDescription[];
 extern const char kAuxiliarySearchDonationName[];
 extern const char kAuxiliarySearchDonationDescription[];
 
+extern const char kAuxiliarySearchThridPartyName[];
+extern const char kAuxiliarySearchThridPartyDescription[];
+
 extern const char kBackgroundResourceFetchName[];
 extern const char kBackgroundResourceFetchDescription[];
 

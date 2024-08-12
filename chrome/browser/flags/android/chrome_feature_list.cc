@@ -183,6 +183,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kArchiveTabService,
     &kAsyncNotificationManager,
     &kAuxiliarySearchDonation,
+    &kAuxiliarySearchThirdParty,
     &kAvoidSelectedTabFocusOnLayoutDoneShowing,
     &kBackGestureActivityTabProvider,
     &kBackGestureMoveToBackDuringStartup,
@@ -498,6 +499,10 @@ BASE_FEATURE(kAsyncNotificationManager,
 
 BASE_FEATURE(kAuxiliarySearchDonation,
              "AuxiliarySearchDonation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAuxiliarySearchThirdParty,
+             "AuxiliarySearchThirdParty",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTinkerTankBottomSheet,
