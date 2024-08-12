@@ -120,6 +120,11 @@ const CGFloat kTopCornerRadius = 10;
       self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
 }
 
+- (BOOL)accessibilityPerformEscape {
+  [self closeSheet];
+  return YES;
+}
+
 // Returns the calculated detent of the medium height sheet. If the content
 // height is less than the default medium detent, use that instead of the
 // default.
