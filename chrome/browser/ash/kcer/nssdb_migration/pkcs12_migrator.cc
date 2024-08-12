@@ -29,6 +29,7 @@
 #include "chromeos/components/kcer/cert_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/cert/nss_cert_database.h"
+#include "net/cert/x509_util_nss.h"
 
 namespace kcer {
 namespace {
@@ -211,8 +212,8 @@ void Pkcs12Migrator::MigrateCertsWithKcerCerts(
   net::ScopedCERTCertificateList nss_certs_to_migrate;
 
   for (net::ScopedCERTCertificate& nss_cert : nss_certs) {
-    const base::span<const uint8_t> cert_span(nss_cert->derCert.data,
-                                              nss_cert->derCert.len);
+    const base::span<const uint8_t> cert_span(
+        net::x509_util::CERTCertificateAsSpan(nss_cert.get()));
     if (!kcer_cert_cache.FindCert(cert_span)) {
       nss_certs_to_migrate.push_back(std::move(nss_cert));
     }

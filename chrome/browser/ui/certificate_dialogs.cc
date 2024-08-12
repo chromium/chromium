@@ -274,7 +274,7 @@ void ShowCertExportDialog(content::WebContents* web_contents,
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain;
   for (auto it = certs_begin; it != certs_end; ++it) {
     cert_chain.push_back(net::x509_util::CreateCryptoBuffer(
-        base::make_span((*it)->derCert.data, (*it)->derCert.len)));
+        net::x509_util::CERTCertificateAsSpan(it->get())));
   }
 
   // Exporter is self-deleting.

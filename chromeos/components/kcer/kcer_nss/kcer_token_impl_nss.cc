@@ -270,8 +270,7 @@ void ImportCertOnWorkerThread(
                             base::expected<void, Error> /*result*/)> callback) {
   net::ScopedCERTCertificateList certs =
       net::x509_util::CreateCERTCertificateListFromBytes(
-          reinterpret_cast<char*>(cert_der->data()), cert_der->size(),
-          net::X509Certificate::FORMAT_AUTO);
+          *cert_der, net::X509Certificate::FORMAT_AUTO);
 
   if (certs.empty() || (certs.size() != 1)) {
     return std::move(callback).Run(
@@ -1614,8 +1613,8 @@ void KcerTokenImplNss::UpdateCacheWithCerts(
   // For every cert that was found, either take it from the previous cache or
   // create a kcer::Cert object for it.
   for (const net::ScopedCERTCertificate& new_cert : new_certs) {
-    const base::span<const uint8_t> cert_span(new_cert->derCert.data,
-                                              new_cert->derCert.len);
+    const base::span<const uint8_t> cert_span(
+        net::x509_util::CERTCertificateAsSpan(new_cert.get()));
     scoped_refptr<const Cert> cert = cert_cache_.FindCert(cert_span);
     if (!cert) {
       cert = BuildKcerCert(token_, new_cert);

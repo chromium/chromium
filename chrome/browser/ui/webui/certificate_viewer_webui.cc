@@ -266,7 +266,7 @@ CertificateViewerDialog* CertificateViewerDialog::ShowConstrained(
   for (const auto& cert : nss_certs) {
     nicknames.push_back(x509_certificate_model::GetRawNickname(cert.get()));
     cert_buffers.push_back(net::x509_util::CreateCryptoBuffer(
-        base::make_span(cert->derCert.data, cert->derCert.len)));
+        net::x509_util::CERTCertificateAsSpan(cert.get())));
   }
   return ShowConstrained(std::move(cert_buffers), std::move(nicknames),
                          web_contents, parent);

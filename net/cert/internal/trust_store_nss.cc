@@ -202,8 +202,8 @@ void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
     bssl::CertErrors parse_errors;
     std::shared_ptr<const bssl::ParsedCertificate> cur_cert =
         bssl::ParsedCertificate::Create(
-            x509_util::CreateCryptoBuffer(base::make_span(
-                node->cert->derCert.data, node->cert->derCert.len)),
+            x509_util::CreateCryptoBuffer(
+                x509_util::CERTCertificateAsSpan(node->cert)),
             {}, &parse_errors);
 
     if (!cur_cert) {
@@ -379,8 +379,8 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
   // clear the cache. (There are multiple approaches possible, could cache the
   // hash->trust mappings on a per-slot basis, or just cache the end result for
   // each cert, etc.)
-  base::SHA1Digest cert_sha1 = base::SHA1Hash(
-      base::make_span(nss_cert->derCert.data, nss_cert->derCert.len));
+  base::SHA1Digest cert_sha1 =
+      base::SHA1Hash(x509_util::CERTCertificateAsSpan(nss_cert));
 
   // Check the slots in trustOrder ordering. Lower trustOrder values are higher
   // priority, so we can return as soon as we find a matching trust object.
@@ -526,8 +526,8 @@ TrustStoreNSS::GetAllUserAddedCerts() {
     }
 
     user_added_certs.emplace_back(
-        base::ToVector(base::make_span(cert_result.cert->derCert.data,
-                                       cert_result.cert->derCert.len)),
+        base::ToVector(
+            x509_util::CERTCertificateAsSpan(cert_result.cert.get())),
         cert_result.trust);
   }
 
