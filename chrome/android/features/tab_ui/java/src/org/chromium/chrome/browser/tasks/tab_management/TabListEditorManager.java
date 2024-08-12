@@ -118,7 +118,7 @@ public class TabListEditorManager {
             mTabListEditorCoordinator =
                     new TabListEditorCoordinator(
                             mActivity,
-                            mRootView,
+                            mCoordinatorView,
                             mCoordinatorView,
                             mBrowserControlsStateProvider,
                             mCurrentTabModelFilterSupplier,
