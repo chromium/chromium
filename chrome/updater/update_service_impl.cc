@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/bind_post_task.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
@@ -81,8 +82,18 @@ void UpdateServiceImpl::CheckForUpdate(
     std::move(callback).Run(Result::kEulaRequiredOrOemMode);
     return;
   }
-  delegate_->CheckForUpdate(app_id, priority, policy_same_version_update,
-                            state_update, std::move(callback));
+  delegate_->FetchPolicies(base::BindPostTaskToCurrentDefault(base::BindOnce(
+      [](scoped_refptr<UpdateServiceImplImpl> delegate,
+         const std::string& app_id, Priority priority,
+         PolicySameVersionUpdate policy_same_version_update,
+         StateChangeCallback state_update, Callback callback,
+         int policy_fetch_result) {
+        VLOG(1) << "Policy fetch result: " << policy_fetch_result;
+        delegate->CheckForUpdate(app_id, priority, policy_same_version_update,
+                                 state_update, std::move(callback));
+      },
+      delegate_, app_id, priority, policy_same_version_update, state_update,
+      std::move(callback))));
 }
 
 void UpdateServiceImpl::Update(
