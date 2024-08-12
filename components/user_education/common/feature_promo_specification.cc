@@ -171,9 +171,11 @@ FeaturePromoSpecification::AdditionalConditions::operator=(
 FeaturePromoSpecification::AdditionalConditions::~AdditionalConditions() =
     default;
 
-void FeaturePromoSpecification::AdditionalConditions::AddAdditionalCondition(
+FeaturePromoSpecification::AdditionalConditions&
+FeaturePromoSpecification::AdditionalConditions::AddAdditionalCondition(
     const AdditionalCondition& additional_condition) {
   additional_conditions_.emplace_back(additional_condition);
+  return *this;
 }
 
 void FeaturePromoSpecification::AdditionalConditions::AddAdditionalCondition(

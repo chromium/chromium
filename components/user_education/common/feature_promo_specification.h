@@ -63,8 +63,9 @@ class FeaturePromoSpecification {
     //
     // Default is zero unless there are additional conditions, in which case it
     // is a week.
-    void set_initial_delay_days(uint32_t initial_delay_days) {
+    AdditionalConditions& set_initial_delay_days(uint32_t initial_delay_days) {
       this->initial_delay_days_ = initial_delay_days;
+      return *this;
     }
     std::optional<uint32_t> initial_delay_days() const {
       return initial_delay_days_;
@@ -73,7 +74,10 @@ class FeaturePromoSpecification {
     // Sets the number of times a promoted feature can be used before the
     // associated promo stops showing. Default is zero - i.e. if the feature is
     // used at all, the promo won't show.
-    void set_used_limit(uint32_t used_limit) { this->used_limit_ = used_limit; }
+    AdditionalConditions& set_used_limit(uint32_t used_limit) {
+      this->used_limit_ = used_limit;
+      return *this;
+    }
     std::optional<uint32_t> used_limit() const { return used_limit_; }
 
     // Adds an additional constraint on when the promo can show. `event_name` is
@@ -86,7 +90,7 @@ class FeaturePromoSpecification {
                                 Constraint constraint,
                                 uint32_t count,
                                 std::optional<uint32_t> in_days = std::nullopt);
-    void AddAdditionalCondition(
+    AdditionalConditions& AddAdditionalCondition(
         const AdditionalCondition& additional_condition);
     const std::vector<AdditionalCondition>& additional_conditions() const {
       return additional_conditions_;
