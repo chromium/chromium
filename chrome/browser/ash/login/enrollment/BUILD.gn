@@ -144,7 +144,10 @@ source_set("browser_tests") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "enrollment_screen_unittest.cc" ]
+  sources = [
+    "enrollment_screen_unittest.cc",
+    "enrollment_uma_unittest.cc",
+  ]
 
   deps = [
     ":enrollment",

@@ -20,6 +20,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
@@ -424,6 +425,11 @@ void EnrollmentLauncherImpl::OnEnrollmentFinished(
   // Logging as "WARNING" to make sure it's preserved in the logs.
   LOG(WARNING) << "Enrollment finished, code: " << status.enrollment_code();
   ReportEnrollmentStatus(status);
+  if (enrollment_config_.mode ==
+      policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED) {
+    TokenBasedEnrollmentOOBEConfigUMA(status,
+                                      enrollment_config_.oobe_config_source);
+  }
   if (oauth_status_ != OAUTH_NOT_STARTED) {
     oauth_status_ = OAUTH_FINISHED;
   }

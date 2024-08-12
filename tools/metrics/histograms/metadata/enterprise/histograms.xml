@@ -3306,6 +3306,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Enterprise.TokenBasedEnrollmentOobeConfig.{OobeConfigSource}.Success"
+    enum="BooleanSuccess" expires_after="2025-08-01">
+  <owner>jacksontadie@google.com</owner>
+  <owner>drcrash@google.com</owner>
+  <owner>cros-onboarding-team@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Records the result of a token-based enrollment that was triggered by the
+    following OOBE config source: {OobeConfigSource}.
+
+    Events are recorded in response to a successful or failed token-based
+    enrollment attempt.
+  </summary>
+  <token key="OobeConfigSource">
+    <variant name="None" summary="No OOBE config source"/>
+    <variant name="PackagingTool"
+        summary="OOBE config created by an image token packaging tool"/>
+    <variant name="RemoteDeployment"
+        summary="OOBE config created during remote deployment"/>
+    <variant name="Unknown" summary="Unrecognized OOBE config source value"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.UserInfoFetch.HttpErrorCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-02-12">
   <owner>vincb@google.com</owner>
