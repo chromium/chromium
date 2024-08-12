@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
@@ -28,12 +29,15 @@ class IsolatedWebAppsEnabledPrefObserverAsh
       override {
     CHECK(!callback_);
     callback_ = callback;
-    pref_change_registrar_.Init(pref_service());
-    base::RepeatingClosure registrar_closure =
-        base::BindRepeating(&IsolatedWebAppsEnabledPrefObserverAsh::RunCallback,
-                            weak_ptr_factory_.GetWeakPtr());
-    pref_change_registrar_.Add(ash::prefs::kIsolatedWebAppsEnabled,
-                               registrar_closure);
+
+    if (!IsIwaDevModeEnabled(profile_)) {
+      pref_change_registrar_.Init(pref_service());
+      base::RepeatingClosure registrar_closure = base::BindRepeating(
+          &IsolatedWebAppsEnabledPrefObserverAsh::RunCallback,
+          weak_ptr_factory_.GetWeakPtr());
+      pref_change_registrar_.Add(ash::prefs::kIsolatedWebAppsEnabled,
+                                 registrar_closure);
+    }
 
     // Runs callback once asynchronously to match the Lacros behavior.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -50,6 +54,7 @@ class IsolatedWebAppsEnabledPrefObserverAsh
  private:
   void RunCallback() {
     bool enabled =
+        IsIwaDevModeEnabled(profile_) ||
         pref_service()->GetBoolean(ash::prefs::kIsolatedWebAppsEnabled);
     callback_.Run(enabled);
   }
