@@ -329,10 +329,6 @@ inline constexpr int kErrorApplicationInstallerFailed =
 // arguments.
 inline constexpr int kErrorMissingInstallParams = kCustomInstallErrorBase + 1;
 
-// The file specified by the manifest |run| attribute could not be found
-// inside the CRX.
-inline constexpr int kErrorMissingRunableFile = kCustomInstallErrorBase + 2;
-
 // The file extension for the installer is not supported. For instance, on
 // Windows, only `.exe` and `.msi` extensions are supported.
 inline constexpr int kErrorInvalidFileExtension = kCustomInstallErrorBase + 4;

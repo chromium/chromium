@@ -51,12 +51,8 @@ void AppWakeAll::FirstTaskRun() {
                            .IsValid()) {
                     return;
                   }
-                  const base::FilePath executable =
-                      name.Append(GetExecutableRelativePath());
-                  if (!base::PathExists(executable)) {
-                    return;
-                  }
-                  base::CommandLine command(executable);
+                  base::CommandLine command(
+                      name.Append(GetExecutableRelativePath()));
                   command.AppendSwitch(kWakeSwitch);
                   if (IsSystemInstall(scope)) {
                     command.AppendSwitch(kSystemSwitch);

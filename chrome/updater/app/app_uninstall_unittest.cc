@@ -48,7 +48,7 @@ TEST_F(AppUninstallTest, GetVersionExecutablePaths) {
         /*should_create_updater_executable=*/false);
   }
 
-  ASSERT_EQ(GetVersionExecutablePaths(GetUpdaterScopeForTesting()).size(), 3u);
+  ASSERT_EQ(GetVersionExecutablePaths(GetUpdaterScopeForTesting()).size(), 5u);
 
   const std::optional<base::FilePath> path =
       GetInstallDirectory(GetUpdaterScopeForTesting());
