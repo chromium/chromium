@@ -1356,6 +1356,13 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
           MainThreadScrollingReason::kMainThreadScrollHitTestRegion;
       return result;
     }
+
+    if (ElementId scroll_element_id = ActiveTree().PointHitsNonCompositedScroll(
+            device_viewport_point, *layer_impl)) {
+      node_to_scroll = GetScrollTree().FindNodeFromElementId(scroll_element_id);
+      CHECK(node_to_scroll);
+      break;
+    }
   }
 
   // It's theoretically possible to hit no layers or only non-scrolling layers.

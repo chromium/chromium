@@ -660,6 +660,8 @@ class CC_EXPORT LayerTreeImpl {
   bool PointHitsMainThreadScrollHitTestRegion(
       const gfx::PointF& scree_space_point,
       const LayerImpl& layer) const;
+  ElementId PointHitsNonCompositedScroll(const gfx::PointF& screen_space_point,
+                                         const LayerImpl& layer) const;
 
   // Returns the ElementId representing a frame's document at the given point.
   // In cases where cc doesn't have enough information to perform accurate

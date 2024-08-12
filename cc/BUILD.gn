@@ -124,6 +124,7 @@ cc_component("cc") {
     "layers/recording_source.h",
     "layers/render_surface_impl.cc",
     "layers/render_surface_impl.h",
+    "layers/scroll_hit_test_rect.h",
     "layers/scrollbar_layer_base.cc",
     "layers/scrollbar_layer_base.h",
     "layers/scrollbar_layer_impl_base.cc",

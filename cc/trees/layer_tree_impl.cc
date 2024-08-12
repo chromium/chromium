@@ -2715,6 +2715,23 @@ bool LayerTreeImpl::PointHitsMainThreadScrollHitTestRegion(
                          layer.main_thread_scroll_hit_test_region(), &layer);
 }
 
+ElementId LayerTreeImpl::PointHitsNonCompositedScroll(
+    const gfx::PointF& screen_space_point,
+    const LayerImpl& layer) const {
+  const std::vector<ScrollHitTestRect>* hit_test_rects =
+      layer.non_composited_scroll_hit_test_rects();
+  if (!hit_test_rects) {
+    return ElementId();
+  }
+  for (const ScrollHitTestRect& rect : base::Reversed(*hit_test_rects)) {
+    if (PointHitsRect(screen_space_point, layer.ScreenSpaceTransform(),
+                      rect.hit_test_rect, /*distance_to_camera=*/nullptr)) {
+      return rect.scroll_element_id;
+    }
+  }
+  return ElementId();
+}
+
 static ElementId GetFrameElementIdForLayer(const LayerImpl* layer) {
   const auto& transform_tree =
       layer->layer_tree_impl()->property_trees()->transform_tree();

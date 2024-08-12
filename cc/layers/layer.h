@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <array>
 #include <memory>
 #include <set>
@@ -24,6 +25,7 @@
 #include "cc/input/hit_test_opaqueness.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/layers/layer_collections.h"
+#include "cc/layers/scroll_hit_test_rect.h"
 #include "cc/layers/touch_action_region.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
@@ -484,6 +486,19 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     if (const auto& rare_inputs = inputs_.Read(*this).rare_inputs)
       return rare_inputs->main_thread_scroll_hit_test_region;
     return Region::Empty();
+  }
+
+  // For layer list mode only.
+  // A scroll in any of the rects but not in non_fast_scrollable_region can
+  // start on the compositor thread. The scroll node is determined by checking
+  // non_composited_scroll_hit_test_rects in reversed order.
+  void SetNonCompositedScrollHitTestRects(std::vector<ScrollHitTestRect> rects);
+  const std::vector<ScrollHitTestRect>* non_composited_scroll_hit_test_rects()
+      const {
+    if (const auto& rare_inputs = inputs_.Read(*this).rare_inputs) {
+      return &rare_inputs->non_composited_scroll_hit_test_rects;
+    }
+    return nullptr;
   }
 
   // Set or get the set of touch actions allowed across each point of this
@@ -969,8 +984,12 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // generally speaking in <10% of use cases. When adding new values to this
   // struct, consider the memory implications versus simply adding to Inputs.
   struct RareInputs {
+    RareInputs();
+    ~RareInputs();
+
     viz::RegionCaptureBounds capture_bounds;
     Region main_thread_scroll_hit_test_region;
+    std::vector<ScrollHitTestRect> non_composited_scroll_hit_test_rects;
     Region wheel_event_region;
   };
 

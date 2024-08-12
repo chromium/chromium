@@ -17994,7 +17994,7 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
   }
 
   void CreateNonCompositedScrollerAndMainThreadScrollHitTestRegion() {
-    // Create an non-compositd scroll node that corresponds to a
+    // Create an non-composited scroll node that corresponds to a
     // MainThreadScrollHitTestRegion on the outer viewport scroll layer.
     gfx::Size scrollable_content_bounds(100, 100);
     gfx::Size container_bounds(50, 50);
@@ -18013,7 +18013,7 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
   void CreateScroller(
       uint32_t main_thread_scrolling_reasons,
       HitTestOpaqueness hit_test_opaqueness = HitTestOpaqueness::kOpaque) {
-    // Creates a regular compositeds scroller that comes with a ScrollNode and
+    // Creates a regular composited scroller that comes with a ScrollNode and
     // Layer.
     gfx::Size scrollable_content_bounds(100, 100);
     gfx::Size container_bounds(50, 50);
@@ -18281,6 +18281,30 @@ TEST_P(UnifiedScrollingTest, MainThreadHitTestScrollNodeNotFound) {
     EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
               status.main_thread_hit_test_reasons);
   }
+}
+
+TEST_P(UnifiedScrollingTest, NonCompositedScrollOnCompositor) {
+  // Create an non-composited scroll node that can start scroll on the
+  // compositor, in the outer viewport scroll layer.
+  gfx::Size scrollable_content_bounds(100, 100);
+  gfx::Size container_bounds(50, 50);
+  CreateScrollNodeForNonCompositedScroller(
+      GetPropertyTrees(), host_impl_->OuterViewportScrollNode()->id,
+      ScrollerElementId(), scrollable_content_bounds, container_bounds);
+  OuterViewportScrollLayer()->SetNonCompositedScrollHitTestRects(
+      {ScrollHitTestRect{ScrollerElementId(), gfx::Rect(container_bounds)}});
+
+  host_impl_->active_tree()->set_needs_update_draw_properties();
+  UpdateDrawProperties(host_impl_->active_tree());
+  host_impl_->active_tree()->DidBecomeActive();
+  DrawFrame();
+
+  ScrollStatus status = ScrollBegin(gfx::Vector2d(10, 10));
+  EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
+  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+            status.main_thread_hit_test_reasons);
+  EXPECT_EQ(ScrollerNode(), CurrentlyScrollingNode());
+  GetInputHandler().ScrollEnd();
 }
 
 // The presence of a layer with mixed hit test opaqueness causes "fail to hit

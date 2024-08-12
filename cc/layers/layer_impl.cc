@@ -88,6 +88,10 @@ const char* LayerTypeAsString(mojom::LayerType type) {
 
 }  // namespace
 
+LayerImpl::RareProperties::RareProperties() = default;
+LayerImpl::RareProperties::RareProperties(const RareProperties&) = default;
+LayerImpl::RareProperties::~RareProperties() = default;
+
 LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
                      int id,
                      bool will_always_push_properties)

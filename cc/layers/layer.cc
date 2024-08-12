@@ -80,12 +80,13 @@ LayerDebugInfo::LayerDebugInfo() = default;
 LayerDebugInfo::LayerDebugInfo(const LayerDebugInfo&) = default;
 LayerDebugInfo::~LayerDebugInfo() = default;
 
-Layer::Inputs::Inputs() = default;
+Layer::RareInputs::RareInputs() = default;
+Layer::RareInputs::~RareInputs() = default;
 
+Layer::Inputs::Inputs() = default;
 Layer::Inputs::~Inputs() = default;
 
 Layer::LayerTreeInputs::LayerTreeInputs() = default;
-
 Layer::LayerTreeInputs::~LayerTreeInputs() = default;
 
 scoped_refptr<Layer> Layer::Create() {
@@ -1129,6 +1130,21 @@ void Layer::SetMainThreadScrollHitTestRegion(const Region& region) {
   SetNeedsCommit();
 }
 
+void Layer::SetNonCompositedScrollHitTestRects(
+    std::vector<ScrollHitTestRect> rects) {
+  DCHECK(IsPropertyChangeAllowed());
+  const auto& rare_inputs = inputs_.Read(*this).rare_inputs;
+  if (!rare_inputs && rects.empty()) {
+    return;
+  }
+  if (rare_inputs &&
+      rare_inputs->non_composited_scroll_hit_test_rects == rects) {
+    return;
+  }
+  EnsureRareInputs().non_composited_scroll_hit_test_rects = std::move(rects);
+  SetNeedsCommit();
+}
+
 void Layer::SetTouchActionRegion(TouchActionRegion touch_action_region) {
   DCHECK(IsPropertyChangeAllowed());
   if (inputs_.Read(*this).touch_action_region == touch_action_region)
@@ -1464,6 +1480,8 @@ void Layer::PushPropertiesTo(LayerImpl* layer,
   if (inputs.rare_inputs) {
     layer->SetMainThreadScrollHitTestRegion(
         inputs.rare_inputs->main_thread_scroll_hit_test_region);
+    layer->SetNonCompositedScrollHitTestRects(
+        inputs.rare_inputs->non_composited_scroll_hit_test_rects);
     layer->SetCaptureBounds(inputs.rare_inputs->capture_bounds);
     layer->SetWheelEventHandlerRegion(inputs.rare_inputs->wheel_event_region);
   } else {
