@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.price_insights;
 
+import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_HISTORY_DESCRIPTION;
+
 import android.content.Context;
 import android.view.View.OnClickListener;
 
+import androidx.annotation.StringRes;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
@@ -171,9 +174,16 @@ public class PriceInsightsBottomSheetMediator {
                 || info.catalogHistoryPrices.isEmpty()) {
             return;
         }
+        @StringRes int priceHistoryTitleResId = R.string.price_history_title;
+        if (info.hasMultipleCatalogs
+                && info.catalogAttributes != null
+                && !info.catalogAttributes.isEmpty()) {
+            priceHistoryTitleResId = R.string.price_history_multiple_catalogs_title;
+            mPropertyModel.set(PRICE_HISTORY_DESCRIPTION, info.catalogAttributes.get());
+        }
         mPropertyModel.set(
                 PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE,
-                mContext.getResources().getString(R.string.price_history_title));
+                mContext.getResources().getString(priceHistoryTitleResId));
         mPropertyModel.set(
                 PriceInsightsBottomSheetProperties.PRICE_HISTORY_CHART,
                 mPriceInsightsDelegate.getPriceHistoryChartForPriceInsightsInfo(info));

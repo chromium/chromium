@@ -4462,6 +4462,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_PRICE_HISTORY_TITLE" desc="The title when a user see the price history graph section in the price insights bottom sheet.">
         Price history across the web
       </message>
+      <message name="IDS_PRICE_HISTORY_MULTIPLE_CATALOGS_TITLE" desc="The title when a user see the price history graph for multiple catalog in the price insights bottom sheet.">
+        Price history across the web for this option
+      </message>
       <message name="IDS_IPH_SHOPPING_LIST_SAVE_FLOW" desc="In-product help text that notifies a user that they can organize their saved products from a folder in bookmarks.">
         Organize your tracked products in Bookmarks
       </message>

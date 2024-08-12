@@ -18,6 +18,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_HISTORY_CHART;
+import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_HISTORY_DESCRIPTION;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -83,8 +84,11 @@ public class PriceInsightsBottomSheetMediatorTest {
     private static final String PRICE_TRACKING_DISABLED_BUTTON_TEXT = "Track";
     private static final String PRICE_TRACKING_ENABLED_BUTTON_TEXT = "Tracking";
     private static final String PRICE_HISTORY_TITLE = "Price history across the web";
+    private static final String PRICE_HISTORY_MULTIPLE_CATALOGS_TITLE =
+            "Price history across the web for this option";
+    private static final String CATALOG_ATTRIBUTES = "Stainless steel, Espresso Bundle";
     private static final String OPEN_URL_TITLE = "Search buying options";
-    private static final PriceInsightsInfo PRICE_INSIGHTS_INFO =
+    private static final PriceInsightsInfo PRICE_INSIGHTS_INFO_SINGLE_CATALOG =
             new PriceInsightsInfo(
                     Optional.empty(),
                     "USD",
@@ -95,6 +99,17 @@ public class PriceInsightsBottomSheetMediatorTest {
                     Optional.of(JUnitTestGURLs.EXAMPLE_URL),
                     0,
                     false);
+    private static final PriceInsightsInfo PRICE_INSIGHTS_INFO_MULTIPLE_CATALOGS =
+            new PriceInsightsInfo(
+                    Optional.empty(),
+                    "USD",
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.of(CATALOG_ATTRIBUTES),
+                    Arrays.asList(new PricePoint("08-08-2024", 65000000L)),
+                    Optional.of(JUnitTestGURLs.EXAMPLE_URL),
+                    0,
+                    true);
 
     private PriceInsightsBottomSheetMediator mPriceInsightsMediator;
     private PropertyModel mPropertyModel =
@@ -117,6 +132,9 @@ public class PriceInsightsBottomSheetMediatorTest {
         doReturn(PRICE_HISTORY_TITLE)
                 .when(mMockResources)
                 .getString(eq(R.string.price_history_title));
+        doReturn(PRICE_HISTORY_MULTIPLE_CATALOGS_TITLE)
+                .when(mMockResources)
+                .getString(eq(R.string.price_history_multiple_catalogs_title));
         doReturn(OPEN_URL_TITLE)
                 .when(mMockResources)
                 .getString(eq(R.string.price_insights_open_url_title));
@@ -240,22 +258,38 @@ public class PriceInsightsBottomSheetMediatorTest {
     }
 
     @Test
-    public void testRequestShowContent_PriceHistory() {
+    public void testRequestShowContent_PriceHistorySingleCatalog() {
         doReturn(mMockPriceHistoryChart)
                 .when(mMockPriceInsightsDelegate)
-                .getPriceHistoryChartForPriceInsightsInfo(PRICE_INSIGHTS_INFO);
-        setShoppingServiceGetPriceInsightsInfoForUrl();
+                .getPriceHistoryChartForPriceInsightsInfo(PRICE_INSIGHTS_INFO_SINGLE_CATALOG);
+        setShoppingServiceGetPriceInsightsInfoForUrl(PRICE_INSIGHTS_INFO_SINGLE_CATALOG);
         mPriceInsightsMediator.requestShowContent();
 
         assertEquals(
                 PRICE_HISTORY_TITLE,
                 mPropertyModel.get(PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE));
+        assertNull(mPropertyModel.get(PRICE_HISTORY_DESCRIPTION));
+        assertEquals(mMockPriceHistoryChart, mPropertyModel.get(PRICE_HISTORY_CHART));
+    }
+
+    @Test
+    public void testRequestShowContent_PriceHistoryMultipleCatalogs() {
+        doReturn(mMockPriceHistoryChart)
+                .when(mMockPriceInsightsDelegate)
+                .getPriceHistoryChartForPriceInsightsInfo(PRICE_INSIGHTS_INFO_MULTIPLE_CATALOGS);
+        setShoppingServiceGetPriceInsightsInfoForUrl(PRICE_INSIGHTS_INFO_MULTIPLE_CATALOGS);
+        mPriceInsightsMediator.requestShowContent();
+
+        assertEquals(
+                PRICE_HISTORY_MULTIPLE_CATALOGS_TITLE,
+                mPropertyModel.get(PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE));
+        assertEquals(CATALOG_ATTRIBUTES, mPropertyModel.get(PRICE_HISTORY_DESCRIPTION));
         assertEquals(mMockPriceHistoryChart, mPropertyModel.get(PRICE_HISTORY_CHART));
     }
 
     @Test
     public void testRequestShowContent_OpenUrlButton() {
-        setShoppingServiceGetPriceInsightsInfoForUrl();
+        setShoppingServiceGetPriceInsightsInfoForUrl(PRICE_INSIGHTS_INFO_SINGLE_CATALOG);
         mPriceInsightsMediator.requestShowContent();
 
         assertEquals(
@@ -315,11 +349,11 @@ public class PriceInsightsBottomSheetMediatorTest {
         doReturn(productInfo).when(mMockShoppingService).getAvailableProductInfoForUrl(any());
     }
 
-    private void setShoppingServiceGetPriceInsightsInfoForUrl() {
+    private void setShoppingServiceGetPriceInsightsInfoForUrl(PriceInsightsInfo info) {
         doAnswer(
                         (InvocationOnMock invocation) -> {
                             ((PriceInsightsInfoCallback) invocation.getArgument(1))
-                                    .onResult(JUnitTestGURLs.EXAMPLE_URL, PRICE_INSIGHTS_INFO);
+                                    .onResult(JUnitTestGURLs.EXAMPLE_URL, info);
                             return null;
                         })
                 .when(mMockShoppingService)

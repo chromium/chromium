@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.price_insights;
 
 import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_HISTORY_CHART;
+import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_HISTORY_DESCRIPTION;
 
 import android.content.res.Resources;
 import android.view.View;
@@ -86,6 +87,9 @@ public class PriceInsightsBottomSheetViewBinder {
         } else if (PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE == propertyKey) {
             ((TextView) view.findViewById(R.id.price_history_title))
                     .setText(model.get(PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE));
+        } else if (PRICE_HISTORY_DESCRIPTION == propertyKey) {
+            ((TextView) view.findViewById(R.id.price_history_description))
+                    .setText(model.get(PRICE_HISTORY_DESCRIPTION));
         } else if (PriceInsightsBottomSheetProperties.PRICE_HISTORY_CHART == propertyKey) {
             LinearLayout priceHistoryLayout =
                     (LinearLayout) view.findViewById(R.id.price_history_layout);

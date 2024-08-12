@@ -41,6 +41,9 @@ public class PriceInsightsBottomSheetProperties {
     public static final WritableObjectPropertyKey<String> PRICE_HISTORY_TITLE =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<String> PRICE_HISTORY_DESCRIPTION =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableObjectPropertyKey<View> PRICE_HISTORY_CHART =
             new WritableObjectPropertyKey<>();
 
@@ -63,6 +66,7 @@ public class PriceInsightsBottomSheetProperties {
                 PRICE_TRACKING_BUTTON_ENABLED,
                 PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER,
                 PRICE_HISTORY_TITLE,
+                PRICE_HISTORY_DESCRIPTION,
                 PRICE_HISTORY_CHART,
                 OPEN_URL_TITLE,
                 OPEN_URL_BUTTON_ICON,
