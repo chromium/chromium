@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -610,8 +611,13 @@ void TabSearchPageHandler::TriggerFeedback(int32_t session_id) {
 
 void TabSearchPageHandler::TriggerSignIn() {
   Profile* profile = chrome::FindLastActive()->profile();
-  signin_ui_util::ShowSigninPromptFromPromo(
-      profile, signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION);
+  if (SigninErrorControllerFactory::GetForProfile(profile)->HasError()) {
+    signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
+        profile, signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION);
+  } else {
+    signin_ui_util::ShowSigninPromptFromPromo(
+        profile, signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION);
+  }
 }
 
 void TabSearchPageHandler::OpenHelpPage() {
