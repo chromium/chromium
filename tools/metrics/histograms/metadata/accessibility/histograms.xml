@@ -595,6 +595,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ChromeVox.PerformCommand"
+    enum="ChromeVoxCommand" expires_after="2025-08-08">
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Records when a user performs a ChromeVox command.</summary>
+</histogram>
+
 <histogram name="Accessibility.ChromeVox.PerformGestureType"
     enum="ChromeVoxGestureType" expires_after="2025-02-28">
   <owner>dtseng@chromium.org</owner>

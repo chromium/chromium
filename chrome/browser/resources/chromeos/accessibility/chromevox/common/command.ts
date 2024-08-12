@@ -2,8 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** List of commands. Please keep list alphabetical. */
+/**
+ * List of commands. A new command needs to be added to the end of this list.
+ * These values and indices are persisted to logs. Entries should not be
+ * reordered and their indices should never be reused.
+ */
 export enum Command {
+  // LINT.IfChange
   ANNOUNCE_BATTERY_DESCRIPTION = 'announceBatteryDescription',
   ANNOUNCE_HEADERS = 'announceHeaders',
   ANNOUNCE_RICH_TEXT_DESCRIPTION = 'announceRichTextDescription',
@@ -185,6 +190,8 @@ export enum Command {
   TOGGLE_STICKY_MODE = 'toggleStickyMode',
   TOP = 'top',
   VIEW_GRAPHIC_AS_BRAILLE = 'viewGraphicAsBraille',
+  // Add a new command to the end of this list.
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml)
 }
 
 /**
