@@ -200,7 +200,8 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   }
 
   if (IsKeyboardAccessoryUpgradeEnabled()) {
-    self.accessibilityLabel = cellIndexAccessibilityLabel;
+    GiveAccessibilityContextToCellAndButton(self, self.overflowMenuButton,
+                                            cellIndexAccessibilityLabel);
   }
 
   [self populateViewsWithAddress:address];

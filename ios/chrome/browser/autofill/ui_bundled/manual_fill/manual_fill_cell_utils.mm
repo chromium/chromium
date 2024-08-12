@@ -6,12 +6,14 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/chip_button.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_labeled_chip.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/chip_button.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_labeled_chip.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -507,8 +509,8 @@ UIButton* CreateOverflowMenuButton() {
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   menu_button.translatesAutoresizingMaskIntoConstraints = NO;
   menu_button.contentMode = UIViewContentModeCenter;
-  menu_button.accessibilityLabel = l10n_util::GetNSString(
-      IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
+  menu_button.accessibilityIdentifier =
+      manual_fill::kExpandedManualFillOverflowMenuID;
 
   UIImage* menu_image = SymbolWithPalette(
       DefaultSymbolWithPointSize(kEllipsisCircleFillSymbol,
@@ -646,4 +648,16 @@ NSMutableAttributedString* CreateSiteNameLabelAttributedText(
   }
 
   return attributedString;
+}
+
+void GiveAccessibilityContextToCellAndButton(TableViewCell* cell,
+                                             UIButton* overflow_menu_button,
+                                             NSString* accessibility_context) {
+  CHECK(cell);
+  CHECK(overflow_menu_button);
+
+  cell.accessibilityLabel = accessibility_context;
+  overflow_menu_button.accessibilityLabel = l10n_util::GetNSStringF(
+      IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL,
+      base::SysNSStringToUTF16(accessibility_context));
 }

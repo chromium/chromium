@@ -244,9 +244,11 @@ static const CGFloat kOffsetForConnectedCell = 16;
     self.siteNameLabel.attributedText = attributedText;
     if (IsKeyboardAccessoryUpgradeEnabled()) {
       self.siteNameLabel.numberOfLines = 0;
-      self.accessibilityLabel =
+      NSString* accessibilityLabel =
           [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
                                      attributedText.string];
+      GiveAccessibilityContextToCellAndButton(self, self.overflowMenuButton,
+                                              accessibilityLabel);
     }
     self.siteNameLabel.hidden = NO;
     self.faviconView.hidden = NO;

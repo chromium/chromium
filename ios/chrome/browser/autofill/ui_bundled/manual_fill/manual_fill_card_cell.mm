@@ -290,17 +290,19 @@ CGFloat GPayIconTopAnchorOffset() {
   [self verticallyArrangeViews:card];
 
   if (IsKeyboardAccessoryUpgradeEnabled()) {
-    self.accessibilityLabel =
+    NSString* accessibilityLabel =
         [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
                                    self.cardLabel.attributedText.string];
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     if (ShouldShowGPayIcon(self.card.recordType)) {
-      self.accessibilityLabel =
-          [NSString stringWithFormat:@"%@, %@", self.accessibilityLabel,
+      accessibilityLabel =
+          [NSString stringWithFormat:@"%@, %@", accessibilityLabel,
                                      l10n_util::GetNSString(
                                          IDS_IOS_AUTOFILL_WALLET_SERVER_NAME)];
     }
 #endif
+    GiveAccessibilityContextToCellAndButton(self, self.overflowMenuButton,
+                                            accessibilityLabel);
   }
 }
 
