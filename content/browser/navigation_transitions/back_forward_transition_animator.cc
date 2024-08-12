@@ -1172,7 +1172,8 @@ bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
 
   for (const auto& request : requests) {
     if (request->IsInPrimaryMainFrame()) {
-      return TrackRequest(std::move(request));
+      TrackRequest(std::move(request));
+      return true;
     }
   }
 
@@ -1183,10 +1184,11 @@ bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
 
   CHECK(!tracked_request_);
   CHECK_EQ(navigation_state_, NavigationState::kNotStarted);
-  return TrackRequest(std::move(requests[0]));
+  TrackRequest(std::move(requests[0]));
+  return true;
 }
 
-bool BackForwardTransitionAnimator::TrackRequest(
+void BackForwardTransitionAnimator::TrackRequest(
     base::WeakPtr<NavigationRequest> created_request) {
   CHECK(created_request);
   // The resulting `NavigationRequest` must be associated with the intended
@@ -1228,7 +1230,6 @@ bool BackForwardTransitionAnimator::TrackRequest(
     navigation_state_ = NavigationState::kBeforeUnloadDispatched;
   }
   created_request->set_was_initiated_by_animated_transition();
-  return true;
 }
 
 BackForwardTransitionAnimator::ComputedAnimationValues

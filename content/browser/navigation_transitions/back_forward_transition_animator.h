@@ -260,8 +260,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // successfully created and false otherwise. The caller should play the invoke
   // or cancel animation based on the return value.
   [[nodiscard]] bool StartNavigationAndTrackRequest();
-  [[nodiscard]] bool TrackRequest(
-      base::WeakPtr<NavigationRequest> created_request);
+  void TrackRequest(base::WeakPtr<NavigationRequest> created_request);
 
   struct ComputedAnimationValues {
     // The offset that will be applied to the live, outgoing page.
