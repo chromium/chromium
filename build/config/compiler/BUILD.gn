@@ -931,7 +931,10 @@ config("compiler") {
         is_android && host_os == "linux",
         "MLGO is currently only supported for targeting Android on a linux host")
     if (use_thin_lto) {
-      ldflags += [ "-Wl,-mllvm,-enable-ml-inliner=release" ]
+      ldflags += [
+        "-Wl,-mllvm,-enable-ml-inliner=release",
+        "-Wl,-mllvm,-ml-inliner-model-selector=arm32-size",
+      ]
     }
   }
 
@@ -2497,6 +2500,8 @@ config("optimize") {
       cflags += [
         "-mllvm",
         "-enable-ml-inliner=release",
+        "-mllvm",
+        "-ml-inliner-model-selector=arm32-size",
       ]
     }
 

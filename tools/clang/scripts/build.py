@@ -1361,7 +1361,7 @@ def main():
   if args.with_ml_inliner_model:
     if args.with_ml_inliner_model == 'default':
       model_path = ('https://commondatastorage.googleapis.com/'
-                    'chromium-browser-clang/tools/mlgo_model2.tgz')
+                    'chromium-browser-clang/tools/mlgo_model3.tgz')
     else:
       model_path = args.with_ml_inliner_model
     if not args.tf_path:
