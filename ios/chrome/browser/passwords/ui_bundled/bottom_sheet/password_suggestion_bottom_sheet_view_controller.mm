@@ -248,6 +248,9 @@ CGFloat const kSpacingAfterTitle = 4;
     subtitle.attributedText =
         PutBoldPartInString(_subtitle, UIFontTextStyleBody);
     subtitle.textAlignment = NSTextAlignmentCenter;
+    // Setting `attributedText` overrides `textColor` set in the parent class,
+    // which does not render visibly in dark mode.
+    subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
   }
 }
 
