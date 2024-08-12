@@ -821,8 +821,8 @@
       <message name="IDS_IOS_CHECK_FINISHED_JUST_NOW_TITLE_CASE" desc="Label shown in the Password Checkup Homepage to indicate that a password check was just completed." meaning="[In Title Case] Check finished just now.">
         Checked Just Now
       </message>
-      <message name="IDS_IOS_CHECK_NEVER_RUN" desc="Used instead of timestamp when Password Check never ran" meaning="Check never run.">
-        Check never run.
+      <message name="IDS_IOS_CHECK_NEVER_RUN" desc="Used instead of timestamp when Password Check never ran" meaning="Check never run">
+        Check never run
       </message>
       <message name="IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON" desc="Label of a button which starts Password Check [Length: 22em] [iOS only]" meaning="By clicking this button user will start checking all passwords for security issues.">
         Check Now

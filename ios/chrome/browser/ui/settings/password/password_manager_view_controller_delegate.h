@@ -51,8 +51,8 @@ struct CredentialUIEntry;
 
 // Returns string containing the timestamp of the last password check. If the
 // check finished less than 1 minute ago string will look "Last check just
-// now.", otherwise "Last check X minutes/hours... ago.". If check never run,
-// string will be "Check never run.".
+// now", otherwise "Last check X minutes/hours... ago.". If check never run,
+// string will be "Check never run".
 - (NSString*)formattedElapsedTimeSinceLastCheck;
 
 // Returns detailed information about Password Check error if applicable.

@@ -115,7 +115,7 @@ TEST_F(PasswordCheckupMediatorTest,
          setPasswordCheckupHomepageState:PasswordCheckupHomepageState::
                                              PasswordCheckupHomepageStateDone
                   insecurePasswordCounts:counts
-      formattedElapsedTimeSinceLastCheck:@"Check never run."]);
+      formattedElapsedTimeSinceLastCheck:@"Check never run"]);
   OCMExpect([consumer() setAffiliatedGroupCount:0]);
 
   PasswordCheckupMediator<PasswordCheckObserver>* password_check_observer =
@@ -139,7 +139,7 @@ TEST_F(PasswordCheckupMediatorTest, NotifiesConsumerOnInsecurePasswordChange) {
          setPasswordCheckupHomepageState:PasswordCheckupHomepageState::
                                              PasswordCheckupHomepageStateDone
                   insecurePasswordCounts:counts
-      formattedElapsedTimeSinceLastCheck:@"Check never run."]);
+      formattedElapsedTimeSinceLastCheck:@"Check never run"]);
   OCMExpect([consumer() setAffiliatedGroupCount:1]);
 
   PasswordCheckupMediator<PasswordCheckObserver>* password_check_observer =
@@ -180,7 +180,7 @@ TEST_F(PasswordCheckupMediatorTest,
          setPasswordCheckupHomepageState:PasswordCheckupHomepageState::
                                              PasswordCheckupHomepageStateDone
                   insecurePasswordCounts:counts
-      formattedElapsedTimeSinceLastCheck:@"Check never run."]);
+      formattedElapsedTimeSinceLastCheck:@"Check never run"]);
   OCMExpect([consumer() setAffiliatedGroupCount:1]);
 
   // Enter an error state of PasswordCheckState.
