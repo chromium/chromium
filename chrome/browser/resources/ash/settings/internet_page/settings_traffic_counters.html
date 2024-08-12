@@ -22,7 +22,9 @@
       </div>
     </div>
     <cr-button id="resetDataUsageButton"
-      aria-label$="$i18n{TrafficCountersDataUsageResetLabel}"
+      aria-labelledby="dataUsageLabel"
+      aria-describedby="dataUsageSubLabel"
+      aria-roledescription="$i18n{TrafficCountersDataUsageResetLabel}"
       on-click="onResetDataUsageClick_">
       [[i18n('TrafficCountersDataUsageResetButtonLabel')]]
     </cr-button>
