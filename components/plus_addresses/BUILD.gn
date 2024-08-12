@@ -44,6 +44,17 @@ source_set("prefs") {
   ]
 }
 
+source_set("blocklist_data") {
+  sources = [
+    "plus_address_blocklist_data.cc",
+    "plus_address_blocklist_data.h",
+  ]
+  deps = [
+    "//base",
+    "//third_party/re2",
+  ]
+}
+
 source_set("plus_addresses") {
   sources = [
     "affiliations/plus_address_affiliation_match_helper.cc",
@@ -64,6 +75,7 @@ source_set("plus_addresses") {
     "plus_address_service.h",
   ]
   deps = [
+    ":blocklist_data",
     ":parsing",
     ":prefs",
     "//components/affiliations/core/browser:affiliations",
