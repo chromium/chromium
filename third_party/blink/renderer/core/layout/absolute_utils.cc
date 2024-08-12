@@ -666,17 +666,13 @@ bool ComputeOofInlineDimensions(
       return is_stretch ? Length::FillAvailable() : Length::FitContent();
     })();
 
-    const Length& min_inline_length =
-        apply_automatic_min_size && style.LogicalMinWidth().HasAuto()
-            ? Length::MinIntrinsic()
-            : style.LogicalMinWidth();
-
-    LayoutUnit main_inline_size = ResolveMainInlineLength(
+    const LayoutUnit main_inline_size = ResolveMainInlineLength(
         space, style, border_padding, MinMaxSizesFunc, main_inline_length,
         &auto_length, imcb.InlineSize());
-    MinMaxSizes min_max_inline_sizes =
-        ComputeMinMaxInlineSizes(space, node, border_padding, MinMaxSizesFunc,
-                                 &min_inline_length, imcb.InlineSize());
+    const MinMaxSizes min_max_inline_sizes = ComputeMinMaxInlineSizes(
+        space, node, border_padding,
+        apply_automatic_min_size ? &Length::MinIntrinsic() : nullptr,
+        MinMaxSizesFunc, imcb.InlineSize());
 
     inline_size = min_max_inline_sizes.ClampSizeToMinAndMax(main_inline_size);
   }

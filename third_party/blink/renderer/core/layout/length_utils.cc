@@ -37,16 +37,10 @@ LayoutUnit ResolveInlineLengthInternal(
     CalcSizeKeywordBehavior calc_size_keyword_behavior) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
 
-  CHECK(!original_length.IsAuto() || auto_length);
-  // for min-inline-size, this might still be 'auto'
-  const Length* length;
-  if (original_length.IsAuto()) [[likely]] {
-    length = auto_length;
-  } else {
-    length = &original_length;
-  }
-
-  switch (length->GetType()) {
+  // For min-inline-size, this might still be 'auto'.
+  const Length& length =
+      original_length.IsAuto() && auto_length ? *auto_length : original_length;
+  switch (length.GetType()) {
     case Length::kFillAvailable: {
       const LayoutUnit available_size =
           override_available_size == kIndefiniteSize
@@ -65,13 +59,13 @@ LayoutUnit ResolveInlineLengthInternal(
     case Length::kCalculated: {
       const LayoutUnit percentage_resolution_size =
           constraint_space.PercentageResolutionInlineSize();
-      if (length->HasPercent() &&
+      if (length.HasPercent() &&
           percentage_resolution_size == kIndefiniteSize) {
         return kIndefiniteSize;
       }
       bool evaluated_indefinite = false;
       LayoutUnit value = MinimumValueForLength(
-          *length, percentage_resolution_size,
+          length, percentage_resolution_size,
           {.intrinsic_evaluator =
                [&](const Length& length_to_evaluate) {
                  LayoutUnit result = ResolveInlineLengthInternal(
@@ -159,16 +153,10 @@ LayoutUnit ResolveBlockLengthInternal(
     BlockSizeFunctionRef block_size_func) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
 
-  CHECK(!original_length.IsAuto() || auto_length);
-  // for min-block-size, this might still be 'auto'
-  const Length* length;
-  if (original_length.IsAuto()) [[likely]] {
-    length = auto_length;
-  } else {
-    length = &original_length;
-  }
-
-  switch (length->GetType()) {
+  // For min-block-size, this might still be 'auto'.
+  const Length& length =
+      original_length.IsAuto() && auto_length ? *auto_length : original_length;
+  switch (length.GetType()) {
     case Length::kFillAvailable: {
       const LayoutUnit available_size =
           override_available_size == kIndefiniteSize
@@ -191,7 +179,7 @@ LayoutUnit ResolveBlockLengthInternal(
           override_percentage_resolution_size
               ? *override_percentage_resolution_size
               : constraint_space.PercentageResolutionBlockSize();
-      if (length->HasPercent() &&
+      if (length.HasPercent() &&
           percentage_resolution_size == kIndefiniteSize) {
         return length_type == LengthTypeInternal::kMain
                    ? block_size_func(SizeType::kContent)
@@ -199,7 +187,7 @@ LayoutUnit ResolveBlockLengthInternal(
       }
       bool evaluated_indefinite = false;
       LayoutUnit value = MinimumValueForLength(
-          *length, percentage_resolution_size,
+          length, percentage_resolution_size,
           {.intrinsic_evaluator = [&](const Length& length_to_evaluate) {
             LayoutUnit result = ResolveBlockLengthInternal(
                 constraint_space, style, border_padding, length_to_evaluate,
@@ -232,7 +220,7 @@ LayoutUnit ResolveBlockLengthInternal(
     case Length::kMinIntrinsic:
     case Length::kFitContent: {
       const LayoutUnit intrinsic_size = block_size_func(
-          length->IsMinIntrinsic() ? SizeType::kIntrinsic : SizeType::kContent);
+          length.IsMinIntrinsic() ? SizeType::kIntrinsic : SizeType::kContent);
 #if DCHECK_IS_ON()
       // Due to how intrinsic_size is calculated, it should always include
       // border and padding. We cannot check for this if we are
@@ -405,8 +393,11 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
         CalcSizeKeywordBehavior::kAsAuto);
   }
 
+  // TODO(ikilpatrick): auto_min_length should take into account:
+  // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
   const MinMaxSizes min_max_sizes = ComputeMinMaxInlineSizes(
-      space, child, border_padding, min_max_sizes_func);
+      space, child, border_padding,
+      /* auto_min_length */ nullptr, min_max_sizes_func);
   sizes.Constrain(min_max_sizes.max_size);
   sizes.Encompass(min_max_sizes.min_size);
 
@@ -538,13 +529,11 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
   const LayoutUnit extent =
       ResolveMainInlineLength(space, style, border_padding, min_max_sizes_func,
                               logical_width, &auto_length);
-  const Length& min_length =
-      apply_automatic_min_size && style.LogicalMinWidth().HasAuto()
-          ? Length::MinIntrinsic()
-          : style.LogicalMinWidth();
 
-  return ComputeMinMaxInlineSizes(space, node, border_padding,
-                                  min_max_sizes_func, &min_length)
+  return ComputeMinMaxInlineSizes(
+             space, node, border_padding,
+             apply_automatic_min_size ? &Length::MinIntrinsic() : nullptr,
+             min_max_sizes_func)
       .ClampSizeToMinAndMax(extent);
 }
 
@@ -614,25 +603,21 @@ MinMaxSizes ComputeInitialMinMaxBlockSizes(const ConstraintSpace& space,
 MinMaxSizes ComputeMinMaxBlockSizes(const ConstraintSpace& space,
                                     const BlockNode& node,
                                     const BoxStrut& border_padding,
-                                    bool apply_automatic_min_size,
+                                    const Length* auto_min_length,
                                     BlockSizeFunctionRef block_size_func,
                                     LayoutUnit override_available_size) {
   const ComputedStyle& style = node.Style();
   MinMaxSizes sizes = {
-      ResolveMinBlockLength(space, style, border_padding,
-                            style.LogicalMinHeight(), block_size_func,
+      ResolveMinBlockLength(space, style, border_padding, block_size_func,
+                            style.LogicalMinHeight(), auto_min_length,
                             override_available_size),
       ResolveMaxBlockLength(space, style, border_padding,
                             style.LogicalMaxHeight(), block_size_func,
                             override_available_size)};
 
-  // Apply the automatic min-size if needed.
-  //
-  // TODO(40339056): For calc-size() we should pass a Length::MinIntrinsic()
-  // for the "auto_length".
-  if (apply_automatic_min_size && style.LogicalMinHeight().HasAuto()) {
-    sizes.Encompass(
-        std::min(block_size_func(SizeType::kIntrinsic), sizes.max_size));
+  // Clamp the auto min-size by the max-size.
+  if (auto_min_length && style.LogicalMinHeight().HasAuto()) {
+    sizes.min_size = std::min(sizes.min_size, sizes.max_size);
   }
 
   // Tables can't shrink below their min-intrinsic size.
@@ -708,17 +693,21 @@ MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
 MinMaxSizes ComputeMinMaxInlineSizes(const ConstraintSpace& space,
                                      const BlockNode& node,
                                      const BoxStrut& border_padding,
+                                     const Length* auto_min_length,
                                      MinMaxSizesFunctionRef min_max_sizes_func,
-                                     const Length* opt_min_length,
                                      LayoutUnit override_available_size) {
   const ComputedStyle& style = node.Style();
-  const Length& min_length =
-      opt_min_length ? *opt_min_length : style.LogicalMinWidth();
   MinMaxSizes sizes = {
       ResolveMinInlineLength(space, style, border_padding, min_max_sizes_func,
-                             min_length, override_available_size),
+                             style.LogicalMinWidth(), auto_min_length,
+                             override_available_size),
       ResolveMaxInlineLength(space, style, border_padding, min_max_sizes_func,
                              style.LogicalMaxWidth(), override_available_size)};
+
+  // Clamp the auto min-size by the max-size.
+  if (auto_min_length && style.LogicalMinWidth().HasAuto()) {
+    sizes.min_size = std::min(sizes.min_size, sizes.max_size);
+  }
 
   // This implements the transferred min/max sizes per:
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-size-transfers
@@ -826,8 +815,9 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
   }
 
   MinMaxSizes min_max = ComputeMinMaxBlockSizes(
-      space, node, border_padding, apply_automatic_min_size, BlockSizeFunc,
-      override_available_size);
+      space, node, border_padding,
+      apply_automatic_min_size ? &Length::MinIntrinsic() : nullptr,
+      BlockSizeFunc, override_available_size);
 
   // When fragmentation is present often want to encompass the intrinsic size.
   if (space.MinBlockSizeShouldEncompassIntrinsicSize() &&
@@ -995,8 +985,9 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
             : space.ReplacedPercentageResolutionBlockSize();
 
     block_min_max_sizes = {
-        ResolveMinBlockLength(space, style, border_padding,
-                              style.LogicalMinHeight(), BlockSizeFunc,
+        ResolveMinBlockLength(space, style, border_padding, BlockSizeFunc,
+                              style.LogicalMinHeight(),
+                              /* auto_length */ nullptr,
                               /* override_available_size */ kIndefiniteSize,
                               &min_max_percentage_resolution_size),
         ResolveMaxBlockLength(space, style, border_padding,

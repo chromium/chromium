@@ -722,8 +722,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 
         const MinMaxSizes inline_min_max = ComputeMinMaxInlineSizes(
             flex_basis_space, child, border_padding_in_child_writing_mode,
-            MinMaxSizesFunc);
-
+            /* auto_min_length */ nullptr, MinMaxSizesFunc);
         const MinMaxSizes min_max = ComputeTransferredMinMaxBlockSizes(
             child.GetAspectRatio(), inline_min_max,
             border_padding_in_child_writing_mode,
@@ -735,6 +734,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       return layout_result->IntrinsicBlockSize();
     };
 
+    // TODO(ikilpatrick): Pre-resolve the auto-min-length, and pass to the
+    // min/max sizes functions.
     MinMaxSizes min_max_sizes_in_main_axis_direction{main_axis_border_padding,
                                                      LayoutUnit::Max()};
     MinMaxSizes min_max_sizes_in_cross_axis_direction{LayoutUnit(),
@@ -748,14 +749,14 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
           MinMaxSizesFunc, max_property_in_main_axis);
       min_max_sizes_in_cross_axis_direction = ComputeMinMaxBlockSizes(
           flex_basis_space, child, border_padding_in_child_writing_mode,
-          /* apply_automatic_min_size */ false, BlockSizeFunc);
+          /* auto_min_length */ nullptr, BlockSizeFunc);
     } else {
       min_max_sizes_in_main_axis_direction.max_size = ResolveMaxBlockLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
           max_property_in_main_axis, BlockSizeFunc);
       min_max_sizes_in_cross_axis_direction = ComputeMinMaxInlineSizes(
           flex_basis_space, child, border_padding_in_child_writing_mode,
-          MinMaxSizesFunc);
+          /* auto_min_length */ nullptr, MinMaxSizesFunc);
     }
 
     const Length& flex_basis = child_style.FlexBasis();
@@ -910,7 +911,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     } else {
       min_max_sizes_in_main_axis_direction.min_size = ResolveMinBlockLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          min, BlockSizeFunc);
+          BlockSizeFunc, min);
     }
     // Flex needs to never give a table a flexed main size that is less than its
     // min-content size, so floor the min main-axis size by min-content size.

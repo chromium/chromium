@@ -105,11 +105,12 @@ inline LayoutUnit ResolveMinInlineLength(
     const BoxStrut& border_padding,
     MinMaxSizesFunctionRef min_max_sizes_func,
     const Length& length,
+    const Length* auto_length = nullptr,
     LayoutUnit override_available_size = kIndefiniteSize) {
   const LayoutUnit result = ResolveInlineLengthInternal(
       constraint_space, style, border_padding, min_max_sizes_func, length,
-      /* auto_length */ &Length::Auto(), LengthTypeInternal::kMin,
-      override_available_size, CalcSizeKeywordBehavior::kAsSpecified);
+      auto_length, LengthTypeInternal::kMin, override_available_size,
+      CalcSizeKeywordBehavior::kAsSpecified);
   return result == kIndefiniteSize ? border_padding.InlineSum() : result;
 }
 
@@ -164,15 +165,15 @@ inline LayoutUnit ResolveMinBlockLength(
     const ConstraintSpace& constraint_space,
     const ComputedStyle& style,
     const BoxStrut& border_padding,
-    const Length& length,
     BlockSizeFunctionRef block_size_func,
+    const Length& length,
+    const Length* auto_length = nullptr,
     LayoutUnit override_available_size = kIndefiniteSize,
     const LayoutUnit* override_percentage_resolution_size = nullptr) {
   const LayoutUnit result = ResolveBlockLengthInternal(
-      constraint_space, style, border_padding, length,
-      /* auto_length */ &Length::Auto(), LengthTypeInternal::kMin,
-      override_available_size, override_percentage_resolution_size,
-      block_size_func);
+      constraint_space, style, border_padding, length, auto_length,
+      LengthTypeInternal::kMin, override_available_size,
+      override_percentage_resolution_size, block_size_func);
   return result == kIndefiniteSize ? border_padding.BlockSum() : result;
 }
 
@@ -248,7 +249,7 @@ MinMaxSizes ComputeMinMaxBlockSizes(
     const ConstraintSpace&,
     const BlockNode&,
     const BoxStrut& border_padding,
-    bool apply_automatic_min_size,
+    const Length* auto_min_length,
     BlockSizeFunctionRef,
     LayoutUnit override_available_size = kIndefiniteSize);
 
@@ -276,8 +277,8 @@ MinMaxSizes ComputeMinMaxInlineSizes(
     const ConstraintSpace& space,
     const BlockNode& node,
     const BoxStrut& border_padding,
+    const Length* auto_min_length,
     MinMaxSizesFunctionRef min_max_sizes_func,
-    const Length* opt_min_length = nullptr,
     LayoutUnit override_available_size = kIndefiniteSize);
 
 // Returns block size of the node's border box by resolving the computed value

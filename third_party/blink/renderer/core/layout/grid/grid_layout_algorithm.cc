@@ -39,6 +39,7 @@ GridLayoutAlgorithm::GridLayoutAlgorithm(const LayoutAlgorithmParams& params)
 
     const MinMaxSizes sizes = ComputeMinMaxInlineSizes(
         constraint_space, node, container_builder_.BorderPadding(),
+        /* auto_min_length */ nullptr,
         [&border_scrollbar_padding](SizeType) -> MinMaxSizesResult {
           // If we've reached here we are inside the |ComputeMinMaxSizes| pass,
           // and also have something like "min-width: min-content". This is

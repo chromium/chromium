@@ -827,7 +827,6 @@ crbug.com/711807 external/wpt/css/CSS2/normal-flow/replaced-intrinsic-002.xht [ 
 crbug.com/1322062 external/wpt/css/css-sizing/aspect-ratio/fieldset-element-001.html [ Failure ]
 crbug.com/970201 external/wpt/css/css-sizing/slice-intrinsic-size.html [ Failure ]
 crbug.com/970201 external/wpt/css/css-sizing/clone-intrinsic-size.html [ Failure ]
-crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-038.html [ Failure ]
 crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-042.html [ Failure ]
 crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-043.html [ Failure ]
 
