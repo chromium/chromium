@@ -927,7 +927,8 @@ def make_v8_to_blink_function(cg_context):
     ])
     bind_local_vars(body, cg_context)
 
-    body.append(T("TryCatchScope try_block(${exception_state}, ${isolate});"))
+    body.append(
+        T("TryRethrowScope rethrow_scope(${isolate}, ${exception_state});"))
     if cg_context.dictionary.inherited:
         body.extend([
             T("${base_class_name}::FillMembersFromV8Object"

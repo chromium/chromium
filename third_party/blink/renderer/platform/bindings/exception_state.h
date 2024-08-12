@@ -275,14 +275,14 @@ class PLATFORM_EXPORT NonThrowableExceptionState final : public ExceptionState {
   const int line_;
 };
 
-class PLATFORM_EXPORT TryCatchScope {
+class PLATFORM_EXPORT TryRethrowScope {
   STACK_ALLOCATED();
 
  public:
-  TryCatchScope(ExceptionState& exception_state, v8::Isolate* isolate)
+  TryRethrowScope(v8::Isolate* isolate, ExceptionState& exception_state)
       : try_catch_(isolate), exception_state_(exception_state) {}
 
-  ~TryCatchScope() {
+  ~TryRethrowScope() {
     if (try_catch_.HasCaught()) [[unlikely]] {
       exception_state_.RethrowV8Exception(try_catch_.Exception());
     }
