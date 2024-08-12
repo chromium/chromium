@@ -470,6 +470,7 @@ component("base") {
     "metrics/histogram_flattener.h",
     "metrics/histogram_functions.cc",
     "metrics/histogram_functions.h",
+    "metrics/histogram_functions_internal_overloads.h",
     "metrics/histogram_macros.h",
     "metrics/histogram_macros_internal.h",
     "metrics/histogram_macros_local.h",
