@@ -38,31 +38,31 @@ namespace {
 bool ParseInputArguments(v8::Local<v8::Context> context,
                          v8::Local<v8::Object> constructor,
                          Vector<CSSSyntaxDefinition>* input_argument_types,
-                         ExceptionState* exception_state) {
+                         ExceptionState& exception_state) {
   v8::Isolate* isolate = context->GetIsolate();
-  v8::TryCatch block(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
 
   if (RuntimeEnabledFeatures::CSSPaintAPIArgumentsEnabled()) {
     v8::Local<v8::Value> input_argument_type_values;
     if (!constructor->Get(context, V8AtomicString(isolate, "inputArguments"))
              .ToLocal(&input_argument_type_values)) {
-      exception_state->RethrowV8Exception(block.Exception());
       return false;
     }
 
     if (!input_argument_type_values->IsNullOrUndefined()) {
       Vector<String> argument_types =
           NativeValueTraits<IDLSequence<IDLString>>::NativeValue(
-              isolate, input_argument_type_values, *exception_state);
+              isolate, input_argument_type_values, exception_state);
 
-      if (exception_state->HadException())
+      if (exception_state.HadException()) {
         return false;
+      }
 
       for (const auto& type : argument_types) {
         std::optional<CSSSyntaxDefinition> syntax_definition =
             CSSSyntaxStringParser(type).Parse();
         if (!syntax_definition) {
-          exception_state->ThrowTypeError("Invalid argument types.");
+          exception_state.ThrowTypeError("Invalid argument types.");
           return false;
         }
         input_argument_types->push_back(std::move(*syntax_definition));
@@ -75,21 +75,21 @@ bool ParseInputArguments(v8::Local<v8::Context> context,
 PaintRenderingContext2DSettings* ParsePaintRenderingContext2DSettings(
     v8::Local<v8::Context> context,
     v8::Local<v8::Object> constructor,
-    ExceptionState* exception_state) {
+    ExceptionState& exception_state) {
   v8::Isolate* isolate = context->GetIsolate();
-  v8::TryCatch block(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
 
   v8::Local<v8::Value> context_settings_value;
   if (!constructor->Get(context, V8AtomicString(isolate, "contextOptions"))
            .ToLocal(&context_settings_value)) {
-    exception_state->RethrowV8Exception(block.Exception());
     return nullptr;
   }
   auto* context_settings =
       NativeValueTraits<PaintRenderingContext2DSettings>::NativeValue(
-          isolate, context_settings_value, *exception_state);
-  if (exception_state->HadException())
+          isolate, context_settings_value, exception_state);
+  if (exception_state.HadException()) {
     return nullptr;
+  }
   return context_settings;
 }
 
@@ -192,7 +192,7 @@ void PaintWorkletGlobalScope::registerPaint(const ScriptState* script_state,
   if (!V8ObjectParser::ParseCSSPropertyList(
           context, execution_context, v8_paint_ctor,
           AtomicString("inputProperties"), &native_invalidation_properties,
-          &custom_invalidation_properties, &exception_state)) {
+          &custom_invalidation_properties, exception_state)) {
     return;
   }
 
@@ -200,12 +200,13 @@ void PaintWorkletGlobalScope::registerPaint(const ScriptState* script_state,
   // cssPaintAPIArguments is enabled.
   Vector<CSSSyntaxDefinition> input_argument_types;
   if (!ParseInputArguments(context, v8_paint_ctor, &input_argument_types,
-                           &exception_state))
+                           exception_state)) {
     return;
+  }
 
   PaintRenderingContext2DSettings* context_settings =
       ParsePaintRenderingContext2DSettings(context, v8_paint_ctor,
-                                           &exception_state);
+                                           exception_state);
   if (!context_settings)
     return;
 

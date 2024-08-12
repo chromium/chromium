@@ -172,6 +172,9 @@ class PLATFORM_EXPORT ExceptionState {
 
   // Rethrows a v8::Value as an exception.
   NOINLINE void RethrowV8Exception(v8::Local<v8::Value>);
+  // Report the given value as the exception being thrown, but rethrow it
+  // immediately via the v8::TryCatch instead of in the destructor.
+  NOINLINE void RethrowV8Exception(v8::TryCatch&);
 
   // Returns true if there is a pending exception.
   //
@@ -246,6 +249,7 @@ class PLATFORM_EXPORT ExceptionState {
   // The exception is empty when it was thrown through
   // DummyExceptionStateForTesting.
   TraceWrapperV8Reference<v8::Value> exception_;
+  bool thrown_via_v8_trycatch_ = false;
 
   friend class ContextScope;
 };
@@ -284,9 +288,11 @@ class PLATFORM_EXPORT TryRethrowScope {
 
   ~TryRethrowScope() {
     if (try_catch_.HasCaught()) [[unlikely]] {
-      exception_state_.RethrowV8Exception(try_catch_.Exception());
+      exception_state_.RethrowV8Exception(try_catch_);
     }
   }
+
+  bool HasCaught() { return try_catch_.HasCaught(); }
 
   v8::TryCatch try_catch_;
   ExceptionState& exception_state_;
