@@ -408,6 +408,7 @@ include_rules = [
   "+components/webrtc_logging/browser",
   "+components/webrtc_logging/common",
   "+components/zoom",
+  "+content/public/android/java/src/org/chromium/content/browser/webid",
   "+content/public/android/java/src/org/chromium/content_public/browser",
   "+content/public/android/java/src/org/chromium/content_public/common",
   "+content/public/browser",

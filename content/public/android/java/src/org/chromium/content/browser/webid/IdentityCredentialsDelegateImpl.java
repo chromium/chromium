@@ -24,20 +24,17 @@ import com.google.android.gms.identitycredentials.IntentHelper;
 
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
-import org.chromium.content_public.browser.webid.IdentityCredentialsDelegate;
 
 import java.util.Arrays;
 
-public class IdentityCredentialsDelegateImpl implements IdentityCredentialsDelegate {
+public class IdentityCredentialsDelegateImpl {
     private static final String TAG = "IdentityCredentials";
 
-    @Override
     public Promise<String> get(String origin, String request) {
         // TODO(crbug.com/40257092): implement this.
         return null;
     }
 
-    @Override
     public Promise<byte[]> get(Activity window, String origin, String request) {
         final IdentityCredentialClient client;
         try {
