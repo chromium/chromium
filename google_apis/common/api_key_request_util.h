@@ -5,7 +5,10 @@
 #ifndef GOOGLE_APIS_COMMON_API_KEY_REQUEST_UTIL_H_
 #define GOOGLE_APIS_COMMON_API_KEY_REQUEST_UTIL_H_
 
+#include <optional>
 #include <string_view>
+
+class GURL;
 
 namespace net {
 class HttpRequestHeaders;
@@ -40,11 +43,20 @@ void AddAPIKeyToRequest(net::HttpRequestHeaders& request_headers,
 // google_apis/common.
 namespace internal {
 
+// The API key can be present as either a URL parameter or as an HTTP header.
+// This class uses the header form when setting the key, but getters support
+// both forms.
+//
 // See https://cloud.google.com/apis/docs/system-parameters
+inline constexpr char kApiKeyQueryParameterName[] = "key";
 inline constexpr char kApiKeyHeaderName[] = "X-Goog-Api-Key";
 
-// Whether the request headers have an API key set.
-bool HasAPIKey(const net::HttpRequestHeaders& request_headers);
+// Returns the API key from a URL query parameter.
+std::optional<std::string> GetAPIKey(const GURL& url);
+
+// Returns the API key from the request headers.
+std::optional<std::string> GetAPIKey(
+    const net::HttpRequestHeaders& request_headers);
 
 }  // namespace internal
 
