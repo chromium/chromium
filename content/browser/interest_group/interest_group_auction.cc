@@ -3930,13 +3930,6 @@ std::string InterestGroupAuction::CreateTrustedBiddingSignalsSlotSizeParam(
     const blink::AuctionConfig& config,
     blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode
         trusted_bidding_signals_slot_size_mode) {
-  // If sending slot sizes to trusted bidding signals servers is not enabled,
-  // return an empty string to maximize worklet reuse.
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kFledgeTrustedBiddingSignalsSlotSize)) {
-    return std::string();
-  }
-
   switch (trusted_bidding_signals_slot_size_mode) {
     case blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone:
       return std::string();

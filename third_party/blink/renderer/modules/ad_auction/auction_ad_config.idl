@@ -90,7 +90,6 @@ dictionary AuctionAdConfig {
   sequence<DOMString> requiredSellerCapabilities;
 
   AuctionAdInterestGroupSize requestedSize;
-  [RuntimeEnabled=FledgeTrustedBiddingSignalsSlotSize]
   sequence<AuctionAdInterestGroupSize> allSlotsRequestedSizes;
 
   [RuntimeEnabled=FledgeNegativeTargeting]

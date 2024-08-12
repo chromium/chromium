@@ -23455,52 +23455,7 @@ TEST_F(AuctionRunnerTest, MatcheReportingIdsInServerResponse) {
   }
 }
 
-TEST_F(AuctionRunnerTest,
-       TrustedBiddingSignalsAdSlotParamGroupingFeatureDisabled) {
-  base::test::ScopedFeatureList debug_features;
-  debug_features.InitAndDisableFeature(
-      blink::features::kFledgeTrustedBiddingSignalsSlotSize);
-
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kBidder1Url,
-      MakeConstBidScript(1, "https://ad1.com/"));
-  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
-                                         kMinimumDecisionScript);
-
-  requested_size_ = blink::AdSize(10, blink::AdSize::LengthUnit::kPixels, 20,
-                                  blink::AdSize::LengthUnit::kPixels);
-  all_slots_requested_sizes_ = {
-      blink::AdSize(10, blink::AdSize::LengthUnit::kPixels, 20,
-                    blink::AdSize::LengthUnit::kPixels),
-      blink::AdSize(30, blink::AdSize::LengthUnit::kPixels, 40,
-                    blink::AdSize::LengthUnit::kPixels)};
-
-  StartAuction(kSellerUrl, CreateTrustedBiddingSignalsSlotSizeModeBidders());
-
-  // Wait for bidding signals network requests to be made.
-  task_environment()->RunUntilIdle();
-
-  std::vector<GURL> pending_request_urls;
-  for (const auto& pending_request : *url_loader_factory_.pending_requests()) {
-    pending_request_urls.push_back(pending_request.request.url);
-  }
-
-  // When kFledgeTrustedBiddingSignalsSlotSize is disabled, all requests should
-  // be merged, regardless of kFledgeTrustedBiddingSignalsSlotSize.
-  EXPECT_THAT(pending_request_urls,
-              testing::ElementsAre(GURL(
-                  kBidder1TrustedSignalsUrl.spec() +
-                  "?hostname=publisher1.com&keys=k1,k2,k3,k4,k5,k6"
-                  "&interestGroupNames=name1,name2,name3,name4,name5,name6")));
-
-  // No need to finish the auction.
-}
-
 TEST_F(AuctionRunnerTest, TrustedBiddingSignalsAdSlotParamGrouping) {
-  base::test::ScopedFeatureList debug_features;
-  debug_features.InitAndEnableFeature(
-      blink::features::kFledgeTrustedBiddingSignalsSlotSize);
-
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
       MakeConstBidScript(1, "https://ad1.com/"));
@@ -23543,10 +23498,6 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignalsAdSlotParamGrouping) {
 }
 
 TEST_F(AuctionRunnerTest, TrustedBiddingSignalsAdSlotParamGroupingNoSizes) {
-  base::test::ScopedFeatureList debug_features;
-  debug_features.InitAndEnableFeature(
-      blink::features::kFledgeTrustedBiddingSignalsSlotSize);
-
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
       MakeConstBidScript(1, "https://ad1.com/"));
