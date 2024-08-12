@@ -475,8 +475,6 @@ class ArchiveBuild(abc.ABC):
 
   def __init__(self, options):
     self.platform = options.archive
-    # FIXME: The current implementation of get_rev_list assuming the revision is
-    # int, while ReleaseBuild supports version strings.
     self.good_revision = options.good
     self.bad_revision = options.bad
     self.use_local_cache = options.use_local_cache
@@ -495,106 +493,140 @@ class ArchiveBuild(abc.ABC):
     raise NotImplemented()
 
   @abc.abstractmethod
-  def _get_rev_list(self):
-    """The actual method to get revision list without cache."""
+  def _get_rev_list(self, min_rev=None, max_rev=None):
+    """The actual method to get revision list without cache.
+
+    min_rev and max_rev could be None, indicating that the method should return
+    all revisions.
+
+    The method should return at least the revision list that exists for the
+    given (min_rev, max_rev) range. However, it could return a revision list
+    with revisions beyond min_rev and max_rev based on the implementation for
+    better caching. The rev_list should contain all available revisions between
+    the returned minimum and maximum values.
+
+    The return value of revisions in the list should match the type of
+    good_revision and bad_revision, and should be comparable.
+    """
     raise NotImplemented()
 
+  @property
+  def _rev_list_cache_filename(self):
+    return os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                        '.bisect-builds-cache.json')
+
+  @property
   @abc.abstractmethod
-  def _get_listing_url(self, marker=None):
-    """Returns the URL for a directory listing, with an optional marker."""
+  def _rev_list_cache_key(self):
+    """Returns the cache key for archive build. The cache key should be able to
+    distinguish like build_type, platform."""
     raise NotImplemented()
 
-  def get_last_change_url(self):
-    return None
+  def _load_rev_list_cache(self):
+    if not self.use_local_cache:
+      return []
+    cache_filename = self._rev_list_cache_filename
+    try:
+      with open(cache_filename) as cache_file:
+        cache = json.load(cache_file)
+        revisions = cache.get(self._rev_list_cache_key, [])
+        if revisions:
+          print('Loaded revisions %s-%s from %s' %
+                (revisions[0], revisions[-1], cache_filename))
+        return revisions
+    except FileNotFoundError:
+      return []
+    except (EnvironmentError, ValueError) as e:
+      print('Load revisions cache error:', e)
+      return []
+
+  def _save_rev_list_cache(self, revisions):
+    if not self.use_local_cache:
+      return
+    cache = {}
+    cache_filename = self._rev_list_cache_filename
+    # Load cache for all of the builds.
+    try:
+      with open(cache_filename) as cache_file:
+        cache = json.load(cache_file)
+    except FileNotFoundError:
+      pass
+    except (EnvironmentError, ValueError) as e:
+      print('Load existing revisions cache error:', e)
+      return
+    # Update and save cache for current build.
+    cache[self._rev_list_cache_key] = revisions
+    try:
+      with open(cache_filename, 'w') as cache_file:
+        json.dump(cache, cache_file)
+      print('Saved revisions %s-%s to %s' %
+            (revisions[0], revisions[-1], cache_filename))
+    except EnvironmentError as e:
+      print('Save revisions cache error:', e)
+      return
 
   def get_rev_list(self):
     """Gets the list of revision numbers between self.good_revision and
     self.bad_revision. The result might be cached when use_local_cache."""
+    # Download the rev_list_all
+    min_rev, max_rev = sorted((self.good_revision, self.bad_revision))
+    rev_list_all = self._load_rev_list_cache()
+    if not rev_list_all:
+      rev_list_all = sorted(self._get_rev_list(min_rev, max_rev))
+      self._save_rev_list_cache(rev_list_all)
+    else:
+      rev_list_min, rev_list_max = rev_list_all[0], rev_list_all[-1]
+      if min_rev < rev_list_min or max_rev > rev_list_max:
+        # We only need to request and merge the rev_list beyond the cache.
+        rev_list_requested = self._get_rev_list(
+            min_rev if min_rev < rev_list_min else rev_list_max,
+            max_rev if max_rev > rev_list_max else rev_list_min)
+        rev_list_all = sorted(set().union(rev_list_all, rev_list_requested))
+        self._save_rev_list_cache(rev_list_all)
+    # If we still don't get a rev_list_all for the given range, adjust the
+    # range to get the full revision list for better messaging.
+    if not rev_list_all:
+      rev_list_all = sorted(self._get_rev_list())
+      self._save_rev_list_cache(rev_list_all)
+    if not rev_list_all:
+      raise BisectException('Could not retrieve the revisions for %s.' %
+                            self.platform)
 
-    cache = {}
-    # The cache is stored in the same directory as bisect-builds.py
-    cache_filename = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                                  '.bisect-builds-cache.json')
-    cache_dict_key = self._get_listing_url()
-
-    def _LoadBucketFromCache():
-      if self.use_local_cache:
-        try:
-          with open(cache_filename) as cache_file:
-            for (key, value) in json.load(cache_file).items():
-              cache[key] = value
-            revisions = cache.get(cache_dict_key, [])
-            githash_svn_dict = cache.get('githash_svn_dict', {})
-            if revisions:
-              print('Loaded revisions %d-%d from %s' %
-                    (revisions[0], revisions[-1], cache_filename))
-            return (revisions, githash_svn_dict)
-        except (EnvironmentError, ValueError):
-          pass
-      return ([], {})
-
-    def _SaveBucketToCache():
-      """Save the list of revisions and the git-svn mappings to a file.
-      The list of revisions is assumed to be sorted."""
-      if self.use_local_cache:
-        cache[cache_dict_key] = revlist_all
-        cache['githash_svn_dict'] = self.githash_svn_dict
-        try:
-          with open(cache_filename, 'w') as cache_file:
-            json.dump(cache, cache_file)
-          print('Saved revisions %d-%d to %s' %
-                (revlist_all[0], revlist_all[-1], cache_filename))
-        except EnvironmentError:
-          pass
-
-    # Download the revlist and filter for just the range between good and bad.
-    minrev = min(self.good_revision, self.bad_revision)
-    maxrev = max(self.good_revision, self.bad_revision)
-
-    (revlist_all, self.githash_svn_dict) = _LoadBucketFromCache()
-    last_known_rev = revlist_all[-1] if revlist_all else 0
-    if last_known_rev < maxrev:
-      revlist_all.extend(list(map(int, self._get_rev_list(last_known_rev))))
-      revlist_all.sort()
-      _SaveBucketToCache()
-
-    revlist = [x for x in revlist_all if x >= int(minrev) and x <= int(maxrev)]
-    if len(revlist) < 2:  # Don't have enough builds to bisect.
-      last_known_rev = revlist_all[-1] if revlist_all else 0
-      first_known_rev = revlist_all[0] if revlist_all else 0
+    # Filter for just the range between good and bad.
+    rev_list = [x for x in rev_list_all if min_rev <= x <= max_rev]
+    if len(rev_list) < 2:  # Don't have enough builds to bisect.
+      rev_list_min, rev_list_max = rev_list_all[0], rev_list_all[-1]
       # Check for specifying a number before the available range.
-      if maxrev < first_known_rev:
+      if max_rev < rev_list_min:
         msg = (
             'First available bisect revision for %s is %d. Be sure to specify '
             'revision numbers, not branch numbers.' %
-            (self.platform, first_known_rev))
-        raise (RuntimeError(msg))
-
+            (self.platform, rev_list_min))
+        raise BisectException(msg)
       # Check for specifying a number beyond the available range.
-      if maxrev > last_known_rev:
+      if min_rev > rev_list_max:
         # Check for the special case of linux where bisect builds stopped at
         # revision 382086, around March 2016.
         if self.platform == 'linux':
           msg = ('Last available bisect revision for %s is %d. Try linux64 '
-                 'instead.' % (self.platform, last_known_rev))
+                 'instead.' % (self.platform, rev_list_max))
         else:
           msg = ('Last available bisect revision for %s is %d. Try a different '
-                 'good/bad range.' % (self.platform, last_known_rev))
-        raise (RuntimeError(msg))
-
+                 'good/bad range.' % (self.platform, rev_list_max))
+        raise BisectException(msg)
       # Otherwise give a generic message.
-      msg = 'We don\'t have enough builds to bisect. revlist: %s' % revlist
-      raise RuntimeError(msg)
-    # Set good and bad revisions to be legit revisions.
-    if revlist:
-      if self.good_revision < self.bad_revision:
-        self.good_revision = revlist[0]
-        self.bad_revision = revlist[-1]
-      else:
-        self.bad_revision = revlist[0]
-        self.good_revision = revlist[-1]
+      msg = 'We don\'t have enough builds to bisect. rev_list: %s' % rev_list
+      raise BisectException(msg)
 
-    return revlist
+    # Set good and bad revisions to be legit revisions.
+    if rev_list:
+      if self.good_revision < self.bad_revision:
+        self.good_revision = rev_list[0]
+        self.bad_revision = rev_list[-1]
+      else:
+        self.bad_revision = rev_list[0]
+        self.good_revision = rev_list[-1]
+    return rev_list
 
 
 class ReleaseBuild(ArchiveBuild):
@@ -653,6 +685,10 @@ class ReleaseBuild(ArchiveBuild):
     # The original implementation of GetReleaseBuildsList doesn't support cache
     return self._get_rev_list()
 
+  @property
+  def _rev_list_cache_key(self):
+    return None
+
 
 class OfficialBuild(ArchiveBuild):
 
@@ -677,7 +713,7 @@ class OfficialBuild(ArchiveBuild):
     return (PERF_BASE_URL + '/?prefix=' + self.listing_platform_dir +
             marker_param)
 
-  def _get_rev_list(self, last_known_rev):
+  def _get_rev_list(self, min_rev=None, max_rev=None):
     # For official builds, it's getting the list from perf build bucket.
     minrev = min(self.good_revision, self.bad_revision)
     maxrev = max(self.good_revision, self.bad_revision)
@@ -697,6 +733,14 @@ class OfficialBuild(ArchiveBuild):
         continue
       final_list.append(revision_number)
     return final_list
+
+  @property
+  def _rev_list_cache_key(self):
+    return self._get_listing_url()
+
+  def get_last_change_url(self):
+    return None
+
 
 
 class SnapshotBuild(ArchiveBuild):
@@ -765,7 +809,7 @@ class SnapshotBuild(ArchiveBuild):
     """Returns a URL to the LAST_CHANGE file."""
     return self.base_url + '/' + self.listing_platform_dir + 'LAST_CHANGE'
 
-  def _get_rev_list(self, last_known_rev):
+  def _get_rev_list(self, min_rev=None, max_rev=None):
     """The actual method to get revision list without cache.
 
     This works by parsing the Google Storage directory listing into a list of
@@ -773,13 +817,13 @@ class SnapshotBuild(ArchiveBuild):
     """
 
     # Fetch the first list of revisions.
-    if last_known_rev:
+    if min_rev:
       revisions = []
       # Optimization: Start paging at the last known revision (local cache).
-      next_marker = self._GetMarkerForRev(last_known_rev)
+      next_marker = self._GetMarkerForRev(min_rev)
       # Optimization: Stop paging at the last known revision (remote).
       last_change_rev = GetChromiumRevision(self.get_last_change_url())
-      if last_known_rev == last_change_rev:
+      if min_rev == last_change_rev:
         return []
     else:
       (revisions, next_marker,
@@ -810,6 +854,10 @@ class SnapshotBuild(ArchiveBuild):
       marker_param = '&marker=' + str(marker)
     return (self.base_url + '/?delimiter=/&prefix=' +
             self.listing_platform_dir + marker_param)
+
+  @property
+  def _rev_list_cache_key(self):
+    return self._get_listing_url()
 
 
 class ASANBuild(SnapshotBuild):
@@ -859,8 +907,8 @@ class ASANBuild(SnapshotBuild):
 
   def _GetMarkerForRev(self, revision):
     # The build type is hardcoded as release in the original code.
-    return '%s-%s/%s-%d.zip' % (self.GetASANPlatformDir(), self.asan_build_type,
-                                self.GetASANBaseName(), revision)
+    return '%s-%s/%s-%d' % (self.GetASANPlatformDir(), self.asan_build_type,
+                            self.GetASANBaseName(), revision)
 
   def _FetchAndParse(self, url):
     """Fetches a URL and returns a 2-Tuple of ([revisions], next-marker). If
@@ -1869,17 +1917,19 @@ def FixChromiumRevForBlink(revisions_final, revisions, self, rev):
   return rev
 
 
-def GetChromiumRevision(url):
+def GetChromiumRevision(url, default=999999999):
   """Returns the chromium revision read from given URL."""
+  if not url:
+    return default
   try:
     # Location of the latest build revision number
     latest_revision = urllib.request.urlopen(url).read()
     if latest_revision.isdigit():
       return int(latest_revision)
-    return 999999999
+    return default
   except Exception:
     print('Could not determine latest revision. This could be bad...')
-    return 999999999
+    return default
 
 
 def FetchJsonFromURL(url):

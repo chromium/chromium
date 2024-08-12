@@ -2,14 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import io
 import functools
+import io
+import json
 import os
 import unittest
 import subprocess
 import sys
 import optparse
-import urllib.request
 from unittest.mock import Mock, MagicMock, mock_open, patch
 
 bisect_builds = __import__('bisect-builds')
@@ -34,6 +34,9 @@ else:
       super().__init__(spec, *args, **kwargs, wraps=spec)
 
   maybe_patch = functools.partial(patch, spec=True, new_callable=WrappedMock)
+  maybe_patch.object = functools.partial(patch.object,
+                                         spec=True,
+                                         new_callable=WrappedMock)
 
 
 class FakeProcess:
@@ -127,55 +130,91 @@ class ArchiveBuildTest(unittest.TestCase):
     patch.multiple(bisect_builds.ArchiveBuild,
                    __abstractmethods__=set(),
                    build_type='release',
-                   _get_rev_list=Mock(return_value=map(str, range(10))),
-                   _get_listing_url=Mock(return_value='abc')).start()
+                   _get_rev_list=Mock(return_value=list(map(str, range(10)))),
+                   _rev_list_cache_key='abc').start()
 
   def tearDown(self):
     patch.stopall()
 
+  def create_build(self, args=None):
+    if args is None:
+      args = ['-a', 'linux64', '-g', '0', '-b', '9']
+    options, args = bisect_builds.ParseCommandLine(args)
+    return bisect_builds.ArchiveBuild(options)
+
   def test_cache_should_not_work_if_not_enabled(self):
-    options, args = bisect_builds.ParseCommandLine(
-        ['-a', 'linux64', '-g', '0', '-b', '10'])
-    # TODO: get_rev_list only supports revision as int in it's original
-    # implementation.
-    options.good = 0
-    options.bad = 10
-    self.assertFalse(options.use_local_cache)
-    build = bisect_builds.ArchiveBuild(options)
-    self.assertEqual(build.get_rev_list(), list(range(10)))
-    bisect_builds.ArchiveBuild._get_rev_list.assert_called_once()
+    build = self.create_build()
+    self.assertFalse(build.use_local_cache)
+    with patch('builtins.open') as m:
+      self.assertEqual(build.get_rev_list(), [str(x) for x in range(10)])
+      bisect_builds.ArchiveBuild._get_rev_list.assert_called_once()
+      m.assert_not_called()
 
   def test_cache_should_save_and_load(self):
-    options, args = bisect_builds.ParseCommandLine(
-        ['-a', 'linux64', '-g', '0', '-b', '10', '--use-local-cache'])
-    # TODO: get_rev_list only supports revision as int in it's original
-    # implementation.
-    options.good = 0
-    options.bad = 10
-    self.assertTrue(options.use_local_cache)
-    build = bisect_builds.ArchiveBuild(options)
-
-    cache_filename = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                                  '.bisect-builds-cache.json')
-
+    build = self.create_build(
+        ['-a', 'linux64', '-g', '0', '-b', '9', '--use-local-cache'])
+    self.assertTrue(build.use_local_cache)
+    # Load the non-existent cache and write to it.
     cached_data = []
-    with patch('builtins.open', mock_open()) as m:
-      m.return_value.__enter__()\
-        .write.side_effect = lambda d: cached_data.append(d)
-      self.assertEqual(build.get_rev_list(), list(range(10)))
+    # The cache file would be opened 3 times:
+    #   1. read by _load_rev_list_cache
+    #   2. read by _save_rev_list_cache for existing cache
+    #   3. write by _save_rev_list_cache
+    write_mock = MagicMock()
+    write_mock.__enter__().write.side_effect = lambda d: cached_data.append(d)
+    with patch('builtins.open',
+               side_effect=[FileNotFoundError, FileNotFoundError, write_mock]):
+      self.assertEqual(build.get_rev_list(), [str(x) for x in range(10)])
       bisect_builds.ArchiveBuild._get_rev_list.assert_called_once()
-      m.assert_any_call(cache_filename)
-      m.assert_any_call(cache_filename, 'w')
-
+    cached_json = json.loads(''.join(cached_data))
+    self.assertDictEqual(cached_json, {'abc': [str(x) for x in range(10)]})
+    # Load cache with cached data.
+    build = self.create_build(
+        ['-a', 'linux64', '-g', '0', '-b', '9', '--use-local-cache'])
     bisect_builds.ArchiveBuild._get_rev_list.reset_mock()
-    with patch('builtins.open', mock_open(read_data=''.join(cached_data))) as m:
-      self.assertEqual(build.get_rev_list(), list(range(10)))
+    with patch('builtins.open', mock_open(read_data=''.join(cached_data))):
+      self.assertEqual(build.get_rev_list(), [str(x) for x in range(10)])
       bisect_builds.ArchiveBuild._get_rev_list.assert_not_called()
-      m.assert_called_once_with(cache_filename)
+
+  @patch.object(bisect_builds.ArchiveBuild, '_load_rev_list_cache')
+  @patch.object(bisect_builds.ArchiveBuild, '_save_rev_list_cache')
+  @patch.object(bisect_builds.ArchiveBuild,
+                '_get_rev_list',
+                return_value=[str(x) for x in range(10)])
+  def test_should_request_partial_rev_list(self, mock_get_rev_list,
+                                           mock_save_rev_list_cache,
+                                           mock_load_rev_list_cache):
+    build = self.create_build()
+    # missing latest
+    mock_load_rev_list_cache.return_value = [str(x) for x in range(5)]
+    self.assertEqual(build.get_rev_list(), [str(x) for x in range(10)])
+    mock_get_rev_list.assert_called_with('4', '9')
+    # missing old and latest
+    mock_load_rev_list_cache.return_value = [str(x) for x in range(1, 5)]
+    self.assertEqual(build.get_rev_list(), [str(x) for x in range(10)])
+    mock_get_rev_list.assert_called_with('0', '9')
+    # missing old
+    mock_load_rev_list_cache.return_value = [str(x) for x in range(3, 10)]
+    self.assertEqual(build.get_rev_list(), [str(x) for x in range(10)])
+    mock_get_rev_list.assert_called_with('0', '3')
+    # no intersect
+    mock_load_rev_list_cache.return_value = ['c', 'd', 'e']
+    self.assertEqual(build.get_rev_list(), [str(x) for x in range(10)])
+    mock_save_rev_list_cache.assert_called_with([str(x) for x in range(10)] +
+                                                ['c', 'd', 'e'])
+    mock_get_rev_list.assert_called_with('0', 'c')
+
+  @patch.object(bisect_builds.ArchiveBuild, '_get_rev_list', return_value=[])
+  def test_should_raise_error_when_no_rev_list(self, mock_get_rev_list):
+    build = self.create_build()
+    with self.assertRaises(bisect_builds.BisectException):
+      build.get_rev_list()
+    mock_get_rev_list.assert_any_call('0', '9')
+    mock_get_rev_list.assert_any_call()
 
   @unittest.skipIf('NO_MOCK_SERVER' not in os.environ,
                    'The test is to ensure NO_MOCK_SERVER working correctly')
-  @maybe_patch('bisect-builds.GetRevisionFromVersion', return_value=123)
+  @maybe_patch.object(bisect_builds, 'GetRevisionFromVersion', return_value=123)
   def test_no_mock(self, mock_GetRevisionFromVersion):
     self.assertEqual(bisect_builds.GetRevisionFromVersion('127.0.6533.74'),
                      1313161)
@@ -194,10 +233,13 @@ class ReleaseBuildTest(unittest.TestCase):
     self.assertEqual(build.archive_name, 'chrome-linux64.zip')
     self.assertEqual(build.archive_extract_dir, 'chrome-linux64')
 
-  @maybe_patch('bisect-builds.PathContext.GsutilList',
-               return_value=['127.0.6533.74', '127.0.6533.75', '127.0.6533.76'])
-  @maybe_patch('bisect-builds.PathContext.GsutilExists',
-               side_effect=[True, True, True])
+  @maybe_patch.object(
+      bisect_builds.PathContext,
+      'GsutilList',
+      return_value=['127.0.6533.74', '127.0.6533.75', '127.0.6533.76'])
+  @maybe_patch.object(bisect_builds.PathContext,
+                      'GsutilExists',
+                      side_effect=[True, True, True])
   def test_get_rev_list(self, mock_GsutilExits, mock_GsutilList):
     options, args = bisect_builds.ParseCommandLine(
         ['-a', 'linux64', '-g', '127.0.6533.74', '-b', '127.0.6533.76'])
@@ -212,8 +254,12 @@ class ReleaseBuildTest(unittest.TestCase):
 
 class OfficialBuildTest(unittest.TestCase):
 
-  @maybe_patch('bisect-builds.GetRevisionFromVersion', return_value=1313161)
-  @maybe_patch('bisect-builds.GetChromiumRevision', return_value=999999999)
+  @maybe_patch.object(bisect_builds,
+                      'GetRevisionFromVersion',
+                      return_value=1313161)
+  @maybe_patch.object(bisect_builds,
+                      'GetChromiumRevision',
+                      return_value=999999999)
   def test_should_convert_revision_as_commit_position(
       self, mock_GetChromiumRevision, mock_GetRevisionFromVersion):
     options, args = bisect_builds.ParseCommandLine(
@@ -234,11 +280,12 @@ class OfficialBuildTest(unittest.TestCase):
     self.assertEqual(build.archive_name, 'chrome-perf-linux.zip')
     self.assertEqual(build.archive_extract_dir, 'full-build-linux')
 
-  @maybe_patch('bisect-builds.PathContext.GsutilList',
-               return_value=[
-                   'full-build-linux_%d.zip' % x
-                   for x in range(1313161, 1313164)
-               ])
+  @maybe_patch.object(bisect_builds.PathContext,
+                      'GsutilList',
+                      return_value=[
+                          'full-build-linux_%d.zip' % x
+                          for x in range(1313161, 1313164)
+                      ])
   def test_get_rev_list(self, mock_GsutilList):
     options, args = bisect_builds.ParseCommandLine(
         ['-a', 'linux64', '-g', '1313161', '-b', '1313163'])
@@ -282,15 +329,16 @@ class SnapshotBuildTest(unittest.TestCase):
 
   @maybe_patch('urllib.request.urlopen',
                return_value=io.StringIO(CommonDataXMLContent))
-  def test_get_rev_list(self, mock_urlopen):
+  @patch.object(bisect_builds, 'GetChromiumRevision', return_value=1313185)
+  def test_get_rev_list(self, mock_GetChromiumRevision, mock_urlopen):
     options, args = bisect_builds.ParseCommandLine(
         ['-a', 'linux64', '-g', '1313161', '-b', '1313185'])
     build = bisect_builds.SnapshotBuild(options)
     rev_list = build.get_rev_list()
-    print(mock_urlopen.call_args_list)
     mock_urlopen.assert_any_call(
-        'http://commondatastorage.googleapis.com/chromium-browser-snapshots/' +
-        '?delimiter=/&prefix=Linux_x64/')
+        'http://commondatastorage.googleapis.com/chromium-browser-snapshots/'
+        '?delimiter=/&prefix=Linux_x64/&marker=Linux_x64/1313161')
+    self.assertEqual(mock_urlopen.call_count, 1)
     self.assertEqual(rev_list, [1313161, 1313163, 1313185])
 
 
@@ -344,8 +392,9 @@ class ASANBuildTest(unittest.TestCase):
     rev_list = build.get_rev_list()
     print(mock_urlopen.call_args_list)
     mock_urlopen.assert_any_call(
-        'http://commondatastorage.googleapis.com/chromium-browser-asan/' +
-        '?delimiter=&prefix=linux-release')
+        'http://commondatastorage.googleapis.com/chromium-browser-asan/'
+        '?delimiter=&prefix=linux-release'
+        '&marker=linux-release/asan-symbolized-linux-release-131722')
     self.assertEqual(rev_list, [131722, 131727, 131728])
 
 
