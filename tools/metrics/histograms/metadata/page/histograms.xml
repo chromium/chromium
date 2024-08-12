@@ -320,6 +320,7 @@ chromium-metrics-reviews@google.com.
     <variant name="FileSystemAccess"/>
     <variant name="Find"/>
     <variant name="IntentPicker"/>
+    <variant name="LensOverlay"/>
     <variant name="LocalCardMigration"/>
     <variant name="ManagePasswords"/>
     <variant name="MandatoryReauth"/>
