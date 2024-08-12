@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -145,6 +146,27 @@ bool AllowPaymentSwapping(const AutofillField& trigger_field,
          !is_refill &&
          base::FeatureList::IsEnabled(
              features::kAutofillEnablePaymentsFieldSwapping);
+}
+
+// Returns whether a filling action for `filling_product` should be included in
+// the form autofill history.
+bool ShouldRecordFillingHistory(FillingProduct filling_product) {
+  switch (filling_product) {
+    case FillingProduct::kAddress:
+    case FillingProduct::kCreditCard:
+      return true;
+    case FillingProduct::kNone:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kIban:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kPassword:
+    case FillingProduct::kCompose:
+    case FillingProduct::kPlusAddresses:
+    case FillingProduct::kStandaloneCvc:
+    case FillingProduct::kPredictionImprovements:
+      return false;
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -450,13 +472,12 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
                                     FormStructure* form_structure,
                                     AutofillField* autofill_field,
                                     const std::u16string& value,
-                                    SuggestionType type,
+                                    FillingProduct filling_product,
                                     std::optional<FieldType> field_type_used) {
   if (autofill_field && action_persistence == mojom::ActionPersistence::kFill) {
     autofill_field->set_is_autofilled(true);
     autofill_field->set_autofilled_type(field_type_used);
-    autofill_field->set_filling_product(
-        GetFillingProductFromSuggestionType(type));
+    autofill_field->set_filling_product(filling_product);
     autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
         .fill_event_id = GetNextFillEventId(),
         .had_value_before_filling = ToOptionalBoolean(!field.value().empty()),
@@ -465,13 +486,12 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
         .had_value_after_filling = ToOptionalBoolean(true),
         .filling_method = FillingMethod::kFieldByFieldFilling});
 
-    if (type == SuggestionType::kCreditCardFieldByFieldFilling ||
-        type == SuggestionType::kAddressFieldByFieldFilling) {
+    if (ShouldRecordFillingHistory(filling_product)) {
       // TODO(crbug.com/40232021): Only use AutofillField.
       form_autofill_history_.AddFormFillEntry(
           std::to_array<const FormFieldData*>({&field}),
           std::to_array<const AutofillField*>({autofill_field}),
-          GetFillingProductFromSuggestionType(type),
+          filling_product,
           /*is_refill=*/false);
     }
   }

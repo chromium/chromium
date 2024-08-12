@@ -1757,9 +1757,11 @@ void BrowserAutofillManager::FillOrPreviewField(
   // condition from.
   std::ignore =
       GetCachedFormAndField(form, field, &form_structure, &autofill_field);
+  const FillingProduct filling_product =
+      GetFillingProductFromSuggestionType(type);
   form_filler_->FillOrPreviewField(action_persistence, action_type, form, field,
-                                   form_structure, autofill_field, value, type,
-                                   field_type_used);
+                                   form_structure, autofill_field, value,
+                                   filling_product, field_type_used);
   if (action_persistence == mojom::ActionPersistence::kFill) {
     if (type == SuggestionType::kAddressFieldByFieldFilling) {
       metrics_->address_form_event_logger.OnFilledByFieldByFieldFilling(type);
@@ -1782,8 +1784,7 @@ void BrowserAutofillManager::FillOrPreviewField(
             type, autofill_field);
     if (is_address_manual_fallback_on_non_address_field ||
         is_payments_manual_fallback_on_non_payments_field) {
-      metrics_->manual_fallback_logger.OnDidFillSuggestion(
-          GetFillingProductFromSuggestionType(type));
+      metrics_->manual_fallback_logger.OnDidFillSuggestion(filling_product);
     }
   }
 }
