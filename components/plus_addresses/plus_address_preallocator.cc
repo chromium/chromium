@@ -102,14 +102,22 @@ bool PlusAddressPreallocator::IsRefreshingSupported(
   return true;
 }
 
-void PlusAddressPreallocator::PrunePreallocatedPlusAddresses() {
-  ScopedListPrefUpdate update(&pref_service_.get(),
-                              prefs::kPreallocatedAddresses);
-  update->EraseIf(&IsOutdatedOrInvalid);
+void PlusAddressPreallocator::RemoveAllocatedPlusAddress(
+    std::string_view plus_address) {
+  {
+    ScopedListPrefUpdate update(&pref_service_.get(),
+                                prefs::kPreallocatedAddresses);
+    update->EraseIf([&](const base::Value& value) {
+      return *value.GetDict().FindString(kPlusAddressKey) == plus_address;
+    });
+  }
+  FixIndexOfNextPreallocatedAddress();
+}
 
+void PlusAddressPreallocator::FixIndexOfNextPreallocatedAddress() {
   // If there were deletions, update the index of the next plus address to make
   // sure it is in bounds (if non-zero).
-  const size_t remaining_plus_addresses = update->size();
+  const size_t remaining_plus_addresses = GetPreallocatedAddresses().size();
   // If the disk value was corrupted to something negative, fix it rather than
   // running into bounds check errors later on.
   const int old_index = std::max(GetIndexOfNextPreallocatedAddress(), 0);
@@ -118,6 +126,15 @@ void PlusAddressPreallocator::PrunePreallocatedPlusAddresses() {
       remaining_plus_addresses
           ? static_cast<int>(old_index % remaining_plus_addresses)
           : 0);
+}
+
+void PlusAddressPreallocator::PrunePreallocatedPlusAddresses() {
+  {
+    ScopedListPrefUpdate update(&pref_service_.get(),
+                                prefs::kPreallocatedAddresses);
+    update->EraseIf(&IsOutdatedOrInvalid);
+  }
+  FixIndexOfNextPreallocatedAddress();
 }
 
 // TODO: crbug.com/324559503 - Once this method is used by

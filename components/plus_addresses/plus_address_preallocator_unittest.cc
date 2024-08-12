@@ -476,4 +476,31 @@ TEST_F(PlusAddressPreallocatorTest,
   allocator.AllocatePlusAddress(kValidOrigin, kMode, callback3.Get());
 }
 
+// Tests that removing plus addresses works correctly.
+TEST_F(PlusAddressPreallocatorTest, RemoveAllocatedPlusAddress) {
+  const std::string kPlusAddress1 = "plus1@plusfoo.com";
+  const std::string kPlusAddress2 = "plus2@plusbar.com";
+  SetPreallocatedAddresses(
+      base::Value::List()
+          .Append(CreatePreallocatedPlusAddress(
+              base::Time::Now() + base::Days(1), kPlusAddress1))
+          .Append(CreatePreallocatedPlusAddress(
+              base::Time::Now() + base::Days(2), kPlusAddress2)));
+  SetPreallocatedAddressesNext(1);
+
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client());
+  ASSERT_THAT(GetPreallocatedAddresses(), SizeIs(2));
+  EXPECT_EQ(GetPreallocatedAddressesNext(), 1);
+  allocator.RemoveAllocatedPlusAddress(kPlusAddress1);
+  ASSERT_THAT(GetPreallocatedAddresses(), SizeIs(1));
+  EXPECT_EQ(GetPreallocatedAddressesNext(), 0);
+  allocator.RemoveAllocatedPlusAddress(kPlusAddress1);
+  ASSERT_THAT(GetPreallocatedAddresses(), SizeIs(1));
+  EXPECT_EQ(GetPreallocatedAddressesNext(), 0);
+  allocator.RemoveAllocatedPlusAddress(kPlusAddress2);
+  ASSERT_THAT(GetPreallocatedAddresses(), IsEmpty());
+  EXPECT_EQ(GetPreallocatedAddressesNext(), 0);
+}
+
 }  // namespace plus_addresses

@@ -53,8 +53,14 @@ class PlusAddressPreallocator : public PlusAddressAllocator {
                            AllocationMode mode,
                            PlusAddressRequestCallback callback) override;
   bool IsRefreshingSupported(const url::Origin& origin) const override;
+  void RemoveAllocatedPlusAddress(std::string_view plus_address) override;
 
  private:
+  // Ensures that the index of the next pre-allocated address is within the
+  // bounds of the array of pre-allocated plus addresses if those are not empty.
+  // If they are empty, it sets the index to zero.
+  void FixIndexOfNextPreallocatedAddress();
+
   // Deletes pre-allocated plus addresses that have reached their EOL and
   // updates the index of the next plus preallocated plus address.
   void PrunePreallocatedPlusAddresses();

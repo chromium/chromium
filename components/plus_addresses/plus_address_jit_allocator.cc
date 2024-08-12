@@ -81,6 +81,12 @@ bool PlusAddressJitAllocator::IsRefreshingSupported(
   return base::FeatureList::IsEnabled(features::kPlusAddressRefresh);
 }
 
+void PlusAddressJitAllocator::RemoveAllocatedPlusAddress(
+    std::string_view plus_address) {
+  // This is a no-op for the JIT allocator - if the plus address was created,
+  // the backend will ensure that it does not show up again.
+}
+
 void PlusAddressJitAllocator::HandleRefreshResponse(
     PlusAddressRequestCallback callback,
     const PlusProfileOrError& profile_or_error) {
