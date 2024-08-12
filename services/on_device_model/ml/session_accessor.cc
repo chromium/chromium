@@ -30,11 +30,6 @@ class SessionAccessor::Canceler : public base::RefCountedThreadSafe<Canceler> {
 };
 
 // static
-SessionAccessor::Ptr SessionAccessor::Empty() {
-  return SessionAccessor::Ptr(nullptr, base::OnTaskRunnerDeleter(nullptr));
-}
-
-// static
 SessionAccessor::Ptr SessionAccessor::Create(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     ChromeMLModel model,

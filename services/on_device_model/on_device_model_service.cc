@@ -50,8 +50,6 @@ class SessionWrapper final : public mojom::Session {
 
   mojo::Receiver<mojom::Session>& receiver() { return receiver_; }
 
-  void ReplayPreviousContext();
-
   void AddPreviousContext(mojom::InputOptionsPtr input) {
     previous_contexts_.push_back(std::move(input));
   }
@@ -242,10 +240,6 @@ class ModelWrapper final : public mojom::OnDeviceModel {
 
     is_running_ = true;
     running_session_ = pending_task.session;
-    if (running_session_ && running_session_.get() != last_session_.get()) {
-      running_session_->ReplayPreviousContext();
-    }
-
     std::move(pending_task.task).Run();
   }
 
@@ -358,16 +352,6 @@ void SessionWrapper::CloneInternal(
   }
 
   model_->AddSession(std::move(session), session_->Clone(), previous_contexts_);
-}
-
-void SessionWrapper::ReplayPreviousContext() {
-  if (session_->ClearContext()) {
-    for (const auto& context : previous_contexts_) {
-      AddContextInternal(context.Clone(),
-                         mojo::PendingRemote<mojom::ContextClient>(),
-                         base::DoNothing());
-    }
-  }
 }
 
 const OnDeviceModelShim* DefaultImpl() {
