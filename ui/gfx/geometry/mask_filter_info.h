@@ -40,8 +40,7 @@ class GEOMETRY_SKIA_EXPORT MaskFilterInfo {
 
   // True if this contains a rounded corner mask.
   bool HasRoundedCorners() const {
-    return rounded_corner_bounds_.GetType() != RRectF::Type::kEmpty &&
-           rounded_corner_bounds_.GetType() != RRectF::Type::kRect;
+    return rounded_corner_bounds_.HasRoundedCorners();
   }
 
   const std::optional<gfx::LinearGradient>& gradient_mask() const {

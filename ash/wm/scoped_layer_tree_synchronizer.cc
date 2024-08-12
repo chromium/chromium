@@ -299,7 +299,7 @@ bool ShouldOverrideCornerRadius(const gfx::RRectF& rect,
                                 const gfx::RRectF& containing_rect,
                                 Corner corner,
                                 bool consider_curvature) {
-  if (rect.IsEmpty() || containing_rect.IsEmpty()) {
+  if (!rect.HasRoundedCorners() || !containing_rect.HasRoundedCorners()) {
     return false;
   }
 
