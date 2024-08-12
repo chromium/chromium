@@ -55,6 +55,10 @@ constexpr base::FeatureParam<double> kShouldRemainAvailableRatio{
     &kStorageQuotaSettings, "ShouldRemainAvailableRatio", 0.1 /* 10% */
 };
 
+BASE_FEATURE(kEvictOrphanQuotaStorage,
+             "EvictOrphanQuotaStorage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEvictStaleQuotaStorage,
              "EvictStaleQuotaStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);

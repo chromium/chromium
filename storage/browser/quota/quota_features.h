@@ -29,6 +29,12 @@ extern const base::FeatureParam<double> kPoolSizeRatio;
 extern const base::FeatureParam<double> kShouldRemainAvailableBytes;
 extern const base::FeatureParam<double> kShouldRemainAvailableRatio;
 
+// Clears quota storage for opaque origins used in prior browsing sessions as
+// they will no longer be reachable. See crbug.com/40281870 for more info.
+// If kEvictStaleQuotaStorage is off this has no impact.
+COMPONENT_EXPORT(STORAGE_BROWSER)
+BASE_DECLARE_FEATURE(kEvictOrphanQuotaStorage);
+
 // Clears quota storage last accessed/modified more than 400 days ago.
 // See crbug.com/40281870 for more info.
 COMPONENT_EXPORT(STORAGE_BROWSER)

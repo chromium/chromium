@@ -77,15 +77,17 @@ bool ContainsBucket(const std::set<BucketLocator>& buckets,
 }  // namespace
 
 // Test parameter indicates if the database should be created for incognito
-// mode. True will create the database in memory.
+// mode, if stale buckets should be evicted, and if orphan buckets should be
+// evicted.
 class QuotaDatabaseTest
-    : public testing::TestWithParam<std::tuple<bool, bool>> {
+    : public testing::TestWithParam<std::tuple<bool, bool, bool>> {
  public:
   QuotaDatabaseTest() {
     clock_ = std::make_unique<base::SimpleTestClock>();
     QuotaDatabase::SetClockForTesting(clock_.get());
-    feature_list_.InitWithFeatureState(features::kEvictStaleQuotaStorage,
-                                       evict_stale_buckets());
+    feature_list_.InitWithFeatureStates(
+        {{features::kEvictStaleQuotaStorage, evict_stale_buckets()},
+         {features::kEvictOrphanQuotaStorage, evict_orphan_buckets()}});
   }
 
  protected:
@@ -101,6 +103,8 @@ class QuotaDatabaseTest
   bool use_in_memory_db() const { return std::get<0>(GetParam()); }
 
   bool evict_stale_buckets() const { return std::get<1>(GetParam()); }
+
+  bool evict_orphan_buckets() const { return std::get<2>(GetParam()); }
 
   base::SimpleTestClock* clock() { return clock_.get(); }
 
@@ -1393,8 +1397,9 @@ TEST_P(QuotaDatabaseTest, Orphan) {
     EXPECT_EQ(0, histograms.GetTotalSum("Quota.OrphanBucketCount"));
     db.SetAlreadyEvictedStaleStorageForTesting(false);
     ASSERT_OK_AND_ASSIGN(buckets, db.GetExpiredBuckets(nullptr));
-    EXPECT_EQ(0U, buckets.size());
-    EXPECT_EQ(evict_stale_buckets() ? 1 : 0,
+    EXPECT_EQ((evict_stale_buckets() && evict_orphan_buckets()) ? 1U : 0U,
+              buckets.size());
+    EXPECT_EQ((evict_stale_buckets() && evict_orphan_buckets()) ? 1 : 0,
               histograms.GetTotalSum("Quota.OrphanBucketCount"));
   }
 
@@ -1411,8 +1416,9 @@ TEST_P(QuotaDatabaseTest, Orphan) {
     db.SetAlreadyEvictedStaleStorageForTesting(false);
     ASSERT_OK_AND_ASSIGN(std::set<BucketInfo> buckets,
                          db.GetExpiredBuckets(nullptr));
-    EXPECT_EQ(0U, buckets.size());
-    EXPECT_EQ(evict_stale_buckets() ? 1 : 0,
+    EXPECT_EQ((evict_stale_buckets() && evict_orphan_buckets()) ? 1U : 0U,
+              buckets.size());
+    EXPECT_EQ((evict_stale_buckets() && evict_orphan_buckets()) ? 1 : 0,
               histograms.GetTotalSum("Quota.OrphanBucketCount"));
 
     EXPECT_EQ(db.SetBucketLastAccessTime(third_party_bucket.id,
@@ -1423,8 +1429,9 @@ TEST_P(QuotaDatabaseTest, Orphan) {
               QuotaError::kNone);
     db.SetAlreadyEvictedStaleStorageForTesting(false);
     ASSERT_OK_AND_ASSIGN(buckets, db.GetExpiredBuckets(nullptr));
-    EXPECT_EQ(0U, buckets.size());
-    EXPECT_EQ(evict_stale_buckets() ? 2 : 0,
+    EXPECT_EQ((evict_stale_buckets() && evict_orphan_buckets()) ? 1 : 0U,
+              buckets.size());
+    EXPECT_EQ((evict_stale_buckets() && evict_orphan_buckets()) ? 2 : 0,
               histograms.GetTotalSum("Quota.OrphanBucketCount"));
   }
 
@@ -1444,8 +1451,9 @@ TEST_P(QuotaDatabaseTest, Orphan) {
     db.SetAlreadyEvictedStaleStorageForTesting(false);
     ASSERT_OK_AND_ASSIGN(std::set<BucketInfo> buckets,
                          db.GetExpiredBuckets(nullptr));
-    EXPECT_EQ(0U, buckets.size());
-    EXPECT_EQ(evict_stale_buckets() ? 1 : 0,
+    EXPECT_EQ((evict_stale_buckets() && evict_orphan_buckets()) ? 1U : 0U,
+              buckets.size());
+    EXPECT_EQ((evict_stale_buckets() && evict_orphan_buckets()) ? 1 : 0,
               histograms.GetTotalSum("Quota.OrphanBucketCount"));
 
     EXPECT_EQ(db.SetBucketLastAccessTime(third_party_nonce_bucket.id,
@@ -1456,12 +1464,13 @@ TEST_P(QuotaDatabaseTest, Orphan) {
               QuotaError::kNone);
     ASSERT_OK_AND_ASSIGN(buckets, db.GetExpiredBuckets(nullptr));
     EXPECT_EQ(0U, buckets.size());
-    EXPECT_EQ(evict_stale_buckets() ? 1 : 0,
+    EXPECT_EQ((evict_stale_buckets() && evict_orphan_buckets()) ? 1 : 0,
               histograms.GetTotalSum("Quota.OrphanBucketCount"));
     db.SetAlreadyEvictedStaleStorageForTesting(false);
     ASSERT_OK_AND_ASSIGN(buckets, db.GetExpiredBuckets(nullptr));
-    EXPECT_EQ(0U, buckets.size());
-    EXPECT_EQ(evict_stale_buckets() ? 3 : 0,
+    EXPECT_EQ((evict_stale_buckets() && evict_orphan_buckets()) ? 2U : 0U,
+              buckets.size());
+    EXPECT_EQ((evict_stale_buckets() && evict_orphan_buckets()) ? 3 : 0,
               histograms.GetTotalSum("Quota.OrphanBucketCount"));
   }
 }
@@ -1505,6 +1514,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     QuotaDatabaseTest,
     testing::Combine(/*use_in_memory_db=*/testing::Bool(),
-                     /*evict_stale_buckets=*/testing::Bool()));
+                     /*evict_stale_buckets=*/testing::Bool(),
+                     /*evict_orphan_buckets=*/testing::Bool()));
 
 }  // namespace storage
