@@ -27,6 +27,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
@@ -1164,9 +1165,9 @@ public class TabGridDialogMediator
         }
 
         // TODO(crbug.com/348731400): Fetch these numbers from the activity backend.
-        int tabsAdded = 1;
-        int tabsChanged = 2;
-        int tabsClosed = 3;
+        int tabsAdded = BuildConfig.IS_FOR_TEST ? 1 : 0;
+        int tabsChanged = BuildConfig.IS_FOR_TEST ? 2 : 0;
+        int tabsClosed = BuildConfig.IS_FOR_TEST ? 3 : 0;
         if (tabsAdded == 0 && tabsChanged == 0 && tabsClosed == 0) {
             removeCollaborationActivityMessageCard();
             return;
