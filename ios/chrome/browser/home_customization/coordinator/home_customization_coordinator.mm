@@ -16,6 +16,14 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 
+namespace {
+
+// The height of the menu's initial detent, which roughly represents a header
+// and 3 cells.
+const CGFloat kInitialDetentHeight = 350;
+
+}  // namespace
+
 @interface HomeCustomizationCoordinator () <
     HomeCustomizationNavigationDelegate,
     UISheetPresentationControllerDelegate>
@@ -93,10 +101,21 @@
   UISheetPresentationController* presentationController =
       self.navigationController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
+
+  auto detentResolver = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    return kInitialDetentHeight;
+  };
+  UISheetPresentationControllerDetent* initialDetent =
+      [UISheetPresentationControllerDetent
+          customDetentWithIdentifier:kBottomSheetDetentIdentifier
+                            resolver:detentResolver];
   presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
+    initialDetent,
     UISheetPresentationControllerDetent.largeDetent,
   ];
+  presentationController.selectedDetentIdentifier =
+      kBottomSheetDetentIdentifier;
 
   // Present the navigation controller.
   [self.baseViewController presentViewController:self.navigationController
@@ -118,7 +137,6 @@
                                            animated:animated];
       break;
     case CustomizationMenuPage::kMagicStack:
-      [self expandMenu];
       [self.navigationController
           pushViewController:self.magicStackViewController
                     animated:animated];

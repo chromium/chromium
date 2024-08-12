@@ -5,42 +5,44 @@
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
 CustomizationSection* const kCustomizationSectionMainToggles =
-    @"CustomizationSectionMainToggles";
+    @"kCustomizationSectionMainToggles";
 
 CustomizationSection* const kCustomizationSectionDiscoverLinks =
-    @"CustomizationSectionDiscoverLinks";
+    @"kCustomizationSectionDiscoverLinks";
 
 CustomizationSection* const kCustomizationSectionMagicStackToggles =
-    @"CustomizationSectionMagicStackToggles";
+    @"kCustomizationSectionMagicStackToggles";
+
+NSString* const kBottomSheetDetentIdentifier = @"kBottomSheetDetentIdentifier";
 
 NSString* const kNavigationBarDismissButtonIdentifier =
-    @"NavigationBarDismissButtonIdentifier";
+    @"kNavigationBarDismissButtonIdentifier";
 
 NSString* const kNavigationBarBackButtonIdentifier =
-    @"NavigationBarBackButtonIdentifier";
+    @"kNavigationBarBackButtonIdentifier";
 
 NSString* const kCustomizationToggleMostVisitedIdentifier =
-    @"CustomizationToggleMostVisitedIdentifier";
+    @"kCustomizationToggleMostVisitedIdentifier";
 NSString* const kCustomizationToggleMagicStackIdentifier =
-    @"CustomizationToggleMagicStackIdentifier";
+    @"kCustomizationToggleMagicStackIdentifier";
 NSString* const kCustomizationToggleDiscoverIdentifier =
-    @"CustomizationToggleDiscoverIdentifier";
+    @"kCustomizationToggleDiscoverIdentifier";
 
 NSString* const kCustomizationToggleMostVisitedNavigableIdentifier =
-    @"CustomizationToggleMostVisitedNavigableIdentifier";
+    @"kCustomizationToggleMostVisitedNavigableIdentifier";
 NSString* const kCustomizationToggleMagicStackNavigableIdentifier =
-    @"CustomizationToggleMagicStackNavigableIdentifier";
+    @"kCustomizationToggleMagicStackNavigableIdentifier";
 NSString* const kCustomizationToggleDiscoverNavigableIdentifier =
-    @"CustomizationToggleDiscoverNavigableIdentifier";
+    @"kCustomizationToggleDiscoverNavigableIdentifier";
 
 NSString* const kCustomizationLinkFollowingIdentifier =
-    @"CustomizationLinkFollowingIdentifier";
+    @"kCustomizationLinkFollowingIdentifier";
 NSString* const kCustomizationLinkHiddenIdentifier =
-    @"CustomizationLinkHiddenIdentifier";
+    @"kCustomizationLinkHiddenIdentifier";
 NSString* const kCustomizationLinkActivityIdentifier =
-    @"CustomizationLinkActivityIdentifier";
+    @"kCustomizationLinkActivityIdentifier";
 NSString* const kCustomizationLinkLearnMoreIdentifier =
-    @"CustomizationLinkLearnMoreIdentifier";
+    @"kCustomizationLinkLearnMoreIdentifier";
 
 const char kDiscoverFollowingURL[] =
     "https://google.com/preferences/interests/yourinterests";

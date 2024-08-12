@@ -19,6 +19,9 @@ extern CustomizationSection* const kCustomizationSectionDiscoverLinks;
 // The section identifier for the Magic Stack menu's visibility toggles.
 extern CustomizationSection* const kCustomizationSectionMagicStackToggles;
 
+// The identifier for the bottom sheet's initial detent.
+extern NSString* const kBottomSheetDetentIdentifier;
+
 // The identifier for the dismiss button on the top right of the navigation bar.
 extern NSString* const kNavigationBarDismissButtonIdentifier;
 
