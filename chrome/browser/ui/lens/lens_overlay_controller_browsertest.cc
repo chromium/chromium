@@ -320,6 +320,11 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
         base::BindOnce(interaction_data_callback_, interaction_response));
   }
 
+  void SendTaskCompletionGen204IfEnabled(
+      lens::mojom::UserAction user_action) override {
+    last_user_action_ = user_action;
+  }
+
   void SendRegionSearch(
       lens::mojom::CenterRotatedBoxPtr region,
       lens::LensOverlaySelectionType selection_type,
@@ -364,6 +369,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
   lens::LensOverlaySelectionType last_lens_selection_type_;
   lens::mojom::CenterRotatedBoxPtr last_queried_region_;
   std::optional<SkBitmap> last_queried_region_bytes_;
+  std::optional<lens::mojom::UserAction> last_user_action_;
 };
 
 // Stubs out network requests and mojo calls.
@@ -2848,7 +2854,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       RecordUkmLensOverlayInteraction) {
+                       RecordUkmAndTaskCompletionForLensOverlayInteraction) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   WaitForPaint();
 
@@ -2864,9 +2870,23 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::Lens_Overlay_Overlay_UserAction::kEntryName);
   EXPECT_EQ(0u, entries.size());
-  // Test that the RecordUkmLensOverlayInteraction function which is called
-  // from the WebUI side, records the entry successfully.
-  controller->RecordUkmLensOverlayInteractionForTesting(
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // We need to flush the mojo receiver calls to make sure the screenshot was
+  // passed back to the WebUI or else the region selection UI will not render.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->FlushForTesting();
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Test that the RecordUkmAndTaskCompletionForLensOverlayInteraction function
+  // which is called from the WebUI side, records the entry successfully.
+  controller->RecordUkmAndTaskCompletionForLensOverlayInteractionForTesting(
       lens::mojom::UserAction::kRegionSelection);
   entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::Lens_Overlay_Overlay_UserAction::kEntryName);
@@ -2875,6 +2895,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   test_ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::Lens_Overlay_Overlay_UserAction::kUserActionName,
       static_cast<int64_t>(lens::mojom::UserAction::kRegionSelection));
+
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  EXPECT_THAT(fake_query_controller->last_user_action_,
+              testing::Optional(lens::mojom::UserAction::kRegionSelection));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

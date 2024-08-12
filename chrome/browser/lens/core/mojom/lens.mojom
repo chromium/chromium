@@ -140,8 +140,8 @@ interface LensPageHandler {
   // When called, the C++ coordinator closes the preselection toast bubble.
   ClosePreselectionBubble();
 
-  // Records UKM metric for lens overlay interactions.
-  RecordUkmLensOverlayInteraction(UserAction user_action);
+  // Records UKM metrics and task completion for lens overlay interactions.
+  RecordUkmAndTaskCompletionForLensOverlayInteraction(UserAction user_action);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)

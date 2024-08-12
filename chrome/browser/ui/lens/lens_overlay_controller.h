@@ -392,7 +392,7 @@ class LensOverlayController : public LensSearchboxClient,
                                            int selection_end_index);
 
   // Testing function to issue a text request.
-  void RecordUkmLensOverlayInteractionForTesting(
+  void RecordUkmAndTaskCompletionForLensOverlayInteractionForTesting(
       lens::mojom::UserAction user_action);
 
   // Testing function to issue a translate request.
@@ -725,7 +725,7 @@ class LensOverlayController : public LensSearchboxClient,
   void CopyText(const std::string& text) override;
   void CloseSearchBubble() override;
   void ClosePreselectionBubble() override;
-  void RecordUkmLensOverlayInteraction(
+  void RecordUkmAndTaskCompletionForLensOverlayInteraction(
       lens::mojom::UserAction user_action) override;
 
   // Performs shared logic for IssueTextSelectionRequest() and

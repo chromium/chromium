@@ -858,9 +858,10 @@ void LensOverlayController::IssueTextSelectionRequestForTesting(
                             selection_end_index);
 }
 
-void LensOverlayController::RecordUkmLensOverlayInteractionForTesting(
-    lens::mojom::UserAction user_action) {
-  RecordUkmLensOverlayInteraction(user_action);
+void LensOverlayController::
+    RecordUkmAndTaskCompletionForLensOverlayInteractionForTesting(
+        lens::mojom::UserAction user_action) {
+  RecordUkmAndTaskCompletionForLensOverlayInteraction(user_action);
 }
 
 void LensOverlayController::IssueSearchBoxRequestForTesting(
@@ -886,13 +887,15 @@ void LensOverlayController::CopyText(const std::string& text) {
   clipboard_writer.WriteText(base::UTF8ToUTF16(text));
 }
 
-void LensOverlayController::RecordUkmLensOverlayInteraction(
+void LensOverlayController::RecordUkmAndTaskCompletionForLensOverlayInteraction(
     lens::mojom::UserAction user_action) {
   ukm::SourceId source_id =
       tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
   ukm::builders::Lens_Overlay_Overlay_UserAction(source_id)
       .SetUserAction(static_cast<int64_t>(user_action))
       .Record(ukm::UkmRecorder::Get());
+  lens_overlay_query_controller_->SendTaskCompletionGen204IfEnabled(
+      user_action);
 }
 
 std::string LensOverlayController::GetInvocationSourceString() {

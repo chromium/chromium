@@ -64,6 +64,8 @@ const base::FeatureParam<bool> kLensOverlayUseTieredDownscaling{
     &kLensOverlay, "enable-tiered-downscaling", false};
 const base::FeatureParam<bool> kLensOverlaySendLatencyGen204{
     &kLensOverlay, "enable-gen204-latency", true};
+const base::FeatureParam<bool> kLensOverlaySendTaskCompletion204{
+    &kLensOverlay, "enable-gen204-task-completion", true};
 const base::FeatureParam<int> kLensOverlayImageMaxArea{
     &kLensOverlay, "image-dimensions-max-area", 1500000};
 const base::FeatureParam<int> kLensOverlayImageMaxHeight{
@@ -369,6 +371,10 @@ bool LensOverlayUseTieredDownscaling() {
 
 bool GetLensOverlaySendLatencyGen204() {
   return kLensOverlaySendLatencyGen204.Get();
+}
+
+bool GetLensOverlaySendTaskCompletionGen204() {
+  return kLensOverlaySendTaskCompletion204.Get();
 }
 
 int GetLensOverlayImageMaxArea() {
