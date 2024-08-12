@@ -254,10 +254,10 @@ cc::PaintOpBuffer::OffsetIterator::buffer_
 cc::PaintOpBuffer::OffsetIterator::offsets_
 cc::PaintOpBuffer::OffsetIterator::ptr_
 cc::PaintOpBuffer::PlaybackFoldingIterator::current_op_
-cc::PictureLayerTiling::CoverageIterator::current_tile_
-cc::PictureLayerTiling::CoverageIterator::tiling_
 cc::PlaybackParams::image_provider
 cc::ResourcePool::InUsePoolResource::resource_
+cc::TilingCoverageIterator::current_tile_;
+cc::TilingCoverageIterator::tiling_;
 cc::TilingSetEvictionQueue::EvictionRectIterator::tilings_
 cc::TilingSetRasterQueueAll::OnePriorityRectIterator::tiling_
 cc::TilingSetRasterQueueAll::OnePriorityRectIterator::tiling_data_
