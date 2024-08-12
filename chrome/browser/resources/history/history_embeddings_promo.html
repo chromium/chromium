@@ -66,8 +66,10 @@
   }
 </style>
 
-<div id="promo" hidden$="[[!shown_]]">
+<div id="promo" role="dialog" aria-label="$i18n{historyEmbeddingsPromoLabel}"
+    hidden$="[[!shown_]]">
   <cr-icon-button id="close" iron-icon="cr:close"
+      aria-label="$i18n{historyEmbeddingsPromoClose}"
       on-click="onCloseClick_">
   </cr-icon-button>
 
