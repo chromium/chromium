@@ -489,12 +489,15 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
           return false;
         }
 
-        // Update the request mode with the precise vsync rate minimum
-        // determined from the found mode.
-        request.mode->set_vsync_rate_min(
-            ModeVSyncRateMin(*found_mode, display->vsync_rate_min_from_edid()));
+        // Populate |out_requests| with a new request which holds an updated
+        // DisplayMode that precisely matches the found drm mode.
+        const std::unique_ptr<display::DisplayMode> out_mode =
+            CreateDisplayMode(*found_mode, display->vsync_rate_min_from_edid());
+        out_requests.emplace_back(request.id, request.origin, out_mode.get(),
+                                  request.enable_vrr);
+      } else {
+        out_requests.emplace_back(request);
       }
-      out_requests.emplace_back(request);
 
       scoped_refptr<DrmDevice> drm = display->drm();
       ControllerConfigParams params(

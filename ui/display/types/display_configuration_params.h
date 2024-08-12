@@ -29,6 +29,8 @@ struct DISPLAY_TYPES_EXPORT DisplayConfigurationParams {
 
   ~DisplayConfigurationParams();
 
+  bool operator==(const DisplayConfigurationParams& other) const;
+
   int64_t id = 0;
   gfx::Point origin = gfx::Point();
   // Set to nullptr to indicate that no mode is set.

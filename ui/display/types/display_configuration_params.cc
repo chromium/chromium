@@ -37,4 +37,11 @@ DisplayConfigurationParams& DisplayConfigurationParams::operator=(
 
 DisplayConfigurationParams::~DisplayConfigurationParams() = default;
 
+bool DisplayConfigurationParams::operator==(
+    const DisplayConfigurationParams& other) const {
+  return id == other.id && origin == other.origin &&
+         (mode == other.mode || (mode && other.mode && *mode == *other.mode)) &&
+         enable_vrr == other.enable_vrr;
+}
+
 }  // namespace display

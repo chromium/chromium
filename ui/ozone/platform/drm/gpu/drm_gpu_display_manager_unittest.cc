@@ -204,6 +204,25 @@ testing::Matcher<display::DisplayMode> EqResAndRefresh(
                Property(&display::DisplayMode::refresh_rate, Eq(mode.second)));
 }
 
+// Verifies that two vectors contain equal requests, excluding certain
+// properties that are permitted to change during a configuration. Assumes that
+// the vectors maintain the same ordering w.r.t. the requests' `id` properties.
+void ExpectEqualRequestsWithExceptions(
+    const std::vector<display::DisplayConfigurationParams>& a,
+    const std::vector<display::DisplayConfigurationParams>& b) {
+  EXPECT_EQ(a.size(), b.size());
+  for (size_t i = 0; i < a.size(); ++i) {
+    EXPECT_EQ(a[i].id, b[i].id);
+    EXPECT_EQ(a[i].origin, b[i].origin);
+    EXPECT_EQ(a[i].enable_vrr, b[i].enable_vrr);
+    EXPECT_EQ(a[i].mode->size(), b[i].mode->size());
+    EXPECT_EQ(a[i].mode->is_interlaced(), b[i].mode->is_interlaced());
+    // mode->refresh_rate() excepted because it can update after configuration.
+    // mode->vsync_rate_min() excepted because it can update after
+    // configuration.
+  }
+}
+
 }  // namespace
 
 class DrmGpuDisplayManagerTest : public testing::Test {
@@ -1149,6 +1168,7 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   std::vector<display::DisplayConfigurationParams> out_requests;
   EXPECT_TRUE(drm_gpu_display_manager_->ConfigureDisplays(config_requests,
                                                           flags, out_requests));
+  EXPECT_EQ(config_requests, out_requests);
 }
 
 TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
@@ -1164,6 +1184,7 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   std::vector<display::DisplayConfigurationParams> out_requests;
   EXPECT_TRUE(drm_gpu_display_manager_->ConfigureDisplays(config_requests,
                                                           flags, out_requests));
+  EXPECT_EQ(config_requests, out_requests);
 }
 
 TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
@@ -1181,6 +1202,7 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   std::vector<display::DisplayConfigurationParams> out_requests;
   EXPECT_FALSE(drm_gpu_display_manager_->ConfigureDisplays(
       config_requests, flags, out_requests));
+  EXPECT_EQ(config_requests, out_requests);
 }
 
 TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
@@ -1197,6 +1219,7 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   std::vector<display::DisplayConfigurationParams> out_requests;
   EXPECT_TRUE(drm_gpu_display_manager_->ConfigureDisplays(config_requests,
                                                           flags, out_requests));
+  EXPECT_EQ(config_requests, out_requests);
 }
 
 TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
@@ -1213,6 +1236,7 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   std::vector<display::DisplayConfigurationParams> out_requests;
   EXPECT_TRUE(drm_gpu_display_manager_->ConfigureDisplays(config_requests,
                                                           flags, out_requests));
+  EXPECT_EQ(config_requests, out_requests);
 }
 
 TEST_F(
@@ -1236,6 +1260,7 @@ TEST_F(
       .WillOnce(Return(false));
   EXPECT_FALSE(drm_gpu_display_manager_->ConfigureDisplays(
       config_requests, flags, out_requests));
+  EXPECT_EQ(config_requests, out_requests);
 }
 
 TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
@@ -1254,6 +1279,7 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   std::vector<display::DisplayConfigurationParams> out_requests;
   EXPECT_FALSE(drm_gpu_display_manager_->ConfigureDisplays(
       config_requests, flags, out_requests));
+  EXPECT_EQ(config_requests, out_requests);
 }
 
 TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
@@ -1269,6 +1295,7 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   std::vector<display::DisplayConfigurationParams> out_requests;
   EXPECT_TRUE(drm_gpu_display_manager_->ConfigureDisplays(config_requests,
                                                           flags, out_requests));
+  EXPECT_EQ(config_requests, out_requests);
 }
 
 TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
@@ -1284,6 +1311,7 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   std::vector<display::DisplayConfigurationParams> out_requests;
   EXPECT_TRUE(drm_gpu_display_manager_->ConfigureDisplays(config_requests,
                                                           flags, out_requests));
+  EXPECT_EQ(config_requests, out_requests);
 }
 
 TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
@@ -1301,6 +1329,7 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   std::vector<display::DisplayConfigurationParams> out_requests;
   EXPECT_FALSE(drm_gpu_display_manager_->ConfigureDisplays(
       config_requests, flags, out_requests));
+  EXPECT_EQ(config_requests, out_requests);
 }
 
 TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
@@ -1318,6 +1347,10 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   std::vector<display::DisplayConfigurationParams> out_requests;
   EXPECT_TRUE(drm_gpu_display_manager_->ConfigureDisplays(config_requests,
                                                           flags, out_requests));
+  EXPECT_NE(config_requests, out_requests);
+  ExpectEqualRequestsWithExceptions(config_requests, out_requests);
+  EXPECT_EQ(51.00354f, out_requests[0].mode->refresh_rate());
+  EXPECT_EQ(24.0f, out_requests[0].mode->vsync_rate_min());
 }
 
 TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
@@ -1335,6 +1368,7 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   std::vector<display::DisplayConfigurationParams> out_requests;
   EXPECT_FALSE(drm_gpu_display_manager_->ConfigureDisplays(
       config_requests, flags, out_requests));
+  EXPECT_EQ(config_requests, out_requests);
 }
 
 TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
@@ -1351,6 +1385,7 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   std::vector<display::DisplayConfigurationParams> out_requests;
   EXPECT_TRUE(drm_gpu_display_manager_->ConfigureDisplays(config_requests,
                                                           flags, out_requests));
+  EXPECT_EQ(config_requests, out_requests);
 }
 
 TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
@@ -1367,6 +1402,7 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   std::vector<display::DisplayConfigurationParams> out_requests;
   EXPECT_TRUE(drm_gpu_display_manager_->ConfigureDisplays(config_requests,
                                                           flags, out_requests));
+  EXPECT_EQ(config_requests, out_requests);
 }
 
 TEST_F(
@@ -1390,6 +1426,7 @@ TEST_F(
       .WillRepeatedly(Return(false));
   EXPECT_FALSE(drm_gpu_display_manager_->ConfigureDisplays(
       config_requests, flags, out_requests));
+  EXPECT_EQ(config_requests, out_requests);
 }
 
 TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
@@ -1408,6 +1445,7 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   std::vector<display::DisplayConfigurationParams> out_requests;
   EXPECT_FALSE(drm_gpu_display_manager_->ConfigureDisplays(
       config_requests, flags, out_requests));
+  EXPECT_EQ(config_requests, out_requests);
 }
 
 TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
@@ -1426,6 +1464,10 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
   std::vector<display::DisplayConfigurationParams> out_requests;
   EXPECT_TRUE(drm_gpu_display_manager_->ConfigureDisplays(config_requests,
                                                           flags, out_requests));
+  EXPECT_NE(config_requests, out_requests);
+  ExpectEqualRequestsWithExceptions(config_requests, out_requests);
+  EXPECT_EQ(50.0f, out_requests[0].mode->refresh_rate());
+  EXPECT_EQ(24.0f, out_requests[0].mode->vsync_rate_min());
 }
 
 TEST_F(
@@ -1445,6 +1487,7 @@ TEST_F(
   std::vector<display::DisplayConfigurationParams> out_requests;
   EXPECT_FALSE(drm_gpu_display_manager_->ConfigureDisplays(
       config_requests, flags, out_requests));
+  EXPECT_EQ(config_requests, out_requests);
 }
 
 using TiledDisplayGetDisplaysTest = DrmGpuDisplayManagerTest;
