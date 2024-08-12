@@ -7,6 +7,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -28,7 +29,7 @@ class SupervisedUserUtilsTest : public ::testing::Test {
   supervised_user::SupervisedUserURLFilter filter_ =
       supervised_user::SupervisedUserURLFilter(
           pref_service_,
-          base::BindRepeating([](const GURL& url) { return false; }));
+          std::make_unique<FakeURLFilterDelegate>());
 };
 
 TEST_F(SupervisedUserUtilsTest, StripOnDefaultFilteringBehaviour) {

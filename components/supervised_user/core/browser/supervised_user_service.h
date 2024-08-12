@@ -59,6 +59,14 @@ class SupervisedUserService : public KeyedService,
    public:
     virtual ~PlatformDelegate() {}
 
+    // Returns the country code stored for this client.
+    // Country code is in the format of lowercase ISO 3166-1 alpha-2. Example:
+    // us, br, in.
+    virtual std::string GetCountryCode() const = 0;
+
+    // Returns the channel for the installation.
+    virtual version_info::Channel GetChannel() const = 0;
+
     // Close all incognito tabs for this service. Called the profile becomes
     // supervised.
     virtual void CloseIncognitoTabs() = 0;
@@ -152,7 +160,6 @@ class SupervisedUserService : public KeyedService,
       PrefService& user_prefs,
       supervised_user::SupervisedUserSettingsService& settings_service,
       syncer::SyncService* sync_service,
-      ValidateURLSupportCallback check_webstore_url_callback,
       std::unique_ptr<supervised_user::SupervisedUserURLFilter::Delegate>
           url_filter_delegate,
       std::unique_ptr<supervised_user::SupervisedUserService::PlatformDelegate>
@@ -235,8 +242,6 @@ class SupervisedUserService : public KeyedService,
   std::unique_ptr<SupervisedUserURLFilter> url_filter_;
 
   const bool can_show_first_time_interstitial_banner_;
-
-  std::unique_ptr<SupervisedUserURLFilter::Delegate> url_filter_delegate_;
 
   // Manages remote web approvals.
   RemoteWebApprovalsManager remote_web_approvals_manager_;

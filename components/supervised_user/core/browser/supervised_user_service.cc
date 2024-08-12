@@ -147,7 +147,6 @@ SupervisedUserService::SupervisedUserService(
     PrefService& user_prefs,
     SupervisedUserSettingsService& settings_service,
     syncer::SyncService* sync_service,
-    ValidateURLSupportCallback check_webstore_url_callback,
     std::unique_ptr<SupervisedUserURLFilter::Delegate> url_filter_delegate,
     std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate,
     bool can_show_first_time_interstitial_banner)
@@ -159,10 +158,9 @@ SupervisedUserService::SupervisedUserService(
       delegate_(nullptr),
       platform_delegate_(std::move(platform_delegate)),
       can_show_first_time_interstitial_banner_(
-          can_show_first_time_interstitial_banner),
-      url_filter_delegate_(std::move(url_filter_delegate)) {
+          can_show_first_time_interstitial_banner) {
   url_filter_ = std::make_unique<SupervisedUserURLFilter>(
-      user_prefs, std::move(check_webstore_url_callback));
+      user_prefs, std::move(url_filter_delegate));
   url_filter_->AddObserver(this);
 }
 
@@ -212,8 +210,8 @@ void SupervisedUserService::SetActive(bool active) {
     GetURLFilter()->SetURLCheckerClient(
         std::make_unique<KidsChromeManagementURLCheckerClient>(
             identity_manager_, url_loader_factory_,
-            url_filter_delegate_->GetCountryCode(),
-            url_filter_delegate_->GetChannel()));
+            platform_delegate_->GetCountryCode(),
+            platform_delegate_->GetChannel()));
 
     pref_change_registrar_.Add(
         prefs::kDefaultSupervisedUserFilteringBehavior,
