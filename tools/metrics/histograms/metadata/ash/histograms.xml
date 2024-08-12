@@ -9735,11 +9735,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.Snap.DeviceOrientation" enum="DeviceOrientation"
-    expires_after="2024-09-22">
-  <owner>cattalyya@chromium.org</owner>
+    expires_after="2025-08-12">
+  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
   <owner>afakhry@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
-  <owner>fanafan@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when the user snaps the window to record whether window snap is used
     while the display orientation is portrait or landscape mode.
@@ -9747,9 +9747,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.DesksSwitchDistance" units="units"
-    expires_after="2024-09-29">
+    expires_after="2025-08-12">
   <owner>afakhry@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when the user ends window cycling via Alt-Tab, if and only if user
     had 2 or more desks and a new window was activated, to report the distance
