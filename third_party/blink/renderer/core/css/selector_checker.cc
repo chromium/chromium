@@ -2034,8 +2034,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       DCHECK(context.relative_anchor_element);
       return context.relative_anchor_element == &element;
     case CSSSelector::kPseudoActiveViewTransition: {
-      // :active-view-transition is only valid on the html element.
-      if (!IsA<HTMLElement>(element)) {
+      // :active-view-transition is only valid on the document element.
+      if (!element.IsDocumentElement()) {
         return false;
       }
 
@@ -2050,8 +2050,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return transition->MatchForActiveViewTransition();
     }
     case CSSSelector::kPseudoActiveViewTransitionType: {
-      // :active-view-transition-type is only valid on the html element.
-      if (!IsA<HTMLElement>(element)) {
+      // :active-view-transition-type is only valid on the document element.
+      if (!element.IsDocumentElement()) {
         return false;
       }
 
