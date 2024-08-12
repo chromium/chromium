@@ -7,6 +7,8 @@ include_rules = [
   "+components/prefs",
   "+components/user_prefs",
   "+components/variations",
+  "+components/webapps/common",
+  "+components/webapps/browser/webapps_client.h",
   "+content/public/browser",
   "+content/public/common/url_constants.h",
   "+content/public/test",

@@ -739,7 +739,7 @@ void UpdateLaunchStats(content::WebContents* web_contents,
   // Update the launch time in the site engagement service. A recent web
   // app launch will provide an engagement boost to the origin.
   site_engagement::SiteEngagementService::Get(profile)
-      ->SetLastShortcutLaunchTime(web_contents, launch_url);
+      ->SetLastShortcutLaunchTime(web_contents, app_id, launch_url);
 }
 
 void LaunchWebApp(apps::AppLaunchParams params,

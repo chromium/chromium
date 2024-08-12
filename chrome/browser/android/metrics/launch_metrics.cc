@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/android/jni_string.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"

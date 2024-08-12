@@ -823,7 +823,8 @@ void AppBannerManager::OnEngagementEvent(
     content::WebContents* contents,
     const GURL& url,
     double score,
-    site_engagement::EngagementType /*type*/) {
+    site_engagement::EngagementType /*type*/,
+    const std::optional<webapps::AppId>& /*app_id*/) {
   if (TriggeringDisabledForTesting()) {
     return;
   }

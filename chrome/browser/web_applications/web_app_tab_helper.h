@@ -52,6 +52,7 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   void SetAppId(std::optional<webapps::AppId> app_id);
   const base::UnguessableToken& GetAudioFocusGroupIdForTesting() const;
 
+  const std::optional<webapps::AppId> app_id() const { return app_id_; }
   bool acting_as_app() const { return acting_as_app_; }
   void set_acting_as_app(bool acting_as_app) { acting_as_app_ = acting_as_app; }
 

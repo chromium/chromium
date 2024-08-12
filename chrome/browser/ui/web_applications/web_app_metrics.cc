@@ -142,7 +142,8 @@ void WebAppMetrics::OnEngagementEvent(
     WebContents* web_contents,
     const GURL& url,
     double score,
-    site_engagement::EngagementType engagement_type) {
+    site_engagement::EngagementType engagement_type,
+    const std::optional<webapps::AppId>& app_id) {
   if (!web_contents)
     return;
 
@@ -167,11 +168,10 @@ void WebAppMetrics::OnEngagementEvent(
                               engagement_type);
   }
 
-  // A presence of WebAppTabHelper with valid app_id indicates an installed
-  // web app.
-  const webapps::AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
-  if (!app_id)
+  if (!app_id) {
     return;
+  }
+  CHECK(!app_id->empty());
 
   // No HostedAppBrowserController if app is running as a tab in common browser.
   const bool in_window = !!browser->app_controller();
@@ -179,6 +179,8 @@ void WebAppMetrics::OnEngagementEvent(
       WebAppProvider::GetForLocalAppsUnchecked(profile_)->registrar_unsafe();
   const bool user_installed = registrar.WasInstalledByUser(*app_id);
   const bool is_diy_app = registrar.IsDiyApp(*app_id);
+  const bool is_default_installed =
+      registrar.IsInstalledByDefaultManagement(*app_id);
 
   // Record all web apps:
   RecordTabOrWindowHistogram("WebApp.Engagement", in_window, engagement_type);
@@ -193,7 +195,8 @@ void WebAppMetrics::OnEngagementEvent(
       RecordTabOrWindowHistogram("WebApp.Engagement.UserInstalled.Crafted",
                                  in_window, engagement_type);
     }
-  } else {
+  }
+  if (is_default_installed) {
     // Record this app into more specific bucket if was installed by default:
     RecordTabOrWindowHistogram("WebApp.Engagement.DefaultInstalled", in_window,
                                engagement_type);

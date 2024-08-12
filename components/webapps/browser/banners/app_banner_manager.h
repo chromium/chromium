@@ -420,7 +420,8 @@ class AppBannerManager : public content::WebContentsObserver,
   void OnEngagementEvent(content::WebContents* web_contents,
                          const GURL& url,
                          double score,
-                         site_engagement::EngagementType type) override;
+                         site_engagement::EngagementType type,
+                         const std::optional<webapps::AppId>& app_id) override;
 
   // Subclass accessors for private fields which should not be changed outside
   // this class.

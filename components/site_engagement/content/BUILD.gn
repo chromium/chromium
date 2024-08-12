@@ -31,6 +31,8 @@ source_set("content") {
     "//components/site_engagement/core/mojom:mojo_bindings",
     "//components/user_prefs",
     "//components/variations",
+    "//components/webapps/browser:webapps_client",
+    "//components/webapps/common",
     "//content/public/browser",
     "//third_party/blink/public/mojom:mojom_platform_headers",
     "//url",

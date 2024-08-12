@@ -30,4 +30,9 @@ ChromeWebappsClient::GetInfoBarManagerForWebContents(
   return infobars::ContentInfoBarManager::FromWebContents(web_contents);
 }
 
+std::optional<webapps::AppId> ChromeWebappsClient::GetAppIdForWebContents(
+    content::WebContents* web_contents) {
+  return std::nullopt;
+}
+
 }  // namespace webapps

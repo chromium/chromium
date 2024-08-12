@@ -27,6 +27,8 @@ class ChromeWebappsClient : public WebappsClient {
       content::WebContents* web_contents) override;
   infobars::ContentInfoBarManager* GetInfoBarManagerForWebContents(
       content::WebContents* web_contents) override;
+  std::optional<webapps::AppId> GetAppIdForWebContents(
+      content::WebContents* web_contents) override;
 };
 
 }  // namespace webapps

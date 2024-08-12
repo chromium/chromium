@@ -138,6 +138,12 @@ class WebappsClient {
                                const AddToHomescreenParams& params) = 0;
 #endif
 
+  // Returns the id of the app that controls the last committed url of the given
+  // `web_contents`.
+  // Note: On Android this always returns `std::nullopt`.
+  virtual std::optional<webapps::AppId> GetAppIdForWebContents(
+      content::WebContents* web_contents) = 0;
+
  protected:
   segmentation_platform::SegmentationPlatformService*
   segmentation_platform_for_testing() const {

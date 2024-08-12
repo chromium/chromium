@@ -32,6 +32,8 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -497,7 +499,8 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, MAYBE_DefaultApp) {
 
   std::optional<webapps::AppId> app_id = FindAppWithUrlInScope(example_url);
   ASSERT_TRUE(app_id);
-  // TODO(ericwilligers): Assert app_id was installed by default.
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalledByDefaultManagement(
+      app_id.value()));
 
   Browser* browser = LaunchWebAppBrowserAndWait(*app_id);
   NavigateViaLinkClickToURLAndWait(browser, example_url);

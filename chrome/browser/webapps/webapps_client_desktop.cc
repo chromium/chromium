@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/url_constants.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -200,6 +201,17 @@ WebappsClientDesktop::GetSegmentationPlatformService(
   CHECK(browser_context);
   return segmentation_platform::SegmentationPlatformServiceFactory::
       GetForProfile(Profile::FromBrowserContext(browser_context));
+}
+
+std::optional<webapps::AppId> WebappsClientDesktop::GetAppIdForWebContents(
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
+  web_app::WebAppTabHelper* helper =
+      web_app::WebAppTabHelper::FromWebContents(web_contents);
+  if (!helper) {
+    return std::nullopt;
+  }
+  return helper->app_id();
 }
 
 }  // namespace webapps
