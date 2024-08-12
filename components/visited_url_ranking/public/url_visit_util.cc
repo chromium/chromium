@@ -114,12 +114,7 @@ URLMergeKey ComputeURLMergeKey(
   if (!deduplication_helper) {
     return url.spec();
   }
-
-  auto key = deduplication_helper->ComputeURLDeduplicationKey(url);
-  if (key.empty()) {
-    LOG(ERROR) << "Key is empty! for URL: " << url;
-  }
-  return key;
+  return deduplication_helper->ComputeURLDeduplicationKey(url);
 }
 
 scoped_refptr<InputContext> AsInputContext(
@@ -250,18 +245,6 @@ scoped_refptr<InputContext> AsInputContext(
             url_visit_aggregate.metrics_signals.end()) {
           value = ProcessedValue::FromFloat(
               url_visit_aggregate.metrics_signals.at(field_schema.name));
-        }
-        break;
-      case kSameTimeGroupVisitCount:
-        if (history_data) {
-          value = ProcessedValue::FromFloat(
-              history_data->same_time_group_visit_count);
-        }
-        break;
-      case kSameDayGroupVisitCount:
-        if (history_data) {
-          value = ProcessedValue::FromFloat(
-              history_data->same_day_group_visit_count);
         }
         break;
     }

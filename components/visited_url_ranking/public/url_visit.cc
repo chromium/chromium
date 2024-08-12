@@ -27,9 +27,7 @@ URLVisit::URLVisit(const URLVisit&) = default;
 
 URLVisit::~URLVisit() = default;
 
-URLVisitAggregate::URLVisitAggregate(std::string key_arg) : url_key(key_arg) {
-  DCHECK(!url_key.empty());
-}
+URLVisitAggregate::URLVisitAggregate(std::string key_arg) : url_key(key_arg) {}
 
 URLVisitAggregate::~URLVisitAggregate() = default;
 

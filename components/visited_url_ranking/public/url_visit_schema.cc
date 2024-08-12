@@ -33,8 +33,6 @@ const char kSignalDismissedCountLast7Days[] = "dismissed_count_last_7_days";
 const char kSignalSeenCountLast30Days[] = "seen_count_last_30_days";
 const char kSignalActivatedCountLast30Days[] = "activated_count_last_30_days";
 const char kSignalDismissedCountLast30Days[] = "dismissed_count_last_30_days";
-const char kSignalSameTimeGroupVisitCount[] = "same_time_group_visit_count";
-const char kSignalSameDayGroupVisitCount[] = "same_day_group_visit_count";
 
 constexpr std::array<FieldSchema, kNumInputs> kURLVisitAggregateSchema = {{
     {.signal =
@@ -92,12 +90,6 @@ constexpr std::array<FieldSchema, kNumInputs> kURLVisitAggregateSchema = {{
     {.signal =
          URLVisitAggregateRankingModelInputSignals::kDismissedCountLast30Days,
      .name = kSignalDismissedCountLast30Days},
-    {.signal =
-         URLVisitAggregateRankingModelInputSignals::kSameTimeGroupVisitCount,
-     .name = kSignalSameTimeGroupVisitCount},
-    {.signal =
-         URLVisitAggregateRankingModelInputSignals::kSameDayGroupVisitCount,
-     .name = kSignalSameDayGroupVisitCount},
 }};
 
 }  // namespace visited_url_ranking
