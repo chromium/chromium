@@ -5,6 +5,8 @@ syntax = "proto3";
 
 package boca;
 
+option optimize_for = LITE_RUNTIME;
+
 message Roster {
   string roster_id = 1;
 

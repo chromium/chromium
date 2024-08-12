@@ -7,6 +7,8 @@ package boca;
 import "chromeos/ash/components/boca/proto/bundle.proto";
 import "chromeos/ash/components/boca/proto/roster.proto";
 
+option optimize_for = LITE_RUNTIME;
+
 // Below copied proto are due to exist in `protobuf_full` source not
 // `protobuf_lite`. The former cannot be included into chrome due to its large
 // size. Copied from //third_party/protobuf/src/google/protobuf/duration.proto

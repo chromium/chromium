@@ -5,6 +5,8 @@ syntax = "proto3";
 
 package boca;
 
+option optimize_for = LITE_RUNTIME;
+
 message Bundle {
   repeated ContentConfig content_configs = 1;
 
