@@ -241,8 +241,8 @@ def remap_paths_to_relative(coverage_file_path, chromium_src_dir, build_dir):
       del coverage_json[key]
       remapped_paths += 1
 
-    logging.info('Remapped %s paths' % (remapped_paths))
-    logging.info('Excluded %s paths' % (excluded_paths))
+    logging.info('Remapped %s paths', remapped_paths)
+    logging.info('Excluded %s paths', excluded_paths)
 
     # Overwrite the current coverage file with new contents.
     f.seek(0)

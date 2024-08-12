@@ -202,8 +202,8 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
                 return json.load(f)
 
     def remove_swarming_dimension(self, args, dimension):
-        for i in range(len(args)):
-            if args[i] == '--dimension' and args[i + 1] == dimension:
+        for i, argument in enumerate(args):
+            if argument == '--dimension' and args[i + 1] == dimension:
                 return args[:i] + args[i + 3:]
         return args
 

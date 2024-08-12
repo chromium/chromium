@@ -2166,8 +2166,8 @@ class UnitTest(TestCase):
     self.assertRegex(
         joined_lines, 'File chromium.test.json did not have the following'
         ' expected contents:.*')
-    self.assertRegex(joined_lines, '.*--- expected.*')
-    self.assertRegex(joined_lines, '.*\+\+\+ current.*')
+    self.assertRegex(joined_lines, r'.*--- expected.*')
+    self.assertRegex(joined_lines, r'.*\+\+\+ current.*')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
@@ -2268,8 +2268,8 @@ class UnitTest(TestCase):
     ):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = '\n'.join(fbb.printed_lines)
-    self.assertRegex(joined_lines, '.*\+ chromium\..*test.*')
-    self.assertRegex(joined_lines, '.*\- chromium\..*test.*')
+    self.assertRegex(joined_lines, r'.*\+ chromium\..*test.*')
+    self.assertRegex(joined_lines, r'.*\- chromium\..*test.*')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
@@ -2282,8 +2282,8 @@ class UnitTest(TestCase):
     ):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = ' '.join(fbb.printed_lines)
-    self.assertRegex(joined_lines, '.*\+.*Fake Tester.*')
-    self.assertRegex(joined_lines, '.*\-.*Fake Tester.*')
+    self.assertRegex(joined_lines, r'.*\+.*Fake Tester.*')
+    self.assertRegex(joined_lines, r'.*\-.*Fake Tester.*')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
@@ -2304,7 +2304,7 @@ class UnitTest(TestCase):
     with self.assertRaises(generate_buildbot_json.BBGenErr):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = ' '.join(fbb.printed_lines)
-    self.assertRegex(joined_lines, '.*\- Fake Tester.*')
+    self.assertRegex(joined_lines, r'.*\- Fake Tester.*')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
@@ -2325,8 +2325,8 @@ class UnitTest(TestCase):
     with self.assertRaises(generate_buildbot_json.BBGenErr):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = ' '.join(fbb.printed_lines)
-    self.assertRegex(joined_lines, '.*\+ Fake Tester.*')
-    self.assertRegex(joined_lines, '.*\- Fake Tester.*')
+    self.assertRegex(joined_lines, r'.*\+ Fake Tester.*')
+    self.assertRegex(joined_lines, r'.*\- Fake Tester.*')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
@@ -2347,8 +2347,8 @@ class UnitTest(TestCase):
     with self.assertRaises(generate_buildbot_json.BBGenErr):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = ' '.join(fbb.printed_lines)
-    self.assertRegex(joined_lines, '.*\+ suite_.*')
-    self.assertRegex(joined_lines, '.*\- suite_.*')
+    self.assertRegex(joined_lines, r'.*\+ suite_.*')
+    self.assertRegex(joined_lines, r'.*\- suite_.*')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
@@ -2368,8 +2368,8 @@ class UnitTest(TestCase):
       with self.assertRaises(generate_buildbot_json.BBGenErr):
         fbb.check_input_file_consistency(verbose=True)
       joined_lines = ' '.join(fbb.printed_lines)
-      self.assertRegex(joined_lines, '.*\+ suite_.*')
-      self.assertRegex(joined_lines, '.*\- suite_.*')
+      self.assertRegex(joined_lines, r'.*\+ suite_.*')
+      self.assertRegex(joined_lines, r'.*\- suite_.*')
       fbb.printed_lines = []
       self.assertFalse(fbb.printed_lines)
 
@@ -2742,8 +2742,8 @@ class MixinTests(TestCase):
     with self.assertRaises(generate_buildbot_json.BBGenErr):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = '\n'.join(fbb.printed_lines)
-    self.assertRegex(joined_lines, '.*\+ ._mixin.*')
-    self.assertRegex(joined_lines, '.*\- ._mixin.*')
+    self.assertRegex(joined_lines, r'.*\+ ._mixin.*')
+    self.assertRegex(joined_lines, r'.*\- ._mixin.*')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
@@ -2878,7 +2878,7 @@ class MixinTests(TestCase):
     ):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = '\n'.join(fbb.printed_lines)
-    self.assertRegex(joined_lines, '.*\- builder_mixin')
+    self.assertRegex(joined_lines, r'.*\- builder_mixin')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
@@ -2892,8 +2892,8 @@ class MixinTests(TestCase):
     ):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = '\n'.join(fbb.printed_lines)
-    self.assertRegex(joined_lines, '.*\- a_test')
-    self.assertRegex(joined_lines, '.*\+ a_test')
+    self.assertRegex(joined_lines, r'.*\- a_test')
+    self.assertRegex(joined_lines, r'.*\+ a_test')
     fbb.printed_lines = []
     self.assertFalse(fbb.printed_lines)
 
@@ -2902,7 +2902,8 @@ class MixinTests(TestCase):
                     LUCI_MILO_CFG)
     with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
-        f'Invalid \.pyl file \'{re.escape(self.args.test_suites_pyl_path)}\'.*',
+        f'Invalid \\.pyl file '
+        f"'{re.escape(self.args.test_suites_pyl_path)}'.*",
     ):
       fbb.check_input_file_consistency(verbose=True)
     self.assertEqual(fbb.printed_lines, [

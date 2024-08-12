@@ -175,9 +175,9 @@ def _shard_tests(list_of_test_names, env):
     assert shard_index < total_shards
 
     result = []
-    for i in range(len(list_of_test_names)):
+    for i, test_name in enumerate(list_of_test_names):
         if (i % total_shards) == shard_index:
-            result.append(list_of_test_names[i])
+            result.append(test_name)
 
     return result
 

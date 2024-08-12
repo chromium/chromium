@@ -32,27 +32,29 @@ ResultListType = List['BaseResult']
 ResultSetType = Set['BaseResult']
 
 
+# TODO(crbug.com/358591565): Refactor this to remove the need for global
+# statements.
 def SetExpectationImplementation(impl: Type['BaseExpectation']) -> None:
-  global Expectation
+  global Expectation  # pylint: disable=global-statement
   assert issubclass(impl, BaseExpectation)
   Expectation = impl
 
 
 def SetResultImplementation(impl: Type['BaseResult']) -> None:
-  global Result
+  global Result  # pylint: disable=global-statement
   assert issubclass(impl, BaseResult)
   Result = impl
 
 
 def SetBuildStatsImplementation(impl: Type['BaseBuildStats']) -> None:
-  global BuildStats
+  global BuildStats  # pylint: disable=global-statement
   assert issubclass(impl, BaseBuildStats)
   BuildStats = impl
 
 
 def SetTestExpectationMapImplementation(impl: Type['BaseTestExpectationMap']
                                         ) -> None:
-  global TestExpectationMap
+  global TestExpectationMap  # pylint: disable=global-statement
   assert issubclass(impl, BaseTestExpectationMap)
   TestExpectationMap = impl
 

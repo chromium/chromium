@@ -76,12 +76,12 @@ def _call_profdata_tool(profile_input_file_paths,
                        check=True)
     logging.info(p.stdout)
   except subprocess.CalledProcessError as error:
-    logging.info('stdout: %s' % error.output)
-    logging.error('Failed to merge profiles, return code (%d), error: %r' %
-                  (error.returncode, error.stderr))
+    logging.info('stdout: %s', error.output)
+    logging.error('Failed to merge profiles, return code (%d), error: %r',
+                  error.returncode, error.stderr)
     raise error
   except subprocess.TimeoutExpired as e:
-    logging.info('stdout: %s' % e.output)
+    logging.info('stdout: %s', e.output)
     raise e
 
   logging.info('Profile data is created as: "%r".', profile_output_file_path)

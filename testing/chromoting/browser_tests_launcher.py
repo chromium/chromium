@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 """Utility script to launch browser-tests on the Chromoting bot."""
 
-from __future__ import print_function
-
 import argparse
 import time
 
@@ -20,8 +18,6 @@ from chromoting_test_utilities import TestCaseSetup
 from chromoting_test_utilities import TestMachineCleanup
 
 SUCCESS_INDICATOR = 'SUCCESS: all tests passed.'
-TEST_FAILURE = False
-FAILING_TESTS = ''
 BROWSER_NOT_STARTED_ERROR = (
     'Still waiting for the following processes to finish')
 TIME_OUT_INDICATOR = '(TIMED OUT)'
@@ -40,7 +36,6 @@ def LaunchBTCommand(args, command):
     host_log_file_names: Array of host logs created for this command, including
          retries.
   """
-  global TEST_FAILURE, FAILING_TESTS
   host_log_file_names = []
 
   retries = 0
@@ -110,35 +105,41 @@ def LaunchBTCommand(args, command):
     retries += 1
 
   # Check that the test passed.
+  test_failure = False
+  failing_tests = ''
   if SUCCESS_INDICATOR not in results:
-    TEST_FAILURE = True
+    test_failure = True
     # Add this command-line to list of tests that failed.
-    FAILING_TESTS += command
+    failing_tests = command
 
-  return host_log_file_names
+  return host_log_file_names, test_failure, failing_tests
 
 
-def main(args):
+def run_tests(args):
 
   InitialiseTestMachineForLinux(args.cfg_file)
 
   host_log_files = []
+  have_test_failure = False
+  all_failing_tests = ''
   with open(args.commands_file) as f:
     for line in f:
       # Replace the PROD_DIR value in the command-line with
       # the passed in value.
       line = line.replace(PROD_DIR_ID, args.prod_dir)
       # Launch specified command line for test.
-      host_log_files.extend(LaunchBTCommand(args, line))
+      log_files, test_failure, failing_tests = LaunchBTCommand(args, line)
+      host_log_files.extend(log_files)
+      have_test_failure = have_test_failure or test_failure
+      all_failing_tests += failing_tests
 
   # All tests completed. Include host-logs in the test results.
   PrintHostLogContents(host_log_files)
 
-  return host_log_files
+  return host_log_files, have_test_failure, all_failing_tests
 
 
-if __name__ == '__main__':
-
+def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('-f',
                       '--commands_file',
@@ -158,12 +159,16 @@ if __name__ == '__main__':
   command_line_args = parser.parse_args()
   host_logs = ''
   try:
-    host_logs = main(command_line_args)
-    if TEST_FAILURE:
+    host_logs, had_test_failure, failing_tests = run_tests(command_line_args)
+    if had_test_failure:
       print('++++++++++AT LEAST 1 TEST FAILED++++++++++')
-      print(FAILING_TESTS.rstrip('\n'))
+      print(failing_tests.rstrip('\n'))
       print('++++++++++++++++++++++++++++++++++++++++++')
       raise Exception('At least one test failed.')
   finally:
     # Stop host and cleanup user-profile-dir.
     TestMachineCleanup(command_line_args.user_profile_dir, host_logs)
+
+
+if __name__ == '__main__':
+  main()

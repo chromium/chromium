@@ -122,7 +122,7 @@ def main():
     rc = subprocess.call(args)
     if rc != 0:
       failed = True
-      logging.warning('%s exited with %s' % (merge_js_results_script, rc))
+      logging.warning('%s exited with %s', merge_js_results_script, rc)
 
   # Name the output profdata file name as {test_target}.profdata or
   # default.profdata.
@@ -177,8 +177,8 @@ def main():
     rc = subprocess.call(args)
     if rc != 0:
       failed = True
-      logging.warning('Additional merge script %s exited with %s' %
-                      (params.additional_merge_script, rc))
+      logging.warning('Additional merge script %s exited with %s',
+                      params.additional_merge_script, rc)
   elif len(params.jsons_to_merge) == 1:
     logging.info("Only one output needs to be merged; directly copying it.")
     with open(params.jsons_to_merge[0]) as f_read:

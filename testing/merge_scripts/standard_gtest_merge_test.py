@@ -447,7 +447,7 @@ class MergeShardResultsTest(_StandardGtestMergeTest):
 
     unicode_expectations = convert_to_unicode(expectation)
     unicode_result = convert_to_unicode(result)
-    self.assertEquals(unicode_expectations, unicode_result)
+    self.assertEqual(unicode_expectations, unicode_result)
 
   def test_ok(self):
     # Two shards, both successfully finished.

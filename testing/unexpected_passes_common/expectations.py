@@ -124,6 +124,8 @@ ALL_STALE_COMMENT_REGEXES = frozenset(ALL_STALE_COMMENT_REGEXES)
 
 # pylint: disable=useless-object-inheritance
 
+# TODO(crbug.com/358591565): Refactor this to remove the need for global
+# statements.
 _registered_instance = None
 
 
@@ -132,14 +134,14 @@ def GetInstance() -> 'Expectations':
 
 
 def RegisterInstance(instance: 'Expectations') -> None:
-  global _registered_instance
+  global _registered_instance  # pylint: disable=global-statement
   assert _registered_instance is None
   assert isinstance(instance, Expectations)
   _registered_instance = instance
 
 
 def ClearInstance() -> None:
-  global _registered_instance
+  global _registered_instance  # pylint: disable=global-statement
   _registered_instance = None
 
 

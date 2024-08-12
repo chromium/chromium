@@ -37,10 +37,10 @@ class BigQueryQuerierInitUnittest(unittest.TestCase):
     with self.assertRaises(AssertionError):
       uu.CreateGenericQuerier(num_samples=-1)
 
-  def testInvalidNumSamples(self):
-    """Tests that the number of samples is validated."""
-    with self.assertRaises(AssertionError):
-      uu.CreateGenericQuerier(num_samples=-1)
+  def testDefaultSamples(self):
+    """Tests that the number of samples is set to a default if not provided."""
+    querier = uu.CreateGenericQuerier(num_samples=0)
+    self.assertGreater(querier._num_samples, 0)
 
 
 class GetBuilderGroupedQueryResultsUnittest(unittest.TestCase):

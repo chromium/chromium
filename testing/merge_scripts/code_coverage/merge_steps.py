@@ -52,7 +52,7 @@ def main():
       sparse=params.sparse,
       merge_timeout=params.profile_merge_timeout)
   if invalid_profiles:
-    logging.error('Invalid profiles were generated:\n%r' % invalid_profiles)
+    logging.error('Invalid profiles were generated:\n%r', invalid_profiles)
     return 1
 
   return 0

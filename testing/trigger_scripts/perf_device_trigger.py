@@ -362,8 +362,8 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
 
     # pylint: disable=inconsistent-return-statements
     def _get_swarming_server(self, args):
-        for i in range(len(args)):
-            if '--swarming' in args[i]:
+        for i, argument in enumerate(args):
+            if '--swarming' in argument:
                 server = args[i + 1]
                 slashes_index = server.index('//') + 2
                 # Strip out the protocol

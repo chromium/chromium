@@ -22,28 +22,20 @@ docstring-quote = double
 #   wrong-import-position: We often need to add directories to PATH before
 #     importing, which causes this check to fail.
 disable=abstract-method,
-        anomalous-backslash-in-string,
         bad-indentation,
         broad-except,
-        consider-using-enumerate,
-        deprecated-method,
-        deprecated-module,
         duplicate-code,
-        global-statement,
         fixme,
-        function-redefined,
         import-error,
         invalid-name,
         invalid-string-quote,
         invalid-triple-quote,
         locally-disabled,
         locally-enabled,
-        logging-not-lazy,
         missing-docstring,
         no-member,
         no-self-use,
         protected-access,
-        reimported,
         too-few-public-methods,
         too-many-arguments,
         too-many-branches,
@@ -247,7 +239,6 @@ valid-classmethod-first-arg=cls
 
 # Deprecated modules which should not be used, separated by a comma
 deprecated-modules=regsub,
-                   string,
                    TERMIOS,
                    Bastion,
                    rexec

@@ -192,7 +192,7 @@ def _make_xorg_modeline(width, height, refresh):
   specified width, height and refresh rate.
   See: https://www.x.org/archive/X11R7.0/doc/html/chips4.html"""
   re_matches = _re_search_command(
-      'Modeline "(.*)"\s+(.*)',
+      r'Modeline "(.*)"\s+(.*)',
       ['cvt', str(width), str(height),
        str(refresh)],
   )
@@ -284,8 +284,8 @@ def _setup_xrandr(env, default_whd):
         call_xrandr(['--addmode', output_name, modeline_label])
     (default_mode_label, _) = _make_xorg_modeline(*default_size, refresh_rate)
     # Set the mode of all monitors to connect and activate them.
-    for i in range(0, len(output_names)):
-      args = ['--output', output_names[i], '--mode', default_mode_label]
+    for i, name in enumerate(output_names):
+      args = ['--output', name, '--mode', default_mode_label]
       if i > 0:
         args += ['--right-of', output_names[i - 1]]
       call_xrandr(args)
