@@ -5653,7 +5653,7 @@ crbug.com/1350337 [ Linux ] external/wpt/web-locks/query-ordering.tentative.http
 
 # These seem to consistently fail with disabling code cache.
 crbug.com/1351903 http/tests/devtools/network/font-face.js [ Failure Pass ]
-crbug.com/1351903 virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-image-ad-fixed-position.html [ Failure Pass ]
+crbug.com/1351903 virtual/disable-frequency-capping-for-overlay-popup/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-image-ad-fixed-position.html [ Failure Pass ]
 
 # Sheriff 2022-08-11
 # Most likely a forced style/layout update from accessibiity while we are
@@ -6644,7 +6644,7 @@ crbug.com/1464993 [ Linux ] fast/forms/accent-color/range-accent-color-hover-dar
 crbug.com/626703 external/wpt/loading/early-hints/modulepreload-as-worker.h2.window.html [ Failure ]
 
 # Flaky
-crbug.com/1459333 [ Mac11 ] virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-ad-viewport-resize.html [ Failure Pass ]
+crbug.com/1459333 [ Mac11 ] virtual/disable-frequency-capping-for-overlay-popup/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-ad-viewport-resize.html [ Failure Pass ]
 # Slightly flaky
 crbug.com/1459304 [ Linux ] fast/filesystem/workers/file-writer-events.html [ Failure Pass ]
 crbug.com/1459304 [ Linux ] virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup.https.html?3-4 [ Failure Pass ]

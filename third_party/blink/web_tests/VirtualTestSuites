@@ -1161,12 +1161,13 @@
     "expires": "Jul 1, 2025"
   },
   {
-    "prefix": "disable-frequency-capping-for-overlay-popup-detection",
+    "prefix": "disable-frequency-capping-for-overlay-popup",
+    "owners": ["yaoxia@chromium.org", "dtapuska@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/subresource_filter/overlay_popup_ad"],
     "exclusive_tests": "ALL",
     "args": ["--disable-features=FrequencyCappingForOverlayPopupDetection"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "first-party-sets",
