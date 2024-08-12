@@ -53,9 +53,8 @@ base::Value CreatePreallocatedPlusAddress(
 PlusProfileOrError PlusProfileFromPreallocatedAddress(
     const url::Origin& origin,
     std::string plus_address) {
-  // TODO: Figure out what to do with the profile_id.
   return PlusProfileOrError(PlusProfile(
-      /*profile_id=*/"0",
+      /*profile_id=*/std::nullopt,
       affiliations::FacetURI::FromPotentiallyInvalidSpec(
           origin.GetURL().spec()),
       std::move(plus_address), /*is_confirmed=*/false));

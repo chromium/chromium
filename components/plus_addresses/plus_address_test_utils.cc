@@ -114,7 +114,7 @@ std::string MakePlusProfile(const PlusProfile& profile) {
             }
           }
         )",
-      {profile.profile_id, facet, profile.plus_address, mode}, nullptr);
+      {*profile.profile_id, facet, profile.plus_address, mode}, nullptr);
   DCHECK(base::JSONReader::Read(json));
   return json;
 }

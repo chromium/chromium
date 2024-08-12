@@ -39,7 +39,7 @@ struct PlusProfile {
   // TODO(b/322147254): Remove variant when sync support is launched.
   using facet_t = absl::variant<std::string, affiliations::FacetURI>;
 
-  PlusProfile(std::string profile_id,
+  PlusProfile(std::optional<std::string> profile_id,
               facet_t facet,
               std::string plus_address,
               bool is_confirmed);
@@ -51,9 +51,17 @@ struct PlusProfile {
 
   friend bool operator==(const PlusProfile&, const PlusProfile&) = default;
 
-  std::string profile_id;
+  // A unique id used as a primary key for storing confirmed plus addresses.
+  // Pre-allocated plus addresses do not have a `profile_id`.
+  std::optional<std::string> profile_id;
+
+  // The domain facet to which the plus address is bound.
   facet_t facet;
+
+  // The plus address.
   std::string plus_address;
+
+  // Whether the plus address' creation has been confirmed by the server.
   bool is_confirmed;
 };
 

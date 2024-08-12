@@ -6,6 +6,7 @@
 #define COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_TABLE_H_
 
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "components/plus_addresses/plus_address_types.h"
@@ -62,7 +63,7 @@ class PlusAddressTable : public WebDatabaseTable,
   // Returns the profile with the given `profile_id` or std::nullopt if it
   // doesn't exist.
   std::optional<PlusProfile> GetPlusProfileForId(
-      const std::string& profile_id) const;
+      std::string_view profile_id) const;
 
   // Adds `profile` to the database, if a profile with the same `profile_id`
   // doesn't already exist. Otherwise, updates the existing `profile`.
@@ -72,7 +73,7 @@ class PlusAddressTable : public WebDatabaseTable,
   // Removes the profile with the given `profile_id` and returns true if the
   // operation succeeded. Trying to remove a non-existing profile is a no-op and
   // not considered a failure.
-  bool RemovePlusProfile(const std::string& profile_id);
+  bool RemovePlusProfile(std::string_view profile_id);
 
   // Deletes all stored PlusProfiles, returning true if the operation succeeded.
   bool ClearPlusProfiles();

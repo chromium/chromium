@@ -60,8 +60,8 @@ TEST_F(PlusAddressTableTest, GetPlusProfileForId) {
       test::CreatePlusProfile2(/*use_full_domain=*/true);
   ASSERT_TRUE(table_.AddOrUpdatePlusProfile(profile1));
   ASSERT_TRUE(table_.AddOrUpdatePlusProfile(profile2));
-  EXPECT_EQ(table_.GetPlusProfileForId(profile1.profile_id), profile1);
-  EXPECT_EQ(table_.GetPlusProfileForId(profile2.profile_id), profile2);
+  EXPECT_EQ(table_.GetPlusProfileForId(*profile1.profile_id), profile1);
+  EXPECT_EQ(table_.GetPlusProfileForId(*profile2.profile_id), profile2);
   EXPECT_EQ(table_.GetPlusProfileForId("invalid_id"), std::nullopt);
 }
 
@@ -90,11 +90,11 @@ TEST_F(PlusAddressTableTest, RemovePlusProfile) {
       test::CreatePlusProfile2(/*use_full_domain=*/true);
   ASSERT_TRUE(table_.AddOrUpdatePlusProfile(profile1));
   ASSERT_TRUE(table_.AddOrUpdatePlusProfile(profile2));
-  EXPECT_TRUE(table_.RemovePlusProfile(profile1.profile_id));
+  EXPECT_TRUE(table_.RemovePlusProfile(*profile1.profile_id));
   EXPECT_THAT(table_.GetPlusProfiles(),
               testing::UnorderedElementsAre(profile2));
   // Removing a non-existing `profile_id` shouldn't be considered a failure.
-  EXPECT_TRUE(table_.RemovePlusProfile(profile1.profile_id));
+  EXPECT_TRUE(table_.RemovePlusProfile(*profile1.profile_id));
 }
 
 TEST_F(PlusAddressTableTest, ClearPlusProfiles) {

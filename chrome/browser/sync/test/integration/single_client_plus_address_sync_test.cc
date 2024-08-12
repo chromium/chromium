@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest,
                                  testing::UnorderedElementsAre(plus_profile))
                   .Wait());
   // Simulate removing the `plus_profile` on the server.
-  InjectTombstoneToServer(plus_profile.profile_id);
+  InjectTombstoneToServer(*plus_profile.profile_id);
   EXPECT_TRUE(
       PlusProfileChecker(GetPlusAddressService(), testing::IsEmpty()).Wait());
 }

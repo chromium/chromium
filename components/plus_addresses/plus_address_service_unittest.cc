@@ -907,7 +907,7 @@ TEST_F(PlusAddressServiceWebDataTest, OnWebDataChangedBySync) {
   EXPECT_THAT(service().GetPlusProfiles(),
               UnorderedElementsAre(profile1, profile2));
 
-  table().RemovePlusProfile(profile1.profile_id);
+  table().RemovePlusProfile(*profile1.profile_id);
   std::vector<PlusAddressDataChange> remove_changes = {
       PlusAddressDataChange(PlusAddressDataChange::Type::kRemove, profile1)};
   EXPECT_CALL(observer, OnPlusAddressesChanged(remove_changes));

@@ -5,6 +5,7 @@
 #include "components/plus_addresses/webdata/plus_address_table.h"
 
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
@@ -153,7 +154,7 @@ std::vector<PlusProfile> PlusAddressTable::GetPlusProfiles() const {
 }
 
 std::optional<PlusProfile> PlusAddressTable::GetPlusProfileForId(
-    const std::string& profile_id) const {
+    std::string_view profile_id) const {
   sql::Statement query(db_->GetUniqueStatement(
       base::StringPrintf("SELECT %s, %s, %s FROM %s WHERE %s=?", kProfileId,
                          kFacet, kPlusAddress, kPlusAddressTable, kProfileId)));
@@ -169,14 +170,14 @@ bool PlusAddressTable::AddOrUpdatePlusProfile(const PlusProfile& profile) {
   sql::Statement query(db_->GetUniqueStatement(base::StringPrintf(
       "INSERT OR REPLACE INTO %s (%s, %s, %s) VALUES (?, ?, ?)",
       kPlusAddressTable, kProfileId, kFacet, kPlusAddress)));
-  query.BindString(0, profile.profile_id);
+  query.BindString(0, profile.profile_id.value());
   query.BindString(
       1, absl::get<affiliations::FacetURI>(profile.facet).canonical_spec());
   query.BindString(2, profile.plus_address);
   return query.Run();
 }
 
-bool PlusAddressTable::RemovePlusProfile(const std::string& profile_id) {
+bool PlusAddressTable::RemovePlusProfile(std::string_view profile_id) {
   sql::Statement query(db_->GetUniqueStatement(base::StringPrintf(
       "DELETE FROM %s WHERE %s=?", kPlusAddressTable, kProfileId)));
   query.BindString(0, profile_id);

@@ -186,9 +186,8 @@ void PlusAddressPreallocator::ProcessAllocationRequests() {
     }
     Request request = std::move(requests_.front());
     requests_.pop();
-    // TODO: crbug.com/324559503 - Make `profile_id` take `std::nullopt`.
     std::move(request.callback)
-        .Run(PlusProfile(/*profile_id=*/"0",
+        .Run(PlusProfile(/*profile_id=*/std::nullopt,
                          /*facet=*/std::move(request.facet),
                          /*plus_address=*/std::move(next_address).value(),
                          /*is_confirmed=*/false));

@@ -5,13 +5,15 @@
 #include "components/plus_addresses/plus_address_types.h"
 
 #include <memory>
+#include <optional>
 #include <ostream>
+#include <string>
 
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace plus_addresses {
 
-PlusProfile::PlusProfile(std::string profile_id,
+PlusProfile::PlusProfile(std::optional<std::string> profile_id,
                          facet_t facet,
                          std::string plus_address,
                          bool is_confirmed)
@@ -68,7 +70,8 @@ std::ostream& operator<<(std::ostream& os,
 }
 
 std::ostream& operator<<(std::ostream& os, const PlusProfile& profile) {
-  os << "PlusProfile(profile_id=" << profile.profile_id << ",facet=";
+  os << "PlusProfile(profile_id=" << profile.profile_id.value_or("")
+     << ",facet=";
   absl::visit([&](const auto& f) { os << f; }, profile.facet);
   return os << ",plus_address=" << profile.plus_address
             << ",is_confirmed=" << profile.is_confirmed << ")";
