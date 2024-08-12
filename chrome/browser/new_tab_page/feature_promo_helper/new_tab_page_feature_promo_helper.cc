@@ -4,23 +4,20 @@
 
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 
-#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "ui/base/ui_base_features.h"
 
-void NewTabPageFeaturePromoHelper::RecordFeatureUsage(
-    const std::string& event,
+void NewTabPageFeaturePromoHelper::RecordPromoFeatureUsage(
+    const base::Feature& feature,
     content::WebContents* web_contents) {
-  auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
-      web_contents->GetBrowserContext());
-  if (tracker) {
-    tracker->NotifyEvent(event);
-  }
+  UserEducationService::MaybeNotifyPromoFeatureUsed(
+      web_contents->GetBrowserContext(), feature);
 }
 
 // For testing purposes only.

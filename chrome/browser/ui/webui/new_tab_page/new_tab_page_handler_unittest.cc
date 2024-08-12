@@ -48,6 +48,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -223,8 +224,8 @@ class MockCustomizeChromeTabHelper
 class MockFeaturePromoHelper : public NewTabPageFeaturePromoHelper {
  public:
   MOCK_METHOD(void,
-              RecordFeatureUsage,
-              (const std::string& event, content::WebContents*),
+              RecordPromoFeatureUsage,
+              (const base::Feature& feature, content::WebContents*),
               (override));
   MOCK_METHOD(void,
               MaybeShowFeaturePromo,
@@ -994,10 +995,30 @@ TEST_F(NewTabPageHandlerTest, OpenSidePanel) {
                                testing::SaveArg<1>(&section)));
   EXPECT_CALL(
       *mock_feature_promo_helper_,
-      RecordFeatureUsage(feature_engagement::events::kCustomizeChromeOpened,
-                         web_contents_.get()))
+      RecordPromoFeatureUsage(
+          testing::Ref(feature_engagement::kIPHDesktopCustomizeChromeFeature),
+          web_contents_.get()))
       .Times(1);
-  EXPECT_CALL(*mock_feature_promo_helper_, CloseFeaturePromo).Times(1);
+  EXPECT_CALL(
+      *mock_feature_promo_helper_,
+      RecordPromoFeatureUsage(
+          testing::Ref(
+              feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature),
+          web_contents_.get()))
+      .Times(1);
+  EXPECT_CALL(
+      *mock_feature_promo_helper_,
+      CloseFeaturePromo(
+          testing::Ref(feature_engagement::kIPHDesktopCustomizeChromeFeature),
+          web_contents_.get()))
+      .Times(1);
+  EXPECT_CALL(
+      *mock_feature_promo_helper_,
+      CloseFeaturePromo(
+          testing::Ref(
+              feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature),
+          web_contents_.get()))
+      .Times(1);
 
   handler_->SetCustomizeChromeSidePanelVisible(
       /*visible=*/true,
@@ -1009,7 +1030,7 @@ TEST_F(NewTabPageHandlerTest, OpenSidePanel) {
 
 TEST_F(NewTabPageHandlerTest, CloseSidePanel) {
   EXPECT_CALL(*mock_customize_chrome_tab_helper_, CloseSidePanel).Times(1);
-  EXPECT_CALL(*mock_feature_promo_helper_, RecordFeatureUsage).Times(0);
+  EXPECT_CALL(*mock_feature_promo_helper_, RecordPromoFeatureUsage).Times(0);
   EXPECT_CALL(*mock_feature_promo_helper_, CloseFeaturePromo).Times(0);
 
   handler_->SetCustomizeChromeSidePanelVisible(
@@ -1108,8 +1129,10 @@ TEST_F(NewTabPageHandlerTest,
 TEST_F(NewTabPageHandlerTest, OnModuleUsedRecordFeatureUsageAndClosePromo) {
   EXPECT_CALL(
       *mock_feature_promo_helper_,
-      RecordFeatureUsage(feature_engagement::events::kDesktopNTPModuleUsed,
-                         web_contents_.get()))
+      RecordPromoFeatureUsage(
+          testing::Ref(
+              feature_engagement::kIPHDesktopNewTabPageModulesCustomizeFeature),
+          web_contents_.get()))
       .Times(1);
   EXPECT_CALL(*mock_feature_promo_helper_, CloseFeaturePromo).Times(1);
 
