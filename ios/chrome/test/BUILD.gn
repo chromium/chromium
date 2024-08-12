@@ -262,7 +262,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/find_in_page/model:unit_tests",
     "//ios/chrome/browser/first_run/ui_bundled/default_browser:unit_tests",
     "//ios/chrome/browser/first_run/ui_bundled/omnibox_position:unit_tests",
-    "//ios/chrome/browser/first_run/ui_bundled/omnibox_position/promo:unit_tests",
     "//ios/chrome/browser/first_run/ui_bundled/tos:unit_tests",
     "//ios/chrome/browser/flags:unit_tests",
     "//ios/chrome/browser/follow/model:unit_tests",

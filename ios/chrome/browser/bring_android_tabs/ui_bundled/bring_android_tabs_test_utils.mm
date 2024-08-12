@@ -70,10 +70,6 @@ void SignInViaFREWithHistorySyncEnabled(BOOL enable_history_sync) {
                           : kPromoStyleSecondaryActionAccessibilityIdentifier);
   // Default browser promo dismissal.
   TapPromoStyleButton(kPromoStyleSecondaryActionAccessibilityIdentifier);
-  // Omnibox position choice promo dismissal.
-  if ([FirstRunAppInterface isOmniboxPositionChoiceEnabled]) {
-    TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
-  }
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 }

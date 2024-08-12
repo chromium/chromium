@@ -216,25 +216,6 @@ const char kBottomOmniboxDefaultSettingDescription[] =
     "hasn't already changed the setting, changes the omnibox position to top "
     "or bottom of the screen on iPhone. The default is top omnibox.";
 
-const char kBottomOmniboxPromoAppLaunchName[] =
-    "Bottom omnibox promo app-launch";
-const char kBottomOmniboxPromoAppLaunchDescription[] =
-    "Enables the app-launch promo for the bottom omnibox.";
-
-const char kBottomOmniboxPromoDefaultPositionName[] =
-    "Bottom omnibox promo default position";
-const char kBottomOmniboxPromoDefaultPositionDescription[] =
-    "Changes the default omnibox position in the FRE and app-launch promos.";
-
-const char kBottomOmniboxPromoFREName[] = "Bottom omnibox promo FRE";
-const char kBottomOmniboxPromoFREDescription[] =
-    "Enables the FRE promo for the bottom omnibox.";
-
-const char kBottomOmniboxPromoRegionFilterName[] =
-    "Bottom omnibox promo region filter";
-const char kBottomOmniboxPromoRegionFilterDescription[] =
-    "When enabled the bottom omnibox promo is limited to some regions.";
-
 const char kBreakpadNoDelayInitialUploadName[] =
     "Remove delay on initial crash upload";
 const char kBreakpadNoDelayInitialUploadDescription[] =

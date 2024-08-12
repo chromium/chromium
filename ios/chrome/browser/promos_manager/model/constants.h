@@ -38,13 +38,14 @@ enum class Promo {
   PostRestoreDefaultBrowserAlert =
       8,  // Post Restore Default Browser (native iOS alert)
   DefaultBrowserRemindMeLater = 9,  // Remind me later for default browser.
-  OmniboxPosition = 10,             // Choose between top and bottom omnibox.
-  DockingPromo = 11,                // Docking Promo.
-  DockingPromoRemindMeLater = 12,   // Docking Promo (Remind Me Later version).
-  AllTabsDefaultBrowser = 13,       // "All Tabs" default browser promo.
-  MadeForIOSDefaultBrowser = 14,    // "Made For iOS" default browser promo.
-  StaySafeDefaultBrowser = 15,      // "Stay Safe" default browser promo.
-  PostDefaultAbandonment = 16,      // Post-default browser abandonment alert.
+  // OmniboxPosition = 10,          // Obsolete. Choose between top and bottom
+  // omnibox.
+  DockingPromo = 11,               // Docking Promo.
+  DockingPromoRemindMeLater = 12,  // Docking Promo (Remind Me Later version).
+  AllTabsDefaultBrowser = 13,      // "All Tabs" default browser promo.
+  MadeForIOSDefaultBrowser = 14,   // "Made For iOS" default browser promo.
+  StaySafeDefaultBrowser = 15,     // "Stay Safe" default browser promo.
+  PostDefaultAbandonment = 16,     // Post-default browser abandonment alert.
   kMaxValue = PostDefaultAbandonment,
 };
 // LINT.ThenChange(/ios/chrome/browser/promos_manager/model/constants.cc)

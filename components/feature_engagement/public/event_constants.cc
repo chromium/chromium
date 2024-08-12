@@ -107,7 +107,6 @@ const char kTabGridToolbarItemUsed[] = "tab_grid_toolbar_item_used";
 const char kHistoryOnOverflowMenuUsed[] = "history_on_overflow_menu_used";
 const char kShareToolbarItemUsed[] = "share_toolbar_item_used";
 const char kLensButtonKeyboardUsed[] = "lens_keyboard_used";
-const char kOmniboxPositionPromoShown[] = "omnibox_position_promo_shown";
 const char kParcelTrackingTriggered[] = "parcel_tracking_triggered";
 const char kParcelTracked[] = "parcel_tracked";
 const char kIOSMultiGestureRefreshUsed[] = "multi_gesture_refresh_used";

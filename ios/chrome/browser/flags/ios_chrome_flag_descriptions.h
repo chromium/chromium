@@ -174,26 +174,6 @@ extern const char kAutofillVcnEnrollRequestTimeoutDescription[];
 extern const char kBottomOmniboxDefaultSettingName[];
 extern const char kBottomOmniboxDefaultSettingDescription[];
 
-// Title and description for the flag that enables the app-launch promo of
-// bottom omnibox.
-extern const char kBottomOmniboxPromoAppLaunchName[];
-extern const char kBottomOmniboxPromoAppLaunchDescription[];
-
-// Title and description for the flag that changes the default omnibox position
-// in the promos.
-extern const char kBottomOmniboxPromoDefaultPositionName[];
-extern const char kBottomOmniboxPromoDefaultPositionDescription[];
-
-// Title and description for the flag that enables the FRE promo of bottom
-// omnibox.
-extern const char kBottomOmniboxPromoFREName[];
-extern const char kBottomOmniboxPromoFREDescription[];
-
-// Title and description for the flag that enables region filter for the omnibox
-// position promos.
-extern const char kBottomOmniboxPromoRegionFilterName[];
-extern const char kBottomOmniboxPromoRegionFilterDescription[];
-
 // Title and description for the flag to control if initial uploading of crash
 // reports is delayed.
 extern const char kBreakpadNoDelayInitialUploadName[];

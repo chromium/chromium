@@ -65,7 +65,6 @@
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
-#import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/promo/omnibox_position_choice_scene_agent.h"
 #import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_delegate.h"
@@ -1135,12 +1134,6 @@ void OnListFamilyMembersResponse(
   [sceneState addAgent:[[CredentialProviderPromoSceneAgent alloc]
                            initWithPromosManager:promosManager
                                      prefService:prefService]];
-
-  if (IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAppLaunch)) {
-    [sceneState addAgent:[[OmniboxPositionChoiceSceneAgent alloc]
-                             initWithPromosManager:promosManager
-                                   forBrowserState:browserState]];
-  }
 }
 
 // Determines the mode (normal or incognito) the initial UI should be in.

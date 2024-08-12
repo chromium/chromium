@@ -30,9 +30,6 @@
 // Display the default browser promo after the user tapped Remind Me Later.
 - (void)displayDefaultBrowserPromoAfterRemindMeLater;
 
-// Display the omnibox position choice screen as a promo.
-- (void)showOmniboxPositionChoicePromo;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_PROMOS_MANAGER_COMMANDS_H_

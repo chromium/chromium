@@ -96,7 +96,7 @@
       assertWithMatcher:grey_nil()];
 
   [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
-  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
+  [[self class] dismissDefaultBrowser];
   [SearchEngineChoiceEarlGreyUI
       verifyDefaultSearchEngineSetting:searchEngineToSelect];
 }
@@ -141,7 +141,7 @@
                               amount:300];
   [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
 
-  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
+  [[self class] dismissDefaultBrowser];
   [SearchEngineChoiceEarlGreyUI
       verifyDefaultSearchEngineSetting:searchEngineToSelect];
 }
@@ -168,7 +168,7 @@
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Dismiss the default browser screen.
-  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
+  [[self class] dismissDefaultBrowser];
   // Open the default search engine settings menu.
   [ChromeEarlGreyUI openSettingsMenu];
   // Verify that the correct search engine is selected. The enterprise search
@@ -267,7 +267,7 @@
                                kFreDefaultWasSet)
           forHistogram:eventHistogram],
       @"Failed to record event histogram");
-  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
+  [[self class] dismissDefaultBrowser];
 }
 
 @end

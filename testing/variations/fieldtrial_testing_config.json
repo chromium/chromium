@@ -3315,27 +3315,6 @@
             ]
         }
     ],
-    "BottomOmniboxPhase2IOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Both_Top",
-                    "params": {
-                        "BottomOmniboxPromoDefaultPositionParam": "Top"
-                    },
-                    "enable_features": [
-                        "BottomOmniboxPromoAppLaunch",
-                        "BottomOmniboxPromoDefaultPosition",
-                        "BottomOmniboxPromoFRE",
-                        "BottomOmniboxPromoRegionFilter"
-                    ]
-                }
-            ]
-        }
-    ],
     "BoundaryEventDispatchTracksNodeRemoval": [
         {
             "platforms": [

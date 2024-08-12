@@ -15,9 +15,6 @@
 // Returns whether UMA collection is enabled.
 + (BOOL)isUMACollectionEnabled;
 
-// Returns whether the omnibox position choice is enabled.
-+ (BOOL)isOmniboxPositionChoiceEnabled;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_FIRST_RUN_APP_INTERFACE_H_

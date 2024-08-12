@@ -187,9 +187,6 @@ extern const char kShareToolbarItemUsed[];
 // The user has triggered the Lens button in the Omnibox keyboard.
 extern const char kLensButtonKeyboardUsed[];
 
-// The omnibox position choice promo has been shown.
-extern const char kOmniboxPositionPromoShown[];
-
 // The user has triggered Parcel Tracking.
 extern const char kParcelTrackingTriggered[];
 

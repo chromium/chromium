@@ -2072,16 +2072,11 @@ enum class ToolbarKind {
 }
 
 - (void)showOmniboxPositionChoice {
-  CHECK(IsIOSTipsNotificationsEnabled() ||
-        IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAppLaunch));
-
   if (!_omniboxPositionChoiceCoordinator) {
     _omniboxPositionChoiceCoordinator =
         [[OmniboxPositionChoiceCoordinator alloc]
             initWithBaseViewController:self.viewController
                                browser:self.browser];
-    _omniboxPositionChoiceCoordinator.promosUIHandler =
-        self.promosManagerCoordinator;
   } else {
     [_omniboxPositionChoiceCoordinator stop];
   }
@@ -2542,11 +2537,6 @@ enum class ToolbarKind {
   self.defaultBrowserGenericPromoCoordinator.handler = self;
   self.defaultBrowserGenericPromoCoordinator.promoWasFromRemindMeLater = YES;
   [self.defaultBrowserGenericPromoCoordinator start];
-}
-
-- (void)showOmniboxPositionChoicePromo {
-  CHECK(IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAppLaunch));
-  [self showOmniboxPositionChoice];
 }
 
 #pragma mark - PageInfoCommands

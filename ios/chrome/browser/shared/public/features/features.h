@@ -310,42 +310,6 @@ extern const char kBottomOmniboxDefaultSettingParamSafariSwitcher[];
 // Feature flag to change the default position of the omnibox.
 BASE_DECLARE_FEATURE(kBottomOmniboxDefaultSetting);
 
-// Feature flag to enable the bottom omnibox FRE promo.
-BASE_DECLARE_FEATURE(kBottomOmniboxPromoFRE);
-
-// Feature flag to enable the bottom omnibox app-launch promo.
-BASE_DECLARE_FEATURE(kBottomOmniboxPromoAppLaunch);
-
-// Feature param under kBottomOmniboxPromoFRE or kBottomOmniboxPromoAppLaunch to
-// skip the promo conditions for testing.
-extern const char kBottomOmniboxPromoParam[];
-extern const char kBottomOmniboxPromoParamForced[];
-
-// Type of bottom omnibox promo.
-enum class BottomOmniboxPromoType {
-  // kBottomOmniboxPromoFRE.
-  kFRE,
-  // kBottomOmniboxPromoAppLaunch.
-  kAppLaunch,
-  // Any promo type.
-  kAny,
-};
-
-// Whether the bottom omnibox promo of `type` is enabled.
-bool IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType type);
-
-// Feature flag to change the default proposed position in omnibox promos.
-BASE_DECLARE_FEATURE(kBottomOmniboxPromoDefaultPosition);
-
-// Feature param under kBottomOmniboxPromoDefaultPosition to select the default
-// position.
-extern const char kBottomOmniboxPromoDefaultPositionParam[];
-extern const char kBottomOmniboxPromoDefaultPositionParamTop[];
-extern const char kBottomOmniboxPromoDefaultPositionParamBottom[];
-
-// Feature flag to enable region filter for the bottom omnibox promos.
-BASE_DECLARE_FEATURE(kBottomOmniboxPromoRegionFilter);
-
 // Feature flag to put all clipboard access onto a background thread. Any
 // synchronous clipboard access will always return nil/false.
 BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);

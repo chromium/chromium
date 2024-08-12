@@ -8,7 +8,6 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 @implementation FirstRunAppInterface
@@ -16,12 +15,6 @@
 + (BOOL)isUMACollectionEnabled {
   return GetApplicationContext()->GetLocalState()->GetBoolean(
       metrics::prefs::kMetricsReportingEnabled);
-}
-
-+ (BOOL)isOmniboxPositionChoiceEnabled {
-  return IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kFRE) &&
-         ShouldShowOmniboxPositionChoiceInFRE(
-             chrome_test_util::GetOriginalBrowserState());
 }
 
 @end

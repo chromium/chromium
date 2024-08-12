@@ -32,7 +32,7 @@ typedef NS_ENUM(NSUInteger, FRESigninIntent) {
 @interface FirstRunTestCaseBase : ChromeTestCase
 
 // Dismisses the remaining screens in FRE after the default browser screen.
-+ (void)dismissDefaultBrowserAndOmniboxPositionSelectionScreens;
++ (void)dismissDefaultBrowser;
 
 // Returns GREYElementInteraction for `matcher`, using `scrollViewMatcher` to
 // scroll.

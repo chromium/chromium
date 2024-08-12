@@ -121,7 +121,6 @@
     case kHistorySync:
     case kDefaultBrowserPromo:
     case kChoice:
-    case kOmniboxPosition:
     case kDockingPromo:
     case kStepsCompleted:
       NOTREACHED_IN_MIGRATION()

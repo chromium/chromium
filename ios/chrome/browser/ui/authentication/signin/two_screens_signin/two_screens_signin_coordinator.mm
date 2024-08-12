@@ -162,7 +162,6 @@ using base::UserMetricsAction;
                                accessPoint:self.accessPoint];
     case kDefaultBrowserPromo:
     case kChoice:
-    case kOmniboxPosition:
     case kDockingPromo:
     case kStepsCompleted:
       break;

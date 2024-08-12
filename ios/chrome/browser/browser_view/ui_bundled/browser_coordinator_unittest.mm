@@ -436,27 +436,3 @@ TEST_F(BrowserCoordinatorTest, DisplayDefaultBrowserPromoAfterRemindMeLater) {
 
   [browser_coordinator stop];
 }
-
-// Tests that the showOmniboxPositionChoice command does not
-// crash.
-TEST_F(BrowserCoordinatorTest, ShowOmniboxPositionChoice) {
-  // OmniboxPositionChoice is only available on phones.
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
-    return;
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kBottomOmniboxPromoAppLaunch);
-
-  // Start the BrowserCoordinator
-  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
-  [browser_coordinator start];
-
-  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-  id<PromosManagerCommands> handler =
-      HandlerForProtocol(dispatcher, PromosManagerCommands);
-
-  [handler showOmniboxPositionChoicePromo];
-
-  [browser_coordinator stop];
-}

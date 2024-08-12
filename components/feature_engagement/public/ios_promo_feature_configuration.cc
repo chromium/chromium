@@ -182,28 +182,6 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     return config;
   }
 
-  if (kIPHiOSPromoOmniboxPositionFeature.name == feature->name) {
-    // Shown only once.
-    config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->used = EventConfig("omnibox_position_promo_used",
-                               Comparator(ANY, 0), 365, 365);
-    config->trigger =
-        EventConfig("omnibox_position_promo_trigger", Comparator(EQUAL, 0),
-                    feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
-
-    // Blocks the app launch promo if it has been shown in another context (the
-    // promo can also be shown in FRE).
-    config->event_configs.insert(
-        EventConfig(events::kOmniboxPositionPromoShown, Comparator(EQUAL, 0),
-                    feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod));
-    return config;
-  }
-
   if (kIPHiOSDockingPromoFeature.name == feature->name) {
     config = FeatureConfig();
     config->valid = true;
