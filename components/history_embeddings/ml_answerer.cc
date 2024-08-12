@@ -43,9 +43,11 @@ void AddQueryAndPassagesToSession(const std::string& query,
   session->AddContext(request);
 }
 
+}  // namespace
+
 // Manages sessions for generating an answer for a given query and multiple
 // URLs.
-class SessionManager {
+class MlAnswerer::SessionManager {
  public:
   using SessionScoreType = std::tuple<int, std::optional<float>>;
 
@@ -154,8 +156,6 @@ class SessionManager {
   const scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
   base::WeakPtrFactory<SessionManager> weak_ptr_factory_;
 };
-
-}  // namespace
 
 MlAnswerer::MlAnswerer(OptimizationGuideModelExecutor* model_executor)
     : model_executor_(model_executor) {}

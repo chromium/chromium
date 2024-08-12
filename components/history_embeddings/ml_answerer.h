@@ -13,10 +13,6 @@
 
 namespace history_embeddings {
 
-namespace {
-class SessionManager;
-}
-
 using optimization_guide::OptimizationGuideModelExecutor;
 
 // TODO: b/343237382 - Integrate History Question Answerer ML model
@@ -30,6 +26,8 @@ class MlAnswerer : public MockAnswerer {
                      ComputeAnswerCallback callback) override;
 
  private:
+  class SessionManager;
+
   // Guaranteed to outlive `this`, since
   // `model_executor_` is owned by OptimizationGuideKeyedServiceFactory,
   // which HistoryEmbeddingsServiceFactory depends on.
