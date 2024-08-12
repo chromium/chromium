@@ -96,6 +96,29 @@ class SupervisedUserServiceTest : public SupervisedUserServiceTestBase {
       : SupervisedUserServiceTestBase(/*is_supervised=*/true) {}
 };
 
+// Tests that restricting all site navigation is applied to supervised users.
+TEST_F(SupervisedUserServiceTest, UrlIsBlockedForUser) {
+  // Set "only allow certain sites" filter.
+  syncable_pref_service_.SetInteger(
+      prefs::kDefaultSupervisedUserFilteringBehavior,
+      static_cast<int>(FilteringBehavior::kBlock));
+  service_->GetURLFilter()->SetDefaultFilteringBehavior(
+      FilteringBehavior::kBlock);
+
+  ASSERT_TRUE(service_->IsBlockedURL(GURL("http://google.com")));
+}
+
+// Tests that allowing all site navigation is applied to supervised users.
+TEST_F(SupervisedUserServiceTest, UrlIsAllowedForUser) {
+  // Set "allow all sites" filter.
+  syncable_pref_service_.SetInteger(
+      prefs::kDefaultSupervisedUserFilteringBehavior,
+      static_cast<int>(FilteringBehavior::kAllow));
+  syncable_pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, false);
+
+  ASSERT_FALSE(service_->IsBlockedURL(GURL("http://google.com")));
+}
+
 // Tests that changes in parent configuration for web filter types are recorded.
 TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
   base::HistogramTester histogram_tester;
@@ -258,6 +281,18 @@ class SupervisedUserServiceTestUnsupervised
   SupervisedUserServiceTestUnsupervised()
       : SupervisedUserServiceTestBase(/*is_supervised=*/false) {}
 };
+
+// Tests that supervision restrictions do not apply to unsupervised users.
+TEST_F(SupervisedUserServiceTestUnsupervised, UrlIsAllowedForUser) {
+  // Set "only allow certain sites" filter.
+  syncable_pref_service_.SetInteger(
+      prefs::kDefaultSupervisedUserFilteringBehavior,
+      static_cast<int>(FilteringBehavior::kBlock));
+  service_->GetURLFilter()->SetDefaultFilteringBehavior(
+      FilteringBehavior::kBlock);
+
+  ASSERT_FALSE(service_->IsBlockedURL(GURL("http://google.com")));
+}
 
 // TODO(crbug.com/1364589): Failing consistently on linux-chromeos-dbg
 // due to failed timezone conversion assertion.

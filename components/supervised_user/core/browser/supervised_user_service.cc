@@ -126,7 +126,12 @@ bool SupervisedUserService::HasACustodian() const {
          !GetSecondCustodianEmailAddress().empty();
 }
 
-bool SupervisedUserService::IsBlockedURL(GURL url) const {
+bool SupervisedUserService::IsBlockedURL(const GURL& url) const {
+  // TODO(b/359161670): prevent access to URL filtering through lifecycle events
+  // rather than individually checking active state.
+  if (!active_) {
+    return false;
+  }
   return GetURLFilter()->GetFilteringBehaviorForURL(url) ==
          supervised_user::FilteringBehavior::kBlock;
 }

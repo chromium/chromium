@@ -122,8 +122,9 @@ class SupervisedUserService : public KeyedService,
   // up to 2 custodians, and this returns true if they have at least 1.
   bool HasACustodian() const;
 
-  // Returns true if the url is blocked for the primary account user.
-  bool IsBlockedURL(GURL url) const;
+  // Returns true if the url is blocked due to supervision restrictions on the
+  // primary account user.
+  bool IsBlockedURL(const GURL& url) const;
 
   void AddObserver(SupervisedUserServiceObserver* observer);
   void RemoveObserver(SupervisedUserServiceObserver* observer);
