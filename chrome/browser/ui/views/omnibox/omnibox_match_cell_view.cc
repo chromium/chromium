@@ -249,14 +249,6 @@ OmniboxMatchCellView::OmniboxMatchCellView(OmniboxResultView* result_view) {
 OmniboxMatchCellView::~OmniboxMatchCellView() = default;
 
 // static
-int OmniboxMatchCellView::GetTextIndent(bool is_iph_type) {
-  // The IPH row left inset is +kIPHLeftOffset from other suggestions, so the
-  // text indent should be -kIPHLeftOffset to keep the text aligned.
-  int offset = is_iph_type ? kIPHLeftOffset : 0;
-  return 52 - offset;
-}
-
-// static
 bool OmniboxMatchCellView::ShouldDisplayImage(const AutocompleteMatch& match) {
   if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
     return match.answer_template.has_value() ||
@@ -270,7 +262,7 @@ bool OmniboxMatchCellView::ShouldDisplayImage(const AutocompleteMatch& match) {
 void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
                                          const AutocompleteMatch& match) {
   is_search_type_ = AutocompleteMatch::IsSearchType(match.type);
-  is_iph_type = match.IsIPHSuggestion();
+  is_iph_type_ = match.IsIPHSuggestion();
   has_image_ = ShouldDisplayImage(match);
   // Decide layout style once before Layout, while match data is available.
   layout_style_ = has_image_ && !OmniboxFieldTrial::IsUniformRowHeightEnabled()
@@ -492,12 +484,11 @@ void OmniboxMatchCellView::Layout(PassKey) {
       has_image_ ? answer_image_view_.get() : icon_view_.get();
   // The IPH row left inset is +kIPHLeftOffset from other suggestions, so the
   // image bounds should be -kIPHLeftOffset to keep the icon aligned.
-  int bounds_offset = is_iph_type ? kIPHLeftOffset : 0;
+  int bounds_offset = is_iph_type_ ? kIPHLeftOffset : 0;
   image_view->SetBounds(image_x, y, kImageBoundsWidth - bounds_offset,
                         row_height);
 
-  const int text_indent =
-      GetTextIndent(is_iph_type) + tail_suggest_common_prefix_width_;
+  const int text_indent = GetTextIndent() + tail_suggest_common_prefix_width_;
   x += text_indent;
   const int text_width = child_area.width() - text_indent;
 
@@ -552,13 +543,12 @@ gfx::Size OmniboxMatchCellView::CalculatePreferredSize(
   int height = GetEntityImageSize() +
                2 * OmniboxFieldTrial::kRichSuggestionVerticalMargin.Get();
   if (layout_style_ == LayoutStyle::TWO_LINE_SUGGESTION)
-    height += description_view_->GetHeightForWidth(width() -
-                                                   GetTextIndent(is_iph_type));
-  if (is_iph_type) {
+    height += description_view_->GetHeightForWidth(width() - GetTextIndent());
+  if (is_iph_type_) {
     height += 4;
   }
 
-  int width = GetInsets().width() + GetTextIndent(is_iph_type) +
+  int width = GetInsets().width() + GetTextIndent() +
               tail_suggest_common_prefix_width_ +
               content_view_->GetPreferredSize().width();
 
@@ -568,6 +558,13 @@ gfx::Size OmniboxMatchCellView::CalculatePreferredSize(
   }
 
   return gfx::Size(width, height);
+}
+
+int OmniboxMatchCellView::GetTextIndent() const {
+  // The IPH row left inset is +kIPHLeftOffset from other suggestions, so the
+  // text indent should be -kIPHLeftOffset to keep the text aligned.
+  int offset = is_iph_type_ ? kIPHLeftOffset : 0;
+  return 52 - offset;
 }
 
 void OmniboxMatchCellView::SetTailSuggestCommonPrefixWidth(
