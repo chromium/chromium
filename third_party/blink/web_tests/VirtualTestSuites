@@ -512,7 +512,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/longtask-timing/shared-renderer"],
     "args": ["--renderer-process-limit=1"],
-    "expires": "Jul 1, 2024"
+    "expires": "never"
   },
   {
     "prefix": "main-threaded-percent-based-scrolling",
