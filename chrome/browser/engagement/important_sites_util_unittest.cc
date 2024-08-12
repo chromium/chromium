@@ -51,13 +51,6 @@ enum ImportantReasonForTesting {
   NOTIFICATIONS = 4
 };
 
-// We only need to reproduce the values that we are testing. The values here
-// need to match the values in important_sites_util.
-enum CrossedReasonForTesting {
-  CROSSED_NOTIFICATIONS_AND_ENGAGEMENT = 3,
-  CROSSED_REASON_UNKNOWN = 7,
-};
-
 }  // namespace
 
 class ImportantSitesUtilTest : public ChromeRenderViewHostTestHarness {
@@ -408,13 +401,6 @@ TEST_F(ImportantSitesUtilTest, Metrics) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Storage.ImportantSites.CBDIgnoredReason"),
       testing::ElementsAre(base::Bucket(BOOKMARKS, 1)));
-
-  // Bookmarks are "unknown", as they were added after the crossed reasons.
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Storage.BlacklistedImportantSites.Reason"),
-              testing::ElementsAre(
-                  base::Bucket(CROSSED_NOTIFICATIONS_AND_ENGAGEMENT, 1),
-                  base::Bucket(CROSSED_REASON_UNKNOWN, 1)));
 }
 
 TEST_F(ImportantSitesUtilTest, DialogExcluding) {

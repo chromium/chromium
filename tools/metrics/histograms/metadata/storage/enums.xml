@@ -38,17 +38,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Inherited"/>
 </enum>
 
-<enum name="ClearDataSiteBlacklistCrossedReason">
-  <int value="0" label="Durable"/>
-  <int value="1" label="Notifications"/>
-  <int value="2" label="Engagement"/>
-  <int value="3" label="Notifications and Engagement"/>
-  <int value="4" label="Durable and Engagement"/>
-  <int value="5" label="Notifications and Durable"/>
-  <int value="6" label="Notifications, Durable, and Engagement"/>
-  <int value="7" label="Unknown"/>
-</enum>
-
 <enum name="ClearSiteDataParameters">
   <int value="0" label="No valid types"/>
   <int value="1" label="Cookies"/>

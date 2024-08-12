@@ -452,18 +452,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.BlacklistedImportantSites.Reason"
-    enum="ClearDataSiteBlacklistCrossedReason" expires_after="2024-08-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    This is recorded for every site that the user blocklists when they when they
-    clear browsing data. It indicates which signals were used to show the given
-    site to the user that the user then chose to exclude from clearing. This
-    histogram has expired between M95-M106.
-  </summary>
-</histogram>
-
 <histogram name="Storage.Blob.FileReaderLoader.DataPipeNotReadableMojoError"
     enum="FileReaderLoaderMojoResult" expires_after="2024-12-14">
   <owner>estade@chromium.org</owner>
