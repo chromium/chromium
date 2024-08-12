@@ -42,6 +42,7 @@
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -668,7 +669,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   base::OnceCallback<void(const std::string&)> password_callback_;
 
   // The current cursor type.
-  ui::mojom::CursorType cursor_type_ = ui::mojom::CursorType::kPointer;
+  ui::Cursor cursor_ = ui::mojom::CursorType::kPointer;
 
   blink::WebTextInputType text_input_type_ =
       blink::WebTextInputType::kWebTextInputTypeNone;
