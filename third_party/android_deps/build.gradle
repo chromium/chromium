@@ -141,8 +141,6 @@ dependencies {
     // Matches version depended on by Dagger.
     buildCompile 'com.squareup:javapoet:1.13.0'
 
-    String errorproneVersion = '2.11.0'
-
     // Provides annotations used to opt into checks.
     compile "com.google.errorprone:error_prone_annotations:2.23.0"
     compile 'org.checkerframework:checker-compat-qual:2.5.5'
@@ -150,12 +148,7 @@ dependencies {
     compile 'org.checkerframework:checker-util:3.25.0'
     compile 'org.codehaus.mojo:animal-sniffer-annotations:1.17'
 
-    buildCompile "com.google.errorprone:error_prone_core:${errorproneVersion}"
-    buildCompile "com.google.errorprone:error_prone_check_api:${errorproneVersion}"
-    // Provides annotations needed when writing custom checks.
-    buildCompile "com.google.errorprone:error_prone_annotation:${errorproneVersion}"
-    buildCompile 'com.google.errorprone:javac:9+181-r4173-1'
-
+    buildCompile 'com.google.auto:auto-common:1.2.1'
     buildCompile 'com.google.auto.service:auto-service:1.0-rc6'
     buildCompile 'com.google.auto.service:auto-service-annotations:1.0-rc6'
     buildCompile 'com.google.code.gson:gson:2.8.0'
