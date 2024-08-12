@@ -22,6 +22,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/focus/focus_manager.h"
@@ -109,6 +110,21 @@ TEST_F(ColorPickerViewTest, ColorSelectedByDefaultIfMatching) {
   EXPECT_TRUE(color_picker->GetSelectedElement().has_value());
   // Expect the index to match that of TabGroupId::kRed.
   EXPECT_EQ(color_picker->GetSelectedElement().value(), 0);
+}
+
+TEST_F(ColorPickerViewTest, AccessibleCheckedState) {
+  ui::AXNodeData data;
+  color_picker_->GetElementAtIndexForTesting(0)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+
+  ClickColorAtIndex(0);
+  data = ui::AXNodeData();
+  color_picker_->GetElementAtIndexForTesting(0)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
 }
 
 TEST_F(ColorPickerViewTest, ClickingSelectsColor) {
