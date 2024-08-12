@@ -11,6 +11,7 @@
 
 #include "ash/accelerators/keyboard_code_util.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/shell.h"
@@ -36,6 +37,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace app_list {
 
@@ -129,6 +134,12 @@ std::optional<int> GetStringIdForIconCode(IconCode icon_code) {
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_LAUNCHER;
     case ash::SearchResultTextItem::kKeyboardShortcutSearch:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_OPEN_SEARCH;
+    case ash::SearchResultTextItem::kKeyboardShortcutKeyboardRightAlt:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return IDS_KEYBOARD_RIGHT_ALT_LABEL;
+#else
+      return IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER;
+#endif
   }
 }
 
@@ -243,6 +254,10 @@ std::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
       return IconCode::kKeyboardShortcutInputModeChange;
     case (KeyboardCode::VKEY_MICROPHONE_MUTE_TOGGLE):
       return IconCode::kKeyboardShortcutMicrophone;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    case (KeyboardCode::VKEY_RIGHT_ALT):
+      return IconCode::kKeyboardShortcutKeyboardRightAlt;
+#endif
     default:
       return std::nullopt;
   }
@@ -289,6 +304,7 @@ KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
        {u"Power", IconCode::kKeyboardShortcutPower},
        {u"PrintScreen", IconCode::kKeyboardShortcutSnapshot},
        {u"PrivacyScreenToggle", IconCode::kKeyboardShortcutPrivacyScreenToggle},
+       {u"RightAlt", IconCode::kKeyboardShortcutKeyboardRightAlt},
        {u"Settings", IconCode::kKeyboardShortcutSettings},
        {u"ViewAllApps", IconCode::kKeyboardShortcutAllApps},
        {u"ZoomToggle", IconCode::kKeyboardShortcutZoom}});

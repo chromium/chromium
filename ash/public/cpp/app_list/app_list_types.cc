@@ -11,6 +11,11 @@
 #include "base/check.h"
 #include "base/files/file.h"
 #include "base/functional/callback.h"
+#include "build/branding_buildflags.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/icons/vector_icons.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -511,6 +516,10 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kKsKeyboardBrightnessUpIcon;
     case kKeyboardShortcutKeyboardBacklightToggle:
       return &kKsKeyboardBrightnessToggleIcon;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    case kKeyboardShortcutKeyboardRightAlt:
+      return &kRightAltInternalIcon;
+#endif
     default:
       return nullptr;
   }

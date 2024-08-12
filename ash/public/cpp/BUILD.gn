@@ -511,7 +511,10 @@ component("cpp") {
   ]
 
   if (is_chrome_branded) {
-    deps += [ "//chromeos/ash/resources/internal/strings" ]
+    deps += [
+      "//chromeos/ash/resources/internal/icons:vector_icons",
+      "//chromeos/ash/resources/internal/strings",
+    ]
   }
 
   output_name = "ash_public_cpp"
