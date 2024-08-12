@@ -350,14 +350,15 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
     return {{block_size, block_size}, /* depends_on_block_constraints */ false};
   }
 
-  // Capture the min/max sizes function so we can access if it depends on block
-  // constraints.
-  std::optional<MinMaxSizesResult> captured_min_max_sizes_result;
+  // Intercept the min/max sizes function so we can access both the
+  // `depends_on_block_constraints` and `applied_aspect_ratio` variables.
+  bool depends_on_block_constraints = false;
+  bool applied_aspect_ratio = false;
   auto min_max_sizes_func = [&](SizeType type) {
-    if (!captured_min_max_sizes_result) {
-      captured_min_max_sizes_result = original_min_max_sizes_func(type);
-    }
-    return *captured_min_max_sizes_result;
+    const MinMaxSizesResult result = original_min_max_sizes_func(type);
+    depends_on_block_constraints |= result.depends_on_block_constraints;
+    applied_aspect_ratio |= result.applied_aspect_ratio;
+    return result;
   };
 
   DCHECK_EQ(space.AvailableSize().inline_size, kIndefiniteSize);
@@ -393,18 +394,19 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
         CalcSizeKeywordBehavior::kAsAuto);
   }
 
-  // TODO(ikilpatrick): auto_min_length should take into account:
+  // Check if we should apply the automatic minimum size.
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
+  const bool apply_automatic_min_size =
+      !style.IsScrollContainer() && applied_aspect_ratio;
+
   const MinMaxSizes min_max_sizes = ComputeMinMaxInlineSizes(
       space, child, border_padding,
-      /* auto_min_length */ nullptr, min_max_sizes_func);
+      apply_automatic_min_size ? &Length::MinIntrinsic() : nullptr,
+      min_max_sizes_func);
   sizes.Constrain(min_max_sizes.max_size);
   sizes.Encompass(min_max_sizes.min_size);
 
-  return {sizes,
-          captured_min_max_sizes_result
-              ? captured_min_max_sizes_result->depends_on_block_constraints
-              : false};
+  return {sizes, depends_on_block_constraints};
 }
 
 MinMaxSizesResult ComputeMinAndMaxContentContribution(

@@ -87,8 +87,21 @@ struct MinMaxSizesResult {
       : sizes(sizes),
         depends_on_block_constraints(depends_on_block_constraints) {}
 
+  // This constructor is only used within `BlockNode::ComputeMinMaxSizes` when
+  // the aspect-ratio has been applied.
+  //
+  // The `applied_aspect_ratio` flag is not propagated up the tree, unlike
+  // `depends_on_block_constraints`.
+  MinMaxSizesResult(MinMaxSizes sizes,
+                    bool depends_on_block_constraints,
+                    bool applied_aspect_ratio)
+      : sizes(sizes),
+        depends_on_block_constraints(depends_on_block_constraints),
+        applied_aspect_ratio(applied_aspect_ratio) {}
+
   MinMaxSizes sizes;
   bool depends_on_block_constraints = false;
+  bool applied_aspect_ratio = false;
 };
 
 }  // namespace blink

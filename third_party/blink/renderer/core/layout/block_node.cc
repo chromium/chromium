@@ -995,7 +995,8 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
           Style().BoxSizingForAspectRatio(),
           fragment_geometry.border_box_size.block_size);
       return MinMaxSizesResult({inline_size_from_ar, inline_size_from_ar},
-                               DependsOnBlockConstraints());
+                               DependsOnBlockConstraints(),
+                               /* applied_aspect_ratio */ true);
     }
   }
 
