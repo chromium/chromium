@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "components/spellcheck/browser/spelling_service_client.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -22,7 +24,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
-#include "components/spellcheck/browser/spelling_service_client.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/load_flags.h"
@@ -206,10 +207,8 @@ TEST_P(SpellingServiceClientTest, RequestTextCheck) {
 
   // Verify the request content type was JSON. (The Spelling service returns
   // an internal server error when this content type is not JSON.)
-  std::string request_content_type;
-  ASSERT_TRUE(intercepted_headers.GetHeader(
-      net::HttpRequestHeaders::kContentType, &request_content_type));
-  EXPECT_EQ("application/json", request_content_type);
+  EXPECT_EQ("application/json", intercepted_headers.GetHeader(
+                                    net::HttpRequestHeaders::kContentType));
 
   // Parse the JSON sent to the service, and verify its parameters.
   std::optional<base::Value> value = base::JSONReader::Read(
