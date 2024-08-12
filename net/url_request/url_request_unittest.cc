@@ -4053,10 +4053,8 @@ class URLRequestTestHTTP : public URLRequestTest {
       EXPECT_FALSE(
           req->extra_request_headers().HasHeader(HttpRequestHeaders::kOrigin));
     } else {
-      std::string origin_header;
-      EXPECT_TRUE(req->extra_request_headers().GetHeader(
-          HttpRequestHeaders::kOrigin, &origin_header));
-      EXPECT_EQ(expected_origin_value, origin_header);
+      EXPECT_EQ(expected_origin_value, req->extra_request_headers().GetHeader(
+                                           HttpRequestHeaders::kOrigin));
     }
   }
 
@@ -5728,10 +5726,8 @@ TEST_F(URLRequestTestHTTP, RedirectWithAdditionalHeadersTest) {
   req->Start();
   d.RunUntilComplete();
 
-  std::string value;
   const HttpRequestHeaders& headers = req->extra_request_headers();
-  EXPECT_TRUE(headers.GetHeader(kExtraHeader, &value));
-  EXPECT_EQ(kExtraValue, value);
+  EXPECT_EQ(kExtraValue, headers.GetHeader(kExtraHeader));
   EXPECT_FALSE(req->is_pending());
   EXPECT_FALSE(req->is_redirecting());
   EXPECT_EQ(kExtraValue, d.data_received());
@@ -5766,9 +5762,8 @@ TEST_F(URLRequestTestHTTP, RedirectWithHeaderRemovalTest) {
   req->Start();
   d.RunUntilComplete();
 
-  std::string value;
   const HttpRequestHeaders& headers = req->extra_request_headers();
-  EXPECT_FALSE(headers.GetHeader(kExtraHeaderToRemove, &value));
+  EXPECT_FALSE(headers.GetHeader(kExtraHeaderToRemove));
   EXPECT_FALSE(req->is_pending());
   EXPECT_FALSE(req->is_redirecting());
   EXPECT_EQ("None", d.data_received());

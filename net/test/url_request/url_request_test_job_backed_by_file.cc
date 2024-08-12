@@ -106,14 +106,15 @@ bool URLRequestTestJobBackedByFile::GetMimeType(std::string* mime_type) const {
 
 void URLRequestTestJobBackedByFile::SetExtraRequestHeaders(
     const HttpRequestHeaders& headers) {
-  std::string range_header;
-  if (headers.GetHeader(HttpRequestHeaders::kRange, &range_header)) {
+  std::optional<std::string> range_header =
+      headers.GetHeader(HttpRequestHeaders::kRange);
+  if (range_header) {
     // This job only cares about the Range header. This method stashes the value
     // for later use in DidOpen(), which is responsible for some of the range
     // validation as well. NotifyStartError is not legal to call here since
     // the job has not started.
     std::vector<HttpByteRange> ranges;
-    if (HttpUtil::ParseRangeHeader(range_header, &ranges)) {
+    if (HttpUtil::ParseRangeHeader(*range_header, &ranges)) {
       if (ranges.size() == 1) {
         byte_range_ = ranges[0];
       } else {
