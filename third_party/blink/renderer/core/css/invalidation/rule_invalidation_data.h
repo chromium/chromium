@@ -300,6 +300,8 @@ class CORE_EXPORT RuleInvalidationData {
 
   friend class RuleFeatureSet;
   friend class RuleFeatureSetTest;
+  friend class RuleInvalidationDataBuilder;
+  friend class RuleInvalidationDataVisitor;
 };
 
 }  // namespace blink

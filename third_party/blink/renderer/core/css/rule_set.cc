@@ -651,7 +651,7 @@ void RuleSet::AddRule(StyleRule* rule,
                                                                selector_index);
     if (features_.CollectFeaturesFromSelector(rule_data.Selector(),
                                               style_scope) ==
-        RuleFeatureSet::kSelectorNeverMatches) {
+        SelectorPreMatch::kNeverMatches) {
       return;
     }
   }
