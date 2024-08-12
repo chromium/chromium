@@ -416,6 +416,38 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
 
   EXPECT_FALSE(GetPdfViewerStreamManager());
 }
+
+// Check that navigating to a PDF and then trying to access localStorage or
+// sessionStorage in the context of the PDF document fails gracefully and
+// doesn't lead to a renderer kill. PDF documents don't access these interfaces
+// directly, but the access could still happen via DevTools.  See
+// https://crbug.com/357014503.
+IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
+                       AccessStorageInPDFDocument) {
+  GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(pdf_url, web_contents->GetLastCommittedURL());
+  ASSERT_TRUE(GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded(
+      web_contents->GetPrimaryMainFrame()));
+
+  // The PDF document should be in the grandchild frame, embedded in the PDF
+  // viewer extension frame.
+  content::RenderFrameHost* pdf_extension_frame =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(pdf_extension_frame);
+  content::RenderFrameHost* pdf_frame =
+      content::ChildFrameAt(pdf_extension_frame, 0);
+  ASSERT_TRUE(pdf_frame);
+  EXPECT_TRUE(pdf_frame->GetProcess()->IsPdf());
+
+  // When accessed from the PDF document, both localStorage and sessionStorage
+  // should be null. These accesses shouldn't lead to a renderer kill.
+  EXPECT_EQ(nullptr, content::EvalJs(pdf_frame, "window.localStorage"));
+  EXPECT_EQ(nullptr, content::EvalJs(pdf_frame, "window.sessionStorage"));
+  EXPECT_TRUE(pdf_frame->IsRenderFrameLive());
+}
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 // A helper class to verify that a "mailto:" external protocol request succeeds.

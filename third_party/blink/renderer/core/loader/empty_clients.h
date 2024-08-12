@@ -477,6 +477,8 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
     return nullptr;
   }
 
+  bool IsDomStorageDisabled() const override { return false; }
+
  protected:
   // Not owned
   WebTextCheckClient* text_check_client_;

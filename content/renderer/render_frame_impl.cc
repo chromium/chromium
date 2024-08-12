@@ -3377,6 +3377,10 @@ bool RenderFrameImpl::IsPluginHandledExternally(
 #endif
 }
 
+bool RenderFrameImpl::IsDomStorageDisabled() const {
+  return GetContentClient()->renderer()->IsDomStorageDisabled();
+}
+
 v8::Local<v8::Object> RenderFrameImpl::GetScriptableObject(
     const blink::WebElement& plugin_element,
     v8::Isolate* isolate) {
