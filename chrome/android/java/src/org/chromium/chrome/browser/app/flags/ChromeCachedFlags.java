@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.signin.SigninFeatureMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +85,9 @@ public class ChromeCachedFlags {
         FirstRunUtils.cacheFirstRunPrefs();
 
         CachedFlagUtils.cacheNativeFlags(
-                ChromeFeatureList.sFlagsCachedFullBrowser, OmniboxFeatures.getFieldTrialsToCache());
+                ChromeFeatureList.sFlagsCachedFullBrowser,
+                OmniboxFeatures.getFieldTrialsToCache(),
+                SigninFeatureMap.sCachedFlags);
         cacheAdditionalNativeFlags();
 
         List<CachedFieldTrialParameter> fieldTrialsToCache =
