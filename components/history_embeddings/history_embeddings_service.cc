@@ -577,6 +577,19 @@ std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
         });
   }
 
+  for (const auto& sr : scored_url_rows) {
+    VLOG(3) << "URL: " << sr.row.url().spec()
+            << " Score: " << sr.scored_url.score;
+    VLOG(3) << "# passages: "
+            << sr.passages_embeddings.url_passages.passages.passages_size()
+            << " # scores: " << sr.scores.size();
+    for (size_t i = 0; i < sr.scores.size(); i++) {
+      VLOG(3) << "score: " << sr.scores[i];
+      VLOG(3) << "passage: "
+              << sr.passages_embeddings.url_passages.passages.passages(i);
+    }
+  }
+
   return scored_url_rows;
 }
 
@@ -755,6 +768,7 @@ void HistoryEmbeddingsService::OnSearchCompleted(
                });
   VLOG(3) << "Search found " << scored_url_rows.size() << " results and kept "
           << filtered.size() << " after score filtering";
+
   base::UmaHistogramCounts100("History.Embeddings.NumUrlsDiscardedForLowScore",
                               scored_url_rows.size() - filtered.size());
   DeterminePassageVisibility(std::move(callback), std::move(result),
