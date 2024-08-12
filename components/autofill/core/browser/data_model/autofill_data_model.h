@@ -86,7 +86,7 @@ class AutofillDataModel : public FormGroup {
   // The last `usage_history_size_` many use dates of the model are tracked in
   // `use_dates`, which is guaranteed to have size `usage_history_size_`.
   // `use_dates_[0]` represents the last use date, `use_dates_[1]` the second to
-  // laste use date, etc. A nullopt value means that the model hasn't been used
+  // last use date, etc. A nullopt value means that the model hasn't been used
   // this often. Since creation counts as a use, `use_dates_[0]` is never
   // nullopt.
   size_t usage_history_size_;
