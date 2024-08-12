@@ -197,7 +197,8 @@ class PlusAddressServiceTest : public ::testing::Test {
   // Forces (re-)initialization of the `PlusAddressService`, which can be useful
   // when classes override feature parameters.
   void InitService() {
-    service_.emplace(identity_manager(), &setting_service(),
+    service_.emplace(&plus_environment_.pref_service(), identity_manager(),
+                     &setting_service(),
                      std::make_unique<PlusAddressHttpClientImpl>(
                          identity_manager(), shared_loader_factory()),
                      /*webdata_service=*/nullptr,
@@ -851,14 +852,19 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
     task_environment_.RunUntilIdle();
     // Initialize the `service_` using the `plus_webdata_service_`.
     service_.emplace(
-        identity_test_env_.identity_manager(), &setting_service_,
+        &plus_environment_.pref_service(), identity_manager(),
+        &plus_environment_.setting_service(),
         std::make_unique<PlusAddressHttpClientImpl>(
-            /*identity_manager=*/identity_test_env_.identity_manager(),
+            /*identity_manager=*/identity_manager(),
             /*url_loader_factory=*/nullptr),
         plus_webdata_service_,
-        /*affiliation_service=*/&affiliation_service_,
+        /*affiliation_service=*/&plus_environment_.affiliation_service(),
         /*feature_enabled_for_profile_check=*/
         base::BindRepeating(&base::FeatureList::IsEnabled));
+  }
+
+  signin::IdentityManager* identity_manager() {
+    return plus_environment_.identity_env().identity_manager();
   }
 
   PlusAddressService& service() { return *service_; }
@@ -870,11 +876,9 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  signin::IdentityTestEnvironment identity_test_env_;
-  FakePlusAddressSettingService setting_service_;
+  test::PlusAddressTestEnvironment plus_environment_;
   scoped_refptr<WebDatabaseService> webdatabase_service_;
   scoped_refptr<PlusAddressWebDataService> plus_webdata_service_;
-  NiceMock<affiliations::MockAffiliationService> affiliation_service_;
   // Except briefly during initialisation, it always has a value.
   std::optional<PlusAddressService> service_;
 };

@@ -30,6 +30,8 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "url/origin.h"
 
+class PrefService;
+
 namespace affiliations {
 class AffiliationService;
 }
@@ -83,6 +85,7 @@ class PlusAddressService : public KeyedService,
   static constexpr int kMaxHttpForbiddenResponses = 1;
 
   PlusAddressService(
+      PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       PlusAddressSettingService* setting_service,
       std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
@@ -239,8 +242,7 @@ class PlusAddressService : public KeyedService,
       GetSuggestionsCallback callback,
       std::vector<PlusProfile> affiliated_profiles);
 
-  // Plus profiles in-memory cache.
-  PlusAddressCache plus_address_cache_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ref<PrefService> pref_service_;
 
   const raw_ref<signin::IdentityManager> identity_manager_;
 
@@ -261,7 +263,10 @@ class PlusAddressService : public KeyedService,
   scoped_refptr<PlusAddressWebDataService> webdata_service_;
 
   // Responsible for allocating new plus addresses.
-  const std::unique_ptr<PlusAddressAllocator> plus_address_allocator_;
+  std::unique_ptr<PlusAddressAllocator> plus_address_allocator_;
+
+  // Plus profiles in-memory cache.
+  PlusAddressCache plus_address_cache_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Responsible for supplying a list of plus profiles with domains affiliated
   // to the the originally requested facet.

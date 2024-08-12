@@ -72,10 +72,11 @@ class PlusAddressCreationControllerAndroidEnabledTest
         base::BindLambdaForTesting([&](content::BrowserContext* context)
                                        -> std::unique_ptr<KeyedService> {
           return std::make_unique<FakePlusAddressService>(
+              &plus_environment_.pref_service(),
               plus_environment_.identity_env().identity_manager(),
               &plus_address_setting_service());
         }));
-    // TODO: crbug.com/322279583: Use FakePlusAddressSettingService from the
+    // TODO: crbug.com/322279583 - Use FakePlusAddressSettingService from the
     // PlusAddressTestEnvironment instead.
     PlusAddressSettingServiceFactory::GetInstance()->SetTestingFactory(
         browser_context(),

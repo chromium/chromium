@@ -41,7 +41,8 @@ class PlusAddressCreationViewAndroidBrowserTest : public AndroidBrowserTest {
   std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
       content::BrowserContext* context) {
     return std::make_unique<FakePlusAddressService>(
-        IdentityManagerFactory::GetForProfile(profile()), &setting_service_);
+        profile()->GetPrefs(), IdentityManagerFactory::GetForProfile(profile()),
+        &setting_service_);
   }
 
  protected:

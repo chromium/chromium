@@ -40,6 +40,7 @@ class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
  protected:
   PlusAddressAffiliationSourceAdapterTest() {
     service_ = std::make_unique<PlusAddressService>(
+        &plus_environment_.pref_service(),
         plus_environment_.identity_env().identity_manager(),
         &plus_environment_.setting_service(),
         std::make_unique<NiceMock<MockPlusAddressHttpClient>>(),

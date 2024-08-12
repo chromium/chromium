@@ -4,6 +4,7 @@
 
 #include "components/plus_addresses/plus_address_service.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,13 +27,16 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
+#include "components/plus_addresses/plus_address_allocator.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_jit_allocator.h"
+#include "components/plus_addresses/plus_address_preallocator.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -119,28 +123,49 @@ bool ShouldOfferPlusAddressCreation(
   NOTREACHED_NORETURN();
 }
 
+std::unique_ptr<PlusAddressAllocator> CreateAllocator(
+    PrefService* pref_service,
+    PlusAddressSettingService* setting_service,
+    PlusAddressHttpClient* http_client,
+    PlusAddressPreallocator::IsEnabledCheck is_enabled_check) {
+  if (base::FeatureList::IsEnabled(features::kPlusAddressPreallocation)) {
+    return std::make_unique<PlusAddressPreallocator>(
+        pref_service, setting_service, http_client,
+        std::move(is_enabled_check));
+  }
+  return std::make_unique<PlusAddressJitAllocator>(http_client);
+}
+
 }  // namespace
 
 PlusAddressService::PlusAddressService(
+    PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     PlusAddressSettingService* setting_service,
     std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
     scoped_refptr<PlusAddressWebDataService> webdata_service,
     affiliations::AffiliationService* affiliation_service,
     FeatureEnabledForProfileCheck feature_enabled_for_profile_check)
-    : identity_manager_(CHECK_DEREF(identity_manager)),
+    : pref_service_(CHECK_DEREF(pref_service)),
+      identity_manager_(CHECK_DEREF(identity_manager)),
       setting_service_(CHECK_DEREF(setting_service)),
       submission_logger_(identity_manager,
                          base::BindRepeating(&PlusAddressService::IsPlusAddress,
                                              base::Unretained(this))),
       plus_address_http_client_(std::move(plus_address_http_client)),
       webdata_service_(std::move(webdata_service)),
-      plus_address_allocator_(std::make_unique<PlusAddressJitAllocator>(
-          plus_address_http_client_.get())),
       plus_address_match_helper_(this, affiliation_service),
       feature_enabled_for_profile_check_(
           std::move(feature_enabled_for_profile_check)),
       excluded_sites_(GetAndParseExcludedSites()) {
+  // The allocator is created in the body of the constructor to avoid that it
+  // calls into `this` before all members are assigned.
+  plus_address_allocator_ =
+      CreateAllocator(&pref_service_.get(), &setting_service_.get(),
+                      plus_address_http_client_.get(),
+                      base::BindRepeating(&PlusAddressService::IsEnabled,
+                                          base::Unretained(this)));
+
   if (IsSyncingPlusAddresses() && webdata_service_) {
     webdata_service_observation_.Observe(webdata_service_.get());
     if (IsEnabled()) {

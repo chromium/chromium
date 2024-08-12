@@ -15,6 +15,8 @@
 #include "components/plus_addresses/plus_address_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+class PrefService;
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -25,7 +27,8 @@ class PlusAddressSettingService;
 
 class FakePlusAddressService : public PlusAddressService {
  public:
-  FakePlusAddressService(signin::IdentityManager* identity_manager,
+  FakePlusAddressService(PrefService* pref_service,
+                         signin::IdentityManager* identity_manager,
                          PlusAddressSettingService* setting_service);
   ~FakePlusAddressService() override;
 

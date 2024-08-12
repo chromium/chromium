@@ -33,6 +33,7 @@ class AffiliatedPlusProfilesCacheTest : public ChromeRenderViewHostTestHarness {
  public:
   AffiliatedPlusProfilesCacheTest()
       : plus_address_service_(
+            &plus_environment_.pref_service(),
             plus_environment_.identity_env().identity_manager(),
             &plus_environment_.setting_service()) {}
 

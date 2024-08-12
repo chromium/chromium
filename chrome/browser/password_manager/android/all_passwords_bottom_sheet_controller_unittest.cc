@@ -172,6 +172,7 @@ class AllPasswordsBottomSheetControllerTest
   std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
       content::BrowserContext* context) {
     return std::make_unique<FakePlusAddressService>(
+        &plus_environment_.pref_service(),
         plus_environment_.identity_env().identity_manager(),
         &plus_environment_.setting_service());
   }

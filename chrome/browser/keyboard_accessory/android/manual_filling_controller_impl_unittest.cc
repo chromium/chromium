@@ -69,11 +69,12 @@ std::vector<uint8_t> test_passkey_id() {
 }
 
 std::unique_ptr<KeyedService> BuildFakePlusAddressService(
+    PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     PlusAddressSettingService* setting_service,
     content::BrowserContext* context) {
-  return std::make_unique<FakePlusAddressService>(identity_manager,
-                                                  setting_service);
+  return std::make_unique<FakePlusAddressService>(
+      pref_service, identity_manager, setting_service);
 }
 
 constexpr autofill::FieldRendererId kFocusedFieldId(123);
@@ -97,6 +98,7 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
     PlusAddressServiceFactory::GetInstance()->SetTestingFactory(
         GetBrowserContext(),
         base::BindRepeating(&BuildFakePlusAddressService,
+                            &plus_environment_.pref_service(),
                             plus_environment_.identity_env().identity_manager(),
                             &plus_environment_.setting_service()));
 
