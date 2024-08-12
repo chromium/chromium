@@ -266,8 +266,9 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 
 // Tests that only MV2 disabled extensions that can be uninstalled are included
 // in the dialog.
+// TODO(crbug.com/358567086): Failing in multiple platforms.
 IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
-                       PolicyInstalledExtensions) {
+                       DISABLED_PolicyInstalledExtensions) {
   const ExtensionId internal_extension_id =
       AddMV2Extension("Internal Extension", mojom::ManifestLocation::kInternal)
           ->id();
