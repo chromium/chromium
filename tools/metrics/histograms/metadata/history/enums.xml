@@ -168,6 +168,13 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Model info has invalid data for additional files"/>
 </enum>
 
+<enum name="EmbeddingsQueryFiltered">
+  <int value="0" label="Not filtered"/>
+  <int value="1" label="Filtered non-ASCII"/>
+  <int value="2" label="Filtered phrase match"/>
+  <int value="3" label="Filtered term match"/>
+</enum>
+
 <enum name="EmbeddingsUserActions">
   <int value="0" label="Non-empty query History search"/>
   <int value="1" label="Embeddings search"/>

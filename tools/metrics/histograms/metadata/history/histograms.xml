@@ -2089,6 +2089,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.QueryFiltered"
+    enum="EmbeddingsQueryFiltered" expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>robertogden@chromium.org</owner>
+  <summary>
+    Indicates query filter status every time a query is checked for filtering.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Search.Completed" enum="Boolean"
     expires_after="2024-12-31">
   <owner>orinj@chromium.org</owner>

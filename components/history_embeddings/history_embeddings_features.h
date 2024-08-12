@@ -113,6 +113,10 @@ extern const base::FeatureParam<bool> kUseUrlFilter;
 // for before being torn down to reduce memory usage.
 extern const base::FeatureParam<base::TimeDelta> kEmbeddingsServiceTimeout;
 
+// Comma-separated list, all ASCII, expected to be lowercased; may contain a mix
+// of words and phrases.
+extern const base::FeatureParam<std::string> kFilterTerms;
+
 // Whether the history embeddings feature is enabled. This only checks if the
 // feature flags are enabled and does not check the user's opt-in preference.
 // See chrome/browser/history_embeddings/history_embeddings_utils.h.

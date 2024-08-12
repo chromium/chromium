@@ -128,6 +128,10 @@ const base::FeatureParam<base::TimeDelta> kEmbeddingsServiceTimeout(
     "EmbeddingsServiceTimeout",
     base::Seconds(60));
 
+const base::FeatureParam<std::string> kFilterTerms(&kHistoryEmbeddings,
+                                                   "FilterTerms",
+                                                   "");
+
 bool IsHistoryEmbeddingsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)
   return chromeos::features::IsFeatureManagementHistoryEmbeddingEnabled() &&

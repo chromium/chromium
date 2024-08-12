@@ -12,6 +12,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -43,6 +45,11 @@
 #include "url/gurl.h"
 
 namespace history_embeddings {
+
+void RecordQueryFiltered(QueryFiltered status) {
+  base::UmaHistogramEnumeration("History.Embeddings.QueryFiltered", status,
+                                QueryFiltered::ENUM_COUNT);
+}
 
 void RecordExtractionCancelled(ExtractionCancelled reason) {
   base::UmaHistogramEnumeration("History.Embeddings.ExtractionCancelled",
@@ -249,6 +256,16 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
     return;
   }
 
+  for (std::string& term_or_phrase : base::SplitString(
+           kFilterTerms.Get(), ",", base::WhitespaceHandling::TRIM_WHITESPACE,
+           base::SplitResult::SPLIT_WANT_NONEMPTY)) {
+    if (term_or_phrase.find(' ') != std::string::npos) {
+      filter_phrases_.push_back(base::ToLowerASCII(term_or_phrase));
+    } else {
+      filter_terms_.insert(base::ToLowerASCII(term_or_phrase));
+    }
+  }
+
   // Notify page content annotations service that we will need the content
   // visibility model during the session.
   if (page_content_annotations_service_) {
@@ -364,6 +381,11 @@ void HistoryEmbeddingsService::Search(
     std::optional<base::Time> time_range_start,
     size_t count,
     SearchResultCallback callback) {
+  if (QueryIsFiltered(query)) {
+    callback.Run({});
+    return;
+  }
+
   SearchResult result;
   result.session_id = base::Token::CreateRandom().ToString();
   result.query = query;
@@ -976,6 +998,36 @@ void HistoryEmbeddingsService::RetrievePassagesWithUrlData(
                              std::move(existing_url_data),
                              UrlPassages(url_id, visit_id, visit_time))),
           nullptr));
+}
+
+bool HistoryEmbeddingsService::QueryIsFiltered(
+    const std::string& raw_query) const {
+  if (!base::IsStringASCII(raw_query)) {
+    RecordQueryFiltered(QueryFiltered::FILTERED_NOT_ASCII);
+    return true;
+  }
+  std::string query = base::ToLowerASCII(raw_query);
+  if (std::any_of(filter_phrases_.begin(), filter_phrases_.end(),
+                  [&](const std::string& phrase) {
+                    return query.find(phrase) != std::string::npos;
+                  })) {
+    RecordQueryFiltered(QueryFiltered::FILTERED_PHRASE_MATCH);
+    return true;
+  }
+  std::vector<std::string> query_terms =
+      base::SplitString(query, " ", base::WhitespaceHandling::TRIM_WHITESPACE,
+                        base::SplitResult::SPLIT_WANT_NONEMPTY);
+  if (std::any_of(query_terms.begin(), query_terms.end(),
+                  [&](const std::string& query_term) {
+                    return filter_terms_.contains(std::string(base::TrimString(
+                        query_term, ".?!,:;-()[]{}<>\"'/\\*&#~@^|%$`+=",
+                        base::TrimPositions::TRIM_ALL)));
+                  })) {
+    RecordQueryFiltered(QueryFiltered::FILTERED_TERM_MATCH);
+    return true;
+  }
+  RecordQueryFiltered(QueryFiltered::NOT_FILTERED);
+  return false;
 }
 
 }  // namespace history_embeddings

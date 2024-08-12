@@ -8,6 +8,7 @@
 #include <atomic>
 #include <optional>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -334,6 +335,9 @@ class HistoryEmbeddingsService : public KeyedService,
       base::Time time_before_database_access,
       std::optional<UrlPassagesEmbeddings> existing_url_data);
 
+  // Returns true if query should be filtered.
+  bool QueryIsFiltered(const std::string& raw_query) const;
+
   raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
   // The history service is used to fill in details about URLs and visits
@@ -372,6 +376,12 @@ class HistoryEmbeddingsService : public KeyedService,
   // This will be null if the feature flag is disabled.
   base::SequenceBound<Storage> storage_;
 
+  // Single word terms with no spaces, checked exactly against query terms.
+  std::unordered_set<std::string> filter_terms_;
+
+  // Multi-word phrases with spaces, checked by finding substring in query.
+  std::vector<std::string> filter_phrases_;
+
   // Callback called when `ProcessAndStorePassages` completes. Needed for tests
   // as the blink dependency doesn't have a 'wait for pending requests to
   // complete' mechanism.
@@ -391,6 +401,22 @@ class HistoryEmbeddingsService : public KeyedService,
 
   base::WeakPtrFactory<HistoryEmbeddingsService> weak_ptr_factory_;
 };
+
+// This corresponds to UMA histogram enum `EmbeddingsQueryFiltered`
+// in tools/metrics/histograms/metadata/history/enums.xml
+enum class QueryFiltered {
+  NOT_FILTERED,
+  FILTERED_NOT_ASCII,
+  FILTERED_PHRASE_MATCH,
+  FILTERED_TERM_MATCH,
+
+  // These enum values are logged in UMA. Do not reuse or skip any values.
+  // The order doesn't need to be chronological, but keep identities stable.
+  ENUM_COUNT,
+};
+
+// Record UMA histogram with query filter status.
+void RecordQueryFiltered(QueryFiltered status);
 
 // This corresponds to UMA histogram enum `EmbeddingsExtractionCancelled`
 // in tools/metrics/histograms/metadata/history/enums.xml
