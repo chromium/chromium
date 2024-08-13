@@ -240,8 +240,12 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
       query_id_(0u),
       query_id_weak_ptr_factory_(&query_id_),
       weak_ptr_factory_(this) {
-  // Observe HistoryService with storage prepared, even when disabled. The user
-  // may disable the feature after using it and then request to delete data.
+  if (!history_embeddings::IsHistoryEmbeddingsEnabled()) {
+    // If the feature flag is disabled, skip initialization. Note we don't also
+    // check the pref here, because the pref can change at runtime.
+    return;
+  }
+
   CHECK(history_service_);
   storage_ = base::SequenceBound<Storage>(
       base::ThreadPool::CreateSequencedTaskRunner(
@@ -249,12 +253,6 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
       history_service_->history_dir());
   history_service_observation_.Observe(history_service_);
-
-  if (!history_embeddings::IsHistoryEmbeddingsEnabled()) {
-    // If the feature flag is disabled, skip initialization. Note we don't also
-    // check the pref here, because the pref can change at runtime.
-    return;
-  }
 
   for (std::string& term_or_phrase : base::SplitString(
            kFilterTerms.Get(), ",", base::WhitespaceHandling::TRIM_WHITESPACE,
