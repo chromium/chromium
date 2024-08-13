@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './pdf_shared.css.js';
-
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {ChangePageOrigin} from './viewer_bookmark.js';
-import {getTemplate} from './viewer_thumbnail.html.js';
+import {getCss} from './viewer_thumbnail.css.js';
+import {getHtml} from './viewer_thumbnail.html.js';
 
 // The maximum widths of thumbnails for each layout (px).
 // These constants should be kept in sync with `kMaxWidthPortraitPx` and
@@ -25,36 +25,47 @@ export interface ViewerThumbnailElement {
   };
 }
 
-export class ViewerThumbnailElement extends PolymerElement {
+export class ViewerThumbnailElement extends CrLitElement {
   static get is() {
     return 'viewer-thumbnail';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      clockwiseRotations: {
-        type: Number,
-        value: 0,
-        observer: 'clockwiseRotationsChanged_',
-      },
+      clockwiseRotations: {type: Number},
 
       isActive: {
         type: Boolean,
-        observer: 'isActiveChanged_',
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      pageNumber: Number,
+      pageNumber: {type: Number},
     };
   }
 
-  clockwiseRotations: number;
-  isActive: boolean;
-  pageNumber: number;
+  clockwiseRotations: number = 0;
+  isActive: boolean = true;
+  pageNumber: number = 0;
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('clockwiseRotations') && this.getCanvas_()) {
+      this.styleCanvas_();
+    }
+
+    if (changedProperties.has('isActive') && this.isActive) {
+      this.scrollIntoView({block: 'nearest'});
+    }
+  }
 
   set image(imageData: ImageData) {
     let canvas = this.getCanvas_();
@@ -95,12 +106,6 @@ export class ViewerThumbnailElement extends PolymerElement {
     return this.$.thumbnail;
   }
 
-  private clockwiseRotationsChanged_() {
-    if (this.getCanvas_()) {
-      this.styleCanvas_();
-    }
-  }
-
   private getCanvas_(): HTMLCanvasElement|null {
     return this.shadowRoot!.querySelector('canvas');
   }
@@ -132,7 +137,7 @@ export class ViewerThumbnailElement extends PolymerElement {
   /**
    * Focuses and scrolls the element into view.
    * The default scroll behavior of focus() acts differently than
-   * scrollIntoView(), which is called in isActiveChanged_(). This method
+   * scrollIntoView(), which is called in updated(). This method
    * unifies the behavior.
    */
   focusAndScroll() {
@@ -148,18 +153,10 @@ export class ViewerThumbnailElement extends PolymerElement {
     this.toggleAttribute(PAINTED_ATTRIBUTE, true);
   }
 
-  private isActiveChanged_() {
-    if (this.isActive) {
-      this.scrollIntoView({block: 'nearest'});
-    }
-  }
-
-  private onClick_() {
-    this.dispatchEvent(new CustomEvent('change-page', {
-      detail: {page: this.pageNumber - 1, origin: ChangePageOrigin.THUMBNAIL},
-      bubbles: true,
-      composed: true,
-    }));
+  protected onClick_() {
+    this.fire(
+        'change-page',
+        {page: this.pageNumber - 1, origin: ChangePageOrigin.THUMBNAIL});
   }
 
   /**

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {ViewerThumbnailElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 function createThumbnail() {
   document.body.innerHTML = '';
@@ -28,10 +28,11 @@ function testThumbnailSize(
   chrome.test.assertEq(canvasSize[1], div.offsetHeight);
 }
 
-function testThumbnailRotation(
+async function testThumbnailRotation(
     thumbnail: ViewerThumbnailElement, clockwiseRotations: number,
     divSize: number[]) {
   thumbnail.clockwiseRotations = clockwiseRotations;
+  await microtasksFinished();
 
   const canvas = thumbnail.shadowRoot!.querySelector('canvas')!;
   const halfTurn = clockwiseRotations % 2 === 0;
@@ -49,7 +50,7 @@ function testThumbnailRotation(
       `rotate(${clockwiseRotations * 90}deg)`, canvas.style.transform);
 }
 
-function testThumbnailRotations(
+async function testThumbnailRotations(
     imageSize: number[], rotatedDivSizes: number[][]) {
   const thumbnail = createThumbnail();
   const imageData = new ImageData(imageSize[0]!, imageSize[1]!);
@@ -57,7 +58,8 @@ function testThumbnailRotations(
 
   chrome.test.assertEq(4, rotatedDivSizes.length);
   for (let rotations = 0; rotations < rotatedDivSizes.length; rotations++) {
-    testThumbnailRotation(thumbnail, rotations, rotatedDivSizes[rotations]!);
+    await testThumbnailRotation(
+        thumbnail, rotations, rotatedDivSizes[rotations]!);
   }
 }
 
@@ -134,44 +136,44 @@ const tests = [
 
     chrome.test.succeed();
   },
-  function testRotateNormalLowRes() {
+  async function testRotateNormalLowRes() {
     window.devicePixelRatio = 1;
 
     // Letter
-    testThumbnailRotations(
+    await testThumbnailRotations(
         [108, 140], [[108, 140], [140, 108], [108, 140], [140, 108]]);
 
     // A4
-    testThumbnailRotations(
+    await testThumbnailRotations(
         [108, 152], [[108, 152], [140, 99], [108, 152], [140, 99]]);
 
     chrome.test.succeed();
   },
-  function testRotateNormalHighRes() {
+  async function testRotateNormalHighRes() {
     window.devicePixelRatio = 2;
 
     // Letter
-    testThumbnailRotations(
+    await testThumbnailRotations(
         [216, 280], [[108, 140], [140, 108], [108, 140], [140, 108]]);
 
     // A4
-    testThumbnailRotations(
+    await testThumbnailRotations(
         [216, 304], [[108, 152], [140, 99], [108, 152], [140, 99]]);
 
     chrome.test.succeed();
   },
-  function testRotateNormalHighRes() {
+  async function testRotateNormalHighRes() {
     window.devicePixelRatio = 1;
 
-    testThumbnailRotations(
+    await testThumbnailRotations(
         [50, 1500], [[50, 1500], [140, 4], [50, 1500], [140, 4]]);
 
     chrome.test.succeed();
   },
-  function testRotateNormalHighRes() {
+  async function testRotateNormalHighRes() {
     window.devicePixelRatio = 2;
 
-    testThumbnailRotations(
+    await testThumbnailRotations(
         [50, 1500], [[25, 750], [140, 4], [25, 750], [140, 4]]);
 
     chrome.test.succeed();

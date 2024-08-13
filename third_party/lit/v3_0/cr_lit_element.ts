@@ -140,10 +140,11 @@ export class CrLitElement extends LitElement {
     }
   }
 
-  override focus() {
+  override focus(
+      options?: {preventScroll?: boolean, focusVisible?: boolean}) {
     // See Case2 in `ensureInitialRender` docs.
     this.ensureInitialRender();
-    super.focus();
+    super.focus(options);
   }
 
   fire(eventName: string, detail?: any) {

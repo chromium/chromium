@@ -107,6 +107,8 @@ build_webui("build") {
     "elements/viewer_page_selector.css",
     "elements/viewer_password_dialog.css",
     "elements/viewer_properties_dialog.css",
+    "elements/viewer_thumbnail.css",
+    "elements/viewer_thumbnail_bar.css",
     "pdf_viewer_shared_style.css",
   ]
 
