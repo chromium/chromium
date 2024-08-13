@@ -37,7 +37,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
 
-namespace ash {
+namespace ash::kiosk {
 
 namespace {
 
@@ -357,4 +357,4 @@ void KioskProfileLoader::ReturnError(KioskAppLaunchError::Error result) {
   std::move(on_done_).Run(base::unexpected(std::move(result)));
 }
 
-}  // namespace ash
+}  // namespace ash::kiosk

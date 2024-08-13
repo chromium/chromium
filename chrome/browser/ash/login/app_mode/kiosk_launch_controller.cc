@@ -69,6 +69,11 @@
 #include "url/gurl.h"
 
 namespace ash {
+
+using kiosk::KioskProfileLoader;
+using kiosk::LoadProfile;
+using kiosk::LoadProfileCallback;
+
 namespace {
 
 // Enum types for Kiosk.LaunchType UMA so don't change its values.

@@ -47,10 +47,14 @@
 #include "ui/events/test/event_generator.h"
 
 namespace ash {
+
 namespace {
 
 using ::base::test::TestFuture;
 using ::testing::_;
+
+using kiosk::KioskProfileLoader;
+using kiosk::LoadProfile;
 
 const test::UIPath kNetworkConfigureScreenContinueButton = {"error-message",
                                                             "continueButton"};
@@ -450,4 +454,5 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest,
 }
 
 }  // namespace
+
 }  // namespace ash

@@ -124,7 +124,7 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   KioskLaunchController(
       LoginDisplayHost* host,
       AppLaunchSplashScreenView* splash_screen,
-      LoadProfileCallback profile_loader,
+      kiosk::LoadProfileCallback profile_loader,
       AppLaunchedCallback app_launched_callback,
       LaunchCompleteCallback done_callback,
       base::OnceClosure attempt_relaunch,
@@ -269,7 +269,7 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   // Handle to the job returned by `profile_loader_`.
   std::unique_ptr<CancellableJob> profile_loader_handle_;
   // The function used to load the Kiosk profile. Overridable in tests.
-  LoadProfileCallback profile_loader_;
+  kiosk::LoadProfileCallback profile_loader_;
 
   std::unique_ptr<app_mode::LacrosLauncher> lacros_launcher_;
 

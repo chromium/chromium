@@ -90,6 +90,9 @@
 
 namespace ash {
 
+using kiosk::KioskProfileLoader;
+using kiosk::LoadProfileCallback;
+
 namespace {
 
 using ::testing::Eq;

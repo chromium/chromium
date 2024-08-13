@@ -25,6 +25,8 @@ namespace ash {
 
 class UserContext;
 
+namespace kiosk {
+
 // Helper class that implements `LoadProfile()`.
 class KioskProfileLoader : public CancellableJob {
  public:
@@ -82,6 +84,8 @@ class KioskProfileLoader : public CancellableJob {
 // Convenience define to declare references to `LoadProfile`. Useful for callers
 // to override `LoadProfile` in tests.
 using LoadProfileCallback = base::OnceCallback<decltype(LoadProfile)>;
+
+}  // namespace kiosk
 
 }  // namespace ash
 
