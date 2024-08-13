@@ -2939,6 +2939,7 @@ void OutOfFlowLayoutPart::NodeInfo::Trace(Visitor* visitor) const {
 void OutOfFlowLayoutPart::OffsetInfo::Trace(Visitor* visitor) const {
   visitor->Trace(initial_layout_result);
   visitor->Trace(non_overflowing_scroll_ranges);
+  visitor->Trace(display_locks_affected_by_anchors);
 }
 
 void OutOfFlowLayoutPart::NodeToLayout::Trace(Visitor* visitor) const {
