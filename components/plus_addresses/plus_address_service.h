@@ -128,12 +128,25 @@ class PlusAddressService : public KeyedService,
       WebDataServiceBase::Handle handle,
       std::unique_ptr<WDTypedResult> result) override;
 
+  // Returns whether plus address filling is supported for the given `origin`.
+  // This is true iff:
+  // - the `PlusAddressService` is enabled and
+  // - `origin` is not a blocked origin.
+  bool IsPlusAddressFillingEnabled(const url::Origin& origin) const;
+
+  // Returns whether plus address creation is supported for the given `origin`.
+  // This is true iff:
+  // - the plus address filling is enabled,
+  // - `is_off_the_record` is `false`, and
+  // - plus address global toggle is on.
+  bool IsPlusAddressCreationEnabled(const url::Origin& origin,
+                                    bool is_off_the_record) const;
+
   // Returns whether a manual fallback suggestion should be shown on `origin`.
   // This is true iff
-  // - the `PlusAddressService` is enabled,
-  // - `origin` is not a blocked origin, and
-  // - the user either has at least one plus address for that `origin` or
-  //   `is_off_the_record` is false.
+  // - plus address creation is supported or
+  // - `is_off_the_record` is `true`  and the user has at least 1 plus address
+  // for the given `origin`.
   bool ShouldShowManualFallback(const url::Origin& origin,
                                 bool is_off_the_record) const;
 

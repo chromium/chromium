@@ -99,7 +99,7 @@ PlusProfile::facet_t OriginToFacet(const url::Origin& origin) {
 // If password manager did not recognize a username field or the username field
 // is different from the focused field, this is always `true`. Otherwise,
 // whether we offer plus address creation depends on the form type.
-bool ShouldOfferPlusAddressCreation(
+bool ShouldOfferPlusAddressCreationOnForm(
     const PasswordFormClassification& form_classification,
     autofill::FieldGlobalId focused_field_id) {
   if ((!form_classification.username_field ||
@@ -182,32 +182,56 @@ PlusAddressService::~PlusAddressService() {
   }
 }
 
+bool PlusAddressService::IsPlusAddressFillingEnabled(
+    const url::Origin& origin) const {
+  // Check that the feature is enabled and the origin is supported (not opaque,
+  // in the `excluded_sites_`, or is non http/https scheme)
+  return IsEnabled() && IsSupportedOrigin(origin);
+}
+
+bool PlusAddressService::IsPlusAddressCreationEnabled(
+    const url::Origin& origin,
+    bool is_off_the_record) const {
+  // Disabled plus address filling implies that plus address creation is
+  // disabled.
+  if (!IsPlusAddressFillingEnabled(origin)) {
+    return false;
+  }
+
+  // Don't offer plus address creation for off-the-record sessions.
+  if (is_off_the_record) {
+    return false;
+  }
+
+  // We've met the prerequisites. If this isn't an OTR session and the global
+  // settings toggle isn't off, plus address creation is supported.
+  return !base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) ||
+         setting_service_->GetIsPlusAddressesEnabled();
+}
+
 bool PlusAddressService::ShouldShowManualFallback(
     const url::Origin& origin,
     bool is_off_the_record) const {
-  // First, check prerequisites (the feature enabled, etc.).
-  if (!IsEnabled()) {
+  if (!IsPlusAddressFillingEnabled(origin)) {
     return false;
   }
 
-  // Check if origin is supported (Not opaque, in the `excluded_sites_`, or is
-  // non http/https scheme).
-  if (!IsSupportedOrigin(origin)) {
-    return false;
-  }
-  // We've met the prerequisites. If this isn't an OTR session and the global
-  // settings toggle isn't off, plus_addresses are supported.
-  if (!is_off_the_record &&
-      (!base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) ||
-       setting_service_->GetIsPlusAddressesEnabled())) {
+  // If there's an existing plus_address with a facet equal to `origin` (i.e. no
+  // affiliations considered), it's supported.
+  if (GetPlusProfile(OriginToFacet(origin)).has_value()) {
     return true;
   }
 
-  // Prerequisites are met, but it's an off-the-record session or the global
-  // settings toggle is off. If there's an existing plus_address with a facet
-  // equal to `origin` (i.e. no affiliations considered), it's supported,
-  // otherwise it is not.
-  return GetPlusProfile(OriginToFacet(origin)).has_value();
+  // Unless there's an existing plus address for `origin`, off-the-record
+  // sessions are not supported.
+  if (is_off_the_record) {
+    return false;
+  }
+
+  // If the user doesn't have an existing plus address for `origin` and this
+  // session is not off-the-record, the global toggle must be enabled.
+  return !base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) ||
+         setting_service_->GetIsPlusAddressesEnabled();
 }
 
 std::optional<std::string> PlusAddressService::GetPlusAddress(
@@ -275,8 +299,7 @@ void PlusAddressService::GetSuggestions(
     const FormFieldData& focused_field,
     autofill::AutofillSuggestionTriggerSource trigger_source,
     GetSuggestionsCallback callback) {
-  if (!IsEnabled() ||
-      !IsSupportedOrigin(last_committed_primary_main_frame_origin)) {
+  if (!IsPlusAddressFillingEnabled(last_committed_primary_main_frame_origin)) {
     std::move(callback).Run({});
     return;
   }
@@ -331,8 +354,8 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
     // login forms).
     if (trigger_source != kManualFallbackPlusAddresses &&
         (!normalized_field_value.empty() ||
-         !ShouldOfferPlusAddressCreation(focused_form_classification,
-                                         focused_field.global_id()))) {
+         !ShouldOfferPlusAddressCreationOnForm(focused_form_classification,
+                                               focused_field.global_id()))) {
       std::move(callback).Run({});
       return;
     }
