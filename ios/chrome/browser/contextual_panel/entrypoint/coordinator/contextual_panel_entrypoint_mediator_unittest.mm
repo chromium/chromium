@@ -203,6 +203,10 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
 
     tracker_ = feature_engagement::CreateTestTracker();
 
+    // Make sure tracker is initialized.
+    tracker_->AddOnInitializedCallback(BoolArgumentQuitClosure());
+    run_loop_.Run();
+
     mediator_ = [[ContextualPanelEntrypointMediator alloc]
           initWithWebStateList:&web_state_list_
              engagementTracker:tracker_.get()
@@ -217,8 +221,13 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
   }
 
  protected:
+  base::RepeatingCallback<void(bool)> BoolArgumentQuitClosure() {
+    return base::IgnoreArgs<bool>(run_loop_.QuitClosure());
+  }
+
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::RunLoop run_loop_;
   std::unique_ptr<feature_engagement::Tracker> tracker_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;

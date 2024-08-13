@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 class FullscreenController;
+@class LayoutGuideCenter;
 @protocol HelpCommands;
 @protocol SideSwipeToolbarInteracting;
 @protocol SideSwipeToolbarSnapshotProviding;
@@ -68,6 +69,8 @@ enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
 @property(nonatomic, assign) FullscreenController* fullscreenController;
 
 @property(nonatomic) feature_engagement::Tracker* engagementTracker;
+
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 // Handler for in-product help tips.
 @property(nonatomic, weak) id<HelpCommands> helpHandler;

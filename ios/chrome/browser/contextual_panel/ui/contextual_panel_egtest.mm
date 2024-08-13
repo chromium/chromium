@@ -68,8 +68,11 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
   config.features_enabled_and_params.push_back(
       {kContextualPanelForceShowEntrypoint, {}});
 
-  config.iph_feature_enabled =
-      feature_engagement::kIPHiOSContextualPanelSampleModelFeature.name;
+  if ([self isRunningTest:@selector(testOpenContextualPanelFromNormalIPH)] ||
+      [self isRunningTest:@selector(testOpenContextualPanelFromRichIPH)]) {
+    config.iph_feature_enabled =
+        feature_engagement::kIPHiOSContextualPanelSampleModelFeature.name;
+  }
 
   return config;
 }
@@ -270,6 +273,30 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(@"PanelCloseButtonAXID")]
       performAction:grey_tap()];
+}
+
+// Test that the Contextual Panel entrypoint's large chip can be dismissed via
+// swipe.
+- (void)testContextualPanelEntrypointLargeChipDismissable {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/defaultresponse")];
+
+  // Wait for large chip entrypoint to appear.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(@"ContextualPanelEntrypointLabelAXID")];
+
+  // Side swipe on the entrypoint.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   @"ContextualPanelEntrypointLabelAXID")]
+      performAction:grey_swipeSlowInDirectionWithStartPoint(kGREYDirectionLeft,
+                                                            0.9, 0.5)];
+
+  // Check that the entrypoint is now back to default size.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   @"ContextualPanelEntrypointLabelAXID")]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end

@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -96,6 +98,14 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   BOOL _shouldCollapseForFullscreen;
   // Whether there currently are any Infobar badges being shown.
   BOOL _infobarBadgesCurrentlyShown;
+
+  // LayoutGuideCenter to register the entrypoint container's view for global
+  // access, only when it is large (i.e. dismissable).
+  LayoutGuideCenter* _layoutGuideCenter;
+
+  // Swipe gesture recognizer for the entrypoint (allows the user to "dismiss"
+  // the large chip entrypoint).
+  UISwipeGestureRecognizer* _swipeRecognizer;
 }
 @end
 
@@ -401,6 +411,12 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
               : [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor];
 }
 
+// User swiped the large entrypoint chip towards the leading edge, intending to
+// dismiss it.
+- (void)largeEntrypointChipSwiped {
+  [self transitionToSmallEntrypoint];
+}
+
 #pragma mark - ContextualPanelEntrypointConsumer
 
 - (void)setEntrypointConfig:
@@ -476,6 +492,18 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
     return;
   }
 
+  [_layoutGuideCenter referenceView:_entrypointContainer
+                          underName:kContextualPanelLargeEntrypointGuide];
+
+  _swipeRecognizer = [[UISwipeGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(largeEntrypointChipSwiped)];
+  _swipeRecognizer.cancelsTouchesInView = YES;
+  _swipeRecognizer.direction = base::i18n::IsRTL()
+                                   ? UISwipeGestureRecognizerDirectionRight
+                                   : UISwipeGestureRecognizerDirectionLeft;
+  [_entrypointContainer addGestureRecognizer:_swipeRecognizer];
+
   __weak ContextualPanelEntrypointViewController* weakSelf = self;
 
   void (^animateTransitionToLargeEntrypoint)() = ^{
@@ -523,6 +551,11 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
                                UIViewAnimationOptionAllowUserInteraction)
                    animations:animateTransitionToSmallEntrypoint
                    completion:nil];
+
+  [_entrypointContainer removeGestureRecognizer:_swipeRecognizer];
+
+  [_layoutGuideCenter referenceView:nil
+                          underName:kContextualPanelLargeEntrypointGuide];
 }
 
 - (void)transitionToContextualPanelOpenedState:(BOOL)opened {

@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/card_side_swipe_view.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_gesture_recognizer.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator+Testing.h"
@@ -621,6 +623,26 @@ const CGFloat kIpadTabSwipeDistance = 100;
 
   if ([_swipeDelegate preventSideSwipe]) {
     return NO;
+  }
+
+  if (IsContextualPanelEnabled()) {
+    // Don't handle gesture if it's meant for the Contextual Panel Entrypoint
+    // (gesture began in its frame) and that entrypoint is currently large.
+    // `contextualPanelEntrypointView` is nil if the entrypoint is not currently
+    // large, which means the gesture won't be blocked here.
+    UIView* contextualPanelEntrypointView = [self.layoutGuideCenter
+        referencedViewUnderName:kContextualPanelLargeEntrypointGuide];
+    CGPoint touchLocationInEntrypointViewCoordinates =
+        [contextualPanelEntrypointView convertPoint:[gesture locationInView:nil]
+                                           fromView:nil];
+    BOOL tapInsideContextualPanelEntrypointContainer =
+        [contextualPanelEntrypointView
+            pointInside:touchLocationInEntrypointViewCoordinates
+              withEvent:nil];
+
+    if (tapInsideContextualPanelEntrypointContainer) {
+      return NO;
+    }
   }
 
   CGPoint location = [gesture locationInView:gesture.view];

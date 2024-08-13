@@ -23,3 +23,5 @@ GuideName* const kAutofillFirstSuggestionGuide =
     @"kAutofillFirstSuggestionGuide";
 GuideName* const kLensKeyboardButtonGuide = @"kLensKeyboardButtonGuide";
 GuideName* const kMagicStackGuide = @"kMagicStackGuide";
+GuideName* const kContextualPanelLargeEntrypointGuide =
+    @"kContextualPanelLargeEntrypointGuide";

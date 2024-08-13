@@ -1019,6 +1019,8 @@ enum class ToolbarKind {
   _sideSwipeMediator = [[SideSwipeMediator alloc]
       initWithFullscreenController:_fullscreenController
                       webStateList:self.browser->GetWebStateList()];
+  _sideSwipeMediator.layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
   _sideSwipeMediator.toolbarInteractionHandler = _toolbarCoordinator;
   _sideSwipeMediator.toolbarSnapshotProvider = _toolbarCoordinator;
   _sideSwipeMediator.engagementTracker = engagementTracker;

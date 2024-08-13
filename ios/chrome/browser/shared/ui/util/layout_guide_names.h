@@ -58,5 +58,8 @@ extern GuideName* const kAutofillFirstSuggestionGuide;
 extern GuideName* const kLensKeyboardButtonGuide;
 // A guide that is constrained to match the frame of the Magic Stack on the NTP.
 extern GuideName* const kMagicStackGuide;
+// A guide that is constrained to match the frame of the Contextual Panel's
+// entrypoint when it is large, otherwise this stays nil.
+extern GuideName* const kContextualPanelLargeEntrypointGuide;
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_LAYOUT_GUIDE_NAMES_H_
