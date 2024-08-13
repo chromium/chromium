@@ -119,11 +119,6 @@ static_library("ui") {
     "file_system_access/file_system_access_restricted_directory_dialog.h",
     "file_system_access/file_system_access_ui_helpers.cc",
     "file_system_access/file_system_access_ui_helpers.h",
-    "find_bar/find_bar.h",
-    "find_bar/find_bar_state.cc",
-    "find_bar/find_bar_state.h",
-    "find_bar/find_bar_state_factory.cc",
-    "find_bar/find_bar_state_factory.h",
     "hats/hats_service.cc",
     "hats/hats_service.h",
     "hats/hats_service_factory.cc",
@@ -477,6 +472,8 @@ static_library("ui") {
     "//chrome/browser/storage_access_api",
     "//chrome/browser/sync",
     "//chrome/browser/ui/cookie_controls",
+    "//chrome/browser/ui/find_bar",
+    "//chrome/browser/ui/find_bar:impl",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/omnibox:impl",
     "//chrome/browser/ui/webui",
@@ -1169,10 +1166,6 @@ static_library("ui") {
       "download/download_item_mode.cc",
       "download/download_item_mode.h",
       "download/download_started_animation.h",
-      "find_bar/find_bar_controller.cc",
-      "find_bar/find_bar_controller.h",
-      "find_bar/find_bar_platform_helper.cc",
-      "find_bar/find_bar_platform_helper.h",
       "focus_tab_after_navigation_helper.cc",
       "focus_tab_after_navigation_helper.h",
       "global_error/global_error.cc",
@@ -2154,6 +2147,12 @@ static_library("ui") {
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/top_chrome:impl",
     ]
+
+    if (is_mac) {
+      # TODO(358538886): find_bar/find_bar_platform_helper_mac.mm includes //c/b/ui/browser.h
+      # and //c/b/ui/tabs/tab_strip_model.h which causes a circular dependency with //c/b/ui.
+      allow_circular_includes_from += [ "//chrome/browser/ui/find_bar:impl" ]
+    }
 
     if (use_ozone && !is_chromeos_ash) {
       deps += [
@@ -3708,7 +3707,6 @@ static_library("ui") {
       "cocoa/window_size_autosaver.mm",
       "content_settings/media_authorization_wrapper_test.h",
       "content_settings/media_authorization_wrapper_test.mm",
-      "find_bar/find_bar_platform_helper_mac.mm",
       "fullscreen_util_mac.cc",
       "fullscreen_util_mac.h",
       "views/apps/chrome_app_window_client_views_mac.mm",
