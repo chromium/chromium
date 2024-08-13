@@ -55,6 +55,7 @@
 #include "ui/android/window_android_compositor.h"
 #include "ui/base/l10n/l10n_util_android.h"
 #include "ui/events/back_gesture_event.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/switches.h"
 #include "ui/snapshot/snapshot.h"
@@ -1790,6 +1791,51 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   ASSERT_EQ(back_to_red.last_committed_url(), RedURL());
   ASSERT_EQ(nav_controller.GetEntryCount(), 3);
   ASSERT_EQ(nav_controller.GetCurrentEntryIndex(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
+                       DifferentScreenAndScreenshotOrientation) {
+  // Resize the screen.
+  auto* native_view = web_contents()->GetNativeView();
+  ASSERT_TRUE(native_view);
+  native_view->OnPhysicalBackingSizeChanged(
+      gfx::ScaleToCeiledSize(native_view->GetPhysicalBackingSize(), 2, 0.5f));
+
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
+  expected.push_back(GestureType::k90ViewportWidth);
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  const auto& children =
+      static_cast<WebContentsViewAndroid*>(web_contents()->GetView())
+          ->parent_for_web_page_widgets()
+          ->parent()
+          ->children();
+  // `parent_for_web_page_widgets()` and the screenshot.
+  ASSERT_EQ(children.size(), 2U);
+  auto* fallback_screenshot =
+      static_cast<cc::slim::SolidColorLayer*>(children[0].get());
+  auto expected_bg_color = web_contents()
+                               ->GetDelegate()
+                               ->GetBackForwardTransitionFallbackUXConfig()
+                               .background_color;
+  ASSERT_EQ(fallback_screenshot->background_color(), expected_bg_color);
+
+  TestFrameNavigationObserver back_to_red(web_contents());
+  base::test::TestFuture<void> cross_fade_displayed;
+  GetAnimatorForTesting()->set_on_cross_fade_animation_displayed(
+      cross_fade_displayed.GetCallback());
+  base::test::TestFuture<void> destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.GetCallback());
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+  ASSERT_TRUE(cross_fade_displayed.Wait());
+  ASSERT_TRUE(destroyed.Wait());
+  back_to_red.Wait();
+
+  ASSERT_EQ(back_to_red.last_committed_url(), RedURL());
+  ASSERT_FALSE(web_contents()->GetController().GetActiveEntry()->GetUserData(
+      NavigationEntryScreenshot::kUserDataKey));
 }
 
 namespace {

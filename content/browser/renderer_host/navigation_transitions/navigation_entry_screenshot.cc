@@ -59,7 +59,8 @@ NavigationEntryScreenshot::NavigationEntryScreenshot(
     int navigation_entry_id,
     bool supports_etc_non_power_of_two)
     : bitmap_(cc::UIResourceBitmap(bitmap)),
-      navigation_entry_id_(navigation_entry_id) {
+      navigation_entry_id_(navigation_entry_id),
+      dimensions_without_compression_(bitmap_->GetSize()) {
   CHECK(NavigationTransitionConfig::AreBackForwardTransitionsEnabled());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -89,10 +90,6 @@ size_t NavigationEntryScreenshot::SetCache(
   }
 
   return GetBitmap().SizeInBytes();
-}
-
-gfx::Size NavigationEntryScreenshot::GetDimensions() const {
-  return GetBitmap().GetSize();
 }
 
 SkBitmap NavigationEntryScreenshot::GetBitmapForTesting() const {

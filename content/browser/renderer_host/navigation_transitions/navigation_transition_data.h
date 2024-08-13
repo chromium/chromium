@@ -63,7 +63,12 @@ class NavigationTransitionData {
     // turned on when the navigation committed.
     kCacheMissPrefersReducedMotion = 11,
 
-    kMaxValue = kCacheMissPrefersReducedMotion
+    // Screenshot is not displayed since it is captured in a different
+    // orientation (horizontal or vertical) compared to the current screen
+    // orientation.
+    kCacheMissScreenshotOrientation = 12,
+
+    kMaxValue = kCacheMissScreenshotOrientation
   };
 
   NavigationTransitionData() = default;

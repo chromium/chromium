@@ -45,6 +45,40 @@ void ResetTransformForLayer(cc::slim::Layer* layer) {
   layer->SetTransform(transform);
 }
 
+bool ShouldUseFallbackScreenshot(
+    BackForwardTransitionAnimationManagerAndroid* animation_manager,
+    NavigationEntryImpl* destination_entry) {
+  bool use_fallback_screenshot = true;
+  auto* screenshot = static_cast<NavigationEntryScreenshot*>(
+      destination_entry->GetUserData(NavigationEntryScreenshot::kUserDataKey));
+  auto cache_hit_or_miss_reason =
+      destination_entry->navigation_transition_data()
+          .cache_hit_or_miss_reason();
+
+  if (screenshot) {
+    gfx::Size screenshot_size = screenshot->dimensions_without_compression();
+    gfx::Size screen_size = animation_manager->web_contents_view_android()
+                                ->GetNativeView()
+                                ->GetPhysicalBackingSize();
+    use_fallback_screenshot = screenshot_size != screen_size;
+    if (screenshot_size != screen_size) {
+      cache_hit_or_miss_reason = NavigationTransitionData::
+          CacheHitOrMissReason::kCacheMissScreenshotOrientation;
+    } else {
+      CHECK_EQ(cache_hit_or_miss_reason.value(),
+               NavigationTransitionData::CacheHitOrMissReason::kCacheHit);
+    }
+  }
+
+  // TODO(crbug.com/355454946): Consider other ways to capture `kCacheColdStart`
+  // metric.
+  UMA_HISTOGRAM_ENUMERATION("Navigation.GestureTransition.CacheHitOrMissReason",
+                            cache_hit_or_miss_reason.value_or(
+                                CacheHitOrMissReason::kCacheMissColdStart));
+
+  return use_fallback_screenshot;
+}
+
 //========================== Fitted animation timeline =========================
 //
 // The animations for `OnGestureProgressed` are driven purely by user gestures.
@@ -200,8 +234,8 @@ BackForwardTransitionAnimator::BackForwardTransitionAnimator(
       animation_manager_(animation_manager),
       is_copied_from_embedder_(destination_entry->navigation_transition_data()
                                    .is_copied_from_embedder()),
-      use_fallback_screenshot_(!destination_entry->GetUserData(
-          NavigationEntryScreenshot::kUserDataKey)),
+      use_fallback_screenshot_(
+          ShouldUseFallbackScreenshot(animation_manager_, destination_entry)),
       fallback_ux_config_(animation_manager_->web_contents_view_android()
                               ->web_contents()
                               ->GetDelegate()
@@ -1060,20 +1094,8 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview() {
   CHECK(destination_entry);
   auto* preview = static_cast<NavigationEntryScreenshot*>(
       destination_entry->GetUserData(NavigationEntryScreenshot::kUserDataKey));
-  CHECK_EQ(use_fallback_screenshot_, !preview);
   CHECK(use_fallback_screenshot_ ||
         preview->navigation_entry_id() == destination_entry_id_);
-
-  const std::optional<NavigationTransitionData::CacheHitOrMissReason>&
-      cache_hit_or_miss_reason = destination_entry->navigation_transition_data()
-                                     .cache_hit_or_miss_reason();
-  CHECK(use_fallback_screenshot_ ||
-        cache_hit_or_miss_reason == CacheHitOrMissReason::kCacheHit);
-
-  // TODO(baranerf): Consider other ways to capture `kCacheColdStart` metric.
-  UMA_HISTOGRAM_ENUMERATION("Navigation.GestureTransition.CacheHitOrMissReason",
-                            cache_hit_or_miss_reason.value_or(
-                                CacheHitOrMissReason::kCacheMissColdStart));
 
   if (!use_fallback_screenshot_) {
     auto* cache = nav_controller->GetNavigationEntryScreenshotCache();

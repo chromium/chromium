@@ -290,7 +290,8 @@ class NavigationEntryScreenshotBrowserTestBase : public ContentBrowserTest {
       std::optional<gfx::Rect> compare_region = std::nullopt) {
     ASSERT_FALSE(EnableCompression());
     EXPECT_NE(screenshot, nullptr);
-    EXPECT_EQ(screenshot->GetDimensions(), GetScaledViewportSize());
+    EXPECT_EQ(screenshot->dimensions_without_compression(),
+              GetScaledViewportSize());
 
     auto bitmap = screenshot->GetBitmapForTesting();
     ExpectBitmapRowsAreColor(bitmap, color, compare_region);
@@ -1063,7 +1064,7 @@ void AssertScreenshotForPageWithIFrameIs(NavigationEntry* entry,
                                          SkColor iframe) {
   auto* screenshot = PreviewScreenshotForEntry(entry);
   ASSERT_NE(screenshot, nullptr);
-  const auto size = screenshot->GetDimensions();
+  const auto size = screenshot->dimensions_without_compression();
   auto bitmap = screenshot->GetBitmapForTesting();
 
   int half_height = size.height() / 2;
