@@ -489,6 +489,20 @@ TEST_F(CaptureModeTest, StartWithMostRecentTypeAndSource) {
   EXPECT_FALSE(controller->IsActive());
 }
 
+TEST_F(CaptureModeTest, AccessibleCheckedState) {
+  auto* controller = CaptureModeController::Get();
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  ui::AXNodeData data;
+  GetImageToggleButton()->SetSelected(true);
+  GetImageToggleButton()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+
+  data = ui::AXNodeData();
+  GetImageToggleButton()->SetSelected(false);
+  GetImageToggleButton()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+}
+
 TEST_F(CaptureModeTest, ChangeTypeAndSourceFromUI) {
   auto* controller = CaptureModeController::Get();
   controller->Start(CaptureModeEntryType::kQuickSettings);

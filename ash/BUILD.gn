@@ -3967,6 +3967,7 @@ test("ash_unittests") {
     "style/ash_color_provider_unittest.cc",
     "style/color_palette_controller_unittest.cc",
     "style/color_util_unittest.cc",
+    "style/combobox_unittest.cc",
     "style/dark_light_mode_controller_unittests.cc",
     "style/rounded_rect_cutout_path_builder_unittest.cc",
     "style/system_components_unittests.cc",

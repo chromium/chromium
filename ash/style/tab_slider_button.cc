@@ -77,6 +77,9 @@ TabSliderButton::TabSliderButton(PressedCallback callback,
 
   SetTooltipText(tooltip_text);
   GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
+  GetViewAccessibility().SetCheckedState(selected_
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
 }
 
 TabSliderButton::~TabSliderButton() = default;
@@ -92,6 +95,9 @@ void TabSliderButton::SetSelected(bool selected) {
   }
 
   selected_ = selected;
+  GetViewAccessibility().SetCheckedState(selected_
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
   if (selected_ && tab_slider_) {
     tab_slider_->OnButtonSelected(this);
   }
@@ -104,12 +110,6 @@ SkColor TabSliderButton::GetColorIdOnButtonState() {
   return selected()
              ? (enabled ? kSelectedColorId : kDisabledSelectedColorId)
              : (enabled ? kUnselectedColorId : kDisabledUnselectedColorId);
-}
-
-void TabSliderButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Button::GetAccessibleNodeData(node_data);
-  node_data->SetCheckedState(selected_ ? ax::mojom::CheckedState::kTrue
-                                       : ax::mojom::CheckedState::kFalse);
 }
 
 void TabSliderButton::NotifyClick(const ui::Event& event) {

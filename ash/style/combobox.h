@@ -81,6 +81,7 @@ class ASH_EXPORT Combobox : public views::Button,
   void SelectMenuItemForTest(size_t index);
 
  private:
+  friend class ComboboxTest;
   class ComboboxMenuView;
   class ComboboxEventHandler;
 

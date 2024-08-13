@@ -41,6 +41,9 @@ OptionButtonBase::OptionButtonBase(int button_width,
   focus_ring->SetColorId(ui::kColorAshFocusRing);
 
   SetAndUpdateAccessibleDefaultActionVerb();
+  GetViewAccessibility().SetCheckedState(selected_
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
 }
 
 OptionButtonBase::~OptionButtonBase() = default;
@@ -51,14 +54,15 @@ void OptionButtonBase::SetSelected(bool selected) {
   }
 
   selected_ = selected;
+  GetViewAccessibility().SetCheckedState(selected_
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
   UpdateImage();
 
   if (delegate_) {
     delegate_->OnButtonSelected(this);
   }
   SetAndUpdateAccessibleDefaultActionVerb();
-  NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
-                           /*send_native_event=*/true);
 }
 
 void OptionButtonBase::SetLabelStyle(TypographyToken token) {
@@ -129,14 +133,6 @@ void OptionButtonBase::NotifyClick(const ui::Event& event) {
     delegate_->OnButtonClicked(this);
   }
   views::LabelButton::NotifyClick(event);
-}
-
-void OptionButtonBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  LabelButton::GetAccessibleNodeData(node_data);
-  const ax::mojom::CheckedState checked_state =
-      selected_ ? ax::mojom::CheckedState::kTrue
-                : ax::mojom::CheckedState::kFalse;
-  node_data->SetCheckedState(checked_state);
 }
 
 SkColor OptionButtonBase::GetIconImageColor() const {

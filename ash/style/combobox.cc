@@ -97,6 +97,7 @@ class ComboboxMenuOption : public RadioButton {
     // accessibility, treat the menu option as a list box option instead of
     // radio button.
     GetViewAccessibility().SetProperties(ax::mojom::Role::kListBoxOption);
+    GetViewAccessibility().SetCheckedState(ax::mojom::CheckedState::kNone);
   }
 
   // RadioButton:
@@ -108,7 +109,6 @@ class ComboboxMenuOption : public RadioButton {
     // selection is checked does not add value to the user and may cause
     // confusion. Additionally, if checked state is set, the action verb will
     // indicate that activating the item toggles it, which would be misleading.
-    node_data->SetCheckedState(ax::mojom::CheckedState::kNone);
     node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
   }
 };

@@ -51,9 +51,6 @@ class ASH_EXPORT TabSliderButton : public views::Button {
   // Returns the recommended color id for the current button state.
   SkColor GetColorIdOnButtonState();
 
-  // views::Button:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
  private:
   // Called when the button selected state is changed.
   virtual void OnSelectedChanged() = 0;
