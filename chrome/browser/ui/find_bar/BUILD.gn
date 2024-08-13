@@ -18,14 +18,10 @@ source_set("find_bar") {
     "//chrome/browser/profiles:profile",
     "//components/find_in_page",
     "//components/keyed_service/core",
-    "//ui/gfx/geometry",
   ]
 
   if (!is_android) {
-    sources += [
-      "find_bar_controller.h",
-      "find_bar_platform_helper.h",
-    ]
+    sources += [ "find_bar_controller.h" ]
 
     public_deps += [ "//content/public/browser" ]
   }
@@ -42,6 +38,7 @@ source_set("impl") {
     sources += [
       "find_bar_controller.cc",
       "find_bar_platform_helper.cc",
+      "find_bar_platform_helper.h",
     ]
     deps += [ "//ui/gfx/range" ]
   }

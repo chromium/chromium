@@ -12,7 +12,6 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "ui/gfx/geometry/rect.h"
 
 class FindBarController;
 class FindBarTesting;
@@ -22,6 +21,7 @@ class FindNotificationDetails;
 }
 
 namespace gfx {
+class Point;
 class Range;
 }
 

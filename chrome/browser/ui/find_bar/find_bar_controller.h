@@ -6,16 +6,14 @@
 #define CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_CONTROLLER_H_
 
 #include <memory>
-#include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/find_bar/find_bar_platform_helper.h"
 #include "components/find_in_page/find_result_observer.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class FindBar;
+class FindBarPlatformHelper;
 
 namespace content {
 class WebContents;
