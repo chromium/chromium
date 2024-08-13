@@ -15,7 +15,6 @@
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/time/time.h"
-#include "chrome/browser/extensions/api/cookies/cookies_api_constants.h"
 #include "chrome/browser/extensions/api/cookies/cookies_helpers.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,6 +44,26 @@ namespace extensions {
 
 namespace {
 
+// Keys
+constexpr char kCauseKey[] = "cause";
+constexpr char kCookieKey[] = "cookie";
+constexpr char kRemovedKey[] = "removed";
+
+// Cause Constants
+constexpr char kEvictedChangeCause[] = "evicted";
+constexpr char kExpiredChangeCause[] = "expired";
+constexpr char kExpiredOverwriteChangeCause[] = "expired_overwrite";
+constexpr char kExplicitChangeCause[] = "explicit";
+constexpr char kOverwriteChangeCause[] = "overwrite";
+
+// Errors
+constexpr char kCookieSetFailedError[] =
+    "Failed to parse or set cookie named \"*\".";
+constexpr char kInvalidStoreIdError[] = "Invalid cookie store id: \"*\".";
+constexpr char kInvalidUrlError[] = "Invalid url: \"*\".";
+constexpr char kNoHostPermissionsError[] =
+    "No host permissions for cookies at url: \"*\".";
+
 bool ParseUrl(const Extension* extension,
               const std::string& url_string,
               GURL* url,
@@ -52,15 +71,14 @@ bool ParseUrl(const Extension* extension,
               std::string* error) {
   *url = GURL(url_string);
   if (!url->is_valid()) {
-    *error = ErrorUtils::FormatErrorMessage(
-        cookies_api_constants::kInvalidUrlError, url_string);
+    *error = ErrorUtils::FormatErrorMessage(kInvalidUrlError, url_string);
     return false;
   }
   // Check against host permissions if needed.
   if (check_host_permissions &&
       !extension->permissions_data()->HasHostPermission(*url)) {
-    *error = ErrorUtils::FormatErrorMessage(
-        cookies_api_constants::kNoHostPermissionsError, url->spec());
+    *error =
+        ErrorUtils::FormatErrorMessage(kNoHostPermissionsError, url->spec());
     return false;
   }
   return true;
@@ -77,8 +95,7 @@ network::mojom::CookieManager* ParseStoreCookieManager(
     store_profile = cookies_helpers::ChooseProfileFromStoreId(
         *store_id, function_profile, include_incognito);
     if (!store_profile) {
-      *error = ErrorUtils::FormatErrorMessage(
-          cookies_api_constants::kInvalidStoreIdError, *store_id);
+      *error = ErrorUtils::FormatErrorMessage(kInvalidStoreIdError, *store_id);
       return nullptr;
     }
   } else {
@@ -123,15 +140,14 @@ void CookiesEventRouter::OnCookieChange(bool otr,
   }
   base::Value::List args;
   base::Value::Dict dict;
-  dict.Set(cookies_api_constants::kRemovedKey,
-           change.cause != net::CookieChangeCause::INSERTED);
+  dict.Set(kRemovedKey, change.cause != net::CookieChangeCause::INSERTED);
 
   Profile* profile =
       otr ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
           : profile_->GetOriginalProfile();
   api::cookies::Cookie cookie = cookies_helpers::CreateCookie(
       change.cookie, cookies_helpers::GetStoreIdFromProfile(profile));
-  dict.Set(cookies_api_constants::kCookieKey, cookie.ToValue());
+  dict.Set(kCookieKey, cookie.ToValue());
 
   // Map the internal cause to an external string.
   std::string cause_dict_entry;
@@ -140,29 +156,29 @@ void CookiesEventRouter::OnCookieChange(bool otr,
     // only make sense for deletions.
     case net::CookieChangeCause::INSERTED:
     case net::CookieChangeCause::EXPLICIT:
-      cause_dict_entry = cookies_api_constants::kExplicitChangeCause;
+      cause_dict_entry = kExplicitChangeCause;
       break;
 
     case net::CookieChangeCause::OVERWRITE:
-      cause_dict_entry = cookies_api_constants::kOverwriteChangeCause;
+      cause_dict_entry = kOverwriteChangeCause;
       break;
 
     case net::CookieChangeCause::EXPIRED:
-      cause_dict_entry = cookies_api_constants::kExpiredChangeCause;
+      cause_dict_entry = kExpiredChangeCause;
       break;
 
     case net::CookieChangeCause::EVICTED:
-      cause_dict_entry = cookies_api_constants::kEvictedChangeCause;
+      cause_dict_entry = kEvictedChangeCause;
       break;
 
     case net::CookieChangeCause::EXPIRED_OVERWRITE:
-      cause_dict_entry = cookies_api_constants::kExpiredOverwriteChangeCause;
+      cause_dict_entry = kExpiredOverwriteChangeCause;
       break;
 
     case net::CookieChangeCause::UNKNOWN_DELETION:
       NOTREACHED_IN_MIGRATION();
   }
-  dict.Set(cookies_api_constants::kCauseKey, cause_dict_entry);
+  dict.Set(kCauseKey, cause_dict_entry);
 
   args.Append(std::move(dict));
 
@@ -550,8 +566,7 @@ void CookiesSetFunction::GetCookieListCallback(
 
   if (!success_) {
     std::string name = parsed_args_->details.name.value_or(std::string());
-    Respond(Error(ErrorUtils::FormatErrorMessage(
-        cookies_api_constants::kCookieSetFailedError, name)));
+    Respond(Error(ErrorUtils::FormatErrorMessage(kCookieSetFailedError, name)));
     return;
   }
 

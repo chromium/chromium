@@ -93,8 +93,6 @@ source_set("extensions") {
     "api/content_settings/content_settings_api.h",
     "api/cookies/cookies_api.cc",
     "api/cookies/cookies_api.h",
-    "api/cookies/cookies_api_constants.cc",
-    "api/cookies/cookies_api_constants.h",
     "api/cookies/cookies_helpers.cc",
     "api/cookies/cookies_helpers.h",
     "api/debugger/debugger_api.cc",
