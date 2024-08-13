@@ -23,6 +23,7 @@
 #import "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #import "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
 #import "components/component_updater/installer_policies/optimization_hints_component_installer.h"
+#import "components/component_updater/installer_policies/plus_address_blocklist_component_installer.h"
 #import "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #import "components/component_updater/url_param_filter_remover.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
@@ -246,6 +247,7 @@ void RegisterComponentsForUpdate() {
   RegisterAutofillStatesComponent(cus,
                                   GetApplicationContext()->GetLocalState());
   RegisterOptimizationHintsComponent(cus);
+  RegisterPlusAddressBlocklistComponent(cus);
 }
 
 // The delay, in seconds, for cleaning external files.

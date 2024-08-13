@@ -6,6 +6,7 @@ include_rules = [
   "+components/omnibox/browser",
   "+components/omnibox/common",
   "+components/optimization_guide/core",
+  "+components/plus_addresses",
   "+components/prefs",
   "+components/tpcd",
   "+mojo/public/cpp/base",

@@ -43,6 +43,7 @@
 #include "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #include "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
 #include "components/component_updater/installer_policies/optimization_hints_component_installer.h"
+#include "components/component_updater/installer_policies/plus_address_blocklist_component_installer.h"
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #include "components/component_updater/url_param_filter_remover.h"
 #include "components/nacl/common/buildflags.h"
@@ -213,6 +214,8 @@ void RegisterComponentsForUpdate() {
   RegisterCommerceHeuristicsComponent(cus);
 
   RegisterTpcdMetadataComponent(cus);
+
+  RegisterPlusAddressBlocklistComponent(cus);
 }
 
 }  // namespace component_updater
