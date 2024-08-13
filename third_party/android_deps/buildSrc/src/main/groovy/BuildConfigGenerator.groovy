@@ -67,9 +67,11 @@ class BuildConfigGenerator extends DefaultTask {
         org_hamcrest_hamcrest_core: '//third_party/hamcrest:hamcrest_core_java',
         org_hamcrest_hamcrest_integration: '//third_party/hamcrest:hamcrest_integration_java',
         org_hamcrest_hamcrest_library: '//third_party/hamcrest:hamcrest_library_java',
-        org_jetbrains_kotlin_kotlin_stdlib: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
         org_jetbrains_annotations: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
+        org_jetbrains_kotlin_kotlin_stdlib_jdk7: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
+        org_jetbrains_kotlin_kotlin_stdlib_jdk8: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
         org_jetbrains_kotlin_kotlin_stdlib_common: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
+        org_jetbrains_kotlin_kotlin_stdlib: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
     ]
 
     // Some libraries have such long names they'll create a path that exceeds the 200 char path limit, which is

@@ -2010,7 +2010,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/kotlin_stdlib',
-              'version': '6Zgw7vC2xVE_bQKd2NaOI2QDOwLrO_0AsFjxzqNW56IC',
+              'version': 'yxgJFLhiWbuuK67RpqaUHyxB7nqEhzdUkqrSSu97GywC',
           },
       ],
       'condition': 'checkout_android',
@@ -4053,28 +4053,6 @@ deps = {
           {
               'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlin_kotlin_parcelize_runtime',
               'version': 'version:2@1.9.22.cr1',
-          },
-      ],
-      'condition': 'checkout_android and non_git_source',
-      'dep_type': 'cipd',
-  },
-
-  'src/third_party/android_deps/cipd/libs/org_jetbrains_kotlin_kotlin_stdlib_jdk7': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlin_kotlin_stdlib_jdk7',
-              'version': 'version:2@1.8.20.cr1',
-          },
-      ],
-      'condition': 'checkout_android and non_git_source',
-      'dep_type': 'cipd',
-  },
-
-  'src/third_party/android_deps/cipd/libs/org_jetbrains_kotlin_kotlin_stdlib_jdk8': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlin_kotlin_stdlib_jdk8',
-              'version': 'version:2@1.8.20.cr1',
           },
       ],
       'condition': 'checkout_android and non_git_source',

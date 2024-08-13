@@ -254,14 +254,6 @@ class ChromiumDepGraph {
             resolveVersion: '1.6.4'),
         org_jetbrains_kotlinx_kotlinx_coroutines_guava: new PropertyOverride(
             resolveVersion: '1.6.4'),
-        org_jetbrains_kotlin_kotlin_stdlib_jdk8: new PropertyOverride(
-            resolveVersion: '1.8.20'),
-        org_jetbrains_kotlin_kotlin_stdlib_jdk7: new PropertyOverride(
-            resolveVersion: '1.8.20'),
-        org_jetbrains_kotlin_kotlin_stdlib: new PropertyOverride(
-            resolveVersion: '1.8.20'),
-        org_jetbrains_kotlin_kotlin_stdlib_common: new PropertyOverride(
-            resolveVersion: '1.8.20'),
         io_grpc_grpc_binder: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),

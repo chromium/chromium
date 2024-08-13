@@ -112,12 +112,12 @@ dependencies {
     compile 'io.grpc:grpc-stub:1.49.0'
     compile 'io.grpc:grpc-api:1.49.0'
 
+    // Needed by androidx.room, but by default it selects a lower version that
+    // does not exist in CIPD.
+    compile 'org.jetbrains.kotlinx:atomicfu-jvm:0.23.2'
     // Needed by androidx and by doubledown targets.
     // Note: These have version overrides set in ChromiumDepGraph.groovy.
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4"
-    compile "org.jetbrains.kotlinx:atomicfu-jvm:0.23.2"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.20"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.6.4"
     compile "org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22"
