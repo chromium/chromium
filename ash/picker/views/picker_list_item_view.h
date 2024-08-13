@@ -60,10 +60,17 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   void SetLeadingIcon(const ui::ImageModel& icon,
                       std::optional<gfx::Size> icon_size = std::nullopt);
 
-  // Sets the primary text or image of the list item. This replaces any existing
-  // contents in the primary container.
+  // Sets the primary text. This replaces any existing contents in the primary
+  // container.
   void SetPrimaryText(const std::u16string& primary_text);
-  void SetPrimaryImage(const ui::ImageModel& primary_image);
+
+  // Sets the primary image. This replaces any existing contents in the primary
+  // container. `available_width` is the available width for this list item
+  // (including any leading icons). The image will be resized to fill
+  // `available_width`, while maintaining a fixed height and aspect ratio by
+  // cropping out any excess.
+  void SetPrimaryImage(const ui::ImageModel& primary_image,
+                       int available_width);
 
   void SetSecondaryText(const std::u16string& secondary_text);
 

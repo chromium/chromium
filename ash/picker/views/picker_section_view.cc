@@ -170,6 +170,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
     const PickerSearchResult& result,
     PickerPreviewBubbleController* preview_controller,
     PickerAssetFetcher* asset_fetcher,
+    int available_width,
     SelectResultCallback select_result_callback) {
   using ReturnType = std::unique_ptr<PickerItemView>;
   return std::visit(
@@ -211,7 +212,8 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
                   return nullptr;
                 }
                 icon = &chromeos::kFiletypeImageIcon;
-                item_view->SetPrimaryImage(*data.display_image);
+                item_view->SetPrimaryImage(*data.display_image,
+                                           available_width);
                 break;
               case PickerSearchResult::ClipboardData::DisplayFormat::kHtml:
                 NOTREACHED_NORETURN();
@@ -420,7 +422,7 @@ PickerItemView* PickerSectionView::AddResult(
     PickerPreviewBubbleController* preview_controller,
     SelectResultCallback select_result_callback) {
   return AddItem(CreateItemFromResult(result, preview_controller,
-                                      asset_fetcher_,
+                                      asset_fetcher_, section_width_,
                                       std::move(select_result_callback)));
 }
 

@@ -71,11 +71,27 @@ TEST_F(PickerListItemViewTest, SetsPrimaryText) {
 TEST_F(PickerListItemViewTest, SetsPrimaryImage) {
   PickerListItemView item_view(base::DoNothing());
 
-  item_view.SetPrimaryImage(ui::ImageModel());
+  item_view.SetPrimaryImage(ui::ImageModel(), /*available_width=*/100);
 
   ASSERT_THAT(item_view.primary_container_for_testing()->children(), SizeIs(1));
   EXPECT_TRUE(views::IsViewClass<views::ImageView>(
       item_view.primary_container_for_testing()->children()[0]));
+}
+
+TEST_F(PickerListItemViewTest, SetPrimaryImageScalesImage) {
+  PickerListItemView item_view(base::DoNothing());
+  item_view.SetPrimaryImage(
+      ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(1)),
+      /*available_width=*/320);
+
+  ASSERT_THAT(item_view.primary_container_for_testing()->children(), SizeIs(1));
+  ASSERT_TRUE(views::IsViewClass<views::ImageView>(
+      item_view.primary_container_for_testing()->children()[0]));
+  EXPECT_EQ(views::AsViewClass<views::ImageView>(
+                item_view.primary_container_for_testing()->children()[0])
+                ->GetImageBounds()
+                .size(),
+            gfx::Size(252, 64));
 }
 
 TEST_F(PickerListItemViewTest, SetsLeadingIcon) {
@@ -124,7 +140,7 @@ TEST_F(PickerListItemViewTest, SetsBadgeVisibleWithPrimaryText) {
 
 TEST_F(PickerListItemViewTest, DoesNotSetBadgeVisibleWithPrimaryImage) {
   PickerListItemView item_view(base::DoNothing());
-  item_view.SetPrimaryImage(ui::ImageModel());
+  item_view.SetPrimaryImage(ui::ImageModel(), /*available_width=*/100);
 
   item_view.SetBadgeVisible(true);
 

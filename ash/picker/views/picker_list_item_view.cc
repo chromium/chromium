@@ -18,6 +18,7 @@
 #include "ash/picker/views/picker_preview_metadata.h"
 #include "ash/picker/views/picker_shortcut_hint_view.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "ash/public/cpp/image_util.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
@@ -58,7 +59,7 @@ constexpr auto kBorderInsetsWithoutBadge = gfx::Insets::TLBR(8, 16, 8, 16);
 constexpr auto kBorderInsetsWithBadge = gfx::Insets::TLBR(8, 16, 8, 12);
 
 constexpr gfx::Size kLeadingIconSizeDip(20, 20);
-constexpr int kImageDisplayHeight = 72;
+constexpr int kImageDisplayHeight = 64;
 constexpr int kImageRadius = 8;
 constexpr auto kLeadingIconRightPadding = gfx::Insets::TLBR(0, 0, 0, 16);
 constexpr auto kBadgeLeftPadding = gfx::Insets::TLBR(0, 8, 0, 0);
@@ -185,22 +186,24 @@ void PickerListItemView::SetPrimaryText(const std::u16string& primary_text) {
   UpdateAccessibleName();
 }
 
-void PickerListItemView::SetPrimaryImage(const ui::ImageModel& primary_image) {
+void PickerListItemView::SetPrimaryImage(const ui::ImageModel& primary_image,
+                                         int available_width) {
   primary_label_ = nullptr;
   primary_container_->RemoveAllChildViews();
-  auto* image_view = primary_container_->AddChildView(
-      std::make_unique<views::ImageView>((primary_image)));
+  auto* image_view =
+      primary_container_->AddChildView(std::make_unique<views::ImageView>(
+          ui::ImageModel::FromImageSkia(image_util::ResizeAndCropImage(
+              primary_image.Rasterize(GetColorProvider()),
+              gfx::Size(available_width - kBorderInsetsWithoutBadge.width() -
+                            kLeadingIconSizeDip.width() -
+                            kLeadingIconRightPadding.right(),
+                        kImageDisplayHeight)))));
   image_view->SetCanProcessEventsWithinSubtree(false);
-  const gfx::Size original_size = image_view->GetImageModel().Size();
-  if (original_size.height() > 0) {
-    const gfx::Size image_display_size = gfx::ScaleToRoundedSize(
-        original_size,
-        static_cast<float>(kImageDisplayHeight) / original_size.height());
-    image_view->SetImageSize(image_display_size);
+  const gfx::Size cropped_size = image_view->GetImageModel().Size();
+  if (cropped_size.height() > 0) {
     SkPath path;
-    path.addRoundRect(
-        gfx::RectToSkRect(gfx::Rect(gfx::Point(), image_display_size)),
-        SkIntToScalar(kImageRadius), SkIntToScalar(kImageRadius));
+    path.addRoundRect(gfx::RectToSkRect(gfx::Rect(gfx::Point(), cropped_size)),
+                      SkIntToScalar(kImageRadius), SkIntToScalar(kImageRadius));
     image_view->SetClipPath(path);
   }
   UpdateAccessibleName();
