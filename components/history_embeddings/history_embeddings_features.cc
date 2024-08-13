@@ -75,6 +75,10 @@ const base::FeatureParam<bool> kUseMlAnswerer(&kHistoryEmbeddings,
                                               "UseMlAnswerer",
                                               false);
 
+const base::FeatureParam<double> kMlAnswererMinScore(&kHistoryEmbeddings,
+                                                     "MlAnswererMinScore",
+                                                     0.5);
+
 const base::FeatureParam<bool> kUseMlEmbedder(&kHistoryEmbeddings,
                                               "UseMlEmbedder",
                                               true);

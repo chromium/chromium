@@ -7,6 +7,7 @@
 #include "base/barrier_callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
@@ -28,6 +29,10 @@ static constexpr std::string kPassageIdToken = "ID";
 
 std::string GetPassageIdStr(size_t id) {
   return base::StringPrintf("%04d", static_cast<int>(id));
+}
+
+float GetMlAnswerScoreThreshold() {
+  return kMlAnswererMinScore.Get();
 }
 
 void AddQueryAndPassagesToSession(const std::string& query,
@@ -143,6 +148,14 @@ class MlAnswerer::SessionManager {
         max_index = i;
       }
     }
+
+    // Return unanswerable status due to highest score is below the threshold.
+    if (max_score < GetMlAnswerScoreThreshold()) {
+      Finish(
+          AnswererResult{ComputeAnswerStatus::UNANSWERABLE, query_, Answer()});
+      return;
+    }
+
     // Continue decoding using the session with the highest score.
     // Use a dummy request here since both passages and query are already added
     // to context.
