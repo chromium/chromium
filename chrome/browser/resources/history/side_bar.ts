@@ -94,7 +94,7 @@ export class HistorySideBarElement extends PolymerElement {
             'historyClustersEnabled, historyClustersVisible)',
       },
 
-      productSpecificationsListsEnabled_: Boolean,
+      compareHistoryEnabled_: Boolean,
     };
   }
 
@@ -107,8 +107,8 @@ export class HistorySideBarElement extends PolymerElement {
   private historyClustersVisibleManagedByPolicy_: boolean;
   private showFooter_: boolean;
   private showHistoryClusters_: boolean;
-  private productSpecificationsListsEnabled_: boolean =
-      loadTimeData.getBoolean('productSpecificationsListsEnabled');
+  private compareHistoryEnabled_: boolean =
+      loadTimeData.getBoolean('compareHistoryEnabled');
 
   override ready() {
     super.ready();

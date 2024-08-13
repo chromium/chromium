@@ -569,9 +569,6 @@
   <message name="IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT" translateable="false" desc="The text for the Product Specifications entry point button with a placeholder for what the specifications are for.">
     Analyze <ph name="SPECIFICATION">$1<ex>pages</ex></ph>?
   </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_HISTORY_MENU_ITEM" translateable="false" desc="The title of the link in the history UI that navigates the user to a page showing the lists being maintained by the product specifications feature.">
-    Product specifications lists
-  </message>
   <message name="IDS_TOOLTIP_PRODUCT_SPECIFICATIONS_ENTRY_POINT_CLOSE" translateable="false" desc="The tooltip text for the close button within the Product Specifications entry point button.">
     Dismiss suggestion
   </message>

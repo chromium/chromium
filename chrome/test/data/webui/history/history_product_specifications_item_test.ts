@@ -39,7 +39,7 @@ suite('ProductSpecificationsItemTest', () => {
 
   test('render labels', async () => {
     const label = productSpecificationsItem.$.link.textContent!;
-    assertEquals('Analyze example1 · 1 items', label.trim());
+    assertEquals('Compare example1 · 1 items', label.trim());
     const url = productSpecificationsItem.$.url.textContent!;
     assertEquals('chrome://compare/?id=ex1', url.trim());
   });

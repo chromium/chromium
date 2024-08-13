@@ -95,13 +95,13 @@
         $i18n{openTabsMenuItem}
         <cr-ripple></cr-ripple>
       </a>
-      <template is="dom-if" if="[[productSpecificationsListsEnabled_]]">
+      <template is="dom-if" if="[[compareHistoryEnabled_]]">
         <a id="productSpecificationsLists" role="menuitem"
-            href="/productSpecificationsLists"
+            href="/comparisonTables"
             class="page-item cr-nav-menu-item"
-            path="productSpecificationsLists" on-click="onItemClick_">
+            path="comparisonTables" on-click="onItemClick_">
           <cr-icon icon="history:table-chart-organize"></cr-icon>
-          $i18n{productSpecificationsListsMenuItem}
+          $i18n{compareHistoryListsMenuItem}
           <cr-ripple></cr-ripple>
         </a>
       </template>

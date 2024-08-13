@@ -33,18 +33,18 @@
   }
 </style>
 <div id="product-specifications-info-text" class="history-cards">
-  $i18n{productSpecificationsInfo}
+  $i18n{compareHistoryInfo}
 </div>
 <div class="centered-message"
     hidden$="[[hasResults_(displayedItems_.length)]]">
-  $i18n{productSpecificationsEmpty}
+  $i18n{compareHistoryEmpty}
 </div>
 <div class="history-cards" id="product-list-container"
     hidden$="[[!hasResults_(displayedItems_.length)]]">
   <div id="card-title-header" class="card-title" role="row">
     <div role="rowheader">
       <div role="heading" aria-level="2">
-        $i18n{productSpecificationsHeader}
+        $i18n{compareHistoryHeader}
       </div>
     </div>
   </div>
@@ -64,7 +64,7 @@
       <cr-action-menu>
         <button class="dropdown-item" on-click="onRemoveItemClick_"
             disabled="[[pendingDelete_]]">
-          $i18n{productSpecificationsHistoryRemove}
+          $i18n{compareHistoryRemove}
         </button>
       </cr-action-menu>
     </template>

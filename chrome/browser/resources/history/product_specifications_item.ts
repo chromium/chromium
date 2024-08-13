@@ -111,12 +111,12 @@ export class ProductSpecificationsItemElement extends PolymerElement {
 
   private getItemTitle_(): string {
     return loadTimeData.getStringF(
-        'productSpecificationsRow', this.item.name, this.item.urls.length);
+        'compareHistoryRow', this.item.name, this.item.urls.length);
   }
 
   private getMenuAriaLabel_(): string {
     return loadTimeData.getStringF(
-        'productSpecificationsMenuAriaLabel', this.item.name);
+        'compareHistoryMenuAriaLabel', this.item.name);
   }
 
   private getUrl_(): string {

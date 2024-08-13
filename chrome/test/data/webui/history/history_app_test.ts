@@ -349,10 +349,10 @@ suite('HistoryAppTest', function() {
   test('ProductSpecsIncrementsToolbar', async () => {
     // Reset the app with product spec lists feature enabled.
     document.body.removeChild(element);
-    loadTimeData.overrideValues({productSpecificationsListsEnabled: true});
+    loadTimeData.overrideValues({compareHistoryEnabled: true});
     element = document.createElement('history-app');
     document.body.appendChild(element);
-    element.$.router.selectedPage = 'productSpecificationsLists';
+    element.$.router.selectedPage = 'comparisonTables';
     await flushTasks();
     assertEquals(0, element.$.toolbar.count);
 
@@ -379,10 +379,10 @@ suite('HistoryAppTest', function() {
   test('ProductSpecsSelectUnselectAll', async () => {
     // Reset the app with product spec lists feature enabled.
     document.body.removeChild(element);
-    loadTimeData.overrideValues({productSpecificationsListsEnabled: true});
+    loadTimeData.overrideValues({compareHistoryEnabled: true});
     element = document.createElement('history-app');
     document.body.appendChild(element);
-    element.$.router.selectedPage = 'productSpecificationsLists';
+    element.$.router.selectedPage = 'comparisonTables';
     await flushTasks();
     assertEquals(0, element.$.toolbar.count);
 
