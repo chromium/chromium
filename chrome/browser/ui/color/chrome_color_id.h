@@ -402,6 +402,7 @@
   E_CPONLY(kColorProductSpecificationsDisclosureGradientStart) \
   E_CPONLY(kColorProductSpecificationsDisclosureSummaryBackground) \
   E_CPONLY(kColorProductSpecificationsDivider) \
+  E_CPONLY(kColorProductSpecificationsHorizontalCarouselScrollbarThumb) \
   E_CPONLY(kColorProductSpecificationsIcon) \
   E_CPONLY(kColorProductSpecificationsPageBackground) \
   E_CPONLY(kColorProductSpecificationsPrimaryTitle) \

@@ -59,13 +59,23 @@ export class HorizontalCarouselElement extends CrLitElement {
 
   static override get properties() {
     return {
+      /**
+       * True if slotted table is overflown, regardless of any elements that may
+       * appear before or after it.
+       */
       canScroll: {
         type: Boolean,
         reflect: true,
       },
 
+      /**
+         True if slotted table is overflown on the left side of the carousel.
+       */
       showBackButton_: {type: Boolean},
 
+      /**
+         True if slotted table is overflown on the right side of the carousel.
+       */
       showForwardButton_: {type: Boolean},
     };
   }

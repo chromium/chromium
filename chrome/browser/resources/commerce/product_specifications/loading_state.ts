@@ -78,6 +78,8 @@ export class LoadingStateElement extends CrLitElement {
     super.updated(changedProperties);
 
     if (changedProperties.has('columnCount')) {
+      // Limit the amount of columns that can show in the loading state.
+      this.columnCount = Math.min(5, this.columnCount);
       this.generateLoadingUi_();
     }
   }

@@ -64,7 +64,21 @@
     overflow-x: auto;
     scroll-behavior: smooth;
     scroll-snap-type: x mandatory;
+  }
+
+  :host(:not([can-scroll])) #carouselContainer {
     scrollbar-width: none;
+  }
+
+  :host([can-scroll]) #carouselContainer::-webkit-scrollbar {
+    background: transparent;
+    height: 6px;
+  }
+
+  :host([can-scroll]) #carouselContainer::-webkit-scrollbar-thumb {
+    background:
+        var(--color-product-specifications-horizontal-carousel-scrollbar-thumb);
+    border-radius: 8px;
   }
 
   ::slotted([slot=selector]) {
