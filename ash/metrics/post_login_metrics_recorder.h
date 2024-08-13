@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/metrics/deferred_metrics_reporter.h"
 #include "ash/metrics/post_login_event_observer.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -35,6 +36,8 @@ class ASH_EXPORT PostLoginMetricsRecorder : public PostLoginEventObserver {
                       bool is_ash_restarted,
                       bool is_regular_user_or_owner) override;
   void OnAllExpectedShelfIconLoaded(base::TimeTicks ts) override;
+  void OnSessionRestoreDataLoaded(base::TimeTicks ts,
+                                  bool restore_automatically) override;
   void OnAllBrowserWindowsCreated(base::TimeTicks ts) override;
   void OnAllBrowserWindowsShown(base::TimeTicks ts) override;
   void OnAllBrowserWindowsPresented(base::TimeTicks ts) override;
@@ -80,6 +83,10 @@ class ASH_EXPORT PostLoginMetricsRecorder : public PostLoginEventObserver {
   // Records the timestamp of `OnAuthSuccess` or `OnUserLoggedIn`, which
   // ever happens first, as the origin time of a user login.
   std::optional<base::TimeTicks> timestamp_origin_;
+
+  // Used for reporting metrics with different names depending on the session
+  // restore flow.
+  DeferredMetricsReporter uma_login_perf_;
 
   base::ScopedObservation<LoginUnlockThroughputRecorder, PostLoginEventObserver>
       post_login_event_observation_{this};

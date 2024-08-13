@@ -306,6 +306,11 @@ chromium-metrics-reviews@google.com.
       summary="Speech recognition happened on remote servers"/>
 </variants>
 
+<variants name="RestoreMode">
+  <variant name="AutoRestore"/>
+  <variant name="ManualRestore"/>
+</variants>
+
 <variants name="ScreenCaptureClient">
   <variant name="GameDashboard"
       summary="Game dashboard initiated capture mode"/>
@@ -5165,6 +5170,127 @@ chromium-metrics-reviews@google.com.
     Relative smoothness of all animations applied during the login process. 100%
     represents the ideal smoothness for 60 frames per second.
   </summary>
+</histogram>
+
+<histogram name="Ash.LoginPerf.AutoRestore.AllBrowserWindowsCreated" units="ms"
+    expires_after="2025-02-01">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.org</owner>
+  <summary>
+    Time between primary user logged in (i.e. a successful cryptohome mount) and
+    creation of all expected restored browser windows.
+
+    This metric is reported only if session is restored automatically.
+  </summary>
+</histogram>
+
+<histogram name="Ash.LoginPerf.AutoRestore.AllBrowserWindowsPresented"
+    units="ms" expires_after="2025-02-01">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.org</owner>
+  <summary>
+    The duration of how long it took for all pixels of expected restored windows
+    to be rendered after primary user logged in (i.e. a successful cryptohome
+    mount).
+
+    This metric is reported only if session is restored automatically.
+  </summary>
+</histogram>
+
+<histogram name="Ash.LoginPerf.AutoRestore.AllBrowserWindowsShown" units="ms"
+    expires_after="2025-02-01">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.org</owner>
+  <summary>
+    Time between primary user logged in (i.e. a successful cryptohome mount) and
+    the full manifestation of all expected restored browser windows.
+
+    This metric is reported only if session restore is automatic.
+  </summary>
+</histogram>
+
+<histogram name="Ash.LoginPerf.{RestoreMode}.AllShelfIconsLoaded" units="ms"
+    expires_after="2025-02-01">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.org</owner>
+  <summary>
+    Time between primary user logged in (i.e. a successful cryptohome mount) and
+    the complete loading of all pinned button icons for restored windows.
+  </summary>
+  <token key="RestoreMode" variants="RestoreMode"/>
+</histogram>
+
+<histogram name="Ash.LoginPerf.{RestoreMode}.ArcUiAvailableAfterLogin"
+    units="ms" expires_after="2025-02-01">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.org</owner>
+  <summary>
+    Time between primary user logged in (i.e. a successful cryptohome mount) and
+    ARC boot completion..
+  </summary>
+  <token key="RestoreMode" variants="RestoreMode"/>
+</histogram>
+
+<histogram
+    name="Ash.LoginPerf.{RestoreMode}.PostLoginAnimation.Duration.{TabletOrClamshellMode}"
+    units="ms" expires_after="2025-02-01">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.org</owner>
+  <summary>
+    The duration of how long it took to finish all animations applied during the
+    login process, from the time the first animation is added, to the time the
+    last animation is finished.
+  </summary>
+  <token key="RestoreMode" variants="RestoreMode"/>
+  <token key="TabletOrClamshellMode" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.LoginPerf.{RestoreMode}.PostLoginAnimation.Jank.{TabletOrClamshellMode}"
+    units="%" expires_after="2025-02-01">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.org</owner>
+  <summary>
+    Jank metrics of all animations applied during the login process. This
+    represents how often the frame update rate changed during animation.
+  </summary>
+  <token key="RestoreMode" variants="RestoreMode"/>
+  <token key="TabletOrClamshellMode" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.LoginPerf.{RestoreMode}.PostLoginAnimation.Smoothness.{TabletOrClamshellMode}"
+    units="%" expires_after="2025-02-01">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.org</owner>
+  <summary>
+    Relative smoothness of all animations applied during the login process. 100%
+    represents the ideal smoothness for 60 frames per second.
+  </summary>
+  <token key="RestoreMode" variants="RestoreMode"/>
+  <token key="TabletOrClamshellMode" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Ash.LoginPerf.{RestoreMode}.ShelfLoginAnimationEnd" units="ms"
+    expires_after="2025-02-01">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.org</owner>
+  <summary>
+    The duration of how long it took to load all the shelf icons of restored
+    windows after primary user logged in (i.e. a successful cryptohome mount).
+  </summary>
+  <token key="RestoreMode" variants="RestoreMode"/>
+</histogram>
+
+<histogram name="Ash.LoginPerf.{RestoreMode}.TotalDuration" units="ms"
+    expires_after="2025-02-01">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-sw-perf@google.org</owner>
+  <summary>
+    Time between when sign-in authentication is started and when post login
+    animation finishes. This metric corresponds to BootTime.Login2.
+  </summary>
+  <token key="RestoreMode" variants="RestoreMode"/>
 </histogram>
 
 <histogram name="Ash.LoginSessionRestore.AllBrowserWindowsCreated" units="ms"

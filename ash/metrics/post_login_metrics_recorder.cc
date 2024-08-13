@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/metrics/deferred_metrics_reporter.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/shell.h"
@@ -46,6 +47,10 @@ constexpr char kAshLoginSessionRestoreAllBrowserWindowsPresented[] =
 
 constexpr char kAshLoginSessionRestoreShelfLoginAnimationEnd[] =
     "Ash.LoginSessionRestore.ShelfLoginAnimationEnd";
+
+constexpr char kUmaMetricsPrefixAutoRestore[] = "Ash.LoginPerf.AutoRestore.";
+constexpr char kUmaMetricsPrefixManualRestore[] =
+    "Ash.LoginPerf.ManualRestore.";
 
 std::string GetDeviceModeSuffix() {
   return display::Screen::GetScreen()->InTabletMode() ? "TabletMode"
@@ -90,6 +95,48 @@ void ReportLoginThroughputEvent(const std::string& event_name,
       "startup", kFailedEvent, TRACE_ID_LOCAL(kLoginThroughput), end);
 }
 
+class MetricTime : public DeferredMetricsReporter::Metric {
+ public:
+  MetricTime(std::string name,
+             base::TimeDelta duration,
+             base::TimeDelta min = base::Milliseconds(100),
+             base::TimeDelta max = base::Seconds(30),
+             size_t buckets = 100)
+      : name_(std::move(name)),
+        duration_(duration),
+        min_(min),
+        max_(max),
+        buckets_(buckets) {}
+  ~MetricTime() override = default;
+
+  void Report(const std::string& prefix) override {
+    base::UmaHistogramCustomTimes(prefix + name_, duration_, min_, max_,
+                                  buckets_);
+  }
+
+ private:
+  const std::string name_;
+  const base::TimeDelta duration_;
+  const base::TimeDelta min_;
+  const base::TimeDelta max_;
+  const size_t buckets_;
+};
+
+class MetricPercentage : public DeferredMetricsReporter::Metric {
+ public:
+  MetricPercentage(std::string name, int percentage)
+      : name_(std::move(name)), percentage_(percentage) {}
+  ~MetricPercentage() override = default;
+
+  void Report(const std::string& prefix) override {
+    base::UmaHistogramPercentage(prefix + name_, percentage_);
+  }
+
+ private:
+  const std::string name_;
+  const int percentage_;
+};
+
 }  // namespace
 
 PostLoginMetricsRecorder::PostLoginMetricsRecorder(
@@ -132,44 +179,67 @@ void PostLoginMetricsRecorder::OnUserLoggedIn(base::TimeTicks ts,
 void PostLoginMetricsRecorder::OnAllExpectedShelfIconLoaded(
     base::TimeTicks ts) {
   if (timestamp_origin_.has_value()) {
-    const base::TimeDelta duration_ms = ts - timestamp_origin_.value();
+    const base::TimeDelta duration = ts - timestamp_origin_.value();
     UMA_HISTOGRAM_CUSTOM_TIMES(kAshLoginSessionRestoreAllShelfIconsLoaded,
-                               duration_ms, base::Milliseconds(1),
+                               duration, base::Milliseconds(1),
                                base::Seconds(100), 100);
     AddLoginTimeMarker(kAshLoginSessionRestoreAllShelfIconsLoaded, ts);
+
+    uma_login_perf_.ReportOrSchedule(
+        std::make_unique<MetricTime>("AllShelfIconsLoaded", duration));
   }
+}
+
+void PostLoginMetricsRecorder::OnSessionRestoreDataLoaded(
+    base::TimeTicks ts,
+    bool restore_automatically) {
+  if (restore_automatically) {
+    uma_login_perf_.SetPrefix(kUmaMetricsPrefixAutoRestore);
+  } else {
+    uma_login_perf_.SetPrefix(kUmaMetricsPrefixManualRestore);
+  }
+  uma_login_perf_.MarkReadyToReport();
 }
 
 void PostLoginMetricsRecorder::OnAllBrowserWindowsCreated(base::TimeTicks ts) {
   if (timestamp_origin_.has_value()) {
-    const base::TimeDelta duration_ms = ts - timestamp_origin_.value();
+    const base::TimeDelta duration = ts - timestamp_origin_.value();
     UMA_HISTOGRAM_CUSTOM_TIMES(kAshLoginSessionRestoreAllBrowserWindowsCreated,
-                               duration_ms, base::Milliseconds(1),
+                               duration, base::Milliseconds(1),
                                base::Seconds(100), 100);
     AddLoginTimeMarker(kAshLoginSessionRestoreAllBrowserWindowsCreated, ts);
+
+    uma_login_perf_.ReportOrSchedule(
+        std::make_unique<MetricTime>("AllBrowserWindowsCreated", duration));
   }
 }
 
 void PostLoginMetricsRecorder::OnAllBrowserWindowsShown(base::TimeTicks ts) {
   if (timestamp_origin_.has_value()) {
-    const base::TimeDelta duration_ms = ts - timestamp_origin_.value();
+    const base::TimeDelta duration = ts - timestamp_origin_.value();
     UMA_HISTOGRAM_CUSTOM_TIMES(kAshLoginSessionRestoreAllBrowserWindowsShown,
-                               duration_ms, base::Milliseconds(1),
+                               duration, base::Milliseconds(1),
                                base::Seconds(100), 100);
     AddLoginTimeMarker(kAshLoginSessionRestoreAllBrowserWindowsShown, ts);
+
+    uma_login_perf_.ReportOrSchedule(
+        std::make_unique<MetricTime>("AllBrowserWindowsShown", duration));
   }
 }
 
 void PostLoginMetricsRecorder::OnAllBrowserWindowsPresented(
     base::TimeTicks ts) {
   if (timestamp_origin_.has_value()) {
-    const base::TimeDelta duration_ms = ts - timestamp_origin_.value();
+    const base::TimeDelta duration = ts - timestamp_origin_.value();
     // Headless units do not report presentation time, so we only report
     // the histogram if primary display is functional.
     if (display::Screen::GetScreen()->GetPrimaryDisplay().detected()) {
       UMA_HISTOGRAM_CUSTOM_TIMES(
-          kAshLoginSessionRestoreAllBrowserWindowsPresented, duration_ms,
+          kAshLoginSessionRestoreAllBrowserWindowsPresented, duration,
           base::Milliseconds(1), base::Seconds(100), 100);
+
+      uma_login_perf_.ReportOrSchedule(
+          std::make_unique<MetricTime>("AllBrowserWindowsPresented", duration));
     }
     AddLoginTimeMarker(kAshLoginSessionRestoreAllBrowserWindowsPresented, ts);
   }
@@ -177,11 +247,14 @@ void PostLoginMetricsRecorder::OnAllBrowserWindowsPresented(
 
 void PostLoginMetricsRecorder::OnShelfAnimationFinished(base::TimeTicks ts) {
   if (timestamp_origin_.has_value()) {
-    const base::TimeDelta duration_ms = ts - timestamp_origin_.value();
+    const base::TimeDelta duration = ts - timestamp_origin_.value();
     UMA_HISTOGRAM_CUSTOM_TIMES(kAshLoginSessionRestoreShelfLoginAnimationEnd,
-                               duration_ms, base::Milliseconds(1),
+                               duration, base::Milliseconds(1),
                                base::Seconds(100), 100);
     AddLoginTimeMarker(kAshLoginSessionRestoreShelfLoginAnimationEnd, ts);
+
+    uma_login_perf_.ReportOrSchedule(
+        std::make_unique<MetricTime>("ShelfLoginAnimationEnd", duration));
   }
 }
 
@@ -218,6 +291,13 @@ void PostLoginMetricsRecorder::OnCompositorAnimationFinished(
   base::UmaHistogramCustomTimes(duration_name + suffix, duration,
                                 base::Milliseconds(100), base::Seconds(30),
                                 100);
+
+  uma_login_perf_.ReportOrSchedule(std::make_unique<MetricPercentage>(
+      "PostLoginAnimation.Smoothness." + suffix, smoothness));
+  uma_login_perf_.ReportOrSchedule(std::make_unique<MetricPercentage>(
+      "PostLoginAnimation.Jank." + suffix, jank));
+  uma_login_perf_.ReportOrSchedule(std::make_unique<MetricTime>(
+      "PostLoginAnimation.Duration." + suffix, duration));
 }
 
 void PostLoginMetricsRecorder::OnArcUiReady(base::TimeTicks ts) {
@@ -233,6 +313,10 @@ void PostLoginMetricsRecorder::OnArcUiReady(base::TimeTicks ts) {
                                 base::Seconds(30), 100);
   LOCAL_HISTOGRAM_TIMES("Ash.Tast.ArcUiAvailableAfterLogin.Duration", duration);
 
+  uma_login_perf_.ReportOrSchedule(std::make_unique<MetricTime>(
+      "ArcUiAvailableAfterLogin", duration, base::Milliseconds(100),
+      base::Seconds(100), 100));
+
   // Note that this event is only reported when OnArcUiReady is called
   // before OnShelfAnimationAndCompositorAnimationDone.
   AddLoginTimeMarker("ArcUiAvailable", ts);
@@ -240,10 +324,9 @@ void PostLoginMetricsRecorder::OnArcUiReady(base::TimeTicks ts) {
 
 void PostLoginMetricsRecorder::OnShelfIconsLoadedAndSessionRestoreDone(
     base::TimeTicks ts) {
-  // Unblock deferred task now.
-  // TODO(b/328339021, b/323098858): This is the mitigation against a bug
-  // that animation observation has race condition.
-  // Can be in a part of better architecture.
+  // TODO(b/328339021, b/323098858): This is the mitigation against a bug that
+  // animation observation has race condition. Can be in a part of better
+  // architecture.
   base::UmaHistogramCustomTimes(
       "BootTime.Login4", ts - timestamp_origin_.value(),
       base::Milliseconds(100), base::Seconds(100), 100);
@@ -252,11 +335,20 @@ void PostLoginMetricsRecorder::OnShelfIconsLoadedAndSessionRestoreDone(
 void PostLoginMetricsRecorder::OnShelfAnimationAndCompositorAnimationDone(
     base::TimeTicks ts) {
   AddLoginTimeMarker("LoginFinished", ts);
+  // This is the last event we expect. We can report all the events now.
+  ReportTraceEvents();
+
   LoginEventRecorder::Get()->AddLoginTimeMarker("LoginFinished",
                                                 /*send_to_uma=*/false,
                                                 /*write_to_file=*/false);
-  // This is the last event we expect. We can report all the events now.
-  ReportTraceEvents();
+
+  auto total_duration =
+      LoginEventRecorder::Get()->GetDuration("LoginStarted", "LoginFinished");
+  // For unit tests, "LoginStarted" may not be recorded.
+  if (total_duration.has_value()) {
+    uma_login_perf_.ReportOrSchedule(
+        std::make_unique<MetricTime>("TotalDuration", total_duration.value()));
+  }
 
   base::UmaHistogramCustomTimes(
       "BootTime.Login3", ts - timestamp_origin_.value(),
