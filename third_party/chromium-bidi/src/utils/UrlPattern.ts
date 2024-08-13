@@ -20,6 +20,7 @@ import {URLPattern as URLPatternPolyfill} from 'urlpattern-polyfill';
 let URLPattern = URLPatternPolyfill;
 
 if ('URLPattern' in globalThis) {
+  // eslint-disable-next-line no-global-assign
   URLPattern = (globalThis as any).URLPattern;
 }
 

@@ -30,20 +30,14 @@ import type {ActionOption} from '../input/ActionOption.js';
 import {SourceType} from '../input/InputSource.js';
 import type {InputState} from '../input/InputState.js';
 import {InputStateManager} from '../input/InputStateManager.js';
-import type {RealmStorage} from '../script/RealmStorage.js';
 
 export class InputProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
-  readonly #realmStorage: RealmStorage;
 
   readonly #inputStateManager = new InputStateManager();
 
-  constructor(
-    browsingContextStorage: BrowsingContextStorage,
-    realmStorage: RealmStorage
-  ) {
+  constructor(browsingContextStorage: BrowsingContextStorage) {
     this.#browsingContextStorage = browsingContextStorage;
-    this.#realmStorage = realmStorage;
   }
 
   async performActions(

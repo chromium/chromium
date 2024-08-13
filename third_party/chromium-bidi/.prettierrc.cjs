@@ -16,6 +16,9 @@
  */
 const gtsPrettierrc = require('gts/.prettierrc.json');
 
+/**
+ * @type {import('prettier').Config}
+ */
 module.exports = {
   ...gtsPrettierrc,
   arrowParens: 'always', // https://google.github.io/styleguide/jsguide.html#features-functions-arrow-functions
