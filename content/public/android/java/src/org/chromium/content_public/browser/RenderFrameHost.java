@@ -58,11 +58,17 @@ public interface RenderFrameHost {
     /**
      * Returns the eldest parent of this RenderFrameHost.
      *
-     * <p>Will only be {@code null} if this {@code RenderFrameHost} is not associated with a native
-     * object.
+     * <p>Will only be {@code null} if this (callee) {@code RenderFrameHost} is no longer associated
+     * with a native object, due to it being or having been destroyed. Note that if this method
+     * returns {@code null}, this does not necessarily mean that any original parent frame or frames
+     * have been destroyed.
+     *
+     * <p>If the callee frame is the eldest in the frame ancestry, it will return itself (if it has
+     * not been destroyed).
      *
      * @see
      *     https://crsrc.org/c/content/public/browser/render_frame_host.h?q=symbol:%5Cbcontent::RenderFrameHost::GetMainFrame%5Cb%20case:yes
+     * @return The eldest parent frame or null when this frame is being destroyed.
      */
     @Nullable
     RenderFrameHost getMainFrame();
