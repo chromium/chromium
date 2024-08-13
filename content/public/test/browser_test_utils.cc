@@ -2432,13 +2432,13 @@ RenderFrameMetadataProviderImpl* RenderFrameMetadataProviderFromRenderFrameHost(
 }  // namespace
 
 TitleWatcher::TitleWatcher(WebContents* web_contents,
-                           const std::u16string& expected_title)
+                           std::u16string_view expected_title)
     : WebContentsObserver(web_contents) {
-  expected_titles_.push_back(expected_title);
+  expected_titles_.emplace_back(expected_title);
 }
 
-void TitleWatcher::AlsoWaitForTitle(const std::u16string& expected_title) {
-  expected_titles_.push_back(expected_title);
+void TitleWatcher::AlsoWaitForTitle(std::u16string_view expected_title) {
+  expected_titles_.emplace_back(expected_title);
 }
 
 TitleWatcher::~TitleWatcher() = default;

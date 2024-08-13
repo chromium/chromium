@@ -1182,7 +1182,7 @@ class TitleWatcher : public WebContentsObserver {
   // |web_contents| must be non-NULL and needs to stay alive for the
   // entire lifetime of |this|. |expected_title| is the title that |this|
   // will wait for.
-  TitleWatcher(WebContents* web_contents, const std::u16string& expected_title);
+  TitleWatcher(WebContents* web_contents, std::u16string_view expected_title);
 
   TitleWatcher(const TitleWatcher&) = delete;
   TitleWatcher& operator=(const TitleWatcher&) = delete;
@@ -1190,7 +1190,7 @@ class TitleWatcher : public WebContentsObserver {
   ~TitleWatcher() override;
 
   // Adds another title to watch for.
-  void AlsoWaitForTitle(const std::u16string& expected_title);
+  void AlsoWaitForTitle(std::u16string_view expected_title);
 
   // Waits until the title matches either expected_title or one of the titles
   // added with AlsoWaitForTitle. Returns the value of the most recently
