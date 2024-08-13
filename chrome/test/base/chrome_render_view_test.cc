@@ -21,7 +21,6 @@
 #include "components/spellcheck/renderer/spellcheck.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/renderer/extensions_renderer_api_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -35,7 +34,8 @@
 #include "chrome/renderer/extensions/chrome_extensions_renderer_client.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/common/extension.h"
-#include "extensions/renderer/dispatcher.h"
+#include "extensions/renderer/dispatcher.h"                        // nogncheck
+#include "extensions/renderer/extensions_renderer_api_provider.h"  // nogncheck
 #endif
 
 using autofill::AutofillAgent;

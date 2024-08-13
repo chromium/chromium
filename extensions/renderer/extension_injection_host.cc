@@ -15,7 +15,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "components/pdf/common/pdf_util.h"
+#include "components/pdf/common/pdf_util.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace extensions {

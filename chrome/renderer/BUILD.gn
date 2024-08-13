@@ -357,6 +357,12 @@ static_library("renderer") {
     public_deps += [ "//ipc" ]
   }
 
+  # TODO(https://crbug.com/356905053): Add more dependencies here and merge this
+  # block with the `enable_extensions` block above.
+  if (enable_desktop_android_extensions) {
+    deps += [ "//extensions/renderer" ]
+  }
+
   if (enable_spellcheck) {
     deps += [ "//components/spellcheck/renderer:renderer" ]
   }
