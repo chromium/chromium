@@ -18,6 +18,11 @@
 
 namespace feed {
 
+namespace switches {
+// Specifies whether RssLinkReader is enabled.
+const char kEnableRssLinkReader[] = "enable-rss-link-reader";
+}  // namespace switches
+
 // InterestFeedV2 takes precedence over InterestFeedContentSuggestions.
 // InterestFeedV2 is cached in ChromeCachedFlags. If the default value here is
 // changed, please update the cached one's default value in CachedFeatureFlags.
