@@ -823,7 +823,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillIban(
 #endif
 }
 
-void ChromePaymentsAutofillClient::HideTouchToFillCreditCard() {
+void ChromePaymentsAutofillClient::HideTouchToFillPaymentMethod() {
 #if BUILDFLAG(IS_ANDROID)
   touch_to_fill_payment_method_controller_.Hide();
 #else

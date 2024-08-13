@@ -76,7 +76,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
               (base::WeakPtr<autofill::TouchToFillDelegate> delegate,
                base::span<const Iban> ibans_to_suggest),
               (override));
-  MOCK_METHOD(void, HideTouchToFillCreditCard, (), (override));
+  MOCK_METHOD(void, HideTouchToFillPaymentMethod, (), (override));
 
   void ExpectDelegateWeakPtrFromShowInvalidatedOnHideForCards() {
     EXPECT_CALL(*this, ShowTouchToFillCreditCard)
@@ -86,7 +86,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
           captured_delegate_ = delegate;
           return true;
         });
-    EXPECT_CALL(*this, HideTouchToFillCreditCard).WillOnce([this]() {
+    EXPECT_CALL(*this, HideTouchToFillPaymentMethod).WillOnce([this]() {
       EXPECT_FALSE(captured_delegate_);
     });
   }
@@ -98,7 +98,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
           captured_delegate_ = delegate;
           return true;
         });
-    EXPECT_CALL(*this, HideTouchToFillCreditCard).WillOnce([this]() {
+    EXPECT_CALL(*this, HideTouchToFillPaymentMethod).WillOnce([this]() {
       EXPECT_FALSE(captured_delegate_);
     });
   }
@@ -196,11 +196,11 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
         .WillByDefault(Return(true));
     ON_CALL(payments_autofill_client(), ShowTouchToFillIban)
         .WillByDefault(Return(true));
-    // Calling HideTouchToFillCreditCard in production code leads to that
-    // OnDismissed gets triggered (HideTouchToFillCreditCard calls view->Hide()
-    // on java side, which in its turn triggers onDismissed). Here we mock this
-    // call.
-    ON_CALL(payments_autofill_client(), HideTouchToFillCreditCard)
+    // Calling HideTouchToFillPaymentMethod in production code leads to that
+    // OnDismissed gets triggered (HideTouchToFillPaymentMethod calls
+    // view->Hide() on java side, which in its turn triggers onDismissed). Here
+    // we mock this call.
+    ON_CALL(payments_autofill_client(), HideTouchToFillPaymentMethod)
         .WillByDefault([delegate = touch_to_fill_delegate_weak]() -> void {
           if (delegate) {
             delegate->OnDismissed(/*dismissed_by_user=*/false);
@@ -334,7 +334,8 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
        HideTouchToFillDoesNothingIfNotShown) {
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
-  EXPECT_CALL(payments_autofill_client(), HideTouchToFillCreditCard).Times(0);
+  EXPECT_CALL(payments_autofill_client(), HideTouchToFillPaymentMethod)
+      .Times(0);
   touch_to_fill_delegate_->HideTouchToFill();
   EXPECT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 }
@@ -343,7 +344,7 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
        HideTouchToFillHidesIfShown) {
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(payments_autofill_client(), HideTouchToFillCreditCard);
+  EXPECT_CALL(payments_autofill_client(), HideTouchToFillPaymentMethod);
   touch_to_fill_delegate_->HideTouchToFill();
   EXPECT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 }
@@ -352,7 +353,7 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
        ResetHidesTouchToFillIfShown) {
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(payments_autofill_client(), HideTouchToFillCreditCard);
+  EXPECT_CALL(payments_autofill_client(), HideTouchToFillPaymentMethod);
   touch_to_fill_delegate_->Reset();
   EXPECT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 }
@@ -938,7 +939,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
 
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(payments_autofill_client(), HideTouchToFillCreditCard);
+  EXPECT_CALL(payments_autofill_client(), HideTouchToFillPaymentMethod);
   touch_to_fill_delegate_->CreditCardSuggestionSelected(credit_card.guid(),
                                                         false);
 }
@@ -1092,7 +1093,7 @@ TEST_F(TouchToFillDelegateAndroidImplIbanUnitTest,
   std::string guid = ConfigureForIbans();
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(payments_autofill_client(), HideTouchToFillCreditCard);
+  EXPECT_CALL(payments_autofill_client(), HideTouchToFillPaymentMethod);
   touch_to_fill_delegate_->IbanSuggestionSelected(Iban::Guid(guid));
 }
 

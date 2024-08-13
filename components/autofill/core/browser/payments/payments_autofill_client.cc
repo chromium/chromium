@@ -225,6 +225,6 @@ bool PaymentsAutofillClient::ShowTouchToFillIban(
   return false;
 }
 
-void PaymentsAutofillClient::HideTouchToFillCreditCard() {}
+void PaymentsAutofillClient::HideTouchToFillPaymentMethod() {}
 
 }  // namespace autofill::payments

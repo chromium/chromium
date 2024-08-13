@@ -199,7 +199,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   bool ShowTouchToFillIban(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::Iban> ibans_to_suggest) override;
-  void HideTouchToFillCreditCard() override;
+  void HideTouchToFillPaymentMethod() override;
 
 #if BUILDFLAG(IS_ANDROID)
   // The AutofillSnackbarController is used to show a snackbar notification
