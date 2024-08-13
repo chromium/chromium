@@ -232,8 +232,7 @@ void BluetoothSerialPortImpl::ReadMore() {
     const size_t num_remaining_bytes =
         receive_buffer_size_ - receive_buffer_next_byte_pos_;
     const size_t bytes_to_copy = std::min(num_remaining_bytes, buffer.size());
-    base::as_writable_chars(buffer)
-        .first(bytes_to_copy)
+    buffer.first(bytes_to_copy)
         .copy_from(receive_buffer_->span().subspan(
             receive_buffer_next_byte_pos_, bytes_to_copy));
     out_stream_->EndWriteData(bytes_to_copy);
@@ -391,7 +390,7 @@ void BluetoothSerialPortImpl::WriteMore() {
   // Copying the buffer because we might want to close in_stream_, thus
   // invalidating |buffer|, which is passed to Send().
   auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(buffer.size());
-  io_buffer->span().copy_from(base::as_chars(buffer));
+  io_buffer->span().copy_from(buffer);
 
   // The call to EndReadData() will be delayed until after Send() completes.
   bluetooth_socket_->Send(

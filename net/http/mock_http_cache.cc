@@ -757,8 +757,8 @@ bool MockHttpCache::ReadResponseInfo(disk_cache::Entry* disk_entry,
   rv = cb.GetResult(rv);
   EXPECT_EQ(size, rv);
 
-  return HttpCache::ParseResponseInfo(base::as_bytes(buffer->span()),
-                                      response_info, response_truncated);
+  return HttpCache::ParseResponseInfo(buffer->span(), response_info,
+                                      response_truncated);
 }
 
 bool MockHttpCache::WriteResponseInfo(disk_cache::Entry* disk_entry,

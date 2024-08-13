@@ -165,8 +165,7 @@ constexpr size_t kDedicatedDataLimit = 16384;
 void WriteCommonDataHeader(net::IOBufferWithSize* buffer,
                            const base::Time& response_time,
                            uint32_t data_size) {
-  auto header =
-      base::as_writable_bytes(buffer->span()).first<kHeaderSizeInBytes>();
+  auto header = buffer->span().first<kHeaderSizeInBytes>();
   auto [header_time, header_size] = header.split_at<kResponseTimeSizeInBytes>();
   header_time.copy_from(base::I64ToLittleEndian(
       response_time.ToDeltaSinceWindowsEpoch().InMicroseconds()));
@@ -176,7 +175,7 @@ void WriteCommonDataHeader(net::IOBufferWithSize* buffer,
 void ReadCommonDataHeader(net::IOBufferWithSize* buffer,
                           base::Time* response_time,
                           uint32_t* data_size) {
-  auto header = base::as_bytes(buffer->span().first<kHeaderSizeInBytes>());
+  auto header = buffer->span().first<kHeaderSizeInBytes>();
   auto [header_time, header_size] = header.split_at<kResponseTimeSizeInBytes>();
   int64_t raw_response_time = base::I64FromLittleEndian(header_time);
   *response_time = base::Time::FromDeltaSinceWindowsEpoch(
@@ -515,9 +514,7 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
     small_buffer = base::MakeRefCounted<net::IOBufferWithSize>(
         kHeaderSizeInBytes + data.size());
     // Copy |data| into the small buffer.
-    base::as_writable_bytes(small_buffer->span())
-        .subspan(kHeaderSizeInBytes)
-        .copy_from(data);
+    small_buffer->span().subspan(kHeaderSizeInBytes).copy_from(data);
     // Write 0 bytes and truncate stream 1 to clear any stale data.
     large_buffer = base::MakeRefCounted<BigIOBuffer>(mojo_base::BigBuffer());
   } else if (!ShouldDeduplicateEntry(data_size)) {
@@ -551,7 +548,9 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
     small_buffer = base::MakeRefCounted<net::IOBufferWithSize>(
         kHeaderSizeInBytes + checksum_key.length());
     // Copy |checksum_key| into the small buffer.
-    small_buffer->span().subspan(kHeaderSizeInBytes).copy_from(checksum_key);
+    small_buffer->span()
+        .subspan(kHeaderSizeInBytes)
+        .copy_from(base::as_byte_span(checksum_key));
     // Write 0 bytes and truncate stream 1 to clear any stale data.
     large_buffer = base::MakeRefCounted<BigIOBuffer>(mojo_base::BigBuffer());
 
@@ -916,8 +915,8 @@ void GeneratedCodeCache::ReadComplete(PendingOperation* op) {
       if (data_size <= kInlineDataLimit) {
         // Small data. Copy the data from the small buffer.
         DCHECK_EQ(0, op->large_buffer()->size());
-        mojo_base::BigBuffer data(base::as_bytes(op->small_buffer()->span())
-                                      .subspan(kHeaderSizeInBytes, data_size));
+        mojo_base::BigBuffer data(
+            op->small_buffer()->span().subspan(kHeaderSizeInBytes, data_size));
         op->RunReadCallback(this, response_time, std::move(data));
       } else if (!ShouldDeduplicateEntry(data_size)) {
         // Large data below the merging threshold, or deduplication is disabled.

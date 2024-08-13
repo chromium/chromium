@@ -356,7 +356,7 @@ DnsResponse::DnsResponse(
                       response_size, do_accumulation);
 
   auto io_buffer = base::MakeRefCounted<IOBufferWithSize>(response_size);
-  auto writer = base::SpanWriter(base::as_writable_bytes(io_buffer->span()));
+  auto writer = base::SpanWriter(io_buffer->span());
   success &= WriteHeader(&writer, header);
   DCHECK(success);
   if (has_query) {

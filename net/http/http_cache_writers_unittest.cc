@@ -494,8 +494,8 @@ class WritersTest : public TestWithTaskEnvironment {
     rv = callback.GetResult(rv);
     HttpResponseInfo response_info;
     bool truncated;
-    HttpCache::ParseResponseInfo(base::as_bytes(read_buffer->span()),
-                                 &response_info, &truncated);
+    HttpCache::ParseResponseInfo(read_buffer->span(), &response_info,
+                                 &truncated);
     return truncated;
   }
 

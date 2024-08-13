@@ -79,8 +79,7 @@ void MojoDataPump::ReceiveMore(MojoResult result,
 
   if (result == MOJO_RESULT_OK) {
     result = receive_stream_->ReadData(
-        MOJO_READ_DATA_FLAG_NONE,
-        base::as_writable_bytes(pending_read_buffer_->span()).first(num_bytes),
+        MOJO_READ_DATA_FLAG_NONE, pending_read_buffer_->span().first(num_bytes),
         num_bytes);
   }
   if (result == MOJO_RESULT_SHOULD_WAIT) {
@@ -102,8 +101,7 @@ void MojoDataPump::SendMore(MojoResult result,
   size_t actually_written_bytes = 0;
   if (result == MOJO_RESULT_OK) {
     base::span<const uint8_t> data_to_write =
-        base::as_bytes(pending_write_buffer_->span())
-            .first(pending_write_buffer_size_);
+        pending_write_buffer_->span().first(pending_write_buffer_size_);
     result = send_stream_->WriteData(data_to_write, MOJO_WRITE_DATA_FLAG_NONE,
                                      actually_written_bytes);
   }

@@ -366,8 +366,7 @@ bool GetResponseInfoForEntry(disk_cache::Entry* entry,
 
     if (rv == 0) {
       bool truncated_response_info = false;
-      if (!net::HttpCache::ParseResponseInfo(base::as_bytes(buffer->span()),
-                                             response_info,
+      if (!net::HttpCache::ParseResponseInfo(buffer->span(), response_info,
                                              &truncated_response_info)) {
         return false;
       }

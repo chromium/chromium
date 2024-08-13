@@ -1636,8 +1636,8 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
   read_headers_since_ = TimeTicks::Now();
 
   if (result != read_buf_->size() ||
-      !HttpCache::ParseResponseInfo(base::as_bytes(read_buf_->span()),
-                                    &response_, &truncated_)) {
+      !HttpCache::ParseResponseInfo(read_buf_->span(), &response_,
+                                    &truncated_)) {
     return OnCacheReadError(result, true);
   }
 

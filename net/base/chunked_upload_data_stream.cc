@@ -92,9 +92,7 @@ int ChunkedUploadDataStream::ReadChunk(IOBuffer* buf, int buf_len) {
     base::span<const uint8_t> bytes_to_read = data.subspan(
         read_offset_, std::min(static_cast<size_t>(buf_len - bytes_read),
                                data.size() - read_offset_));
-    base::as_writable_bytes(buf->span())
-        .subspan(bytes_read)
-        .copy_prefix_from(bytes_to_read);
+    buf->span().subspan(bytes_read).copy_prefix_from(bytes_to_read);
     bytes_read += bytes_to_read.size();
     read_offset_ += bytes_to_read.size();
     if (read_offset_ == data.size()) {

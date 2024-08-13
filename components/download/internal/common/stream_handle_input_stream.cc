@@ -72,8 +72,7 @@ InputStream::StreamState StreamHandleInputStream::Read(
   static size_t bytes_to_read = GetDownloadFileBufferSize();
   *data = base::MakeRefCounted<net::IOBufferWithSize>(bytes_to_read);
   MojoResult mojo_result = stream_handle_->stream->ReadData(
-      MOJO_READ_DATA_FLAG_NONE, base::as_writable_bytes((*data)->span()),
-      *length);
+      MOJO_READ_DATA_FLAG_NONE, (*data)->span(), *length);
   // TODO(qinmin): figure out when COMPLETE should be returned.
   switch (mojo_result) {
     case MOJO_RESULT_OK:

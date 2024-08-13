@@ -71,8 +71,7 @@ RaceNetworkRequestReadBufferManager::ReadData() {
   }
   scoped_refptr<net::IOBuffer> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(num_bytes);
-  result = consumer_handle_->ReadData(MOJO_READ_DATA_FLAG_NONE,
-                                      base::as_writable_bytes(buffer->span()),
+  result = consumer_handle_->ReadData(MOJO_READ_DATA_FLAG_NONE, buffer->span(),
                                       num_bytes);
 
   if (result == MOJO_RESULT_OK) {
@@ -80,8 +79,8 @@ RaceNetworkRequestReadBufferManager::ReadData() {
                                                            num_bytes);
   }
 
-  return std::make_pair(result,
-                        buffer_ ? buffer_->span() : base::span<const char>());
+  return std::make_pair(result, buffer_ ? base::as_chars(buffer_->span())
+                                        : base::span<const char>());
 }
 
 void RaceNetworkRequestReadBufferManager::ConsumeData(size_t num_bytes_read) {
@@ -100,6 +99,6 @@ base::span<const char> RaceNetworkRequestReadBufferManager::RemainingBuffer()
   // base::span with the actual data size. IOBuffer::span() returns the span
   // with the size of the whole buffer, even if data is partially consumed. So
   // subspan it with the remaining data size.
-  return buffer_->span().subspan(0, buffer_->BytesRemaining());
+  return base::as_chars(buffer_->span()).subspan(0, buffer_->BytesRemaining());
 }
 }  // namespace content

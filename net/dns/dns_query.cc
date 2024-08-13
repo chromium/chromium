@@ -131,8 +131,7 @@ DnsQuery::DnsQuery(uint16_t id,
   header->qdcount = base::HostToNet16(1);
 
   // Write question section after the header.
-  auto writer = base::SpanWriter(
-      base::as_writable_bytes(io_buffer_->span()).subspan(kHeaderSize));
+  auto writer = base::SpanWriter(io_buffer_->span().subspan(kHeaderSize));
   writer.Write(qname);
   writer.WriteU16BigEndian(qtype);
   writer.WriteU16BigEndian(dns_protocol::kClassIN);
@@ -181,7 +180,7 @@ bool DnsQuery::Parse(size_t valid_bytes) {
     return false;
   }
   auto reader =
-      base::SpanReader(base::as_bytes(io_buffer_->span()).first(valid_bytes));
+      base::SpanReader<const uint8_t>(io_buffer_->span().first(valid_bytes));
   dns_protocol::Header header;
   if (!ReadHeader(&reader, &header)) {
     return false;
@@ -215,17 +214,17 @@ uint16_t DnsQuery::id() const {
 }
 
 base::span<const uint8_t> DnsQuery::qname() const {
-  return base::as_bytes(io_buffer_->span()).subspan(kHeaderSize, qname_size_);
+  return io_buffer_->span().subspan(kHeaderSize, qname_size_);
 }
 
 uint16_t DnsQuery::qtype() const {
-  return base::U16FromBigEndian(base::as_bytes(io_buffer_->span())
-                                    .subspan(kHeaderSize + qname_size_)
-                                    .first<2u>());
+  return base::U16FromBigEndian(
+      io_buffer_->span().subspan(kHeaderSize + qname_size_).first<2u>());
 }
 
 std::string_view DnsQuery::question() const {
-  auto s = io_buffer_->span().subspan(kHeaderSize, QuestionSize(qname_size_));
+  auto s = base::as_chars(io_buffer_->span());
+  s = s.subspan(kHeaderSize, QuestionSize(qname_size_));
   return std::string_view(s.begin(), s.end());
 }
 

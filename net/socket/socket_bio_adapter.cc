@@ -248,9 +248,7 @@ int SocketBIOAdapter::BIOWrite(base::span<const uint8_t> in) {
         std::min(base::checked_cast<size_t>(write_buffer_->RemainingCapacity() -
                                             write_buffer_used_),
                  in.size()));
-    base::as_writable_bytes(write_buffer_->span())
-        .subspan(write_buffer_used_)
-        .copy_prefix_from(chunk);
+    write_buffer_->span().subspan(write_buffer_used_).copy_prefix_from(chunk);
     in = in.subspan(chunk.size());
     bytes_copied += chunk.size();
     write_buffer_used_ += chunk.size();

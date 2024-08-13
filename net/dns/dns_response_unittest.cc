@@ -1383,8 +1383,8 @@ TEST(DnsResponseWriteTest,
       2 /* qclass */ +
       10 /* extra bytes that inflate the internal buffer of a query */;
   auto buf = base::MakeRefCounted<IOBufferWithSize>(buf_size);
-  std::ranges::fill(buf->span(), char{0});
-  auto writer = base::SpanWriter(base::as_writable_bytes(buf->span()));
+  std::ranges::fill(buf->span(), 0);
+  auto writer = base::SpanWriter(buf->span());
   writer.WriteU16BigEndian(0x1234);                  // id
   writer.WriteU16BigEndian(0);                       // flags, is query
   writer.WriteU16BigEndian(1);                       // qdcount

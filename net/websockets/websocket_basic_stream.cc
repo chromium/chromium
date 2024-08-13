@@ -219,13 +219,12 @@ int WebSocketBasicStream::WriteFrames(
   int total_size = CalculateSerializedSizeAndTurnOnMaskBit(frames);
   auto combined_buffer = base::MakeRefCounted<IOBufferWithSize>(total_size);
 
-  base::span<char> dest = combined_buffer->span();
+  base::span<uint8_t> dest = combined_buffer->span();
   for (const auto& frame : *frames) {
     net_log_.AddEvent(net::NetLogEventType::WEBSOCKET_SENT_FRAME_HEADER,
                       [&] { return NetLogFrameHeaderParam(&frame->header); });
     WebSocketMaskingKey mask = generate_websocket_masking_key_();
-    int result = WriteWebSocketFrameHeader(frame->header, &mask,
-                                           base::as_writable_bytes(dest));
+    int result = WriteWebSocketFrameHeader(frame->header, &mask, dest);
     DCHECK_NE(ERR_INVALID_ARGUMENT, result)
         << "WriteWebSocketFrameHeader() says that " << dest.size()
         << " is not enough to write the header in. This should not happen.";
@@ -238,8 +237,9 @@ int WebSocketBasicStream::WriteFrames(
     if (frame_size > 0) {
       base::span<const char> frame_data =
           base::make_span(frame->payload, frame_size);
-      dest.copy_prefix_from(frame_data);
-      MaskWebSocketFramePayload(mask, 0, dest.data(), frame_size);
+      dest.copy_prefix_from(base::as_bytes(frame_data));
+      MaskWebSocketFramePayload(mask, 0, base::as_writable_chars(dest).data(),
+                                frame_size);
       dest = dest.subspan(frame_size);
     }
   }
@@ -391,9 +391,9 @@ int WebSocketBasicStream::HandleReadResult(
   buffer_size_manager_.OnReadComplete(base::TimeTicks::Now(), result);
 
   std::vector<std::unique_ptr<WebSocketFrameChunk>> frame_chunks;
-  if (!parser_.Decode(base::as_bytes(read_buffer_->span().first(
-                          base::checked_cast<size_t>(result))),
-                      &frame_chunks)) {
+  if (!parser_.Decode(
+          read_buffer_->span().first(base::checked_cast<size_t>(result)),
+          &frame_chunks)) {
     return WebSocketErrorToNetError(parser_.websocket_error());
   }
   if (frame_chunks.empty())

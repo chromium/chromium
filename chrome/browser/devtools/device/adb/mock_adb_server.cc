@@ -316,7 +316,8 @@ void SimpleHttpServer::Connection::Send(const std::string& message) {
         output_buffer_->span().subspan(old_offset, bytes_to_write_));
   }
 
-  base::as_writable_bytes(output_buffer_->span().subspan(bytes_to_write_, size))
+  output_buffer_->span()
+      .subspan(bytes_to_write_, size)
       .copy_from(base::as_byte_span(message));
   bytes_to_write_ += size;
 

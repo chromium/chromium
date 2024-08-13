@@ -859,7 +859,7 @@ bool WebSocket::ReadAndSendFrameFromDataPipe(DataFrame* data_frame) {
                                                     bytes_reassembled_));
       message_under_reassembly_->span()
           .subspan(bytes_reassembled_, bytes_to_copy)
-          .copy_from(base::as_chars(buffer).first(bytes_to_copy));
+          .copy_from(buffer.first(bytes_to_copy));
       bytes_reassembled_ += bytes_to_copy;
 
       const MojoResult end_result = readable_->EndReadData(bytes_to_copy);
@@ -889,7 +889,7 @@ bool WebSocket::ReadAndSendFrameFromDataPipe(DataFrame* data_frame) {
         base::MakeRefCounted<net::IOBufferWithSize>(size_to_send);
     data_to_pass->span()
         .first(size_to_send)
-        .copy_from(base::as_chars(buffer).first(size_to_send));
+        .copy_from(buffer.first(size_to_send));
 
     const bool is_final = (size_to_send == data_frame->data_length);
     blocked_on_websocket_channel_ = true;

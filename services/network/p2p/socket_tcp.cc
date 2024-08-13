@@ -462,8 +462,7 @@ void P2PSocketTcp::DoSend(const net::IPEndPoint& to,
           base::MakeRefCounted<net::IOBufferWithSize>(buffer_size),
           buffer_size));
   {
-    base::SpanWriter writer(
-        base::as_writable_bytes(send_buffer.buffer->span()));
+    base::SpanWriter writer(send_buffer.buffer->span());
     writer.WriteU16BigEndian(base::checked_cast<uint16_t>(data.size()));
     // We've written the full header now.
     static_assert(kPacketHeaderSize == sizeof(uint16_t));
