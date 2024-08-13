@@ -56,7 +56,7 @@ class TextEncoder final : public ScriptWrappable {
 
   // Implement the IDL
   String encoding() const;
-  NotShared<DOMUint8Array> encode(const String&);
+  NotShared<DOMUint8Array> encode(const String&, ExceptionState&);
   TextEncoderEncodeIntoResult* encodeInto(const String&,
                                           NotShared<DOMUint8Array>&);
 
