@@ -877,6 +877,10 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE" desc="The title of the Autofill manual fallback for showing the Autofill suggestions in the content area context menu.">
             Fill in form
           </message>
+          <!-- TODO(359570730): remove non translateable flag  -->
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS" desc="The name of the Autofill context menu entry that will initiate filling using improved predictions." translateable="false">
+            Autocomplete
+          </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS" desc="The name of the Autofill manual fallback for showing address suggestions in the content area context menu.">
             Addresses and more
           </message>
@@ -1209,6 +1213,10 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE" desc="In Title Case: The title of the Autofill manual fallback for showing the Autofill suggestions in the content area context menu.">
             Fill in Form
+          </message>
+          <!-- TODO(359570730): remove non translateable flag  -->
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS" desc="In Title Case: The name of the Autofill manual fallback for payment methods attribute command in the content area context menu." translateable="false">
+            Autocomplete
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS" desc="In Title Case: The name of the Autofill manual fallback for showing address suggestions in the content area context menu.">
             Addresses and More

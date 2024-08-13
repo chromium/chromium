@@ -472,6 +472,8 @@
   E(kActionContentContextAutofillFeedback, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK) \
   /* Autofill context menu commands */ \
+  E(kActionContentContextAutofillImprovedSuggestions, \
+    IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS) \
   E(kActionContentContextAutofillFallbackAddress, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS) \
   E(kActionContentContextAutofillFallbackPayments, \

@@ -149,6 +149,21 @@ MATCHER(OnlyAddressFallbackAdded, "") {
          arg->GetTypeAt(2) == ui::MenuModel::ItemType::TYPE_SEPARATOR;
 }
 
+// Checks if the context menu model contains the prediction improvement
+// entry with correct UI strings. `arg` must be of type `ui::SimpleMenuModel`.
+MATCHER(ContainsPredictionImprovementsEntry, "") {
+  for (size_t i = 0; i < arg->GetItemCount(); i++) {
+    if (arg->GetCommandIdAt(i) ==
+            IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS &&
+        arg->GetLabelAt(i) ==
+            l10n_util::GetStringUTF16(
+                IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // Checks if the context menu model contains the plus address manual fallback
 // entries with correct UI strings. `arg` must be of type `ui::SimpleMenuModel`.
 MATCHER(PlusAddressFallbackAdded, "") {
@@ -699,6 +714,78 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_THAT(menu_model(), AddressAndPaymentsFallbacksAdded());
+}
+
+// Tests if the prediction improvements entry is not added based on the disabled
+// feature flag.
+class PredictionImprovementsDisabledTest
+    : public BaseAutofillContextMenuManagerTest {
+ public:
+  PredictionImprovementsDisabledTest() {
+    feature_.InitAndDisableFeature(
+        features::kAutofillPredictionImprovementsEnabled);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_;
+};
+
+// Tests that when triggering the context menu on any form field, the improved
+// predictions fallback is not added when the feature is disabled.
+IN_PROC_BROWSER_TEST_F(PredictionImprovementsDisabledTest,
+                       PredictionImprovementsEntryNotAdded) {
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id(),
+                              form.fields()[0].renderer_id()));
+  autofill_context_menu_manager()->AppendItems();
+  EXPECT_THAT(menu_model(), Not(ContainsPredictionImprovementsEntry()));
+}
+
+// Tests if the prediction improvements entry is added based on the feature
+// flag.
+class PredictionImprovementsEnabledTest
+    : public BaseAutofillContextMenuManagerTest {
+ public:
+  PredictionImprovementsEnabledTest() {
+    feature_.InitAndEnableFeature(
+        features::kAutofillPredictionImprovementsEnabled);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_;
+};
+
+// Tests that when triggering the context menu on any form field, the improved
+// prediction entry point is added.
+IN_PROC_BROWSER_TEST_F(PredictionImprovementsEnabledTest,
+                       PredictionImprovementsEntryAdded) {
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id(),
+                              form.fields()[0].renderer_id()));
+  autofill_context_menu_manager()->AppendItems();
+  EXPECT_THAT(menu_model(), ContainsPredictionImprovementsEntry());
+}
+
+// Tests that selecting the improved predictions triggers the right command.
+IN_PROC_BROWSER_TEST_F(PredictionImprovementsEnabledTest,
+                       ActionTriggersSuggestions) {
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id(),
+                              form.fields()[0].renderer_id()));
+  autofill_context_menu_manager()->AppendItems();
+
+  EXPECT_CALL(
+      *driver(),
+      RendererShouldTriggerSuggestions(
+          FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
+                        form.fields()[0].renderer_id()},
+          AutofillSuggestionTriggerSource::kPredictionImprovements));
+
+  autofill_context_menu_manager()->ExecuteCommand(
+      IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS);
 }
 
 // Tests that when triggering the context menu on an unclassified form, payments

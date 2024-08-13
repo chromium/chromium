@@ -151,16 +151,18 @@ bool ShouldShowAutofillContextMenu(const content::ContextMenuParams& params) {
 // Returns true if the given id is one generated for autofill context menu.
 bool IsAutofillCustomCommandId(
     AutofillContextMenuManager::CommandId command_id) {
-  static constexpr auto kAutofillCommands = base::MakeFixedFlatSet<int>(
-      {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS,
-       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS,
-       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS,
-       IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
-       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS,
-       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
-       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS,
-       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD,
-       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS});
+  static constexpr auto kAutofillCommands = base::MakeFixedFlatSet<int>({
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS,
+      IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS,
+  });
   return kAutofillCommands.contains(command_id.value());
 }
 
@@ -268,6 +270,12 @@ void AutofillContextMenuManager::ExecuteCommand(int command_id) {
   }
   CHECK(IsAutofillCustomCommandId(CommandId(command_id)));
 
+  if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS) {
+    ExecutePredictionImprovementsCommand(autofill_driver->GetFrameToken(),
+                                         *autofill_driver);
+    return;
+  }
+
   if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK) {
     ExecuteAutofillFeedbackCommand(autofill_driver->GetFrameToken(),
                                    autofill_driver->GetAutofillManager());
@@ -364,10 +372,12 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
   bool add_address_fallback = false;
   bool add_payments_fallback = false;
   bool add_passwords_fallback = false;
+  bool add_prediction_improvements = false;
 
   // Do not show autofill context menu options for input fields that cannot be
   // filled by the driver. See crbug.com/1367547.
   if (autofill_driver && autofill_driver->CanShowAutofillUi()) {
+    add_prediction_improvements = ShouldAddPredictionImprovementsItem();
     add_plus_address_fallback =
         ShouldAddPlusAddressManualFallbackItem(*autofill_driver);
     add_address_fallback = ShouldAddAddressManualFallbackItem(*autofill_driver);
@@ -389,11 +399,21 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
   }
 
   if (!add_plus_address_fallback && !add_address_fallback &&
-      !add_payments_fallback && !add_passwords_fallback) {
+      !add_payments_fallback && !add_passwords_fallback &&
+      !add_prediction_improvements) {
     return;
   }
   menu_model_->AddTitle(
       l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE));
+
+  if (add_prediction_improvements) {
+    menu_model_->AddItemWithStringIdAndIcon(
+        IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS,
+        IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS,
+        ui::ImageModel::FromVectorIcon(
+            vector_icons::kLocationOnChromeRefreshIcon, ui::kColorIcon,
+            kContextMenuIconSize));
+  }
 
   if (add_address_fallback) {
     menu_model_->AddItemWithStringIdAndIcon(
@@ -471,6 +491,12 @@ bool AutofillContextMenuManager::ShouldAddPlusAddressManualFallbackItem(
              client.IsOffTheRecord()) &&
          base::FeatureList::IsEnabled(
              plus_addresses::features::kPlusAddressFallbackFromContextMenu);
+}
+
+bool AutofillContextMenuManager::ShouldAddPredictionImprovementsItem() {
+  // Only show the entry point if the corresponding feature is enabled.
+  return base::FeatureList::IsEnabled(
+      autofill::features::kAutofillPredictionImprovementsEnabled);
 }
 
 bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(
@@ -687,6 +713,14 @@ void AutofillContextMenuManager::
                                   IsPasswordFormField(*password_manager_driver,
                                                       params_));
   }
+}
+
+void AutofillContextMenuManager::ExecutePredictionImprovementsCommand(
+    const LocalFrameToken& frame_token,
+    ContentAutofillDriver& autofill_driver) {
+  autofill_driver.browser_events().RendererShouldTriggerSuggestions(
+      FieldGlobalId(frame_token, FieldRendererId(params_.field_renderer_id)),
+      AutofillSuggestionTriggerSource::kPredictionImprovements);
 }
 
 void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(

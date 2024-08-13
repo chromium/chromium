@@ -66,6 +66,10 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // available for the field.
   void MaybeAddAutofillFeedbackItem();
 
+  // Conditionally adds the item to trigger filling with prediction
+  // improvements.
+  void MaybeAddAutofillPredictionImprovementsItem();
+
   // Conditionally adds the address, payments and / or passwords Autofill manual
   // fallbacks to the context menu model depending on whether there's data to
   // suggest.
@@ -75,6 +79,9 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // currently focused field.
   bool ShouldAddPlusAddressManualFallbackItem(
       ContentAutofillDriver& autofill_driver);
+
+  // Returns if the item to trigger prediction improvements should be added.
+  bool ShouldAddPredictionImprovementsItem();
 
   // Checks if the manual fallback context menu entry can be shown for the
   // currently focused field.
@@ -132,6 +139,11 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
       AutofillDriver& autofill_driver);
 
   void LogSelectPasswordManualFallbackContextMenuEntryAccepted();
+
+  // Triggers the filling with prediction improvements flow.
+  void ExecutePredictionImprovementsCommand(
+      const LocalFrameToken& frame_token,
+      ContentAutofillDriver& autofill_driver);
 
   // Triggers the feedback flow for Autofill command.
   void ExecuteAutofillFeedbackCommand(const LocalFrameToken& frame_token,
