@@ -12,6 +12,7 @@
   background-color: var(--cr-card-background-color);
   border-radius: var(--cr-card-border-radius);
   box-shadow: var(--cr-card-shadow);
+  overflow: hidden;
 }
 
 /* This selector relies on the fact that pseudo-classes :hover and :active have
