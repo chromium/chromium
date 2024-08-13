@@ -219,6 +219,12 @@ bool PaymentsAutofillClient::ShowTouchToFillCreditCard(
   return false;
 }
 
+bool PaymentsAutofillClient::ShowTouchToFillIban(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const autofill::Iban> ibans_to_suggest) {
+  return false;
+}
+
 void PaymentsAutofillClient::HideTouchToFillCreditCard() {}
 
 }  // namespace autofill::payments

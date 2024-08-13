@@ -810,6 +810,19 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillCreditCard(
 #endif
 }
 
+bool ChromePaymentsAutofillClient::ShowTouchToFillIban(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const autofill::Iban> ibans_to_suggest) {
+#if BUILDFLAG(IS_ANDROID)
+  return touch_to_fill_payment_method_controller_.Show(
+      std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
+      delegate, std::move(ibans_to_suggest));
+#else
+  // Touch To Fill is not supported on Desktop.
+  NOTREACHED_NORETURN();
+#endif
+}
+
 void ChromePaymentsAutofillClient::HideTouchToFillCreditCard() {
 #if BUILDFLAG(IS_ANDROID)
   touch_to_fill_payment_method_controller_.Hide();

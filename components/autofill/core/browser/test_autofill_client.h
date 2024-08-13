@@ -294,12 +294,6 @@ class TestAutofillClientTemplate : public T {
       AutofillClient::AddressProfileDeleteDialogCallback delete_dialog_callback)
       override {}
 
-  bool ShowTouchToFillIban(
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::Iban> ibans_to_suggest) override {
-    return false;
-  }
-
   void ShowAutofillSuggestions(
       const AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override {

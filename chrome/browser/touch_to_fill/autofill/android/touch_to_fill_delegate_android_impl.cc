@@ -210,8 +210,10 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
                ibans_to_suggest &&
                (base::FeatureList::IsEnabled(
                     features::kAutofillSkipAndroidBottomSheetForIban) ||
-                !manager_->client().ShowTouchToFillIban(
-                    GetWeakPtr(), std::move(*ibans_to_suggest)))) {
+                !manager_->client()
+                     .GetPaymentsAutofillClient()
+                     ->ShowTouchToFillIban(GetWeakPtr(),
+                                           std::move(*ibans_to_suggest)))) {
       dry_run.outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
     }
   }

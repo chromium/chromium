@@ -128,8 +128,6 @@
 #include "chrome/browser/android/signin/signin_bridge.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
-#include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_impl.h"
 #include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
@@ -556,20 +554,6 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
 #else
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, original_profile, options, std::move(callback));
-#endif
-}
-
-bool ChromeAutofillClient::ShowTouchToFillIban(
-    base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::Iban> ibans_to_suggest) {
-#if BUILDFLAG(IS_ANDROID)
-  return GetPaymentsAutofillClient()
-      ->GetTouchToFillPaymentMethodController()
-      .Show(std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
-            delegate, std::move(ibans_to_suggest));
-#else
-  // Touch To Fill is not supported on Desktop.
-  NOTREACHED_NORETURN();
 #endif
 }
 

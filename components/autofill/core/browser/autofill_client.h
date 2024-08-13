@@ -84,12 +84,10 @@ class AutofillPredictionImprovementsDelegate;
 class AutofillProfile;
 enum class CreditCardFetchResult;
 class FormDataImporter;
-class Iban;
 class LogManager;
 class PersonalDataManager;
 class StrikeDatabase;
 struct Suggestion;
-class TouchToFillDelegate;
 enum class WebauthnDialogState;
 
 namespace payments {
@@ -394,14 +392,6 @@ class AutofillClient {
       const AutofillProfile* original_profile,
       AutofillClient::SaveAddressProfilePromptOptions options,
       AddressProfileSavePromptCallback callback) = 0;
-
-  // Shows the Touch To Fill surface for filling IBAN information, if
-  // possible, returning `true` on success. `delegate` will be notified of
-  // events. This function is not implemented on iOS and iOS WebView, and
-  // should not be used on those platforms.
-  virtual bool ShowTouchToFillIban(
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::Iban> ibans_to_suggest);
 
   // Shows Autofill suggestions with the given `values`, `labels`, `icons`, and
   // `identifiers` for the element at `element_bounds`. `delegate` will be

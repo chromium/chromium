@@ -196,6 +196,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest,
       base::span<const Suggestion> suggestions) override;
+  bool ShowTouchToFillIban(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      base::span<const autofill::Iban> ibans_to_suggest) override;
   void HideTouchToFillCreditCard() override;
 
 #if BUILDFLAG(IS_ANDROID)

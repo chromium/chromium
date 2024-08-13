@@ -129,12 +129,6 @@ AutofillClient::CreateCreditCardInternalAuthenticator(AutofillDriver* driver) {
 }
 #endif
 
-bool AutofillClient::ShowTouchToFillIban(
-    base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::Iban> ibans_to_suggest) {
-  return false;
-}
-
 LogManager* AutofillClient::GetLogManager() const {
   return nullptr;
 }
