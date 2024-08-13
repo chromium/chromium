@@ -1195,7 +1195,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       net::handles::NetworkHandle bound_network,
       network::URLLoaderFactoryBuilder& factory_builder,
-      network::mojom::URLLoaderFactoryOverridePtr* factory_override);
+      network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+      const net::IsolationInfo& isolation_info);
 
   mojo::Remote<network::mojom::NetworkContext>&
   get_network_bound_network_context_for_testing() {
