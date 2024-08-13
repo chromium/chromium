@@ -469,7 +469,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         // Closing all the tabs through selection mode will display a confirmation dialog. This is
         // done because the opteration cannot be undone.
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Close tabs");
-        onView(withText("Close all")).perform(click());
+        mRobot.resultRobot.verifyUndoSnackbarWithTextIsShown("3 tabs closed");
 
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());

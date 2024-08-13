@@ -123,7 +123,10 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
                 @Override
                 public void closeArchivedTabs(List<Tab> tabs) {
-                    ArchivedTabsDialogCoordinator.this.closeArchivedTabs(tabs);
+                    mArchivedTabModel.closeTabs(TabClosureParams.closeTabs(tabs).build());
+                    RecordHistogram.recordCount1000Histogram(
+                            "Tabs.CloseArchivedTabsMenuItem.TabCount", tabs.size());
+                    RecordUserAction.record("Tabs.CloseArchivedTabsMenuItem");
                 }
             };
 
@@ -539,23 +542,6 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                             "Tabs.CloseAllArchivedTabs.TabCount", tabCount);
                     RecordUserAction.record("Tabs.CloseAllArchivedTabsMenuItem");
                 });
-    }
-
-    private void closeArchivedTabs(List<Tab> tabs) {
-        int tabCount = tabs.size();
-        Runnable metricsRunnable =
-                () -> {
-                    RecordHistogram.recordCount1000Histogram(
-                            "Tabs.CloseArchivedTabsMenuItem.TabCount", tabCount);
-                    RecordUserAction.record("Tabs.CloseArchivedTabsMenuItem");
-                };
-
-        if (tabCount == mArchivedTabModel.getTabCountSupplier().get()) {
-            showCloseAllArchivedTabsConfirmation(tabCount, metricsRunnable);
-        } else {
-            mArchivedTabModel.closeTabs(TabClosureParams.closeTabs(tabs).build());
-            metricsRunnable.run();
-        }
     }
 
     /**
