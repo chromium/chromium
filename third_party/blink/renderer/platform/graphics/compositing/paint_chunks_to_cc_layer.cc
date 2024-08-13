@@ -1117,6 +1117,17 @@ PaintRecord PaintChunksToCcLayer::Convert(const PaintChunkSubset& chunks,
 
 namespace {
 
+struct NonCompositedScroll {
+  const TransformPaintPropertyNode* scroll_translation;
+  // The hit-testable rect of the scroller in the layer space.
+  gfx::Rect layer_hit_test_rect;
+  // Accumulated hit test opaqueness of a) the scroller itself and b)
+  // contents after the scroller intersecting layer_hit_test_rect.
+  // If it's kMixed, scroll in some areas in the layer can't reliably scroll
+  // `scroll_translation`.
+  cc::HitTestOpaqueness hit_test_opaqueness;
+};
+
 class LayerPropertiesUpdater {
   STACK_ALLOCATED();
 
@@ -1130,7 +1141,9 @@ class LayerPropertiesUpdater {
         layer_(layer),
         chunks_(chunks),
         layer_selection_(layer_selection),
-        selection_only_(selection_only) {}
+        selection_only_(selection_only),
+        layer_scroll_translation_(
+            layer_state.Transform().NearestScrollTranslationNode()) {}
 
   void Update();
 
@@ -1138,7 +1151,13 @@ class LayerPropertiesUpdater {
   TouchAction ShouldDisableCursorControl();
   void UpdateTouchActionRegion(const HitTestData&);
   void UpdateWheelEventRegion(const HitTestData&);
-  void UpdateScrollHitTestData(DisplayItem::Type, const HitTestData&);
+
+  void UpdateScrollHitTestData(const PaintChunk&);
+  void AddNonCompositedScroll(const PaintChunk&);
+  const TransformPaintPropertyNode& TopNonCompositedScroll(
+      const TransformPaintPropertyNode&) const;
+  void UpdatePreviousNonCompositedScrolls(const PaintChunk&);
+
   void UpdateForNonCompositedScrollbar(const ScrollbarDisplayItem&);
   void UpdateRegionCaptureData(const RegionCaptureData&);
   gfx::Point MapSelectionBoundPoint(const gfx::Point&) const;
@@ -1151,6 +1170,7 @@ class LayerPropertiesUpdater {
   const PaintChunkSubset& chunks_;
   cc::LayerSelection& layer_selection_;
   bool selection_only_;
+  const TransformPaintPropertyNode& layer_scroll_translation_;
 
   cc::TouchActionRegion touch_action_region_;
   TouchAction last_disable_cursor_control_ = TouchAction::kNone;
@@ -1159,6 +1179,14 @@ class LayerPropertiesUpdater {
   cc::Region wheel_event_region_;
   cc::Region main_thread_scroll_hit_test_region_;
   viz::RegionCaptureBounds capture_bounds_;
+
+  // Top-level (i.e., non-nested) non-composited scrolls. Nested non-composited
+  // scrollers will force the containing top non-composited scroller to hit test
+  // on the main thread, to avoid the complexity and cost of mapping the scroll
+  // hit test rect of nested scroller to the layer space, especially when the
+  // parent scroller scrolls. TODO(crbug.com/359279553): Investigate if we can
+  // optimize this.
+  HeapVector<NonCompositedScroll, 4> top_non_composited_scrolls_;
 };
 
 TouchAction LayerPropertiesUpdater::ShouldDisableCursorControl() {
@@ -1220,9 +1248,8 @@ void LayerPropertiesUpdater::UpdateWheelEventRegion(
   }
 }
 
-void LayerPropertiesUpdater::UpdateScrollHitTestData(
-    DisplayItem::Type type,
-    const HitTestData& hit_test_data) {
+void LayerPropertiesUpdater::UpdateScrollHitTestData(const PaintChunk& chunk) {
+  const HitTestData& hit_test_data = *chunk.hit_test_data;
   if (hit_test_data.scroll_hit_test_rect.IsEmpty()) {
     return;
   }
@@ -1244,6 +1271,13 @@ void LayerPropertiesUpdater::UpdateScrollHitTestData(
     }
   }
 
+  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled() &&
+      hit_test_data.scroll_translation) {
+    CHECK_EQ(chunk.id.type, DisplayItem::Type::kScrollHitTest);
+    AddNonCompositedScroll(chunk);
+    return;
+  }
+
   gfx::Rect rect =
       chunk_to_layer_mapper_.MapVisualRect(hit_test_data.scroll_hit_test_rect);
   if (rect.IsEmpty()) {
@@ -1253,9 +1287,145 @@ void LayerPropertiesUpdater::UpdateScrollHitTestData(
 
   // The scroll hit test rect of scrollbar or resizer also contributes to the
   // touch action region.
-  if (type == DisplayItem::Type::kScrollbarHitTest ||
-      type == DisplayItem::Type::kResizerScrollHitTest) {
+  if (chunk.id.type == DisplayItem::Type::kScrollbarHitTest ||
+      chunk.id.type == DisplayItem::Type::kResizerScrollHitTest) {
     touch_action_region_.Union(TouchAction::kNone, rect);
+  }
+}
+
+const TransformPaintPropertyNode&
+LayerPropertiesUpdater::TopNonCompositedScroll(
+    const TransformPaintPropertyNode& scroll_translation) const {
+  const auto* node = &scroll_translation;
+  do {
+    const auto* parent = node->ParentScrollTranslationNode();
+    if (parent == &layer_scroll_translation_) {
+      return *node;
+    }
+    node = parent;
+  } while (node);
+  // TODO(crbug.com/40558824): Abnormal hierarchy.
+  return scroll_translation;
+}
+
+void LayerPropertiesUpdater::AddNonCompositedScroll(const PaintChunk& chunk) {
+  DCHECK(RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled());
+  const auto& scroll_translation = *chunk.hit_test_data->scroll_translation;
+  const auto& top_scroll = TopNonCompositedScroll(scroll_translation);
+  if (&top_scroll == &scroll_translation) {
+    auto hit_test_opaqueness = chunk.hit_test_opaqueness;
+    if (hit_test_opaqueness == cc::HitTestOpaqueness::kOpaque &&
+        !chunk_to_layer_mapper_.ClipRect().IsTight()) {
+      hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
+    }
+    top_non_composited_scrolls_.emplace_back(
+        &scroll_translation,
+        chunk_to_layer_mapper_.MapVisualRect(
+            chunk.hit_test_data->scroll_hit_test_rect),
+        hit_test_opaqueness);
+  } else {
+    // A top non-composited scroller with nested non-composited scrollers is
+    // forced to be non-fast.
+    for (auto& scroll : top_non_composited_scrolls_) {
+      if (scroll.scroll_translation == &top_scroll) {
+        scroll.hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
+        break;
+      }
+    }
+  }
+}
+
+// Updates hit_test_opaqueness on previous non-composited scrollers to be
+// HitTestOpaqueness::kMixed if the chunk is hit testable and overlaps.
+// Hit tests in these cases cannot be handled on the compositor thread.
+void LayerPropertiesUpdater::UpdatePreviousNonCompositedScrolls(
+    const PaintChunk& chunk) {
+  if (top_non_composited_scrolls_.empty()) {
+    return;
+  }
+  DCHECK(RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled());
+
+  if (chunk.hit_test_data && chunk.hit_test_data->scroll_translation) {
+    // ScrollHitTest has been handled in AddNonCompositedScroll().
+    return;
+  }
+
+  if (chunk.hit_test_opaqueness == cc::HitTestOpaqueness::kTransparent) {
+    return;
+  }
+
+  const auto* scroll_translation =
+      &chunk.properties.Transform().Unalias().NearestScrollTranslationNode();
+  if (scroll_translation == &layer_scroll_translation_) {
+    // The new chunk is not scrollable in the layer. Any previous scroller
+    // intersecting with the new chunk will need main thread hit test.
+    gfx::Rect chunk_hit_test_rect =
+        chunk_to_layer_mapper_.MapVisualRect(chunk.bounds);
+    for (auto& previous_scroll : base::Reversed(top_non_composited_scrolls_)) {
+      if (previous_scroll.layer_hit_test_rect.Intersects(chunk_hit_test_rect)) {
+        previous_scroll.hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
+      }
+      if (previous_scroll.layer_hit_test_rect.Contains(chunk_hit_test_rect)) {
+        break;
+      }
+    }
+    return;
+  }
+
+  const auto& top_scroll = TopNonCompositedScroll(*scroll_translation);
+  if (&top_scroll != scroll_translation) {
+    // The chunk is under a nested non-composited scroller. We should have
+    // forced or will force the top scroll to be non-fast, so we don't need
+    // to do anything here.
+    return;
+  }
+  // The chunk is in the scrolling contents of a top non-composited scroller.
+  // Find the scroller. Normally the loop runs only one iteration, unless the
+  // scrolling contents of the scroller interlace with other scrollers.
+  NonCompositedScroll* non_composited_scroll = nullptr;
+  for (auto& previous_scroll : base::Reversed(top_non_composited_scrolls_)) {
+    if (previous_scroll.scroll_translation == scroll_translation) {
+      non_composited_scroll = &previous_scroll;
+      break;
+    }
+  }
+  if (!non_composited_scroll) {
+    // The chunk appears before the ScrollHitTest chunk of top_scroll.
+    // The chunk's hit-test status doesn't matter because it will be covered
+    // by the future ScrollHitTest.
+    return;
+  }
+  if (non_composited_scroll->hit_test_opaqueness ==
+      cc::HitTestOpaqueness::kTransparent) {
+    // non_composited_scroll has pointer-events:none but the chunk is
+    // hit-testable.
+    non_composited_scroll->hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
+  }
+  if (non_composited_scroll->hit_test_opaqueness ==
+      cc::HitTestOpaqueness::kMixed) {
+    // non_composited_scroll will generate a rect in
+    // main_thread_scroll_hit_test_region_ which will disable all fast scroll
+    // in the area, so no need to check overlap with other scrollers.
+    return;
+  }
+
+  // Assume the chunk can appear anywhere in non_composited_scroll, so use
+  // non_composited_scroll->layer_hit_test_rect to check overlap.
+  const gfx::Rect& hit_test_rect = non_composited_scroll->layer_hit_test_rect;
+  // This is the same as the loop under '== &layer_scroll_translation_` but
+  // stops at scroll_translation. Normally this loop is no-op, unless the
+  // scrolling contents of the scroller interlace with other scrollers
+  // (which will be tested overlap with the hit_test_rect).
+  for (auto& previous_scroll : base::Reversed(top_non_composited_scrolls_)) {
+    if (previous_scroll.scroll_translation == scroll_translation) {
+      break;
+    }
+    if (previous_scroll.layer_hit_test_rect.Intersects(hit_test_rect)) {
+      previous_scroll.hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
+    }
+    if (previous_scroll.layer_hit_test_rect.Contains(hit_test_rect)) {
+      break;
+    }
   }
 }
 
@@ -1336,8 +1506,9 @@ void LayerPropertiesUpdater::Update() {
     const PaintChunk& chunk = *it;
     const auto* non_composited_scrollbar =
         NonCompositedScrollbarDisplayItem(it, layer_);
-    if ((!selection_only_ && (chunk.hit_test_data || non_composited_scrollbar ||
-                              chunk.region_capture_data)) ||
+    if ((!selection_only_ &&
+         (chunk.hit_test_data || non_composited_scrollbar ||
+          chunk.region_capture_data || !top_non_composited_scrolls_.empty())) ||
         chunk.layer_selection_data) {
       chunk_to_layer_mapper_.SwitchToChunk(chunk);
     }
@@ -1345,8 +1516,9 @@ void LayerPropertiesUpdater::Update() {
       if (chunk.hit_test_data) {
         UpdateTouchActionRegion(*chunk.hit_test_data);
         UpdateWheelEventRegion(*chunk.hit_test_data);
-        UpdateScrollHitTestData(chunk.id.type, *chunk.hit_test_data);
+        UpdateScrollHitTestData(chunk);
       }
+      UpdatePreviousNonCompositedScrolls(chunk);
       if (non_composited_scrollbar) {
         UpdateForNonCompositedScrollbar(*non_composited_scrollbar);
       }
@@ -1364,9 +1536,22 @@ void LayerPropertiesUpdater::Update() {
   if (!selection_only_) {
     layer_.SetTouchActionRegion(std::move(touch_action_region_));
     layer_.SetWheelEventRegion(std::move(wheel_event_region_));
+    layer_.SetCaptureBounds(std::move(capture_bounds_));
+
+    std::vector<cc::ScrollHitTestRect> non_composited_scroll_hit_test_rects;
+    for (const auto& scroll : top_non_composited_scrolls_) {
+      if (scroll.hit_test_opaqueness == cc::HitTestOpaqueness::kMixed) {
+        main_thread_scroll_hit_test_region_.Union(scroll.layer_hit_test_rect);
+      } else if (scroll.hit_test_opaqueness == cc::HitTestOpaqueness::kOpaque) {
+        non_composited_scroll_hit_test_rects.emplace_back(
+            scroll.scroll_translation->ScrollNode()->GetCompositorElementId(),
+            scroll.layer_hit_test_rect);
+      }
+    }
     layer_.SetMainThreadScrollHitTestRegion(
         std::move(main_thread_scroll_hit_test_region_));
-    layer_.SetCaptureBounds(std::move(capture_bounds_));
+    layer_.SetNonCompositedScrollHitTestRects(
+        std::move(non_composited_scroll_hit_test_rects));
   }
 
   if (any_selection_was_painted) {

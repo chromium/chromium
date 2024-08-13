@@ -139,7 +139,10 @@ void ScrollMetricsTest::SetUpHtml(const char* html_content) {
 TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
   SetUpHtml(R"HTML(
     <style>
-     .box { overflow:scroll; width: 100px; height: 100px; }
+     .box { overflow:scroll; width: 100px; height: 100px;
+            /* Make the box not opaque to hit test, so that not eligible for
+               fast scroll hit test. */
+            border-radius: 5px; }
      .spacer { height: 1000px; }
     </style>
     <div id='box' class='box'>
@@ -195,10 +198,13 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
   SetUpHtml(R"HTML(
     <style>
      .box { overflow:scroll; width: 100px; height: 100px; }
-     .composited { will-change: transform; }
+     /* Make the box not opaque to hit test, so that not eligible for fast
+        scroll hit test. */
+     .border-radius { border-radius: 5px; }
+     .composited { will-change: transform; border-radius: 0; }
      .spacer { height: 1000px; }
     </style>
-    <div id='box' class='box'>
+    <div id='box' class='box border-radius'>
      <div class='spacer'></div>
     </div>
   )HTML");
@@ -239,7 +245,11 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
 
 TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
   SetUpHtml(R"HTML(
-    <style>.box { overflow:scroll; width: 100px; height: 100px; }
+    <style>
+     .box { overflow:scroll; width: 100px; height: 100px;
+            /* Make the box not opaque to hit test, so that not eligible for
+               fast scroll hit test. */
+            border-radius: 5px; }
      .hidden { overflow: hidden; }
      .spacer { height: 1000px; }
     </style>

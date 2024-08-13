@@ -464,6 +464,7 @@ void DisplayItemList::PushDrawScrollingContentsOp(
     // This will cause over-invalidation when the nested scroller scrolls, but
     // avoids the complexity and cost of mapping the visual rect of nested
     // scroller to the layer space, especially when the parent scroller scrolls.
+    // TODO(crbug.com/359279553): Evaluate if the optimization is worth it.
     raster_inducing_scrolls_[nested_scroll_element_id] =
         RasterInducingScrollInfo{visual_rect, info.has_discardable_images};
   }

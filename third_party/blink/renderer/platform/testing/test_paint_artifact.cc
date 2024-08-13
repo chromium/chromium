@@ -111,9 +111,9 @@ TestPaintArtifact& TestPaintArtifact::ScrollHitTestChunk(
     const PropertyTreeState& contents_state) {
   const auto& scroll_translation = contents_state.Transform();
   DCHECK(scroll_translation.ScrollNode());
-  Chunk(client).Properties(*scroll_translation.Parent(),
-                           *contents_state.Clip().Parent(),
-                           contents_state.Effect());
+  Chunk(client, DisplayItem::kScrollHitTest)
+      .Properties(*scroll_translation.Parent(), *contents_state.Clip().Parent(),
+                  contents_state.Effect());
   auto& chunk = paint_artifact_->GetPaintChunks().back();
   chunk.hit_test_opaqueness = cc::HitTestOpaqueness::kOpaque;
   auto& hit_test_data = chunk.EnsureHitTestData();

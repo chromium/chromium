@@ -1689,6 +1689,11 @@
       name: "FasterMinContent",
       status: "stable",
     },
+    {
+      name: "FastNonCompositedScrollHitTest",
+      depends_on: ["HitTestOpaqueness", "RasterInducingScroll"],
+      status: "test",
+    },
     // Kill switch.
     {
       name: "FastPathSingleSelectorExactMatch",
