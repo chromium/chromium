@@ -156,7 +156,8 @@ using signin_metrics::PromoAction;
   BOOL isSyncConsentGiven =
       syncService &&
       syncService->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
-  BOOL shouldClearDataOnSignOut = self.authService->ShouldClearDataOnSignOut();
+  BOOL shouldClearDataOnSignOut =
+      self.authService->ShouldClearDataForSignedInPeriodOnSignOut();
 
   self.signOutCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.viewController

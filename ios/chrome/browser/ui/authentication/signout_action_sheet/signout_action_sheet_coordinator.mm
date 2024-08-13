@@ -165,23 +165,24 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   DCHECK(self.browser);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
-  if (self.authenticationService->ShouldClearDataOnSignOut()) {
-    return SignedInUserStateWithManagedAccountClearsDataOnSignout;
-  }
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  AuthenticationService* authenticationService = self.authenticationService;
+  const bool is_managed_account_migrated_from_syncing =
+      browser_sync::WasPrimaryAccountMigratedFromSyncingToSignedIn(
+          IdentityManagerFactory::GetForBrowserState(browserState),
+          browserState->GetPrefs()) &&
+      authenticationService->HasPrimaryIdentityManaged(
+          signin::ConsentLevel::kSignin);
+
   // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
-  if (!self.authenticationService->HasPrimaryIdentity(
-          signin::ConsentLevel::kSync)) {
-    const bool is_migrated_from_syncing =
-        browser_sync::WasPrimaryAccountMigratedFromSyncingToSignedIn(
-            IdentityManagerFactory::GetForBrowserState(
-                self.browser->GetBrowserState()),
-            self.browser->GetBrowserState()->GetPrefs());
-    if (self.authenticationService->HasPrimaryIdentityManaged(
-            signin::ConsentLevel::kSignin) &&
-        is_migrated_from_syncing) {
-      return SignedInUserStateWithManagedAccountAndMigratedFromSyncing;
-    }
+  if (is_managed_account_migrated_from_syncing) {
+    return SignedInUserStateWithManagedAccountAndMigratedFromSyncing;
+  }
+  if (authenticationService->ShouldClearDataForSignedInPeriodOnSignOut()) {
+    return SignedInUserStateWithManagedAccountClearsDataOnSignout;
+  }
+  if (!authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
     return SignedInUserStateWithNotSyncingAndReplaceSyncWithSignin;
   }
   BOOL syncEnabled =

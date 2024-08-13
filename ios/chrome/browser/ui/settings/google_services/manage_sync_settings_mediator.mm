@@ -229,7 +229,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       break;
     case SyncSettingsAccountState::kSignedIn:
       BOOL would_clear_data_on_signout =
-          _authenticationService->ShouldClearDataOnSignOut();
+          _authenticationService->ShouldClearDataForSignedInPeriodOnSignOut();
       [model addSectionWithIdentifier:SyncDataTypeSectionIdentifier];
       TableViewTextHeaderFooterItem* headerItem =
           [[TableViewTextHeaderFooterItem alloc]

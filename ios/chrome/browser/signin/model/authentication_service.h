@@ -106,7 +106,7 @@ class AuthenticationService : public KeyedService,
       signin::ConsentLevel consent_level) const;
 
   // Returns true if data should be cleared on sign-out.
-  virtual bool ShouldClearDataOnSignOut() const;
+  virtual bool ShouldClearDataForSignedInPeriodOnSignOut() const;
 
   // Retrieves the identity of the currently authenticated user or `nil` if
   // either the user is not authenticated, or is authenticated through
