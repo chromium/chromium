@@ -559,6 +559,15 @@ void WaylandDataDragController::OnDataSourceSend(WaylandDataSource* source,
   CHECK_EQ(data_source_.get(), source);
   CHECK(buffer);
   VLOG(1) << __FUNCTION__ << " mime=" << mime_type;
+
+  // We don't actually have any data to send. Nothing except Chrome itself
+  // should accept this MIME type, and Chrome won't request the non-existent
+  // data; but the KDE desktop seems to accept and request the data. To prevent
+  // hitting a CHECK in ExtractData() due to the MIME type, we exit early here.
+  if (mime_type == ui::kMimeTypeWindowDrag) {
+    return;
+  }
+
   if (!GetOfferedExchangeDataProvider()->ExtractData(mime_type, buffer)) {
     LOG(WARNING) << "Cannot deliver data of type " << mime_type
                  << " and no text representation is available.";
