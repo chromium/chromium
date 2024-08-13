@@ -1190,7 +1190,7 @@
       "alimariam@google.com",
       "tommasin@chromium.org",
       "chrome-browser-privacy-team@google.com"],
-      "expiry_milestone": 129
+      "expiry_milestone": 131
   },
   {
     "name": "bypass-app-banner-engagement-checks",
