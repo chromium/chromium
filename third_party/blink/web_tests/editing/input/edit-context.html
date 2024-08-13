@@ -22,6 +22,16 @@ test(function() {
 }, 'Setting .editContext on a stray div should not crash.');
 
 test(function() {
+  const iframe = document.createElement("iframe");
+  document.body.appendChild(iframe);
+  iframe.srcdoc = `<script>
+    const editContext = new EditContext();
+    window.top.document.querySelector("iframe").remove();
+    editContext.updateSelection(0, 0);
+  </scr` + `ipt>`;
+}, 'Calling updateSelection in an EditContext in a detached frame should not crash.');
+
+test(function() {
   const editContext = new EditContext();
   assert_not_equals(editContext, null);
   const test = document.createElement("div");

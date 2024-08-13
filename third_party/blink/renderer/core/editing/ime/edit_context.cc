@@ -660,9 +660,11 @@ void EditContext::SetSelection(int start,
   selection_start_ = start;
   selection_end_ = end;
 
-  DomWindow()->GetFrame()->Client()->DidChangeSelection(
-      /*is_selection_empty=*/selection_start_ == selection_end_,
-      blink::SyncCondition::kNotForced);
+  if (DomWindow()->GetFrame()) {
+    DomWindow()->GetFrame()->Client()->DidChangeSelection(
+        /*is_selection_empty=*/selection_start_ == selection_end_,
+        blink::SyncCondition::kNotForced);
+  }
 
   if (dispatch_text_update_event) {
     DispatchTextUpdateEvent(g_empty_string, /*update_range_start=*/0,
