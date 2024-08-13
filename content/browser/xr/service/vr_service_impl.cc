@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "build/build_config.h"
@@ -587,13 +588,21 @@ void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
   const std::vector<blink::PermissionType> permissions_for_mode =
       GetRequiredPermissionsForMode(request.options->mode);
 
+  // Note that if we prompt for any permissions because of *features*, we could
+  // cause re-entrant behavior if those permissions would preempt the permission
+  // that we just queried for. To that end, post a task to handle the result of
+  // the permissions query to avoid that re-entrant behavior.
+  // TODO(crbug.com/357776212): Remove this if the re-entrant behavior is fixed
+  // on the permissions side.
   permission_controller->RequestPermissionsFromCurrentDocument(
       render_frame_host_,
       PermissionRequestDescription(permissions_for_mode,
                                    /*user_gesture=*/true),
-      base::BindOnce(&VRServiceImpl::OnPermissionResultsForMode,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(request),
-                     permissions_for_mode));
+      base::BindPostTask(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindOnce(&VRServiceImpl::OnPermissionResultsForMode,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(request),
+                         permissions_for_mode)));
 }
 
 void VRServiceImpl::OnPermissionResultsForMode(
