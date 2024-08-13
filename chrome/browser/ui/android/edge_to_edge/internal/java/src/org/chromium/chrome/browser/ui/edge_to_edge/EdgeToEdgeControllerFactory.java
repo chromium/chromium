@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.hasTappableBottomBar;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.isEnabled;
 
 import android.app.Activity;
 import android.os.Build;
@@ -17,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -55,7 +55,7 @@ public class EdgeToEdgeControllerFactory {
             BrowserControlsStateProvider browserControlsStateProvider,
             LayoutManager layoutManager) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
-        assert isSupportedConfiguration(activity);
+        assert isEnabled();
         return new EdgeToEdgeControllerImpl(
                 activity,
                 windowAndroid,
@@ -121,6 +121,5 @@ public class EdgeToEdgeControllerFactory {
     @VisibleForTesting
     public static void setHas3ButtonNavBar(boolean has3ButtonNavBar) {
         sHas3ButtonNavBarForTesting = has3ButtonNavBar;
-        ResettersForTesting.register(() -> sHas3ButtonNavBarForTesting = false);
     }
 }

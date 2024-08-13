@@ -8483,19 +8483,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_BottomChin",
-                    "params": {
-                        "disable_bottom_controls_stacker_y_offset": "false"
-                    },
-                    "enable_features": [
-                        "BottomBrowserControlsRefactor",
-                        "DrawCutoutEdgeToEdge",
-                        "DynamicSafeAreaInsets",
-                        "DynamicSafeAreaInsetsOnScroll",
-                        "EdgeToEdgeBottomChin"
-                    ]
-                },
-                {
                     "name": "Enabled_DynamicSafeAreaInsetsOnly",
                     "enable_features": [
                         "DynamicSafeAreaInsets",
