@@ -407,6 +407,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kV8FileSystemObserver_Observe_Method,
           WebFeature::kGamepadHapticActuatorType,
           WebFeature::kV8Navigator_JoinAdInterestGroup_Method,
+          WebFeature::kFormValidationShowedMessage,
       }));
   return *opt_in_features;
 }
