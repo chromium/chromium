@@ -17,6 +17,7 @@
 #include "ash/rotator/screen_rotation_animator_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing.h"
@@ -1518,6 +1519,7 @@ class AutotestPrivateStopSmoothnessTrackingFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   void OnReportData(
+      base::TimeTicks start_time,
       const cc::FrameSequenceMetrics::CustomReportData& frame_data,
       std::vector<int>&& throughput);
   void OnTimeOut(int64_t display_id);

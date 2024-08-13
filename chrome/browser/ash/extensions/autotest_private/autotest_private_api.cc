@@ -970,6 +970,8 @@ class DisplaySmoothnessTracker {
       return false;
     }
 
+    start_time_ = base::TimeTicks::Now();
+
     DCHECK(root_window_tracker_.windows().empty());
     root_window_tracker_.Add(root_window);
 
@@ -997,6 +999,7 @@ class DisplaySmoothnessTracker {
 
   bool stopping() const { return stopping_; }
   bool has_error() const { return has_error_; }
+  base::TimeTicks start_time() const { return start_time_; }
 
  private:
   void OnThroughputTimerFired() {
@@ -1023,6 +1026,7 @@ class DisplaySmoothnessTracker {
   ReportCallback callback_;
   bool stopping_ = false;
   bool has_error_ = false;
+  base::TimeTicks start_time_;
 
   base::RepeatingTimer throughtput_timer_;
   std::vector<int> throughput_;
@@ -5875,13 +5879,14 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
                             base::NumberToString(display_id)})));
   }
 
-  if (it->second->stopping()) {
+  auto& [_, tracker] = *it;
+  if (tracker->stopping()) {
     return RespondNow(Error(
         base::StrCat({"stopSmoothnessTracking already called for display: ",
                       base::NumberToString(display_id)})));
   }
 
-  const bool has_error = it->second->has_error();
+  const bool has_error = tracker->has_error();
 
 #if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER) ||  \
     defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \
@@ -5900,9 +5905,9 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
       base::BindOnce(&AutotestPrivateStopSmoothnessTrackingFunction::OnTimeOut,
                      this, display_id));
 
-  if (!it->second->Stop(base::BindOnce(
-          &AutotestPrivateStopSmoothnessTrackingFunction::OnReportData,
-          this))) {
+  if (!tracker->Stop(base::BindOnce(
+          &AutotestPrivateStopSmoothnessTrackingFunction::OnReportData, this,
+          tracker->start_time()))) {
     timeout_timer_.AbandonAndStop();
     trackers->erase(it);
     return RespondNow(
@@ -5924,6 +5929,7 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
 }
 
 void AutotestPrivateStopSmoothnessTrackingFunction::OnReportData(
+    base::TimeTicks start_time,
     const cc::FrameSequenceMetrics::CustomReportData& frame_data,
     std::vector<int>&& throughput) {
   if (did_respond()) {
@@ -5939,7 +5945,7 @@ void AutotestPrivateStopSmoothnessTrackingFunction::OnReportData(
 
   for (auto jank : frame_data.janks) {
     jank_timestamps.emplace_back(
-        (jank.start_time - base::TimeTicks()).InMilliseconds());
+        (jank.start_time - start_time).InMilliseconds());
     jank_durations.emplace_back(jank.duration.InMilliseconds());
   }
 
