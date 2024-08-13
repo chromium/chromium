@@ -51,6 +51,7 @@ source_set("incognito_session_tracker") {
     ":browser_state",
     "//base",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
   ]
 }
