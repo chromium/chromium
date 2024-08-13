@@ -20,6 +20,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/lottie:chromium_lottie_animation",
     "//ios/chrome/browser/providers/mailto_handler:chromium_mailto_handler",
     "//ios/chrome/browser/providers/material:chromium_material_branding",
+    "//ios/chrome/browser/providers/memory_experimenter:chromium_memory_experimenter",
     "//ios/chrome/browser/providers/mini_map:chromium_mini_map",
     "//ios/chrome/browser/providers/modals:chromium_modals",
     "//ios/chrome/browser/providers/omaha:chromium_omaha",
