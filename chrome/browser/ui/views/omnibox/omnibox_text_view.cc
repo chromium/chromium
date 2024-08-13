@@ -148,22 +148,28 @@ OmniboxTextView::~OmniboxTextView() = default;
 
 gfx::Size OmniboxTextView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return render_text_ ? render_text_->GetStringSize() : gfx::Size();
+  if (!render_text_) {
+    return gfx::Size();
+  }
+
+  if (!available_size.width().is_bounded()) {
+    render_text_->SetDisplayRect(gfx::Rect(gfx::Size(INT_MAX, 0)));
+    return render_text_->GetStringSize();
+  }
+
+  int width = available_size.width().value();
+  if (!wrap_text_lines_) {
+    return gfx::Size(width, GetLineHeight());
+  }
+
+  render_text_->SetDisplayRect(gfx::Rect(width, 0));
+  gfx::Size string_size = render_text_->GetStringSize();
+  string_size.Enlarge(0, kVerticalPadding);
+  return string_size;
 }
 
 bool OmniboxTextView::GetCanProcessEventsWithinSubtree() const {
   return false;
-}
-
-int OmniboxTextView::GetHeightForWidth(int width) const {
-  if (!render_text_)
-    return 0;
-  // If text wrapping is not called for we can simply return the font height.
-  if (!wrap_text_lines_)
-    return GetLineHeight();
-  render_text_->SetDisplayRect(gfx::Rect(width, 0));
-  gfx::Size string_size = render_text_->GetStringSize();
-  return string_size.height() + kVerticalPadding;
 }
 
 void OmniboxTextView::OnPaint(gfx::Canvas* canvas) {
@@ -379,9 +385,7 @@ void OmniboxTextView::OnStyleChanged() {
   font_height_ = std::max(height_normal, height_bold);
   font_height_ += kVerticalPadding;
 
-  render_text_->SetElideBehavior(gfx::NO_ELIDE);
   SetPreferredSize(CalculatePreferredSize({}));
-  render_text_->SetElideBehavior(gfx::ELIDE_TAIL);
   SchedulePaint();
 }
 
