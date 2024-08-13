@@ -149,6 +149,10 @@ class WebState;
 // Records in UMA that a URL has been dropped from outside of the app.
 - (void)recordExternalURLDropped;
 
+// Shows the tab group snackbar or IPH.
+// `closedGroups` represents the number of closed groups.
+- (void)showTabGroupSnackbarOrIPH:(int)closedGroups;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_MEDIATOR_H_

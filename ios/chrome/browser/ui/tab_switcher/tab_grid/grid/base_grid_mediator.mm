@@ -453,8 +453,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   }
 
   if (IsTabGroupSyncEnabled() && !deleteGroup) {
-    [self.tabGroupsHandler showTabGroupSnackbarAfterClosingGroups:1];
-    [self.tabGridToolbarHandler showSavedTabGroupIPH];
+    [self showTabGroupSnackbarOrIPH:1];
     tab_groups::TabGroupSyncService* syncService =
         tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());
@@ -500,6 +499,14 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 
 - (void)recordExternalURLDropped {
   base::UmaHistogramEnumeration(kUmaGridViewDragOrigin, DragItemOrigin::kOther);
+}
+
+- (void)showTabGroupSnackbarOrIPH:(int)closedGroups {
+  if (!IsTabGroupSyncEnabled() || closedGroups < 1) {
+    return;
+  }
+  [self.tabGroupsHandler showTabGroupSnackbarAfterClosingGroups:closedGroups];
+  [self.tabGridToolbarHandler showSavedTabGroupIPH];
 }
 
 #pragma mark - WebStateListObserving

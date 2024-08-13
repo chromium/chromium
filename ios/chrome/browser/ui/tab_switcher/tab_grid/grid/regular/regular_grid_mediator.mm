@@ -58,8 +58,12 @@
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
 
-  const int closed_tabs = _tabsCloser->CloseTabs();
-  RecordTabGridCloseTabsCount(closed_tabs);
+  const int tabGroupCount = self.webStateList->GetGroups().size();
+
+  const int closedTabs = _tabsCloser->CloseTabs();
+  RecordTabGridCloseTabsCount(closedTabs);
+
+  [self showTabGroupSnackbarOrIPH:tabGroupCount];
 }
 
 - (void)undoCloseAllItems {
