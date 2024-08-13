@@ -298,7 +298,8 @@ inline StringView::StringView(const StringView& view,
                               unsigned offset,
                               unsigned length)
     : impl_(view.impl_), length_(length) {
-  SECURITY_DCHECK(offset + length <= view.length());
+  SECURITY_DCHECK(offset <= view.length());
+  SECURITY_DCHECK(length <= view.length() - offset);
   if (Is8Bit())
     bytes_ = view.Characters8() + offset;
   else
@@ -344,7 +345,8 @@ inline void StringView::Clear() {
 inline void StringView::Set(const StringImpl& impl,
                             unsigned offset,
                             unsigned length) {
-  SECURITY_DCHECK(offset + length <= impl.length());
+  SECURITY_DCHECK(offset <= impl.length());
+  SECURITY_DCHECK(length <= impl.length() - offset);
   length_ = length;
   impl_ = const_cast<StringImpl*>(&impl);
   if (impl.Is8Bit())
