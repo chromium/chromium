@@ -19,6 +19,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
@@ -74,8 +75,6 @@ class SessionManagerOperationTest : public testing::Test {
  public:
   SessionManagerOperationTest()
       : owner_key_util_(new ownership::MockOwnerKeyUtil()),
-        user_manager_(new FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_.get())),
         validated_(false) {
     OwnerSettingsServiceAshFactory::GetInstance()->SetOwnerKeyUtilForTesting(
         owner_key_util_);
@@ -122,8 +121,8 @@ class SessionManagerOperationTest : public testing::Test {
   ObservableFakeSessionManagerClient session_manager_client_;
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
 
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_;
-  user_manager::ScopedUserManager user_manager_enabler_;
+  user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_{
+      std::make_unique<FakeChromeUserManager>()};
 
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<OwnerSettingsServiceAsh> service_;

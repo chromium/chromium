@@ -33,6 +33,7 @@ static_library("ownership") {
     "//chrome/browser/ash/system",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/settings",

@@ -16,11 +16,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_key_loader.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -28,13 +28,13 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -72,6 +72,10 @@ class CrosSettingsTest : public testing::Test {
     device_policy_.Build();
 
     fake_session_manager_client_.set_device_policy(device_policy_.GetBlob());
+
+    // Initialize ProfileHelper including BrowserContextHelper.
+    ProfileHelper::Get();
+
     owner_key_util_->SetPublicKeyFromPrivateKey(
         *device_policy_.GetSigningKey());
     owner_key_util_->ImportPrivateKeyAndSetPublicKey(
@@ -96,9 +100,9 @@ class CrosSettingsTest : public testing::Test {
   OwnerSettingsServiceAsh* CreateOwnerSettingsService(
       const std::string& owner_email) {
     const AccountId account_id = AccountId::FromUserEmail(owner_email);
-    user_manager_->AddUser(account_id);
     profile_ = std::make_unique<TestingProfile>();
     profile_->set_profile_name(account_id.GetUserEmail());
+    ash::AnnotatedAccountId::Set(profile_.get(), account_id);
 
     FakeNssService::InitializeForBrowserContext(profile_.get(),
                                                 /*enable_system_slot=*/false);
@@ -161,8 +165,6 @@ class CrosSettingsTest : public testing::Test {
   CrosSettingsHolder cros_settings_holder_{ash::DeviceSettingsService::Get(),
                                            local_state_.Get()};
 
-  user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_{
-      std::make_unique<FakeChromeUserManager>()};
   FakeSessionManagerClient fake_session_manager_client_;
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_{
       base::MakeRefCounted<ownership::MockOwnerKeyUtil>()};
