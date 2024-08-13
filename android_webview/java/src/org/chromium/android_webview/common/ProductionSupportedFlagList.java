@@ -973,6 +973,10 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.BLINK_SCHEDULER_PRIORITIZE_NAVIGATION_IP_CS,
                 "If enabled, main frame navigation IPCs have higher priority on visible pages"),
         Flag.baseFeature(
+                BlinkFeatures.BLINK_SCHEDULER_DISCRETE_INPUT_MATCHES_RESPONSIVENESS_METRICS,
+                "If enabled, the scheduler filters discrete input based on responsivness metrics"
+                        + " definitions"),
+        Flag.baseFeature(
                 BlinkFeatures.CURSOR_ANCHOR_INFO_MOJO_PIPE,
                 "If enabled, CursorAnchorInfo is sent from Blink to the browser using a single"
                         + " IPC."),
