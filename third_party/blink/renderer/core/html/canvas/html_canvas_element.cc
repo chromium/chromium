@@ -757,6 +757,7 @@ void HTMLCanvasElement::Reset() {
     context_->Reset();
     origin_clean_ = true;
   }
+  canvas_is_clear_ = true;
 
   gfx::Size old_size = Size();
   gfx::Size new_size(w, h);
@@ -765,7 +766,6 @@ void HTMLCanvasElement::Reset() {
   // This optimization is only done for 2D canvases for now.
   if (IsRenderingContext2D() && ResourceProvider() != nullptr &&
       old_size == new_size) {
-    canvas_is_clear_ = true;
     return;
   }
 
