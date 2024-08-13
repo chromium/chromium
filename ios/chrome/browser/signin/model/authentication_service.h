@@ -181,22 +181,15 @@ class AuthenticationService : public KeyedService,
   // `invalid_identity` is an additional identity to consider invalid. It can be
   // nil if there is no such additional identity to ignore.
   //
-  // `should_prompt` indicates whether the user should be prompted with the
-  // resign-in infobar if the method signs the user out.
-  //
   // `device_restore` should be true only when called from `Initialize()` and
   // Chrome is started after a device restore.
   void HandleForgottenIdentity(id<SystemIdentity> invalid_identity,
-                               bool should_prompt,
                                bool device_restore);
 
   // Checks if the authenticated identity was removed by calling
   // `HandleForgottenIdentity`. Reloads the OAuth2 token service accounts if the
   // authenticated identity is still present.
-  //
-  // `should_prompt` indicates whether the user should be prompted with the
-  // resign-in infobar if the method signs the user out of Chrome.
-  void ReloadCredentialsFromIdentities(bool should_prompt);
+  void ReloadCredentialsFromIdentities();
 
   // signin::IdentityManager::Observer implementation.
   void OnPrimaryAccountChanged(

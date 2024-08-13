@@ -118,10 +118,6 @@ SystemIdentityManager::PresentLinkedServicesSettingsDetailsController(
       std::move(configuration));
 }
 
-bool SystemIdentityManager::IdentityRemovedByUser(NSString* gaia_id) {
-  return false;
-}
-
 void SystemIdentityManager::FireIdentityListChanged(bool notify_user) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observers_) {
