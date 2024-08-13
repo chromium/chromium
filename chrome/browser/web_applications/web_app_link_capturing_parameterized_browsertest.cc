@@ -13,10 +13,12 @@
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -28,12 +30,15 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -44,7 +49,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -178,6 +186,14 @@ std::string ToIdString(OpenerMode opener) {
   }
 }
 
+std::string ToParamString(
+    blink::mojom::ManifestLaunchHandler_ClientMode client_mode) {
+  if (client_mode == blink::mojom::ManifestLaunchHandler_ClientMode::kAuto) {
+    return "";
+  }
+  return base::ToString(client_mode);
+}
+
 std::string_view ToParamString(OpenerMode opener) {
   switch (opener) {
     case OpenerMode::kOpener:
@@ -231,20 +247,24 @@ std::string_view ToParamString(NavigationTarget target) {
 
 // Use a std::tuple for the overall test configuration so testing::Combine can
 // be used to construct the values.
-using LinkCaptureTestParam = std::tuple<StartingPoint,
-                                        Destination,
-                                        NavigationElement,
-                                        ClickMethod,
-                                        OpenerMode,
-                                        NavigationTarget>;
+using LinkCaptureTestParam =
+    std::tuple<blink::mojom::ManifestLaunchHandler_ClientMode,
+               StartingPoint,
+               Destination,
+               NavigationElement,
+               ClickMethod,
+               OpenerMode,
+               NavigationTarget>;
 
 std::string LinkCaptureTestParamToString(
     testing::TestParamInfo<LinkCaptureTestParam> param_info) {
   // Concatenates the result of calling `ToParamString()` on each member of the
   // tuple with '_' in between fields.
-  return std::apply(
+  std::string name = std::apply(
       [](auto&... p) { return base::JoinString({ToParamString(p)...}, "_"); },
       param_info.param);
+  base::TrimString(name, "_", &name);
+  return name;
 }
 
 std::string BrowserTypeToString(Browser::Type type) {
@@ -317,6 +337,18 @@ base::Value::Dict WebContentsToJson(content::WebContents& web_contents) {
     history.Append(std::move(json_entry));
   }
   dict.Set("history", std::move(history));
+
+  content::EvalJsResult launchParamsResults = content::EvalJs(
+      web_contents.GetPrimaryMainFrame(),
+      "'launchParamsTargetUrls' in window ? launchParamsTargetUrls : []");
+  EXPECT_THAT(launchParamsResults, content::EvalJsResult::IsOk());
+  base::Value::List launchParamsTargetUrls =
+      launchParamsResults.ExtractList().TakeList();
+  if (!launchParamsTargetUrls.empty()) {
+    for (const base::Value& url : launchParamsTargetUrls) {
+      dict.EnsureList("launchParams")->Append(GURL(url.GetString()).path());
+    }
+  }
 
   return dict;
 }
@@ -419,7 +451,7 @@ class WebContentsCreationMonitor : public ui_test_utils::AllTabsObserver {
 // --rebaseline-link-capturing-test --run-all-tests
 //
 class WebAppLinkCapturingParameterizedBrowserTest
-    : public InProcessBrowserTest,
+    : public web_app::WebAppBrowserTestBase,
       public testing::WithParamInterface<LinkCaptureTestParam> {
  public:
   WebAppLinkCapturingParameterizedBrowserTest() {
@@ -505,10 +537,30 @@ class WebAppLinkCapturingParameterizedBrowserTest
   }
 
   // This function is used during rebaselining to record (to a file) the results
-  // from an actual run of a single test case. Constructs a json dictionary and
-  // saves it to the test results json file. Returns true if writing was
-  // successful.
+  // from an actual run of a single test case, used by developers to update the
+  // expectations. Constructs a json dictionary and saves it to the test results
+  // json file. Returns true if writing was successful.
   void RecordActualResults() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    // Lock the results file to support using `--test-launcher-jobs=X` when
+    // doing a rebaseline.
+    base::File exclusive_file = base::File(
+        lock_file_path_, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE);
+
+// Fuchsia doesn't support file locking.
+#if !BUILDFLAG(IS_FUCHSIA)
+    {
+      SCOPED_TRACE("Attempting to gain exclusive lock of " +
+                   lock_file_path_.MaybeAsASCII());
+      base::test::RunUntil([&]() {
+        return exclusive_file.Lock(base::File::LockMode::kExclusive) ==
+               base::File::FILE_OK;
+      });
+    }
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+    // Re-read expectations to catch changes from other parallel runs of
+    // rebaselining.
+    InitializeTestExpectations();
     base::Value::Dict& test_case = GetTestCaseDataFromParam();
     // If this is a new test case, start it out as disabled until we've manually
     // verified the expectations are correct.
@@ -519,12 +571,19 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
     // Write formatted JSON back to disk.
     {
-      base::ScopedAllowBlockingForTesting allow_blocking;
       std::optional<std::string> json_string = base::WriteJsonWithOptions(
           *test_expectations_, base::JsonOptions::OPTIONS_PRETTY_PRINT);
       ASSERT_TRUE(json_string.has_value());
       ASSERT_TRUE(base::WriteFile(json_file_path_, *json_string));
     }
+#if !BUILDFLAG(IS_FUCHSIA)
+    EXPECT_EQ(exclusive_file.Unlock(), base::File::FILE_OK);
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+    exclusive_file.Close();
+  }
+
+  blink::mojom::ManifestLaunchHandler_ClientMode GetClientMode() const {
+    return std::get<blink::mojom::ManifestLaunchHandler_ClientMode>(GetParam());
   }
 
   StartingPoint GetStartingPoint() const {
@@ -595,7 +654,10 @@ class WebAppLinkCapturingParameterizedBrowserTest
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
+    web_app_info->launch_handler =
+        blink::Manifest::LaunchHandler(GetClientMode());
     web_app_info->scope = start_url.GetWithoutFilename();
+    web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
     const webapps::AppId app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
     apps::AppReadinessWaiter(profile(), app_id).Await();
@@ -710,11 +772,11 @@ class WebAppLinkCapturingParameterizedBrowserTest
       base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
           .AppendASCII(kLinkCaptureTestInputPath);
 
+  base::FilePath lock_file_path_ =
+      base::PathService::CheckedGet(base::DIR_OUT_TEST_DATA_ROOT)
+          .AppendASCII("link_capturing_rebaseline_lock_file.lock");
   // Current expectations for this test (parsed from the test json file).
   std::optional<base::Value> test_expectations_;
-
-  // static int test_case_counter_;
-  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
@@ -724,8 +786,16 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
   const base::Value::Dict& test_case = GetTestCaseDataFromParam();
   if (!ShouldRunDisabledTests() &&
       test_case.FindBool("disabled").value_or(false)) {
-    GTEST_SKIP();
+    GTEST_SKIP()
+        << "Skipped as test is marked as disabled in the expectations file. "
+           "Add the switch '--run-all-tests' to run disabled tests too.";
   }
+
+  // Install all apps.
+  const webapps::AppId app_a =
+      InstallTestWebApp(embedded_test_server()->GetURL(kStartPageScopeA));
+  const webapps::AppId app_b =
+      InstallTestWebApp(embedded_test_server()->GetURL(kDestinationPageScopeB));
 
   std::string element_id = GetElementId();
 
@@ -736,10 +806,6 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
     content::DOMMessageQueue message_queue;
 
     if (StartInAppWindow()) {
-      // Setup the starting app.
-      const webapps::AppId app_a =
-          InstallTestWebApp(embedded_test_server()->GetURL(kStartPageScopeA));
-
       auto* const proxy =
           apps::AppServiceProxyFactory::GetForProfile(profile());
       ui_test_utils::AllBrowserTabAddedWaiter waiter;
@@ -768,7 +834,6 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
     InstallTestWebApp(embedded_test_server()->GetURL(kDestinationPageScopeB));
   }
 
-  content::WebContents* contents_b;
   {
     content::DOMMessageQueue message_queue;
 
@@ -778,17 +843,20 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
 
     std::string message;
     EXPECT_TRUE(message_queue.WaitForMessage(&message));
+    DLOG(INFO) << message;
     std::string unquoted_message;
-    ASSERT_TRUE(base::RemoveChars(message, "\"", &unquoted_message));
-    std::vector parts =
-        base::SplitString(unquoted_message, ":", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
-    EXPECT_EQ("FinishedNavigating in frame", parts[0]);
+    ASSERT_TRUE(base::RemoveChars(message, "\"", &unquoted_message)) << message;
+    EXPECT_TRUE(base::StartsWith(unquoted_message, "FinishedNavigating"))
+        << unquoted_message;
 
-    contents_b = monitor.GetLastSeenWebContentsAndStopMonitoring();
+    content::WebContents* handled_contents =
+        monitor.GetLastSeenWebContentsAndStopMonitoring();
+    ASSERT_NE(nullptr, handled_contents);
+    ASSERT_TRUE(handled_contents->GetURL().is_valid());
 
-    ASSERT_NE(nullptr, contents_b);
-    ASSERT_TRUE(contents_b->GetURL().is_valid());
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+    // Attempt to ensure that all launchParams have propagated.
+    content::RunAllTasksUntilIdle();
   }
 
   if (ShouldRebaseline()) {
@@ -809,6 +877,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
+        testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
         testing::Values(
             StartingPoint::kAppWindow,  // Starting point is app window.
             StartingPoint::kTab         // Starting point is a tab.
@@ -842,6 +911,7 @@ INSTANTIATE_TEST_SUITE_P(
     ServiceWorker,
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
+        testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
         testing::Values(
             StartingPoint::kAppWindow,  // Starting point is app window.
             StartingPoint::kTab         // Starting point is a tab.
