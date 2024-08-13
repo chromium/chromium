@@ -5456,7 +5456,7 @@
       field_group: "box",
       field_template: "keyword",
       default_value: "none",
-      keywords: ["none", "start", "end", "both"],
+      keywords: ["none", "trim-start", "trim-end", "trim-both"],
       typedom_types: ["Keyword"],
       invalidate: ["layout"],
       runtime_flag: "CSSTextBoxTrim",

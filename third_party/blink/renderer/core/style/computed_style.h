@@ -1699,13 +1699,13 @@ class ComputedStyle final : public ComputedStyleBase {
   // `text-box-trim` utility functions.
   bool ShouldTextBoxTrimStart() const {
     const ETextBoxTrim text_box_trim = TextBoxTrim();
-    return text_box_trim == ETextBoxTrim::kStart ||
-           text_box_trim == ETextBoxTrim::kBoth;
+    return text_box_trim == ETextBoxTrim::kTrimStart ||
+           text_box_trim == ETextBoxTrim::kTrimBoth;
   }
   bool ShouldTextBoxTrimEnd() const {
     const ETextBoxTrim text_box_trim = TextBoxTrim();
-    return text_box_trim == ETextBoxTrim::kEnd ||
-           text_box_trim == ETextBoxTrim::kBoth;
+    return text_box_trim == ETextBoxTrim::kTrimEnd ||
+           text_box_trim == ETextBoxTrim::kTrimBoth;
   }
 
   // Text decoration utility functions.

@@ -1674,8 +1674,10 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kNormal || value_id == CSSValueID::kNone;
     case CSSPropertyID::kTextBoxTrim:
       DCHECK(RuntimeEnabledFeatures::CSSTextBoxTrimEnabled());
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kStart ||
-             value_id == CSSValueID::kEnd || value_id == CSSValueID::kBoth;
+      return value_id == CSSValueID::kNone ||
+             value_id == CSSValueID::kTrimStart ||
+             value_id == CSSValueID::kTrimEnd ||
+             value_id == CSSValueID::kTrimBoth;
     default:
       NOTREACHED_IN_MIGRATION();
       return false;

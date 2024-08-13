@@ -1427,7 +1427,7 @@ const gCSSProperties2 = {
   'text-box-trim': {
     // https://drafts.csswg.org/css-inline-3/#propdef-text-box-trim
     types: [
-      { type: 'discrete', options: [ [ 'none', 'start' ] ] }
+      { type: 'discrete', options: [ [ 'none', 'trim-start' ] ] }
     ]
   },
   'text-decoration': {

@@ -805,6 +805,14 @@
     "leading",
 
     //
+    // text-box-trim
+    //
+    // "none"
+    "trim-both",
+    "trim-end",
+    "trim-start",
+
+    //
     // text-overflow
     //
     "clip",
@@ -834,7 +842,7 @@
     // normal
     "space-all",
     "space-first",
-    "trim-start",
+    // "trim-start",
 
     // text-underline-position
     // auto
