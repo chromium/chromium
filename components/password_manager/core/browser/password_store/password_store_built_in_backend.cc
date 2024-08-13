@@ -78,21 +78,17 @@ std::unique_ptr<os_crypt_async::Encryptor> ConvertToUniquePtr(
 // Records in a pref that passwords were deleted via sync. The pref is used to
 // report metrics.
 std::optional<PasswordStoreChangeList> MaybeRecordPasswordDeletionViaSync(
-    base::RepeatingCallback<
-        void(password_manager::IsAccountStore,
-             metrics_util::PasswordManagerCredentialRemovalReason)>
+    base::RepeatingCallback<void(password_manager::IsAccountStore)>
         write_prefs_callback,
     std::optional<PasswordStoreChangeList> password_store_change_list,
     bool is_account_store) {
-  bool hasCredentialRemoval = std::any_of(
-      password_store_change_list.value().begin(),
-      password_store_change_list.value().end(), [](PasswordStoreChange change) {
+  bool hasCredentialRemoval = base::ranges::any_of(
+      password_store_change_list.value(), [](PasswordStoreChange change) {
         return change.type() == PasswordStoreChange::REMOVE;
       });
   if (hasCredentialRemoval) {
     write_prefs_callback.Run(
-        password_manager::IsAccountStore(is_account_store),
-        metrics_util::PasswordManagerCredentialRemovalReason::kSync);
+        password_manager::IsAccountStore(is_account_store));
   }
   return password_store_change_list;
 }
@@ -206,13 +202,7 @@ void PasswordStoreBuiltInBackend::InitBackend(
 
   auto init_database_callback = base::BindOnce(
       &PasswordStoreBuiltInBackend::OnEncryptorReceived,
-      weak_ptr_factory_.GetWeakPtr(),
-      base::BindRepeating(
-          &MaybeRecordPasswordDeletionViaSync,
-          base::BindRepeating(
-              &PasswordStoreBuiltInBackend::WritePasswordRemovalReasonPrefs,
-              weak_ptr_factory_.GetWeakPtr()))
-          .Then(std::move(remote_form_changes_received)),
+      weak_ptr_factory_.GetWeakPtr(), std::move(remote_form_changes_received),
       std::move(sync_enabled_or_disabled_cb), std::move(completion));
 
   if (!os_crypt_async_) {
@@ -512,14 +502,23 @@ void PasswordStoreBuiltInBackend::OnInitComplete(
 }
 
 void PasswordStoreBuiltInBackend::OnEncryptorReceived(
-    base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>, bool)>
-        remote_form_changes_received,
+    RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion,
     std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramBoolean("PasswordManager.OnEncryptorReceived.Success",
                             !encryptor);
+
+  // Piggyback on |remote_form_changes_received| to record password deletion
+  // coming from sync.
+  auto remote_form_changes_with_store_callback =
+      base::BindRepeating(
+          &MaybeRecordPasswordDeletionViaSync,
+          base::BindRepeating(
+              &PasswordStoreBuiltInBackend::WritePasswordRemovalReasonPrefs,
+              weak_ptr_factory_.GetWeakPtr()))
+          .Then(std::move(remote_form_changes_received));
 
   base::RepeatingClosure on_undecryptable_passwords_removed =
 #if BUILDFLAG(IS_ANDROID)
@@ -536,7 +535,7 @@ void PasswordStoreBuiltInBackend::OnEncryptorReceived(
       base::BindOnce(
           &LoginDatabaseAsyncHelper::Initialize,
           base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
-          std::move(remote_form_changes_received),
+          std::move(remote_form_changes_with_store_callback),
           std::move(sync_enabled_or_disabled_cb),
           std::move(on_undecryptable_passwords_removed), std::move(encryptor)),
       base::BindOnce(&PasswordStoreBuiltInBackend::OnInitComplete,
@@ -552,10 +551,9 @@ void PasswordStoreBuiltInBackend::
 #endif
 
 void PasswordStoreBuiltInBackend::WritePasswordRemovalReasonPrefs(
-    IsAccountStore is_account_store,
-    metrics_util::PasswordManagerCredentialRemovalReason removal_reason) {
-  AddPasswordRemovalReason(pref_service_,
-                           password_manager::IsAccountStore(is_account_store),
-                           removal_reason);
+    IsAccountStore is_account_store) {
+  AddPasswordRemovalReason(
+      pref_service_, password_manager::IsAccountStore(is_account_store),
+      metrics_util::PasswordManagerCredentialRemovalReason::kSync);
 }
 }  // namespace password_manager
