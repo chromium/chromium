@@ -6,7 +6,7 @@
 import json
 import os.path
 import sys
-from typing import Optional
+from typing import List, Optional
 from json_parse import OrderedDict
 
 # This file is a peer to json_schema.py and idl_schema.py. Each of these files
@@ -78,6 +78,22 @@ def GetTypeName(node: IDLNode) -> str:
   raise SchemaCompilerError(
       'Could not find Type node when looking for Typeref name.', node
   )
+
+
+def GetExtendedAttributes(node: IDLNode) -> Optional[List[IDLNode]]:
+  """Returns the list of extended attribute nodes on a given IDLNode
+
+  Args:
+    node: The IDLNode to get the extended attributes from.
+
+  Returns:
+    The list of ExtAttribute IDLNodes from the node if any exist, otherwise
+    returns an empty list.
+  """
+  ext_attribute_node = node.GetOneOf('ExtAttributes')
+  if ext_attribute_node is None:
+    return []
+  return ext_attribute_node.GetListOf('ExtAttribute')
 
 
 class Type:
@@ -184,11 +200,19 @@ class Namespace:
 
   def process(self) -> dict:
     functions = []
+
     for node in self.namespace.GetListOf('Operation'):
       functions.append(Operation(node).process())
+
+    nodoc = 'nodoc' in [
+        attribute.GetName()
+        for attribute in GetExtendedAttributes(self.namespace)
+    ]
+
     return {
         'namespace': self.name,
         'functions': functions,
+        'nodoc': nodoc,
     }
 
 

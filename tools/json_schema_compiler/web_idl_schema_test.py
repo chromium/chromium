@@ -52,6 +52,11 @@ class WebIdlSchemaTest(unittest.TestCase):
         getReturns(schema, 'returnsDOMString'),
     )
 
+  # Tests that if the nodoc extended attribute is not specified on the API
+  # interface the related attribute is set to false after processing
+  def testNodocUnspecifiedOnNamespace(self):
+    self.assertFalse(self.idl_basics['nodoc'])
+
   # TODO(crbug.com/340297705): This will eventually be relaxed when adding
   # support for shared types to the new parser.
   def testMissingBrowserInterface(self):
@@ -106,6 +111,14 @@ class WebIdlSchemaTest(unittest.TestCase):
         web_idl_schema.Load,
         'test/web_idl/unsupported_type_class.idl',
     )
+
+  # Tests that an API interface that uses the nodoc extended attribute has the
+  # related nodoc attribute set to true after processing.
+  def testNoDocOnNamespace(self):
+    nodoc_schema = web_idl_schema.Load('test/web_idl/nodoc_on_namespace.idl')
+    self.assertEqual(1, len(nodoc_schema))
+    self.assertEqual('nodocAPI', nodoc_schema[0]['namespace'])
+    self.assertTrue(nodoc_schema[0]['nodoc'])
 
 
 if __name__ == '__main__':
