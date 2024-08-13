@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -83,7 +84,7 @@ TEST_P(SyncReaderBitstreamTest, BitstreamBufferOverflow_DoesNotWriteOOB) {
   reader.RequestMoreData(base::TimeDelta(), base::TimeTicks(), {});
 
   uint32_t signal;
-  EXPECT_EQ(socket->Receive(&signal, sizeof(signal)), sizeof(signal));
+  EXPECT_EQ(socket->Receive(base::byte_span_from_ref(signal)), sizeof(signal));
 
   // So far, this is an ordinary stream.
   // Now |reader| expects data to be written to the shared memory. The renderer
@@ -111,7 +112,7 @@ TEST_P(SyncReaderBitstreamTest, BitstreamBufferOverflow_DoesNotWriteOOB) {
   }
 
   ++signal;
-  EXPECT_EQ(socket->Send(&signal, sizeof(signal)), sizeof(signal));
+  EXPECT_EQ(socket->Send(base::byte_span_from_ref(signal)), sizeof(signal));
 
   // The purpose of the test is to ensure this call doesn't result in undefined
   // behavior, which should be verified by sanitizers.
@@ -191,7 +192,8 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
   {
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), {});
     uint32_t signal;
-    EXPECT_EQ(socket_->Receive(&signal, sizeof(signal)), sizeof(signal));
+    EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
+              sizeof(signal));
     buffer_->params.bitstream_data_size =
         shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
@@ -208,7 +210,8 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
   {
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), {});
     uint32_t signal;
-    EXPECT_EQ(socket_->Receive(&signal, sizeof(signal)), sizeof(signal));
+    EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
+              sizeof(signal));
     buffer_->params.bitstream_data_size =
         shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
@@ -225,7 +228,8 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
   {
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), {});
     uint32_t signal;
-    EXPECT_EQ(socket_->Receive(&signal, sizeof(signal)), sizeof(signal));
+    EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
+              sizeof(signal));
     buffer_->params.bitstream_data_size =
         shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
@@ -243,7 +247,8 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
   {
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), {});
     uint32_t signal;
-    EXPECT_EQ(socket_->Receive(&signal, sizeof(signal)), sizeof(signal));
+    EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
+              sizeof(signal));
     buffer_->params.bitstream_data_size =
         shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
@@ -265,7 +270,7 @@ TEST_F(SyncReaderTest, PropagatesDelay) {
 
   reader_->RequestMoreData(delay, delay_timestamp, {});
   uint32_t signal;
-  EXPECT_EQ(socket_->Receive(&signal, sizeof(signal)), sizeof(signal));
+  EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)), sizeof(signal));
   buffer_->params.bitstream_data_size =
       shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
   std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
@@ -282,7 +287,8 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
 
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), glitch_info);
     uint32_t signal;
-    EXPECT_EQ(socket_->Receive(&signal, sizeof(signal)), sizeof(signal));
+    EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
+              sizeof(signal));
     buffer_->params.bitstream_data_size =
         shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
@@ -306,7 +312,8 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
 
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), glitch_info);
     uint32_t signal;
-    EXPECT_EQ(socket_->Receive(&signal, sizeof(signal)), sizeof(signal));
+    EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
+              sizeof(signal));
     buffer_->params.bitstream_data_size =
         shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
@@ -331,7 +338,8 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
 
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), glitch_info);
     uint32_t signal;
-    EXPECT_EQ(socket_->Receive(&signal, sizeof(signal)), sizeof(signal));
+    EXPECT_EQ(socket_->Receive(base::byte_span_from_ref(signal)),
+              sizeof(signal));
     buffer_->params.bitstream_data_size =
         shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);

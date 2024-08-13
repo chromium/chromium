@@ -64,11 +64,6 @@ class BASE_EXPORT SyncSocket {
   // The data will be received in `buffer`, which must be non-empty.
   // Returns the number of bytes received, or 0 upon failure.
   virtual size_t Receive(span<uint8_t> buffer);
-  // Same as above, but with the following parameters:
-  // `buffer` is a pointer to the buffer to receive data.
-  // `length` is the number of bytes of data to receive (must be non-zero).
-  // TODO(crbug.com/40284755): Migrate callers to the span version.
-  virtual size_t Receive(void* buffer, size_t length);
 
   // Same as Receive() but only blocks for data until `timeout` has elapsed or
   // `buffer` is exhausted. Currently only timeouts less than one second are
@@ -124,8 +119,6 @@ class BASE_EXPORT CancelableSyncSocket : public SyncSocket {
   // SyncSocket methods in order to support shutting down the 'socket'.
   void Close() override;
   size_t Receive(span<uint8_t> buffer) override;
-  // TODO(crbug.com/40284755): Migrate callers to the span version.
-  size_t Receive(void* buffer, size_t length) override;
   size_t ReceiveWithTimeout(span<uint8_t> buffer, TimeDelta timeout) override;
 #endif
 
