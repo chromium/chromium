@@ -67,6 +67,7 @@ build_webui("build_overlay") {
     "cubic_bezier.ts",
     "find_words_in_region.ts",
     "hit.ts",
+    "language_browser_proxy.ts",
     "metrics_utils.ts",
     "post_selection_paint_worklet.ts",
     "selection_utils.ts",
@@ -87,7 +88,9 @@ build_webui("build_overlay") {
 
   ts_definitions = [
     "paint_api.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/language_settings_private.d.ts",
   ]
 
   ts_composite = true
