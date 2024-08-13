@@ -195,6 +195,10 @@ void OhttpKeyService::SetEnabled(bool enable) {
     async_fetch_timer_.Stop();
     return;
   }
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.HPRT.OhttpKeyService.IsFasterOhttpKeyRotationEnabled",
+      base::FeatureList::IsEnabled(
+          kHashPrefixRealTimeLookupsFasterOhttpKeyRotation));
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&OhttpKeyService::MaybeStartOrRescheduleAsyncFetch,
