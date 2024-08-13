@@ -746,9 +746,9 @@ String IPAddressToString(const net::IPAddress& address) {
 
 namespace ContentEncodingEnum = protocol::Network::ContentEncodingEnum;
 
-std::optional<String> AcceptedEncodingFromProtocol(
+String AcceptedEncodingFromProtocol(
     const protocol::Network::ContentEncoding& encoding) {
-  std::optional<String> result;
+  String result;
   if (ContentEncodingEnum::Gzip == encoding ||
       ContentEncodingEnum::Br == encoding ||
       ContentEncodingEnum::Deflate == encoding ||
@@ -2239,12 +2239,12 @@ protocol::Response InspectorNetworkAgent::setAcceptedEncodings(
         encodings) {
   HashSet<String> accepted_encodings;
   for (const protocol::Network::ContentEncoding& encoding : *encodings) {
-    std::optional<String> value = AcceptedEncodingFromProtocol(encoding);
-    if (!value) {
+    String value = AcceptedEncodingFromProtocol(encoding);
+    if (value.IsNull()) {
       return protocol::Response::InvalidParams("Unknown encoding type: " +
                                                encoding.Utf8());
     }
-    accepted_encodings.insert(value.value());
+    accepted_encodings.insert(value);
   }
   // If invoked with an empty list, it means none of the encodings should be
   // accepted. See InspectorNetworkAgent::PrepareRequest.
