@@ -249,10 +249,10 @@ void FileSystemAccessObserverObservation::OnChanges(
         CreateEntryForUrl(*manager, binding_context, handle_state, change.url,
                           changed_entry_handle_type);
 
-    // TODO(crbug.com/321980270, crbug.com/321980447): Some platforms do not
-    // support ChangeInfo for Local FS changes, in which case a default, empty
-    // ChangeInfo is passed. In this case, report an event without metadata.
-    // Remove this section once ChangeInfo is supported in all platforms.
+    // Some platforms do not support ChangeInfo for Local FS changes, in which
+    // case a default, empty ChangeInfo is passed. In this case, report an event
+    // without metadata. Remove this section once ChangeInfo is supported in all
+    // platforms.
     if (change_info == FileSystemAccessChangeSource::ChangeInfo()) {
       mojo_changes.emplace_back(blink::mojom::FileSystemAccessChange::New(
           blink::mojom::FileSystemAccessChangeMetadata::New(

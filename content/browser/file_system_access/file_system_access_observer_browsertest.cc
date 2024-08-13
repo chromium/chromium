@@ -443,11 +443,7 @@ class FileSystemAccessObserverBrowserTest
         // BUILDFLAG(IS_MAC)
   }
 
-  bool SupportsChangeInfo() const {
-    // TODO(crbug.com/321980270): Reporting change info and the modified path
-    // are both only supported on inotify and Windows, for now.
-    return SupportsReportingModifiedPath();
-  }
+  bool SupportsChangeInfo() const { return SupportsReportingModifiedPath(); }
 };
 
 // `base::FilePatchWatcher` is not implemented on Fuchsia. See
@@ -806,10 +802,6 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsCorrectHandle) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
-
-  // TODO(crbug.com/321980270): Some platforms do not report the modified path.
-  // In these cases, `changedHandle` will always be the handle passed to
-  // observe().
   const std::string changed_handle =
       SupportsReportingModifiedPath() ? "subDir" : "dir";
 
@@ -847,10 +839,6 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
 
   // The modified handle is a file, so the change record should contain a
   // FileSystemFileHandle.
-  //
-  // TODO(crbug.com/321980270): Some platforms do not report the modified path.
-  // In these cases, `changedHandle` will always be the handle passed to
-  // observe().
   const std::string changed_handle =
       SupportsReportingModifiedPath() ? "fileInDir" : "dir";
 
