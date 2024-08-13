@@ -202,15 +202,6 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
         constraintEqualToAnchor:_headerView.contentView.centerYAnchor],
   ]];
 
-  // One of UIVisualEffectView's subviews has a white-ish background color,
-  // which is not desired for this feature.
-  for (UIView* subview in _headerView.subviews) {
-    // Replace any non-nil backgrounds with clear.
-    if (subview.backgroundColor) {
-      subview.backgroundColor = UIColor.clearColor;
-    }
-  }
-
   [self.view layoutIfNeeded];
   [self.sheetDisplayController
       setContentHeight:[self preferredHeightForContent]];
@@ -231,6 +222,19 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   _appearanceTime = base::Time::Now();
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                   _headerView);
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+
+  // One of UIVisualEffectView's subviews has a white-ish background color,
+  // which is not desired for this feature.
+  for (UIView* subview in _headerView.subviews) {
+    // Replace any non-nil backgrounds with clear.
+    if (subview.backgroundColor) {
+      subview.backgroundColor = UIColor.clearColor;
+    }
+  }
 }
 
 - (void)viewSafeAreaInsetsDidChange {
