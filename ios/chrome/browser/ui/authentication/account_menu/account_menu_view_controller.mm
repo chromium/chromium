@@ -93,16 +93,29 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [self setUpNavigationController];
   [self setUpTableContent];
   [self updatePrimaryAccount];
-  [self.sheetPresentationController invalidateDetents];
+  [self resize];
 }
 
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
   // Update the bottom sheet height.
-  [self.sheetPresentationController invalidateDetents];
+  [self resize];
 }
 
 #pragma mark - Private
+
+// Resizes the view for current content.
+- (void)resize {
+  // Update the bottom sheet height.
+  [self.sheetPresentationController invalidateDetents];
+  // Update the popover height.
+  CGFloat height =
+      [self.tableView
+          systemLayoutSizeFittingSize:self.popoverPresentationController
+                                          .containerView.bounds.size]
+          .height;
+  self.preferredContentSize = CGSize(self.preferredContentSize.width, height);
+}
 
 // Sets up the navigation controller’s buttons.
 - (void)setUpNavigationController {
