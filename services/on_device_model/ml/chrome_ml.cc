@@ -187,8 +187,4 @@ std::unique_ptr<ChromeML> ChromeML::Create(
                                     std::move(*holder));
 }
 
-bool ChromeML::IsGpuBlocked() const {
-  return gpu_blocklist_.IsGpuBlocked(api());
-}
-
 }  // namespace ml

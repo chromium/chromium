@@ -32,7 +32,7 @@ class OnDeviceModelInternalImpl final
       return base::unexpected(
           on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary);
     }
-    if (!gpu_blocklist_.skip_for_testing && chrome_ml->IsGpuBlocked()) {
+    if (gpu_blocklist_.IsGpuBlocked(chrome_ml->api())) {
       return base::unexpected(
           on_device_model::mojom::LoadModelResult::kGpuBlocked);
     }
@@ -47,7 +47,7 @@ class OnDeviceModelInternalImpl final
     if (!chrome_ml) {
       return on_device_model::mojom::PerformanceClass::kFailedToLoadLibrary;
     }
-    if (!gpu_blocklist_.skip_for_testing && chrome_ml->IsGpuBlocked()) {
+    if (gpu_blocklist_.IsGpuBlocked(chrome_ml->api())) {
       return on_device_model::mojom::PerformanceClass::kGpuBlocked;
     }
     return ml::GetEstimatedPerformanceClass(*chrome_ml);

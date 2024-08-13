@@ -13,7 +13,6 @@
 #include "base/scoped_native_library.h"
 #include "base/types/pass_key.h"
 #include "services/on_device_model/ml/chrome_ml_api.h"
-#include "services/on_device_model/ml/gpu_blocklist.h"
 
 namespace ml {
 
@@ -60,19 +59,11 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ChromeML {
   // Exposes the raw ChromeMLAPI functions defined by the library.
   const ChromeMLAPI& api() const { return holder_.api(); }
 
-  // Whether or not the GPU is blocklisted.
-  bool IsGpuBlocked() const;
-
-  void SetAllowGpuForTesting(bool allow_gpu) {
-    gpu_blocklist_.skip_for_testing = true;
-  }
-
  private:
   static std::unique_ptr<ChromeML> Create(
       const std::optional<std::string>& library_name);
 
   ChromeMLHolder holder_;
-  GpuBlocklist gpu_blocklist_;
 };
 
 }  // namespace ml
