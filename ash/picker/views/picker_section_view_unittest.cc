@@ -192,6 +192,24 @@ TEST_F(PickerSectionViewTest,
   EXPECT_EQ(list_item->GetSecondaryTextForTesting(), u"example.com/foo");
 }
 
+TEST_F(PickerSectionViewTest, CapsLockResultShowsShortcutHint) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerPreviewBubbleController preview_controller;
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
+
+  section_view.AddResult(PickerSearchResult::CapsLock(/*enabled=*/true),
+                         &preview_controller, base::DoNothing());
+
+  base::span<const raw_ptr<PickerItemView>> items =
+      section_view.item_views_for_testing();
+  ASSERT_THAT(items, SizeIs(1));
+  auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
+  ASSERT_TRUE(list_item);
+  EXPECT_NE(list_item->shortcut_hint_view_for_testing(), nullptr);
+}
+
 TEST_F(PickerSectionViewTest, ClearsItems) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;

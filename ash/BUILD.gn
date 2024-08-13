@@ -1153,6 +1153,8 @@ component("ash") {
     "picker/views/picker_section_list_view.h",
     "picker/views/picker_section_view.cc",
     "picker/views/picker_section_view.h",
+    "picker/views/picker_shortcut_hint_view.cc",
+    "picker/views/picker_shortcut_hint_view.h",
     "picker/views/picker_skeleton_loader_view.cc",
     "picker/views/picker_skeleton_loader_view.h",
     "picker/views/picker_strings.cc",
@@ -4696,7 +4698,10 @@ test("ash_unittests") {
   }
 
   if (is_chrome_branded) {
-    deps += [ "//chromeos/ash/resources/internal/strings" ]
+    deps += [
+      "//chromeos/ash/resources/internal/icons:vector_icons",
+      "//chromeos/ash/resources/internal/strings",
+    ]
   }
 }
 

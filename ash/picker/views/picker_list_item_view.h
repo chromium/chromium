@@ -37,6 +37,7 @@ namespace ash {
 
 class PickerBadgeView;
 class PickerPreviewBubbleController;
+class PickerShortcutHintView;
 
 // View for a Picker list item with text or an image as its primary contents.
 // Can optionally have other parts such as a leading icon and secondary text.
@@ -66,6 +67,9 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
 
   void SetSecondaryText(const std::u16string& secondary_text);
 
+  void SetShortcutHintView(
+      std::unique_ptr<PickerShortcutHintView> shortcut_hint_view);
+
   void SetBadgeAction(PickerActionType action);
   void SetBadgeVisible(bool visible);
 
@@ -87,6 +91,9 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   }
   const views::View* primary_container_for_testing() const {
     return primary_container_;
+  }
+  const PickerShortcutHintView* shortcut_hint_view_for_testing() const {
+    return shortcut_hint_view_;
   }
   const PickerBadgeView& trailing_badge_for_testing() const {
     return *trailing_badge_;
@@ -113,6 +120,10 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   // Contains the item's secondary text if it has been set.
   raw_ptr<views::View> secondary_container_ = nullptr;
   raw_ptr<views::Label> secondary_label_ = nullptr;
+
+  // Contains the item's shortcut hint if it has been set.
+  raw_ptr<views::View> shortcut_hint_container_ = nullptr;
+  raw_ptr<PickerShortcutHintView> shortcut_hint_view_ = nullptr;
 
   // Contains the item's trailing badge if it has been set.
   raw_ptr<PickerBadgeView> trailing_badge_ = nullptr;

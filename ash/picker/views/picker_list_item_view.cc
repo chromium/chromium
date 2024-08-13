@@ -16,6 +16,7 @@
 #include "ash/picker/views/picker_preview_bubble.h"
 #include "ash/picker/views/picker_preview_bubble_controller.h"
 #include "ash/picker/views/picker_preview_metadata.h"
+#include "ash/picker/views/picker_shortcut_hint_view.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
@@ -140,6 +141,9 @@ PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
   secondary_container_ = main_container->AddChildView(
       views::Builder<views::View>().SetUseDefaultFillLayout(true).Build());
 
+  shortcut_hint_container_ = item_contents->AddChildView(
+      views::Builder<views::View>().SetUseDefaultFillLayout(true).Build());
+
   // Trailing badge should always be preferred size.
   trailing_badge_ = item_contents->AddChildView(
       views::Builder<PickerBadgeView>()
@@ -162,8 +166,10 @@ void PickerListItemView::SetItemState(ItemState item_state) {
   PickerItemView::SetItemState(item_state);
   if (GetItemState() == ItemState::kPseudoFocused) {
     ShowPreview();
+    shortcut_hint_container_->SetVisible(false);
   } else {
     HidePreview();
+    shortcut_hint_container_->SetVisible(true);
   }
 }
 
@@ -223,6 +229,14 @@ void PickerListItemView::SetSecondaryText(
           .SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL)
           .Build());
   UpdateAccessibleName();
+}
+
+void PickerListItemView::SetShortcutHintView(
+    std::unique_ptr<PickerShortcutHintView> shortcut_hint_view) {
+  shortcut_hint_view_ = nullptr;
+  shortcut_hint_container_->RemoveAllChildViews();
+  shortcut_hint_view_ =
+      shortcut_hint_container_->AddChildView(std::move(shortcut_hint_view));
 }
 
 void PickerListItemView::SetBadgeAction(PickerActionType action) {
@@ -344,6 +358,12 @@ std::u16string PickerListItemView::GetAccessibilityLabel() const {
           : l10n_util::GetStringFUTF16(IDS_PICKER_LIST_ITEM_ACCESSIBLE_NAME,
                                        primary_accessibililty_label,
                                        secondary_label_->GetText());
+  if (shortcut_hint_view_ != nullptr) {
+    label = l10n_util::GetStringFUTF16(
+        IDS_PICKER_LIST_ITEM_WITH_SHORTCUT_ACCESSIBLE_NAME, label,
+        shortcut_hint_view_->GetAccessibleName());
+  }
+
   switch (badge_action_) {
     case PickerActionType::kDo:
       return label;

@@ -18,6 +18,7 @@
 #include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_list_item_container_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
+#include "ash/picker/views/picker_shortcut_hint_view.h"
 #include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_traversable_item_container.h"
 #include "ash/public/cpp/picker/picker_category.h"
@@ -310,6 +311,10 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
             item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
                 data.enabled ? kPickerCapsLockOnIcon : kPickerCapsLockOffIcon,
                 cros_tokens::kCrosSysOnSurface));
+            // TODO: b/350385392 - The shortcut hint shouldn't be shown if the
+            // user has customized the shortcut.
+            item_view->SetShortcutHintView(
+                std::make_unique<PickerShortcutHintView>());
             return item_view;
           },
           [&](const PickerSearchResult::CaseTransformData& data) -> ReturnType {

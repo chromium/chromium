@@ -12,6 +12,7 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_preview_bubble.h"
 #include "ash/picker/views/picker_preview_bubble_controller.h"
+#include "ash/picker/views/picker_shortcut_hint_view.h"
 #include "ash/picker/views/picker_submenu_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
@@ -85,6 +86,14 @@ TEST_F(PickerListItemViewTest, SetsLeadingIcon) {
 
   EXPECT_TRUE(
       item_view.leading_icon_view_for_testing().GetImageModel().IsVectorIcon());
+}
+
+TEST_F(PickerListItemViewTest, SetsShortcutHintView) {
+  PickerListItemView item_view(base::DoNothing());
+
+  item_view.SetShortcutHintView(std::make_unique<PickerShortcutHintView>());
+
+  EXPECT_NE(item_view.shortcut_hint_view_for_testing(), nullptr);
 }
 
 TEST_F(PickerListItemViewTest, SetsBadgeVisible) {
