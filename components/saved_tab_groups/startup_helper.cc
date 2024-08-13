@@ -35,8 +35,12 @@ void StartupHelper::InitializeTabGroupSync() {
     // First update the tab ID mappings left to right.
     MapTabIdsForGroup(*local_tab_group_id, saved_tab_group);
 
-    // Update the local to group to match sync.
-    platform_delegate_->UpdateLocalTabGroup(saved_tab_group);
+    // Update the local to group to match sync. As the group was modified, query
+    // it again to have the updated one.
+    auto updated_saved_group = service_->GetGroup(saved_tab_group.saved_guid());
+    if (updated_saved_group) {
+      platform_delegate_->UpdateLocalTabGroup(updated_saved_group.value());
+    }
   }
 }
 
