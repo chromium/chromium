@@ -291,6 +291,8 @@ class PlusAddressService : public KeyedService,
 
   // Store set of excluded sites ETLD+1 where PlusAddressService is not
   // supported.
+  // TODO(crbug.com/324556906): Remove once `kPlusAddressBlocklistEnabled` is
+  // launched.
   base::flat_set<std::string> excluded_sites_;
 
   // Counts the number of HTTP_FORBIDDEN that the client has received.

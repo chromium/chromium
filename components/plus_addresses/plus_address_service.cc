@@ -28,6 +28,7 @@
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_allocator.h"
+#include "components/plus_addresses/plus_address_blocklist_data.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_jit_allocator.h"
@@ -136,6 +137,30 @@ std::unique_ptr<PlusAddressAllocator> CreateAllocator(
   return std::make_unique<PlusAddressJitAllocator>(http_client);
 }
 
+// Returns `true` if the origin is part of the set of blocklisted domains and
+// `false` otherwise. If `kPlusAddressBlocklistEnabled` is enabled, this means
+// that the domain's origin matches the `exclusion_pattern` regex and does not
+// match the `exception_pattern` regex.
+bool IsSiteExcluded(const base::flat_set<std::string>& excluded_sites,
+                    const url::Origin& origin) {
+  if (base::FeatureList::IsEnabled(features::kPlusAddressBlocklistEnabled)) {
+    const PlusAddressBlocklistData& blocklist_data =
+        PlusAddressBlocklistData::GetInstance();
+
+    const re2::RE2* exception_pattern = blocklist_data.GetExceptionPattern();
+    if (exception_pattern &&
+        RE2::PartialMatch(origin.host(), *exception_pattern)) {
+      return false;
+    }
+
+    const re2::RE2* exclusion_pattern = blocklist_data.GetExclusionPattern();
+    return exclusion_pattern &&
+           RE2::PartialMatch(origin.host(), *exclusion_pattern);
+  }
+
+  return excluded_sites.contains(GetEtldPlusOne(origin));
+}
+
 }  // namespace
 
 PlusAddressService::PlusAddressService(
@@ -156,8 +181,7 @@ PlusAddressService::PlusAddressService(
       webdata_service_(std::move(webdata_service)),
       plus_address_match_helper_(this, affiliation_service),
       feature_enabled_for_profile_check_(
-          std::move(feature_enabled_for_profile_check)),
-      excluded_sites_(GetAndParseExcludedSites()) {
+          std::move(feature_enabled_for_profile_check)) {
   // The allocator is created in the body of the constructor to avoid that it
   // calls into `this` before all members are assigned.
   plus_address_allocator_ =
@@ -174,6 +198,10 @@ PlusAddressService::PlusAddressService(
   }
   CreateAndStartTimer();
   identity_manager_observation_.Observe(identity_manager);
+
+  if (!base::FeatureList::IsEnabled(features::kPlusAddressBlocklistEnabled)) {
+    excluded_sites_ = GetAndParseExcludedSites();
+  }
 }
 
 PlusAddressService::~PlusAddressService() {
@@ -676,7 +704,7 @@ void PlusAddressService::HandleSignout() {
 
 
 bool PlusAddressService::IsSupportedOrigin(const url::Origin& origin) const {
-  if (origin.opaque() || excluded_sites_.contains(GetEtldPlusOne(origin))) {
+  if (origin.opaque() || IsSiteExcluded(excluded_sites_, origin)) {
     return false;
   }
 
