@@ -2335,7 +2335,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.Cleared" enum="IOSTipsNotificationType"
-    expires_after="2024-12-15">
+    expires_after="2024-12-29">
   <owner>scottyoder@chromium.org</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>Logs when a tips notification is cleared by the client.</summary>
@@ -2353,7 +2353,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.Dismissed"
-    enum="IOSTipsNotificationType" expires_after="2024-09-29">
+    enum="IOSTipsNotificationType" expires_after="2024-12-29">
   <owner>scottyoder@chromium.org</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>
@@ -2364,14 +2364,14 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.Interaction"
-    enum="IOSTipsNotificationType" expires_after="2024-09-29">
+    enum="IOSTipsNotificationType" expires_after="2024-12-29">
   <owner>scottyoder@chromium.org</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>Logs when the user interacts with a Tips notification.</summary>
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.Sent" enum="IOSTipsNotificationType"
-    expires_after="2024-12-15">
+    expires_after="2024-12-29">
   <owner>scottyoder@chromium.org</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>
@@ -2381,13 +2381,23 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.Triggered"
-    enum="IOSTipsNotificationType" expires_after="2024-09-29">
+    enum="IOSTipsNotificationType" expires_after="2024-12-29">
   <owner>scottyoder@chromium.org</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>
     Logs when a Tips notification that was requested appears to have triggered.
     Will be logged when or if the app starts again, after the notification has
     triggered.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Notifications.Tips.UserType"
+    enum="IOSTipsNotificationUserType" expires_after="2024-12-29">
+  <owner>scottyoder@chromium.org</owner>
+  <owner>hiramahmood@google.com</owner>
+  <summary>
+    Logs when a Tips Notifications user is classified, when returning to the app
+    after the first notification has been scheduled.
   </summary>
 </histogram>
 

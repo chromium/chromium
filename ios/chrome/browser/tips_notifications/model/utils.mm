@@ -69,6 +69,9 @@ const char kTipsNotificationsSentPref[] = "tips_notifications.sent_bitfield";
 const char kTipsNotificationsLastSent[] = "tips_notifiations.last_sent";
 const char kTipsNotificationsLastTriggered[] =
     "tips_notifiations.last_triggered";
+const char kTipsNotificationsLastRequestedTime[] =
+    "tips_notifications.last_requested.time";
+const char kTipsNotificationsUserType[] = "tips_notifications.user_type";
 
 bool IsTipsNotification(UNNotificationRequest* request) {
   return [request.identifier isEqualToString:kTipsNotificationId];

@@ -15,6 +15,7 @@
 @class CommandDispatcher;
 class PrefRegistrySimple;
 enum class TipsNotificationType;
+enum class TipsNotificationUserType;
 
 // A notification client responsible for registering notification requests and
 // handling the receiving of user notifications that are user-ed "Tips".
@@ -121,8 +122,14 @@ class TipsNotificationClient : public PushNotificationClient {
   // changes.
   void OnPermittedPrefChanged(const std::string& name);
 
+  // Classifies the user and sets the `user_type`, if possible.
+  void ClassifyUser();
+
   // Stores whether Tips notifications are permitted.
   bool permitted_ = false;
+
+  // Stores the user's classification.
+  TipsNotificationUserType user_type_;
 
   // When the user interacts with a Tips notification but there are no
   // foreground scenes, this will store the notification type so it can

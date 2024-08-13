@@ -98,6 +98,21 @@ bool FETHasEverTriggered(Browser* browser, const base::Feature& feature) {
   return tracker->HasEverTriggered(feature, true);
 }
 
+// Returns the user's type stored in local state prefs.
+TipsNotificationUserType GetUserType() {
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+  return static_cast<TipsNotificationUserType>(
+      local_state->GetInteger(kTipsNotificationsUserType));
+}
+
+// Sets the user's type in local state prefs, and records a histogram with the
+// type.
+void SetUserType(TipsNotificationUserType user_type) {
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+  local_state->SetInteger(kTipsNotificationsUserType, int(user_type));
+  base::UmaHistogramEnumeration("IOS.Notifications.Tips.UserType", user_type);
+}
+
 }  // namespace
 
 TipsNotificationClient::TipsNotificationClient()
@@ -108,6 +123,7 @@ TipsNotificationClient::TipsNotificationClient()
   pref_change_registrar_.Add(prefs::kAppLevelPushNotificationPermissions,
                              pref_callback);
   permitted_ = IsPermitted();
+  user_type_ = GetUserType();
 }
 
 TipsNotificationClient::~TipsNotificationClient() = default;
@@ -166,6 +182,9 @@ void TipsNotificationClient::OnSceneActiveForegroundBrowserReady() {
 void TipsNotificationClient::OnSceneActiveForegroundBrowserReady(
     base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (user_type_ == TipsNotificationUserType::kUnknown) {
+    ClassifyUser();
+  }
   ClearAndMaybeRequestNotification(std::move(closure));
 }
 
@@ -195,6 +214,8 @@ void TipsNotificationClient::RegisterLocalStatePrefs(
   registry->RegisterIntegerPref(kTipsNotificationsSentPref, 0);
   registry->RegisterIntegerPref(kTipsNotificationsLastSent, -1);
   registry->RegisterIntegerPref(kTipsNotificationsLastTriggered, -1);
+  registry->RegisterTimePref(kTipsNotificationsLastRequestedTime, base::Time());
+  registry->RegisterIntegerPref(kTipsNotificationsUserType, 0);
 }
 
 void TipsNotificationClient::GetPendingRequest(
@@ -497,6 +518,7 @@ void TipsNotificationClient::MarkNotificationTypeSent(
   sent_bitfield |= 1 << int(type);
   local_state->SetInteger(kTipsNotificationsSentPref, sent_bitfield);
   local_state->SetInteger(kTipsNotificationsLastSent, int(type));
+  local_state->SetTime(kTipsNotificationsLastRequestedTime, base::Time::Now());
   base::UmaHistogramEnumeration("IOS.Notifications.Tips.Sent", type);
 }
 
@@ -579,4 +601,27 @@ void TipsNotificationClient::OnPermittedPrefChanged(const std::string& name) {
   if (permitted_ != newpermitted_) {
     ClearAndMaybeRequestNotification(base::DoNothing());
   }
+}
+
+void TipsNotificationClient::ClassifyUser() {
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+
+  if (!local_state->GetUserPrefValue(kTipsNotificationsLastRequestedTime)) {
+    return;
+  }
+
+  base::Time now = base::Time::Now();
+  base::Time last_request =
+      local_state->GetTime(kTipsNotificationsLastRequestedTime);
+  if (now < last_request + base::Hours(2)) {
+    // Not enough time has passed to classify the user.
+    return;
+  }
+
+  if (now > last_request + base::Hours(72)) {
+    user_type_ = TipsNotificationUserType::kLessEngaged;
+  } else {
+    user_type_ = TipsNotificationUserType::kActiveSeeker;
+  }
+  SetUserType(user_type_);
 }

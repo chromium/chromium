@@ -7,6 +7,7 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_mock_clock_override.h"
 #import "base/test/task_environment.h"
 #import "base/threading/thread_restrictions.h"
 #import "components/prefs/scoped_user_pref_update.h"
@@ -212,6 +213,21 @@ class TipsNotificationClientTest : public PlatformTest {
     [browser_->GetCommandDispatcher() startDispatchingToTarget:mock_handler
                                                    forProtocol:protocol];
     return mock_handler;
+  }
+
+  // Simulates foregrounding the app by calling the client's
+  // OnSceneActiveForegroundBrowserReady method.
+  void SimulateForegroundingApp() {
+    base::RunLoop run_loop;
+    client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Returns the user's type stored in local state prefs.
+  TipsNotificationUserType GetUserType() {
+    PrefService* local_state = GetApplicationContext()->GetLocalState();
+    return static_cast<TipsNotificationUserType>(
+        local_state->GetInteger(kTipsNotificationsUserType));
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -460,4 +476,59 @@ TEST_F(TipsNotificationClientTest, OmniboxPositionHandle) {
   histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
                                        TipsNotificationType::kOmniboxPosition,
                                        1);
+}
+
+TEST_F(TipsNotificationClientTest, ClassifyUserActiveSeeker) {
+  base::ScopedMockClockOverride clock;
+  WriteFirstRunSentinel();
+  SetSentNotifications({
+      TipsNotificationType::kWhatsNew,
+      TipsNotificationType::kOmniboxPosition,
+      TipsNotificationType::kDefaultBrowser,
+      TipsNotificationType::kDocking,
+      TipsNotificationType::kSignin,
+  });
+  StubPrepareToPresentModal();
+  EXPECT_EQ(GetUserType(), TipsNotificationUserType::kUnknown);
+
+  StubGetPendingRequests(nil);
+  ExpectNotificationRequest(TipsNotificationType::kSetUpListContinuation);
+  base::RunLoop run_loop;
+  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+
+  clock.Advance(base::Hours(1));
+  SimulateForegroundingApp();
+  EXPECT_EQ(GetUserType(), TipsNotificationUserType::kUnknown);
+
+  clock.Advance(base::Hours(24));
+  SimulateForegroundingApp();
+  EXPECT_EQ(GetUserType(), TipsNotificationUserType::kActiveSeeker);
+}
+
+TEST_F(TipsNotificationClientTest, ClassifyUserLessEngaged) {
+  base::ScopedMockClockOverride clock;
+  WriteFirstRunSentinel();
+  SetSentNotifications({
+      TipsNotificationType::kWhatsNew,
+      TipsNotificationType::kOmniboxPosition,
+      TipsNotificationType::kDefaultBrowser,
+      TipsNotificationType::kDocking,
+      TipsNotificationType::kSignin,
+  });
+  StubPrepareToPresentModal();
+
+  EXPECT_EQ(GetUserType(), TipsNotificationUserType::kUnknown);
+
+  StubGetPendingRequests(nil);
+  ExpectNotificationRequest(TipsNotificationType::kSetUpListContinuation);
+  base::RunLoop run_loop;
+  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+
+  clock.Advance(base::Hours(73));
+  SimulateForegroundingApp();
+  EXPECT_EQ(GetUserType(), TipsNotificationUserType::kLessEngaged);
 }

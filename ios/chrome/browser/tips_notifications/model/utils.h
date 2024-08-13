@@ -28,6 +28,12 @@ extern const char kTipsNotificationsLastSent[];
 // Pref that stores which notification type was triggered last.
 extern const char kTipsNotificationsLastTriggered[];
 
+// Pref that stores the last time that a notification was requested.
+extern const char kTipsNotificationsLastRequestedTime[];
+
+// Pref that stores the user's classification.
+extern const char kTipsNotificationsUserType[];
+
 // The type of Tips Notification, for an individual notification.
 // Always keep this enum in sync with
 // the corresponding IOSTipsNotificationType in enums.xml.
@@ -41,6 +47,16 @@ enum class TipsNotificationType {
   kDocking = 5,
   kOmniboxPosition = 6,
   kMaxValue = kOmniboxPosition,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
+
+// An enum to store a classification of Tips Notification users.
+// LINT.IfChange
+enum class TipsNotificationUserType {
+  kUnknown = 0,
+  kLessEngaged = 1,
+  kActiveSeeker = 2,
+  kMaxValue = kActiveSeeker,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 

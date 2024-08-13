@@ -848,6 +848,12 @@ the generic promo launch. -->
   <int value="6" label="Omnibox Position"/>
 </enum>
 
+<enum name="IOSTipsNotificationUserType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Less Engaged"/>
+  <int value="2" label="Active Seeker"/>
+</enum>
+
 <enum name="IOSUpgradeCenterFailureReason">
   <int value="0" label="Invalid URL"/>
   <int value="1" label="Invalid Version"/>
