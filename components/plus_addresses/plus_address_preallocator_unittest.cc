@@ -84,8 +84,13 @@ class PlusAddressPreallocatorTest : public ::testing::Test {
  public:
   PlusAddressPreallocatorTest() {
     prefs::RegisterProfilePrefs(pref_service_.registry());
-    // By default, assume that the notice has been accepted and plus addresses
-    // are enabled.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kPlusAddressUserOnboardingEnabled,
+                              features::kPlusAddressGlobalToggle},
+        /*disabled_features=*/{});
+
+    // By default, assume that the notice has been accepted and plus
+    // addresses are enabled.
     setting_service().set_has_accepted_notice(true);
     setting_service().set_is_plus_addresses_enabled(true);
     // Forward to make sure we can subtract from `base::Time::Now()` without
@@ -114,6 +119,7 @@ class PlusAddressPreallocatorTest : public ::testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;

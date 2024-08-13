@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -72,7 +73,9 @@ PlusAddressPreallocator::PlusAddressPreallocator(
   PrunePreallocatedPlusAddresses();
 
   // If the notice has not been accepted, we do not preemptively pre-allocate.
-  if (settings_->GetHasAcceptedNotice()) {
+  if (settings_->GetHasAcceptedNotice() ||
+      !base::FeatureList::IsEnabled(
+          features::kPlusAddressUserOnboardingEnabled)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
@@ -144,7 +147,8 @@ void PlusAddressPreallocator::MaybeRequestNewPreallocatedPlusAddresses() {
     return;
   }
 
-  if (!settings_->GetIsPlusAddressesEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) &&
+      !settings_->GetIsPlusAddressesEnabled()) {
     return;
   }
 
