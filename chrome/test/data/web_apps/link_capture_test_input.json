@@ -22,7 +22,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -54,7 +54,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -95,7 +95,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -127,7 +127,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -165,7 +165,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -197,7 +197,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -237,7 +237,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -269,7 +269,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -300,7 +300,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -316,7 +316,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -345,7 +345,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -377,7 +377,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -393,7 +393,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -423,7 +423,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -454,7 +454,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -470,7 +470,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -498,7 +498,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -530,7 +530,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -546,7 +546,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -575,7 +575,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -606,7 +606,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -622,7 +622,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -651,7 +651,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -683,7 +683,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -699,7 +699,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -729,7 +729,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -760,7 +760,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -776,7 +776,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -804,7 +804,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -836,7 +836,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -852,7 +852,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -881,7 +881,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -920,7 +920,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -952,7 +952,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -993,7 +993,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1025,7 +1025,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1063,7 +1063,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1095,7 +1095,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1135,7 +1135,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1167,7 +1167,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1198,7 +1198,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1214,7 +1214,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1242,7 +1242,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1258,7 +1258,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1286,7 +1286,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1302,7 +1302,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1330,7 +1330,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1346,7 +1346,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1374,7 +1374,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1390,7 +1390,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1418,7 +1418,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1434,7 +1434,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1462,7 +1462,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1478,7 +1478,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1506,7 +1506,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1522,7 +1522,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1550,7 +1550,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1566,7 +1566,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1594,7 +1594,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1610,7 +1610,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1638,7 +1638,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1654,7 +1654,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1682,7 +1682,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1698,7 +1698,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1726,7 +1726,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1742,7 +1742,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1770,7 +1770,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1786,7 +1786,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1814,7 +1814,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1830,7 +1830,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1858,7 +1858,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1874,7 +1874,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1902,7 +1902,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1918,7 +1918,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1954,7 +1954,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -1986,7 +1986,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2027,7 +2027,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2097,7 +2097,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2129,7 +2129,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2169,7 +2169,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2201,7 +2201,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2232,7 +2232,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2248,7 +2248,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2278,7 +2278,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2357,7 +2357,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2388,7 +2388,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2404,7 +2404,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2433,7 +2433,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2465,7 +2465,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2481,7 +2481,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2511,7 +2511,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2542,7 +2542,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2558,7 +2558,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2588,7 +2588,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2620,7 +2620,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2636,7 +2636,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2667,7 +2667,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2698,7 +2698,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2714,7 +2714,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2743,7 +2743,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2775,7 +2775,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2791,7 +2791,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2860,7 +2860,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2892,7 +2892,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2933,7 +2933,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -2965,7 +2965,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3035,7 +3035,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3075,7 +3075,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3107,7 +3107,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3138,7 +3138,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3154,7 +3154,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3314,7 +3314,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3330,7 +3330,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3446,7 +3446,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3462,7 +3462,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3534,7 +3534,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3550,7 +3550,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3578,7 +3578,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3594,7 +3594,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3622,7 +3622,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3638,7 +3638,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3666,7 +3666,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3682,7 +3682,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3754,7 +3754,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3770,7 +3770,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3798,7 +3798,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3814,7 +3814,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3842,7 +3842,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3858,7 +3858,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3886,7 +3886,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3902,7 +3902,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP_POPUP",
                "tabs": [ {
                   "active": true,
@@ -3931,7 +3931,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3963,7 +3963,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -3979,7 +3979,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP_POPUP",
                "tabs": [ {
                   "active": true,
@@ -4009,7 +4009,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4047,7 +4047,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4079,7 +4079,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4119,7 +4119,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4151,7 +4151,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4190,7 +4190,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4222,7 +4222,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4263,7 +4263,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4295,7 +4295,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4333,7 +4333,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4365,7 +4365,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4405,7 +4405,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4437,7 +4437,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4468,7 +4468,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4484,7 +4484,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP_POPUP",
                "tabs": [ {
                   "active": true,
@@ -4513,7 +4513,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4545,7 +4545,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4561,7 +4561,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP_POPUP",
                "tabs": [ {
                   "active": true,
@@ -4591,7 +4591,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4622,7 +4622,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4666,7 +4666,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4698,7 +4698,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4743,7 +4743,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4782,7 +4782,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4814,7 +4814,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4855,7 +4855,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4887,7 +4887,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4925,7 +4925,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4957,7 +4957,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -4997,7 +4997,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5029,7 +5029,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5067,7 +5067,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5106,7 +5106,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5145,7 +5145,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5184,7 +5184,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5223,7 +5223,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5262,7 +5262,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5301,7 +5301,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5340,7 +5340,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5372,7 +5372,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5416,7 +5416,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5460,7 +5460,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5504,7 +5504,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5548,7 +5548,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5592,7 +5592,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5636,7 +5636,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5680,7 +5680,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5724,7 +5724,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5768,7 +5768,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5784,7 +5784,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP_POPUP",
                "tabs": [ {
                   "active": true,
@@ -5813,7 +5813,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5845,7 +5845,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5861,7 +5861,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP_POPUP",
                "tabs": [ {
                   "active": true,
@@ -5891,7 +5891,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5929,7 +5929,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -5961,7 +5961,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6001,7 +6001,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6033,7 +6033,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6072,7 +6072,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6104,7 +6104,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6145,7 +6145,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6177,7 +6177,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6215,7 +6215,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6247,7 +6247,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6287,7 +6287,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6319,7 +6319,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6350,7 +6350,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6366,7 +6366,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP_POPUP",
                "tabs": [ {
                   "active": true,
@@ -6395,7 +6395,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6427,7 +6427,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6443,7 +6443,7 @@
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP_POPUP",
                "tabs": [ {
                   "active": true,
@@ -6473,7 +6473,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6504,7 +6504,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6549,7 +6549,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6581,7 +6581,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6627,7 +6627,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6666,7 +6666,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6698,7 +6698,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6739,7 +6739,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6771,7 +6771,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6809,7 +6809,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6841,7 +6841,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6881,7 +6881,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6913,7 +6913,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6951,7 +6951,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -6990,7 +6990,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -7029,7 +7029,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -7068,7 +7068,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -7107,7 +7107,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -7146,7 +7146,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -7185,7 +7185,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -7224,7 +7224,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -7256,7 +7256,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -7300,7 +7300,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -7344,7 +7344,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -7388,7 +7388,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -7432,7 +7432,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -7476,7 +7476,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -7520,7 +7520,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -7564,7 +7564,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -7608,7 +7608,7 @@
                   } ]
                } ]
             }, {
-               "app_scope": "/banners/link_capturing/scope_a",
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -9051,6 +9051,7 @@
                   } ]
                } ]
             }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
@@ -10477,6 +10478,7 @@
                   } ]
                } ]
             }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
                "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
