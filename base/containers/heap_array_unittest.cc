@@ -266,6 +266,43 @@ TEST(HeapArray, CopyFrom) {
   EXPECT_EQ(1001u, other[1]);
 }
 
+TEST(HeapArrayDeathTest, CopyFrom) {
+  HeapArray<uint32_t> empty;
+  HeapArray<uint32_t> something = HeapArray<uint32_t>::WithSize(2);
+  HeapArray<uint32_t> other = HeapArray<uint32_t>::WithSize(3);
+
+  EXPECT_DEATH_IF_SUPPORTED(empty.copy_from(something), "");
+  EXPECT_DEATH_IF_SUPPORTED(something.copy_from(empty), "");
+  EXPECT_DEATH_IF_SUPPORTED(other.copy_from(something), "");
+  EXPECT_DEATH_IF_SUPPORTED(something.copy_from(other), "");
+}
+
+TEST(HeapArray, CopyPrefixFrom) {
+  HeapArray<uint32_t> empty;
+  HeapArray<uint32_t> something = HeapArray<uint32_t>::WithSize(3);
+  const uint32_t kStuff[] = {1000u, 1001u};
+
+  something.copy_prefix_from(kStuff);
+  EXPECT_EQ(1000u, something[0]);
+  EXPECT_EQ(1001u, something[1]);
+  EXPECT_EQ(0u, something[2]);
+
+  empty.copy_prefix_from(span<uint32_t>());  // Should not check.
+  something.copy_prefix_from(empty);
+  EXPECT_EQ(1000u, something[0]);
+  EXPECT_EQ(1001u, something[1]);
+  EXPECT_EQ(0u, something[2]);
+}
+
+TEST(HeapArrayDeathTest, CopyPrefixFrom) {
+  HeapArray<uint32_t> empty;
+  HeapArray<uint32_t> something = HeapArray<uint32_t>::WithSize(2);
+  HeapArray<uint32_t> other = HeapArray<uint32_t>::WithSize(3);
+
+  EXPECT_DEATH_IF_SUPPORTED(empty.copy_prefix_from(something), "");
+  EXPECT_DEATH_IF_SUPPORTED(something.copy_prefix_from(other), "");
+}
+
 TEST(HeapArray, Leak) {
   size_t count = 0;
   span<DestructCounter> leaked;

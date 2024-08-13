@@ -152,10 +152,17 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
     return UNSAFE_BUFFERS(base::span<const T>(data_.get(), size_));
   }
 
-  // Convenience method to copy the contents of the entire array from a
-  // span<>. Hard CHECK occurs in span<>::copy_from() if the HeapArray and
-  // the span have different sizes.
+  // Convenience method to copy the contents of a span<> into the entire array.
+  // Hard CHECK occurs in span<>::copy_from() if the HeapArray and the span
+  // have different sizes.
   void copy_from(base::span<const T> other) { as_span().copy_from(other); }
+
+  // Convenience method to copy the contents of a span<> into the start of the
+  // array. Hard CHECK occurs in span<>::copy_prefix_from() if the HeapArray
+  // isn't large enough to contain the entire span.
+  void copy_prefix_from(base::span<const T> other) {
+    as_span().copy_prefix_from(other);
+  }
 
   // Convenience methods to slice the vector into spans.
   // Returns a span over the HeapArray starting at `offset` of `count` elements.
