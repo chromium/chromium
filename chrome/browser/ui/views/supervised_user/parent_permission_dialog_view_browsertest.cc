@@ -439,8 +439,16 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
           ActionStatus::kWasPerformed))));
 }
 
+// TODO(crbug.com/359630760): Re-enable on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PermissionFailedInvalidPassword_extension \
+  DISABLED_PermissionFailedInvalidPassword_extension
+#else
+#define MAYBE_PermissionFailedInvalidPassword_extension \
+  PermissionFailedInvalidPassword_extension
+#endif
 IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
-                       PermissionFailedInvalidPassword_extension) {
+                       MAYBE_PermissionFailedInvalidPassword_extension) {
   // Provide an extension dialog entry point to test the recorded histograms.
   harness_.SetExtensionApprovalEntryPoint(
       SupervisedUserExtensionParentApprovalEntryPoint::
