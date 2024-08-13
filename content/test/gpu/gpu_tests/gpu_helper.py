@@ -23,6 +23,8 @@ EXPECTATIONS_DRIVER_TAGS = frozenset([
     'mesa_ge_23.2',
     'nvidia_ge_31.0.15.4601',
     'nvidia_lt_31.0.15.4601',
+    'nvidia_ge_535.183.01',
+    'nvidia_lt_535.183.01',
 ])
 
 # Driver tag format: VENDOR_OPERATION_VERSION
