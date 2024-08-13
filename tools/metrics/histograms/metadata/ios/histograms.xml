@@ -1670,6 +1670,28 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.JavaScript.ErrorHasFilename" enum="Boolean"
+    expires_after="2024-12-31">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@google.com</owner>
+  <summary>
+    Records when a JavaScript error is reported through the
+    `WindowErrorResultHandler` message handler and whether the error has an
+    associated script filename. Reported errors with no filename are associated
+    with Chrome's injected user scripts.
+  </summary>
+</histogram>
+
+<histogram name="IOS.JavaScript.ScriptExecutionFailed" enum="Boolean"
+    expires_after="2024-12-31">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@google.com</owner>
+  <summary>
+    Records when a JavaScript error occurs as a result of executing a JavaScript
+    string.
+  </summary>
+</histogram>
+
 <histogram name="IOS.JavascriptContentBlockFailure"
     enum="IOSJavascriptContentBlockType" expires_after="2020-12-31">
   <owner>rkgibson@google.com</owner>
