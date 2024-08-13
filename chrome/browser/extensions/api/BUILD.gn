@@ -28,6 +28,7 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/command_line_private",
     "//chrome/browser/extensions/api/context_menus",
     "//chrome/browser/extensions/api/desktop_capture",
+    "//chrome/browser/extensions/api/downloads_internal",
     "//chrome/browser/extensions/api/module",
     "//chrome/browser/extensions/api/page_capture",
     "//chrome/browser/extensions/api/permissions",
