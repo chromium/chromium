@@ -83,7 +83,14 @@ struct VisualProperties {
   // property applied to the embedding element (e.g. <iframe>) in the embedding
   // document. 0 is the default value which results in 1.0 zoom factor.
   // See WebFrameWidgetImpl::SetZoomLevel() for how this value is used.
+
+  // This is the zoom setting from the browser UI.
   double zoom_level;
+
+  // For an embedded widget this is the cumulative effect of the CSS "zoom"
+  // property on the embedding element (e.g. <iframe>) and its ancestors. For a
+  // top-level widget this is 1.0.
+  double css_zoom_factor;
 
   // This represents the page's scale factor, which changes during pinch zoom.
   // It needs to be shared with subframes.

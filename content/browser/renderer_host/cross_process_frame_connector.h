@@ -129,7 +129,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
       const blink::FrameVisualProperties& visual_properties,
       bool propagate = true);
 
-  double zoom_level() const { return last_received_zoom_level_; }
+  double css_zoom_factor() const { return last_received_css_zoom_factor_; }
 
   // Return the size of the CompositorFrame to use in the child renderer.
   const gfx::Size& local_frame_size_in_pixels() const {
@@ -440,6 +440,9 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // The last zoom level received from parent renderer, which is used to check
   // if a new surface is created in case of zoom level change.
   double last_received_zoom_level_ = 0.0;
+
+  // Represents CSS zoom applied to the embedding element in the parent.
+  double last_received_css_zoom_factor_ = 1.0;
 
   // Closure that will be run whenever a sad frame is shown and its visibility
   // metrics have been logged. Used for testing only.

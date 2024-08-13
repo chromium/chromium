@@ -990,7 +990,8 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   } else {
     visual_properties.display_mode = blink::mojom::DisplayMode::kBrowser;
   }
-  visual_properties.zoom_level = view_->GetZoomLevel();
+  visual_properties.zoom_level = delegate_->GetPendingPageZoomLevel();
+  visual_properties.css_zoom_factor = view_->GetCSSZoomFactor();
 
   RenderViewHostDelegateView* rvh_delegate_view = delegate_->GetDelegateView();
   CHECK(rvh_delegate_view);
@@ -2812,7 +2813,9 @@ bool RenderWidgetHostImpl::StoredVisualPropertiesNeedsUpdate(
           new_parent_local_surface_id.embed_token();
 
   const bool zoom_changed =
-      old_visual_properties->zoom_level != new_visual_properties.zoom_level;
+      old_visual_properties->zoom_level != new_visual_properties.zoom_level ||
+      old_visual_properties->css_zoom_factor !=
+          new_visual_properties.css_zoom_factor;
 
   return zoom_changed || size_changed || parent_local_surface_id_changed ||
          old_visual_properties->screen_infos !=

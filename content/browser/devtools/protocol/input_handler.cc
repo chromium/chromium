@@ -1478,15 +1478,21 @@ void InputHandler::OnWidgetForDispatchDragEvent(
 
 float InputHandler::ScaleFactor() {
   DCHECK(web_contents_);
-  RenderWidgetHostImpl* widget_host =
-      host_ ? host_->GetRenderWidgetHost() : nullptr;
-  float page_zoom_level = 0.;
-  if (widget_host && widget_host->GetView()) {
-    page_zoom_level = widget_host->GetView()->GetZoomLevel();
+  // Browser zoom
+  float scale_factor =
+      blink::ZoomLevelToZoomFactor(web_contents_->GetPendingPageZoomLevel());
+  // CSS zoom applied to embedding element (e.g. <iframe>), if applicable.
+  if (host_) {
+    if (RenderWidgetHostImpl* widget_host = host_->GetRenderWidgetHost()) {
+      if (auto* view = widget_host->GetView()) {
+        scale_factor *= view->GetCSSZoomFactor();
+      }
+    }
   }
+  // Pinch zoom
+  scale_factor *= web_contents_->GetPrimaryPage().GetPageScaleFactor();
 
-  return blink::ZoomLevelToZoomFactor(page_zoom_level) *
-         web_contents_->GetPrimaryPage().GetPageScaleFactor();
+  return scale_factor;
 }
 
 void InputHandler::StartDragging(const content::DropData& drop_data,

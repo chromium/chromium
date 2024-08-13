@@ -2313,31 +2313,11 @@ double WebViewImpl::ClampZoomLevel(double zoom_level) const {
                   std::min(maximum_zoom_level_, zoom_level));
 }
 
-double WebViewImpl::ZoomLevelToZoomFactor(double zoom_level,
-                                          bool for_main_frame) const {
-  double zoom_factor = blink::ZoomLevelToZoomFactor(zoom_level);
-  if (for_main_frame && zoom_factor_override_) {
-    zoom_factor = zoom_factor_override_;
+double WebViewImpl::ZoomLevelToZoomFactor(double zoom_level) const {
+  if (zoom_factor_override_) {
+    return zoom_factor_override_;
   }
-  if (zoom_factor_for_device_scale_factor_) {
-    if (compositor_device_scale_factor_override_) {
-      zoom_factor *= compositor_device_scale_factor_override_;
-    } else {
-      zoom_factor *= zoom_factor_for_device_scale_factor_;
-    }
-  }
-  return zoom_factor;
-}
-
-double WebViewImpl::ZoomFactorToZoomLevel(double zoom_factor) const {
-  if (zoom_factor_for_device_scale_factor_) {
-    if (compositor_device_scale_factor_override_) {
-      zoom_factor /= compositor_device_scale_factor_override_;
-    } else {
-      zoom_factor /= zoom_factor_for_device_scale_factor_;
-    }
-  }
-  return blink::ZoomFactorToZoomLevel(zoom_factor);
+  return blink::ZoomLevelToZoomFactor(zoom_level);
 }
 
 void WebViewImpl::UpdateWidgetZoomFactors() {
@@ -2347,14 +2327,12 @@ void WebViewImpl::UpdateWidgetZoomFactors() {
 }
 
 void WebViewImpl::UpdateInspectorDeviceScaleFactorOverride() {
-  if (zoom_factor_for_device_scale_factor_) {
-    if (compositor_device_scale_factor_override_) {
-      page_->SetInspectorDeviceScaleFactorOverride(
-          zoom_factor_for_device_scale_factor_ /
-          compositor_device_scale_factor_override_);
-    } else {
-      page_->SetInspectorDeviceScaleFactorOverride(1.0f);
-    }
+  if (compositor_device_scale_factor_override_) {
+    page_->SetInspectorDeviceScaleFactorOverride(
+        zoom_factor_for_device_scale_factor_ /
+        compositor_device_scale_factor_override_);
+  } else {
+    page_->SetInspectorDeviceScaleFactorOverride(1.0f);
   }
 }
 
@@ -3261,10 +3239,8 @@ void WebViewImpl::SetCompositorDeviceScaleFactorOverride(
     float device_scale_factor) {
   if (compositor_device_scale_factor_override_ != device_scale_factor) {
     compositor_device_scale_factor_override_ = device_scale_factor;
-    if (zoom_factor_for_device_scale_factor_) {
-      UpdateWidgetZoomFactors();
-      UpdateInspectorDeviceScaleFactorOverride();
-    }
+    UpdateWidgetZoomFactors();
+    UpdateInspectorDeviceScaleFactorOverride();
   }
 }
 

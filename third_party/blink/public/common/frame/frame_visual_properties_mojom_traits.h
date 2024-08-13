@@ -40,6 +40,10 @@ struct BLINK_COMMON_EXPORT
     return r.zoom_level;
   }
 
+  static double css_zoom_factor(const blink::FrameVisualProperties& r) {
+    return r.css_zoom_factor;
+  }
+
   static double page_scale_factor(const blink::FrameVisualProperties& r) {
     DCHECK_GT(r.page_scale_factor, 0);
     return r.page_scale_factor;

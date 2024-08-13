@@ -790,18 +790,6 @@ WebContentsImpl* WebContentsImpl::FromRenderWidgetHostImpl(
   return static_cast<WebContentsImpl*>(rwh->delegate());
 }
 
-std::optional<double> WebContentsImpl::AdjustedChildZoom(
-    const RenderWidgetHostViewChildFrame* render_widget) {
-  // <webview> permits zoom level to be set programmatically by script:
-  // https://developer.chrome.com/docs/apps/reference/webviewTag#method-setZoom
-  if (IsGuest() && GetRenderWidgetHostView() == render_widget) {
-    return GetPendingPageZoomLevel();
-  }
-
-  // Signals zoom level should be inherited from the parent
-  return std::nullopt;
-}
-
 bool WebContentsImpl::IsPopup() const {
   return is_popup_;
 }

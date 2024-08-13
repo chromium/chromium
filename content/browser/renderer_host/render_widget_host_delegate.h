@@ -355,14 +355,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // shouldn't be used to improve typing suggestions for the user.
   virtual bool ShouldDoLearning();
 
-  // Zoom level is normally inherited from the parent. The delegate can override
-  // this behavior by returning a value.
-  // This is used in <webview>, which permits zoom level to be set
-  // programmatically by script:
-  // https://developer.chrome.com/docs/apps/reference/webviewTag#method-setZoom
-  virtual std::optional<double> AdjustedChildZoom(
-      const RenderWidgetHostViewChildFrame* render_widget);
-
  protected:
   virtual ~RenderWidgetHostDelegate() {}
 };
