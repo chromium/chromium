@@ -2025,6 +2025,10 @@ CSSSelector::AttributeMatchType CSSSelectorParser::ConsumeAttributeFlags(
 
 bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenStream& stream,
                                        std::pair<int, int>& result) {
+  if (stream.AtEnd()) {
+    return false;
+  }
+
   const CSSParserToken& token = stream.Consume();
   if (token.GetType() == kNumberToken &&
       token.GetNumericValueType() == kIntegerValueType) {
