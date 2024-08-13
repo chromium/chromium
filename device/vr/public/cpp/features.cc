@@ -92,12 +92,7 @@ bool IsImmersiveFeatureEnabled(const base::Feature& base_feature,
   static bool feature_enabled = base::FeatureList::IsEnabled(base_feature);
   static bool allow_with_immersive_feature =
       base::FeatureList::IsEnabled(immersive_feature_guard);
-#if BUILDFLAG(IS_ANDROID)
-  static bool has_immersive_feature = Java_XrFeatureStatus_hasImmersiveFeature(
-      base::android::AttachCurrentThread());
-#else
-  static bool has_immersive_feature = false;
-#endif
+  static bool has_immersive_feature = HasImmersiveFeature();
 
   return feature_enabled ||
          (allow_with_immersive_feature && has_immersive_feature);
@@ -114,4 +109,21 @@ bool IsOpenXrArEnabled() {
 }
 
 #endif  // ENABLE_OPENXR
+
+bool HasImmersiveFeature() {
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_OPENXR)
+  return device::Java_XrFeatureStatus_hasImmersiveFeature(
+      base::android::AttachCurrentThread());
+#else
+  return false;
+#endif
+}
+
+bool IsHandTrackingEnabled() {
+#if BUILDFLAG(ENABLE_OPENXR)
+  return IsOpenXrEnabled() && base::FeatureList::IsEnabled(kWebXrHandInput);
+#else
+  return false;
+#endif
+}
 }  // namespace device::features
