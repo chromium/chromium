@@ -240,7 +240,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         () -> mToolbarCoordinator,
                         () -> mNavigationController,
                         () -> mIntentDataProvider,
-                        () -> mDelegateFactory.getEphemeralTabCoordinator(),
                         mBackPressManager,
                         () -> mTabController,
                         () -> mMinimizationManagerHolder.getMinimizationManager(),
@@ -356,6 +355,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         mMinimizationManagerHolder = component.resolveCustomTabMinimizationManagerHolder();
         mFeatureOverridesManager = component.resolveCustomTabFeatureOverridesManager();
         mTabFactory.setActivityType(getActivityType());
+        mDelegateFactory.setEphemeralTabCoordinatorSupplier(
+                mRootUiCoordinator.getEphemeralTabCoordinatorSupplier());
         return component;
     }
 

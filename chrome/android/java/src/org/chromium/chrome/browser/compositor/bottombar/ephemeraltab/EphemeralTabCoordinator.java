@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.compositor.bottombar.ephemeraltab;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.DECOR_VIEW;
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.IS_PROMOTABLE_TO_TAB_BOOLEAN;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -17,10 +13,8 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -46,19 +40,15 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.url.GURL;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 /**
  * Central class for ephemeral tab, responsible for spinning off other classes necessary to display
  * the preview tab UI.
  */
-@ActivityScope
 public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     private final Context mContext;
     private final ActivityWindowAndroid mWindow;
     private final View mLayoutView;
-    private final ActivityTabProvider mTabProvider;
+    private final Supplier<Tab> mTabProvider;
     private final Supplier<TabCreator> mTabCreator;
     private final BottomSheetController mBottomSheetController;
     private final EphemeralTabMediator mMediator;
@@ -77,6 +67,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
 
     /**
      * Constructor.
+     *
      * @param context The associated {@link Context}.
      * @param window The associated {@link WindowAndroid}.
      * @param layoutView The {@link View} to listen layout change on.
@@ -85,15 +76,14 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
      * @param bottomSheetController {@link BottomSheetController} as the container of the tab.
      * @param canPromoteToNewTab Whether the tab can be promoted to a normal tab.
      */
-    @Inject
     public EphemeralTabCoordinator(
-            @Named(ACTIVITY_CONTEXT) Context context,
+            Context context,
             ActivityWindowAndroid window,
-            @Named(DECOR_VIEW) View layoutView,
-            ActivityTabProvider tabProvider,
+            View layoutView,
+            Supplier<Tab> tabProvider,
             Supplier<TabCreator> tabCreator,
             BottomSheetController bottomSheetController,
-            @Named(IS_PROMOTABLE_TO_TAB_BOOLEAN) boolean canPromoteToNewTab) {
+            boolean canPromoteToNewTab) {
         mContext = context;
         mWindow = window;
         mLayoutView = layoutView;

@@ -2041,7 +2041,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 this::isInOverviewMode,
                 /* appMenuDelegate= */ this,
                 /* statusBarColorProvider= */ this,
-                new ObservableSupplierImpl<>(),
+                new OneshotSupplierImpl<>(),
                 getIntentRequestTracker(),
                 getWindowAndroid().getInsetObserver(),
                 this::backShouldCloseTab,
