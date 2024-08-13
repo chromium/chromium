@@ -2511,7 +2511,10 @@ TEST_F(PaymentsDataManagerTest, IsServerCard_UniqueLocalCard) {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PaymentsDataManagerSyncTransportModeTest,
-       ShouldShowCardsFromAccountOption) {
+       ShouldShowCardsFromAccountOption_FlagOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillRemovePaymentsButterDropdown);
   // The method should return false if one of these is not respected:
   //   * The sync_service is not null
   //   * The sync feature is not enabled
@@ -2575,6 +2578,68 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
   payments_data_manager().SetSyncServiceForTest(nullptr);
   EXPECT_FALSE(payments_data_manager().ShouldShowCardsFromAccountOption());
 }
+
+TEST_F(PaymentsDataManagerSyncTransportModeTest,
+       ShouldShowCardsFromAccountOption_FlagOn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillRemovePaymentsButterDropdown);
+  // Set up a new, non-sync-consented account, with a card, in transport mode.
+  std::vector<CreditCard> server_cards;
+  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "c789");
+  test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
+                          "0005" /* American Express */, "04", "2999", "1");
+  server_cards.back().SetNetworkForMaskedCard(kAmericanExpressCard);
+  SetServerCards(server_cards);
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  // The function should returns false because the
+  // kAutofillRemovePaymentsButterDropdown flag is enabled.
+  EXPECT_FALSE(payments_data_manager().ShouldShowCardsFromAccountOption());
+}
+
+TEST_F(PaymentsDataManagerSyncTransportModeTest,
+       ShouldSuggestServerPaymentMethods_FlagOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillRemovePaymentsButterDropdown);
+
+  // Set up a new, non-sync-consented account in transport mode.
+  ASSERT_TRUE(identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(sync_service_.HasSyncConsent());
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kAutofill,
+                 syncer::UserSelectableType::kPayments});
+
+  // Server payment methods should not be suggested because the user has not
+  // acknowledged the notice to begin seeing them.
+  EXPECT_FALSE(
+      test_api(payments_data_manager()).ShouldSuggestServerPaymentMethods());
+}
+
+TEST_F(PaymentsDataManagerSyncTransportModeTest,
+       ShouldSuggestServerPaymentMethods_FlagOn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillRemovePaymentsButterDropdown);
+
+  // Set up a new, non-sync-consented account in transport mode.
+  ASSERT_TRUE(identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(sync_service_.HasSyncConsent());
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kAutofill,
+                 syncer::UserSelectableType::kPayments});
+
+  // Server payment methods should be suggested because the flag is enabled.
+  EXPECT_TRUE(
+      test_api(payments_data_manager()).ShouldSuggestServerPaymentMethods());
+}
+
 #else   // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
         // !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PaymentsDataManagerSyncTransportModeTest,

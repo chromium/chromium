@@ -42,6 +42,8 @@ class PaymentsDataManagerTestApi {
   void OnCardArtImagesFetched(
       std::vector<std::unique_ptr<CreditCardArtImage>> images);
 
+  bool ShouldSuggestServerPaymentMethods();
+
  private:
   const raw_ref<PaymentsDataManager> payments_data_manager_;
 };

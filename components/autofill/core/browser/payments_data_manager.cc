@@ -1071,8 +1071,10 @@ bool PaymentsDataManager::ShouldShowCardsFromAccountOption() const {
   bool is_opted_in = prefs::IsUserOptedInWalletSyncTransport(
       pref_service_, sync_service_->GetAccountInfo().account_id);
 
-  // The option should only be shown if the user has not already opted-in.
-  return !is_opted_in;
+  // The option should only be shown if the user has not already opted-in and
+  // the flag to remove the dropdown is disabled.
+  return !is_opted_in && !base::FeatureList::IsEnabled(
+                             features::kAutofillRemovePaymentsButterDropdown);
 #else
   return false;
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) ||
@@ -1655,11 +1657,16 @@ bool PaymentsDataManager::ShouldSuggestServerPaymentMethods() const {
   // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   if (!sync_service_->IsSyncFeatureEnabled()) {
-    // For SyncTransport, only show server payment methods if the user has opted
-    // in to seeing them in the dropdown.
+    // For SyncTransport, only show server payment methods if the user has
+    // opted in to seeing them in the dropdown.
     if (!prefs::IsUserOptedInWalletSyncTransport(
             pref_service_, sync_service_->GetAccountInfo().account_id)) {
-      return false;
+      // If the AutofillRemovePaymentsButterDropdown feature is enabled, all
+      // users can see server payment methods, even in SyncTransport mode.
+      if (!base::FeatureList::IsEnabled(
+              features::kAutofillRemovePaymentsButterDropdown)) {
+        return false;
+      }
     }
   }
 
