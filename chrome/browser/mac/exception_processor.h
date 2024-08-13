@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include "base/feature_list.h"
+
 @class NSException;
 
 namespace chrome {
@@ -18,6 +20,8 @@ void InstallObjcExceptionPreprocessor();
 
 // The items below are exposed only for testing.
 ////////////////////////////////////////////////////////////////////////////////
+
+BASE_DECLARE_FEATURE(kForceCrashOnExceptions);
 
 // Removes the exception preprocessor if it is installed.
 void UninstallObjcExceptionPreprocessor();

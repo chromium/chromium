@@ -9,10 +9,21 @@
 #include <sys/wait.h>
 
 #include "base/mac/os_crash_dumps.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome {
+
+class ExceptionProcessorTest : public testing::Test {
+ public:
+  ExceptionProcessorTest() {
+    features_.InitWithFeatures({kForceCrashOnExceptions}, {});
+  }
+
+ protected:
+  base::test::ScopedFeatureList features_;
+};
 
 void RaiseExceptionInRunLoop() {
   CFRunLoopRef run_loop = CFRunLoopGetCurrent();
@@ -38,7 +49,7 @@ void ThrowExceptionInRunLoop() {
 
 // Tests that when the preprocessor is installed, exceptions thrown from
 // a runloop callout are made fatal, so that the stack trace is useful.
-TEST(ExceptionProcessorTest, ThrowExceptionInRunLoop) {
+TEST_F(ExceptionProcessorTest, ThrowExceptionInRunLoop) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");
   EXPECT_DEATH(ThrowExceptionInRunLoop(),
                ".*FATAL:exception_processor\\.mm.*"
@@ -68,7 +79,7 @@ void ThrowAndCatchExceptionInRunLoop() {
 }
 
 // Tests that exceptions can still be caught when the preprocessor is enabled.
-TEST(ExceptionProcessorTest, ThrowAndCatchExceptionInRunLoop) {
+TEST_F(ExceptionProcessorTest, ThrowAndCatchExceptionInRunLoop) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");
   EXPECT_EXIT(ThrowAndCatchExceptionInRunLoop(),
               [](int exit_code) -> bool {
@@ -94,7 +105,7 @@ void ThrowExceptionFromSelector() {
   exit(1);
 }
 
-TEST(ExceptionProcessorTest, ThrowExceptionFromSelector) {
+TEST_F(ExceptionProcessorTest, ThrowExceptionFromSelector) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");
   EXPECT_DEATH(ThrowExceptionFromSelector(),
                ".*FATAL:exception_processor\\.mm.*"
@@ -129,7 +140,7 @@ void ThrowInNotificationObserver() {
   exit(1);
 }
 
-TEST(ExceptionProcessorTest, ThrowInNotificationObserver) {
+TEST_F(ExceptionProcessorTest, ThrowInNotificationObserver) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");
   EXPECT_DEATH(ThrowInNotificationObserver(),
                ".*FATAL:exception_processor\\.mm.*"
@@ -161,7 +172,7 @@ void ThrowExceptionInRunLoopWithoutProcessor() {
   ThrowExceptionInRunLoopWithoutProcessor
 #endif
 // Tests basic exception handling when the preprocessor is disabled.
-TEST(ExceptionProcessorTest, MAYBE_ThrowExceptionInRunLoopWithoutProcessor) {
+TEST_F(ExceptionProcessorTest, MAYBE_ThrowExceptionInRunLoopWithoutProcessor) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");
   EXPECT_EXIT(ThrowExceptionInRunLoopWithoutProcessor(),
               [](int exit_code) -> bool {
