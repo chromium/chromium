@@ -507,10 +507,10 @@ bool RulesetManager::ShouldEvaluateRulesetForRequest(
     // Checking the precursor is necessary here since requests initiated by
     // manifest sandbox pages have an opaque initiator origin, but still
     // originate from an extension.
-    auto initator_precursor =
+    auto initiator_precursor =
         request.initiator->GetTupleOrPrecursorTupleIfOpaque();
-    if (initator_precursor.scheme() == kExtensionScheme &&
-        initator_precursor.host() != ruleset.extension_id) {
+    if (initiator_precursor.scheme() == kExtensionScheme &&
+        initiator_precursor.host() != ruleset.extension_id) {
       return false;
     }
   }
