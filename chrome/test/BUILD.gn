@@ -10940,6 +10940,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/find_bar:interactive_ui_tests",
+      "//chrome/browser/ui/find_bar:test_support",
       "//chrome/browser/ui/lens:interactive_ui_tests",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/views/bubble",

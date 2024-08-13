@@ -75,6 +75,7 @@ if (!is_android) {
 
     deps = [
       ":find_bar",
+      ":test_support",
       "//chrome/test:test_support",
     ]
 
@@ -101,4 +102,10 @@ if (!is_android && !is_chromeos_device) {
       sources += [ "find_bar_platform_helper_mac_interactive_uitest.mm" ]
     }
   }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [ "find_bar_host_unittest_util.h" ]
 }

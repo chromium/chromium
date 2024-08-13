@@ -6137,7 +6137,6 @@ static_library("test_support") {
     "autofill/payments/desktop_payments_window_manager_test_api.h",
     "content_settings/fake_owner.cc",
     "content_settings/fake_owner.h",
-    "find_bar/find_bar_host_unittest_util.h",
   ]
   public_deps = [ ":ui" ]
   deps = [
@@ -6146,6 +6145,7 @@ static_library("test_support") {
     "//chrome/browser",
     "//chrome/browser/devtools",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/find_bar:test_support",
     "//components/omnibox/browser",
     "//components/password_manager/core/browser",
     "//components/payments/content",
