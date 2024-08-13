@@ -24,7 +24,7 @@
 </style>
 <cr-toolbar id="toolbar" page-name="$i18n{title}" autofocus always-show-logo
     search-prompt="$i18n{search}" clear-label="$i18n{clearSearch}"
-    spinner-active="{{spinnerActive}}" on-search-changed="onSearchChanged_">
+    spinner-active="[[spinnerActive]]" on-search-changed="onSearchChanged_">
   <cr-icon-button id="moreActions" iron-icon="cr:more-vert"
       class="dropdown-trigger" title="$i18n{moreActions}"
       on-click="onMoreActionsClick_" aria-haspopup="menu"></cr-icon-button>
