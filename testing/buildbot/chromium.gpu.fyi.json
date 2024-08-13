@@ -12924,7 +12924,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -12951,7 +12951,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -12982,7 +12982,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13003,7 +13003,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13028,7 +13028,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13055,7 +13055,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13093,7 +13093,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13130,7 +13130,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13167,7 +13167,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13213,7 +13213,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13259,7 +13259,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13305,7 +13305,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13342,7 +13342,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13379,7 +13379,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13420,7 +13420,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13466,7 +13466,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13512,7 +13512,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13558,7 +13558,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13596,7 +13596,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13634,7 +13634,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13672,7 +13672,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13709,7 +13709,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13746,7 +13746,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13783,7 +13783,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13820,7 +13820,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13859,7 +13859,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13900,7 +13900,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13939,7 +13939,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -13979,7 +13979,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -14018,7 +14018,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
@@ -14056,7 +14056,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.6-23G80"
+            "os": "Mac-15.0"
           },
           "expiration": 21600,
           "hard_timeout": 1800,
