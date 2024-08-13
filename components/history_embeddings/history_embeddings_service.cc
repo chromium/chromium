@@ -379,16 +379,16 @@ void HistoryEmbeddingsService::Search(
     std::optional<base::Time> time_range_start,
     size_t count,
     SearchResultCallback callback) {
-  if (QueryIsFiltered(query)) {
-    callback.Run({});
-    return;
-  }
-
   SearchResult result;
   result.session_id = base::Token::CreateRandom().ToString();
   result.query = query;
   result.time_range_start = time_range_start;
   result.count = count;
+  if (QueryIsFiltered(query)) {
+    result.count = 0;
+    callback.Run(result);
+    return;
+  }
   embedder_->ComputePassagesEmbeddings(
       PassageKind::QUERY, {std::move(query)},
       base::BindOnce(&HistoryEmbeddingsService::OnQueryEmbeddingComputed,
