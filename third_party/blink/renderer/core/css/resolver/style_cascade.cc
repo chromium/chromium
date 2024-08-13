@@ -1770,6 +1770,8 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
 
   // Validate fallback value.
   if (ConsumeComma(stream)) {
+    stream.ConsumeWhitespace();
+
     TokenSequence fallback;
     if (!ResolveTokensInto(stream, resolver, parent_tokenizer, context,
                            FunctionContext{}, fallback)) {
