@@ -38,12 +38,16 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/guest_view/guest_view_events.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/web_request/web_request_activity_log_constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/browser/guest_view/guest_view_events.h"
+#endif
 
 using content::BrowserThread;
 using extension_web_request_api_helpers::ExtraInfoSpec;
@@ -126,12 +130,14 @@ events::HistogramValue GetEventHistogramValue(const std::string& event_name) {
     }
   }
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   // If there is no webRequest event, it might be a guest view webRequest event.
   events::HistogramValue guest_view_histogram_value =
       guest_view_events::GetEventHistogramValue(event_name);
   if (guest_view_histogram_value != events::UNKNOWN) {
     return guest_view_histogram_value;
   }
+#endif
 
   // There is no histogram value for this event name. It should be added to
   // either the mapping here, or in guest_view_events.

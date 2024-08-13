@@ -8,19 +8,23 @@
 
 #include "base/trace_event/typed_macros.h"
 #include "content/public/browser/render_process_host.h"
-#include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/message_service_api.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/messaging/port_context.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/message_port.mojom.h"
 #include "extensions/common/trace_util.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#endif
 
 using perfetto::protos::pbzero::ChromeTrackEvent;
 
@@ -124,6 +128,7 @@ const Extension* ExtensionFrameHost::GetExtension(
 }
 
 void ExtensionFrameHost::AppWindowReady() {
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   AppWindowRegistry* registry =
       AppWindowRegistry::Get(web_contents_->GetBrowserContext());
   if (!registry) {
@@ -134,6 +139,7 @@ void ExtensionFrameHost::AppWindowReady() {
     return;
   }
   app_window->AppWindowReady();
+#endif
 }
 
 void ExtensionFrameHost::OpenChannelToExtension(
