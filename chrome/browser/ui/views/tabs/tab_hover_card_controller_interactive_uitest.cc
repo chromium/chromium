@@ -190,8 +190,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                   CheckHovercardIsClosed());
 }
 
-// TODO(crbug.com/41481726):  Enable once failing test is fixed.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_HoverCardShownOnTabFocus DISABLED_HoverCardShownOnTabFocus
 #else
 #define MAYBE_HoverCardShownOnTabFocus HoverCardShownOnTabFocus
@@ -271,17 +270,8 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                   SelectTab(kTabStripElementId, 0), CheckHovercardIsClosed());
 }
 
-// TODO(crbug.com/41481726):  Enable once failing test is fixed.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_HoverCardVisibleOnTabFocusFromKeyboardAccelerator \
-  DISABLED_HoverCardVisibleOnTabFocusFromKeyboardAccelerator
-#else
-#define MAYBE_HoverCardVisibleOnTabFocusFromKeyboardAccelerator \
-  HoverCardVisibleOnTabFocusFromKeyboardAccelerator
-#endif
-IN_PROC_BROWSER_TEST_F(
-    TabHoverCardInteractiveUiTest,
-    MAYBE_HoverCardVisibleOnTabFocusFromKeyboardAccelerator) {
+IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+                       HoverCardVisibleOnTabFocusFromKeyboardAccelerator) {
   TabStrip* const tab_strip = GetTabStrip(browser());
 
   ASSERT_TRUE(
@@ -330,16 +320,8 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
       BrowserView::GetBrowserViewForBrowser(inactive_window)->IsActive());
 }
 
-// TODO(crbug.com/41481726):  Enable once failing test is fixed.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_UpdatesHoverCardOnHoverDifferentTab \
-  DISABLED_UpdatesHoverCardOnHoverDifferentTab
-#else
-#define MAYBE_UpdatesHoverCardOnHoverDifferentTab \
-  UpdatesHoverCardOnHoverDifferentTab
-#endif
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
-                       MAYBE_UpdatesHoverCardOnHoverDifferentTab) {
+                       UpdatesHoverCardOnHoverDifferentTab) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
