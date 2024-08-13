@@ -155,7 +155,7 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
     if (ShouldShowNotice()) {
       GetPlusAddressSettingService()->SetHasAcceptedNotice();
     }
-    std::move(callback_).Run(maybe_plus_profile->plus_address);
+    std::move(callback_).Run(*maybe_plus_profile->plus_address);
     RecordModalShownDuration(
         metrics::PlusAddressModalCompletionStatus::kModalConfirmed);
   } else {

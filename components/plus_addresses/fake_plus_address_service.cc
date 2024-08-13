@@ -51,8 +51,8 @@ bool FakePlusAddressService::IsPlusAddress(
 void FakePlusAddressService::GetAffiliatedPlusProfiles(
     const url::Origin& origin,
     GetPlusProfilesCallback callback) {
-  std::move(callback).Run(std::vector<PlusProfile>{
-      PlusProfile(kFakeProfileId, kFacet, kFakePlusAddress, is_confirmed_)});
+  std::move(callback).Run(std::vector<PlusProfile>{PlusProfile(
+      kFakeProfileId, kFacet, PlusAddress(kFakePlusAddress), is_confirmed_)});
 }
 
 void FakePlusAddressService::ReservePlusAddress(
@@ -65,13 +65,13 @@ void FakePlusAddressService::ReservePlusAddress(
     return;
   }
   std::move(on_completed)
-      .Run(
-          PlusProfile(kFakeProfileId, kFacet, kFakePlusAddress, is_confirmed_));
+      .Run(PlusProfile(kFakeProfileId, kFacet, PlusAddress(kFakePlusAddress),
+                       is_confirmed_));
 }
 
 void FakePlusAddressService::ConfirmPlusAddress(
     const url::Origin& origin,
-    const std::string& plus_address,
+    const PlusAddress& plus_address,
     PlusAddressRequestCallback on_completed) {
   if (should_fail_to_confirm_) {
     std::move(on_completed)
@@ -80,7 +80,8 @@ void FakePlusAddressService::ConfirmPlusAddress(
     return;
   }
   is_confirmed_ = true;
-  PlusProfile profile(kFakeProfileId, kFacet, plus_address, is_confirmed_);
+  PlusProfile profile(kFakeProfileId, kFacet, std::move(plus_address),
+                      is_confirmed_);
   if (on_confirmed_) {
     std::move(on_confirmed_).Run(profile);
     on_confirmed_.Reset();
@@ -98,8 +99,8 @@ void FakePlusAddressService::RefreshPlusAddress(
     return;
   }
   std::move(on_completed)
-      .Run(
-          PlusProfile(kFakeProfileId, kFacet, kFakePlusAddress, is_confirmed_));
+      .Run(PlusProfile(kFakeProfileId, kFacet, PlusAddress(kFakePlusAddress),
+                       is_confirmed_));
 }
 
 std::optional<std::string> FakePlusAddressService::GetPrimaryEmail() {

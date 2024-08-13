@@ -61,7 +61,7 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
   ASSERT_TRUE(valid_result.has_value());
   EXPECT_EQ(valid_result->profile_id, kProfileId);
   EXPECT_EQ(absl::get<std::string>(valid_result->facet), kFacet);
-  EXPECT_EQ(valid_result->plus_address, kPlusAddress);
+  EXPECT_EQ(valid_result->plus_address, PlusAddress(kPlusAddress));
   EXPECT_EQ(valid_result->is_confirmed, true);
 
   // Test when the plusMode should set is_confirmed to false.
@@ -92,7 +92,7 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
   ASSERT_TRUE(invalid_result.has_value());
   EXPECT_EQ(invalid_result->profile_id, kProfileId);
   EXPECT_EQ(absl::get<std::string>(invalid_result->facet), kFacet);
-  EXPECT_EQ(invalid_result->plus_address, kPlusAddress);
+  EXPECT_EQ(invalid_result->plus_address, PlusAddress(kPlusAddress));
   EXPECT_EQ(invalid_result->is_confirmed, false);
 }
 
@@ -205,8 +205,9 @@ TEST(PlusAddressParsing, FromV1List_ParsesSuccessfully) {
   std::optional<PlusAddressMap> result =
       ParsePlusAddressMapFromV1List(std::move(perfect.value()));
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), PlusAddressMap({{"google.com", "foo@plus.com"},
-                                            {"netflix.com", "bar@plus.com"}}));
+  EXPECT_EQ(result.value(),
+            PlusAddressMap({{"google.com", PlusAddress("foo@plus.com")},
+                            {"netflix.com", PlusAddress("bar@plus.com")}}));
 }
 
 TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithFacets) {
@@ -236,7 +237,8 @@ TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithFacets) {
   std::optional<PlusAddressMap> result =
       ParsePlusAddressMapFromV1List(std::move(json.value()));
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), PlusAddressMap({{"google.com", "foo@plus.com"}}));
+  EXPECT_EQ(result.value(),
+            PlusAddressMap({{"google.com", PlusAddress("foo@plus.com")}}));
 }
 
 TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithPlusAddresses) {
@@ -266,7 +268,8 @@ TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithPlusAddresses) {
   std::optional<PlusAddressMap> result =
       ParsePlusAddressMapFromV1List(std::move(json.value()));
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), PlusAddressMap({{"google.com", "foo@plus.com"}}));
+  EXPECT_EQ(result.value(),
+            PlusAddressMap({{"google.com", PlusAddress("foo@plus.com")}}));
 }
 
 TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithPlusModes) {
@@ -296,7 +299,8 @@ TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithPlusModes) {
   std::optional<PlusAddressMap> result =
       ParsePlusAddressMapFromV1List(std::move(json.value()));
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), PlusAddressMap({{"google.com", "foo@plus.com"}}));
+  EXPECT_EQ(result.value(),
+            PlusAddressMap({{"google.com", PlusAddress("foo@plus.com")}}));
 }
 
 TEST(PlusAddressParsing, FromV1List_ReturnsEmptyMapForEmptyProfileList) {
@@ -360,10 +364,10 @@ TEST(PlusAddressParsing, ParsePreallocatedPlusAddresses) {
   EXPECT_THAT(
       addresses,
       Optional(ElementsAre(
-          PreallocatedPlusAddress{.plus_address = "foo@foo.com",
-                                  .lifetime = base::Seconds(123)},
-          PreallocatedPlusAddress{.plus_address = "foo@bar.com",
-                                  .lifetime = base::Seconds(15552000)})));
+          PreallocatedPlusAddress(PlusAddress("foo@foo.com"),
+                                  /*lifetime=*/base::Seconds(123)),
+          PreallocatedPlusAddress(PlusAddress("foo@bar.com"),
+                                  /*lifetime=*/base::Seconds(15552000)))));
 }
 
 TEST(PlusAddressParsing, ParsePreallocatedPlusAddressesWithInvalidJSON) {
@@ -415,10 +419,10 @@ TEST(PlusAddressParsing, ParsePreallocatedPlusAddressesWithMalformedEntries) {
       ParsePreallocatedPlusAddresses(std::move(*json));
   EXPECT_THAT(addresses,
               Optional(ElementsAre(
-                  PreallocatedPlusAddress{.plus_address = "foo@foo.com",
-                                          .lifetime = base::Seconds(123)},
-                  PreallocatedPlusAddress{.plus_address = "foo@goo.com",
-                                          .lifetime = base::Seconds(312)})));
+                  PreallocatedPlusAddress(PlusAddress("foo@foo.com"),
+                                          /*lifetime=*/base::Seconds(123)),
+                  PreallocatedPlusAddress(PlusAddress("foo@goo.com"),
+                                          /*lifetime=*/base::Seconds(312)))));
 }
 
 // Tests that `ParsePreallocatedPlusAddresses` returns `std::nullopt` if the

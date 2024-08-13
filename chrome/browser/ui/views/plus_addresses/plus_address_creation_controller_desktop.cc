@@ -194,7 +194,7 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
     const PlusProfileOrError& maybe_plus_profile) {
   if (maybe_plus_profile.has_value()) {
     // Autofill the plus address.
-    std::move(callback_).Run(maybe_plus_profile->plus_address);
+    std::move(callback_).Run(*maybe_plus_profile->plus_address);
 
     // If this was a first run dialog, record that the user has accepted the
     // notice.

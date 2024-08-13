@@ -217,9 +217,10 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
 
  protected:
   std::string PlusAddressResponseContent(bool confirmed,
-                                         const std::string& plus_address) {
+                                         std::string plus_address) {
     return plus_addresses::test::MakeCreationResponse(PlusProfile(
-        /*profile_id=*/"123", facet.Serialize(), plus_address, confirmed));
+        /*profile_id=*/"123", facet.Serialize(),
+        PlusAddress(std::move(plus_address)), confirmed));
   }
 
   InteractiveTestApi::StepBuilder ShowModal() {

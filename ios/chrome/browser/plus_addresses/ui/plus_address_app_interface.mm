@@ -22,7 +22,7 @@
 
   plusAddressService->SavePlusProfile(plus_addresses::PlusProfile(
       /*profile_id=*/"234", base::SysNSStringToUTF8(url),
-      /*plus_address=*/plus_addresses::test::kFakePlusAddress,
+      plus_addresses::PlusAddress(plus_addresses::test::kFakePlusAddress),
       /*is_confirmed=*/true));
 }
 

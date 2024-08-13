@@ -47,7 +47,7 @@ class FakePlusAddressService : public PlusAddressService {
   void ReservePlusAddress(const url::Origin& origin,
                           PlusAddressRequestCallback on_completed) override;
   void ConfirmPlusAddress(const url::Origin& origin,
-                          const std::string& plus_address,
+                          const PlusAddress& plus_address,
                           PlusAddressRequestCallback on_completed) override;
   void RefreshPlusAddress(const url::Origin& origin,
                           PlusAddressRequestCallback on_completed) override;

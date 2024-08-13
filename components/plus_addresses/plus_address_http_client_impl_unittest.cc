@@ -221,8 +221,8 @@ TEST_F(PlusAddressHttpClientRequests,
 TEST_F(PlusAddressHttpClientRequests, ConfirmPlusAddress_IssuesCorrectRequest) {
   const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
   std::string facet = origin.Serialize();
-  std::string plus_address = "plus@plus.plus";
-  client().ConfirmPlusAddress(origin, plus_address, base::DoNothing());
+  client().ConfirmPlusAddress(origin, PlusAddress("plus@plus.plus"),
+                              base::DoNothing());
   identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       kToken, base::Time::Max());
 
@@ -477,10 +477,10 @@ TEST_F(PlusAddressHttpClientRequests,
   identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       kToken, base::Time::Max());
 
-  const auto address1 = PreallocatedPlusAddress{
-      .plus_address = "plus1@plus.com", .lifetime = base::Days(10)};
-  const auto address2 = PreallocatedPlusAddress{.plus_address = "plus2@foo.com",
-                                                .lifetime = base::Days(50)};
+  const auto address1 = PreallocatedPlusAddress(PlusAddress("plus1@plus.com"),
+                                                /*lifetime=*/base::Days(10));
+  const auto address2 = PreallocatedPlusAddress(PlusAddress("plus2@foo.com"),
+                                                /*lifetime=*/base::Days(50));
 
   const std::string json = test::MakePreallocateResponse({address1, address2});
   EXPECT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
@@ -915,7 +915,8 @@ TEST_F(PlusAddressHttpClientNullServerUrl, ConfirmPlusAddress_SendsNoRequest) {
   EXPECT_FALSE(test_api(client()).GetServerUrlForTesting().has_value());
   // ConfirmPlusAddress should return without making any request when no valid
   // `server_ur_` is provided.
-  client().ConfirmPlusAddress(origin, "random_address", callback.GetCallback());
+  client().ConfirmPlusAddress(origin, PlusAddress("foo@moo.com"),
+                              callback.GetCallback());
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
   EXPECT_FALSE(callback.IsReady());
 }

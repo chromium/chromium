@@ -39,7 +39,7 @@ class PlusAddressHttpClient {
   // On success, the facet of the returned `PlusProfile` is set to the `origin`
   // by the server.
   virtual void ConfirmPlusAddress(const url::Origin& origin,
-                                  const std::string& plus_address,
+                                  const PlusAddress& plus_address,
                                   PlusAddressRequestCallback on_completed) = 0;
 
   using PreallocatePlusAddressesResult =

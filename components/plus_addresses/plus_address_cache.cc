@@ -17,7 +17,7 @@ PlusAddressCache::~PlusAddressCache() = default;
 bool PlusAddressCache::InsertProfile(const PlusProfile& profile) {
   const auto [it, inserted] = plus_profiles_.insert(profile);
   if (inserted) {
-    plus_addresses_.insert(profile.plus_address);
+    plus_addresses_.insert(*profile.plus_address);
   }
   return inserted;
 }
@@ -25,7 +25,7 @@ bool PlusAddressCache::InsertProfile(const PlusProfile& profile) {
 bool PlusAddressCache::EraseProfile(const PlusProfile& profile) {
   bool erased = plus_profiles_.erase(profile);
   if (erased) {
-    plus_addresses_.erase(profile.plus_address);
+    plus_addresses_.erase(*profile.plus_address);
   }
   return erased;
 }
@@ -33,7 +33,8 @@ bool PlusAddressCache::EraseProfile(const PlusProfile& profile) {
 std::optional<PlusProfile> PlusAddressCache::FindByFacet(
     const PlusProfile::facet_t& facet) const {
   // `facet` is used as the comparator, so the other fields don't matter.
-  if (auto it = plus_profiles_.find(PlusProfile("", facet, "", false));
+  if (auto it =
+          plus_profiles_.find(PlusProfile("", facet, PlusAddress(), false));
       it != plus_profiles_.end()) {
     return *it;
   }

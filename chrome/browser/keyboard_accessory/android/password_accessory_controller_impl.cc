@@ -201,7 +201,7 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
 
   base::flat_map<std::string, bool>::container_type items(plus_profiles.size());
   for (const PlusProfile& profile : plus_profiles) {
-    items.push_back({profile.plus_address, false});
+    items.push_back({*profile.plus_address, false});
   }
   base::flat_map<std::string, bool> plus_addresses_used_as_usernames(
       std::move(items));
@@ -252,10 +252,10 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
                          });
 
   for (const PlusProfile& profile : plus_profiles) {
-    if (!plus_addresses_used_as_usernames[profile.plus_address]) {
+    if (!plus_addresses_used_as_usernames[*profile.plus_address]) {
       data.add_plus_address_section(autofill::PlusAddressSection(
           GetOriginFromPlusProfile(profile),
-          base::UTF8ToUTF16(profile.plus_address)));
+          base::UTF8ToUTF16(*profile.plus_address)));
     }
   }
 

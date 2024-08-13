@@ -176,7 +176,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest,
                                  testing::UnorderedElementsAre(plus_profile))
                   .Wait());
   // Simulate updating the `plus_profile` on the server.
-  plus_profile.plus_address = "new-" + plus_profile.plus_address;
+  plus_profile.plus_address =
+      plus_addresses::PlusAddress("new-" + *plus_profile.plus_address);
   InjectEntityToServer(EntityDataFromPlusProfile(plus_profile).specifics);
   EXPECT_TRUE(PlusProfileChecker(GetPlusAddressService(),
                                  testing::UnorderedElementsAre(plus_profile))

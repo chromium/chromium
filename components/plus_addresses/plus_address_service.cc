@@ -262,11 +262,12 @@ bool PlusAddressService::ShouldShowManualFallback(
          setting_service_->GetIsPlusAddressesEnabled();
 }
 
-std::optional<std::string> PlusAddressService::GetPlusAddress(
+std::optional<PlusAddress> PlusAddressService::GetPlusAddress(
     const PlusProfile::facet_t& facet) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::optional<PlusProfile> profile = GetPlusProfile(facet);
-  return profile ? std::make_optional(profile->plus_address) : std::nullopt;
+  return profile ? std::make_optional(std::move(profile->plus_address))
+                 : std::nullopt;
 }
 
 void PlusAddressService::GetAffiliatedPlusProfiles(
@@ -415,7 +416,7 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
   suggestions.reserve(affiliated_profiles.size());
   for (const PlusProfile& profile : affiliated_profiles) {
     Suggestion suggestion =
-        Suggestion(base::UTF8ToUTF16(profile.plus_address),
+        Suggestion(base::UTF8ToUTF16(*profile.plus_address),
                    SuggestionType::kFillExistingPlusAddress);
     if constexpr (!BUILDFLAG(IS_ANDROID)) {
       suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
@@ -469,7 +470,7 @@ bool PlusAddressService::IsRefreshingSupported(const url::Origin& origin) {
 
 void PlusAddressService::ConfirmPlusAddress(
     const url::Origin& origin,
-    const std::string& plus_address,
+    const PlusAddress& plus_address,
     PlusAddressRequestCallback on_completed) {
   if (!IsEnabled()) {
     return;

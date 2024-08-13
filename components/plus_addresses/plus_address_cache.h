@@ -39,7 +39,7 @@ class PlusAddressCache {
   void Clear();
 
   // Checks whether the passed-in string is a known plus address.
-  bool IsPlusAddress(const std::string& potential_plus_address) const;
+  bool IsPlusAddress(const std::string& plus_address) const;
 
   // Returns all the cached plus profiles.
   base::span<const PlusProfile> GetPlusProfiles() const;

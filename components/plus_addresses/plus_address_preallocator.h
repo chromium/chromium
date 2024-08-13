@@ -88,7 +88,7 @@ class PlusAddressPreallocator : public PlusAddressAllocator {
 
   // Returns the next available pre-allocated plus address or `std::nullopt` if
   // there is none. It does not attempt to pre-allocate more.
-  std::optional<std::string> GetNextPreallocatedPlusAddress();
+  std::optional<PlusAddress> GetNextPreallocatedPlusAddress();
 
   // Returns the pre-allocated plus addresses from pref-storage.
   const base::Value::List& GetPreallocatedAddresses() const;

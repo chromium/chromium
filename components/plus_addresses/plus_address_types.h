@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/strong_alias.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -21,10 +22,20 @@
 // A common place for PlusAddress types to be defined.
 namespace plus_addresses {
 
+using PlusAddress = base::StrongAlias<struct PlusAddressTag, std::string>;
+
 // A representation of a pre-allocated plus address as received from the server.
-struct PreallocatedPlusAddress {
+struct PreallocatedPlusAddress final {
+  PreallocatedPlusAddress();
+  PreallocatedPlusAddress(PlusAddress plus_address, base::TimeDelta lifetime);
+  PreallocatedPlusAddress(const PreallocatedPlusAddress&);
+  PreallocatedPlusAddress& operator=(const PreallocatedPlusAddress&);
+  PreallocatedPlusAddress(PreallocatedPlusAddress&&);
+  PreallocatedPlusAddress& operator=(PreallocatedPlusAddress&);
+  ~PreallocatedPlusAddress();
+
   // The plus address.
-  std::string plus_address;
+  PlusAddress plus_address;
   // The remaining lifetime relative to when it was requested.
   base::TimeDelta lifetime;
 
@@ -41,7 +52,7 @@ struct PlusProfile {
 
   PlusProfile(std::optional<std::string> profile_id,
               facet_t facet,
-              std::string plus_address,
+              PlusAddress plus_address,
               bool is_confirmed);
   PlusProfile(const PlusProfile&);
   PlusProfile(PlusProfile&&);
@@ -59,7 +70,7 @@ struct PlusProfile {
   facet_t facet;
 
   // The plus address.
-  std::string plus_address;
+  PlusAddress plus_address;
 
   // Whether the plus address' creation has been confirmed by the server.
   bool is_confirmed;
@@ -140,7 +151,7 @@ class PlusAddressDataChange {
 // Only used by Autofill.
 using autofill::PlusAddressCallback;
 
-using PlusAddressMap = std::map<std::string, std::string>;
+using PlusAddressMap = std::map<std::string, PlusAddress>;
 
 // Holds either a PlusProfile or an error that prevented us from getting it.
 using PlusProfileOrError = base::expected<PlusProfile, PlusAddressRequestError>;

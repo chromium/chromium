@@ -263,7 +263,7 @@ void PlusAddressHttpClientImpl::ReservePlusAddress(
 
 void PlusAddressHttpClientImpl::ConfirmPlusAddress(
     const url::Origin& origin,
-    const std::string& plus_address,
+    const PlusAddress& plus_address,
     PlusAddressRequestCallback on_completed) {
   if (!server_url_) {
     return;
@@ -350,7 +350,7 @@ void PlusAddressHttpClientImpl::ReservePlusAddressInternal(
 
 void PlusAddressHttpClientImpl::ConfirmPlusAddressInternal(
     const url::Origin& origin,
-    const std::string& plus_address,
+    const PlusAddress& plus_address,
     PlusAddressRequestCallback on_completed,
     std::optional<std::string> auth_token) {
   if (!auth_token.has_value()) {
@@ -365,7 +365,7 @@ void PlusAddressHttpClientImpl::ConfirmPlusAddressInternal(
                     net::HttpRequestHeaders::kPutMethod, *auth_token);
   base::Value::Dict payload;
   payload.Set("facet", origin.Serialize());
-  payload.Set("reserved_email_address", plus_address);
+  payload.Set("reserved_email_address", *plus_address);
   std::string request_body;
   const bool wrote_payload = base::JSONWriter::Write(payload, &request_body);
   DCHECK(wrote_payload);

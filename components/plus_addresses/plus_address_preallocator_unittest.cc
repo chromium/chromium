@@ -59,7 +59,7 @@ PlusProfileOrError PlusProfileFromPreallocatedAddress(
       /*profile_id=*/std::nullopt,
       affiliations::FacetURI::FromPotentiallyInvalidSpec(
           origin.GetURL().spec()),
-      std::move(plus_address), /*is_confirmed=*/false));
+      PlusAddress(std::move(plus_address)), /*is_confirmed=*/false));
 }
 
 MATCHER_P2(IsPreallocatedPlusAddress, end_of_life, address, "") {
@@ -219,10 +219,10 @@ TEST_F(PlusAddressPreallocatorTest, RequestPreallocatedAddressesOnStartup) {
     EXPECT_CALL(http_client(), PreallocatePlusAddresses)
         .WillOnce(RunOnceCallback<0>(
             PlusAddressHttpClient::PreallocatePlusAddressesResult(
-                {PreallocatedPlusAddress{.plus_address = "plus@plus.com",
-                                         .lifetime = base::Days(1)},
-                 PreallocatedPlusAddress{.plus_address = "plus2@plus.com",
-                                         .lifetime = base::Days(3)}})));
+                {PreallocatedPlusAddress(PlusAddress("plus@plus.com"),
+                                         /*lifetime=*/base::Days(1)),
+                 PreallocatedPlusAddress(PlusAddress("plus2@plus.com"),
+                                         /*lifetime=*/base::Days(3))})));
     EXPECT_CALL(check, Call);
   }
 
@@ -471,8 +471,8 @@ TEST_F(PlusAddressPreallocatorTest,
   allocator.AllocatePlusAddress(kValidOrigin, kMode, callback2.Get());
   std::move(preallocate_callback)
       .Run(PlusAddressHttpClient::PreallocatePlusAddressesResult(
-          {PreallocatedPlusAddress{.plus_address = kPlusAddress4,
-                                   .lifetime = base::Days(1)}}));
+          {PreallocatedPlusAddress(PlusAddress(kPlusAddress4),
+                                   /*lifetime=*/base::Days(1))}));
   check.Call("Server response received.");
   EXPECT_THAT(GetPreallocatedAddresses(), SizeIs(3));
 
@@ -534,10 +534,10 @@ TEST_F(PlusAddressPreallocatorTest,
   check.Call("About to send server response.");
   std::move(preallocate_callback)
       .Run(PlusAddressHttpClient::PreallocatePlusAddressesResult(
-          {PreallocatedPlusAddress{.plus_address = kPlusAddress3,
-                                   .lifetime = base::Days(1)},
-           PreallocatedPlusAddress{.plus_address = kPlusAddress4,
-                                   .lifetime = base::Days(1)}}));
+          {PreallocatedPlusAddress(PlusAddress(kPlusAddress3),
+                                   /*lifetime=*/base::Days(1)),
+           PreallocatedPlusAddress(PlusAddress(kPlusAddress4),
+                                   /*lifetime=*/base::Days(1))}));
   check.Call("Server response sent.");
 
   // Subsequent allocation requests are fulfilled directly.

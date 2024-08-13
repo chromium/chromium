@@ -128,7 +128,8 @@ TEST_F(PlusAddressAffiliationSourceAdapterTest, OnPlusAddressesChanged) {
 
   // Simulate update of `profile1`.
   PlusProfile updated_profile1 = profile1;
-  updated_profile1.plus_address = "new-" + updated_profile1.plus_address;
+  updated_profile1.plus_address =
+      PlusAddress("new-" + *updated_profile1.plus_address);
 
   service_->OnWebDataChangedBySync(
       {PlusAddressDataChange(PlusAddressDataChange::Type::kRemove, profile1),

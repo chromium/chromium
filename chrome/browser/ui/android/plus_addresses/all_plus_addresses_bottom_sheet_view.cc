@@ -58,7 +58,7 @@ void AllPlusAddressesBottomSheetView::Show(
 
   for (const PlusProfile& profile : profiles) {
     java_profiles.emplace_back(Java_PlusProfile_Constructor(
-        env, profile.plus_address, GetOriginFromPlusProfile(profile)));
+        env, *profile.plus_address, GetOriginFromPlusProfile(profile)));
   }
 
   base::android::ScopedJavaLocalRef<jobject> ui_info =

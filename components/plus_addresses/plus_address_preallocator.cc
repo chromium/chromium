@@ -49,7 +49,7 @@ base::Value SeralizeAndSetEndOfLife(PreallocatedPlusAddress address) {
           .Set(PlusAddressPreallocator::kEndOfLifeKey,
                base::TimeToValue(base::Time::Now() + address.lifetime))
           .Set(PlusAddressPreallocator::kPlusAddressKey,
-               std::move(address.plus_address)));
+               std::move(*address.plus_address)));
 }
 
 // Returns the plus address from its `base::Value` representation. Assumes that
@@ -186,7 +186,7 @@ void PlusAddressPreallocator::OnReceivePreallocatedPlusAddresses(
 
 void PlusAddressPreallocator::ProcessAllocationRequests() {
   while (!requests_.empty()) {
-    std::optional<std::string> next_address = GetNextPreallocatedPlusAddress();
+    std::optional<PlusAddress> next_address = GetNextPreallocatedPlusAddress();
     if (!next_address) {
       break;
     }
@@ -203,7 +203,7 @@ void PlusAddressPreallocator::ProcessAllocationRequests() {
   MaybeRequestNewPreallocatedPlusAddresses();
 }
 
-std::optional<std::string>
+std::optional<PlusAddress>
 PlusAddressPreallocator::GetNextPreallocatedPlusAddress() {
   PrunePreallocatedPlusAddresses();
   const base::Value::List& preallocated_addresses = GetPreallocatedAddresses();
@@ -215,7 +215,8 @@ PlusAddressPreallocator::GetNextPreallocatedPlusAddress() {
   pref_service_->SetInteger(
       prefs::kPreallocatedAddressesNext,
       (index + 1) % static_cast<int>(preallocated_addresses.size()));
-  return GetPlusAddress(preallocated_addresses[index]);
+  return std::make_optional<PlusAddress>(
+      GetPlusAddress(preallocated_addresses[index]));
 }
 
 const base::Value::List& PlusAddressPreallocator::GetPreallocatedAddresses()

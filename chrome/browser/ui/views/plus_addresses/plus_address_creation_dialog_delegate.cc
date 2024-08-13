@@ -407,7 +407,7 @@ void PlusAddressCreationDialogDelegate::ShowReserveResult(
 
   if (maybe_plus_profile.has_value()) {
     plus_address_label_->SetText(
-        base::UTF8ToUTF16(maybe_plus_profile->plus_address));
+        base::UTF8ToUTF16(*maybe_plus_profile->plus_address));
     confirm_button_->SetEnabled(true);
   } else {
     ShowErrorStateUI();

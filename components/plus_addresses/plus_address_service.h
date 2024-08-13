@@ -151,7 +151,7 @@ class PlusAddressService : public KeyedService,
                                 bool is_off_the_record) const;
 
   // Gets a plus address, if one exists, for the passed-in facet.
-  std::optional<std::string> GetPlusAddress(
+  std::optional<PlusAddress> GetPlusAddress(
       const PlusProfile::facet_t& facet) const;
 
   // Same as `GetPlusAddress()`, but returns the entire profile.
@@ -190,7 +190,7 @@ class PlusAddressService : public KeyedService,
   //
   // Virtual to allow overriding the behavior in tests.
   virtual void ConfirmPlusAddress(const url::Origin& origin,
-                                  const std::string& plus_address,
+                                  const PlusAddress& plus_address,
                                   PlusAddressRequestCallback on_completed);
 
   // Used for displaying the user's email address in the UI modal.

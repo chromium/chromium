@@ -129,7 +129,7 @@ AddressAccessoryControllerImpl::GetSheetData() const {
   for (const plus_addresses::PlusProfile& plus_profile : plus_profiles) {
     sheet_data.add_plus_address_section(
         PlusAddressSection(GetOriginFromPlusProfile(plus_profile),
-                           base::UTF8ToUTF16(plus_profile.plus_address)));
+                           base::UTF8ToUTF16(*plus_profile.plus_address)));
   }
   return sheet_data;
 }

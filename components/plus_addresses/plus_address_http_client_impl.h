@@ -60,7 +60,7 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
                           bool refresh,
                           PlusAddressRequestCallback on_completed) override;
   void ConfirmPlusAddress(const url::Origin& origin,
-                          const std::string& plus_address,
+                          const PlusAddress& plus_address,
                           PlusAddressRequestCallback on_completed) override;
   void PreallocatePlusAddresses(
       PreallocatePlusAddressesCallback callback) override;
@@ -86,7 +86,7 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
                                   PlusAddressRequestCallback on_completed,
                                   std::optional<std::string> auth_token);
   void ConfirmPlusAddressInternal(const url::Origin& origin,
-                                  const std::string& plus_address,
+                                  const PlusAddress& plus_address,
                                   PlusAddressRequestCallback on_completed,
                                   std::optional<std::string> auth_token);
   void GetAllPlusAddressesInternal(PlusAddressMapRequestCallback on_completed,

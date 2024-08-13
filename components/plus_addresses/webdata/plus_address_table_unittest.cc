@@ -73,7 +73,7 @@ TEST_F(PlusAddressTableTest, AddOrUpdatePlusProfile) {
   EXPECT_THAT(table_.GetPlusProfiles(),
               testing::UnorderedElementsAre(profile1));
   // Update `profile1`.
-  profile1.plus_address = "new-" + profile1.plus_address;
+  profile1.plus_address = PlusAddress("new-" + *profile1.plus_address);
   EXPECT_TRUE(table_.AddOrUpdatePlusProfile(profile1));
   EXPECT_THAT(table_.GetPlusProfiles(),
               testing::UnorderedElementsAre(profile1));

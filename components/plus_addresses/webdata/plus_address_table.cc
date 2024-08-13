@@ -52,7 +52,7 @@ std::optional<PlusProfile> PlusProfileFromStatement(sql::Statement& s) {
     return std::nullopt;
   }
   return PlusProfile(/*profile_id=*/s.ColumnString(0), std::move(facet),
-                     /*plus_address=*/s.ColumnString(2),
+                     PlusAddress(s.ColumnString(2)),
                      /*is_confirmed=*/true);
 }
 
@@ -173,7 +173,7 @@ bool PlusAddressTable::AddOrUpdatePlusProfile(const PlusProfile& profile) {
   query.BindString(0, profile.profile_id.value());
   query.BindString(
       1, absl::get<affiliations::FacetURI>(profile.facet).canonical_spec());
-  query.BindString(2, profile.plus_address);
+  query.BindString(2, *profile.plus_address);
   return query.Run();
 }
 

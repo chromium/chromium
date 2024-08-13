@@ -168,7 +168,7 @@ TEST_F(PlusAddressSyncBridgeTest, ApplyIncrementalSyncChanges_AddUpdate) {
   // Update `profile1`.
   syncer::EntityChangeList change_list;
   PlusProfile old_profile1 = profile1;
-  profile1.plus_address = "new-" + profile1.plus_address;
+  profile1.plus_address = PlusAddress("new-" + *profile1.plus_address);
   syncer::EntityData entity_data = EntityDataFromPlusProfile(profile1);
   std::string storage_key = bridge().GetStorageKey(entity_data);
   change_list.push_back(

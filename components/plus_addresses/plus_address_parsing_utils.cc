@@ -34,7 +34,7 @@ namespace {
 std::optional<PlusProfile> ParsePlusProfileFromV1Dict(base::Value::Dict dict) {
   std::string profile_id;
   std::string facet_str;
-  std::string plus_address;
+  PlusAddress plus_address;
   std::optional<bool> is_confirmed;
   for (std::pair<const std::string&, base::Value&> entry : dict) {
     auto [key, val] = entry;
@@ -54,7 +54,7 @@ std::optional<PlusProfile> ParsePlusProfileFromV1Dict(base::Value::Dict dict) {
           continue;
         }
         if (base::MatchPattern(email_key, "*Address")) {
-          plus_address = std::move(email_val.GetString());
+          plus_address = PlusAddress(std::move(email_val.GetString()));
         }
         if (base::MatchPattern(email_key, "*Mode")) {
           is_confirmed =
@@ -63,7 +63,7 @@ std::optional<PlusProfile> ParsePlusProfileFromV1Dict(base::Value::Dict dict) {
       }
     }
   }
-  if (profile_id.empty() || facet_str.empty() || plus_address.empty() ||
+  if (profile_id.empty() || facet_str.empty() || plus_address->empty() ||
       !is_confirmed.has_value()) {
     return std::nullopt;
   }
@@ -129,21 +129,23 @@ std::optional<PreallocatedPlusAddress> ParsePreallocatedPlusAddress(
   static constexpr std::string_view kAddressKey = "emailAddress";
   static constexpr std::string_view kLifetimeKey = "reservationLifetime";
 
-  PreallocatedPlusAddress result;
-  if (std::string* address = dict.FindString(kAddressKey)) {
-    result.plus_address = std::move(*address);
+  PlusAddress address;
+  if (std::string* address_str = dict.FindString(kAddressKey)) {
+    address = PlusAddress(std::move(*address_str));
   } else {
     return std::nullopt;
   }
 
-  if (std::optional<base::TimeDelta> lifetime =
+  base::TimeDelta lifetime;
+  if (std::optional<base::TimeDelta> time =
           ParseLifetime(dict.FindString(kLifetimeKey))) {
-    result.lifetime = *lifetime;
+    lifetime = *time;
   } else {
     return std::nullopt;
   }
 
-  return std::move(result);
+  return std::make_optional<PreallocatedPlusAddress>(std::move(address),
+                                                     lifetime);
 }
 
 }  // namespace

@@ -120,7 +120,7 @@
 
     ManualFillPlusAddress* manualFillPlusAddress =
         [self createManualFillPlusAddress:base::SysUTF8ToNSString(
-                                              plusProfiles[i].plus_address)];
+                                              *plusProfiles[i].plus_address)];
     ManualFillPlusAddressItem* item = [[ManualFillPlusAddressItem alloc]
                 initWithPlusAddress:manualFillPlusAddress
                     contentInjector:_contentInjector

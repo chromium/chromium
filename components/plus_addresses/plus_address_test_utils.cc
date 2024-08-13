@@ -24,7 +24,7 @@ PlusProfile CreatePlusProfile(std::string plus_address,
   }
 
   return PlusProfile(/*profile_id=*/"123", facet,
-                     /*plus_address=*/std::move(plus_address),
+                     PlusAddress(std::move(plus_address)),
                      /*is_confirmed=*/is_confirmed);
 }
 
@@ -41,7 +41,7 @@ PlusProfile CreatePlusProfile2(bool use_full_domain) {
     facet = "bar.com";
   }
   return PlusProfile(/*profile_id=*/"234", facet,
-                     /*plus_address=*/"plus+bar@plus.plus",
+                     PlusAddress("plus+bar@plus.plus"),
                      /*is_confirmed=*/true);
 }
 
@@ -84,7 +84,7 @@ std::string MakePreallocateResponse(
   for (const PreallocatedPlusAddress& address : addresses) {
     profiles.Append(
         base::Value::Dict()
-            .Set("emailAddress", address.plus_address)
+            .Set("emailAddress", *address.plus_address)
             .Set("reservationLifetime",
                  base::NumberToString(address.lifetime.InSeconds()) + "s"));
   }
@@ -114,7 +114,7 @@ std::string MakePlusProfile(const PlusProfile& profile) {
             }
           }
         )",
-      {*profile.profile_id, facet, profile.plus_address, mode}, nullptr);
+      {*profile.profile_id, facet, *profile.plus_address, mode}, nullptr);
   DCHECK(base::JSONReader::Read(json));
   return json;
 }
