@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 
 namespace version_info {
@@ -17,8 +18,14 @@ namespace supervised_user {
 
 class FakeURLFilterDelegate : public SupervisedUserURLFilter::Delegate {
  public:
+  bool SupportsWebstoreURL(const GURL& url) const override;
+};
+
+class FakePlatformDelegate : public SupervisedUserService::PlatformDelegate {
+ public:
   std::string GetCountryCode() const override;
   version_info::Channel GetChannel() const override;
+  void CloseIncognitoTabs() override;
 };
 
 }  // namespace supervised_user

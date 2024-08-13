@@ -17,6 +17,10 @@ class SupervisedUserServicePlatformDelegate
   explicit SupervisedUserServicePlatformDelegate(
       ChromeBrowserState* browser_state);
 
+  // supervised_user::SupervisedUserService::PlatformDelegate
+  std::string GetCountryCode() const override;
+  version_info::Channel GetChannel() const override;
+
   // Closes all incognito tabs of all windows when supervised users sign in.
   void CloseIncognitoTabs() override;
 
