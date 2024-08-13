@@ -463,6 +463,15 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kRotate, WebDXFeature::kIndividualTransforms},
           {CSSSampleId::kScale, WebDXFeature::kIndividualTransforms},
           {CSSSampleId::kWillChange, WebDXFeature::kWillChange},
+          {CSSSampleId::kMaskImage, WebDXFeature::kMasks},
+          {CSSSampleId::kMaskClip, WebDXFeature::kMasks},
+          {CSSSampleId::kMaskSize, WebDXFeature::kMasks},
+          {CSSSampleId::kMaskOrigin, WebDXFeature::kMasks},
+          {CSSSampleId::kMaskRepeat, WebDXFeature::kMasks},
+          {CSSSampleId::kMaskComposite, WebDXFeature::kMasks},
+          {CSSSampleId::kMaskPosition, WebDXFeature::kMasks},
+          {CSSSampleId::kMaskMode, WebDXFeature::kMasks},
+          {CSSSampleId::kMask, WebDXFeature::kMasks},
       });
 
   return *kMap;

@@ -154,6 +154,7 @@ enum WebDXFeature {
   kImageSet = 98,
   kStructuredClone = 99,
   kSlotAssign = 100,
+  kMasks = 101,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

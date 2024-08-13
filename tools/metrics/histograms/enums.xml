@@ -34032,6 +34032,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="98" label="ImageSet"/>
   <int value="99" label="StructuredClone"/>
   <int value="100" label="SlotAssign"/>
+  <int value="101" label="Masks"/>
 </enum>
 
 <enum name="WebFontCacheHit">
