@@ -599,10 +599,10 @@ void BitstreamQualityMetrics::WriteToFile(
   constexpr const base::FilePath::CharType* kMetrixFileSuffix =
       FILE_PATH_LITERAL(".json");
   const std::string svc_text_ext = svc_text.empty() ? "" : "." + svc_text;
-  base::FilePath metrics_file_path = output_folder_path.Append(
-      g_env->GetTestOutputFilePath()
-          .Append(base::FilePath::FromASCII(svc_text_ext))
-          .AddExtension(kMetrixFileSuffix));
+  base::FilePath metrics_file_path =
+      output_folder_path.Append(g_env->GetTestOutputFilePath()
+                                    .AddExtensionASCII(svc_text_ext)
+                                    .AddExtension(kMetrixFileSuffix));
   // Make sure that the directory into which json is saved is created.
   LOG_ASSERT(base::CreateDirectory(metrics_file_path.DirName()));
   base::File metrics_output_file(
