@@ -207,4 +207,53 @@ std::string GetImageDataUrl(ui::AXNode* ax_node) {
   return url;
 }
 
+std::u16string GetTextContent(ui::AXNode* ax_node, bool is_docs) {
+  // For Google Docs, because the content is rendered in canvas, we distill
+  // text from the "Annotated Canvas"
+  // (https://sites.google.com/corp/google.com/docs-canvas-migration/home)
+  // instead of the HTML.
+  if (is_docs) {
+    // With 'Annotated Canvas', text is stored within the aria-labels of SVG
+    // elements. To retrieve this text, we need to access the 'name' attribute
+    // of these elements.
+    if ((ax_node->GetTextContentUTF16()).empty()) {
+      std::u16string nodeText = GetNameAttributeText(ax_node);
+      if (!nodeText.empty()) {
+        // Add a space between the text of two annotated canvas elements.
+        // Otherwise, there is no space separating two lines of text.
+        return nodeText + u" ";
+      }
+    } else {
+      // We ignore all text in the HTML. These text are either from comments or
+      // from off-screen divs that contain hidden information information that
+      // only is intended for screen readers and braille support. These are not
+      // actual text in the doc.
+      // TODO(b/324143642): Reading Mode handles Doc comments.
+      if (ax_node->GetRole() == ax::mojom::Role::kStaticText) {
+        return u"";
+      }
+    }
+  }
+  return ax_node->GetTextContentUTF16();
+}
+
+std::u16string GetNameAttributeText(ui::AXNode* ax_node) {
+  DCHECK(ax_node);
+  std::u16string node_text;
+  if (ax_node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+    node_text =
+        ax_node->GetString16Attribute(ax::mojom::StringAttribute::kName);
+  }
+
+  for (auto it = ax_node->UnignoredChildrenBegin();
+       it != ax_node->UnignoredChildrenEnd(); ++it) {
+    if (node_text.empty()) {
+      node_text = GetNameAttributeText(it.get());
+    } else {
+      node_text += u" " + GetNameAttributeText(it.get());
+    }
+  }
+  return node_text;
+}
+
 }  // namespace a11y

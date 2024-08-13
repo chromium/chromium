@@ -138,7 +138,7 @@ a11y::ReadAloudCurrentGranularity ReadAloudAppModel::GetNextNodes(
   // AXPosition to simplify Read Aloud-specific code and allow improvements
   // to be used by other places where AXPosition is used.
   while (!ax_position_->IsNullPosition() && !ax_position_->AtEndOfAXTree()) {
-    if (NoValidTextRemainingInCurrentNode(is_pdf)) {
+    if (NoValidTextRemainingInCurrentNode(is_pdf, is_docs)) {
       MoveToNextAXPosition(current_granularity, is_pdf, is_docs, current_nodes);
 
       // Return the current granularity if the position is invalid.
@@ -147,7 +147,7 @@ a11y::ReadAloudCurrentGranularity ReadAloudAppModel::GetNextNodes(
       }
 
       a11y::TraversalState traversal_state =
-          AddTextFromStartOfNode(is_pdf, current_granularity);
+          AddTextFromStartOfNode(is_pdf, is_docs, current_granularity);
 
       switch (traversal_state) {
         case a11y::TraversalState::EndOfSegment:
@@ -161,7 +161,7 @@ a11y::ReadAloudCurrentGranularity ReadAloudAppModel::GetNextNodes(
       }
     }
 
-    if (AddTextFromMiddleOfNode(is_pdf, current_granularity) ==
+    if (AddTextFromMiddleOfNode(is_pdf, is_docs, current_granularity) ==
         a11y::TraversalState::EndOfSegment) {
       return current_granularity;
     }
@@ -169,9 +169,10 @@ a11y::ReadAloudCurrentGranularity ReadAloudAppModel::GetNextNodes(
   return current_granularity;
 }
 
-bool ReadAloudAppModel::NoValidTextRemainingInCurrentNode(bool is_pdf) const {
+bool ReadAloudAppModel::NoValidTextRemainingInCurrentNode(bool is_pdf,
+                                                          bool is_docs) const {
   ui::AXNode* anchor_node = GetNextNodeFromPosition(ax_position_);
-  std::u16string text = anchor_node->GetTextContentUTF16();
+  std::u16string text = a11y::GetTextContent(anchor_node, is_docs);
   std::u16string text_substr = text.substr(current_text_index_);
   int prev_index = current_text_index_;
   // Gets the starting index for the next sentence in the current node.
@@ -248,10 +249,11 @@ bool ReadAloudAppModel::ShouldEndTextTraversal(
 
 a11y::TraversalState ReadAloudAppModel::AddTextFromStartOfNode(
     bool is_pdf,
+    bool is_docs,
     a11y::ReadAloudCurrentGranularity& current_granularity) {
   ui::AXNode* anchor_node = GetNextNodeFromPosition(ax_position_);
 
-  std::u16string base_text = anchor_node->GetTextContentUTF16();
+  std::u16string base_text = a11y::GetTextContent(anchor_node, is_docs);
 
   bool is_superscript = a11y::IsSuperscript(anchor_node);
 
@@ -299,7 +301,7 @@ a11y::TraversalState ReadAloudAppModel::AddTextFromStartOfNode(
     // (index_in_new_node);
     AddTextToCurrentGranularity(anchor_node, /* startIndex= */ 0,
                                 /* end_index= */ index_in_new_node,
-                                current_granularity);
+                                current_granularity, is_docs);
     current_text_index_ = index_in_new_node;
     if (current_text_index_ != (int)base_text.length()) {
       // If we're in the middle of the node, there's no need to attempt
@@ -323,10 +325,11 @@ a11y::TraversalState ReadAloudAppModel::AddTextFromStartOfNode(
 
 a11y::TraversalState ReadAloudAppModel::AddTextFromMiddleOfNode(
     bool is_pdf,
+    bool is_docs,
     a11y::ReadAloudCurrentGranularity& current_granularity) {
   // Add the next granularity piece within the current node.
   ui::AXNode* anchor_node = GetNextNodeFromPosition(ax_position_);
-  std::u16string text = anchor_node->GetTextContentUTF16();
+  std::u16string text = a11y::GetTextContent(anchor_node, is_docs);
   int prev_index = current_text_index_;
   std::u16string text_substr = text.substr(current_text_index_);
   // Find the next sentence within the current node.
@@ -340,7 +343,7 @@ a11y::TraversalState ReadAloudAppModel::AddTextFromMiddleOfNode(
   // the sentence) to the start of the next sentence.
   AddTextToCurrentGranularity(anchor_node, start_index,
                               /* end_index= */ current_text_index_,
-                              current_granularity);
+                              current_granularity, is_docs);
 
   // After adding the most recent granularity segment, if we're not at the
   //  end of the node, the current nodes can be returned, as we know there's
@@ -356,7 +359,8 @@ void ReadAloudAppModel::AddTextToCurrentGranularity(
     ui::AXNode* anchor_node,
     int start_index,
     int end_index,
-    a11y::ReadAloudCurrentGranularity& current_granularity) {
+    a11y::ReadAloudCurrentGranularity& current_granularity,
+    bool is_docs) {
   ReadAloudTextSegment segment;
   segment.id = anchor_node->id();
   segment.text_start = start_index;
@@ -365,8 +369,8 @@ void ReadAloudAppModel::AddTextToCurrentGranularity(
 
   int current_text_length = current_granularity.text.length();
 
-  current_granularity.text += anchor_node->GetTextContentUTF16().substr(
-      start_index, end_index - start_index);
+  current_granularity.text += a11y::GetTextContent(anchor_node, is_docs)
+                                  .substr(start_index, end_index - start_index);
 
   current_granularity.index_map.insert(
       {{current_text_length, current_granularity.text.length()}, segment.id});

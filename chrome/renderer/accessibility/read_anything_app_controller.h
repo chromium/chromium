@@ -176,8 +176,7 @@ class ReadAnythingAppController
   std::string GetDataFontCss(ui::AXNodeID ax_node_id) const;
   std::string GetHtmlTag(ui::AXNodeID ax_node_id) const;
   std::string GetLanguage(ui::AXNodeID ax_node_id) const;
-  std::string GetNameAttributeText(ui::AXNode* ax_node) const;
-  std::string GetTextContent(ui::AXNodeID ax_node_id) const;
+  std::u16string GetTextContent(ui::AXNodeID ax_node_id) const;
   std::string GetTextDirection(ui::AXNodeID ax_node_id) const;
   std::string GetUrl(ui::AXNodeID ax_node_id) const;
   std::string GetAltText(ui::AXNodeID ax_node_id) const;

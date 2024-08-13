@@ -39,6 +39,13 @@ std::string GetAltText(ui::AXNode* ax_node);
 
 // Returns the image data url for the given node.
 std::string GetImageDataUrl(ui::AXNode* ax_node);
+
+// Returns the text content for the given node. This needs to be a wrapper
+// instead of getting text from the node directly because the text content
+// is different if in Google Docs
+std::u16string GetTextContent(ui::AXNode* ax_node, bool is_docs);
+
+std::u16string GetNameAttributeText(ui::AXNode* ax_node);
 }  // namespace a11y
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_NODE_UTILS_H_

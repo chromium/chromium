@@ -201,7 +201,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     // No events we care about come about, so there's no distillation.
     EXPECT_CALL(*distiller_, Distill).Times(0);
     AccessibilityEventReceived({initial_update});
-    EXPECT_EQ("234", GetTextContent(1));
+    EXPECT_EQ(u"234", GetTextContent(1));
     Mock::VerifyAndClearExpectations(distiller_);
     return child_ids;
   }
@@ -393,7 +393,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->GetImageDataUrl(ax_node_id);
   }
 
-  std::string GetTextContent(ui::AXNodeID ax_node_id) {
+  std::u16string GetTextContent(ui::AXNodeID ax_node_id) {
     return controller_->GetTextContent(ax_node_id);
   }
 
@@ -1208,10 +1208,10 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent_NoSelection) {
 
   SendUpdateWithNodes({node1, node2, node3});
   OnAXTreeDistilled({});
-  EXPECT_EQ("Hello world", GetTextContent(1));
-  EXPECT_EQ("Hello", GetTextContent(2));
-  EXPECT_EQ("", GetTextContent(3));
-  EXPECT_EQ(" world", GetTextContent(4));
+  EXPECT_EQ(u"Hello world", GetTextContent(1));
+  EXPECT_EQ(u"Hello", GetTextContent(2));
+  EXPECT_EQ(u"", GetTextContent(3));
+  EXPECT_EQ(u" world", GetTextContent(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetTextContent_WithSelection) {
@@ -1230,10 +1230,10 @@ TEST_F(ReadAnythingAppControllerTest, GetTextContent_WithSelection) {
   update.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({});
-  EXPECT_EQ("Hello world friend", GetTextContent(1));
-  EXPECT_EQ("Hello", GetTextContent(2));
-  EXPECT_EQ(" world", GetTextContent(3));
-  EXPECT_EQ(" friend", GetTextContent(4));
+  EXPECT_EQ(u"Hello world friend", GetTextContent(1));
+  EXPECT_EQ(u"Hello", GetTextContent(2));
+  EXPECT_EQ(u" world", GetTextContent(3));
+  EXPECT_EQ(u" friend", GetTextContent(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -1255,25 +1255,24 @@ TEST_F(ReadAnythingAppControllerTest,
   OnAXTreeDistilled({});
   OnActiveAXTreeIDChanged(id_1);
   EXPECT_TRUE(IsGoogleDocs());
-  EXPECT_EQ("", GetTextContent(2));
-  EXPECT_EQ("", GetTextContent(3));
+  EXPECT_EQ(u"", GetTextContent(2));
+  EXPECT_EQ(u"", GetTextContent(3));
 }
 
 TEST_F(ReadAnythingAppControllerTest,
        GetTextContent_UseNameAttributeTextIfGoogleDocs) {
-  std::string text_content = "Hello";
-  std::string more_text_content = "world";
+  std::u16string text_content = u"Hello";
+  std::u16string more_text_content = u"world";
   ui::AXTreeUpdate update;
   ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
   test::SetUpdateTreeID(&update, id_1);
   ui::AXNodeData node1;
   node1.id = 2;
-  node1.AddStringAttribute(ax::mojom::StringAttribute::kName, text_content);
+  node1.AddStringAttribute(ax::mojom::StringAttribute::kName, "Hello");
 
   ui::AXNodeData node2;
   node2.id = 3;
-  node2.AddStringAttribute(ax::mojom::StringAttribute::kName,
-                           more_text_content);
+  node2.AddStringAttribute(ax::mojom::StringAttribute::kName, "world");
   ui::AXNodeData root = test::LinkNode(/* id= */ 1, DOCS_URL);
   root.child_ids = {node1.id, node2.id};
   root.role = ax::mojom::Role::kParagraph;
@@ -1285,9 +1284,9 @@ TEST_F(ReadAnythingAppControllerTest,
   OnAXTreeDistilled({});
   OnActiveAXTreeIDChanged(id_1);
   EXPECT_TRUE(IsGoogleDocs());
-  EXPECT_EQ("Hello world ", GetTextContent(1));
-  EXPECT_EQ(text_content + " ", GetTextContent(2));
-  EXPECT_EQ(more_text_content + " ", GetTextContent(3));
+  EXPECT_EQ(u"Hello world ", GetTextContent(1));
+  EXPECT_EQ(text_content + u" ", GetTextContent(2));
+  EXPECT_EQ(more_text_content + u" ", GetTextContent(3));
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -1317,9 +1316,9 @@ TEST_F(ReadAnythingAppControllerTest,
   OnAXTreeDistilled({});
   OnActiveAXTreeIDChanged(id_1);
   EXPECT_FALSE(IsGoogleDocs());
-  EXPECT_EQ("", GetTextContent(1));
-  EXPECT_EQ("", GetTextContent(2));
-  EXPECT_EQ("", GetTextContent(3));
+  EXPECT_EQ(u"", GetTextContent(1));
+  EXPECT_EQ(u"", GetTextContent(2));
+  EXPECT_EQ(u"", GetTextContent(3));
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetDisplayNameForLocale) {
@@ -1548,26 +1547,26 @@ TEST_F(ReadAnythingAppControllerTest, Draw_DoNotRecomputeDisplayNodesForDocs) {
 
 TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceived) {
   // Tree starts off with no text content.
-  EXPECT_EQ("", GetTextContent(1));
-  EXPECT_EQ("", GetTextContent(2));
-  EXPECT_EQ("", GetTextContent(3));
-  EXPECT_EQ("", GetTextContent(4));
+  EXPECT_EQ(u"", GetTextContent(1));
+  EXPECT_EQ(u"", GetTextContent(2));
+  EXPECT_EQ(u"", GetTextContent(3));
+  EXPECT_EQ(u"", GetTextContent(4));
 
   // Send a new update which settings the text content of node 2.
   ui::AXNodeData node = test::TextNode(/* id= */ 2, u"Hello world");
   SendUpdateWithNodes({node});
 
-  EXPECT_EQ("Hello world", GetTextContent(1));
-  EXPECT_EQ("Hello world", GetTextContent(2));
-  EXPECT_EQ("", GetTextContent(3));
-  EXPECT_EQ("", GetTextContent(4));
+  EXPECT_EQ(u"Hello world", GetTextContent(1));
+  EXPECT_EQ(u"Hello world", GetTextContent(2));
+  EXPECT_EQ(u"", GetTextContent(3));
+  EXPECT_EQ(u"", GetTextContent(4));
 
   // Send three updates which should be merged.
   SendBatchUpdates();
-  EXPECT_EQ("Node 2Node 3Node 4", GetTextContent(1));
-  EXPECT_EQ("Node 2", GetTextContent(2));
-  EXPECT_EQ("Node 3", GetTextContent(3));
-  EXPECT_EQ("Node 4", GetTextContent(4));
+  EXPECT_EQ(u"Node 2Node 3Node 4", GetTextContent(1));
+  EXPECT_EQ(u"Node 2", GetTextContent(2));
+  EXPECT_EQ(u"Node 3", GetTextContent(3));
+  EXPECT_EQ(u"Node 4", GetTextContent(4));
 
   // Clear node 1.
   ui::AXTreeUpdate clear_update;
@@ -1578,33 +1577,33 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceived) {
   clearNode.id = 1;
   clear_update.nodes = {clearNode};
   AccessibilityEventReceived({clear_update});
-  EXPECT_EQ("", GetTextContent(1));
+  EXPECT_EQ(u"", GetTextContent(1));
 }
 
 TEST_F(ReadAnythingAppControllerTest,
        AccessibilityEventReceivedWhileDistilling) {
   // Tree starts off with no text content.
-  EXPECT_EQ("", GetTextContent(1));
-  EXPECT_EQ("", GetTextContent(2));
-  EXPECT_EQ("", GetTextContent(3));
-  EXPECT_EQ("", GetTextContent(4));
+  EXPECT_EQ(u"", GetTextContent(1));
+  EXPECT_EQ(u"", GetTextContent(2));
+  EXPECT_EQ(u"", GetTextContent(3));
+  EXPECT_EQ(u"", GetTextContent(4));
 
   // Send a new update which settings the text content of node 2.
   ui::AXNodeData start_node = test::TextNode(/* id= */ 2, u"Hello world");
   SendUpdateWithNodes({start_node});
 
-  EXPECT_EQ("Hello world", GetTextContent(1));
-  EXPECT_EQ("Hello world", GetTextContent(2));
-  EXPECT_EQ("", GetTextContent(3));
-  EXPECT_EQ("", GetTextContent(4));
+  EXPECT_EQ(u"Hello world", GetTextContent(1));
+  EXPECT_EQ(u"Hello world", GetTextContent(2));
+  EXPECT_EQ(u"", GetTextContent(3));
+  EXPECT_EQ(u"", GetTextContent(4));
 
   // Send three updates while distilling.
   set_distillation_in_progress(true);
   SendBatchUpdates();
 
   // The updates shouldn't be applied yet.
-  EXPECT_EQ("Hello world", GetTextContent(1));
-  EXPECT_EQ("Hello world", GetTextContent(2));
+  EXPECT_EQ(u"Hello world", GetTextContent(1));
+  EXPECT_EQ(u"Hello world", GetTextContent(2));
 
   // Send another update after distillation finishes but before
   // OnAXTreeDistilled would unserialize the pending updates. Since a11y events
@@ -1614,35 +1613,35 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXNodeData final_node = test::TextNode(/* id= */ 2, u"Final update");
   SendUpdateWithNodes({final_node});
 
-  EXPECT_EQ("Final updateNode 3Node 4", GetTextContent(1));
-  EXPECT_EQ("Final update", GetTextContent(2));
-  EXPECT_EQ("Node 3", GetTextContent(3));
-  EXPECT_EQ("Node 4", GetTextContent(4));
+  EXPECT_EQ(u"Final updateNode 3Node 4", GetTextContent(1));
+  EXPECT_EQ(u"Final update", GetTextContent(2));
+  EXPECT_EQ(u"Node 3", GetTextContent(3));
+  EXPECT_EQ(u"Node 4", GetTextContent(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceivedWhileSpeaking) {
   // Tree starts off with no text content.
-  EXPECT_EQ("", GetTextContent(1));
-  EXPECT_EQ("", GetTextContent(2));
-  EXPECT_EQ("", GetTextContent(3));
-  EXPECT_EQ("", GetTextContent(4));
+  EXPECT_EQ(u"", GetTextContent(1));
+  EXPECT_EQ(u"", GetTextContent(2));
+  EXPECT_EQ(u"", GetTextContent(3));
+  EXPECT_EQ(u"", GetTextContent(4));
 
   // Send a new update which settings the text content of node 2.
   ui::AXNodeData start_node = test::TextNode(/* id= */ 2, u"Hello world");
   SendUpdateWithNodes({start_node});
 
-  EXPECT_EQ("Hello world", GetTextContent(1));
-  EXPECT_EQ("Hello world", GetTextContent(2));
-  EXPECT_EQ("", GetTextContent(3));
-  EXPECT_EQ("", GetTextContent(4));
+  EXPECT_EQ(u"Hello world", GetTextContent(1));
+  EXPECT_EQ(u"Hello world", GetTextContent(2));
+  EXPECT_EQ(u"", GetTextContent(3));
+  EXPECT_EQ(u"", GetTextContent(4));
 
   // Send three updates while playing.
   OnSpeechPlayingStateChanged(/* is_speech_active= */ true);
   SendBatchUpdates();
 
   // The updates shouldn't be applied yet.
-  EXPECT_EQ("Hello world", GetTextContent(1));
-  EXPECT_EQ("Hello world", GetTextContent(2));
+  EXPECT_EQ(u"Hello world", GetTextContent(1));
+  EXPECT_EQ(u"Hello world", GetTextContent(2));
 
   // Send another update after distillation finishes but before
   // OnAXTreeDistilled would unserialize the pending updates. Since a11y events
@@ -1652,10 +1651,10 @@ TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceivedWhileSpeaking) {
   ui::AXNodeData final_node = test::TextNode(/* id= */ 2, u"Final update");
   SendUpdateWithNodes({final_node});
 
-  EXPECT_EQ("Final updateNode 3Node 4", GetTextContent(1));
-  EXPECT_EQ("Final update", GetTextContent(2));
-  EXPECT_EQ("Node 3", GetTextContent(3));
-  EXPECT_EQ("Node 4", GetTextContent(4));
+  EXPECT_EQ(u"Final updateNode 3Node 4", GetTextContent(1));
+  EXPECT_EQ(u"Final update", GetTextContent(2));
+  EXPECT_EQ(u"Node 3", GetTextContent(3));
+  EXPECT_EQ(u"Node 4", GetTextContent(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
@@ -1681,7 +1680,7 @@ TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
     OnAXTreeDistilled({1});
     EXPECT_CALL(*distiller_, Distill).Times(1);
     OnActiveAXTreeIDChanged(tree_ids[i]);
-    EXPECT_EQ("Tree " + base::NumberToString(i), GetTextContent(1));
+    EXPECT_EQ(u"Tree " + base::NumberToString16(i), GetTextContent(1));
     Mock::VerifyAndClearExpectations(distiller_);
   }
 
@@ -1784,13 +1783,13 @@ TEST_F(ReadAnythingAppControllerTest, OnAXTreeDestroyed_EraseTreeCalled) {
   // Send update 0.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   AccessibilityEventReceived({updates[0]});
-  EXPECT_EQ("2345", GetTextContent(1));
+  EXPECT_EQ(u"2345", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 
   // Send update 1.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   AccessibilityEventReceived({updates[1]});
-  EXPECT_EQ("23456", GetTextContent(1));
+  EXPECT_EQ(u"23456", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 
   // Destroy the tree.
@@ -1807,7 +1806,7 @@ TEST_F(ReadAnythingAppControllerTest,
   // Send update 0. Data gets unserialized.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   AccessibilityEventReceived({updates[0]});
-  EXPECT_EQ("2345", GetTextContent(1));
+  EXPECT_EQ(u"2345", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 
   // Send update 1. This triggers distillation via a non-generated event. The
@@ -1815,7 +1814,7 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_CALL(*distiller_, Distill).Times(1);
   ui::AXEvent load_complete_1(1, ax::mojom::Event::kLoadComplete);
   AccessibilityEventReceived({updates[1]}, {load_complete_1});
-  EXPECT_EQ("23456", GetTextContent(1));
+  EXPECT_EQ(u"23456", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 
   // Send update 2. Distillation is still in progress; we get a non-generated
@@ -1824,7 +1823,7 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_CALL(*distiller_, Distill).Times(0);
   ui::AXEvent load_complete_2(2, ax::mojom::Event::kLoadComplete);
   AccessibilityEventReceived({updates[2]}, {load_complete_2});
-  EXPECT_EQ("23456", GetTextContent(1));
+  EXPECT_EQ(u"23456", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 
   // Complete distillation. The queued up tree update gets unserialized; we also
@@ -1832,7 +1831,7 @@ TEST_F(ReadAnythingAppControllerTest,
   // `requires_distillation_` from the model.
   EXPECT_CALL(*distiller_, Distill).Times(1);
   OnAXTreeDistilled({1});
-  EXPECT_EQ("234567", GetTextContent(1));
+  EXPECT_EQ(u"234567", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
@@ -1844,7 +1843,7 @@ TEST_F(ReadAnythingAppControllerTest,
   // Send update 0. Data gets unserialized.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   AccessibilityEventReceived({updates[0]});
-  EXPECT_EQ("2345", GetTextContent(1));
+  EXPECT_EQ(u"2345", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 
   // Send update 1. This triggers distillation via a non-generated event. The
@@ -1852,7 +1851,7 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_CALL(*distiller_, Distill).Times(1);
   ui::AXEvent load_complete_1(1, ax::mojom::Event::kLoadComplete);
   AccessibilityEventReceived({updates[1]}, {load_complete_1});
-  EXPECT_EQ("23456", GetTextContent(1));
+  EXPECT_EQ(u"23456", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 
   // Send update 2. Distillation is still in progress; we get a non-generated
@@ -1862,26 +1861,26 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXEvent load_complete_2(2, ax::mojom::Event::kLoadComplete);
   OnSpeechPlayingStateChanged(/*is_speech_active=*/true);
   AccessibilityEventReceived({updates[2]}, {load_complete_2});
-  EXPECT_EQ("23456", GetTextContent(1));
+  EXPECT_EQ(u"23456", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 
   // Complete distillation with speech still playing. This does not result in
   // distillation (yet). The data is not unserialized
   EXPECT_CALL(*distiller_, Distill).Times(0);
   OnAXTreeDistilled({1});
-  EXPECT_EQ("23456", GetTextContent(1));
+  EXPECT_EQ(u"23456", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 
   // Speech stops. We request distillation (deferred from above)
   EXPECT_CALL(*distiller_, Distill).Times(1);
   OnSpeechPlayingStateChanged(/*is_speech_active=*/false);
-  EXPECT_EQ("23456", GetTextContent(1));
+  EXPECT_EQ(u"23456", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 
   // Complete distillation. The queued up tree update gets unserialized.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   OnAXTreeDistilled({1});
-  EXPECT_EQ("234567", GetTextContent(1));
+  EXPECT_EQ(u"234567", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
@@ -1928,7 +1927,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
   EXPECT_CALL(*distiller_, Distill).Times(0);
   AccessibilityEventReceived({updates[2]});
-  EXPECT_EQ("56", GetTextContent(1));
+  EXPECT_EQ(u"56", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 
   // Calling OnActiveAXTreeID updates the active AXTreeID.

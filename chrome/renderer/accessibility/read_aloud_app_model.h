@@ -174,7 +174,8 @@ class ReadAloudAppModel {
       ui::AXNode* anchor_node,
       int start_index,
       int end_index,
-      a11y::ReadAloudCurrentGranularity& current_granularity);
+      a11y::ReadAloudCurrentGranularity& current_granularity,
+      bool is_docs);
 
   // Returns if we should end text traversal from the current position, due
   // to reaching the end of content or reaching a point, such as a paragraph,
@@ -195,6 +196,7 @@ class ReadAloudAppModel {
   // continue to the next node, or continue within the same node.
   a11y::TraversalState AddTextFromStartOfNode(
       bool is_pdf,
+      bool is_docs,
       a11y::ReadAloudCurrentGranularity& current_granularity);
 
   // Helper method for GetNextNodes.
@@ -210,6 +212,7 @@ class ReadAloudAppModel {
   // continue to the next node, or continue within the same node.
   a11y::TraversalState AddTextFromMiddleOfNode(
       bool is_pdf,
+      bool is_docs,
       a11y::ReadAloudCurrentGranularity& current_granularity);
 
   bool PositionEndsWithOpeningPunctuation(
@@ -236,7 +239,7 @@ class ReadAloudAppModel {
   //      return true. However, if Read Aloud has only read out the first
   //      sentence, this will return false because "You need to not stare."
   //      still needs to be read.
-  bool NoValidTextRemainingInCurrentNode(bool is_pdf) const;
+  bool NoValidTextRemainingInCurrentNode(bool is_pdf, bool is_docs) const;
 
   // Whether Read Aloud speech is currently playing or not.
   bool speech_playing_ = false;

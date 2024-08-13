@@ -1119,56 +1119,12 @@ std::string ReadAnythingAppController::GetLanguage(
   return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kLanguage);
 }
 
-std::string ReadAnythingAppController::GetNameAttributeText(
-    ui::AXNode* ax_node) const {
-  DCHECK(ax_node);
-  std::string node_text;
-  if (ax_node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
-    node_text = ax_node->GetStringAttribute(ax::mojom::StringAttribute::kName);
-  }
-
-  for (auto it = ax_node->UnignoredChildrenBegin();
-       it != ax_node->UnignoredChildrenEnd(); ++it) {
-    if (node_text.empty()) {
-      node_text = GetNameAttributeText(it.get());
-    } else {
-      node_text += " " + GetNameAttributeText(it.get());
-    }
-  }
-  return node_text;
-}
-
-std::string ReadAnythingAppController::GetTextContent(
+std::u16string ReadAnythingAppController::GetTextContent(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  // For Google Docs, because the content is rendered in canvas, we distill
-  // text from the "Annotated Canvas"
-  // (https://sites.google.com/corp/google.com/docs-canvas-migration/home)
-  // instead of the HTML.
-  if (IsGoogleDocs()) {
-    // With 'Annotated Canvas', text is stored within the aria-labels of SVG
-    // elements. To retrieve this text, we need to access the 'name' attribute
-    // of these elements.
-    if ((ax_node->GetTextContentUTF8()).empty()) {
-      std::string nodeText = GetNameAttributeText(ax_node);
-      if (!nodeText.empty()) {
-        // Add a space between the text of two annotated canvas elements.
-        // Otherwise, there is no space separating two lines of text.
-        return nodeText + " ";
-      }
-    } else {
-      // We ignore all text in the HTML. These text are either from comments or
-      // from off-screen divs that contain hidden information information that
-      // only is intended for screen readers and braille support. These are not
-      // actual text in the doc.
-      // TODO(b/324143642): Reading Mode handles Doc comments.
-      if (ax_node->GetRole() == ax::mojom::Role::kStaticText) {
-        return "";
-      }
-    }
-  }
-  return ax_node->GetTextContentUTF8();
+
+  return a11y::GetTextContent(ax_node, IsGoogleDocs());
 }
 
 std::string ReadAnythingAppController::GetTextDirection(
