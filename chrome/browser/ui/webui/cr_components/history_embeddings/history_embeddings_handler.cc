@@ -17,6 +17,7 @@
 #include "history_embeddings_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -77,9 +78,14 @@ void HistoryEmbeddingsHandler::OnReceivedSearchResult(
 
   auto mojom_search_result = history_embeddings::mojom::SearchResult::New();
   mojom_search_result->query = native_search_result.query;
-  mojom_search_result->answer = native_search_result.answer;
-  for (history_embeddings::ScoredUrlRow& scored_url_row :
-       native_search_result.scored_url_rows) {
+  bool has_answer = history_embeddings::kEnableAnswers.Get() &&
+                    !native_search_result.AnswerText().empty();
+  if (has_answer) {
+    mojom_search_result->answer = native_search_result.AnswerText();
+  }
+  for (size_t i = 0; i < native_search_result.scored_url_rows.size(); i++) {
+    history_embeddings::ScoredUrlRow& scored_url_row =
+        native_search_result.scored_url_rows[i];
     auto item = history_embeddings::mojom::SearchResultItem::New();
     item->title = base::UTF16ToUTF8(scored_url_row.row.title());
     item->url = scored_url_row.row.url();
@@ -96,6 +102,12 @@ void HistoryEmbeddingsHandler::OnReceivedSearchResult(
     item->url_for_display = base::UTF16ToUTF8(url_formatter::FormatUrl(
         scored_url_row.row.url(), format_types, base::UnescapeRule::SPACES,
         nullptr, nullptr, nullptr));
+    if (has_answer && i == native_search_result.AnswerIndex()) {
+      item->answer_data = history_embeddings::mojom::AnswerData::New();
+      item->answer_data->answer_text_directives.assign(
+          native_search_result.answerer_result.text_directives.begin(),
+          native_search_result.answerer_result.text_directives.end());
+    }
 
     if (history_embeddings::kShowSourcePassages.Get()) {
       item->source_passage = scored_url_row.GetBestPassage();

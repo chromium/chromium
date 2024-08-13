@@ -67,6 +67,10 @@ const base::FeatureParam<double> kSearchScoreThreshold(&kHistoryEmbeddings,
                                                        "SearchScoreThreshold",
                                                        -1);
 
+const base::FeatureParam<bool> kEnableAnswers(&kHistoryEmbeddings,
+                                              "EnableAnswers",
+                                              false);
+
 const base::FeatureParam<bool> kUseMlAnswerer(&kHistoryEmbeddings,
                                               "UseMlAnswerer",
                                               false);
@@ -123,6 +127,10 @@ const base::FeatureParam<base::TimeDelta> kEmbeddingsServiceTimeout(
     &kHistoryEmbeddings,
     "EmbeddingsServiceTimeout",
     base::Seconds(60));
+
+const base::FeatureParam<std::string> kFilterTerms(&kHistoryEmbeddings,
+                                                   "FilterTerms",
+                                                   "");
 
 bool IsHistoryEmbeddingsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)

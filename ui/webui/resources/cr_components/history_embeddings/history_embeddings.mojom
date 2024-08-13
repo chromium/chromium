@@ -7,6 +7,14 @@ module history_embeddings.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
+// Some SearchResultItem may be specialized and marked as the query answer.
+// When that happens, it will have an AnswerData instance for details.
+struct AnswerData {
+  // If this item is the answer, the base URL may be expanded to include one
+  // or more scroll-to-text-fragment directives.
+  array<string> answer_text_directives;
+};
+
 // A single completed history entry reference that forms part of a search
 // result and can be presented to the user with source context.
 struct SearchResultItem {
@@ -29,6 +37,10 @@ struct SearchResultItem {
 
   // The full source passage that was used to recall this item.
   string source_passage;
+
+  // When present, this contains information about how to mark this
+  // SearchResultItem as the query answer. Most items will not have it.
+  AnswerData? answer_data;
 };
 
 // Represents a search query for the history embeddings database.

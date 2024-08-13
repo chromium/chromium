@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <queue>
 #include <string>
 #include <utility>
 #include <vector>
@@ -103,7 +104,7 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
 
   base::OnceClosure query_history_continuation_;
 
-  std::string remove_visits_callback_;
+  std::queue<std::string> remove_visits_callbacks_;
 
   base::WeakPtrFactory<BrowsingHistoryHandler> weak_factory_{this};
 };

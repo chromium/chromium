@@ -1823,6 +1823,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.DatabaseInitialized" enum="Boolean"
+    expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    When the HistoryEmbeddings database is opened, this histogram is logged to
+    indicate whether initialization succeeded.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Embedder.CacheHit" enum="Boolean"
     expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>
@@ -2030,6 +2040,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
     Number of URLs that matched the query. Logged each time a query leveraging
     history embeddings is performed.
@@ -2039,6 +2050,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.Embeddings.Passages.ExtractionTime" units="ms"
     expires_after="2024-12-31">
   <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
     Round trip request and response time for a single passage extraction. The
     clock starts just before the browser requests passages from a renderer, and
@@ -2050,6 +2062,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.Embeddings.Passages.PassageCount" units="passages"
     expires_after="2024-12-31">
   <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
     Number of passages retrieved from a single page passage extraction. Logged
     each time passages are retrieved from a RenderFrameHost.
@@ -2059,6 +2072,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.Embeddings.Passages.TotalTextSize" units="bytes"
     expires_after="2024-12-31">
   <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
     The sum of passage text sizes for all passages retrieved from an extraction.
     Logged each time passages are retrieved from a RenderFrameHost.
@@ -2085,9 +2099,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.QueryFiltered"
+    enum="EmbeddingsQueryFiltered" expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>robertogden@chromium.org</owner>
+  <summary>
+    Indicates query filter status every time a query is checked for filtering.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Search.Completed" enum="Boolean"
     expires_after="2024-12-31">
   <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
     Whether the search completed without interruption. Logged each time a vector
     database search is performed.
@@ -2097,6 +2121,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.Embeddings.Search.Duration" units="ms"
     expires_after="2024-12-31">
   <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
     The number of milliseconds spent searching. Logged each time a vector
     database search is performed.
@@ -2106,15 +2131,28 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.Embeddings.Search.EmbeddingCount" units="embeddings"
     expires_after="2024-12-31">
   <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
     The number of embeddings searched. Logged each time a vector database search
     is performed.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.Search.SkippedNonAsciiPassageCount"
+    units="passages" expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    The number of passages that had their embeddings scored zero during search
+    due to the source passage containing non-ASCII characters. Logged each time
+    a vector database search is performed.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Search.UrlCount" units="urls"
     expires_after="2024-12-31">
   <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
     The number of URLs searched. Logged each time a vector database search is
     performed.
@@ -2124,6 +2162,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.Embeddings.UserActions" enum="EmbeddingsUserActions"
     expires_after="2025-04-15">
   <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
     Tracks user actions related to History Embeddings in various bins within a
     single histogram.

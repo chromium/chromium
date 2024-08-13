@@ -28,6 +28,7 @@ suite('cr-history-embeddings', () => {
       relativeTime: '2 hours ago',
       sourcePassage: 'Google description',
       lastUrlVisitTimestamp: 1000,
+      answerData: null,
     },
     {
       title: 'Youtube',
@@ -36,6 +37,7 @@ suite('cr-history-embeddings', () => {
       relativeTime: '4 hours ago',
       sourcePassage: 'Youtube description',
       lastUrlVisitTimestamp: 2000,
+      answerData: null,
     },
   ];
 

@@ -8,6 +8,7 @@
 #include <atomic>
 #include <optional>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -23,6 +24,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/url_row.h"
+#include "components/history_embeddings/answerer.h"
 #include "components/history_embeddings/passage_embeddings_service_controller.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
@@ -106,6 +108,16 @@ struct SearchResult {
   SearchResult& operator=(const SearchResult&);
   SearchResult& operator=(SearchResult&&);
 
+  // Gets the answer text from within the `answerer_result`.
+  const std::string& AnswerText() const;
+
+  // Finds the index in `scored_url_rows` that has the URL selected by the
+  // `answerer_result`, indicating where the answer came from.
+  size_t AnswerIndex() const;
+
+  // Session ID to associate query with answers.
+  std::string session_id;
+
   // Keep context for search parameters requested, to make logging easier.
   std::string query;
   std::optional<base::Time> time_range_start;
@@ -118,7 +130,7 @@ struct SearchResult {
   // This may be empty for initial embeddings search results, as the answer
   // isn't ready yet. When the answerer finishes work, a second search
   // result is provided with this answer filled.
-  std::string answer;
+  AnswererResult answerer_result;
 };
 
 using SearchResultCallback = base::RepeatingCallback<void(SearchResult)>;
@@ -297,6 +309,19 @@ class HistoryEmbeddingsService : public KeyedService,
       const std::vector<page_content_annotations::BatchAnnotationResult>&
           annotation_results);
 
+  // Called on main sequence after the history worker thread finalizes
+  // the initial search result with URL rows. Calls the `callback` and
+  // then proceeds to v2 answer generation if enabled.
+  void OnPrimarySearchResultReady(SearchResultCallback callback,
+                                  SearchResult result);
+
+  // Called after the answerer finishes computing an answer. Combines
+  // the `answer_result` into `search_result` and invokes `callback`
+  // with new search result complete with answer.
+  void OnAnswerComputed(SearchResultCallback callback,
+                        SearchResult search_result,
+                        AnswererResult answerer_result);
+
   // Rebuild absent embeddings from source passages.
   void RebuildAbsentEmbeddings(std::vector<UrlPassages> all_url_passages);
 
@@ -309,6 +334,9 @@ class HistoryEmbeddingsService : public KeyedService,
       content::WeakDocumentPtr weak_render_frame_host,
       base::Time time_before_database_access,
       std::optional<UrlPassagesEmbeddings> existing_url_data);
+
+  // Returns true if query should be filtered.
+  bool QueryIsFiltered(const std::string& raw_query) const;
 
   raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
@@ -340,12 +368,19 @@ class HistoryEmbeddingsService : public KeyedService,
   // Metadata about the embedder.
   std::optional<EmbedderMetadata> embedder_metadata_;
 
-  // The answerer used to answer queries with context.
+  // The answerer used to answer queries with context. May be nullptr if
+  // the kEnableAnswers parameter is false.
   std::unique_ptr<Answerer> answerer_;
 
   // Storage is bound to a separate sequence.
   // This will be null if the feature flag is disabled.
   base::SequenceBound<Storage> storage_;
+
+  // Single word terms with no spaces, checked exactly against query terms.
+  std::unordered_set<std::string> filter_terms_;
+
+  // Multi-word phrases with spaces, checked by finding substring in query.
+  std::vector<std::string> filter_phrases_;
 
   // Callback called when `ProcessAndStorePassages` completes. Needed for tests
   // as the blink dependency doesn't have a 'wait for pending requests to
@@ -366,6 +401,22 @@ class HistoryEmbeddingsService : public KeyedService,
 
   base::WeakPtrFactory<HistoryEmbeddingsService> weak_ptr_factory_;
 };
+
+// This corresponds to UMA histogram enum `EmbeddingsQueryFiltered`
+// in tools/metrics/histograms/metadata/history/enums.xml
+enum class QueryFiltered {
+  NOT_FILTERED,
+  FILTERED_NOT_ASCII,
+  FILTERED_PHRASE_MATCH,
+  FILTERED_TERM_MATCH,
+
+  // These enum values are logged in UMA. Do not reuse or skip any values.
+  // The order doesn't need to be chronological, but keep identities stable.
+  ENUM_COUNT,
+};
+
+// Record UMA histogram with query filter status.
+void RecordQueryFiltered(QueryFiltered status);
 
 // This corresponds to UMA histogram enum `EmbeddingsExtractionCancelled`
 // in tools/metrics/histograms/metadata/history/enums.xml

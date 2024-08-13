@@ -7,6 +7,7 @@
 #include <queue>
 
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 
@@ -29,6 +30,17 @@ UrlPassages::UrlPassages(const UrlPassages&) = default;
 UrlPassages& UrlPassages::operator=(const UrlPassages&) = default;
 UrlPassages::UrlPassages(UrlPassages&&) = default;
 UrlPassages& UrlPassages::operator=(UrlPassages&&) = default;
+bool UrlPassages::operator==(const UrlPassages& other) const {
+  if (other.url_id == url_id && other.visit_id == visit_id &&
+      other.visit_time == visit_time) {
+    std::string a, b;
+    if (other.passages.SerializeToString(&a) &&
+        passages.SerializeToString(&b)) {
+      return a == b;
+    }
+  }
+  return false;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -65,10 +77,17 @@ void Embedding::Normalize() {
   }
 }
 
-float Embedding::ScoreWith(const Embedding& other) const {
+float Embedding::ScoreWith(SearchInfo& search_info,
+                           const std::string& other_passage,
+                           const Embedding& other_embedding) const {
   float score = 0.0f;
-  for (size_t i = 0; i < data_.size(); i++) {
-    score += data_[i] * other.data_[i];
+  // Skip non-ASCII strings to avoid scoring problems with the model.
+  if (base::IsStringASCII(other_passage)) {
+    for (size_t i = 0; i < data_.size(); i++) {
+      score += data_[i] * other_embedding.data_[i];
+    }
+  } else {
+    search_info.skipped_nonascii_passage_count++;
   }
   return score;
 }
@@ -91,13 +110,17 @@ UrlEmbeddings::UrlEmbeddings(const UrlEmbeddings&) = default;
 UrlEmbeddings& UrlEmbeddings::operator=(const UrlEmbeddings&) = default;
 bool UrlEmbeddings::operator==(const UrlEmbeddings&) const = default;
 
-float UrlEmbeddings::BestScoreWith(const Embedding& query,
+float UrlEmbeddings::BestScoreWith(SearchInfo& search_info,
+                                   const Embedding& query,
+                                   const proto::PassagesValue& passages,
                                    size_t search_minimum_word_count) const {
   float best = std::numeric_limits<float>::min();
-  for (const Embedding& embedding : embeddings) {
-    float score = embedding.GetPassageWordCount() < search_minimum_word_count
-                      ? 0.0f
-                      : query.ScoreWith(embedding);
+  for (size_t i = 0; i < embeddings.size(); i++) {
+    const Embedding& embedding = embeddings[i];
+    float score =
+        embedding.GetPassageWordCount() < search_minimum_word_count
+            ? 0.0f
+            : query.ScoreWith(search_info, passages.passages(i), embedding);
     if (score > best) {
       best = score;
     }
@@ -138,6 +161,8 @@ UrlPassagesEmbeddings::UrlPassagesEmbeddings(const UrlPassagesEmbeddings&) =
     default;
 UrlPassagesEmbeddings& UrlPassagesEmbeddings::operator=(
     const UrlPassagesEmbeddings&) = default;
+bool UrlPassagesEmbeddings::operator==(const UrlPassagesEmbeddings&) const =
+    default;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -150,8 +175,8 @@ SearchInfo VectorDatabase::FindNearest(
     return {};
   }
 
-  std::unique_ptr<EmbeddingsIterator> iterator =
-      MakeEmbeddingsIterator(time_range_start);
+  std::unique_ptr<UrlDataIterator> iterator =
+      MakeUrlDataIterator(time_range_start);
   if (!iterator) {
     return {};
   }
@@ -178,17 +203,20 @@ SearchInfo VectorDatabase::FindNearest(
   search_info.completed = true;
   base::ElapsedTimer total_timer;
   base::TimeDelta scoring_elapsed;
-  while (const UrlEmbeddings* item = iterator->Next()) {
+  while (const UrlPassagesEmbeddings* url_data = iterator->Next()) {
+    const UrlEmbeddings& item = url_data->url_embeddings;
     if (is_search_halted.Run()) {
       search_info.completed = false;
       break;
     }
     search_info.searched_url_count++;
-    search_info.searched_embedding_count += item->embeddings.size();
+    search_info.searched_embedding_count += item.embeddings.size();
 
     base::ElapsedTimer scoring_timer;
-    const float score = item->BestScoreWith(query, search_minimum_word_count);
-    q.emplace(item->url_id, item->visit_id, item->visit_time, score);
+    const float score =
+        item.BestScoreWith(search_info, query, url_data->url_passages.passages,
+                           search_minimum_word_count);
+    q.emplace(item.url_id, item.visit_id, item.visit_time, score);
     while (q.size() > count) {
       q.pop();
     }
@@ -222,47 +250,49 @@ VectorDatabaseInMemory::VectorDatabaseInMemory() = default;
 VectorDatabaseInMemory::~VectorDatabaseInMemory() = default;
 
 void VectorDatabaseInMemory::SaveTo(VectorDatabase* database) {
-  for (UrlEmbeddings& url_embeddings : data_) {
-    database->AddUrlEmbeddings(std::move(url_embeddings));
+  for (UrlPassagesEmbeddings& url_data : data_) {
+    database->AddUrlData(std::move(url_data));
   }
   data_.clear();
 }
 
 size_t VectorDatabaseInMemory::GetEmbeddingDimensions() const {
-  return data_.empty() ? 0 : data_[0].embeddings[0].Dimensions();
+  return data_.empty() ? 0 : data_[0].url_embeddings.embeddings[0].Dimensions();
 }
 
-bool VectorDatabaseInMemory::AddUrlEmbeddings(
-    const UrlEmbeddings& url_embeddings) {
+bool VectorDatabaseInMemory::AddUrlData(UrlPassagesEmbeddings url_data) {
+  CHECK_EQ(static_cast<size_t>(url_data.url_passages.passages.passages_size()),
+           url_data.url_embeddings.embeddings.size());
   if (!data_.empty()) {
-    for (const Embedding& embedding : url_embeddings.embeddings) {
+    for (const Embedding& embedding : url_data.url_embeddings.embeddings) {
       // All embeddings in the database must have equal dimensions.
-      CHECK_EQ(embedding.Dimensions(), data_[0].embeddings[0].Dimensions());
+      CHECK_EQ(embedding.Dimensions(),
+               data_[0].url_embeddings.embeddings[0].Dimensions());
       // All embeddings in the database are expected to be normalized.
       CHECK_LT(std::abs(embedding.Magnitude() - kUnitLength), kEpsilon);
     }
   }
 
-  data_.push_back(url_embeddings);
+  data_.push_back(std::move(url_data));
   return true;
 }
 
-std::unique_ptr<VectorDatabase::EmbeddingsIterator>
-VectorDatabaseInMemory::MakeEmbeddingsIterator(
+std::unique_ptr<VectorDatabase::UrlDataIterator>
+VectorDatabaseInMemory::MakeUrlDataIterator(
     std::optional<base::Time> time_range_start) {
-  struct SimpleEmbeddingsIterator : public EmbeddingsIterator {
-    explicit SimpleEmbeddingsIterator(
-        const std::vector<UrlEmbeddings>& source,
-        std::optional<base::Time> time_range_start)
+  struct SimpleIterator : public UrlDataIterator {
+    explicit SimpleIterator(const std::vector<UrlPassagesEmbeddings>& source,
+                            std::optional<base::Time> time_range_start)
         : iterator_(source.cbegin()),
           end_(source.cend()),
           time_range_start_(time_range_start) {}
-    ~SimpleEmbeddingsIterator() override = default;
+    ~SimpleIterator() override = default;
 
-    const UrlEmbeddings* Next() override {
+    const UrlPassagesEmbeddings* Next() override {
       if (time_range_start_.has_value()) {
         while (iterator_ != end_) {
-          if (iterator_->visit_time >= time_range_start_.value()) {
+          if (iterator_->url_embeddings.visit_time >=
+              time_range_start_.value()) {
             break;
           }
           iterator_++;
@@ -275,8 +305,8 @@ VectorDatabaseInMemory::MakeEmbeddingsIterator(
       return &(*iterator_++);
     }
 
-    std::vector<UrlEmbeddings>::const_iterator iterator_;
-    std::vector<UrlEmbeddings>::const_iterator end_;
+    std::vector<UrlPassagesEmbeddings>::const_iterator iterator_;
+    std::vector<UrlPassagesEmbeddings>::const_iterator end_;
     const std::optional<base::Time> time_range_start_;
   };
 
@@ -284,7 +314,7 @@ VectorDatabaseInMemory::MakeEmbeddingsIterator(
     return nullptr;
   }
 
-  return std::make_unique<SimpleEmbeddingsIterator>(data_, time_range_start);
+  return std::make_unique<SimpleIterator>(data_, time_range_start);
 }
 
 }  // namespace history_embeddings

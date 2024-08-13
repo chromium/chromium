@@ -15,6 +15,10 @@ namespace history_embeddings {
 
 // The status of an answer generation attempt.
 enum class ComputeAnswerStatus {
+  // Not yet specified. This status in an AnswererResult means the answer
+  // isn't ready yet.
+  UNSPECIFIED,
+
   // Answer generated successfully.
   SUCCESS,
 
@@ -42,7 +46,7 @@ struct AnswererResult {
   AnswererResult(const AnswererResult&);
   ~AnswererResult();
 
-  ComputeAnswerStatus status;
+  ComputeAnswerStatus status = ComputeAnswerStatus::UNSPECIFIED;
   std::string query;
   optimization_guide::proto::Answer answer;
   // URL source of the answer.
@@ -63,9 +67,13 @@ class Answerer {
   // generated answers. It includes top search result passages and
   // potentially other data.
   struct Context {
-    Context();
-    Context(const Context& other);
+    explicit Context(std::string session_id);
+    Context(const Context&);
+    Context(Context&&);
     ~Context();
+
+    // Session ID to relate v2 logging with v1 logging session.
+    std::string session_id;
 
     // URL to passages.
     std::unordered_map<std::string, std::vector<std::string>> url_passages_map;

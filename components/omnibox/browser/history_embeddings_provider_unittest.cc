@@ -15,8 +15,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_row.h"
+#include "components/history/core/test/history_service_test_util.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/history_embeddings/mock_history_embeddings_service.h"
@@ -83,16 +86,25 @@ class FakeHistoryEmbeddingsProvider : public HistoryEmbeddingsProvider {
 class HistoryEmbeddingsProviderTest : public testing::Test,
                                       public AutocompleteProviderListener {
  public:
-  HistoryEmbeddingsProviderTest() {
+  void SetUp() override {
+    testing::Test::SetUp();
+
+    CHECK(history_dir_.CreateUniqueTempDir());
+    history_service_ =
+        history::CreateHistoryService(history_dir_.GetPath(), true);
+    history_embeddings_service_ = std::make_unique<
+        testing::NiceMock<history_embeddings::MockHistoryEmbeddingsService>>(
+        history_service_.get());
+
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
-    client_->set_history_embeddings_service(&history_embeddings_service_);
+    client_->set_history_embeddings_service(history_embeddings_service_.get());
 
     history_embeddings_provider_ =
         new FakeHistoryEmbeddingsProvider(client_.get(), this);
 
     // When `Search()` is called, pushes a callback to `search_callbacks_` that
     // can be ran to simulate `Search()` responding asyncly.
-    ON_CALL(history_embeddings_service_,
+    ON_CALL(*history_embeddings_service_,
             Search(testing::_, testing::_, testing::_, testing::_))
         .WillByDefault([&](std::string query,
                            std::optional<base::Time> time_range_start,
@@ -114,7 +126,11 @@ class HistoryEmbeddingsProviderTest : public testing::Test,
     last_update_matches_ = history_embeddings_provider_->matches_;
   }
 
-  testing::NiceMock<history_embeddings::MockHistoryEmbeddingsService>
+  base::ScopedTempDir history_dir_;
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<history::HistoryService> history_service_;
+  std::unique_ptr<
+      testing::NiceMock<history_embeddings::MockHistoryEmbeddingsService>>
       history_embeddings_service_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<FakeHistoryEmbeddingsProvider> history_embeddings_provider_;
@@ -133,7 +149,7 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
   // When the feature is disabled, should early exit.
   EXPECT_CALL(*client_, IsHistoryEmbeddingsEnabled())
       .WillOnce(testing::Return(false));
-  EXPECT_CALL(history_embeddings_service_,
+  EXPECT_CALL(*history_embeddings_service_,
               Search(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   history_embeddings_provider_->Start(long_input, false);
@@ -151,14 +167,14 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
   EXPECT_CALL(*client_, IsHistoryEmbeddingsEnabled())
       .WillRepeatedly(testing::Return(true));
 
-  EXPECT_CALL(history_embeddings_service_,
+  EXPECT_CALL(*history_embeddings_service_,
               Search(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   history_embeddings_provider_->Start(short_input, false);
 
   // Long queries should pass.
   EXPECT_CALL(
-      history_embeddings_service_,
+      *history_embeddings_service_,
       Search("query query query", std::optional<base::Time>{}, 3u, testing::_))
       .Times(1);
   history_embeddings_provider_->Start(long_input, false);
