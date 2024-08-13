@@ -45,6 +45,10 @@ const base::TimeDelta TimeDelayForSafetyCheckAutorun();
 // Feature to enable Safety Check Push Notifications.
 BASE_DECLARE_FEATURE(kSafetyCheckNotifications);
 
+// Feature to enable the refactored implementation of the `OmahaService`, using
+// new `OmahaServiceObserver`(s) for Omaha clients. Acts as a killswitch.
+BASE_DECLARE_FEATURE(kOmahaServiceRefactor);
+
 // Safety Check Notifications experiment variations.
 extern const char kSafetyCheckNotificationsExperimentType[];
 
@@ -329,6 +333,9 @@ bool IsSafetyCheckMagicStackEnabled();
 
 // Whether Safety Check Push Notifications should be sent to the user.
 bool IsSafetyCheckNotificationsEnabled();
+
+// Whether the refactored implementation of the `OmahaService` is enabled.
+bool IsOmahaServiceRefactorEnabled();
 
 // Returns the experiment type for the Safety Check Notifications feature.
 SafetyCheckNotificationsExperimentalArm

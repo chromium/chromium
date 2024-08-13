@@ -44,6 +44,10 @@ BASE_FEATURE(kSafetyCheckNotifications,
              "SafetyCheckNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOmahaServiceRefactor,
+             "OmahaServiceRefactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kSafetyCheckNotificationsExperimentType[] =
     "SafetyCheckNotificationsExperimentType";
 
@@ -306,6 +310,10 @@ bool IsSafetyCheckMagicStackEnabled() {
 
 bool IsSafetyCheckNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kSafetyCheckNotifications);
+}
+
+bool IsOmahaServiceRefactorEnabled() {
+  return base::FeatureList::IsEnabled(kOmahaServiceRefactor);
 }
 
 SafetyCheckNotificationsExperimentalArm

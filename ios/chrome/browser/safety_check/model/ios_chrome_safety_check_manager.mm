@@ -17,7 +17,6 @@
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -67,6 +66,10 @@ IOSChromeSafetyCheckManager::IOSChromeSafetyCheckManager(
 
   password_check_manager->AddObserver(this);
 
+  if (IsOmahaServiceRefactorEnabled()) {
+    OmahaService::AddObserver(this);
+  }
+
   pref_change_registrar_.Init(pref_service);
 
   pref_change_registrar_.Add(
@@ -111,6 +114,14 @@ IOSChromeSafetyCheckManager::~IOSChromeSafetyCheckManager() {
 void IOSChromeSafetyCheckManager::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // `OmahaService` instances are not currently destroyed due to the
+  // `NoDestructor` implementation. This prevents `OmahaServiceObserver`'s
+  // `ServiceWillShutdown()` from being called as intended. As a workaround,
+  // manually remove the observation here to ensure proper cleanup.
+  if (IsOmahaServiceRefactorEnabled()) {
+    OmahaService::RemoveObserver(this);
+  }
+
   for (auto& observer : observers_) {
     observer.ManagerWillShutdown(this);
   }
@@ -122,9 +133,12 @@ void IOSChromeSafetyCheckManager::Shutdown() {
   local_pref_service_ = nullptr;
 
   // Confirm that `IOSChromeSafetyCheckManager` is not observing any other
-  // services, particularly `IOSChromePasswordCheckManager`. This ensures safe
-  // destruction of `IOSChromeSafetyCheckManager`.
-  CHECK(!IsInObserverList());
+  // services, particularly `IOSChromePasswordCheckManager` and `OmahaService`.
+  // This ensures safe destruction of `IOSChromeSafetyCheckManager`.
+  CHECK(!IOSChromePasswordCheckManager::Observer::IsInObserverList());
+  if (IsOmahaServiceRefactorEnabled()) {
+    CHECK(!OmahaServiceObserver::IsInObserverList());
+  }
 }
 
 void IOSChromeSafetyCheckManager::StartSafetyCheck() {
@@ -295,6 +309,23 @@ void IOSChromeSafetyCheckManager::InsecureCredentialsChanged() {
 void IOSChromeSafetyCheckManager::ManagerWillShutdown(
     IOSChromePasswordCheckManager* password_check_manager) {
   password_check_manager->RemoveObserver(this);
+}
+
+void IOSChromeSafetyCheckManager::UpgradeRecommendedDetailsChanged(
+    UpgradeRecommendedDetails details) {
+  CHECK(IsOmahaServiceRefactorEnabled());
+
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&IOSChromeSafetyCheckManager::HandleOmahaResponse,
+                     weak_ptr_factory_.GetWeakPtr(), details));
+}
+
+void IOSChromeSafetyCheckManager::ServiceWillShutdown(
+    OmahaService* omaha_service) {
+  CHECK(IsOmahaServiceRefactorEnabled());
+
+  omaha_service->RemoveObserver(this);
 }
 
 SafeBrowsingSafetyCheckState

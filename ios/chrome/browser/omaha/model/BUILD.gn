@@ -7,8 +7,12 @@ source_set("model") {
     "omaha_service.h",
     "omaha_service.mm",
   ]
-  deps = [
+  public_deps = [
     "//base",
+    "//ios/chrome/browser/upgrade/model",
+    "//ios/chrome/browser/upgrade/model:public",
+  ]
+  deps = [
     "//base:i18n",
     "//build:branding_buildflags",
     "//components/metrics",
@@ -19,8 +23,7 @@ source_set("model") {
     "//ios/chrome/browser/browser_state_metrics/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/upgrade/model",
-    "//ios/chrome/browser/upgrade/model:public",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common",
     "//ios/public/provider/chrome/browser/omaha:omaha_api",
     "//ios/public/provider/chrome/browser/raccoon:raccoon_api",
