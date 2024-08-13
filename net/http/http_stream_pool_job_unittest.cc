@@ -520,6 +520,25 @@ TEST_F(HttpStreamPoolJobTest, ResolveErrorInfo) {
   ASSERT_EQ(requester.resolve_error_info(), resolve_error_info);
 }
 
+TEST_F(HttpStreamPoolJobTest, DnsAliases) {
+  const std::set<std::string> kAliases = {"alias1", "alias2"};
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .set_aliases(kAliases)
+      .CompleteStartSynchronously(OK);
+
+  SequencedSocketData data;
+  socket_factory()->AddSocketDataProvider(&data);
+
+  StreamRequester requester;
+  requester.RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(*requester.result(), IsOk());
+  std::unique_ptr<HttpStream> stream = requester.ReleaseStream();
+  EXPECT_THAT(stream->GetDnsAliases(), kAliases);
+}
+
 TEST_F(HttpStreamPoolJobTest, ConnectTiming) {
   constexpr base::TimeDelta kDnsUpdateDelay = base::Milliseconds(20);
   constexpr base::TimeDelta kDnsFinishDelay = base::Milliseconds(10);

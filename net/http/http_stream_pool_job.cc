@@ -1075,6 +1075,8 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
   std::unique_ptr<StreamSocket> stream_socket =
       in_flight_attempt->attempt->ReleaseStreamSocket();
   CHECK(stream_socket);
+  CHECK(service_endpoint_request_);
+  stream_socket->SetDnsAliases(service_endpoint_request_->GetDnsAliasResults());
 
   spdy_throttle_timer_.Stop();
 
