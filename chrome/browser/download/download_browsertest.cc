@@ -2313,19 +2313,9 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, NullInitiator) {
 
 class DownloadTestSplitCacheEnabled : public DownloadTest {
  public:
-  void SetUp() override {
-    DownloadTest::SetUp();
-    feature_list_.InitWithFeatures(GetEnabledFeatures(), GetDisabledFeatures());
-  }
-
-  virtual std::vector<base::test::FeatureRef> GetEnabledFeatures() const {
-    std::vector<base::test::FeatureRef> enabled;
-    enabled.push_back(net::features::kSplitCacheByNetworkIsolationKey);
-    return enabled;
-  }
-
-  virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() const {
-    return {};
+  DownloadTestSplitCacheEnabled() {
+    feature_list_.InitAndEnableFeature(
+        net::features::kSplitCacheByNetworkIsolationKey);
   }
 
  private:
@@ -2344,24 +2334,6 @@ class PdfDownloadTestSplitCacheEnabled : public base::test::WithFeatureOverride,
   pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() {
     return factory_.GetTestPdfViewerStreamManager(
         browser()->tab_strip_model()->GetActiveWebContents());
-  }
-
-  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
-    std::vector<base::test::FeatureRef> enabled =
-        DownloadTestSplitCacheEnabled::GetEnabledFeatures();
-    if (UseOopif()) {
-      enabled.push_back(chrome_pdf::features::kPdfOopif);
-    }
-    return enabled;
-  }
-
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    std::vector<base::test::FeatureRef> disabled =
-        DownloadTestSplitCacheEnabled::GetDisabledFeatures();
-    if (!UseOopif()) {
-      disabled.push_back(chrome_pdf::features::kPdfOopif);
-    }
-    return disabled;
   }
 
   void TestSaveMainFramePdfFromTargetFrameContextMenu(
