@@ -4264,11 +4264,14 @@ bool AXObject::IsKeyboardFocusable() const {
   CHECK(!element.NeedsStyleRecalc())
       << "\n* Element: " << element << "\n* Object: " << this
       << "\n* LayoutObject: " << GetLayoutObject();
-  if (!element.IsFocusable(Element::UpdateBehavior::kNoneForAccessibility)) {
-    return false;
+
+  if (element.IsKeyboardFocusable(
+          Element::UpdateBehavior::kNoneForAccessibility)) {
+    DCHECK(element.IsFocusable(Element::UpdateBehavior::kNoneForAccessibility));
+    return true;
   }
-  return element.IsKeyboardFocusable(
-      Element::UpdateBehavior::kNoneForAccessibility);
+
+  return false;
 }
 
 bool AXObject::CanSetSelectedAttribute() const {
