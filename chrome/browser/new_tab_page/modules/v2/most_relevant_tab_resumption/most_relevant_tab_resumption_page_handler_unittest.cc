@@ -8,6 +8,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/visited_url_ranking/visited_url_ranking_service_factory.h"
@@ -190,6 +191,7 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetTabs_TabURLTypesOnly) {
 }
 
 TEST_F(MostRelevantTabResumptionPageHandlerTest, GetTabs) {
+  base::HistogramTester histogram_tester;
   visited_url_ranking::MockVisitedURLRankingService*
       mock_visited_url_ranking_service =
           static_cast<visited_url_ranking::MockVisitedURLRankingService*>(
@@ -236,6 +238,9 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetTabs) {
     ASSERT_EQ("sample_title", tab_mojom->title);
     ASSERT_EQ(GURL(visited_url_ranking::kSampleSearchUrl), tab_mojom->url);
   }
+
+  histogram_tester.ExpectBucketCount("NewTabPage.Modules.DataRequest",
+                                     base::PersistentHash("tab_resumption"), 1);
 }
 
 TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreTab) {

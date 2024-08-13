@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
@@ -223,12 +224,14 @@ void MostRelevantTabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
   auto* visited_url_ranking_service =
       visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
           profile_);
-  // TODO (crbug.com/329243396): Wire call to `RankURLVisitAggregates`.
   visited_url_ranking_service->FetchURLVisitAggregates(
       fetch_options,
       base::BindOnce(
           &MostRelevantTabResumptionPageHandler::OnURLVisitAggregatesFetched,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  base::UmaHistogramSparse("NewTabPage.Modules.DataRequest",
+                           base::PersistentHash("tab_resumption"));
 }
 
 void MostRelevantTabResumptionPageHandler::DismissModule(
