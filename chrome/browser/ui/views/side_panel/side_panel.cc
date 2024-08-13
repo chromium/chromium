@@ -309,21 +309,9 @@ SidePanel::SidePanel(BrowserView* browser_view,
   SetVisible(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  // Get the width from user preferences, defaulting to the minimum size if not
-  // set.
-  PrefService* prefs = browser_view_->browser()->profile()->GetPrefs();
-  int width = GetMinimumSize().width();  // Default to minimum size
-
-  if (base::FeatureList::IsEnabled(features::kSidePanelResizing)) {
-    int pref_width = prefs->GetInteger(prefs::kSidePanelBookmarksWidth);
-    if (pref_width > 0) {
-      width = pref_width;
-    }
-  }
-
   // Set the panel width from the preference or use the minimum size as the
   // default.
-  SetPanelWidth(width);
+  SetPanelWidth(GetMinimumSize().width());
 
   SetBorder(views::CreateEmptyBorder(GetBorderInsets()));
 
@@ -490,10 +478,21 @@ void SidePanel::AnimationEnded(const gfx::Animation* animation) {
   InvalidateLayout();
 }
 
+void SidePanel::UpdateSidePanelWidthPref(const std::string& panel_id,
+                                         int width) {
+  PrefService* pref_service = browser_view_->browser()->profile()->GetPrefs();
+  ScopedDictPrefUpdate update(pref_service, prefs::kSidePanelIdToWidth);
+  base::Value::Dict& dict = update.Get();
+
+  // Update the dictionary with the new width for the specified panel_id.
+  dict.Set(panel_id, base::Value(width));
+}
+
 void SidePanel::OnResize(int resize_amount, bool done_resizing) {
   if (starting_width_on_resize_ < 0) {
     starting_width_on_resize_ = width();
   }
+
   int proposed_width = starting_width_on_resize_ +
                        ((IsRightAligned() && !base::i18n::IsRTL()) ||
                                 (!IsRightAligned() && base::i18n::IsRTL())
@@ -509,10 +508,19 @@ void SidePanel::OnResize(int resize_amount, bool done_resizing) {
   }
 
   if (width() != proposed_width) {
-    PrefService* pref_service = browser_view_->browser()->profile()->GetPrefs();
-    if (pref_service &&
-        base::FeatureList::IsEnabled(features::kSidePanelResizing)) {
-      pref_service->SetInteger(prefs::kSidePanelBookmarksWidth, proposed_width);
+    if (base::FeatureList::IsEnabled(features::kSidePanelResizing)) {
+      auto* coordinator =
+          browser_view_->browser()->GetFeatures().side_panel_ui();
+      if (coordinator) {
+        std::optional<SidePanelEntry::Id> entry_id =
+            coordinator->GetCurrentEntryId();
+        if (entry_id.has_value()) {
+          std::string panel_id = SidePanelEntryIdToString(entry_id.value());
+
+          // Update the pref with the new width
+          UpdateSidePanelWidthPref(panel_id, proposed_width);
+        }
+      }
     }
 
     SetPanelWidth(proposed_width);

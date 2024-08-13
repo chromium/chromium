@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
@@ -1142,36 +1143,70 @@ TEST_F(SidePanelCoordinatorTest,
   EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
 }
 
-TEST_F(SidePanelCoordinatorTest, SidePanelBookmarksWidthPreference) {
+// Verify that side panels maintain individual widths when the
+// #side-panel-resizing flag is enabled. In this case, the bookmarks and reading
+// list side panels should be able to have independent widths.
+TEST_F(SidePanelCoordinatorTest, SidePanelWidthPreference) {
   ASSERT_TRUE(browser_view());
   SidePanel* side_panel = browser_view()->unified_side_panel();
   ASSERT_TRUE(side_panel);
 
-  // Toggle the side panel to ensure it is open
+  PrefService* prefs = browser_view()->browser()->profile()->GetPrefs();
+  auto& dict = prefs->GetDict(prefs::kSidePanelIdToWidth);
+  const std::string bookmarks_side_panel_id =
+      SidePanelEntryIdToString(SidePanelEntry::Id::kBookmarks);
+  const std::string reading_list_side_panel_id =
+      SidePanelEntryIdToString(SidePanelEntry::Id::kReadingList);
+
+  // Verify both side panels do not have a default value.
+  EXPECT_FALSE(dict.FindInt(bookmarks_side_panel_id).has_value());
+  EXPECT_FALSE(dict.FindInt(reading_list_side_panel_id).has_value());
+
   coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
-
-  // Get the pref service to query the bookmarks pref
-  PrefService* prefs = browser_view()->browser()->profile()->GetPrefs();
-
-  // Check the default preference width
-  EXPECT_EQ(prefs->GetInteger(prefs::kSidePanelBookmarksWidth), -1);
-
-  // Ensure the side panel width is updated accordingly after resize
   views::test::RunScheduledLayout(browser_view());
+  const int initial_bookmark_width = side_panel->width();
+  const int expected_bookmark_width = initial_bookmark_width + 100;
 
-  const int initial_side_panel_width = side_panel->width();
-
-  // Call OnResize
+  // Resize the bookmarks side panel.
   side_panel->OnResize(-100, false);
 
-  // Ensure the side panel width is updated accordingly after resize
+  // Ensure the bookmark width is updated accordingly after resizing.
   views::test::RunScheduledLayout(browser_view());
-  EXPECT_EQ(side_panel->width(), initial_side_panel_width + 100);
+  EXPECT_EQ(side_panel->width(), expected_bookmark_width);
 
   // Verify the preference value is updated after resize
-  EXPECT_EQ(prefs->GetInteger(prefs::kSidePanelBookmarksWidth),
-            side_panel->width());
+  EXPECT_EQ(expected_bookmark_width, prefs->GetDict(prefs::kSidePanelIdToWidth)
+                                         .FindInt(bookmarks_side_panel_id));
+
+  // Show the reading list side panel.
+  coordinator_->Show(SidePanelEntry::Id::kReadingList);
+  views::test::RunScheduledLayout(browser_view());
+
+  // Verify the side panel keeps the bookmarks resized width since it doesn't
+  // have a default value yet.
+  EXPECT_EQ(expected_bookmark_width, side_panel->width());
+  const int initial_reading_list_width = side_panel->width();
+  const int expected_reading_list_width = initial_reading_list_width - 50;
+
+  // Resize the reading list side panel.
+  side_panel->OnResize(-50, false);
+  views::test::RunScheduledLayout(browser_view());
+
+  // Ensure the reading list width is updated accordingly after resizing.
+  EXPECT_EQ(side_panel->width(), expected_reading_list_width);
+
+  // Verify the preference value is updated after resize
+  EXPECT_EQ(expected_reading_list_width,
+            prefs->GetDict(prefs::kSidePanelIdToWidth)
+                .FindInt(reading_list_side_panel_id));
+
+  // Show the bookmarks side panel again to verify we use the correct width.
+  coordinator_->Show(SidePanelEntry::Id::kBookmarks);
+  views::test::RunScheduledLayout(browser_view());
+
+  EXPECT_NE(expected_reading_list_width, side_panel->width());
+  EXPECT_EQ(expected_bookmark_width, side_panel->width());
 }
 
 class TestSidePanelObserver : public SidePanelEntryObserver {

@@ -38,6 +38,7 @@ class SidePanel : public views::AccessiblePaneView,
   ~SidePanel() override;
 
   void SetPanelWidth(int width);
+  void UpdateSidePanelWidthPref(const std::string& panel_id, int width);
   double GetAnimationValue() const;
   gfx::RoundedCornersF background_radii() const { return background_radii_; }
   void SetBackgroundRadii(const gfx::RoundedCornersF& radii);

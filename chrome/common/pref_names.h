@@ -1941,10 +1941,8 @@ inline constexpr char kSidePanelHorizontalAlignment[] =
 // a button in the toolbar.
 inline constexpr char kSidePanelCompanionEntryPinnedToToolbar[] =
     "side_panel.companion_pinned_to_toolbar";
-// The pref key for the width of the Bookmarks side panel.
-// This key is used to store the user-specific width of the Bookmarks side
-// panel.
-inline constexpr char kSidePanelBookmarksWidth[] = "side_panel.bookmarks_width";
+// Stores the mapping of side panel IDs to their widths.
+inline constexpr char kSidePanelIdToWidth[] = "side_panel.id_to_width";
 // Corresponds to the enterprise policy.
 inline constexpr char kGoogleSearchSidePanelEnabled[] =
     "side_panel.google_search_side_panel_enabled";

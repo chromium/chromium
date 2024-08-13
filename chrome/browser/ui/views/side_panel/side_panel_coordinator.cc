@@ -716,6 +716,20 @@ void SidePanelCoordinator::PopulateSidePanel(
       view_state_observer.OnSidePanelDidOpen();
     }
   }
+
+  if (base::FeatureList::IsEnabled(features::kSidePanelResizing)) {
+    const base::Value::Dict& dict =
+        browser_view_->browser()->profile()->GetPrefs()->GetDict(
+            prefs::kSidePanelIdToWidth);
+    std::string current_entry_id = SidePanelEntryIdToString(entry->key().id());
+
+    std::optional<int> default_width = dict.FindInt(current_entry_id);
+
+    if (default_width.has_value()) {
+      auto* sp = browser_view_->unified_side_panel();
+      sp->SetPanelWidth(default_width.value());
+    }
+  }
 }
 
 void SidePanelCoordinator::ClearCachedEntryViews() {
