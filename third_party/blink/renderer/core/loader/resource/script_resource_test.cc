@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -169,6 +170,71 @@ TEST(ScriptResourceTest, CodeCacheEnabledByResponseFlag) {
   EXPECT_TRUE(handler);
   EXPECT_TRUE(handler->HashRequired());
   EXPECT_EQ(UTF8Encoding().GetName(), handler->Encoding());
+}
+
+class MockTestingPlatformForCodeCache : public TestingPlatformSupport {
+ public:
+  MockTestingPlatformForCodeCache() = default;
+  ~MockTestingPlatformForCodeCache() override = default;
+
+  // TestingPlatformSupport:
+  bool ShouldUseCodeCacheWithHashing(const WebURL& request_url) const override {
+    return should_use_code_cache_with_hashing_;
+  }
+
+  void set_should_use_code_cache_with_hashing(
+      bool should_use_code_cache_with_hashing) {
+    should_use_code_cache_with_hashing_ = should_use_code_cache_with_hashing;
+  }
+
+ private:
+  bool should_use_code_cache_with_hashing_ = true;
+};
+
+TEST(ScriptResourceTest, WebUICodeCachePlatformOverride) {
+  test::TaskEnvironment task_environment;
+  SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
+      "codecachewithhashing");
+  ScopedTestingPlatformSupport<MockTestingPlatformForCodeCache> platform;
+  V8TestingScope scope;
+  const auto create_resource = [&scope]() {
+    const KURL url("codecachewithhashing://www.example.com/script.js");
+    ScriptResource* resource =
+        ScriptResource::CreateForTest(scope.GetIsolate(), url, UTF8Encoding());
+    ResourceResponse response(url);
+    response.SetHttpStatusCode(200);
+
+    resource->ResponseReceived(response);
+    constexpr std::string_view kData = "abcd";
+    resource->AppendData(kData);
+    resource->FinishForTest();
+
+    return resource;
+  };
+
+  {
+    // Assert the cache handler is created when code caching is allowed by the
+    // platform.
+    platform->set_should_use_code_cache_with_hashing(true);
+    ScriptResource* resource = create_resource();
+
+    auto* handler = resource->CacheHandler();
+    EXPECT_TRUE(handler);
+    EXPECT_TRUE(handler->HashRequired());
+    EXPECT_EQ(UTF8Encoding().GetName(), handler->Encoding());
+  }
+
+  {
+    // Assert the cache handler is not created when code caching is restricted
+    // by the platform.
+    platform->set_should_use_code_cache_with_hashing(false);
+    ScriptResource* resource = create_resource();
+
+    auto* handler = resource->CacheHandler();
+    EXPECT_FALSE(handler);
+  }
+
+  SchemeRegistry::RemoveURLSchemeAsCodeCacheWithHashing("codecachewithhashing");
 }
 
 }  // namespace

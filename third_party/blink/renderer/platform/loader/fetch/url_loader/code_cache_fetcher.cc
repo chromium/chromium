@@ -7,6 +7,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -51,6 +53,11 @@ bool ShouldUseIsolatedCodeCache(
       // send cached code to it.
       return false;
     }
+    if (!Platform::Current()->ShouldUseCodeCacheWithHashing(
+            WebURL(current_url))) {
+      // Do not send cached code if opted-out by the embedder.
+      return false;
+    }
   } else if (!response_head.should_use_source_hash_for_js_code_cache) {
     // If the timestamps don't match or are null, the code cache data may be
     // for a different response. See https://crbug.com/1099587.
@@ -72,10 +79,13 @@ bool ShouldFetchCodeCache(const network::ResourceRequest& request) {
   }
 
   // Aside from http and https, the only other supported protocols are those
-  // listed in the SchemeRegistry as requiring a content equality check.
+  // listed in the SchemeRegistry as requiring a content equality check. Do not
+  // fetch cached code if opted-out by the embedder.
   bool should_use_source_hash =
       SchemeRegistry::SchemeSupportsCodeCacheWithHashing(
-          String(request.url.scheme()));
+          String(request.url.scheme())) &&
+      Platform::Current()->ShouldUseCodeCacheWithHashing(
+          WebURL(KURL(request.url)));
   if (!request.url.SchemeIsHTTPOrHTTPS() && !should_use_source_hash) {
     return false;
   }
