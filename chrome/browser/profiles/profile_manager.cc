@@ -1208,20 +1208,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
     profile->GetPrefs()->SetString(prefs::kProfileName, profile_name);
   }
 
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  bool force_supervised_user_id =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      !ash::IsSigninBrowserContext(profile) &&
-      !ash::IsLockScreenAppBrowserContext(profile) &&
-#endif
-      command_line->HasSwitch(switches::kSupervisedUserId);
-
-  if (force_supervised_user_id) {
-    supervised_user_id =
-        command_line->GetSwitchValueASCII(switches::kSupervisedUserId);
-  }
-  if (force_supervised_user_id ||
-      !profile->GetPrefs()->HasPrefPath(prefs::kSupervisedUserId)) {
+  if (!profile->GetPrefs()->HasPrefPath(prefs::kSupervisedUserId)) {
     profile->GetPrefs()->SetString(prefs::kSupervisedUserId,
                                    supervised_user_id);
   }

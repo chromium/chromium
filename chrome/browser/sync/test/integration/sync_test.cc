@@ -476,17 +476,6 @@ bool SyncTest::UseVerifier() {
   return false;
 }
 
-bool SyncTest::UseArcPackage() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ARC_PACKAGE do not support supervised users, switches::kSupervisedUserId
-  // need to be set in SetUpCommandLine() when a test will use supervise users.
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kSupervisedUserId);
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
 bool SyncTest::SetupClients() {
   previous_profile_ =
       g_browser_process->profile_manager()->GetLastUsedProfile();
@@ -513,10 +502,8 @@ bool SyncTest::SetupClients() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (UseArcPackage()) {
-    // Sets Arc flags, need to be called before create test profiles.
-    ArcAppListPrefsFactory::SetFactoryForSyncTest();
-  }
+  // Sets Arc flags, need to be called before create test profiles.
+  ArcAppListPrefsFactory::SetFactoryForSyncTest();
 
   // Uses a fake app list model updater to avoid interacting with Ash.
   model_updater_factory_scope_ =
