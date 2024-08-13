@@ -15,7 +15,7 @@
 			<string>PackageTracking</string>
 			<key>ImageTexts</key>
 			<dict>
-				<key>Track this Package? </key>
+				<key>Track this Package?</key>
 				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_1</string>
 				<key>Track</key>
 				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_2</string>
