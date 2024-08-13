@@ -296,9 +296,9 @@ struct GPU_EXPORT ExportedSharedImage {
   uint32_t texture_target_ = 0;
 };
 
-class SharedImageTexture {
+class GPU_EXPORT SharedImageTexture {
  public:
-  class ScopedAccess {
+  class GPU_EXPORT ScopedAccess {
    public:
     ScopedAccess(const ScopedAccess&) = delete;
     ScopedAccess& operator=(const ScopedAccess&) = delete;
