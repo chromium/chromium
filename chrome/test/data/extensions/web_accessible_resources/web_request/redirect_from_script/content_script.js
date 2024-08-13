@@ -4,4 +4,4 @@
 
 const script = document.createElement('script');
 document.body.appendChild(script);
-script.src = 'http://example.org/redirect.js';
+script.src = '/redirect.js';

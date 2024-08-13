@@ -283,26 +283,15 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesNonGuidBrowserTest,
   ASSERT_TRUE(content::EvalJs(web_contents, script).ExtractBool());
 }
 
-// TODO(crbug.com/352267920): Write a test to ensure that server redirects work
-// fine from this point. It already exists at
-// CrossExtensionEmbeddingOfWebAccessibleResources, but localize it here to
-// detect early exit from IsResourceWebAccessible, such as:
-// if (!upstream_url.is_empty() && !upstream_url.SchemeIs(kExtensionScheme)) {
-//   // return false;
-// }
-
-// TODO(crbug.com/352267920): Create a test for guid based on
-// accessible_link_resource.html;drc=9a60d160b6dfb2351ae0dad28341c3ca80f1ca59.
-
 // Verify setting script.src from a content script that relies on web request to
 // redirect to a web accessible resource. It's important to set `script.src`
 // using a script so that `CanRequestResource` has `upstream_url` set to
 // something other than a chrome extension.
 IN_PROC_BROWSER_TEST_P(ParameterizedWebAccessibleResourcesBrowserTest,
-                       WebRequest) {
+                       WebRequestRedirectFromScript) {
   ExtensionTestMessageListener listener("ready");
-  auto file_path =
-      test_data_dir_.AppendASCII("web_accessible_resources/web_request");
+  auto file_path = test_data_dir_.AppendASCII(
+      "web_accessible_resources/web_request/redirect_from_script");
   const Extension* extension = LoadExtension(file_path);
   ASSERT_TRUE(extension);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -311,6 +300,29 @@ IN_PROC_BROWSER_TEST_P(ParameterizedWebAccessibleResourcesBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL gurl = embedded_test_server()->GetURL("example.com", "/empty.html");
+  content::TestNavigationObserver navigation_observer(web_contents);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(gurl, web_contents->GetLastCommittedURL());
+  EXPECT_EQ(net::Error::OK, navigation_observer.last_net_error_code());
+}
+
+// Tests an extension using webRequest to redirect a resource included in a
+// page's static html.
+IN_PROC_BROWSER_TEST_P(ParameterizedWebAccessibleResourcesBrowserTest,
+                       WebRequestRedirectFromPage) {
+  ExtensionTestMessageListener listener("ready");
+  auto file_path = test_data_dir_.AppendASCII(
+      "web_accessible_resources/web_request/redirect_from_page");
+  const Extension* extension = LoadExtension(file_path);
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  // Navigate to a non extension page.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL gurl = embedded_test_server()->GetURL(
+      "example.com", "/extensions/api_test/webrequest/script/index.html");
   content::TestNavigationObserver navigation_observer(web_contents);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
