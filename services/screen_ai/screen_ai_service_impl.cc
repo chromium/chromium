@@ -45,6 +45,10 @@ namespace {
 // How often it would be checked that the service is idle and can be shutdown.
 constexpr base::TimeDelta kIdleCheckingDelay = base::Minutes(10);
 
+// How long after all clients are disconnected, it is checked if service is
+// idle.
+constexpr base::TimeDelta kCoolDownTime = base::Seconds(1);
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class OcrClientTypeForMetrics {
@@ -166,8 +170,12 @@ ScreenAIService::ScreenAIService(
     : factory_receiver_(this, std::move(receiver)),
       ocr_receiver_(this),
       main_content_extraction_receiver_(this) {
-  screen_ai_annotators_.set_disconnect_handler(base::BindRepeating(
-      &ScreenAIService::ReceiverDisconnected, weak_ptr_factory_.GetWeakPtr()));
+  screen2x_main_content_extractors_.set_disconnect_handler(
+      base::BindRepeating(&ScreenAIService::CheckIdleStateAfterDelay,
+                          weak_ptr_factory_.GetWeakPtr()));
+  screen_ai_annotators_.set_disconnect_handler(
+      base::BindRepeating(&ScreenAIService::OcrReceiverDisconnected,
+                          weak_ptr_factory_.GetWeakPtr()));
   model_data_holder_ = std::make_unique<ModelDataHolder>();
   idle_checking_timer_ = std::make_unique<base::RepeatingTimer>();
   idle_checking_timer_->Start(FROM_HERE, kIdleCheckingDelay, this,
@@ -290,8 +298,8 @@ void ScreenAIService::BindAnnotator(
 void ScreenAIService::BindMainContentExtractor(
     mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
         main_content_extractor) {
-  screen_2x_main_content_extractors_.Add(this,
-                                         std::move(main_content_extractor));
+  screen2x_main_content_extractors_.Add(this,
+                                        std::move(main_content_extractor));
 }
 
 std::optional<chrome_screen_ai::VisualAnnotation>
@@ -481,17 +489,28 @@ void ScreenAIService::RecordMetrics(ukm::SourceId ukm_source_id,
   }
 }
 
-void ScreenAIService::ReceiverDisconnected() {
+void ScreenAIService::OcrReceiverDisconnected() {
   auto entry = ocr_client_types_.find(screen_ai_annotators_.current_receiver());
   if (entry != ocr_client_types_.end()) {
     ocr_client_types_.erase(entry);
   }
+
+  CheckIdleStateAfterDelay();
+}
+
+void ScreenAIService::CheckIdleStateAfterDelay() {
+  // Check if service is idle, a little after the client disconnects.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ScreenAIService::ShutDownIfNoClients,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kCoolDownTime);
 }
 
 void ScreenAIService::ShutDownIfNoClients() {
   bool ocr_has_clients = screen_ai_annotators_.size();
   bool main_content_extraction_has_clients =
-      screen_2x_main_content_extractors_.size();
+      screen2x_main_content_extractors_.size();
   if (!ocr_has_clients && !main_content_extraction_has_clients) {
     VLOG(2) << "Shutting down since no client.";
     base::Process::TerminateCurrentProcessImmediately(0);
