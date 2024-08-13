@@ -15,8 +15,17 @@ import os
 import subprocess
 import sys
 
+_THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+_ROOT_DIR = os.path.abspath(
+    os.path.join(_THIS_DIR, "..", "..", "third_party/depot_tools"))
+
+sys.path.insert(0, _ROOT_DIR)
+
+import gclient_utils
+
 VersionInfo = collections.namedtuple("VersionInfo",
                                      ("revision_id", "revision", "timestamp"))
+_EMPTY_VERSION_INFO = VersionInfo('0' * 40, '0' * 40, 0)
 
 class GitError(Exception):
   pass
@@ -213,6 +222,52 @@ def WriteIfChanged(file_name, contents):
   return True
 
 
+def GetVersion(source_dir, commit_filter, merge_base_ref):
+  """
+  Returns the version information for the given source directory.
+  """
+  if gclient_utils.IsEnvCog():
+    return _EMPTY_VERSION_INFO
+
+  git_top_dir = None
+  try:
+    git_top_dir = GetGitTopDirectory(source_dir)
+  except GitError as e:
+    logging.warning("Failed to get git top directory from '%s': %s", source_dir,
+                    e)
+
+  merge_base_sha = 'HEAD'
+  if git_top_dir and merge_base_ref:
+    try:
+      merge_base_sha = GetMergeBase(git_top_dir, merge_base_ref)
+    except GitError as e:
+      logging.error(
+          "You requested a --merge-base-ref value of '%s' but no "
+          "merge base could be found between it and HEAD. Git "
+          "reports: %s", merge_base_ref, e)
+      return None
+
+  version_info = None
+  if git_top_dir:
+    try:
+      version_info = FetchGitRevision(git_top_dir, commit_filter,
+                                      merge_base_sha)
+    except GitError as e:
+      logging.error("Failed to get version info: %s", e)
+
+  if not version_info:
+    logging.warning(
+        "Falling back to a version of 0.0.0 to allow script to "
+        "finish. This is normal if you are bootstrapping a new environment "
+        "or do not have a git repository for any other reason. If not, this "
+        "could represent a serious error.")
+    # Use a dummy revision that has the same length as a Git commit hash,
+    # same as what we use in build/util/LASTCHANGE.dummy.
+    version_info = _EMPTY_VERSION_INFO
+
+  return version_info
+
+
 def main(argv=None):
   if argv is None:
     argv = sys.argv
@@ -278,40 +333,7 @@ def main(argv=None):
 
   source_dir = args.source_dir or os.path.dirname(os.path.abspath(__file__))
 
-  git_top_dir = None
-  try:
-    git_top_dir = GetGitTopDirectory(source_dir)
-  except GitError as e:
-    logging.warning("Failed to get git top directory from '%s': %s", source_dir,
-                    e)
-
-  merge_base_sha = 'HEAD'
-  if git_top_dir and args.merge_base_ref:
-    try:
-      merge_base_sha = GetMergeBase(git_top_dir, args.merge_base_ref)
-    except GitError as e:
-      logging.error("You requested a --merge-base-ref value of '%s' but no "
-                    "merge base could be found between it and HEAD. Git "
-                    "reports: %s", args.merge_base_ref, e)
-      return 3
-
-  version_info = None
-  if git_top_dir:
-    try:
-      version_info = FetchGitRevision(git_top_dir, commit_filter,
-                                      merge_base_sha)
-    except GitError as e:
-      logging.error("Failed to get version info: %s", e)
-
-  if not version_info:
-    logging.warning(
-        "Falling back to a version of 0.0.0 to allow script to "
-        "finish. This is normal if you are bootstrapping a new environment "
-        "or do not have a git repository for any other reason. If not, this "
-        "could represent a serious error.")
-    # Use a dummy revision that has the same length as a Git commit hash,
-    # same as what we use in build/util/LASTCHANGE.dummy.
-    version_info = VersionInfo('0' * 40, '0' * 40, 0)
+  version_info = GetVersion(source_dir, commit_filter, args.merge_base_ref)
 
   revision_string = version_info.revision
   if args.revision_id_only:
