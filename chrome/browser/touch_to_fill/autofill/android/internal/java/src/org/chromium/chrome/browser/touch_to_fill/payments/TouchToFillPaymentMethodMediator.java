@@ -169,8 +169,6 @@ class TouchToFillPaymentMethodMediator {
             sheetItems.add(new ListItem(CREDIT_CARD, model));
         }
 
-        // TODO(crbug.com/357659994): Implement the extended behavior exclusively for one virtual
-        // card that is deactivated.
         if (mCards.size() == 1) {
             // Use the credit card model as the property model for the fill button too
             assert sheetItems.get(0).type == CREDIT_CARD;
