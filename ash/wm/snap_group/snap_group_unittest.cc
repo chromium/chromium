@@ -9714,6 +9714,43 @@ TEST_F(SnapGroupMultiDisplayTest, MirroredMode) {
                                    group2->snap_group_divider());
 }
 
+// Tests that toggling mirror mode with a Snap Group on external display doesn't
+// result in crash. Regression test for http://b/358539486.
+TEST_F(SnapGroupMultiDisplayTest, ToggleMirrorMode) {
+  UpdateDisplay("800x700,801+0-800x700");
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  const auto& displays = display_manager->active_display_list();
+  ASSERT_EQ(2U, displays.size());
+
+  const gfx::Point point_in_display2(1000, 100);
+  EXPECT_FALSE(displays[0].bounds().Contains(point_in_display2));
+  EXPECT_TRUE(displays[1].bounds().Contains(point_in_display2));
+
+  // Create Snap Group on display #2.
+  std::unique_ptr<aura::Window> w1(
+      CreateAppWindow(gfx::Rect(1000, 0, 200, 100)));
+  std::unique_ptr<aura::Window> w2(
+      CreateAppWindow(gfx::Rect(1050, 50, 100, 200)));
+  auto* event_generator = GetEventGenerator();
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true, event_generator);
+  auto* snap_group_controller = SnapGroupController::Get();
+  SnapGroup* snap_group =
+      snap_group_controller->GetSnapGroupForGivenWindow(w1.get());
+  VerifySnapGroupOnDisplay(snap_group, displays[1].id());
+
+  // Enable mirror mode and there should be no crash.
+  display_manager->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
+  ASSERT_EQ(1U, displays.size());
+  VerifySnapGroupOnDisplay(snap_group, displays[0].id());
+  base::RunLoop().RunUntilIdle();
+
+  // Disable mirror mode and there should be no crash.
+  display_manager->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
+  ASSERT_EQ(2U, displays.size());
+  VerifySnapGroupOnDisplay(snap_group, displays[1].id());
+  base::RunLoop().RunUntilIdle();
+}
+
 // Tests drag to snap across a landscape and portrait display.
 TEST_F(SnapGroupMultiDisplayTest, LandscapeAndPortrait) {
   UpdateDisplay("800x600,600x800");
