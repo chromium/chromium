@@ -99,8 +99,9 @@ public class EdgeToEdgeUtils {
      * why it is ineligible.
      *
      * @param activity The current active activity.
+     * @return Whether the activity is eligible for edge to edge based on device configuration.
      */
-    public static void recordEligibility(@NonNull Activity activity) {
+    public static boolean recordEligibility(@NonNull Activity activity) {
         boolean eligible = true;
 
         if (hasTappableBottomBar(activity.getWindow())) {
@@ -135,6 +136,8 @@ public class EdgeToEdgeUtils {
                     IneligibilityReason.NUM_TYPES);
         }
         RecordHistogram.recordBooleanHistogram(ELIGIBLE_HISTOGRAM, eligible);
+
+        return eligible;
     }
 
     /**
