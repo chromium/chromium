@@ -233,6 +233,13 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   return CGSizeMake(UIViewNoIntrinsicMetric, kTabGridTopToolbarHeight);
 }
 
+- (void)setBounds:(CGRect)bounds {
+  [super setBounds:bounds];
+  if (_mode == TabGridMode::kSearch) {
+    [self configureSearchModeForTraitCollection:self.traitCollection];
+  }
+}
+
 - (void)didMoveToSuperview {
   if (_scrolledBackgroundView) {
     [self.superview.topAnchor
