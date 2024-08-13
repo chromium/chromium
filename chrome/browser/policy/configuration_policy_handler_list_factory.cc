@@ -2263,12 +2263,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kAuthenticationFlowAutoReloadInterval,
     base::Value::Type::INTEGER },
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_MAC)
-  { key::kAdHocCodeSigningForPWAsEnabled,
-    prefs::kWebAppsUseAdHocCodeSigningForAppShims,
-    base::Value::Type::BOOLEAN },
-#endif // BUILDFLAG(IS_MAC)
 };
 // clang-format on
 
