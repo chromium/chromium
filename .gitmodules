@@ -329,6 +329,9 @@
 [submodule "third_party/fuzztest/src"]
 	path = third_party/fuzztest/src
 	url = https://chromium.googlesource.com/external/github.com/google/fuzztest
+[submodule "third_party/domato/src"]
+	path = third_party/domato/src
+	url = https://chromium.googlesource.com/external/github.com/googleprojectzero/domato
 [submodule "third_party/libaddressinput/src"]
 	path = third_party/libaddressinput/src
 	url = https://chromium.googlesource.com/external/libaddressinput

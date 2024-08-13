@@ -400,6 +400,10 @@ vars = {
   # and whatever else without interference from each other.
   'fuzztest_revision': '32eb84a95951fa3a0148fb3e6a1a02f830ded136',
   # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling domato
+  # and whatever else without interference from each other.
+  'domato_revision': '739329a915173ab001880ec313659c3125a1c8fe',
+  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
   'devtools_frontend_revision': '693f4b9989ac0d5d437a8c90398af14486af557d',
@@ -2032,6 +2036,9 @@ deps = {
 
   'src/third_party/fuzztest/src':
     Var('chromium_git') + '/external/github.com/google/fuzztest.git' + '@' + Var('fuzztest_revision'),
+
+  'src/third_party/domato/src':
+    Var('chromium_git') + '/external/github.com/googleprojectzero/domato.git' + '@' + Var('domato_revision'),
 
   'src/third_party/libaddressinput/src':
     Var('chromium_git') + '/external/libaddressinput.git' + '@' + 'e8712e415627f22d0b00ebee8db99547077f39bd',
