@@ -96,7 +96,7 @@ public class TabSwitcherDrawable extends TintedDrawable {
         mTextPaint = new TextPaint();
         mTextPaint.setAntiAlias(true);
         mTextPaint.setTextAlign(Align.CENTER);
-        mTextPaint.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
+        mTextPaint.setTypeface(Typeface.create("google-sans-medium", Typeface.BOLD));
         mTextPaint.setColor(getColorForState());
 
         mIconPaint = new Paint();

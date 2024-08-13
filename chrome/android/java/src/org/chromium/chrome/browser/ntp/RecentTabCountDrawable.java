@@ -53,7 +53,7 @@ public class RecentTabCountDrawable extends DrawableWrapper {
 
         mTextPaint.setAntiAlias(true);
         mTextPaint.setTextAlign(Align.CENTER);
-        mTextPaint.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
+        mTextPaint.setTypeface(Typeface.create("google-sans-medium", Typeface.BOLD));
         mTextPaint.setColor(getColorForState());
         mTextPaint.setTextSize(
                 context.getResources().getDimension(R.dimen.recent_tabs_count_text_size));
