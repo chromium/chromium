@@ -54,7 +54,6 @@ public class ThumbnailMediaParserTest {
     private MediaParserResult parseMediaFile(String filePath, String mimeType) {
         File mediaFile = new File(filePath);
         Assert.assertTrue(mediaFile.exists());
-        boolean done = false;
         MediaParserResult result = new MediaParserResult();
 
         // The native MediaParser needs to be created on UI thread.
@@ -137,6 +136,60 @@ public class ThumbnailMediaParserTest {
     public void testParseVideoThumbnailVp8WithAlphaPlane() {
         String filePath = UrlUtils.getIsolatedTestRoot() + "/media/test/data/bear-vp8a.webm";
         MediaParserResult result = parseMediaFile(filePath, "video/webm");
+        Assert.assertTrue("Failed to parse video file.", result.mediaData != null);
+        Assert.assertTrue(
+                "Failed to retrieve thumbnail.", result.mediaData.thumbnail.getWidth() > 0);
+        Assert.assertTrue(
+                "Failed to retrieve thumbnail.", result.mediaData.thumbnail.getHeight() > 0);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"MediaParser"})
+    /**
+     * Verify metadata and thumbnail can be retrieved correctly from vp9 video file.
+     *
+     * @throws InterruptedException
+     */
+    public void testParseVideoThumbnailVp9() {
+        String filePath = UrlUtils.getIsolatedTestRoot() + "/media/test/data/bear-vp9.webm";
+        MediaParserResult result = parseMediaFile(filePath, "video/webm");
+        Assert.assertTrue("Failed to parse video file.", result.mediaData != null);
+        Assert.assertTrue(
+                "Failed to retrieve thumbnail.", result.mediaData.thumbnail.getWidth() > 0);
+        Assert.assertTrue(
+                "Failed to retrieve thumbnail.", result.mediaData.thumbnail.getHeight() > 0);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"MediaParser"})
+    /**
+     * Verify metadata and thumbnail can be retrieved correctly from av1 video file.
+     *
+     * @throws InterruptedException
+     */
+    public void testParseVideoThumbnailAv1() {
+        String filePath = UrlUtils.getIsolatedTestRoot() + "/media/test/data/bear-av1.mp4";
+        MediaParserResult result = parseMediaFile(filePath, "video/mp4");
+        Assert.assertTrue("Failed to parse video file.", result.mediaData != null);
+        Assert.assertTrue(
+                "Failed to retrieve thumbnail.", result.mediaData.thumbnail.getWidth() > 0);
+        Assert.assertTrue(
+                "Failed to retrieve thumbnail.", result.mediaData.thumbnail.getHeight() > 0);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"MediaParser"})
+    /**
+     * Verify metadata and thumbnail can be retrieved correctly from h265 video file.
+     *
+     * @throws InterruptedException
+     */
+    public void testParseVideoThumbnailH265() {
+        String filePath = UrlUtils.getIsolatedTestRoot() + "/media/test/data/bear-hevc-frag.mp4";
+        MediaParserResult result = parseMediaFile(filePath, "video/mp4");
         Assert.assertTrue("Failed to parse video file.", result.mediaData != null);
         Assert.assertTrue(
                 "Failed to retrieve thumbnail.", result.mediaData.thumbnail.getWidth() > 0);

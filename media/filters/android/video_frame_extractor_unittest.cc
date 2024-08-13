@@ -79,6 +79,34 @@ TEST_F(VideoFrameExtractorTest, ExtractVideoFrame) {
   EXPECT_EQ(result.decoder_config.codec(), VideoCodec::kH264);
 }
 
+TEST_F(VideoFrameExtractorTest, ExtractVideoFrameHEVC) {
+  auto result = ExtractFrame(GetTestDataFilePath("bear-hevc-frag.mp4"));
+  EXPECT_TRUE(result.success);
+  EXPECT_GT(result.encoded_frame.size(), 0u);
+  EXPECT_EQ(result.decoder_config.codec(), VideoCodec::kHEVC);
+}
+
+TEST_F(VideoFrameExtractorTest, ExtractVideoFrameAV1) {
+  auto result = ExtractFrame(GetTestDataFilePath("bear-av1.mp4"));
+  EXPECT_TRUE(result.success);
+  EXPECT_GT(result.encoded_frame.size(), 0u);
+  EXPECT_EQ(result.decoder_config.codec(), VideoCodec::kAV1);
+}
+
+TEST_F(VideoFrameExtractorTest, ExtractVideoFrameVP8) {
+  auto result = ExtractFrame(GetTestDataFilePath("bear-vp8-webvtt.webm"));
+  EXPECT_TRUE(result.success);
+  EXPECT_GT(result.encoded_frame.size(), 0u);
+  EXPECT_EQ(result.decoder_config.codec(), VideoCodec::kVP8);
+}
+
+TEST_F(VideoFrameExtractorTest, ExtractVideoFrameVP9) {
+  auto result = ExtractFrame(GetTestDataFilePath("bear-vp9.webm"));
+  EXPECT_TRUE(result.success);
+  EXPECT_GT(result.encoded_frame.size(), 0u);
+  EXPECT_EQ(result.decoder_config.codec(), VideoCodec::kVP9);
+}
+
 // Verifies graceful failure when trying to extract frame from an invalid video
 // file.
 TEST_F(VideoFrameExtractorTest, ExtractInvalidVideoFile) {

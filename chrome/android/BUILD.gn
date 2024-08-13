@@ -2116,9 +2116,12 @@ if (current_toolchain == default_toolchain) {
       "//content/test/data/media/session/",
       "//content/test/data/media/video-player.html",
       "//content/test/data/media/webrtc_test_utilities.js",
-      "//media/test/data/bear.mp4",
+      "//media/test/data/bear-av1.mp4",
+      "//media/test/data/bear-hevc-frag.mp4",
       "//media/test/data/bear-vp8-webvtt.webm",
       "//media/test/data/bear-vp8a.webm",
+      "//media/test/data/bear-vp9.webm",
+      "//media/test/data/bear.mp4",
       "//media/test/data/sfx.mp3",
     ]
 

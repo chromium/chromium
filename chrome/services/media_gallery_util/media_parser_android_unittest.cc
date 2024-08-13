@@ -19,6 +19,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
+#include "media/base/supported_types.h"
 #include "media/base/test_data_util.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -28,9 +29,9 @@
 namespace {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-// Returns if the first 3 or 4 bytes of H264 encoded |data| is the start code,
+// Returns if the first 3 or 4 bytes of H26x encoded |data| is the start code,
 // 0x000001 or 0x00000001.
-bool HasH264StartCode(const std::vector<uint8_t>& data) {
+bool HasH26xStartCode(const std::vector<uint8_t>& data) {
   if (data.size() < 4 || (data[0] != 0u || data[1] != 0u))
     return false;
   return data[2] == 0x01 || (data[2] == 0u && data[3] == 0x01);
@@ -139,10 +140,31 @@ TEST_F(MediaParserAndroidTest, VideoFrameExtractionH264) {
   chrome::mojom::ExtractVideoFrameResultPtr result =
       ExtractFrame(media::GetTestDataFilePath("bear.mp4"), "video/mp4");
   ASSERT_TRUE(result);
+
+  if (media::IsBuiltInVideoCodec(media::VideoCodec::kH264)) {
+    const auto& frame = result->frame_data->get_decoded_frame();
+    ASSERT_TRUE(frame);
+    EXPECT_TRUE(HasValidYUVData(*frame));
+    EXPECT_TRUE(frame->IsMappable());
+    EXPECT_FALSE(frame->HasTextures());
+    EXPECT_EQ(frame->storage_type(),
+              media::VideoFrame::StorageType::STORAGE_OWNED_MEMORY);
+  } else {
+    EXPECT_EQ(result->frame_data->which(),
+              chrome::mojom::VideoFrameData::Tag::kEncodedData);
+    EXPECT_FALSE(result->frame_data->get_encoded_data().empty());
+    EXPECT_TRUE(HasH26xStartCode(result->frame_data->get_encoded_data()));
+  }
+}
+
+TEST_F(MediaParserAndroidTest, VideoFrameExtractionH265) {
+  chrome::mojom::ExtractVideoFrameResultPtr result = ExtractFrame(
+      media::GetTestDataFilePath("bear-hevc-frag.mp4"), "video/mp4");
+  ASSERT_TRUE(result);
   EXPECT_EQ(result->frame_data->which(),
             chrome::mojom::VideoFrameData::Tag::kEncodedData);
   EXPECT_FALSE(result->frame_data->get_encoded_data().empty());
-  EXPECT_TRUE(HasH264StartCode(result->frame_data->get_encoded_data()));
+  EXPECT_TRUE(HasH26xStartCode(result->frame_data->get_encoded_data()));
 }
 #endif
 
@@ -179,6 +201,36 @@ TEST_F(MediaParserAndroidTest, VideoFrameExtractionVp8WithAlphaPlane) {
   EXPECT_FALSE(frame->HasTextures());
   EXPECT_EQ(frame->storage_type(),
             media::VideoFrame::StorageType::STORAGE_OWNED_MEMORY);
+}
+
+TEST_F(MediaParserAndroidTest, VideoFrameExtractionVp9) {
+  chrome::mojom::ExtractVideoFrameResultPtr result =
+      ExtractFrame(media::GetTestDataFilePath("bear-vp9.webm"), "video/webm");
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->frame_data->which(),
+            chrome::mojom::VideoFrameData::Tag::kDecodedFrame);
+  const auto& frame = result->frame_data->get_decoded_frame();
+  ASSERT_TRUE(frame);
+  EXPECT_TRUE(HasValidYUVData(*frame));
+  EXPECT_TRUE(frame->IsMappable());
+  EXPECT_FALSE(frame->HasTextures());
+  EXPECT_EQ(frame->storage_type(),
+            media::VideoFrame::StorageType::STORAGE_UNOWNED_MEMORY);
+}
+
+TEST_F(MediaParserAndroidTest, VideoFrameExtractionAv1) {
+  chrome::mojom::ExtractVideoFrameResultPtr result =
+      ExtractFrame(media::GetTestDataFilePath("bear-av1.mp4"), "video/mp4");
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->frame_data->which(),
+            chrome::mojom::VideoFrameData::Tag::kDecodedFrame);
+  const auto& frame = result->frame_data->get_decoded_frame();
+  ASSERT_TRUE(frame);
+  EXPECT_TRUE(HasValidYUVData(*frame));
+  EXPECT_TRUE(frame->IsMappable());
+  EXPECT_FALSE(frame->HasTextures());
+  EXPECT_EQ(frame->storage_type(),
+            media::VideoFrame::StorageType::STORAGE_UNOWNED_MEMORY);
 }
 
 // Test to verify frame extraction will fail on invalid video file.
