@@ -1,5 +1,5 @@
 apk_path=lib/armeabi-v7a/libchromium_android_linker.so, compress=False, alignment=4096
-apk_path=assets/chrome_100_percent.pak, compress=False, alignment=4
+apk_path=assets/chrome_100_percent.pak+com.android.webview+, compress=False, alignment=4
 apk_path=assets/locales/af.pak, compress=False, alignment=4
 apk_path=assets/locales/am.pak, compress=False, alignment=4
 apk_path=assets/locales/ar.pak, compress=False, alignment=4
@@ -81,6 +81,6 @@ apk_path=assets/locales/zh-CN.pak, compress=False, alignment=4
 apk_path=assets/locales/zh-HK.pak, compress=False, alignment=4
 apk_path=assets/locales/zh-TW.pak, compress=False, alignment=4
 apk_path=assets/locales/zu.pak, compress=False, alignment=4
-apk_path=assets/resources.pak, compress=False, alignment=4
+apk_path=assets/resources.pak+com.android.webview+, compress=False, alignment=4
 apk_path=assets/webapk8.dex, compress=True, alignment=0
 apk_path=assets/webapk_dex_version.txt, compress=True, alignment=0

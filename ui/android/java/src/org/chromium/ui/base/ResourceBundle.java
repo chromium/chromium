@@ -4,17 +4,13 @@
 
 package org.chromium.ui.base;
 
-import android.content.res.AssetFileDescriptor;
-import android.content.res.AssetManager;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import org.chromium.base.ContextUtils;
+import org.chromium.base.ApkAssets;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -93,24 +89,21 @@ public final class ResourceBundle {
                 pathPrefix = "assets/locales#lang_" + lang + "/";
             }
         }
-        String assetPath = pathPrefix + locale + ".pak";
-        AssetManager manager = ContextUtils.getApplicationContext().getAssets();
+        String apkSubpath = pathPrefix + locale + ".pak";
         // The file may not exist if the language split for this locale has not been installed
         // yet, so make sure it exists before returning the asset path.
-        try (AssetFileDescriptor afd = manager.openNonAssetFd(assetPath)) {
-            return assetPath;
-        } catch (IOException e) {
-            // Fallback for apk targets.
-            // TODO(crbug.com/40168285): Remove the need for this fallback logic.
-            String fallbackPath = "assets/locales/" + locale + ".pak";
-            try (AssetFileDescriptor afd = manager.openNonAssetFd(fallbackPath)) {
-                return fallbackPath;
-            } catch (IOException e2) {
-            }
-            if (logError) {
-                Log.e(TAG, "path=%s", assetPath, e);
-            }
-            return null;
+        if (ApkAssets.exists(apkSubpath)) {
+            return apkSubpath;
         }
+        // Fallback for apk targets.
+        // TODO(crbug.com/40168285): Remove the need for this fallback logic.
+        String fallbackPath = "assets/locales/" + locale + ".pak";
+        if (ApkAssets.exists(fallbackPath)) {
+            return fallbackPath;
+        }
+        if (logError) {
+            Log.e(TAG, "Did not exist: %s", apkSubpath);
+        }
+        return null;
     }
 }

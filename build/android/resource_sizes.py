@@ -421,6 +421,12 @@ def _AnalyzeInternal(apk_path,
   total_apk_size = os.path.getsize(apk_path)
   for member in apk_contents:
     filename = member.filename
+    # Undo asset path suffixing. https://crbug.com/357131361
+    if filename.endswith('+'):
+      suffix_idx = filename.rfind('+', 0, len(filename) - 1)
+      if suffix_idx != -1:
+        filename = filename[:suffix_idx]
+
     if filename.endswith('/'):
       continue
     if filename.endswith('.so'):
