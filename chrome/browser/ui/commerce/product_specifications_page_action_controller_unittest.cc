@@ -115,7 +115,7 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest, IconShow) {
   ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
   ASSERT_TRUE(controller_->WantsExpandedUi());
   ASSERT_EQ(l10n_util::GetStringFUTF16(
-                IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD,
+                IDS_COMPARE_PAGE_ACTION_ADD,
                 base::UTF8ToUTF16(static_cast<std::string>(kSetTitle))),
             controller_->GetProductSpecificationsLabel(false));
 }
@@ -148,8 +148,7 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
   ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
   ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
   ASSERT_TRUE(controller_->WantsExpandedUi());
-  ASSERT_EQ(l10n_util::GetStringUTF16(
-                IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT),
+  ASSERT_EQ(l10n_util::GetStringUTF16(IDS_COMPARE_PAGE_ACTION_ADD_DEFAULT),
             controller_->GetProductSpecificationsLabel(false));
 }
 
@@ -176,8 +175,7 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
   ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
   ASSERT_FALSE(controller_->ShouldShowForNavigation().value());
   ASSERT_FALSE(controller_->WantsExpandedUi());
-  ASSERT_EQ(l10n_util::GetStringUTF16(
-                IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT),
+  ASSERT_EQ(l10n_util::GetStringUTF16(IDS_COMPARE_PAGE_ACTION_ADD_DEFAULT),
             controller_->GetProductSpecificationsLabel(false));
 }
 

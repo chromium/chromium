@@ -355,10 +355,9 @@ void ProductSpecificationsEntryPointController::ShowEntryPointWithTitle(
   // Show the default title if the set title is too long.
   std::u16string title =
       entry_point_info->title.size() > kEntryPointTitleMaxLength
-          ? l10n_util::GetStringUTF16(
-                IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT_DEFAULT)
+          ? l10n_util::GetStringUTF16(IDS_COMPARE_ENTRY_POINT_DEFAULT)
           : l10n_util::GetStringFUTF16(
-                IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT,
+                IDS_COMPARE_ENTRY_POINT,
                 base::UTF8ToUTF16(entry_point_info->title));
   for (auto& observer : observers_) {
     observer.ShowEntryPointWithTitle(std::move(title));

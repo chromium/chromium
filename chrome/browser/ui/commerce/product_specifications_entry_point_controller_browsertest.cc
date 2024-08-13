@@ -146,9 +146,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_,
-              ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
-                  IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT, kTitleUnicode)))
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
+                              IDS_COMPARE_ENTRY_POINT, kTitleUnicode)))
       .Times(1);
 
   // Create two tabs and simulate selection.
@@ -206,9 +205,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_,
-              ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
-                  IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT, kTitleUnicode)))
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
+                              IDS_COMPARE_ENTRY_POINT, kTitleUnicode)))
       .Times(1);
 
   // Current window has to have more than three unique tabs that are similar in
@@ -509,9 +507,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_,
-              ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
-                  IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT, kTitleUnicode)))
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
+                              IDS_COMPARE_ENTRY_POINT, kTitleUnicode)))
       .Times(1);
 
   // Trigger entry point with navigations.
@@ -552,9 +549,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_,
-              ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
-                  IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT, kTitleUnicode)))
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
+                              IDS_COMPARE_ENTRY_POINT, kTitleUnicode)))
       .Times(1);
 
   // Trigger entry point with navigations.
@@ -592,9 +588,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_,
-              ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
-                  IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT, kTitleUnicode)))
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
+                              IDS_COMPARE_ENTRY_POINT, kTitleUnicode)))
       .Times(1);
 
   // Create two tabs and simulate selection.
@@ -631,9 +626,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_,
-              ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
-                  IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT, kTitleUnicode)))
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
+                              IDS_COMPARE_ENTRY_POINT, kTitleUnicode)))
       .Times(1);
 
   // Create two tabs and simulate selection.
@@ -677,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
 
   // Set up observer. The default title should be shown.
   EXPECT_CALL(*observer_, ShowEntryPointWithTitle(l10n_util::GetStringUTF16(
-                              IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT_DEFAULT)))
+                              IDS_COMPARE_ENTRY_POINT_DEFAULT)))
       .Times(1);
 
   // Create two tabs and simulate selection.
@@ -723,9 +717,8 @@ IN_PROC_BROWSER_TEST_F(
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_,
-              ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
-                  IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT, kTitleUnicode)))
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
+                              IDS_COMPARE_ENTRY_POINT, kTitleUnicode)))
       .Times(1);
 
   // Create two tabs and simulate selection.
@@ -770,9 +763,8 @@ IN_PROC_BROWSER_TEST_F(
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
 
   // Set up observer.
-  EXPECT_CALL(*observer_,
-              ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
-                  IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT, kTitleUnicode)))
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(l10n_util::GetStringFUTF16(
+                              IDS_COMPARE_ENTRY_POINT, kTitleUnicode)))
       .Times(1);
 
   // Current window has to have more than three unique tabs that are similar in

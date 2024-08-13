@@ -51,8 +51,7 @@ ProductSpecificationsIconView::ProductSpecificationsIconView(
               kProductSpecificationsChipElementId);
   GetViewAccessibility().SetProperties(
       /*role*/ std::nullopt,
-      l10n_util::GetStringUTF16(
-          IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT));
+      l10n_util::GetStringUTF16(IDS_COMPARE_PAGE_ACTION_ADD_DEFAULT));
 }
 
 ProductSpecificationsIconView::~ProductSpecificationsIconView() = default;

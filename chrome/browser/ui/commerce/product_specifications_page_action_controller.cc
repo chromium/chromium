@@ -160,16 +160,16 @@ ProductSpecificationsPageActionController::GetProductSpecificationsLabel(
     bool is_added) {
   if (!product_group_for_page_.has_value() ||
       product_group_for_page_->name.size() > kPageActionTitleMaxLength) {
-    return is_added ? l10n_util::GetStringUTF16(
-                          IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED_DEFAULT)
-                    : l10n_util::GetStringUTF16(
-                          IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT);
+    return is_added
+               ? l10n_util::GetStringUTF16(
+                     IDS_COMPARE_PAGE_ACTION_ADDED_DEFAULT)
+               : l10n_util::GetStringUTF16(IDS_COMPARE_PAGE_ACTION_ADD_DEFAULT);
   }
   std::u16string set_name = base::UTF8ToUTF16(product_group_for_page_->name);
-  return is_added ? l10n_util::GetStringFUTF16(
-                        IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED, set_name)
-                  : l10n_util::GetStringFUTF16(
-                        IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD, set_name);
+  return is_added ? l10n_util::GetStringFUTF16(IDS_COMPARE_PAGE_ACTION_ADDED,
+                                               set_name)
+                  : l10n_util::GetStringFUTF16(IDS_COMPARE_PAGE_ACTION_ADD,
+                                               set_name);
 }
 
 void ProductSpecificationsPageActionController::HandleProductInfoResponse(

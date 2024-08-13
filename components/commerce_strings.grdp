@@ -534,11 +534,29 @@
   <message name="IDS_COMPARE_EMPTY_STATE_TITLE_DESCRIPTION" desc="The description of the prompt that shows for tab compare when no products have been selected.">
     Something will show here once you select something from the dropdown under this
   </message>
+  <message name="IDS_COMPARE_ENTRY_POINT_DEFAULT" desc="The default text for the Compare entry point button.">
+    Compare tabs?
+  </message>
+  <message name="IDS_COMPARE_ENTRY_POINT" desc="The text for the Compare entry point button with a placeholder for the category of products being compared.">
+    Compare <ph name="CATEGORY">$1<ex>Baby Carriers</ex></ph>?
+  </message>
   <message name="IDS_COMPARE_LEARN_MORE_A11Y_LABEL" desc="Accessibility label for a link labeled 'Learn more' that links to a help article about tab compare.">
     Learn more about Compare.
   </message>
   <message name="IDS_COMPARE_OFFLINE_TOAST_MESSAGE" desc="The message that shows when tab compare is offline.">
     Check your connection and try again.
+  </message>
+  <message name="IDS_COMPARE_PAGE_ACTION_ADD_DEFAULT" desc="The default text for the Compare page action chip before adding the current page.">
+    Add to Comparison?
+  </message>
+  <message name="IDS_COMPARE_PAGE_ACTION_ADDED_DEFAULT" desc="The default text for the Compare page action chip after adding the current page, indicating that the page has been added to a comparison table.">
+    Added to Comparison
+  </message>
+  <message name="IDS_COMPARE_PAGE_ACTION_ADD" desc="The text for the Compare page action chip with a placeholder for comparison table name, indicating which set the current page will be added to if user clicks on the page action.">
+    Add to <ph name="SET">$1<ex>Cell Phones</ex></ph>?
+  </message>
+  <message name="IDS_COMPARE_PAGE_ACTION_ADDED" desc="The text for the Compare page action chip with a placeholder for what comparison table this current page has been added to.">
+    Added to <ph name="SET">$1<ex>Cell Phones</ex></ph>
   </message>
   <message name="IDS_COMPARE_PRICE_ROW_TITLE" desc="The title for the product price row in the tab compare table.">
     Price
@@ -561,30 +579,11 @@
   <message name="IDS_COMPARE_SUGGESTIONS_SECTION" desc="The title of the section in the product selection drop-down in the tab compare UI that shows a list of tabs suggested by the browser to be put into the table.">
     Suggestions
   </message>
-
-  <!-- For Product Specifications -->
-  <message name="IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT_DEFAULT" translateable="false" desc="The default text for the Product Specifications entry point button.">
-    Analyze pages?
-  </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT" translateable="false" desc="The text for the Product Specifications entry point button with a placeholder for what the specifications are for.">
-    Analyze <ph name="SPECIFICATION">$1<ex>pages</ex></ph>?
-  </message>
-  <message name="IDS_TOOLTIP_PRODUCT_SPECIFICATIONS_ENTRY_POINT_CLOSE" translateable="false" desc="The tooltip text for the close button within the Product Specifications entry point button.">
+  <message name="IDS_TOOLTIP_COMPARE_ENTRY_POINT_CLOSE" desc="The tooltip text for the close button within the Compare entry point button.">
     Dismiss suggestion
   </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT" translateable="false" desc="The default text for the Product Specifications page action chip before adding the current page.">
-    Add to analysis?
-  </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED_DEFAULT" translateable="false" desc="The default text for the Product Specifications page action chip after adding the current page.">
-    Added to analysis
-  </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD" translateable="false" desc="The text for the Product Specifications page action chip with a placeholder for what the specifications are for, before adding the current page.">
-    Add to <ph name="SPECIFICATION">$1<ex>analysis</ex></ph>?
-  </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED" translateable="false" desc="The text for the Product Specifications page action chip with a placeholder for what the specifications are for, after adding the current page.">
-    Added to <ph name="SPECIFICATION">$1<ex>analysis</ex></ph>
-  </message>
-  
+
+  <!-- For Product Specifications -->
   <message name="IDS_PRODUCT_SPECIFICATIONS_FEEDBACK_PLACEHOLDER" translateable="false" desc="Placeholder text for the product specifications feedback form.">
     Send feedback for Product Specifications.
   </message>

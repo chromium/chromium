@@ -49,8 +49,7 @@ ProductSpecificationsButton::ProductSpecificationsButton(
           tab_strip_controller,
           base::BindRepeating(&ProductSpecificationsButton::OnClicked,
                               base::Unretained(this)),
-          l10n_util::GetStringUTF16(
-              IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT_DEFAULT),
+          l10n_util::GetStringUTF16(IDS_COMPARE_ENTRY_POINT_DEFAULT),
           Edge::kNone),
       locked_expansion_view_(locked_expansion_view),
       tab_strip_model_(tab_strip_model),
@@ -69,8 +68,7 @@ ProductSpecificationsButton::ProductSpecificationsButton(
   SetProperty(views::kElementIdentifierKey,
               kProductSpecificationsButtonElementId);
 
-  SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT_DEFAULT));
+  SetTooltipText(l10n_util::GetStringUTF16(IDS_COMPARE_ENTRY_POINT_DEFAULT));
   // TODO(b/325661685): Set accessibility name of the button.
   SetLabelStyle(views::style::STYLE_BODY_3_EMPHASIS);
   label()->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
@@ -262,8 +260,8 @@ void ProductSpecificationsButton::SetCloseButton(
     views::LabelButton::PressedCallback pressed_callback) {
   auto close_button =
       std::make_unique<views::LabelButton>(std::move(pressed_callback));
-  close_button->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_TOOLTIP_PRODUCT_SPECIFICATIONS_ENTRY_POINT_CLOSE));
+  close_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_TOOLTIP_COMPARE_ENTRY_POINT_CLOSE));
 
   const ui::ImageModel icon_image_model = ui::ImageModel::FromVectorIcon(
       vector_icons::kCloseChromeRefreshIcon,
