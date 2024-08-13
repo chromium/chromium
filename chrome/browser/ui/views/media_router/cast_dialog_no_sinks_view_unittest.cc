@@ -7,10 +7,14 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace media_router {
 
@@ -26,7 +30,8 @@ class CastDialogNoSinksViewTest : public ChromeViewsTestBase {
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-    no_sinks_view_ = std::make_unique<CastDialogNoSinksView>(nullptr);
+    no_sinks_view_ = std::make_unique<CastDialogNoSinksView>(
+        nullptr, /*permission_rejected*/ false);
   }
 
  protected:
@@ -40,7 +45,10 @@ class CastDialogNoSinksViewTest : public ChromeViewsTestBase {
     return no_sinks_view_->label_text_for_testing();
   }
 
- private:
+  const std::u16string& get_permission_rejected_label_text() const {
+    return no_sinks_view_->permission_rejected_label_text_for_testing();
+  }
+
   std::unique_ptr<CastDialogNoSinksView> no_sinks_view_;
 };
 
@@ -59,6 +67,35 @@ TEST_F(CastDialogNoSinksViewTest, SwitchViews) {
   EXPECT_FALSE(running());
   EXPECT_NE(initial_icon, get_icon());
   EXPECT_NE(initial_title, get_label_text());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON),
+            get_icon()->GetAccessibleName());
+}
+
+class CastDialogNoSinksViewWithPermissionIssueTest
+    : public CastDialogNoSinksViewTest {
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+
+    scoped_feature_list_.InitAndEnableFeature(
+        media_router::kShowCastPermissionRejectedError);
+    no_sinks_view_ = std::make_unique<CastDialogNoSinksView>(
+        nullptr, /*permission_rejected*/ true);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(CastDialogNoSinksViewWithPermissionIssueTest, CreateView) {
+  EXPECT_FALSE(running());
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LABEL,
+                l10n_util::GetStringUTF16(
+                    IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK)),
+            get_permission_rejected_label_text());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_BUTTON),
+            get_icon()->GetAccessibleName());
 }
 
 }  // namespace media_router

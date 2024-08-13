@@ -86,7 +86,7 @@ class CastToolbarButton : public ToolbarButton,
   const raw_ptr<Profile> profile_;
 
   // This value is set only when there is an outstanding issue.
-  std::unique_ptr<media_router::IssueInfo> current_issue_;
+  std::optional<media_router::IssueInfo::Severity> issue_severity_;
 
   std::unique_ptr<CastContextualMenu> context_menu_;
 

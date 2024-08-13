@@ -190,6 +190,10 @@ class CastDialogViewTest : public ChromeViewsTestBase {
 
   views::View* no_sinks_view() { return dialog_->no_sinks_view_for_test(); }
 
+  views::View* permission_rejected_view() {
+    return dialog_->permission_rejected_view_for_test();
+  }
+
   views::Button* sources_button() { return dialog_->sources_button_for_test(); }
 
   HoverButton* access_code_cast_button() {
@@ -408,6 +412,27 @@ TEST_F(CastDialogViewTest, SwitchToNoDeviceView) {
   dialog_->OnModelUpdated(model);
   EXPECT_TRUE(no_sinks_view()->GetVisible());
   EXPECT_FALSE(scroll_view());
+}
+
+TEST_F(CastDialogViewTest, ShowPermissionRejectedView) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      media_router::kShowCastPermissionRejectedError);
+
+  // No sink, permission pending/granted.
+  CastDialogModel model;
+  InitializeDialogWithModel(model);
+  EXPECT_TRUE(no_sinks_view());
+  EXPECT_FALSE(scroll_view());
+  EXPECT_FALSE(permission_rejected_view());
+
+  // No sink, permission rejected.
+  model.set_is_permission_rejected(true);
+  InitializeDialogWithModel(model);
+  EXPECT_FALSE(no_sinks_view());
+  EXPECT_FALSE(scroll_view());
+  EXPECT_TRUE(permission_rejected_view() &&
+              permission_rejected_view()->GetVisible());
 }
 
 TEST_F(CastDialogViewTest, ShowAccessCodeCastButtonDisabled) {

@@ -138,6 +138,10 @@ TEST_F(CastToolbarButtonControllerUnitTest, EphemeralIconForIssues) {
   controller_->OnIssuesCleared();
   EXPECT_FALSE(controller_->has_issue_);
   EXPECT_FALSE(IsIconShown());
+  // Adding a permission rejected issue should not show the icon.
+  controller_->OnIssue(media_router::Issue::CreatePermissionRejectedIssue());
+  EXPECT_FALSE(controller_->has_issue_);
+  EXPECT_FALSE(IsIconShown());
 
   // When the issue disappears, the icon should remain visible if there's
   // a local mirroring route.

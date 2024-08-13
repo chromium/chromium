@@ -85,6 +85,9 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   }
   views::ScrollView* scroll_view_for_test() { return scroll_view_; }
   views::View* no_sinks_view_for_test() { return no_sinks_view_; }
+  views::View* permission_rejected_view_for_test() {
+    return permission_rejected_view_;
+  }
   views::Button* sources_button_for_test() { return sources_button_; }
   HoverButton* access_code_cast_button_for_test() {
     return access_code_cast_button_;
@@ -112,7 +115,9 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   void MaybeShowAccessCodeCastButton();
 
   void ShowNoSinksView();
+  void ShowPermissionRejectedView();
   void ShowScrollView();
+  void ResetViews();
 
   // Applies the stored scroll state.
   void RestoreSinkListState();
@@ -169,10 +174,11 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   raw_ptr<CastDialogController> controller_;
 
   // ScrollView containing the list of sink buttons.
-  raw_ptr<views::ScrollView, DanglingUntriaged> scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
   // View shown while there are no sinks.
-  raw_ptr<views::View, DanglingUntriaged> no_sinks_view_ = nullptr;
+  raw_ptr<views::View> no_sinks_view_ = nullptr;
+  raw_ptr<views::View> permission_rejected_view_ = nullptr;
 
   const raw_ptr<Profile> profile_;
 
