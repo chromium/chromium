@@ -100,10 +100,15 @@ class CONTENT_EXPORT PermissionController
   virtual void ResetPermission(blink::PermissionType permission,
                                const url::Origin& origin) = 0;
 
+  // Create a new subscription for permission status changes and call the
+  // permission_controller_delegate.
+  // Only one of |render_process_host| and |render_frame_host| should be set,
+  // or neither. RenderProcessHost will be inferred from |render_frame_host|.
   virtual SubscriptionId SubscribeToPermissionStatusChange(
       blink::PermissionType permission,
       RenderProcessHost* render_process_host,
-      const url::Origin& requesting_origin,
+      RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
       bool should_include_device_status,
       const base::RepeatingCallback<void(PermissionStatus)>& callback) = 0;
 

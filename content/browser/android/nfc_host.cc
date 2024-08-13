@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
-#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/navigation_handle.h"
@@ -30,8 +29,8 @@ NFCHost::NFCHost(WebContents* web_contents)
     : WebContentsObserver(web_contents) {
   DCHECK(web_contents);
 
-  permission_controller_ = PermissionControllerImpl::FromBrowserContext(
-      web_contents->GetBrowserContext());
+  permission_controller_ =
+      web_contents->GetBrowserContext()->GetPermissionController();
 }
 
 NFCHost::~NFCHost() {
@@ -70,8 +69,6 @@ void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
   if (!subscription_id_) {
     // base::Unretained() is safe here because the subscription is canceled when
     // this object is destroyed.
-    // TODO(crbug.com/40205763) : Move `SubscribeToPermissionStatusChange` to
-    // `PermissionController`.
     subscription_id_ =
         permission_controller_->SubscribeToPermissionStatusChange(
             blink::PermissionType::NFC, /*render_process_host=*/nullptr,

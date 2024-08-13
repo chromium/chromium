@@ -449,8 +449,9 @@ std::optional<blink::mojom::PermissionStatus> PerformanceManagerTabHelper::
   permission_controller_subscription_id_ =
       permission_controller->SubscribeToPermissionStatusChange(
           blink::PermissionType::NOTIFICATIONS,
-          web_contents()->GetPrimaryMainFrame()->GetProcess(),
-          url::Origin::Create(web_contents()->GetLastCommittedURL()),
+          /*render_process_host=*/nullptr,
+          web_contents()->GetPrimaryMainFrame(),
+          url::Origin::Create(web_contents()->GetLastCommittedURL()).GetURL(),
           /*should_include_device_status=*/false,
           base::BindRepeating(&PerformanceManagerTabHelper::
                                   OnNotificationPermissionStatusChange,

@@ -86,12 +86,6 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool should_include_device_status,
-      const base::RepeatingCallback<void(PermissionStatus)>& callback);
-  SubscriptionId SubscribeToPermissionStatusChange(
-      PermissionType permission,
-      RenderProcessHost* render_process_host,
-      const url::Origin& requesting_origin,
-      bool should_include_device_status,
       const base::RepeatingCallback<void(PermissionStatus)>& callback) override;
 
   void UnsubscribeFromPermissionStatusChange(
