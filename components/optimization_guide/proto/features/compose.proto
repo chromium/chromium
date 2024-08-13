@@ -120,7 +120,7 @@ message ComposeAXTreeData {
 
   uint32 focus_id = 6;
 
-  bool sel_is_backwards = 7;
+  bool sel_is_backward = 7;
 
   uint32 sel_anchor_object_id = 8;
 
@@ -169,9 +169,9 @@ message ComposeAXAttribute {
 
     ComposeAXBoolAttribute bool_type = 4;
 
-    ComposeAXIntListAttribute int_list_type = 5;
+    ComposeAXIntListAttribute intlist_type = 5;
 
-    ComposeAXStringListAttribute string_list_type = 6;
+    ComposeAXStringListAttribute stringlist_type = 6;
 
     string html_attribute_name = 7;
   }
@@ -580,7 +580,7 @@ enum ComposeAXRole {
 
   COMPOSE_AX_ROLE_POPUPBUTTON = 137;
 
-  COMPOSE_AX_ROLE_PORTAL = 138;
+  COMPOSE_AX_ROLE_PORTALDEPRECATED = 138;
 
   COMPOSE_AX_ROLE_PREDEPRECATED = 139;
 
@@ -768,7 +768,7 @@ enum ComposeAXStringAttribute {
 
   COMPOSE_AX_SA_IMAGEDATAURL = 16;
 
-  COMPOSE_AX_SA_MATHCONTENT = 17;
+  COMPOSE_AX_SA_INNERHTML = 17;
 
   COMPOSE_AX_SA_INPUTTYPE = 18;
 
