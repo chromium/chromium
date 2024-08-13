@@ -418,8 +418,6 @@ void AutocompleteResult::SortAndCull(
         // the limit of the normal NTP ZPS Section to make room for the IPH.
         bool has_iph_match = base::ranges::any_of(
             matches_, [](auto match) { return match.IsIPHSuggestion(); });
-        CHECK(!has_iph_match ||
-              OmniboxFieldTrial::IsFeaturedSearchIPHEnabled());
         bool add_iph_section =
             page_classification != OmniboxEventProto::NTP_REALBOX &&
             has_iph_match;

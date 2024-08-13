@@ -1145,14 +1145,6 @@ bool IsFeaturedEnterpriseSearchIPHEnabled() {
   return base::FeatureList::IsEnabled(
       omnibox::kShowFeaturedEnterpriseSiteSearchIPH);
 }
-// <- Featured Enterprise Site Search
-// ---------------------------------------------------------
-// Featured Search ->
-bool IsFeaturedSearchIPHEnabled() {
-  return IsStarterPackIPHEnabled() || IsFeaturedEnterpriseSearchIPHEnabled();
-}
-// <- Featured Search
-// ---------------------------------------------------------
 
 }  // namespace OmniboxFieldTrial
 
