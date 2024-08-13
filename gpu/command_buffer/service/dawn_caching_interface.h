@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/linked_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -56,14 +57,21 @@ class GPU_GLES2_EXPORT DawnCachingBackend
     const std::string data_;
   };
 
+  // Overrides for transparent flat_set lookups using a string.
+  friend bool operator<(const std::unique_ptr<Entry>& lhs,
+                        const std::unique_ptr<Entry>& rhs);
+  friend bool operator<(const std::unique_ptr<Entry>& lhs,
+                        const std::string& rhs);
+  friend bool operator<(const std::string& lhs,
+                        const std::unique_ptr<Entry>& rhs);
+
   friend class base::RefCounted<DawnCachingBackend>;
   ~DawnCachingBackend();
 
   void EvictEntry(Entry* entry) EXCLUSIVE_LOCKS_REQUIRED(mutex_);
 
   base::Lock mutex_;
-  base::flat_map<std::string, std::unique_ptr<Entry>> entries_
-      GUARDED_BY(mutex_);
+  base::flat_set<std::unique_ptr<Entry>> entries_ GUARDED_BY(mutex_);
   base::LinkedList<Entry> lru_ GUARDED_BY(mutex_);
 
   size_t max_size_;
