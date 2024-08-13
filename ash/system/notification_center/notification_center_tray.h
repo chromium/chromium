@@ -79,7 +79,7 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
   void HideBubble(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
-  void CloseBubble() override;
+  void CloseBubbleInternal() override;
   void ShowBubble() override;
   void UpdateAfterLoginStatusChange() override;
   TrayBubbleView* GetBubbleView() override;

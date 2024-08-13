@@ -329,7 +329,7 @@ TrayBubbleView* FocusModeTray::GetBubbleView() {
   return bubble_ ? bubble_->bubble_view() : nullptr;
 }
 
-void FocusModeTray::CloseBubble() {
+void FocusModeTray::CloseBubbleInternal() {
   CloseBubbleAndMaybeReset(/*should_reset=*/true);
 }
 

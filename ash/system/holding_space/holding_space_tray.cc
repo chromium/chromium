@@ -331,7 +331,7 @@ void HoldingSpaceTray::UpdateAfterLoginStatusChange() {
   UpdateVisibility();
 }
 
-void HoldingSpaceTray::CloseBubble() {
+void HoldingSpaceTray::CloseBubbleInternal() {
   if (!bubble_)
     return;
 

@@ -428,7 +428,7 @@ void PhoneHubTray::SetEcheIconActivationCallback(
   eche_icon_callback_ = std::move(callback);
 }
 
-void PhoneHubTray::CloseBubble() {
+void PhoneHubTray::CloseBubbleInternal() {
   if (!bubble_)
     return;
 

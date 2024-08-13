@@ -322,7 +322,7 @@ VideoConferenceTray::~VideoConferenceTray() {
   VideoConferenceTrayController::Get()->RemoveObserver(this);
 }
 
-void VideoConferenceTray::CloseBubble() {
+void VideoConferenceTray::CloseBubbleInternal() {
   bubble_open_ = false;
   toggle_bubble_button_->SetToggled(false);
   bubble_.reset();

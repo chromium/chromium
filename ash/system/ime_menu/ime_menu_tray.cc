@@ -519,7 +519,7 @@ void ImeMenuTray::UpdateTrayItemColor(bool is_active) {
       extension_ime_util::IsArcIME(ime_controller_->current_ime().id));
 }
 
-void ImeMenuTray::CloseBubble() {
+void ImeMenuTray::CloseBubbleInternal() {
   bubble_.reset();
   ime_list_view_ = nullptr;
   SetIsActive(false);

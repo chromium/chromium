@@ -164,7 +164,7 @@ void AnnotationTray::HideBubbleWithView(
     CloseBubble();
 }
 
-void AnnotationTray::CloseBubble() {
+void AnnotationTray::CloseBubbleInternal() {
   pen_view_ = nullptr;
   bubble_.reset();
   // Annotator can be enabled after closing the bubble so set the activity state

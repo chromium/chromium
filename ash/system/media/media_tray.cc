@@ -298,7 +298,7 @@ void MediaTray::ShowBubble() {
   ShowBubbleWithItem("");
 }
 
-void MediaTray::CloseBubble() {
+void MediaTray::CloseBubbleInternal() {
   if (!bubble_) {
     CHECK(!is_active());
     CHECK(!pin_button_);

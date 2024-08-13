@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/focus_cycler.h"
@@ -16,6 +17,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/login_shelf_view.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_focus_cycler.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -787,6 +789,17 @@ void TrayBackgroundView::SetIsActive(bool is_active) {
   is_active_ = is_active;
   UpdateBackgroundColor(is_active);
   UpdateTrayItemColor(is_active);
+}
+
+void TrayBackgroundView::CloseBubble() {
+  CloseBubbleInternal();
+
+  // If ChromeVox is enabled, focus on the this tray when the bubble is closed.
+  if (Shell::Get()->accessibility_controller() &&
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+    shelf_->shelf_focus_cycler()->FocusStatusArea(false);
+    RequestFocus();
+  }
 }
 
 views::View* TrayBackgroundView::GetBubbleAnchor() const {

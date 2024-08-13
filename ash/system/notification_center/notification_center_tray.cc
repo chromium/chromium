@@ -177,7 +177,7 @@ void NotificationCenterTray::UpdateTrayItemColor(bool is_active) {
   }
 }
 
-void NotificationCenterTray::CloseBubble() {
+void NotificationCenterTray::CloseBubbleInternal() {
   if (!bubble_) {
     return;
   }

@@ -46,7 +46,7 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
   TrayBubbleView* GetBubbleView() override;
-  void CloseBubble() override;
+  void CloseBubbleInternal() override;
   void ShowBubble() override;
   void UpdateTrayItemColor(bool is_active) override;
   void OnThemeChanged() override;

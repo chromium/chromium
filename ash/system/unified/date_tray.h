@@ -45,7 +45,7 @@ class ASH_EXPORT DateTray : public TrayBackgroundView,
   void UpdateLayout() override;
   void UpdateAfterLoginStatusChange() override;
   void ShowBubble() override;
-  void CloseBubble() override;
+  void CloseBubbleInternal() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;

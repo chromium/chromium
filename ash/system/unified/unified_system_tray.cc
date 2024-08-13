@@ -384,7 +384,7 @@ void UnifiedSystemTray::ShowBubble() {
   }
 }
 
-void UnifiedSystemTray::CloseBubble() {
+void UnifiedSystemTray::CloseBubbleInternal() {
   base::UmaHistogramMediumTimes("Ash.QuickSettings.UserJourneyTime",
                                 base::TimeTicks::Now() - time_opened_);
   HideBubbleInternal();

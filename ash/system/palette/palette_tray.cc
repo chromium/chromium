@@ -629,7 +629,7 @@ void PaletteTray::Initialize() {
   InitializeWithLocalState();
 }
 
-void PaletteTray::CloseBubble() {
+void PaletteTray::CloseBubbleInternal() {
   HidePalette();
 }
 

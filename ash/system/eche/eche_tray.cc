@@ -290,7 +290,7 @@ void EcheTray::Initialize() {
   SetVisiblePreferred(visibility);
 }
 
-void EcheTray::CloseBubble() {
+void EcheTray::CloseBubbleInternal() {
   if (bubble_)
     HideBubble();
 }

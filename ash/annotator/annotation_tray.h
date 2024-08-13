@@ -53,7 +53,7 @@ class AnnotationTray : public TrayBackgroundView,
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
-  void CloseBubble() override;
+  void CloseBubbleInternal() override;
   void ShowBubble() override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
