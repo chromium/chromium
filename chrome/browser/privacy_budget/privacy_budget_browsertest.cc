@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
       ukm::builders::Identifiability::kEntryName,
       base::BindLambdaForTesting([this, &run_loop]() {
         // Key of the entry metric to look for.
-        constexpr uint64_t input_digest = UINT64_C(3701609392929341475);
+        constexpr uint64_t input_digest = UINT64_C(10266206452287635496);
         const uint64_t canvas_key =
             blink::IdentifiableSurface::FromTypeAndToken(
                 blink::IdentifiableSurface::Type::kCanvasReadback,

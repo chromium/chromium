@@ -761,14 +761,11 @@ void HTMLCanvasElement::Reset() {
   gfx::Size old_size = Size();
   gfx::Size new_size(w, h);
 
-  // If the size of an existing buffer matches, we can just clear it instead of
-  // reallocating.  This optimization is only done for 2D canvases for now.
-  if (ResourceProvider() != nullptr && old_size == new_size &&
-      IsRenderingContext2D()) {
-    if (!canvas_is_clear_) {
-      canvas_is_clear_ = true;
-      context_->ClearRect(0, 0, width(), height());
-    }
+  // If the size of an existing buffer matches, we can reuse that buffer.
+  // This optimization is only done for 2D canvases for now.
+  if (IsRenderingContext2D() && ResourceProvider() != nullptr &&
+      old_size == new_size) {
+    canvas_is_clear_ = true;
     return;
   }
 
