@@ -165,7 +165,7 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
     control_signal = std::numeric_limits<uint32_t>::max();
   }
 
-  size_t sent_bytes = socket_.Send(&control_signal, sizeof(control_signal));
+  size_t sent_bytes = socket_.Send(base::byte_span_from_ref(control_signal));
   if (sent_bytes != sizeof(control_signal)) {
     // Ensure we don't log consecutive errors as this can lead to a large
     // amount of logs.

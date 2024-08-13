@@ -349,7 +349,7 @@ bool InputSyncWriter::WriteDataToCurrentSegment(
 }
 
 bool InputSyncWriter::SignalDataWrittenAndUpdateCounters() {
-  if (socket_->Send(&current_segment_id_, sizeof(current_segment_id_)) !=
+  if (socket_->Send(base::byte_span_from_ref(current_segment_id_)) !=
       sizeof(current_segment_id_)) {
     // Ensure we don't log consecutive errors as this can lead to a large
     // amount of logs.

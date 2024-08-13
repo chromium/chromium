@@ -54,11 +54,6 @@ class BASE_EXPORT SyncSocket {
   // `data` must be non-empty.
   // Returns the number of bytes sent, or 0 upon failure.
   virtual size_t Send(span<const uint8_t> data);
-  // Same as above, but with the following parameters:
-  // `buffer` is a pointer to the data to send.
-  // `length` is the length of the data to send (must be non-zero).
-  // TODO(crbug.com/40284755): Migrate callers to the span version.
-  virtual size_t Send(const void* buffer, size_t length);
 
   // Receives a message from an SyncSocket.
   // The data will be received in `buffer`, which must be non-empty.
@@ -128,8 +123,6 @@ class BASE_EXPORT CancelableSyncSocket : public SyncSocket {
   // SyncSocket::Send will, but instead return 0, as no bytes could be sent.
   // Note that the socket will not be closed in this case.
   size_t Send(span<const uint8_t> data) override;
-  // TODO(crbug.com/40284755): Migrate callers to the span version.
-  size_t Send(const void* buffer, size_t length) override;
 
  private:
 #if BUILDFLAG(IS_WIN)

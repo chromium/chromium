@@ -510,7 +510,7 @@ class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
     // on |socket_->Receive()|.
     if (current_packet_count_ < expected_packet_count_) {
       uint32_t control_signal = 0;
-      socket_->Send(&control_signal, sizeof(control_signal));
+      socket_->Send(base::byte_span_from_ref(control_signal));
       output_buffer()->params.delay_us = delay.InMicroseconds();
       output_buffer()->params.delay_timestamp_us =
           (delay_timestamp - base::TimeTicks()).InMicroseconds();
@@ -597,7 +597,9 @@ DWORD __stdcall SyncSocketThread(void* context) {
     sine.OnMoreData(delay, delay_timestamp, {}, audio_bus.get());
 
     // Send the audio data to the Audio Stream.
-    ctx.socket->Send(data.get(), ctx.packet_size_bytes);
+    // SAFETY: `data`'s allocation has size `ctx.packet_size_bytes`.
+    ctx.socket->Send(UNSAFE_BUFFERS(base::make_span(
+        reinterpret_cast<uint8_t*>(data.get()), ctx.packet_size_bytes)));
   }
 
   return 0;

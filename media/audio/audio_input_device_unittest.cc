@@ -209,7 +209,7 @@ TEST_P(AudioInputDeviceTest, CaptureCallback) {
   CreateInputDevice();
 
   uint32_t buffer_index = 0;
-  browser_socket_.Send(&buffer_index, sizeof(buffer_index));
+  browser_socket_.Send(base::byte_span_from_ref(buffer_index));
 
   EXPECT_CALL(*capture_callback_, OnCaptureError(_, _)).Times(0);
   EXPECT_CALL(*capture_callback_, VerifyCapture(capture_time_, glitch_info_));
@@ -228,7 +228,7 @@ TEST_P(AudioInputDeviceTest, CaptureCallbackSocketError) {
   CreateInputDevice();
 
   uint32_t buffer_index = 0;
-  browser_socket_.Send(&buffer_index, sizeof(buffer_index));
+  browser_socket_.Send(base::byte_span_from_ref(buffer_index));
 
   EXPECT_CALL(*capture_callback_,
               OnCaptureError(AudioCapturerSource::ErrorCode::kSocketError, _))

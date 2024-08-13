@@ -199,7 +199,7 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
 
     ++buffer_index;
-    EXPECT_EQ(socket_->Send(&buffer_index, sizeof(buffer_index)),
+    EXPECT_EQ(socket_->Send(base::byte_span_from_ref(buffer_index)),
               sizeof(buffer_index));
     EXPECT_CALL(*mock_output_glitch_counter_,
                 ReportMissedCallback(/*missed_callback = */ false,
@@ -217,7 +217,7 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
 
     ++buffer_index;
-    EXPECT_EQ(socket_->Send(&buffer_index, sizeof(buffer_index)),
+    EXPECT_EQ(socket_->Send(base::byte_span_from_ref(buffer_index)),
               sizeof(buffer_index));
     EXPECT_CALL(*mock_output_glitch_counter_,
                 ReportMissedCallback(/*missed_callback = */ false,
@@ -236,7 +236,7 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
 
     // Send an incorrect buffer index, which will count as a missed callback.
     buffer_index = 123;
-    EXPECT_EQ(socket_->Send(&buffer_index, sizeof(buffer_index)),
+    EXPECT_EQ(socket_->Send(base::byte_span_from_ref(buffer_index)),
               sizeof(buffer_index));
     EXPECT_CALL(*mock_output_glitch_counter_,
                 ReportMissedCallback(/*missed_callback = */ true,
@@ -255,7 +255,7 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
 
     // Send an incorrect buffer index, which will count as a missed callback.
     buffer_index = 123;
-    EXPECT_EQ(socket_->Send(&buffer_index, sizeof(buffer_index)),
+    EXPECT_EQ(socket_->Send(base::byte_span_from_ref(buffer_index)),
               sizeof(buffer_index));
     EXPECT_CALL(*mock_output_glitch_counter_,
                 ReportMissedCallback(/*missed_callback = */ true,
@@ -301,7 +301,7 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
     // assume it's got the wrong data back from the Renderer process, and will
     // proceed to drop it. This causes a glitch.
     uint32_t buffer_index = 321;
-    EXPECT_EQ(socket_->Send(&buffer_index, sizeof(buffer_index)),
+    EXPECT_EQ(socket_->Send(base::byte_span_from_ref(buffer_index)),
               sizeof(buffer_index));
     reader_->Read(output_bus.get(), false);
   }
@@ -327,7 +327,7 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
 
     // This time, send the correct buffer index.
     uint32_t buffer_index = 2;
-    EXPECT_EQ(socket_->Send(&buffer_index, sizeof(buffer_index)),
+    EXPECT_EQ(socket_->Send(base::byte_span_from_ref(buffer_index)),
               sizeof(buffer_index));
     reader_->Read(output_bus.get(), false);
   }

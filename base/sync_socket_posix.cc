@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/sync_socket.h"
 
 #include <errno.h>
@@ -93,10 +88,6 @@ void SyncSocket::Close() {
 size_t SyncSocket::Send(span<const uint8_t> data) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   return SendHelper(handle(), data);
-}
-
-size_t SyncSocket::Send(const void* buffer, size_t length) {
-  return Send(make_span(static_cast<const uint8_t*>(buffer), length));
 }
 
 size_t SyncSocket::Receive(span<uint8_t> buffer) {
@@ -211,10 +202,6 @@ size_t CancelableSyncSocket::Send(span<const uint8_t> data) {
   }
 
   return len;
-}
-
-size_t CancelableSyncSocket::Send(const void* buffer, size_t length) {
-  return Send(make_span(static_cast<const uint8_t*>(buffer), length));
 }
 
 // static

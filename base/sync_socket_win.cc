@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/sync_socket.h"
 
 #include <limits.h>
@@ -248,10 +243,6 @@ size_t SyncSocket::Send(span<const uint8_t> data) {
   return count;
 }
 
-size_t SyncSocket::Send(const void* buffer, size_t length) {
-  return Send(make_span(static_cast<const uint8_t*>(buffer), length));
-}
-
 size_t SyncSocket::ReceiveWithTimeout(span<uint8_t> buffer, TimeDelta timeout) {
   NOTIMPLEMENTED();
   return 0;
@@ -312,10 +303,6 @@ size_t CancelableSyncSocket::Send(span<const uint8_t> data) {
   static const DWORD kWaitTimeOutInMs = 500;
   return CancelableFileOperation(&::WriteFile, handle(), data, &file_operation_,
                                  &shutdown_event_, this, kWaitTimeOutInMs);
-}
-
-size_t CancelableSyncSocket::Send(const void* buffer, size_t length) {
-  return Send(make_span(static_cast<const uint8_t*>(buffer), length));
 }
 
 size_t CancelableSyncSocket::Receive(span<uint8_t> buffer) {

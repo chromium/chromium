@@ -110,7 +110,7 @@ void AudioDeviceThread::ThreadMain() {
     // expects. For more details on how this works see
     // AudioSyncReader::WaitUntilDataIsReady().
     ++buffer_index;
-    size_t bytes_sent = socket_.Send(&buffer_index, sizeof(buffer_index));
+    size_t bytes_sent = socket_.Send(base::byte_span_from_ref(buffer_index));
     if (bytes_sent != sizeof(buffer_index))
       break;
   }
