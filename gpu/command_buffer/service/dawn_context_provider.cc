@@ -526,6 +526,7 @@ bool DawnSharedState::Initialize(
       wgpu::FeatureName::TransientAttachments,
 
       wgpu::FeatureName::DawnLoadResolveTexture,
+      wgpu::FeatureName::DawnPartialLoadResolveTexture,
   };
 
   wgpu::Adapter adapter(adapters[0].Get());
