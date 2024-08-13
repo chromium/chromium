@@ -128,7 +128,7 @@ async function check_predefined_frames() {
 async function main(arg) {
   let source_type = arg.source_type;
   TEST.log('Starting test with arguments: ' + JSON.stringify(arg));
-  let source = await createFrameSource(source_type, 320, 240);
+  let source = await createFrameSource(source_type, FRAME_WIDTH, FRAME_HEIGHT);
   if (!source) {
     TEST.skip('Unsupported source: ' + source_type);
     return;
