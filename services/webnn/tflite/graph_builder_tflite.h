@@ -333,6 +333,11 @@ class GraphBuilderTflite final {
   base::expected<OperatorOffset, std::string> SerializeGruCellOperation(
       const GruCellOperation& gru_cell);
 
+  // A helper function for serializing WebNN gru and lstm operations.
+  template <typename RecurrentNetworkType>
+  base::expected<OperatorOffset, std::string> SerializeRecurrentNetwork(
+      const RecurrentNetworkType& recurrent_network);
+
   enum class LstmGateType { kInput, kForget, kCell, kOutput };
 
   // The struct maps to mojom::LstmCell to use tflite tensor index instead of
@@ -374,6 +379,21 @@ class GraphBuilderTflite final {
   base::expected<OperatorOffset, std::string> SerializeLstmCellOperation(
       const LstmCellOperation& lstm_cell);
 
+  // Get initial hidden and cell state tensor index if existed or serialize an
+  // empty tensor.
+  int32_t GetInitialHiddenAndCellState(
+      std::optional<uint64_t> state_operand_id,
+      base::span<const int32_t> state_dimensions);
+
+  // Reshape hidden and cell state, concat the reshaped tensor if the input
+  // tensor of concat is provided.
+  int32_t ReshapeHiddenAndCellState(
+      ::tflite::TensorType input_tensor_type,
+      int32_t input_tensor_index,
+      base::span<const int32_t> new_shape,
+      std::optional<int32_t> concat_input_tensor_index,
+      base::span<const int32_t> concat_output_shape);
+
   // Serialize a sub graph (slice appending squeeze operation) for gru.
   base::expected<int32_t, std::string> SerializeSubGraphSliceSqueeze(
       ::tflite::TensorType input_tensor_type,
@@ -407,8 +427,6 @@ class GraphBuilderTflite final {
       const mojom::Gelu& gelu);
   base::expected<OperatorOffset, std::string> SerializeGemm(
       const mojom::Gemm& gemm);
-  base::expected<OperatorOffset, std::string> SerializeGru(
-      const mojom::Gru& gru);
   base::expected<OperatorOffset, std::string> SerializeGruCell(
       const mojom::GruCell& gru_cell);
   OperatorOffset SerializeHardSigmoid(const mojom::HardSigmoid& hard_sigmoid);

@@ -400,6 +400,7 @@ void WebNNGraphImplBackendTest::SetUp() {
       "BuildAndComputeSingleOperatorGruCell",
       "BuildAndComputeSingleOperatorGru",
       "BuildAndComputeSingleOperatorLstmCell",
+      "BuildAndComputeSingleOperatorLstm",
   });
   if (!kSupportedTests.contains(current_test_name)) {
     GTEST_SKIP() << "Skipping test because the operator is not yet supported.";
@@ -2463,8 +2464,19 @@ struct LstmTester {
   LstmAttributes attributes;
   std::vector<OperandInfo<T>> outputs;
 
-  void Test(BuildAndComputeExpectation expectation =
+  void Test(WebNNGraphImplBackendTest& helper,
+            BuildAndComputeExpectation expectation =
                 BuildAndComputeExpectation::kSuccess) {
+#if BUILDFLAG(IS_CHROMEOS)
+    base::flat_map<std::string, std::vector<T>> name_to_data_map;
+    for (size_t i = 0; i < outputs.size(); ++i) {
+      std::string output_name =
+          base::StrCat({"output", base::NumberToString(i)});
+      name_to_data_map[std::move(output_name)] = outputs[i].values;
+    }
+
+    helper.SetComputeResult(std::move(name_to_data_map));
+#endif
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
     uint64_t input_operand_id =
@@ -2590,7 +2602,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstm) {
                     {.type = OperandDataType::kFloat32,
                      .dimensions = {direction_count, batch_size, hidden_size},
                      .values = {4, 36}}}}
-        .Test();
+        .Test(*this);
   }
   {
     // Test lstm with given bias and peephole weight, activations = {relu, relu,
@@ -2631,7 +2643,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstm) {
                     {.type = OperandDataType::kFloat32,
                      .dimensions = {direction_count, batch_size, hidden_size},
                      .values = {20672, 20672}}}}
-        .Test();
+        .Test(*this);
   }
   {
     // Test lstm with constant operands.
@@ -2647,6 +2659,12 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstm) {
     std::array<float, 6> peephole_weight_data = {0, 0, 0, 0, 0, 0};
     std::array<float, 4> initial_hidden_state_data = {0, 0, 0, 0};
     std::array<float, 4> initial_cell_state_data = {1, 1, 1, 1};
+    std::vector<float> expected_data = {0, 0, 2, 2};
+
+#if BUILDFLAG(IS_CHROMEOS)
+    SetComputeResult(base::flat_map<std::string, std::vector<float>>(
+        {{"output0", expected_data}, {"output1", expected_data}}));
+#endif
 
     GraphInfoBuilder builder;
     uint64_t input_operand_id = builder.BuildConstant(
@@ -2694,9 +2712,9 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstm) {
 
     ASSERT_EQ(named_outputs.size(), 2u);
     EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output0"])),
-              std::vector<float>({0, 0, 2, 2}));
+              expected_data);
     EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output1"])),
-              std::vector<float>({0, 0, 2, 2}));
+              expected_data);
   }
 }
 

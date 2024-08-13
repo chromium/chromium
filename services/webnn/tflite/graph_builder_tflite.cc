@@ -423,7 +423,8 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       break;
     }
     case mojom::Operation::Tag::kGru: {
-      ASSIGN_OR_RETURN(operator_offset, SerializeGru(*op.get_gru()));
+      ASSIGN_OR_RETURN(operator_offset,
+                       SerializeRecurrentNetwork<mojom::Gru>(*op.get_gru()));
       break;
     }
     case mojom::Operation::Tag::kGruCell: {
@@ -454,6 +455,11 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       break;
     case mojom::Operation::Tag::kLstmCell: {
       ASSIGN_OR_RETURN(operator_offset, SerializeLstmCell(*op.get_lstm_cell()));
+      break;
+    }
+    case mojom::Operation::Tag::kLstm: {
+      ASSIGN_OR_RETURN(operator_offset,
+                       SerializeRecurrentNetwork<mojom::Lstm>(*op.get_lstm()));
       break;
     }
     case mojom::Operation::Tag::kMatmul:
@@ -521,7 +527,6 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
     case mojom::Operation::Tag::kWhere:
       operator_offset = SerializeWhere(*op.get_where());
       break;
-    case mojom::Operation::Tag::kLstm:
     case mojom::Operation::Tag::kTriangular:
       return base::unexpected(NotSupportedOperatorError(op));
   }
@@ -2373,9 +2378,15 @@ auto GraphBuilderTflite::SerializeSubGraphSliceSqueeze(
   return output_tensor_index;
 }
 
-auto GraphBuilderTflite::SerializeGru(const mojom::Gru& gru)
+// `RecurrentNetworkType` must be `mojom::Gru` or `mojom::Lstm`.
+template <typename RecurrentNetworkType>
+auto GraphBuilderTflite::SerializeRecurrentNetwork(
+    const RecurrentNetworkType& recurrent_network)
     -> base::expected<OperatorOffset, std::string> {
-  const mojom::Operand& input_operand = GetOperand(gru.input_operand_id);
+  static_assert(std::is_same<RecurrentNetworkType, mojom::Gru>::value ||
+                std::is_same<RecurrentNetworkType, mojom::Lstm>::value);
+  const mojom::Operand& input_operand =
+      GetOperand(recurrent_network.input_operand_id);
   // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
   // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
   if (input_operand.descriptor.data_type() == OperandDataType::kFloat16) {
@@ -2390,33 +2401,35 @@ auto GraphBuilderTflite::SerializeGru(const mojom::Gru& gru)
   const ::tflite::TensorType input_tensor_type =
       OperandDataTypeToTFLite(input_operand.descriptor.data_type());
   const auto checked_hidden_size =
-      base::MakeCheckedNum<int32_t>(gru.hidden_size);
+      base::MakeCheckedNum<int32_t>(recurrent_network.hidden_size);
   if (!checked_hidden_size.IsValid()) {
     return base::unexpected("The hidden size is too large.");
   }
-  const auto checked_steps = base::MakeCheckedNum<int32_t>(gru.steps);
+  const auto checked_steps =
+      base::MakeCheckedNum<int32_t>(recurrent_network.steps);
   if (!checked_steps.IsValid()) {
     return base::unexpected("The steps size is too large.");
   }
   const int32_t num_directions =
-      gru.direction == mojom::RecurrentNetworkDirection::kBoth ? 2 : 1;
+      recurrent_network.direction == mojom::RecurrentNetworkDirection::kBoth
+          ? 2
+          : 1;
   const int32_t batch_size = (*signed_input_dimensions)[1];
   const int32_t input_size = (*signed_input_dimensions)[2];
   const int32_t hidden_size = checked_hidden_size.ValueOrDie();
-  const int32_t gru_steps = checked_steps.ValueOrDie();
+  const int32_t recurrent_steps = checked_steps.ValueOrDie();
 
-  int32_t hidden_state_tensor_index;
-  if (gru.initial_hidden_state_operand_id) {
-    hidden_state_tensor_index =
-        operand_to_index_map_.at(*gru.initial_hidden_state_operand_id);
-  } else {
-    const std::array<int32_t, 3> initial_hidden_state_shape = {
-        num_directions, batch_size, hidden_size};
-    const std::vector<float> initial_hidden_state_value(std::accumulate(
-        initial_hidden_state_shape.begin(), initial_hidden_state_shape.end(), 1,
-        std::multiplies()));
-    hidden_state_tensor_index = SerializeTensorWithBuffer<float>(
-        initial_hidden_state_value, initial_hidden_state_shape);
+  const std::array<int32_t, 3> initial_hidden_cell_state_shape = {
+      num_directions, batch_size, hidden_size};
+  int32_t hidden_state_tensor_index = GetInitialHiddenAndCellState(
+      recurrent_network.initial_hidden_state_operand_id,
+      initial_hidden_cell_state_shape);
+  // The cell state tensor index only be used by lstm.
+  int32_t lstm_cell_state_tensor_index;
+  if constexpr (std::is_same<RecurrentNetworkType, mojom::Lstm>::value) {
+    lstm_cell_state_tensor_index = GetInitialHiddenAndCellState(
+        recurrent_network.initial_cell_state_operand_id,
+        initial_hidden_cell_state_shape);
   }
 
   std::vector<int32_t> cell_weight_tensor_indices;
@@ -2427,60 +2440,93 @@ auto GraphBuilderTflite::SerializeGru(const mojom::Gru& gru)
   cell_bias_tensor_indices.reserve(num_directions);
   std::vector<int32_t> cell_recurrent_bias_tensor_indices;
   cell_recurrent_bias_tensor_indices.reserve(num_directions);
+  // The cell peephole weight tensor indices only be used by lstm.
+  std::vector<int32_t> lstm_cell_peephole_weight_tensor_indices;
+  if constexpr (std::is_same<RecurrentNetworkType, mojom::Lstm>::value) {
+    lstm_cell_peephole_weight_tensor_indices.reserve(num_directions);
+  }
   for (int32_t slot = 0; slot < num_directions; ++slot) {
+    int32_t slice_height;
+    if constexpr (std::is_same<RecurrentNetworkType, mojom::Gru>::value) {
+      slice_height = 3 * hidden_size;
+    } else /* `RecurrentNetworkType` is `mojom::Lstm` */ {
+      slice_height = 4 * hidden_size;
+    }
     ASSIGN_OR_RETURN(
         const int32_t cell_weight_tensor_index,
         SerializeSubGraphSliceSqueeze(
-            input_tensor_type, operand_to_index_map_.at(gru.weight_operand_id),
+            input_tensor_type,
+            operand_to_index_map_.at(recurrent_network.weight_operand_id),
             /*slice_starts=*/std::array<int32_t, 3>({slot, 0, 0}),
             /*slice_sizes=*/
-            std::array<int32_t, 3>({1, 3 * hidden_size, input_size}),
+            std::array<int32_t, 3>({1, slice_height, input_size}),
             /*squeeze_axis=*/0));
     cell_weight_tensor_indices.push_back(cell_weight_tensor_index);
 
-    ASSIGN_OR_RETURN(
-        const int32_t cell_recurrent_weight_tensor_index,
-        SerializeSubGraphSliceSqueeze(
-            input_tensor_type,
-            operand_to_index_map_.at(gru.recurrent_weight_operand_id),
-            /*slice_starts=*/std::array<int32_t, 3>({slot, 0, 0}),
-            /*slice_sizes=*/
-            std::array<int32_t, 3>({1, 3 * hidden_size, hidden_size}),
-            /*squeeze_axis=*/0));
+    ASSIGN_OR_RETURN(const int32_t cell_recurrent_weight_tensor_index,
+                     SerializeSubGraphSliceSqueeze(
+                         input_tensor_type,
+                         operand_to_index_map_.at(
+                             recurrent_network.recurrent_weight_operand_id),
+                         /*slice_starts=*/std::array<int32_t, 3>({slot, 0, 0}),
+                         /*slice_sizes=*/
+                         std::array<int32_t, 3>({1, slice_height, hidden_size}),
+                         /*squeeze_axis=*/0));
     cell_recurrent_weight_tensor_indices.push_back(
         cell_recurrent_weight_tensor_index);
 
-    if (gru.bias_operand_id) {
+    if (recurrent_network.bias_operand_id) {
       ASSIGN_OR_RETURN(
           const int32_t cell_bias_tensor_index,
           SerializeSubGraphSliceSqueeze(
-              input_tensor_type, operand_to_index_map_.at(*gru.bias_operand_id),
+              input_tensor_type,
+              operand_to_index_map_.at(*recurrent_network.bias_operand_id),
               /*slice_starts=*/std::array<int32_t, 2>({slot, 0}),
               /*slice_sizes=*/
-              std::array<int32_t, 2>({1, 3 * hidden_size}),
+              std::array<int32_t, 2>({1, slice_height}),
               /*squeeze_axis=*/0));
       cell_bias_tensor_indices.push_back(cell_bias_tensor_index);
     }
 
-    if (gru.recurrent_bias_operand_id) {
-      ASSIGN_OR_RETURN(
-          const int32_t cell_recurrent_bias_tensor_index,
-          SerializeSubGraphSliceSqueeze(
-              input_tensor_type,
-              operand_to_index_map_.at(*gru.recurrent_bias_operand_id),
-              /*slice_starts=*/std::array<int32_t, 2>({slot, 0}),
-              /*slice_sizes=*/
-              std::array<int32_t, 2>({1, 3 * hidden_size}),
-              /*squeeze_axis=*/0));
+    if (recurrent_network.recurrent_bias_operand_id) {
+      ASSIGN_OR_RETURN(const int32_t cell_recurrent_bias_tensor_index,
+                       SerializeSubGraphSliceSqueeze(
+                           input_tensor_type,
+                           operand_to_index_map_.at(
+                               *recurrent_network.recurrent_bias_operand_id),
+                           /*slice_starts=*/std::array<int32_t, 2>({slot, 0}),
+                           /*slice_sizes=*/
+                           std::array<int32_t, 2>({1, slice_height}),
+                           /*squeeze_axis=*/0));
       cell_recurrent_bias_tensor_indices.push_back(
           cell_recurrent_bias_tensor_index);
+    }
+
+    if constexpr (std::is_same<RecurrentNetworkType, mojom::Lstm>::value) {
+      if (recurrent_network.peephole_weight_operand_id) {
+        ASSIGN_OR_RETURN(const int32_t peephole_weight_tensor_index,
+                         SerializeSubGraphSliceSqueeze(
+                             input_tensor_type,
+                             operand_to_index_map_.at(
+                                 *recurrent_network.peephole_weight_operand_id),
+                             /*slice_starts=*/std::array<int32_t, 2>({slot, 0}),
+                             /*slice_sizes=*/
+                             std::array<int32_t, 2>({1, 3 * hidden_size}),
+                             /*squeeze_axis=*/0));
+        lstm_cell_peephole_weight_tensor_indices.push_back(
+            peephole_weight_tensor_index);
+      }
     }
   }
 
   std::optional<int32_t> sequence_tensor_index;
-  for (int32_t step = 0; step < gru_steps; ++step) {
-    std::vector<int32_t> cell_hidden_tensor_indices;
-    cell_hidden_tensor_indices.reserve(num_directions);
+  for (int32_t step = 0; step < recurrent_steps; ++step) {
+    std::vector<int32_t> current_hidden_tensor_indices;
+    current_hidden_tensor_indices.reserve(num_directions);
+    std::vector<int32_t> lstm_current_cell_tensor_indices;
+    if constexpr (std::is_same<RecurrentNetworkType, mojom::Lstm>::value) {
+      lstm_current_cell_tensor_indices.reserve(num_directions);
+    }
     for (int32_t slot = 0; slot < num_directions; ++slot) {
       ASSIGN_OR_RETURN(
           const int32_t cell_hidden_tensor_index,
@@ -2490,20 +2536,34 @@ auto GraphBuilderTflite::SerializeGru(const mojom::Gru& gru)
               /*slice_sizes=*/
               std::array<int32_t, 3>({1, batch_size, hidden_size}),
               /*squeeze_axis=*/0));
-      cell_hidden_tensor_indices.push_back(cell_hidden_tensor_index);
+      current_hidden_tensor_indices.push_back(cell_hidden_tensor_index);
+
+      if constexpr (std::is_same<RecurrentNetworkType, mojom::Lstm>::value) {
+        ASSIGN_OR_RETURN(
+            const int32_t lstm_cell_tensor_index,
+            SerializeSubGraphSliceSqueeze(
+                input_tensor_type, lstm_cell_state_tensor_index,
+                /*slice_starts=*/std::array<int32_t, 3>({slot, 0, 0}),
+                /*slice_sizes=*/
+                std::array<int32_t, 3>({1, batch_size, hidden_size}),
+                /*squeeze_axis=*/0));
+        lstm_current_cell_tensor_indices.push_back(lstm_cell_tensor_index);
+      }
     }
 
-    std::optional<int32_t> concated_cell_tensor_index;
+    std::optional<int32_t> next_hidden_tensor_index;
+    std::optional<int32_t> lstm_next_cell_tensor_index;
     for (int32_t slot = 0; slot < num_directions; ++slot) {
       const int32_t slice_start =
-          (slot == 1 ||
-                   gru.direction == mojom::RecurrentNetworkDirection::kBackward
-               ? gru_steps - step - 1
+          (slot == 1 || recurrent_network.direction ==
+                            mojom::RecurrentNetworkDirection::kBackward
+               ? recurrent_steps - step - 1
                : step);
       ASSIGN_OR_RETURN(
           const int32_t cell_input_tensor_index,
           SerializeSubGraphSliceSqueeze(
-              input_tensor_type, operand_to_index_map_.at(gru.input_operand_id),
+              input_tensor_type,
+              operand_to_index_map_.at(recurrent_network.input_operand_id),
               /*slice_starts=*/std::array<int32_t, 3>({slice_start, 0, 0}),
               /*slice_sizes=*/
               std::array<int32_t, 3>({1, batch_size, input_size}),
@@ -2513,64 +2573,91 @@ auto GraphBuilderTflite::SerializeGru(const mojom::Gru& gru)
                                                             input_size};
       const std::array<int32_t, 2> cell_output_dimensions = {batch_size,
                                                              hidden_size};
-      const int32_t gru_cell_output_tensor_index =
+      const int32_t output_hidden_state_tensor_index =
           SerializeTemporaryTensor(cell_output_dimensions, input_tensor_type);
+      // The output cell state tensor index is only used by lstm.
+      int32_t lstm_output_cell_state_tensor_index;
 
       std::optional<int32_t> bias_tensor_index;
-      if (gru.bias_operand_id) {
+      if (recurrent_network.bias_operand_id) {
         bias_tensor_index = cell_bias_tensor_indices[slot];
       }
       std::optional<int32_t> recurrent_bias_tensor_index;
-      if (gru.recurrent_bias_operand_id) {
+      if (recurrent_network.recurrent_bias_operand_id) {
         recurrent_bias_tensor_index = cell_recurrent_bias_tensor_indices[slot];
       }
 
-      GruCellOperation gru_cell_operation(
-          cell_input_dimensions, input_tensor_type, cell_input_tensor_index,
-          gru_cell_output_tensor_index, cell_weight_tensor_indices[slot],
-          cell_recurrent_weight_tensor_indices[slot], bias_tensor_index,
-          recurrent_bias_tensor_index, cell_hidden_tensor_indices[slot],
-          hidden_size, gru.reset_after, gru.layout, gru.activations);
+      if constexpr (std::is_same<RecurrentNetworkType, mojom::Gru>::value) {
+        GruCellOperation gru_cell_operation(
+            cell_input_dimensions, input_tensor_type, cell_input_tensor_index,
+            output_hidden_state_tensor_index, cell_weight_tensor_indices[slot],
+            cell_recurrent_weight_tensor_indices[slot], bias_tensor_index,
+            recurrent_bias_tensor_index, current_hidden_tensor_indices[slot],
+            hidden_size, recurrent_network.reset_after,
+            recurrent_network.layout, recurrent_network.activations);
 
-      ASSIGN_OR_RETURN(OperatorOffset operator_offset,
-                       SerializeGruCellOperation(gru_cell_operation));
-      operators_.emplace_back(operator_offset);
+        ASSIGN_OR_RETURN(OperatorOffset operator_offset,
+                         SerializeGruCellOperation(gru_cell_operation));
+        operators_.emplace_back(operator_offset);
+      } else /* `RecurrentNetworkType` is `mojom::Lstm` */ {
+        std::optional<int32_t> lstm_peephole_weight_tensor_index;
+        if (recurrent_network.peephole_weight_operand_id) {
+          lstm_peephole_weight_tensor_index =
+              lstm_cell_peephole_weight_tensor_indices[slot];
+        }
+        lstm_output_cell_state_tensor_index =
+            SerializeTemporaryTensor(cell_output_dimensions, input_tensor_type);
+        const std::array<int32_t, 2> output_tensor_indices = {
+            output_hidden_state_tensor_index,
+            lstm_output_cell_state_tensor_index};
+        LstmCellOperation lstm_cell_operation(
+            cell_input_dimensions, input_tensor_type, cell_input_tensor_index,
+            output_tensor_indices, cell_weight_tensor_indices[slot],
+            cell_recurrent_weight_tensor_indices[slot], bias_tensor_index,
+            recurrent_bias_tensor_index, current_hidden_tensor_indices[slot],
+            hidden_size, lstm_current_cell_tensor_indices[slot],
+            lstm_peephole_weight_tensor_index, recurrent_network.layout,
+            recurrent_network.activations);
 
-      // Resahpe the output tensor of gru cell to the 3-D tensor [1, batchSize,
-      // hiddenSize].
-      std::array<int32_t, 3> new_shape = {1, batch_size, hidden_size};
-      const int32_t reshape_gru_cell_tensor_index =
-          SerializeTemporaryTensor(new_shape, input_tensor_type);
-      operators_.emplace_back(
-          SerializeReshapeOperation(gru_cell_output_tensor_index,
-                                    reshape_gru_cell_tensor_index, new_shape));
-      if (concated_cell_tensor_index) {
-        const std::array<int32_t, 3> concat_output_shape = {
-            slot + 1, batch_size, hidden_size};
-        const int32_t concat_tensor_index =
-            SerializeTemporaryTensor(concat_output_shape, input_tensor_type);
-        operators_.emplace_back(SerializeConcatOperation(
-            std::array<int32_t, 2>(
-                {*concated_cell_tensor_index, reshape_gru_cell_tensor_index}),
-            concat_tensor_index, 0));
-        concated_cell_tensor_index = concat_tensor_index;
-      } else {
-        concated_cell_tensor_index = reshape_gru_cell_tensor_index;
+        ASSIGN_OR_RETURN(OperatorOffset operator_offset,
+                         SerializeLstmCellOperation(lstm_cell_operation));
+        operators_.emplace_back(operator_offset);
+      }
+
+      // Reshape the output hidden state tensor of gru / lstm cell to the 3-D
+      // tensor [1, batchSize, hiddenSize].
+      const std::array<int32_t, 3> new_shape = {1, batch_size, hidden_size};
+      const std::array<int32_t, 3> concat_output_shape = {slot + 1, batch_size,
+                                                          hidden_size};
+      next_hidden_tensor_index = ReshapeHiddenAndCellState(
+          input_tensor_type, output_hidden_state_tensor_index, new_shape,
+          next_hidden_tensor_index, concat_output_shape);
+
+      if constexpr (std::is_same<RecurrentNetworkType, mojom::Lstm>::value) {
+        // Reshape the output cell state tensor of lstm cell to the 3-D tensor
+        // [1, batchSize, hiddenSize].
+        lstm_next_cell_tensor_index = ReshapeHiddenAndCellState(
+            input_tensor_type, lstm_output_cell_state_tensor_index, new_shape,
+            lstm_next_cell_tensor_index, concat_output_shape);
       }
     }
 
     // Update hidden state.
-    hidden_state_tensor_index = *concated_cell_tensor_index;
+    hidden_state_tensor_index = *next_hidden_tensor_index;
+    // Update cell state for Lstm.
+    if constexpr (std::is_same<RecurrentNetworkType, mojom::Lstm>::value) {
+      lstm_cell_state_tensor_index = *lstm_next_cell_tensor_index;
+    }
 
-    if (gru.return_sequence) {
-      // Resahpe the output tensor of gru cell to the 3-D tensor [1,
+    if (recurrent_network.return_sequence) {
+      // Reshape the output tensor of gru cell to the 3-D tensor [1,
       // num_directions, batchSize, hiddenSize].
       const std::array<int32_t, 4> new_shape = {1, num_directions, batch_size,
                                                 hidden_size};
       const int32_t reshape_cells_tensor_index =
           SerializeTemporaryTensor(new_shape, input_tensor_type);
       operators_.emplace_back(SerializeReshapeOperation(
-          *concated_cell_tensor_index, reshape_cells_tensor_index, new_shape));
+          *next_hidden_tensor_index, reshape_cells_tensor_index, new_shape));
 
       if (sequence_tensor_index) {
         const std::array<int32_t, 4> concat_output_shape = {
@@ -2588,18 +2675,35 @@ auto GraphBuilderTflite::SerializeGru(const mojom::Gru& gru)
     }
   }
 
-  if (gru.return_sequence) {
-    CHECK_EQ(gru.output_operand_ids.size(), 2u);
-    const std::array<int32_t, 4> new_shape = {gru_steps, num_directions,
+  if (recurrent_network.return_sequence) {
+    int32_t output_sequence_tensor_index;
+    if constexpr (std::is_same<RecurrentNetworkType, mojom::Gru>::value) {
+      CHECK_EQ(recurrent_network.output_operand_ids.size(), 2u);
+      output_sequence_tensor_index =
+          operand_to_index_map_.at(recurrent_network.output_operand_ids[1]);
+    } else /* `RecurrentNetworkType` is `mojom::Lstm` */ {
+      CHECK_EQ(recurrent_network.output_operand_ids.size(), 3u);
+      output_sequence_tensor_index =
+          operand_to_index_map_.at(recurrent_network.output_operand_ids[2]);
+    }
+    const std::array<int32_t, 4> new_shape = {recurrent_steps, num_directions,
                                               batch_size, hidden_size};
     operators_.emplace_back(SerializeReshapeOperation(
-        *sequence_tensor_index,
-        operand_to_index_map_.at(gru.output_operand_ids[1]), new_shape));
+        *sequence_tensor_index, output_sequence_tensor_index, new_shape));
+  }
+
+  // Return cell state for Lstm.
+  if constexpr (std::is_same<RecurrentNetworkType, mojom::Lstm>::value) {
+    CHECK_GE(recurrent_network.output_operand_ids.size(), 2u);
+    operators_.emplace_back(SerializeReshapeOperation(
+        lstm_cell_state_tensor_index,
+        operand_to_index_map_.at(recurrent_network.output_operand_ids[1]),
+        std::array<int32_t, 3>({num_directions, batch_size, hidden_size})));
   }
 
   return SerializeReshapeOperation(
       hidden_state_tensor_index,
-      operand_to_index_map_.at(gru.output_operand_ids[0]),
+      operand_to_index_map_.at(recurrent_network.output_operand_ids[0]),
       std::array<int32_t, 3>({num_directions, batch_size, hidden_size}));
 }
 
@@ -2978,6 +3082,48 @@ auto GraphBuilderTflite::SerializeLstmCell(const mojom::LstmCell& lstm_cell)
       peephole_weight_tensor_index, lstm_cell.layout, lstm_cell.activations);
 
   return SerializeLstmCellOperation(lstm_cell_operation);
+}
+
+int32_t GraphBuilderTflite::GetInitialHiddenAndCellState(
+    std::optional<uint64_t> state_operand_id,
+    base::span<const int32_t> state_dimensions) {
+  int32_t state_tensor_index;
+  if (state_operand_id) {
+    state_tensor_index = operand_to_index_map_.at(*state_operand_id);
+  } else {
+    CHECK_EQ(state_dimensions.size(), 3u);
+    const std::vector<float> initial_hidden_state_value(
+        std::accumulate(state_dimensions.begin(), state_dimensions.end(), 1,
+                        std::multiplies()));
+    state_tensor_index = SerializeTensorWithBuffer<float>(
+        initial_hidden_state_value, state_dimensions);
+  }
+  return state_tensor_index;
+}
+
+int32_t GraphBuilderTflite::ReshapeHiddenAndCellState(
+    ::tflite::TensorType input_tensor_type,
+    int32_t input_tensor_index,
+    base::span<const int32_t> new_shape,
+    std::optional<int32_t> concat_input_tensor_index,
+    base::span<const int32_t> concat_output_shape) {
+  // Reshape the output hidden or cell state tensor of gru / lstm cell to the
+  // 3-D tensor [1, batchSize, hiddenSize].
+  const int32_t out_tensor_index_of_shape =
+      SerializeTemporaryTensor(new_shape, input_tensor_type);
+  operators_.emplace_back(SerializeReshapeOperation(
+      input_tensor_index, out_tensor_index_of_shape, new_shape));
+  if (concat_input_tensor_index) {
+    const int32_t concat_output_tensor_index =
+        SerializeTemporaryTensor(concat_output_shape, input_tensor_type);
+    operators_.emplace_back(SerializeConcatOperation(
+        std::array<int32_t, 2>(
+            {*concat_input_tensor_index, out_tensor_index_of_shape}),
+        concat_output_tensor_index, /*axis=*/0));
+    return concat_output_tensor_index;
+  }
+
+  return out_tensor_index_of_shape;
 }
 
 auto GraphBuilderTflite::SerializeMatmul(const mojom::Matmul& matmul)
