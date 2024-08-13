@@ -7595,6 +7595,22 @@ New install
         desc="This string is read out by a screen reader when the user selects a search result to insert into an input field. The contents are the search results are read out before this announcement.">
         Inserting selected result
       </message>
+      <message name="IDS_PICKER_DATE_DISAMBIGUATION_THIS_COMING_DAY"
+        desc="In sentence case: This string appears as a subtitle to a calendar date. The placeholder is the name of a day of the week (e.g. Monday) and is capitalized when appropriate for the locale. This string indicates that the date is in the future. For example, suppose today is Tuesday. If the placeholder is Monday, then this string refers to the upcoming Monday (6 days from now), as opposed to the Monday that just passed (1 day ago). The whole string (including placeholder) should be in sentence case.">
+        This coming <ph name="DAY_OF_WEEK">$1<ex>Monday</ex></ph>
+      </message>
+      <message name="IDS_PICKER_DATE_DISAMBIGUATION_THIS_PAST_DAY"
+        desc="In sentence case: This string appears as a subtitle to a calendar date. The placeholder is the name of a day of the week (e.g. Monday) and is capitalized when appropriate for the locale. This string indicates that the date is in the past. For example, suppose today is Tuesday. If the placeholder is Monday, then this string refers to the Monday that just passed (1 day ago), as opposed to upcoming Monday (6 days from now).">
+        This past <ph name="DAY_OF_WEEK">$1<ex>Monday</ex></ph>
+      </message>
+      <message name="IDS_PICKER_DATE_DISAMBIGUATION_NEXT_WEEK"
+        desc="In sentence case: This string appears as a subtitle to a calendar date. The placeholder is the name of a day of the week (e.g. Wednesday) and is capitalized when appropriate for the locale. This string indicates that the date is in the next week. For example, suppose today is Tuesday. If the placeholder is Wednesday, then this string refers to the Wednesday next week (8 days from now), as opposed to upcoming Wednesday in this week (1 day from now).">
+        <ph name="DAY_OF_WEEK">$1<ex>Wednesday</ex></ph> next week
+      </message>
+      <message name="IDS_PICKER_DATE_DISAMBIGUATION_LAST_WEEK"
+        desc="In sentence case: This string appears as a subtitle to a calendar date. The placeholder is the name of a day of the week (e.g. Monday) and is capitalized when appropriate for the locale. This string indicates that the date is in the previous week. For example, suppose today is Tuesday. If the placeholder is Monday, then this string refers to the Monday last week (8 days from ago), as opposed to the Monday that just passed (1 day from now).">
+        <ph name="DAY_OF_WEEK">$1<ex>Monday</ex></ph> last week
+      </message>
 
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">

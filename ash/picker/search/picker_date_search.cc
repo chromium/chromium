@@ -16,14 +16,15 @@
 
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/time_formatting.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace ash {
@@ -63,15 +64,16 @@ constexpr auto kDayOfWeekToNumber =
         {"friday", 5},
         {"saturday", 6},
     });
-constexpr std::u16string_view kNumberToDayOfWeek[] = {
-    u"Sunday",   u"Monday", u"Tuesday", u"Wednesday",
-    u"Thursday", u"Friday", u"Saturday"};
 
 constexpr std::u16string_view kSuggestedDates[] = {
     {u"Today"},
     {u"Tomorrow"},
     {u"2 weeks from now"},
 };
+
+std::u16string GetLocalizedDayOfWeek(const base::Time& time) {
+  return base::LocalizedTimeFormatWithPattern(time, "EEEE");
+}
 
 // The result of parsing a date expression query.
 struct ResolvedDate {
@@ -153,30 +155,37 @@ void HandleDayOfWeekQueries(const base::Time& now,
   int day_diff = target_day_of_week - current_day_of_week;
   if (prefix.empty() || prefix == "this ") {
     if (target_day_of_week < current_day_of_week) {
+      std::u16string localized_day_of_week =
+          GetLocalizedDayOfWeek(now + base::Days(day_diff));
       resolved_dates.push_back({
           .time = now + base::Days(day_diff + kDaysPerWeek),
-          .disambiguation_text = base::StrCat(
-              {u"this coming ", kNumberToDayOfWeek[target_day_of_week]}),
+          .disambiguation_text = l10n_util::GetStringFUTF16(
+              IDS_PICKER_DATE_DISAMBIGUATION_THIS_COMING_DAY,
+              localized_day_of_week),
       });
       resolved_dates.push_back({
           .time = now + base::Days(day_diff),
-          .disambiguation_text = base::StrCat(
-              {u"this past ", kNumberToDayOfWeek[target_day_of_week]}),
+          .disambiguation_text = l10n_util::GetStringFUTF16(
+              IDS_PICKER_DATE_DISAMBIGUATION_THIS_PAST_DAY,
+              std::move(localized_day_of_week)),
       });
     } else {
       resolved_dates.push_back({.time = now + base::Days(day_diff)});
     }
   } else if (prefix == "next ") {
     if (target_day_of_week > current_day_of_week) {
+      std::u16string localized_day_of_week =
+          GetLocalizedDayOfWeek(now + base::Days(day_diff));
       resolved_dates.push_back({
           .time = now + base::Days(day_diff + kDaysPerWeek),
-          .disambiguation_text = base::StrCat(
-              {kNumberToDayOfWeek[target_day_of_week], u" next week"}),
+          .disambiguation_text = l10n_util::GetStringFUTF16(
+              IDS_PICKER_DATE_DISAMBIGUATION_NEXT_WEEK, localized_day_of_week),
       });
       resolved_dates.push_back({
           .time = now + base::Days(day_diff),
-          .disambiguation_text = base::StrCat(
-              {u"this coming ", kNumberToDayOfWeek[target_day_of_week]}),
+          .disambiguation_text = l10n_util::GetStringFUTF16(
+              IDS_PICKER_DATE_DISAMBIGUATION_THIS_COMING_DAY,
+              std::move(localized_day_of_week)),
       });
     } else {
       resolved_dates.push_back(
@@ -184,15 +193,18 @@ void HandleDayOfWeekQueries(const base::Time& now,
     }
   } else if (prefix == "last ") {
     if (target_day_of_week < current_day_of_week) {
+      std::u16string localized_day_of_week =
+          GetLocalizedDayOfWeek(now + base::Days(day_diff));
       resolved_dates.push_back({
           .time = now + base::Days(day_diff - kDaysPerWeek),
-          .disambiguation_text = base::StrCat(
-              {kNumberToDayOfWeek[target_day_of_week], u" last week"}),
+          .disambiguation_text = l10n_util::GetStringFUTF16(
+              IDS_PICKER_DATE_DISAMBIGUATION_LAST_WEEK, localized_day_of_week),
       });
       resolved_dates.push_back({
           .time = now + base::Days(day_diff),
-          .disambiguation_text = base::StrCat(
-              {u"this past ", kNumberToDayOfWeek[target_day_of_week]}),
+          .disambiguation_text = l10n_util::GetStringFUTF16(
+              IDS_PICKER_DATE_DISAMBIGUATION_THIS_PAST_DAY,
+              std::move(localized_day_of_week)),
       });
     } else {
       resolved_dates.push_back(
