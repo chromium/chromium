@@ -2951,6 +2951,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityMinRole) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityMinRoleTabbableGroup) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "KeyboardFocusableScrollers");
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "AccessibilityMinRoleTabbable");
+  RunHtmlTest(FILE_PATH_LITERAL("min-role-tabbable-group.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityMissingRelationTargetsAddedLater) {
   RunAriaTest(FILE_PATH_LITERAL("missing-relation-targets-added-later.html"));
 }

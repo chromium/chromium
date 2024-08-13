@@ -1924,12 +1924,19 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
   }
 
   // Minimum role:
+  // TODO(accessibility) if (AXObjectCache().IsInternalUICheckerOn()) assert,
+  // because it is a bad code smell and usually points to other problems.
   if (GetElement() && !GetElement()->FastHasAttribute(html_names::kRoleAttr)) {
     if (IsPopup() != ax::mojom::blink::IsPopup::kNone ||
         GetElement()->FastHasAttribute(html_names::kAutofocusAttr) ||
         GetElement()->FastHasAttribute(html_names::kDraggableAttr)) {
-      // TODO(accessibility) Consider for tabindex="0".
       return ax::mojom::blink::Role::kGroup;
+    }
+    if (RuntimeEnabledFeatures::AccessibilityMinRoleTabbableEnabled()) {
+      if (GetElement()->IsKeyboardFocusable(
+              Element::UpdateBehavior::kNoneForAccessibility)) {
+        return ax::mojom::blink::Role::kGroup;
+      }
     }
   }
 

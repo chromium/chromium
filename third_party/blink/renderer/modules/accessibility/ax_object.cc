@@ -4429,11 +4429,15 @@ String AXObject::ComputedName(ax::mojom::blink::NameFrom* name_from_out) const {
 }
 
 bool AXObject::IsNameProhibited() const {
-  if (CanSetFocusAttribute()) {
+  if (CanSetFocusAttribute() &&
+      !RuntimeEnabledFeatures::AccessibilityMinRoleTabbableEnabled()) {
     // Make an exception for focusable elements. ATs will likely read the name
     // of a focusable element even if it has the wrong role.
+    // We do not need to do this if/when AccessibilityMinRoleTabbableEnabled
+    // becomes enabled by default, because focusable objects will get a
+    // minimum role of group, which can support an accessible name.
     // TODO(crbug.com/350528330): Test to see whether the following content
-    // works in all screen readers we support, and not, we should return true
+    // works in all screen readers we support, and if not, we should return true
     // here: <div tabindex="0" aria-label="Some label"></div>. Either way,
     // we should still disallow this pattern in Chromium Web UI.
     return false;
@@ -7780,8 +7784,8 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
         //     << "A focusable node lacked proper accessibility markup, "
         //        "causing a repair situation:"
         //     << "\n* Is name prohibited: " << IsNameProhibited()
-        //     << "\n* Role: " << RoleValue() << "\n* URL: " <<
-        //     GetDocument()->Url()
+        //     << "\n* Role: " << RoleValue()
+        //     << "\n* URL: " << GetDocument()->Url()
         //     << "\n* Outer html: " << GetElement()->outerHTML()
         //     << "\n* AXObject ancestry:\n"
         //     << ParentChainToStringHelper(this);
