@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scheduler/script_wrappable_task_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -18,12 +19,13 @@ class DOMTaskSignal;
 class SoftNavigationContext;
 
 class CORE_EXPORT TaskAttributionInfoImpl final
-    : public ScriptWrappableTaskState,
+    : public GarbageCollected<TaskAttributionInfoImpl>,
+      public WrappableTaskState,
       public scheduler::TaskAttributionInfo {
  public:
   TaskAttributionInfoImpl(scheduler::TaskAttributionId, SoftNavigationContext*);
 
-  // `ScriptWrappableTaskState` implementation:
+  // `WrappableTaskState` implementation:
   AbortSignal* AbortSource() override;
   DOMTaskSignal* PrioritySource() override;
   scheduler::TaskAttributionInfo* GetTaskAttributionInfo() override;

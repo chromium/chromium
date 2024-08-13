@@ -68,7 +68,7 @@ scheduler::TaskAttributionInfo* TaskAttributionTrackerImpl::RunningTask()
     const {
   if (ScriptWrappableTaskState* task_state =
           ScriptWrappableTaskState::GetCurrent(isolate_)) {
-    return task_state->GetTaskAttributionInfo();
+    return task_state->WrappedState()->GetTaskAttributionInfo();
   }
   // There won't be a running task outside of a `TaskScope` or microtask
   // checkpoint.
@@ -105,8 +105,10 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
 
   ScriptWrappableTaskState* previous_task_state =
       ScriptWrappableTaskState::GetCurrent(isolate_);
+  WrappableTaskState* previous_unwrapped_task_state =
+      previous_task_state ? previous_task_state->WrappedState() : nullptr;
 
-  ScriptWrappableTaskState* running_task_state = nullptr;
+  WrappableTaskState* running_task_state = nullptr;
   if (abort_source || priority_source) {
     running_task_state = MakeGarbageCollected<WebSchedulingTaskState>(
         task_state, abort_source, priority_source);
@@ -116,16 +118,21 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
     running_task_state = To<TaskAttributionInfoImpl>(task_state);
   }
 
-  if (running_task_state != previous_task_state) {
-    ScriptWrappableTaskState::SetCurrent(script_state, running_task_state);
+  if (running_task_state != previous_unwrapped_task_state) {
+    ScriptWrappableTaskState::SetCurrent(
+        script_state,
+        running_task_state
+            ? MakeGarbageCollected<ScriptWrappableTaskState>(running_task_state)
+            : nullptr);
   }
 
   TaskAttributionInfo* current =
       running_task_state ? running_task_state->GetTaskAttributionInfo()
                          : nullptr;
   TaskAttributionInfo* previous =
-      previous_task_state ? previous_task_state->GetTaskAttributionInfo()
-                          : nullptr;
+      previous_unwrapped_task_state
+          ? previous_unwrapped_task_state->GetTaskAttributionInfo()
+          : nullptr;
 
   // Fire observer callbacks after updating the CPED to keep `RunningTask()` in
   // sync with what is passed to the observer.

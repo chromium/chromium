@@ -15,7 +15,6 @@ TaskAttributionInfoImpl::TaskAttributionInfoImpl(
     : id_(id), soft_navigation_context_(soft_navigation_context) {}
 
 void TaskAttributionInfoImpl::Trace(Visitor* visitor) const {
-  ScriptWrappableTaskState::Trace(visitor);
   visitor->Trace(soft_navigation_context_);
 }
 

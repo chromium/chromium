@@ -7,6 +7,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace v8 {
 class Isolate;
@@ -20,6 +22,19 @@ namespace blink {
 class AbortSignal;
 class DOMTaskSignal;
 class ScriptState;
+
+// Interface for objects stored as `ScriptWrappableTaskState`.
+//
+// Instances of this class will either be WebSchedulingTaskState, if propagating
+// abort and priority sources (web scheduling APIs), or TaskAttributionInfoImpl,
+// which is exposed as TaskAttributionInfo via TaskAttributionTracker public
+// APIs.
+class WrappableTaskState : public GarbageCollectedMixin {
+ public:
+  virtual scheduler::TaskAttributionInfo* GetTaskAttributionInfo() = 0;
+  virtual AbortSignal* AbortSource() = 0;
+  virtual DOMTaskSignal* PrioritySource() = 0;
+};
 
 // `ScriptWrappableTaskState` objects are stored in V8 as continuation preserved
 // embedder data (CPED). They aren't exposed directly to JS, but are
@@ -40,16 +55,14 @@ class ScriptState;
 //   3. For non-promise microtasks, which are used throughout Blink, the current
 //      CPED is bound when EnqueueMicrotask() is called.
 //
-// Similarly, in Blink these objects are propagated to descendant tasks by
-// capturing the current CPED during various API calls and restoring it prior to
-// running a callback. For example, the current CPED is captured when setTimeout
-// is called and restored before running the associated callback.
+// Similarly, in Blink the objects these wrap are propagated to descendant tasks
+// by capturing the current CPED during various API calls and restoring it prior
+// to running a callback. For example, the current CPED is captured when
+// setTimeout is called and restored before running the associated callback.
 //
-// Instances of this class will either be WebSchedulingTaskState, if propagating
-// abort and priority sources (web scheduling APIs), or TaskAttributionInfoImpl,
-// which is exposed as TaskAttributionInfo via TaskAttributionTracker public
-// APIs.
-class CORE_EXPORT ScriptWrappableTaskState : public ScriptWrappable {
+// Note: `ScriptWrappableTaskState` objects aren't directly propagated in Blink
+// to avoid leaking detached windows in long timeouts. See crbug.com/353997473.
+class CORE_EXPORT ScriptWrappableTaskState final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -61,15 +74,14 @@ class CORE_EXPORT ScriptWrappableTaskState : public ScriptWrappable {
   // preserved embedder data.
   static void SetCurrent(ScriptState*, ScriptWrappableTaskState*);
 
-  virtual scheduler::TaskAttributionInfo* GetTaskAttributionInfo() = 0;
+  explicit ScriptWrappableTaskState(WrappableTaskState*);
 
-  virtual AbortSignal* AbortSource() = 0;
-  virtual DOMTaskSignal* PrioritySource() = 0;
+  WrappableTaskState* WrappedState() { return wrapped_task_state_.Get(); }
 
   void Trace(Visitor*) const override;
 
- protected:
-  ScriptWrappableTaskState();
+ private:
+  Member<WrappableTaskState> wrapped_task_state_;
 };
 
 }  // namespace blink
