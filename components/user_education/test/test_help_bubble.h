@@ -37,6 +37,10 @@ class TestHelpBubble : public HelpBubble {
 
   const HelpBubbleParams& params() const { return params_; }
 
+  const ui::TrackedElement* anchor_element() const {
+    return anchor_element_.get();
+  }
+
   // Simulates the user dismissing the bubble.
   void SimulateDismiss();
 

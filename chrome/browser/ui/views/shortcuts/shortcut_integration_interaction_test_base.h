@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SHORTCUTS_SHORTCUT_INTEGRATION_BROWSERTEST_BASE_H_
-#define CHROME_BROWSER_UI_VIEWS_SHORTCUTS_SHORTCUT_INTEGRATION_BROWSERTEST_BASE_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_SHORTCUTS_SHORTCUT_INTEGRATION_INTERACTION_TEST_BASE_H_
+#define CHROME_BROWSER_UI_VIEWS_SHORTCUTS_SHORTCUT_INTEGRATION_INTERACTION_TEST_BASE_H_
 
 #include <memory>
 #include <string>
@@ -16,15 +16,15 @@
 
 namespace shortcuts {
 
-class ShortcutIntegrationBrowserTestPrivate;
+class ShortcutIntegrationInteractionTestPrivate;
 
 // API class that provides both base browser Kombucha functionality and
 // additional logic to facilitate writing tests for the "Create Shortcut"
 // feature.
-class ShortcutIntegrationBrowserTestApi : public InteractiveBrowserTestApi {
+class ShortcutIntegrationInteractionTestApi : public InteractiveBrowserTestApi {
  public:
-  ShortcutIntegrationBrowserTestApi();
-  ~ShortcutIntegrationBrowserTestApi() override;
+  ShortcutIntegrationInteractionTestApi();
+  ~ShortcutIntegrationInteractionTestApi() override;
 
   // Triggers the "create shortcut" dialog and waits for the dialog to show.
   [[nodiscard]] MultiStep ShowCreateShortcutDialog();
@@ -67,25 +67,25 @@ class ShortcutIntegrationBrowserTestApi : public InteractiveBrowserTestApi {
  private:
   base::test::ScopedFeatureList feature_list_{features::kShortcutsNotApps};
 
-  ShortcutIntegrationBrowserTestPrivate& test_impl();
+  ShortcutIntegrationInteractionTestPrivate& test_impl();
 };
 
-// Template for adding ShortcutIntegrationBrowserTestApi to any test fixture
+// Template for adding ShortcutIntegrationInteractionTestApi to any test fixture
 // which is derived from InProcessBrowserTest.
 //
 // If you don't need to derive from some existing test class, prefer to use
-// ShortcutIntegrationBrowserTestBase.
+// ShortcutIntegrationInteractionTestBase.
 template <typename T>
   requires std::derived_from<T, InProcessBrowserTest>
-class ShortcutIntegrationBrowserTestT
+class ShortcutIntegrationInteractionTestT
     : public T,
-      public ShortcutIntegrationBrowserTestApi {
+      public ShortcutIntegrationInteractionTestApi {
  public:
   template <typename... Args>
-  explicit ShortcutIntegrationBrowserTestT(Args&&... args)
+  explicit ShortcutIntegrationInteractionTestT(Args&&... args)
       : T(std::forward<Args>(args)...) {}
 
-  ~ShortcutIntegrationBrowserTestT() override = default;
+  ~ShortcutIntegrationInteractionTestT() override = default;
 
  protected:
   void SetUpOnMainThread() override {
@@ -107,9 +107,9 @@ class ShortcutIntegrationBrowserTestT
 // Convenience test fixture for shortcut integration tests. This is the
 // preferred base class for Kombucha tests unless you specifically need
 // something else.
-using ShortcutIntegrationBrowserTestBase =
-    ShortcutIntegrationBrowserTestT<InProcessBrowserTest>;
+using ShortcutIntegrationInteractionTestBase =
+    ShortcutIntegrationInteractionTestT<InProcessBrowserTest>;
 
 }  // namespace shortcuts
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SHORTCUTS_SHORTCUT_INTEGRATION_BROWSERTEST_BASE_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_SHORTCUTS_SHORTCUT_INTEGRATION_INTERACTION_TEST_BASE_H_

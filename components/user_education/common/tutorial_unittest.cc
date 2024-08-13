@@ -8,6 +8,8 @@
 #include <string>
 #include <string_view>
 
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
@@ -28,6 +30,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/interaction_sequence_test_util.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -127,7 +130,18 @@ class TutorialTest : public testing::Test {
   TutorialTest() = default;
   ~TutorialTest() override = default;
 
- protected:
+  void ClearEventQueue(bool fast_forward = true) {
+    if (fast_forward) {
+      task_environment_.FastForwardUntilNoTasksRemain();
+    } else {
+      base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, run_loop.QuitClosure());
+      run_loop.Run();
+    }
+  }
+
+ private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
@@ -309,8 +323,9 @@ TEST_F(TutorialTest, SingleInteractionTutorialRuns) {
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
 
+  ClearEventQueue();
   EXPECT_TRUE(service.currently_displayed_bubble_for_testing());
-  EXPECT_CALL_IN_SCOPE(
+  EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       ClickCloseButton(service.currently_displayed_bubble_for_testing()));
 }
@@ -363,27 +378,32 @@ TEST_F(TutorialTest, MultipleInteractionTutorialRuns) {
   // Register and start the tutorial.
   registry.AddTutorial(kTestTutorial1, std::move(description));
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
+  ClearEventQueue();
 
   // Verify only the default next button is visible and click it.
   auto* bubble = service.currently_displayed_bubble_for_testing();
   ASSERT_TRUE(bubble);
   EXPECT_FALSE(HasButtonWithText(bubble, IDS_TUTORIAL_CLOSE_TUTORIAL));
   EXPECT_TRUE(HasButtonWithText(bubble, IDS_TUTORIAL_NEXT_BUTTON));
+  EXPECT_EQ(&element_1, bubble->AsA<test::TestHelpBubble>()->anchor_element());
   ClickNextButton(bubble);
+  ClearEventQueue();
 
   // Verify only the custom next button is visible and click it.
   bubble = service.currently_displayed_bubble_for_testing();
   ASSERT_TRUE(bubble);
   EXPECT_FALSE(HasButtonWithText(bubble, IDS_TUTORIAL_CLOSE_TUTORIAL));
   EXPECT_TRUE(HasButtonWithText(bubble, IDS_TUTORIAL_NEXT_BUTTON));
+  EXPECT_EQ(&element_2, bubble->AsA<test::TestHelpBubble>()->anchor_element());
   EXPECT_CALL_IN_SCOPE(next, Run, ClickNextButton(bubble));
+  ClearEventQueue();
 
   // Verify only the close button is visible and click it.
   bubble = service.currently_displayed_bubble_for_testing();
   ASSERT_TRUE(bubble);
   EXPECT_TRUE(HasButtonWithText(bubble, IDS_TUTORIAL_CLOSE_TUTORIAL));
   EXPECT_FALSE(HasButtonWithText(bubble, IDS_TUTORIAL_NEXT_BUTTON));
-  EXPECT_CALL_IN_SCOPE(completed, Run, ClickCloseButton(bubble));
+  EXPECT_ASYNC_CALL_IN_SCOPE(completed, Run, ClickCloseButton(bubble));
 }
 
 TEST_F(TutorialTest, StartTutorialAbortsExistingTutorial) {
@@ -415,7 +435,7 @@ TEST_F(TutorialTest, StartTutorialAbortsExistingTutorial) {
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get(),
                         aborted.Get(), restarted.Get());
-  EXPECT_CALL_IN_SCOPE(
+  EXPECT_ASYNC_CALL_IN_SCOPE(
       aborted, Run, service.StartTutorial(kTestTutorial1, element_1.context()));
   EXPECT_TRUE(service.IsRunningTutorial());
 }
@@ -445,7 +465,7 @@ TEST_F(TutorialTest, StartTutorialCompletesExistingTutorial) {
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get(),
                         aborted.Get(), restarted.Get());
-  EXPECT_CALL_IN_SCOPE(
+  EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       service.StartTutorial(kTestTutorial1, element_1.context()));
   EXPECT_TRUE(service.IsRunningTutorial());
@@ -476,7 +496,7 @@ TEST_F(TutorialTest, TutorialWithCustomEvent) {
   ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
       &element_1, kCustomEventType1);
 
-  EXPECT_CALL_IN_SCOPE(
+  EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       ClickCloseButton(service.currently_displayed_bubble_for_testing()));
 }
@@ -520,7 +540,7 @@ TEST_F(TutorialTest, TutorialWithNamedElement) {
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
 
-  EXPECT_CALL_IN_SCOPE(
+  EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       ClickCloseButton(service.currently_displayed_bubble_for_testing()));
 }
@@ -553,6 +573,7 @@ TEST_F(TutorialTest, TutorialWithExtendedProperties) {
   // Register and start the tutorial.
   registry.AddTutorial(kTestTutorial1, std::move(description));
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
+  ClearEventQueue();
 
   // Verify the bubble has been forwarded the extended properties.
   auto* bubble = service.currently_displayed_bubble_for_testing();
@@ -562,7 +583,7 @@ TEST_F(TutorialTest, TutorialWithExtendedProperties) {
       extended_properties);
 
   // Close the bubble to complete the tutorial.
-  EXPECT_CALL_IN_SCOPE(completed, Run, ClickCloseButton(bubble));
+  EXPECT_ASYNC_CALL_IN_SCOPE(completed, Run, ClickCloseButton(bubble));
 }
 
 TEST_F(TutorialTest, SingleStepRestartTutorial) {
@@ -591,10 +612,11 @@ TEST_F(TutorialTest, SingleStepRestartTutorial) {
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get(),
                         aborted.Get(), restarted.Get());
 
-  EXPECT_CALL(restarted, Run).Times(1);
-  ClickRestartButton(service.currently_displayed_bubble_for_testing());
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      restarted, Run,
+      ClickRestartButton(service.currently_displayed_bubble_for_testing()));
 
-  EXPECT_CALL_IN_SCOPE(
+  EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       ClickCloseButton(service.currently_displayed_bubble_for_testing()));
 }
@@ -626,14 +648,16 @@ TEST_F(TutorialTest, SingleStepRestartTutorialCanRestartMultipleTimes) {
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get(),
                         aborted.Get(), restarted.Get());
+  ClearEventQueue();
 
   const int restarted_times = 3;
-  EXPECT_CALL(restarted, Run).Times(restarted_times);
   for (int i = 0; i < restarted_times; ++i) {
-    ClickRestartButton(service.currently_displayed_bubble_for_testing());
+    EXPECT_ASYNC_CALL_IN_SCOPE(
+        restarted, Run,
+        ClickRestartButton(service.currently_displayed_bubble_for_testing()));
   }
 
-  EXPECT_CALL_IN_SCOPE(
+  EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       ClickCloseButton(service.currently_displayed_bubble_for_testing()));
 }
@@ -677,18 +701,22 @@ TEST_F(TutorialTest, MultiStepRestartTutorialWithCloseOnComplete) {
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get(),
                         aborted.Get(), restarted.Get());
+  ClearEventQueue();
   element_2.Show();
+  ClearEventQueue();
   element_3.Show();
-
+  ClearEventQueue();
   element_2.Hide();
+  ClearEventQueue();
 
-  EXPECT_CALL(restarted, Run).Times(1);
-  ClickRestartButton(service.currently_displayed_bubble_for_testing());
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      restarted, Run,
+      ClickRestartButton(service.currently_displayed_bubble_for_testing()));
 
   EXPECT_TRUE(service.IsRunningTutorial());
   element_2.Show();
 
-  EXPECT_CALL_IN_SCOPE(
+  EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       ClickCloseButton(service.currently_displayed_bubble_for_testing()));
 }
@@ -732,18 +760,22 @@ TEST_F(TutorialTest, MultiStepRestartTutorialWithDismissAfterRestart) {
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get(),
                         aborted.Get(), restarted.Get());
+  ClearEventQueue();
   element_2.Show();
+  ClearEventQueue();
   element_3.Show();
-
+  ClearEventQueue();
   element_2.Hide();
 
-  EXPECT_CALL(restarted, Run).Times(1);
-  ClickRestartButton(service.currently_displayed_bubble_for_testing());
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      restarted, Run,
+      ClickRestartButton(service.currently_displayed_bubble_for_testing()));
+  ClearEventQueue();
 
   EXPECT_TRUE(service.IsRunningTutorial());
   EXPECT_TRUE(service.currently_displayed_bubble_for_testing() != nullptr);
 
-  EXPECT_CALL_IN_SCOPE(
+  EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       ClickDismissButton(service.currently_displayed_bubble_for_testing()));
 }
@@ -787,22 +819,25 @@ TEST_F(TutorialTest, MultiStepRestartTutorialCanRestartMultipleTimes) {
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get(),
                         aborted.Get(), restarted.Get());
+  ClearEventQueue();
 
   const int restarted_times = 3;
-  EXPECT_CALL(restarted, Run).Times(restarted_times);
   for (int i = 0; i < restarted_times; ++i) {
     element_2.Show();
+    ClearEventQueue();
     element_3.Show();
-
+    ClearEventQueue();
     element_2.Hide();
-
-    ClickRestartButton(service.currently_displayed_bubble_for_testing());
+    EXPECT_ASYNC_CALL_IN_SCOPE(
+        restarted, Run,
+        ClickRestartButton(service.currently_displayed_bubble_for_testing()));
+    ClearEventQueue();
   }
 
   EXPECT_TRUE(service.IsRunningTutorial());
   EXPECT_TRUE(service.currently_displayed_bubble_for_testing() != nullptr);
 
-  EXPECT_CALL_IN_SCOPE(
+  EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       ClickDismissButton(service.currently_displayed_bubble_for_testing()));
 }
@@ -841,9 +876,10 @@ TEST_F(TutorialTest, BubbleClosingProgrammaticallyOnlyEndsTutorialOnLastStep) {
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get(),
                         aborted.Get(), restarted.Get());
-  service.currently_displayed_bubble_for_testing()->Close();
+  ClearEventQueue();
   element_2.Show();
-  EXPECT_CALL_IN_SCOPE(
+  ClearEventQueue();
+  EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       service.currently_displayed_bubble_for_testing()->Close());
 }
@@ -870,8 +906,7 @@ TEST_F(TutorialTest, TimeoutBeforeFirstBubble) {
   service.StartTutorial(kTestTutorial1, el.context(), completed.Get(),
                         aborted.Get(), restarted.Get());
   EXPECT_FALSE(service.currently_displayed_bubble_for_testing());
-  EXPECT_CALL_IN_SCOPE(aborted, Run,
-                       task_environment_.FastForwardUntilNoTasksRemain());
+  EXPECT_ASYNC_CALL_IN_SCOPE(aborted, Run, ClearEventQueue());
 }
 
 TEST_F(TutorialTest, TimeoutBetweenBubbles) {
@@ -902,12 +937,13 @@ TEST_F(TutorialTest, TimeoutBetweenBubbles) {
 
   service.StartTutorial(kTestTutorial1, el1.context(), completed.Get(),
                         aborted.Get(), restarted.Get());
+  ClearEventQueue();
 
   // This closes the bubble but does not advance the tutorial.
   el1.Hide();
+  ClearEventQueue(/*fast_forward=*/false);
   EXPECT_FALSE(service.currently_displayed_bubble_for_testing());
-  EXPECT_CALL_IN_SCOPE(aborted, Run,
-                       task_environment_.FastForwardUntilNoTasksRemain());
+  EXPECT_ASYNC_CALL_IN_SCOPE(aborted, Run, ClearEventQueue());
 }
 
 TEST_F(TutorialTest, NoTimeoutIfBubbleShowing) {
@@ -937,10 +973,11 @@ TEST_F(TutorialTest, NoTimeoutIfBubbleShowing) {
 
   service.StartTutorial(kTestTutorial1, el1.context(), completed.Get(),
                         aborted.Get(), restarted.Get());
+  ClearEventQueue();
 
   // Since there is a bubble, there is no timeout.
   EXPECT_TRUE(service.currently_displayed_bubble_for_testing());
-  task_environment_.FastForwardUntilNoTasksRemain();
+  ClearEventQueue();
 
   // When we exit and destroy the service, the callback will be called.
   EXPECT_CALL(aborted, Run).Times(1);
@@ -1026,12 +1063,13 @@ TEST_F(TutorialTest, SetupTemporaryStateCallback) {
   // Register and start the tutorial.
   registry.AddTutorial(kTestTutorial1, std::move(description));
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());
+  ClearEventQueue();
 
   auto* bubble = service.currently_displayed_bubble_for_testing();
   // Verify that the element is shown when the tutorial is active.
   ASSERT_TRUE(element_2.IsVisible());
   // Close the bubble to complete the tutorial.
-  EXPECT_CALL_IN_SCOPE(completed, Run, ClickCloseButton(bubble));
+  EXPECT_ASYNC_CALL_IN_SCOPE(completed, Run, ClickCloseButton(bubble));
   // Verify that the element is hidden when the tutorial is completed.
   ASSERT_FALSE(element_2.IsVisible());
 }
@@ -1065,6 +1103,7 @@ TEST_F(TutorialTest, CleanupTemporaryStateOnAbort) {
   // Register and start the tutorial.
   registry.AddTutorial(kTestTutorial1, std::move(description));
   service.StartTutorial(kTestTutorial1, element_1.context());
+  ClearEventQueue();
 
   // Verify that the bubble is shown to the user.
   EXPECT_TRUE(service.currently_displayed_bubble_for_testing());
@@ -1073,6 +1112,7 @@ TEST_F(TutorialTest, CleanupTemporaryStateOnAbort) {
 
   // Verify the tutorial is aborted when the anchor visibility is lost.
   element_1.Hide();
+  ClearEventQueue();
   EXPECT_FALSE(service.currently_displayed_bubble_for_testing());
   EXPECT_FALSE(service.IsRunningTutorial());
   // Verify that the state is reset when the tutorial is aborted.
@@ -1254,7 +1294,7 @@ TEST_P(ConditionalTutorialTest1, ConditionalAtEndOfTutorialUnevenSteps) {
       StartTutorial(
           BubbleStep(kTestIdentifier1).SetBubbleBodyText(IDS_DONE),
           IfStep(kTestIdentifier2, Branch(0))
-              .Then(BubbleStep(kTestIdentifier2).SetBubbleBodyText(IDS_OK))
+              .Then(BubbleStep(kTestIdentifier3).SetBubbleBodyText(IDS_OK))
               .Else(
                   BubbleStep(kTestIdentifier2).SetBubbleBodyText(IDS_CLEAR),
                   BubbleStep(kTestIdentifier3).SetBubbleBodyText(IDS_CANCEL))),

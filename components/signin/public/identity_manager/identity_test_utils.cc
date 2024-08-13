@@ -89,7 +89,7 @@ void UpdateRefreshTokenForAccount(
   // platforms.
   WaitForRefreshTokensLoaded(identity_manager);
 
-  base::RunLoop run_loop;
+  base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
   TestIdentityManagerObserver token_updated_observer(identity_manager);
   token_updated_observer.SetOnRefreshTokenUpdatedCallback(
       run_loop.QuitClosure());

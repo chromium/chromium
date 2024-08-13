@@ -4465,7 +4465,6 @@ if (!is_android) {
         "../browser/ui/views/payments/shipping_option_view_controller_browsertest.cc",
         "../browser/ui/views/performance_controls/memory_saver_chip_view_browsertest.cc",
         "../browser/ui/views/performance_controls/memory_saver_exclusion_list_browsertest.cc",
-        "../browser/ui/views/performance_controls/memory_saver_iph_browsertest.cc",
         "../browser/ui/views/permissions/embedded_permission_prompt_uitest.cc",
         "../browser/ui/views/permissions/exclusive_access_permission_prompt_browsertest.cc",
         "../browser/ui/views/permissions/permission_prompt_bubble_base_view_browsertest.cc",
@@ -11180,6 +11179,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/passwords/manage_passwords_icon_view_interactive_uitest.cc",
         "../browser/ui/views/passwords/password_bubble_interactive_uitest.cc",
         "../browser/ui/views/performance_controls/memory_saver_interactive_ui_test.cc",
+        "../browser/ui/views/performance_controls/memory_saver_iph_interactive_uitest.cc",
         "../browser/ui/views/performance_controls/performance_intervention_interactive_ui_test.cc",
         "../browser/ui/views/permissions/chip/LHS_indicators_browsertest.cc",
         "../browser/ui/views/permissions/chip/dashboard_kombucha_interactive_uitest.cc",
@@ -11274,6 +11274,8 @@ if (!is_android && !is_chromeos_device) {
           "../browser/signin/mirror_interactive_uitest.cc",
           "../browser/ui/views/toolbar/browser_app_menu_button_interactive_uitest_chromeos.cc",
         ]
+      } else {
+        deps += [ "//chrome/browser/ui/views/shortcuts:interactive_ui_tests" ]
       }
       if (is_linux || is_chromeos_lacros) {
         # Desktop linux.

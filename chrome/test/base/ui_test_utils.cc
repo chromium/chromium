@@ -743,7 +743,8 @@ void AllTabsObserver::Wait() {
       << "Subclasses must call `AddAllBrowsers()` during construction";
 
   if (!condition_met_) {
-    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_ = std::make_unique<base::RunLoop>(
+        base::RunLoop::Type::kNestableTasksAllowed);
     run_loop_->Run();
     run_loop_.reset();
   }

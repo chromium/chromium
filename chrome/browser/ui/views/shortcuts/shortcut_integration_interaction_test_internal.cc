@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/shortcuts/shortcut_integration_browsertest_internal.h"
+#include "chrome/browser/ui/views/shortcuts/shortcut_integration_interaction_test_internal.h"
 
 #include <map>
 #include <set>
@@ -114,7 +114,7 @@ DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedShortcut)
 // `TrackedShortcut` instances for any files created and removed from the
 // directory being monitored. This makes it possible to treat files in the given
 // directory as elements using the interactive test framework.
-class ShortcutIntegrationBrowserTestPrivate::ShortcutTracker {
+class ShortcutIntegrationInteractionTestPrivate::ShortcutTracker {
  public:
   explicit ShortcutTracker(const base::FilePath& path)
       : path_(path),
@@ -221,33 +221,34 @@ class ShortcutIntegrationBrowserTestPrivate::ShortcutTracker {
   base::WeakPtrFactory<ShortcutTracker> weak_ptr_factory_{this};
 };
 
-ShortcutIntegrationBrowserTestPrivate::ShortcutIntegrationBrowserTestPrivate()
+ShortcutIntegrationInteractionTestPrivate
+    ::ShortcutIntegrationInteractionTestPrivate()
     : internal::InteractiveBrowserTestPrivate(
           std::make_unique<InteractionTestUtilBrowser>()) {}
 
-ShortcutIntegrationBrowserTestPrivate::
-    ~ShortcutIntegrationBrowserTestPrivate() = default;
+ShortcutIntegrationInteractionTestPrivate::
+    ~ShortcutIntegrationInteractionTestPrivate() = default;
 
-void ShortcutIntegrationBrowserTestPrivate::DoTestSetUp() {
+void ShortcutIntegrationInteractionTestPrivate::DoTestSetUp() {
   internal::InteractiveBrowserTestPrivate::DoTestSetUp();
   test_support_ = std::make_unique<ShortcutCreationTestSupport>();
   shortcut_tracker_ = std::make_unique<ShortcutTracker>(
       base::PathService::CheckedGet(base::DIR_USER_DESKTOP));
 }
 
-void ShortcutIntegrationBrowserTestPrivate::DoTestTearDown() {
+void ShortcutIntegrationInteractionTestPrivate::DoTestTearDown() {
   shortcut_tracker_.reset();
   test_support_.reset();
   internal::InteractiveBrowserTestPrivate::DoTestTearDown();
 }
 
-void ShortcutIntegrationBrowserTestPrivate::SetNextShortcutIdentifier(
+void ShortcutIntegrationInteractionTestPrivate::SetNextShortcutIdentifier(
     ui::ElementIdentifier identifier) {
   shortcut_tracker_->SetNextShortcutIdentifier(identifier);
 }
 
 // static
-base::FilePath ShortcutIntegrationBrowserTestPrivate::GetShortcutPath(
+base::FilePath ShortcutIntegrationInteractionTestPrivate::GetShortcutPath(
     ui::TrackedElement* element) {
   CHECK(element->IsA<TrackedShortcut>());
   TrackedShortcut* const shortcut = element->AsA<TrackedShortcut>();

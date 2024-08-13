@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ClickLanguageTab) {
       WaitForTranslated(false),
       // P4.Tap on cancel button option in the Translate bubble popup box.
       PressButton(TranslateBubbleView::kCloseButton),
-      AfterHide(TranslateBubbleView::kIdentifier, base::DoNothing()));
+      WaitForHide(TranslateBubbleView::kIdentifier));
 }
 
 // Verify the "Choose another language" option from 3 dot menu.
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ChooseAnotherLanguage) {
       // V1. Verify that this dismisses the options menu and brings up a new
       // bubble with a combobox that populates a list of all available
       // languages.
-      AfterHide(TranslateBubbleView::kChangeTargetLanguage, base::DoNothing()),
+      WaitForHide(TranslateBubbleView::kChangeTargetLanguage),
       // P4. Select a language from the list and select translate.
       SelectDropdownItem(TranslateBubbleView::kTargetLanguageCombobox, 0),
       PressButton(TranslateBubbleView::kTargetLanguageDoneButton),
@@ -254,8 +254,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ChooseAnotherLanguage) {
       // language tab shows updated target language. Source language tab is
       // no longer highlighted and the target language tab will be
       // highlighted once translation is completed.
-      AfterHide(TranslateBubbleView::kTargetLanguageCombobox,
-                base::DoNothing()),
+      WaitForHide(TranslateBubbleView::kTargetLanguageCombobox),
       WaitForTranslated(true),
       CheckViewProperty(
           TranslateBubbleView::kTargetLanguageTab,
@@ -285,7 +284,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest,
       // V1. Verify that this dismisses the options menu and brings up a new
       // bubble with a combobox that populates a list of all available
       // languages.
-      AfterHide(TranslateBubbleView::kChangeSourceLanguage, base::DoNothing()),
+      WaitForHide(TranslateBubbleView::kChangeSourceLanguage),
       // P4. Select a language from the list and select translate.
       // Item 0 is the detected language.
       SelectDropdownItem(TranslateBubbleView::kSourceLanguageCombobox, 1),
@@ -294,8 +293,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest,
       // shows updated source language. Source language tab is no longer
       // highlighted and the target language tab will be highlighted once
       // the translation is completed.
-      AfterHide(TranslateBubbleView::kSourceLanguageCombobox,
-                base::DoNothing()),
+      WaitForHide(TranslateBubbleView::kSourceLanguageCombobox),
       WaitForTranslated(true),
       CheckViewProperty(
           TranslateBubbleView::kSourceLanguageTab,
@@ -362,7 +360,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, NetworkInterruption) {
                         l10n_util::GetStringUTF16(
                             IDS_TRANSLATE_BUBBLE_COULD_NOT_TRANSLATE_TITLE)),
       // V5. Wait for the bubble to be dismissed.
-      AfterHide(TranslateBubbleView::kChangeTargetLanguage, base::DoNothing()));
+      WaitForHide(TranslateBubbleView::kChangeTargetLanguage));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

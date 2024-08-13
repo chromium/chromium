@@ -13,7 +13,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
-#include "chrome/browser/ui/views/shortcuts/shortcut_integration_browsertest_base.h"
+#include "chrome/browser/ui/views/shortcuts/shortcut_integration_interaction_test_base.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -33,9 +33,10 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewShortcutId);
 
 }  // namespace
 
-using ShortcutIntegrationBrowserTest = ShortcutIntegrationBrowserTestBase;
+using ShortcutIntegrationInteractiveUiTest =
+    ShortcutIntegrationInteractionTestBase;
 
-IN_PROC_BROWSER_TEST_F(ShortcutIntegrationBrowserTest, CreateAndLaunch) {
+IN_PROC_BROWSER_TEST_F(ShortcutIntegrationInteractiveUiTest, CreateAndLaunch) {
   const GURL kPageWithIconsUrl =
       embedded_https_test_server().GetURL("/shortcuts/page_icons.html");
   RunTestSequence(
@@ -48,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutIntegrationBrowserTest, CreateAndLaunch) {
       WaitForWebContentsNavigation(kNewTabId, kPageWithIconsUrl));
 }
 
-IN_PROC_BROWSER_TEST_F(ShortcutIntegrationBrowserTest, CustomTitle) {
+IN_PROC_BROWSER_TEST_F(ShortcutIntegrationInteractiveUiTest, CustomTitle) {
   const GURL kPageWithIconsUrl =
       embedded_https_test_server().GetURL("/shortcuts/page_icons.html");
   RunTestSequence(
@@ -59,7 +60,8 @@ IN_PROC_BROWSER_TEST_F(ShortcutIntegrationBrowserTest, CustomTitle) {
       CheckShortcut(kNewShortcutId, IsShortcutWithTitle(u"Hello World!")));
 }
 
-IN_PROC_BROWSER_TEST_F(ShortcutIntegrationBrowserTest, MultipleShortcuts) {
+IN_PROC_BROWSER_TEST_F(ShortcutIntegrationInteractiveUiTest,
+                       MultipleShortcuts) {
   const GURL kPageWithIconsUrl =
       embedded_https_test_server().GetURL("/shortcuts/page_icons.html");
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondShortcutId);
@@ -102,11 +104,11 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfile1ShortcutId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfile2ShortcutId);
 }  // namespace
 
-class ShortcutIntegrationMultiProfileBrowserTest
-    : public ShortcutIntegrationBrowserTest {
+class ShortcutIntegrationMultiProfileInteractiveUiTest
+    : public ShortcutIntegrationInteractiveUiTest {
  public:
   void SetUpOnMainThread() override {
-    ShortcutIntegrationBrowserTest::SetUpOnMainThread();
+    ShortcutIntegrationInteractiveUiTest::SetUpOnMainThread();
 
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     base::FilePath new_path =
@@ -179,7 +181,8 @@ class ShortcutIntegrationMultiProfileBrowserTest
   }
 
   static base::FilePath ProfilePathFromWebContents(ui::TrackedElement* te) {
-    auto* wc = ShortcutIntegrationBrowserTest::AsInstrumentedWebContents(te);
+    auto* const wc =
+        ShortcutIntegrationInteractiveUiTest::AsInstrumentedWebContents(te);
     return wc->web_contents()->GetBrowserContext()->GetPath();
   }
 
@@ -188,7 +191,7 @@ class ShortcutIntegrationMultiProfileBrowserTest
   base::WeakPtr<Browser> profile2_browser_;
 };
 
-IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileBrowserTest,
+IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileInteractiveUiTest,
                        CreatedForCorrectProfile) {
   RunTestSequence(
       CreateShortcuts(),
@@ -203,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileBrowserTest,
                     IsShortcutForProfile(profile2()->GetPath())));
 }
 
-IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileBrowserTest,
+IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileInteractiveUiTest,
                        LaunchInCorrectProfile) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfile1NewTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfile2NewTabId);
@@ -234,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileBrowserTest,
                                 ::testing::Eq(profile1()->GetPath()))));
 }
 
-IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileBrowserTest,
+IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileInteractiveUiTest,
                        DontLaunchInLockedProfile) {
   signin_util::ScopedForceSigninSetterForTesting signin_setter(true);
 

@@ -76,7 +76,7 @@ class WidgetActivationWaiter : public WidgetObserver {
   bool observed_ = false;
   bool active_;
   const raw_ref<Widget> widget_;
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 

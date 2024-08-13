@@ -391,7 +391,7 @@ InteractiveAshTest::WaitForWindowWithTitle(aura::Env* env,
   return Steps(
       ObserveState(kTitleObserver,
                    std::make_unique<AuraWindowTitleObserver>(env, title)),
-      WaitForState(kTitleObserver, true));
+      WaitForState(kTitleObserver, true), StopObservingState(kTitleObserver));
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep

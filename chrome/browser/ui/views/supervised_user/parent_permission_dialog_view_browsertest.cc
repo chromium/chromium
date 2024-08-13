@@ -368,11 +368,16 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
       ShowDialog(),
       WaitForShow(ParentPermissionDialog::kDialogViewIdForTesting),
       PressButton(views::DialogClientView::kOkButtonElementId),
-      WaitForHide(ParentPermissionDialog::kDialogViewIdForTesting),
-      CheckResult([this]() { return harness_.InvalidCredentialWasReceived(); },
-                  true),
-      CheckResult([this]() { return harness_.GetResult(); },
-                  ParentPermissionDialog::Result::kParentPermissionFailed))));
+      // Because the failure results in the freeing of resources, these checks
+      // must be done immediately.
+      WithoutDelay(Steps(
+          WaitForHide(ParentPermissionDialog::kDialogViewIdForTesting),
+          CheckResult(
+              [this]() { return harness_.InvalidCredentialWasReceived(); },
+              true),
+          CheckResult(
+              [this]() { return harness_.GetResult(); },
+              ParentPermissionDialog::Result::kParentPermissionFailed))))));
 }
 
 IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
@@ -448,42 +453,47 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
       WaitForShow(ParentPermissionDialog::kDialogViewIdForTesting),
       PressButton(views::DialogClientView::kOkButtonElementId),
       WaitForHide(ParentPermissionDialog::kDialogViewIdForTesting),
-      CheckResult([this]() { return harness_.InvalidCredentialWasReceived(); },
-                  true),
-      CheckResult([this]() { return harness_.GetResult(); },
-                  ParentPermissionDialog::Result::kParentPermissionFailed),
-      CheckHistogramBucketCount(SupervisedUserExtensionsMetricsRecorder::
-                                    kParentPermissionDialogHistogramName,
-                                SupervisedUserExtensionsMetricsRecorder::
-                                    ParentPermissionDialogState::kOpened,
-                                1),
-      CheckHistogramBucketCount(
-          SupervisedUserExtensionsMetricsRecorder::
-              kParentPermissionDialogHistogramName,
-          SupervisedUserExtensionsMetricsRecorder::ParentPermissionDialogState::
-              kIncorrectParentPasswordProvided,
-          1),
-      CheckHistogramBucketCount(SupervisedUserExtensionsMetricsRecorder::
-                                    kParentPermissionDialogHistogramName,
-                                SupervisedUserExtensionsMetricsRecorder::
-                                    ParentPermissionDialogState::kFailed,
-                                1),
-      // The total histogram count is 3 (one for kOpened, one for
-      // kIncorrectPassword and one for kFailed).
-      CheckHistogramTotalCount(SupervisedUserExtensionsMetricsRecorder::
-                                   kParentPermissionDialogHistogramName,
-                               3),
-      // The provided entry point for the parent approval dialog has been
-      // recorded.
-      CheckHistogramBucketCount(
-          SupervisedUserExtensionsMetricsRecorder::
-              kExtensionParentApprovalEntryPointHistogramName,
-          SupervisedUserExtensionParentApprovalEntryPoint::
-              kOnExtensionManagementSetEnabledOperation,
-          1),
-      CheckResult(GetActionStatus(SupervisedUserExtensionsMetricsRecorder::
-                                      kParentPermissionDialogOpenedActionName),
-                  ActionStatus::kWasPerformed))));
+      // Because the failure results in the freeing of resources, these checks
+      // must be done immediately.
+      WithoutDelay(Steps(
+          CheckResult(
+              [this]() { return harness_.InvalidCredentialWasReceived(); },
+              true),
+          CheckResult([this]() { return harness_.GetResult(); },
+                      ParentPermissionDialog::Result::kParentPermissionFailed),
+          CheckHistogramBucketCount(SupervisedUserExtensionsMetricsRecorder::
+                                        kParentPermissionDialogHistogramName,
+                                    SupervisedUserExtensionsMetricsRecorder::
+                                        ParentPermissionDialogState::kOpened,
+                                    1),
+          CheckHistogramBucketCount(
+              SupervisedUserExtensionsMetricsRecorder::
+                  kParentPermissionDialogHistogramName,
+              SupervisedUserExtensionsMetricsRecorder::
+                  ParentPermissionDialogState::kIncorrectParentPasswordProvided,
+              1),
+          CheckHistogramBucketCount(SupervisedUserExtensionsMetricsRecorder::
+                                        kParentPermissionDialogHistogramName,
+                                    SupervisedUserExtensionsMetricsRecorder::
+                                        ParentPermissionDialogState::kFailed,
+                                    1),
+          // The total histogram count is 3 (one for kOpened, one for
+          // kIncorrectPassword and one for kFailed).
+          CheckHistogramTotalCount(SupervisedUserExtensionsMetricsRecorder::
+                                       kParentPermissionDialogHistogramName,
+                                   3),
+          // The provided entry point for the parent approval dialog has been
+          // recorded.
+          CheckHistogramBucketCount(
+              SupervisedUserExtensionsMetricsRecorder::
+                  kExtensionParentApprovalEntryPointHistogramName,
+              SupervisedUserExtensionParentApprovalEntryPoint::
+                  kOnExtensionManagementSetEnabledOperation,
+              1),
+          CheckResult(
+              GetActionStatus(SupervisedUserExtensionsMetricsRecorder::
+                                  kParentPermissionDialogOpenedActionName),
+              ActionStatus::kWasPerformed))))));
 }
 
 IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,

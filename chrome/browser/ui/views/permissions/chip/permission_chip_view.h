@@ -28,8 +28,7 @@ class PermissionChipView : public views::MdTextButton {
   METADATA_HEADER(PermissionChipView, views::MdTextButton)
 
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRequestChipElementId);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIndicatorChipElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementIdForTesting);
   explicit PermissionChipView(PressedCallback callback);
   PermissionChipView(const PermissionChipView& button) = delete;
   PermissionChipView& operator=(const PermissionChipView& button) = delete;
@@ -80,8 +79,11 @@ class PermissionChipView : public views::MdTextButton {
   PermissionPromptStyle GetPermissionPromptStyle() const {
     return prompt_style_;
   }
-  PermissionChipTheme GetPermissionChipTheme() const { return theme_; }
-  PermissionChipTheme get_theme_for_testing() { return theme_; }
+  PermissionChipTheme theme() const { return theme_; }
+
+  // Returns whether the theme describes a request state (true) or indicator
+  // state (false).
+  bool GetIsRequestForTesting() const;
 
   // Add/remove observer.
   void AddObserver(Observer* observer);

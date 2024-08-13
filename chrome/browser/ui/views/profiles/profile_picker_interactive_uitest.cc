@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
       // Navigate again back with the keyboard.
       SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
-      CheckResult(HasPendingNav(), IsTrue()),
+      WithoutDelay(CheckResult(HasPendingNav(), IsTrue())),
       WaitForStateChange(kPickerWebContentsId,
                          UrlEntryMatches(GURL("chrome://profile-picker"))),
       CheckResult(GetNavState(), Eq(NavState{.entry_count = 2,
@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
       // Navigating back once again does nothing.
       SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
-      CheckResult(HasPendingNav(), IsFalse()));
+      WithoutDelay(CheckResult(HasPendingNav(), IsFalse())));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
       // Navigate back with the keyboard.
       SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
-      CheckResult(HasPendingNav(), IsTrue()),
+      WithoutDelay(CheckResult(HasPendingNav(), IsTrue())),
       WaitForStateChange(kPickerWebContentsId,
                          UrlEntryMatches(GURL("chrome://profile-picker"))),
       CheckResult(GetNavState(), Eq(NavState{.entry_count = 2,
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
       // Navigating back once again does nothing.
       SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
-      CheckResult(HasPendingNav(), IsFalse()));
+      WithoutDelay(CheckResult(HasPendingNav(), IsFalse())));
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
@@ -510,8 +510,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
       // Navigate back with the keyboard.
       SendAccelerator(kPickerWebContentsId, GetAccelerator(IDC_BACK)),
-      CheckResult(HasPendingNav(), IsTrue(),
-                  /*check_description=*/"HasPendingNav"),
+      WithoutDelay(CheckResult(HasPendingNav(), IsTrue(),
+                               /*check_description=*/"HasPendingNav")),
       WaitForStateChange(kPickerWebContentsId,
                          UrlEntryMatches(GURL("chrome://profile-picker"))),
       CheckResult(GetNavState(), Eq(NavState{.entry_count = 2,
@@ -519,9 +519,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
       // Navigating back once again does nothing.
       SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
-      CheckResult(HasPendingNav(), IsFalse())
-
-  );
+      WithoutDelay(CheckResult(HasPendingNav(), IsFalse())));
 }
 
 IN_PROC_BROWSER_TEST_P(ProfilePickerParametrizedInteractiveUiTest,

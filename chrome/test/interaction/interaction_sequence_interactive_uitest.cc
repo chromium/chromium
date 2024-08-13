@@ -5,9 +5,10 @@
 #include <string.h>
 
 #include "base/functional/bind.h"
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -20,6 +21,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/interaction_sequence_test_util.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_sequence_views.h"
@@ -34,9 +36,17 @@
 //
 // In the future, we should add additional specific cases, such as opening a
 // dialog or multiple submenus.
-class InteractionSequenceUITest : public InProcessBrowserTest {};
+class InteractionSequenceUiTest : public InProcessBrowserTest {
+ public:
+  static void ClearEventQueue() {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+};
 
-IN_PROC_BROWSER_TEST_F(InteractionSequenceUITest, OpenMainMenuAndViewHelpItem) {
+IN_PROC_BROWSER_TEST_F(InteractionSequenceUiTest, OpenMainMenuAndViewHelpItem) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
 
@@ -76,9 +86,10 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceUITest, OpenMainMenuAndViewHelpItem) {
 
   // Start the sequence and verify that it does not proceed.
   sequence->Start();
+  ClearEventQueue();
 
   // Click the app menu button, displaying the target element.
-  EXPECT_CALL_IN_SCOPE(
+  EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       views::test::InteractionTestUtilSimulatorViews::PressButton(
           app_menu_button));

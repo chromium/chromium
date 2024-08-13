@@ -50,7 +50,9 @@ class StateObserver {
  protected:
   // Call to update the state.
   void OnStateObserverStateChanged(T state) {
-    state_changed_callback_.Run(state);
+    if (state_changed_callback_) {
+      state_changed_callback_.Run(state);
+    }
   }
 
  private:

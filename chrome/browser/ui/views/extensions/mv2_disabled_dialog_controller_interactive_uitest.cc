@@ -199,7 +199,6 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
       WaitForShow(kExtensionsMv2DisabledDialogManageButtonElementId),
       PressButton(kExtensionsMv2DisabledDialogManageButtonElementId),
       WaitForHide(kExtensionsMv2DisabledDialogManageButtonElementId),
-      FlushEvents(),
       // Clicking on the manage button should open the extensions page.
       WaitForWebContentsReady(kTabId, GURL("chrome://extensions")),
       // Extension remains disabled.

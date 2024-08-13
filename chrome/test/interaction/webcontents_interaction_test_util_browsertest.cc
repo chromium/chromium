@@ -72,6 +72,20 @@ class WebContentsInteractionTestUtilTest : public InProcessBrowserTest {
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
     InProcessBrowserTest::TearDownOnMainThread();
   }
+
+  ui::InteractionSequence::Builder DefaultBuilder(
+      Browser* context_browser = nullptr) {
+    if (!context_browser) {
+      context_browser = browser();
+    }
+    return std::move(
+        ui::InteractionSequence::Builder()
+            .SetContext(context_browser->window()->GetElementContext())
+            // Because the state of the util needs to be checked immediately,
+            // the start callbacks need to be immediate.
+            .SetDefaultStepStartMode(
+                ui::InteractionSequence::StepStartMode::kImmediate));
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
@@ -84,10 +98,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInContext(
       browser()->window()->GetElementContext(), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
           .AddStep(
               ui::InteractionSequence::StepBuilder()
                   .SetType(ui::InteractionSequence::StepType::kShown)
@@ -114,10 +127,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForTabWebContents(
       browser()->tab_strip_model()->GetWebContentsAt(0), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
           .AddStep(
               ui::InteractionSequence::StepBuilder()
                   .SetType(ui::InteractionSequence::StepType::kShown)
@@ -146,10 +158,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -184,10 +195,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest, LoadPage) {
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -222,10 +233,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest, IsPageLoaded) {
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -272,10 +283,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -314,10 +325,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
       browser(), kWebContentsElementId);
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           // Load the first page and make sure we wait for the page transition.
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
@@ -404,10 +415,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   util->LoadPage(url);
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder(browser2)
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser2->window()->GetElementContext())
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -434,10 +444,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest, EvaluateInt) {
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -459,10 +469,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest, EvaluateString) {
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -489,10 +499,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest, EvaluatePromise) {
   constexpr char kPromiseScript[] =
       "() => new Promise((resolve) => setTimeout(resolve(123), 300))";
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -516,10 +526,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -553,10 +563,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -596,10 +606,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -643,10 +653,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -719,10 +729,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   };
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -829,10 +839,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   const WebContentsInteractionTestUtil::DeepQuery kQuery = {"a#title1"};
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
 
           // Wait for an element which is already in the document to exist and
           // fire an event when it does (which should be almost immediate).
@@ -885,10 +894,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   const WebContentsInteractionTestUtil::DeepQuery kQuery = {"ul#foo"};
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
 
           // Queue a method that will cause an element to be added to the
           // document in 300 ms, then wait for it to become present and fire an
@@ -967,10 +975,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   const WebContentsInteractionTestUtil::DeepQuery kQuery = {"ul#foo"};
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
 
           // Queue a method that will cause an element to be added to the
           // document in 1000 ms, then wait for it to become present and fire an
@@ -1037,10 +1044,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   const WebContentsInteractionTestUtil::DeepQuery kQuery = {"a#title5"};
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
 
           // Wait for an element which is already not in the document to not
           // exist and fire an event (which should be almost immediate).
@@ -1092,10 +1098,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   const WebContentsInteractionTestUtil::DeepQuery kQuery = {"ul#foo"};
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
 
           // Add the element referenced above and then remove it in 300 ms.
           // In the interim, wait for the element to be removed and send an
@@ -1167,10 +1172,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   const WebContentsInteractionTestUtil::DeepQuery kQuery = {"ul#foo"};
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
 
           // Add the above-referenced element to the document, and then set up
           // a callback to remove it 1000 ms later. Wait only 300 ms for the
@@ -1238,10 +1242,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   const char kTestCondition[] = "el => (el.innerText == 'Go to title1')";
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -1291,10 +1295,10 @@ IN_PROC_BROWSER_TEST_F(
   const char kTestCondition[] = "el => (el.innerText == 'bar')";
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -1361,10 +1365,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   const char kTestCondition[] = "el => (el.innerText == 'bar')";
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -1417,10 +1421,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -1447,10 +1451,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(
               ui::InteractionSequence::StepBuilder()
                   .SetType(ui::InteractionSequence::StepType::kShown)
@@ -1498,10 +1502,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   const WebContentsInteractionTestUtil::DeepQuery kQuery = {"a#title1"};
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(
               ui::InteractionSequence::StepBuilder()
                   .SetType(ui::InteractionSequence::StepType::kShown)
@@ -1554,10 +1558,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -1592,10 +1596,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(
               ui::InteractionSequence::StepBuilder()
                   .SetType(ui::InteractionSequence::StepType::kShown)
@@ -1628,10 +1632,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -1691,10 +1695,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
       browser()->window()->GetElementContext(), kWebContentsElementId2);
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -1728,10 +1732,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
       browser2, kWebContentsElementId2);
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -1754,10 +1758,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted2);
 
   auto sequence2 =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder(browser2)
           .SetCompletedCallback(completed2.Get())
           .SetAbortedCallback(aborted2.Get())
-          .SetContext(browser2->window()->GetElementContext())
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId2)
@@ -1783,10 +1786,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
       kWebContentsElementId2);
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -1811,10 +1814,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted2);
 
   auto sequence2 =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder(browser2)
           .SetCompletedCallback(completed2.Get())
           .SetAbortedCallback(aborted2.Get())
-          .SetContext(browser2->window()->GetElementContext())
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId2)
@@ -1838,10 +1840,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
       kWebContentsElementId2);
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -1881,10 +1883,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   };
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(
               ui::InteractionSequence::StepBuilder()
                   .SetType(ui::InteractionSequence::StepType::kShown)
@@ -1930,10 +1932,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   };
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(
               ui::InteractionSequence::StepBuilder()
                   .SetType(ui::InteractionSequence::StepType::kShown)
@@ -1973,10 +1975,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest, ExistsInWebUIPage) {
   util->LoadPage(GURL("chrome://settings"));
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -2008,10 +2010,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   util->LoadPage(GURL("chrome://settings"));
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -2042,10 +2044,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   util->LoadPage(GURL("chrome://settings"));
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -2086,10 +2088,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   util->LoadPage(url);
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -2134,10 +2136,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   util->LoadPage(url);
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -2174,10 +2176,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   util->LoadPage(url);
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -2220,10 +2222,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   util->LoadPage(url);
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -2269,10 +2271,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   util->LoadPage(url1);
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -2322,8 +2324,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   std::unique_ptr<WebContentsInteractionTestUtil> new_tab;
 
   auto sequence =
-      ui::InteractionSequence::Builder()
-          .SetContext(browser()->window()->GetElementContext())
+      DefaultBuilder()
+
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
           // Get the first tab and inject code to pop up a second window.
@@ -2372,10 +2374,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   // the hassle of writing three identical tests.
   std::unique_ptr<WebContentsInteractionTestUtil> util;
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kDummyElementId)
@@ -2409,10 +2411,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -2453,10 +2455,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
       browser()->window()->GetElementContext(), kWebContentsElementId2);
 
   auto sequence =
-      ui::InteractionSequence::Builder()
+      DefaultBuilder()
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
-          .SetContext(browser()->window()->GetElementContext())
+
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)

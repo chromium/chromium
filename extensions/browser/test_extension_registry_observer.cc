@@ -13,8 +13,7 @@ namespace extensions {
 
 class TestExtensionRegistryObserver::Waiter {
  public:
-  Waiter() : observed_(false), extension_(nullptr) {}
-
+  Waiter() = default;
   Waiter(const Waiter&) = delete;
   Waiter& operator=(const Waiter&) = delete;
 
@@ -31,8 +30,8 @@ class TestExtensionRegistryObserver::Waiter {
   }
 
  private:
-  bool observed_;
-  base::RunLoop run_loop_;
+  bool observed_ = false;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   scoped_refptr<const Extension> extension_;
 };
 

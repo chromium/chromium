@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -270,7 +271,7 @@ class FullscreenWaiter : public FullscreenObserver {
   const raw_ptr<FullscreenController> controller_;
   base::ScopedObservation<FullscreenController, FullscreenObserver>
       observation_{this};
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 
   // Caches if the condition is satisfied even once.
   bool satisfied_;
@@ -315,7 +316,7 @@ class BrowserSetLastActiveWaiter : public BrowserListObserver {
   const raw_ptr<Browser> browser_;  // not_owned
   bool satisfied_ = false;
   bool wait_for_set_last_active_observed_ = false;
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
 
 // Toggles browser fullscreen mode, then wait for its completion.
@@ -525,7 +526,7 @@ class TabAddedWaiter : public TabStripModelObserver {
       const TabStripSelectionChange& selection) override;
 
  private:
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_ =
       nullptr;
 };
@@ -552,7 +553,7 @@ class AllBrowserTabAddedWaiter : public TabStripModelObserver,
   void OnBrowserAdded(Browser* browser) override;
 
  private:
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 
   // The last tab that was added.
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_ =
@@ -598,7 +599,7 @@ class BrowserChangeObserver : public BrowserListObserver {
  private:
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
   ChangeType type_;
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
 
 // Encapsulates waiting for the browser window to change state. This is
@@ -642,7 +643,7 @@ class ViewBoundsWaiter : public views::ViewObserver {
   void OnViewBoundsChanged(views::View* observed_view) override;
 
   const raw_ptr<views::View> observed_view_;
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
 
 }  // namespace ui_test_utils

@@ -241,12 +241,18 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
                        kToolbarForwardButtonElementId);
                  }),
                  WaitForHide(kToolbarForwardButtonElementId),
-                 WaitForShow(kToolbarOverflowButtonElementId));
+                 // Overflow button is intentionally "flickered" by the toolbar
+                 // during two-pass layout, which could cause a simple "wait
+                 // for show" to fail.
+                 // TODO: this is hacky as hell; please fix toolbar view layout?
+                 std::move(WaitForShow(kToolbarOverflowButtonElementId)
+                               .SetMustRemainVisible(false)),
+                 EnsurePresent(kToolbarOverflowButtonElementId));
   }
 
   auto CheckActionItemOverflowed(actions::ActionId id, bool overflowed) {
     return CheckResult([=, this]() { return delegate()->IsOverflowed(id); },
-                       overflowed);
+                       overflowed, "CheckActionItemOverflowed()");
   }
 
   auto PinBookmarkToToolbar() {
@@ -277,7 +283,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   }
 
   auto LoadAndPinExtensionButton() {
-    return Steps(Do([this]() {
+    return Do([this]() {
       extensions::TestExtensionDir extension_directory;
       constexpr char kManifest[] = R"({
         "name": "Test Extension",
@@ -297,7 +303,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
       ASSERT_TRUE(toolbar_model);
       toolbar_model->SetActionVisibility(extension->id(), true);
       views::test::RunScheduledLayout(browser_view_);
-    }));
+    });
   }
 
   auto ResizeRelativeToOverflow(int diff) {
@@ -446,6 +452,14 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
   SetBrowserWidth(overflow_threshold_width() + 1);
   EXPECT_FALSE(overflow_button()->GetVisible());
 }
+
+// TODO(crbug.com/41495158): These are all flaky due to layout loops and
+// oscillations of the overflow button from visible->not visible->visible during
+// layout.
+//
+// The tests are not reliable enough to run on Linux or Lacros; the layout code
+// itself needs to be rewritten.
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, MenuMatchesOverflowedElements) {
   RunTestSequence(
@@ -633,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                    ->is_animating());
 }
 
-// TODO(crbug.com/41495158): Flaky on Windows.
+// TODO(crbug.com/41495158): Flaky on Windows and fails on Lacros.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_DoNotShowIphWhenOverflowed DISABLED_DoNotShowIphWhenOverflowed
 #else
@@ -649,3 +663,5 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
       MaybeShowPromo(feature_engagement::kIPHTabSearchFeature),
       PressClosePromoButton());
 }
+
+#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)

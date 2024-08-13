@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SHORTCUTS_SHORTCUT_INTEGRATION_BROWSERTEST_INTERNAL_H_
-#define CHROME_BROWSER_UI_VIEWS_SHORTCUTS_SHORTCUT_INTEGRATION_BROWSERTEST_INTERNAL_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_SHORTCUTS_SHORTCUT_INTEGRATION_INTERACTION_TEST_INTERNAL_H_
+#define CHROME_BROWSER_UI_VIEWS_SHORTCUTS_SHORTCUT_INTEGRATION_INTERACTION_TEST_INTERNAL_H_
 
 #include "chrome/browser/shortcuts/shortcut_creation_test_support.h"
 #include "chrome/test/interaction/interactive_browser_test_internal.h"
 
 namespace shortcuts {
 
-// Class that provides functionality needed by ShortcutIntegrationBrowserTestApi
-// but which should not be directly visible to tests inheriting from the API
-// class.
-class ShortcutIntegrationBrowserTestPrivate
+// Class that provides functionality needed by
+// ShortcutIntegrationInteractionTestApi but which should not be directly
+// visible to tests inheriting from the API class.
+class ShortcutIntegrationInteractionTestPrivate
     : public internal::InteractiveBrowserTestPrivate {
  public:
-  ShortcutIntegrationBrowserTestPrivate();
-  ~ShortcutIntegrationBrowserTestPrivate() override;
+  ShortcutIntegrationInteractionTestPrivate();
+  ~ShortcutIntegrationInteractionTestPrivate() override;
 
   // internal::InteractiveBrowserTestPrivate:
   void DoTestSetUp() override;
@@ -42,4 +42,4 @@ class ShortcutIntegrationBrowserTestPrivate
 
 }  // namespace shortcuts
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SHORTCUTS_SHORTCUT_INTEGRATION_BROWSERTEST_INTERNAL_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_SHORTCUTS_SHORTCUT_INTEGRATION_INTERACTION_TEST_INTERNAL_H_

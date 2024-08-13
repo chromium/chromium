@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/shortcuts/shortcut_integration_browsertest_base.h"
+#include "chrome/browser/ui/views/shortcuts/shortcut_integration_interaction_test_base.h"
 
 #include "chrome/browser/platform_util_internal.h"
 #include "chrome/browser/shortcuts/shortcut_creation_test_support.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/shortcuts/create_desktop_shortcut_delegate.h"
-#include "chrome/browser/ui/views/shortcuts/shortcut_integration_browsertest_internal.h"
+#include "chrome/browser/ui/views/shortcuts/shortcut_integration_interaction_test_internal.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -18,17 +18,17 @@
 
 namespace shortcuts {
 
-ShortcutIntegrationBrowserTestApi::ShortcutIntegrationBrowserTestApi()
+ShortcutIntegrationInteractionTestApi::ShortcutIntegrationInteractionTestApi()
     : InteractiveBrowserTestApi(
-          std::make_unique<ShortcutIntegrationBrowserTestPrivate>()) {
+          std::make_unique<ShortcutIntegrationInteractionTestPrivate>()) {
   platform_util::internal::DisableShellOperationsForTesting();
 }
 
-ShortcutIntegrationBrowserTestApi::~ShortcutIntegrationBrowserTestApi() =
-    default;
+ShortcutIntegrationInteractionTestApi
+    ::~ShortcutIntegrationInteractionTestApi() = default;
 
 ui::test::InteractiveTestApi::MultiStep
-ShortcutIntegrationBrowserTestApi::ShowCreateShortcutDialog() {
+ShortcutIntegrationInteractionTestApi::ShowCreateShortcutDialog() {
   return Steps(
       PressButton(kToolbarAppMenuButtonElementId),
       // Sometimes the "Save and Share" item isn't immediately present, so
@@ -51,7 +51,7 @@ ShortcutIntegrationBrowserTestApi::ShowCreateShortcutDialog() {
 }
 
 ui::test::InteractiveTestApi::MultiStep
-ShortcutIntegrationBrowserTestApi::ShowAndAcceptCreateShortcutDialog() {
+ShortcutIntegrationInteractionTestApi::ShowAndAcceptCreateShortcutDialog() {
   return Steps(
       ShowCreateShortcutDialog(),
       PressButton(
@@ -63,8 +63,8 @@ ShortcutIntegrationBrowserTestApi::ShowAndAcceptCreateShortcutDialog() {
 }
 
 ui::test::InteractiveTestApi::MultiStep
-ShortcutIntegrationBrowserTestApi::ShowCreateShortcutDialogSetTitleAndAccept(
-    const std::u16string& title) {
+ShortcutIntegrationInteractionTestApi
+    ::ShowCreateShortcutDialogSetTitleAndAccept(const std::u16string& title) {
   return Steps(
       ShowCreateShortcutDialog(),
       EnterText(
@@ -79,7 +79,7 @@ ShortcutIntegrationBrowserTestApi::ShowCreateShortcutDialogSetTitleAndAccept(
 }
 
 ui::test::InteractiveTestApi::StepBuilder
-ShortcutIntegrationBrowserTestApi::InstrumentNextShortcut(
+ShortcutIntegrationInteractionTestApi::InstrumentNextShortcut(
     ui::ElementIdentifier identifier) {
   return Do([this, identifier] {
     test_impl().SetNextShortcutIdentifier(identifier);
@@ -87,7 +87,7 @@ ShortcutIntegrationBrowserTestApi::InstrumentNextShortcut(
 }
 
 ui::test::InteractiveTestApi::StepBuilder
-ShortcutIntegrationBrowserTestApi::LaunchShortcut(
+ShortcutIntegrationInteractionTestApi::LaunchShortcut(
     ui::ElementIdentifier identifier) {
   return InAnyContext(WithElement(identifier, [](ui::TrackedElement* element) {
     ShortcutCreationTestSupport::LaunchShortcut(GetShortcutPath(element));
@@ -95,14 +95,14 @@ ShortcutIntegrationBrowserTestApi::LaunchShortcut(
 }
 
 // static
-base::FilePath ShortcutIntegrationBrowserTestApi::GetShortcutPath(
+base::FilePath ShortcutIntegrationInteractionTestApi::GetShortcutPath(
     ui::TrackedElement* element) {
-  return ShortcutIntegrationBrowserTestPrivate::GetShortcutPath(element);
+  return ShortcutIntegrationInteractionTestPrivate::GetShortcutPath(element);
 }
 
-ShortcutIntegrationBrowserTestPrivate&
-ShortcutIntegrationBrowserTestApi::test_impl() {
-  return static_cast<ShortcutIntegrationBrowserTestPrivate&>(
+ShortcutIntegrationInteractionTestPrivate&
+ShortcutIntegrationInteractionTestApi::test_impl() {
+  return static_cast<ShortcutIntegrationInteractionTestPrivate&>(
       private_test_impl());
 }
 

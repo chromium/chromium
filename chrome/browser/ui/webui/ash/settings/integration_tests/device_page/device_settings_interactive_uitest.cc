@@ -867,11 +867,11 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, KeyboardFkeys) {
                   "Event('change'));}"),
       Log("Verifying 'F12' action contains the shift shortcut"),
       WaitForDropdownContainsValue(kF12DropdownQuery, /*value=*/1),
+      InstrumentNextTab(kDevToolsId, AnyBrowser()),
       SendKeyPressAndReleaseEvent(ui::VKEY_F2,
                                   ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN),
-      InstrumentNextTab(kDevToolsId, AnyBrowser()),
       Log("Verifying that 'F12' shortcut opens the developer console"),
-      WaitForShow(kDevToolsId));
+      InAnyContext(WaitForShow(kDevToolsId)));
   // Get settings browser and verify that the window is maximized.
   Browser* browser = BrowserList::GetInstance()->get(0);
   EXPECT_TRUE(browser->window()->IsFullscreen());

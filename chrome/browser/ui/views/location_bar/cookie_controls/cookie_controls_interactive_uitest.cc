@@ -414,6 +414,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
       // Check that IPH shows, then dismiss it.
       InAnyContext(WaitForShow(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)),
+      ActivateSurface(kCookieControlsIconElementId),
       PressButton(
           user_education::HelpBubbleView::kFirstNonDefaultButtonIdForTesting),
       // IPH should hide and cookie controls bubble should not open.
@@ -432,6 +433,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
       // Check that IPH shows, then open cookie controls bubble via IPH button.
       InAnyContext(WaitForShow(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)),
+      ActivateSurface(kCookieControlsIconElementId),
       PressButton(user_education::HelpBubbleView::kDefaultButtonIdForTesting),
       // Cookie controls bubble should show and IPH should close.
       InAnyContext(
@@ -450,7 +452,8 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiWithCookieControlsIphTest,
       // Check that IPH shows, then open cookie controls bubble via icon.
       InAnyContext(WaitForShow(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)),
-      FlushEvents(), PressButton(kCookieControlsIconElementId),
+      ActivateSurface(kCookieControlsIconElementId),
+      PressButton(kCookieControlsIconElementId),
       // Cookie controls bubble should show and IPH should close.
       InAnyContext(
           WaitForShow(CookieControlsBubbleView::kCookieControlsBubble)),

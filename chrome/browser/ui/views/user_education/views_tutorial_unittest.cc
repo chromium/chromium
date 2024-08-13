@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/functional/bind.h"
-#include "base/run_loop.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
@@ -25,6 +23,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/test/views_test_base.h"
@@ -47,16 +46,9 @@ class TestTutorialService : public user_education::TutorialService {
   }
 };
 
-void FlushMessageQueue() {
-  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
-}
-
 }  // namespace
 
-class ViewsTutorialTest : public views::ViewsTestBase {
+class ViewsTutorialTest : public views::test::InteractiveViewsTest {
  public:
   ViewsTutorialTest() {
     help_bubble_registry_.MaybeRegister<user_education::HelpBubbleFactoryViews>(
@@ -66,7 +58,7 @@ class ViewsTutorialTest : public views::ViewsTestBase {
   ~ViewsTutorialTest() override = default;
 
   void SetUp() override {
-    ViewsTestBase::SetUp();
+    InteractiveViewsTestT::SetUp();
     widget_ = std::make_unique<views::Widget>();
 
     views::Widget::InitParams params =
@@ -93,6 +85,7 @@ class ViewsTutorialTest : public views::ViewsTestBase {
             .Build());
 
     widget_->Show();
+    SetContextWidget(widget_.get());
   }
 
   void TearDown() override {
@@ -118,8 +111,9 @@ class ViewsTutorialTest : public views::ViewsTestBase {
   void OnButtonPressed(const ui::Event& event) {
     CHECK(button_);
     CHECK(indicator_);
-    if (hide_button_on_press_)
+    if (hide_button_on_press_) {
       button_->SetVisible(false);
+    }
     indicator_->SetVisible(true);
   }
 };
@@ -154,29 +148,27 @@ TEST_F(ViewsTutorialTest, BubbleDismissOnViewHiddenDoesNotEndTutorial) {
           .SetBubbleArrow(kArrow));
   tutorial_registry_.AddTutorial(kTutorialId, std::move(desc));
 
-  tutorial_service_.StartTutorial(
-      kTutorialId,
-      views::ElementTrackerViews::GetContextForWidget(widget_.get()),
-      completed.Get(), aborted.Get(), restarted.Get());
-  ASSERT_TRUE(tutorial_service_.IsRunningTutorial());
-
   hide_button_on_press_ = true;
-  views::test::InteractionTestUtilSimulatorViews::PressButton(
-      button_.get(), ui::test::InteractionTestUtil::InputType::kKeyboard);
 
-  // Ensure that all messages are processed before continuing.
-  FlushMessageQueue();
+  EXPECT_CALL(completed, Run);
 
-  // Close the final bubble. This should complete the tutorial.
-  EXPECT_CALL_IN_SCOPE(completed, Run, {
-    views::test::InteractionTestUtilSimulatorViews::PressButton(
-        tutorial_service_.currently_displayed_bubble_for_testing()
-            ->AsA<user_education::HelpBubbleViews>()
-            ->bubble_view()
-            ->GetDefaultButtonForTesting());
-    // Again, ensure that all messages are processed before continuing.
-    FlushMessageQueue();
-  });
+  RunTestSequence(
+      Do([&]() {
+        tutorial_service_.StartTutorial(
+            kTutorialId,
+            views::ElementTrackerViews::GetContextForWidget(widget_.get()),
+            completed.Get(), aborted.Get(), restarted.Get());
+      }),
+      Check([this]() { return tutorial_service_.IsRunningTutorial(); },
+            "Ensure tutorial is running."),
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      PressButton(kButtonElementId),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      PressButton(user_education::HelpBubbleView::kDefaultButtonIdForTesting));
 }
 
 // Verifies that the final bubble of a tutorial disappearing due to its anchor
@@ -209,22 +201,23 @@ TEST_F(ViewsTutorialTest, FinalBubbleDismissOnViewHiddenDoesEndTutorial) {
           .SetBubbleArrow(kArrow));
   tutorial_registry_.AddTutorial(kTutorialId, std::move(desc));
 
-  tutorial_service_.StartTutorial(
-      kTutorialId,
-      views::ElementTrackerViews::GetContextForWidget(widget_.get()),
-      completed.Get(), aborted.Get(), restarted.Get());
-  ASSERT_TRUE(tutorial_service_.IsRunningTutorial());
+  EXPECT_CALL(completed, Run);
 
-  views::test::InteractionTestUtilSimulatorViews::PressButton(
-      button_.get(), ui::test::InteractionTestUtil::InputType::kKeyboard);
-
-  // Ensure that all messages are processed before continuing.
-  FlushMessageQueue();
-
-  // Close the final bubble. This should complete the tutorial.
-  EXPECT_CALL_IN_SCOPE(completed, Run, {
-    tutorial_service_.currently_displayed_bubble_for_testing()->Close();
-    // Again, ensure that all messages are processed before continuing.
-    FlushMessageQueue();
-  });
+  RunTestSequence(
+      Do([&]() {
+        tutorial_service_.StartTutorial(
+            kTutorialId,
+            views::ElementTrackerViews::GetContextForWidget(widget_.get()),
+            completed.Get(), aborted.Get(), restarted.Get());
+      }),
+      Check([&]() { return tutorial_service_.IsRunningTutorial(); },
+            "Ensure tutorial is running."),
+      PressButton(kButtonElementId),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      WithView(kIndicatorElementId, [](views::Label* indicator) {
+        indicator->SetVisible(false);
+      }).SetMustRemainVisible(false));
 }

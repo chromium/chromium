@@ -24,7 +24,7 @@ void ScriptResultQueue::OnScriptResult(const base::Value& script_result) {
 
 base::Value ScriptResultQueue::GetNextResult() {
   if (next_result_index_ >= results_.size()) {
-    base::RunLoop run_loop;
+    base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
     quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();
   }
