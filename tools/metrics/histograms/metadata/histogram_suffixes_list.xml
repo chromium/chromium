@@ -3205,6 +3205,9 @@ chromium-metrics-reviews@google.com.
   <suffix name="SiteStorage.BlobStorage"
       label="Only counting memory used by in-memory blob files."/>
   <suffix name="Skia" label="Only counting memory used by Skia caches."/>
+  <suffix name="Skia.PurgeableSize"
+      label="Only counting memory used by Skia caches which Skia considers
+             purgeable."/>
   <suffix name="Skia.SkGlyphCache"
       label="Only counting memory used by Skia glyph cache."/>
   <suffix name="Skia.SkResourceCache"
