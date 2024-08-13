@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.android.webid.data;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
@@ -22,7 +24,7 @@ public class IdentityProviderData {
     private final IdentityProviderMetadata mIdpMetadata;
     private final ClientIdMetadata mClientMetadata;
     private final @RpContext.EnumType int mRpContext;
-    private final boolean mRequestPermission;
+    private boolean mRequestPermission;
     private final boolean mHasLoginStatusMismatch;
 
     @CalledByNative
@@ -69,5 +71,10 @@ public class IdentityProviderData {
 
     public boolean getHasLoginStatusMismatch() {
         return mHasLoginStatusMismatch;
+    }
+
+    @VisibleForTesting
+    public void setRequestPermission(boolean requestPermission) {
+        mRequestPermission = requestPermission;
     }
 }

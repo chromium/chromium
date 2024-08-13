@@ -40,9 +40,25 @@ public class AccountSelectionIntegrationTestBase {
     protected static final GURL TEST_URL = JUnitTestGURLs.URL_1;
 
     protected static final Account RETURNING_ANA =
-            new Account("Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, null, true);
+            new Account(
+                    "Ana",
+                    "ana@one.test",
+                    "Ana Doe",
+                    "Ana",
+                    TEST_PROFILE_PIC,
+                    null,
+                    /* isSignIn= */ true,
+                    /* isBrowserTrustedSignIn= */ true);
     protected static final Account NEW_BOB =
-            new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, null, false);
+            new Account(
+                    "Bob",
+                    "",
+                    "Bob",
+                    "",
+                    TEST_PROFILE_PIC,
+                    null,
+                    /* isSignIn= */ false,
+                    /* isBrowserTrustedSignIn= */ false);
 
     protected static final IdentityProviderMetadata IDP_METADATA =
             new IdentityProviderMetadata(
@@ -74,7 +90,8 @@ public class AccountSelectionIntegrationTestBase {
     String mTestUrlTermsOfService;
     String mTestUrlPrivacyPolicy;
     ClientIdMetadata mClientIdMetadata;
-    IdentityProviderData mNewAccountsIdp;
+    IdentityProviderData mNewAccountsIdpReturningAna;
+    IdentityProviderData mNewAccountsIdpNewBob;
     @RpMode.EnumType int mRpMode;
 
     @Before
@@ -91,10 +108,19 @@ public class AccountSelectionIntegrationTestBase {
                         new GURL(mTestUrlTermsOfService),
                         new GURL(mTestUrlPrivacyPolicy),
                         EXAMPLE_ETLD_PLUS_ONE);
-        mNewAccountsIdp =
+        mNewAccountsIdpReturningAna =
                 new IdentityProviderData(
                         EXAMPLE_ETLD_PLUS_ONE,
                         new Account[] {RETURNING_ANA},
+                        IDP_METADATA_WITH_ADD_ACCOUNT,
+                        mClientIdMetadata,
+                        RpContext.SIGN_IN,
+                        /* requestPermission= */ true,
+                        /* hasLoginStatusMismatch= */ false);
+        mNewAccountsIdpNewBob =
+                new IdentityProviderData(
+                        EXAMPLE_ETLD_PLUS_ONE,
+                        new Account[] {NEW_BOB},
                         IDP_METADATA_WITH_ADD_ACCOUNT,
                         mClientIdMetadata,
                         RpContext.SIGN_IN,

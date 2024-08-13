@@ -218,24 +218,29 @@ bool FedCmAccountSelectionView::Show(
       // logged in with a returning account from the LOADING state, we do not
       // skip the next UI when mediation mode is `required` because there was
       // not user mediation acquired yet in this case.
-      bool should_skip_dialog =
+      bool should_show_verifying_sheet =
           new_idp_data.accounts[0].browser_trusted_login_state ==
               Account::LoginState::kSignIn &&
           state_ != State::LOADING;
       // The IDP claimed login state controls whether we show disclosure text,
       // if we do not skip the next dialog. Also skip when request_permission
       // is false (controlled by the fields API).
-      bool should_hide_disclosure_text = new_idp_data.accounts[0].login_state ==
-                                             Account::LoginState::kSignIn ||
-                                         !new_accounts_idp->request_permission;
+      bool should_show_request_permission_dialog =
+          new_idp_data.accounts[0].login_state !=
+              Account::LoginState::kSignIn &&
+          new_accounts_idp->request_permission;
 
-      if (should_skip_dialog) {
+      if (should_show_verifying_sheet) {
         state_ = State::VERIFYING;
         // ShowVerifyingSheet will call delegate_->OnAccountSelected to proceed.
         if (!ShowVerifyingSheet(new_idp_data.accounts[0], new_idp_data)) {
           return false;
         }
-      } else if (should_hide_disclosure_text) {
+      } else if (should_show_request_permission_dialog) {
+        state_ = State::REQUEST_PERMISSION;
+        account_selection_view_->ShowRequestPermissionDialog(
+            new_idp_data.accounts[0], new_idp_data);
+      } else {
         // Normally we'd show the request permission dialog but without the
         // disclosure text, there is no material difference between the account
         // picker and the request permission dialog. We show the account picker
@@ -245,10 +250,6 @@ bool FedCmAccountSelectionView::Show(
         ShowMultiAccountPicker(idp_display_data_list_,
                                /*show_back_button=*/false,
                                /*is_choose_an_account=*/false);
-      } else {
-        state_ = State::REQUEST_PERMISSION;
-        account_selection_view_->ShowRequestPermissionDialog(
-            new_idp_data.accounts[0], new_idp_data);
       }
     } else {
       if (new_idp_data.accounts.size() == 1u) {

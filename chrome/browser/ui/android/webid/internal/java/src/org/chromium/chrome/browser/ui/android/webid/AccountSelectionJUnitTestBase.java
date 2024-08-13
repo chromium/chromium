@@ -99,7 +99,8 @@ public class AccountSelectionJUnitTestBase {
     ModelList mSheetAccountItems;
     View mContentView;
     IdentityProviderMetadata mIdpMetadata;
-    IdentityProviderData mNewAccountsIdpSingleAccount;
+    IdentityProviderData mNewAccountsIdpSingleReturningAccount;
+    IdentityProviderData mNewAccountsIdpSingleNewAccount;
     IdentityProviderData mNewAccountsIdpMultipleAccounts;
     AccountSelectionBottomSheetContent mBottomSheetContent;
     AccountSelectionMediator mMediator;
@@ -131,7 +132,8 @@ public class AccountSelectionJUnitTestBase {
                         "Ana",
                         mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
-                        /* isSignIn= */ true);
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true);
         mBobAccount =
                 new Account(
                         "Bob",
@@ -140,7 +142,8 @@ public class AccountSelectionJUnitTestBase {
                         "",
                         mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
-                        /* isSignIn= */ true);
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true);
         mCarlAccount =
                 new Account(
                         "Carl",
@@ -149,7 +152,8 @@ public class AccountSelectionJUnitTestBase {
                         ":)",
                         mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
-                        /* isSignIn= */ true);
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true);
         mNewUserAccount =
                 new Account(
                         "602214076",
@@ -158,7 +162,8 @@ public class AccountSelectionJUnitTestBase {
                         "Sam",
                         mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
-                        /* isSignIn= */ false);
+                        /* isSignIn= */ false,
+                        /* isBrowserTrustedSignIn= */ false);
         mNoOneAccount =
                 new Account(
                         "",
@@ -167,7 +172,8 @@ public class AccountSelectionJUnitTestBase {
                         "",
                         mTestProfilePicUrl,
                         /* pictureBitmap= */ null,
-                        /* isSignIn= */ true);
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true);
 
         mClientIdMetadata =
                 new ClientIdMetadata(
@@ -186,10 +192,19 @@ public class AccountSelectionJUnitTestBase {
                         mTestLoginUrl,
                         /* supportsAddAccount= */ false);
 
-        mNewAccountsIdpSingleAccount =
+        mNewAccountsIdpSingleReturningAccount =
                 new IdentityProviderData(
                         mTestEtldPlusOne,
                         new Account[] {mAnaAccount},
+                        mIdpMetadata,
+                        mClientIdMetadata,
+                        RpContext.SIGN_IN,
+                        /* requestPermission= */ true,
+                        /* hasLoginStatusMismatch= */ false);
+        mNewAccountsIdpSingleNewAccount =
+                new IdentityProviderData(
+                        mTestEtldPlusOne,
+                        new Account[] {mNewUserAccount},
                         mIdpMetadata,
                         mClientIdMetadata,
                         RpContext.SIGN_IN,

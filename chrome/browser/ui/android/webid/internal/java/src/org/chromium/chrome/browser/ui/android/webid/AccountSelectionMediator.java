@@ -363,7 +363,7 @@ class AccountSelectionMediator {
 
     private void handleBackPress() {
         mSelectedAccount = null;
-        showAccountsInternal(/* newlySignedInAccount= */ null);
+        showAccountsInternal(/* newAccountsIdp= */ null);
     }
 
     private PropertyModel createHeaderItem(
@@ -577,13 +577,7 @@ class AccountSelectionMediator {
             mSelectedAccount = accounts.get(0);
         }
 
-        // TODO(crbug.com/356665527): Handle multiple newly signed-in accounts.
-        Account newlySignedInAccount =
-                newAccountsIdp != null && newAccountsIdp.getAccounts().size() == 1
-                        ? newAccountsIdp.getAccounts().get(0)
-                        : null;
-
-        showAccountsInternal(newlySignedInAccount);
+        showAccountsInternal(newAccountsIdp);
         setComponentShowTime(SystemClock.elapsedRealtime());
     }
 
@@ -670,17 +664,47 @@ class AccountSelectionMediator {
         return mHeaderType;
     }
 
-    private void showAccountsInternal(@Nullable Account newlySignedInAccount) {
-        mHeaderType = mIsAutoReauthn ? HeaderType.VERIFY_AUTO_REAUTHN : HeaderType.SIGN_IN;
+    private void showAccountsInternal(@Nullable IdentityProviderData newAccountsIdp) {
+        // TODO(crbug.com/356665527): Handle multiple newly signed-in accounts.
+        Account newlySignedInAccount =
+                newAccountsIdp != null && newAccountsIdp.getAccounts().size() == 1
+                        ? newAccountsIdp.getAccounts().get(0)
+                        : null;
 
         if (!mIsAutoReauthn && newlySignedInAccount != null && mRpMode == RpMode.BUTTON) {
-            // TODO(crbug.com/356446419): Optimize showing disclosure text and dialog on Android
-            // button mode.
             mSelectedAccount = newlySignedInAccount;
-            showRequestPermissionSheet(mSelectedAccount);
-            return;
+
+            // The browser trusted login state controls whether we'd skip the next
+            // dialog. One caveat: if a user was logged out of the IdP and they just
+            // logged in with a returning account from the LOADING state, we do not
+            // skip the next UI when mediation mode is `required` because there was
+            // not user mediation acquired yet in this case.
+            boolean shouldShowVerifyingSheet =
+                    newlySignedInAccount.isBrowserTrustedSignIn()
+                            && mHeaderType != HeaderType.LOADING;
+            if (shouldShowVerifyingSheet) {
+                mHeaderType = HeaderType.SIGN_IN;
+                mDelegate.onAccountSelected(mIdpMetadata.getConfigUrl(), mSelectedAccount);
+                showVerifySheet(mSelectedAccount);
+                return;
+            }
+
+            // The IDP claimed login state controls whether we show disclosure text,
+            // if we do not skip the next dialog. Also skip when request_permission
+            // is false (controlled by the fields API).
+            boolean shouldShowRequestPermissionDialog =
+                    !newlySignedInAccount.isSignIn() && newAccountsIdp.getRequestPermission();
+            if (shouldShowRequestPermissionDialog) {
+                showRequestPermissionSheet(mSelectedAccount);
+                return;
+            }
+
+            // Else:
+            // Show accounts picker which doesn't contain the disclosure text. We do not support
+            // request permission UI without disclosure text.
         }
 
+        mHeaderType = mIsAutoReauthn ? HeaderType.VERIFY_AUTO_REAUTHN : HeaderType.SIGN_IN;
         updateSheet(
                 mSelectedAccount != null ? Arrays.asList(mSelectedAccount) : mAccounts,
                 /* areAccountsClickable= */ mSelectedAccount == null);
@@ -732,7 +756,6 @@ class AccountSelectionMediator {
         if (mHeaderType == HeaderType.VERIFY_AUTO_REAUTHN) {
             assert mSelectedAccount != null;
             assert mSelectedAccount.isSignIn();
-
             onAccountSelected(mSelectedAccount);
         }
 
@@ -756,9 +779,6 @@ class AccountSelectionMediator {
 
         if (mHeaderType == HeaderType.REQUEST_PERMISSION) {
             assert mSelectedAccount != null;
-            // TODO(crbug.com/353770052): Currently on button mode, request permission dialogs will
-            // always have data sharing consent visible. This can be optimized when we support new
-            // account IDP on Android.
             isDataSharingConsentVisible = true;
             continueButtonCallback = this::onClickAccountSelected;
         }
@@ -936,7 +956,8 @@ class AccountSelectionMediator {
 
         // There is an old selected account if an account was already selected from an account
         // chooser and it implies that this `onAccountSelected` call comes from a dialog containing
-        // disclosure text.
+        // disclosure text or that the user has just signed into a new account on an IDP through
+        // FedCM.
         Account oldSelectedAccount = mSelectedAccount;
         mSelectedAccount = selectedAccount;
 
@@ -961,7 +982,7 @@ class AccountSelectionMediator {
         }
 
         // At this point, the account is a non-returning user and RP mode is widget.
-        showAccountsInternal(/* newlySignedInAccount= */ null);
+        showAccountsInternal(/* newAccountsIdp= */ null);
     }
 
     void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {

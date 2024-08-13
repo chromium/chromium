@@ -50,7 +50,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(JNIEnv* env,
       ConvertUTF8ToJavaString(env, account.name),
       ConvertUTF8ToJavaString(env, account.given_name),
       url::GURLAndroid::FromNativeGURL(env, account.picture), decoded_picture,
-      account.login_state == Account::LoginState::kSignIn);
+      account.login_state == Account::LoginState::kSignIn,
+      account.browser_trusted_login_state == Account::LoginState::kSignIn);
 }
 
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderMetadata(

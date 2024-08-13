@@ -35,6 +35,7 @@ import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
@@ -225,7 +226,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
     }
 
     @Test
-    public void testNewAccountsIdpSingleAccountShowsRequestPermissionDialog() {
+    public void testNewAccountsIdpSingleNewAccountShowsRequestPermissionDialog() {
+        mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne2, RpContext.SIGN_IN);
         mMediator.showAccounts(
                 mTestEtldPlusOne,
                 mTestEtldPlusOne2,
@@ -235,9 +237,53 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 /* isAutoReauthn= */ false,
                 RpContext.SIGN_IN,
                 /* requestPermission= */ true,
-                mNewAccountsIdpSingleAccount);
+                mNewAccountsIdpSingleNewAccount);
 
-        // Account chooser is skipped for a single newly signed in account.
+        // Request permission dialog is NOT skipped for a single newly signed-in new account. Since
+        // this is a new account and request permission is true, we need to show the request
+        // permission dialog to gather permission from the user.
         assertEquals(HeaderType.REQUEST_PERMISSION, mModel.get(ItemProperties.HEADER).get(TYPE));
+    }
+
+    @Test
+    public void testNewAccountsIdpRequestPermissionFalseShowsAccountChooserDialog() {
+        mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne2, RpContext.SIGN_IN);
+        IdentityProviderData newAccountsIdp = mNewAccountsIdpSingleNewAccount;
+        newAccountsIdp.setRequestPermission(/* requestPermission= */ false);
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(),
+                mIdpMetadata,
+                mClientIdMetadata,
+                /* isAutoReauthn= */ false,
+                RpContext.SIGN_IN,
+                /* requestPermission= */ true,
+                mNewAccountsIdpSingleNewAccount);
+
+        // Account chooser dialog is shown for a single newly signed-in new account where request
+        // permission is false. Since this is a new account and request permission is false, we need
+        // to show UI without disclosure text so we show the account chooser.
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+    }
+
+    @Test
+    public void testNewAccountsIdpSingleReturningAccountShowsAccountChooserDialog() {
+        mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne2, RpContext.SIGN_IN);
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(),
+                mIdpMetadata,
+                mClientIdMetadata,
+                /* isAutoReauthn= */ false,
+                RpContext.SIGN_IN,
+                /* requestPermission= */ true,
+                mNewAccountsIdpSingleReturningAccount);
+
+        // Account chooser dialog is shown for a single newly signed-in returning account. Although
+        // this is a returning account, we cannot skip directly to signing in because we have to
+        // show browser UI in the flow so we show the account chooser.
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
     }
 }
