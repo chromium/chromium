@@ -1034,9 +1034,6 @@ class CORE_EXPORT LocalFrameView final
   // necessary.
   OverlayInterstitialAdDetector& EnsureOverlayInterstitialAdDetector();
 
-  void GetUserScrollTranslationNodes(
-      Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes);
-
   // Return the sticky-ad detector for this frame, creating it if necessary.
   StickyAdDetector& EnsureStickyAdDetector();
 

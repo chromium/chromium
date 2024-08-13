@@ -320,10 +320,10 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
     // The overlay layer needs to be in the root property tree state (instead of
     // the default FrameOverlay state which is under the emulation scale
     // transform node) because the emulation scale is baked in the layer.
-    const auto* property_tree_state = &PropertyTreeState::Root();
+    auto property_tree_state = PropertyTreeState::Root();
     RecordForeignLayer(graphics_context, *client,
                        DisplayItem::kForeignLayerDevToolsOverlay, layer_,
-                       gfx::Point(), property_tree_state);
+                       gfx::Point(), &property_tree_state);
   }
 
   void Invalidate() override {

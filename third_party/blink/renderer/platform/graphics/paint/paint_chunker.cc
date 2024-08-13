@@ -212,9 +212,9 @@ bool PaintChunker::AddRegionCaptureDataToCurrentChunk(
   bool created_new_chunk = EnsureCurrentChunk(id, client);
   auto& chunk = chunks_->back();
   if (!chunk.region_capture_data) {
-    chunk.region_capture_data = std::make_unique<RegionCaptureData>();
+    chunk.region_capture_data = MakeGarbageCollected<RegionCaptureData>();
   }
-  chunk.region_capture_data->insert_or_assign(crop_id, std::move(rect));
+  chunk.region_capture_data->map.insert_or_assign(crop_id, std::move(rect));
   return created_new_chunk;
 }
 

@@ -72,10 +72,10 @@ TEST_P(BoxFragmentPainterTest, ScrollHitTestOrder) {
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(text_fragment.Id(), kForegroundType)));
-  HitTestData scroll_hit_test;
-  scroll_hit_test.scroll_translation =
+  auto* scroll_hit_test = MakeGarbageCollected<HitTestData>();
+  scroll_hit_test->scroll_translation =
       scroller.FirstFragment().PaintProperties()->ScrollTranslation();
-  scroll_hit_test.scroll_hit_test_rect = gfx::Rect(0, 0, 40, 40);
+  scroll_hit_test->scroll_hit_test_rect = gfx::Rect(0, 0, 40, 40);
   EXPECT_THAT(
       ContentPaintChunks(),
       ElementsAre(
@@ -87,7 +87,7 @@ TEST_P(BoxFragmentPainterTest, ScrollHitTestOrder) {
               1, 1,
               PaintChunk::Id(root_fragment.Id(), DisplayItem::kScrollHitTest),
               scroller.FirstFragment().LocalBorderBoxProperties(),
-              &scroll_hit_test, gfx::Rect(0, 0, 40, 40)),
+              scroll_hit_test, gfx::Rect(0, 0, 40, 40)),
           IsPaintChunk(1, 2)));
 }
 

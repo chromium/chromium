@@ -26,6 +26,8 @@
 #include "ui/gfx/geometry/transform.h"
 
 namespace blink {
+
+class ClipPaintPropertyNode;
 class PaintLayer;
 class PseudoElement;
 
@@ -259,7 +261,7 @@ class ViewTransitionStyleTracker
     // A clip used to specify the subset of the `target_element`'s visual
     // overflow rect rendered into the element's snapshot.
     // TODO(khushalsagar): Move this to ObjectPaintProperties.
-    scoped_refptr<ClipPaintPropertyNode> clip_node;
+    Member<ClipPaintPropertyNode> clip_node;
 
     // Index to add to the view transition element id.
     int element_index;

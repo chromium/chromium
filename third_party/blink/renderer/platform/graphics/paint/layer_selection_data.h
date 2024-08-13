@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "third_party/blink/renderer/platform/graphics/paint/painted_selection_bound.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
@@ -19,11 +20,13 @@ namespace blink {
 // independently by different painters within the same paint chunk.
 // In the common case of no selection (or if the selection completely surrounds
 // a paint chunk), neither would be set.
-struct PLATFORM_EXPORT LayerSelectionData {
+struct PLATFORM_EXPORT LayerSelectionData
+    : public GarbageCollected<LayerSelectionData> {
   std::optional<PaintedSelectionBound> start;
   std::optional<PaintedSelectionBound> end;
   bool any_selection_was_painted = false;
-  USING_FAST_MALLOC(LayerSelectionData);
+
+  void Trace(Visitor*) const {}
 };
 
 }  // namespace blink

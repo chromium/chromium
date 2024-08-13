@@ -65,14 +65,6 @@ bool ClipChainInTransformCompositingBoundary(
 
 }  // namespace
 
-const PropertyTreeState& PropertyTreeStateOrAlias::Root() {
-  DEFINE_STATIC_LOCAL(
-      const PropertyTreeState, root,
-      (TransformPaintPropertyNode::Root(), ClipPaintPropertyNode::Root(),
-       EffectPaintPropertyNode::Root()));
-  return root;
-}
-
 bool PropertyTreeStateOrAlias::Changed(
     PaintPropertyChangeType change,
     const PropertyTreeState& relative_to) const {
@@ -131,7 +123,8 @@ std::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
 }
 
 String PropertyTreeStateOrAlias::ToString() const {
-  return String::Format("t:%p c:%p e:%p", transform_, clip_, effect_);
+  return String::Format("t:%p c:%p e:%p", transform_.Get(), clip_.Get(),
+                        effect_.Get());
 }
 
 #if DCHECK_IS_ON()
