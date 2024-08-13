@@ -302,8 +302,8 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
  public:
   GeneratedPasswordBox() {
     GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
+    UpdateAccessibleDescription();
   }
-
   ~GeneratedPasswordBox() override = default;
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
@@ -313,26 +313,6 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
 
     node_data->SetNameChecked(base::JoinString(
         {controller_->SuggestedText(), controller_->password()}, u" "));
-    const std::u16string help_text = l10n_util::GetStringFUTF16(
-        GetHelpTextMessageId(),
-        l10n_util::GetStringUTF16(
-            IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT),
-        controller_->GetPrimaryAccountEmail());
-
-    if (password_manager::features::kPasswordGenerationExperimentVariationParam
-            .Get() == PasswordGenerationVariation::kCrossDevice) {
-      const std::u16string description = base::JoinString(
-          {l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_BENEFITS),
-           l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_CROSS_DEVICE),
-           l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SECURITY),
-           l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_PROACTIVE_CHECK),
-           help_text},
-          u" ");
-      node_data->SetDescription(description);
-      return;
-    }
-
-    node_data->SetDescription(help_text);
   }
 
   // Fills the view with strings provided by |controller|.
@@ -350,9 +330,35 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
     suggestion_label_->SetBackgroundColorId(color);
   }
 
-  void reset_controller() { controller_ = nullptr; }
+  void reset_controller() {
+    controller_ = nullptr;
+    UpdateAccessibleDescription();
+  }
 
  private:
+  void UpdateAccessibleDescription() {
+    if (!controller_) {
+      GetViewAccessibility().RemoveDescription();
+      return;
+    }
+
+    const std::u16string help_text = l10n_util::GetStringFUTF16(
+        GetHelpTextMessageId(),
+        l10n_util::GetStringUTF16(
+            IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT),
+        controller_->GetPrimaryAccountEmail());
+
+    if (password_manager::features::kPasswordGenerationExperimentVariationParam
+            .Get() == PasswordGenerationVariation::kCrossDevice) {
+      const std::u16string description =
+          JoinMultiplePasswordGenerationStrings(help_text);
+      GetViewAccessibility().SetDescription(description);
+      return;
+    }
+
+    GetViewAccessibility().SetDescription(help_text);
+  }
+
   // Implements the View interface.
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
@@ -401,6 +407,7 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
       controller_->password(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       STYLE_SECONDARY_MONOSPACED));
   layout->SetFlexForView(password_label_, 1);
+  UpdateAccessibleDescription();
 }
 
 void PasswordGenerationPopupViewViews::GeneratedPasswordBox::OnMouseEntered(
@@ -652,6 +659,23 @@ PasswordGenerationPopupView* PasswordGenerationPopupView::Create(
 const views::ViewAccessibility&
 PasswordGenerationPopupViewViews::GetPasswordViewViewAccessibilityForTest() {
   return password_view_->GetViewAccessibility();
+}
+
+int PasswordGenerationPopupViewViews::GetHelpTextMessageIdForTesting() const {
+  return GetHelpTextMessageId();
+}
+
+// static
+std::u16string
+PasswordGenerationPopupViewViews::JoinMultiplePasswordGenerationStrings(
+    const std::u16string& help_text) {
+  return base::JoinString(
+      {l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_BENEFITS),
+       l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_CROSS_DEVICE),
+       l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SECURITY),
+       l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_PROACTIVE_CHECK),
+       help_text},
+      u" ");
 }
 
 BEGIN_METADATA(PasswordGenerationPopupViewViews)

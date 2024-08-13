@@ -38,6 +38,11 @@ class PasswordGenerationPopupViewViews : public autofill::PopupBaseView,
   void NudgePasswordSelectionUpdated() override;
 
   const views::ViewAccessibility& GetPasswordViewViewAccessibilityForTest();
+  int GetHelpTextMessageIdForTesting() const;
+
+  // static
+  static std::u16string JoinMultiplePasswordGenerationStrings(
+      const std::u16string& help_text);
 
  private:
   class GeneratedPasswordBox;
