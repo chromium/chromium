@@ -5,6 +5,7 @@
 #include "components/component_updater/installer_policies/plus_address_blocklist_component_installer.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -33,15 +34,24 @@ base::FilePath GetInstalledPath(const base::FilePath& base) {
   return base.Append(kPlusAddressBlocklistBinaryPbFileName);
 }
 
-void LoadPlusAddressBlocklistFromDisk(const base::FilePath& pb_path) {
+std::optional<std::string> LoadPlusAddressBlocklistFromDisk(
+    const base::FilePath& pb_path) {
   std::string binary_pb;
   if (!base::ReadFileToString(pb_path, &binary_pb)) {
     DVLOG(1) << "Failed reading from " << pb_path.value();
-    return;
+    return std::nullopt;
   }
 
+  return binary_pb;
+}
+
+void PopulatePlusAddressBlocklistData(const base::FilePath& pb_path,
+                                      std::optional<std::string> binary_pb) {
+  if (!binary_pb) {
+    return;
+  }
   bool parsing_result = plus_addresses::PlusAddressBlocklistData::GetInstance()
-                            .PopulateDataFromComponent(binary_pb);
+                            .PopulateDataFromComponent(std::move(*binary_pb));
   if (!parsing_result) {
     DVLOG(1) << "Failed parsing proto " << pb_path.value();
     return;
@@ -80,10 +90,12 @@ void PlusAddressBlocklistInstallerPolicy::ComponentReady(
     base::Value::Dict /* manifest */) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
-  base::ThreadPool::PostTask(
+  const base::FilePath pb_path = GetInstalledPath(install_dir);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&LoadPlusAddressBlocklistFromDisk,
-                     GetInstalledPath(install_dir)));
+      base::BindOnce(&LoadPlusAddressBlocklistFromDisk, pb_path),
+      base::BindOnce(&PopulatePlusAddressBlocklistData, pb_path));
 }
 
 // Called during startup and installation before ComponentReady().

@@ -88,4 +88,20 @@ TEST_F(PlusAddressBlocklistInstallerPolicyTest,
   RunUntilIdle();
 }
 
+TEST_F(PlusAddressBlocklistInstallerPolicyTest, LoadFileWithData) {
+  plus_addresses::CompactPlusAddressBlockedFacets blocked_facets;
+  blocked_facets.set_exclusion_pattern("foo");
+  blocked_facets.set_exception_pattern("bar");
+  ASSERT_TRUE(
+      CreateTestPlusAddressBlocklist(blocked_facets.SerializeAsString()));
+  ASSERT_NO_FATAL_FAILURE(LoadPlusAddressBlocklist());
+
+  const plus_addresses::PlusAddressBlocklistData& blocklist_data =
+      plus_addresses::PlusAddressBlocklistData::GetInstance();
+  ASSERT_TRUE(blocklist_data.GetExclusionPattern());
+  ASSERT_TRUE(blocklist_data.GetExceptionPattern());
+  EXPECT_EQ(blocklist_data.GetExceptionPattern()->pattern(), "bar");
+  EXPECT_EQ(blocklist_data.GetExclusionPattern()->pattern(), "foo");
+}
+
 }  // namespace component_updater
