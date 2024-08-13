@@ -7369,7 +7369,6 @@ New install
       </message>
 
       <!-- Picker -->
-      <!-- TODO: b/309706053 - Finalize these strings and then mark them as these as translateable -->
       <message name="IDS_PICKER_EXPRESSIONS_CATEGORY_LABEL"
         desc="This string appears in a selectable menu item in a menu. When selected, it opens the ChromeOS emoji picker. The term 'more' indicates that it has more than just emojis and GIFs, including symbols and emoticons.">
         Emojis, GIFs, and more
@@ -7519,7 +7518,8 @@ New install
         desc="This string appears as the label for a badge in a search result. It indicates that selecting the search result will open it in a new window. For example, this badge might appear in a search result for an image, which would open the image in a new window. Try to limit translations to 10 characters.">
         Open
       </message>
-      <message name="IDS_PICKER_CREATE_RESULT_BADGE_LABEL" translateable="false" desc="Label of the badge in a result that can be created.">
+      <message name="IDS_PICKER_CREATE_RESULT_BADGE_LABEL"
+        desc="This string appears as the label for a badge in a search result. It indicates that selecting the search result will create it. For example, this badge might appear in a search result labeled 'Note', which would create a new note. Try to limit translations to 10 characters.">
         Create
       </message>
       <message name="IDS_PICKER_FEATURE_TOUR_LEARN_MORE_BUTTON_LABEL"
