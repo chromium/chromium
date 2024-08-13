@@ -400,7 +400,7 @@ public class NewTabPageLayout extends LinearLayout {
                 mIsInMultiWindowModeOnTablet
                         ? LogoSizeForLogoPolish.SMALL
                         : mLogoSizeForLogoPolish);
-        mLogoCoordinator.initWithNative();
+        mLogoCoordinator.initWithNative(mProfile);
         setSearchProviderInfo(searchProviderHasLogo, searchProviderIsGoogle);
         setSearchProviderTopMargin();
         setSearchProviderBottomMargin();
