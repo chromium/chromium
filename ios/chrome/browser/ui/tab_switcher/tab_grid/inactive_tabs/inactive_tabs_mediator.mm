@@ -335,7 +335,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   NOTREACHED_NORETURN();
 }
 
-- (void)closeItemsWithIDs:(const std::set<web::WebStateID>&)itemIDs {
+- (void)closeItemsWithTabIDs:(const std::set<web::WebStateID>&)tabIDs
+                    groupIDs:(const std::set<tab_groups::TabGroupId>&)groupIDs
+                    tabCount:(int)tabCount {
   NOTREACHED_NORETURN();
 }
 

@@ -20,6 +20,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/saved_tab_groups/tab_group_sync_service.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -1075,16 +1076,34 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   }
 }
 
-- (void)closeItemsWithIDs:(const std::set<web::WebStateID>&)itemIDs {
-  auto itemsCount = itemIDs.size();
-  base::UmaHistogramCounts100("IOS.TabGrid.Selection.CloseTabs", itemsCount);
-  RecordTabGridCloseTabsCount(itemsCount);
+- (void)closeItemsWithTabIDs:(const std::set<web::WebStateID>&)tabIDs
+                    groupIDs:(const std::set<tab_groups::TabGroupId>&)groupIDs
+                    tabCount:(int)tabCount {
+  base::UmaHistogramCounts100("IOS.TabGrid.Selection.CloseTabs", tabCount);
+  RecordTabGridCloseTabsCount(tabCount);
 
   WebStateList* webStateList = self.webStateList;
+  int closedGroupsCount = groupIDs.size();
+
+  if (IsTabGroupSyncEnabled() && closedGroupsCount > 0) {
+    tab_groups::TabGroupSyncService* syncService =
+        tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+
+    // Find and close all groups in `groupIDs`.
+    for (const TabGroup* group : webStateList->GetGroups()) {
+      tab_groups::TabGroupId groupID = group->tab_group_id();
+      if (groupIDs.contains(groupID)) {
+        tab_groups::utils::CloseTabGroupLocally(group, webStateList,
+                                                syncService);
+      }
+    }
+  }
+
   {
     WebStateList::ScopedBatchOperation lock =
         webStateList->StartBatchOperation();
-    for (const web::WebStateID itemID : itemIDs) {
+    for (const web::WebStateID itemID : tabIDs) {
       const int index = GetWebStateIndex(
           webStateList,
           WebStateSearchCriteria{.identifier = itemID,
@@ -1107,6 +1126,10 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
       base::RecordAction(base::UserMetricsAction(
           "MobileTabGridSelectionCloseAllIncognitoTabsConfirmed"));
     }
+  }
+
+  if (IsTabGroupSyncEnabled() && closedGroupsCount > 0) {
+    [self showTabGroupSnackbarOrIPH:closedGroupsCount];
   }
 }
 
@@ -1736,33 +1759,37 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 - (void)closeSelectedTabs:(id)sender {
   [self.delegate dismissPopovers];
 
-  std::set<web::WebStateID> selectedIDs;
+  std::set<web::WebStateID> selectedTabIDs;
+  std::set<tab_groups::TabGroupId> selectedGroupIDs;
+  int tabCount = 0;
+
   for (GridItemIdentifier* identifier in _selectedEditingItems
            .itemsIdentifiers) {
     switch (identifier.type) {
       case GridItemType::kInactiveTabsButton:
         NOTREACHED_NORETURN();
-      case GridItemType::kTab:
-        selectedIDs.insert(identifier.tabSwitcherItem.identifier);
+      case GridItemType::kTab: {
+        selectedTabIDs.insert(identifier.tabSwitcherItem.identifier);
+        tabCount++;
         break;
+      }
       case GridItemType::kGroup: {
         CHECK(identifier.tabGroupItem.tabGroup);
-        const TabGroupRange groupRange =
-            identifier.tabGroupItem.tabGroup->range();
-        for (int index : groupRange) {
-          web::WebState* webState = self.webStateList->GetWebStateAt(index);
-          selectedIDs.insert(webState->GetUniqueIdentifier());
-        }
+        const TabGroup* group = identifier.tabGroupItem.tabGroup;
+        selectedGroupIDs.insert(group->tab_group_id());
+        tabCount += group->range().count();
         break;
       }
       case GridItemType::kSuggestedActions:
         NOTREACHED_NORETURN();
     }
   }
-  [self.delegate
-      showCloseItemsConfirmationActionSheetWithBaseGridMediator:self
-                                                        itemIDs:selectedIDs
-                                                         anchor:sender];
+
+  [self.delegate baseGridMediator:self
+      showCloseConfirmationWithTabIDs:selectedTabIDs
+                             groupIDs:selectedGroupIDs
+                             tabCount:tabCount
+                               anchor:sender];
 }
 
 - (void)shareSelectedTabs:(id)sender {

@@ -299,8 +299,9 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
     (std::set<web::WebStateID>)tabsToClose {
   // Close the tabs which rearranges the grid to not include the tabs hidden by
   // the animation.
-  [_gridHandler closeItemsWithIDs:tabsToClose];
-
+  [_gridHandler closeItemsWithTabIDs:tabsToClose
+                            groupIDs:{}
+                            tabCount:tabsToClose.size()];
   _tabsClosureAnimation = nil;
 }
 

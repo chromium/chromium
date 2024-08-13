@@ -1142,15 +1142,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 #pragma mark - GridMediatorDelegate
 
-- (void)
-    showCloseItemsConfirmationActionSheetWithBaseGridMediator:
-        (BaseGridMediator*)baseGridMediator
-                                                      itemIDs:
-                                                          (const std::set<
-                                                              web::WebStateID>&)
-                                                              itemIDs
-                                                       anchor:(UIBarButtonItem*)
-                                                                  buttonAnchor {
+- (void)baseGridMediator:(BaseGridMediator*)baseGridMediator
+    showCloseConfirmationWithTabIDs:(const std::set<web::WebStateID>&)tabIDs
+                           groupIDs:
+                               (const std::set<tab_groups::TabGroupId>&)groupIDs
+                           tabCount:(int)tabCount
+                             anchor:(UIBarButtonItem*)buttonAnchor {
   if (baseGridMediator == self.regularTabsMediator) {
     base::RecordAction(base::UserMetricsAction(
         "MobileTabGridSelectionCloseRegularTabsConfirmationPresented"));
@@ -1184,17 +1181,22 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   __weak BaseGridMediator* weakBaseGridMediator = baseGridMediator;
   __weak TabGridCoordinator* weakSelf = self;
-  // Copy the set of items, so that the following block can use it.
-  std::set<web::WebStateID> itemIDsCopy = itemIDs;
+  // Copy the set of tab and group identifiers, so that the following block can
+  // use it.
+  std::set<web::WebStateID> tabIDsCopy = tabIDs;
+  std::set<tab_groups::TabGroupId> groupIDsCopy = groupIDs;
+
   [self.actionSheetCoordinator
       addItemWithTitle:base::SysUTF16ToNSString(
                            l10n_util::GetPluralStringFUTF16(
                                IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_CONFIRMATION,
-                               itemIDs.size()))
+                               tabCount))
                 action:^{
                   base::RecordAction(base::UserMetricsAction(
                       "MobileTabGridSelectionCloseTabsConfirmed"));
-                  [weakBaseGridMediator closeItemsWithIDs:itemIDsCopy];
+                  [weakBaseGridMediator closeItemsWithTabIDs:tabIDsCopy
+                                                    groupIDs:groupIDsCopy
+                                                    tabCount:tabCount];
                   [weakSelf dismissActionSheetCoordinator];
                 }
                  style:UIAlertActionStyleDestructive];
