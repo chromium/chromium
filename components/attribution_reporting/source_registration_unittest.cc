@@ -405,10 +405,6 @@ TEST(SourceRegistrationTest, ToJson) {
             "source_event_id": "0",
             "trigger_data_matching": "modulus",
             "trigger_specs": [],
-            "aggregatable_debug_reporting": {
-              "budget": 0,
-              "key_piece": "0x0"
-            },
             "destination_limit_priority": "0"
           })json",
       },
@@ -565,10 +561,6 @@ TEST(SourceRegistrationTest, SerializeDestinationLimit) {
               "source_event_id": "0",
               "trigger_data_matching": "modulus",
               "trigger_specs": [],
-              "aggregatable_debug_reporting": {
-                "budget": 0,
-                "key_piece": "0x0"
-              },
               "destination_limit_priority": "0"
           })json",
       },
@@ -588,10 +580,6 @@ TEST(SourceRegistrationTest, SerializeDestinationLimit) {
               "source_event_id": "0",
               "trigger_data_matching": "modulus",
               "trigger_specs": [],
-              "aggregatable_debug_reporting": {
-                "budget": 0,
-                "key_piece": "0x0"
-              },
               "destination_limit_priority": "123"
           })json",
       },

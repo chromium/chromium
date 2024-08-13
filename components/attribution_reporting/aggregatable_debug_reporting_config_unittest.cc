@@ -698,12 +698,7 @@ TEST(AggregatableDebugReportingConfig, SerializeSource) {
   } kTestCases[] = {
       {
           SourceAggregatableDebugReportingConfig(),
-          R"json({
-            "aggregatable_debug_reporting": {
-              "budget": 0,
-              "key_piece": "0x0"
-            }
-          })json",
+          R"json({})json",
       },
       {
           *SourceAggregatableDebugReportingConfig::Create(

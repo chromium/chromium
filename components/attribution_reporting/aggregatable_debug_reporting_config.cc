@@ -448,8 +448,10 @@ SourceAggregatableDebugReportingConfig::operator=(
 
 void SourceAggregatableDebugReportingConfig::Serialize(
     base::Value::Dict& dict) const {
+  // `budget_` is 0 when aggregatable debug reporting is not opted in.
   if (!base::FeatureList::IsEnabled(
-          features::kAttributionAggregatableDebugReporting)) {
+          features::kAttributionAggregatableDebugReporting) ||
+      budget_ == 0) {
     return;
   }
 
