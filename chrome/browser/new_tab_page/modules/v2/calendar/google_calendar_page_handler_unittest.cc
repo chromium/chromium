@@ -375,6 +375,9 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
   }
   histogram_tester().ExpectBucketCount(
       "NewTabPage.GoogleCalendar.RequestResult", kNumEvents, 1);
+  histogram_tester().ExpectBucketCount("NewTabPage.Modules.DataRequest",
+                                       base::PersistentHash("google_calendar"),
+                                       1);
 }
 
 TEST_F(GoogleCalendarPageHandlerTest, GetEventsWithFeatureParams) {

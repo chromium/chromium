@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
@@ -197,6 +198,8 @@ void GoogleCalendarPageHandler::GetEvents(GetEventsCallback callback) {
             /*event_types=*/event_types,
             ntp_features::kNtpCalendarModuleExperimentParam.Get(),
             /*order_by=*/"startTime"));
+    base::UmaHistogramSparse("NewTabPage.Modules.DataRequest",
+                             base::PersistentHash("google_calendar"));
   }
 }
 
