@@ -1,10 +1,10 @@
 <a id="header" href="${this.event.url.url}" @click="${this.recordHeaderClick_}">
+  <div id="hoverContainer"></div>
   <span id="startTime">${this.formattedStartTime_}</span>
   <span id="title">${this.event.title}</span>
   <span id="timeStatus" ?hidden="${!this.timeStatus_}">
     ${this.timeStatus_}
   </span>
-  <div id="hoverContainer"></div>
 </a>
 ${this.expanded ? html`
   <div id="expandedInfo">

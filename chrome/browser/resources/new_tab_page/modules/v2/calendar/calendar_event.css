@@ -13,6 +13,7 @@
 :host([expanded]) #header {
   color: var(--color-new-tab-page-primary-foreground);
   font-weight: 500;
+  overflow: hidden;
 }
 
 #header {
@@ -58,12 +59,14 @@
 #startTime {
   display: inline-block;
   flex-shrink: 0;
+  position: relative;
   width: 56px;
 }
 
 #title {
   flex-grow: 1;
   overflow: hidden;
+  position: relative;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -80,6 +83,7 @@
   font-weight: 400;
   line-height: var(--ntp-module-secondary-line-height);
   padding: 2px 8px;
+  position: relative;
 }
 
 .cr-icon {
