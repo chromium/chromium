@@ -171,15 +171,6 @@ enum class ScanningCrashKey {
 void IncrementCrashKey(ScanningCrashKey key, int delta = 1);
 void DecrementCrashKey(ScanningCrashKey key, int delta = 1);
 
-// Helper enum to get the corresponding regional url in service provider config
-// for data region setting policy.
-// LINT.IfChange(DlpRegionEndpoints)
-enum class DataRegion { NO_PREFERENCE = 0, UNITED_STATES = 1, EUROPE = 2 };
-// LINT.ThenChange(/chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h:DlpRegionEndpoints)
-GURL GetRegionalizedEndpoint(base::span<const char* const> region_urls,
-                             DataRegion data_region);
-DataRegion ChromeDataRegionSettingToEnum(int chrome_data_region_setting);
-
 // Returns true for consumer scans and not on enterprise scans.
 bool IsConsumerScanRequest(
     const safe_browsing::BinaryUploadService::Request& request);

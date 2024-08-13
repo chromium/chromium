@@ -230,6 +230,15 @@ enum EnterpriseRealTimeUrlCheckMode {
   REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED = 1,
 };
 
+// Helper enum to get the corresponding regional url in service provider config
+// for data region setting policy.
+// LINT.IfChange(DataRegion)
+enum class DataRegion { NO_PREFERENCE = 0, UNITED_STATES = 1, EUROPE = 2 };
+// LINT.ThenChange(//components/enterprise/connectors/core/service_provider_config.cc:DlpRegionEndpoints)
+GURL GetRegionalizedEndpoint(base::span<const char* const> region_urls,
+                             DataRegion data_region);
+DataRegion ChromeDataRegionSettingToEnum(int chrome_data_region_setting);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_COMMON_H_

@@ -446,31 +446,6 @@ void DecrementCrashKey(ScanningCrashKey key, int delta) {
   ModifyKey(key, -delta);
 }
 
-GURL GetRegionalizedEndpoint(base::span<const char* const> region_urls,
-                             DataRegion data_region) {
-  switch (data_region) {
-    case DataRegion::NO_PREFERENCE:
-      return GURL(region_urls[0]);
-    case DataRegion::UNITED_STATES:
-      return GURL(region_urls[1]);
-    case DataRegion::EUROPE:
-      return GURL(region_urls[2]);
-  }
-}
-
-DataRegion ChromeDataRegionSettingToEnum(int chrome_data_region_setting) {
-  switch (chrome_data_region_setting) {
-    case 0:
-      return DataRegion::NO_PREFERENCE;
-    case 1:
-      return DataRegion::UNITED_STATES;
-    case 2:
-      return DataRegion::EUROPE;
-  }
-  NOTREACHED_IN_MIGRATION();
-  return DataRegion::NO_PREFERENCE;
-}
-
 bool IsConsumerScanRequest(const BinaryUploadService::Request& request) {
   if (request.cloud_or_local_settings().is_local_analysis()) {
     return false;

@@ -32,7 +32,7 @@ constexpr std::array<const char*, 3> kGoogleDlpRegionalizedUrls = {
     {"https://safebrowsing.google.com/safebrowsing/uploads/scan",
      "https://scan.webprotect-us.goog/uploads",
      "https://scan.webprotect-eu.goog/uploads"}
-    // LINT.ThenChange(/chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h:DlpRegionEndpoints)
+    // LINT.ThenChange(/components/enterprise/connectors/core/common.h:DataRegion)
 };
 
 constexpr AnalysisConfig kGoogleAnalysisConfig = {
