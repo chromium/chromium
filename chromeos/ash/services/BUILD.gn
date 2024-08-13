@@ -21,6 +21,7 @@ source_set("unit_tests") {
     "//chromeos/ash/services/assistant:tests",
     "//chromeos/ash/services/bluetooth_config:unit_tests",
     "//chromeos/ash/services/cellular_setup:unit_tests",
+    "//chromeos/ash/services/connectivity/public/cpp:unit_tests",
     "//chromeos/ash/services/cros_healthd/private/cpp:unit_tests",
     "//chromeos/ash/services/cros_healthd/public/cpp:unit_tests",
     "//chromeos/ash/services/device_sync:unit_tests",
