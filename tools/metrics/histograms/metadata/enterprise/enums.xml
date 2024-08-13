@@ -2155,6 +2155,7 @@ chromium-metrics-reviews@google.com.
   <int value="1289" label="ShowGeminiIntroScreenEnabled"/>
   <int value="1290" label="DeviceRestrictionSchedule"/>
   <int value="1291" label="TabCompareSettings"/>
+  <int value="1292" label="AdHocCodeSigningForPWAsEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

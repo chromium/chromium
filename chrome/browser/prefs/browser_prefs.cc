@@ -1694,6 +1694,11 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   QuitWithAppsController::RegisterPrefs(registry);
   system_media_permissions::RegisterSystemMediaPermissionStatesPrefs(registry);
   AppShimRegistry::Get()->RegisterLocalPrefs(registry);
+
+  // The default value is not signicant as this preference is only consulted if
+  // it is explicitly set by an enterprise policy.
+  registry->RegisterBooleanPref(prefs::kWebAppsUseAdHocCodeSigningForAppShims,
+                                false);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
