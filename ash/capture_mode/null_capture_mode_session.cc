@@ -102,7 +102,8 @@ void NullCaptureModeSession::OnCameraPreviewDestroyed() {}
 
 void NullCaptureModeSession::MaybeDismissUserNudgeForever() {}
 
-void NullCaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
+void NullCaptureModeSession::MaybeChangeRoot(aura::Window* new_root,
+                                             bool root_window_will_shutdown) {
   DCHECK(new_root->IsRootWindow());
   current_root_ = new_root;
 }

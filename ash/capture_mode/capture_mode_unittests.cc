@@ -1150,22 +1150,27 @@ TEST_F(CaptureModeTest, MultiDisplayCaptureBarInitialLocation) {
 
 // Tests behavior of a capture mode session if the active display is removed.
 TEST_F(CaptureModeTest, DisplayRemoval) {
-  UpdateDisplay("800x700,801+0-800x700");
+  UpdateDisplay("1200x700,1201+0-800x700");
 
   // Start capture mode on the secondary display.
-  GetEventGenerator()->MoveMouseTo(gfx::Point(1000, 500));
+  GetEventGenerator()->MoveMouseTo(gfx::Point(1300, 500));
   auto* controller = StartImageRegionCapture();
   auto* session = controller->capture_mode_session();
-  EXPECT_TRUE(gfx::Rect(801, 0, 800, 800)
+  EXPECT_TRUE(gfx::Rect(1201, 0, 800, 700)
                   .Contains(GetCaptureModeBarView()->GetBoundsInScreen()));
   ASSERT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
 
   RemoveSecondaryDisplay();
 
   // Tests that the capture mode bar is now on the primary display.
-  EXPECT_TRUE(gfx::Rect(800, 800).Contains(
-      GetCaptureModeBarView()->GetBoundsInScreen()));
+  const gfx::Rect bar_bounds_in_screen =
+      GetCaptureModeBarView()->GetBoundsInScreen();
+  EXPECT_TRUE(gfx::Rect(1200, 700).Contains(bar_bounds_in_screen));
   ASSERT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
+
+  // Tests that the capture mode bar is centered on the primary display.
+  // Regression test for http://b/303094552.
+  EXPECT_EQ(600, bar_bounds_in_screen.CenterPoint().x());
 }
 
 // Tests behavior of a capture mode session if the active display is removed

@@ -45,7 +45,8 @@ class ASH_EXPORT NullCaptureModeSession : public BaseCaptureModeSession {
       bool did_bounds_or_visibility_change) override;
   void OnCameraPreviewDestroyed() override;
   void MaybeDismissUserNudgeForever() override;
-  void MaybeChangeRoot(aura::Window* new_root) override;
+  void MaybeChangeRoot(aura::Window* new_root,
+                       bool root_window_will_shutdown) override;
   std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
 
  private:
