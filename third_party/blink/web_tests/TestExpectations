@@ -1416,6 +1416,7 @@ crbug.com/329106317 external/wpt/css/css-color/lch-009.html [ Failure ]
 crbug.com/329106317 external/wpt/css/css-color/lch-010.html [ Failure ]
 crbug.com/329106317 external/wpt/css/css-color/oklch-009.html [ Failure ]
 crbug.com/329106317 external/wpt/css/css-color/oklch-010.html [ Failure ]
+crbug.com/358210825 external/wpt/css/css-color/color-layers-no-blend-mode.html [ Failure ]
 
 # @supports
 crbug.com/1269580 external/wpt/css/css-conditional/at-supports-namespace-001.html [ Failure ]
@@ -1465,6 +1466,20 @@ crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-022.html [ Failure
 crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-023.html [ Failure ]
 crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-024.html [ Failure ]
 crbug.com/1491198 external/wpt/css/selectors/selectors-4/lang-025.html [ Failure ]
+
+# Custom properties, css-variables, css-properties-values-api
+crbug.com/357751736 [ Mac11-arm64 ] external/wpt/css/css-properties-values-api/at-property.html [ Failure Timeout ]
+
+# css-images
+crbug.com/358159989 external/wpt/css/css-images/conic-gradient-angle-negative.html [ Failure ]
+crbug.com/358159989 external/wpt/css/css-images/conic-gradient-angle.html [ Failure ]
+crbug.com/358159989 external/wpt/css/css-images/conic-gradient-center.html [ Failure ]
+crbug.com/358159989 external/wpt/css/css-images/multiple-position-color-stop-conic.html [ Failure ]
+crbug.com/358159989 external/wpt/css/css-images/normalization-conic-2.html [ Failure ]
+crbug.com/358159989 external/wpt/css/css-images/normalization-conic-degenerate.html [ Failure ]
+crbug.com/358159989 external/wpt/css/css-images/normalization-conic.html [ Failure ]
+crbug.com/358159989 external/wpt/css/css-images/out-of-range-color-stop-conic.html [ Failure ]
+crbug.com/358159989 external/wpt/css/css-images/tiled-conic-gradients.html [ Failure ]
 
 # ====== Style team owned tests to here ======
 
@@ -2655,7 +2670,6 @@ crbug.com/358437652 external/wpt/dom/events/scrolling/wheel-event-transactions-t
 crbug.com/358437652 external/wpt/dom/events/scrolling/wheel-event-transactions-target-removal.html [ Timeout ]
 crbug.com/358437652 external/wpt/dom/events/scrolling/wheel-event-transactions-target-resize.html?include=passive-false [ Timeout ]
 crbug.com/358437652 external/wpt/dom/events/scrolling/wheel-event-transactions-target-resize.html?include=passive-true [ Timeout ]
-crbug.com/358461408 external/wpt/css/css-color/color-layers-no-blend-mode.html [ Failure ]
 crbug.com/358437643 [ Win11-arm64 ] external/wpt/html/semantics/forms/the-label-element/control-active-with-multiple-clicks.html [ Timeout ]
 crbug.com/358437643 [ Mac ] external/wpt/html/semantics/forms/the-label-element/control-active-with-multiple-clicks.html [ Timeout ]
 crbug.com/358399788 [ Win11-arm64 ] virtual/threaded/external/wpt/css/css-view-transitions/nested/contain-nested.tentative.html [ Failure ]
@@ -2677,24 +2691,11 @@ crbug.com/358192562 [ Win11-arm64 ] virtual/view-transition-wide-gamut/external/
 crbug.com/358192562 [ Win11-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/normal-goes-up.tentative.html [ Failure ]
 crbug.com/358192613 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/matmul.https.any.html?gpu [ Crash ]
 crbug.com/358192613 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/matmul.https.any.html?gpu [ Crash ]
-crbug.com/358159989 external/wpt/css/css-images/conic-gradient-angle-negative.html [ Failure ]
-crbug.com/358159989 external/wpt/css/css-images/conic-gradient-angle.html [ Failure ]
-crbug.com/358159989 external/wpt/css/css-images/conic-gradient-center.html [ Failure ]
-crbug.com/358159989 external/wpt/css/css-images/multiple-position-color-stop-conic.html [ Failure ]
-crbug.com/358159989 external/wpt/css/css-images/normalization-conic-2.html [ Failure ]
-crbug.com/358159989 external/wpt/css/css-images/normalization-conic-degenerate.html [ Failure ]
-crbug.com/358159989 external/wpt/css/css-images/normalization-conic.html [ Failure ]
-crbug.com/358159989 external/wpt/css/css-images/out-of-range-color-stop-conic.html [ Failure ]
-crbug.com/358159989 external/wpt/css/css-images/tiled-conic-gradients.html [ Failure ]
 crbug.com/358192560 [ Win11-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/compute-explicit-name-non-existent.html [ Failure ]
 crbug.com/358192560 [ Win11-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nearest-nested.html [ Failure ]
 crbug.com/358192560 [ Win11-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/normal-goes-up.html [ Failure ]
 crbug.com/357937886 external/wpt/html/semantics/embedded-content/the-img-element/update-the-image-data/current-request-microtask-002.html [ Failure ]
-crbug.com/357946492 external/wpt/css/css-highlight-api/highlight-image.html [ Failure ]
-crbug.com/357946492 [ Linux ] external/wpt/css/css-highlight-api/highlight-text-across-elements.html [ Failure ]
-crbug.com/357946492 [ Mac ] external/wpt/css/css-highlight-api/highlight-text-decorations.html [ Failure ]
 crbug.com/357909526 [ Mac12 ] virtual/threaded/external/wpt/css/css-backgrounds/border-top-width-medium.html [ Failure ]
-crbug.com/357751736 [ Mac11-arm64 ] external/wpt/css/css-properties-values-api/at-property.html [ Failure Timeout ]
 crbug.com/356913465 external/wpt/css/css-backgrounds/background-gradient-interpolation-003.html [ Failure ]
 crbug.com/356913465 [ Mac14 ] virtual/threaded/external/wpt/css/css-backgrounds/background-gradient-interpolation-003.html [ Failure ]
 crbug.com/356913465 [ Mac14-arm64 ] virtual/threaded/external/wpt/css/css-backgrounds/background-gradient-interpolation-003.html [ Failure ]
@@ -5024,6 +5025,9 @@ crbug.com/1216139 http/tests/devtools/bfcache/bfcache-elements-update.js [ Failu
 # pseudo-elements painting
 crbug.com/1163437 external/wpt/css/css-highlight-api/painting/custom-highlight-painting-below-grammar.html [ Failure ]
 crbug.com/1521187 external/wpt/css/css-highlight-api/painting/custom-highlight-painting-staticrange-005.html [ Failure Pass ]
+crbug.com/357946492 external/wpt/css/css-highlight-api/highlight-image.html [ Failure ]
+crbug.com/359253683 [ Linux ] external/wpt/css/css-highlight-api/highlight-text-across-elements.html [ Failure ]
+crbug.com/359253683 [ Mac ] external/wpt/css/css-highlight-api/highlight-text-decorations.html [ Failure ]
 
 crbug.com/1455239 http/tests/security/drag-drop-different-origin.html [ Failure Pass ]
 
