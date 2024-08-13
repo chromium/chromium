@@ -6,6 +6,8 @@
 
 #import "base/i18n/rtl.h"
 #import "base/memory/weak_ptr.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
@@ -415,6 +417,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 // dismiss it.
 - (void)largeEntrypointChipSwiped {
   [self transitionToSmallEntrypoint];
+  base::RecordAction(base::UserMetricsAction(
+      "IOSContextualPanelEntrypointLargeChipDismissedWithSwipe"));
 }
 
 #pragma mark - ContextualPanelEntrypointConsumer

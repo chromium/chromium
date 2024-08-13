@@ -14387,6 +14387,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOSContextualPanelEntrypointLargeChipDismissedWithSwipe">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    Reported when the Contextual Panel's large chip entrypoint is swiped closed.
+  </description>
+</action>
+
 <action name="IOSDownloadClose">
   <owner>ewannpv@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
