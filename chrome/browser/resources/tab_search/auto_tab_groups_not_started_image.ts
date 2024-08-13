@@ -4,8 +4,8 @@
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './tab_organization_not_started_image.css.js';
-import {getHtml} from './tab_organization_not_started_image.html.js';
+import {getCss} from './auto_tab_groups_not_started_image.css.js';
+import {getHtml} from './auto_tab_groups_not_started_image.html.js';
 
 // Themed image for the tab organization not started state.
 export class TabOrganizationNotStartedImageElement extends CrLitElement {

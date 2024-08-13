@@ -4,7 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TabOrganizationFailureElement} from './tab_organization_failure.js';
+import type {TabOrganizationFailureElement} from './auto_tab_groups_failure.js';
 
 export function getHtml(this: TabOrganizationFailureElement) {
   // clang-format off

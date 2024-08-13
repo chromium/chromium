@@ -4,7 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TabOrganizationNotStartedElement} from './tab_organization_not_started.js';
+import type {TabOrganizationNotStartedElement} from './auto_tab_groups_not_started.js';
 
 export function getHtml(this: TabOrganizationNotStartedElement) {
   // clang-format off

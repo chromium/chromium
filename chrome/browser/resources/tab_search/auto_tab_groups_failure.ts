@@ -8,8 +8,8 @@ import './strings.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './tab_organization_failure.css.js';
-import {getHtml} from './tab_organization_failure.html.js';
+import {getCss} from './auto_tab_groups_failure.css.js';
+import {getHtml} from './auto_tab_groups_failure.html.js';
 import {TabOrganizationError} from './tab_search.mojom-webui.js';
 
 export interface TabOrganizationFailureElement {

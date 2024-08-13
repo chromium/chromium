@@ -4,8 +4,8 @@
 
 import 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import './strings.m.js';
-import './tab_organization_group.js';
-import './tab_organization_results_actions.js';
+import './auto_tab_groups_group.js';
+import './auto_tab_groups_results_actions.js';
 
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrFeedbackButtonsElement} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
@@ -14,9 +14,9 @@ import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {TabOrganizationGroupElement} from './tab_organization_group.js';
-import {getCss} from './tab_organization_results.css.js';
-import {getHtml} from './tab_organization_results.html.js';
+import type {TabOrganizationGroupElement} from './auto_tab_groups_group.js';
+import {getCss} from './auto_tab_groups_results.css.js';
+import {getHtml} from './auto_tab_groups_results.html.js';
 import type {TabOrganization, TabOrganizationSession} from './tab_search.mojom-webui.js';
 
 const MINIMUM_SCROLLABLE_MAX_HEIGHT: number = 204;

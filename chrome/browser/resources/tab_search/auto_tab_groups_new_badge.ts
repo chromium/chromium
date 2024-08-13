@@ -4,8 +4,8 @@
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './tab_organization_new_badge.css.js';
-import {getHtml} from './tab_organization_new_badge.html.js';
+import {getCss} from './auto_tab_groups_new_badge.css.js';
+import {getHtml} from './auto_tab_groups_new_badge.html.js';
 
 // New badge divider for the tab organization UI.
 export class TabOrganizationNewBadgeElement extends CrLitElement {

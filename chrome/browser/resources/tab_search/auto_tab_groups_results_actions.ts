@@ -14,8 +14,8 @@ import './strings.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './tab_organization_results_actions.css.js';
-import {getHtml} from './tab_organization_results_actions.html.js';
+import {getCss} from './auto_tab_groups_results_actions.css.js';
+import {getHtml} from './auto_tab_groups_results_actions.html.js';
 
 export class TabOrganizationResultsActionsElement extends CrLitElement {
   static get is() {

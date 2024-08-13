@@ -4,7 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TabOrganizationNotStartedImageElement} from './tab_organization_not_started_image.js';
+import type {TabOrganizationNotStartedImageElement} from './auto_tab_groups_not_started_image.js';
 
 export function getHtml(this: TabOrganizationNotStartedImageElement) {
   return html`<!--_html_template_start_-->

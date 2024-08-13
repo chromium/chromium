@@ -4,7 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TabOrganizationNewBadgeElement} from './tab_organization_new_badge.js';
+import type {TabOrganizationNewBadgeElement} from './auto_tab_groups_new_badge.js';
 
 export function getHtml(this: TabOrganizationNewBadgeElement) {
   return html`

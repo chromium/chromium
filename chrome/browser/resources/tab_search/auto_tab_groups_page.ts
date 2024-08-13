@@ -4,10 +4,10 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './strings.m.js';
-import './tab_organization_failure.js';
-import './tab_organization_in_progress.js';
-import './tab_organization_not_started.js';
-import './tab_organization_results.js';
+import './auto_tab_groups_failure.js';
+import './auto_tab_groups_in_progress.js';
+import './auto_tab_groups_not_started.js';
+import './auto_tab_groups_results.js';
 
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
@@ -15,12 +15,12 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {TabOrganizationFailureElement} from './tab_organization_failure.js';
-import type {TabOrganizationInProgressElement} from './tab_organization_in_progress.js';
-import type {TabOrganizationNotStartedElement} from './tab_organization_not_started.js';
-import {getCss} from './tab_organization_page.css.js';
-import {getHtml} from './tab_organization_page.html.js';
-import type {TabOrganizationResultsElement} from './tab_organization_results.js';
+import type {TabOrganizationFailureElement} from './auto_tab_groups_failure.js';
+import type {TabOrganizationInProgressElement} from './auto_tab_groups_in_progress.js';
+import type {TabOrganizationNotStartedElement} from './auto_tab_groups_not_started.js';
+import {getCss} from './auto_tab_groups_page.css.js';
+import {getHtml} from './auto_tab_groups_page.html.js';
+import type {TabOrganizationResultsElement} from './auto_tab_groups_results.js';
 import type {Tab, TabOrganization, TabOrganizationSession} from './tab_search.mojom-webui.js';
 import {TabOrganizationError, TabOrganizationState, UserFeedback} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
