@@ -1546,6 +1546,7 @@
   },
   {
     "prefix": "lcp-multiple-updates-per-element",
+    "owners": ["haoliuk@chromium.org", "iclelland@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/largest-contentful-paint/update-on-style-change.tentative.html"
@@ -1557,6 +1558,7 @@
   },
   {
     "prefix": "lcp-mouseover-heuristics",
+    "owners": ["haoliuk@chromium.org", "iclelland@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/largest-contentful-paint/mouseover-heuristics-element.tentative.html",
