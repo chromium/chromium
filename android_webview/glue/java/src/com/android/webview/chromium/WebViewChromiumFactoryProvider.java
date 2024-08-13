@@ -340,7 +340,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                         mWebViewPrefs.getBoolean(WEBVIEW_CONTEXT_EXPERIMENT_PREF, false)
                                 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
             }
-            boolean webViewContextWasApplied = false;
 
             if (sUseWebViewContext
                     || CommandLine.getInstance()
@@ -360,18 +359,17 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                                                     packageInfo.packageName)
                                     & 0xff000000)
                             == 0x7f000000) {
-                        ClassLoaderContextWrapperFactory.setWebViewResourceOverrideContext(
-                                override, R.style.WebViewBaseTheme);
-                        webViewContextWasApplied = true;
-                    } else {
-                        Log.w(TAG, "Attempted to use WebView's context in standalone WebView.");
+                        ClassLoaderContextWrapperFactory.setOverrideInfo(
+                                packageInfo.packageName,
+                                R.style.WebViewBaseTheme,
+                                Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
+                        // Use this to report the actual state of the feature at runtime.
+                        AwBrowserMainParts.setUseWebViewContext(true);
                     }
                 } catch (PackageManager.NameNotFoundException e) {
                     Log.e(TAG, "Could not get resource override context.");
                 }
             }
-            // Use this to report the actual state of the feature at runtime.
-            AwBrowserMainParts.setUseWebViewContext(webViewContextWasApplied);
 
             // WebView needs to make sure to always use the wrapped application context.
             ctx = ClassLoaderContextWrapperFactory.get(ctx);
