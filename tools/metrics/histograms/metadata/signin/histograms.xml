@@ -1893,6 +1893,19 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram
+    name="Signin.ShowSigninCoordinatorWhenAlreadyPresent.DurationBetweenTwoSigninCoordinatorCreation"
+    units="ms" expires_after="2024-12-01">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>jlebel@chromium.org</owner>
+  <summary>
+    This histogram is recorded when two sign-in views are being opened at the
+    same time. This indicates the duration between the two sign-in events.
+  </summary>
+</histogram>
+
+<histogram
     name="Signin.ShowSigninCoordinatorWhenAlreadyPresent.{View}AccessPoint"
     enum="SigninAccessPoint" expires_after="2024-12-01">
   <owner>arthurmilchior@chromium.org</owner>

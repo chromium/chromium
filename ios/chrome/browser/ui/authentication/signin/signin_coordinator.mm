@@ -38,6 +38,7 @@ using signin_metrics::PromoAction;
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _accessPoint = accessPoint;
+    _creationTimeTicks = base::TimeTicks::Now();
   }
   return self;
 }

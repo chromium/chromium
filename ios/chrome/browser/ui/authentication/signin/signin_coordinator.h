@@ -37,6 +37,11 @@ class PrefRegistrySyncable;
 // Used for histogram only.
 @property(nonatomic, readonly) signin_metrics::AccessPoint accessPoint;
 
+// TODO(crbug.com/40071586): Need to remove this property when the bug is
+// closed.
+// This property returns the time ticks when the instance was created.
+@property(nonatomic, readonly, assign) base::TimeTicks creationTimeTicks;
+
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                accessPoint:
