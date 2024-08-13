@@ -6708,8 +6708,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.BackendUsage" enum="LinuxPasswordStoreUsage"
-    expires_after="2024-09-22">
-  <owner>cfroussios@chromium.org</owner>
+    expires_after="2025-03-22">
+  <owner>vasilii@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
     The backend selected for this user and whether it was initialised
