@@ -294,6 +294,11 @@ bool IsActiveUserSession() {
          !session_controller->IsUserSessionBlocked();
 }
 
+bool IsGuestSession() {
+  const auto* session_controller = Shell::Get()->session_controller();
+  return session_controller->IsUserGuest();
+}
+
 // If the user has reached the settings page through the notification, do
 // not show any more new notifications.
 void PreventNotificationFromShowingAgain(const char* pref_name) {
@@ -623,7 +628,7 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
     const mojom::Mouse& mouse,
     const gfx::ImageSkia& device_image) {
-  if (!IsActiveUserSession() || !mouse.is_external) {
+  if (!IsActiveUserSession() || !mouse.is_external || IsGuestSession()) {
     return;
   }
 
@@ -664,7 +669,7 @@ void InputDeviceSettingsNotificationController::
     NotifyGraphicsTabletFirstTimeConnected(
         const mojom::GraphicsTablet& graphics_tablet,
         const gfx::ImageSkia& device_image) {
-  if (!IsActiveUserSession()) {
+  if (!IsActiveUserSession() || IsGuestSession()) {
     return;
   }
 
@@ -863,7 +868,7 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::
     NotifyKeyboardFirstTimeConnected(const mojom::Keyboard& keyboard,
                                      const gfx::ImageSkia& device_image) {
-  if (!IsActiveUserSession() || !keyboard.is_external) {
+  if (!IsActiveUserSession() || !keyboard.is_external || IsGuestSession()) {
     return;
   }
 
@@ -890,7 +895,7 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::
     NotifyTouchpadFirstTimeConnected(const mojom::Touchpad& touchpad,
                                      const gfx::ImageSkia& device_image) {
-  if (!IsActiveUserSession() || !touchpad.is_external) {
+  if (!IsActiveUserSession() || !touchpad.is_external || IsGuestSession()) {
     return;
   }
 
@@ -946,7 +951,8 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::
     NotifyPointingStickFirstTimeConnected(
         const mojom::PointingStick& pointing_stick) {
-  if (!IsActiveUserSession() || !pointing_stick.is_external) {
+  if (!IsActiveUserSession() || !pointing_stick.is_external ||
+      IsGuestSession()) {
     return;
   }
 
