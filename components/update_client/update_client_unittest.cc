@@ -4183,8 +4183,7 @@ INSTANTIATE_TEST_SUITE_P(SendPingTestCases,
                               1,
                               {},
                               10,
-                              base::Version("1.2.3.4"),
-                              base::Version("0")},
+                              base::Version("1.2.3.4")},
                          }));
 
 TEST_P(SendPingTest, TestCases) {

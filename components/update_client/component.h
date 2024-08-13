@@ -287,6 +287,8 @@ class Component {
     // State overrides.
     void DoHandle() override;
 
+    void PatchingComplete(
+        const base::expected<base::FilePath, CategorizedError>&);
     void InstallProgress(int install_progress);
     void InstallComplete(ErrorCategory error_category,
                          int error_code,
