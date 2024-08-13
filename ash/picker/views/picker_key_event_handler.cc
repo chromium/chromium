@@ -6,6 +6,7 @@
 
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_pseudo_focus_handler.h"
+#include "base/i18n/rtl.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/focus/focus_manager.h"
@@ -31,6 +32,7 @@ bool PickerKeyEventHandler::HandleKeyEvent(const ui::KeyEvent& event) {
 
   const bool has_modifier =
       event.IsShiftDown() || event.IsControlDown() || event.IsAltDown();
+  const bool is_rtl = base::i18n::IsRTL();
   switch (event.key_code()) {
     case ui::VKEY_RETURN:
       return active_pseudo_focus_handler_->DoPseudoFocusedAction();
@@ -41,12 +43,17 @@ bool PickerKeyEventHandler::HandleKeyEvent(const ui::KeyEvent& event) {
       return has_modifier ? false
                           : active_pseudo_focus_handler_->MovePseudoFocusDown();
     case ui::VKEY_LEFT:
-      return has_modifier ? false
-                          : active_pseudo_focus_handler_->MovePseudoFocusLeft();
+      return has_modifier
+                 ? false
+                 : (is_rtl
+                        ? active_pseudo_focus_handler_->MovePseudoFocusRight()
+                        : active_pseudo_focus_handler_->MovePseudoFocusLeft());
     case ui::VKEY_RIGHT:
       return has_modifier
                  ? false
-                 : active_pseudo_focus_handler_->MovePseudoFocusRight();
+                 : (is_rtl
+                        ? active_pseudo_focus_handler_->MovePseudoFocusLeft()
+                        : active_pseudo_focus_handler_->MovePseudoFocusRight());
     default:
       return false;
   }
