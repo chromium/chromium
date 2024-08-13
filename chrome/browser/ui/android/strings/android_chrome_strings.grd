@@ -1848,7 +1848,7 @@ Your Google account may have other forms of browsing history like searches and a
         Chrome automatically removes permissions from abusive and unused sites
       </message>
       <message name="IDS_SAFETY_HUB_PERMISSIONS_WARNING_SUMMARY" desc="Text shown as a header at the very top of the Safety Hub permissions review subpage, or as a summary in the permissions review dashboard module. Further educates the user about why their permissions were revoked.">
-        To protect your privacy, permissions were removed from some sites
+        To help keep you safe, permissions were removed from some sites
       </message>
       <message name="IDS_SAFETY_HUB_COMPROMISED_PASSWORDS_SUMMARY" desc="Summary for the password check row in the Safety Check page indicating that the checkup found compromised passwords and that the user should change them immediately.">
         {NUM_PASSWORDS, plural,
