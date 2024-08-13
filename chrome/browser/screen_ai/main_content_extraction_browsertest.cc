@@ -119,10 +119,10 @@ class MainContentExtractionTest : public InProcessBrowserTest {
     EXPECT_EQ(web_contents->GetURL(), page);
 
     base::test::TestFuture<const ui::AXTreeUpdate&> future;
-    web_contents->RequestAXTreeSnapshot(future.GetCallback(),
-                                        ui::kAXModeComplete,
-                                        /* max_nodes= */ 0,
-                                        /* timeout= */ {});
+    web_contents->RequestAXTreeSnapshot(
+        future.GetCallback(), ui::kAXModeComplete,
+        /* max_nodes= */ 0,
+        /* timeout= */ {}, content::WebContents::AXTreeSnapshotPolicy::kAll);
     EXPECT_TRUE(future.Wait());
     return future.Get();
   }

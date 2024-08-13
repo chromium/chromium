@@ -424,7 +424,8 @@ class CONTENT_EXPORT WebContentsImpl
   void RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
                              ui::AXMode ax_mode,
                              size_t max_nodes,
-                             base::TimeDelta timeout) override;
+                             base::TimeDelta timeout,
+                             AXTreeSnapshotPolicy policy) override;
   uint64_t GetUploadSize() override;
   uint64_t GetUploadPosition() override;
   const std::string& GetEncoding() override;

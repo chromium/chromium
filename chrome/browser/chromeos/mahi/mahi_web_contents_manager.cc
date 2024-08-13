@@ -360,7 +360,8 @@ void MahiWebContentsManager::RequestWebContent(
                      focused_web_content_state_.page_id, focused_web_contents_,
                      start_time, std::move(callback)),
       ui::kAXModeWebContentsOnly,
-      /* max_nodes= */ 5000, /* timeout= */ {});
+      /* max_nodes= */ 5000, /* timeout= */ {},
+      content::WebContents::AXTreeSnapshotPolicy::kAll);
 }
 
 void MahiWebContentsManager::RequestPDFContent(

@@ -2078,7 +2078,8 @@ class AXTreeSnapshotCombiner : public base::RefCounted<AXTreeSnapshotCombiner> {
 void WebContentsImpl::RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
                                             ui::AXMode ax_mode,
                                             size_t max_nodes,
-                                            base::TimeDelta timeout) {
+                                            base::TimeDelta timeout,
+                                            AXTreeSnapshotPolicy policy) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RequestAXTreeSnapshot",
                         "mode", ax_mode.ToString());
   // Send a request to each of the frames in parallel. Each one will return
@@ -2092,9 +2093,24 @@ void WebContentsImpl::RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
 
   auto combiner = base::MakeRefCounted<AXTreeSnapshotCombiner>(
       std::move(callback), std::move(params));
-  GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      [&combiner](RenderFrameHostImpl* rfh) {
+  GetPrimaryMainFrame()->ForEachRenderFrameHostWithAction(
+      [this, &combiner, policy](RenderFrameHostImpl* rfh) {
+        switch (policy) {
+          case AXTreeSnapshotPolicy::kAll:
+            break;
+          case AXTreeSnapshotPolicy::kSameOriginDirectDescendants:
+            if (GetPrimaryMainFrame()->GetSiteInstance() !=
+                    rfh->GetSiteInstance() ||
+                rfh->IsFencedFrameRoot() ||
+                !GetPrimaryMainFrame()
+                     ->GetLastCommittedOrigin()
+                     .IsSameOriginWith(rfh->GetLastCommittedOrigin())) {
+              return FrameIterationAction::kSkipChildren;
+            }
+            break;
+        }
         combiner->AXTreeSnapshotOnFrame(rfh);
+        return FrameIterationAction::kContinue;
       });
 }
 

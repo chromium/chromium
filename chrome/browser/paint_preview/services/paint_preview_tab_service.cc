@@ -309,7 +309,7 @@ void PaintPreviewTabService::CaptureTabInternal(
                                       weak_ptr_factory_.GetWeakPtr(), task)),
         ui::kAXModeWebContentsOnly,
         /* max_nodes= */ 5000,
-        /* timeout= */ {});
+        /* timeout= */ {}, content::WebContents::AXTreeSnapshotPolicy::kAll);
   }
 
   CaptureParams capture_params;
