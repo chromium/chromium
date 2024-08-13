@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
-
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -22,10 +22,13 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/media_start_stop_observer.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/views/widget/widget_utils.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/themes/theme_service.h"
@@ -36,12 +39,73 @@
 
 namespace {
 
+using ::testing::WithParamInterface;
+
+// Contains all expectations associated with animations at a given point in
+// time.
+struct ExpectationsAtTimeDelta {
+  base::TimeDelta time_delta;
+
+  // Whether the back to tab button is expected to be visible, or not. Optional
+  // since the associated button view is null when `disallow_return_to_opener`
+  // is true.
+  std::optional<bool> expected_back_to_tab_button_is_visible;
+
+  // Whether the close button is expected to be visible, or not.
+  bool expected_close_button_is_visible;
+
+  // Whether any of the content setting view/s is/are expected to be visible or
+  // not.
+  bool expected_has_any_visible_content_setting_views;
+};
+
+struct AnimationTimingTestCase {
+  std::string test_name;
+  bool has_content_settings_view;
+  bool disallow_return_to_opener;
+  std::vector<ExpectationsAtTimeDelta> show_expectations;
+  std::vector<ExpectationsAtTimeDelta> hide_expectations;
+};
+
+using AnimationTimingTest = WithParamInterface<AnimationTimingTestCase>;
+
+constexpr base::TimeDelta kFirstAnimationInterval = base::Milliseconds(25);
+constexpr base::TimeDelta kSecondAnimationInterval = base::Milliseconds(75);
+constexpr base::TimeDelta kThirdAnimationInterval = base::Milliseconds(125);
+constexpr base::TimeDelta kFourthAnimationInterval = base::Milliseconds(175);
+constexpr base::TimeDelta kFifthAnimationInterval = base::Milliseconds(225);
 constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
 
 const base::FilePath::CharType kPictureInPictureDocumentPipPage[] =
     FILE_PATH_LITERAL("media/picture-in-picture/document-pip.html");
+const base::FilePath::CharType kCameraPage[] =
+    FILE_PATH_LITERAL("media/picture-in-picture/autopip-camera.html");
 
-class PictureInPictureBrowserFrameViewTest : public InProcessBrowserTest {
+class AnimationWaiter {
+ public:
+  explicit AnimationWaiter(std::vector<gfx::Animation*> animations)
+      : animations_(animations) {}
+
+  AnimationWaiter() = delete;
+  AnimationWaiter(const AnimationWaiter&) = delete;
+  AnimationWaiter(AnimationWaiter&&) = delete;
+  AnimationWaiter& operator=(const AnimationWaiter&) = delete;
+
+  void WaitForAnimationInterval(base::TimeDelta animation_interval) {
+    for (auto* animation : animations_) {
+      auto animation_api = std::make_unique<gfx::AnimationTestApi>(animation);
+      animation_api->SetStartTime(waiter_creation_time_);
+      animation_api->Step(waiter_creation_time_ + animation_interval);
+    }
+  }
+
+ private:
+  const base::TimeTicks waiter_creation_time_ = base::TimeTicks::Now();
+  std::vector<gfx::Animation*> animations_;
+};
+
+class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
+                                             public AnimationTimingTest {
  public:
   PictureInPictureBrowserFrameViewTest() = default;
 
@@ -65,11 +129,13 @@ class PictureInPictureBrowserFrameViewTest : public InProcessBrowserTest {
   }
 
   void SetUpDocumentPIP(
-      std::optional<bool> disallow_return_to_opener = std::nullopt) {
+      std::optional<bool> disallow_return_to_opener = std::nullopt,
+      const base::FilePath::CharType* pip_page_relative_path =
+          kPictureInPictureDocumentPipPage) {
     // Navigate to test url.
     GURL test_page_url = ui_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
-        base::FilePath(kPictureInPictureDocumentPipPage));
+        base::FilePath(pip_page_relative_path));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
 
     content::WebContents* active_web_contents =
@@ -83,11 +149,32 @@ class PictureInPictureBrowserFrameViewTest : public InProcessBrowserTest {
         (disallow_return_to_opener.has_value()
              ? (*disallow_return_to_opener ? "true" : "false")
              : "undefined");
-    ASSERT_EQ(true,
-              EvalJs(active_web_contents,
-                     base::StrCat(
-                         {"createDocumentPipWindow({disallowReturnToOpener: ",
-                          disallow_return_to_opener_js_string, "})"})));
+
+    if (pip_page_relative_path == kCameraPage) {
+      GetUserMediaAndAccept(active_web_contents);
+
+      // Open a picture-in-picture window manually.
+      content::MediaStartStopObserver enter_pip_observer(
+          active_web_contents,
+          content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+      active_web_contents->GetPrimaryMainFrame()
+          ->ExecuteJavaScriptWithUserGestureForTests(
+              base::StrCat(
+                  {u"openPip({disallowReturnToOpener: ",
+                   base::UTF8ToUTF16(disallow_return_to_opener_js_string),
+                   u"})"}),
+              base::NullCallback());
+      enter_pip_observer.Wait();
+    } else {
+      ASSERT_EQ(true,
+                EvalJs(active_web_contents,
+                       base::StrCat(
+                           {"createDocumentPipWindow({disallowReturnToOpener: ",
+                            disallow_return_to_opener_js_string, "})"})));
+    }
+
+    // A pip window should have opened.
+    EXPECT_TRUE(active_web_contents->HasPictureInPictureDocument());
     ASSERT_NE(nullptr, pip_window_controller_);
 
     auto* child_web_contents = pip_window_controller_->GetChildWebContents();
@@ -101,6 +188,9 @@ class PictureInPictureBrowserFrameViewTest : public InProcessBrowserTest {
     pip_frame_view_ = static_cast<PictureInPictureBrowserFrameView*>(
         browser_view->frame()->GetFrameView());
     ASSERT_TRUE(pip_frame_view_);
+
+    event_generator_ = std::make_unique<ui::test::EventGenerator>(
+        views::GetRootWindow(pip_frame_view_->GetWidget()));
   }
 
   void WaitForTopBarAnimations(std::vector<gfx::Animation*> animations) {
@@ -115,7 +205,7 @@ class PictureInPictureBrowserFrameViewTest : public InProcessBrowserTest {
   bool IsButtonVisible(views::View* button_view) {
     bool is_button_visible = button_view->GetVisible();
     if (button_view->layer() != nullptr) {
-      is_button_visible &= (button_view->layer()->opacity() > 0);
+      is_button_visible &= (button_view->layer()->opacity() > 0.0f);
     }
     return is_button_visible;
   }
@@ -123,6 +213,16 @@ class PictureInPictureBrowserFrameViewTest : public InProcessBrowserTest {
   bool IsPointInPIPFrameView(gfx::Point point_in_screen) {
     views::View::ConvertPointFromScreen(pip_frame_view_, &point_in_screen);
     return pip_frame_view_->GetLocalBounds().Contains(point_in_screen);
+  }
+
+  void UpdateTopBarView(const gfx::Point& point) {
+// The platform specific code is needed because Mac does not detect mouse events
+// that are sent outside the pip window.
+#if BUILDFLAG(IS_MAC)
+    pip_frame_view()->UpdateTopBarView(IsPointInPIPFrameView(point));
+#else
+    event_generator_->MoveMouseTo(point);
+#endif
   }
 
 #if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
@@ -147,6 +247,7 @@ class PictureInPictureBrowserFrameViewTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<PictureInPictureBrowserFrameView, AcrossTasksDanglingUntriaged>
       pip_frame_view_ = nullptr;
+  std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 
 #if BUILDFLAG(IS_WIN)
@@ -455,5 +556,349 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   // The back-to-tab button should exist when `disallowReturnToOpener` is false.
   EXPECT_NE(nullptr, pip_frame_view()->GetBackToTabButtonForTesting());
 }
+
+IN_PROC_BROWSER_TEST_P(PictureInPictureBrowserFrameViewTest,
+                       TestAnimationTiming) {
+  const AnimationTimingTestCase& test_case = GetParam();
+  test_case.has_content_settings_view
+      ? SetUpDocumentPIP(
+            /*disallow_return_to_opener=*/test_case.disallow_return_to_opener,
+            kCameraPage)
+      : SetUpDocumentPIP(
+            /*disallow_return_to_opener=*/test_case.disallow_return_to_opener);
+
+  // Move mouse to the center of the pip window should activate title.
+  gfx::Point center = pip_frame_view()->GetLocalBounds().CenterPoint();
+  views::View::ConvertPointToScreen(pip_frame_view(), &center);
+  ASSERT_TRUE(IsPointInPIPFrameView(center));
+  UpdateTopBarView(center);
+
+  AnimationWaiter show_animation_waiter(
+      pip_frame_view()->GetRenderActiveAnimationsForTesting());
+  for (size_t i = 0; i < test_case.show_expectations.size(); ++i) {
+    const auto& show_expectations = test_case.show_expectations[i];
+
+    SCOPED_TRACE(
+        base::StringPrintf("Show expectation # %zu, time delta used: %0.1f ms",
+                           i, show_expectations.time_delta.InMillisecondsF()));
+
+    show_animation_waiter.WaitForAnimationInterval(
+        show_expectations.time_delta);
+    if (test_case.disallow_return_to_opener) {
+      DCHECK(!show_expectations.expected_back_to_tab_button_is_visible);
+      ASSERT_EQ(nullptr, pip_frame_view()->GetBackToTabButtonForTesting());
+    } else {
+      ASSERT_EQ(
+          show_expectations.expected_back_to_tab_button_is_visible,
+          IsButtonVisible(pip_frame_view()->GetBackToTabButtonForTesting()));
+    }
+    ASSERT_EQ(show_expectations.expected_close_button_is_visible,
+              IsButtonVisible(pip_frame_view()->GetCloseButtonForTesting()));
+    ASSERT_EQ(show_expectations.expected_has_any_visible_content_setting_views,
+              pip_frame_view()->HasAnyVisibleContentSettingViews());
+  }
+
+  // Move mouse to the top-left corner of the main browser window (out side of
+  // the pip window) should deactivate the title.
+  gfx::Point outside = gfx::Point();
+  views::View::ConvertPointToScreen(
+      static_cast<BrowserView*>(browser()->window()), &outside);
+  ASSERT_FALSE(IsPointInPIPFrameView(outside));
+  UpdateTopBarView(outside);
+
+  AnimationWaiter hide_animation_waiter(
+      pip_frame_view()->GetRenderInactiveAnimationsForTesting());
+  for (size_t i = 0; i < test_case.hide_expectations.size(); ++i) {
+    const auto& hide_expectations = test_case.hide_expectations[i];
+
+    SCOPED_TRACE(
+        base::StringPrintf("Hide expectation # %zu, time delta used: %0.1f ms",
+                           i, hide_expectations.time_delta.InMillisecondsF()));
+
+    hide_animation_waiter.WaitForAnimationInterval(
+        hide_expectations.time_delta);
+    if (test_case.disallow_return_to_opener) {
+      DCHECK(!hide_expectations.expected_back_to_tab_button_is_visible);
+      ASSERT_EQ(nullptr, pip_frame_view()->GetBackToTabButtonForTesting());
+    } else {
+      ASSERT_EQ(
+          hide_expectations.expected_back_to_tab_button_is_visible,
+          IsButtonVisible(pip_frame_view()->GetBackToTabButtonForTesting()));
+    }
+    ASSERT_EQ(hide_expectations.expected_close_button_is_visible,
+              IsButtonVisible(pip_frame_view()->GetCloseButtonForTesting()));
+    ASSERT_EQ(hide_expectations.expected_has_any_visible_content_setting_views,
+              pip_frame_view()->HasAnyVisibleContentSettingViews());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AnimationTimingTestSuiteInstantiation,
+    PictureInPictureBrowserFrameViewTest,
+    testing::ValuesIn<AnimationTimingTestCase>({
+        {.test_name = "WithoutContentSettingView_WithBackToTabButton",
+         .has_content_settings_view = false,
+         .disallow_return_to_opener = false,
+         .show_expectations =
+             {ExpectationsAtTimeDelta{
+                  .time_delta = kFirstAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kSecondAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kThirdAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kFourthAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kFifthAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kAnimationDuration,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false}},
+         .hide_expectations =
+             {ExpectationsAtTimeDelta{
+                  .time_delta = kFirstAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kSecondAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kThirdAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kFourthAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kFifthAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kAnimationDuration,
+                  .expected_back_to_tab_button_is_visible = false,
+                  .expected_close_button_is_visible = false,
+                  .expected_has_any_visible_content_setting_views = false}}},
+        {.test_name = "WithoutContentSettingView_WithoutBackToTabButton",
+         .has_content_settings_view = false,
+         .disallow_return_to_opener = true,
+         .show_expectations =
+             {ExpectationsAtTimeDelta{
+                  .time_delta = kFirstAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kSecondAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kThirdAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kFourthAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kFifthAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kAnimationDuration,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false}},
+         .hide_expectations =
+             {ExpectationsAtTimeDelta{
+                  .time_delta = kFirstAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kSecondAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kThirdAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kFourthAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kFifthAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = false},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kAnimationDuration,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = false,
+                  .expected_has_any_visible_content_setting_views = false}}},
+        {.test_name = "WithContentSettingView_WithBackToTabButton",
+         .has_content_settings_view = true,
+         .disallow_return_to_opener = false,
+         .show_expectations =
+             {ExpectationsAtTimeDelta{
+                  .time_delta = kFirstAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kSecondAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kThirdAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kFourthAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kFifthAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kAnimationDuration,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true}},
+         .hide_expectations =
+             {ExpectationsAtTimeDelta{
+                  .time_delta = kFirstAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kSecondAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = true,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kThirdAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = false,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kFourthAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = false,
+                  .expected_close_button_is_visible = false,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kFifthAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = false,
+                  .expected_close_button_is_visible = false,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kAnimationDuration,
+                  .expected_back_to_tab_button_is_visible = false,
+                  .expected_close_button_is_visible = false,
+                  .expected_has_any_visible_content_setting_views = true}}},
+        {.test_name = "WithContentSettingView_WithoutBackToTabButton",
+         .has_content_settings_view = true,
+         .disallow_return_to_opener = true,
+         .show_expectations =
+             {ExpectationsAtTimeDelta{
+                  .time_delta = kFirstAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kSecondAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kThirdAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kFourthAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kFifthAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kAnimationDuration,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true}},
+         .hide_expectations =
+             {ExpectationsAtTimeDelta{
+                  .time_delta = kFirstAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kSecondAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kThirdAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = true,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kFourthAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = false,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kFifthAnimationInterval,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = false,
+                  .expected_has_any_visible_content_setting_views = true},
+              ExpectationsAtTimeDelta{
+                  .time_delta = kAnimationDuration,
+                  .expected_back_to_tab_button_is_visible = std::nullopt,
+                  .expected_close_button_is_visible = false,
+                  .expected_has_any_visible_content_setting_views = true}}},
+    }),
+    [](const testing::TestParamInfo<AnimationTimingTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace
