@@ -115,7 +115,8 @@ class ChromePaymentsAutofillClientTest
   ChromePaymentsAutofillClientTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kAutofillEnableVcnEnrollLoadingAndConfirmation,
+        {features::kAutofillEnableSaveCardLoadingAndConfirmation,
+         features::kAutofillEnableVcnEnrollLoadingAndConfirmation,
          features::kAutofillEnableCvcStorageAndFilling},
         /*disabled_features=*/{});
   }

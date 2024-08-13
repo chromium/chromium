@@ -337,19 +337,22 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
     bridge->Hide();
   }
 
-  if (card_saved) {
-    if (on_confirmation_closed_callback) {
-      GetAutofillSnackbarController().ShowWithDurationAndCallback(
-          AutofillSnackbarType::kSaveCardSuccess,
-          kSaveCardConfirmationSnackbarDuration,
-          std::move(on_confirmation_closed_callback));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+    if (card_saved) {
+      if (on_confirmation_closed_callback) {
+        GetAutofillSnackbarController().ShowWithDurationAndCallback(
+            AutofillSnackbarType::kSaveCardSuccess,
+            kSaveCardConfirmationSnackbarDuration,
+            std::move(on_confirmation_closed_callback));
+      } else {
+        GetAutofillSnackbarController().Show(
+            AutofillSnackbarType::kSaveCardSuccess);
+      }
     } else {
-      GetAutofillSnackbarController().Show(
-          AutofillSnackbarType::kSaveCardSuccess);
+      GetAutofillMessageController().Show(
+          AutofillMessageModel::CreateForSaveCardFailure());
     }
-  } else {
-    GetAutofillMessageController().Show(
-        AutofillMessageModel::CreateForSaveCardFailure());
   }
 #else  // !BUILDFLAG(IS_ANDROID)
   if (SaveCardBubbleControllerImpl* controller =
