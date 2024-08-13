@@ -1586,6 +1586,16 @@
     "expiry_milestone": 130
   },
   {
+    "name": "container-debug",
+    "owners": [ "dmblack@google.com", "xiaohuic@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
+    "name": "container-debug-contents",
+    "owners": [ "dmblack@google.com", "xiaohuic@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "content-notification-experiment",
     "owners": [ "tinazwang@google.com", "chrome-sherlock@google.com"],
     "expiry_milestone": 130

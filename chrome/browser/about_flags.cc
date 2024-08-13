@@ -11282,6 +11282,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContainerDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kContainerAppPreinstall)},
 
+    {"container-debug", flag_descriptions::kContainerDebugName,
+     flag_descriptions::kContainerDebugDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kContainerAppPreinstallDebug)},
+
+    {"container-debug-contents", flag_descriptions::kContainerDebugContentsName,
+     flag_descriptions::kContainerDebugContentsDescription, kOsCrOS,
+     STRING_VALUE_TYPE(chromeos::switches::kContainerAppPreinstallDebugKey,
+                       "")},
+
     {"mahi", flag_descriptions::kMahiName, flag_descriptions::kMahiDescription,
      kOsCrOS, FEATURE_VALUE_TYPE(chromeos::features::kMahi)},
 
