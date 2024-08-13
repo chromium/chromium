@@ -176,11 +176,11 @@ TEST_F(CastToolbarButtonTest, UpdateIssues) {
   button_->UpdateIcon();
   EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
 
-  button_->OnIssue(Issue(IssueInfo(
+  button_->OnIssue(Issue::CreateIssueWithIssueInfo(IssueInfo(
       "title notification", IssueInfo::Severity::NOTIFICATION, "sinkId1")));
   EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
 
-  button_->OnIssue(Issue(
+  button_->OnIssue(Issue::CreateIssueWithIssueInfo(
       IssueInfo("title warning", IssueInfo::Severity::WARNING, "sinkId1")));
   EXPECT_TRUE(
       gfx::test::AreImagesEqual(warning_chrome_refresh_icon_, GetIcon()));

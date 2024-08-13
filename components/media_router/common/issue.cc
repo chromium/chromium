@@ -24,9 +24,7 @@ IssueInfo::~IssueInfo() = default;
 IssueInfo::IssueInfo(const std::string& title,
                      Severity severity,
                      MediaSink::Id sink_id)
-    : title(title), severity(severity), sink_id(sink_id) {
-  DCHECK(!sink_id.empty());
-}
+    : title(title), severity(severity), sink_id(sink_id) {}
 
 bool IssueInfo::operator==(const IssueInfo& other) const {
   return title == other.title && severity == other.severity &&
@@ -34,6 +32,18 @@ bool IssueInfo::operator==(const IssueInfo& other) const {
          sink_id == other.sink_id;
 }
 
+Issue Issue::CreatePermissionRejectedIssue() {
+  return Issue(/*is_permission_rejected_issue*/ true);
+}
+Issue Issue::CreateIssueWithIssueInfo(IssueInfo info) {
+  return Issue(info);
+}
+
+Issue::Issue(bool is_permission_rejected_issue)
+    : id_(g_next_issue_id.GetNext()),
+      is_permission_rejected_issue_(is_permission_rejected_issue) {
+  info_.severity = IssueInfo::Severity::WARNING;
+}
 Issue::Issue(IssueInfo info)
     : id_(g_next_issue_id.GetNext()), info_(std::move(info)) {}
 

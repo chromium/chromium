@@ -296,6 +296,7 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
   friend class MediaRouterNativeIntegrationBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, JoinRouteTimedOutFails);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, HandleIssue);
+  FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, HandlePermissionIssue);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
                            PresentationConnectionStateChangedCallback);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,

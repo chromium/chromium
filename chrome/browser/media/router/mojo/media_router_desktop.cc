@@ -714,7 +714,9 @@ void MediaRouterDesktop::RouteResponseReceived(
 }
 
 void MediaRouterDesktop::OnLocalDiscoveryPermissionRejected() {
-  // TODO(crbug.com/354232459): Add an issue to the IssueManager.
+  if (base::FeatureList::IsEnabled(kShowCastPermissionRejectedError)) {
+    GetIssueManager()->AddPermissionRejectedIssue();
+  }
 }
 
 void MediaRouterDesktop::OnMediaControllerBound(const MediaRoute::Id& route_id,

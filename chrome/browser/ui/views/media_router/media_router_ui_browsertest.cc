@@ -42,9 +42,10 @@ namespace media_router {
 class MediaRouterUIBrowserTest : public InProcessBrowserTest {
  public:
   MediaRouterUIBrowserTest()
-      : issue_(IssueInfo("title notification",
-                         IssueInfo::Severity::NOTIFICATION,
-                         "sinkId1")) {}
+      : issue_(Issue::CreateIssueWithIssueInfo(
+            IssueInfo("title notification",
+                      IssueInfo::Severity::NOTIFICATION,
+                      "sinkId1"))) {}
   ~MediaRouterUIBrowserTest() override {}
 
   void SetUpOnMainThread() override {

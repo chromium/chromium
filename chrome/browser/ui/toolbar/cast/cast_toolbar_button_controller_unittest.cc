@@ -38,10 +38,11 @@ class FakeCastToolbarIcon : public CastToolbarButtonController::Observer {
 class CastToolbarButtonControllerUnitTest : public BrowserWithTestWindowTest {
  public:
   CastToolbarButtonControllerUnitTest()
-      : issue_(media_router::IssueInfo(
-            "title notification",
-            media_router::IssueInfo::Severity::NOTIFICATION,
-            "sinkId1")) {}
+      : issue_(media_router::Issue::CreateIssueWithIssueInfo(
+            media_router::IssueInfo(
+                "title notification",
+                media_router::IssueInfo::Severity::NOTIFICATION,
+                "sinkId1"))) {}
 
   CastToolbarButtonControllerUnitTest(
       const CastToolbarButtonControllerUnitTest&) = delete;

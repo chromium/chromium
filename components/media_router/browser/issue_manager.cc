@@ -4,13 +4,10 @@
 
 #include "components/media_router/browser/issue_manager.h"
 
-#include <algorithm>
-
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace media_router {
 
@@ -34,14 +31,12 @@ base::TimeDelta IssueManager::GetAutoDismissTimeout(
       return base::Minutes(kNotificationAutoDismissMins);
     case IssueInfo::Severity::WARNING:
       return base::Minutes(kWarningAutoDismissMins);
+    default:
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return base::TimeDelta();
 }
 
-IssueManager::IssueManager()
-    : top_issue_(nullptr), task_runner_(content::GetUIThreadTaskRunner({})) {}
-
+IssueManager::IssueManager() = default;
 IssueManager::~IssueManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
@@ -49,37 +44,43 @@ IssueManager::~IssueManager() {
 void IssueManager::AddIssue(const IssueInfo& issue_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& key_value_pair : issues_map_) {
-    const auto& issue = key_value_pair.second->issue;
-    if (issue.info() == issue_info)
+    if (key_value_pair.second.info() == issue_info) {
       return;
+    }
   }
 
-  Issue issue(issue_info);
-  std::unique_ptr<base::CancelableOnceClosure> cancelable_dismiss_cb;
-  base::TimeDelta timeout = GetAutoDismissTimeout(issue_info);
-  if (!timeout.is_zero()) {
-    cancelable_dismiss_cb =
-        std::make_unique<base::CancelableOnceClosure>(base::BindOnce(
-            &IssueManager::ClearIssue, base::Unretained(this), issue.id()));
-    task_runner_->PostDelayedTask(FROM_HERE, cancelable_dismiss_cb->callback(),
-                                  timeout);
-  }
+  Issue issue = Issue::CreateIssueWithIssueInfo(issue_info);
+  // No-op if the task is invoked after the issue is cleared.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&IssueManager::ClearIssue, weak_ptr_factory_.GetWeakPtr(),
+                     issue.id()),
+      GetAutoDismissTimeout(issue_info));
 
-  issues_map_.emplace(issue.id(), std::make_unique<IssueManager::Entry>(
-                                      issue, std::move(cancelable_dismiss_cb)));
+  issues_map_.emplace(issue.id(), issue);
+  MaybeUpdateTopIssue();
+}
+
+void IssueManager::AddPermissionRejectedIssue() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Issue issue = Issue::CreatePermissionRejectedIssue();
+  issues_map_.clear();
+  issues_map_.emplace(issue.id(), issue);
   MaybeUpdateTopIssue();
 }
 
 void IssueManager::ClearIssue(const Issue::Id& issue_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (issues_map_.erase(issue_id))
+  if (issues_map_.erase(issue_id)) {
     MaybeUpdateTopIssue();
+  }
 }
 
 void IssueManager::ClearAllIssues() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (issues_map_.empty())
+  if (issues_map_.empty()) {
     return;
+  }
 
   issues_map_.clear();
   MaybeUpdateTopIssue();
@@ -87,10 +88,11 @@ void IssueManager::ClearAllIssues() {
 
 void IssueManager::ClearTopIssueForSink(const MediaSink::Id& sink_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!top_issue_ || top_issue_->info().sink_id != sink_id)
-    return;
-
-  ClearIssue(top_issue_->id());
+  auto issue_it = issues_map_.find(top_issue_id_.value_or(-1));
+  if (issue_it != issues_map_.end() &&
+      issue_it->second.info().sink_id == sink_id) {
+    ClearIssue(top_issue_id_.value());
+  }
 }
 
 void IssueManager::RegisterObserver(IssuesObserver* observer) {
@@ -99,8 +101,10 @@ void IssueManager::RegisterObserver(IssuesObserver* observer) {
   DCHECK(!issues_observers_.HasObserver(observer));
 
   issues_observers_.AddObserver(observer);
-  if (top_issue_)
-    observer->OnIssue(*top_issue_);
+  auto issue_it = issues_map_.find(top_issue_id_.value_or(-1));
+  if (issue_it != issues_map_.end()) {
+    observer->OnIssue(issue_it->second);
+  }
 }
 
 void IssueManager::UnregisterObserver(IssuesObserver* observer) {
@@ -108,30 +112,25 @@ void IssueManager::UnregisterObserver(IssuesObserver* observer) {
   issues_observers_.RemoveObserver(observer);
 }
 
-IssueManager::Entry::Entry(
-    const Issue& issue,
-    std::unique_ptr<base::CancelableOnceClosure> cancelable_dismiss_callback)
-    : issue(issue),
-      cancelable_dismiss_callback(std::move(cancelable_dismiss_callback)) {}
-
-IssueManager::Entry::~Entry() = default;
-
 void IssueManager::MaybeUpdateTopIssue() {
-  const Issue* new_top_issue = nullptr;
+  if (issues_map_.empty()) {
+    top_issue_id_ = std::nullopt;
+    for (auto& observer : issues_observers_) {
+      observer.OnIssuesCleared();
+    }
+    return;
+  }
+
   // Select the first issue in the list of issues.
-  if (!issues_map_.empty()) {
-    new_top_issue = &issues_map_.begin()->second->issue;
+  Issue::Id new_top_issue_id = issues_map_.begin()->first;
+  if (top_issue_id_.has_value() && new_top_issue_id == top_issue_id_.value()) {
+    return;
   }
 
   // If we've found a new top issue, then report it via the observer.
-  if (new_top_issue != top_issue_) {
-    top_issue_ = new_top_issue;
-    for (auto& observer : issues_observers_) {
-      if (top_issue_)
-        observer.OnIssue(*top_issue_);
-      else
-        observer.OnIssuesCleared();
-    }
+  top_issue_id_ = new_top_issue_id;
+  for (auto& observer : issues_observers_) {
+    observer.OnIssue(issues_map_.at(new_top_issue_id));
   }
 }
 

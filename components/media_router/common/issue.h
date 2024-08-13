@@ -44,7 +44,8 @@ struct IssueInfo {
   // with it.
   MediaRoute::Id route_id;
 
-  // ID of the sink associated with this issue.
+  // ID of the sink associated with this issue, or empty if no sink is
+  // associated with it.
   MediaSink::Id sink_id;
 };
 
@@ -53,8 +54,10 @@ struct IssueInfo {
 class Issue {
  public:
   using Id = int;
-  // ID is generated during construction.
-  explicit Issue(IssueInfo info);
+
+  static Issue CreatePermissionRejectedIssue();
+  static Issue CreateIssueWithIssueInfo(IssueInfo info);
+
   Issue(const Issue&);
   Issue& operator=(const Issue&);
   Issue(Issue&&);
@@ -63,10 +66,18 @@ class Issue {
 
   const Id& id() const { return id_; }
   const IssueInfo& info() const { return info_; }
+  bool is_permission_rejected_issue() const {
+    return is_permission_rejected_issue_;
+  }
 
  private:
+  explicit Issue(bool is_permission_rejected_issue);
+  explicit Issue(IssueInfo info);
+
+  // ID is generated during construction.
   Id id_;
   IssueInfo info_;
+  bool is_permission_rejected_issue_ = false;
 };
 
 }  // namespace media_router
