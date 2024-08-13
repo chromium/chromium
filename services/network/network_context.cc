@@ -1898,6 +1898,21 @@ void NetworkContext::ResolveHost(
     const net::NetworkAnonymizationKey& network_anonymization_key,
     mojom::ResolveHostParametersPtr optional_parameters,
     mojo::PendingRemote<mojom::ResolveHostClient> response_client) {
+  // Dns request is disallowed if network access is disabled for the nonce.
+  if (network_anonymization_key.GetNonce().has_value() &&
+      !IsNetworkForNonceAndUrlAllowed(
+          network_anonymization_key.GetNonce().value(),
+          host->get_scheme_host_port().GetURL())) {
+    mojo::Remote<mojom::ResolveHostClient> remote_response_client(
+        std::move(response_client));
+    remote_response_client->OnComplete(
+        net::ERR_NETWORK_ACCESS_REVOKED,
+        net::ResolveErrorInfo(net::ERR_NETWORK_ACCESS_REVOKED),
+        /*resolved_addresses=*/std::nullopt,
+        /*endpoint_results_with_metadata=*/std::nullopt);
+    return;
+  }
+
   if (!internal_host_resolver_) {
     internal_host_resolver_ = std::make_unique<HostResolver>(
         url_request_context_->host_resolver(), url_request_context_->net_log());
