@@ -18,6 +18,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -502,11 +503,10 @@ void ChromeBrowserMainPartsWin::PreCreateMainMessageLoop() {
 }
 
 int ChromeBrowserMainPartsWin::PreCreateThreads() {
-  // Record whether the machine is enterprise managed in a crash key. This will
-  // be used to better identify whether crashes are from enterprise users.
-  static crash_reporter::CrashKeyString<4> is_enterprise_managed(
-      "is-enterprise-managed");
-  is_enterprise_managed.Set(
+  static constexpr std::string_view kIsEnterpriseManaged =
+      "is-enterprise-managed";
+  crash_keys::AllocateCrashKeyInBrowserAndChildren(
+      kIsEnterpriseManaged,
       policy::ManagementServiceFactory::GetForPlatform()
                   ->GetManagementAuthorityTrustworthiness() >=
               policy::ManagementAuthorityTrustworthiness::TRUSTED
