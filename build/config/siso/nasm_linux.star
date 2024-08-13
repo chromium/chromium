@@ -28,6 +28,10 @@ def __step_config(ctx, step_config):
         rules.append({
             "name": path.join("nasm", toolchain),
             "command_prefix": "python3 ../../build/gn_run_binary.py " + nasm_path,
+            "inputs": [
+                "build/gn_run_binary.py",
+                ctx.fs.canonpath("./" + nasm_path),
+            ],
             "indirect_inputs": {
                 "includes": ["*.asm"],
             },
