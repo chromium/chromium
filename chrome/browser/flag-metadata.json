@@ -1652,6 +1652,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "contextual-search-with-credentials-for-debug",
+    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS", "contextual-search-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "convert-trackpad-events-to-mouse",
     "owners": [ "mvanouwerkerk@chromium.org", "wbjacksonjr@chromium.org" ],
     "expiry_milestone": 124

@@ -988,6 +988,14 @@ const char kCompressionDictionaryTransportRequireKnownRootCertDescription[] =
     "when the connection is using a well known root cert or when the server is "
     "a localhost.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kContextualSearchWithCredentialsForDebugName[] =
+    "Contextual Search within credentials for debug";
+const char kContextualSearchWithCredentialsForDebugDescription[] =
+    "When this is enabled, if a user do the contextual search, the credentials "
+    "mode will be include.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kForceColorProfileSRGB[] = "sRGB";
 const char kForceColorProfileP3[] = "Display P3 D65";
 const char kForceColorProfileRec2020[] = "ITU-R BT.2020";

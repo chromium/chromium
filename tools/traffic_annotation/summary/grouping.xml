@@ -338,6 +338,7 @@ after discussions on the right group.
       <annotation id="get_locale_oauth2_people_api_call"/>
       <annotation id="boca_classroom_integration"/>
       <annotation id="android_webview_shell"/>
+      <annotation id="contextual_search_resolve_debug"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
