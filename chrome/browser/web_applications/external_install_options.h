@@ -152,6 +152,9 @@ struct ExternalInstallOptions {
   // capabilities are not used (like file handlers).
   // Note: This is different behavior than using the "Create Shortcut..."
   // option in the GUI.
+  // TODO(crbug.com/339718933): This is a deprecated feature. To install a site
+  // as an app, install it as a 'diy' app instead, or use
+  // shortcuts::CreateShortcutForWebContents.
   bool install_as_shortcut = false;
 
   // Whether the app should be reinstalled even if it is already installed.
