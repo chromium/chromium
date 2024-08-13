@@ -24,6 +24,8 @@ static_library("babelorca") {
     "tachyon_constants.h",
     "tachyon_registrar.cc",
     "tachyon_registrar.h",
+    "tachyon_utils.cc",
+    "tachyon_utils.h",
     "token_data_wrapper.h",
     "token_fetcher.h",
     "token_manager.h",
