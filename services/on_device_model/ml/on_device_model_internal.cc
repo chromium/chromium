@@ -54,6 +54,7 @@ OnDeviceModelInternalImpl::~OnDeviceModelInternalImpl() = default;
 
 }  // namespace
 
+COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
 const on_device_model::OnDeviceModelShim* GetOnDeviceModelInternalImpl() {
   static const base::NoDestructor<OnDeviceModelInternalImpl> impl;
   return impl.get();

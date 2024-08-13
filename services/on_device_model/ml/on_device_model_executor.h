@@ -9,6 +9,7 @@
 #include <functional>
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ref.h"
@@ -31,7 +32,8 @@ class LanguageDetector;
 
 // Uses the ChromeML API to create a model based on the params passed to
 // |Create()|. This is the main interface for interacting with the model.
-class OnDeviceModelExecutor : public on_device_model::OnDeviceModel {
+class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor
+    : public on_device_model::OnDeviceModel {
  public:
   explicit OnDeviceModelExecutor(base::PassKey<OnDeviceModelExecutor>,
                                  const ChromeML& chrome_ml);

@@ -59,6 +59,7 @@ void LogVeryLowReason(VeryLowPerformanceReason reason) {
 
 }  // namespace
 
+COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
 DISABLE_CFI_DLSYM
 on_device_model::mojom::PerformanceClass GetEstimatedPerformanceClass(
     const ChromeML& chrome_ml) {

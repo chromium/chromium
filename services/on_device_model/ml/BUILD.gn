@@ -7,7 +7,7 @@ source_set("api") {
   deps = [ "//third_party/dawn/src/dawn/native:headers" ]
 }
 
-source_set("ml") {
+component("ml") {
   public = [
     "chrome_ml.h",
     "on_device_model_executor.h",
@@ -15,6 +15,8 @@ source_set("ml") {
     "session_accessor.h",
     "utils.h",
   ]
+
+  defines = [ "IS_ON_DEVICE_MODEL_ML_IMPL" ]
 
   sources = [
     "chrome_ml.cc",
