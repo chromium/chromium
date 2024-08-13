@@ -163,12 +163,12 @@ void BruschettaNetworkContext::OnGotClientCerts(
         cert_responder_remote,
     net::ClientCertIdentityList certs) {
   GURL requesting_url =
-      chrome::enterprise_util::GetRequestingUrl(cert_info->host_and_port);
+      enterprise_util::GetRequestingUrl(cert_info->host_and_port);
   net::ClientCertIdentityList matching_certificates, nonmatching_certificates;
   // Bruschetta is an enterprise feature with the URL set in policy. So if they
   // pick a URL which requires an SSL cert they should also provide the cert via
   // policy. We don't have a WebContents so can't show UI.
-  chrome::enterprise_util::AutoSelectCertificates(
+  enterprise_util::AutoSelectCertificates(
       profile_, requesting_url, std::move(certs), &matching_certificates,
       &nonmatching_certificates);
 

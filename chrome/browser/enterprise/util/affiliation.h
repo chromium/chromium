@@ -7,7 +7,6 @@
 
 class Profile;
 
-namespace chrome {
 namespace enterprise_util {
 
 // Returns true if the profile and browser are managed by the same customer
@@ -17,6 +16,5 @@ namespace enterprise_util {
 bool IsProfileAffiliated(Profile* profile);
 
 }  // namespace enterprise_util
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_ENTERPRISE_UTIL_AFFILIATION_H_

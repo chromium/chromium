@@ -21,7 +21,6 @@ class GURL;
 class PrefRegistrySimple;
 class Profile;
 
-namespace chrome {
 namespace enterprise_util {
 
 enum EnterpriseProfileBadgingTemporarySetting : int {
@@ -98,6 +97,5 @@ void GetManagementIcon(const GURL& url,
                        base::OnceCallback<void(const gfx::Image&)> callback);
 
 }  // namespace enterprise_util
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_ENTERPRISE_UTIL_MANAGED_BROWSER_UTILS_H_

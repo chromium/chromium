@@ -18,7 +18,6 @@
 
 // Only use from the UI Thread.
 
-namespace chrome {
 namespace enterprise_util {
 
 class AndroidEnterpriseInfoFriendHelper;
@@ -70,6 +69,5 @@ class AndroidEnterpriseInfo {
 };
 
 }  // namespace enterprise_util
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_ENTERPRISE_UTIL_ANDROID_ENTERPRISE_INFO_H_

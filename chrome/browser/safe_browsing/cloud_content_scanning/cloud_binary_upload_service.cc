@@ -173,7 +173,7 @@ bool CanUseAccessToken(const BinaryUploadService::Request& request,
   }
 
   // The access token can always be included in affiliated use cases.
-  if (chrome::enterprise_util::IsProfileAffiliated(profile)) {
+  if (enterprise_util::IsProfileAffiliated(profile)) {
     return true;
   }
 

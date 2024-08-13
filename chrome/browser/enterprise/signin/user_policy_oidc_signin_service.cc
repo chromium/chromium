@@ -256,7 +256,7 @@ void UserPolicyOidcSigninService::OnPolicyFetchCompleteInNewProfile(
         OidcProfileCreationFunnelStep::kAddingPrimaryAccount, dasher_based);
 
     // User account management would be included in unified consent dialog.
-    chrome::enterprise_util::SetUserAcceptedAccountManagement(profile_, true);
+    enterprise_util::SetUserAcceptedAccountManagement(profile_, true);
 
     policy::CloudPolicyManager* user_policy_manager =
         profile_->GetUserCloudPolicyManager();

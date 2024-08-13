@@ -40,7 +40,7 @@ AccountStatus::Type ParseAccountStatusType(
   }
   if (response.user_account_type() == em::CheckUserAccountResponse::CONSUMER) {
     const std::string domain = gaia::ExtractDomainName(email);
-    if (chrome::enterprise_util::IsKnownConsumerDomain(domain)) {
+    if (enterprise_util::IsKnownConsumerDomain(domain)) {
       return AccountStatus::Type::kConsumerWithConsumerDomain;
     }
     return AccountStatus::Type::kConsumerWithBusinessDomain;

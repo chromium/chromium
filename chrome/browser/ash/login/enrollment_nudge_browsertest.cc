@@ -167,9 +167,9 @@ IN_PROC_BROWSER_TEST_F(EnrollmentNudgeTest, NoNudgeForKnownConsumerDomain) {
 
   // Make sure that `FakeGaiaMixin::kFakeUserEmail` belongs to a known consumer
   // domain.
-  const std::string email_domain = chrome::enterprise_util::GetDomainFromEmail(
-      FakeGaiaMixin::kFakeUserEmail);
-  EXPECT_TRUE(chrome::enterprise_util::IsKnownConsumerDomain(email_domain));
+  const std::string email_domain =
+      enterprise_util::GetDomainFromEmail(FakeGaiaMixin::kFakeUserEmail);
+  EXPECT_TRUE(enterprise_util::IsKnownConsumerDomain(email_domain));
 
   // Using an email belonging to a known consumer domain should lead to the Gaia
   // password page without enrollment nudging.

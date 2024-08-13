@@ -140,7 +140,7 @@ void ManagedMenuView::OpenManagementPage() {
 }
 
 void ManagedMenuView::UpdateProfileManagementIcon() {
-  chrome::enterprise_util::GetManagementIcon(
+  enterprise_util::GetManagementIcon(
       GURL(GetProfile()->GetPrefs()->GetString(prefs::kEnterpriseLogoUrl)),
       GetProfile(),
       base::BindOnce(&ManagedMenuView::SetProfileManagementIcon,
@@ -148,7 +148,7 @@ void ManagedMenuView::UpdateProfileManagementIcon() {
 }
 
 void ManagedMenuView::UpdateBrowserManagementIcon() {
-  chrome::enterprise_util::GetManagementIcon(
+  enterprise_util::GetManagementIcon(
       GURL(g_browser_process->local_state()->GetString(
           prefs::kEnterpriseLogoUrl)),
       GetProfile(),

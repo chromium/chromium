@@ -106,17 +106,16 @@ gfx::Image GetGaiaAccountImage(Profile* profile) {
 // - true for Work.
 // - false for School.
 bool IsManagementWork(Profile* profile) {
-  CHECK(chrome::enterprise_util::CanShowEnterpriseBadging(profile));
+  CHECK(enterprise_util::CanShowEnterpriseBadging(profile));
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  auto management_environment =
-      chrome::enterprise_util::GetManagementEnvironment(
-          profile, identity_manager->FindExtendedAccountInfoByAccountId(
-                       identity_manager->GetPrimaryAccountId(
-                           signin::ConsentLevel::kSignin)));
+  auto management_environment = enterprise_util::GetManagementEnvironment(
+      profile, identity_manager->FindExtendedAccountInfoByAccountId(
+                   identity_manager->GetPrimaryAccountId(
+                       signin::ConsentLevel::kSignin)));
   CHECK_NE(management_environment,
-           chrome::enterprise_util::ManagementEnvironment::kNone);
+           enterprise_util::ManagementEnvironment::kNone);
   return management_environment ==
-         chrome::enterprise_util::ManagementEnvironment::kWork;
+         enterprise_util::ManagementEnvironment::kWork;
 }
 
 }  // namespace
@@ -703,7 +702,7 @@ class ManagementStateProvider : public StateProvider,
 
   // StateProvider:
   bool IsActive() const override {
-    return chrome::enterprise_util::CanShowEnterpriseBadging(&profile_.get()) &&
+    return enterprise_util::CanShowEnterpriseBadging(&profile_.get()) &&
            (!IsTransient() || temporarily_showing_);
   }
 
@@ -717,7 +716,7 @@ class ManagementStateProvider : public StateProvider,
   // ProfileAttributesStorage::Observer:
   void OnProfileUserManagementAcceptanceChanged(
       const base::FilePath& profile_path) override {
-    if (!chrome::enterprise_util::CanShowEnterpriseBadging(&profile_.get())) {
+    if (!enterprise_util::CanShowEnterpriseBadging(&profile_.get())) {
       RequestUpdate();
       return;
     }

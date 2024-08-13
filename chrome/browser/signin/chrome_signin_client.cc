@@ -315,7 +315,7 @@ void ChromeSigninClient::PreSignOut(
            signin_metrics::ProfileSignout::kRevokeSyncFromSettings ||
        signout_source_metric == signin_metrics::ProfileSignout::
                                     kCancelSyncConfirmationOnWebOnlySignedIn) &&
-      chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
+      enterprise_util::UserAcceptedAccountManagement(profile_);
   // These sign out won't remove the policy cache, keep the window opened.
   bool keep_window_opened =
       signout_source_metric ==
@@ -465,7 +465,7 @@ SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
 // Android allows signing out of Managed accounts.
 #if !BUILDFLAG(IS_ANDROID)
   // Check if managed user.
-  if (chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
+  if (enterprise_util::UserAcceptedAccountManagement(profile_)) {
     if (base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)) {
       // Allow revoke sync but disallow signout regardless of consent level of
       // the primary account.

@@ -84,7 +84,7 @@ void SetInitializedModalHeight(Browser* browser,
 void ClearProfileWithManagedAccounts(Profile* profile) {
   policy::UserPolicySigninServiceFactory::GetForProfile(profile)
       ->ShutdownCloudPolicyManager();
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(profile, false);
+  enterprise_util::SetUserAcceptedAccountManagement(profile, false);
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   CoreAccountId primary_account_id =

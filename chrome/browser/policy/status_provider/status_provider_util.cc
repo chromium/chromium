@@ -61,8 +61,7 @@ void GetUserAffiliationStatus(base::Value::Dict* dict, Profile* profile) {
       return;
     }
   }
-  dict->Set("isAffiliated",
-            chrome::enterprise_util::IsProfileAffiliated(profile));
+  dict->Set("isAffiliated", enterprise_util::IsProfileAffiliated(profile));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

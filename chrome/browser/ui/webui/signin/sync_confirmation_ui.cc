@@ -337,7 +337,7 @@ void SyncConfirmationUI::InitializeForSyncDisabled(
 
   bool managed_account_signout_disallowed =
       base::FeatureList::IsEnabled(kDisallowManagedProfileSignout) &&
-      chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
+      enterprise_util::UserAcceptedAccountManagement(profile_);
 
   source->AddBoolean("signoutDisallowed", managed_account_signout_disallowed);
   AddStringResource(source, "syncDisabledConfirmationTitle",

@@ -1142,7 +1142,7 @@ class AvatarToolbarButtonEnterpriseBadgingBrowserTest
     // // Ensure enterprise badging can be shown.
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kEnterpriseBadgingTemporarySetting,
-        chrome::enterprise_util::EnterpriseProfileBadgingTemporarySetting::
+        enterprise_util::EnterpriseProfileBadgingTemporarySetting::
             kShowOnAllDevices);
     AvatarToolbarButtonBrowserTest::SetUpOnMainThread();
   }
@@ -1160,8 +1160,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   std::u16string work_label = u"Work";
 
   {
-    chrome::enterprise_util::SetUserAcceptedAccountManagement(
-        browser()->profile(), true);
+    enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(),
+                                                      true);
     EXPECT_EQ(avatar_button->GetText(), work_label);
     auto clear_closure = avatar_button->ShowExplicitText(
         u"Explicit text", /*accessibility_label=*/std::nullopt);
@@ -1171,8 +1171,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   }
 
   {
-    chrome::enterprise_util::SetUserAcceptedAccountManagement(
-        browser()->profile(), false);
+    enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(),
+                                                      false);
     EXPECT_NE(avatar_button->GetText(), work_label);
     auto clear_closure = avatar_button->ShowExplicitText(
         u"Explicit text", /*accessibility_label=*/std::nullopt);
@@ -1187,18 +1187,17 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   // Ensure enterprise badging can be shown.
   std::u16string work_label = u"Work";
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
-      browser()->profile(), true);
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
   EXPECT_EQ(avatar_button->GetText(), work_label);
 
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kEnterpriseBadgingTemporarySetting,
-      chrome::enterprise_util::EnterpriseProfileBadgingTemporarySetting::kHide);
+      enterprise_util::EnterpriseProfileBadgingTemporarySetting::kHide);
   EXPECT_NE(avatar_button->GetText(), work_label);
 
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kEnterpriseBadgingTemporarySetting,
-      chrome::enterprise_util::EnterpriseProfileBadgingTemporarySetting::
+      enterprise_util::EnterpriseProfileBadgingTemporarySetting::
           kShowOnAllDevices);
 
   EXPECT_EQ(avatar_button->GetText(), work_label);
@@ -1210,8 +1209,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   AvatarToolbarButtonTestObserver observer(avatar_button);
   EnableToolbarAvatarLabelByPolicy(/*transient=*/true);
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
-      browser()->profile(), true);
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
   EXPECT_EQ(avatar_button->GetText(), work_label);
 
   observer.WaitForShowEnterpriseTextEnded();
@@ -1225,8 +1223,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   AvatarToolbarButtonTestObserver observer(avatar_button);
   EnableToolbarAvatarLabelByPolicy(/*transient=*/true);
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
-      browser()->profile(), true);
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
   EXPECT_EQ(avatar_button->GetText(), work_label);
 
   observer.WaitForShowEnterpriseTextEnded();
@@ -1250,8 +1247,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   EnableToolbarAvatarLabelByPolicy(/*transient=*/false);
 
   std::u16string work_label = u"Work";
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
-      browser()->profile(), true);
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
   EXPECT_EQ(avatar_button->GetText(), work_label);
 
   // Simulate waiting for some time, twice the expected duration of showing the
@@ -1263,8 +1259,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
                        WorkBrowserShowsBadgeWithLabelPresets) {
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
-      browser()->profile(), true);
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
 
   // Work label
@@ -1281,8 +1276,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
                        WorkNewBrowserShowsBadge) {
   std::u16string work_label = u"Work";
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
-      browser()->profile(), true);
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
 
   Browser* second_browser = CreateBrowser(browser()->profile());
   AvatarToolbarButton* second_browser_avatar_button =
@@ -1298,8 +1292,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 
   EnableToolbarAvatarLabelByPolicy(/*transient=*/false);
   std::u16string work_label = u"Work";
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
-      browser()->profile(), true);
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
   EXPECT_EQ(avatar_button->GetText(), work_label);
 
   EnableSyncAndWait(u"work@managed.com");
@@ -1334,8 +1327,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   EnableToolbarAvatarLabelByPolicy(/*transient=*/true);
   std::u16string work_label = u"Work";
   AvatarToolbarButtonTestObserver observer(avatar_button);
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
-      browser()->profile(), true);
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
   EXPECT_EQ(avatar_button->GetText(), work_label);
 
   SimulateSyncPaused();
@@ -1357,12 +1349,11 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 
   EnableToolbarAvatarLabelByPolicy(/*transient=*/false);
   std::u16string work_label = u"Work";
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
-      browser()->profile(), true);
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
   EXPECT_EQ(avatar_button->GetText(), work_label);
 
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
-      browser()->profile(), false);
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(),
+                                                    false);
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 }
 

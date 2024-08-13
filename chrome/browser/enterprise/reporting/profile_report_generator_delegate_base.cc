@@ -66,8 +66,7 @@ ProfileReportGeneratorDelegateBase::MakePolicyConversionsClient(
   // For profile reporting, if user is not affiliated, we need to hide machine
   // policy value.
   client->EnableShowMachineValues(
-      is_machine_scope ||
-      chrome::enterprise_util::IsProfileAffiliated(profile_));
+      is_machine_scope || enterprise_util::IsProfileAffiliated(profile_));
 
   return client;
 }

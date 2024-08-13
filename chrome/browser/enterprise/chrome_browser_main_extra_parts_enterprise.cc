@@ -7,7 +7,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 
-namespace chrome::enterprise_util {
+namespace enterprise_util {
 
 namespace {
 
@@ -51,4 +51,4 @@ void ChromeBrowserMainExtraPartsEnterprise::PostProfileInit(
   MaybePrimeLocalContentAnalysisAgentConnection(profile);
 }
 
-}  // namespace chrome::enterprise_util
+}  // namespace enterprise_util

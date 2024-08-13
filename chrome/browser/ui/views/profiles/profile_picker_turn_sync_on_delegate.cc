@@ -216,7 +216,7 @@ void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
   // It does not apply to managed accounts.
   // TODO(crbug.com/40280466): Align Managed and Consumer accounts.
   if (signin_util::IsForceSigninEnabled() &&
-      !chrome::enterprise_util::ProfileCanBeManaged(profile_) &&
+      !enterprise_util::ProfileCanBeManaged(profile_) &&
       result == LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC) {
     CHECK(base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker));
     HandleCancelSigninChoice(

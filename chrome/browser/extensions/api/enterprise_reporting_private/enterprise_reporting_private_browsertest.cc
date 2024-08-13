@@ -611,7 +611,7 @@ class EnterpriseReportingPrivateGetCertificateTest : public policy::PolicyTest {
   }
 
   void SetPolicyValue(const std::string& policy_value) {
-    EXPECT_FALSE(chrome::enterprise_util::IsMachinePolicyPref(
+    EXPECT_FALSE(enterprise_util::IsMachinePolicyPref(
         prefs::kManagedAutoSelectCertificateForUrls));
 
     base::Value::List list;
@@ -624,7 +624,7 @@ class EnterpriseReportingPrivateGetCertificateTest : public policy::PolicyTest {
                  nullptr);
     UpdateProviderPolicy(policies);
 
-    EXPECT_TRUE(chrome::enterprise_util::IsMachinePolicyPref(
+    EXPECT_TRUE(enterprise_util::IsMachinePolicyPref(
         prefs::kManagedAutoSelectCertificateForUrls));
   }
 

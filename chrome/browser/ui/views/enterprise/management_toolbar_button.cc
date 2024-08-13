@@ -110,7 +110,7 @@ void ManagementToolbarButton::UpdateManagementInfo() {
   }
   SetManagementLabel(prefs->GetString(prefs::kEnterpriseCustomLabel));
   if (show_management_toolbar_button) {
-    chrome::enterprise_util::GetManagementIcon(
+    enterprise_util::GetManagementIcon(
         GURL(prefs->GetString(prefs::kEnterpriseLogoUrl)), profile_,
         base::BindOnce(&ManagementToolbarButton::SetManagementIcon,
                        weak_ptr_factory_.GetWeakPtr()));

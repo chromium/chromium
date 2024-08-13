@@ -103,7 +103,7 @@ bool ChromeEnterpriseRealTimeUrlLookupService::
   if (policy::ManagementServiceFactory::GetForProfile(profile_)
           ->HasManagementAuthority(
               policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) &&
-      !chrome::enterprise_util::IsProfileAffiliated(profile_)) {
+      !enterprise_util::IsProfileAffiliated(profile_)) {
     return false;
   }
 
@@ -248,7 +248,7 @@ std::string ChromeEnterpriseRealTimeUrlLookupService::GetBrowserDMTokenString()
 std::string ChromeEnterpriseRealTimeUrlLookupService::GetProfileDMTokenString()
     const {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chrome::enterprise_util::IsProfileAffiliated(profile_)) {
+  if (enterprise_util::IsProfileAffiliated(profile_)) {
     return connectors_service_->GetProfileDmToken().value_or("");
   }
 #endif

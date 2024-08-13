@@ -1078,7 +1078,7 @@ IN_PROC_BROWSER_TEST_P(EnterpriseReportingPrivateEnqueueRecordApiTest,
                           "\');"});
 
   ASSERT_EQ(GetParam().affiliated,
-            chrome::enterprise_util::IsProfileAffiliated(
+            enterprise_util::IsProfileAffiliated(
                 ash::ProfileHelper::Get()->GetProfileByAccountId(
                     affiliation_mixin_.account_id())));
 

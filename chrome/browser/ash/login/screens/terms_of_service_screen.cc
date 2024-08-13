@@ -150,7 +150,7 @@ void TermsOfServiceScreen::ShowImpl() {
   view_->Show(
       ash::InstallAttributes::Get()->IsEnterpriseManaged()
           ? connector->GetEnterpriseDomainManager()
-          : chrome::enterprise_util::GetDomainFromEmail(
+          : enterprise_util::GetDomainFromEmail(
                 ProfileManager::GetActiveUserProfile()->GetProfileUserName()));
 
   // Start downloading the Terms of Service.

@@ -389,10 +389,10 @@ std::string JNI_SigninManagerImpl_ExtractDomainName(JNIEnv* env,
 void SigninManagerAndroid::SetUserAcceptedAccountManagement(
     JNIEnv* env,
     bool accepted_account_management) {
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
+  enterprise_util::SetUserAcceptedAccountManagement(
       profile_, accepted_account_management);
 }
 
 bool SigninManagerAndroid::GetUserAcceptedAccountManagement(JNIEnv* env) {
-  return chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
+  return enterprise_util::UserAcceptedAccountManagement(profile_);
 }

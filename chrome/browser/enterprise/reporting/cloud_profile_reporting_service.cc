@@ -69,7 +69,7 @@ bool CanUploadExtensionInfo(Profile* profile) {
     return true;
   }
 
-  if (chrome::enterprise_util::IsProfileAffiliated(profile)) {
+  if (enterprise_util::IsProfileAffiliated(profile)) {
     return true;
   }
 

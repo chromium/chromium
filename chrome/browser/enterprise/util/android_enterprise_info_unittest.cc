@@ -14,12 +14,12 @@
 class AndroidEnterpriseInfoTest : public ::testing::Test {
  protected:
   AndroidEnterpriseInfoTest() {
-    instance_ = chrome::enterprise_util::AndroidEnterpriseInfo::GetInstance();
+    instance_ = enterprise_util::AndroidEnterpriseInfo::GetInstance();
     // Java side isn't running, so we need to skip the call to it.
     instance_->set_skip_jni_call_for_testing(true);
   }
 
-  raw_ptr<chrome::enterprise_util::AndroidEnterpriseInfo> instance_;
+  raw_ptr<enterprise_util::AndroidEnterpriseInfo> instance_;
 };
 
 class EnterpriseInfoCallbackHelper {
@@ -131,7 +131,7 @@ TEST_F(AndroidEnterpriseInfoTest, ReentrantCallback) {
 
   // Insert 4 callbacks into the instance, the 2nd callback will attempt to
   // insert another callback when it's serviced.
-  chrome::enterprise_util::AndroidEnterpriseInfo::EnterpriseInfoCallback
+  enterprise_util::AndroidEnterpriseInfo::EnterpriseInfoCallback
       reentrant_callback =
           base::BindLambdaForTesting([&](bool one, bool two) -> void {
             // Do nothing with the arguments, just enter the function again.

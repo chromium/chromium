@@ -403,9 +403,8 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, DISABLED_BasicSignin) {
 // Disabled for Win11 arm64 flakes: https://crbug.com/340623286
 IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, DISABLED_UndoSignin) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
-  EXPECT_FALSE(
-      chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
-  EXPECT_FALSE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
+  EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagement(profile()));
+  EXPECT_FALSE(enterprise_util::ProfileCanBeManaged(profile()));
   EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed(
       /*has_sync_account=*/false));
 
@@ -432,9 +431,8 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, DISABLED_UndoSignin) {
               signin::GetPrimaryAccountConsentLevel(identity_manager()));
     EXPECT_FALSE(signin_client()->IsClearPrimaryAccountAllowed(
         /*has_sync_account=*/false));
-    EXPECT_TRUE(
-        chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
-    EXPECT_TRUE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
+    EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(profile()));
+    EXPECT_TRUE(enterprise_util::ProfileCanBeManaged(profile()));
 
   } else {
     // Policy is reverted.
@@ -444,9 +442,8 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, DISABLED_UndoSignin) {
               signin::GetPrimaryAccountConsentLevel(identity_manager()));
     EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed(
         /*has_sync_account=*/false));
-    EXPECT_FALSE(
-        chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
-    EXPECT_FALSE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
+    EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagement(profile()));
+    EXPECT_FALSE(enterprise_util::ProfileCanBeManaged(profile()));
   }
 }
 
@@ -495,7 +492,7 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest,
                        DISABLED_AcceptManagementDeclineSync) {
   TurnSyncOnHelper::SetShowSyncEnabledUiForTesting(true);
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
-  EXPECT_FALSE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
+  EXPECT_FALSE(enterprise_util::ProfileCanBeManaged(profile()));
   EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed(
       /*has_sync_account=*/false));
 
@@ -516,9 +513,8 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest,
 
   EXPECT_EQ(signin::ConsentLevel::kSignin,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
-  EXPECT_TRUE(
-      chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
-  EXPECT_TRUE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
+  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(profile()));
+  EXPECT_TRUE(enterprise_util::ProfileCanBeManaged(profile()));
   EXPECT_NE(
       signin_client()->IsClearPrimaryAccountAllowed(/*has_sync_account=*/false),
       base::FeatureList::IsEnabled(kDisallowManagedProfileSignout));
@@ -533,17 +529,15 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest,
         /*has_sync_account=*/false));
     EXPECT_EQ(std::nullopt,
               signin::GetPrimaryAccountConsentLevel(identity_manager()));
-    EXPECT_FALSE(
-        chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
-    EXPECT_FALSE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
+    EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagement(profile()));
+    EXPECT_FALSE(enterprise_util::ProfileCanBeManaged(profile()));
   } else {
     EXPECT_FALSE(signin_client()->IsClearPrimaryAccountAllowed(
         /*has_sync_account=*/false));
     EXPECT_EQ(signin::ConsentLevel::kSignin,
               signin::GetPrimaryAccountConsentLevel(identity_manager()));
-    EXPECT_TRUE(
-        chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
-    EXPECT_TRUE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
+    EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(profile()));
+    EXPECT_TRUE(enterprise_util::ProfileCanBeManaged(profile()));
   }
   TurnSyncOnHelper::SetShowSyncEnabledUiForTesting(false);
 }

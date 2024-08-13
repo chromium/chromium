@@ -768,7 +768,7 @@ bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
     // Returns true only for reauth for primary accounts without sync where
     // management hasn't been accepted.
     return !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
-           !chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
+           !enterprise_util::UserAcceptedAccountManagement(profile_);
   }
 
   if (!signin_util::IsAccountExemptedFromEnterpriseProfileSeparation(
@@ -809,7 +809,7 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
   if (intercepted_account_info.IsManaged() &&
       IsPrimaryAccountInterception(intercepted_account_info.account_id,
                                    identity_manager_) &&
-      !chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
+      !enterprise_util::UserAcceptedAccountManagement(profile_)) {
     return true;
   }
 
@@ -1337,7 +1337,7 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
     }
   }
 
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
+  enterprise_util::SetUserAcceptedAccountManagement(
       new_profile, state_->intercepted_account_management_accepted_);
 
   // Work is done in this profile, the flow continues in the
@@ -1370,7 +1370,7 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
     // a new profile.
     if (IsReauthPrimaryAccount(state_->new_account_interception_,
                                account_info.account_id, identity_manager_)) {
-      chrome::enterprise_util::SetUserAcceptedAccountManagement(
+      enterprise_util::SetUserAcceptedAccountManagement(
           profile_, state_->intercepted_account_management_accepted_);
       Reset();
     } else {
@@ -1381,7 +1381,7 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
     state_->intercepted_account_management_accepted_ = true;
     DCHECK_EQ(GetPrimaryAccountInfo(identity_manager_).account_id,
               account_info.account_id);
-    chrome::enterprise_util::SetUserAcceptedAccountManagement(
+    enterprise_util::SetUserAcceptedAccountManagement(
         profile_, state_->intercepted_account_management_accepted_);
     Reset();
   } else {

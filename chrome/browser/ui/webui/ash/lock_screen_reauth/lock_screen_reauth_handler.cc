@@ -231,8 +231,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
     params.Set("gaiaPath", default_gaia_path);
   }
 
-  const std::string domain =
-      chrome::enterprise_util::GetDomainFromEmail(context.email);
+  const std::string domain = enterprise_util::GetDomainFromEmail(context.email);
   if (!domain.empty()) {
     params.Set("enterpriseEnrollmentDomain", domain);
   } else {

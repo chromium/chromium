@@ -15,7 +15,6 @@
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-namespace chrome {
 namespace enterprise_util {
 
 bool IsProfileAffiliated(Profile* profile) {
@@ -31,4 +30,3 @@ bool IsProfileAffiliated(Profile* profile) {
 }
 
 }  // namespace enterprise_util
-}  // namespace chrome
