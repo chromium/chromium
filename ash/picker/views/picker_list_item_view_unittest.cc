@@ -113,6 +113,24 @@ TEST_F(PickerListItemViewTest, SetsBadgeNotVisible) {
   EXPECT_FALSE(item_view.trailing_badge_for_testing().GetVisible());
 }
 
+TEST_F(PickerListItemViewTest, SetsBadgeVisibleWithPrimaryText) {
+  PickerListItemView item_view(base::DoNothing());
+  item_view.SetPrimaryText(u"a");
+
+  item_view.SetBadgeVisible(true);
+
+  EXPECT_TRUE(item_view.trailing_badge_for_testing().GetVisible());
+}
+
+TEST_F(PickerListItemViewTest, DoesNotSetBadgeVisibleWithPrimaryImage) {
+  PickerListItemView item_view(base::DoNothing());
+  item_view.SetPrimaryImage(ui::ImageModel());
+
+  item_view.SetBadgeVisible(true);
+
+  EXPECT_FALSE(item_view.trailing_badge_for_testing().GetVisible());
+}
+
 TEST_F(PickerListItemViewTest, SetBadgeActionDoHasNoLabelText) {
   PickerListItemView item_view(base::DoNothing());
 

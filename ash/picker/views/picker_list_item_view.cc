@@ -262,6 +262,14 @@ void PickerListItemView::SetBadgeAction(PickerActionType action) {
 }
 
 void PickerListItemView::SetBadgeVisible(bool visible) {
+  if (primary_container_ != nullptr &&
+      !primary_container_->children().empty() &&
+      views::IsViewClass<views::ImageView>(
+          primary_container_->children().front().get())) {
+    // Badge should not be visible if the list item has a primary image.
+    return;
+  }
+
   trailing_badge_->SetVisible(visible);
 
   if (visible) {
