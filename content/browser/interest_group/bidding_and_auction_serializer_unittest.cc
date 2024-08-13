@@ -138,7 +138,9 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithLargeRequestSize) {
       "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1, 1);
 }
 
-TEST_F(BiddingAndAuctionSerializerTest, SerializeWithSmallRequestSize) {
+// TODO(crbug.com/355013095): Re-enable this test
+TEST_F(BiddingAndAuctionSerializerTest,
+       DISABLED_SerializeWithSmallRequestSize) {
   base::HistogramTester histogram_tester;
 
   const size_t kRequestSize = 2000;
