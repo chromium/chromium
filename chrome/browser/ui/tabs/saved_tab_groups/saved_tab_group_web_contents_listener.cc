@@ -6,6 +6,7 @@
 
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
@@ -16,50 +17,10 @@
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "net/http/http_request_headers.h"
 #include "ui/base/page_transition_types.h"
 
 namespace tab_groups {
 namespace {
-
-bool IsSaveableNavigation(content::NavigationHandle* navigation_handle) {
-  ui::PageTransition page_transition = navigation_handle->GetPageTransition();
-
-  // The initial request needs to be a GET request, regardless of server-side
-  // redirects later on.
-  if (navigation_handle->GetRequestMethod() !=
-      net::HttpRequestHeaders::kGetMethod) {
-    return false;
-  }
-  if (!ui::IsValidPageTransitionType(page_transition)) {
-    return false;
-  }
-  if (ui::PageTransitionIsRedirect(page_transition)) {
-    return false;
-  }
-
-  if (!ui::PageTransitionIsMainFrame(page_transition)) {
-    return false;
-  }
-
-  if (!navigation_handle->HasCommitted()) {
-    return false;
-  }
-
-  if (!navigation_handle->ShouldUpdateHistory()) {
-    return false;
-  }
-
-  // For renderer initiated navigation, in most cases these navigations will be
-  // auto triggered on restoration. So there is no need to save them.
-  if (navigation_handle->IsRendererInitiated() &&
-      !navigation_handle->HasUserGesture()) {
-    return false;
-  }
-
-  return SavedTabGroupUtils::IsURLValidForSavedTabGroups(
-      navigation_handle->GetURL());
-}
 
 // Returns whether this navigation is user triggered main frame navigation.
 bool IsUserTriggeredMainFrameNavigation(
@@ -143,7 +104,7 @@ void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
   }
 
   // Dont navigate to the new URL if its not valid for sync.
-  if (!SavedTabGroupUtils::IsURLValidForSavedTabGroups(url)) {
+  if (!TabGroupSyncUtils::IsURLValidForSavedTabGroups(url)) {
     return;
   }
 
@@ -173,7 +134,7 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
     TabGroupSyncTabState::Reset(web_contents());
   }
 
-  if (!IsSaveableNavigation(navigation_handle)) {
+  if (!TabGroupSyncUtils::IsSaveableNavigation(navigation_handle)) {
     return;
   }
 

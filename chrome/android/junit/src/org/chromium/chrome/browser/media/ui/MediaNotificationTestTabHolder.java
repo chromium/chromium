@@ -129,7 +129,7 @@ public class MediaNotificationTestTabHolder {
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
-                /* shouldUpdateHistory= */ false);
+                /* isSaveableNavigation= */ false);
         mMediaSessionTabHelper.mMediaSessionHelper.mWebContentsObserver
                 .didFinishNavigationInPrimaryMainFrame(navigation);
     }

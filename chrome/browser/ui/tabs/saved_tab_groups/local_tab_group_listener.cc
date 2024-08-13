@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/token.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
@@ -138,7 +139,7 @@ void LocalTabGroupListener::AddWebContentsFromLocal(
   SavedTabGroupTab tab =
       SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(web_contents,
                                                                 saved_guid_);
-  if (!SavedTabGroupUtils::IsURLValidForSavedTabGroups(tab.url())) {
+  if (!TabGroupSyncUtils::IsURLValidForSavedTabGroups(tab.url())) {
     tab.SetURL(GURL(chrome::kChromeUINewTabURL));
   }
 
@@ -328,7 +329,7 @@ void LocalTabGroupListener::OpenWebContentsFromSync(SavedTabGroupTab tab,
                                                     Browser* browser,
                                                     int index_in_tabstrip) {
   GURL url_to_open = tab.url();
-  if (!SavedTabGroupUtils::IsURLValidForSavedTabGroups(url_to_open)) {
+  if (!TabGroupSyncUtils::IsURLValidForSavedTabGroups(url_to_open)) {
     url_to_open = GURL(chrome::kChromeUINewTabURL);
   }
 

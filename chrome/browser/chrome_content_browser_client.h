@@ -1069,6 +1069,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
           callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  bool IsSaveableNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
   void SetSamplingProfiler(
       std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler);
 

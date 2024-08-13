@@ -1761,4 +1761,9 @@ void ContentBrowserClient::QueryInstalledWebAppsByManifestId(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+bool ContentBrowserClient::IsSaveableNavigation(
+    NavigationHandle* navigation_handle) {
+  return false;
+}
+
 }  // namespace content

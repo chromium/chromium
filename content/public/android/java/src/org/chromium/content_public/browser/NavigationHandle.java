@@ -46,7 +46,7 @@ public class NavigationHandle {
     private UserDataHost mUserDataHost;
     private boolean mIsPdf;
     private String mMimeType;
-    private boolean mShouldUpdateHistory;
+    private boolean mIsSaveableNavigation;
 
     public static NavigationHandle createForTesting(
             @NonNull GURL url,
@@ -61,7 +61,7 @@ public class NavigationHandle {
                 transition,
                 hasUserGesture,
                 /* isReload= */ false,
-                /* shouldUpdateHistory= */ false);
+                /* isSaveableNavigation= */ false);
     }
 
     public static NavigationHandle createForTesting(
@@ -80,7 +80,7 @@ public class NavigationHandle {
                 transition,
                 hasUserGesture,
                 isReload,
-                /* shouldUpdateHistory= */ false);
+                /* isSaveableNavigation= */ false);
     }
 
     public static NavigationHandle createForTesting(
@@ -91,7 +91,7 @@ public class NavigationHandle {
             @PageTransition int transition,
             boolean hasUserGesture,
             boolean isReload,
-            boolean shouldUpdateHistory) {
+            boolean isSaveableNavigation) {
         NavigationHandle handle = new NavigationHandle(0);
         handle.initialize(
                 0,
@@ -112,7 +112,7 @@ public class NavigationHandle {
                 isReload,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
-                shouldUpdateHistory);
+                isSaveableNavigation);
         return handle;
     }
 
@@ -141,7 +141,7 @@ public class NavigationHandle {
             boolean isReload,
             boolean isPdf,
             String mimeType,
-            boolean shouldUpdateHistory) {
+            boolean isSaveableNavigation) {
         mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
         mReferrerUrl = referrerUrl;
@@ -160,7 +160,7 @@ public class NavigationHandle {
         mIsReload = isReload;
         mIsPdf = isPdf;
         mMimeType = mimeType;
-        mShouldUpdateHistory = shouldUpdateHistory;
+        mIsSaveableNavigation = isSaveableNavigation;
     }
 
     /**
@@ -192,7 +192,7 @@ public class NavigationHandle {
             boolean isExternalProtocol,
             boolean isPdf,
             String mimeType,
-            boolean shouldUpdateHistory) {
+            boolean isSaveableNavigation) {
         mUrl = url;
         mIsErrorPage = isErrorPage;
         mHasCommitted = hasCommitted;
@@ -205,7 +205,7 @@ public class NavigationHandle {
         mIsExternalProtocol = isExternalProtocol;
         mIsPdf = isPdf;
         mMimeType = mimeType;
-        mShouldUpdateHistory = shouldUpdateHistory;
+        mIsSaveableNavigation = isSaveableNavigation;
     }
 
     /** Release the C++ pointer. */
@@ -412,8 +412,8 @@ public class NavigationHandle {
         return mMimeType;
     }
 
-    /** Whether this navigation should update history. */
-    public boolean shouldUpdateHistory() {
-        return mShouldUpdateHistory;
+    /** Whether this navigation can be saved so that it be reloaded or synced. */
+    public boolean isSaveableNavigation() {
+        return mIsSaveableNavigation;
     }
 }

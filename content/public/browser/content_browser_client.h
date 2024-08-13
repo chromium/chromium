@@ -2985,6 +2985,12 @@ class CONTENT_EXPORT ContentBrowserClient {
       base::OnceCallback<void(std::optional<blink::mojom::RelatedApplication>)>
           callback);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Whether the destination URL from a NavigationHandle can be saved and
+  // synced to another machine and reloaded there. Some navigations, such as
+  // http POST requests, cannot be synced across machines as the request body
+  // is no longer available when reloading the URL.
+  virtual bool IsSaveableNavigation(NavigationHandle* navigation_handle);
 };
 
 }  // namespace content

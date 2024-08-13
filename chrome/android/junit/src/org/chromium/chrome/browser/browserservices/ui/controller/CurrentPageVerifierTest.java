@@ -198,7 +198,7 @@ public class CurrentPageVerifierTest {
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
-                /* shouldUpdateHistory= */ false);
+                /* isSaveableNavigation= */ false);
         for (CustomTabTabObserver tabObserver : mTabObserverCaptor.getAllValues()) {
             tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTab, navigation);
         }

@@ -22,6 +22,7 @@ class Browser;
 class Profile;
 
 namespace content {
+class NavigationHandle;
 class WebContents;
 }
 
@@ -116,10 +117,6 @@ class SavedTabGroupUtils {
   // already activated, then we focus the window the group belongs to instead.
   static void FocusFirstTabOrWindowInOpenGroup(
       tab_groups::TabGroupId local_group_id);
-
-  // Returns whether the tab's URL is viable for saving in a saved tab
-  // group.
-  static bool IsURLValidForSavedTabGroups(const GURL& gurl);
 
   // Returns the correct element for showing the IPH for Saved Groups V2. Either
   // the SavedTabGroupBar::EverythingMenuButton or the AppMenuButton.

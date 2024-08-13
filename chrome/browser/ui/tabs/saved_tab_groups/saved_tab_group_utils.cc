@@ -14,6 +14,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -395,7 +396,8 @@ SavedTabGroupTab SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
   // in order to protect from filesystem access or chrome settings page use,
   // replace the URL with the new tab page, when creating from sync or an
   // unsaved group.
-  if (!IsURLValidForSavedTabGroups(contents->GetVisibleURL())) {
+  if (!TabGroupSyncUtils::IsURLValidForSavedTabGroups(
+          contents->GetVisibleURL())) {
     return SavedTabGroupTab(GURL(chrome::kChromeUINewTabURL), u"Unsavable tab",
                             saved_tab_group_id,
                             /*position=*/std::nullopt);
@@ -561,11 +563,6 @@ void SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(
 
   base::RecordAction(
       base::UserMetricsAction("TabGroups_SavedTabGroups_Focused"));
-}
-
-// static
-bool SavedTabGroupUtils::IsURLValidForSavedTabGroups(const GURL& gurl) {
-  return gurl.SchemeIsHTTPOrHTTPS() || gurl == GURL(chrome::kChromeUINewTabURL);
 }
 
 // static

@@ -345,7 +345,7 @@ public class ScopeChangeControllerTest {
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
-                /* shouldUpdateHistory= */ false);
+                /* isSaveableNavigation= */ false);
         return handle;
     }
 }

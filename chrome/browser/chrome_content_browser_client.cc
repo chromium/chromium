@@ -165,6 +165,7 @@
 #include "chrome/browser/supervised_user/classify_url_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_google_auth_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -8683,6 +8684,11 @@ void ChromeContentBrowserClient::QueryInstalledWebAppsByManifestId(
       std::move(callback), std::move(arg_for_shutdown));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+bool ChromeContentBrowserClient::IsSaveableNavigation(
+    content::NavigationHandle* navigation_handle) {
+  return tab_groups::TabGroupSyncUtils::IsSaveableNavigation(navigation_handle);
+}
 
 void ChromeContentBrowserClient::SetSamplingProfiler(
     std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler) {

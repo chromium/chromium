@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -982,7 +983,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
       tabstrip->group_model()->GetTabGroup(group_id)->ListTabs();
   EXPECT_EQ(2u, grouped_tabs.length());
   for (auto index = grouped_tabs.start(); index < grouped_tabs.end(); ++index) {
-    EXPECT_TRUE(SavedTabGroupUtils::IsURLValidForSavedTabGroups(
+    EXPECT_TRUE(TabGroupSyncUtils::IsURLValidForSavedTabGroups(
         tabstrip->GetWebContentsAt(index)->GetURL()));
   }
 }
