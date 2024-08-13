@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
@@ -37,6 +38,9 @@ class FakePlusAddressService : public PlusAddressService {
   static constexpr char kFacet[] = "facet.bar";
 
   // PlusAddressService:
+  bool IsPlusAddressFillingEnabled(const url::Origin& origin) const override;
+  bool IsPlusAddressCreationEnabled(const url::Origin& origin,
+                                    bool is_off_the_record) const override;
   bool IsPlusAddress(const std::string& potential_plus_address) const override;
   void GetAffiliatedPlusProfiles(const url::Origin& origin,
                                  GetPlusProfilesCallback callback) override;
@@ -48,6 +52,11 @@ class FakePlusAddressService : public PlusAddressService {
   void RefreshPlusAddress(const url::Origin& origin,
                           PlusAddressRequestCallback on_completed) override;
   std::optional<std::string> GetPrimaryEmail() override;
+  base::span<const PlusProfile> GetPlusProfiles() const override;
+
+  void add_plus_profile(PlusProfile profile) {
+    plus_profiles_.emplace_back(std::move(profile));
+  }
 
   // Toggles on/off whether `ReservePlusAddress` returns a confirmed
   // `PlusProfile`.
@@ -74,14 +83,25 @@ class FakePlusAddressService : public PlusAddressService {
     should_fail_to_refresh_ = status;
   }
 
+  void set_is_plus_address_filling_enabled(bool enabled) {
+    is_plus_address_filling_enabled_ = enabled;
+  }
+
+  void set_should_offer_plus_address_creation(bool should_offer_creation) {
+    should_offer_creation_ = should_offer_creation;
+  }
+
  private:
   PlusAddressRequestCallback on_confirmed_;
   testing::NiceMock<affiliations::MockAffiliationService>
       mock_affiliation_service_;
+  std::vector<PlusProfile> plus_profiles_;
   bool is_confirmed_ = false;
   bool should_fail_to_confirm_ = false;
   bool should_fail_to_reserve_ = false;
   bool should_fail_to_refresh_ = false;
+  bool is_plus_address_filling_enabled_ = false;
+  bool should_offer_creation_ = false;
 };
 
 }  // namespace plus_addresses

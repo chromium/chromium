@@ -15,6 +15,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_utils.h"
+#include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_controller.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -73,24 +74,6 @@ std::vector<UserInfo> UserInfosForProfiles(
   std::vector<UserInfo> infos(profiles.size());
   base::ranges::transform(profiles, infos.begin(), TranslateProfile);
   return infos;
-}
-
-std::vector<FooterCommand> CreateManageAddressesFooter() {
-  std::vector<FooterCommand> commands = {FooterCommand(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SHEET_ALL_ADDRESSES_LINK),
-      AccessoryAction::MANAGE_ADDRESSES)};
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled)) {
-    commands.emplace_back(FooterCommand(
-        l10n_util::GetStringUTF16(
-            IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
-        AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET));
-    commands.emplace_back(
-        FooterCommand(l10n_util::GetStringUTF16(
-                          IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID),
-                      AccessoryAction::SELECT_PLUS_ADDRESS_FROM_ADDRESS_SHEET));
-  }
-  return commands;
 }
 
 std::string GetOriginFromPlusProfile(
@@ -275,7 +258,50 @@ AddressAccessoryControllerImpl::AddressAccessoryControllerImpl(
     : content::WebContentsUserData<AddressAccessoryControllerImpl>(
           *web_contents),
       mf_controller_(std::move(mf_controller)),
-      personal_data_manager_(nullptr) {}
+      personal_data_manager_(nullptr),
+      autofill_client_(
+          autofill::ContentAutofillClient::FromWebContents(&GetWebContents())),
+      plus_address_service_(PlusAddressServiceFactory::GetForBrowserContext(
+          GetWebContents().GetBrowserContext())) {}
+
+std::vector<FooterCommand>
+AddressAccessoryControllerImpl::CreateManageAddressesFooter() const {
+  std::vector<FooterCommand> commands = {FooterCommand(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SHEET_ALL_ADDRESSES_LINK),
+      AccessoryAction::MANAGE_ADDRESSES)};
+  if (!base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled)) {
+    return commands;
+  }
+  if (!autofill_client_ || !plus_address_service_) {
+    return commands;
+  }
+  // Offer plus address creation if it's supported for the current user session
+  // and if the user doesn't have any plus addresses created for the current
+  // domain.
+  if (plus_address_service_->IsPlusAddressCreationEnabled(
+          autofill_client_->GetLastCommittedPrimaryMainFrameOrigin(),
+          autofill_client_->IsOffTheRecord()) &&
+      plus_profiles_provider_ &&
+      plus_profiles_provider_->GetAffiliatedPlusProfiles().empty()) {
+    commands.emplace_back(FooterCommand(
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
+        AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET));
+  }
+  // Offer the user to select the plus address manually if plus address filling
+  // is supported for the last committed origin and the user has at least 1 plus
+  // address.
+  if (plus_address_service_->IsPlusAddressFillingEnabled(
+          autofill_client_->GetLastCommittedPrimaryMainFrameOrigin()) &&
+      !plus_address_service_->GetPlusProfiles().empty()) {
+    commands.emplace_back(
+        FooterCommand(l10n_util::GetStringUTF16(
+                          IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID),
+                      AccessoryAction::SELECT_PLUS_ADDRESS_FROM_ADDRESS_SHEET));
+  }
+  return commands;
+}
 
 void AddressAccessoryControllerImpl::OnPlusAddressCreated(
     FieldGlobalId focused_field_id,

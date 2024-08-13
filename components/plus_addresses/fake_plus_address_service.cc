@@ -32,6 +32,17 @@ FakePlusAddressService::FakePlusAddressService(
 
 FakePlusAddressService::~FakePlusAddressService() = default;
 
+bool FakePlusAddressService::IsPlusAddressFillingEnabled(
+    const url::Origin& origin) const {
+  return is_plus_address_filling_enabled_;
+}
+
+bool FakePlusAddressService::IsPlusAddressCreationEnabled(
+    const url::Origin& origin,
+    bool is_off_the_record) const {
+  return should_offer_creation_;
+}
+
 bool FakePlusAddressService::IsPlusAddress(
     const std::string& potential_plus_address) const {
   return potential_plus_address == kFakePlusAddress;
@@ -94,6 +105,10 @@ void FakePlusAddressService::RefreshPlusAddress(
 std::optional<std::string> FakePlusAddressService::GetPrimaryEmail() {
   // Ensure the value is present without requiring identity setup.
   return "plus+primary@plus.plus";
+}
+
+base::span<const PlusProfile> FakePlusAddressService::GetPlusProfiles() const {
+  return plus_profiles_;
 }
 
 }  // namespace plus_addresses

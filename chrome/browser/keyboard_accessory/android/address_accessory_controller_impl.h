@@ -22,9 +22,11 @@ class ManualFillingController;
 
 namespace plus_addresses {
 class AllPlusAddressesBottomSheetController;
+class PlusAddressService;
 }  // namespace plus_addresses
 
 namespace autofill {
+class ContentAutofillClient;
 class PersonalDataManager;
 
 // Use either AddressAccessoryController::GetOrCreate or
@@ -83,6 +85,10 @@ class AddressAccessoryControllerImpl
       content::WebContents* web_contents,
       base::WeakPtr<ManualFillingController> mf_controller);
 
+  // Constructs a vector of available manual fallback actions subject to
+  // enabled features and available user data.
+  std::vector<FooterCommand> CreateManageAddressesFooter() const;
+
   // Fills `plus_address` into the web form field identified by
   // `focused_field_id`. Called when manually triggered plus address creation
   // bottom sheet is accepted by the user.
@@ -115,6 +121,9 @@ class AddressAccessoryControllerImpl
 
   // The data manager used to retrieve the profiles.
   raw_ptr<PersonalDataManager> personal_data_manager_;
+
+  const raw_ptr<const ContentAutofillClient> autofill_client_;
+  const raw_ptr<const plus_addresses::PlusAddressService> plus_address_service_;
 
   std::unique_ptr<plus_addresses::AllPlusAddressesBottomSheetController>
       all_plus_addresses_bottom_sheet_controller_;

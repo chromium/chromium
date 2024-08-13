@@ -132,15 +132,15 @@ class PlusAddressService : public KeyedService,
   // This is true iff:
   // - the `PlusAddressService` is enabled and
   // - `origin` is not a blocked origin.
-  bool IsPlusAddressFillingEnabled(const url::Origin& origin) const;
+  virtual bool IsPlusAddressFillingEnabled(const url::Origin& origin) const;
 
   // Returns whether plus address creation is supported for the given `origin`.
   // This is true iff:
   // - the plus address filling is enabled,
   // - `is_off_the_record` is `false`, and
   // - plus address global toggle is on.
-  bool IsPlusAddressCreationEnabled(const url::Origin& origin,
-                                    bool is_off_the_record) const;
+  virtual bool IsPlusAddressCreationEnabled(const url::Origin& origin,
+                                            bool is_off_the_record) const;
 
   // Returns whether a manual fallback suggestion should be shown on `origin`.
   // This is true iff
@@ -165,7 +165,7 @@ class PlusAddressService : public KeyedService,
 
   // Returns all the cached plus profiles. There are no server requests
   // triggered by this method, only the cached responses are returned.
-  base::span<const PlusProfile> GetPlusProfiles() const;
+  virtual base::span<const PlusProfile> GetPlusProfiles() const;
 
   // Saves a confirmed plus profile for its facet.
   void SavePlusProfile(const PlusProfile& profile);
