@@ -311,9 +311,18 @@ IN_PROC_BROWSER_TEST_F(
 
 #if BUILDFLAG(RTC_USE_H264)
 
+// TODO(crbug.com/359253692): test fails on some mac bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_H264 \
+  DISABLED_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_H264
+#else
+#define MAYBE_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_H264 \
+  MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_H264
+#endif
+
 IN_PROC_BROWSER_TEST_F(
     WebRtcStatsPerfBrowserTest,
-    MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_H264) {
+    MAYBE_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_H264) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   // Only run test if run-time feature corresponding to |rtc_use_h264| is on.
   if (!base::FeatureList::IsEnabled(
