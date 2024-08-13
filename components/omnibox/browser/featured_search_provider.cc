@@ -127,7 +127,7 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
   } else if (ShouldShowGeminiIPHMatch(input)) {
     AddIPHMatch(IphType::kGemini,
                 l10n_util::GetStringUTF16(IDS_OMNIBOX_GEMINI_IPH), u"@gemini",
-                u"", {});
+                u"", {}, true);
   } else if (ShouldShowHistoryScopePromoIphMatch(input)) {
     AddHistoryScopePromoIphMatch();
   } else if (ShouldShowHistoryEmbeddingsScopePromoIphMatch(input)) {
@@ -266,17 +266,17 @@ void FeaturedSearchProvider::AddIPHMatch(IphType iph_type,
                                          const std::u16string& iph_contents,
                                          const std::u16string& matched_term,
                                          const std::u16string& iph_link_text,
-                                         const GURL& iph_link_url) {
+                                         const GURL& iph_link_url,
+                                         bool deletable) {
   // IPH suggestions are grouped after all other suggestions. But they still
   // need to score within top N suggestions to be shown.
   constexpr int kRelevanceScore = 5000;
-  AutocompleteMatch match(this, kRelevanceScore, /*deletable=*/false,
+  AutocompleteMatch match(this, kRelevanceScore, /*deletable=*/deletable,
                           AutocompleteMatchType::NULL_RESULT_MESSAGE);
 
   // Use this suggestion's contents field to display a message to the user that
   // cannot be acted upon.
   match.contents = iph_contents;
-  match.deletable = true;
   match.iph_type = iph_type;
   match.iph_link_text = iph_link_text;
   match.iph_link_url = iph_link_url;
@@ -392,7 +392,7 @@ void FeaturedSearchProvider::AddFeaturedEnterpriseSearchIPHMatch() {
               l10n_util::GetStringFUTF16(
                   IDS_OMNIBOX_FEATURED_ENTERPRISE_SITE_SEARCH_IPH,
                   base::UTF8ToUTF16(base::JoinString(sites, ", "))),
-              u"", u"", {});
+              u"", u"", {}, true);
 }
 
 bool FeaturedSearchProvider::ShouldShowHistoryEmbeddingsSettingsPromoIphMatch()
@@ -419,7 +419,7 @@ void FeaturedSearchProvider::AddHistoryEmbeddingsSettingsPromoIphMatch() {
       IDS_OMNIBOX_HISTORY_EMBEDDINGS_SETTINGS_PROMO_IPH_LINK_TEXT);
   GURL link_url = GURL("chrome://settings/ai");
   AddIPHMatch(IphType::kHistoryEmbeddingsSettingsPromo, text, u"", link_text,
-              link_url);
+              link_url, true);
 }
 
 bool FeaturedSearchProvider::ShouldShowHistoryEmbeddingsDisclaimerIphMatch()
@@ -439,7 +439,7 @@ void FeaturedSearchProvider::AddHistoryEmbeddingsDisclaimerIphMatch() {
       IDS_OMNIBOX_HISTORY_EMBEDDINGS_DISCLAIMER_IPH_LINK_TEXT);
   GURL link_url = GURL("chrome://settings/ai");
   AddIPHMatch(IphType::kHistoryEmbeddingsDisclaimer, text, u"", link_text,
-              link_url);
+              link_url, false);
 }
 
 bool FeaturedSearchProvider::ShouldShowHistoryScopePromoIphMatch(
@@ -457,7 +457,7 @@ bool FeaturedSearchProvider::ShouldShowHistoryScopePromoIphMatch(
 void FeaturedSearchProvider::AddHistoryScopePromoIphMatch() {
   std::u16string text =
       l10n_util::GetStringUTF16(IDS_OMNIBOX_HISTORY_SCOPE_PROMO_IPH);
-  AddIPHMatch(IphType::kHistoryScopePromo, text, u"@history", u"", {});
+  AddIPHMatch(IphType::kHistoryScopePromo, text, u"@history", u"", {}, true);
 }
 
 bool FeaturedSearchProvider::ShouldShowHistoryEmbeddingsScopePromoIphMatch(
@@ -472,6 +472,6 @@ bool FeaturedSearchProvider::ShouldShowHistoryEmbeddingsScopePromoIphMatch(
 void FeaturedSearchProvider::AddHistoryEmbeddingsScopePromoIphMatch() {
   std::u16string text =
       l10n_util::GetStringUTF16(IDS_OMNIBOX_HISTORY_EMBEDDINGS_SCOPE_PROMO_IPH);
-  AddIPHMatch(IphType::kHistoryEmbeddingsScopePromo, text, u"@history", u"",
-              {});
+  AddIPHMatch(IphType::kHistoryEmbeddingsScopePromo, text, u"@history", u"", {},
+              true);
 }
