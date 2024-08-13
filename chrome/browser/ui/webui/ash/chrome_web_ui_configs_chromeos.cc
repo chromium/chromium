@@ -115,7 +115,9 @@
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/kiosk/vision/webui/ui_controller.h"
+#include "components/user_manager/user_manager.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #if !defined(USE_REAL_DBUS_CLIENTS)
@@ -218,6 +220,19 @@ std::unique_ptr<content::WebUIConfig> MakeSanitizeUIConfig() {
         return std::make_unique<SanitizeDialogUI>(web_ui);
       });
   return std::make_unique<SanitizeDialogUIConfig>(create_controller_func);
+}
+
+bool IsSanitizeAllowed() {
+  if (!user_manager::UserManager::IsInitialized()) {
+    return false;
+  }
+  auto* manager = user_manager::UserManager::Get();
+  bool is_child_user = manager->IsLoggedInAsChildUser();
+  bool is_guest_mode_active = manager->IsLoggedInAsGuest() ||
+                              manager->IsLoggedInAsManagedGuestSession();
+  return !ash::InstallAttributes::Get()->IsEnterpriseManaged() &&
+         !is_guest_mode_active && !is_child_user &&
+         base::FeatureList::IsEnabled(ash::features::kSanitize);
 }
 
 void RegisterAshChromeWebUIConfigs() {
@@ -324,7 +339,7 @@ void RegisterAshChromeWebUIConfigs() {
       MakeComponentConfigWithDelegate<RecorderAppUIConfig, RecorderAppUI,
                                       ChromeRecorderAppUIDelegate>());
   map.AddWebUIConfig(std::make_unique<RemoteMaintenanceCurtainUIConfig>());
-  if (base::FeatureList::IsEnabled(ash::features::kSanitize)) {
+  if (IsSanitizeAllowed()) {
     map.AddWebUIConfig(MakeSanitizeUIConfig());
   }
   map.AddWebUIConfig(
