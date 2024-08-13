@@ -10,13 +10,13 @@
 <message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of PackageTracking in What's New. [iOS only]">
         Enter your tracking number on a postal or shopping website.
 </message>
-<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 3 of PackageTracking in What's New. [iOS only]">
+<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of PackageTracking in What's New. [iOS only]">
         Allow Chrome to track your packages.
 </message>
-<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 5 of PackageTracking in What's New. [iOS only]">
+<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of PackageTracking in What's New. [iOS only]">
         See package updates in the Cards on your New Tab Page.
 </message>
-<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_1" desc="Text in image displaying: Track this Package?  for the feature: PackageTracking in What's New. [iOS only]">
+<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_1" desc="Text in image displaying: Track this Package? for the feature: PackageTracking in What's New. [iOS only]">
         Track this Package?
 </message>
 <message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_2" desc="Text in image displaying: Track for the feature: PackageTracking in What's New. [iOS only]">
