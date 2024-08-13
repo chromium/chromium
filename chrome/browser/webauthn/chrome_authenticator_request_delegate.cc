@@ -843,7 +843,8 @@ ChromeAuthenticatorRequestDelegate::ChromeAuthenticatorRequestDelegate(
       dialog_model_(base::MakeRefCounted<AuthenticatorRequestDialogModel>(
           GetRenderFrameHost())),
       dialog_controller_(std::make_unique<AuthenticatorRequestDialogController>(
-          dialog_model_.get())) {
+          dialog_model_.get(),
+          GetRenderFrameHost())) {
   dialog_model_->observers.AddObserver(this);
   if (g_observer) {
     g_observer->Created(this);

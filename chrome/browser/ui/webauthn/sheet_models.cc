@@ -78,19 +78,6 @@ std::u16string PossibleResidentKeyWarning(
   return std::u16string();
 }
 
-ProfileAttributesEntry* GetProfileAttributesEntryForDialogModel(
-    AuthenticatorRequestDialogModel* dialog_model) {
-  content::RenderFrameHost* rfh = dialog_model->GetRenderFrameHost();
-  if (!rfh) {
-    return nullptr;
-  }
-  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext())
-                         ->GetOriginalProfile();
-  return g_browser_process->profile_manager()
-      ->GetProfileAttributesStorage()
-      .GetProfileAttributesWithPath(profile->GetPath());
-}
-
 constexpr int kAvatarIconSize = 32;
 
 }  // namespace
@@ -1649,20 +1636,17 @@ AuthenticatorGpmPinSheetModelBase::~AuthenticatorGpmPinSheetModelBase() =
     default;
 
 std::u16string AuthenticatorGpmPinSheetModelBase::GetGpmAccountEmail() const {
-  ProfileAttributesEntry* entry =
-      GetProfileAttributesEntryForDialogModel(dialog_model());
+  ProfileAttributesEntry* entry = dialog_model()->GetProfileAttributesEntry();
   return entry ? entry->GetUserName() : std::u16string();
 }
 
 std::u16string AuthenticatorGpmPinSheetModelBase::GetGpmAccountName() const {
-  ProfileAttributesEntry* entry =
-      GetProfileAttributesEntryForDialogModel(dialog_model());
+  ProfileAttributesEntry* entry = dialog_model()->GetProfileAttributesEntry();
   return entry ? entry->GetGAIAName() : std::u16string();
 }
 
 gfx::Image AuthenticatorGpmPinSheetModelBase::GetGpmAccountImage() const {
-  ProfileAttributesEntry* entry =
-      GetProfileAttributesEntryForDialogModel(dialog_model());
+  ProfileAttributesEntry* entry = dialog_model()->GetProfileAttributesEntry();
   if (!entry || !entry->IsUsingGAIAPicture()) {
     return gfx::Image();
   }

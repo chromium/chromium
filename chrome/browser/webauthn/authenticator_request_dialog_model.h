@@ -59,6 +59,7 @@ struct VectorIcon;
 
 class AuthenticatorRequestDialogController;
 class Profile;
+class ProfileAttributesEntry;
 
 //                ┌───────┐
 //                │ View  │
@@ -450,10 +451,8 @@ struct AuthenticatorRequestDialogModel
 
   void DisableUiOrShowLoadingDialog();
 
-  // This can return nullptr in tests or if the render frame host is not live.
-  content::WebContents* GetWebContents() const;
-  // This can return nullptr in tests or if the render frame host is not live.
-  content::RenderFrameHost* GetRenderFrameHost() const;
+  // Returns profile attributes. May return nullptr.
+  ProfileAttributesEntry* GetProfileAttributesEntry();
 
   // generation is incremented each time the request is restarted so that events
   // from different request generations can be distinguished.
@@ -468,7 +467,6 @@ struct AuthenticatorRequestDialogModel
   // has no UI, or a different style of UI.
   bool should_dialog_be_closed() const;
 
-  const std::optional<content::GlobalRenderFrameHostId> frame_host_id;
   device::FidoRequestType request_type = device::FidoRequestType::kGetAssertion;
   device::ResidentKeyRequirement resident_key_requirement =
       device::ResidentKeyRequirement::kDiscouraged;
@@ -544,6 +542,7 @@ struct AuthenticatorRequestDialogModel
   ~AuthenticatorRequestDialogModel();
 
   Step step_ = Step::kNotStarted;
+  const std::optional<content::GlobalRenderFrameHostId> frame_host_id;
 };
 
 std::ostream& operator<<(std::ostream& os,
@@ -565,7 +564,9 @@ class AuthenticatorRequestDialogController
   using BlePermissionCallback = base::RepeatingCallback<void(
       device::FidoRequestHandlerBase::BlePermissionCallback)>;
 
-  explicit AuthenticatorRequestDialogController(Model* model);
+  AuthenticatorRequestDialogController(
+      Model* model,
+      content::RenderFrameHost* render_frame_host);
 
   AuthenticatorRequestDialogController(
       const AuthenticatorRequestDialogController&) = delete;
@@ -1013,6 +1014,10 @@ class AuthenticatorRequestDialogController
   // default. This only makes sense for a create() call.
   bool CanDefaultToEnclave(Profile* profile);
 
+  // Returns the render frame host associated with this request. The render
+  // frame host indirectly owns the controller, and so it should outlive it.
+  content::RenderFrameHost* GetRenderFrameHost() const;
+
   raw_ptr<Model> model_;
 
   // Identifier for the RenderFrameHost of the frame that initiated the current
@@ -1143,6 +1148,8 @@ class AuthenticatorRequestDialogController
 #endif
 
   bool enclave_can_be_default_ = true;
+
+  const content::GlobalRenderFrameHostId frame_host_id_;
 
   base::ScopedObservation<webauthn::PasskeyModel,
                           webauthn::PasskeyModel::Observer>

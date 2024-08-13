@@ -23,6 +23,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/sync/base/features.h"
 #include "components/trusted_vault/features.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -67,16 +68,16 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     // https://crbug.com/893292.
     set_should_verify_dialog_bounds(false);
 
-    model_ = base::MakeRefCounted<AuthenticatorRequestDialogModel>(
-        browser()
-            ->tab_strip_model()
-            ->GetActiveWebContents()
-            ->GetPrimaryMainFrame());
+    content::RenderFrameHost* rfh = browser()
+                                        ->tab_strip_model()
+                                        ->GetActiveWebContents()
+                                        ->GetPrimaryMainFrame();
+    model_ = base::MakeRefCounted<AuthenticatorRequestDialogModel>(rfh);
     model_->relying_party_id = "example.com";
     // Since this code tests UI, it is possible to do everything by configuring
     // just the Model. However, it's easier to do that via a Controller.
-    controller_ =
-        std::make_unique<AuthenticatorRequestDialogController>(model_.get());
+    controller_ = std::make_unique<AuthenticatorRequestDialogController>(
+        model_.get(), rfh);
 
     device::FidoRequestHandlerBase::TransportAvailabilityInfo&
         transport_availability =
@@ -626,15 +627,15 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
     // https://crbug.com/893292.
     set_should_verify_dialog_bounds(false);
 
-    model_ = base::MakeRefCounted<AuthenticatorRequestDialogModel>(
-        browser()
-            ->tab_strip_model()
-            ->GetActiveWebContents()
-            ->GetPrimaryMainFrame());
+    content::RenderFrameHost* rfh = browser()
+                                        ->tab_strip_model()
+                                        ->GetActiveWebContents()
+                                        ->GetPrimaryMainFrame();
+    model_ = base::MakeRefCounted<AuthenticatorRequestDialogModel>(rfh);
     model_->relying_party_id = "example.com";
     model_->account_name = "example@gmail.com";
-    controller_ =
-        std::make_unique<AuthenticatorRequestDialogController>(model_.get());
+    controller_ = std::make_unique<AuthenticatorRequestDialogController>(
+        model_.get(), rfh);
     controller_->SetAccountPreselectedCallback(base::DoNothing());
 
     device::FidoRequestHandlerBase::TransportAvailabilityInfo&

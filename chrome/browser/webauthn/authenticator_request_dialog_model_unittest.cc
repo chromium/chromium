@@ -1398,7 +1398,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
 
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-    AuthenticatorRequestDialogController controller(model.get());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     FakeEnclaveController enclave_controller(model.get());
 
     std::optional<bool> has_v2_cable_extension;
@@ -1550,7 +1550,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinCancel) {
 
       auto model =
           base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-      AuthenticatorRequestDialogController controller(model.get());
+      AuthenticatorRequestDialogController controller(model.get(), main_rfh());
       controller.saved_authenticators().AddAuthenticator(
           AuthenticatorReference("ID", AuthenticatorTransport::kInternal,
                                  device::AuthenticatorType::kWinNative));
@@ -1614,7 +1614,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  AuthenticatorRequestDialogController controller(model.get());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   controller.saved_authenticators().AddAuthenticator(
       AuthenticatorReference("ID", AuthenticatorTransport::kInternal,
                              device::AuthenticatorType::kWinNative));
@@ -1646,7 +1646,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinNoPlatformAuthenticator) {
   tai.has_win_native_api_authenticator = true;
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  AuthenticatorRequestDialogController controller(model.get());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   controller.StartFlow(std::move(tai), /*is_conditional_mediation=*/false);
   EXPECT_EQ(
       model->step(),
@@ -1659,7 +1659,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, NoAvailableTransports) {
   testing::StrictMock<MockDialogModelObserver> mock_observer;
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  AuthenticatorRequestDialogController controller(model.get());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   model->observers.AddObserver(&mock_observer);
 
   EXPECT_CALL(mock_observer, OnStepTransition());
@@ -1741,7 +1741,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Cable2ndFactorFlows) {
 
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-    AuthenticatorRequestDialogController controller(model.get());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
 
     std::vector<std::unique_ptr<device::cablev2::Pairing>> pairings;
     pairings.emplace_back(GetPairingFromQR());
@@ -1792,7 +1792,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Cable2ndFactorFlows) {
 TEST_F(AuthenticatorRequestDialogControllerTest, CrBug333592767) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  AuthenticatorRequestDialogController controller(model.get());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
 
   auto phone1 = std::make_unique<device::cablev2::Pairing>();
   phone1->name = "test";
@@ -1834,7 +1834,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, AwaitingAcknowledgement) {
     testing::StrictMock<MockDialogModelObserver> mock_observer;
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-    AuthenticatorRequestDialogController controller(model.get());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     model->observers.AddObserver(&mock_observer);
 
     TransportAvailabilityInfo transports_info;
@@ -1886,7 +1886,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BleAdapterAlreadyPowered) {
     BluetoothAdapterPowerOnCallbackReceiver power_receiver;
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-    AuthenticatorRequestDialogController controller(model.get());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     controller.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     controller.set_cable_transport_info(true, {}, base::DoNothing(),
                                         std::nullopt);
@@ -1918,7 +1918,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     BluetoothAdapterPowerOnCallbackReceiver power_receiver;
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-    AuthenticatorRequestDialogController controller(model.get());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     model->observers.AddObserver(&mock_observer);
     controller.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     controller.set_cable_transport_info(true, {}, base::DoNothing(),
@@ -1962,7 +1962,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     BluetoothAdapterPowerOnCallbackReceiver power_receiver;
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-    AuthenticatorRequestDialogController controller(model.get());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     controller.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     controller.set_cable_transport_info(true, {}, base::DoNothing(),
                                         std::nullopt);
@@ -2002,7 +2002,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BleAdapterPendingPermission) {
         request_ble_permission_callback_receiver;
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-    AuthenticatorRequestDialogController controller(model.get());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     controller.SetRequestBlePermissionCallback(
         request_ble_permission_callback_receiver.Callback());
     controller.set_cable_transport_info(true, {}, base::DoNothing(),
@@ -2033,7 +2033,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
        ConditionalUINoRecognizedCredential) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  AuthenticatorRequestDialogController controller(model.get());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
 
   int preselect_num_called = 0;
   controller.SetAccountPreselectedCallback(base::BindRepeating(
@@ -2071,7 +2071,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
        ConditionalUIRecognizedCredential) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  AuthenticatorRequestDialogController controller(model.get());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   int preselect_num_called = 0;
   controller.SetAccountPreselectedCallback(base::BindRepeating(
       [](int* i, device::DiscoverableCredentialMetadata cred) {
@@ -2118,7 +2118,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUICancelRequest) {
   testing::StrictMock<MockDialogModelObserver> mock_observer;
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  AuthenticatorRequestDialogController controller(model.get());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   model->observers.AddObserver(&mock_observer);
   controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       /*device_id=*/"internal", AuthenticatorTransport::kInternal,
@@ -2156,8 +2156,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIPhonePasskey) {
                     std::unique_ptr<EnclaveDisabledController>> {
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-    auto controller =
-        std::make_unique<AuthenticatorRequestDialogController>(model.get());
+    auto controller = std::make_unique<AuthenticatorRequestDialogController>(
+        model.get(), main_rfh());
     auto gpm_controller =
         std::make_unique<EnclaveDisabledController>(model.get());
 
@@ -2253,8 +2253,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  auto controller =
-      std::make_unique<AuthenticatorRequestDialogController>(model.get());
+  auto controller = std::make_unique<AuthenticatorRequestDialogController>(
+      model.get(), main_rfh());
   controller->StartFlow(TransportAvailabilityInfo(),
                         /*is_conditional_mediation=*/true);
   ASSERT_EQ(model->step(),
@@ -2292,8 +2292,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  auto controller =
-      std::make_unique<AuthenticatorRequestDialogController>(model.get());
+  auto controller = std::make_unique<AuthenticatorRequestDialogController>(
+      model.get(), main_rfh());
   TransportAvailabilityInfo transports_info;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
   transports_info.recognized_credentials = {};
@@ -2310,8 +2310,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 TEST_F(AuthenticatorRequestDialogControllerTest, InvalidPriorityPhonePref) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  auto controller =
-      std::make_unique<AuthenticatorRequestDialogController>(model.get());
+  auto controller = std::make_unique<AuthenticatorRequestDialogController>(
+      model.get(), main_rfh());
   auto gpm_controller =
       std::make_unique<EnclaveDisabledController>(model.get());
   controller->SetAccountPreselectedCallback(base::DoNothing());
@@ -2357,7 +2357,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIWindowsCancel) {
   testing::StrictMock<MockDialogModelObserver> mock_observer;
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  AuthenticatorRequestDialogController controller(model.get());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   model->observers.AddObserver(&mock_observer);
   controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       /*device_id=*/"internal", AuthenticatorTransport::kInternal,
@@ -2386,7 +2386,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIWindowsCancel) {
 TEST_F(AuthenticatorRequestDialogControllerTest, PlatformVirtualAuthenticator) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  AuthenticatorRequestDialogController controller(model.get());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       /*device_id=*/"virtual-authenticator", AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kOther));
@@ -2416,7 +2416,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PreSelect) {
 
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-    AuthenticatorRequestDialogController controller(model.get());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     int preselect_num_called = 0;
     controller.SetAccountPreselectedCallback(base::BindLambdaForTesting(
         [&preselect_num_called](device::DiscoverableCredentialMetadata cred) {
@@ -2482,7 +2482,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PreSelect) {
 TEST_F(AuthenticatorRequestDialogControllerTest, JumpToWindowsWithNewUI) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  AuthenticatorRequestDialogController controller(model.get());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
 
   TransportAvailabilityInfo transports_info;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
@@ -2521,7 +2521,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ContactPriorityPhone_NoSync) {
 
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  AuthenticatorRequestDialogController controller(model.get());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
   phones.emplace_back(GetPairingFromQR());
   controller.set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
@@ -2554,7 +2554,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
       syncer::kSyncWebauthnCredentials};
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  AuthenticatorRequestDialogController controller(model.get());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
   phones.emplace_back(GetPairingFromQR());
   phones.emplace_back(GetPairingFromSync());
@@ -2595,7 +2595,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BluetoothPermissionPrompt) {
 
       auto model =
           base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-      AuthenticatorRequestDialogController controller(model.get());
+      AuthenticatorRequestDialogController controller(model.get(), main_rfh());
       std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
       phones.emplace_back(GetPairingFromQR());
       controller.set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
@@ -2638,7 +2638,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BluetoothPermissionPrompt) {
 TEST_F(AuthenticatorRequestDialogControllerTest, AdvanceThroughCableV2States) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  AuthenticatorRequestDialogController controller(model.get());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   controller.set_cable_transport_info(/*extension_is_v2=*/std::nullopt, {},
                                       base::DoNothing(), std::nullopt);
   TransportAvailabilityInfo transports_info;
@@ -2664,7 +2664,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
        AdvanceThroughCableV2StatesStopTimer) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  AuthenticatorRequestDialogController controller(model.get());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   controller.set_cable_transport_info(/*extension_is_v2=*/std::nullopt, {},
                                       base::DoNothing(), std::nullopt);
   TransportAvailabilityInfo transports_info;
@@ -2704,7 +2704,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Crbug1503187) {
 
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  AuthenticatorRequestDialogController controller(model.get());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   RepeatingValueCallbackReceiver<device::DiscoverableCredentialMetadata>
       account_preselected_callback;
   controller.SetAccountPreselectedCallback(
@@ -2736,7 +2736,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, DeduplicateAccounts) {
 
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-    AuthenticatorRequestDialogController controller(model.get());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     controller.set_allow_icloud_keychain(true);
     RepeatingValueCallbackReceiver<device::DiscoverableCredentialMetadata>
         account_preselected_callback;
@@ -2785,7 +2785,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Dispatch) {
 
       auto model =
           base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-      AuthenticatorRequestDialogController controller(model.get());
+      AuthenticatorRequestDialogController controller(model.get(), main_rfh());
       controller.set_allow_icloud_keychain(true);
       controller.set_should_create_in_icloud_keychain(
           should_create_in_icloud_keychain);
@@ -2868,7 +2868,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-    AuthenticatorRequestDialogController controller(model.get());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     controller.set_allow_icloud_keychain(true);
     RepeatingValueCallbackReceiver<device::DiscoverableCredentialMetadata>
         account_preselected_callback;
@@ -2919,7 +2919,7 @@ TEST_F(ListPasskeysFromSyncTest, ListGPMPasskeysInConditionalUI) {
   {
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-    AuthenticatorRequestDialogController controller(model.get());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     controller.StartFlow(transports_info,
                          /*is_conditional_mediation=*/true);
 
@@ -2929,7 +2929,7 @@ TEST_F(ListPasskeysFromSyncTest, ListGPMPasskeysInConditionalUI) {
   {
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-    AuthenticatorRequestDialogController controller(model.get());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
     phones.emplace_back(GetPairingFromQR());
     controller.set_cable_transport_info(
@@ -2944,7 +2944,7 @@ TEST_F(ListPasskeysFromSyncTest, ListGPMPasskeysInConditionalUI) {
   {
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-    AuthenticatorRequestDialogController controller(model.get());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
     phones.emplace_back(GetPairingFromSync());
     controller.set_cable_transport_info(
@@ -2973,7 +2973,7 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
   // Set up a model with two local passkeys and a GPM passkey.
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  AuthenticatorRequestDialogController controller(model.get());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   TransportAvailabilityInfo transports_info;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
   transports_info.available_transports = {AuthenticatorTransport::kInternal};
@@ -3142,7 +3142,7 @@ TEST_F(ListPasskeysFromSyncTest, WindowsHelloButtonLabel_GetAssertion) {
   for (const auto& test_case : kWinHelloButtonGetAssertionTestCases) {
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-    AuthenticatorRequestDialogController controller(model.get());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     controller.SetAccountPreselectedCallback(base::DoNothing());
 
     TransportAvailabilityInfo transports_info;
@@ -3225,7 +3225,7 @@ TEST_F(ListPasskeysFromSyncTest, WindowsHelloButtonLabel_MakeCredential) {
   for (const auto& test_case : kWinHelloButtonMakeCredentialTestCases) {
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-    AuthenticatorRequestDialogController controller(model.get());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     TransportAvailabilityInfo transports_info;
     transports_info.has_win_native_api_authenticator = true;
     transports_info.request_type = device::FidoRequestType::kMakeCredential;
