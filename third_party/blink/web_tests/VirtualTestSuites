@@ -2059,7 +2059,7 @@
     "platforms": ["Linux"],
     "bases": ["external/wpt/longtask-timing"],
     "args": ["--enable-blink-features=LongTaskFromLongAnimationFrame"],
-    "expires": "Aug 1, 2024"
+    "expires": "Feb 1, 2025"
   },
   {
     "prefix": "new-text-size-adjust",
