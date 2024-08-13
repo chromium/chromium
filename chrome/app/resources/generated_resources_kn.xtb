@@ -831,7 +831,7 @@
 <translation id="1593327942193951498">{NUM_SITES,plural, =1{ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡದ <ph name="BEGIN_BOLD" />1 ಸೈಟ್‌ನಿಂದ<ph name="END_BOLD" /> ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ}one{ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡದ <ph name="BEGIN_BOLD" />{NUM_SITES} ಸೈಟ್‌ಗಳಿಂದ<ph name="END_BOLD" /> ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ}other{ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡದ <ph name="BEGIN_BOLD" />{NUM_SITES} ಸೈಟ್‌ಗಳಿಂದ<ph name="END_BOLD" /> ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ}}</translation>
 <translation id="1593594475886691512">ಸ್ವರೂಪಣೆ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="159359590073980872">ಚಿತ್ರದ ಕ್ಯಾಷ್</translation>
-<translation id="1593926297800505364">ಪಾವತಿ ವಿಧಾನವನ್ನು ಉಳಿಸಿ</translation>
+<translation id="1593926297800505364">ಪಾವತಿ ವಿಧಾನವನ್ನು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="1594703455918849716">ಪರಿಶೀಲನೆ ಪುಟಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="1594781465361405478">ವಾಲ್ಯೂಮ್ ಆನ್/ಆಫ್</translation>
 <translation id="1594963087419619323">ಸ್ಪ್ಲಿಟ್‌ ಸ್ಕ್ರೀನ್ ಅವಲೋಕನ</translation>
@@ -6549,7 +6549,7 @@
 <translation id="574209121243317957">ಪಿಚ್</translation>
 <translation id="5742787970423162234">ವರ್ಧಿತ ಸಾಮರ್ಥ್ಯಗಳೊಂದಿಗೆ ಪ್ಯಾಕೇಜ್ ಮಾಡಲಾದ ವೆಬ್ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="5743501966138291117">ಸ್ವಯಂಚಾಲಿತ ಲಾಕ್ ಬಳಸಲು ಪಿನ್‌ನಲ್ಲಿ 12 ಅಥವಾ ಅದಕ್ಕಿಂತ ಕಡಿಮೆ ಅಂಕಿಗಳಿರಬೇಕು</translation>
-<translation id="5746169159649715125">PDF ನಂತೆ ಉಳಿಸಿ</translation>
+<translation id="5746169159649715125">PDF ನಂತೆ ಸೇವ್‌ ಮಾಡಿ.</translation>
 <translation id="5747785204778348146">ಡೆವಲಪರ್ - ಅಸ್ಥಿರ</translation>
 <translation id="5747809636523347288">ಅಂ&amp;ಟಿಸಿ ಮತ್ತು <ph name="URL" /> ಗೆ ಹೋಗಿ</translation>
 <translation id="5747876413503288066">ಲಿವಿಂಗ್ ರೂಮ್</translation>
@@ -10332,7 +10332,7 @@
 <translation id="8523493869875972733">ಬದಲಾವಣೆಗಳನ್ನು ಇರಿಸು</translation>
 <translation id="8523849605371521713">ಕಾರ್ಯನೀತಿಯಿಂದ ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="8524594273111932386">ಹುಡುಕಾಟ + ಡೌನ್ ಆ್ಯರೋ</translation>
-<translation id="8524783101666974011">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಕಾರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಿ</translation>
+<translation id="8524783101666974011">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಕಾರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="8524817717332153865">Mac ಸಿಸ್ಟಂ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಕ್ಯಾಮರಾ ಹಾಗೂ ಮೈಕ್ರೋಫೋನ್ ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8524841856047224176">ವೀಡಿಯೊ ಕರೆಗಳು ಹಾಗೂ ಮುಂತಾದವುಗಳಿಗಾಗಿ ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಹಿನ್ನೆಲೆಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಿ</translation>
 <translation id="8525306231823319788">ಪೂರ್ಣ ಪರದೆ</translation>
@@ -10951,7 +10951,7 @@
 <translation id="8967427617812342790">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" /> ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="8968527460726243404">ChromeOS ಸಿಸ್ಟಂ ಚಿತ್ರ ಬರೆಯುವಿಕೆ</translation>
-<translation id="8968766641738584599">ಕಾರ್ಡ್‌ ಉಳಿಸಿ</translation>
+<translation id="8968766641738584599">ಕಾರ್ಡ್‌ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="8968906873893164556">ಸೆಟಪ್‌ಗಾಗಿ ಬಳಸಲು ಖಾತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8970887620466824814">ಏನೋ ತಪ್ಪಾಗಿದೆ.</translation>
 <translation id="89720367119469899">ಎಸ್ಕೇಪ್</translation>
