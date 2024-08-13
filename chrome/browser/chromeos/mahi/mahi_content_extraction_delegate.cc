@@ -221,9 +221,8 @@ void MahiContentExtractionDelegate::OnScreenAIServiceInitialized(
 }
 
 void MahiContentExtractionDelegate::MaybeBindScreenAIContentExtraction() {
-  // Screen AI service isn't initialize yet or Screen AI content extraction is
-  // already bound.
-  if (!screen_ai_service_initialized_ || is_screen_ai_service_bound_) {
+  // Screen AI service isn't initialize yet.
+  if (!screen_ai_service_initialized_) {
     return;
   }
 
@@ -241,7 +240,6 @@ void MahiContentExtractionDelegate::MaybeBindScreenAIContentExtraction() {
       ->BindMainContentExtractor(std::move(screen_ai_receiver));
   remote_content_extraction_service_factory_->OnScreen2xReady(
       std::move(screen_ai_remote));
-  is_screen_ai_service_bound_ = true;
 }
 
 }  // namespace mahi

@@ -76,7 +76,6 @@ class MahiContentExtractionDelegate {
   void MaybeBindScreenAIContentExtraction();
 
   bool screen_ai_service_initialized_ = false;
-  bool is_screen_ai_service_bound_ = false;
 
   mojo::Remote<mojom::ContentExtractionServiceFactory>
       remote_content_extraction_service_factory_;
