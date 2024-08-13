@@ -21,10 +21,6 @@ BirchCoralProvider::~BirchCoralProvider() {
   }
 }
 
-void BirchCoralProvider::RequestBirchDataFetch() {
-  // TODO(yulunwu) fetch coral data and update `birch_model_`
-}
-
 void BirchCoralProvider::OnTabItemAdded(TabClusterUIItem* tab_item) {
   // TODO(yulunwu) stream tab item metadata to backend for async embedding
 }
@@ -34,5 +30,21 @@ void BirchCoralProvider::OnTabItemUpdated(TabClusterUIItem* tab_item) {
 }
 
 void BirchCoralProvider::OnTabItemRemoved(TabClusterUIItem* tab_item) {}
+
+void BirchCoralProvider::RequestBirchDataFetch() {
+  // TODO(yulunwu) make appropriate data request, send data to backend.
+}
+
+void HandlePostLoginDataRequest() {
+  // TODO(sammiequon) handle post-login use case.
+}
+
+void HandleInSessionDataRequest() {
+  // TODO(yulunwu, zxdan) handle in-session use case.
+}
+
+void BirchCoralProvider::HandleClusterData() {
+  // TODO(yulunwu) update `birch_model_`
+}
 
 }  // namespace ash

@@ -31,6 +31,17 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   void RequestBirchDataFetch() override;
 
  private:
+  // Called during session restore. Sends a grouping request with session
+  // restore data to the coral backend.
+  void HandlePostLoginDataRequest();
+
+  // Called during user session. Sends a grouping request with active tab
+  // and app metadata to the coral backend.
+  void HandleInSessionDataRequest();
+
+  // Callback passed to the coral backend.
+  void HandleClusterData();
+
   const raw_ptr<BirchModel> birch_model_;
 };
 
