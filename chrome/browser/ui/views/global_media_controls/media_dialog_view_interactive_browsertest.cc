@@ -929,12 +929,12 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveTranslate) {
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kLiveTranslateEnabled));
 
-  // Click the Live Caption toggle to toggle it off, which toggles off Live
-  // Translate as well.
+  // Click the Live Caption toggle to toggle it off, which does not toggle off
+  // Translate.
   ClickEnableLiveCaptionOnDialog();
   EXPECT_FALSE(
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kLiveTranslateEnabled));
 }
 
