@@ -404,6 +404,10 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
 
   // If scroll offsets were not synchronized by this commit we need another main
   // frame to sync them.
+  // Note that scroll_and_viewport_changes_synced will be false for the frame
+  // that contains the first contentful paint, since paint holding makes us skip
+  // ApplyCompositorChanges. This means we are guaranteed to run another main
+  // frame after FCP, which is good because there may be hover effects to apply.
   if (!scroll_and_viewport_changes_synced)
     scheduler_->SetNeedsBeginMainFrame();
 }
