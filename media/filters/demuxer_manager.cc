@@ -516,7 +516,6 @@ bool DemuxerManager::WouldTaintOrigin() const {
       return true;
     }
     case HlsFallbackImplementation::kBuiltinHlsPlayer: {
-      CHECK(data_source_info_);
       // TODO(crbug/40057824): return data_source_info_->WouldTaintOrigin();
       // For now, we should continue to assume that tainting is always true with
       // HLS content.
