@@ -27,7 +27,8 @@ GetDisplayFormat(crosapi::mojom::ClipboardHistoryDisplayFormat format) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
       return PickerSearchResult::ClipboardData::DisplayFormat::kImage;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
-      return PickerSearchResult::ClipboardData::DisplayFormat::kHtml;
+      // TODO: b/348102522 - Show HTML content once it's possible to render them
+      // inside Picker.
     default:
       return std::nullopt;
   }

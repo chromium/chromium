@@ -214,10 +214,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
                 item_view->SetPrimaryImage(*data.display_image);
                 break;
               case PickerSearchResult::ClipboardData::DisplayFormat::kHtml:
-                icon = &vector_icons::kCodeIcon;
-                item_view->SetPrimaryText(
-                    l10n_util::GetStringUTF16(IDS_PICKER_HTML_CONTENT));
-                break;
+                NOTREACHED_NORETURN();
             }
             if (icon) {
               item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(

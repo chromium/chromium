@@ -154,5 +154,26 @@ TEST_F(PickerClipboardHistoryProviderTest, FiletersResultByQuery) {
               _, PickerSearchResult::ClipboardData::DisplayFormat::kText,
               u"12345", std::nullopt, true)))));
 }
+
+TEST_F(PickerClipboardHistoryProviderTest, FiltersOutHtmlResults) {
+  testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
+  EXPECT_CALL(mock_clipboard, GetHistoryValues)
+      .WillOnce([](ClipboardHistoryController::GetHistoryValuesCallback
+                       callback) {
+        ClipboardHistoryItemBuilder builder;
+        std::move(callback).Run(
+            {builder.SetFormat(ui::ClipboardInternalFormat::kHtml).Build()});
+      });
+
+  base::SimpleTestClock clock;
+  PickerClipboardHistoryProvider provider(&clock);
+  clock.SetNow(base::Time::Now());
+
+  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  provider.FetchResults(future.GetCallback(), /*query=*/u"123");
+
+  EXPECT_THAT(future.Get(), IsEmpty());
+}
+
 }  // namespace
 }  // namespace ash

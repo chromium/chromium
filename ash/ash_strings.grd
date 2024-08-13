@@ -7491,9 +7491,6 @@ New install
         desc="This string appears as the heading text of a section. This section contains several selectable menu items related to editing the user's selected text, such as changing the capitalization of the text.">
         Edit text
       </message>
-      <message name="IDS_PICKER_HTML_CONTENT" translateable="false" desc="Display text for the clipboard html item.">
-        Html content
-      </message>
       <message name="IDS_PICKER_SEE_MORE_BUTTON_TEXT"
         desc="This string appears as the label text of a button. The button is part of a truncated list of search results. Clicking the button will show all the search results.">
         Show all
