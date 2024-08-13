@@ -87,8 +87,7 @@ class ReadAnythingUntrustedPageHandler :
     public read_anything::mojom::UntrustedPageHandler,
     public ReadAnythingCoordinator::Observer,
     public ReadAnythingSidePanelController::Observer,
-    public translate::TranslateDriver::LanguageDetectionObserver,
-    public TabStripModelObserver {
+    public translate::TranslateDriver::LanguageDetectionObserver {
  public:
   ReadAnythingUntrustedPageHandler(
       mojo::PendingRemote<read_anything::mojom::UntrustedPage> page,
@@ -175,22 +174,6 @@ class ReadAnythingUntrustedPageHandler :
   // ReadAnythingSidePanelController::Observer:
   void OnSidePanelControllerDestroyed() override;
 
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-  void OnTabStripModelDestroyed(TabStripModel* tab_strip_model) override;
-
-  // When the active web contents changes (or the UI becomes active):
-  // 1. Begins observing the web contents of the active tab and enables web
-  //    contents-only accessibility on that web contents. This causes
-  //    AXTreeSerializer to reset and send accessibility events of the AXTree
-  //    when it is re-serialized. The WebUI receives these events and stores a
-  //    copy of the web contents' AXTree.
-  // 2. Notifies the model that the AXTreeID has changed.
-  void OnActiveWebContentsChanged();
-
   void SetUpPdfObserver();
 
   void OnActiveAXTreeIDChanged();
@@ -205,7 +188,7 @@ class ReadAnythingUntrustedPageHandler :
   void PerformActionInTargetTree(const ui::AXActionData& data);
 
   raw_ptr<ReadAnythingSidePanelController> side_panel_controller_;
-  const base::WeakPtr<Browser> browser_;
+  const raw_ptr<Profile> profile_;
   const raw_ptr<content::WebUI> web_ui_;
 
   std::unique_ptr<ReadAnythingWebContentsObserver> main_observer_;
