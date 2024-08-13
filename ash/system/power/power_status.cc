@@ -274,6 +274,12 @@ PowerStatus::BatteryImageInfo PowerStatus::GenerateBatteryImageInfo(
 }
 
 void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
+  if (!proto_initialized_) {
+    info->icon_badge = &kUnifiedMenuBatteryUnreliableIcon;
+    info->badge_outline = &kUnifiedMenuBatteryUnreliableOutlineMaskIcon;
+    return;
+  }
+
   // We only alert if we are on battery, and battery saver mode is disabled.
   if (features::IsBatterySaverAvailable()) {
     info->alert_if_low = !IsLinePowerConnected() && !IsBatterySaverActive();
