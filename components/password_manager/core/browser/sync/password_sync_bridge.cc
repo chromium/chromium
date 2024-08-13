@@ -190,7 +190,7 @@ bool IsCredentialPhished(const sync_pb::PasswordSpecificsData& specifics) {
 // the local copy, to be replaced by the remote version coming from Sync during
 // merge.
 bool ShouldRecoverPasswordsDuringMerge() {
-  // Delete the local undecryptable copy. Launched on MacOS or Linux only.
+  // Delete the local undecryptable copy. Launched on MacOS, Linux, Win and iOS.
   return base::FeatureList::IsEnabled(
       features::kClearUndecryptablePasswordsOnSync);
 }
