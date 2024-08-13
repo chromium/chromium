@@ -2532,7 +2532,9 @@ void InspectorDOMAgent::NodeCreated(Node* node) {
   }
 }
 
-static ShadowRoot* ShadowRootForNode(Node* node, const String& type) {
+namespace {
+
+ShadowRoot* ShadowRootForNode(Node* node, const String& type) {
   auto* element = DynamicTo<Element>(node);
   if (!element)
     return nullptr;
@@ -2543,11 +2545,21 @@ static ShadowRoot* ShadowRootForNode(Node* node, const String& type) {
   return nullptr;
 }
 
+Document* DocumentForFrameOwner(Node* node) {
+  if (auto* owner = DynamicTo<HTMLFrameOwnerElement>(node)) {
+    return owner->contentDocument();
+  }
+  return nullptr;
+}
+
+}  // namespace
+
 Node* InspectorDOMAgent::NodeForPath(const String& path) {
   // The path is of form "1,HTML,2,BODY,1,DIV" (<index> and <nodeName>
   // interleaved).  <index> may also be "a" (author shadow root) or "u"
   // (user-agent shadow root), in which case <nodeName> MUST be
   // "#document-fragment".
+  // The first component after an iframe will always be "d,#document".
   if (!document_)
     return nullptr;
 
@@ -2564,15 +2576,19 @@ Node* InspectorDOMAgent::NodeForPath(const String& path) {
     String& index_value = path_tokens[i];
     wtf_size_t child_number = index_value.ToUInt(&success);
     Node* child;
+    String child_name = path_tokens[i + 1];
     if (!success) {
-      child = ShadowRootForNode(node, index_value);
+      if (index_value == "d") {
+        child = DocumentForFrameOwner(node);
+      } else {
+        child = ShadowRootForNode(node, index_value);
+      }
     } else {
       if (child_number >= InnerChildNodeCount(node, include_whitespace))
         return nullptr;
 
       child = InnerFirstChild(node, include_whitespace);
     }
-    String child_name = path_tokens[i + 1];
     for (wtf_size_t j = 0; child && j < child_number; ++j)
       child = InnerNextSibling(child, include_whitespace);
 
