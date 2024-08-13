@@ -127,6 +127,14 @@ TEST_F(TabbedPaneTest, SizeAndLayoutInVerticalOrientation) {
   EXPECT_EQ(child1->bounds(), child2->bounds());
 }
 
+TEST_F(TabbedPaneTest, AccessibleAttributes) {
+  auto tabbed_pane = std::make_unique<TabbedPane>();
+
+  ui::AXNodeData data;
+  tabbed_pane->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kTabList);
+}
+
 class TabbedPaneWithWidgetTest : public ViewsTestBase {
  public:
   TabbedPaneWithWidgetTest() = default;
