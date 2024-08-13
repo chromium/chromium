@@ -580,7 +580,8 @@ void ChromeBrowserMainPartsWin::PreProfileInit() {
     platform_auth_policy_observer_ =
         std::make_unique<PlatformAuthPolicyObserver>(local_state);
 
-  if (base::FeatureList::IsEnabled(features::kWinSystemLocationPermission)) {
+  if (base::FeatureList::IsEnabled(features::kWinSystemLocationPermission) &&
+      !device::GeolocationSystemPermissionManager::GetInstance()) {
     device::GeolocationSystemPermissionManager::SetInstance(
         device::SystemGeolocationSourceWin::
             CreateGeolocationSystemPermissionManager());

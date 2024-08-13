@@ -26211,6 +26211,21 @@
             ]
         }
     ],
+    "WinSystemLocationPermission": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WinSystemLocationPermission"
+                    ]
+                }
+            ]
+        }
+    ],
     "YieldWithInputHint": [
         {
             "platforms": [
