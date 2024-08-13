@@ -186,8 +186,24 @@ void ScriptLoader::DidNotifySubtreeInsertionsToDocument() {
 // <spec step="B">The script element is connected and a node or document
 // fragment is inserted into the script element, after any script elements
 // inserted at that time.</spec>
-void ScriptLoader::ChildrenChanged() {
-  if (!parser_inserted_ && element_->IsConnected()) {
+void ScriptLoader::ChildrenChanged(
+    const ContainerNode::ChildrenChange& change) {
+  if (script_type_ == ScriptTypeAtPrepare::kSpeculationRules &&
+      (change.type == ContainerNode::ChildrenChangeType::kTextChanged ||
+       change.type == ContainerNode::ChildrenChangeType::kNonElementInserted ||
+       change.type == ContainerNode::ChildrenChangeType::kNonElementRemoved) &&
+      change.sibling_changed->IsCharacterDataNode()) {
+    // See https://crbug.com/328100599.
+    auto* message = MakeGarbageCollected<ConsoleMessage>(
+        ConsoleMessage::Source::kJavaScript, ConsoleMessage::Level::kWarning,
+        "Inline speculation rules cannot currently be modified after they are "
+        "processed. Instead, a new <script> element must be inserted.");
+    element_->GetDocument().AddConsoleMessage(message,
+                                              /*discard_duplicates=*/true);
+  }
+
+  if (change.IsChildInsertion() && !parser_inserted_ &&
+      element_->IsConnected()) {
     PendingScript* pending_script = PrepareScript(
         ParserBlockingInlineOption::kDeny, TextPosition::MinimumPosition());
     DCHECK(!pending_script);

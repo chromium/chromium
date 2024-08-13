@@ -1305,6 +1305,29 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarningForSetInnerHTML) {
       }));
 }
 
+// Tests that a console warning mentions that child modifications are
+// ineffective.
+TEST_F(SpeculationRuleSetTest, ConsoleWarningForChildModification) {
+  auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
+  DummyPageHolder page_holder(/*initial_view_size=*/{}, chrome_client);
+  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+
+  Document& document = page_holder.GetDocument();
+  HTMLScriptElement* script =
+      MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
+  script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
+  script->setText("{}");
+  document.head()->appendChild(script);
+
+  script->setText(R"({"prefetch": [{"urls": "/2"}]})");
+
+  EXPECT_TRUE(base::ranges::any_of(
+      chrome_client->ConsoleMessages(), [](const String& message) {
+        return message.Contains("speculation rule") &&
+               message.Contains("modified");
+      }));
+}
+
 TEST_F(SpeculationRuleSetTest, DropNotArrayAtRuleSetPosition) {
   auto* rule_set = CreateRuleSet(
       R"({
