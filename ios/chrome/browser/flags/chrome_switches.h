@@ -19,7 +19,7 @@ extern const char kEnableThirdPartyKeyboardWorkaround[];
 extern const char kEnableDiscoverFeed[];
 extern const char kEnableUpgradeSigninPromo[];
 extern const char kForceDeviceSwitcherExperienceCommandLineFlag[];
-
+extern const char kForceShopperExperience[];
 extern const char kUserAgent[];
 
 }  // namespace switches

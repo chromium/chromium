@@ -200,15 +200,27 @@
 			<key>Values</key>
 			<array>
 				<string></string>
+				<string>Desktop</string>
 				<string>AndroidPhone</string>
 				<string>SyncedAndFirstDevice</string>
 			</array>
 			<key>Titles</key>
 			<array>
 				<string>Disabled</string>
+				<string>Desktop</string>
 				<string>Android Phone</string>
 				<string>Synced And First Device</string>
 			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Force Shopper Experience</string>
+			<key>Key</key>
+			<string>ForceExperienceForShopper</string>
+			<key>DefaultValue</key>
+			<false/>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -451,7 +463,7 @@
 			</array>
 		</dict>
 		<dict>
-		    <key>Type</key>
+			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
 			<string>Switch Profile Debugging</string>
