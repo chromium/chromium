@@ -32,6 +32,7 @@ const char kLoggingModuleSwitch[] = "vmodule";
 const char kCrashHandlerSwitch[] = "crash-handler";
 const char kCrashMeSwitch[] = "crash-me";
 const char kShutdownSwitch[] = "shutdown";
+const char kFetchPoliciesSwitch[] = "fetch-policies";
 const char kInstallSwitch[] = "install";
 
 #if BUILDFLAG(IS_MAC)
@@ -90,6 +91,10 @@ void InitThreadPool() {
 std::unique_ptr<App> CreateAppForCommandLine(base::CommandLine* command_line) {
   if (command_line->HasSwitch(kShutdownSwitch)) {
     return CreateAppShutdown();
+  }
+
+  if (command_line->HasSwitch(kFetchPoliciesSwitch)) {
+    return CreateAppFetchPolicies();
   }
 
   if (command_line->HasSwitch(kInstallSwitch)) {

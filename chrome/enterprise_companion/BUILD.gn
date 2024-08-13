@@ -53,6 +53,9 @@ source_set("base") {
   sources = [
     "app/app.cc",
     "app/app.h",
+    "app/app_client_base.cc",
+    "app/app_client_base.h",
+    "app/app_fetch_policies.cc",
     "app/app_install.cc",
     "app/app_server.cc",
     "app/app_shutdown.cc",

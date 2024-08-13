@@ -45,6 +45,12 @@ std::unique_ptr<App> CreateAppShutdown(
     const mojo::NamedPlatformChannel::ServerName& server_name =
         GetServerName());
 
+// Creates an App which instructs the running server to fetch policies, if
+// present.
+std::unique_ptr<App> CreateAppFetchPolicies(
+    const mojo::NamedPlatformChannel::ServerName& server_name =
+        GetServerName());
+
 std::unique_ptr<App> CreateAppInstall(
     base::OnceCallback<EnterpriseCompanionStatus()> shutdown_remote_task =
         base::BindOnce([] { return CreateAppShutdown()->Run(); }),

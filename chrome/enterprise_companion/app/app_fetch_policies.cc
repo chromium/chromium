@@ -16,15 +16,15 @@
 
 namespace enterprise_companion {
 
-// AppShutdown sends an IPC to the running EnterpriseCompanion instructing it to
-// shutdown, if present.
-class AppShutdown : public AppClientBase {
+// AppFetchPolicies sends an IPC to the running EnterpriseCompanion instructing
+// it to fetch policies, if present.
+class AppFetchPolicies : public AppClientBase {
  public:
-  explicit AppShutdown(
+  explicit AppFetchPolicies(
       const mojo::NamedPlatformChannel::ServerName& server_name)
       : AppClientBase(server_name) {}
 
-  ~AppShutdown() override {
+  ~AppFetchPolicies() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
@@ -32,14 +32,14 @@ class AppShutdown : public AppClientBase {
   void OnRemoteReady() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    remote_->Shutdown(mojo::WrapCallbackWithDropHandler(
-        base::BindOnce(&AppShutdown::OnRemoteShutdown,
+    remote_->FetchPolicies(mojo::WrapCallbackWithDropHandler(
+        base::BindOnce(&AppFetchPolicies::OnPoliciesFetched,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&AppShutdown::OnRPCDropped,
+        base::BindOnce(&AppFetchPolicies::OnRPCDropped,
                        weak_ptr_factory_.GetWeakPtr())));
   }
 
-  void OnRemoteShutdown(mojom::StatusPtr status) {
+  void OnPoliciesFetched(mojom::StatusPtr status) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     Shutdown(EnterpriseCompanionStatus::FromMojomStatus(std::move(status)));
@@ -53,12 +53,12 @@ class AppShutdown : public AppClientBase {
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<AppShutdown> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AppFetchPolicies> weak_ptr_factory_{this};
 };
 
-std::unique_ptr<App> CreateAppShutdown(
+std::unique_ptr<App> CreateAppFetchPolicies(
     const mojo::NamedPlatformChannel::ServerName& server_name) {
-  return std::make_unique<AppShutdown>(server_name);
+  return std::make_unique<AppFetchPolicies>(server_name);
 }
 
 }  // namespace enterprise_companion
