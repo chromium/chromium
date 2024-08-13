@@ -16,7 +16,7 @@ import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js
 import {LWIN_KEY, META_KEY, ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 import {KeyToIconNameMap} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 // <if expr="_google_chrome" >
-import {KeyToInternalIconNameMap} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
+import {KeyToInternalIconNameMap, KeyToInternalIconNameRefreshOnlyMap} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 // </if>
 
 import {assert} from 'chrome://resources/js/assert.js';
@@ -472,17 +472,22 @@ export class CustomizeButtonSelectElement extends
       }
     }
 
-    const iconName = KeyToIconNameMap[key];
-    if (iconName) {
-      return `shortcut-input-keys:${iconName}`;
-    }
-
     // <if expr="_google_chrome" >
     const internalIconName = KeyToInternalIconNameMap[key];
     if (internalIconName) {
       return `ash-internal:${internalIconName}`;
     }
+
+    const internalRefreshIconName = KeyToInternalIconNameRefreshOnlyMap[key];
+    if (internalRefreshIconName && this.metaKey === MetaKey.kLauncherRefresh) {
+      return `ash-internal:${internalRefreshIconName}`;
+    }
     // </if>
+
+    const iconName = KeyToIconNameMap[key];
+    if (iconName) {
+      return `shortcut-input-keys:${iconName}`;
+    }
 
     return null;
   }

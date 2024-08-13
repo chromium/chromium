@@ -123,6 +123,12 @@ export const KeyToIconNameMap: {[key: string]: string|undefined} = {
 export const KeyToInternalIconNameMap: {[key: string]: string|undefined} = {
   'RightAlt': 'right-alt',
 };
+
+export const KeyToInternalIconNameRefreshOnlyMap:
+    {[key: string]: string|undefined} = {
+      'LaunchApplication1': 'overview-refresh',
+      'BrightnessUp': 'brightness-up-refresh',
+    };
 // </if>
 
 /**

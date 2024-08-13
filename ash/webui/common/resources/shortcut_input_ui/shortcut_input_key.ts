@@ -18,7 +18,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './shortcut_input_key.html.js';
 import {KeyInputState, KeyToIconNameMap, MetaKey} from './shortcut_utils.js';
 // <if expr="_google_chrome" >
-import {KeyToInternalIconNameMap} from './shortcut_utils.js';
+import {KeyToInternalIconNameMap, KeyToInternalIconNameRefreshOnlyMap} from './shortcut_utils.js';
 // </if>
 
 export const META_KEY = 'meta';
@@ -117,17 +117,24 @@ export class ShortcutInputKeyElement extends ShortcutInputKeyElementBase {
           return 'shortcut-input-keys:launcher';
       }
     }
-    const iconName = KeyToIconNameMap[this.key];
-    if (iconName) {
-      return `shortcut-input-keys:${iconName}`;
-    }
 
     // <if expr="_google_chrome" >
     const internalIconName = KeyToInternalIconNameMap[this.key];
     if (internalIconName) {
       return `ash-internal:${internalIconName}`;
     }
+
+    const internalRefreshIconName =
+        KeyToInternalIconNameRefreshOnlyMap[this.key];
+    if (internalRefreshIconName && this.metaKey === MetaKey.kLauncherRefresh) {
+      return `ash-internal:${internalRefreshIconName}`;
+    }
     // </if>
+
+    const iconName = KeyToIconNameMap[this.key];
+    if (iconName) {
+      return `shortcut-input-keys:${iconName}`;
+    }
 
     return null;
   }
