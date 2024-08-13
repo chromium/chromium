@@ -188,8 +188,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
 
  private:
   using SharedVersionType = std::atomic<uint64_t>;
-  static_assert(SharedVersionType::is_always_lock_free,
-                "Usage of SharedVersionType across processes might be unsafe");
 
   // Function to be called when an event is known to potentially invalidate
   // cookies the other side could have cached.

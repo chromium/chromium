@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <atomic>
 #include <limits>
 
 #include "base/containers/span.h"
@@ -45,10 +46,10 @@ TEST_F(SharedMemoryMappingTest, Scalar) {
   CreateMapping(sizeof(uint32_t));
 
   uint32_t* write_ptr = write_mapping_.GetMemoryAs<uint32_t>();
-  EXPECT_NE(nullptr, write_ptr);
+  ASSERT_NE(nullptr, write_ptr);
 
   const uint32_t* read_ptr = read_mapping_.GetMemoryAs<uint32_t>();
-  EXPECT_NE(nullptr, read_ptr);
+  ASSERT_NE(nullptr, read_ptr);
 
   *write_ptr = 0u;
   EXPECT_EQ(0u, *read_ptr);
@@ -144,6 +145,33 @@ TEST_F(SharedMemoryMappingTest, TooBigSpanWithExplicitElementCount) {
   EXPECT_TRUE(read_mapping_
                   .GetMemoryAsSpan<uint32_t>(std::numeric_limits<size_t>::max())
                   .empty());
+}
+
+TEST_F(SharedMemoryMappingTest, Atomic) {
+  CreateMapping(sizeof(std::atomic<uint32_t>));
+
+  auto* write_ptr = write_mapping_.GetMemoryAs<std::atomic<uint32_t>>();
+  ASSERT_NE(nullptr, write_ptr);
+
+  // Placement new to initialize the std::atomic in place.
+  new (write_ptr) std::atomic<uint32_t>;
+
+  const auto* read_ptr = read_mapping_.GetMemoryAs<std::atomic<uint32_t>>();
+  ASSERT_NE(nullptr, read_ptr);
+
+  write_ptr->store(0u, std::memory_order_relaxed);
+  EXPECT_EQ(0u, read_ptr->load(std::memory_order_relaxed));
+
+  write_ptr->store(0x12345678u, std::memory_order_relaxed);
+  EXPECT_EQ(0x12345678u, read_ptr->load(std::memory_order_relaxed));
+}
+
+TEST_F(SharedMemoryMappingTest, TooBigAtomic) {
+  CreateMapping(sizeof(std::atomic<uint8_t>));
+
+  EXPECT_EQ(nullptr, write_mapping_.GetMemoryAs<std::atomic<uint32_t>>());
+
+  EXPECT_EQ(nullptr, read_mapping_.GetMemoryAs<std::atomic<uint32_t>>());
 }
 
 // TODO(dcheng): This test is temporarily disabled on iOS. iOS devices allow

@@ -18,8 +18,6 @@ class SharedMemoryVersionClient;
 
 using VersionType = uint64_t;
 using SharedVersionType = std::atomic<VersionType>;
-static_assert(SharedVersionType::is_always_lock_free,
-              "Usage of SharedVersionType across processes might be unsafe");
 
 // This file contains classes to share a version between processes through
 // shared memory. A version is a nonzero monotonically increasing integer. A

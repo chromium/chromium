@@ -1802,10 +1802,6 @@ void RenderProcessHostImpl::InitializeSharedMemoryRegionsOnceChannelIsUp() {
   // the same host (e.g. from AgentSchedulingGroupHost::RenderProcessExited()).
   // In that case, we only need to resend the read-only memory region.
   if (!last_foreground_time_region_.IsValid()) {
-    static_assert(
-        std::atomic<base::TimeTicks>::is_always_lock_free,
-        "Atomically sharing TimeTicks across processes might be unsafe");
-
     last_foreground_time_region_ = base::ReadOnlySharedMemoryRegion::Create(
         sizeof(std::atomic<base::TimeTicks>));
     CHECK(last_foreground_time_region_.IsValid());
