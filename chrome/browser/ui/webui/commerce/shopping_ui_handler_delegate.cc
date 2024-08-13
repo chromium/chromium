@@ -8,6 +8,8 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -21,10 +23,13 @@
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/webui/shopping_service_handler.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "shopping_ui_handler_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 
@@ -235,6 +240,17 @@ void ShoppingUiHandlerDelegate::NavigateToUrl(Browser* browser,
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
   browser->OpenURL(params, /*navigation_handle_callback=*/{});
+}
+
+void ShoppingUiHandlerDelegate::ShowSyncSetupFlow() {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  CoreAccountInfo account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  signin_ui_util::EnableSyncFromSingleAccountPromo(
+      profile_, account_info,
+      signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS);
+  return;
 }
 
 }  // namespace commerce

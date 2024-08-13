@@ -54,6 +54,7 @@ export interface BrowserProxy {
       version: ProductSpecificationsDisclosureVersion): void;
   maybeShowProductSpecificationDisclosure(urls: Url[], name: string):
       Promise<{disclosureShown: boolean}>;
+  showSyncSetupFlow(): void;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -69,6 +70,10 @@ export class BrowserProxyImpl implements BrowserProxy {
     factory.createShoppingServiceHandler(
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
         this.handler.$.bindNewPipeAndPassReceiver());
+  }
+
+  showSyncSetupFlow() {
+    this.handler.showSyncSetupFlow();
   }
 
   getAllPriceTrackedBookmarkProductInfo() {

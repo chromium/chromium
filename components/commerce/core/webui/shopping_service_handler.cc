@@ -1117,4 +1117,10 @@ void ShoppingServiceHandler::OnGetProductSpecificationsForUrls(
 
   std::move(callback).Run(ProductSpecsToMojo(specs.value()));
 }
+
+void ShoppingServiceHandler::ShowSyncSetupFlow() {
+  if (delegate_) {
+    delegate_->ShowSyncSetupFlow();
+  }
+}
 }  // namespace commerce

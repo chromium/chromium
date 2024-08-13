@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
@@ -86,6 +87,8 @@ class ShoppingServiceHandler
 
     virtual void ShowProductSpecificationsSetForUuid(const base::Uuid& uuid,
                                                      bool in_new_tab) = 0;
+
+    virtual void ShowSyncSetupFlow() = 0;
   };
 
   ShoppingServiceHandler(
@@ -188,6 +191,8 @@ class ShoppingServiceHandler
 
   void OnProductSpecificationsSetRemoved(
       const ProductSpecificationsSet& set) override;
+
+  void ShowSyncSetupFlow() override;
 
   static std::vector<shopping_service::mojom::BookmarkProductInfoPtr>
   BookmarkListToMojoList(

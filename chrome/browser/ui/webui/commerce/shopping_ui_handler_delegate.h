@@ -46,6 +46,8 @@ class ShoppingUiHandlerDelegate : public ShoppingServiceHandler::Delegate {
 
   void ShowFeedbackForProductSpecifications(const std::string& log_id) override;
 
+  void ShowSyncSetupFlow() override;
+
   // Get the main frame source id from the page load.
   ukm::SourceId GetCurrentTabUkmSourceId() override;
 

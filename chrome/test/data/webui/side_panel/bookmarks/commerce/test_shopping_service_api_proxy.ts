@@ -75,6 +75,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'setProductSpecificationsUserFeedback',
       'setProductSpecificationDisclosureAcceptVersion',
       'maybeShowProductSpecificationDisclosure',
+      'showSyncSetupFlow',
     ]);
 
     this.callbackRouter = new PageCallbackRouter();
@@ -229,6 +230,10 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
   maybeShowProductSpecificationDisclosure(urls: Url[], name: string) {
     this.methodCalled('maybeShowProductSpecificationDisclosure', urls, name);
     return Promise.resolve({disclosureShown: false});
+  }
+
+  showSyncSetupFlow() {
+    this.methodCalled('showSyncSetupFlow');
   }
 
   getCallbackRouter() {

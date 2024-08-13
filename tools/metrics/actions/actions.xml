@@ -36306,6 +36306,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromProductSpecifications">
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Recorded when showing sync entry in product specifications.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromReadingList" not_user_triggered="true">
   <owner>myuu@google.com</owner>
   <owner>chrome-signin-team@chromium.org</owner>
@@ -37106,6 +37113,14 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromProductSpecifications">
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS.
   </description>
 </action>
 
