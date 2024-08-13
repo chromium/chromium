@@ -6380,6 +6380,13 @@
        {}
       ]
      ],
+     "replace-document-root-and-refocus-window.html": [
+      "b2923054684382aa5c78d936008e4a7029ec3891",
+      [
+       null,
+       {}
+      ]
+     ],
      "replace-document-root-with-object-and-mo.html": [
       "bdad541422833382c831de19bc0c1973006448c1",
       [
@@ -180889,7 +180896,7 @@
        ]
       ],
       "block-aspect-ratio-042.html": [
-       "3f76d42b97125d793637f0477394b16f4ef848f0",
+       "63c3b1abc9bc1d58d971e953508b1c56b12c367b",
        [
         null,
         [
@@ -180902,7 +180909,7 @@
        ]
       ],
       "block-aspect-ratio-043.html": [
-       "98fd3697dc3e68b9a102b74bf70e8c4075792bb5",
+       "da63c050320cc9aa5b8f3d91afc1f4dafe88525f",
        [
         null,
         [
@@ -181051,6 +181058,32 @@
         [
          [
           "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-aspect-ratio-056.html": [
+       "c12f8082a3660c1ac38efc794256057c3c4b83c1",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-aspect-ratio-057.tentative.html": [
+       "e183c7ec0a3932dfc9c2c57554ecc6498f6ca123",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
           "=="
          ]
         ],
@@ -234773,6 +234806,136 @@
         {}
        ]
       ],
+      "calc-size-aspect-ratio-003.html": [
+       "3a91792fbd246b6590159f757e4958dca4d21143",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "calc-size-aspect-ratio-004.html": [
+       "f4f0b66b1eaec4a8a476ca75cf19893fb83aae65",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "calc-size-aspect-ratio-005.html": [
+       "70f0ffe9a3f633be154f287eecab0e77a74200a9",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "calc-size-flex-001.html": [
+       "22aa9d90bb5e9c72e2e8a1a0c2b84896677ab3f8",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "calc-size-flex-002.html": [
+       "0b93341fc0be5300fe01550b95f3121db080db70",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "calc-size-flex-003.html": [
+       "22858da47357ab66228d0f01d446ff8c7dc16e10",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "calc-size-flex-004.html": [
+       "759fc326859b790fae2c4c7429edb5464ef241c4",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "calc-size-flex-005.html": [
+       "01f142e16e147784d8a0f6ca81887d246fd1fba4",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "calc-size-flex-006.html": [
+       "02e9f993bd9e91b2c8e59f4f884b7667afb3e137",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "calc-size-grid-repeat.html": [
+       "a6526507aabac3999f056c537217f93e3fa9758c",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "calc-size-min-max-sizes-001.html": [
        "d64a1fdc24d25d345b9f1214b7fcb8dc8690a741",
        [
@@ -238243,8 +238406,34 @@
        }
       ]
      ],
+     "active-view-transition-on-non-root.html": [
+      "9870b15cca958d0e7c5080cebe24c463ad7a33ca",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/view-transition-types-one-green-square-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "active-view-transition-pseudo-class-match.html": [
       "534c144ecf0c3b7dc14fd915782f8daeef93a18c",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/view-transition-types-one-green-square-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "active-view-transition-type-on-non-root.html": [
+      "f4225485b860b09fc0fca560fbc7f33c270dbf05",
       [
        null,
        [
@@ -242611,6 +242800,45 @@
        {}
       ]
      ],
+     "shadow-part-with-class-inside-shadow-important.html": [
+      "34d98be1fa4210694c63c8600b63139a5a12ce8c",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/names-are-tree-scoped-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-part-with-class-inside-shadow.html": [
+      "ad89ce230b541909921bad47d1031f3555117dd2",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/names-are-tree-scoped-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "shadow-part-with-class.html": [
+      "090fceeb14bf4387d1f7f093846301127b5d7935",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/names-are-tree-scoped-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "shadow-part-with-name-nested.html": [
       "e34903a4a2218a92fb782f34d0f5c20de4a0f37f",
       [
@@ -242968,7 +243196,7 @@
       ]
      ],
      "view-transition-types-matches.html": [
-      "ef15d97fb997e1dd744bcc42108e68c750b74d68",
+      "bb625d86830ba4278e40d9094b1278c9b826201b",
       [
        null,
        [
@@ -280839,6 +281067,19 @@
           [
            [
             "/html/semantics/forms/the-select-element/stylable-select/select-option-images-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "select-size-multiple-new-content.tentative.html": [
+         "169f1096255ce35a64eafa15e45cb9b555071710",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/stylable-select/select-size-multiple-new-content-ref.html",
             "=="
            ]
           ],
@@ -379792,6 +380033,10 @@
         ],
         "select-option-images-ref.html": [
          "814e01f8d8f8373ca776e679d37ba4e77619f984",
+         []
+        ],
+        "select-size-multiple-new-content-ref.html": [
+         "dccff7311d1c8c425ca4a199c5fb1e4ed6181a6e",
          []
         ]
        }
@@ -496066,7 +496311,7 @@
        ]
       ],
       "observable-constructor.window.js": [
-       "d2b597c819054f2b4c186d24f1e908bf5d46d2a2",
+       "878fc456c102873b0985fbfb9b34a98ce9ed6438",
        [
         "dom/observable/tentative/observable-constructor.window.html",
         {}
@@ -496084,7 +496329,7 @@
        ]
       ],
       "observable-event-target.any.js": [
-       "0f7ace2acc0794a96dae575f33a23a47cb287d8b",
+       "9f5d5541a039c4dce5ebdebc8b9b17c3a130c61f",
        [
         "dom/observable/tentative/observable-event-target.any.html",
         {}
@@ -496095,7 +496340,7 @@
        ]
       ],
       "observable-event-target.window.js": [
-       "77a137a3622e8dbbfb4c3f177f512c0cd509b509",
+       "fa3ae1d3b020e1f626e130fb62dbd9ff820c526e",
        [
         "dom/observable/tentative/observable-event-target.window.html",
         {}
@@ -496175,7 +496420,7 @@
        ]
       ],
       "observable-from.any.js": [
-       "80408ddced7ef5dd6c81855e6d26f0326d413226",
+       "900362d8c3aceef35596815999caae5eb6123bf9",
        [
         "dom/observable/tentative/observable-from.any.html",
         {}
@@ -496186,7 +496431,7 @@
        ]
       ],
       "observable-inspect.any.js": [
-       "8aff741d2670db26a7a355fdd747e70082479a43",
+       "2b67dd9f3d3a830028643cc1bce4e881b687fc16",
        [
         "dom/observable/tentative/observable-inspect.any.html",
         {}
@@ -500299,6 +500544,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "no-beforeinput-when-no-selection.html": [
+      "098a95863a606393502d4e2fc517fcb8ad144d35",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "non-html-document.html": [
@@ -517565,7 +517819,7 @@
      ]
     ],
     "notify-event-prevent-caching.https.html": [
-     "ad2d01151313a09446a563bac91359f73f0b62c9",
+     "a3824aa411052c9e182a9ca4f5543a3e3d8a6e6e",
      [
       null,
       {
@@ -593973,6 +594227,15 @@
           }
          ]
         ],
+        "select-disabled.tentative.html": [
+         "60530b417d59bd0891f820e76b31d1992cbecc3d",
+         [
+          null,
+          {
+           "testdriver": true
+          }
+         ]
+        ],
         "select-keyboard-behavior.tentative.html": [
          "ff27aeb3a99ba150809d47fdf92a7bbd143a1701",
          [
@@ -609814,6 +610077,13 @@
       ]
      ]
     },
+    "background-image-set-image.html": [
+     "4dbb97c7f5eb918ef33ffa8f6a8bba1de779cc54",
+     [
+      null,
+      {}
+     ]
+    ],
     "broken-image-icon.html": [
      "be27e34e6ac9274276b26f239e7f69a168d2e849",
      [
@@ -690137,7 +690407,7 @@
       ]
      ],
      "buffer.https.any.js": [
-      "75992f5de85f36972285c1b37b62b0e3134261ee",
+      "31a33d9e70654d9c9a10baf7326e2bc86f015982",
       [
        "webnn/conformance_tests/buffer.https.any.html?cpu",
        {
@@ -699322,6 +699592,225 @@
          [
           "title",
           "test parallel WebNN API compute operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "parallel-dispatch.https.any.js": [
+      "2ba1f6cf442bd0f6a36b135df7f8ed865ec98efe",
+      [
+       "webnn/conformance_tests/parallel-dispatch.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test parallel WebNN API dispatch calls"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/parallel-dispatch.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test parallel WebNN API dispatch calls"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/parallel-dispatch.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test parallel WebNN API dispatch calls"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/parallel-dispatch.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test parallel WebNN API dispatch calls"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/parallel-dispatch.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test parallel WebNN API dispatch calls"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/parallel-dispatch.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test parallel WebNN API dispatch calls"
          ],
          [
           "global",
