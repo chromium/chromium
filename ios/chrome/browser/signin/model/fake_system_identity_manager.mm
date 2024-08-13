@@ -46,7 +46,8 @@ FakeSystemIdentityManager::FakeSystemIdentityManager()
 
 FakeSystemIdentityManager::FakeSystemIdentityManager(
     NSArray<id<SystemIdentity>>* identities)
-    : storage_([[FakeSystemIdentityManagerStorage alloc] init]) {
+    : storage_([[FakeSystemIdentityManagerStorage alloc] init]),
+      gaia_ids_removed_by_user_([NSMutableSet set]) {
   DCHECK(!gFakeSystemIdentityManager);
   gFakeSystemIdentityManager = this;
 
@@ -71,6 +72,7 @@ FakeSystemIdentityManager* FakeSystemIdentityManager::FromSystemIdentityManager(
 void FakeSystemIdentityManager::AddIdentity(id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(![storage_ containsIdentity:identity]);
+  [gaia_ids_removed_by_user_ removeObject:identity.gaiaID];
   [storage_ addIdentity:identity];
   FireIdentityListChanged(/*notify_user*/ false);
 
@@ -88,6 +90,7 @@ void FakeSystemIdentityManager::AddIdentityWithUnknownCapabilities(
     id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(![storage_ containsIdentity:identity]);
+  [gaia_ids_removed_by_user_ removeObject:identity.gaiaID];
   [storage_ addIdentity:identity];
   FireIdentityListChanged(/*notify_user*/ false);
 }
@@ -97,6 +100,7 @@ void FakeSystemIdentityManager::AddIdentityWithCapabilities(
     NSDictionary<NSString*, NSNumber*>* capabilities) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(![storage_ containsIdentity:identity]);
+  [gaia_ids_removed_by_user_ removeObject:identity.gaiaID];
   [storage_ addIdentity:identity];
   AccountCapabilitiesTestMutator* mutator =
       GetPendingCapabilitiesMutator(identity);
@@ -114,7 +118,8 @@ void FakeSystemIdentityManager::ForgetIdentityFromOtherApplication(
   if (![storage_ containsIdentity:identity])
     return;
 
-  ForgetIdentityAsync(identity, base::DoNothing(), /*notify_user*/ true);
+  ForgetIdentityAsync(identity, base::DoNothing(), /*notify_user=*/true,
+                      /*removed_by_user=*/false);
 }
 
 AccountCapabilitiesTestMutator*
@@ -257,7 +262,11 @@ void FakeSystemIdentityManager::ForgetIdentity(
   PostClosure(FROM_HERE,
               base::BindOnce(&FakeSystemIdentityManager::ForgetIdentityAsync,
                              GetWeakPtr(), identity, std::move(callback),
-                             /*notify_user*/ false));
+                             /*notify_user=*/false, /*removed_by_user=*/true));
+}
+
+bool FakeSystemIdentityManager::IdentityRemovedByUser(NSString* gaia_id) {
+  return [gaia_ids_removed_by_user_ containsObject:gaia_id];
 }
 
 void FakeSystemIdentityManager::GetAccessToken(
@@ -368,12 +377,16 @@ FakeSystemIdentityManager::GetWeakPtr() {
 void FakeSystemIdentityManager::ForgetIdentityAsync(
     id<SystemIdentity> identity,
     ForgetIdentityCallback callback,
-    bool notify_user) {
+    bool notify_user,
+    bool removed_by_user) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (![storage_ containsIdentity:identity]) {
     // The identity was removed before async method was called. There is
     // nothing to do.
     return;
+  }
+  if (removed_by_user) {
+    [gaia_ids_removed_by_user_ addObject:identity.gaiaID];
   }
   [storage_ removeIdentity:identity];
 

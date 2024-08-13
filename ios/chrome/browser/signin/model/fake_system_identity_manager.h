@@ -106,6 +106,7 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   void IterateOverIdentities(IdentityIteratorCallback callback) final;
   void ForgetIdentity(id<SystemIdentity> identity,
                       ForgetIdentityCallback callback) final;
+  bool IdentityRemovedByUser(NSString* gaia_id) final;
   void GetAccessToken(id<SystemIdentity> identity,
                       const std::set<std::string>& scopes,
                       AccessTokenCallback callback) final;
@@ -134,7 +135,8 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // Helper used to implement the asynchronous part of `ForgetIdentity`.
   void ForgetIdentityAsync(id<SystemIdentity> identity,
                            ForgetIdentityCallback callback,
-                           bool notify_user);
+                           bool notify_user,
+                           bool removed_by_user);
 
   // Helper used to implement the asynchronous part of `GetAccessToken`.
   void GetAccessTokenAsync(id<SystemIdentity> identity,
@@ -169,6 +171,9 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
 
   // Stores identities.
   __strong FakeSystemIdentityManagerStorage* storage_ = nil;
+  // List of gaia ids for identities that has been removed by calling
+  // `ForgetIdentity()` (instead of `ForgetIdentityFromOtherApplication()`).
+  __strong NSMutableSet<NSString*>* gaia_ids_removed_by_user_ = nil;
 
   base::WeakPtrFactory<FakeSystemIdentityManager> weak_ptr_factory_{this};
 };
