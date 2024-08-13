@@ -158,7 +158,7 @@ void ShoppingUiHandlerDelegate::ShowFeedbackForProductSpecifications(
       browser, feedback::kFeedbackSourceAI,
       /*description_template=*/std::string(),
       /*description_placeholder_text=*/
-      l10n_util::GetStringUTF8(IDS_PRODUCT_SPECIFICATIONS_FEEDBACK_PLACEHOLDER),
+      l10n_util::GetStringUTF8(IDS_COMPARE_FEEDBACK_PLACEHOLDER),
       /*category_tag=*/"product_specifications",
       /*extra_diagnostics=*/std::string(),
       /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));

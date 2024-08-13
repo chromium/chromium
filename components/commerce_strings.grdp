@@ -540,6 +540,9 @@
   <message name="IDS_COMPARE_ENTRY_POINT" desc="The text for the Compare entry point button with a placeholder for the category of products being compared.">
     Compare <ph name="CATEGORY">$1<ex>Baby Carriers</ex></ph>?
   </message>
+  <message name="IDS_COMPARE_FEEDBACK_PLACEHOLDER" desc="Placeholder text for the Compare feedback form.">
+    Send feedback for Compare
+  </message>
   <message name="IDS_COMPARE_LEARN_MORE_A11Y_LABEL" desc="Accessibility label for a link labeled 'Learn more' that links to a help article about tab compare.">
     Learn more about Compare.
   </message>
@@ -584,9 +587,6 @@
   </message>
 
   <!-- For Product Specifications -->
-  <message name="IDS_PRODUCT_SPECIFICATIONS_FEEDBACK_PLACEHOLDER" translateable="false" desc="Placeholder text for the product specifications feedback form.">
-    Send feedback for Product Specifications.
-  </message>
   <message name="IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ACCEPT" translateable="false" desc="The text for the accept button on the FRE disclosure.">
     Lets go
   </message>
