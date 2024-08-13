@@ -57,14 +57,15 @@ static const std::array<std::string, 7> kGameAppIdAllowList{
 // TODO(b/343400145): Move these PWA app IDs into `kGameAppIdAllowList` once
 // they have been fully evaluated and the `game-dashboard-game-pwas` flag is
 // removed.
-static const std::array<std::string, 14> kPWAGameAppIdAllowList{
-    extension_misc::kAmazonLunaAppIdCA, extension_misc::kAmazonLunaAppIdDE,
-    extension_misc::kAmazonLunaAppIdES, extension_misc::kAmazonLunaAppIdFR,
-    extension_misc::kAmazonLunaAppIdIT, extension_misc::kAmazonLunaAppIdPL,
-    extension_misc::kAmazonLunaAppIdUK, extension_misc::kAmazonLunaAppIdUS,
-    extension_misc::kBoosteroidAppId,   extension_misc::kCoolMathGamesAppId,
-    extension_misc::kNowGGAppIdUK,      extension_misc::kNowGGAppIdUS,
-    extension_misc::kPokiAppId,         extension_misc::kXboxCloudGamingAppId};
+static const std::array<std::string, 15> kPWAGameAppIdAllowList{
+    extension_misc::kAmazonLunaAppIdCA,   extension_misc::kAmazonLunaAppIdDE,
+    extension_misc::kAmazonLunaAppIdES,   extension_misc::kAmazonLunaAppIdFR,
+    extension_misc::kAmazonLunaAppIdIT,   extension_misc::kAmazonLunaAppIdNL,
+    extension_misc::kAmazonLunaAppIdPL,   extension_misc::kAmazonLunaAppIdUK,
+    extension_misc::kAmazonLunaAppIdUS,   extension_misc::kBoosteroidAppId,
+    extension_misc::kCoolMathGamesAppId,  extension_misc::kNowGGAppIdUK,
+    extension_misc::kNowGGAppIdUS,        extension_misc::kPokiAppId,
+    extension_misc::kXboxCloudGamingAppId};
 
 // Checks whether the given `app_id` is allow listed to show the Game
 // Dashboard button.
