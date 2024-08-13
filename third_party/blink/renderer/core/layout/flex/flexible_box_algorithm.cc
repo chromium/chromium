@@ -88,7 +88,6 @@ FlexItem::FlexItem(const FlexibleBoxAlgorithm* algorithm,
                    bool is_used_flex_basis_indefinite,
                    bool depends_on_min_max_sizes)
     : algorithm_(algorithm),
-      line_number_(0),
       style_(style),
       flex_base_content_size_(flex_base_content_size),
       min_max_main_sizes_(min_max_main_sizes),
@@ -705,7 +704,6 @@ FlexLine* FlexibleBoxAlgorithm::ComputeNextFlexLine(
         flex_shrink * flex_item.flex_base_content_size_;
     sum_hypothetical_main_size +=
         flex_item.HypotheticalMainAxisMarginBoxSize() + gap_between_items_;
-    flex_item.line_number_ = flex_lines_.size();
   }
   if (line_has_in_flow_item) {
     // We added a gap after every item but there shouldn't be one after the last

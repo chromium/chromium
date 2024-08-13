@@ -138,8 +138,6 @@ class FlexItem {
 
   LayoutUnit CrossAxisOffset(const NGFlexLine&, LayoutUnit cross_axis_size);
 
-  inline const FlexLine* Line() const;
-
   static LayoutUnit AlignmentOffset(LayoutUnit available_free_space,
                                     ItemPosition position,
                                     LayoutUnit baseline_offset,
@@ -149,7 +147,6 @@ class FlexItem {
   void Trace(Visitor*) const;
 
   const FlexibleBoxAlgorithm* algorithm_;
-  wtf_size_t line_number_;
   Member<const ComputedStyle> style_;
   const LayoutUnit flex_base_content_size_;
   const MinMaxSizes min_max_main_sizes_;
@@ -433,10 +430,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   Vector<FlexLine> flex_lines_;
   wtf_size_t next_item_index_;
 };
-
-inline const FlexLine* FlexItem::Line() const {
-  return &algorithm_->FlexLines()[line_number_];
-}
 
 }  // namespace blink
 
