@@ -182,9 +182,9 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Redo Clicked"/>
   <int value="23" label="Result Edited"/>
   <int value="24" label="Edited Result Inserted"/>
-  <int value="25" label="Has successful request">Added in M128</int>
-  <int value="26" label="Has failed request">Added in M128</int>
-  <int value="27" label="Compose Dialog Opened">Added in M128</int>
+  <int value="25" label="Has successful request">Added in M127</int>
+  <int value="26" label="Has failed request">Added in M127</int>
+  <int value="27" label="Compose Dialog Opened">Added in M127</int>
 </enum>
 
 <enum name="ComposeShowStatus">
