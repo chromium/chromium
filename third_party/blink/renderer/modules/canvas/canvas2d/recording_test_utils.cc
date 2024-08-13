@@ -9,10 +9,12 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_record.h"
 #include "cc/test/paint_op_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
 
 namespace blink_testing {
 
@@ -36,6 +38,19 @@ RecordedOpsView::RecordedOpsView(cc::PaintRecord record)
 
   // The last `PaintOp` must be a `RestoreOp`.
   EXPECT_THAT(*end_, PaintOpEq<RestoreOp>());
+}
+
+cc::PaintFlags FillFlags() {
+  cc::PaintFlags rect_flags;
+  rect_flags.setAntiAlias(true);
+  rect_flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
+  return rect_flags;
+}
+
+cc::PaintFlags ClearRectFlags() {
+  cc::PaintFlags clear_flags;
+  clear_flags.setBlendMode(SkBlendMode::kClear);
+  return clear_flags;
 }
 
 }  // namespace blink_testing

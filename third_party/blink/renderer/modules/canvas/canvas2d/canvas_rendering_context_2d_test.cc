@@ -124,7 +124,6 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorType.h"
@@ -157,6 +156,8 @@ class ExecutionContext;
 }  // namespace blink
 
 using ::base::test::ScopedFeatureList;
+using ::blink_testing::ClearRectFlags;
+using ::blink_testing::FillFlags;
 using ::blink_testing::RecordedOpsAre;
 using ::cc::ClipRectOp;
 using ::cc::DrawColorOp;
@@ -502,19 +503,6 @@ testing::Matcher<base::HistogramTester> OverdrawOpAre(Args... args) {
       std::unordered_set<BaseRenderingContext2D::OverdrawOp>{args...});
 }
 
-cc::PaintFlags DrawRectFlags() {
-  cc::PaintFlags rect_flags;
-  rect_flags.setAntiAlias(true);
-  rect_flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
-  return rect_flags;
-}
-
-cc::PaintFlags ClearRectFlags() {
-  cc::PaintFlags clear_flags;
-  clear_flags.setBlendMode(SkBlendMode::kClear);
-  return clear_flags;
-}
-
 TEST_P(CanvasRenderingContext2DTest, FillRect_FullCoverage) {
   // Fill rect no longer supports overdraw optimizations
   // Reason: low real world incidence not worth the test overhead.
@@ -528,9 +516,9 @@ TEST_P(CanvasRenderingContext2DTest, FillRect_FullCoverage) {
   EXPECT_THAT(
       Context2D()->FlushCanvas(FlushReason::kTesting),
       Optional(RecordedOpsAre(
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 1, 1), DrawRectFlags()),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 1, 1), FillFlags()),
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(-1, -1, 12, 12),
-                                DrawRectFlags()))));
+                                FillFlags()))));
   EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
@@ -547,7 +535,7 @@ TEST_P(CanvasRenderingContext2DTest, DisableOverdrawOptimization) {
   EXPECT_THAT(
       Context2D()->FlushCanvas(FlushReason::kTesting),
       Optional(RecordedOpsAre(
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 1, 1), DrawRectFlags()),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 1, 1), FillFlags()),
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
                                 ClearRectFlags()))));
   EXPECT_THAT(histogram_tester, OverdrawOpAre());
@@ -580,7 +568,7 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_PartialCoverage) {
   EXPECT_THAT(
       Context2D()->FlushCanvas(FlushReason::kTesting),
       Optional(RecordedOpsAre(
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 1, 1), DrawRectFlags()),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 1, 1), FillFlags()),
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 9, 9),
                                 ClearRectFlags()))));
   EXPECT_THAT(histogram_tester, OverdrawOpAre());
@@ -605,15 +593,14 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_InsideLayer) {
   EXPECT_THAT(
       Context2D()->FlushCanvas(FlushReason::kTesting),
       Optional(RecordedOpsAre(
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 1, 1), DrawRectFlags()),
-          DrawRecordOpEq(PaintOpEq<SaveLayerAlphaOp>(1.0f),
-                         PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(2, 2, 2, 2),
-                                               DrawRectFlags()),
-                         PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
-                                               ClearRectFlags()),
-                         PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 3, 3),
-                                               DrawRectFlags()),
-                         PaintOpEq<RestoreOp>()))));
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 1, 1), FillFlags()),
+          DrawRecordOpEq(
+              PaintOpEq<SaveLayerAlphaOp>(1.0f),
+              PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(2, 2, 2, 2), FillFlags()),
+              PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
+                                    ClearRectFlags()),
+              PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 3, 3), FillFlags()),
+              PaintOpEq<RestoreOp>()))));
   EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
@@ -640,18 +627,16 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_InsideNestedLayer) {
   EXPECT_THAT(
       Context2D()->FlushCanvas(FlushReason::kTesting),
       Optional(RecordedOpsAre(
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 1, 1), DrawRectFlags()),
-          DrawRecordOpEq(PaintOpEq<SaveLayerAlphaOp>(1.0f),
-                         PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(2, 2, 2, 2),
-                                               DrawRectFlags()),
-                         PaintOpEq<SaveLayerAlphaOp>(1.0f),
-                         PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 3, 3),
-                                               DrawRectFlags()),
-                         PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
-                                               ClearRectFlags()),
-                         PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(4, 4, 4, 4),
-                                               DrawRectFlags()),
-                         PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()))));
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 1, 1), FillFlags()),
+          DrawRecordOpEq(
+              PaintOpEq<SaveLayerAlphaOp>(1.0f),
+              PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(2, 2, 2, 2), FillFlags()),
+              PaintOpEq<SaveLayerAlphaOp>(1.0f),
+              PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 3, 3), FillFlags()),
+              PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
+                                    ClearRectFlags()),
+              PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(4, 4, 4, 4), FillFlags()),
+              PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()))));
   EXPECT_THAT(histogram_tester, OverdrawOpAre());
 }
 
@@ -724,7 +709,7 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_TransformPartialCoverage) {
       Context2D()->FlushCanvas(FlushReason::kTesting),
       Optional(RecordedOpsAre(
           PaintOpIs<TranslateOp>(),
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 1, 1), DrawRectFlags()),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 1, 1), FillFlags()),
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
                                 ClearRectFlags()))));
   EXPECT_THAT(histogram_tester, OverdrawOpAre());
@@ -784,7 +769,7 @@ TEST_P(CanvasRenderingContext2DTest, ClearRect_Clipped) {
       Context2D()->FlushCanvas(FlushReason::kTesting),
       Optional(RecordedOpsAre(
           PaintOpIs<ClipRectOp>(),
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 1, 1), DrawRectFlags()),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 1, 1), FillFlags()),
           PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
                                 ClearRectFlags()))));
   EXPECT_THAT(histogram_tester, OverdrawOpAre());
@@ -1932,7 +1917,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
   // Hibernating should have rastered paint ops preceding `beginLayer`.
   EXPECT_THAT(hibernation_raster,
               RecordedOpsAre(PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 1, 1),
-                                                   DrawRectFlags())));
+                                                   FillFlags())));
 
   // Wake up from hibernation.
   GetDocument().GetPage()->SetVisibilityState(
@@ -1946,7 +1931,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
       Context2D()->FlushCanvas(FlushReason::kTesting),
       Optional(RecordedOpsAre(DrawRecordOpEq(
           PaintOpEq<SaveLayerAlphaOp>(1.0f),
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 1, 1), DrawRectFlags()),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 1, 1), FillFlags()),
           DrawImageRectOpIs(
               CreateSkImage(/*width=*/1, /*height=*/1, SK_ColorRED)),
           PaintOpEq<RestoreOp>()))));
@@ -2095,17 +2080,13 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   Context2D()->endLayer(exception_state);
   Context2D()->restore(exception_state);
 
-  cc::PaintFlags rect_flags;
-  rect_flags.setAntiAlias(true);
-  rect_flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
-
   EXPECT_THAT(
       Context2D()->FlushCanvas(FlushReason::kTesting),
       Optional(RecordedOpsAre(
           PaintOpEq<SaveOp>(),
           DrawRecordOpEq(PaintOpEq<SaveLayerAlphaOp>(1.0f),
                          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(10, 20, 30, 40),
-                                               rect_flags),
+                                               FillFlags()),
                          PaintOpEq<RestoreOp>()),
           PaintOpEq<RestoreOp>())));
 }

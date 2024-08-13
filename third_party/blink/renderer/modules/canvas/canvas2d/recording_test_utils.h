@@ -15,6 +15,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace cc {
+class PaintFlags;
+}
+
 namespace blink_testing {
 
 // A view of a `cc::PaintRecord` which drops the leading and trailing
@@ -47,6 +51,12 @@ testing::Matcher<cc::PaintRecord> RecordedOpsAre(Args... args) {
       [](const cc::PaintRecord& record) { return RecordedOpsView(record); },
       testing::ElementsAre(args...));
 }
+
+// Returns the default `cc::PaintFlags` used when recording a fill op (e.g.
+// fillRect).
+cc::PaintFlags FillFlags();
+// Returns the default `cc::PaintFlags` used when recording a clearRect op.
+cc::PaintFlags ClearRectFlags();
 
 }  // namespace blink_testing
 

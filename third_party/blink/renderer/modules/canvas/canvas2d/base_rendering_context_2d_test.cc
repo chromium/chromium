@@ -71,6 +71,7 @@
 namespace blink {
 namespace {
 
+using ::blink_testing::FillFlags;
 using ::blink_testing::ParseFilter;
 using ::blink_testing::RecordedOpsAre;
 using ::blink_testing::RecordedOpsView;
@@ -1379,16 +1380,13 @@ TEST(BaseRenderingContextRestoreStackTests, UnclosedLayersAreNotFlushed) {
   context->fillRect(2, 2, 6, 6);
 
   // Only draw ops preceding `beginLayer` gets flushed.
-  cc::PaintFlags rect_flags;
-  rect_flags.setAntiAlias(true);
-  rect_flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
   EXPECT_THAT(
       context->FlushRecorder(),
       RecordedOpsAre(
           PaintOpEq<SaveOp>(), PaintOpEq<TranslateOp>(1, 2),
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 4, 4), rect_flags),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(0, 0, 4, 4), FillFlags()),
           PaintOpEq<SaveOp>(), PaintOpEq<TranslateOp>(3, 4),
-          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), rect_flags),
+          PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 1, 5, 5), FillFlags()),
           PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 
   context->fillRect(3, 3, 7, 7);
@@ -1450,8 +1448,8 @@ TEST(BaseRenderingContextRestoreStackTests, UnclosedLayersAreNotFlushed) {
                                            0, 0, 0, 1)),
               PaintOpEq<SaveLayerOp>(filter_flags),
               PaintOpEq<TranslateOp>(5.0f, 6.0f),
-              PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(2, 2, 6, 6), rect_flags),
-              PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 7, 7), rect_flags),
+              PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(2, 2, 6, 6), FillFlags()),
+              PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 7, 7), FillFlags()),
               PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>(),
               PaintOpEq<RestoreOp>()),
 
@@ -1494,12 +1492,9 @@ TEST(BaseRenderingContextResetTest, DiscardsRenderStates) {
   // Do some operation and check that the rendering state was reset:
   context->fillRect(1, 2, 3, 4);
 
-  cc::PaintFlags fill_rect_flags;
-  fill_rect_flags.setAntiAlias(true);
-  fill_rect_flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
   EXPECT_THAT(context->FlushRecorder(),
               RecordedOpsAre(PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(1, 2, 3, 4),
-                                                   fill_rect_flags)));
+                                                   FillFlags())));
 }
 
 TEST(BaseRenderingContextLayersCallOrderTests, LoneBeginLayer) {
@@ -1772,10 +1767,7 @@ TEST(BaseRenderingContextMeshTests, DrawMesh) {
               /*crop_rect=*/std::nullopt)),
       no_exception);
 
-  PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setFilterQuality(PaintFlags::FilterQuality::kLow);
-
+  PaintFlags flags = FillFlags();
   SkMatrix local_matrix = SkMatrix::Scale(1.0f / 10, 1.0f / 10);
   flags.setShader(PaintShader::MakeImage(PaintImage(), SkTileMode::kClamp,
                                          SkTileMode::kClamp, &local_matrix));
