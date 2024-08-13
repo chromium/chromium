@@ -182,7 +182,7 @@
     "typescript": "5.5.4",
     "webdriverio": "8.39.1",
     "websocket": "1.0.35",
-    "wireit": "0.14.5",
+    "wireit": "0.14.7",
     "ws": "8.18.0",
     "yargs": "17.7.2"
   },
