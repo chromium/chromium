@@ -91,20 +91,10 @@ in [orderfile.py](../tools/perf/contrib/orderfile/orderfile.py). These profiles
 are a list of function offsets into the binary that were called during execution
 of the benchmarks.
 
-3. **Cluster the symbols from the profiles to generate the unpatched orderfile.**
+3. **Cluster the symbols from the profiles to generate the orderfile.**
 The offsets are processed and merged using a
 [clustering](../tools/cygprofile/cluster.py) algorithm to produce an orderfile.
 
-4. **Build an uninstrumented Chrome and patch the orderfile with it.** The
-orderfile based on an instrumented build cannot be applied directly to an
-uninstrumented build. The orderfile needs to be
-[patched](../tools/cygprofile/patch_orderfile.py) with an uninstrumented build
-because the instrumentation has a non-trivial impact on inlining decisions and
-has identical code folding disabled. The patching step produces the final
-orderfile which will be in `clank/orderfiles/` for internal builds, or in
-`orderfiles/` if running the generator script with `--public`. The
-uninstrumented build will be in `out/orderfile_arm64_uninstrumented_out`.
-
-5. **Run benchmarks on the final orderfile.** We run some benchmarks to compare
+4. **Run benchmarks on the final orderfile.** We run some benchmarks to compare
 the performance with/without the orderfile. You can supply the `--no-benchmark`
 flag to skip this step.
