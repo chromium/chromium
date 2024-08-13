@@ -1027,7 +1027,7 @@ bool ShouldDeleteUndecryptablePasswords(
     LoginDatabase::ClearingUndecryptablePasswordsCallback
         clearing_undecryptable_passwords,
     bool is_user_data_dir_policy_set,
-    bool is_disabled_by_policy) {
+    bool is_enabled_by_policy) {
 #if BUILDFLAG(IS_LINUX)
   std::string user_data_dir_string;
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
@@ -1076,7 +1076,7 @@ bool ShouldDeleteUndecryptablePasswords(
     return false;
   }
 
-  if (is_disabled_by_policy) {
+  if (!is_enabled_by_policy) {
     RecordShouldDeleteUndecryptablePasswordsMetric(
         ShouldDeleteUndecryptablePasswordsResult::kDisabledByPolicy);
     return false;
@@ -1102,11 +1102,13 @@ struct LoginDatabase::PrimaryKeyAndPassword {
 };
 
 LoginDatabase::LoginDatabase(const base::FilePath& db_path,
-                             IsAccountStore is_account_store)
+                             IsAccountStore is_account_store,
+                             DeletingUndecryptablePasswordsEnabled can_delete)
     : db_path_(db_path),
       is_account_store_(is_account_store),
       // Set options for a small, private database (based on WebDatabase).
-      db_({.page_size = 2048, .cache_size = 32}) {}
+      db_({.page_size = 2048, .cache_size = 32}),
+      is_deleting_undecryptable_logins_enabled_by_policy_(can_delete) {}
 
 LoginDatabase::~LoginDatabase() = default;
 
@@ -2382,7 +2384,7 @@ FormRetrievalResult LoginDatabase::StatementToForms(
   if (failed) {
     if (ShouldDeleteUndecryptablePasswords(
             clearing_undecryptable_passwords_, is_user_data_dir_policy_set_,
-            is_deleting_undecryptable_logins_disabled_by_policy_)) {
+            is_deleting_undecryptable_logins_enabled_by_policy_.value())) {
       DatabaseCleanupResult result = DeleteUndecryptableLogins();
       if (result == DatabaseCleanupResult::kSuccess) {
         were_undecryptable_logins_deleted_ = true;

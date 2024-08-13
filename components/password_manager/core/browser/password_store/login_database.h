@@ -67,8 +67,13 @@ class LoginDatabase : public EncryptDecryptInterface {
       base::RepeatingCallback<void(LoginDatabaseEmptinessState)>;
   using ClearingUndecryptablePasswordsCallback =
       base::RepeatingCallback<void(bool)>;
+  using DeletingUndecryptablePasswordsEnabled =
+      base::StrongAlias<class DeletingUndecryptablePasswordsEnabledTag, bool>;
 
-  LoginDatabase(const base::FilePath& db_path, IsAccountStore is_account_store);
+  LoginDatabase(const base::FilePath& db_path,
+                IsAccountStore is_account_store,
+                DeletingUndecryptablePasswordsEnabled can_delete =
+                    DeletingUndecryptablePasswordsEnabled(true));
   LoginDatabase(const LoginDatabase&) = delete;
   LoginDatabase& operator=(const LoginDatabase&) = delete;
 
@@ -206,9 +211,6 @@ class LoginDatabase : public EncryptDecryptInterface {
   void SetClearingUndecryptablePasswordsCb(
       ClearingUndecryptablePasswordsCallback clearing_undecryptable_passwords);
 
-  void SetIsDeletingUndecryptableLoginsDisabledByPolicy(bool is_disabled) {
-    is_deleting_undecryptable_logins_disabled_by_policy_ = is_disabled;
-  }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void SetIsUserDataDirPolicySet(bool is_set) {
     is_user_data_dir_policy_set_ = is_set;
@@ -396,7 +398,8 @@ class LoginDatabase : public EncryptDecryptInterface {
 
   std::optional<bool> were_undecryptable_logins_deleted_;
   bool is_user_data_dir_policy_set_ = false;
-  bool is_deleting_undecryptable_logins_disabled_by_policy_ = false;
+  DeletingUndecryptablePasswordsEnabled
+      is_deleting_undecryptable_logins_enabled_by_policy_;
 
   // These cached strings are used to build SQL statements.
   std::string add_statement_;

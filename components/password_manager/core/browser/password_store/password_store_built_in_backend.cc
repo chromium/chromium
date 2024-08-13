@@ -210,18 +210,6 @@ void PasswordStoreBuiltInBackend::InitBackend(
           &LoginDatabaseAsyncHelper::SetClearingUndecryptablePasswordsCb,
           base::Unretained(helper_.get()),
           std::move(clearing_undecryptable_passwords_cb)));
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_IOS)
-  background_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LoginDatabaseAsyncHelper::
-                         SetIsDeletingUndecryptableLoginsDisabledByPolicy,
-                     base::Unretained(helper_.get()),
-                     !pref_service_->GetBoolean(
-                         prefs::kDeletingUndecryptablePasswordsEnabled)));
-#endif
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   background_task_runner_->PostTask(

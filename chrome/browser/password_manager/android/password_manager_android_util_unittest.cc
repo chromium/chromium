@@ -984,7 +984,7 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
     // database file when using the split stores feature).
     std::unique_ptr<password_manager::LoginDatabase> login_db(
         password_manager::CreateLoginDatabaseForProfileStorage(
-            profile->GetPath()));
+            profile->GetPath(), profile->GetPrefs()));
     password_manager::LoginDatabase* login_db_ptr = login_db.get();
     std::unique_ptr<password_manager::PasswordStoreBackend> profile_backend =
         std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
@@ -1010,7 +1010,7 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
     std::unique_ptr<password_manager::PasswordStoreBackend> account_backend =
         std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
             password_manager::CreateLoginDatabaseForAccountStorage(
-                profile->GetPath()),
+                profile->GetPath(), profile->GetPrefs()),
             syncer::WipeModelUponSyncDisabledBehavior::kAlways,
             profile->GetPrefs());
     AccountPasswordStoreFactory::GetInstance()->SetTestingFactory(

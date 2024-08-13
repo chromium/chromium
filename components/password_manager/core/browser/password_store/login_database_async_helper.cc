@@ -381,14 +381,6 @@ void LoginDatabaseAsyncHelper::SetClearingUndecryptablePasswordsCb(
   }
 }
 
-void LoginDatabaseAsyncHelper::SetIsDeletingUndecryptableLoginsDisabledByPolicy(
-    bool is_disabled) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (login_db_) {
-    login_db_->SetIsDeletingUndecryptableLoginsDisabledByPolicy(is_disabled);
-  }
-}
-
 PasswordStoreChangeList LoginDatabaseAsyncHelper::AddCredentialSync(
     const sync_pb::PasswordSpecificsData& password,
     AddCredentialError* error) {

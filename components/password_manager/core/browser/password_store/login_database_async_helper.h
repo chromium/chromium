@@ -99,7 +99,6 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
   // after a successful rollout.
   void SetClearingUndecryptablePasswordsCb(
       base::RepeatingCallback<void(bool)> clearing_undecryptable_passwords);
-  void SetIsDeletingUndecryptableLoginsDisabledByPolicy(bool is_disabled);
 
  private:
   // Implements PasswordStoreSync interface.

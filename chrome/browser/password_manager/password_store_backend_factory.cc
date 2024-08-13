@@ -53,8 +53,8 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBuiltInBackend(
     PrefService* prefs,
     os_crypt_async::OSCryptAsync* os_crypt_async) {
   std::unique_ptr<password_manager::LoginDatabase> login_db(
-      password_manager::CreateLoginDatabaseForProfileStorage(
-          login_db_directory));
+      password_manager::CreateLoginDatabaseForProfileStorage(login_db_directory,
+                                                             prefs));
   password_manager::LoginDatabase* login_db_ptr = login_db.get();
   std::unique_ptr<PasswordStoreBackend> backend =
       std::make_unique<PasswordStoreBuiltInBackend>(
@@ -184,8 +184,8 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
         unsynced_deletions_notifier,
     os_crypt_async::OSCryptAsync* os_crypt_async) {
   std::unique_ptr<password_manager::LoginDatabase> login_db(
-      password_manager::CreateLoginDatabaseForAccountStorage(
-          login_db_directory));
+      password_manager::CreateLoginDatabaseForAccountStorage(login_db_directory,
+                                                             prefs));
   std::unique_ptr<PasswordStoreBackend> backend;
 #if !BUILDFLAG(IS_ANDROID)
   password_manager::LoginDatabase* login_db_ptr = login_db.get();

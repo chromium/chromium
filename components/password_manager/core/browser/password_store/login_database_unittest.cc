@@ -2572,10 +2572,9 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   auto form3 =
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
-  LoginDatabase db(database_path(), IsAccountStore(false));
+  LoginDatabase db(database_path(), IsAccountStore(false),
+                   LoginDatabase::DeletingUndecryptablePasswordsEnabled(false));
   ASSERT_TRUE(db.Init(nullptr));
-
-  db.SetIsDeletingUndecryptableLoginsDisabledByPolicy(true);
 
   EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
   histogram_tester.ExpectTotalCount(
