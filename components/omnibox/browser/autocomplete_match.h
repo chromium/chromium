@@ -587,8 +587,11 @@ struct AutocompleteMatch {
   // next.
   int GetSortingOrder() const;
 
-  // Returns true if the match is eligible to be re-scored by ML Url scoring.
-  bool IsUrlScoringEligible() const;
+  // Returns true if the match is eligible for ML scoring signal logging.
+  bool IsMlSignalLoggingEligible() const;
+
+  // Returns true if the match is eligible to be re-scored by ML scoring.
+  bool IsMlScoringEligible() const;
 
   // Filter OmniboxActions based on the supplied qualifiers.
   // The order of the supplied qualifiers determines the preference.
@@ -952,12 +955,6 @@ struct AutocompleteMatch {
 
   // Signals for ML scoring.
   std::optional<ScoringSignals> scoring_signals;
-
-  // A flag that's set during the de-duplication process in order to forcibly
-  // exclude this match from ML scoring (e.g. this match is ML-eligible, but one
-  // of the matches in `duplicate_matches` is not). Furthermore, when this flag
-  // is set, ML scoring signals will NOT be logged for this particular match.
-  bool force_skip_ml_scoring = false;
 
   // A flag to mark whether this would've been excluded from the "original" list
   // of matches. Traditionally, providers limit the number of suggestions they

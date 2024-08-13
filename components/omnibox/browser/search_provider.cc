@@ -1550,15 +1550,19 @@ AutocompleteMatch SearchProvider::NavigationToMatch(
 
   match.from_keyword = navigation.from_keyword();
 
-  // Initialize the ML scoring signals for this suggestion if needed.
-  if (!match.scoring_signals) {
-    match.scoring_signals = std::make_optional<ScoringSignals>();
-  }
+  // Only set scoring signals for eligible matches.
+  if (match.IsMlSignalLoggingEligible()) {
+    // Initialize the ML scoring signals for this suggestion if needed.
+    if (!match.scoring_signals) {
+      match.scoring_signals = std::make_optional<ScoringSignals>();
+    }
 
-  if (navigation.relevance_from_server()) {
-    match.scoring_signals->set_search_suggest_relevance(navigation.relevance());
+    if (navigation.relevance_from_server()) {
+      match.scoring_signals->set_search_suggest_relevance(
+          navigation.relevance());
+    }
+    SearchScoringSignalsAnnotator::UpdateMatchTypeScoringSignals(match, input);
   }
-  SearchScoringSignalsAnnotator::UpdateMatchTypeScoringSignals(match, input);
 
   return match;
 }

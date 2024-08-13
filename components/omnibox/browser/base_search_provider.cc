@@ -530,16 +530,19 @@ void BaseSearchProvider::AddMatchToMap(
   if (mark_as_deletable)
     match.deletable = true;
 
-  // Initialize the ML scoring signals for this suggestion if needed.
-  if (!match.scoring_signals) {
-    match.scoring_signals = std::make_optional<ScoringSignals>();
-  }
+  // Only set scoring signals for eligible matches.
+  if (match.IsMlSignalLoggingEligible()) {
+    // Initialize the ML scoring signals for this suggestion if needed.
+    if (!match.scoring_signals) {
+      match.scoring_signals = std::make_optional<ScoringSignals>();
+    }
 
-  if (result.relevance_from_server()) {
-    match.scoring_signals->set_search_suggest_relevance(result.relevance());
+    if (result.relevance_from_server()) {
+      match.scoring_signals->set_search_suggest_relevance(result.relevance());
+    }
+    SearchScoringSignalsAnnotator::UpdateMatchTypeScoringSignals(match,
+                                                                 input.text());
   }
-  SearchScoringSignalsAnnotator::UpdateMatchTypeScoringSignals(match,
-                                                               input.text());
 
   // Try to add `match` to `map`.
   // NOTE: Keep this ToLower() call in sync with url_database.cc.

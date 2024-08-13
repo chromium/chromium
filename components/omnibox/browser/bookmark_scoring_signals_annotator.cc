@@ -50,7 +50,7 @@ void BookmarkScoringSignalsAnnotator::AnnotateResult(
 
   for (auto& match : *result) {
     // Skip ineligible matches.
-    if (!IsEligibleMatch(match)) {
+    if (!match.IsMlSignalLoggingEligible()) {
       continue;
     }
 

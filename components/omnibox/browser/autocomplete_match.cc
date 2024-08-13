@@ -64,19 +64,6 @@ constexpr bool kIsAndroid = BUILDFLAG(IS_ANDROID);
 
 namespace {
 
-bool IsMatchTypeUrlScoringEligible(const AutocompleteMatch* match) {
-  const std::vector<AutocompleteMatchType::Type> ml_scoring_ineligible_types{
-      AutocompleteMatchType::URL_WHAT_YOU_TYPED,
-      AutocompleteMatchType::NAVSUGGEST,
-      AutocompleteMatchType::NAVSUGGEST_PERSONALIZED,
-      AutocompleteMatchType::TILE_NAVSUGGEST};
-
-  return std::find(ml_scoring_ineligible_types.begin(),
-                   ml_scoring_ineligible_types.end(),
-                   match->type) == ml_scoring_ineligible_types.end() &&
-         !AutocompleteMatch::IsSearchType(match->type);
-}
-
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
 // Used for `SEARCH_SUGGEST_TAIL` and `NULL_RESULT_MESSAGE` (e.g. starter pack)
 // type suggestion icons.
@@ -1467,9 +1454,57 @@ int AutocompleteMatch::GetSortingOrder() const {
   return 4;
 }
 
-bool AutocompleteMatch::IsUrlScoringEligible() const {
-  return scoring_signals.has_value() && IsMatchTypeUrlScoringEligible(this) &&
-         !force_skip_ml_scoring;
+bool AutocompleteMatch::IsMlSignalLoggingEligible() const {
+  const auto& ml_config = OmniboxFieldTrial::GetMLConfig();
+  return type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
+         type == AutocompleteMatchType::HISTORY_URL ||
+         type == AutocompleteMatchType::HISTORY_TITLE ||
+         type == AutocompleteMatchType::BOOKMARK_TITLE ||
+         type == AutocompleteMatchType::NAVSUGGEST ||
+         type == AutocompleteMatchType::NAVSUGGEST_PERSONALIZED ||
+         type == AutocompleteMatchType::TILE_NAVSUGGEST ||
+         (ml_config.shortcut_document_signals &&
+          type == AutocompleteMatchType::DOCUMENT_SUGGESTION) ||
+         AutocompleteMatch::IsSearchType(type) ||
+         AutocompleteMatch::IsVerbatimType();
+}
+
+bool AutocompleteMatch::IsMlScoringEligible() const {
+  if (!scoring_signals.has_value()) {
+    return false;
+  }
+
+  // Certain suggestion types are manually excluded from ML scoring (since
+  // applying ML scoring to these suggestions currently results in suboptimal
+  // behavior).
+  if (type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
+      type == AutocompleteMatchType::NAVSUGGEST ||
+      type == AutocompleteMatchType::NAVSUGGEST_PERSONALIZED ||
+      type == AutocompleteMatchType::TILE_NAVSUGGEST) {
+    return false;
+  }
+
+  // Do not apply ML scoring to stale suggestions sourced from the
+  // DocumentProvider cache.
+  if (type == AutocompleteMatchType::DOCUMENT_SUGGESTION && relevance == 0) {
+    return false;
+  }
+
+  // Search suggestions are currently considered ineligible for ML scoring.
+  if (AutocompleteMatch::IsSearchType(type)) {
+    return false;
+  }
+
+  // If any of the duplicates under this match are ineligible for ML scoring,
+  // then the top-level match (this) is also considered ineligible for ML
+  // scoring.
+  if (base::ranges::any_of(duplicate_matches, [](const auto& match) {
+        return !match.IsMlScoringEligible();
+      })) {
+    return false;
+  }
+
+  return true;
 }
 
 bool AutocompleteMatch::IsTrendSuggestion() const {
@@ -1718,20 +1753,9 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
         duplicate_match.rich_autocompletion_triggered;
   }
 
-  // If either one of the matches is ineligible for ML scoring, then ensure that
-  // the final match is marked as ineligible for ML scoring. Search suggestions
-  // are guaranteed to be excluded from ML scoring at this time, so there's no
-  // need to set `force_skip_ml_scoring` for those matches.
-  if (base::FeatureList::IsEnabled(omnibox::kEnableForceSkipMlScoring) &&
-      (!IsUrlScoringEligible() || !duplicate_match.IsUrlScoringEligible()) &&
-      !AutocompleteMatch::IsSearchType(type)) {
-    force_skip_ml_scoring = true;
-    RecordAdditionalInfo("force skip ml scoring", "true");
-  }
-
-  // Merge scoring signals from duplicate match for ML model scoring and
-  // training.
-  if (OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled()) {
+  // Merge ML scoring signals from duplicate match when appropriate.
+  if (OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled() &&
+      IsMlSignalLoggingEligible()) {
     MergeScoringSignals(duplicate_match);
   }
 }

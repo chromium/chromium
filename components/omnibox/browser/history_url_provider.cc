@@ -1188,9 +1188,8 @@ AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
 
   RecordAdditionalInfoFromUrlRow(info, &match);
 
-  // Populate scoring signals for machine learning model training and scoring.
-  if (populate_scoring_signals &&
-      AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match)) {
+  // Populate ML scoring signals when appropriate.
+  if (populate_scoring_signals && match.IsMlSignalLoggingEligible()) {
     match.scoring_signals = std::make_optional<ScoringSignals>();
     match.scoring_signals->set_typed_count(info.typed_count());
     match.scoring_signals->set_visit_count(info.visit_count());

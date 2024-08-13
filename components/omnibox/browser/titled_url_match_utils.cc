@@ -149,7 +149,7 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
   }
 
   if (OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled() &&
-      AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match)) {
+      match.IsMlSignalLoggingEligible()) {
     match.scoring_signals = std::make_optional<ScoringSignals>();
     // Populate ACMatches with signals for ML model scoring and training.
     if (!titled_url_match.title_match_positions.empty())
