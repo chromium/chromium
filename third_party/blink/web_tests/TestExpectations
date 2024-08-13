@@ -2670,8 +2670,6 @@ crbug.com/358437652 external/wpt/dom/events/scrolling/wheel-event-transactions-t
 crbug.com/358437652 external/wpt/dom/events/scrolling/wheel-event-transactions-target-removal.html [ Timeout ]
 crbug.com/358437652 external/wpt/dom/events/scrolling/wheel-event-transactions-target-resize.html?include=passive-false [ Timeout ]
 crbug.com/358437652 external/wpt/dom/events/scrolling/wheel-event-transactions-target-resize.html?include=passive-true [ Timeout ]
-crbug.com/358437643 [ Win11-arm64 ] external/wpt/html/semantics/forms/the-label-element/control-active-with-multiple-clicks.html [ Timeout ]
-crbug.com/358437643 [ Mac ] external/wpt/html/semantics/forms/the-label-element/control-active-with-multiple-clicks.html [ Timeout ]
 crbug.com/358399788 [ Win11-arm64 ] virtual/threaded/external/wpt/css/css-view-transitions/nested/contain-nested.tentative.html [ Failure ]
 crbug.com/358399788 [ Win11-arm64 ] virtual/threaded/external/wpt/css/css-view-transitions/nested/nearest-direct.tentative.html [ Failure ]
 crbug.com/358399788 [ Win11-arm64 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/compute-explicit-name-non-ancestor.tentative.html [ Failure ]
