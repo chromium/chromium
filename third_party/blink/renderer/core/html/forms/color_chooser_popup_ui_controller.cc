@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 
