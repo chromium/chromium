@@ -8,7 +8,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../../test_support.js';
 
@@ -218,6 +218,7 @@ suite('NewTabPageModulesCalendarEventTest', () => {
     });
 
     test('basic event click', async () => {
+      const usagePromise = eventToPromise('usage', element);
       const moduleName = 'GoogleCalendar';
       element.event = createEvent(1);
       element.moduleName = moduleName;
@@ -230,6 +231,8 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       element.$.header.click();
 
       // Assert.
+      const usageEvent: Event = await usagePromise;
+      assertTrue(!!usageEvent);
       assertEquals(
           1,
           metrics.count(
@@ -242,6 +245,7 @@ suite('NewTabPageModulesCalendarEventTest', () => {
     });
 
     test('expanded event click', async () => {
+      const usagePromise = eventToPromise('usage', element);
       const moduleName = 'GoogleCalendar';
       element.expanded = true;
       element.event = createEvent(1);
@@ -255,6 +259,8 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       element.$.header.click();
 
       // Assert.
+      const usageEvent: Event = await usagePromise;
+      assertTrue(!!usageEvent);
       assertEquals(
           1,
           metrics.count(
@@ -267,6 +273,7 @@ suite('NewTabPageModulesCalendarEventTest', () => {
     });
 
     test('double booked event click', async () => {
+      const usagePromise = eventToPromise('usage', element);
       const moduleName = 'GoogleCalendar';
       element.doubleBooked = true;
       element.event = createEvent(1);
@@ -280,6 +287,8 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       element.$.header.click();
 
       // Assert.
+      const usageEvent: Event = await usagePromise;
+      assertTrue(!!usageEvent);
       assertEquals(
           1,
           metrics.count(
@@ -292,6 +301,7 @@ suite('NewTabPageModulesCalendarEventTest', () => {
     });
 
     test('attachment click', async () => {
+      const usagePromise = eventToPromise('usage', element);
       const moduleName = 'GoogleCalendar';
       element.expanded = true;
       element.event = createEvent(1, {attachments: createAttachments(3)});
@@ -304,6 +314,8 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       (attachments[1]! as HTMLElement).click();
 
       // Assert.
+      const usageEvent: Event = await usagePromise;
+      assertTrue(!!usageEvent);
       assertEquals(
           1,
           metrics.count(
@@ -312,6 +324,7 @@ suite('NewTabPageModulesCalendarEventTest', () => {
     });
 
     test('conference call click', async () => {
+      const usagePromise = eventToPromise('usage', element);
       const moduleName = 'GoogleCalendar';
       element.expanded = true;
       element.event =
@@ -326,6 +339,8 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       (conference! as HTMLElement).click();
 
       // Assert.
+      const usageEvent: Event = await usagePromise;
+      assertTrue(!!usageEvent);
       assertEquals(
           1,
           metrics.count(

@@ -157,6 +157,7 @@ export class CalendarElement extends CrLitElement {
   }
 
   protected recordSeeMoreClick_() {
+    this.dispatchEvent(new Event('usage', {composed: true, bubbles: true}));
     recordCalendarAction(CalendarAction.SEE_MORE_CLICKED, this.moduleName);
   }
 

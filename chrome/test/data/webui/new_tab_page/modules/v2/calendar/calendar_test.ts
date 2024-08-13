@@ -9,7 +9,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../../test_support.js';
 
@@ -215,6 +215,7 @@ suite('NewTabPageModulesCalendarTest', () => {
     });
 
     test('see more click', async () => {
+      const usagePromise = eventToPromise('usage', element);
       const moduleName = 'GoogleCalendar';
       const numEvents = 2;
       element.events = createEvents(numEvents);
@@ -228,6 +229,8 @@ suite('NewTabPageModulesCalendarTest', () => {
       seeMoreLink.click();
 
       // Assert.
+      const usageEvent: Event = await usagePromise;
+      assertTrue(!!usageEvent);
       assertEquals(
           1,
           metrics.count(
