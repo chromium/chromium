@@ -43,9 +43,9 @@
       icon-class="cr:help-outline"
       tooltip-text="[[i18n('TrafficCountersDataUsageResetDayTooltipText')]]">
     </cr-tooltip-icon>
-    <select id="resetDayList"
-      class="md-select"
-      aria-label$="$i18n{TrafficCountersDataUsageDropdownLabel}"
+    <select class="md-select" id="resetDayList"
+      aria-labelledby="daySelectionLabel"
+      aria-describedby="daySelectionSubLabel"
       on-change="onResetDaySelected_">
       <template is="dom-repeat" items="[[getDaysList_()]]" as="day">
         <option value="[[day]]" selected$="[[isSelected_(day, resetDay_)]]">
