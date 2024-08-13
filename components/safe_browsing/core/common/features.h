@@ -185,6 +185,9 @@ BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookupsFasterOhttpKeyRotation);
 // Check the design doc (go/sample-esb-ping-send-hprt) for further
 // details.
 BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookupsSamplePing);
+// Determines the percentage of ESB lookups that we sample to send a background
+// HPRT lookup. The value should be between 0 and 100.
+extern const base::FeatureParam<int> kHashPrefixRealTimeLookupsSampleRate;
 
 // Show referrer URL on download item on chrome://downloads page. This will
 // replace the downloads url.
