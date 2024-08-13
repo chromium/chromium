@@ -697,7 +697,7 @@ TEST_F(AnnotationTextManagerNoViewportTest, DecorateTextCrossingElements) {
   CheckHtml(html);
 }
 
-// Tests different annotation cases, including tags boundaries.
+// Tests decoration across elements for addresses.
 // Covers: RemoveDecorations
 TEST_F(AnnotationTextManagerViewportTest, DecorateTextCrossingElements) {
   std::string html = "<html><body>"
@@ -710,8 +710,10 @@ TEST_F(AnnotationTextManagerViewportTest, DecorateTextCrossingElements) {
   LoadHtmlAndExtractText(html);
 
   NSString* source = base::SysUTF8ToNSString(observer()->extracted_text());
-  CreateAndApplyAnnotations(source, @[ @"a", @"c d", @"f ghi j", @"l mno " ],
-                            observer() -> seq_id());
+  CreateAndApplyAnnotationsWithTypes(
+      source,
+      @{@"address" : @[ @"a", @"c d", @"f ghi j", @"l mno " ]},
+      observer()->seq_id());
 
   // Check the resulting html is annotating at the right place.
   CheckHtml("<html><body>"
@@ -724,6 +726,35 @@ TEST_F(AnnotationTextManagerViewportTest, DecorateTextCrossingElements) {
             "chrome_annotation></p>"
             "<p><chrome_annotation>mno</chrome_annotation></p>"
             "</body></html>");
+
+  // Make sure it's back to the original.
+  auto* manager = AnnotationsTextManager::FromWebState(web_state());
+  manager->RemoveDecorations();
+  CheckHtml(html);
+}
+
+// Tests no decoration accross elements for other types.
+// Covers: RemoveDecorations
+TEST_F(AnnotationTextManagerViewportTest, DontDecorateTextCrossingElements) {
+  std::string html = "<html><body>"
+                     "<p>abc</p>"
+                     "<p>def</p>"
+                     "<p>ghi</p>"
+                     "<p>jkl</p>"
+                     "<p>mno</p>"
+                     "</body></html>";
+  LoadHtmlAndExtractText(html);
+
+  NSString* source = base::SysUTF8ToNSString(observer()->extracted_text());
+  CreateAndApplyAnnotationsWithTypes(
+      source,
+      @{@"phone" : @[ @"a", @"c d", @"f ghi j", @"l mno " ]},
+      observer()->seq_id());
+
+  // Check the resulting html is annotating at the right place.
+  CheckHtml("<html><body>"
+            "<p><chrome_annotation>a</chrome_annotation>"
+            "bc</p><p>def</p><p>ghi</p><p>jkl</p><p>mno</p></body></html>");
 
   // Make sure it's back to the original.
   auto* manager = AnnotationsTextManager::FromWebState(web_state());
@@ -766,8 +797,10 @@ TEST_F(AnnotationTextManagerViewportTest, DecorateTextBreakElements) {
 
   NSString* source = base::SysUTF8ToNSString(observer()->extracted_text());
   // ` ‡ ` is used as a section break to avoid cross section annotations.
-  CreateAndApplyAnnotations(source, @[ @"abc ‡ \ndef" ],
-                            observer() -> seq_id());
+  // Only address is allowed across elements.
+  CreateAndApplyAnnotationsWithTypes(
+      source,
+      @{@"address" : @[ @"abc ‡ \ndef" ]}, observer()->seq_id());
 
   // Check the resulting html is annotating at the right place.
   CheckHtml("<html><body>"

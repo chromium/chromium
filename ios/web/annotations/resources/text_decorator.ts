@@ -8,7 +8,7 @@
 
 import {TextAnnotationList} from '//ios/web/annotations/resources/text_annotation_list.js';
 import {annotationUniqueId, createChromeAnnotation, originalNodeDecorationId, replacementNodeDecorationId, TextDecoration} from '//ios/web/annotations/resources/text_decoration.js';
-import {HTMLElementWithSymbolIndex, NodeWithSymbolIndex, TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
+import {annotationCanBeCrossElement, HTMLElementWithSymbolIndex, NodeWithSymbolIndex, TextWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
 import {TextChunk} from '//ios/web/annotations/resources/text_extractor.js';
 import {TextStyler} from '//ios/web/annotations/resources/text_styler.js';
 
@@ -101,6 +101,11 @@ class TextDecorator {
       const start = annotation.start;
       const end = annotation.end;
       if (index < end && index + length > start) {
+        if (end > index + length &&
+            !(annotationCanBeCrossElement(annotation.type))) {
+          run.skip();
+          continue;
+        }
         // Position and substring inside the textNode. A textNode can include
         // a part of, the whole of or many annotations.
         const left = Math.max(0, start - index);
