@@ -161,6 +161,21 @@ void ScriptLoader::Trace(Visitor* visitor) const {
 
 // <spec step="A">The script element becomes connected.</spec>
 void ScriptLoader::DidNotifySubtreeInsertionsToDocument() {
+  if (already_started_ &&
+      GetScriptTypeAtPrepare(element_->TypeAttributeValue(),
+                             element_->LanguageAttributeValue()) ==
+          ScriptTypeAtPrepare::kSpeculationRules) {
+    // See https://crbug.com/359355331, where this was requested.
+    auto* message = MakeGarbageCollected<ConsoleMessage>(
+        ConsoleMessage::Source::kJavaScript, ConsoleMessage::Level::kWarning,
+        "A speculation rule set was inserted into the document but will be "
+        "ignored. This might happen, for example, if it was previously "
+        "inserted into another document, or if it was created using the "
+        "innerHTML setter.");
+    element_->GetDocument().AddConsoleMessage(message,
+                                              /*discard_duplicates=*/true);
+  }
+
   if (!parser_inserted_) {
     PendingScript* pending_script = PrepareScript(
         ParserBlockingInlineOption::kDeny, TextPosition::MinimumPosition());
