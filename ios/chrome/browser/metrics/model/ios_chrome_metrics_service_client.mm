@@ -357,14 +357,13 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<IOSFeedActivityMetricsProvider>());
 
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<IOSFeedEnabledMetricsProvider>());
+
   ProfileManagerIOS* manager =
       GetApplicationContext()->GetChromeBrowserStateManager();
 
   for (ChromeBrowserState* browser_state : manager->GetLoadedBrowserStates()) {
-    metrics_service_->RegisterMetricsProvider(
-        std::make_unique<IOSFeedEnabledMetricsProvider>(
-            browser_state->GetPrefs()));
-
     metrics_service_->RegisterMetricsProvider(
         std::make_unique<IOSPushNotificationsMetricsProvider>(
             IdentityManagerFactory::GetForBrowserState(browser_state)));
