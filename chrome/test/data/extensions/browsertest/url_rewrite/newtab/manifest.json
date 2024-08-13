@@ -1,7 +1,7 @@
 {
   "name": "New tab override test",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Test chrome://newtab override",
   "chrome_url_overrides": {
     "newtab": "newtab.html"
