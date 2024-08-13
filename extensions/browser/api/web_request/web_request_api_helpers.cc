@@ -344,14 +344,12 @@ std::string GetDNRNewRequestHeaderValue(net::HttpRequestHeaders* headers,
                                         dnr_api::HeaderOperation operation) {
   namespace dnr = extensions::declarative_net_request;
 
-  std::string existing_value;
-  bool has_header = headers->GetHeader(header_name, &existing_value);
-
-  if (has_header && operation == dnr_api::HeaderOperation::kAppend) {
+  std::optional<std::string> existing_value = headers->GetHeader(header_name);
+  if (existing_value && operation == dnr_api::HeaderOperation::kAppend) {
     const auto it = dnr::kDNRRequestHeaderAppendAllowList.find(header_name);
     CHECK(it != dnr::kDNRRequestHeaderAppendAllowList.end(),
           base::NotFatalUntil::M130);
-    return base::StrCat({existing_value, it->second, header_value});
+    return base::StrCat({*existing_value, it->second, header_value});
   }
 
   return header_value;
@@ -816,8 +814,7 @@ EventResponseDelta CalculateOnBeforeSendHeadersDelta(
                                     i.name())) {
           continue;
         }
-        std::string value;
-        if (!old_headers->GetHeader(i.name(), &value) || i.value() != value) {
+        if (i.value() != old_headers->GetHeader(i.name())) {
           result.modified_request_headers.SetHeader(i.name(), i.value());
         }
       }
@@ -1117,8 +1114,9 @@ void MergeCookiesInOnBeforeSendHeadersResponses(
     return;
 
   // Parse old cookie line.
-  std::string cookie_header;
-  request_headers->GetHeader(net::HttpRequestHeaders::kCookie, &cookie_header);
+  std::string cookie_header =
+      request_headers->GetHeader(net::HttpRequestHeaders::kCookie)
+          .value_or(std::string());
   ParsedRequestCookies cookies;
   net::cookie_util::ParseRequestCookieLine(cookie_header, &cookies);
 
@@ -1215,13 +1213,10 @@ void MergeOnBeforeSendHeadersResponses(
 
         // We must not modify anything that has been set to a *different*
         // value before.
-        if (base::Contains(*set_headers, key)) {
-          std::string current_value;
-          if (!request_headers->GetHeader(key, &current_value) ||
-              current_value != value) {
-            extension_conflicts = true;
-            break;
-          }
+        if (base::Contains(*set_headers, key) &&
+            request_headers->GetHeader(key) != value) {
+          extension_conflicts = true;
+          break;
         }
       }
     }
