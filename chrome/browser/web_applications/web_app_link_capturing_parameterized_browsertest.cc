@@ -27,10 +27,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -320,9 +323,25 @@ base::Value::Dict WebContentsToJson(content::WebContents& web_contents) {
 
 // Serializes the state of all tabs in a particular Browser to a json
 // dictionary, including which tab is the currently active tab.
+//
+// For app browsers, the scope path is added to simplify manual debugging to
+// identify cases where a source app window can have an out of scope destination
+// url loaded in it.
 base::Value::Dict BrowserToJson(const Browser& browser) {
   base::Value::Dict dict = base::Value::Dict().Set(
       "browser_type", BrowserTypeToString(browser.type()));
+  if (browser.type() == Browser::Type::TYPE_APP ||
+      browser.type() == Browser::Type::TYPE_APP_POPUP) {
+    CHECK(browser.app_controller());
+    const webapps::AppId& app_id = browser.app_controller()->app_id();
+    CHECK(!app_id.empty());
+    web_app::WebAppProvider* provider =
+        web_app::WebAppProvider::GetForTest(browser.profile());
+    const GURL& app_scope = provider->registrar_unsafe().GetAppScope(app_id);
+    if (app_scope.is_valid()) {
+      dict.Set("app_scope", app_scope.path());
+    }
+  }
   base::Value::List tabs;
   const TabStripModel* tab_model = browser.tab_strip_model();
   for (int i = 0; i < tab_model->count(); ++i) {
@@ -576,6 +595,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
+    web_app_info->scope = start_url.GetWithoutFilename();
     const webapps::AppId app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
     apps::AppReadinessWaiter(profile(), app_id).Await();
