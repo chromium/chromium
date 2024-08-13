@@ -44,6 +44,14 @@ std::vector<Profile*> JNI_ProfileManager_GetLoadedProfiles(JNIEnv* env) {
 }
 
 // static
+void JNI_ProfileManager_OnProfileActivated(JNIEnv* env, Profile* profile) {
+  if (!profile) {
+    return;
+  }
+  g_browser_process->profile_manager()->SetProfileAsLastUsed(profile);
+}
+
+// static
 void JNI_ProfileManager_DestroyWhenAppropriate(JNIEnv* env, Profile* profile) {
   CHECK(profile) << "Attempting to destroy a null profile.";
   CHECK(profile->IsOffTheRecord())

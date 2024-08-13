@@ -343,6 +343,12 @@ class ProfileManager : public Profile::Delegate {
     return has_updated_last_opened_profiles_;
   }
 
+  // Sets the last-used profile to `last_active`, and also sets that profile's
+  // last-active time to now. If the profile has a primary account, this also
+  // sets its last-active time to now.
+  // Public so that `ProfileManagerAndroid` can call it.
+  void SetProfileAsLastUsed(Profile* last_active);
+
  protected:
   // Creates a new profile by calling into the profile's profile creation
   // method. Virtual so that unittests can return a TestingProfile instead
@@ -506,11 +512,6 @@ class ProfileManager : public Profile::Delegate {
 #if !BUILDFLAG(IS_ANDROID)
   void OnBrowserOpened(Browser* browser);
   void OnBrowserClosed(Browser* browser);
-
-  // Sets the last-used profile to `last_active`, and also sets that profile's
-  // last-active time to now. If the profile has a primary account, this also
-  // sets its last-active time to now.
-  void SetProfileAsLastUsed(Profile* last_active);
 
   class BrowserListObserver : public ::BrowserListObserver {
    public:

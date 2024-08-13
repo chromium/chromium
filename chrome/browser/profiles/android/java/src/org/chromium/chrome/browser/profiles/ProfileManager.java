@@ -105,6 +105,10 @@ public class ProfileManager {
         return ProfileManagerJni.get().getLoadedProfiles();
     }
 
+    public static void onProfileActivated(Profile profile) {
+        ProfileManagerJni.get().onProfileActivated(profile);
+    }
+
     /**
      * Destroys the Profile. Destruction is delayed until all associated renderers have been killed,
      * so the profile might not be destroyed upon returning from this call.
@@ -128,6 +132,8 @@ public class ProfileManager {
     @NativeMethods
     public interface Natives {
         Object getLastUsedRegularProfile();
+
+        void onProfileActivated(@JniType("Profile*") Profile profile);
 
         void destroyWhenAppropriate(@JniType("Profile*") Profile caller);
 

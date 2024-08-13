@@ -2083,6 +2083,55 @@ void ProfileManager::SaveActiveProfiles() {
   }
 }
 
+void ProfileManager::SetProfileAsLastUsed(Profile* last_active) {
+#if !BUILDFLAG(IS_ANDROID)
+  // The profile may incorrectly become "active" during its destruction, caused
+  // by the UI teardown. See https://crbug.com/1073451
+  if (IsProfileDirectoryMarkedForDeletion(last_active->GetPath())) {
+    return;
+  }
+#endif
+
+  // If there is a primary account, mark it as used "just now".
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(last_active);
+  signin::ActivePrimaryAccountsMetricsRecorder*
+      active_primary_accounts_metrics_recorder =
+          g_browser_process->active_primary_accounts_metrics_recorder();
+  // IdentityManager is null for incognito profiles.
+  if (active_primary_accounts_metrics_recorder && identity_manager &&
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    CoreAccountInfo account_info =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    active_primary_accounts_metrics_recorder->MarkAccountAsActiveNow(
+        account_info.gaia);
+  }
+
+  // Don't remember ephemeral profiles as last because they are not going to
+  // persist after restart.
+  if (IsRegisteredAsEphemeral(&GetProfileAttributesStorage(),
+                              last_active->GetPath())) {
+    return;
+  }
+
+  // Only keep track of profiles that we are managing; tests may create others.
+  // Also never consider the SystemProfile as "active".
+  if (profiles_info_.find(last_active->GetPath()) != profiles_info_.end() &&
+      !last_active->IsSystemProfile()) {
+    base::FilePath profile_path_base = last_active->GetBaseName();
+    if (profile_path_base != GetLastUsedProfileBaseName()) {
+      profiles::SetLastUsedProfile(profile_path_base);
+    }
+
+    ProfileAttributesEntry* entry =
+        GetProfileAttributesStorage().GetProfileAttributesWithPath(
+            last_active->GetPath());
+    if (entry) {
+      entry->SetActiveTimeToNow();
+    }
+  }
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void ProfileManager::OnBrowserOpened(Browser* browser) {
   DCHECK(browser);
@@ -2150,53 +2199,6 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
       // Delete browsing data set by the ClearBrowsingDataOnExitList policy.
       browsing_data_lifetime_manager->ClearBrowsingDataForOnExitPolicy(
           /*keep_browser_alive=*/true);
-    }
-  }
-}
-
-void ProfileManager::SetProfileAsLastUsed(Profile* last_active) {
-  // The profile may incorrectly become "active" during its destruction, caused
-  // by the UI teardown. See https://crbug.com/1073451
-  if (IsProfileDirectoryMarkedForDeletion(last_active->GetPath())) {
-    return;
-  }
-
-  // If there is a primary account, mark it as used "just now".
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(last_active);
-  signin::ActivePrimaryAccountsMetricsRecorder*
-      active_primary_accounts_metrics_recorder =
-          g_browser_process->active_primary_accounts_metrics_recorder();
-  // IdentityManager is null for incognito profiles.
-  if (active_primary_accounts_metrics_recorder && identity_manager &&
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    CoreAccountInfo account_info =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-    active_primary_accounts_metrics_recorder->MarkAccountAsActiveNow(
-        account_info.gaia);
-  }
-
-  // Don't remember ephemeral profiles as last because they are not going to
-  // persist after restart.
-  if (IsRegisteredAsEphemeral(&GetProfileAttributesStorage(),
-                              last_active->GetPath())) {
-    return;
-  }
-
-  // Only keep track of profiles that we are managing; tests may create others.
-  // Also never consider the SystemProfile as "active".
-  if (profiles_info_.find(last_active->GetPath()) != profiles_info_.end() &&
-      !last_active->IsSystemProfile()) {
-    base::FilePath profile_path_base = last_active->GetBaseName();
-    if (profile_path_base != GetLastUsedProfileBaseName()) {
-      profiles::SetLastUsedProfile(profile_path_base);
-    }
-
-    ProfileAttributesEntry* entry =
-        GetProfileAttributesStorage().GetProfileAttributesWithPath(
-            last_active->GetPath());
-    if (entry) {
-      entry->SetActiveTimeToNow();
     }
   }
 }
