@@ -11,8 +11,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_blocklist_data.h"
 
 namespace component_updater {
 namespace {
@@ -29,6 +31,21 @@ constexpr std::array<uint8_t, 32> kPlusAddressBlocklistPublicKeySHA256 = {
 
 base::FilePath GetInstalledPath(const base::FilePath& base) {
   return base.Append(kPlusAddressBlocklistBinaryPbFileName);
+}
+
+void LoadPlusAddressBlocklistFromDisk(const base::FilePath& pb_path) {
+  std::string binary_pb;
+  if (!base::ReadFileToString(pb_path, &binary_pb)) {
+    DVLOG(1) << "Failed reading from " << pb_path.value();
+    return;
+  }
+
+  bool parsing_result = plus_addresses::PlusAddressBlocklistData::GetInstance()
+                            .PopulateDataFromComponent(binary_pb);
+  if (!parsing_result) {
+    DVLOG(1) << "Failed parsing proto " << pb_path.value();
+    return;
+  }
 }
 
 }  // namespace
@@ -61,7 +78,12 @@ void PlusAddressBlocklistInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::Value::Dict /* manifest */) {
-  // TODO(crbug.com/324556906): Implement.
+  VLOG(1) << "Component ready, version " << version.GetString() << " in "
+          << install_dir.value();
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&LoadPlusAddressBlocklistFromDisk,
+                     GetInstalledPath(install_dir)));
 }
 
 // Called during startup and installation before ComponentReady().

@@ -29,6 +29,7 @@ class PlusAddressBlocklistInstallerPolicy : public ComponentInstallerPolicy {
   ~PlusAddressBlocklistInstallerPolicy() override;
 
  private:
+  friend class PlusAddressBlocklistInstallerPolicyTest;
   // ComponentInstallerPolicy:
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
