@@ -488,7 +488,10 @@ size_t Iban::GetLengthOfIbanCountry(IbanSupportedCountry supported_country) {
 }
 
 bool Iban::SetMetadata(const PaymentsMetadata& metadata) {
-  if (metadata.id != guid()) {
+  // Make sure the ids match.
+  if (metadata.id != (record_type_ == RecordType::kLocalIban
+                          ? guid()
+                          : base::NumberToString(instrument_id()))) {
     return false;
   }
   set_use_count(metadata.use_count);
