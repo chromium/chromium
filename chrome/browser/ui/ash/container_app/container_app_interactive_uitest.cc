@@ -467,6 +467,7 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, LaunchFromAppList) {
   RunTestSequence(
       // Launch app list.
       DoDefaultAction(ash::kHomeButtonElementId),
+      WaitForShow(ash::kAppListBubbleViewElementId),
 
       // Find apps page.
       NameDescendantViewByType<ash::AppListBubbleAppsPage>(
@@ -689,6 +690,7 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, UninstallFromAppList) {
   RunTestSequence(
       // Launch app list.
       DoDefaultAction(ash::kHomeButtonElementId),
+      WaitForShow(ash::kAppListBubbleViewElementId),
 
       // Find apps page.
       NameDescendantViewByType<ash::AppListBubbleAppsPage>(
@@ -1009,6 +1011,7 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiIneligibilityTest,
   RunTestSequence(
       // Launch app list.
       DoDefaultAction(ash::kHomeButtonElementId),
+      WaitForShow(ash::kAppListBubbleViewElementId),
 
       // Find apps page.
       NameDescendantViewByType<ash::AppListBubbleAppsPage>(
