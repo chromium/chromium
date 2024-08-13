@@ -1,0 +1,43 @@
+# proto-file: //chrome/browser/extensions/cws_item_service.proto"
+# proto-message: extensions.FetchItemSnippetResponse
+
+item_id: "gcpjojfkologpegommokeppihdbcnahn"
+
+manifest:
+  '{'
+  '  "oauth2": {'
+  '    "scopes": ['
+  '      "https://www.googleapis.com/auth/userinfo.profile"'
+  '    ],'
+  '    "client_id": "fake-client-id"'
+  '  },'
+  '  "name": "Enterprise Kiosk Test App",'
+  '  "app": {'
+  '    "background": {'
+  '      "scripts": ['
+  '        "main.js"'
+  '      ]'
+  '    }'
+  '  },'
+  '  "kiosk_enabled": true,'
+  '  "version": "1",'
+  '  "manifest_version": 2,'
+  '  "permissions": ['
+  '    "identity",'
+  '    "enterprise.kioskInput"'
+  '  ]'
+  '}'
+
+title: "Enterprise Kiosk Test App"
+
+summary: "undefined"
+
+logo_uri: "webstore/itemsnippet/icons/app_1_green16x16.png"
+
+user_count_string: "0"
+
+rating_count: 0
+
+average_rating: 0
+
+rating_count_string: "0"

@@ -7,9 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -75,11 +77,20 @@ class FakeCWS {
                              std::string* update_check_content,
                              bool use_json);
 
+  // Creates serialized protobuf string of an item snippet API response. Returns
+  // nullopt if the `app_id` is not in `id_to_details_map_`.
+  std::optional<std::string> CreateItemSnippetStringForApp(
+      const std::string& app_id);
+
   // Request handler for kiosk app update server.
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request);
 
   GURL web_store_url_;
+
+  // Used to override the item snippets API URL for the embedded test server.
+  GURL item_snippets_url_;
+  std::optional<base::AutoReset<const GURL*>> item_snippets_url_override_;
 
   bool use_private_store_templates_;
   std::string update_check_end_point_;

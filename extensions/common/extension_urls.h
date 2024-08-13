@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/auto_reset.h"
 #include "build/branding_buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "url/gurl.h"
@@ -73,6 +74,9 @@ GURL GetWebstoreItemJsonDataURL(const extensions::ExtensionId& extension_id);
 // Returns the URL used to get webstore data (ratings, manifest, icon URL,
 // etc.) about an extension from the webstore using the new itemSnippets API.
 GURL GetWebstoreItemSnippetURL(const std::string& extension_id);
+
+// Sets the itemSnippets API URL to `test_url`.
+base::AutoReset<const GURL*> SetItemSnippetURLForTesting(const GURL* test_url);
 
 // Returns the compile-time constant webstore update url specific to
 // Chrome. Usually you should prefer using GetWebstoreUpdateUrl.

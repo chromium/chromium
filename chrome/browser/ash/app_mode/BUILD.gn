@@ -189,7 +189,9 @@ static_library("test_support") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support_ui",
+    "//chrome/test/data/chromeos/app_mode/webstore/itemsnippet",
   ]
+  data_deps = [ "//chrome/test/data/chromeos/app_mode/webstore/itemsnippet:generated_protobufs" ]
 }
 
 source_set("unit_tests") {

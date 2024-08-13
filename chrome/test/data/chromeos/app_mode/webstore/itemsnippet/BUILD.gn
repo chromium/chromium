@@ -1,0 +1,36 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+protoc_convert("itemsnippet") {
+  sources = [
+    "abbjjkefakmllanciinhgjgjamdmlbdg.textproto",
+    "app_1.textproto",
+    "app_with_bad_required_platform_version.textproto",
+    "app_with_required_platform_version.textproto",
+    "enelnimkndkcejhjnpaofdlbbfmdnagi.textproto",
+    "epancfbahpnkphlhpeefecinmgclhjlj.textproto",
+    "gbcgichpbeeimejckkpgnaighpndpped.textproto",
+    "gcpjojfkologpegommokeppihdbcnahn.textproto",
+    "ggaeimfdpnmlhdhpcikgoblffmkckdmn.textproto",
+    "ggbflgnkafappblpkiflbgpmkfdpnhhe.textproto",
+    "iiigpodgfihagabpagjehoocpakbnclp.textproto",
+  ]
+  inputs = [ "//chrome/browser/extensions/cws_item_service.proto" ]
+
+  # Output becomes:
+  #   gen/chrome/test/data/chromeos/app_mode/webstore/itemsnippet/iiigpodgfihagabpagjehoocpakbnclp
+  output_pattern = "$target_gen_dir/{{source_name_part}}"
+  args = [
+    "--encode=extensions.FetchItemSnippetResponse",
+    "-I",
+    rebase_path("//"),
+    "chrome/browser/extensions/cws_item_service.proto",
+  ]
+}
+
+group("generated_protobufs") {
+  data = get_target_outputs(":itemsnippet")
+}

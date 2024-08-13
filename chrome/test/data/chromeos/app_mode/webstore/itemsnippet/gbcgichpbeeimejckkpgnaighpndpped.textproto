@@ -1,0 +1,32 @@
+# proto-file: //chrome/browser/extensions/cws_item_service.proto"
+# proto-message: extensions.FetchItemSnippetResponse
+
+item_id: "gbcgichpbeeimejckkpgnaighpndpped"
+
+manifest:
+  '{'
+  '  "manifest_version": 3,'
+  '  "name": "Test Non Kiosk App",'
+  '  "version": "1.0.0",'
+  '  "app": {'
+  '    "background": {'
+  '      "scripts": ['
+  '        "main.js"'
+  '      ]'
+  '    }'
+  '  }'
+  '}'
+
+title: "Test Non Kiosk App"
+
+summary: "Description of Test Non Kiosk App"
+
+logo_uri: "apps_and_extensions/non_kiosk_enabled_app/src/icon-16.png"
+
+user_count_string: "1234"
+
+rating_count: 999
+
+average_rating: 1
+
+rating_count_string: "999"

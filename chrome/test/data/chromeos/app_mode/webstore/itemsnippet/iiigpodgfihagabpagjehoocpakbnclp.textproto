@@ -1,0 +1,42 @@
+# proto-file: //chrome/browser/extensions/cws_item_service.proto"
+# proto-message: extensions.FetchItemSnippetResponse
+
+item_id: "iiigpodgfihagabpagjehoocpakbnclp"
+
+manifest:
+  '{'
+  '  "manifest_version": 2,'
+  '  "name": "Test Kiosk App",'
+  '  "minimum_chrome_version": "24.0.1307.0",'
+  '  "version": "2.0.0",'
+  '  "icons": {'
+  '    "128": "icon-128.png",'
+  '    "16": "icon-16.png"'
+  '  },'
+  '  "app": {'
+  '    "background": {'
+  '      "scripts": ['
+  '        "main.js"'
+  '      ]'
+  '    }'
+  '  },'
+  '  "kiosk_enabled": true,'
+  '  "offline_enabled": true,'
+  '  "permissions": ['
+  '    "power"'
+  '  ]'
+  '}'
+
+title: "Offline enabled app"
+
+summary: "Description of Offline enabled app"
+
+logo_uri: "webstore/itemsnippet/icons/app_1_green16x16.png"
+
+user_count_string: "999"
+
+rating_count: 999
+
+average_rating: 4.5
+
+rating_count_string: "999"
