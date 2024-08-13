@@ -91,6 +91,9 @@ class LocaleItemView : public views::Button {
     }
     GetViewAccessibility().SetName(display_name_view->GetText());
     GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
+    GetViewAccessibility().SetCheckedState(
+        checked_ ? ax::mojom::CheckedState::kTrue
+                 : ax::mojom::CheckedState::kFalse);
   }
   LocaleItemView(const LocaleItemView&) = delete;
   LocaleItemView& operator=(const LocaleItemView&) = delete;
@@ -104,12 +107,6 @@ class LocaleItemView : public views::Button {
   void OnFocus() override {
     views::Button::OnFocus();
     ScrollViewToVisible();
-  }
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    views::Button::GetAccessibleNodeData(node_data);
-    node_data->SetCheckedState(checked_ ? ax::mojom::CheckedState::kTrue
-                                        : ax::mojom::CheckedState::kFalse);
   }
 
  private:
