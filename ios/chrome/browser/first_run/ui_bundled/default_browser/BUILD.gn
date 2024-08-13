@@ -38,6 +38,7 @@ source_set("default_browser_ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",

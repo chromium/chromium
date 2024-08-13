@@ -1,0 +1,1 @@
+include_rules = [ "+ios/chrome/browser/segmentation_platform/model", ]
