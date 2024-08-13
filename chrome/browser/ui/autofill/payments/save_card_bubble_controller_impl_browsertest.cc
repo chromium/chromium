@@ -80,10 +80,11 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
             .with_should_request_expiration_date_from_user(
                 name.find("WithCardExpirationDateDropDownBox") !=
                 std::string::npos)
-            .with_card_save_type(
-                name.find("CvcSave") != std::string::npos
-                    ? AutofillClient::CardSaveType::kCvcSaveOnly
-                    : AutofillClient::CardSaveType::kCardSaveOnly)
+            .with_card_save_type(name.find("CvcSave") != std::string::npos
+                                     ? payments::PaymentsAutofillClient::
+                                           CardSaveType::kCvcSaveOnly
+                                     : payments::PaymentsAutofillClient::
+                                           CardSaveType::kCardSaveOnly)
             .with_show_prompt(true);
 
     BubbleType bubble_type = BubbleType::INACTIVE;

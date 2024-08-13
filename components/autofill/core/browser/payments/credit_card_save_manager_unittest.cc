@@ -801,7 +801,8 @@ TEST_F(CreditCardSaveManagerTest,
                               true),
                         Field(&payments::PaymentsAutofillClient::
                                   SaveCreditCardOptions::card_save_type,
-                              AutofillClient::CardSaveType::kCvcSaveOnly)),
+                              payments::PaymentsAutofillClient::CardSaveType::
+                                  kCvcSaveOnly)),
                   /*callback=*/_));
 
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(test::GetCreditCard());
@@ -821,7 +822,8 @@ TEST_F(CreditCardSaveManagerTest,
                               true),
                         Field(&payments::PaymentsAutofillClient::
                                   SaveCreditCardOptions::card_save_type,
-                              AutofillClient::CardSaveType::kCvcSaveOnly)),
+                              payments::PaymentsAutofillClient::CardSaveType::
+                                  kCvcSaveOnly)),
                   _));
 
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(credit_card);
@@ -5752,9 +5754,10 @@ TEST_P(ProceedWithSavingIfApplicableTest, CardWithCorrectSaveCardOption) {
   test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
   test_api(credit_card_form).field(4).set_value(u"123");
 
-  auto card_save_type = (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled())
-                            ? AutofillClient::CardSaveType::kCardSaveWithCvc
-                            : AutofillClient::CardSaveType::kCardSaveOnly;
+  auto card_save_type =
+      (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled())
+          ? payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc
+          : payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly;
 
   if (IsCreditCardUpstreamEnabled()) {
     EXPECT_CALL(payments_client(),

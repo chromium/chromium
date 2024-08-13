@@ -59,8 +59,8 @@ class AutofillCvcSaveMessageDelegateTest
       const AutofillSaveCardUiInfo& ui_info =
           AutofillSaveCardUiInfo::CreateForLocalSave(
               payments::PaymentsAutofillClient::SaveCreditCardOptions()
-                  .with_card_save_type(
-                      AutofillClient::CardSaveType::kCvcSaveOnly),
+                  .with_card_save_type(payments::PaymentsAutofillClient::
+                                           CardSaveType::kCvcSaveOnly),
               CreditCard())) {
     autofill_cvc_save_message_delegate_ =
         std::make_unique<AutofillCvcSaveMessageDelegate>(web_contents());
@@ -155,7 +155,8 @@ TEST_F(AutofillCvcSaveMessageDelegateTest, MessageIgnored) {
 TEST_F(AutofillCvcSaveMessageDelegateTest, MessagePropertiesAreSet) {
   AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
       payments::PaymentsAutofillClient::SaveCreditCardOptions()
-          .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly),
+          .with_card_save_type(
+              payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly),
       CreditCard());
 
   // Show the message, and save the created `MessageWrapper`.

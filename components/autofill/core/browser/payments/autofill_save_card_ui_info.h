@@ -59,7 +59,7 @@ struct AutofillSaveCardUiInfo {
 
   // Create the ui info for a local save prompt.
   // Requires that `options.card_save_type` is not equal to
-  // `AutofillClient::CardSaveType::kCvcSaveOnly`
+  // `payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly`
   static AutofillSaveCardUiInfo CreateForLocalSave(
       payments::PaymentsAutofillClient::SaveCreditCardOptions options,
       const CreditCard& card);
@@ -75,7 +75,7 @@ struct AutofillSaveCardUiInfo {
   //
   // This function allows specifying whether google pay branding is enabled.
   // Requires `options.card_save_type` not equal to
-  // `AutofillClient::CardSaveType::kCvcSaveOnly`.
+  // `payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly`.
   static AutofillSaveCardUiInfo CreateForUploadSave(
       payments::PaymentsAutofillClient::SaveCreditCardOptions options,
       const CreditCard& card,

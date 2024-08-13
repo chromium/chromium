@@ -122,6 +122,15 @@ class PaymentsAutofillClient : public RiskDataLoader {
     kFido = 2,
   };
 
+  enum class CardSaveType {
+    // Credit card is saved without the CVC.
+    kCardSaveOnly = 0,
+    // Credit card is saved with the CVC.
+    kCardSaveWithCvc = 1,
+    // Only CVC is saved.
+    kCvcSaveOnly = 2,
+  };
+
   // Used for options of upload prompt.
   struct SaveCreditCardOptions {
     SaveCreditCardOptions& with_should_request_name_from_user(bool b) {
@@ -151,7 +160,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
       return *this;
     }
 
-    SaveCreditCardOptions& with_card_save_type(AutofillClient::CardSaveType b) {
+    SaveCreditCardOptions& with_card_save_type(CardSaveType b) {
       card_save_type = b;
       return *this;
     }
@@ -162,8 +171,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
     bool has_multiple_legal_lines = false;
     bool has_same_last_four_as_server_card_but_different_expiration_date =
         false;
-    AutofillClient::CardSaveType card_save_type =
-        AutofillClient::CardSaveType::kCardSaveOnly;
+    CardSaveType card_save_type = CardSaveType::kCardSaveOnly;
   };
 
   // Callback to run if user presses the Save button in the migration dialog.

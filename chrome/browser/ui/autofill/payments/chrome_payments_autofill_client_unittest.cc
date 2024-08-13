@@ -230,7 +230,8 @@ TEST_F(ChromePaymentsAutofillClientTest,
   chrome_payments_client()->ConfirmSaveCreditCardLocally(
       CreditCard(),
       payments::ChromePaymentsAutofillClient::SaveCreditCardOptions()
-          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveOnly)
+          .with_card_save_type(payments::ChromePaymentsAutofillClient::
+                                   CardSaveType::kCardSaveOnly)
           .with_show_prompt(true),
       base::DoNothing());
 }
@@ -251,7 +252,8 @@ TEST_F(ChromePaymentsAutofillClientTest,
   chrome_payments_client()->ConfirmSaveCreditCardLocally(
       CreditCard(),
       payments::ChromePaymentsAutofillClient::SaveCreditCardOptions()
-          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveWithCvc)
+          .with_card_save_type(payments::ChromePaymentsAutofillClient::
+                                   CardSaveType::kCardSaveWithCvc)
           .with_show_prompt(true),
       base::DoNothing());
 }
@@ -293,7 +295,8 @@ TEST_F(
   chrome_payments_client()->ConfirmSaveCreditCardToCloud(
       CreditCard(), LegalMessageLines(),
       payments::ChromePaymentsAutofillClient::SaveCreditCardOptions()
-          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveOnly)
+          .with_card_save_type(payments::ChromePaymentsAutofillClient::
+                                   CardSaveType::kCardSaveOnly)
           .with_show_prompt(true),
       base::DoNothing());
 }
@@ -324,7 +327,8 @@ TEST_F(ChromePaymentsAutofillClientTest,
   chrome_payments_client()->ConfirmSaveCreditCardToCloud(
       CreditCard(), LegalMessageLines(),
       payments::ChromePaymentsAutofillClient::SaveCreditCardOptions()
-          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveWithCvc)
+          .with_card_save_type(payments::ChromePaymentsAutofillClient::
+                                   CardSaveType::kCardSaveWithCvc)
           .with_show_prompt(true),
       base::DoNothing());
 }

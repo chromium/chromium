@@ -957,7 +957,7 @@ void AutofillMetrics::LogCreditCardInfoBarMetric(
   }
 
   if (options.card_save_type ==
-      AutofillClient::CardSaveType::kCardSaveWithCvc) {
+      payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc) {
     base::UmaHistogramEnumeration(base::StrCat({"Autofill.CreditCardInfoBar",
                                                 destination, ".SavingWithCvc"}),
                                   metric, NUM_INFO_BAR_METRICS);

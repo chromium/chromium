@@ -30,7 +30,8 @@ void AutofillSaveCardDelegate::OnUiAccepted(base::OnceClosure callback) {
   // Credit card save acceptance can be logged immediately if:
   // 1. the user is accepting card local save.
   // 2. or when we don't need more info in order to upload.
-  if (options_.card_save_type != AutofillClient::CardSaveType::kCvcSaveOnly &&
+  if (options_.card_save_type !=
+          payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly &&
       (!is_for_upload() ||
        !(options_.should_request_name_from_user ||
          options_.should_request_expiration_date_from_user))) {
@@ -53,7 +54,8 @@ void AutofillSaveCardDelegate::OnUiCanceled() {
       AutofillClient::SaveCardOfferUserDecision::kDeclined,
       /*user_provided_details=*/{});
   LogInfoBarAction(AutofillMetrics::INFOBAR_DENIED);
-  if (options_.card_save_type != AutofillClient::CardSaveType::kCvcSaveOnly) {
+  if (options_.card_save_type !=
+      payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly) {
     LogSaveCreditCardPromptResult(
         autofill_metrics::SaveCreditCardPromptResult::kDenied, is_for_upload(),
         options_);
@@ -66,7 +68,8 @@ void AutofillSaveCardDelegate::OnUiIgnored() {
         AutofillClient::SaveCardOfferUserDecision::kIgnored,
         /*user_provided_details=*/{});
     LogInfoBarAction(AutofillMetrics::INFOBAR_IGNORED);
-    if (options_.card_save_type != AutofillClient::CardSaveType::kCvcSaveOnly) {
+    if (options_.card_save_type !=
+        payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly) {
       LogSaveCreditCardPromptResult(
           autofill_metrics::SaveCreditCardPromptResult::kIgnored,
           is_for_upload(), options_);
@@ -107,7 +110,8 @@ void AutofillSaveCardDelegate::GatherAdditionalConsentIfApplicable(
 void AutofillSaveCardDelegate::LogInfoBarAction(
     AutofillMetrics::InfoBarMetric action) {
   CHECK(!had_user_interaction_);
-  if (options_.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly) {
+  if (options_.card_save_type ==
+      payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly) {
     autofill_metrics::LogCvcInfoBarMetric(action, is_for_upload());
   } else {
     AutofillMetrics::LogCreditCardInfoBarMetric(action, is_for_upload(),

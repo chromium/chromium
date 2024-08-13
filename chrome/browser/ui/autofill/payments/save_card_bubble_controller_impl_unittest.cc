@@ -51,11 +51,13 @@ using testing::ElementsAre;
 
 namespace autofill {
 
+using CardSaveType = payments::PaymentsAutofillClient::CardSaveType;
+using SaveCreditCardOptions =
+    payments::PaymentsAutofillClient::SaveCreditCardOptions;
+
 namespace {
 
 const base::Time kArbitraryTime = base::Time::FromTimeT(1234567890);
-using SaveCreditCardOptions =
-    payments::PaymentsAutofillClient::SaveCreditCardOptions;
 
 std::unique_ptr<KeyedService> BuildTestPersonalDataManager(
     content::BrowserContext* context) {
@@ -275,7 +277,7 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
 
   void ShowUploadBubble(SaveCreditCardOptions options =
                             SaveCreditCardOptions().with_show_prompt()) {
-    if (options.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly) {
+    if (options.card_save_type == CardSaveType::kCvcSaveOnly) {
       SetLegalMessage("{}", options);
       return;
     }
@@ -590,17 +592,16 @@ struct SaveCardOptionParam {
   bool should_request_expiration_date_from_user;
   bool has_multiple_legal_lines;
   bool has_same_last_four_as_server_card_but_different_expiration_date;
-  AutofillClient::CardSaveType card_save_type;
+  CardSaveType card_save_type;
 };
 
 const SaveCardOptionParam kSaveCardOptionParam[] = {
-    {false, false, false, false, AutofillClient::CardSaveType::kCardSaveOnly},
-    {true, false, false, false, AutofillClient::CardSaveType::kCardSaveOnly},
-    {false, true, false, false, AutofillClient::CardSaveType::kCardSaveOnly},
-    {false, false, true, false, AutofillClient::CardSaveType::kCardSaveOnly},
-    {false, false, false, true, AutofillClient::CardSaveType::kCardSaveOnly},
-    {false, false, false, false,
-     AutofillClient::CardSaveType::kCardSaveWithCvc}};
+    {false, false, false, false, CardSaveType::kCardSaveOnly},
+    {true, false, false, false, CardSaveType::kCardSaveOnly},
+    {false, true, false, false, CardSaveType::kCardSaveOnly},
+    {false, false, true, false, CardSaveType::kCardSaveOnly},
+    {false, false, false, true, CardSaveType::kCardSaveOnly},
+    {false, false, false, false, CardSaveType::kCardSaveWithCvc}};
 
 // Param of the SaveCardBubbleSingletonTestData:
 // -- std::string save_destination
@@ -685,7 +686,7 @@ class SaveCardBubbleLoggingTest
       result += ".WithSameLastFourButDifferentExpiration";
     }
     if (GetSaveCreditCardOptions().card_save_type ==
-        AutofillClient::CardSaveType::kCardSaveWithCvc) {
+        CardSaveType::kCardSaveWithCvc) {
       result += ".SavingWithCvc";
     }
 
@@ -823,14 +824,14 @@ class SaveCvcBubbleLoggingTest
     if (save_destination_ == "Upload") {
       ShowUploadBubble(
           /*options=*/SaveCreditCardOptions()
-              .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly)
+              .with_card_save_type(CardSaveType::kCvcSaveOnly)
               .with_show_prompt(show_prompt));
     } else {
       ASSERT_EQ(save_destination_, "Local");
       ShowLocalBubble(
           /*card=*/nullptr,
           /*options=*/SaveCreditCardOptions()
-              .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly)
+              .with_card_save_type(CardSaveType::kCvcSaveOnly)
               .with_show_prompt(show_prompt));
     }
 
@@ -938,7 +939,7 @@ TEST_F(SaveCardBubbleControllerImplTest, LocalCvcOnlySaveDialogContent) {
   ShowLocalBubble(
       /*card=*/nullptr,
       /*options=*/SaveCreditCardOptions()
-          .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly)
+          .with_card_save_type(CardSaveType::kCvcSaveOnly)
           .with_show_prompt(true));
 
   ASSERT_EQ(BubbleType::LOCAL_CVC_SAVE, controller()->GetBubbleType());
@@ -977,7 +978,7 @@ TEST_F(SaveCardBubbleControllerImplTest, UploadCvcOnlySaveDialogContent) {
   // Show the server CVC save bubble.
   ShowUploadBubble(
       /*options=*/SaveCreditCardOptions()
-          .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly)
+          .with_card_save_type(CardSaveType::kCvcSaveOnly)
           .with_show_prompt(true));
 
   ASSERT_EQ(BubbleType::UPLOAD_CVC_SAVE, controller()->GetBubbleType());
@@ -997,7 +998,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   ShowLocalBubble(
       /*card=*/nullptr,
       /*options=*/SaveCreditCardOptions().with_card_save_type(
-          AutofillClient::CardSaveType::kCardSaveOnly));
+          CardSaveType::kCardSaveOnly));
   ClickSaveButton();
   CloseAndReshowBubble();
   // After closing the sign-in promo, clicking the icon should bring up the
@@ -1019,7 +1020,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   ShowLocalBubble(
       /*card=*/nullptr,
       /*options=*/SaveCreditCardOptions().with_card_save_type(
-          AutofillClient::CardSaveType::kCvcSaveOnly));
+          CardSaveType::kCvcSaveOnly));
   ClickSaveButton();
   CloseAndReshowBubble();
   // After closing the sign-in promo, clicking the icon should bring up the
@@ -1158,7 +1159,7 @@ TEST_F(SaveCardBubbleControllerImplTestWithCvCStorageAndFilling,
   ShowLocalBubble(
       /*card=*/nullptr,
       /*options=*/SaveCreditCardOptions()
-          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveOnly)
+          .with_card_save_type(CardSaveType::kCardSaveOnly)
           .with_show_prompt(true));
 
   ASSERT_EQ(BubbleType::LOCAL_SAVE, controller()->GetBubbleType());
@@ -1174,7 +1175,7 @@ TEST_F(SaveCardBubbleControllerImplTestWithCvCStorageAndFilling,
   ShowLocalBubble(
       /*card=*/nullptr,
       /*options=*/SaveCreditCardOptions()
-          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveWithCvc)
+          .with_card_save_type(CardSaveType::kCardSaveWithCvc)
           .with_show_prompt(true));
 
   ASSERT_EQ(BubbleType::LOCAL_SAVE, controller()->GetBubbleType());
@@ -1190,7 +1191,7 @@ TEST_F(SaveCardBubbleControllerImplTestWithCvCStorageAndFilling,
   // Show the server card save with CVC bubble.
   ShowUploadBubble(
       /*options=*/SaveCreditCardOptions()
-          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveWithCvc)
+          .with_card_save_type(CardSaveType::kCardSaveWithCvc)
           .with_show_prompt(true));
 
   ASSERT_EQ(BubbleType::UPLOAD_SAVE, controller()->GetBubbleType());

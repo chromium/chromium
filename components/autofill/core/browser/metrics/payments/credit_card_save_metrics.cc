@@ -105,7 +105,7 @@ void LogSaveCardPromptOfferMetric(
                                   metric);
   }
   if (options.card_save_type ==
-      AutofillClient::CardSaveType::kCardSaveWithCvc) {
+      payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc) {
     base::UmaHistogramEnumeration(
         metric_with_destination_and_show + ".SavingWithCvc", metric);
   }
@@ -150,7 +150,7 @@ void LogSaveCardPromptResultMetric(
                                   metric);
   }
   if (options.card_save_type ==
-      AutofillClient::CardSaveType::kCardSaveWithCvc) {
+      payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc) {
     base::UmaHistogramEnumeration(
         metric_with_destination_and_show + ".SavingWithCvc", metric);
   }

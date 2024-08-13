@@ -279,7 +279,7 @@ void ChromePaymentsAutofillClient::ConfirmSaveCreditCardLocally(
 
   // If a CVC is detected for an existing local card in the checkout form, the
   // CVC save prompt is shown in a message.
-  if (options.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly) {
+  if (options.card_save_type == CardSaveType::kCvcSaveOnly) {
     autofill_cvc_save_message_delegate_ =
         std::make_unique<AutofillCvcSaveMessageDelegate>(web_contents());
     autofill_cvc_save_message_delegate_->ShowMessage(
@@ -320,7 +320,7 @@ void ChromePaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
 
   // If a CVC is detected for an existing server card in the checkout form,
   // the CVC save prompt is shown in a message.
-  if (options.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly) {
+  if (options.card_save_type == CardSaveType::kCvcSaveOnly) {
     autofill_cvc_save_message_delegate_ =
         std::make_unique<AutofillCvcSaveMessageDelegate>(web_contents());
     autofill_cvc_save_message_delegate_->ShowMessage(

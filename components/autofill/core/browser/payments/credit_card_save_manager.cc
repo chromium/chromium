@@ -420,7 +420,8 @@ void CreditCardSaveManager::AttemptToOfferCvcUploadSave(
       card_save_candidate_, legal_message_lines_,
       payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_show_prompt(show_save_prompt_.value())
-          .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly),
+          .with_card_save_type(
+              payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly),
       base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -703,12 +704,13 @@ void CreditCardSaveManager::OfferCardLocalSave() {
     if (observer_for_testing_) {
       observer_for_testing_->OnOfferLocalSave();
     }
-    AutofillClient::CardSaveType card_save_type =
-        AutofillClient::CardSaveType::kCardSaveOnly;
+    payments::PaymentsAutofillClient::CardSaveType card_save_type =
+        payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly;
     // Show `kCardSaveWithCvc` prompt if flag is on and CVC is not empty.
     if (!card_save_candidate_.cvc().empty() &&
         payments_data_manager().IsPaymentCvcStorageEnabled()) {
-      card_save_type = AutofillClient::CardSaveType::kCardSaveWithCvc;
+      card_save_type =
+          payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc;
     }
     client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardLocally(
         card_save_candidate_,
@@ -730,7 +732,8 @@ void CreditCardSaveManager::OfferCvcLocalSave() {
       card_save_candidate_,
       payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_show_prompt(show_save_prompt_.value_or(false))
-          .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly),
+          .with_card_save_type(
+              payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly),
       base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnCvcLocalSave,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -759,12 +762,13 @@ void CreditCardSaveManager::OfferCardUploadSave() {
           return server_card->HasSameNumberAs(upload_request_.card) &&
                  !server_card->HasSameExpirationDateAs(upload_request_.card);
         });
-    AutofillClient::CardSaveType card_save_type =
-        AutofillClient::CardSaveType::kCardSaveOnly;
+    payments::PaymentsAutofillClient::CardSaveType card_save_type =
+        payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly;
     // Show `kCardSaveWithCvc` prompt if flag is on and CVC is not empty.
     if (!upload_request_.card.cvc().empty() &&
         payments_data_manager().IsPaymentCvcStorageEnabled()) {
-      card_save_type = AutofillClient::CardSaveType::kCardSaveWithCvc;
+      card_save_type =
+          payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc;
     }
     client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardToCloud(
         upload_request_.card, legal_message_lines_,

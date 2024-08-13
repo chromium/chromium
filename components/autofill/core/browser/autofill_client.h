@@ -162,15 +162,6 @@ class AutofillClient {
     std::u16string expiration_date_year;
   };
 
-  enum class CardSaveType {
-    // Credit card is saved without the CVC.
-    kCardSaveOnly = 0,
-    // Credit card is saved with the CVC.
-    kCardSaveWithCvc = 1,
-    // Only CVC is saved.
-    kCvcSaveOnly = 2,
-  };
-
   // TODO(crbug.com/325440757): Remove after the save-update controller
   // splitting is done or remove this TODO if a new option is added. Used for
   // options of save (and update) address profile prompt.
