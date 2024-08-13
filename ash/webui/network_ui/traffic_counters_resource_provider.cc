@@ -56,6 +56,8 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
      IDS_TRAFFIC_COUNTERS_DATA_USAGE_RESET_DAY_TOOLTIP_TEXT},
     {"TrafficCountersDataUsageDropdownLabel",
      IDS_TRAFFIC_COUNTERS_DATA_USAGE_DROPDOWN_LABEL},
+    {"TrafficCountersDataUsageResetDayTooltipA11yLabel",
+     IDS_TRAFFIC_COUNTERS_DATA_USAGE_RESET_DAY_TOOLTIP_A11Y_LABEL},
 };
 
 }  // namespace
