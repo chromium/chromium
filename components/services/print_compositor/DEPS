@@ -2,8 +2,6 @@ include_rules = [
   "+cc/paint",
   "+components/crash/core/common/crash_key.h",
   "+components/discardable_memory/client",
-  "+components/enterprise/buildflags",
-  "+components/enterprise/watermarking",
   "+content/public/child",  # Windows direct write proxy access.
   "+content/public/common",
   "+content/public/utility",

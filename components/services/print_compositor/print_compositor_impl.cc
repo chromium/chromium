@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
-#include "components/enterprise/buildflags/buildflags.h"
 #include "components/services/print_compositor/public/cpp/print_service_mojo_types.h"
 #include "content/public/utility/utility_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -40,10 +39,6 @@
 #include "third_party/skia/include/core/SkFontMgr.h"
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/public/platform/platform.h"
-#endif
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-#include "components/enterprise/watermarking/features.h"
 #endif
 
 using MojoDiscardableSharedMemoryManager =
@@ -72,21 +67,9 @@ sk_sp<SkDocument> MakeDocument(
       generate_document_outline, &stream);
 }
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-void DrawEnterpriseWatermark(SkCanvas* canvas, SkSize size) {
-  if (!base::FeatureList::IsEnabled(
-          enterprise_watermark::features::kEnablePrintWatermark)) {
-    return;
-  }
-}
-#endif
-
 void DrawPage(SkDocument* doc, const SkDocumentPage& page) {
   SkCanvas* canvas = doc->beginPage(page.fSize.width(), page.fSize.height());
   canvas->drawPicture(page.fPicture);
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-  DrawEnterpriseWatermark(canvas, page.fSize);
-#endif
   doc->endPage();
 }
 
