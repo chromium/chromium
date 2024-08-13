@@ -274,6 +274,7 @@ void TrustedSignalsFetcher::StartRequest(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->url = trusted_signals_url;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->mode = network::mojom::RequestMode::kNoCors;
   resource_request->redirect_mode = network::mojom::RedirectMode::kError;
   resource_request->headers.SetHeader("Accept", kResponseMediaType);

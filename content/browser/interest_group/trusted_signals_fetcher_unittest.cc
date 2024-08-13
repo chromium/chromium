@@ -25,11 +25,15 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -165,6 +169,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
       EXPECT_THAT(request.headers,
                   testing::Contains(std::pair(
                       "Accept", TrustedSignalsFetcher::kResponseMediaType)));
+      EXPECT_EQ(request.headers.find("Cookie"), request.headers.end());
       EXPECT_TRUE(request.has_content);
       EXPECT_EQ(request.method_string, net::HttpRequestHeaders::kPostMethod);
       bidding_request_body_ = request.content;
@@ -243,6 +248,65 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMimeType) {
       result.error().error_msg,
       base::StringPrintf("Rejecting load of %s due to unexpected MIME type.",
                          TrustedBiddingSignalsUrl().spec().c_str()));
+  ValidateRequestBody(kBasicBiddingSignalsRequestBody);
+}
+
+TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCanSetNoCookies) {
+  auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
+
+  // Request trusted bidding signals using a URL that tries to set a cookie.
+  GURL set_cookie_url = embedded_test_server_.GetURL(
+      kTrustedSignalsHost, "/set-cookie?a=1;Secure;SameSite=None");
+  auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request,
+                                                      set_cookie_url);
+
+  // Request should have failed due to a missing MIME type.
+  EXPECT_EQ(
+      result.error().error_msg,
+      base::StringPrintf("Rejecting load of %s due to unexpected MIME type.",
+                         set_cookie_url.spec().c_str()));
+
+  // Make sure no cookie was set.
+  base::RunLoop run_loop;
+  mojo::Remote<network::mojom::CookieManager> cookie_manager;
+  url_loader_factory_->network_context()->GetCookieManager(
+      cookie_manager.BindNewPipeAndPassReceiver());
+  cookie_manager->GetAllCookies(
+      base::BindLambdaForTesting([&](const net::CookieList& cookies) {
+        EXPECT_TRUE(cookies.empty());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(TrustedSignalsFetcherTest, BiddingSignalsHasNoCookies) {
+  auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
+
+  // Set a same-site none cookie on the trusted signals server's origin.
+  mojo::Remote<network::mojom::CookieManager> cookie_manager;
+  url_loader_factory_->network_context()->GetCookieManager(
+      cookie_manager.BindNewPipeAndPassReceiver());
+  net::CookieInclusionStatus status;
+  std::unique_ptr<net::CanonicalCookie> cookie = net::CanonicalCookie::Create(
+      TrustedBiddingSignalsUrl(), "a=1; Secure; SameSite=None",
+      base::Time::Now(),
+      /*server_time=*/std::nullopt,
+      /*cookie_partition_key=*/std::nullopt, net::CookieSourceType::kHTTP,
+      &status);
+  ASSERT_TRUE(cookie);
+  base::RunLoop run_loop;
+  cookie_manager->SetCanonicalCookie(
+      *cookie, TrustedBiddingSignalsUrl(),
+      net::CookieOptions::MakeAllInclusive(),
+      base::BindLambdaForTesting([&](net::CookieAccessResult result) {
+        EXPECT_TRUE(result.status.IsInclude());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  // Request trusted bidding signals. The request handler will cause the test to
+  // fail if it sees a cookie header.
+  auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
   ValidateRequestBody(kBasicBiddingSignalsRequestBody);
 }
 
