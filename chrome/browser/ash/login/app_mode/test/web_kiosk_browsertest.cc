@@ -53,8 +53,8 @@ namespace {
 using ::base::test::TestFuture;
 using ::testing::_;
 
-using kiosk::KioskProfileLoader;
 using kiosk::LoadProfile;
+using kiosk::LoadProfileResult;
 
 const test::UIPath kNetworkConfigureScreenContinueButton = {"error-message",
                                                             "continueButton"};
@@ -63,7 +63,7 @@ std::optional<Profile*> LoadKioskProfile(const AccountId& account_id) {
   TestFuture<std::optional<Profile*>> profile_future;
   auto profile_loader = LoadProfile(
       account_id, KioskAppType::kWebApp,
-      base::BindOnce([](KioskProfileLoader::Result result) {
+      base::BindOnce([](LoadProfileResult result) {
         return result.has_value() ? std::make_optional(result.value())
                                   : std::nullopt;
       }).Then(profile_future.GetCallback()));

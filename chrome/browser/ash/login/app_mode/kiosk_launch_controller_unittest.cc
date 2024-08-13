@@ -90,8 +90,8 @@
 
 namespace ash {
 
-using kiosk::KioskProfileLoader;
 using kiosk::LoadProfileCallback;
+using kiosk::LoadProfileResultCallback;
 
 namespace {
 
@@ -360,12 +360,12 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   }
 
   LoadProfileCallback FakeLoadProfileCallback() {
-    return base::BindLambdaForTesting(
-        [&](const AccountId& app_account_id, KioskAppType app_type,
-            KioskProfileLoader::ResultCallback on_done) {
-          on_profile_loaded_callback_ = std::move(on_done);
-          return std::unique_ptr<CancellableJob>{};
-        });
+    return base::BindLambdaForTesting([&](const AccountId& app_account_id,
+                                          KioskAppType app_type,
+                                          LoadProfileResultCallback on_done) {
+      on_profile_loaded_callback_ = std::move(on_done);
+      return std::unique_ptr<CancellableJob>{};
+    });
   }
 
   TestingProfile profile_;
@@ -385,7 +385,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
 
-  KioskProfileLoader::ResultCallback on_profile_loaded_callback_;
+  LoadProfileResultCallback on_profile_loaded_callback_;
   std::unique_ptr<FakeAppLaunchSplashScreenHandler> view_;
   int app_launchers_created_ = 0;
   std::unique_ptr<KioskLaunchController> controller_;
@@ -692,7 +692,7 @@ TEST_F(KioskLaunchControllerTest, KioskProfileLoadFailedObserverShouldBeFired) {
   EXPECT_EQ(num_launchers_created(), 0);
 }
 
-TEST_F(KioskLaunchControllerTest, KioskProfileLoadErrorShouldBeStored) {
+TEST_F(KioskLaunchControllerTest, LoadProfileErrorShouldBeStored) {
   controller().Start(kiosk_app(), /*auto_launch=*/false);
 
   FinishLoadingProfileWithError(KioskAppLaunchError::Error::kUnableToMount);
@@ -1102,12 +1102,12 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
   }
 
   LoadProfileCallback FakeLoadProfileCallback() {
-    return base::BindLambdaForTesting(
-        [&](const AccountId& app_account_id, KioskAppType app_type,
-            KioskProfileLoader::ResultCallback on_done) {
-          on_profile_loaded_callback_ = std::move(on_done);
-          return std::unique_ptr<CancellableJob>{};
-        });
+    return base::BindLambdaForTesting([&](const AccountId& app_account_id,
+                                          KioskAppType app_type,
+                                          LoadProfileResultCallback on_done) {
+      on_profile_loaded_callback_ = std::move(on_done);
+      return std::unique_ptr<CancellableJob>{};
+    });
   }
 
   FakeChromeUserManager& fake_user_manager() { return *fake_user_manager_; }
@@ -1125,7 +1125,7 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
 
   std::unique_ptr<base::AutoReset<std::optional<bool>>>
       can_configure_network_for_testing_;
-  KioskProfileLoader::ResultCallback on_profile_loaded_callback_;
+  LoadProfileResultCallback on_profile_loaded_callback_;
   std::unique_ptr<FakeAppLaunchSplashScreenHandler> view_;
   raw_ptr<FakeKioskAppLauncher, DanglingUntriaged> app_launcher_ =
       nullptr;  // owned by `controller_`.

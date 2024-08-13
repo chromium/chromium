@@ -14,12 +14,14 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
+#include "base/thread_annotations.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/app_mode/cancellable_job.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
@@ -266,38 +268,62 @@ void LogErrorToSyslog(KioskAppLaunchError::Error error) {
   }
 }
 
-}  // namespace
+// Helper class that implements the functionality of `LoadProfile`.
+// See docs on that function for more information.
+class ProfileLoader : public CancellableJob {
+ public:
+  static std::unique_ptr<CancellableJob> Run(const AccountId& app_account_id,
+                                             KioskAppType app_type,
+                                             LoadProfileResultCallback on_done);
 
-std::unique_ptr<CancellableJob> LoadProfile(
+  ProfileLoader(const ProfileLoader&) = delete;
+  ProfileLoader& operator=(const ProfileLoader&) = delete;
+  ~ProfileLoader() override;
+
+ private:
+  ProfileLoader(const AccountId& app_account_id,
+                KioskAppType app_type,
+                LoadProfileResultCallback on_done);
+
+  void CheckCryptohomeIsNotMounted();
+  void LoginAsKioskAccount();
+  void PrepareProfile(const UserContext& user_context);
+  void ReturnSuccess(Profile& profile);
+  void ReturnError(KioskAppLaunchError::Error result);
+
+  const AccountId account_id_;
+  const KioskAppType app_type_;
+
+  std::unique_ptr<CancellableJob> current_step_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  LoadProfileResultCallback on_done_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+std::unique_ptr<CancellableJob> ProfileLoader::Run(
     const AccountId& app_account_id,
     KioskAppType app_type,
-    KioskProfileLoader::ResultCallback on_done) {
-  return KioskProfileLoader::Run(app_account_id, app_type, std::move(on_done));
-}
-
-std::unique_ptr<CancellableJob> KioskProfileLoader::Run(
-    const AccountId& app_account_id,
-    KioskAppType app_type,
-    ResultCallback on_done) {
+    LoadProfileResultCallback on_done) {
   auto loader = base::WrapUnique(
-      new KioskProfileLoader(app_account_id, app_type, std::move(on_done)));
+      new ProfileLoader(app_account_id, app_type, std::move(on_done)));
   loader->CheckCryptohomeIsNotMounted();
   return loader;
 }
 
-KioskProfileLoader::KioskProfileLoader(const AccountId& app_account_id,
-                                       KioskAppType app_type,
-                                       ResultCallback on_done)
+ProfileLoader::ProfileLoader(const AccountId& app_account_id,
+                             KioskAppType app_type,
+                             LoadProfileResultCallback on_done)
     : account_id_(app_account_id),
       app_type_(app_type),
       on_done_(std::move(on_done)) {}
 
-KioskProfileLoader::~KioskProfileLoader() = default;
+ProfileLoader::~ProfileLoader() = default;
 
-void KioskProfileLoader::CheckCryptohomeIsNotMounted() {
+void ProfileLoader::CheckCryptohomeIsNotMounted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_step_ = CheckCryptohome(base::BindOnce(
-      [](KioskProfileLoader* self, MountedState result) {
+      [](ProfileLoader* self, MountedState result) {
         switch (result) {
           case MountedState::kNotMounted:
             return self->LoginAsKioskAccount();
@@ -313,13 +339,13 @@ void KioskProfileLoader::CheckCryptohomeIsNotMounted() {
       base::Unretained(this)));
 }
 
-void KioskProfileLoader::LoginAsKioskAccount() {
+void ProfileLoader::LoginAsKioskAccount() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_step_ = Signin(
       app_type_, account_id_,
       /*on_done=*/
       base::BindOnce(
-          [](KioskProfileLoader* self, SigninPerformer::Result result) {
+          [](ProfileLoader* self, SigninPerformer::Result result) {
             if (result.has_value()) {
               return self->PrepareProfile(result.value());
             } else if (auto* error = std::get_if<SigninPerformer::LoginError>(
@@ -336,25 +362,33 @@ void KioskProfileLoader::LoginAsKioskAccount() {
           base::Unretained(this)));
 }
 
-void KioskProfileLoader::PrepareProfile(const UserContext& user_context) {
+void ProfileLoader::PrepareProfile(const UserContext& user_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_step_ = SessionStarter::Run(
-      user_context, base::BindOnce(&KioskProfileLoader::ReturnSuccess,
+      user_context, base::BindOnce(&ProfileLoader::ReturnSuccess,
                                    // Safe because `this` owns `current_step_`
                                    base::Unretained(this)));
 }
 
-void KioskProfileLoader::ReturnSuccess(Profile& profile) {
+void ProfileLoader::ReturnSuccess(Profile& profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_step_.reset();
   std::move(on_done_).Run(&profile);
 }
 
-void KioskProfileLoader::ReturnError(KioskAppLaunchError::Error result) {
+void ProfileLoader::ReturnError(KioskAppLaunchError::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_step_.reset();
   LogErrorToSyslog(result);
   std::move(on_done_).Run(base::unexpected(std::move(result)));
+}
+
+}  // namespace
+
+std::unique_ptr<CancellableJob> LoadProfile(const AccountId& app_account_id,
+                                            KioskAppType app_type,
+                                            LoadProfileResultCallback on_done) {
+  return ProfileLoader::Run(app_account_id, app_type, std::move(on_done));
 }
 
 }  // namespace ash::kiosk

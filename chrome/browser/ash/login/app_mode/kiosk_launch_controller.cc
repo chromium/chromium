@@ -70,9 +70,9 @@
 
 namespace ash {
 
-using kiosk::KioskProfileLoader;
 using kiosk::LoadProfile;
 using kiosk::LoadProfileCallback;
+using kiosk::LoadProfileResult;
 
 namespace {
 
@@ -373,8 +373,7 @@ void KioskLaunchController::Start(KioskApp kiosk_app, bool auto_launch) {
           .Run(kiosk_app_id().account_id, kiosk_app_id().type,
                /*on_done=*/
                base::BindOnce(
-                   [](KioskLaunchController* self,
-                      KioskProfileLoader::Result result) {
+                   [](KioskLaunchController* self, LoadProfileResult result) {
                      CHECK(!self->profile_) << "Kiosk profile loaded twice";
                      self->profile_loader_handle_.reset();
 

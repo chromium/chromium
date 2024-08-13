@@ -6,12 +6,9 @@
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_PROFILE_LOADER_H_
 
 #include <memory>
-#include <variant>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
-#include "base/sequence_checker.h"
-#include "base/thread_annotations.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/app_mode/cancellable_job.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
@@ -21,47 +18,15 @@
 
 class Profile;
 
-namespace ash {
+namespace ash::kiosk {
 
-class UserContext;
+// The final result of a `LoadProfile` call. Includes the `Profile` on success
+// or the error reason on failure.
+using LoadProfileResult = base::expected<Profile*, KioskAppLaunchError::Error>;
 
-namespace kiosk {
-
-// Helper class that implements `LoadProfile()`.
-class KioskProfileLoader : public CancellableJob {
- public:
-  using Result = base::expected<Profile*, KioskAppLaunchError::Error>;
-  using ResultCallback = base::OnceCallback<void(Result result)>;
-
-  [[nodiscard]] static std::unique_ptr<CancellableJob> Run(
-      const AccountId& app_account_id,
-      KioskAppType app_type,
-      ResultCallback on_done);
-
-  KioskProfileLoader(const KioskProfileLoader&) = delete;
-  KioskProfileLoader& operator=(const KioskProfileLoader&) = delete;
-  ~KioskProfileLoader() override;
-
- private:
-  KioskProfileLoader(const AccountId& app_account_id,
-                     KioskAppType app_type,
-                     ResultCallback on_done);
-
-  void CheckCryptohomeIsNotMounted();
-  void LoginAsKioskAccount();
-  void PrepareProfile(const UserContext& user_context);
-  void ReturnSuccess(Profile& profile);
-  void ReturnError(KioskAppLaunchError::Error result);
-
-  const AccountId account_id_;
-  const KioskAppType app_type_;
-
-  std::unique_ptr<CancellableJob> current_step_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  ResultCallback on_done_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  SEQUENCE_CHECKER(sequence_checker_);
-};
+// Convenicence alias to declare result callbacks for `LoadProfile`.
+using LoadProfileResultCallback =
+    base::OnceCallback<void(LoadProfileResult result)>;
 
 // Loads the Kiosk profile for a given app.
 //
@@ -79,14 +44,12 @@ class KioskProfileLoader : public CancellableJob {
 [[nodiscard]] std::unique_ptr<CancellableJob> LoadProfile(
     const AccountId& app_account_id,
     KioskAppType app_type,
-    KioskProfileLoader::ResultCallback on_done);
+    LoadProfileResultCallback on_done);
 
-// Convenience define to declare references to `LoadProfile`. Useful for callers
+// Convenience alias to declare references to `LoadProfile`. Useful for callers
 // to override `LoadProfile` in tests.
 using LoadProfileCallback = base::OnceCallback<decltype(LoadProfile)>;
 
-}  // namespace kiosk
-
-}  // namespace ash
+}  // namespace ash::kiosk
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_PROFILE_LOADER_H_
