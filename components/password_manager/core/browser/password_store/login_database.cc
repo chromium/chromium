@@ -1024,8 +1024,7 @@ void RecordShouldDeleteUndecryptablePasswordsMetric(
 }
 
 bool ShouldDeleteUndecryptablePasswords(
-    LoginDatabase::ClearingUndecryptablePasswordsCallback
-        clearing_undecryptable_passwords,
+    base::RepeatingClosure clearing_undecryptable_passwords,
     bool is_user_data_dir_policy_set,
     bool is_enabled_by_policy) {
 #if BUILDFLAG(IS_LINUX)
@@ -1088,7 +1087,7 @@ bool ShouldDeleteUndecryptablePasswords(
   // Needed in order to maintain kClearUndecryptablePasswords experiment groups
   // population.
   if (clearing_undecryptable_passwords) {
-    clearing_undecryptable_passwords.Run(true);
+    clearing_undecryptable_passwords.Run();
   }
   return base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords);
 }
@@ -1112,8 +1111,12 @@ LoginDatabase::LoginDatabase(const base::FilePath& db_path,
 
 LoginDatabase::~LoginDatabase() = default;
 
-bool LoginDatabase::Init(std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
+bool LoginDatabase::Init(
+    base::RepeatingClosure on_undecryptable_passwords_removed,
+    std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
   TRACE_EVENT0("passwords", "LoginDatabase::Init");
+  on_undecryptable_passwords_removed_ =
+      std::move(on_undecryptable_passwords_removed);
   encryptor_ = std::move(encryptor);
 
   db_.set_histogram_tag("Passwords");
@@ -1944,7 +1947,8 @@ bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
   meta_table_.Reset();
   db_.Close();
   sql::Database::Delete(db_path_);
-  return Init(std::move(encryptor_));
+  return Init(std::move(on_undecryptable_passwords_removed_),
+              std::move(encryptor_));
 }
 
 DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
@@ -2014,12 +2018,6 @@ bool LoginDatabase::CommitTransaction() {
 
 void LoginDatabase::SetIsEmptyCb(IsEmptyCallback is_empty_cb) {
   is_empty_cb_ = std::move(is_empty_cb);
-}
-
-void LoginDatabase::SetClearingUndecryptablePasswordsCb(
-    ClearingUndecryptablePasswordsCallback clearing_undecryptable_passwords) {
-  clearing_undecryptable_passwords_ =
-      std::move(clearing_undecryptable_passwords);
 }
 
 LoginDatabase::SyncMetadataStore::SyncMetadataStore(sql::Database* db)
@@ -2383,7 +2381,7 @@ FormRetrievalResult LoginDatabase::StatementToForms(
   }
   if (failed) {
     if (ShouldDeleteUndecryptablePasswords(
-            clearing_undecryptable_passwords_, is_user_data_dir_policy_set_,
+            on_undecryptable_passwords_removed_, is_user_data_dir_policy_set_,
             is_deleting_undecryptable_logins_enabled_by_policy_.value())) {
       DatabaseCleanupResult result = DeleteUndecryptableLogins();
       if (result == DatabaseCleanupResult::kSuccess) {

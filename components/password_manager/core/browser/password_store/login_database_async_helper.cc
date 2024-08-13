@@ -69,6 +69,7 @@ bool LoginDatabaseAsyncHelper::Initialize(
     base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>, bool)>
         remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
+    base::RepeatingClosure on_undecryptable_passwords_removed,
     std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -76,7 +77,8 @@ bool LoginDatabaseAsyncHelper::Initialize(
       std::move(remote_form_changes_received);
 
   bool success = true;
-  if (!login_db_->Init(std::move(encryptor))) {
+  if (!login_db_->Init(std::move(on_undecryptable_passwords_removed),
+                       std::move(encryptor))) {
     login_db_.reset();
     // The initialization should be continued, because PasswordSyncBridge
     // has to be initialized even if database initialization failed.
@@ -370,15 +372,6 @@ LoginDatabaseAsyncHelper::GetSyncControllerDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(password_sync_bridge_);
   return password_sync_bridge_->change_processor()->GetControllerDelegate();
-}
-
-void LoginDatabaseAsyncHelper::SetClearingUndecryptablePasswordsCb(
-    base::RepeatingCallback<void(bool)> clearing_undecryptable_passwords) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (login_db_) {
-    login_db_->SetClearingUndecryptablePasswordsCb(
-        std::move(clearing_undecryptable_passwords));
-  }
 }
 
 PasswordStoreChangeList LoginDatabaseAsyncHelper::AddCredentialSync(

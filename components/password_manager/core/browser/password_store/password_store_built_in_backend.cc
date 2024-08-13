@@ -198,19 +198,7 @@ void PasswordStoreBuiltInBackend::InitBackend(
   if (pref_service_->GetBoolean(prefs::kClearingUndecryptablePasswords)) {
     base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords);
   }
-
-  auto clearing_undecryptable_passwords_cb = base::BindPostTaskToCurrentDefault(
-      base::BindRepeating(&PasswordStoreBuiltInBackend::
-                              SetClearingUndecryptablePasswordsIsEnabledPref,
-                          weak_ptr_factory_.GetWeakPtr()));
-
-  background_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &LoginDatabaseAsyncHelper::SetClearingUndecryptablePasswordsCb,
-          base::Unretained(helper_.get()),
-          std::move(clearing_undecryptable_passwords_cb)));
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
 
   background_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&LoginDatabaseAsyncHelper::CreateSyncBackend,
@@ -533,22 +521,33 @@ void PasswordStoreBuiltInBackend::OnEncryptorReceived(
   base::UmaHistogramBoolean("PasswordManager.OnEncryptorReceived.Success",
                             !encryptor);
 
+  base::RepeatingClosure on_undecryptable_passwords_removed =
+#if BUILDFLAG(IS_ANDROID)
+      base::DoNothing();
+#else
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &PasswordStoreBuiltInBackend::
+              SetClearingUndecryptablePasswordsIsEnabledPref,
+          weak_ptr_factory_.GetWeakPtr()));
+#endif
+
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &LoginDatabaseAsyncHelper::Initialize,
           base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
           std::move(remote_form_changes_received),
-          std::move(sync_enabled_or_disabled_cb), std::move(encryptor)),
+          std::move(sync_enabled_or_disabled_cb),
+          std::move(on_undecryptable_passwords_removed), std::move(encryptor)),
       base::BindOnce(&PasswordStoreBuiltInBackend::OnInitComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(completion)));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 void PasswordStoreBuiltInBackend::
-    SetClearingUndecryptablePasswordsIsEnabledPref(bool value) {
+    SetClearingUndecryptablePasswordsIsEnabledPref() {
   CHECK(pref_service_);
-  pref_service_->SetBoolean(prefs::kClearingUndecryptablePasswords, value);
+  pref_service_->SetBoolean(prefs::kClearingUndecryptablePasswords, true);
 }
 #endif
 
@@ -559,5 +558,4 @@ void PasswordStoreBuiltInBackend::WritePasswordRemovalReasonPrefs(
                            password_manager::IsAccountStore(is_account_store),
                            removal_reason);
 }
-
 }  // namespace password_manager

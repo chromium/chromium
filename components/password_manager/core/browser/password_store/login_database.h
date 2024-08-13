@@ -65,8 +65,6 @@ class LoginDatabase : public EncryptDecryptInterface {
 
   using IsEmptyCallback =
       base::RepeatingCallback<void(LoginDatabaseEmptinessState)>;
-  using ClearingUndecryptablePasswordsCallback =
-      base::RepeatingCallback<void(bool)>;
   using DeletingUndecryptablePasswordsEnabled =
       base::StrongAlias<class DeletingUndecryptablePasswordsEnabledTag, bool>;
 
@@ -88,7 +86,8 @@ class LoginDatabase : public EncryptDecryptInterface {
 
   // Actually creates/opens the database. If false is returned, no other method
   // should be called.
-  virtual bool Init(std::unique_ptr<os_crypt_async::Encryptor> encryptor);
+  virtual bool Init(base::RepeatingClosure on_undecryptable_passwords_removed,
+                    std::unique_ptr<os_crypt_async::Encryptor> encryptor);
 
   // Reports metrics regarding inaccessible passwords and bubble usages to UMA.
   void ReportMetrics();
@@ -203,13 +202,6 @@ class LoginDatabase : public EncryptDecryptInterface {
   // logins. The call happens when initializing the database and when
   // adding/removing entries, regardless of success.
   void SetIsEmptyCb(IsEmptyCallback is_empty_cb);
-
-  // `clearing_undecryptable_passwords`is called to signal whether user
-  // interacted with the kClearUndecryptablePasswords experiment. It is needed
-  // to ensure that experiment groups stay balaced. This method will be deleted
-  // after a successful rollout.
-  void SetClearingUndecryptablePasswordsCb(
-      ClearingUndecryptablePasswordsCallback clearing_undecryptable_passwords);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void SetIsUserDataDirPolicySet(bool is_set) {
@@ -384,8 +376,13 @@ class LoginDatabase : public EncryptDecryptInterface {
   const base::FilePath db_path_;
   const IsAccountStore is_account_store_;
   IsEmptyCallback is_empty_cb_ = base::NullCallback();
+
+  // `on_undecryptable_passwords_removed_`is called to signal whether user
+  // interacted with the kClearUndecryptablePasswords experiment. It is needed
+  // to ensure that experiment groups stay balanced. This callback will be
+  // deleted after a successful rollout.
   // TODO(b/40286735): Remove after this feature is launched.
-  ClearingUndecryptablePasswordsCallback clearing_undecryptable_passwords_ =
+  base::RepeatingClosure on_undecryptable_passwords_removed_ =
       base::NullCallback();
 
   mutable sql::Database db_;

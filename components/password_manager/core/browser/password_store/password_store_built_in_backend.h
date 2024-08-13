@@ -147,7 +147,7 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   // Sets the pref responsible for maintaining groups population in
   // the kClearUndecryptablePasswords experiment.
   // TODO(b/40286735): Remove after this feature is launched.
-  void SetClearingUndecryptablePasswordsIsEnabledPref(bool value);
+  void SetClearingUndecryptablePasswordsIsEnabledPref();
 #endif
 
   // Ensures that all methods are called on the main sequence.
