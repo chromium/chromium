@@ -299,6 +299,8 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
   AddAccelerator(ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN));
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  GetViewAccessibility().SetDescription(l10n_util::GetStringUTF8(
+      IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVED_DESK_GRID_ITEM_EXTRA_ACCESSIBLE_DESCRIPTION));
 }
 
 SavedDeskItemView::~SavedDeskItemView() {
@@ -402,11 +404,6 @@ void SavedDeskItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // TODO(crbug.com/325137417): Remove this once the accessible name is set in
   // the cache as soon as the name is updated.
   GetViewAccessibility().SetName(ComputeAccessibleName());
-
-  node_data->AddStringAttribute(
-      ax::mojom::StringAttribute::kDescription,
-      l10n_util::GetStringUTF8(
-          IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVED_DESK_GRID_ITEM_EXTRA_ACCESSIBLE_DESCRIPTION));
 }
 
 void SavedDeskItemView::Layout(PassKey) {

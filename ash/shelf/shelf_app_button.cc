@@ -57,6 +57,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skbitmap_operations.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/square_ink_drop_ripple.h"
@@ -489,6 +490,8 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   views::FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<views::RoundRectHighlightPathGenerator>(
           gfx::Insets::VH(views::FocusRing::kDefaultHaloThickness / 2, 0), 0));
+
+  UpdateAccessibleDescription();
 }
 
 ShelfAppButton::~ShelfAppButton() {
@@ -705,21 +708,6 @@ void ShelfAppButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(!accessible_name.empty()
                          ? accessible_name
                          : shelf_view_->GetTitleForView(this));
-
-  switch (app_status_) {
-    case AppStatus::kBlocked:
-      node_data->SetDescription(
-          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-              IDS_SHELF_ITEM_BLOCKED_APP));
-      break;
-    case AppStatus::kPaused:
-      node_data->SetDescription(
-          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-              IDS_SHELF_ITEM_PAUSED_APP));
-      break;
-    default:
-      break;
-  }
 }
 
 bool ShelfAppButton::ShouldEnterPushedState(const ui::Event& event) {
@@ -745,6 +733,7 @@ void ShelfAppButton::ReflectItemStatus(const ShelfItem& item) {
     progress_ = item.progress;
     app_status_ = item.app_status;
     UpdateProgressRingBounds();
+    UpdateAccessibleDescription();
   }
 
   const ShelfID active_id = shelf_view_->model()->active_shelf_id();
@@ -1448,6 +1437,24 @@ void ShelfAppButton::OnAnimatedInFromPromiseApp(
   UpdateMainAndMaybeHostBadgeIconImage();
 
   callback.Run();
+}
+
+void ShelfAppButton::UpdateAccessibleDescription() {
+  switch (app_status_) {
+    case AppStatus::kBlocked:
+      GetViewAccessibility().SetDescription(
+          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
+              IDS_SHELF_ITEM_BLOCKED_APP));
+      break;
+    case AppStatus::kPaused:
+      GetViewAccessibility().SetDescription(
+          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
+              IDS_SHELF_ITEM_PAUSED_APP));
+      break;
+    default:
+      GetViewAccessibility().RemoveDescription();
+      break;
+  }
 }
 
 BEGIN_METADATA(ShelfAppButton)

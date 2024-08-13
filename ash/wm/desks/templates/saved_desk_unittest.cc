@@ -24,6 +24,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/close_button.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_util.h"
@@ -2550,6 +2551,19 @@ TEST_F(SavedDeskTest, TemplateNameBounds) {
       name_view->GetBoundsInScreen().x() - item_view->GetBoundsInScreen().x(),
       item_view->GetBoundsInScreen().right() -
           name_view->GetBoundsInScreen().right());
+}
+
+TEST_F(SavedDeskTest, AccessibleProperties) {
+  AddEntry(base::Uuid::GenerateRandomV4(), "template name", base::Time::Now(),
+           DeskTemplateType::kTemplate);
+
+  OpenOverviewAndShowSavedDeskGrid();
+  SavedDeskItemView* item_view = GetItemViewFromSavedDeskGrid(0);
+
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+          IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVED_DESK_GRID_ITEM_EXTRA_ACCESSIBLE_DESCRIPTION),
+      item_view->GetViewAccessibility().GetCachedDescription());
 }
 
 // Tests that we are able to edit the saved desk name.

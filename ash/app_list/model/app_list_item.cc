@@ -191,6 +191,9 @@ void AppListItem::SetAccessibleName(const std::string& accessible_name) {
 
 void AppListItem::SetAppCollectionId(AppCollection collection_id) {
   metadata_->collection_id = collection_id;
+  for (auto& observer : observers_) {
+    observer.ItemAppCollectionIdChanged();
+  }
 }
 
 void AppListItem::UpdateNotificationBadge(bool has_badge) {

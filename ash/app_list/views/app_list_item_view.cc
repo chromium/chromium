@@ -736,6 +736,8 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
         break;
     }
   }
+
+  UpdateAccessibleDescription();
 }
 
 void AppListItemView::InitializeIconLoader() {
@@ -1226,67 +1228,6 @@ void AppListItemView::SetItemName(const std::u16string& display_name,
 
 void AppListItemView::SetItemAccessibleName(const std::u16string& name) {
   GetViewAccessibility().SetName(name);
-}
-
-void AppListItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // When this item is being removed, there will still be an accessible object
-  // in the accessibility tree until it is destroyed. Populating AXNodeData
-  // with the information from the button makes it possible for assistive
-  // technologies to obtain the name and role/type of the control along with
-  // relevant states such as disabled. It is also necessary to pass the
-  // accessibility paint checks: items that claim to be focusable must have
-  // a valid role.
-  DCHECK(node_data);
-  Button::GetAccessibleNodeData(node_data);
-
-  if (!item_weak_) {
-    return;
-  }
-
-  // The list of descriptions to be announced.
-  std::vector<std::u16string> descriptions;
-
-  if (item_weak_->is_folder()) {
-    // For folder items, announce the number of apps in the folder.
-    std::u16string app_count_announcement = l10n_util::GetPluralStringFUTF16(
-        IDS_APP_LIST_FOLDER_NUMBER_OF_APPS_ACCESSIBILE_DESCRIPTION,
-        item_weak_->AsFolderItem()->ChildItemCount());
-    descriptions.push_back(app_count_announcement);
-  }
-
-  auto app_status = item_weak_->app_status();
-  std::u16string app_status_description;
-  switch (app_status) {
-    case AppStatus::kBlocked:
-      app_status_description =
-          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-              IDS_APP_LIST_BLOCKED_APP);
-      break;
-    case AppStatus::kPaused:
-      app_status_description =
-          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-              IDS_APP_LIST_PAUSED_APP);
-      break;
-    default:
-      if (item_weak_->is_new_install()) {
-        app_status_description =
-            ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-                IDS_APP_LIST_NEW_INSTALL_ACCESSIBILE_DESCRIPTION);
-      }
-      break;
-  }
-  if (!app_status_description.empty()) {
-    descriptions.push_back(app_status_description);
-  }
-
-  if (context_ == Context::kAppsCollection) {
-    descriptions.push_back(GetAppCollectionName(item_weak_->collection_id()));
-  }
-
-  // Set the concatenated descriptions.
-  if (!descriptions.empty()) {
-    node_data->SetDescription(base::JoinString(descriptions, u" "));
-  }
 }
 
 void AppListItemView::OnContextMenuModelReceived(
@@ -2171,12 +2112,15 @@ void AppListItemView::ItemIsNewInstallChanged() {
     new_install_dot_->SetVisible(item_weak_->is_new_install());
     DeprecatedLayoutImmediately();
   }
+
+  UpdateAccessibleDescription();
 }
 
 void AppListItemView::ItemBeingDestroyed() {
   DCHECK(item_weak_);
   item_weak_->RemoveObserver(this);
   item_weak_ = nullptr;
+  UpdateAccessibleDescription();
   if (!use_item_icon_) {
     folder_icon_->ResetFolderItem();
   }
@@ -2199,6 +2143,11 @@ void AppListItemView::ItemProgressUpdated() {
 
 void AppListItemView::ItemAppStatusUpdated() {
   UpdateProgressIndicatorState();
+  UpdateAccessibleDescription();
+}
+
+void AppListItemView::ItemAppCollectionIdChanged() {
+  UpdateAccessibleDescription();
 }
 
 bool AppListItemView::ImageModelHasPlaceholderIcon() const {
@@ -2391,6 +2340,60 @@ ui::Layer* AppListItemView::GetIconBackgroundLayer() {
 
 bool AppListItemView::AlwaysPaintsToLayer() {
   return is_promise_app_ || progress_indicator_;
+}
+
+void AppListItemView::UpdateAccessibleDescription() {
+  if (!item_weak_) {
+    GetViewAccessibility().RemoveDescription();
+    return;
+  }
+
+  // The list of descriptions to be announced.
+  std::vector<std::u16string> descriptions;
+
+  if (item_weak_->is_folder()) {
+    // For folder items, announce the number of apps in the folder.
+    std::u16string app_count_announcement = l10n_util::GetPluralStringFUTF16(
+        IDS_APP_LIST_FOLDER_NUMBER_OF_APPS_ACCESSIBILE_DESCRIPTION,
+        item_weak_->AsFolderItem()->ChildItemCount());
+    descriptions.push_back(app_count_announcement);
+  }
+
+  auto app_status = item_weak_->app_status();
+  std::u16string app_status_description;
+  switch (app_status) {
+    case AppStatus::kBlocked:
+      app_status_description =
+          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
+              IDS_APP_LIST_BLOCKED_APP);
+      break;
+    case AppStatus::kPaused:
+      app_status_description =
+          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
+              IDS_APP_LIST_PAUSED_APP);
+      break;
+    default:
+      if (item_weak_->is_new_install()) {
+        app_status_description =
+            ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
+                IDS_APP_LIST_NEW_INSTALL_ACCESSIBILE_DESCRIPTION);
+      }
+      break;
+  }
+  if (!app_status_description.empty()) {
+    descriptions.push_back(app_status_description);
+  }
+
+  if (context_ == Context::kAppsCollection) {
+    descriptions.push_back(GetAppCollectionName(item_weak_->collection_id()));
+  }
+
+  // Set the concatenated descriptions.
+  if (!descriptions.empty()) {
+    GetViewAccessibility().SetDescription(base::JoinString(descriptions, u" "));
+  } else {
+    GetViewAccessibility().RemoveDescription();
+  }
 }
 
 BEGIN_METADATA(AppListItemView)

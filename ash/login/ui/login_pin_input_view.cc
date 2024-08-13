@@ -25,6 +25,7 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace ash {
@@ -62,11 +63,14 @@ class LoginPinInput : public FixedLengthCodeInput {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
+  void UpdateAccessibleDescription();
+
   int length_ = 0;
   LoginPinInputView::OnPinSubmit on_submit_;
   LoginPinInputView::OnPinChanged on_changed_;
 
   base::WeakPtrFactory<FixedLengthCodeInput> weak_ptr_factory_{this};
+  base::CallbackListSubscription active_index_changed_callback_;
 };
 
 LoginPinInput::LoginPinInput(int length,
@@ -87,6 +91,12 @@ LoginPinInput::LoginPinInput(int length,
   SetAllowArrowNavigation(false);
   DCHECK(on_submit_);
   DCHECK(on_changed_);
+
+  active_index_changed_callback_ =
+      AddActiveInputIndexChanged(base::BindRepeating(
+          &LoginPinInput::UpdateAccessibleDescription, base::Unretained(this)));
+
+  UpdateAccessibleDescription();
 }
 
 void LoginPinInput::OnModified(bool last_field_active, bool complete) {
@@ -102,6 +112,8 @@ void LoginPinInput::OnModified(bool last_field_active, bool complete) {
     SetReadOnly(true);
     on_submit_.Run(base::UTF8ToUTF16(user_input.value_or(std::string())));
   }
+
+  UpdateAccessibleDescription();
 }
 
 // Focus on the entire field and not on a single element.
@@ -140,12 +152,15 @@ bool LoginPinInput::HandleKeyEvent(views::Textfield* sender,
 
 void LoginPinInput::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   FixedLengthCodeInput::GetAccessibleNodeData(node_data);
-  const int inserted_digits = active_input_index();
-  const int remaining_digits = length_ - inserted_digits;
-  node_data->SetDescription(l10n_util::GetPluralStringFUTF16(
-      IDS_ASH_LOGIN_PIN_INPUT_DIGITS_REMAINING, remaining_digits));
   node_data->SetName(l10n_util::GetStringUTF8(
       IDS_ASH_LOGIN_POD_PASSWORD_PIN_INPUT_ACCESSIBLE_NAME));
+}
+
+void LoginPinInput::UpdateAccessibleDescription() {
+  const int inserted_digits = active_input_index();
+  const int remaining_digits = length_ - inserted_digits;
+  GetViewAccessibility().SetDescription(l10n_util::GetPluralStringFUTF16(
+      IDS_ASH_LOGIN_PIN_INPUT_DIGITS_REMAINING, remaining_digits));
 }
 
 BEGIN_METADATA(LoginPinInput)

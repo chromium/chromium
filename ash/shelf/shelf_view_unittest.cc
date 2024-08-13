@@ -4019,6 +4019,36 @@ TEST_F(ShelfViewPromiseAppTest, UpdateProgressOnPromiseIcon) {
   ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 1.0f);
 }
 
+TEST_F(ShelfViewPromiseAppTest, AccessibleDescription) {
+  // Add platform app button.
+  ShelfID last_added = AddAppShortcut();
+  ShelfItem item = GetItemByID(last_added);
+  int index = model_->ItemIndexByID(last_added);
+  ShelfAppButton* button = GetButtonByID(last_added);
+
+  EXPECT_EQ(u"", button->GetViewAccessibility().GetCachedDescription());
+
+  item.app_status = AppStatus::kBlocked;
+  item.progress = 0.0f;
+  item.is_promise_app = true;
+  model_->Set(index, item);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SHELF_ITEM_BLOCKED_APP),
+            button->GetViewAccessibility().GetCachedDescription());
+
+  item.app_status = AppStatus::kPaused;
+  item.progress = 0.0f;
+  model_->Set(index, item);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SHELF_ITEM_PAUSED_APP),
+            button->GetViewAccessibility().GetCachedDescription());
+
+  item.app_status = AppStatus::kInstalling;
+  item.progress = 0.3f;
+  model_->Set(index, item);
+  EXPECT_EQ(u"", button->GetViewAccessibility().GetCachedDescription());
+}
+
 TEST_F(ShelfViewPromiseAppTest, AppStatusReflectsOnProgressIndicator) {
   // Add platform app button.
   ShelfID last_added = AddAppShortcut();
