@@ -91,7 +91,9 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
 - (void)animateTabsClosureForTabs:(std::set<web::WebStateID>)tabsToClose
                            groups:
                                (std::map<tab_groups::TabGroupId, std::set<int>>)
-                                   groupsWithTabsToClose {
+                                   groupsWithTabsToClose
+                  allInactiveTabs:(BOOL)animateAllInactiveTabs
+                completionHandler:(ProceduralBlock)completionHandler {
   NSMutableArray<UIView*>* gridCells = [[NSMutableArray alloc] init];
 
   for (NSIndexPath* path in self.collectionView.indexPathsForVisibleItems) {
@@ -99,7 +101,6 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
         [self.diffableDataSource itemIdentifierForIndexPath:path];
     UICollectionViewCell* collectionViewCell =
         [self.collectionView cellForItemAtIndexPath:path];
-    // TODO(crbug.com/354112735): Add logic for animation of inactive tabs.
     if (item.type == GridItemType::kTab &&
         tabsToClose.contains(item.tabSwitcherItem.identifier)) {
       [gridCells addObject:collectionViewCell];
@@ -111,6 +112,9 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
                          ObjCCastStrict<GroupGridCell>(collectionViewCell),
                          groupsWithTabsToClose[item.tabGroupItem.tabGroup
                                                    ->tab_group_id()])];
+    } else if (item.type == GridItemType::kInactiveTabsButton &&
+               animateAllInactiveTabs) {
+      [gridCells addObject:collectionViewCell];
     }
   }
 
@@ -119,7 +123,7 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
       [[TabsClosureAnimation alloc] initWithWindow:self.view.window
                                          gridCells:gridCells];
   [_tabsClosureAnimation animateWithCompletion:^{
-    [weakSelf onTabsClosureAnimationCompletionWithTabs:tabsToClose];
+    [weakSelf onTabsClosureAnimationEndWithCompletion:completionHandler];
   }];
 }
 
@@ -294,14 +298,14 @@ NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
 #pragma mark - Private
 
 // Callback of `_tabsClosureAnimation` when the animation has been completed.
-// Closes the actual tabs in `tabsToClose` and reenables user interaction.
-- (void)onTabsClosureAnimationCompletionWithTabs:
-    (std::set<web::WebStateID>)tabsToClose {
-  // Close the tabs which rearranges the grid to not include the tabs hidden by
-  // the animation.
-  [_gridHandler closeItemsWithTabIDs:tabsToClose
-                            groupIDs:{}
-                            tabCount:tabsToClose.size()];
+// Closes the actual tabs in `tabsToClose`.
+- (void)onTabsClosureAnimationEndWithCompletion:
+    (ProceduralBlock)closeSelectedTabsOnCompletion {
+  CHECK(closeSelectedTabsOnCompletion);
+  // Close selected tabs which which rearranges the grid to not include the tabs
+  // hidden by the animation.
+  closeSelectedTabsOnCompletion();
+
   _tabsClosureAnimation = nil;
 }
 

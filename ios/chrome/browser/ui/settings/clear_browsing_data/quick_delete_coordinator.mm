@@ -6,12 +6,15 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/browsing_data/model/tabs_closure_util.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -165,14 +168,37 @@
   id<TabsAnimationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabsAnimationCommands);
 
+  CHECK(self.browser->type() == Browser::Type::kRegular);
   // TODO(crbug.com/335387869): Consider only returning tabs not in tab groups.
-  std::set<web::WebStateID> tabsToClose = tabs_closure_util::GetTabsToClose(
-      self.browser->GetWebStateList(), beginTime, endTime, cachedTabsInfo);
+  std::set<web::WebStateID> activeTabsToClose =
+      tabs_closure_util::GetTabsToClose(self.browser->GetWebStateList(),
+                                        beginTime, endTime, cachedTabsInfo);
   std::map<tab_groups::TabGroupId, std::set<int>> tabGroupsWithTabsToClose =
       tabs_closure_util::GetTabGroupsWithTabsToClose(
           self.browser->GetWebStateList(), beginTime, endTime, cachedTabsInfo);
-  [handler animateTabsClosureForTabs:tabsToClose
-                              groups:tabGroupsWithTabsToClose];
+
+  BOOL allInactiveTabsWillClose = NO;
+  if (Browser* inactiveBrowser = self.browser->GetInactiveBrowser()) {
+    std::set<web::WebStateID> inactiveTabsToClose =
+        tabs_closure_util::GetTabsToClose(inactiveBrowser->GetWebStateList(),
+                                          beginTime, endTime, cachedTabsInfo);
+
+    allInactiveTabsWillClose = inactiveBrowser->GetWebStateList()->count() ==
+                               (int)inactiveTabsToClose.size();
+  }
+
+  BrowsingDataRemover* browsingDataRemover =
+      BrowsingDataRemoverFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  browsingDataRemover->SetCachedTabsInfo(cachedTabsInfo);
+  [handler
+      animateTabsClosureForTabs:activeTabsToClose
+                         groups:tabGroupsWithTabsToClose
+                allInactiveTabs:allInactiveTabsWillClose
+              completionHandler:^{
+                browsingDataRemover->RemoveInRange(
+                    beginTime, endTime, BrowsingDataRemoveMask::CLOSE_TABS, {});
+              }];
 }
 
 // Disconnects all instances.

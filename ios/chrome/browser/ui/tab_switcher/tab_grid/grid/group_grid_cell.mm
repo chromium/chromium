@@ -198,6 +198,7 @@ const CGFloat kGroupColorViewSize = 18;
   self.groupColor = nil;
   self.selected = NO;
   self.opacity = 1.0;
+  self.hidden = NO;
 }
 
 #pragma mark - UIAccessibility

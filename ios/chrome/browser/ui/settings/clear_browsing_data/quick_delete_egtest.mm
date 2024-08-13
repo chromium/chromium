@@ -12,8 +12,10 @@
 #import "components/sync/base/command_line_switches.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
@@ -29,6 +31,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -111,23 +114,50 @@ void OpenTabGroupAtIndex(int group_cell_index) {
 
 - (void)setUp {
   [super setUp];
+
+  // Ensure that inactive tabs preference settings is set to its default state.
+  [ChromeEarlGrey setIntegerValue:0
+                forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
+  GREYAssertEqual(
+      0,
+      [ChromeEarlGrey localStateIntegerPref:prefs::kInactiveTabsTimeThreshold],
+      @"Inactive tabs preference is not set to default value.");
+
   [AutofillAppInterface clearCreditCardStore];
   [PasswordSettingsAppInterface clearPasswordStores];
   [ChromeEarlGrey clearBrowsingHistory];
   [ChromeEarlGrey resetBrowsingDataPrefs];
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
-  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
+
+  if (![self isRunningTest:@selector(testInactiveTabsForDeletion)]) {
+    GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                  @"Cannot setup histogram tester.");
+    [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
+  }
 }
 
 - (void)tearDown {
+  // Ensure that inactive tabs preference settings is set to its default state.
+  [ChromeEarlGrey setIntegerValue:0
+                forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
+  GREYAssertEqual(
+      0,
+      [ChromeEarlGrey localStateIntegerPref:prefs::kInactiveTabsTimeThreshold],
+      @"Inactive tabs preference is not set to default value.");
+
   [AutofillAppInterface clearCreditCardStore];
   [PasswordSettingsAppInterface clearPasswordStores];
   [ChromeEarlGrey clearBrowsingHistory];
   [ChromeEarlGrey resetBrowsingDataPrefs];
-  [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+
+  if (![self isRunningTest:@selector(testInactiveTabsForDeletion)]) {
+    [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+    GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                  @"Cannot reset histogram tester.");
+  }
+
+  // Shutdown network process after tests run to avoid hanging from
+  // deleting browsing history.
+  [ChromeEarlGrey killWebKitNetworkProcess];
 
   [super tearDown];
 }
@@ -142,6 +172,18 @@ void OpenTabGroupAtIndex(int group_cell_index) {
   config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kModernTabStrip);
   return config;
+}
+
+// Relaunches the app with Inactive Tabs still enabled.
+- (void)relaunchAppWithInactiveTabsEnabled {
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled.push_back(kIOSQuickDelete);
+  config.additional_args.push_back(
+      "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
+      kTabInactivityThresholdParameterName + "/" +
+      kTabInactivityThresholdImmediateDemoParam);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
 // Opens Quick Delete from the Privacy page in Settings.
@@ -569,6 +611,67 @@ void ExpectClearBrowsingDataNavigationHistograms(
   GREYAssertTrue([ChromeEarlGrey mainTabCount] == 0, @"Tabs were not closed.");
 }
 
+// Tests that inactive tabs are shown as a possible type to be deleted on the
+// browsing data row when tabs are selected as a data type for deletion. It also
+// tests that the inactive tabs get closed when the deletion of tabs is
+// selected.
+- (void)testInactiveTabsForDeletion {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
+                           @"only supported on iPhone.");
+  }
+
+  // Set pref to close tabs.
+  [ChromeEarlGrey setBoolValue:true
+                   forUserPref:browsing_data::prefs::kCloseTabs];
+
+  // Load page in tab.
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+  GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 0,
+                 @"Inactive tab count should be 0");
+
+  // Relaunch the app to create the inactive tab. Relaunces also creates a new
+  // NTP tab.
+  [self relaunchAppWithInactiveTabsEnabled];
+
+  // Load a url in the NTP tab.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 1,
+                 @"Inactive tab count should be 1");
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 1, @"Tab count should be 1");
+
+  // Open Quick Delete.
+  [self openQuickDeleteFromThreeDotMenu];
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that the browsing data row and the tabs substring are presented.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 ContainsPartialText(l10n_util::GetPluralNSStringF(
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS, 2))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+
+  // Check that the tabs have been closed.
+  [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
+  GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 0,
+                 @"Inactive tabs were not closed.");
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 0, @"Tabs were not closed.");
+}
+
 // Tests that tabs in tab groups are shown as a possible type to be deleted on
 // the browsing data row when tabs are selected as a data type for deletion. It
 // also tests that the tabs in tab groups get closed when the deletion of tabs
@@ -623,8 +726,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
 // tabs should include tabs in all windows, not just the ones where quick delete
 // is triggered from. It also tests that the tabs in both windows get closed
 // when the deletion of tabs is selected.
-// TODO(crbug.com/358141981): Test is flaky on iPad.
-- (void)DISABLED_testTabsForDeletionInMultiwindow {
+- (void)testTabsForDeletionInMultiwindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }

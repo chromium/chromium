@@ -141,7 +141,6 @@
   gridViewController.mutator = _mediator;
   gridViewController.gridProvider = _mediator;
   gridViewController.menuProvider = _contextMenuProvider;
-  gridViewController.gridHandler = _mediator;
 
   // If regular is enabled then the grid exists and it is not disabled.
   // TODO(crbug.com/40273478): Get disabled status from the mediator.
@@ -191,10 +190,14 @@
 - (void)animateTabsClosureForTabs:(std::set<web::WebStateID>)tabsToClose
                            groups:
                                (std::map<tab_groups::TabGroupId, std::set<int>>)
-                                   groupsWithTabsToClose {
+                                   groupsWithTabsToClose
+                  allInactiveTabs:(BOOL)animateAllInactiveTabs
+                completionHandler:(ProceduralBlock)completionHandler {
   [self hideTabGroup];  // Make sure that no tab group is being displayed.
   [_gridViewController animateTabsClosureForTabs:tabsToClose
-                                          groups:groupsWithTabsToClose];
+                                          groups:groupsWithTabsToClose
+                                 allInactiveTabs:animateAllInactiveTabs
+                               completionHandler:completionHandler];
 }
 
 #pragma mark - Public

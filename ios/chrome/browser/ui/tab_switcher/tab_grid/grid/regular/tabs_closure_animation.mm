@@ -273,10 +273,10 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame, NSTimeInterval duration) {
   [_gradientLayer removeFromSuperlayer];
   _gradientLayer = nil;
 
-  // Remove the gradient layer in each grid cell mask in favor of setting the
-  // opacity to 0.
+  // Remove the gradient layer in each grid cell mask in favor of hiding the
+  // view.
   for (UIView* cell : _gridCells) {
-    cell.alpha = 0;
+    cell.hidden = YES;
     cell.layer.mask = nil;
   }
 

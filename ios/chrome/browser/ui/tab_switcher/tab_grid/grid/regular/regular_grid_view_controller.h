@@ -7,6 +7,7 @@
 
 #import <map>
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller+subclassing.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
 
@@ -19,15 +20,17 @@ class TabGroupId;
 @interface RegularGridViewController
     : BaseGridViewController <InactiveTabsInfoConsumer>
 
-// Handler for the GridCommands protocol.
-@property(nonatomic, weak) id<GridCommands> gridHandler;
-
-// Trigger the tabs closure animation along with the actual closure of the
-// WebStates in `tabsToClose` and the groups in `groupsWithTabsToClose`.
+// Triggers the tabs closure animation on the tab grid for the WebStates in
+// `tabsToClose`, for the groups in `groupsWithTabsToClose`, and if
+// `animateAllInactiveTabs` is true, then for the inactive tabs banner. It also
+// triggers the closure of the selected WebStates through `completionHandler`
+// after running the animation.
 - (void)animateTabsClosureForTabs:(std::set<web::WebStateID>)tabsToClose
                            groups:
                                (std::map<tab_groups::TabGroupId, std::set<int>>)
-                                   groupsWithTabsToClose;
+                                   groupsWithTabsToClose
+                  allInactiveTabs:(BOOL)animateAllInactiveTabs
+                completionHandler:(ProceduralBlock)completionHandler;
 
 @end
 
