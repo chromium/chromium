@@ -145,6 +145,10 @@ BASE_DECLARE_FEATURE(kWebAuthnAndroidOpenAccessory);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticatorDelay);
 
+// Enable non-autofill sign-in UI for conditional mediation.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnAmbientSignin);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_
