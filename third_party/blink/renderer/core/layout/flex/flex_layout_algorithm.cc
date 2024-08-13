@@ -665,12 +665,9 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         border_padding_in_child_writing_mode.ConvertToPhysical(
             child_style.GetWritingDirection()));
 
-    LayoutUnit main_axis_border_padding =
+    const LayoutUnit main_axis_border_padding =
         is_horizontal_flow_ ? physical_border_padding.HorizontalSum()
                             : physical_border_padding.VerticalSum();
-    LayoutUnit cross_axis_border_padding =
-        is_horizontal_flow_ ? physical_border_padding.VerticalSum()
-                            : physical_border_padding.HorizontalSum();
 
     const Length& cross_axis_length =
         is_horizontal_flow_ ? child.Style().Height() : child.Style().Width();
@@ -733,15 +730,6 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 
       return layout_result->IntrinsicBlockSize();
     };
-
-    const MinMaxSizes min_max_sizes_in_cross_axis_direction =
-        is_main_axis_inline_axis
-            ? ComputeMinMaxBlockSizes(
-                  flex_basis_space, child, border_padding_in_child_writing_mode,
-                  /* auto_min_length */ nullptr, BlockSizeFunc)
-            : ComputeMinMaxInlineSizes(
-                  flex_basis_space, child, border_padding_in_child_writing_mode,
-                  /* auto_min_length */ nullptr, MinMaxSizesFunc);
 
     const Length& flex_basis = child_style.FlexBasis();
     if (is_column_ && flex_basis.MayHavePercentDependence()) {
@@ -847,6 +835,16 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 
         // If appropriate clamp by the transferred min/max sizes.
         if (child.HasAspectRatio()) {
+          const MinMaxSizes min_max_sizes_in_cross_axis_direction =
+              is_main_axis_inline_axis
+                  ? ComputeMinMaxBlockSizes(
+                        flex_basis_space, child,
+                        border_padding_in_child_writing_mode,
+                        /* auto_min_length */ nullptr, BlockSizeFunc)
+                  : ComputeMinMaxInlineSizes(
+                        flex_basis_space, child,
+                        border_padding_in_child_writing_mode,
+                        /* auto_min_length */ nullptr, MinMaxSizesFunc);
           auto transferred_min_max_func =
               is_main_axis_inline_axis ? ComputeTransferredMinMaxInlineSizes
                                        : ComputeTransferredMinMaxBlockSizes;
@@ -945,10 +943,9 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     algorithm_
         .emplace_back(child.Style(), flex_base_content_size,
                       min_max_sizes_in_main_axis_direction,
-                      min_max_sizes_in_cross_axis_direction,
-                      main_axis_border_padding, cross_axis_border_padding,
-                      physical_child_margins, scrollbars, baseline_writing_mode,
-                      baseline_group, is_initial_block_size_indefinite,
+                      main_axis_border_padding, physical_child_margins,
+                      scrollbars, baseline_writing_mode, baseline_group,
+                      is_initial_block_size_indefinite,
                       is_used_flex_basis_indefinite, min_max_sizes.has_value())
         .ng_input_node_ = child;
     // Save the layout result so that we can maybe reuse it later.
@@ -1216,7 +1213,6 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
       FlexItem& flex_item = line->line_items_[i];
       NGFlexItem& flex_item_output = flex_line_outputs->back().line_items[i];
 
-      flex_item.offset_ = &flex_item_output.offset;
       flex_item_output.ng_input_node = flex_item.ng_input_node_;
       flex_item_output.main_axis_final_size = flex_item.FlexedBorderBoxSize();
       flex_item_output.is_initial_block_size_indefinite =
@@ -1316,8 +1312,6 @@ void FlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals(
 
   algorithm_.AlignFlexLines(final_content_cross_size, flex_line_outputs);
 
-  algorithm_.AlignChildren();
-
   if (Style().FlexWrap() == EFlexWrap::kWrapReverse) {
     // flex-wrap: wrap-reverse reverses the order of the lines in the container;
     // FlipForWrapReverse recalculates each item's cross axis position. We have
@@ -1342,6 +1336,10 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     HeapVector<NGFlexLine>* flex_line_outputs,
     Vector<EBreakBetween>* row_break_between_outputs) {
   DCHECK(!IsBreakInside(GetBreakToken()));
+
+  const WritingDirectionMode writing_direction =
+      GetConstraintSpace().GetWritingDirection();
+
   LayoutUnit final_content_cross_size;
   if (is_column_) {
     final_content_cross_size =
@@ -1389,8 +1387,6 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
          flex_item_idx < line_output.line_items.size(); ++flex_item_idx) {
       NGFlexItem& flex_item = line_output.line_items[flex_item_idx];
       FlexItem* item = algorithm_.FlexItemAtIndex(flex_line_idx, flex_item_idx);
-
-      LogicalOffset offset = flex_item.offset.ToLogicalOffset(is_column_);
 
       const LayoutResult* layout_result = nullptr;
       if (DoesItemStretch(flex_item.ng_input_node)) {
@@ -1450,9 +1446,16 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
       const auto& physical_fragment =
           To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());
+      const LogicalBoxFragment fragment(writing_direction, physical_fragment);
+      const LayoutUnit cross_axis_size =
+          is_column_ ? fragment.InlineSize() : fragment.BlockSize();
 
-      const auto writing_direction = GetConstraintSpace().GetWritingDirection();
-      LogicalBoxFragment fragment(writing_direction, physical_fragment);
+      flex_item.offset =
+          FlexOffset(item->main_axis_offset_,
+                     line_output.cross_axis_offset +
+                         item->CrossAxisOffset(line_output, cross_axis_size));
+      const LogicalOffset offset = flex_item.offset.ToLogicalOffset(is_column_);
+
       if (!InvolvedInBlockFragmentation(container_builder_)) {
         container_builder_.AddResult(
             *layout_result, offset,
@@ -2545,7 +2548,6 @@ void FlexLayoutAlgorithm::CheckFlexLines(
       const FlexItem& flex_item = flex_line.line_items_[j];
       const NGFlexItem& flex_item_output = flex_line_output.line_items[j];
 
-      DCHECK_EQ(flex_item_output.offset, *flex_item.offset_);
       DCHECK_EQ(flex_item_output.ng_input_node, flex_item.ng_input_node_);
       // Cloned box decorations may cause the border box of a flex item to grow.
       if (flex_item_output.ng_input_node.Style().BoxDecorationBreak() !=
