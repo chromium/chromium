@@ -1,32 +1,33 @@
-caption: Control the enablement of <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME">"GenAI VC Background"</ph> feature in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>
+caption: Settings for Generative AI VC Background feature 
 desc: |-
-  This policy enables or disables <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME">"GenAI VC Background"</ph> feature for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
-  0 = Do not allow <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME">"GenAI VC Background"</ph>.
+  This policy enables or disables Generative AI VC Background feature for <ph name="PRODUCT_OS_NAME">$1<ex>Google ChromeOS</ex></ph>.
+  1 is the default value.
 
-  1 = Allow <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME">"GenAI VC Background"</ph> without improving AI models.
+  1 = Allow Generative AI VC Background without improving AI models. 1 is the default value for Enterprise users managed by <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph> and Education accounts managed by <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph>.
 
-  If this policy is set to Unset, <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME">"GenAI VC Background"</ph> feature is allowed for enterprise and EDU users.
-  In M127, the policy was disabled for enterprise users by default.
+  2 = Do not allow Generative AI VC Background.
+
+  For more information on data handling for generative AI features, please see https://support.google.com/chrome/a?p=generative_ai_settings.
 default: 1
-example_value: 0
+example_value: 2
 features:
   dynamic_refresh: true
   per_profile: true
 owners:
 - file://ash/webui/personalization_app/OWNERS
 items:
-- caption: Do not allow "GenAI VC Background"
-  name: Disabled
-  value: 0
-- caption: Allow "GenAI VC Background" without improving AI models
+- caption: Allow Generative AI VC Background without improving AI models
   name: AllowedWithoutLogging
   value: 1
+- caption: Do not allow Generative AI VC Background
+  name: Disabled
+  value: 2
 schema:
   enum:
-  - 0
   - 1
+  - 2
   type: integer
-supported_on:
-- chrome_os:127-
+future_on:
+- chrome_os
 tags: []
 type: int-enum

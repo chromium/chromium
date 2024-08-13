@@ -55,13 +55,13 @@ IN_PROC_BROWSER_TEST_F(GenAIWallpaperPolicyTest,
 
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
   policies.Set(key::kGenAIWallpaperSettings, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(0), nullptr);
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(2), nullptr);
   UpdateProviderPolicy(policies);
 
   EXPECT_TRUE(profile->GetPrefs()->IsManagedPreference(
       ash::prefs::kGenAIWallpaperSettings));
   EXPECT_EQ(
-      profile->GetPrefs()->GetInteger(ash::prefs::kGenAIWallpaperSettings), 0);
+      profile->GetPrefs()->GetInteger(ash::prefs::kGenAIWallpaperSettings), 2);
   EXPECT_FALSE(
       ash::personalization_app::IsManagedSeaPenWallpaperEnabled(profile));
 }
