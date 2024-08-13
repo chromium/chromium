@@ -1592,6 +1592,24 @@ the browser and content area. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.NumberOfActiveAccounts.{TimeRange}" units="accounts"
+    expires_after="2025-07-31">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    The number of accounts that were active in the {TimeRange}, i.e. that were
+    used as the primary account in any profile. Emitted no more than once every
+    24 hours, as soon as Chrome detects that more than 24 hours passed from the
+    last recording.
+  </summary>
+  <token key="TimeRange">
+    <variant name="Last7Days" summary="last 7 days"/>
+    <variant name="Last28Days" summary="last 28 days"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.OAuth2MintToken.ApiCallResult"
     enum="OAuth2MintTokenApiCallResult" expires_after="2024-05-19">
   <owner>alexilin@chromium.org</owner>

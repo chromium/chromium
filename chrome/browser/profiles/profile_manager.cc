@@ -89,6 +89,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search_engines/default_search_manager.h"
+#include "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -2160,6 +2161,28 @@ void ProfileManager::SetProfileAsLastUsed(Profile* last_active) {
     return;
   }
 
+  // If there is a primary account, mark it as used "just now".
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(last_active);
+  signin::ActivePrimaryAccountsMetricsRecorder*
+      active_primary_accounts_metrics_recorder =
+          g_browser_process->active_primary_accounts_metrics_recorder();
+  // IdentityManager is null for incognito profiles.
+  if (active_primary_accounts_metrics_recorder && identity_manager &&
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    CoreAccountInfo account_info =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    active_primary_accounts_metrics_recorder->MarkAccountAsActiveNow(
+        account_info.gaia);
+  }
+
+  // Don't remember ephemeral profiles as last because they are not going to
+  // persist after restart.
+  if (IsRegisteredAsEphemeral(&GetProfileAttributesStorage(),
+                              last_active->GetPath())) {
+    return;
+  }
+
   // Only keep track of profiles that we are managing; tests may create others.
   // Also never consider the SystemProfile as "active".
   if (profiles_info_.find(last_active->GetPath()) != profiles_info_.end() &&
@@ -2206,16 +2229,7 @@ void ProfileManager::BrowserListObserver::OnBrowserSetLastActive(
     return;
   }
 
-  Profile* last_active = browser->profile();
-
-  // Don't remember ephemeral profiles as last because they are not going to
-  // persist after restart.
-  if (IsRegisteredAsEphemeral(&profile_manager_->GetProfileAttributesStorage(),
-                              last_active->GetPath())) {
-    return;
-  }
-
-  profile_manager_->SetProfileAsLastUsed(last_active);
+  profile_manager_->SetProfileAsLastUsed(browser->profile());
 }
 
 void ProfileManager::OnClosingAllBrowsersChanged(bool closing) {

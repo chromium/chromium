@@ -17,6 +17,10 @@
 class PrefService;
 class PrefRegistrySimple;
 
+namespace signin {
+class ActivePrimaryAccountsMetricsRecorder;
+}
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 extern const char kExplicitSigninMigrationHistogramName[];
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -45,8 +49,12 @@ class SigninMetricsService : public KeyedService,
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ExplicitSigninMigration)
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+  // `active_primary_accounts_metrics_recorder` may be null (this should happen
+  // only in tests).
   explicit SigninMetricsService(signin::IdentityManager& identity_manager,
-                                PrefService& pref_service);
+                                PrefService& pref_service,
+                                signin::ActivePrimaryAccountsMetricsRecorder*
+                                    active_primary_accounts_metrics_recorder);
   ~SigninMetricsService() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -74,8 +82,11 @@ class SigninMetricsService : public KeyedService,
       signin_metrics::AccessPoint access_point);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-  raw_ref<signin::IdentityManager> identity_manager_;
+  const raw_ref<signin::IdentityManager> identity_manager_;
   const raw_ref<PrefService> pref_service_;
+
+  const raw_ptr<signin::ActivePrimaryAccountsMetricsRecorder>
+      active_primary_accounts_metrics_recorder_;
 
   signin::AccountManagementTypeMetricsRecorder management_type_recorder_;
 

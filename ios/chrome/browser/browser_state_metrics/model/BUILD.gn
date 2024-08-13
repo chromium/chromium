@@ -11,9 +11,11 @@ source_set("model") {
   ]
   deps = [
     "//components/profile_metrics",
+    "//components/signin/core/browser",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
   ]
 }

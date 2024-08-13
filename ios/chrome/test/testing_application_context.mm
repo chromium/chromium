@@ -180,6 +180,12 @@ metrics::MetricsService* TestingApplicationContext::GetMetricsService() {
   return nullptr;
 }
 
+signin::ActivePrimaryAccountsMetricsRecorder*
+TestingApplicationContext::GetActivePrimaryAccountsMetricsRecorder() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return nullptr;
+}
+
 ukm::UkmRecorder* TestingApplicationContext::GetUkmRecorder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return nullptr;

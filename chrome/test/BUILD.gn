@@ -379,6 +379,7 @@ static_library("test_support") {
     "//components/security_interstitials/core:unsafe_resource",
     "//components/segmentation_platform/public",
     "//components/segmentation_platform/public:test_support",
+    "//components/signin/core/browser",
     "//components/spellcheck/renderer",
     "//components/subresource_filter/core/browser:test_support",
     "//components/subresource_filter/core/common:test_support",

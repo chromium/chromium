@@ -22,6 +22,7 @@ source_set("model") {
     "//components/os_crypt/async/browser",
     "//components/prefs",
     "//components/sessions",
+    "//components/signin/core/browser",
     "//components/translate/core/browser",
     "//components/ukm",
     "//components/update_client",

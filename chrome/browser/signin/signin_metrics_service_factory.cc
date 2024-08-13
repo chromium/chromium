@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 #include "chrome/browser/signin/signin_metrics_service_factory.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/core/browser/signin_metrics_service.h"
@@ -35,7 +37,8 @@ KeyedService* SigninMetricsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   return new SigninMetricsService(
-      *IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs());
+      *IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
+      g_browser_process->active_primary_accounts_metrics_recorder());
 }
 
 bool SigninMetricsServiceFactory::ServiceIsCreatedWithBrowserContext() const {

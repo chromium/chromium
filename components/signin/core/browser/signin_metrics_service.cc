@@ -16,6 +16,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -112,9 +113,13 @@ void MaybeRecordWebSigninToChromeSigninTimes(
 
 SigninMetricsService::SigninMetricsService(
     signin::IdentityManager& identity_manager,
-    PrefService& pref_service)
+    PrefService& pref_service,
+    signin::ActivePrimaryAccountsMetricsRecorder*
+        active_primary_accounts_metrics_recorder)
     : identity_manager_(identity_manager),
       pref_service_(pref_service),
+      active_primary_accounts_metrics_recorder_(
+          active_primary_accounts_metrics_recorder),
       management_type_recorder_(identity_manager) {
   identity_manager_scoped_observation_.Observe(&identity_manager_.get());
 
@@ -152,6 +157,11 @@ void SigninMetricsService::OnPrimaryAccountChanged(
           event_details.GetCurrentState().primary_account.gaia,
           access_point.value());
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+      if (active_primary_accounts_metrics_recorder_) {
+        active_primary_accounts_metrics_recorder_->MarkAccountAsActiveNow(
+            event_details.GetCurrentState().primary_account.gaia);
+      }
 
       return;
     }

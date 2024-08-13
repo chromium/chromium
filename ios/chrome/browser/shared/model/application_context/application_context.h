@@ -52,6 +52,10 @@ namespace os_crypt_async {
 class OSCryptAsync;
 }
 
+namespace signin {
+class ActivePrimaryAccountsMetricsRecorder;
+}
+
 namespace ukm {
 class UkmRecorder;
 }
@@ -138,6 +142,11 @@ class ApplicationContext {
 
   // Gets the MetricsService used by this application. May return null.
   virtual metrics::MetricsService* GetMetricsService() = 0;
+
+  // Gets the ActivePrimaryAccountsMetricsRecorder used by this application. May
+  // return null.
+  virtual signin::ActivePrimaryAccountsMetricsRecorder*
+  GetActivePrimaryAccountsMetricsRecorder() = 0;
 
   // Gets the UkmRecorder used by this application. May return null.
   virtual ukm::UkmRecorder* GetUkmRecorder() = 0;

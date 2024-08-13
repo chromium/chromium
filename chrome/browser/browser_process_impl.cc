@@ -120,6 +120,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/sessions/core/session_id_generator.h"
+#include "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #include "components/subresource_filter/content/browser/safe_browsing_ruleset_publisher.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
@@ -272,6 +273,9 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
                                     ->TakeChromeBrowserPolicyConnector()),
       local_state_(
           startup_data->chrome_feature_list_creator()->TakePrefService()),
+      active_primary_accounts_metrics_recorder_(
+          std::make_unique<signin::ActivePrimaryAccountsMetricsRecorder>(
+              *local_state_)),
       platform_part_(std::make_unique<BrowserProcessPlatformPart>()) {
   CHECK(!g_browser_process);
   g_browser_process = this;
@@ -818,6 +822,12 @@ ProfileManager* BrowserProcessImpl::profile_manager() {
 PrefService* BrowserProcessImpl::local_state() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return local_state_.get();
+}
+
+signin::ActivePrimaryAccountsMetricsRecorder*
+BrowserProcessImpl::active_primary_accounts_metrics_recorder() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return active_primary_accounts_metrics_recorder_.get();
 }
 
 variations::VariationsService* BrowserProcessImpl::variations_service() {

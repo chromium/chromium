@@ -70,6 +70,10 @@ namespace safe_browsing {
 class SafeBrowsingService;
 }
 
+namespace signin {
+class ActivePrimaryAccountsMetricsRecorder;
+}
+
 namespace subresource_filter {
 class RulesetService;
 }
@@ -159,6 +163,8 @@ class BrowserProcess {
   virtual PrefService* local_state() = 0;
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   shared_url_loader_factory() = 0;
+  virtual signin::ActivePrimaryAccountsMetricsRecorder*
+  active_primary_accounts_metrics_recorder() = 0;
   virtual variations::VariationsService* variations_service() = 0;
 
   virtual BrowserProcessPlatformPart* platform_part() = 0;

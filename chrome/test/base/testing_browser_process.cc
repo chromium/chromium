@@ -279,6 +279,11 @@ PrefService* TestingBrowserProcess::local_state() {
   return local_state_;
 }
 
+signin::ActivePrimaryAccountsMetricsRecorder*
+TestingBrowserProcess::active_primary_accounts_metrics_recorder() {
+  return nullptr;
+}
+
 variations::VariationsService* TestingBrowserProcess::variations_service() {
   return variations_service_;
 }

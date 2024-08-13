@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/signin/model/signin_metrics_service_factory.h"
+#import "ios/chrome/browser/signin/model/signin_metrics_service_factory.h"
 
-#include <utility>
+#import <utility>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/signin/core/browser/signin_metrics_service.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#import "components/signin/core/browser/signin_metrics_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 // static
 SigninMetricsService* SigninMetricsServiceFactory::GetForBrowserState(
@@ -42,7 +44,8 @@ SigninMetricsServiceFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<SigninMetricsService>(
       *IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
-      *chrome_browser_state->GetPrefs());
+      *chrome_browser_state->GetPrefs(),
+      GetApplicationContext()->GetActivePrimaryAccountsMetricsRecorder());
 }
 
 bool SigninMetricsServiceFactory::ServiceIsCreatedWithBrowserState() const {

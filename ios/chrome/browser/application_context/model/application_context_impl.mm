@@ -37,6 +37,7 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/sessions/core/session_id_generator.h"
+#import "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #import "components/translate/core/browser/translate_download_manager.h"
 #import "components/ukm/ukm_service.h"
 #import "components/update_client/configurator.h"
@@ -349,6 +350,17 @@ metrics::MetricsService* ApplicationContextImpl::GetMetricsService() {
     return metrics_services_manager->GetMetricsService();
   }
   return nullptr;
+}
+
+signin::ActivePrimaryAccountsMetricsRecorder*
+ApplicationContextImpl::GetActivePrimaryAccountsMetricsRecorder() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!active_primary_accounts_metrics_recorder_) {
+    active_primary_accounts_metrics_recorder_ =
+        std::make_unique<signin::ActivePrimaryAccountsMetricsRecorder>(
+            *GetLocalState());
+  }
+  return active_primary_accounts_metrics_recorder_.get();
 }
 
 ukm::UkmRecorder* ApplicationContextImpl::GetUkmRecorder() {

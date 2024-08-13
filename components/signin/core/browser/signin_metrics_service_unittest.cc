@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -47,23 +48,34 @@ class SigninMetricsServiceTest : public ::testing::Test {
       : identity_test_environment_(/*test_url_loader_factory=*/nullptr,
                                    &pref_service_) {
     SigninMetricsService::RegisterProfilePrefs(pref_service_.registry());
+    signin::ActivePrimaryAccountsMetricsRecorder::RegisterLocalStatePrefs(
+        local_state_.registry());
+
+    active_primary_accounts_metrics_recorder_ =
+        std::make_unique<signin::ActivePrimaryAccountsMetricsRecorder>(
+            local_state_);
   }
 
   void CreateSigninMetricsService() {
     signin_metrics_service_ = std::make_unique<SigninMetricsService>(
-        *identity_manager(), pref_service_);
+        *identity_manager(), pref_service_,
+        active_primary_accounts_metrics_recorder_.get());
   }
 
   void DestroySigninMetricsService() { signin_metrics_service_ = nullptr; }
 
   AccountInfo Signin(
       const std::string& email,
-      signin_metrics::AccessPoint access_point = kDefaultTestAccessPoint) {
+      signin_metrics::AccessPoint access_point = kDefaultTestAccessPoint,
+      const std::string& gaia_id = "") {
+    signin::AccountAvailabilityOptionsBuilder builder;
+    builder.AsPrimary(signin::ConsentLevel::kSignin)
+        .WithAccessPoint(access_point);
+    if (!gaia_id.empty()) {
+      builder.WithGaiaId(gaia_id);
+    }
     return identity_test_environment_.MakeAccountAvailable(
-        signin::AccountAvailabilityOptionsBuilder()
-            .AsPrimary(signin::ConsentLevel::kSignin)
-            .WithAccessPoint(access_point)
-            .Build(email));
+        builder.Build(email));
   }
 
   void Signout() { identity_test_environment_.ClearPrimaryAccount(); }
@@ -154,6 +166,11 @@ class SigninMetricsServiceTest : public ::testing::Test {
 
   PrefService& pref_service() { return pref_service_; }
 
+  signin::ActivePrimaryAccountsMetricsRecorder*
+  active_primary_accounts_metrics_recorder() {
+    return active_primary_accounts_metrics_recorder_.get();
+  }
+
  private:
   signin::IdentityManager* identity_manager() {
     return identity_test_environment_.identity_manager();
@@ -161,6 +178,9 @@ class SigninMetricsServiceTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<signin::ActivePrimaryAccountsMetricsRecorder>
+      active_primary_accounts_metrics_recorder_;
   signin::IdentityTestEnvironment identity_test_environment_;
 
   std::unique_ptr<SigninMetricsService> signin_metrics_service_;
@@ -528,3 +548,27 @@ TEST_F(SigninMetricsServiceTest, ChromeSigninSettingOnSignin) {
       1);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+TEST_F(SigninMetricsServiceTest, UpdatesAccountLastActiveTimeOnSignin) {
+  const std::string gaia_id("gaia_id");
+
+  CreateSigninMetricsService();
+
+  // Sanity check: Before signing in, there's no last-active timestamp for the
+  // account.
+  ASSERT_FALSE(active_primary_accounts_metrics_recorder()
+                   ->GetLastActiveTimeForAccount(gaia_id)
+                   .has_value());
+
+  base::Time before_signin = base::Time::Now();
+  Signin("test@gmail.com", kDefaultTestAccessPoint, gaia_id);
+
+  // After signin, the last-active timestamp should've been updated.
+  EXPECT_TRUE(active_primary_accounts_metrics_recorder()
+                  ->GetLastActiveTimeForAccount(gaia_id)
+                  .has_value());
+  EXPECT_GE(active_primary_accounts_metrics_recorder()
+                ->GetLastActiveTimeForAccount(gaia_id)
+                .value_or(base::Time()),
+            before_signin);
+}

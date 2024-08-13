@@ -93,6 +93,7 @@ source_set("test_support") {
   public_deps = [
     ":browser_state",
     "//base",
+    "//components/signin/core/browser",
     "//third_party/abseil-cpp:absl",
   ]
 

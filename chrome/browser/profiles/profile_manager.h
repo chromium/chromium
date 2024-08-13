@@ -508,7 +508,8 @@ class ProfileManager : public Profile::Delegate {
   void OnBrowserClosed(Browser* browser);
 
   // Sets the last-used profile to `last_active`, and also sets that profile's
-  // last-active time to now.
+  // last-active time to now. If the profile has a primary account, this also
+  // sets its last-active time to now.
   void SetProfileAsLastUsed(Profile* last_active);
 
   class BrowserListObserver : public ::BrowserListObserver {
