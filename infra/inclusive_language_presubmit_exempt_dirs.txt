@@ -699,7 +699,7 @@ third_party/rust/chromium_crates_io/vendor/rand_chacha-0.3.1 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4/src 3 1
 third_party/rust/chromium_crates_io/vendor/rand_pcg-0.3.1 4 1
-third_party/rust/chromium_crates_io/vendor/read-fonts-0.19.3/src/tables 2 1
+third_party/rust/chromium_crates_io/vendor/read-fonts-0.20.0/src/tables 2 1
 third_party/rust/chromium_crates_io/vendor/regex-1.10.6 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.10.6/src 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.10.6/tests 7 6
@@ -726,7 +726,7 @@ third_party/rust/chromium_crates_io/vendor/serde_json-1.0.122 6 1
 third_party/rust/chromium_crates_io/vendor/serde_json-1.0.122/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1 1 1
 third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/.github/workflows 1 1
-third_party/rust/chromium_crates_io/vendor/skrifa-0.19.3/src 1 1
+third_party/rust/chromium_crates_io/vendor/skrifa-0.20.0/src 1 1
 third_party/rust/chromium_crates_io/vendor/static_assertions-1.1.0 5 2
 third_party/rust/chromium_crates_io/vendor/static_assertions-1.1.0/src 2 1
 third_party/rust/chromium_crates_io/vendor/strum-0.25.0/src 1 1

@@ -193,6 +193,9 @@ shipped = false
 [crate.serde_json]
 group = 'test'
 
+[crate.skrifa]
+extra_src_roots = ['../generated']
+
 [crate.small_ctor]
 group = 'test'
 

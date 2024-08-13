@@ -849,6 +849,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
 delta = "0.5.4 -> 0.5.5"
 notes = "No unsafe changes."
 
+[[audits.font-types]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-1"]
+delta = "0.5.5 -> 0.6.0"
+notes = "This change comprises changes to understand larger GlyphId and compatibility with older Mac TrueType fonts. No unsafe code is introduced."
+
 [[audits.getrandom]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -1235,6 +1241,20 @@ who = "danakj@chromium.org"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.19.2 -> 0.19.3"
 notes = "No unsafe."
+
+[[audits.read-fonts]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-0"]
+delta = "0.19.3 -> 0.20.0"
+notes = """
+Contains changes for:
+* Adding IntSet, SparseBitSet
+* Support for VARC
+* Improved AAT support
+* Fuzzer overflow fixes, and avoiding timeouts in CMAP
+* Closure computations for subsetting of COLR
+* large glyphId support.
+"""
 
 [[audits.regex]]
 who = "danakj@chromium.org"
@@ -1659,6 +1679,12 @@ delta = "0.19.1 -> 0.19.2"
 who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.19.2 -> 0.19.3"
+
+[[audits.skrifa]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-0"]
+delta = "0.19.3 -> 0.20.0"
+notes = "Contains mainly preparatory autohint changes and data tables."
 
 [[audits.small_ctor]]
 who = "danakj@chromium.org"
