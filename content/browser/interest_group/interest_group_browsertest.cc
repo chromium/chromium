@@ -730,7 +730,6 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kParakeet, {}},
          {blink::features::kFledge, {}},
          {blink::features::kAllowURNsInIframes, {}},
-         {blink::features::kFledgeNegativeTargeting, {}},
          {blink::features::kBiddingAndScoringDebugReportingAPI, {}},
          {blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot, {}},
          {blink::features::kFencedFramesM120FeaturesPart1, {}},

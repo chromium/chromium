@@ -92,10 +92,8 @@ dictionary AuctionAdConfig {
   AuctionAdInterestGroupSize requestedSize;
   sequence<AuctionAdInterestGroupSize> allSlotsRequestedSizes;
 
-  [RuntimeEnabled=FledgeNegativeTargeting]
   Promise<undefined> additionalBids;
 
-  [RuntimeEnabled=FledgeNegativeTargeting]
   DOMString auctionNonce;
 
   ProtectedAudiencePrivateAggregationConfig privateAggregationConfig;

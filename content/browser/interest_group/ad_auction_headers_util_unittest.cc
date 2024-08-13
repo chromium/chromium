@@ -349,8 +349,7 @@ class ProcessAdAuctionResponseHeadersTest : public RenderViewHostTestHarness {
   ProcessAdAuctionResponseHeadersTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kFledgeBiddingAndAuctionServer,
-                              blink::features::kAdAuctionSignals,
-                              blink::features::kFledgeNegativeTargeting},
+                              blink::features::kAdAuctionSignals},
         /*disabled_features=*/{});
   }
 

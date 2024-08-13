@@ -869,7 +869,6 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
         /*enabled_features=*/
         {blink::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI, blink::features::kFledge,
-         blink::features::kFledgeNegativeTargeting,
          blink::features::kFledgeRealTimeReporting,
          blink::features::kFledgeAuctionDealSupport},
         /*disabled_features=*/{});
@@ -6088,9 +6087,8 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
 
 TEST_F(AdAuctionServiceImplTest, CreateAuctionNonce) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {blink::features::kFledgeNegativeTargeting},
-      {blink::features::kFledgeCreateAuctionNonceSynchronousResolution});
+  feature_list.InitAndDisableFeature(
+      blink::features::kFledgeCreateAuctionNonceSynchronousResolution);
 
   mojo::Remote<blink::mojom::AdAuctionService> ad_auction_service;
   AdAuctionServiceImpl::CreateMojoService(
@@ -6108,37 +6106,13 @@ TEST_F(AdAuctionServiceImplTest, CreateAuctionNonce) {
   EXPECT_NE(auction_nonce.AsLowercaseString(), "");
 }
 
-// Calling CreateAuctionNonce() with `kFledgeNegativeTargeting` feature
-// disabled should not be possible.
-TEST_F(AdAuctionServiceImplTest,
-       CreateAuctionNonceDisabledBecauseNegativeTargetingDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {}, {blink::features::kFledgeNegativeTargeting,
-           blink::features::kFledgeCreateAuctionNonceSynchronousResolution});
-
-  mojo::Remote<blink::mojom::AdAuctionService> ad_auction_service;
-  AdAuctionServiceImpl::CreateMojoService(
-      main_rfh(), ad_auction_service.BindNewPipeAndPassReceiver());
-
-  base::RunLoop run_loop;
-  ad_auction_service.set_disconnect_handler(run_loop.QuitClosure());
-  ad_auction_service->CreateAuctionNonce(
-      base::BindOnce([](const base::Uuid& nonce) {
-        ADD_FAILURE() << "Callback unexpectedly invoked.";
-      }));
-  run_loop.Run();
-}
-
 // CreateAuctionNonce() should not be called when the
 // `FledgeCreateAuctionNonceSynchronousResolution` feature is enabled.
 TEST_F(AdAuctionServiceImplTest,
        CreateAuctionNonceDisabledBecauseOfSynchronousResolution) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {blink::features::kFledgeNegativeTargeting,
-       blink::features::kFledgeCreateAuctionNonceSynchronousResolution},
-      {});
+  feature_list.InitAndEnableFeature(
+      blink::features::kFledgeCreateAuctionNonceSynchronousResolution);
 
   mojo::Remote<blink::mojom::AdAuctionService> ad_auction_service;
   AdAuctionServiceImpl::CreateMojoService(
@@ -6150,74 +6124,6 @@ TEST_F(AdAuctionServiceImplTest,
       base::BindOnce([](const base::Uuid& nonce) {
         ADD_FAILURE() << "Callback unexpectedly invoked.";
       }));
-  run_loop.Run();
-}
-
-// Passing in a config with `auction_nonce` set while
-// `kFledgeNegativeTargeting` feature is disabled should not be possible.
-TEST_F(AdAuctionServiceImplTest, RunAdAuctionNonceDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(blink::features::kFledgeNegativeTargeting);
-
-  mojo::Remote<blink::mojom::AdAuctionService> ad_auction_service;
-  AdAuctionServiceImpl::CreateMojoService(
-      main_rfh(), ad_auction_service.BindNewPipeAndPassReceiver());
-
-  blink::AuctionConfig auction_config;
-  auction_config.seller = kOriginA;
-  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
-  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  auction_config.non_shared_params.auction_nonce =
-      base::Uuid::GenerateRandomV4();
-
-  base::RunLoop run_loop;
-  ad_auction_service.set_disconnect_handler(run_loop.QuitClosure());
-  ad_auction_service->RunAdAuction(
-      auction_config, mojo::NullReceiver(),
-      base::BindOnce(
-          [](bool aborted_by_script,
-             const std::optional<blink::FencedFrame::RedactedFencedFrameConfig>&
-                 config) {
-            ADD_FAILURE() << "Callback unexpectedly invoked.";
-          }));
-  ad_auction_service.FlushForTesting();
-  run_loop.Run();
-}
-
-// Passing in a config with `auction_nonce` set while
-// `kFledgeNegativeTargeting` feature is disabled should not be possible.
-TEST_F(AdAuctionServiceImplTest, RunAdAuctionNonceOnComponentDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(blink::features::kFledgeNegativeTargeting);
-
-  mojo::Remote<blink::mojom::AdAuctionService> ad_auction_service;
-  AdAuctionServiceImpl::CreateMojoService(
-      main_rfh(), ad_auction_service.BindNewPipeAndPassReceiver());
-
-  blink::AuctionConfig auction_config;
-  auction_config.seller = kOriginA;
-  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
-
-  blink::AuctionConfig component_auction1;
-  component_auction1.seller = kOriginA;
-  component_auction1.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
-  component_auction1.non_shared_params.interest_group_buyers = {kOriginA};
-  component_auction1.non_shared_params.auction_nonce =
-      base::Uuid::GenerateRandomV4();
-  auction_config.non_shared_params.component_auctions.emplace_back(
-      std::move(component_auction1));
-
-  base::RunLoop run_loop;
-  ad_auction_service.set_disconnect_handler(run_loop.QuitClosure());
-  ad_auction_service->RunAdAuction(
-      auction_config, mojo::NullReceiver(),
-      base::BindOnce(
-          [](bool aborted_by_script,
-             const std::optional<blink::FencedFrame::RedactedFencedFrameConfig>&
-                 config) {
-            ADD_FAILURE() << "Callback unexpectedly invoked.";
-          }));
-  ad_auction_service.FlushForTesting();
   run_loop.Run();
 }
 

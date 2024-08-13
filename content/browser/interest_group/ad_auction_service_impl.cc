@@ -397,12 +397,6 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
 
 void AdAuctionServiceImpl::CreateAuctionNonce(
     CreateAuctionNonceCallback callback) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kFledgeNegativeTargeting)) {
-    ReportBadMessageAndDeleteThis(
-        "CreateAuctionNonce with FledgeNegativeTargeting off");
-    return;
-  }
   if (base::FeatureList::IsEnabled(
           blink::features::kFledgeCreateAuctionNonceSynchronousResolution)) {
     ReportBadMessageAndDeleteThis(
@@ -451,22 +445,6 @@ void AdAuctionServiceImpl::RunAdAuction(
     std::move(callback).Run(/*aborted_by_script=*/false,
                             /*config=*/std::nullopt);
     return;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kFledgeNegativeTargeting)) {
-    if (config.non_shared_params.auction_nonce) {
-      ReportBadMessageAndDeleteThis(
-          "auction_nonce set with FledgeNegativeTargeting off");
-      return;
-    }
-    for (const auto& component : config.non_shared_params.component_auctions) {
-      if (component.non_shared_params.auction_nonce) {
-        ReportBadMessageAndDeleteThis(
-            "auction_nonce set with FledgeNegativeTargeting off");
-        return;
-      }
-    }
   }
 
   FencedFrameURLMapping& fenced_frame_urls_map =

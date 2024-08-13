@@ -157,7 +157,6 @@ class AdAuctionURLLoaderInterceptorTest : public RenderViewHostTestHarness {
         /*enabled_features=*/{blink::features::kInterestGroupStorage,
                               blink::features::kFledgeBiddingAndAuctionServer,
                               blink::features::kAdAuctionSignals,
-                              blink::features::kFledgeNegativeTargeting,
                               blink::features::kBrowsingTopics},
         /*disabled_features=*/{});
   }

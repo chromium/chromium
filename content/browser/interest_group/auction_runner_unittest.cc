@@ -7898,9 +7898,6 @@ TEST_F(AuctionRunnerTest, PromiseSignals4) {
 // An auction that passes empty additionalBids via a promise (in that headers
 // are never observed carrying them).
 TEST_F(AuctionRunnerTest, PromiseSignalsAdditionalBids) {
-  base::test::ScopedFeatureList additional_bids_on;
-  additional_bids_on.InitAndEnableFeature(
-      blink::features::kFledgeNegativeTargeting);
   auction_nonce_ = CreateAuctionNonce();
   pass_promise_for_additional_bids_ = true;
 
@@ -8128,10 +8125,6 @@ TEST_F(AuctionRunnerTest, PromiseSignalsComponentAuction) {
 //
 // See https://crbug.com/1488417
 TEST_F(AuctionRunnerTest, PromiseAndNetworkErrors) {
-  base::test::ScopedFeatureList additional_bids_on;
-  additional_bids_on.InitAndEnableFeature(
-      blink::features::kFledgeNegativeTargeting);
-
   SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
                                     /*bidder2_seller=*/kComponentSeller1,
                                     /*bid_from_component_auction_wins=*/true,
@@ -8657,9 +8650,6 @@ TEST_F(AuctionRunnerTest, PromiseSignalsBadAuctionId6) {
 }
 
 TEST_F(AuctionRunnerTest, PromiseSignalsBadAuctionIdAdditionalBids) {
-  base::test::ScopedFeatureList additional_bids_on;
-  additional_bids_on.InitAndEnableFeature(
-      blink::features::kFledgeNegativeTargeting);
   pass_promise_for_additional_bids_ = true;
 
   auction_worklet::AddJavascriptResponse(
@@ -8700,11 +8690,9 @@ TEST_F(AuctionRunnerTest, PromiseSignalsBadAuctionIdAdditionalBids) {
 // An auction where the winning additional bid claims to be from an IG the user
 // is already in.
 TEST_F(AuctionRunnerTest, AdditionalBidAliasesInterestGroup) {
-  base::test::ScopedFeatureList additional_bids_on;
-  additional_bids_on.InitWithFeatures(
-      {blink::features::kFledgeNegativeTargeting,
-       blink::features::kBiddingAndScoringDebugReportingAPI},
-      {});
+  base::test::ScopedFeatureList debug_reporting_api_on;
+  debug_reporting_api_on.InitAndEnableFeature(
+      blink::features::kBiddingAndScoringDebugReportingAPI);
 
   const char kAdditionalBidUrl[] =
       "https://adplatform.com/offers-contextual.js";
@@ -8958,11 +8946,9 @@ TEST_F(AuctionRunnerTest, AdditionalBidAliasesInterestGroup) {
 // An auction where the winning additional bid claims to be from an IG the user
 // is not in.
 TEST_F(AuctionRunnerTest, AdditionalBidDistinctFromInterestGroup) {
-  base::test::ScopedFeatureList additional_bids_on;
-  additional_bids_on.InitWithFeatures(
-      {blink::features::kFledgeNegativeTargeting,
-       blink::features::kBiddingAndScoringDebugReportingAPI},
-      {});
+  base::test::ScopedFeatureList debug_reporting_api_on;
+  debug_reporting_api_on.InitAndEnableFeature(
+      blink::features::kBiddingAndScoringDebugReportingAPI);
 
   const char kAdditionalBidUrl[] =
       "https://adplatform.com/offers-contextual.js";
@@ -10003,10 +9989,6 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise9) {
 
 // Trying to update additionalBids twice.
 TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromiseAdditionalBids) {
-  base::test::ScopedFeatureList additional_bids_on;
-  additional_bids_on.InitAndEnableFeature(
-      blink::features::kFledgeNegativeTargeting);
-
   // Have two kind of promises so we don't just finish after first
   // additionalBids update
   use_promise_for_per_buyer_signals_ = true;
@@ -10049,49 +10031,6 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromiseAdditionalBids) {
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0));
   task_environment()->RunUntilIdle();
   EXPECT_EQ("ResolvedAdditionalBids updating non-promise", TakeBadMessage());
-}
-
-// Trying to update additionalBids when the negative targeting feature is off.
-TEST_F(AuctionRunnerTest, PromiseSignalsUpdateAdditionalBidsFeatureOff) {
-  base::test::ScopedFeatureList additional_bids_off;
-  additional_bids_off.InitAndDisableFeature(
-      blink::features::kFledgeNegativeTargeting);
-
-  pass_promise_for_additional_bids_ = true;
-
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kBidder1Url,
-      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
-                    kBidder1, kBidder1Name));
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kBidder2Url,
-      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
-                    kBidder2, kBidder2Name));
-  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
-                                         MakeAuctionScript());
-
-  std::vector<StorageInterestGroup> bidders;
-  bidders.emplace_back(MakeInterestGroup(
-      kBidder1, kBidder1Name, kBidder1Url,
-      /*trusted_bidding_signals_url=*/std::nullopt,
-      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
-      /*ad_component_urls=*/std::nullopt));
-  bidders.emplace_back(MakeInterestGroup(
-      kBidder2, kBidder2Name, kBidder2Url,
-      /*trusted_bidding_signals_url=*/std::nullopt,
-      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
-      /*ad_component_urls=*/std::nullopt));
-  StartAuction(kSellerUrl, std::move(bidders));
-
-  // Can't complete yet.
-  task_environment()->RunUntilIdle();
-  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
-
-  abortable_ad_auction_->ResolvedAdditionalBids(
-      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0));
-  task_environment()->RunUntilIdle();
-  EXPECT_EQ("ResolvedAdditionalBids with FledgeNegativeTargeting off",
-            TakeBadMessage());
 }
 
 // Trying to update directFromSellerSignalsHeaderAdSlot twice.
@@ -22884,10 +22823,6 @@ TEST_P(AuctionRunnerKAnonTest, ReportingId) {
 }
 
 TEST_P(AuctionRunnerKAnonTest, AdditionalBidBuyerReporting) {
-  base::test::ScopedFeatureList additional_bids_on;
-  additional_bids_on.InitAndEnableFeature(
-      blink::features::kFledgeNegativeTargeting);
-
   const char kAdditionalBidUrl[] =
       "https://adplatform.com/offers-contextual.js";
 
