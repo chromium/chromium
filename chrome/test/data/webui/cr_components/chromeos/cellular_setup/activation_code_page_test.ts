@@ -445,8 +445,9 @@ suite('CrComponentsActivationCodePageTest', function() {
         const scanInstallFailureHeader =
             activationCodePage.shadowRoot!.querySelector<HTMLElement>(
                 '#scanInstallFailureHeader');
-        const scanSucessHeader =
-            activationCodePage.shadowRoot!.querySelector<HTMLElement>('#scanSucessHeader');
+        const scanSuccessHeader =
+            activationCodePage.shadowRoot!.querySelector<HTMLElement>(
+                '#scanSuccessHeader');
         const getUseCameraAgainButton = () => {
           return activationCodePage.shadowRoot!.querySelector<HTMLElement>(
               '#useCameraAgainButton');
@@ -456,7 +457,7 @@ suite('CrComponentsActivationCodePageTest', function() {
         assertTrue(!!startScanningButton);
         assertTrue(!!scanFinishContainer);
         assertTrue(!!scanInstallFailureHeader);
-        assertTrue(!!scanSucessHeader);
+        assertTrue(!!scanSuccessHeader);
         assertFalse(!!getUseCameraAgainButton());
         assertFalse(input.invalid);
 
@@ -474,7 +475,7 @@ suite('CrComponentsActivationCodePageTest', function() {
         // The code detected UI should be showing.
         assertTrue(startScanningContainer.hidden);
         assertFalse(scanFinishContainer.hidden);
-        assertFalse(scanSucessHeader.hidden);
+        assertFalse(scanSuccessHeader.hidden);
         assertTrue(scanInstallFailureHeader.hidden);
         assertFalse(!!getUseCameraAgainButton());
 
@@ -485,7 +486,7 @@ suite('CrComponentsActivationCodePageTest', function() {
         // The scan install failure UI should be showing.
         assertTrue(startScanningContainer.hidden);
         assertFalse(scanFinishContainer.hidden);
-        assertTrue(scanSucessHeader.hidden);
+        assertTrue(scanSuccessHeader.hidden);
         assertFalse(scanInstallFailureHeader.hidden);
         assertTrue(!!getUseCameraAgainButton());
 
@@ -632,8 +633,9 @@ suite('CrComponentsActivationCodePageTest', function() {
     const scanInstallFailureHeader =
         activationCodePage.shadowRoot!.querySelector<HTMLElement>(
             '#scanInstallFailureHeader');
-    const scanSucessHeader =
-        activationCodePage.shadowRoot!.querySelector<HTMLElement>('#scanSucessHeader');
+    const scanSuccessHeader =
+        activationCodePage.shadowRoot!.querySelector<HTMLElement>(
+            '#scanSuccessHeader');
     const getUseCameraAgainButton = () => {
       return activationCodePage.shadowRoot!.querySelector<HTMLElement>(
           '#useCameraAgainButton');
@@ -643,7 +645,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(!!startScanningButton);
     assertTrue(!!scanFinishContainer);
     assertTrue(!!scanInstallFailureHeader);
-    assertTrue(!!scanSucessHeader);
+    assertTrue(!!scanSuccessHeader);
     assertFalse(!!getUseCameraAgainButton());
     assertFalse(input.invalid);
 
@@ -664,7 +666,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     // The scan install failure UI should be showing.
     assertTrue(startScanningContainer.hidden);
     assertFalse(scanFinishContainer.hidden);
-    assertTrue(scanSucessHeader.hidden);
+    assertTrue(scanSuccessHeader.hidden);
     assertFalse(scanInstallFailureHeader.hidden);
     assertTrue(!!getUseCameraAgainButton());
     assertTrue(input.invalid);
@@ -686,7 +688,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     // The scan install failure UI should be showing.
     assertTrue(startScanningContainer.hidden);
     assertFalse(scanFinishContainer.hidden);
-    assertTrue(scanSucessHeader.hidden);
+    assertTrue(scanSuccessHeader.hidden);
     assertFalse(scanInstallFailureHeader.hidden);
     assertTrue(!!getUseCameraAgainButton());
     assertFalse(input.invalid);
@@ -709,7 +711,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(activationCodePage.isFromQrCode);
     assertTrue(startScanningContainer.hidden);
     assertFalse(scanFinishContainer.hidden);
-    assertFalse(scanSucessHeader.hidden);
+    assertFalse(scanSuccessHeader.hidden);
     assertTrue(scanInstallFailureHeader.hidden);
     assertFalse(!!getUseCameraAgainButton());
     assertFalse(input.invalid);

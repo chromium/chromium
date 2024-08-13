@@ -110,7 +110,7 @@
     --cr-input-border-bottom: none;
   }
 
-  #scanSucessHeader {
+  #scanSuccessHeader {
     --iron-icon-fill-color: var(--cros-icon-color-positive);
     margin-bottom: 8px;
   }
@@ -125,12 +125,14 @@
   }
 
   #useCameraAgainButton {
+    color: var(--cros-sys-on_primary_container);
     display: block;
     font-weight: 500;
     text-align: center;
   }
 
   #tryAgainButton {
+    color: var(--cros-sys-on_primary_container);
     display: block;
     text-align: center;
   }
@@ -170,6 +172,7 @@
   }
 
   #startScanningButton {
+    color: var(--cros-sys-on_primary_container);
     max-width: 470px;
     min-width: 345px;
     text-align: center;
@@ -236,7 +239,7 @@
           <div>
             <div id="scanSuccessContainer"
                 hidden$="[[isUiElementHidden_(UiElement.SCAN_SUCCESS, state_)]]">
-              <div id=scanSucessHeader
+              <div id=scanSuccessHeader
                   hidden$="[[isUiElementHidden_(UiElement.CODE_DETECTED, state_)]]">
                 <iron-icon class="scan-finish-image" icon="cellular-setup:checked"></iron-icon>
                 <span class="label scan-finish-message" id="scanSuccessMessage">
