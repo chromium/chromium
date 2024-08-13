@@ -745,30 +745,6 @@ id<GREYMatcher> EnhancedSafeBrowsingInfobarButtonMatcher() {
   [ChromeEarlGrey waitForWebStateContainingText:_realTimePhishingContent];
 }
 
-// Tests that a page identified as unsafe by real-time Safe Browsing is blocked
-// when loaded as part of session restoration.
-// TODO(crbug.com/41489568):  Test is flaky. Re-enable the test.
-- (void)DISABLED_testRestoreRealTimeWarning {
-  // Opt-in to real-time checks.
-  [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:YES];
-
-  // Visit two safe pages, followed by an unsafe page.
-  [ChromeEarlGrey loadURL:_safeURL1];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
-  [ChromeEarlGrey loadURL:_safeURL2];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
-  [ChromeEarlGrey loadURL:_realTimePhishingURL];
-
-  // Verify that a warning is shown for the unsafe page.
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_SAFEBROWSING_HEADING)];
-
-  // Perform session restoration, and verify that a warning is still shown.
-  [self triggerRestoreByRestartingApplication];
-  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_SAFEBROWSING_HEADING)];
-}
-
 // Tests that when a page identified as unsafe by real-time Safe Browsing is
 // loaded using a bookmark, a warning is shown.
 - (void)testRealTimeWarningForBookmark {
