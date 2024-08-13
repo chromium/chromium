@@ -17244,6 +17244,12 @@ be describing additional metrics about the same event.
       shown in the Autofill UI.
     </summary>
   </metric>
+  <metric name="WasShownCreateSuggestion" enum="Boolean">
+    <summary>
+      Boolean value representing whether the user was offered a suggestion to
+      create a new plus address.
+    </summary>
+  </metric>
 </event>
 
 <event name="Popup.Closed">
