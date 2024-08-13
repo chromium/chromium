@@ -1473,12 +1473,27 @@ bool AutocompleteMatch::IsMlScoringEligible() const {
   if (!scoring_signals.has_value()) {
     return false;
   }
+  const auto& ml_config = OmniboxFieldTrial::GetMLConfig();
+
+  // Search suggestions are conditionally eligible for ML scoring.
+  if (AutocompleteMatch::IsSearchType(type)) {
+    return ml_config.enable_ml_scoring_for_searches;
+  }
+
+  // Verbatim URL suggestions are conditionally eligible for ML scoring.
+  // A "verbatim URL" suggestion is any suggestion that is UWYT itself or has
+  // been deduped with a UWYT suggestion.
+  if (type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
+      base::ranges::any_of(duplicate_matches, [](const auto& match) {
+        return match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+      })) {
+    return ml_config.enable_ml_scoring_for_verbatim_urls;
+  }
 
   // Certain suggestion types are manually excluded from ML scoring (since
   // applying ML scoring to these suggestions currently results in suboptimal
   // behavior).
-  if (type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
-      type == AutocompleteMatchType::NAVSUGGEST ||
+  if (type == AutocompleteMatchType::NAVSUGGEST ||
       type == AutocompleteMatchType::NAVSUGGEST_PERSONALIZED ||
       type == AutocompleteMatchType::TILE_NAVSUGGEST) {
     return false;
@@ -1487,11 +1502,6 @@ bool AutocompleteMatch::IsMlScoringEligible() const {
   // Do not apply ML scoring to stale suggestions sourced from the
   // DocumentProvider cache.
   if (type == AutocompleteMatchType::DOCUMENT_SUGGESTION && relevance == 0) {
-    return false;
-  }
-
-  // Search suggestions are currently considered ineligible for ML scoring.
-  if (AutocompleteMatch::IsSearchType(type)) {
     return false;
   }
 

@@ -620,6 +620,13 @@ struct MLConfig {
   bool ml_url_score_caching{false};
   // Maximum number of cached entries to store in the ML score cache.
   int max_ml_score_cache_size{30};
+
+  // If true, Search suggestions will be eligible for re-ranking via ML scoring.
+  bool enable_ml_scoring_for_searches{false};
+
+  // If true, verbatim URL suggestions will be eligible for re-ranking via ML
+  // scoring.
+  bool enable_ml_scoring_for_verbatim_urls{false};
 };
 
 // A testing utility class for overriding the current configuration returned

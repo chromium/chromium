@@ -1035,6 +1035,16 @@ MLConfig::MLConfig() {
                               "MlUrlScoreCaching_MaxMlScoreCacheSize",
                               max_ml_score_cache_size)
           .Get();
+
+  enable_ml_scoring_for_searches =
+      base::FeatureParam<bool>(&omnibox::kMlUrlScoring,
+                               "MlUrlScoring_EnableMlScoringForSearches", false)
+          .Get();
+  enable_ml_scoring_for_verbatim_urls =
+      base::FeatureParam<bool>(&omnibox::kMlUrlScoring,
+                               "MlUrlScoring_EnableMlScoringForVerbatimUrls",
+                               false)
+          .Get();
 }
 
 MLConfig::MLConfig(const MLConfig&) = default;

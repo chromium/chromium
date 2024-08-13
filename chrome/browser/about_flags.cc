@@ -1376,6 +1376,20 @@ const FeatureEntry::FeatureParam kOmniboxMlUrlScoringMaxMatchesByProvider10[] =
         {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
         {"MlUrlScoringShortcutDocumentSignals", "true"},
 };
+// Enables ML scoring for Search suggestions.
+const FeatureEntry::FeatureParam kOmniboxMlUrlScoringWithSearches[] = {
+    {"MlUrlScoring_EnableMlScoringForSearches", "true"},
+};
+// Enables ML scoring for verbatim URL suggestions.
+const FeatureEntry::FeatureParam kOmniboxMlUrlScoringWithVerbatimURLs[] = {
+    {"MlUrlScoring_EnableMlScoringForVerbatimUrls", "true"},
+};
+// Enables ML scoring for both Search and verbatim URL suggestions.
+const FeatureEntry::FeatureParam
+    kOmniboxMlUrlScoringWithSearchesAndVerbatimURLs[] = {
+        {"MlUrlScoring_EnableMlScoringForSearches", "true"},
+        {"MlUrlScoring_EnableMlScoringForVerbatimUrls", "true"},
+};
 
 const FeatureEntry::FeatureVariation kOmniboxMlUrlScoringVariations[] = {
     {"Enabled with fixes", kOmniboxMlUrlScoringEnabledWithFixes,
@@ -1386,6 +1400,14 @@ const FeatureEntry::FeatureVariation kOmniboxMlUrlScoringVariations[] = {
     {"Increase provider max limit to 10",
      kOmniboxMlUrlScoringMaxMatchesByProvider10,
      std::size(kOmniboxMlUrlScoringMaxMatchesByProvider10), nullptr},
+    {"with scoring of Search suggestions", kOmniboxMlUrlScoringWithSearches,
+     std::size(kOmniboxMlUrlScoringWithSearches), nullptr},
+    {"with scoring of verbatim URL suggestions",
+     kOmniboxMlUrlScoringWithVerbatimURLs,
+     std::size(kOmniboxMlUrlScoringWithVerbatimURLs), nullptr},
+    {"with scoring of Search & verbatim URL suggestions",
+     kOmniboxMlUrlScoringWithSearchesAndVerbatimURLs,
+     std::size(kOmniboxMlUrlScoringWithSearchesAndVerbatimURLs), nullptr},
 };
 
 const FeatureEntry::FeatureParam
