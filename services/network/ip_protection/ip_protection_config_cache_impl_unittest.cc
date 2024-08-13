@@ -31,8 +31,8 @@ namespace {
 constexpr char kEmptyTokenCacheHistogram[] =
     "NetworkService.IpProtection.EmptyTokenCache";
 
-constexpr char kDefaultGeoId[] = "EARTH";
 constexpr char kMountainViewGeoId[] = "US,US-CA,MOUNTAIN VIEW";
+constexpr char kSunnyvaleGeoId[] = "US,US-CA,SUNNYVALE";
 
 constexpr bool kEnableTokenCacheByGeo = true;
 constexpr bool kDisableTokenCacheByGeo = false;
@@ -44,11 +44,7 @@ class MockIpProtectionTokenCacheManager : public IpProtectionTokenCacheManager {
   }
 
   bool IsAuthTokenAvailable(const std::string& geo_id) override {
-    if (!auth_token_.has_value()) {
-      return false;
-    }
-
-    return network::GetGeoIdFromGeoHint(auth_token_->geo_hint) == geo_id;
+    return auth_tokens_.contains(geo_id);
   }
 
   void InvalidateTryAgainAfterTime() override {}
@@ -65,23 +61,20 @@ class MockIpProtectionTokenCacheManager : public IpProtectionTokenCacheManager {
 
   std::optional<BlindSignedAuthToken> GetAuthToken(
       const std::string& geo_id) override {
-    if (!auth_token_.has_value()) {
+    if (!auth_tokens_.contains(geo_id)) {
       return std::nullopt;
     }
 
-    return network::GetGeoIdFromGeoHint(auth_token_->geo_hint) == geo_id
-               ? std::move(auth_token_)
-               : std::nullopt;
+    return auth_tokens_.extract(geo_id).mapped();
   }
 
-  void SetAuthToken(std::optional<BlindSignedAuthToken> auth_token) {
-    if (auth_token.has_value()) {
-      SetCurrentGeo(network::GetGeoIdFromGeoHint(auth_token->geo_hint));
-    }
-    auth_token_ = std::move(auth_token);
+  void SetAuthToken(BlindSignedAuthToken auth_token) {
+    auth_tokens_[network::GetGeoIdFromGeoHint(auth_token.geo_hint)] =
+        auth_token;
   }
 
  private:
+  std::map<std::string, BlindSignedAuthToken> auth_tokens_;
   std::optional<BlindSignedAuthToken> auth_token_;
   std::string current_geo_id_;
 };
@@ -111,9 +104,7 @@ class MockIpProtectionProxyListManager : public IpProtectionProxyListManager {
   }
 
   // Set the geo id returned from `CurrentGeo()`.
-  void SetCurrentGeo(const std::string& geo_id) override {
-    geo_id_ = geo_id;
-
+  void RefreshProxyListForGeoChange() override {
     if (on_force_refresh_proxy_list_) {
       if (!geo_id_to_change_on_refresh_.empty()) {
         geo_id_ = geo_id_to_change_on_refresh_;
@@ -128,6 +119,8 @@ class MockIpProtectionProxyListManager : public IpProtectionProxyListManager {
     geo_id_to_change_on_refresh_ = geo_id;
     on_force_refresh_proxy_list_ = std::move(on_force_refresh_proxy_list);
   }
+
+  void SetCurrentGeo(const std::string& geo_id) { geo_id_ = geo_id; }
 
  private:
   std::optional<std::vector<net::ProxyChain>> proxy_list_;
@@ -154,14 +147,6 @@ class IpProtectionConfigCacheImplTest : public testing::Test {
     return net::ProxyChain::ForIpProtection(servers);
   }
 
-  base::HistogramTester histogram_tester_;
-
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  // The IpProtectionConfigCache being tested.
-  std::unique_ptr<IpProtectionConfigCacheImpl> ipp_config_cache_;
-
   void SetTokenCachingByGeoParam(bool should_enable_feature) {
     // Set token caching by geo param value.
     scoped_feature_list_.Reset();
@@ -172,22 +157,73 @@ class IpProtectionConfigCacheImplTest : public testing::Test {
         net::features::kEnableIpProtectionProxy, std::move(parameters));
   }
 
+  base::HistogramTester histogram_tester_;
+
+  // TODO(abhipatel): Reorder scoped_feature_list_ to be
+  // initialized before task_environment_
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  // The IpProtectionConfigCache being tested.
+  std::unique_ptr<IpProtectionConfigCacheImpl> ipp_config_cache_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Token cache manager returns available token for proxyA.
-TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManagerForProxyA) {
+TEST_F(IpProtectionConfigCacheImplTest,
+       AreAuthTokensAvailable_NoProxiesConfigured) {
+  // A proxy list is available. This should ensure that the only reason tokens
+  // are not available is due to a lack of token cache managers.
+  auto ipp_proxy_list_manager =
+      std::make_unique<MockIpProtectionProxyListManager>();
+  ipp_proxy_list_manager->SetProxyList({MakeChain({"a-proxy"})});
+  ipp_proxy_list_manager->SetCurrentGeo(kMountainViewGeoId);
+
+  ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
+      std::move(ipp_proxy_list_manager));
+
+  ASSERT_FALSE(ipp_config_cache_->AreAuthTokensAvailable());
+}
+
+TEST_F(IpProtectionConfigCacheImplTest,
+       AuthTokensNotAvailableIfProxyListIsNotAvailable) {
+  // `IpProtectionProxyListManager` has not been set up. This means even if
+  // tokens are available, `AreAuthTokensAvailable()` should return false.
   BlindSignedAuthToken exp_token;
   exp_token.token = "a-token";
   exp_token.geo_hint =
       network::GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value();
-  auto ipp_token_cache_manager_ =
+  auto ipp_token_cache_manager =
       std::make_unique<MockIpProtectionTokenCacheManager>();
-  ipp_token_cache_manager_->SetAuthToken(std::move(exp_token));
+  ipp_token_cache_manager->SetAuthToken(std::move(exp_token));
   ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
-      IpProtectionProxyLayer::kProxyA, std::move(ipp_token_cache_manager_));
-  ipp_config_cache_->SetCurrentGeoForTesting(kMountainViewGeoId);
+      IpProtectionProxyLayer::kProxyA, std::move(ipp_token_cache_manager));
+
+  ASSERT_FALSE(ipp_config_cache_->AreAuthTokensAvailable());
+  // Neither calls will return a token since there is no proxy list available.
+  ASSERT_FALSE(ipp_config_cache_->GetAuthToken(0).has_value());
+  ASSERT_FALSE(ipp_config_cache_->GetAuthToken(1).has_value());
+}
+
+// Token cache manager returns available token for proxyA.
+TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManagerForProxyA) {
+  auto ipp_proxy_list_manager =
+      std::make_unique<MockIpProtectionProxyListManager>();
+  ipp_proxy_list_manager->SetProxyList({MakeChain({"a-proxy"})});
+  ipp_proxy_list_manager->SetCurrentGeo(kMountainViewGeoId);
+
+  auto ipp_token_cache_manager =
+      std::make_unique<MockIpProtectionTokenCacheManager>();
+  ipp_token_cache_manager->SetAuthToken(BlindSignedAuthToken{
+      .token = "a-token",
+      .geo_hint =
+          network::GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value()});
+
+  ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
+      std::move(ipp_proxy_list_manager));
+  ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
+      IpProtectionProxyLayer::kProxyA, std::move(ipp_token_cache_manager));
 
   ASSERT_TRUE(ipp_config_cache_->AreAuthTokensAvailable());
   ASSERT_FALSE(
@@ -197,16 +233,23 @@ TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManagerForProxyA) {
 
 // Token cache manager returns available token for proxyB.
 TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManagerForProxyB) {
+  auto ipp_proxy_list_manager =
+      std::make_unique<MockIpProtectionProxyListManager>();
+  ipp_proxy_list_manager->SetProxyList({MakeChain({"a-proxy"})});
+  ipp_proxy_list_manager->SetCurrentGeo(kMountainViewGeoId);
+
   BlindSignedAuthToken exp_token;
   exp_token.token = "b-token";
   exp_token.geo_hint =
       network::GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value();
-  auto ipp_token_cache_manager_ =
+  auto ipp_token_cache_manager =
       std::make_unique<MockIpProtectionTokenCacheManager>();
-  ipp_token_cache_manager_->SetAuthToken(std::move(exp_token));
+  ipp_token_cache_manager->SetAuthToken(std::move(exp_token));
+
+  ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
+      std::move(ipp_proxy_list_manager));
   ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
-      IpProtectionProxyLayer::kProxyB, std::move(ipp_token_cache_manager_));
-  ipp_config_cache_->SetCurrentGeoForTesting(kMountainViewGeoId);
+      IpProtectionProxyLayer::kProxyB, std::move(ipp_token_cache_manager));
 
   ASSERT_TRUE(ipp_config_cache_->AreAuthTokensAvailable());
   ASSERT_FALSE(
@@ -218,6 +261,11 @@ TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManagerForProxyB) {
 // is set to false.
 TEST_F(IpProtectionConfigCacheImplTest,
        AreAuthTokensAvailable_OneTokenCacheIsEmpty) {
+  auto ipp_proxy_list_manager =
+      std::make_unique<MockIpProtectionProxyListManager>();
+  ipp_proxy_list_manager->SetProxyList({MakeChain({"a-proxy"})});
+  ipp_proxy_list_manager->SetCurrentGeo(kMountainViewGeoId);
+
   BlindSignedAuthToken exp_token;
   exp_token.token = "a-token";
   exp_token.geo_hint =
@@ -225,12 +273,14 @@ TEST_F(IpProtectionConfigCacheImplTest,
   auto ipp_token_cache_manager =
       std::make_unique<MockIpProtectionTokenCacheManager>();
   ipp_token_cache_manager->SetAuthToken(std::move(exp_token));
+
+  ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
+      std::move(ipp_proxy_list_manager));
   ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
       IpProtectionProxyLayer::kProxyA, std::move(ipp_token_cache_manager));
   ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
       IpProtectionProxyLayer::kProxyB,
       std::make_unique<MockIpProtectionTokenCacheManager>());
-  ipp_config_cache_->SetCurrentGeoForTesting(kMountainViewGeoId);
 
   ASSERT_FALSE(ipp_config_cache_->AreAuthTokensAvailable());
   histogram_tester_.ExpectTotalCount(kEmptyTokenCacheHistogram, 1);
@@ -238,9 +288,40 @@ TEST_F(IpProtectionConfigCacheImplTest,
                                       IpProtectionProxyLayer::kProxyB, 1);
 }
 
-TEST_F(IpProtectionConfigCacheImplTest,
-       AreAuthTokensAvailable_NoProxiesConfigured) {
-  ASSERT_FALSE(ipp_config_cache_->AreAuthTokensAvailable());
+// GetAuthToken for where proxy list manager's geo is different than the current
+// geo of the config cache.
+TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenForOldGeo) {
+  auto ipp_proxy_list_manager =
+      std::make_unique<MockIpProtectionProxyListManager>();
+  ipp_proxy_list_manager->SetProxyList({MakeChain({"a-proxy"})});
+  ipp_proxy_list_manager->SetCurrentGeo(kMountainViewGeoId);
+
+  // The token cache manager will contain a token from the "old" mountain view
+  // geo and a new sunnyvale geo.
+  auto ipp_token_cache_manager =
+      std::make_unique<MockIpProtectionTokenCacheManager>();
+  ipp_token_cache_manager->SetAuthToken(BlindSignedAuthToken{
+      .token = "a-token",
+      .geo_hint =
+          network::GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value()});
+  ipp_token_cache_manager->SetAuthToken(BlindSignedAuthToken{
+      .token = "a-token",
+      .geo_hint =
+          network::GetGeoHintFromGeoIdForTesting(kSunnyvaleGeoId).value()});
+
+  ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
+      std::move(ipp_proxy_list_manager));
+  ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
+      IpProtectionProxyLayer::kProxyA, std::move(ipp_token_cache_manager));
+
+  // The following calls will be based on the proxy list manager's geo (Mountain
+  // View).
+  ASSERT_TRUE(ipp_config_cache_->AreAuthTokensAvailable());
+  std::optional<BlindSignedAuthToken> token =
+      ipp_config_cache_->GetAuthToken(0);
+  ASSERT_TRUE(token);
+  ASSERT_EQ(token->geo_hint,
+            network::GetGeoHintFromGeoIdForTesting(kMountainViewGeoId));
 }
 
 // Proxy list manager returns currently cached proxy hostnames.
@@ -251,11 +332,11 @@ TEST_F(IpProtectionConfigCacheImplTest, GetProxyListFromManager) {
           net::ProxyServer::SCHEME_HTTPS, proxy, std::nullopt)});
   const std::vector<net::ProxyChain> proxy_chain_list = {
       std::move(ip_protection_proxy_chain)};
-  auto ipp_proxy_list_manager_ =
+  auto ipp_proxy_list_manager =
       std::make_unique<MockIpProtectionProxyListManager>();
-  ipp_proxy_list_manager_->SetProxyList({MakeChain({proxy})});
+  ipp_proxy_list_manager->SetProxyList({MakeChain({proxy})});
   ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
-      std::move(ipp_proxy_list_manager_));
+      std::move(ipp_proxy_list_manager));
 
   ASSERT_TRUE(ipp_config_cache_->IsProxyListAvailable());
   EXPECT_EQ(ipp_config_cache_->GetProxyChainList(), proxy_chain_list);
@@ -275,12 +356,12 @@ TEST_F(IpProtectionConfigCacheImplTest, GetProxyListFromManagerWithQuic) {
 
   ipp_config_cache_ = std::make_unique<IpProtectionConfigCacheImpl>(nullptr);
 
-  auto ipp_proxy_list_manager_ =
+  auto ipp_proxy_list_manager =
       std::make_unique<MockIpProtectionProxyListManager>();
-  ipp_proxy_list_manager_->SetProxyList({MakeChain({"a-proxy1", "b-proxy1"}),
-                                         MakeChain({"a-proxy2", "b-proxy2"})});
+  ipp_proxy_list_manager->SetProxyList({MakeChain({"a-proxy1", "b-proxy1"}),
+                                        MakeChain({"a-proxy2", "b-proxy2"})});
   ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
-      std::move(ipp_proxy_list_manager_));
+      std::move(ipp_proxy_list_manager));
 
   const std::vector<net::ProxyChain> proxy_chain_list_with_quic = {
       net::ProxyChain::ForIpProtection({
@@ -343,13 +424,13 @@ TEST_F(IpProtectionConfigCacheImplTest, RefreshProxyListOnNetworkChange) {
 
   ipp_config_cache_ = std::make_unique<IpProtectionConfigCacheImpl>(nullptr);
 
-  auto ipp_proxy_list_manager_ =
+  auto ipp_proxy_list_manager =
       std::make_unique<MockIpProtectionProxyListManager>();
   bool refresh_requested = false;
-  ipp_proxy_list_manager_->SetOnRequestRefreshProxyList(
+  ipp_proxy_list_manager->SetOnRequestRefreshProxyList(
       base::BindLambdaForTesting([&]() { refresh_requested = true; }));
   ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
-      std::move(ipp_proxy_list_manager_));
+      std::move(ipp_proxy_list_manager));
 
   net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G);
@@ -362,28 +443,28 @@ TEST_F(IpProtectionConfigCacheImplTest, RefreshProxyListOnNetworkChange) {
 TEST_F(IpProtectionConfigCacheImplTest,
        GeoChangeObservedInIppProxyListManager) {
   // Set up IppProxyListManager to have a "new" geo.
-  auto ipp_proxy_list_manager_ =
+  auto ipp_proxy_list_manager =
       std::make_unique<MockIpProtectionProxyListManager>();
   bool refresh_requested = false;
   std::string new_geo_signal = "US,US-NY,NEW YORK CITY";
-  ipp_proxy_list_manager_->SetCurrentGeo(new_geo_signal);
-  ipp_proxy_list_manager_->SetOnRequestRefreshProxyList(
+  ipp_proxy_list_manager->SetCurrentGeo(new_geo_signal);
+  ipp_proxy_list_manager->SetOnRequestRefreshProxyList(
       base::BindLambdaForTesting([&]() { refresh_requested = true; }));
-  ipp_proxy_list_manager_->SetProxyList({MakeChain({"a-proxy"})});
+  ipp_proxy_list_manager->SetProxyList({MakeChain({"a-proxy"})});
 
   ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
-      std::move(ipp_proxy_list_manager_));
+      std::move(ipp_proxy_list_manager));
 
   // Set up `IppTokenCacheManager` to have an "old geo"
-  auto ipp_token_cache_manager_ =
+  auto ipp_token_cache_manager =
       std::make_unique<MockIpProtectionTokenCacheManager>();
-  ipp_token_cache_manager_->SetCurrentGeo("US,US-MA,BOSTON");
+  ipp_token_cache_manager->SetCurrentGeo("US,US-MA,BOSTON");
   ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
-      IpProtectionProxyLayer::kProxyA, std::move(ipp_token_cache_manager_));
+      IpProtectionProxyLayer::kProxyA, std::move(ipp_token_cache_manager));
 
   // Simulate that the new geo signal in the Proxy List Manager resulted in a
   // call to observe a geo change.
-  ipp_config_cache_->GeoChangeObserved(new_geo_signal);
+  ipp_config_cache_->GeoObserved(new_geo_signal);
 
   EXPECT_EQ(ipp_config_cache_->GetIpProtectionProxyListManagerForTesting()
                 ->CurrentGeo(),
@@ -403,28 +484,28 @@ TEST_F(IpProtectionConfigCacheImplTest,
 TEST_F(IpProtectionConfigCacheImplTest,
        GeoChangeObservedEmptyGeoIdInProxyListManager) {
   // Set up IppProxyListManager to have a "new" geo.
-  auto ipp_proxy_list_manager_ =
+  auto ipp_proxy_list_manager =
       std::make_unique<MockIpProtectionProxyListManager>();
   bool refresh_requested = false;
   std::string empty_geo_signal = "";
-  ipp_proxy_list_manager_->SetCurrentGeo(empty_geo_signal);
-  ipp_proxy_list_manager_->SetOnRequestRefreshProxyList(
+  ipp_proxy_list_manager->SetCurrentGeo(empty_geo_signal);
+  ipp_proxy_list_manager->SetOnRequestRefreshProxyList(
       base::BindLambdaForTesting([&]() { refresh_requested = true; }));
-  ipp_proxy_list_manager_->SetProxyList({MakeChain({"a-proxy"})});
+  ipp_proxy_list_manager->SetProxyList({MakeChain({"a-proxy"})});
   ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
-      std::move(ipp_proxy_list_manager_));
+      std::move(ipp_proxy_list_manager));
 
   // Set up `IppTokenCacheManager` to have an "old geo"
   std::string boston_geo_id = "US,US-MA,BOSTON";
-  auto ipp_token_cache_manager_ =
+  auto ipp_token_cache_manager =
       std::make_unique<MockIpProtectionTokenCacheManager>();
-  ipp_token_cache_manager_->SetCurrentGeo(boston_geo_id);
+  ipp_token_cache_manager->SetCurrentGeo(boston_geo_id);
   ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
-      IpProtectionProxyLayer::kProxyA, std::move(ipp_token_cache_manager_));
+      IpProtectionProxyLayer::kProxyA, std::move(ipp_token_cache_manager));
 
   // Simulate the empty geo change in the proxy list manager caused a call such
   // as this.
-  ipp_config_cache_->GeoChangeObserved(empty_geo_signal);
+  ipp_config_cache_->GeoObserved(empty_geo_signal);
 
   EXPECT_EQ(ipp_config_cache_->GetIpProtectionProxyListManagerForTesting()
                 ->CurrentGeo(),
@@ -435,18 +516,14 @@ TEST_F(IpProtectionConfigCacheImplTest,
                 ->CurrentGeo(),
             empty_geo_signal);
 
-  // The config cache should be aligned with the situation of the proxy lists.
-  // So this means the config cache's geo should be empty as well.
-  EXPECT_EQ(ipp_config_cache_->CurrentGeoForTesting(), empty_geo_signal);
-
   // Since the new geo matches the geo of the proxy list manager, it should not
   // refresh the proxy list.
   EXPECT_FALSE(refresh_requested);
 }
 
-// When token caching by geo is disabled, `GeoChangeObserved` has no impact.
+// When token caching by geo is disabled, `GeoObserved` has no impact.
 TEST_F(IpProtectionConfigCacheImplTest,
-       GeoChangeObservedTokenCachingByGeoDisabledNoImpact) {
+       GeoObservedTokenCachingByGeoDisabledNoImpact) {
   SetTokenCachingByGeoParam(kDisableTokenCacheByGeo);
 
   // Reinitialize the config cache b/c the feature value needs to be set to
@@ -458,28 +535,28 @@ TEST_F(IpProtectionConfigCacheImplTest,
   std::string old_geo_id = "US,US-CA,MOUNTAIN VIEW";
 
   // Set up `IppTokenCacheManager` to have an "old geo"
-  auto ipp_token_cache_manager_ =
+  auto ipp_token_cache_manager =
       std::make_unique<MockIpProtectionTokenCacheManager>();
-  ipp_token_cache_manager_->SetCurrentGeo(old_geo_id);
+  ipp_token_cache_manager->SetCurrentGeo(old_geo_id);
   ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
-      IpProtectionProxyLayer::kProxyA, std::move(ipp_token_cache_manager_));
+      IpProtectionProxyLayer::kProxyA, std::move(ipp_token_cache_manager));
 
   // Set up IppProxyListManager to have a "old" geo.
-  auto ipp_proxy_list_manager_ =
+  auto ipp_proxy_list_manager =
       std::make_unique<MockIpProtectionProxyListManager>();
   bool refresh_requested = false;
-  ipp_proxy_list_manager_->SetOnRequestRefreshProxyList(
+  ipp_proxy_list_manager->SetOnRequestRefreshProxyList(
       base::BindLambdaForTesting([&]() { refresh_requested = true; }),
       old_geo_id);
-  ipp_proxy_list_manager_->SetProxyList({MakeChain({"a-proxy"})});
-  ipp_proxy_list_manager_->SetCurrentGeo(old_geo_id);
+  ipp_proxy_list_manager->SetProxyList({MakeChain({"a-proxy"})});
+  ipp_proxy_list_manager->SetCurrentGeo(old_geo_id);
   ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
-      std::move(ipp_proxy_list_manager_));
+      std::move(ipp_proxy_list_manager));
 
   // Simulate a new geo signal that is non-empty. In theory this should cause
   // both the token cache manager and proxy list manager to set the new geo. But
   // the disabled experiment means this is short circuited.
-  ipp_config_cache_->GeoChangeObserved("US,US-CA,SUNNYVALE");
+  ipp_config_cache_->GeoObserved("US,US-CA,SUNNYVALE");
 
   // Both should still contain the old geo id.
   EXPECT_EQ(ipp_config_cache_
@@ -491,9 +568,6 @@ TEST_F(IpProtectionConfigCacheImplTest,
   EXPECT_EQ(ipp_config_cache_->GetIpProtectionProxyListManagerForTesting()
                 ->CurrentGeo(),
             old_geo_id);
-
-  // In this case, the config cache should only have the default geo.
-  EXPECT_EQ(ipp_config_cache_->CurrentGeoForTesting(), kDefaultGeoId);
 }
 
 // Simulates a geo change detected in the IppTokenCacheManager.
@@ -501,27 +575,27 @@ TEST_F(IpProtectionConfigCacheImplTest,
        GeoChangeObservedInIppTokenCacheManager) {
   // Set up `IppTokenCacheManager` to have an "new geo"
   std::string new_geo_signal = "US,US-MA,BOSTON";
-  auto ipp_token_cache_manager_ =
+  auto ipp_token_cache_manager =
       std::make_unique<MockIpProtectionTokenCacheManager>();
-  ipp_token_cache_manager_->SetCurrentGeo(new_geo_signal);
+  ipp_token_cache_manager->SetCurrentGeo(new_geo_signal);
   ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
-      IpProtectionProxyLayer::kProxyA, std::move(ipp_token_cache_manager_));
+      IpProtectionProxyLayer::kProxyA, std::move(ipp_token_cache_manager));
 
   // Set up IppProxyListManager to have a "old" geo.
-  auto ipp_proxy_list_manager_ =
+  auto ipp_proxy_list_manager =
       std::make_unique<MockIpProtectionProxyListManager>();
   bool refresh_requested = false;
-  ipp_proxy_list_manager_->SetOnRequestRefreshProxyList(
+  ipp_proxy_list_manager->SetOnRequestRefreshProxyList(
       base::BindLambdaForTesting([&]() { refresh_requested = true; }),
       new_geo_signal);
-  ipp_proxy_list_manager_->SetProxyList({MakeChain({"a-proxy"})});
-  ipp_proxy_list_manager_->SetCurrentGeo("US,US-NY,NEW YORK CITY");
+  ipp_proxy_list_manager->SetProxyList({MakeChain({"a-proxy"})});
+  ipp_proxy_list_manager->SetCurrentGeo("US,US-NY,NEW YORK CITY");
   ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
-      std::move(ipp_proxy_list_manager_));
+      std::move(ipp_proxy_list_manager));
 
   // Simulate that the new geo signal in the token cache manager resulted in a
   // call to observe a geo change.
-  ipp_config_cache_->GeoChangeObserved(new_geo_signal);
+  ipp_config_cache_->GeoObserved(new_geo_signal);
 
   EXPECT_EQ(ipp_config_cache_
                 ->GetIpProtectionTokenCacheManagerForTesting(
@@ -532,7 +606,6 @@ TEST_F(IpProtectionConfigCacheImplTest,
   EXPECT_EQ(ipp_config_cache_->GetIpProtectionProxyListManagerForTesting()
                 ->CurrentGeo(),
             new_geo_signal);
-  EXPECT_EQ(ipp_config_cache_->CurrentGeoForTesting(), new_geo_signal);
 
   // Since the new geo matches the geo of the proxy list manager, it should not
   // refresh the proxy list.

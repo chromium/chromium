@@ -17,6 +17,7 @@
 #include "services/network/ip_protection/ip_protection_config_cache.h"
 #include "services/network/ip_protection/ip_protection_config_getter.h"
 #include "services/network/ip_protection/ip_protection_data_types.h"
+#include "services/network/ip_protection/ip_protection_geo_utils.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 
 namespace network {
@@ -45,7 +46,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
   bool IsProxyListAvailable() override;
   const std::vector<net::ProxyChain>& ProxyList() override;
   const std::string& CurrentGeo() override;
-  void SetCurrentGeo(const std::string& geo_id) override;
+  void RefreshProxyListForGeoChange() override;
   void RequestRefreshProxyList() override;
 
   // Set a callback to occur when the proxy list has been refreshed.
@@ -66,6 +67,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
     disable_proxy_refreshing_for_testing_ = false;
   }
 
+  void SetProxyListForTesting(
+      std::optional<std::vector<net::ProxyChain>> proxy_list,
+      std::optional<GeoHint> geo_hint) {
+    current_geo_id_ = network::GetGeoIdFromGeoHint(geo_hint);
+    proxy_list_ = *proxy_list;
+    have_fetched_proxy_list_ = true;
+  }
+
  private:
   void RefreshProxyList();
   void ScheduleRefreshProxyList(base::TimeDelta delay);
@@ -77,9 +86,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
   // Latest fetched proxy list.
   std::vector<net::ProxyChain> proxy_list_;
 
-  // Current geo of the client.
-  // This value should only be set by the `IpProtectionConfigCache` using the
-  // `IpProtectionProxyListManager::SetCurrentGeo()` function.
+  // Current geo of the proxy list.
   std::string current_geo_id_ = "";
 
   // True if an invocation of `config_getter_.GetProxyList()` is

@@ -81,13 +81,10 @@ const std::string& IpProtectionProxyListManagerImpl::CurrentGeo() {
   return current_geo_id_;
 }
 
-void IpProtectionProxyListManagerImpl::SetCurrentGeo(
-    const std::string& geo_id) {
+void IpProtectionProxyListManagerImpl::RefreshProxyListForGeoChange() {
   if (!enable_token_caching_by_geo_) {
     return;
   }
-
-  current_geo_id_ = geo_id;
 
   if (IsProxyListOlderThanMinAge()) {
     RefreshProxyList();
@@ -154,11 +151,8 @@ void IpProtectionProxyListManagerImpl::OnGotProxyList(
     // 3. The new geo is different than the existing geo.
     if (enable_token_caching_by_geo_ && !proxy_list->empty()) {
       CHECK(geo_hint.has_value());
-      std::string latest_geo_id =
-          network::GetGeoIdFromGeoHint(std::move(geo_hint));
-      if (latest_geo_id != current_geo_id_) {
-        ip_protection_config_cache_->GeoChangeObserved(latest_geo_id);
-      }
+      current_geo_id_ = network::GetGeoIdFromGeoHint(std::move(geo_hint));
+      ip_protection_config_cache_->GeoObserved(current_geo_id_);
     }
 
     ScheduleRefreshProxyList(proxy_list_refresh_interval_);

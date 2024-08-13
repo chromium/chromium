@@ -125,7 +125,7 @@ class MockIpProtectionConfigGetter : public IpProtectionConfigGetter {
 
 class MockIpProtectionConfigCache : public IpProtectionConfigCache {
  public:
-  MOCK_METHOD(void, GeoChangeObserved, (const std::string& geo_id), (override));
+  MOCK_METHOD(void, GeoObserved, (const std::string& geo_id), (override));
 
   // Dummy implementations for functions not tested in this file.
   bool AreAuthTokensAvailable() override { return false; }
@@ -149,10 +149,6 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
       override {
     return nullptr;
   }
-  void SetCurrentGeoForTesting(const std::string& geo_id) override {
-    NOTREACHED_NORETURN();
-  }
-  const std::string& CurrentGeoForTesting() override { NOTREACHED_NORETURN(); }
   bool IsProxyListAvailable() override { return false; }
   void QuicProxiesFailed() override {}
   std::vector<net::ProxyChain> GetProxyChainList() override { return {}; }
@@ -184,10 +180,10 @@ class IpProtectionTokenCacheManagerImplTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         net::features::kEnableIpProtectionProxy, std::move(parameters));
 
-    // Default behavior for `GeoChangeObserved`. The default is defined here
+    // Default behavior for `GeoObserved`. The default is defined here
     // (instead of in the mock) to allow access to the local instances of the
     // token cache managers.
-    ON_CALL(mock_config_cache_, GeoChangeObserved(testing::_))
+    ON_CALL(mock_config_cache_, GeoObserved(testing::_))
         .WillByDefault([this](const std::string& geo_id) {
           if (ipp_proxy_a_token_cache_manager_->CurrentGeo() != geo_id) {
             ipp_proxy_a_token_cache_manager_->SetCurrentGeo(geo_id);
@@ -415,7 +411,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenSuccessful) {
 TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenForGeoSuccessful) {
   SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
 
-  EXPECT_CALL(mock_config_cache_, GeoChangeObserved(testing::_)).Times(1);
+  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(1);
 
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_, TokenBatch(1, kFutureExpiration, kMountainViewGeo));
@@ -477,7 +473,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
        CurrentGeoTokensNotRequestedGeoCachingEnabledReturnsEmpty) {
   SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
   // If no tokens have been added, this should not be called.
-  EXPECT_CALL(mock_config_cache_, GeoChangeObserved(testing::_)).Times(0);
+  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(0);
 
   EXPECT_EQ(ipp_proxy_a_token_cache_manager_->CurrentGeo(), "");
 }
@@ -524,7 +520,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, SmallBatch) {
 TEST_F(IpProtectionTokenCacheManagerImplTest, ErrorBatch) {
   SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
 
-  EXPECT_CALL(mock_config_cache_, GeoChangeObserved(testing::_)).Times(0);
+  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(0);
 
   const base::TimeDelta kBackoff = base::Seconds(10);
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_,
@@ -750,7 +746,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, ProxyBTokenExpirationRate) {
 TEST_F(IpProtectionTokenCacheManagerImplTest, Prefill) {
   SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
 
-  EXPECT_CALL(mock_config_cache_, GeoChangeObserved(testing::_)).Times(1);
+  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(1);
 
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_,
@@ -768,7 +764,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, RefillLowWaterMark) {
 
   // A refill with tokens from the same geo should not trigger this function a
   // second time.
-  EXPECT_CALL(mock_config_cache_, GeoChangeObserved(testing::_)).Times(1);
+  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(1);
 
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_,
@@ -830,7 +826,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, RefillAfterExpiration) {
 
   // A refill with tokens from the same geo should not trigger this function a
   // second time.
-  EXPECT_CALL(mock_config_cache_, GeoChangeObserved(testing::_)).Times(1);
+  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(1);
 
   // Make a batch of tokens almost all with `expiration2`, except one expiring
   // sooner and the one expiring later. These are returned in incorrect order
@@ -886,7 +882,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
 
   // A geo change means this is called twice: once for prefill and once for
   // second batch.
-  EXPECT_CALL(mock_config_cache_, GeoChangeObserved(testing::_)).Times(2);
+  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(2);
 
   // First batch should contain tokens for Mountain View geo.
   mock_.ExpectTryGetAuthTokensCall(
@@ -931,7 +927,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
 
   // A geo change means this is called twice: once for prefill and once for
   // second batch.
-  EXPECT_CALL(mock_config_cache_, GeoChangeObserved(testing::_)).Times(2);
+  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(2);
 
   // First geo will be Mountain View.
   mock_.ExpectTryGetAuthTokensCall(
@@ -976,9 +972,9 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
 
   // The geo change to Sunnyvale occurs through a call to `SetCurrentGeo`
-  // which means there will not be an additional call to `GeoChangeObserved`
+  // which means there will not be an additional call to `GeoObserved`
   // aside from the first one during the prefill.
-  EXPECT_CALL(mock_config_cache_, GeoChangeObserved(testing::_)).Times(1);
+  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(1);
 
   // Original geo will be Mountain View.
   mock_.ExpectTryGetAuthTokensCall(
@@ -1018,8 +1014,8 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   //    Mountain View).
   // 2. `SetCurrentGeo("Sunnyvale")` causes refill and current geo to change.
   //    Refill however returns "Mountain View" which causes an additional
-  //    `GeoChangeObserved`.
-  EXPECT_CALL(mock_config_cache_, GeoChangeObserved(testing::_)).Times(2);
+  //    `GeoObserved`.
+  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(2);
 
   // Mountain View geo that will be maintained from token refill requests.
   mock_.ExpectTryGetAuthTokensCall(

@@ -313,7 +313,7 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
 
   bool has_geo_id_changed = geo_id_from_token != current_geo_id_;
   if (enable_token_caching_by_geo_ && has_geo_id_changed) {
-    ip_protection_config_cache_->GeoChangeObserved(geo_id_from_token);
+    ip_protection_config_cache_->GeoObserved(geo_id_from_token);
   }
 
   base::UmaHistogramMediumTimes(
