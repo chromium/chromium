@@ -101,7 +101,6 @@ instead of "initial value".
 |       id="select-button"
 |       <button>
 |         pseudo="select-fallback-button"
-|         type="popover"
 |         shadow:pseudoId="select-fallback-button"
 |         <span>
 |           pseudo="select-fallback-button-text"

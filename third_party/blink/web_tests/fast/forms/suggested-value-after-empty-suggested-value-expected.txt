@@ -73,7 +73,6 @@ Input before setting suggested values:
 |       id="select-button"
 |       <button>
 |         pseudo="select-fallback-button"
-|         type="popover"
 |         shadow:pseudoId="select-fallback-button"
 |         <span>
 |           pseudo="select-fallback-button-text"
@@ -196,7 +195,6 @@ Input after setting suggestedValue:
 |       id="select-button"
 |       <button>
 |         pseudo="select-fallback-button"
-|         type="popover"
 |         shadow:pseudoId="select-fallback-button"
 |         <span>
 |           pseudo="select-fallback-button-text"
@@ -318,7 +316,6 @@ After resetting suggestedValue value:
 |       id="select-button"
 |       <button>
 |         pseudo="select-fallback-button"
-|         type="popover"
 |         shadow:pseudoId="select-fallback-button"
 |         <span>
 |           pseudo="select-fallback-button-text"

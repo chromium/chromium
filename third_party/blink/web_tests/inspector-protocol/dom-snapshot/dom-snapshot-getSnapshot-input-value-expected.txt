@@ -257,10 +257,6 @@ Tests DOMSnapshot.getSnapshot method returning input values.
         [20] : {
             attributes : [
                 [0] : {
-                    name : type
-                    value : popover
-                }
-                [1] : {
                     name : pseudo
                     value : select-fallback-button
                 }

@@ -443,8 +443,6 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
     root.appendChild(button_slot_);
 
     default_button_ = MakeGarbageCollected<HTMLButtonElement>(doc);
-    default_button_->setAttribute(html_names::kTypeAttr,
-                                  AtomicString("popover"));
     default_button_->SetShadowPseudoId(
         shadow_element_names::kSelectFallbackButton);
     button_slot_->AppendChild(default_button_);
