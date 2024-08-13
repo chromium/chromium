@@ -3448,6 +3448,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DemoMode.Setup.Error" enum="DemoModeSetupError"
+    expires_after="2025-08-13">
+  <owner>llin@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>wanghaifan@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <summary>
+    The failure reason of the demo mode setup process error. It is recorded when
+    there is a failure during the demo mode setup process (both the enrollment
+    and the component download and install).
+  </summary>
+</histogram>
+
 <histogram name="DemoMode.Setup.LoadingDuration" units="ms"
     expires_after="2025-02-28">
   <owner>llin@chromium.org</owner>
