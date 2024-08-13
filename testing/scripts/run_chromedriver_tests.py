@@ -30,7 +30,7 @@ class ChromeDriverAdapter(common.BaseIsolatedScriptArgsAdapter):
   def generate_test_filter_args(self, test_filter_str):
     if any('--filter' in arg for arg in self.rest_args):
       self.parser.error(
-          'can\'t have the test call filter with the'
+          "can't have the test call filter with the"
           '--isolated-script-test-filter argument to the wrapper script')
 
     return ['--filter', test_filter_str.replace('::', ':')]

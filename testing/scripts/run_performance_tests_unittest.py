@@ -18,7 +18,7 @@ from telemetry.internal.util import binary_manager
 
 # The path where the output of a wpt run was written. This is the file that
 # gets processed by BaseWptScriptAdapter.
-OUTPUT_JSON_FILENAME = "out.json"
+OUTPUT_JSON_FILENAME = 'out.json'
 
 
 class TelemetryCommandGeneratorTest(unittest.TestCase):

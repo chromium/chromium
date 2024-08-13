@@ -38,8 +38,8 @@ class Tests(fake_filesystem_unittest.TestCase):
                                          mode='w',
                                          encoding='utf-8') as f:
             filepath = f.name
-            f.write("foo\n")
-            f.write("bar\n")
+            f.write('foo\n')
+            f.write('bar\n')
         try:
             args.rust_test_executables = filepath
             actual = _generate_script(args,
@@ -49,7 +49,8 @@ class Tests(fake_filesystem_unittest.TestCase):
 
         expected = '''
 #!/bin/bash
-env vpython3 "$(dirname $0)/../../../testing/scripts/rust/rust_main_program.py" \\
+env vpython3 \
+"$(dirname $0)/../../../testing/scripts/rust/rust_main_program.py" \\
     "--rust-test-executable=$(dirname $0)/../bar" \\
     "--rust-test-executable=$(dirname $0)/../foo" \\
     "$@"
@@ -70,8 +71,8 @@ env vpython3 "$(dirname $0)/../../../testing/scripts/rust/rust_main_program.py" 
                                          mode='w',
                                          encoding='utf-8') as f:
             filepath = f.name
-            f.write("foo\n")
-            f.write("bar\n")
+            f.write('foo\n')
+            f.write('bar\n')
         try:
             args.rust_test_executables = filepath
             actual = _generate_script(args,

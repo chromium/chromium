@@ -37,7 +37,7 @@ def _merge_steps_argument_parser(*args, **kwargs):
 
 
 def main():
-  desc = "Merge profdata files in <--input-dir> into a single profdata."
+  desc = 'Merge profdata files in <--input-dir> into a single profdata.'
   parser = _merge_steps_argument_parser(description=desc)
   params = parser.parse_args()
 

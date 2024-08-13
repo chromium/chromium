@@ -19,7 +19,7 @@ SEED_CORPUS_LIMIT_MB = 100
 
 
 def main():
-  parser = argparse.ArgumentParser(description="Generate fuzzer config.")
+  parser = argparse.ArgumentParser(description='Generate fuzzer config.')
   parser.add_argument('corpus_directories',
                       metavar='corpus_dir',
                       type=str,
@@ -44,7 +44,7 @@ def main():
   with zipfile.ZipFile(seed_corpus_path, 'w') as z:
     # Turn warnings into errors to interrupt the build: crbug.com/653920.
     with warnings.catch_warnings():
-      warnings.simplefilter("error")
+      warnings.simplefilter('error')
       for i, corpus_file in enumerate(corpus_files):
         # To avoid duplication of filenames inside the archive, use numbers.
         arcname = '%016d' % i

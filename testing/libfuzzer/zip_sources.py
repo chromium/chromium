@@ -21,7 +21,7 @@ at_name_re = re.compile('.*DW_AT_name.*"(.*)".*')
 
 
 def main():
-  parser = argparse.ArgumentParser(description="Zip binary sources.")
+  parser = argparse.ArgumentParser(description='Zip binary sources.')
   parser.add_argument('--binary', required=True, help='binary file to read')
   parser.add_argument('--workdir',
                       required=True,

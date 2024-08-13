@@ -22,9 +22,9 @@ def resolve_loads(output_file, input_lines, loaded_files, load_root):
 
 def load_file(output_file, input_file, loaded_files, load_root):
   if input_file in loaded_files:
-    sys.exit('Recursive load of \'{}\''.format(input_file))
+    sys.exit("Recursive load of '{}'".format(input_file))
   loaded_files.add(input_file)
-  output_file.write('\n// Loaded from \'{}\':\n'.format(input_file))
+  output_file.write("\n// Loaded from '{}':\n".format(input_file))
   with open(os.path.join(load_root, input_file)) as file:
     resolve_loads(output_file, file.readlines(), loaded_files, load_root)
 

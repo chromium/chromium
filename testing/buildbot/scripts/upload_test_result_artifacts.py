@@ -75,7 +75,7 @@ def get_tests(test_trie):
   file a bug with crbug.com/new and cc martiniss@.
   """
   if not isinstance(test_trie, dict):
-    raise ValueError("expected %s to be a dict" % test_trie)
+    raise ValueError('expected %s to be a dict' % test_trie)
 
   tests = {}
 

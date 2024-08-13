@@ -73,9 +73,9 @@ class _TestFilter:
     def __str__(self):
         result = self._filter_text
         if self._is_exclusion_filter:
-            result = "-" + result
+            result = '-' + result
         if self._is_prefix_match:
-            result += "*"
+            result += '*'
         return result
 
 

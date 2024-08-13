@@ -567,7 +567,7 @@ class MergeShardResultsTest(_StandardGtestMergeTest):
     old_json_limit = standard_gtest_merge.OUTPUT_JSON_SIZE_LIMIT
     len0 = len(json.dumps(GOOD_GTEST_JSON_0))
     len1 = len(json.dumps(GOOD_GTEST_JSON_1))
-    large_shard = "0" if len0 > len1 else "1"
+    large_shard = '0' if len0 > len1 else '1'
     try:
       # Override max output.json size just for this test.
       standard_gtest_merge.OUTPUT_JSON_SIZE_LIMIT = min(len0, len1)

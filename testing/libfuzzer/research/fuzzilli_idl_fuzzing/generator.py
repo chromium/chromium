@@ -94,7 +94,7 @@ class LiteralList(SwiftExpression):
   values: List[SwiftExpression]
 
   def fuzzilli_repr(self) -> str:
-    values = ", ".join([v.fuzzilli_repr() for v in self.values])
+    values = ', '.join([v.fuzzilli_repr() for v in self.values])
     return f'[{values}]'
 
 
@@ -265,17 +265,17 @@ SIMPLE_TYPE_TO_ILTYPE = {
     'ArrayBufferView': ILType.jsDataView(),
     'SharedArray': ILType.jsSharedArrayBuffer(),
     'Int8Array': ILType.jsTypedArray('Uint8Array'),
-    'Int16Array': ILType.jsTypedArray("Int16Array"),
-    'Int32Array': ILType.jsTypedArray("Int32Array"),
-    'Uint8Array': ILType.jsTypedArray("Uint8Array"),
-    'Uint16Array': ILType.jsTypedArray("Uint16Array"),
-    'Uint32Array': ILType.jsTypedArray("Uint32Array"),
-    'Uint8ClampedArray': ILType.jsTypedArray("Uint8ClampedArray"),
-    'BigInt64Array': ILType.jsTypedArray("BigInt64Array"),
-    'BigUint64Array': ILType.jsTypedArray("BigUint64Array"),
-    'Float16Array': ILType.jsTypedArray("Float16Array"),
-    'Float32Array': ILType.jsTypedArray("Float32Array"),
-    'Float64Array': ILType.jsTypedArray("Float64Array"),
+    'Int16Array': ILType.jsTypedArray('Int16Array'),
+    'Int32Array': ILType.jsTypedArray('Int32Array'),
+    'Uint8Array': ILType.jsTypedArray('Uint8Array'),
+    'Uint16Array': ILType.jsTypedArray('Uint16Array'),
+    'Uint32Array': ILType.jsTypedArray('Uint32Array'),
+    'Uint8ClampedArray': ILType.jsTypedArray('Uint8ClampedArray'),
+    'BigInt64Array': ILType.jsTypedArray('BigInt64Array'),
+    'BigUint64Array': ILType.jsTypedArray('BigUint64Array'),
+    'Float16Array': ILType.jsTypedArray('Float16Array'),
+    'Float32Array': ILType.jsTypedArray('Float32Array'),
+    'Float64Array': ILType.jsTypedArray('Float64Array'),
     'DataView': ILType.jsDataView(),
 }
 
@@ -521,11 +521,11 @@ def main():
   parser.add_argument('-p',
                       '--path',
                       required=True,
-                      help="Path to the web_idl_database.")
+                      help='Path to the web_idl_database.')
   parser.add_argument('-o',
                       '--outfile',
                       required=True,
-                      help="Path to the output profile.")
+                      help='Path to the output profile.')
 
   args = parser.parse_args()
   database = web_idl.Database.read_from_file(args.path)
@@ -545,5 +545,5 @@ def main():
     f.write(template.render(context))
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   main()

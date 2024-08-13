@@ -140,5 +140,5 @@ def main(argv):
     f.write(conversion_contents)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   main(sys.argv)

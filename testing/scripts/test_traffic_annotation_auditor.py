@@ -18,19 +18,19 @@ import traceback
 import common
 
 WINDOWS_SHEET_CONFIG = {
-    "spreadsheet_id": "1TmBr9jnf1-hrjntiVBzT9EtkINGrtoBYFMWad2MBeaY",
-    "annotations_sheet_name": "Annotations",
-    "chrome_version_sheet_name": "Chrome Version",
-    "silent_change_columns": [],
-    "last_update_column_name": "Last Update",
+    'spreadsheet_id': '1TmBr9jnf1-hrjntiVBzT9EtkINGrtoBYFMWad2MBeaY',
+    'annotations_sheet_name': 'Annotations',
+    'chrome_version_sheet_name': 'Chrome Version',
+    'silent_change_columns': [],
+    'last_update_column_name': 'Last Update',
 }
 
 CHROMEOS_SHEET_CONFIG = {
-    "spreadsheet_id": "1928goWKy6LVdF9Nl5nV1OD260YC10dHsdrnHEGdGsg8",
-    "annotations_sheet_name": "Annotations",
-    "chrome_version_sheet_name": "Chrome Version",
-    "silent_change_columns": [],
-    "last_update_column_name": "Last Update",
+    'spreadsheet_id': '1928goWKy6LVdF9Nl5nV1OD260YC10dHsdrnHEGdGsg8',
+    'annotations_sheet_name': 'Annotations',
+    'chrome_version_sheet_name': 'Chrome Version',
+    'silent_change_columns': [],
+    'last_update_column_name': 'Last Update',
 }
 
 
@@ -40,7 +40,7 @@ def is_windows():
 
 def is_chromeos(build_path):
   current_platform = get_current_platform_from_gn_args(build_path)
-  return current_platform == "chromeos"
+  return current_platform == 'chromeos'
 
 
 def get_sheet_config(build_path):
@@ -52,17 +52,16 @@ def get_sheet_config(build_path):
 
 
 def get_current_platform_from_gn_args(build_path):
-  if sys.platform.startswith("linux") and build_path is not None:
+  if sys.platform.startswith('linux') and build_path is not None:
     try:
-      with open(os.path.join(build_path, "args.gn")) as f:
+      with open(os.path.join(build_path, 'args.gn')) as f:
         gn_args = f.read()
       if not gn_args:
-        logging.info("Could not retrieve args.gn")
+        logging.info('Could not retrieve args.gn')
 
-      pattern = re.compile(r"^\s*target_os\s*=\s*\"chromeos\"\s*$",
-                           re.MULTILINE)
+      pattern = re.compile(r'^\s*target_os\s*=\s*"chromeos"\s*$', re.MULTILINE)
       if pattern.search(gn_args):
-        return "chromeos"
+        return 'chromeos'
 
     except (ValueError, OSError) as e:
       logging.info(e)
@@ -92,7 +91,7 @@ def main_run(args):
   sheet_config = get_sheet_config(build_path)
   try:
     if rc == 0 and sheet_config is not None:
-      print("Tests succeeded. Updating annotations sheet...")
+      print('Tests succeeded. Updating annotations sheet...')
 
       config_file = tempfile.NamedTemporaryFile(delete=False, mode='w+')
       json.dump(sheet_config, config_file, indent=4)
@@ -113,9 +112,9 @@ def main_run(args):
       rc = common.run_command(command_line)
       cleanup_file(config_filename)
     else:
-      print("Test failed without updating the annotations sheet.")
+      print('Test failed without updating the annotations sheet.')
   except (ValueError, OSError) as e:
-    print("Error updating the annotations sheet", e)
+    print('Error updating the annotations sheet', e)
     traceback.print_exc()
   finally:
     cleanup_file(annotations_filename)
@@ -130,7 +129,7 @@ def cleanup_file(filename):
   try:
     os.remove(filename)
   except OSError:
-    print("Could not remove file: ", filename)
+    print('Could not remove file: ', filename)
 
 
 def main_compile_targets(args):

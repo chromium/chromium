@@ -77,7 +77,7 @@ class XvfbLinuxTest(unittest.TestCase):
     self._procs.append(launch_process([]))
     self._procs[0].wait()
 
-  @unittest.skip("flaky; crbug.com/1320399")
+  @unittest.skip('flaky; crbug.com/1320399')
   def test_xvfb_race_condition(self):
     self._procs = [launch_process([]) for _ in range(15)]
     for proc in self._procs:

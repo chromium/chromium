@@ -65,9 +65,9 @@ _TEST_CASES = [
 
 def _get_httpd():
   """Returns a HTTPServer instance."""
-  hostname = "localhost"
+  hostname = 'localhost'
   port = 8000
-  directory = os.path.join(_THIS_DIR, _VARIATIONS_TEST_DATA, "http_server")
+  directory = os.path.join(_THIS_DIR, _VARIATIONS_TEST_DATA, 'http_server')
   httpd = None
   handler = partial(SimpleHTTPRequestHandler, directory=directory)
   httpd = http.server.HTTPServer((hostname, port), handler)
@@ -159,7 +159,7 @@ def _check_chrome_version():
   #(crbug/158372)
   if OS == 'win':
     cmd = ('powershell -command "&{(Get-Item'
-           '\'' + path_chrome + '\').VersionInfo.ProductVersion}"')
+           "'" + path_chrome + '\').VersionInfo.ProductVersion}"')
     version = subprocess.run(cmd, check=True,
                              capture_output=True).stdout.decode('utf-8')
   else:
@@ -167,7 +167,7 @@ def _check_chrome_version():
     version = subprocess.run(cmd, check=True,
                              capture_output=True).stdout.decode('utf-8')
     #only return the version number portion
-    version = version.strip().split(" ")[-1]
+    version = version.strip().split(' ')[-1]
   return packaging.version.parse(version)
 
 
@@ -233,7 +233,7 @@ def _run_tests(work_dir, skia_util, *args):
   chrome_options.add_argument('log-file=' + log_file)
   chrome_options.add_argument('variations-test-seed-path=' + path_seed)
   #TODO(crbug.com/40230862): Remove this line.
-  chrome_options.add_argument("disable-field-trial-config")
+  chrome_options.add_argument('disable-field-trial-config')
 
   for arg in args:
     chrome_options.add_argument(arg)
@@ -313,8 +313,8 @@ def _start_local_http_server():
   """
   httpd = _get_httpd()
   thread = None
-  address = "http://{}:{}".format(httpd.server_name, httpd.server_port)
-  logging.info("%s is used as local http server.", address)
+  address = 'http://{}:{}'.format(httpd.server_name, httpd.server_port)
+  logging.info('%s is used as local http server.', address)
   thread = Thread(target=httpd.serve_forever)
   thread.setDaemon(True)
   thread.start()

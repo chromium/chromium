@@ -3040,157 +3040,157 @@ TEST_SUITE_WITH_PARAMS = """\
 }
 """
 TEST_QUERY_BOTS_OUTPUT = {
-    "Fake Android M Tester": {
-        "gtest_tests": [{
-            "name": "foo_test",
-            "test": "foo_test",
+    'Fake Android M Tester': {
+        'gtest_tests': [{
+            'name': 'foo_test',
+            'test': 'foo_test',
         }]
     },
-    "Fake Android L Tester": {
-        "gtest_tests": [{
-            "test":
-            "foo_test",
-            "args": [
-                "--gs-results-bucket=chromium-result-details",
-                "--recover-devices"
+    'Fake Android L Tester': {
+        'gtest_tests': [{
+            'test':
+            'foo_test',
+            'args': [
+                '--gs-results-bucket=chromium-result-details',
+                '--recover-devices'
             ],
-            "merge": {
-                "script": "//testing/merge_scripts/standard_gtest_merge.py"
+            'merge': {
+                'script': '//testing/merge_scripts/standard_gtest_merge.py'
             },
-            "name":
-            "foo_test",
-            "swarming": {
-                "dimensions": {
-                    "device_os": "LMY41U",
-                    "device_os_type": "user",
-                    "device_type": "hammerhead",
+            'name':
+            'foo_test',
+            'swarming': {
+                'dimensions': {
+                    'device_os': 'LMY41U',
+                    'device_os_type': 'user',
+                    'device_type': 'hammerhead',
                     'os': 'Android'
                 },
             }
         }]
     },
-    "Fake Android K Tester": {
-        "additional_compile_targets": ["bar_test"],
-        "gtest_tests": [{
-            "test":
-            "foo_test",
-            "args": [
-                "--gs-results-bucket=chromium-result-details",
-                "--recover-devices"
+    'Fake Android K Tester': {
+        'additional_compile_targets': ['bar_test'],
+        'gtest_tests': [{
+            'test':
+            'foo_test',
+            'args': [
+                '--gs-results-bucket=chromium-result-details',
+                '--recover-devices'
             ],
-            "merge": {
-                "script": "//testing/merge_scripts/standard_gtest_merge.py"
+            'merge': {
+                'script': '//testing/merge_scripts/standard_gtest_merge.py'
             },
-            "name":
-            "foo_test",
-            "swarming": {
-                "dimensions": {
-                    "device_os": "KTU84P",
-                    "device_os_type": "userdebug",
-                    "device_type": "hammerhead",
-                    "os": "Android",
+            'name':
+            'foo_test',
+            'swarming': {
+                'dimensions': {
+                    'device_os': 'KTU84P',
+                    'device_os_type': 'userdebug',
+                    'device_type': 'hammerhead',
+                    'os': 'Android',
                 },
             }
         }]
     },
-    "Android Builder": {
-        "additional_compile_targets": ["bar_test"]
+    'Android Builder': {
+        'additional_compile_targets': ['bar_test']
     }
 }
 TEST_QUERY_BOTS_TESTS_OUTPUT = {
-    "Fake Android M Tester": [{
-        "name": "foo_test",
-        "test": "foo_test",
+    'Fake Android M Tester': [{
+        'name': 'foo_test',
+        'test': 'foo_test',
     }],
-    "Fake Android L Tester": [{
-        "test":
-        "foo_test",
-        "args":
-        ["--gs-results-bucket=chromium-result-details", "--recover-devices"],
-        "merge": {
-            "script": "//testing/merge_scripts/standard_gtest_merge.py"
+    'Fake Android L Tester': [{
+        'test':
+        'foo_test',
+        'args':
+        ['--gs-results-bucket=chromium-result-details', '--recover-devices'],
+        'merge': {
+            'script': '//testing/merge_scripts/standard_gtest_merge.py'
         },
-        "name":
-        "foo_test",
-        "swarming": {
-            "dimensions": {
-                "device_os": "LMY41U",
-                "device_os_type": "user",
-                "device_type": "hammerhead",
-                "os": "Android"
+        'name':
+        'foo_test',
+        'swarming': {
+            'dimensions': {
+                'device_os': 'LMY41U',
+                'device_os_type': 'user',
+                'device_type': 'hammerhead',
+                'os': 'Android'
             },
         }
     }],
-    "Android Builder": [],
-    "Fake Android K Tester": [{
-        "test":
-        "foo_test",
-        "args":
-        ["--gs-results-bucket=chromium-result-details", "--recover-devices"],
-        "merge": {
-            "script": "//testing/merge_scripts/standard_gtest_merge.py"
+    'Android Builder': [],
+    'Fake Android K Tester': [{
+        'test':
+        'foo_test',
+        'args':
+        ['--gs-results-bucket=chromium-result-details', '--recover-devices'],
+        'merge': {
+            'script': '//testing/merge_scripts/standard_gtest_merge.py'
         },
-        "name":
-        "foo_test",
-        "swarming": {
-            "dimensions": {
-                "device_os": "KTU84P",
-                "device_os_type": "userdebug",
-                "device_type": "hammerhead",
-                "os": "Android"
+        'name':
+        'foo_test',
+        'swarming': {
+            'dimensions': {
+                'device_os': 'KTU84P',
+                'device_os_type': 'userdebug',
+                'device_type': 'hammerhead',
+                'os': 'Android'
             },
         }
     }]
 }
 
 TEST_QUERY_BOT_OUTPUT = {
-    "additional_compile_targets": ["bar_test"],
-    "gtest_tests": [
+    'additional_compile_targets': ['bar_test'],
+    'gtest_tests': [
         {
-            "test":
-            "foo_test",
-            "args": [
-                "--gs-results-bucket=chromium-result-details",
-                "--recover-devices",
+            'test':
+            'foo_test',
+            'args': [
+                '--gs-results-bucket=chromium-result-details',
+                '--recover-devices',
             ],
-            "merge": {
-                "script": "//testing/merge_scripts/standard_gtest_merge.py",
+            'merge': {
+                'script': '//testing/merge_scripts/standard_gtest_merge.py',
             },
-            "name":
-            "foo_test",
-            "swarming": {
-                "dimensions": {
-                    "device_os": "KTU84P",
-                    "device_os_type": "userdebug",
-                    "device_type": "hammerhead",
-                    "os": "Android",
+            'name':
+            'foo_test',
+            'swarming': {
+                'dimensions': {
+                    'device_os': 'KTU84P',
+                    'device_os_type': 'userdebug',
+                    'device_type': 'hammerhead',
+                    'os': 'Android',
                 },
             },
         },
     ],
 }
 TEST_QUERY_BOT_TESTS_OUTPUT = [{
-    "test":
-    "foo_test",
-    "args":
-    ["--gs-results-bucket=chromium-result-details", "--recover-devices"],
-    "merge": {
-        "script": "//testing/merge_scripts/standard_gtest_merge.py"
+    'test':
+    'foo_test',
+    'args':
+    ['--gs-results-bucket=chromium-result-details', '--recover-devices'],
+    'merge': {
+        'script': '//testing/merge_scripts/standard_gtest_merge.py'
     },
-    "name":
-    "foo_test",
-    "swarming": {
-        "dimensions": {
-            "device_os": "LMY41U",
-            "device_os_type": "user",
-            "device_type": "hammerhead",
-            "os": "Android"
+    'name':
+    'foo_test',
+    'swarming': {
+        'dimensions': {
+            'device_os': 'LMY41U',
+            'device_os_type': 'user',
+            'device_type': 'hammerhead',
+            'os': 'Android'
         },
     }
 }]
 
 TEST_QUERY_TESTS_OUTPUT = {
-    "bar_test": {
+    'bar_test': {
         'name': 'bar_test',
         'swarming': {
             'dimensions': {
@@ -3198,7 +3198,7 @@ TEST_QUERY_TESTS_OUTPUT = {
             },
         }
     },
-    "foo_test": {
+    'foo_test': {
         'name': 'foo_test',
         'swarming': {
             'dimensions': {
@@ -3208,11 +3208,11 @@ TEST_QUERY_TESTS_OUTPUT = {
     }
 }
 
-TEST_QUERY_TESTS_MULTIPLE_PARAMS_OUTPUT = ["foo_test"]
+TEST_QUERY_TESTS_MULTIPLE_PARAMS_OUTPUT = ['foo_test']
 
-TEST_QUERY_TESTS_DIMENSION_PARAMS_OUTPUT = ["bar_test"]
+TEST_QUERY_TESTS_DIMENSION_PARAMS_OUTPUT = ['bar_test']
 
-TEST_QUERY_TESTS_SWARMING_PARAMS_OUTPUT = ["bar_test_test"]
+TEST_QUERY_TESTS_SWARMING_PARAMS_OUTPUT = ['bar_test_test']
 
 TEST_QUERY_TESTS_PARAMS_OUTPUT = ['bar_test_test']
 
@@ -3228,9 +3228,9 @@ TEST_QUERY_TEST_OUTPUT = {
 }
 
 TEST_QUERY_TEST_BOTS_OUTPUT = [
-    "Fake Android K Tester",
-    "Fake Android L Tester",
-    "Fake Android M Tester",
+    'Fake Android K Tester',
+    'Fake Android L Tester',
+    'Fake Android M Tester',
 ]
 
 TEST_QUERY_TEST_BOTS_ISOLATED_SCRIPTS_OUTPUT = ['Fake Tester']
@@ -3248,7 +3248,7 @@ class QueryTests(TestCase):
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_SORTED)
     fbb.query(fbb.args)
-    query_json = json.loads("".join(fbb.printed_lines))
+    query_json = json.loads(''.join(fbb.printed_lines))
     self.assertEqual(query_json, TEST_QUERY_BOTS_OUTPUT)
 
   def test_query_bots_invalid(self):
@@ -3281,7 +3281,7 @@ class QueryTests(TestCase):
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_SORTED)
     fbb.query(fbb.args)
-    query_json = json.loads("".join(fbb.printed_lines))
+    query_json = json.loads(''.join(fbb.printed_lines))
     self.assertEqual(query_json, TEST_QUERY_BOTS_TESTS_OUTPUT)
 
   def test_query_invalid_bots_tests(self):
@@ -3304,7 +3304,7 @@ class QueryTests(TestCase):
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_SORTED)
     fbb.query(fbb.args)
-    query_json = json.loads("".join(fbb.printed_lines))
+    query_json = json.loads(''.join(fbb.printed_lines))
     self.maxDiff = None  # pragma pylint: disable=attribute-defined-outside-init
     self.assertEqual(query_json, TEST_QUERY_BOT_OUTPUT)
 
@@ -3352,7 +3352,7 @@ class QueryTests(TestCase):
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_SORTED)
     fbb.query(fbb.args)
-    query_json = json.loads("".join(fbb.printed_lines))
+    query_json = json.loads(''.join(fbb.printed_lines))
     self.assertEqual(query_json, TEST_QUERY_BOT_TESTS_OUTPUT)
 
   def test_query_tests(self):
@@ -3363,7 +3363,7 @@ class QueryTests(TestCase):
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_SORTED)
     fbb.query(fbb.args)
-    query_json = json.loads("".join(fbb.printed_lines))
+    query_json = json.loads(''.join(fbb.printed_lines))
     self.assertEqual(query_json, TEST_QUERY_TESTS_OUTPUT)
 
   def test_query_tests_invalid(self):
@@ -3386,7 +3386,7 @@ class QueryTests(TestCase):
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_SORTED)
     fbb.query(fbb.args)
-    query_json = json.loads("".join(fbb.printed_lines))
+    query_json = json.loads(''.join(fbb.printed_lines))
     self.assertEqual(query_json, TEST_QUERY_TESTS_MULTIPLE_PARAMS_OUTPUT)
 
   def test_query_tests_invalid_params(self):
@@ -3409,7 +3409,7 @@ class QueryTests(TestCase):
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_SORTED)
     fbb.query(fbb.args)
-    query_json = json.loads("".join(fbb.printed_lines))
+    query_json = json.loads(''.join(fbb.printed_lines))
     self.assertEqual(query_json, TEST_QUERY_TESTS_DIMENSION_PARAMS_OUTPUT)
 
   def test_query_tests_swarming_params(self):
@@ -3420,7 +3420,7 @@ class QueryTests(TestCase):
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_SORTED)
     fbb.query(fbb.args)
-    query_json = json.loads("".join(fbb.printed_lines))
+    query_json = json.loads(''.join(fbb.printed_lines))
     self.assertEqual(query_json, TEST_QUERY_TESTS_SWARMING_PARAMS_OUTPUT)
 
   def test_query_tests_params(self):
@@ -3431,7 +3431,7 @@ class QueryTests(TestCase):
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_SORTED)
     fbb.query(fbb.args)
-    query_json = json.loads("".join(fbb.printed_lines))
+    query_json = json.loads(''.join(fbb.printed_lines))
     self.assertEqual(query_json, TEST_QUERY_TESTS_PARAMS_OUTPUT)
 
   def test_query_tests_params_false(self):
@@ -3442,7 +3442,7 @@ class QueryTests(TestCase):
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_SORTED)
     fbb.query(fbb.args)
-    query_json = json.loads("".join(fbb.printed_lines))
+    query_json = json.loads(''.join(fbb.printed_lines))
     self.assertEqual(query_json, TEST_QUERY_TESTS_PARAMS_FALSE_OUTPUT)
 
   def test_query_test(self):
@@ -3453,7 +3453,7 @@ class QueryTests(TestCase):
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_SORTED)
     fbb.query(fbb.args)
-    query_json = json.loads("".join(fbb.printed_lines))
+    query_json = json.loads(''.join(fbb.printed_lines))
     self.assertEqual(query_json, TEST_QUERY_TEST_OUTPUT)
 
   def test_query_test_invalid_id(self):
@@ -3488,7 +3488,7 @@ class QueryTests(TestCase):
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_SORTED)
     fbb.query(fbb.args)
-    query_json = json.loads("".join(fbb.printed_lines))
+    query_json = json.loads(''.join(fbb.printed_lines))
     self.assertEqual(query_json, TEST_QUERY_TEST_BOTS_OUTPUT)
 
   def test_query_test_bots_isolated_scripts(self):
@@ -3499,7 +3499,7 @@ class QueryTests(TestCase):
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_SORTED)
     fbb.query(fbb.args)
-    query_json = json.loads("".join(fbb.printed_lines))
+    query_json = json.loads(''.join(fbb.printed_lines))
     self.assertEqual(query_json, TEST_QUERY_TEST_BOTS_ISOLATED_SCRIPTS_OUTPUT)
 
   def test_query_test_bots_invalid(self):
@@ -3522,7 +3522,7 @@ class QueryTests(TestCase):
                     LUCI_MILO_CFG,
                     mixins=SWARMING_MIXINS_SORTED)
     fbb.query(fbb.args)
-    query_json = json.loads("".join(fbb.printed_lines))
+    query_json = json.loads(''.join(fbb.printed_lines))
     self.assertEqual(query_json, TEST_QUERY_TEST_BOTS_NO_BOTS_OUTPUT)
 
   def test_query_invalid(self):

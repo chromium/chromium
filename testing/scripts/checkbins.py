@@ -35,7 +35,7 @@ def with_python3():
       for maybe_py3 in WIN_PY3_TARGETS:
         if os.path.exists(os.path.join(d, maybe_py3)):
           return os.path.join(d, maybe_py3)
-  raise Exception("Cannot find python3 to launch checkbins.py")
+  raise Exception('Cannot find python3 to launch checkbins.py')
 
 
 def main_run(args):

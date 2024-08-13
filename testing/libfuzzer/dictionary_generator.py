@@ -34,7 +34,7 @@ def EscapeDictionaryElement(element):
   """Escape all unprintable and control characters in an element."""
   element_escaped = element.encode('string_escape')
   # Remove escaping for single quote because it breaks libFuzzer.
-  element_escaped = element_escaped.replace('\\\'', '\'')
+  element_escaped = element_escaped.replace("\\'", "'")
   # Add escaping for double quote.
   element_escaped = element_escaped.replace('"', '\\"')
   return element_escaped
@@ -119,7 +119,7 @@ def GenerateDictionary(path_to_binary, path_to_spec, strategy, is_html=False):
   """Generate a dictionary for given pair of fuzzer binary and specification."""
   for filepath in [path_to_binary, path_to_spec]:
     if not os.path.exists(filepath):
-      logging.error('%s doesn\'t exist. Exit.', filepath)
+      logging.error("%s doesn't exist. Exit.", filepath)
       sys.exit(1)
 
   words_from_binary = ExtractWordsFromBinary(path_to_binary)
@@ -205,7 +205,7 @@ def WriteDictionary(dictionary_path, dictionary):
 
 
 def main():
-  parser = argparse.ArgumentParser(description="Generate fuzzer dictionary.")
+  parser = argparse.ArgumentParser(description='Generate fuzzer dictionary.')
   parser.add_argument('--fuzzer',
                       required=True,
                       help='Path to a fuzzer binary executable. It is '
