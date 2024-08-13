@@ -109,7 +109,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandQueue
         std::deque<CommandQueue::QueuedObject> queued_objects,
         Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue,
         uint64_t last_fence_value,
-        Microsoft::WRL::ComPtr<ID3D12Fence> fence);
+        Microsoft::WRL::ComPtr<ID3D12Fence> fence,
+        base::win::ScopedHandle fence_event);
     ~PendingWorkDelegate() override;
 
     PendingWorkDelegate(const PendingWorkDelegate&) = delete;

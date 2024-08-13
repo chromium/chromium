@@ -19,12 +19,14 @@ CommandQueue::PendingWorkDelegate::PendingWorkDelegate(
     std::deque<CommandQueue::QueuedObject> queued_objects,
     Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue,
     uint64_t last_fence_value,
-    Microsoft::WRL::ComPtr<ID3D12Fence> fence)
+    Microsoft::WRL::ComPtr<ID3D12Fence> fence,
+    base::win::ScopedHandle fence_event)
     : base::win::ObjectWatcher::Delegate(),
       queued_objects_(std::move(queued_objects)),
       command_queue_(std::move(command_queue)),
       last_fence_value_(last_fence_value),
-      fence_(std::move(fence)) {
+      fence_(std::move(fence)),
+      fence_event_(std::move(fence_event)) {
   CHECK(object_watcher_.StartWatchingOnce(fence_event_.get(), this));
 }
 
@@ -63,7 +65,8 @@ void CommandQueue::ScheduleCleanupForPendingWork(
   // It is by design we're not using std::unique_ptr because PendingWorkDelegate
   // deletes itself.
   new PendingWorkDelegate(std::move(queued_objects), std::move(command_queue),
-                          last_fence_value, std::move(fence));
+                          last_fence_value, std::move(fence),
+                          std::move(fence_event));
 }
 
 CommandQueue::CommandQueue(ComPtr<ID3D12CommandQueue> command_queue,
