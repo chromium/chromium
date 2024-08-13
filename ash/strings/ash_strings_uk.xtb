@@ -997,7 +997,6 @@
 <translation id="4544483149666270818">Виберіть вікно, яке потрібно записати на відео</translation>
 <translation id="4545950850562423083">Зберегти поточну сторінку як закладку</translation>
 <translation id="4548482551627849548">Перемістити активне вікно на робочий стіл ліворуч</translation>
-<translation id="4549853322523631092">Результатів не знайдено.</translation>
 <translation id="4552748006424994716">Щоб уникнути відлуння, слухайте звук зі свого мікрофона лише через дротові навушники.</translation>
 <translation id="4560576029703263363">Увімкнено</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1795,6 +1794,7 @@
 <translation id="7302889331339392448">Живі субтитри вимкнено.</translation>
 <translation id="7303365578352795231">Відповідь на іншому пристрої.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">Результатів не знайдено</translation>
 <translation id="7312210124139670355">Адміністратор скидає вашу eSIM-карту. Це може зайняти кілька хвилин.</translation>
 <translation id="7312761820869643657">Відновіть попередню версію на пристрої</translation>
 <translation id="7313193732017069507">Розгорнути вікно камери</translation>
@@ -1862,6 +1862,7 @@
 Щоб завершити роботу, знову утримуйте кнопку живлення на пристрої.</translation>
 <translation id="7523420897035067483">Не турбувати в режимі концентрації уваги</translation>
 <translation id="7524043547948122239">Google Завдання</translation>
+<translation id="7525067979554623046">Створити</translation>
 <translation id="7526573455193969409">Мережевий трафік може відстежуватися</translation>
 <translation id="7536035074519304529">ІР-адреса: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Оновити вікно ліворуч</translation>

@@ -998,7 +998,6 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4544483149666270818">Izaberite prozor za snimanje</translation>
 <translation id="4545950850562423083">Sačuvaj aktuelnu stranicu kao obeleživač</translation>
 <translation id="4548482551627849548">Premesti aktivni prozor na radnu površinu na levoj strani</translation>
-<translation id="4549853322523631092">Nije pronađen nijedan rezultat.</translation>
 <translation id="4552748006424994716">Da biste izbegli eho, mikrofon možete da slušate samo pomoću žičanih slušalica.</translation>
 <translation id="4560576029703263363">Uključeno</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1797,6 +1796,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="7302889331339392448">Titl uživo je isključen.</translation>
 <translation id="7303365578352795231">Odgovor se daje na drugom uređaju.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">Nije pronađen nijedan rezultat</translation>
 <translation id="7312210124139670355">Administrator resetuje eSIM. To može da potraje nekoliko minuta.</translation>
 <translation id="7312761820869643657">Promenite verziju uređaja u prethodnu verziju</translation>
 <translation id="7313193732017069507">Proširite kameru</translation>
@@ -1864,6 +1864,7 @@ Priključite uređaj na napajanje.</translation>
 Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivanje na uređaju.</translation>
 <translation id="7523420897035067483">Omogućite funkciju Ne uznemiravaj dok sam u fokusu</translation>
 <translation id="7524043547948122239">Google zadaci</translation>
+<translation id="7525067979554623046">Napravi</translation>
 <translation id="7526573455193969409">Mreža se možda nadgleda</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Ažuriraj levi prozor</translation>

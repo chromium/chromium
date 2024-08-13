@@ -996,7 +996,6 @@
 <translation id="4544483149666270818">रेकॉर्ड करण्यासाठी विंडो निवडा</translation>
 <translation id="4545950850562423083">सद्य पेज बुकमार्क म्हणून सेव्ह करा</translation>
 <translation id="4548482551627849548">डावीकडील डेस्‍कवर अ‍ॅक्टिव्ह विंडो हलवा</translation>
-<translation id="4549853322523631092">कोणतेही परिणाम आढळले नाहीत.</translation>
 <translation id="4552748006424994716">प्रतिध्वनी टाळण्यासाठी, तुम्ही फक्त वायर्ड हेडफोन वापरून तुमचा माइक ऐकू शकता.</translation>
 <translation id="4560576029703263363">सुरू</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1792,6 +1791,7 @@
 <translation id="7302889331339392448">लाइव्ह कॅप्शन बंद आहे.</translation>
 <translation id="7303365578352795231">दुसऱ्या डिव्हाइसवर उत्तर देत आहे.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">कोणतेही परिणाम आढळले नाहीत</translation>
 <translation id="7312210124139670355">तुमचा ॲडमिनिस्ट्रेटर तुमचा eSIM रीसेट करत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="7312761820869643657">मागील आवृत्तीवर डिव्हाइस अपडेट करा</translation>
 <translation id="7313193732017069507">कॅमेराचा विस्तार करा</translation>
@@ -1859,6 +1859,7 @@
 डिव्हाइस बंद करण्यासाठी, डिव्हाइसवरील पॉवर बटण पुन्हा प्रेस करून धरून ठेवा.</translation>
 <translation id="7523420897035067483">फोकस मध्ये असताना व्यत्यय आणू नका सुरू करा</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7525067979554623046">तयार करा</translation>
 <translation id="7526573455193969409">नेटवर्कचे परीक्षण केले जाऊ शकते</translation>
 <translation id="7536035074519304529">IP पत्ता: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">डावी विंडो अपडेट करा</translation>

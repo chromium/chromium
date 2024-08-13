@@ -1214,6 +1214,7 @@
 <translation id="184183613002882946">Не, остани на 1 прекинувач</translation>
 <translation id="184273675144259287">Заменете ги апликациите и датотеките на Linux со претходен бекап</translation>
 <translation id="1842766183094193446">Дали сигурно сакате да овозможите демо-режим?</translation>
+<translation id="1843048149176045210">Копирај го линкот за преземање</translation>
 <translation id="1845060436536902492">Читачот на екран на ChromeOS Flex, ChromeVox, првенствено го користат лица со слепило и лица со намален вид за да го читаат текстот што се прикажува на екранот со машина за генерирање говор или уред за приказ на брајово писмо. За да го вклучите ChromeVox, притиснете го копчето за празно место. Кога ќе се активира ChromeVox, ќе погледнете кратка разгледница.</translation>
 <translation id="1845727111305721124">Дозволено им е да пуштаат звук</translation>
 <translation id="1846308012215045257">Контролен клик за да го извршите приклучокот <ph name="PLUGIN_NAME" /></translation>
@@ -3174,6 +3175,7 @@
 <translation id="3251714896659475029">Дозволете <ph name="SUPERVISED_USER_NAME" /> да пристапува до „Помошникот на Google“ со „Ok Google“</translation>
 <translation id="3251759466064201842">&lt;Не е дел од сертификатот&gt;</translation>
 <translation id="325238099842880997">Поставете основни дигитални правила за да им помогнете на децата да си играат, да истражуваат и да извршуваат училишни задачи дома</translation>
+<translation id="3253083398453405334">Светни со блицот од екранот при примање известувања</translation>
 <translation id="3253225298092156258">Не е достапна</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Ослободете простор во <ph name="CLOUD_PROVIDER" /> за да ја копирате датотекава}one{Ослободете простор во <ph name="CLOUD_PROVIDER" /> за да ги копирате датотекиве}other{Ослободете простор во <ph name="CLOUD_PROVIDER" /> за да ги копирате датотекиве}}</translation>
 <translation id="3253448572569133955">Непозната сметка</translation>
@@ -3670,6 +3672,7 @@
 <translation id="3621202678540785336">Внесување</translation>
 <translation id="3621807901162200696">Помогнете да се подобрат функциите и изведбата на Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{апликација}one{# апликација}other{# апликации}}</translation>
+<translation id="3622820753353315928">Боја на блицот од екранот</translation>
 <translation id="362333465072914957">Се чека CA да издаде сертификат</translation>
 <translation id="3623598555687153298">Ова ќе избрише податоците (<ph name="TOTAL_USAGE" />) што ги складирале прикажаните сајтови</translation>
 <translation id="3624567683873126087">Отклучи го уредот и најави се на сметката на Google</translation>
@@ -7173,6 +7176,7 @@
 <translation id="6197128521826316819">Создајте QR-код за страницава</translation>
 <translation id="6198223452299275399">Повлекувајте меѓу страници</translation>
 <translation id="6198252989419008588">Промена на PIN</translation>
+<translation id="61988015556954366">Блиц од екранот</translation>
 <translation id="6200047250927636406">Отфрли ја датотеката</translation>
 <translation id="6200151268994853226">Управувајте со наставката</translation>
 <translation id="6201608810045805374">Да се отстрани сметкава?</translation>
@@ -7530,6 +7534,7 @@
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> датотеки</translation>
 <translation id="6469557521904094793">Вклучување мобилна мрежа</translation>
 <translation id="6469702164109431067">Лозинки и криптографски клучеви</translation>
+<translation id="6470120577693311302">Известувања со блиц</translation>
 <translation id="6470823736074966819">Исклучете го звукот на известувањата</translation>
 <translation id="6472893788822429178">Прикажи копче Дома</translation>
 <translation id="6473315466413288899">Изберете опција</translation>
@@ -7964,6 +7969,7 @@
 <translation id="6790820461102226165">Додај лице...</translation>
 <translation id="6793610798874309813">Вашиот PIN може да содржи 4 или повеќе знаци</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395">Линкот за преземање <ph name="DOWNLOAD_URL" /> е копиран во привремената меморија</translation>
 <translation id="6794511157503068">Ако вашиот криптографски клуч за <ph name="APP_NAME" /> е на безбедносен клуч на USB, вметнете и допрете го сега</translation>
 <translation id="679486139907144816">За да се најавите на сајтов со криптографски клуч, треба да вклучите Windows Hello во поставките. Потоа вратете се на сајтов и обидете се повторно.</translation>
 <translation id="6795371939514004514">Автоматското скенирање ви дозволува да се движите автоматски низ ставките на екранот. Кога некоја ставка е нагласена, притиснете „Избери“ за да ја активирате.</translation>

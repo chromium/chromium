@@ -668,6 +668,7 @@
 <translation id="3439896670700055005">Обновить текущую страницу без использования кешированного контента</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">Персонализация мыши</translation>
+<translation id="3444385531800624797">Загружаются результаты</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="3445925074670675829">Устройство USB-C</translation>
 <translation id="3454555520521576458">Изменяемые</translation>
@@ -996,7 +997,6 @@
 <translation id="4544483149666270818">Выберите окно для записи</translation>
 <translation id="4545950850562423083">Добавить текущую страницу в закладки</translation>
 <translation id="4548482551627849548">Переместить активное окно на рабочий стол слева</translation>
-<translation id="4549853322523631092">Ничего не найдено.</translation>
 <translation id="4552748006424994716">Чтобы избежать эха, слушайте микрофон только через них.</translation>
 <translation id="4560576029703263363">Включено</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1212,6 +1212,7 @@
 <translation id="5253783950165989294">Установлено подключение к устройству "<ph name="DEVICE_NAME" />", заряд батареи – <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5258528442992323769">Нет сохраненных рабочих столов.</translation>
 <translation id="5260676007519551770">Рабочий стол 4</translation>
+<translation id="5265391159779542051">Результаты загружены</translation>
 <translation id="5270547718570958938">Календарь Google</translation>
 <translation id="5277869901083657836">Показать или скрыть инструменты стилуса</translation>
 <translation id="5278086053818066789">Включить или отключить ChromeVox (озвучивание текста на экране)</translation>
@@ -1507,6 +1508,7 @@
 <translation id="6210042900243040400">Можно подключиться к устройству <ph name="NAME" />, которое уже сохранено в аккаунте <ph name="EMAIL" />.</translation>
 <translation id="6213808132343683860">Сделать скриншот или запись видео с части экрана</translation>
 <translation id="621606890568890214">Показать информацию из Google Класса</translation>
+<translation id="6216759484154215561">Страница по ссылке "Подробнее" открыта в браузере</translation>
 <translation id="6220928844947387476">Теперь можно вести запись экрана и изображения с веб-камеры одновременно.</translation>
 <translation id="622484624075952240">Вниз</translation>
 <translation id="6228457605945141550">Уменьшить яркость</translation>
@@ -1792,6 +1794,7 @@
 <translation id="7302889331339392448">Автоматические субтитры отключены</translation>
 <translation id="7303365578352795231">Ассистент отвечает на другом устройстве.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">Ничего не найдено</translation>
 <translation id="7312210124139670355">Администратор выполняет сброс eSIM. Это может занять несколько минут.</translation>
 <translation id="7312761820869643657">Вернитесь к предыдущей версии ОС</translation>
 <translation id="7313193732017069507">Показать кнопку изменения размера</translation>
@@ -1859,6 +1862,7 @@
 Чтобы выключить устройство, снова нажмите и удерживайте кнопку питания.</translation>
 <translation id="7523420897035067483">Не беспокоить в режиме концентрации внимания</translation>
 <translation id="7524043547948122239">Google Задачи</translation>
+<translation id="7525067979554623046">Создать</translation>
 <translation id="7526573455193969409">Сеть может отслеживаться</translation>
 <translation id="7536035074519304529">IP-адрес: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Обновить окно слева</translation>
@@ -2217,6 +2221,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" />.</translation>
 <translation id="8790632710469941716">Переключаться вперед между правым нижним углом, панелью запуска, адресной строкой, панелью закладок, открытым сайтом и страницей со скачанными файлами</translation>
 <translation id="8792626944327216835">микрофон</translation>
+<translation id="8797381270745758905">Нажата ссылка "Повторить"</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Папка <ph name="FOLDER_NAME" />.</translation>
 <translation id="880709030178078220">"Справка"</translation>

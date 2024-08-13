@@ -1199,6 +1199,7 @@
 <translation id="184183613002882946">ନା, 1ଟି ସ୍ୱିଚ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="184273675144259287">ଆପଣଙ୍କର Linux ଆପ୍ସ ଏବଂ ଫାଇଲ୍‌ଗୁଡ଼ିକ ପୂର୍ବବର୍ତ୍ତୀ ବ୍ୟାକ୍‌ଅପ୍ ସହିତ ବଦଳାନ୍ତୁ</translation>
 <translation id="1842766183094193446">ଆପଣ କ’ଣ ସୁନିଶ୍ଚିତ ଯେ ଆପଣ ଡେମୋ ମୋଡ୍‌ ସକ୍ଷମ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
+<translation id="1843048149176045210">ଡାଉନଲୋଡ ଲିଙ୍କ କପି କରନ୍ତୁ</translation>
 <translation id="1845060436536902492">ChromeOS Flex, ChromeVoxରେ ସ୍କ୍ରିନ ରିଡର ମୁଖ୍ୟତଃ ଦୃଷ୍ଟିହୀନ କିମ୍ବା କମ ଦେଖାଯାଉଥିବା ଲୋକଙ୍କ ଦ୍ୱାରା ସ୍କ୍ରିନରେ ଡିସପ୍ଲେ କରାଯାଇଥିବା ଟେକ୍ସଟକୁ ସ୍ପିଚ ସିନ୍ଥେସାଇଜର ବା ବ୍ରେଲି ଡିସପ୍ଲେ ମାଧ୍ୟମରେ ପଢ଼ିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଏ। ChromeVox ଚାଲୁ କରିବା ପାଇଁ ସ୍ପେସ ବାରକୁ ଦବାନ୍ତୁ। ChromeVox ସକ୍ରିୟ ହେଲେ ଏହା ବିଷୟରେ ଆପଣଙ୍କୁ ଏକ କୁଇକ ସୂଚନା ଦିଆଯିବ।</translation>
 <translation id="1845727111305721124">ସାଉଣ୍ଡ ଚଲାଇବାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" />କୁ ଚଲାଇବା ପାଇଁ Controlକୁ ଦବାଇ ଧରି କ୍ଲିକ୍ କରନ୍ତୁ</translation>
@@ -3156,6 +3157,7 @@
 <translation id="3251714896659475029">"Hey Google" କହି <ph name="SUPERVISED_USER_NAME" />କୁ Google Assistant ଆକ୍ସେସ୍ କରିବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="3251759466064201842">&lt;ସାର୍ଟିଫିକେଟ୍‍ର ଅଂଶ ନୁହେଁ&gt;</translation>
 <translation id="325238099842880997">ଆପଣଙ୍କ ପିଲାକୁ ଖେଳିବା, ଏକ୍ସପ୍ଲୋର୍ କରିବା ଏବଂ ଘରେ ସ୍କୁଲ କାର୍ଯ୍ୟ କରିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ ଡିଜିଟାଲ୍ ମୂଳ ନିୟମଗୁଡ଼ିକ ସେଟ୍ କରନ୍ତୁ</translation>
+<translation id="3253083398453405334">ଆପଣ ବିଜ୍ଞପ୍ତି ପାଇଲେ ସ୍କ୍ରିନ ଫ୍ଲାସ ହୁଏ</translation>
 <translation id="3253225298092156258">ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{ଏହି ଫାଇଲ କପି କରିବାକୁ <ph name="CLOUD_PROVIDER" />ରେ ସ୍ପେସ ଖାଲି କରନ୍ତୁ}other{ଏହି ଫାଇଲଗୁଡ଼ିକ କପି କରିବାକୁ <ph name="CLOUD_PROVIDER" />ରେ ସ୍ପେସ ଖାଲି କରନ୍ତୁ}}</translation>
 <translation id="3253448572569133955">ଅଜଣା ଆକାଉଣ୍ଟ</translation>
@@ -3652,6 +3654,7 @@
 <translation id="3621202678540785336">ଇନ୍‌ପୁଟ୍</translation>
 <translation id="3621807901162200696">ChromeOSର ଫିଚରଗୁଡ଼ିକ ଏବଂ ପରଫରମାନ୍ସକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{ଏକ ଆପ୍}other{#ଟି ଆପ୍}}</translation>
+<translation id="3622820753353315928">ଫ୍ଲାସ ସ୍କ୍ରିନର ରଙ୍ଗ</translation>
 <translation id="362333465072914957">ଏକ ସାର୍ଟିଫିକେଟ୍ ଜାରି କରିବାକୁ CA ପାଇଁ ଅପେକ୍ଷା କରାଯାଉଛି</translation>
 <translation id="3623598555687153298">ଏହା ଡିସପ୍ଲେ ହୋଇଥିବା ସାଇଟଗୁଡ଼ିକ ଦ୍ୱାରା ଷ୍ଟୋର କରାଯାଇଥିବା <ph name="TOTAL_USAGE" /> ଡାଟାକୁ ଡିଲିଟ କରିଦେବ</translation>
 <translation id="3624567683873126087">ଡିଭାଇସ୍ ଅନ୍‌ଲକ୍ କରନ୍ତୁ ଏବଂ Google ଆକାଉଣ୍ଟକୁ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
@@ -7150,6 +7153,7 @@
 <translation id="6197128521826316819">ଏହି ପୃଷ୍ଠା ପାଇଁ QR କୋଡ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6198223452299275399">ପୃଷ୍ଠାଗୁଡ଼ିକ ମଧ୍ୟରେ ସ୍ୱାଇପ କରନ୍ତୁ</translation>
 <translation id="6198252989419008588">PIN ବଦଳାନ୍ତୁ</translation>
+<translation id="61988015556954366">ସ୍କ୍ରିନ ଫ୍ଲାସ</translation>
 <translation id="6200047250927636406">ଫାଇଲକୁ ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="6200151268994853226">ଏକ୍ସଟେନସନକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6201608810045805374">ଏହି ଆକାଉଣ୍ଟକୁ କାଢ଼ିବେ?</translation>
@@ -7507,6 +7511,7 @@
 <translation id="6468773105221177474"><ph name="FILE_COUNT" />ଟି ଫାଇଲ୍</translation>
 <translation id="6469557521904094793">ସେଲ୍ୟୁଲାର୍ ନେଟୱାର୍କ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="6469702164109431067">ପାସୱାର୍ଡ ଏବଂ ପାସକୀଗୁଡ଼ିକ</translation>
+<translation id="6470120577693311302">ଫ୍ଲାସ ବିଜ୍ଞପ୍ତି</translation>
 <translation id="6470823736074966819">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="6472893788822429178">ମୂଳ ବଟନ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="6473315466413288899">ଏକ ବିକଳ୍ପ ଚୟନ କରନ୍ତୁ</translation>
@@ -7941,6 +7946,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6790820461102226165">ଲୋକଙ୍କୁ ଯୋଗ କରନ୍ତୁ...</translation>
 <translation id="6793610798874309813">ଆପଣଙ୍କ PIN 4 କିମ୍ବା ଅଧିକ କେରେକ୍ଟରର ହୋଇପାରିବ</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> କ୍ଲିପବୋର୍ଡକୁ କପି କରାଯାଇଛି</translation>
 <translation id="6794511157503068">ଯଦି <ph name="APP_NAME" /> ପାଇଁ ଆପଣଙ୍କ ପାସକୀ ଏକ USB ସୁରକ୍ଷା କୀ'ରେ ଅଛି, ତେବେ ବର୍ତ୍ତମାନ ଏହାକୁ ଇନସାର୍ଟ କରି ସ୍ପର୍ଶ କରନ୍ତୁ</translation>
 <translation id="679486139907144816">ଏକ ପାସକୀ ମାଧ୍ୟମରେ ଏହି ସାଇଟରେ ସାଇନ ଇନ କରିବାକୁ ଆପଣ ସେଟିଂସରେ Windows Helloକୁ ଚାଲୁ କରିବା ଆବଶ୍ୟକ। ତା'ପରେ ଏହି ସାଇଟକୁ ଫେରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6795371939514004514">ସ୍ୱଚାଳିତ-ସ୍କାନ ଆପଣଙ୍କୁ ସ୍ୱଚାଳିତ ଭାବେ ସ୍କ୍ରିନରେ ଥିବା ଆଇଟମଗୁଡ଼ିକ ମଧ୍ୟରେ ମୁଭ କରିବାକୁ ଦିଏ। ଯେତେବେଳେ କୌଣସି ଆଇଟମକୁ ହାଇଲାଇଟ କରାଯାଏ, ଏହାକୁ ସକ୍ରିୟ କରିବା ପାଇଁ "ଚୟନ କରନ୍ତୁ"କୁ ଦବାନ୍ତୁ।</translation>

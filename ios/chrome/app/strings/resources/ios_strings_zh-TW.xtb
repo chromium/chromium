@@ -935,6 +935,7 @@
 <translation id="556042886152191864">按鈕</translation>
 <translation id="5572648434713976849">你會在網址列取得更貼近需求的建議</translation>
 <translation id="5572684875078967866">資訊儲存空間</translation>
+<translation id="5585019845078534178">資訊卡</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{追蹤這個包裹}other{追蹤所有包裹}}</translation>
 <translation id="5597915316964418992">開啟分頁方格</translation>
 <translation id="560322036295180549">已由貴機構停用</translation>
@@ -1127,7 +1128,6 @@
 <translation id="6445981559479772097">訊息已送出。</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6449554712554071184">這項操作會將群組從裝置中永久刪除。</translation>
-<translation id="6453018583485750254">未曾執行過檢查。</translation>
 <translation id="6459307836338400162">如需更多有關隱私權、安全性和資料收集的設定，請參閱 <ph name="BEGIN_LINK" />Google Sync<ph name="END_LINK" /> 和 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="6459411599807878608">已隱藏詳細資料</translation>
 <translation id="646394917185284261">檔案</translation>
@@ -1631,7 +1631,6 @@
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8825562130641217944">取得書籤、密碼等內容。</translation>
 <translation id="882557203579758546">在網頁中搜尋…</translation>
-<translation id="8838250347763484641">你可以將網址列放在頂端或移至底部，享受量身打造的瀏覽體驗。</translation>
 <translation id="8840513115188359703">您不會因此登出 Google 帳戶。</translation>
 <translation id="8843129975935593190">貴機構對你能同步處理的內容設有限制。</translation>
 <translation id="8849001918648564819">隱藏</translation>

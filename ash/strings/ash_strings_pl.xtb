@@ -999,7 +999,6 @@ Połączono 1 urządzenie.</translation>
 <translation id="4544483149666270818">Wybierz okno, które chcesz nagrać</translation>
 <translation id="4545950850562423083">Zapisz bieżącą stronę jako zakładkę</translation>
 <translation id="4548482551627849548">Przenieś aktywne okno na biurko po lewej</translation>
-<translation id="4549853322523631092">Nie znaleziono wyników.</translation>
 <translation id="4552748006424994716">Aby uniknąć echa, możesz słuchać dźwięku z mikrofonu tylko przez słuchawki przewodowe.</translation>
 <translation id="4560576029703263363">Włączono</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1796,6 +1795,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="7302889331339392448">Napisy na żywo są wyłączone.</translation>
 <translation id="7303365578352795231">Odpowiem na innym urządzeniu.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">Brak wyników</translation>
 <translation id="7312210124139670355">Administrator resetuje Twoją kartę eSIM. Może to potrwać kilka minut.</translation>
 <translation id="7312761820869643657">Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego</translation>
 <translation id="7313193732017069507">Otwórz aparat</translation>
@@ -1863,6 +1863,7 @@ Brak połączonych urządzeń.</translation>
 Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk zasilania.</translation>
 <translation id="7523420897035067483">Włącz funkcję Nie przeszkadzać podczas korzystania z trybu skupienia</translation>
 <translation id="7524043547948122239">Lista zadań Google</translation>
+<translation id="7525067979554623046">Utwórz</translation>
 <translation id="7526573455193969409">Sieć może być monitorowana</translation>
 <translation id="7536035074519304529">Adres IP: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Zaktualizuj okno po lewej stronie</translation>

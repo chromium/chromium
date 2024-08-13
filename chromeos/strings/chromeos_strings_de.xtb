@@ -462,6 +462,7 @@
 <translation id="346423161771747987">Strom</translation>
 <translation id="346539236881580388">Neu aufnehmen</translation>
 <translation id="3484914941826596830">Während die Firmware aktualisiert wird, darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Du kannst dieses Fenster minimieren. Die Aktualisierung dauert einige Minuten und dein externes Gerät funktioniert während dieser Zeit eventuell nicht.</translation>
+<translation id="3485555238092220889">Aktion für Bedienungshilfen</translation>
 <translation id="3486220673238053218">Definition</translation>
 <translation id="3487866404496702283">Feedback zur Mahi-Funktion</translation>
 <translation id="3488065109653206955">Teilweise aktiviert</translation>
@@ -637,6 +638,7 @@
 <translation id="4422041425070339732">Abwärtspfeil</translation>
 <translation id="4425149324548788773">Meine Ablage</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ist deaktiviert</translation>
+<translation id="4428840632568803690">Sprecher <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos-Ticket läuft bald ab</translation>
 <translation id="4431821876790500265">Bericht ansehen</translation>
 <translation id="4443192710976771874">roten</translation>
@@ -978,7 +980,6 @@
 <translation id="6231648282154119906">Verdächtige Dateien werden im Rahmen des von dir ausgewählten erweiterten Schutzes automatisch von Google Safe Browsing gescannt</translation>
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6234024205316847054">Umrisse anzeigen</translation>
-<translation id="6235460611964961764">Datennutzung manuell zurücksetzen</translation>
 <translation id="6243280677745499710">Derzeit festgelegt</translation>
 <translation id="6250316632541035980">Eier mit Speck</translation>
 <translation id="6265268291107409527">Die ausgewählte Taste ist „<ph name="KEYS" />“. <ph name="ASSIGN_INSTRUCTION" /></translation>
@@ -1298,6 +1299,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7802764839223122985">Keine Taste zugewiesen. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Nein danke</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7811024689617730980">Wähle einen Tag für die automatische Zurücksetzung aus (zwischen 1 und 31, beide inklusive)</translation>
 <translation id="7813073042185856802">Berg</translation>
 <translation id="7819857487979277519">PSK (WPA oder RSN)</translation>
 <translation id="7824219488248240180">Post-Impressionismus</translation>

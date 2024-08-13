@@ -157,7 +157,6 @@
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սեղմեք Tab, ապա սեղմեք Enter՝ Chrome-ի ձեր կարգավորումները կառավարելու համար</translation>
 <translation id="1264309058268477500">Այլ</translation>
 <translation id="1264974993859112054">Սպորտ</translation>
-<translation id="126728463333482584">Դուք առաջիններից եք, ով փորձարկում է Հետագծման արգելափակումը՝ գործառույթ, որը սահմանափակում է կայքերի կողմից երրորդ կողմերի քուքիների օգտագործումը՝ ձեր գործողությունները համացանցում հետագծելու նպատակով։</translation>
 <translation id="1268480293435976622">Envelope Chinese #7</translation>
 <translation id="1269516672602708785">Արագ ստեղծել կայք Google Կայքերում</translation>
 <translation id="1270328905573953738">Տեղափոխություններ</translation>
@@ -465,7 +464,6 @@
 <translation id="1812527064848182527">հորիզոնական</translation>
 <translation id="1812975699435941848">Կրթություն առողջապահության ոլորտում և բուժպատրաստություն</translation>
 <translation id="1816436748874040213">Կարող է խնդրել ոլորումով փոխել մասշտաբը</translation>
-<translation id="1816707915923025275">Մուտքագրեք @history՝ ձեր այցելությունների պատմության մեջ որոնելու համար</translation>
 <translation id="1817364650920811003">Դերը՝ Chrome-ի խորհուրդ։ Հատուկ գործառույթների կոճակ՝ «<ph name="CHROME_TIP" />»</translation>
 <translation id="1818522458013171885">Արգելաբացել</translation>
 <translation id="1818585559878922121">Վավերագրական ֆիլմեր</translation>
@@ -1049,6 +1047,7 @@
 <translation id="2954624054936281172">Վճարման պահված եղանակների աղյուսակ</translation>
 <translation id="295526156371527179">Զգուշացում. այս կանոնը չի միավորվել որպես բառարան, ինչպես նշված է կանոնում, քանի որ այն բառարան չէ:</translation>
 <translation id="2955913368246107853">Փակել որոնման գոտին</translation>
+<translation id="2956070106555335453">Ամփոփագիր</translation>
 <translation id="2958544468932521864">Կրիկետ</translation>
 <translation id="2959274854674276289">Բուսակերական խոհանոց</translation>
 <translation id="2961809451460302960">Կյանքի ապահովագրություն</translation>
@@ -1121,7 +1120,6 @@
 <translation id="3111155154146792758">Բուխարիներ և վառարաններ</translation>
 <translation id="3112892588078695695">Հեռախոսահամար՝ <ph name="PHONE" />։</translation>
 <translation id="3113284927548439113">Մինչև երրորդ հերթափոխը</translation>
-<translation id="3113930177999394798">Մուտքագրեք @history՝ ձեր այցելությունների պատմության մեջ որոնելու համար․ աշխատում է արհեստական բանականության տեխնոլոգիայով</translation>
 <translation id="3114040155724590991">Android համակարգը թարմացվում է
     Հավելվածի գործարկումը կարող է սովորականից երկար տևել։</translation>
 <translation id="3115363211799416195">{0,plural, =1{Ներբեռնե՞լ կոնֆիդենցիալ ֆայլը}one{Ներբեռնե՞լ կոնֆիդենցիալ ֆայլը}other{Ներբեռնե՞լ կոնֆիդենցիալ ֆայլերը}}</translation>
@@ -1292,7 +1290,6 @@
 <translation id="3414275587143250384">Քլաուդ քոմփյութինգ</translation>
 <translation id="3414952576877147120">Չափսը՝</translation>
 <translation id="341513675006332771">«Խաղալ Chrome Dino խաղը» կոճակ․ ակտիվացրեք՝ Chrome-ում Dino Run խաղը խաղալու համար</translation>
-<translation id="3415471717466570460">Ձեր որոնման հարցումները, լավագույն համընկնումները և գտնված էջերի բովանդակությունը կուղարկվեն Google-ին և կարող են դիտվել մասնագետների կողմից՝ գործառույթը բարելավելու համար։ Սա փորձնական գործառույթ է, և երբեմն կարող է սխալներով աշխատել։</translation>
 <translation id="3422248202833853650">Փակեք մյուս ծրագրերը՝ տարածք ազատելու համար:</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" />-ը ներկայումս անհասանելի է:</translation>
 <translation id="3423742043356668186">Նշված է համակարգի կողմից</translation>
@@ -1573,6 +1570,7 @@
 <translation id="388632593194507180">Միացումը վերահսկվում է</translation>
 <translation id="3886948180919384617">Շեղջիչ 3</translation>
 <translation id="3890664840433101773">Ավելացրեք էլ․ հասցե</translation>
+<translation id="3891414008432200754">Գին</translation>
 <translation id="3897092660631435901">Ընտրացանկ</translation>
 <translation id="3901925938762663762">Քարտի ժամկետը սպառվել է</translation>
 <translation id="390391808978419508">Բացման ժամանակը սպառվել է</translation>
@@ -1712,7 +1710,6 @@
 <translation id="4177501066905053472">Գովազդի թեմաներ</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Այլևս չհետագծել գինը</translation>
-<translation id="4190446002599583608">ԱԲ-ի միջոցով որոնում այցելությունների պատմությունում</translation>
 <translation id="4191334393248735295">Երկարություն</translation>
 <translation id="4195459680867822611">«Տեսնել Chrome-ին առնչվող խորհուրդներ» կոճակ․ ակտիվացրեք՝ Chrome-ի գործառույթների մասին տեղեկանալու համար</translation>
 <translation id="4195643157523330669">Բացել նոր ներդիրով</translation>
@@ -1756,7 +1753,6 @@
 <translation id="4235360514405112390">Վավեր</translation>
 <translation id="4239799716689808527">Պիտակներ</translation>
 <translation id="4242380780309416996">Ծրար (բարձր խտությամբ)</translation>
-<translation id="4242981939686657948">Միացրեք կարգավորումը՝ այցելությունների պատմությունում ավելի արդյունավետորեն տեղեկություններ որոնելու համար</translation>
 <translation id="4244926541863471678">Թաղանթ</translation>
 <translation id="4246517972543675653">Ուսում արտասահմանում</translation>
 <translation id="4250431568374086873">Կայքին կապակցումը լիարժեք պաշտպանված չէ</translation>
@@ -1900,7 +1896,6 @@
 <translation id="4521280267704259211">Envelope Monarch</translation>
 <translation id="4521916730539354575">Ձախ կողմի դարակ</translation>
 <translation id="4522570452068850558">Մանրամասներ</translation>
-<translation id="4522821696628398940">Պահե՞լ IBAN-ը Google հաշվում</translation>
 <translation id="4523643381056109546">Ցուցանակներ</translation>
 <translation id="4524138615196389145">Այսուհետ ավելի արագ հաստատեք ձեր քարտերը WebAuthn-ի միջոցով</translation>
 <translation id="45243788195988825">Արգելափակել «<ph name="TOPIC" />» թեման</translation>
@@ -1974,7 +1969,6 @@
 <translation id="4691093235373904540">Տանիքածածկում</translation>
 <translation id="4692623383562244444">Որոնիչներ</translation>
 <translation id="4698692901173737941">Մարտական սպորտաձևեր</translation>
-<translation id="4701307090948589984">Ընտրեք սարքը, որին ուզում եք հեռարձակել</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Կողմ</translation>
 <translation id="4702656508969495934">Կենդանի ենթագրերը տեսանելի են, նշելու համար օգտագործեք պատուհանների փոխարկիչը։</translation>
@@ -1994,6 +1988,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> լեզվի փաթեթը ներբեռնվում է... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> կայքն ուզում է օգտագործել ձեր սարքի տեղադրությունը</translation>
 <translation id="473414950835101501">Օգտագործել ձեր տեսախցիկները</translation>
+<translation id="4736732123074402682">Ստուգեք կապը և նորից փորձեք:</translation>
 <translation id="4736825316280949806">Վերագործարկեք Chromium-ը</translation>
 <translation id="4736934858538408121">Վիրտուալ քարտ</translation>
 <translation id="473775607612524610">Թարմացնել</translation>
@@ -2003,6 +1998,7 @@
 <translation id="4744514002166662487">Ստեղծել ներկայացում</translation>
 <translation id="4744603770635761495">Մշակվող ֆայլի ուղին</translation>
 <translation id="4749011317274908093">Դուք ինկոգնիտո ռեժիմում եք</translation>
+<translation id="4750394297954878236">Առաջարկներ</translation>
 <translation id="4750671009706599284">այս հեռախոսը</translation>
 <translation id="4750917950439032686">Այս կայքի միջոցով ուղարկվող տեղեկությունները (օր.` գաղտնաբառերը կամ վարկային քարտի տվյալները) պաշտպանված են:</translation>
 <translation id="4751249061288707459">Համաձայնության վերջին թարմացումը՝</translation>
@@ -2661,6 +2657,7 @@
 <translation id="6000528814684428358">Հարդ ռոք և պրոգրեսիվ ռոք</translation>
 <translation id="6000758707621254961">«<ph name="SEARCH_TEXT" />»-ի որոնման <ph name="RESULT_COUNT" /> արդյունք</translation>
 <translation id="6002122790816966947">Ձեր սարքերը</translation>
+<translation id="6002968396561884726">Վերջին դիտումները</translation>
 <translation id="6005659677094197001">Շարունակական</translation>
 <translation id="6005765687956866568">Ինքնալրացված տեղեկությունները ջնջվել են ձևից</translation>
 <translation id="6006365096047131769">3 x 5 դյույմ</translation>
@@ -2827,7 +2824,6 @@
 <translation id="6300452962057769623">{0,plural, =0{Սարքը հիմա կվերագործարկվի}=1{Սարքը կվերագործարկվի 1 վայրկյանից}one{Սարքը կվերագործարկվի # վայրկյանից}other{Սարքը կվերագործարկվի # վայրկյանից}}</translation>
 <translation id="6301104306974789820">Ստանալ ծանուցումներ գների հետագծման մասին</translation>
 <translation id="6302546952464230349">Ցուցադրել «<ph name="PERMISSION_NAME" />» թույլտվության մանրամասները</translation>
-<translation id="6302661287897119265">Զտել</translation>
 <translation id="6304398603974202180">Մուլտիմեդիա ծրագրեր</translation>
 <translation id="6305205051461490394"><ph name="URL" />-ն անհասանելի է:</translation>
 <translation id="6306713302480826305">Հասցեն կհեռացվի այս և ձեր մյուս սարքերից, որոնցում մտել եք հաշիվ</translation>
@@ -3235,7 +3231,6 @@
 <translation id="70705239631109039">Ձեր կապը լիարժեք պաշտպանված չէ</translation>
 <translation id="7075452647191940183">Հարցումը չափազանց մեծ է</translation>
 <translation id="7078665357168027058">RA3</translation>
-<translation id="7079138647457502205">Համացանցի ավելի անվտանգ օգտագործում</translation>
 <translation id="7081311540357715807">Մթերային խանութներ</translation>
 <translation id="7083258188081898530">Դարակ 9</translation>
 <translation id="7086090958708083563">Օգտատերը վերբեռնման հայտ է ուղարկել</translation>
@@ -3419,6 +3414,7 @@
       &lt;li&gt;Այցելեք &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome-ի օգնության կենտրոն&lt;/a&gt; և իմացեք՝ ինչպես ծրագիրն ընդմիշտ հեռացնել համակարգչից։
       &lt;/ol&gt;</translation>
 <translation id="7408613996403626141">Խաղալիքներ</translation>
+<translation id="7410852728357935715">Հեռարձակել սարքին</translation>
 <translation id="741204030948306876">Լավ</translation>
 <translation id="7416351320495623771">Գաղտնաբառերի կառավարում…</translation>
 <translation id="7416898721136759658">Դրամաշնորհներ, կրթաթոշակներ և ֆինանսական օգնություն</translation>
@@ -3699,6 +3695,7 @@
 <translation id="7888575728750733395">Գույները վերահաշվելու եղանակ տպման համար</translation>
 <translation id="7894280532028510793">Եթե տառասխալ չկա, <ph name="BEGIN_LINK" />գործարկեք ցանցի դիագնոստիկան<ph name="END_LINK" />։</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 դյմ</translation>
+<translation id="7905064834449738336">Երբ գաղտնաբառ եք օգտագործում, Chromium-ը զգուշացնում է ձեզ, եթե այն հրապարակվել է համացանցում։ Այդ ժամանակ ձեր գաղտնաբառերը և օգտանունները գաղտնագրվում են, այնպես որ ոչ ոք, այդ թվում՝ Google-ը, չի կարող կարդալ դրանք։</translation>
 <translation id="7908648876066812348">Վիրտուալ քարտը միացվում է</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Կարգավորումներում Chrome-ի անվտանգության ստուգման էջ անցնելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="791107458486222637">Արդյունքը վերարկվում է</translation>
@@ -4066,7 +4063,6 @@
 <translation id="8555010941760982128">Օգտագործեք այս կոդը վճարման ժամանակ</translation>
 <translation id="8556297087315686325">Ցանցի մոնիտորինգ և կառավարում</translation>
 <translation id="8557066899867184262">CVC կոդը գրված է քարտի հակառակ կողմում։</translation>
-<translation id="8557412555245662180">Իմանալ ավելին Հետագծման արգելափակման մասին</translation>
 <translation id="8558347880669160417">Տրվել է խոսափողն ու տեսախցիկն օգտագործելու մեկանգամյա թույլտվություն</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />-ի հետ կապակցում չի կարող հաստատվել, քանի որ ձեր սարքի ամսաթիվը և ժամը (<ph name="DATE_AND_TIME" />) սխալ է:</translation>
 <translation id="8564182942834072828">Մի քանի փաստաթուղթ/չառանձնացված պատճեններ</translation>

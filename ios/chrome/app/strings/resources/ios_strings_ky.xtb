@@ -408,6 +408,7 @@
 <translation id="2975121486251958312">Жашыруун режим гана жеткиликтүү</translation>
 <translation id="2982481275546140226">Маалыматты өчүрүү</translation>
 <translation id="298306318844797842">Төлөм ыкмасын кошуу…</translation>
+<translation id="2984370252102312100">Өтмөктөрдү жана өтмөктөрдүн топторун ачуу</translation>
 <translation id="2989805286512600854">Жаңы өтмөктө ачуу</translation>
 <translation id="300455800299409273">"Бул өтмөк менен улантуу" параметрин жашырыңыз</translation>
 <translation id="3010025794097054078">Маалыматтарды бекем сактап, кооптуу вебсайттардан жана башкалардан коргонуңуз.</translation>
@@ -896,6 +897,7 @@
 <translation id="5415289094036440596">Киргизүүчү ачкычтарды бөлүшүүгө болбойт</translation>
 <translation id="5416022985862681400">Акыркы 7 күндө</translation>
 <translation id="5416455648658732408">Өтмөктөр тобуна жылдыруу</translation>
+<translation id="5419613306346207284">Бардык түзмөктөрдөгү өтмөктөрдүн топтору</translation>
 <translation id="5423269318075950257">Баага көз салуу</translation>
 <translation id="5431252637281434233">Аккаунтуңуздан чыгасыз</translation>
 <translation id="543338862236136125">Сырсөздү түзөтүү</translation>
@@ -933,6 +935,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="556042886152191864">Баскыч</translation>
 <translation id="5572648434713976849">Дарек тилкесинде жакшыртылган сунуштарды аласыз</translation>
 <translation id="5572684875078967866">Маалымат сактагыч</translation>
+<translation id="5585019845078534178">Карточкалар</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Бул таңгакка көз салуу}other{Бардык таңгактарга көз салуу}}</translation>
 <translation id="5597915316964418992">Өтмөк торчосун ачуу</translation>
 <translation id="560322036295180549">Уюмуңуз тарабынан өчүрүлгөн</translation>
@@ -1125,7 +1128,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6445981559479772097">Билдирүү жөнөтүлдү.</translation>
 <translation id="6447842834002726250">Кукилер</translation>
 <translation id="6449554712554071184">Бул топ ушуну менен бул түзмөктөн биротоло өчүрүлөт.</translation>
-<translation id="6453018583485750254">Эч качан текшерилбейт.</translation>
 <translation id="6459307836338400162">Купуялыкка, коопсуздукка жана дайындарды чогултууга байланыштуу дагы башка параметрлерди көрүү үчүн <ph name="BEGIN_LINK" />Шайкештирүү<ph name="END_LINK" /> жана <ph name="BEGIN_LINK" />Google кызматтары<ph name="END_LINK" /> бөлүмүнө өтүңүз.</translation>
 <translation id="6459411599807878608">Чоо-жайы жашырылды</translation>
 <translation id="646394917185284261">Файлдар</translation>
@@ -1629,7 +1631,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8820817407110198400">Кыстармалар</translation>
 <translation id="8825562130641217944">Кыстармаларды, сырсөздөрдү жана башкаларды алыңыз</translation>
 <translation id="882557203579758546">Барактан табуу…</translation>
-<translation id="8838250347763484641">Ыңгайлуу карап чыгуу үчүн дарек тилкесин өйдө же ылдый жылдырыңыз.</translation>
 <translation id="8840513115188359703">Google Каттоо эсебиңизден чыгарылбайсыз.</translation>
 <translation id="8843129975935593190">Шайкештире алган нерселер уюмуңуз тарабынан чектелген.</translation>
 <translation id="8849001918648564819">Жашырылды</translation>

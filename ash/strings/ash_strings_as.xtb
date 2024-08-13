@@ -34,6 +34,7 @@
 <translation id="1104621072296271835">আপোনাৰ ডিভাইচসমূহে একেলগে আৰু ভালকৈ কাম কৰে</translation>
 <translation id="1111021433905331574">আপুনি ছেটিং &gt; <ph name="APP_TITLE" />ত আপোনাৰ কীব’ৰ্ডৰ পিছফালৰ পোহৰৰ ৰং সলনি কৰিব পাৰে</translation>
 <translation id="1117719261843403176">ম’বাইল ডেটা ট’গল কৰক। <ph name="STATE" />।</translation>
+<translation id="1122849163460178706">কেইটামান কৰি চাবলগীয়া কাম</translation>
 <translation id="112308213915226829">শ্বেল্ফ স্বয়ংক্রিয়ভাৱে লুকুৱাওক</translation>
 <translation id="1129383337808748948"><ph name="CONTENT_TITLE" /> ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="1142002900084379065">শেহতীয়া ফট’</translation>
@@ -902,6 +903,7 @@
 <translation id="4217571870635786043">শ্ৰুতলিপি</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ইনষ্টল কৰা এপ্‌, পজ কৰি থোৱা</translation>
 <translation id="4228078597006700451">নিয়ন্ত্ৰণসমূহ ছেট আপ কৰা হোৱা নাই</translation>
+<translation id="4230560241506423345">নতুন</translation>
 <translation id="4239069858505860023">জিপিআৰএছ</translation>
 <translation id="4240486403425279990">অৱলোকন ম’ড</translation>
 <translation id="4242533952199664413">ছেটিংসমূহ খোলক</translation>
@@ -997,7 +999,6 @@
 <translation id="4544483149666270818">ৰেকৰ্ড কৰিবলৈ এখন ৱিণ্ড’ বাছনি কৰক</translation>
 <translation id="4545950850562423083">বৰ্তমান পৃষ্ঠাটো বুকমাৰ্ক হিচাপে ছেভ কৰক</translation>
 <translation id="4548482551627849548">সক্ৰিয় ৱিণ্ড’ বাওঁফালৰ ডেস্কলৈ স্থানান্তৰ কৰক</translation>
-<translation id="4549853322523631092">কোনো ফলাফল পোৱা নগ’ল।</translation>
 <translation id="4552748006424994716">প্ৰতিধ্বনি হোৱাটো এৰাই চলিবলৈ, আপুনি নিজৰ মাইকটোত কেৱল তাঁৰযুক্ত হেডফ’নেৰে শুনিব পাৰে।</translation>
 <translation id="4560576029703263363">অন আছে</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1795,6 +1796,7 @@
 <translation id="7302889331339392448">লাইভ কেপশ্বন অফ আছে।</translation>
 <translation id="7303365578352795231">অন্য এটা ডিভাইচত উত্তৰ দি থকা হৈছে।</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">কোনো ফলাফল পোৱা নগ’ল</translation>
 <translation id="7312210124139670355">আপোনাৰ প্ৰশাসকে আপোনাৰ ই-ছিম ৰিছেট কৰি আছে। এই কামটোৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে।</translation>
 <translation id="7312761820869643657">পূৰ্বৱৰ্তী সংস্কৰণলৈ ডিভাইচটো আপডে’ট কৰক</translation>
 <translation id="7313193732017069507">কেমেৰা বিস্তাৰ কৰক</translation>
@@ -1862,6 +1864,7 @@
 ডিভাইচটো শ্বাট ডাউন কৰিবলৈ, ডিভাইচটোত থকা পাৱাৰ বুটামটো পুনৰ টিপি কিছুসময় ধৰি থাকক।</translation>
 <translation id="7523420897035067483">ফ’কাছত থাকোঁতে অসুবিধা নিদিব ম’ডটো সক্ষম কৰক</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7525067979554623046">সৃষ্টি কৰক</translation>
 <translation id="7526573455193969409">নেটৱৰ্ক নিৰীক্ষণ কৰা হ’ব পাৰে</translation>
 <translation id="7536035074519304529">আইপি ঠিকনা: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">বাওঁফালৰ ৱিণ্ড’খন আপডে’ট কৰক</translation>

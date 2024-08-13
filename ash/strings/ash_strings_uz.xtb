@@ -996,7 +996,6 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4544483149666270818">Yozib olish uchun oynani tanlang</translation>
 <translation id="4545950850562423083">Joriy sahifani bukmark shaklida saqlash</translation>
 <translation id="4548482551627849548">Faol oynani ish stolining chap tomoniga joylash</translation>
-<translation id="4549853322523631092">Hech narsa topilmadi.</translation>
 <translation id="4552748006424994716">Aks sado eshitilmasligi uchun faqatgina simli quloqlik mikrofonidan tinglang.</translation>
 <translation id="4560576029703263363">Yoniq</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1792,6 +1791,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7302889331339392448">Jonli izoh yoqilmagan.</translation>
 <translation id="7303365578352795231">Boshqa qurilmada javob berilmoqda</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">Hech narsa topilmadi</translation>
 <translation id="7312210124139670355">Administrator eSIM kartangizni tiklamoqda. Bu bir necha daqiqa vaqt olishi mumkin.</translation>
 <translation id="7312761820869643657">Qurilma tizimini avvalgi versiyaga qaytarish</translation>
 <translation id="7313193732017069507">Kamera tugmasini chiqarish</translation>
@@ -1859,6 +1859,7 @@ yangi oʻrnatilgan</translation>
 Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translation>
 <translation id="7523420897035067483">Fokus rejimida Bezovta qilinmasin</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7525067979554623046">Yaratish</translation>
 <translation id="7526573455193969409">Tarmoq kuzatilishi mumkin</translation>
 <translation id="7536035074519304529">IP manzil: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Chap oynani yangilash</translation>

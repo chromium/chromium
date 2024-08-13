@@ -668,6 +668,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3439896670700055005">Volver a cargar la página actual sin utilizar contenido almacenado en caché</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">Personaliza tu ratón</translation>
+<translation id="3444385531800624797">Cargando resultados</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3454555520521576458">Tamaño ajustable</translation>
@@ -997,7 +998,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4544483149666270818">Selecciona una ventana para grabar</translation>
 <translation id="4545950850562423083">Guardar página actual como marcador</translation>
 <translation id="4548482551627849548">Mover ventana activa al escritorio de la izquierda</translation>
-<translation id="4549853322523631092">No se han encontrado resultados.</translation>
 <translation id="4552748006424994716">Para evitar el eco, puedes escuchar tu micrófono solo usando los auriculares con cable.</translation>
 <translation id="4560576029703263363">Activado</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1213,6 +1213,7 @@ También puedes usar la combinación de teclas. Primero, selecciona el texto y, 
 <translation id="5253783950165989294">Conectado a un dispositivo llamado <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
 <translation id="5258528442992323769">No hay escritorios guardados</translation>
 <translation id="5260676007519551770">Escritorio 4</translation>
+<translation id="5265391159779542051">Resultados cargados</translation>
 <translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">Activar o desactivar herramientas del lápiz óptico</translation>
 <translation id="5278086053818066789">Activar/Desactivar ChromeVox (mensajes de voz)</translation>
@@ -1508,6 +1509,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6210042900243040400">Conectar dispositivo <ph name="NAME" /> guardado anteriormente en <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Hacer captura o grabación de pantalla parcial</translation>
 <translation id="621606890568890214">Desplegar Google Classroom</translation>
+<translation id="6216759484154215561">Enlace con más información abierto en el navegador</translation>
 <translation id="6220928844947387476">Ahora puedes grabarte a ti mismo y tu pantalla al mismo tiempo</translation>
 <translation id="622484624075952240">Flecha hacia abajo</translation>
 <translation id="6228457605945141550">Reducir el brillo</translation>
@@ -1793,6 +1795,7 @@ Nueva instalación</translation>
 <translation id="7302889331339392448">Subtítulos automáticos desactivados.</translation>
 <translation id="7303365578352795231">Se está respondiendo en otro dispositivo.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">No se han encontrado resultados</translation>
 <translation id="7312210124139670355">Tu administrador está restableciendo tu eSIM. Este proceso puede tardar unos minutos.</translation>
 <translation id="7312761820869643657">Restaura la versión anterior en el dispositivo</translation>
 <translation id="7313193732017069507">Ampliar cámara</translation>
@@ -1860,6 +1863,7 @@ Nueva instalación</translation>
 Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.</translation>
 <translation id="7523420897035067483">Habilitar No molestar cuando esté activado el modo Sin distracciones</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7525067979554623046">Crear</translation>
 <translation id="7526573455193969409">Es posible que la red esté supervisada</translation>
 <translation id="7536035074519304529">Dirección IP: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Actualizar la ventana de la izquierda</translation>
@@ -2218,6 +2222,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">Desplazarse hacia adelante entre la esquina inferior derecha, el menú de aplicaciones, la barra de direcciones, la barra de marcadores, el sitio web que está abierto y las descargas</translation>
 <translation id="8792626944327216835">micrófono</translation>
+<translation id="8797381270745758905">Enlace de reintentar activado</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Carpeta <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Ayuda"</translation>

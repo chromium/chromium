@@ -998,7 +998,6 @@
 <translation id="4544483149666270818">Изаберите прозор за снимање</translation>
 <translation id="4545950850562423083">Сачувај актуелну страницу као обележивач</translation>
 <translation id="4548482551627849548">Премести активни прозор на радну површину на левој страни</translation>
-<translation id="4549853322523631092">Није пронађен ниједан резултат.</translation>
 <translation id="4552748006424994716">Да бисте избегли ехо, микрофон можете да слушате само помоћу жичаних слушалица.</translation>
 <translation id="4560576029703263363">Укључено</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1797,6 +1796,7 @@
 <translation id="7302889331339392448">Титл уживо је искључен.</translation>
 <translation id="7303365578352795231">Одговор се даје на другом уређају.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">Није пронађен ниједан резултат</translation>
 <translation id="7312210124139670355">Администратор ресетује eSIM. То може да потраје неколико минута.</translation>
 <translation id="7312761820869643657">Промените верзију уређаја у претходну верзију</translation>
 <translation id="7313193732017069507">Проширите камеру</translation>
@@ -1864,6 +1864,7 @@
 Да бисте искључили уређај, поново притисните и задржите дугме за укључивање на уређају.</translation>
 <translation id="7523420897035067483">Омогућите функцију Не узнемиравај док сам у фокусу</translation>
 <translation id="7524043547948122239">Google задаци</translation>
+<translation id="7525067979554623046">Направи</translation>
 <translation id="7526573455193969409">Мрежа се можда надгледа</translation>
 <translation id="7536035074519304529">IP адреса: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Ажурирај леви прозор</translation>

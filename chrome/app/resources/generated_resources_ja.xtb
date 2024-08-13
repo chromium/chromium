@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">マイクとカメラを使用する</translation>
 <translation id="1005333234656240382">ADB デバッグを有効にしますか？</translation>
 <translation id="1005671386794704751">ローズ</translation>
+<translation id="1005919400326853998">新しいダイアログで <ph name="CERT_NAME" /> の証明書の詳細を表示します</translation>
 <translation id="1006033052970139968">マイクへのアクセス権を持つアプリとウェブサイト、システム サービスに対して、マイクへのアクセスが許可されています</translation>
 <translation id="1006873397406093306">この拡張機能は、サイト上でユーザー自身のデータを読み取りおよび変更できます。ユーザーは、拡張機能がアクセスできるサイトを管理することができます。</translation>
 <translation id="1007057452468855774">Google Play ストアを有効にする</translation>
@@ -2735,6 +2736,7 @@
 <translation id="2926708162326352948">アップロードした画像に合わせてテーマが更新されました</translation>
 <translation id="2927017729816812676">キャッシュ ストレージ</translation>
 <translation id="2928795416630981206">カメラ位置の追跡を許可するサイト</translation>
+<translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome で 1 件のサイトの権限を削除しました}other{Chrome で {NUM_SITES} 件のサイトの権限を削除しました}}</translation>
 <translation id="2931157624143513983">印刷可能領域に合わせる</translation>
 <translation id="2931342457001070961">マイクが接続されていません</translation>
 <translation id="2932085390869194046">パスワードを自動生成...</translation>
@@ -3181,6 +3183,7 @@
 <translation id="3269093882174072735">画像を読み込む</translation>
 <translation id="326911502853238749"><ph name="MODULE_NAME" />を表示しない</translation>
 <translation id="3269175001434213183">他のデバイスで使用できるように同期をオンにしてデータをバックアップ</translation>
+<translation id="3269209112443570745">New! 画面に表示されている内容を簡単に検索</translation>
 <translation id="3269612321104318480">明るい青緑と白</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ファイル}other{# 件のファイル}}</translation>
 <translation id="326999365752735949">差分のダウンロード中</translation>
@@ -3650,6 +3653,7 @@
 <translation id="3621202678540785336">入力</translation>
 <translation id="3621807901162200696">Chrome OS の機能とパフォーマンスの改善に協力する</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{アプリ}other{# 件のアプリ}}</translation>
+<translation id="3622716124581627104">ものや場所を特定したり、テキストをコピーまたは翻訳したりできます。Google レンズを使用すると、ページのスクリーンショットが Google に送信されます。<ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">画面の点滅の色</translation>
 <translation id="362333465072914957">CA による証明書の発行を待機しています</translation>
 <translation id="3623598555687153298">表示中のサイトにより保存された <ph name="TOTAL_USAGE" /> のデータが削除されます</translation>
@@ -4061,6 +4065,7 @@
 <translation id="3894983081771074056">キーボードとマウスの動作、言語設定など</translation>
 <translation id="3895076768659607631">検索エンジンを管理(&amp;M)...</translation>
 <translation id="3895090224522145010">Kerberos ユーザー名</translation>
+<translation id="3895097816015686240">前回使用していたウィンドウやタブが開かれ、すぐに作業の続きに取りかかれます</translation>
 <translation id="389521680295183045">サイトがデバイスのアクティブ状態の検出を要求できるようにする</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{画像}other{# 件の画像}}</translation>
 <translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> はゲームに適した設計となっています。次に表示される「使い方・ヒント」アプリでは、何百種類もの最新ゲームにアクセスでき、ゲームに関する特典やデバイスに付属のゲームをご覧いただけます。</translation>
@@ -5294,6 +5299,7 @@
 <translation id="4823484602432206655">ユーザー設定とデバイス設定の読み取りと変更</translation>
 <translation id="4824037980212326045">Linux のバックアップと復元</translation>
 <translation id="4824958205181053313">同期をキャンセルしますか？</translation>
+<translation id="4825462365587146530">Chrome Root Store の詳細を新しいタブで開きます。</translation>
 <translation id="4825532258163983651">パスキーを削除できません</translation>
 <translation id="4827134188176577524">Chrome Root Store には　Chrome Root Program が信頼する認証局の証明書が含まれ、継続的に順次審査されます。</translation>
 <translation id="4827283332383516812">カードを削除</translation>
@@ -11004,6 +11010,7 @@
 <translation id="8991766915726096402">ローカルデータの復元</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - メモリ使用量 - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> のパスワードを忘れた場合でも、ローカルデータを復元できます。Google アカウントにログインするか、アカウント復元を使用する必要があります。</translation>
+<translation id="8993198843374358393"><ph name="CERT_NAME" /> の証明書ハッシュをコピー</translation>
 <translation id="8993737615451556423">読み上げを早送り、巻き戻し、一時停止できる操作パネルを表示します</translation>
 <translation id="899384117894244799">制限付きユーザーの削除</translation>
 <translation id="8993853206419610596">すべてのリクエストを開く</translation>
@@ -11211,6 +11218,7 @@
 <translation id="9128317794749765148">セットアップを完了できませんでした</translation>
 <translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" /> の設定ページを開く</translation>
 <translation id="9128870381267983090">ネットワークに接続する</translation>
+<translation id="9129562557082598582"><ph name="CERT_GROUP" /> をすべてエクスポート</translation>
 <translation id="9130015405878219958">入力されたモードが無効です。</translation>
 <translation id="9130208109420587135">グループ名 <ph name="NAME" /> を編集</translation>
 <translation id="9130364135697530260">このサイトの埋め込みコンテンツでは、保存したあなたに関する情報を使用できます</translation>

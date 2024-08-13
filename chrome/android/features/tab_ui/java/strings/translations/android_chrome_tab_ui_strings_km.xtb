@@ -38,8 +38,10 @@
 <translation id="2662028055331606429">ការវាយតម្លៃដោយដាក់ផ្កាយ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">ចូលមើលគេហទំព័រ</translation>
 <translation id="2677748264148917807">ចាកចេញ</translation>
+<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{បានបញ្ចូល <ph name="ONE_ADDED" /> ផ្ទាំង, បានប្ដូរ <ph name="ANY_CHANGED" /> ផ្ទាំង, បានបិទ <ph name="ANY_CLOSED" /> ផ្ទាំង}other{បានបញ្ចូល <ph name="MANY_ADDED" /> ផ្ទាំង, បានប្ដូរ <ph name="ANY_CHANGED" /> ផ្ទាំង, បានបិទ <ph name="ANY_CLOSED" /> ផ្ទាំង}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{បានបង្កើត <ph name="NUM_HOURS_ONE" /> ម៉ោងមុន}other{បានបង្កើត <ph name="NUM_HOURS_MANY" /> ម៉ោងមុន}}</translation>
 <translation id="2801787514987684416">មើលព័ត៌មានអំពីហាងឬ?</translation>
+<translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{បានបិទ <ph name="ONE_CLOSED" /> ផ្ទាំង}other{បានបិទ <ph name="MANY_CLOSED" /> ផ្ទាំង}}</translation>
 <translation id="2894757982205307093">ផ្ទាំងថ្មី​នៅក្នុងក្រុម</translation>
 <translation id="2928243913527329289">Google | អំពី​ហាងនេះ</translation>
 <translation id="2977480621796371840">លុបចេញ​ពីក្រុម</translation>
@@ -50,6 +52,7 @@
 <translation id="3052964831964880138">ធ្លាក់ថ្លៃ <ph name="PRICE_DROP" /> សម្រាប់ <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">រូបពណ៌​ក្រុមផ្ទាំង<ph name="COLOR_NAME" /></translation>
 <translation id="3194464645767632461">ការវាយតម្លៃដោយដាក់ផ្កាយ</translation>
+<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{បានបញ្ចូល <ph name="ONE_ADDED" /> ផ្ទាំង, បានប្ដូរ <ph name="ANY_CHANGED" /> ផ្ទាំង}other{បានបញ្ចូល <ph name="MANY_ADDED" /> ផ្ទាំង, បានប្ដូរ <ph name="ANY_CHANGED" /> ផ្ទាំង}}</translation>
 <translation id="3291470810748040983">អ្នកនឹងទទួលបាន​ការជូនដំណឹង នៅពេលមានតម្លៃទាបជាងមុននៅក្នុងផ្ទាំងដែលកំពុងបើក</translation>
 <translation id="3322827343001922122">បើក​ម៉ឺនុយ​សកម្មភាព​ក្រុមផ្ទាំង​សម្រាប់​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">ការណែនាំ៖ ផ្ទាំង <ph name="NUMBER_OF_TABS" /> ហាក់ដូចជាពាក់ព័ន្ធគ្នា។ បញ្ចូលផ្ទាំងទាំងនេះទៅក្នុងក្រុមឬ?</translation>
@@ -71,6 +74,7 @@
 <translation id="4159784952369912983">ស្វាយ</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{ពង្រីក​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលមាន <ph name="TABS_COUNT_ONE" /> ផ្ទាំង។}other{ពង្រីក​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលមាន <ph name="TABS_COUNT_MANY" /> ផ្ទាំង។}}</translation>
 <translation id="427987768447457592">ក្រុមផ្ទាំងថ្មី</translation>
+<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{បានប្ដូរ <ph name="ONE_CHANGED" /> ផ្ទាំង, បានបិទ <ph name="ANY_CLOSED" /> ផ្ទាំង}other{បានប្ដូរ <ph name="MANY_CHANGED" /> ផ្ទាំង, បានបិទ <ph name="ANY_CLOSED" /> ផ្ទាំង}}</translation>
 <translation id="4371591986692297148">អសកម្ម​</translation>
 <translation id="4460014764210899310">បំបែក​ក្រុម</translation>
 <translation id="4590027107044272416">ឥឡូវនេះ អ្នកអាចបើកផ្ទាំងថ្មីនៅទីនេះ</translation>
@@ -92,6 +96,7 @@
 <translation id="5076161749301278626">មើលការវាយតម្លៃហាងឬ?</translation>
 <translation id="5082793167783849073">ប្រៀបធៀបទំព័រ​យ៉ាងរហ័សដោយ​ការបង្កើតក្រុម។ ដើម្បីចាប់ផ្ដើម សូមចុច​តំណឱ្យជាប់។</translation>
 <translation id="5094423602314093681">ដកផ្ទាំងចេញ និងលុបក្រុមឬ?</translation>
+<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{បាន​បញ្ចូល <ph name="ONE_ADDED" /> ផ្ទាំង}other{បាន​បញ្ចូល <ph name="MANY_ADDED" /> ផ្ទាំង}}</translation>
 <translation id="5161254044473106830">ត្រូវមានចំណងជើង</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{បិទ​ក្រុមផ្ទាំង​ដែលមាន <ph name="TABS_COUNT_ONE" /> ផ្ទាំង។}other{បិទ​ក្រុមផ្ទាំង​ដែលមាន <ph name="TABS_COUNT_MANY" /> ផ្ទាំង។}}</translation>
 <translation id="5339733443032484186">ផ្ទាំង​ចុងក្រោយ​របស់អ្នក</translation>
@@ -100,6 +105,7 @@
 <translation id="5494920125229734069">ជ្រើសរើសទាំងអស់</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{បិទ​ក្រុមផ្ទាំង​ដែលមាន <ph name="TABS_COUNT_ONE" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" />។}other{បិទ​ក្រុមផ្ទាំង​ដែលមាន <ph name="TABS_COUNT_MANY" /> ផ្ទាំង ពណ៌<ph name="COLOR_NAME" />។}}</translation>
 <translation id="5556417849629758491">មើលព័ត៌មានអំពីហាង ជម្រើសមាននៅជិតផ្នែកខាងលើអេក្រង់</translation>
+<translation id="5627941783489838464">មិនមានការធ្វើបច្ចុប្បន្នភាពផ្ទាំងទេ</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{ស្ដារផ្ទាំង}other{ស្ដារផ្ទាំង}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{តំណ <ph name="TABS_COUNT_ONE" /> ពី Chrome}other{តំណ <ph name="TABS_COUNT_MANY" /> ពី Chrome}}</translation>
 <translation id="575494663145460764">ទទួលបានការជូនដំណឹងអំពីការធ្លាក់ថ្លៃឬ?</translation>
@@ -124,6 +130,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ផ្លាស់ទី​ផ្ទាំង​ទៅ​ខាងឆ្វេង</translation>
 <translation id="6615455863669487791">បង្ហាញខ្ញុំ</translation>
+<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{បានប្ដូរ <ph name="ONE_CHANGED" /> ផ្ទាំង}other{បានប្ដូរ <ph name="MANY_CHANGED" /> ផ្ទាំង}}</translation>
 <translation id="6694634756612002311">គ្រប់គ្រង​ការចែករំលែក</translation>
 <translation id="6744956528665271406">កែ​ពណ៌​ក្រុម</translation>
 <translation id="6856809498882026482">លាក់មុខងារ​ជ្រើសរើសច្រើន</translation>
@@ -165,6 +172,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{បិទ​ផ្ទាំង​ដែលបាន​ជ្រើសរើស <ph name="TABS_COUNT_ONE" />}other{បិទ​ផ្ទាំង​ដែលបាន​ជ្រើសរើស <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="8398929769197326728">ថតថ្មី - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">ការកំណត់</translation>
+<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{បានបញ្ចូល <ph name="ONE_ADDED" /> ផ្ទាំង, បានបិទ <ph name="ANY_CLOSED" /> ផ្ទាំង}other{បានបញ្ចូល <ph name="MANY_ADDED" /> ផ្ទាំង, បានបិទ <ph name="ANY_CLOSED" /> ផ្ទាំង}}</translation>
 <translation id="8631711675211020168">អ្នក​គ្រប់គ្នានឹងបាត់បង់សិទ្ធិចូលប្រើក្រុមផ្ទាំង <ph name="GROUP_NAME" /> ភ្លាមៗ ហើយក្រុមផ្ទាំងនេះនឹងត្រូវបានលុបចេញពីឧបករណ៍ទាំងអស់</translation>
 <translation id="8633025649649592204">សកម្មភាព​ថ្មីៗ</translation>
 <translation id="870736955561925754">បិទផ្ទាំង និងលុបក្រុមឬ?</translation>

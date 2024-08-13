@@ -34,6 +34,7 @@
 <translation id="1104621072296271835">デバイスを連携させると活用の幅が広がります</translation>
 <translation id="1111021433905331574">[設定] &gt; [<ph name="APP_TITLE" />] でキーボードのバックライトの色を変更できます</translation>
 <translation id="1117719261843403176">モバイルデータのオンとオフを切り替える。<ph name="STATE" />。</translation>
+<translation id="1122849163460178706">次をお試しください</translation>
 <translation id="112308213915226829">シェルフを自動的に非表示にする</translation>
 <translation id="1129383337808748948"><ph name="CONTENT_TITLE" /> を更新する</translation>
 <translation id="1142002900084379065">最近の写真</translation>
@@ -902,6 +903,7 @@
 <translation id="4217571870635786043">音声入力</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />、インストール済みアプリ、一時停止中</translation>
 <translation id="4228078597006700451">コントロールが設定されていません</translation>
+<translation id="4230560241506423345">新規</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">複数画面モード</translation>
 <translation id="4242533952199664413">設定を開く</translation>
@@ -997,7 +999,6 @@
 <translation id="4544483149666270818">録画するウィンドウを選択してください</translation>
 <translation id="4545950850562423083">現在のページをブックマークとして保存する</translation>
 <translation id="4548482551627849548">アクティブなウィンドウを左側のデスクに移動する</translation>
-<translation id="4549853322523631092">一致する結果は見つかりませんでした。</translation>
 <translation id="4552748006424994716">エコーを防ぐため、マイクの音を有線ヘッドフォンでのみ聞くようにできます。</translation>
 <translation id="4560576029703263363">オン</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1795,6 +1796,7 @@
 <translation id="7302889331339392448">自動字幕起こしはオフになっています。</translation>
 <translation id="7303365578352795231">別のデバイスで応答しています。</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">一致する結果は見つかりませんでした</translation>
 <translation id="7312210124139670355">管理者が eSIM をリセットしています。この処理には数分かかることがあります。</translation>
 <translation id="7312761820869643657">デバイスを以前のバージョンに更新してください</translation>
 <translation id="7313193732017069507">カメラを展開</translation>
@@ -1863,6 +1865,7 @@
 デバイスをシャットダウンするには、デバイスの電源ボタンをもう一度長押しします。</translation>
 <translation id="7523420897035067483">フォーカス モード中にサイレント モードを有効にする</translation>
 <translation id="7524043547948122239">Google ToDo リスト</translation>
+<translation id="7525067979554623046">作成</translation>
 <translation id="7526573455193969409">ネットワークが監視されている可能性があります</translation>
 <translation id="7536035074519304529">IP アドレス: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">左側のウィンドウを更新する</translation>

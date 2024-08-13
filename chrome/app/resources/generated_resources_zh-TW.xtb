@@ -2448,6 +2448,7 @@
 <translation id="272741954544380994">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋圖片</translation>
 <translation id="2727633948226935816">不要再提醒我</translation>
 <translation id="2727712005121231835">實際大小</translation>
+<translation id="2727713483500953825">選取要使用智慧鏡頭搜尋的圖片/文字</translation>
 <translation id="2727744317940422214">抱歉，系統發生錯誤。請提供意見回饋，並在說明中加上 #bruschetta。錯誤代碼：<ph name="ERROR" />。清除失敗，你可能需要手動操作。</translation>
 <translation id="2729327310379176711">Chrome 正在尋找減少追蹤使用者活動的新方式，讓你上網時更安全。此外，Chrome 也會<ph name="ESTIMATE_INTERESTS_LINK" />，同時讓你自行管理這些資訊。你造訪的網站可在之後要求 Chrome 提供這類資訊，以便向你顯示廣告。</translation>
 <translation id="2729577602370119849">輕鬆存取及管理印表機</translation>
@@ -3660,6 +3661,7 @@
 <translation id="3623598555687153298">這會刪除目前顯示網站所儲存的資料，共 <ph name="TOTAL_USAGE" /></translation>
 <translation id="3624567683873126087">解鎖裝置並登入 Google 帳戶</translation>
 <translation id="3624583033347146597">選擇第三方 Cookie 偏好設定</translation>
+<translation id="3625345586754200168">試試智慧鏡頭</translation>
 <translation id="3625481642044239431">選取的檔案無效，請再試一次。</translation>
 <translation id="3626296069957678981">如要為這部 Chromebook 充電，請使用相容的 Dell 電池。</translation>
 <translation id="3627320433825461852">剩下不到 1 分鐘</translation>
@@ -4815,6 +4817,7 @@
 <translation id="4450974146388585462">診斷</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> 偵測到有效的 TPM，這可安全儲存你的資料。</translation>
 <translation id="4452898361839215358">或選取 PPD。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">使用智慧鏡頭搜尋圖片或文字</translation>
 <translation id="4453430595102511050">請輕觸鍵盤右上角的指紋感應器。你的指紋資料會安全地儲存在「<ph name="DEVICE_TYPE" />」上，絕不會外洩。</translation>
 <translation id="4453946976636652378">執行 <ph name="SEARCH_ENGINE_NAME" /> 搜尋或輸入網址</translation>
 <translation id="4457472090507035117">選取目前的語音：</translation>
@@ -6967,6 +6970,7 @@
 <translation id="6059276912018042191">最近開啟的 Chrome 分頁</translation>
 <translation id="6059652578941944813">憑證階層</translation>
 <translation id="6059925163896151826">USB 裝置</translation>
+<translation id="6060842547856900641">開啟智慧鏡頭</translation>
 <translation id="6061408389284235459">已傳送通知給「<ph name="DEVICE_NAME" />」</translation>
 <translation id="6063284707309177505">建立 QR 圖碼</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人聲音與<ph name="SUPERVISED_USER_NAME" />相似或擁有其聲音錄音檔，或許就能存取孩子的個人化搜尋結果。為了節省電池電量，你可以在<ph name="SUPERVISED_USER_NAME" />的 Google 助理設定中進行選取，讓系統只有在裝置接上充電器時才會啟動「Ok Google」。</translation>

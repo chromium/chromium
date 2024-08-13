@@ -935,6 +935,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="556042886152191864">Pulsante</translation>
 <translation id="5572648434713976849">Riceverai suggerimenti migliori nella barra degli indirizzi</translation>
 <translation id="5572684875078967866">Archiviazione delle informazioni</translation>
+<translation id="5585019845078534178">Schede</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Monitora questo pacchetto}other{Monitora tutti i pacchetti}}</translation>
 <translation id="5597915316964418992">Apri la griglia delle schede</translation>
 <translation id="560322036295180549">Opzione disattivata dall'organizzazione</translation>
@@ -1127,7 +1128,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6445981559479772097">Messaggio inviato.</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6449554712554071184">Il gruppo verrà eliminato definitivamente dal tuo dispositivo.</translation>
-<translation id="6453018583485750254">Controllo mai eseguito.</translation>
 <translation id="6459307836338400162">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, apri le sezioni <ph name="BEGIN_LINK" />Sincronizzazione<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Dettagli nascosti</translation>
 <translation id="646394917185284261">File</translation>
@@ -1631,7 +1631,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8820817407110198400">Preferiti</translation>
 <translation id="8825562130641217944">Trova preferiti, password e altri dati.</translation>
 <translation id="882557203579758546">Trova nella pagina…</translation>
-<translation id="8838250347763484641">Sposta la barra degli indirizzi in alto o in basso per un'esperienza di navigazione personalizzata.</translation>
 <translation id="8840513115188359703">Non verrai disconnesso dal tuo Account Google.</translation>
 <translation id="8843129975935593190">La tua organizzazione limita ciò che puoi sincronizzare.</translation>
 <translation id="8849001918648564819">Nascosto</translation>

@@ -668,6 +668,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3439896670700055005">Last inn siden på nytt uten å bruke bufret innhold</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">Tilpass musen</translation>
+<translation id="3444385531800624797">Resultatene lastes inn</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C-enhet</translation>
 <translation id="3454555520521576458">Størrelsen kan endres</translation>
@@ -996,7 +997,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4544483149666270818">Velg vinduet du vil ta opp</translation>
 <translation id="4545950850562423083">Lagre denne siden som bokmerke</translation>
 <translation id="4548482551627849548">Flytt det aktive vinduet til skrivebordet til venstre</translation>
-<translation id="4549853322523631092">Fant ingen resultater.</translation>
 <translation id="4552748006424994716">På grunn av ekko kan du bare lytte til mikrofonen din via hodetelefoner med ledning.</translation>
 <translation id="4560576029703263363">På</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1212,6 +1212,7 @@ Du kan også bruke hurtigtasten. Marker først teksten, og trykk deretter på <p
 <translation id="5253783950165989294">Koblet til enheten <ph name="DEVICE_NAME" /> – <ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
 <translation id="5258528442992323769">Ingen lagrede skrivebord</translation>
 <translation id="5260676007519551770">Skrivebord 4</translation>
+<translation id="5265391159779542051">Resultatene er lastet inn</translation>
 <translation id="5270547718570958938">Google Kalender</translation>
 <translation id="5277869901083657836">Slå av/på pekepennverktøyene</translation>
 <translation id="5278086053818066789">Slå ChromeVox av/på (taletilbakemelding)</translation>
@@ -1507,6 +1508,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6210042900243040400">Koble til <ph name="NAME" /> som tidligere har blitt lagret i <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Ta delvis skjermbilde eller skjermopptak</translation>
 <translation id="621606890568890214">Vis Google Classroom</translation>
+<translation id="6216759484154215561">Åpnet Finn ut mer-linken i nettleseren</translation>
 <translation id="6220928844947387476">Nå kan du ta opp deg selv og skjermen din samtidig</translation>
 <translation id="622484624075952240">Ned</translation>
 <translation id="6228457605945141550">Skru ned lysstyrken</translation>
@@ -1792,6 +1794,7 @@ Nylig installert</translation>
 <translation id="7302889331339392448">Direkteteksting er av.</translation>
 <translation id="7303365578352795231">Svarer på en annen enhet</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">Fant ingen resultater</translation>
 <translation id="7312210124139670355">Administratoren holder på å tilbakestille eSIM-kortet ditt. Dette kan ta noen minutter.</translation>
 <translation id="7312761820869643657">Oppdater enheten til en tidligere versjon</translation>
 <translation id="7313193732017069507">Vis kameraet</translation>
@@ -1859,6 +1862,7 @@ Nylig installert</translation>
 For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</translation>
 <translation id="7523420897035067483">Slå på Ikke forstyrr mens fokus er på</translation>
 <translation id="7524043547948122239">Google Huskeliste</translation>
+<translation id="7525067979554623046">Opprett</translation>
 <translation id="7526573455193969409">Nettverket kan være overvåket</translation>
 <translation id="7536035074519304529">IP-adresse: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Oppdater vinduet til venstre</translation>
@@ -2217,6 +2221,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">Beveg deg fremover mellom nedre høyre hjørne, Appoversikt, adressefeltet, bokmerkeraden, nettstedet som er åpent, og nedlastingene</translation>
 <translation id="8792626944327216835">mikrofon</translation>
+<translation id="8797381270745758905">Prøv på nytt-linken er aktivert</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">«Hjelp»</translation>

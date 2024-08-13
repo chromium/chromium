@@ -1209,6 +1209,7 @@
 <translation id="184183613002882946">Не, оставане с 1 превключвател</translation>
 <translation id="184273675144259287">Замяна на приложенията и файловете ви за Linux с предишно резервно копие</translation>
 <translation id="1842766183094193446">Наистина ли искате да активирате демонстрационния режим?</translation>
+<translation id="1843048149176045210">Копиране на връзката за изтегляне</translation>
 <translation id="1845060436536902492">ChromeVox, екранният четец в ChromeOS Flex, се използва основно от незрящи хора и лица със слабо зрение за четене на показван на екрана текст с помощта на синтезатор на говор или екран за брайлово писмо. Натиснете клавиша за интервал, за да включите ChromeVox. Когато екранният четец е активиран, ще преминете през кратка обиколка.</translation>
 <translation id="1845727111305721124">Сайтове с разрешение за възпроизвеждане на звук</translation>
 <translation id="1846308012215045257">Задръжте „Ctrl“ и кликнете, за да стартирате <ph name="PLUGIN_NAME" /></translation>
@@ -3170,6 +3171,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3251714896659475029">Разрешаване на <ph name="SUPERVISED_USER_NAME" /> да осъществява достъп до Google Асистент с „Ok Google“</translation>
 <translation id="3251759466064201842">&lt;Не е част от сертификата&gt;</translation>
 <translation id="325238099842880997">Задайте дигитални правила, с чиято помощ децата могат да играят, изследват и да изпълняват училищни задачи</translation>
+<translation id="3253083398453405334">Премигване на екрана при получаване на известия</translation>
 <translation id="3253225298092156258">Няма достъп</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Освободете място в <ph name="CLOUD_PROVIDER" />, за да копирате този файл}other{Освободете място в <ph name="CLOUD_PROVIDER" />, за да копирате тези файлове}}</translation>
 <translation id="3253448572569133955">Неизвестен профил</translation>
@@ -3666,6 +3668,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3621202678540785336">Вход</translation>
 <translation id="3621807901162200696">Помощ за подобряването на функциите и ефективността на Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{приложение}other{# приложения}}</translation>
+<translation id="3622820753353315928">Цвят на екрана при премигване</translation>
 <translation id="362333465072914957">Изчаква се издаването на сертификат от сертифициращия орган</translation>
 <translation id="3623598555687153298">Съхраняваните от показаните сайтове данни в размер на <ph name="TOTAL_USAGE" /> ще бъдат изтрити</translation>
 <translation id="3624567683873126087">Отключване на устройството и влизане в профила в Google</translation>
@@ -7174,6 +7177,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6197128521826316819">Създаване на QR код за тази страница</translation>
 <translation id="6198223452299275399">Прокарване на пръст между страниците</translation>
 <translation id="6198252989419008588">Промяна на ПИН</translation>
+<translation id="61988015556954366">Премигване на екрана</translation>
 <translation id="6200047250927636406">Отхвърляне на файла</translation>
 <translation id="6200151268994853226">Управление на разширението</translation>
 <translation id="6201608810045805374">Да се премахне ли този профил?</translation>
@@ -7531,6 +7535,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> файла</translation>
 <translation id="6469557521904094793">Включване на мобилната мрежа</translation>
 <translation id="6469702164109431067">Пароли и кодове за достъп</translation>
+<translation id="6470120577693311302">Известия с премигване</translation>
 <translation id="6470823736074966819">Спиране на известията</translation>
 <translation id="6472893788822429178">Показване на бутона „Начална страница“</translation>
 <translation id="6473315466413288899">Изберете опция</translation>
@@ -7963,6 +7968,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6790820461102226165">Добавяне на човек...</translation>
 <translation id="6793610798874309813">ПИН кодът може да е с дължина най-малко 4 знака</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794175321111873395"><ph name="DOWNLOAD_URL" /> е копиран в буферната памет</translation>
 <translation id="6794511157503068">Ако ключът ви за достъп за <ph name="APP_NAME" /> се съхранява в ключ за сигурност с USB, поставете устройството и го докоснете сега</translation>
 <translation id="679486139907144816">За да влезете в този сайт посредством ключ за достъп, трябва да включите Windows Hello от настройките. След това се върнете на този сайт и опитайте отново.</translation>
 <translation id="6795371939514004514">Автоматичното сканиране позволява да се придвижвате автоматично през елементите на екрана. Когато даден елемент бъде откроен, натиснете „Избор“, за да го активирате.</translation>

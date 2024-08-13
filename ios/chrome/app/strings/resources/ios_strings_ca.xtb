@@ -408,6 +408,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2975121486251958312">Només està disponible el mode d'incògnit</translation>
 <translation id="2982481275546140226">Esborra les dades</translation>
 <translation id="298306318844797842">Afegeix una forma de pagament...</translation>
+<translation id="2984370252102312100">Obre pestanyes i grups de pestanyes</translation>
 <translation id="2989805286512600854">Obre en una pestanya nova</translation>
 <translation id="300455800299409273">Amaga l'opció Continua amb aquesta pestanya</translation>
 <translation id="3010025794097054078">Protegeix-te de violacions de les dades, de llocs web no segurs i més.</translation>
@@ -896,6 +897,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5415289094036440596">Les claus d'accés no es poden compartir</translation>
 <translation id="5416022985862681400">7 darrers dies</translation>
 <translation id="5416455648658732408">Mou a un grup de pestanyes</translation>
+<translation id="5419613306346207284">Grups de pestanyes de tots els dispositius</translation>
 <translation id="5423269318075950257">Fes un seguiment del preu</translation>
 <translation id="5431252637281434233">Es tancarà la teva sessió</translation>
 <translation id="543338862236136125">Edita la contrasenya</translation>
@@ -933,6 +935,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="556042886152191864">Botó</translation>
 <translation id="5572648434713976849">Obtindràs suggeriments millorats a la barra d'adreces</translation>
 <translation id="5572684875078967866">Emmagatzematge d'informació</translation>
+<translation id="5585019845078534178">Targetes</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Fes el seguiment d'aquest paquet}other{Fes el seguiment de tots els paquets}}</translation>
 <translation id="5597915316964418992">Obre la quadrícula de pestanyes</translation>
 <translation id="560322036295180549">Desactivat per l'organització</translation>
@@ -1125,7 +1128,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6445981559479772097">Missatge enviat.</translation>
 <translation id="6447842834002726250">Galetes</translation>
 <translation id="6449554712554071184">El grup se suprimirà permanentment del dispositiu.</translation>
-<translation id="6453018583485750254">No s'ha fet mai la comprovació.</translation>
 <translation id="6459307836338400162">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta <ph name="BEGIN_LINK" />Sincronització<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Els detalls estan amagats</translation>
 <translation id="646394917185284261">Arxius</translation>
@@ -1629,7 +1631,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8820817407110198400">Adreces d'interès</translation>
 <translation id="8825562130641217944">Obtén les adreces d'interès, les contrasenyes i altres dades.</translation>
 <translation id="882557203579758546">Cerca a la pàgina…</translation>
-<translation id="8838250347763484641">Mou la barra d'adreces a la part superior o inferior per gaudir d'una experiència de navegació personalitzada.</translation>
 <translation id="8840513115188359703">No se't tancarà la sessió del Compte de Google.</translation>
 <translation id="8843129975935593190">La teva organització limita els elements que pots sincronitzar.</translation>
 <translation id="8849001918648564819">Amagat</translation>

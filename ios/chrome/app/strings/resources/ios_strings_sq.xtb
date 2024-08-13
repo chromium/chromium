@@ -408,6 +408,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="2975121486251958312">Ofrohet vetëm modaliteti "i fshehtë"</translation>
 <translation id="2982481275546140226">Pastro të dhënat</translation>
 <translation id="298306318844797842">Shto mënyrën e pagesës...</translation>
+<translation id="2984370252102312100">Skedat e hapura dhe grupet e hapura të skedave</translation>
 <translation id="2989805286512600854">Hape në skedë të re</translation>
 <translation id="300455800299409273">Fshih "Vazhdo me këtë skedë"</translation>
 <translation id="3010025794097054078">Qëndro i sigurt nga nxjerrjet e paautorizuara të të dhënave, uebsajtet e pasigurta etj.</translation>
@@ -896,6 +897,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5415289094036440596">Çelësat e kalimit nuk mund të ndahen</translation>
 <translation id="5416022985862681400">7 ditët e fundit</translation>
 <translation id="5416455648658732408">Zhvendose te grupi i skedave</translation>
+<translation id="5419613306346207284">Grupet e skedave nga të gjitha pajisjet</translation>
 <translation id="5423269318075950257">Monitoro çmimin</translation>
 <translation id="5431252637281434233">Do të dalësh nga llogaria</translation>
 <translation id="543338862236136125">Redakto fjalëkalimin</translation>
@@ -933,6 +935,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="556042886152191864">Buton</translation>
 <translation id="5572648434713976849">Do të marrësh sugjerime të përmirësuara në shiritin e adresave</translation>
 <translation id="5572684875078967866">Hapësira ruajtëse e informacioneve</translation>
+<translation id="5585019845078534178">Kartat</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Gjurmo këtë pako}other{Gjurmo të gjitha pakot}}</translation>
 <translation id="5597915316964418992">Hap rrjetën e skedave</translation>
 <translation id="560322036295180549">Çaktivizuar nga organizata jote</translation>
@@ -1125,7 +1128,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6445981559479772097">Mesazhi u dërgua.</translation>
 <translation id="6447842834002726250">Kukit</translation>
 <translation id="6449554712554071184">Kjo do të fshijë përgjithmonë grupin nga pajisja jote.</translation>
-<translation id="6453018583485750254">Kontrolli nuk është ekzekutuar asnjëherë.</translation>
 <translation id="6459307836338400162">Për cilësime të tjera në lidhje me privatësinë, sigurinë dhe mbledhjen e të dhënave, shiko <ph name="BEGIN_LINK" />Sinkronizimin<ph name="END_LINK" /> dhe <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Detajet u fshehën</translation>
 <translation id="646394917185284261">Skedarët</translation>
@@ -1629,7 +1631,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8820817407110198400">Faqeshënuesit</translation>
 <translation id="8825562130641217944">Merr faqeshënuesit, fjalëkalimet etj.</translation>
 <translation id="882557203579758546">Gjej në faqe…</translation>
-<translation id="8838250347763484641">Kaloje shiritin e adresave në krye ose në fund të ekranit për një përvojë të personalizuar të shfletimit.</translation>
 <translation id="8840513115188359703">Nuk do të dalësh nga llogaria jote e Google</translation>
 <translation id="8843129975935593190">Organizata jote kufizon se çfarë mund të sinkronizosh.</translation>
 <translation id="8849001918648564819">E fshehur</translation>

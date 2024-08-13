@@ -3189,6 +3189,7 @@
 <translation id="3269093882174072735">სურათის ჩატვირთვა</translation>
 <translation id="326911502853238749">არ გამოჩნდეს <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">ჩართეთ სინქრონიზაცია, რომ შექმნათ თქვენი მონაცემების სარეზერვო ასლები და გამოიყენოთ ისინი ნებისმიერ მოწყობილობაზე</translation>
+<translation id="3269209112443570745">სიახლე! თქვენს ეკრანზე არსებული კონტენტის მარტივად მოძიების გზა</translation>
 <translation id="3269612321104318480">ღია ფირუზისფერი და თეთრი</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ფაილი}other{# ფაილი}}</translation>
 <translation id="326999365752735949">დიფ ჩამოტვირთვა</translation>
@@ -3659,6 +3660,7 @@
 <translation id="3621202678540785336">შეყვანა</translation>
 <translation id="3621807901162200696">ChromeOS-ის ფუნქციებისა და წარმადობის გაუმჯობესების ხელშეწყობა</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{აპი}other{# აპი}}</translation>
+<translation id="3622716124581627104">მოახდინეთ საგნების თუ ადგილების იდენტიფიცირება, დააკოპირეთ ან თარგმნეთ ტექსტი. Google Lens-ის გამოყენებისას გვერდის ეკრანის ანაბეჭდი არ ეგზავნება Google-ს. <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">ეკრანის ბლიცის ფერი</translation>
 <translation id="362333465072914957">სერტიფიკატების ცენტრის მიერ სერტიფიკატის გაცემის მოლოდინში</translation>
 <translation id="3623598555687153298">ამ მოქმედებით წაიშლება ნაჩვენები საიტების მიერ შენახული მონაცემების <ph name="TOTAL_USAGE" /></translation>

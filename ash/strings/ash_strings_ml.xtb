@@ -669,6 +669,7 @@
 <translation id="3439896670700055005">കാഷെ ചെയ്‌ത ഉള്ളടക്കം ഉപയോഗിക്കാതെ നിലവിലെ പേജ് റീലോഡ് ചെയ്യുക</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">നിങ്ങളുടെ മൗസ് വ്യക്തിപരമാക്കുക</translation>
+<translation id="3444385531800624797">ഫലങ്ങൾ ലോഡ് ചെയ്യുന്നു</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> മി.</translation>
 <translation id="3445925074670675829">USB-C ഉപകരണം</translation>
 <translation id="3454555520521576458">വലുപ്പം മാറ്റാവുന്നത്</translation>
@@ -998,7 +999,6 @@
 <translation id="4544483149666270818">റെക്കോർഡ് ചെയ്യാൻ വിൻഡോ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4545950850562423083">നിലവിലെ പേജ് ബുക്ക്‌മാർക്കായി സംരക്ഷിക്കുക</translation>
 <translation id="4548482551627849548">സജീവ വിൻഡോ ഇടതുവശത്തെ ഡെസ്‌ക്കിലേക്ക് നീക്കുക</translation>
-<translation id="4549853322523631092">ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല.</translation>
 <translation id="4552748006424994716">എക്കോ ഒഴിവാക്കാൻ, വയേർഡ് ഹെഡ്ഫോൺ വഴി മാത്രം മൈക്ക് ഉപയോഗിക്കാവുന്നതാണ്.</translation>
 <translation id="4560576029703263363">ഓണാണ്</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1214,6 +1214,7 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> എന്ന് പേരുള്ള ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്തിരിക്കുന്നു, <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി</translation>
 <translation id="5258528442992323769">സംരക്ഷിച്ച ഡെസ്ക്കുകൾ ഇല്ല</translation>
 <translation id="5260676007519551770">ഡെസ്‌ക് 4</translation>
+<translation id="5265391159779542051">ഫലങ്ങൾ ലോഡ് ചെയ്തു</translation>
 <translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">സ്റ്റൈലസ് ടൂളുകൾ ടോഗിൾ ചെയ്യുക</translation>
 <translation id="5278086053818066789">ChromeVox ഓണാക്കുകയോ ഓഫാക്കുകയോ ചെയ്യുക (സംഭാഷണ ഫീഡ്ബാക്ക്)</translation>
@@ -1509,6 +1510,7 @@
 <translation id="6210042900243040400"><ph name="EMAIL" /> എന്നതിലേക്ക് മുമ്പ് സംരക്ഷിച്ച <ph name="NAME" /> കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="6213808132343683860">ഭാഗിക സ്ക്രീൻഷോട്ടോ സ്ക്രീൻ റെക്കോർഡിംഗോ എടുക്കുക</translation>
 <translation id="621606890568890214">Google Classroom വികസിപ്പിക്കുക</translation>
+<translation id="6216759484154215561">ബ്രൗസറിൽ 'കൂടുതലറിയുക' ലിങ്ക് തുറന്നു</translation>
 <translation id="6220928844947387476">നിങ്ങൾക്ക് ഇപ്പോൾ നിങ്ങളെയും ഒപ്പം സ്ക്രീനും ഒരേസമയം റെക്കോർഡ് ചെയ്യാം</translation>
 <translation id="622484624075952240">താഴേക്കുള്ള കീ</translation>
 <translation id="6228457605945141550">തെളിച്ചം കുറയ്‌ക്കുക</translation>
@@ -1795,6 +1797,7 @@
 <translation id="7302889331339392448">തത്സമയ ക്യാപ്ഷൻ ഓഫാണ്.</translation>
 <translation id="7303365578352795231">മറ്റൊരു ഉപകരണത്തിൽ മറുപടി നൽകുന്നു.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="7312210124139670355">നിങ്ങളുടെ അഡ്‌മിൻ eSIM റീസെറ്റ് ചെയ്യുകയാണ്. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="7312761820869643657">ഉപകരണം മുമ്പത്തെ പതിപ്പിലേക്ക് അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="7313193732017069507">ക്യാമറ വികസിപ്പിക്കുക</translation>
@@ -1862,6 +1865,7 @@
 ഉപകരണം ഷട്ട് ഡൗൺ ചെയ്യാൻ, ഉപകരണത്തിലെ പവർ ബട്ടൺ വീണ്ടും അമർത്തിപ്പിടിക്കുക.</translation>
 <translation id="7523420897035067483">ഫോക്കസിലായിരിക്കുമ്പോൾ 'ശല്യപ്പെടുത്തരുത്' പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7525067979554623046">സൃഷ്‌ടിക്കുക</translation>
 <translation id="7526573455193969409">നെറ്റ്‌വർക്ക് നിരീക്ഷിക്കപ്പെടാം</translation>
 <translation id="7536035074519304529">IP വിലാസം: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">ഇടതുവശത്തെ വിൻഡോ അപ്ഡേറ്റ് ചെയ്യുക</translation>
@@ -2220,6 +2224,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">താഴെ വലത് മൂല, ലോഞ്ചർ, വിലാസ ബാർ, ബുക്ക്‌മാർക്ക് ബാർ, തുറന്നിരിക്കുന്ന വെബ്സൈറ്റ്, ഡൗൺലോഡുകൾ എന്നിവയ്ക്കിടയിൽ മുന്നിലേക്ക് നീങ്ങുക</translation>
 <translation id="8792626944327216835">മൈക്രോഫോൺ</translation>
+<translation id="8797381270745758905">'വീണ്ടും ശ്രമിക്കുക' ലിങ്ക് സജീവമാക്കി</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">ഫോൾഡർ <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"സഹായം"</translation>

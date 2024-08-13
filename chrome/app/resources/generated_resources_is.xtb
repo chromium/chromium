@@ -11045,7 +11045,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8999560016882908256">Málskipunarvilla hluta: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Minni hreyfing á skjá</translation>
 <translation id="9000185763019430629">Snertu fingrafaralesarann hægra megin í <ph name="DEVICE_TYPE" />. Fingrafaragögnin þín eru í öruggri geymslu og fara aldrei út fyrir <ph name="DEVICE_TYPE" />-tækið þitt.</translation>
-<translation id="9003031149571024583">Sláðu inn PIN tölustaf <ph name="NUM_DIGIT" /> af 6. Notaðu bakklykil eða eyddu til að fjarlægja síðasta stafinn.</translation>
+<translation id="9003031149571024583">Sláðu inn PIN-tölustaf <ph name="NUM_DIGIT" /> af 6. Notaðu bakklykil eða eyddu til að fjarlægja síðasta stafinn.</translation>
 <translation id="9003185744423389627">Ekki náðist tenging við þjón tækjastjórnunar með stöðunni „<ph name="STATUS_TEXT" />“ <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Leita sjálfkrafa að tiltækum eSIM-prófílum?</translation>
 <translation id="9003647077635673607">Leyfa á öllum vefsvæðum</translation>

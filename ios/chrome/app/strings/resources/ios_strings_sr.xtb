@@ -935,6 +935,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="556042886152191864">Дугме</translation>
 <translation id="5572648434713976849">Добијаћете побољшане предлоге на траци за адресу</translation>
 <translation id="5572684875078967866">Меморијски простор за податке</translation>
+<translation id="5585019845078534178">Картице</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Прати овај пакет}one{Прати све пакете}few{Прати све пакете}other{Прати све пакете}}</translation>
 <translation id="5597915316964418992">Отворите мрежу за картице</translation>
 <translation id="560322036295180549">Искључила је организација</translation>
@@ -1127,7 +1128,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6445981559479772097">Порука је послата.</translation>
 <translation id="6447842834002726250">Колачићи</translation>
 <translation id="6449554712554071184">Овим ћете трајно избрисати групу са уређаја.</translation>
-<translation id="6453018583485750254">Провера никада није рађена.</translation>
 <translation id="6459307836338400162">Више подешавања у вези са приватношћу, безбедношћу и прикупљањем података потражите у одељцима <ph name="BEGIN_LINK" />Синхронизација<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Google услуге<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Детаљи су скривени</translation>
 <translation id="646394917185284261">Фајлови</translation>
@@ -1631,7 +1631,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8820817407110198400">Обележивачи</translation>
 <translation id="8825562130641217944">Приступајте обележивачима, лозинкама и другом садржају.</translation>
 <translation id="882557203579758546">Пронађи на страници…</translation>
-<translation id="8838250347763484641">Пребаците траку за адресу на врх или дно да бисте имали прилагођени доживљај прегледања.</translation>
 <translation id="8840513115188359703">Нећемо вас одјавити са Google налога.</translation>
 <translation id="8843129975935593190">Ваша организација ограничава садржај који можете да синхронизујете.</translation>
 <translation id="8849001918648564819">Скривено</translation>

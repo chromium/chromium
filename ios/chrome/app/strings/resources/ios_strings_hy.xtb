@@ -938,6 +938,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="556042886152191864">Կոճակ</translation>
 <translation id="5572648434713976849">Հասցեագոտում կհայտնվեն բարելավված հուշումներ։</translation>
 <translation id="5572684875078967866">Տեղեկությունների ծավալ</translation>
+<translation id="5585019845078534178">Քարտեր</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Հետևել այս առաքանուն}one{Հետևել առաքանուն}other{Հետևել բոլոր առաքանիներին}}</translation>
 <translation id="5597915316964418992">Բացեք ներդիրների ցանցը</translation>
 <translation id="560322036295180549">Անջատվել է կազմակերպության կողմից</translation>
@@ -1131,7 +1132,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6445981559479772097">Հաղորդագրությունն ուղարկվեց:</translation>
 <translation id="6447842834002726250">Cookie ֆայլեր</translation>
 <translation id="6449554712554071184">Խումբն ընդմիշտ կջնջվի ձեր սարքից։</translation>
-<translation id="6453018583485750254">Ստուգում երբեք չի կատարվել։</translation>
 <translation id="6459307836338400162">Գաղտնիության, անվտանգության և տվյալների հավաքման հետ կապված լրացուցիչ կարգավորումներին կարող եք ծանոթանալ <ph name="BEGIN_LINK" />Համաժամացում<ph name="END_LINK" /> և <ph name="BEGIN_LINK" />Google-ի ծառայություններ<ph name="END_LINK" /> բաժիններում։</translation>
 <translation id="6459411599807878608">Մանրամասները թաքցվեցին</translation>
 <translation id="646394917185284261">Ֆայլեր</translation>
@@ -1636,7 +1636,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8820817407110198400">Էջանիշներ</translation>
 <translation id="8825562130641217944">Ստացեք հասանելիություն ձեր էջանիշներին, գաղտնաբառերին և այլ տեղեկություններին</translation>
 <translation id="882557203579758546">Գտնել էջում…</translation>
-<translation id="8838250347763484641">Հասցեագոտին տեղափոխեք վերև կամ ներքև՝ անհատականացված դիտարկման համար։</translation>
 <translation id="8840513115188359703">Դուք դուրս չեք գա ձեր Google հաշվից:</translation>
 <translation id="8843129975935593190">Ձեր կազմակերպությունը սահմանափակել է տվյալները, որոնք կարելի է համաժամացնել։</translation>
 <translation id="8849001918648564819">Ոչ ոք</translation>

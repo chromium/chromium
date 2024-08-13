@@ -2445,6 +2445,7 @@
 <translation id="272741954544380994">Суретті <ph name="VISUAL_SEARCH_PROVIDER" /> көмегімен іздеу</translation>
 <translation id="2727633948226935816">Енді еске салынбасын</translation>
 <translation id="2727712005121231835">Нақты өлшемі</translation>
+<translation id="2727713483500953825">Lens-бен іздеу үшін суреттер/мәтін таңдаңыз</translation>
 <translation id="2727744317940422214">Өкінішке орай, қате шықты. Сипаттамада #bruschetta арқылы пікір жіберіңіз. Қате коды – <ph name="ERROR" />. Тазалау сәтсіз аяқталды, оны қолмен жасау керек болуы мүмкін.</translation>
 <translation id="2729327310379176711">Chrome браузері сайтаралық қадағалау деңгейін төмендетіп, интернеттегі қауіпсіздігіңізді одан әрі арттырудың жаңа жолдарын тауып жатыр. Сондай-ақ ол <ph name="ESTIMATE_INTERESTS_LINK" />, оларды басқаруыңызға мүмкіндік береді. Бұл ретте сіз кіретін сайттар Chrome браузерінен қызығушылықтарыңызды сұрап, сізге жарнамалар көрсетуі мүмкін.</translation>
 <translation id="2729577602370119849">Принтерлерді оңай пайдалану және басқару</translation>
@@ -3658,6 +3659,7 @@
 <translation id="3623598555687153298">Бұл көрсетілген сайттарда сақталған <ph name="TOTAL_USAGE" /> деректерді жояды.</translation>
 <translation id="3624567683873126087">Құрылғының құлпын ашу және Google аккаунтына кіру</translation>
 <translation id="3624583033347146597">Үшінші тараптың cookie параметрлерін таңдаңыз</translation>
+<translation id="3625345586754200168">Lens-бен іздеп көру</translation>
 <translation id="3625481642044239431">Жарамсыз файл таңдалды. Әрекетті қайталаңыз.</translation>
 <translation id="3626296069957678981">Осы Chromebook құрылғысын зарядтау үшін үйлесімді Dell батареясын қолданыңыз.</translation>
 <translation id="3627320433825461852">1 минуттан аз уақыт қалды</translation>
@@ -4814,6 +4816,7 @@
 <translation id="4450974146388585462">Диагностикалау</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> белсенді TPM-ді анықтады, ол деректеріңізді мейлінше қауіпсіз сақтайды.</translation>
 <translation id="4452898361839215358">немесе PPD файлын таңдаңыз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Lens-бен кез келген суретті не мәтінді іздеңіз</translation>
 <translation id="4453430595102511050">Пернетақтаның жоғарғы оң жақ бұрышындағы саусақ ізін оқу сканерін түртіңіз. Саусағыңыздың ізі туралы деректер қауіпсіз сақталған және <ph name="DEVICE_TYPE" /> құрылғысынан басқа ешқайда жіберілмейді.</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> браузерінен іздеңіз не URL мекенжайын енгізіңіз</translation>
 <translation id="4457472090507035117">Ағымдағы дауысты таңдау:</translation>
@@ -6967,6 +6970,7 @@
 <translation id="6059276912018042191">Соңғы Chrome қойындылары</translation>
 <translation id="6059652578941944813">Сертификат иерархиясы</translation>
 <translation id="6059925163896151826">USB құрылғылары</translation>
+<translation id="6060842547856900641">Lens қызметін ашу</translation>
 <translation id="6061408389284235459"><ph name="DEVICE_NAME" /> құрылғысына хабарландыру жіберілді.</translation>
 <translation id="6063284707309177505">QR кодын жасау</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Ескертпе:<ph name="END_BOLD" /> кез келген адам ұқсас дауыс немесе жазба арқылы баланың (<ph name="SUPERVISED_USER_NAME" />) жеке нәтижелерін пайдалануы мүмкін. Батарея зарядын үнемдеу үшін баланың (<ph name="SUPERVISED_USER_NAME" />) Assistant параметрлерінен "Ok Google" пәрменінің осы құрылғы қуат көзіне жалғанғанда ғана қосылуын таңдауға болады.</translation>

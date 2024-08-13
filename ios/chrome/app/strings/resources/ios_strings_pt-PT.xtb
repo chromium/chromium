@@ -127,6 +127,7 @@
 <translation id="1622717322707146952">Selecione "Adicionar ao Calendário Google" ou "Adicionar ao Calendário Apple".</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> palavras-passe reutilizadas</translation>
 <translation id="1636234353664774105">Receba direções para o seu destino com as orientações passo a passo da funcionalidade de navegação</translation>
+<translation id="1641068175940982148">Abrir <ph name="GROUP_TITLE" />, grupo de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">Navegação segura</translation>
 <translation id="1641316430523156212">Seguir</translation>
 <translation id="1644574205037202324">Histórico</translation>
@@ -402,6 +403,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2952246431280799028">Toque sem soltar numa morada.</translation>
 <translation id="2952278131021475699">Pesquisa com a câmara do Lens</translation>
 <translation id="2958718410589002129">Palavras-passe</translation>
+<translation id="2963044753825419640">Permita que os Websites e as apps atualizem automaticamente as contas existentes para usarem chaves de acesso quando disponíveis</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
 <translation id="2965328226365382335">Últimos 15 Minutos</translation>
 <translation id="2969979262385602596">Falha ao iniciar sessão. Tente nov. mais tarde.</translation>
@@ -759,6 +761,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Apenas neste dispositivo, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Novo separador anónimo</translation>
 <translation id="4766112107778026136">Discover e A seguir</translation>
+<translation id="4769198578611055647">Ajuda a aceder às chaves de acesso guardadas em qualquer dispositivo</translation>
 <translation id="4775879719735953715">Navegador predefinido</translation>
 <translation id="4779732376610430319">Aceder às definições…</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -935,6 +938,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="556042886152191864">Botão</translation>
 <translation id="5572648434713976849">Receberá sugestões melhoradas na barra de endereço</translation>
 <translation id="5572684875078967866">Armazenamento de informações</translation>
+<translation id="5585019845078534178">Cartões</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Acompanhar esta embalagem}other{Acompanhar todas as embalagens}}</translation>
 <translation id="5597915316964418992">Abra a grelha de separadores</translation>
 <translation id="560322036295180549">Desativado pela sua entidade</translation>
@@ -1041,6 +1045,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6067849159007176401">Adicione proteção da navegação</translation>
 <translation id="607620096698446287">Não foi possível carregar <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6084848228346514841">Selecionar separadores</translation>
+<translation id="6089212833343035912">PIN do Gestor de Palavras-passe da Google</translation>
 <translation id="6100617279104942061">Com sessão iniciada como <ph name="USER_EMAIL" />. Abre as definições.</translation>
 <translation id="6103540626693881831">Encriptação no dispositivo</translation>
 <translation id="6119050551270742952">Página Web atual – Nav. anónima</translation>
@@ -1127,7 +1132,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6445981559479772097">Mensagem enviada.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">Esta ação elimina permanentemente o grupo do seu dispositivo.</translation>
-<translation id="6453018583485750254">Verificação nunca executada.</translation>
 <translation id="6459307836338400162">Para obter mais definições relacionadas com privacidade, segurança e recolha de dados, consulte <ph name="BEGIN_LINK" />Sincronização<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />serviços Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Detalhes ocultados</translation>
 <translation id="646394917185284261">Files</translation>
@@ -1261,6 +1265,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7022197654033719543">Informações do site</translation>
 <translation id="7029809446516969842">Palavras-passe</translation>
 <translation id="704692552158601232">App de navegador predefinida</translation>
+<translation id="7051147526307793383">Permitir atualizações automáticas de chaves de acesso</translation>
 <translation id="7055240621761583113">Preencher automaticamente a palavra-passe</translation>
 <translation id="7063811929043357292">A conta é gerida pelos teus pais.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -1631,7 +1636,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8825562130641217944">Obtenha os seus marcadores, palavras-passe e muito mais.</translation>
 <translation id="882557203579758546">Localizar na página…</translation>
-<translation id="8838250347763484641">Mude a barra de endereço para cima ou para baixo para ter uma experiência de navegação personalizada.</translation>
 <translation id="8840513115188359703">A sessão na sua Conta Google não é terminada.</translation>
 <translation id="8843129975935593190">A sua organização limita o que pode sincronizar.</translation>
 <translation id="8849001918648564819">Oculto</translation>

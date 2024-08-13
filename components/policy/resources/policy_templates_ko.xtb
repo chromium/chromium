@@ -3533,6 +3533,17 @@ HTTPS용 RSA 인증서에 두 가지를 모두 포함해야 합니다.</translat
 <translation id="3660562134618097814">로그인 중 SAML IdP 쿠키 전송</translation>
 <translation id="3662660961914441274">사용자 파일을 로컬로 저장하지 못하도록 설정</translation>
 <translation id="3665437376055221832">자동 선택과 일치하는 인증서가 없을 때만 사용자에게 메시지 표시</translation>
+<translation id="3667467644216039144">사용자가 모든 브라우저 창을 닫을 때 삭제되어야 하는 인터넷 사용 기록 유형의 목록을 구성합니다.
+
+경고: 이 정책을 설정하면 로컬 개인 정보가 영향을 받아 영구적으로 삭제될 수 있습니다. 개인 정보가 실수로 삭제되지 않도록 배포하기 전에 설정을 테스트하는 것이 좋습니다.
+
+사용 가능한 데이터 유형은 방문 기록(<ph name="DATA_TYPE_BROWSING_HISTORY" />), 다운로드 기록(<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), 쿠키(<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), 캐시<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, 자동 완성(<ph name="DATA_TYPE_AUTOFILL" />), 비밀번호(<ph name="DATA_TYPE_PASSWORD" />), 사이트 설정(<ph name="DATA_TYPE_SITE_SETTINGS" />) 및 호스팅된 앱 데이터(<ph name="DATA_TYPE_HOSTED_APP_DATA" />)입니다. 본 정책은 <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />보다 우선 적용되지 않습니다.
+
+Chrome 114까지 이 정책을 적용하려면 <ph name="SYNC_DISABLED_POLICY_NAME" /> 정책을 true로 설정해야 합니다. Chrome 115부터 이 정책을 설정하면 <ph name="SYNC_DISABLED_POLICY_NAME" /> 정책을 설정하여 `<ph name="CHROME_SYNC_NAME" />`를 사용 중지하지 않거나 <ph name="BROWSER_SIGNIN_POLICY_NAME" /> 정책을 사용 중지하지 않으면 각 데이터 유형의 동기화가 사용 중지됩니다.
+
+어떤 이유로 데이터 삭제가 시작되었지만 완료되지 않은 경우 다음에 프로필이 로드될 때 인터넷 사용 기록이 지워집니다.
+
+<ph name="PRODUCT_NAME" />이 올바르게 종료되지 않으면(예: 브라우저 또는 OS 비정상 종료) 브라우저 창을 모두 닫아서 브라우저가 종료된 것이 아니기 때문에 인터넷 사용 기록이 삭제되지 않습니다.</translation>
 <translation id="3671773704245936868">키보드 포커스 강조표시 사용 중지</translation>
 <translation id="3674010627788940405">와일드카드가 아닌 CORS 요청 헤더는 지원되지 않습니다.</translation>
 <translation id="3675303748198647471">setTimeout(…, 0)은 흔히 시간이 오래 걸리는 자바스크립트 작업을 세분화하는 데 사용됩니다.
@@ -6846,6 +6857,27 @@ ArcEnabled 및 UnaffiliatedArcAllowed 정책에서 적용하는 제한사항과 
       정책을 '사용'으로 설정하거나 설정하지 않으면 사용자가 Chrome for Testing을 설치하고 실행할 수 있습니다.
 
       정책을 '사용 안함'으로 설정하면 사용자가 Chrome for Testing을 실행할 수 없습니다. 사용자는 여전히 Chrome for Testing을 설치할 수 있지만 정책이 '사용 안함'으로 설정된 프로필에서는 실행되지 않습니다.</translation>
+<translation id="6258646807927528870">데이터 유출을 방지하기 위해 데이터 제어 규칙 목록을 구성합니다.
+
+      각 규칙은 다음으로 구성됩니다.
+      - 해당 규칙을 트리거하는 조건 필드. 규칙은 사용자 작업이 <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" />, <ph name="DATA_CONTROLS_NOT" /> 필드에 채워진 모든 필드와 일치하는 경우에만 트리거됩니다. 목록 하위 필드의 경우 하나의 항목만 일치하면 됩니다. 예를 들어 하나의 URL 패턴만 일치하면 규칙이 트리거됩니다.
+      - 적용될 제한사항의 목록. 제한사항에 따라 <ph name="DATA_CONTROLS_SOURCES" /> 또는 <ph name="DATA_CONTROLS_DESTINATIONS" /> 조건만 사용할 수 있습니다.
+
+      규칙은 다음을 위해 추가될 수 있습니다.
+      - 소스와 대상 사이에 공유되는 클립보드 데이터의 제어
+      - 소스 탭을 기준으로 스크린샷 차단 제어
+
+      <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 정책을 True로 설정하면 트리거된 규칙이 관리자에게 보고됩니다.
+      제한 수준은 BLOCK, WARN 또는 REPORT로 설정될 수 있습니다.
+      - 제한 수준이 BLOCK으로 설정되면 작업이 허용되지 않습니다.
+      - 제한 수준이 WARN으로 설정되면 사용자에게 경고가 표시되며 사용자는 작업을 계속하거나 취소할 수 있습니다.
+      - 제한 수준이 REPORT로 설정되면 사용자 작업은 중단되지 않지만, <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 정책이 사용 설정된 경우 보고서가 전송됩니다.
+
+      참고:
+      - URL 패턴 형식은 이 형식(https://support.google.com/chrome/a?p=url_blocklist_filter_format)에 따라 지정하세요.
+      - <ph name="PRODUCT_OS_NAME" />에 대한 데이터 유출 방지 규칙의 경우 <ph name="DATA_LEAK_PREVENTION_RULES_LIST" /> 정책도 참고하세요.
+
+      정책을 설정하지 않으면 제한사항이 적용되지 않습니다.</translation>
 <translation id="6258658183356534534">User-Agent Client Hints GREASE 업데이트 기능을 제어합니다.</translation>
 <translation id="6261643884958898336">기기 식별 정보 보고</translation>
 <translation id="6264247808139384018">정책을 사용 설정하거나 설정하지 않으면 비밀번호로 인증하는 사용자가 화면을 잠글 수 있습니다.

@@ -408,6 +408,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="2975121486251958312">Slegs Incognitomodus is beskikbaar</translation>
 <translation id="2982481275546140226">Vee data uit</translation>
 <translation id="298306318844797842">Voeg betaalmetode by …</translation>
+<translation id="2984370252102312100">Maak Oortjies en Oortjiegroepe oop</translation>
 <translation id="2989805286512600854">Maak in 'n nuwe oortjie oop</translation>
 <translation id="300455800299409273">Versteek “Gaan voort met hierdie oortjie”</translation>
 <translation id="3010025794097054078">Beskerm jou teen dataskending, onveilige webwerwe en meer.</translation>
@@ -896,6 +897,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="5415289094036440596">Toegangsleutels kan nie gedeel word nie</translation>
 <translation id="5416022985862681400">Afgelope 7 dae</translation>
 <translation id="5416455648658732408">Skuif na oortjiegroep</translation>
+<translation id="5419613306346207284">Oortjiegroepe van alle toestelle af</translation>
 <translation id="5423269318075950257">Spoor prys na</translation>
 <translation id="5431252637281434233">Jy sal afgemeld word</translation>
 <translation id="543338862236136125">Wysig wagwoord</translation>
@@ -933,6 +935,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="556042886152191864">Knoppie</translation>
 <translation id="5572648434713976849">Jy sal verbeterde voorstelle in die adresbalk kry</translation>
 <translation id="5572684875078967866">Inligtingberging</translation>
+<translation id="5585019845078534178">Kaarte</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Spoor hierdie pakkie na}other{Spoor alle pakkies na}}</translation>
 <translation id="5597915316964418992">Maak die oortjierooster oop</translation>
 <translation id="560322036295180549">Afgeskakel deur jou organisasie</translation>
@@ -1125,7 +1128,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6445981559479772097">Boodskap is gestuur.</translation>
 <translation id="6447842834002726250">Webkoekies</translation>
 <translation id="6449554712554071184">Dit sal die groep permanent van jou toestel af uitvee</translation>
-<translation id="6453018583485750254">Kontrole is nooit uitgevoer nie.</translation>
 <translation id="6459307836338400162">Raadpleeg <ph name="BEGIN_LINK" />Sinkronisering<ph name="END_LINK" /> én <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer instellings wat met privaatheid, sekuriteit en data-insameling verband hou.</translation>
 <translation id="6459411599807878608">Besonderhede is versteek</translation>
 <translation id="646394917185284261">Lêers</translation>
@@ -1629,7 +1631,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8820817407110198400">Boekmerke</translation>
 <translation id="8825562130641217944">Kry jou boekmerke, wagwoorde en meer.</translation>
 <translation id="882557203579758546">Soek op bladsy …</translation>
-<translation id="8838250347763484641">Wissel jou adresbalk na bo of onder vir ’n gepasmaakte blaai-ervaring.</translation>
 <translation id="8840513115188359703">Jy sal nie uit jou Google-rekening afgemeld word nie.</translation>
 <translation id="8843129975935593190">Jou organisasie beperk wat jy kan sinkroniseer.</translation>
 <translation id="8849001918648564819">Versteek</translation>

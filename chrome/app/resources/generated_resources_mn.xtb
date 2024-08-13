@@ -2457,6 +2457,7 @@
 <translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" />-р зургийг хайх</translation>
 <translation id="2727633948226935816">Надад дахин битгий сануул</translation>
 <translation id="2727712005121231835">Бодит хэмжээ</translation>
+<translation id="2727713483500953825">Lens-р хайхын тулд дурын зураг/текстийг сонгоно уу</translation>
 <translation id="2727744317940422214">Уучлаарай, алдаа гарлаа. Тайлбарт #bruschetta-р санал хүсэлт илгээнэ үү. Алдааны код нь <ph name="ERROR" />. Цэвэрлэж чадсангүй. Та үүнийг гар аргаар хийх шаардлагатай байж магадгүй.</translation>
 <translation id="2729327310379176711">Chrome нь хяналтыг багасгаж, таныг хайлт хийх явцад илүү аюулгүй байлгах шинэ арга замыг олж байна. Chrome нь <ph name="ESTIMATE_INTERESTS_LINK" /> тэдгээрийг удирдах боломжийг танд олгоно. Дараа нь таны зочилдог сайтууд танд зар харуулахын тулд Chrome-с сонирхлыг тань асуух боломжтой.</translation>
 <translation id="2729577602370119849">Хэвлэгчдэд хялбра хандаж, удирдаарай</translation>
@@ -3672,6 +3673,7 @@
 <translation id="3623598555687153298">Энэ нь үзүүлсэн сайтуудын хадгалсан <ph name="TOTAL_USAGE" />-н өгөгдлийг устгана</translation>
 <translation id="3624567683873126087">Төхөөрөмжийн түгжээг тайлж Google Туслахдаа нэвтрэх</translation>
 <translation id="3624583033347146597">Гуравдагч талын күүкиний тохиргоогоо сонгоно уу</translation>
+<translation id="3625345586754200168">Lens-г туршиж үзэх</translation>
 <translation id="3625481642044239431">Буруу файл сонгосон байна. Дахин оролдоно уу.</translation>
 <translation id="3626296069957678981">Энэ Chromebook-г цэнэглэхийн тулд тохирох Dell батарейг ашиглана уу.</translation>
 <translation id="3627320433825461852">1 минут хүрэхгүй хугацаа үлдлээ</translation>
@@ -4827,6 +4829,7 @@
 <translation id="4450974146388585462">Оношлох</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> нь таны өгөгдлийг илүү аюулгүй хадгалах боломжтой идэвхтэй TPM илрүүллээ.</translation>
 <translation id="4452898361839215358">эсвэл PPD-г сонгоно уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Lens-р дурын зураг эсвэл текстийг хайна уу</translation>
 <translation id="4453430595102511050">Таны гарын баруун дээд буланд байх хурууны хээ мэдрэгчид хүрнэ үү. Таны хурууны хээний өгөгдлийг аюулгүй хадгалдаг бөгөөд энэ нь таны <ph name="DEVICE_TYPE" />-с гадагш хэзээ ч гарахгүй.</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" />-г хайх эсвэл URL оруулах</translation>
 <translation id="4457472090507035117">Одоогийн дуу хоолойг сонгоно уу:</translation>
@@ -6985,6 +6988,7 @@
 <translation id="6059276912018042191">Саяхны Chrome табууд</translation>
 <translation id="6059652578941944813">Гэрчилгээний шатлал</translation>
 <translation id="6059925163896151826">USB төхөөрөмж</translation>
+<translation id="6060842547856900641">Lens-г нээх</translation>
 <translation id="6061408389284235459">Мэдэгдлийг <ph name="DEVICE_NAME" />-д илгээсэн</translation>
 <translation id="6063284707309177505">QR код үүсгэх</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Санамж:<ph name="END_BOLD" /> Төстэй дуу хоолой эсвэл бичлэгээр <ph name="SUPERVISED_USER_NAME" />-н хувийн илэрцэд хандах боломжтой байж магадгүй. Батарей хэмнэхийн тулд та <ph name="SUPERVISED_USER_NAME" />-н Туслахын тохиргоо хэсэгт энэ төхөөрөмжийг зөвхөн цэнэглэгчид холбогдсон үед “Ok Google”-г асаалттай байлгахаар сонгож болно.</translation>

@@ -249,6 +249,7 @@
 <translation id="1831565490995294689"><ph name="APP_TO_OPEN" /> खोल्न चयन गर्नुहोस्।</translation>
 <translation id="1838011306813517425">फोकस मोडका सेटिङ</translation>
 <translation id="1838895407229022812">रात्रि प्रकाश निष्क्रिय छ।</translation>
+<translation id="1840920496749066704">°C</translation>
 <translation id="1854180393107901205">Cast गर्न रोक्नुहोस्</translation>
 <translation id="1862077610023398675">सेटिङ लुकाउनुहोस्</translation>
 <translation id="1862380676329487333">अपडेट गर्नुहोस् अनि साइन आउट गर्नुहोस्</translation>
@@ -317,7 +318,9 @@
 <translation id="2135456203358955318">डक गरिएको म्याग्निफायर</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2149229036084364364">अघिल्लो ट्रयाक प्ले गर्नुहोस्</translation>
+<translation id="2152796271648108398">हालको मौसम</translation>
 <translation id="2152895518047545149">तपाईंले सबै असाइनमेन्ट पेस गरिसक्नुभयो जस्तो देखिन्छ। राम्रो काम!</translation>
+<translation id="2159568970844941445">Files मा कुनै पनि फोटो छैन</translation>
 <translation id="2161132820593978283">भिडियो कल गर्दा आफूलाई स्क्रिनको बिचमा राखिराख्न क्यामेरा फ्रेमिङ प्रयोग गरी हेर्नुहोस्। "द्रुत सेटिङ" मा गई यो सुविधा अन गर्नुहोस्।</translation>
 <translation id="216955976692983107">विन्डोको टाइलको आकार दायाँतिरबाट बदल्नुहोस्</translation>
 <translation id="2185166372312820725">अघिल्लो ट्याबमा जानुहोस्</translation>
@@ -614,6 +617,7 @@
 <translation id="3264031581203585083">Google Drive का सबै सुझावहरू लुकाउनुहोस्</translation>
 <translation id="3265032511221679826">सटीक लोकेसन प्रयोग गर्ने अनुमति दिने हो?</translation>
 <translation id="3269597722229482060">दायाँ क्लिक गर्नुहोस्</translation>
+<translation id="3273040715184276344">क्याप्स लक अफ गरियो</translation>
 <translation id="3274634049061007184">आफ्नो फोनमा भएका एपहरू हेर्नुहोस्</translation>
 <translation id="3289364673986435196">पावर मेनु</translation>
 <translation id="3289544412142055976">Linux एपहरू हाल प्रयोग गर्न मिल्दैन</translation>
@@ -664,6 +668,7 @@
 <translation id="3439896670700055005">क्यास गरिएका सामग्री प्रयोग नगरिकन हालको पेज रिलोड गर्नुहोस्</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">आफ्नो माउस कस्टमाइज गर्नुहोस्</translation>
+<translation id="3444385531800624797">परिणामहरू लोड गरिँदै छन्</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनेट</translation>
 <translation id="3445925074670675829">USB-C यन्त्र</translation>
 <translation id="3454555520521576458">आकार मिलाउन सकिने</translation>
@@ -992,7 +997,6 @@
 <translation id="4544483149666270818">रेकर्ड गर्न कुनै विन्डो चयन गर्नुहोस्</translation>
 <translation id="4545950850562423083">हालको पेजलाई बुकमार्कका रूपमा सेभ गर्नुहोस्</translation>
 <translation id="4548482551627849548">सक्रिय विन्डो सारेर बायाँतिरको डेस्कमा लैजानुहोस्</translation>
-<translation id="4549853322523631092">कुनै पनि परिणाम भेटिएन।</translation>
 <translation id="4552748006424994716">प्रतिध्वनि उत्पन्न हुन नदिन तपाईं तारवाला हेडफोनबाट मात्र आफ्नो माइक सुन्न सक्नुहुन्छ।</translation>
 <translation id="4560576029703263363">अन</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4868492592575313542">सक्रिय गरियो</translation>
 <translation id="4871905435473761992">हटस्पटसम्बन्धी विवरणहरू देखाउनुहोस्। तपाईंको मोबाइल नेटवर्कमा हटस्पट प्रयोग गर्न मिल्दैन।</translation>
 <translation id="4872237917498892622">Alt+खोज्नुहोस् वा Shift</translation>
+<translation id="4872724534194216608">गणना गर्न खोज्नुहोस्</translation>
 <translation id="4872852897273142380">बुकमार्क बारमा फोकस गर्नुहोस् वा बुकमार्क बार हाइलाइट गर्नुहोस् (बुकमार्क बार देखाइएको छ भने)</translation>
 <translation id="4876935764454575645">अडियोको चयन</translation>
 <translation id="4881323000405981760">इफेक्टहरू Linux एपहरूमा प्रयोग गर्न मिल्दैन</translation>
@@ -1201,11 +1206,13 @@
 <translation id="523505283826916779">पहुँचक्षमता सेटिङहरू</translation>
 <translation id="5238719049014159442">लन्चर खोल्नुहोस्/बन्द गर्नुहोस्</translation>
 <translation id="5240725217819182328">इन्स्टल गरिएका एपमा भएका विशेष पेज वा कारबाहीहरूको द्रुत पहुँच</translation>
+<translation id="5243355658487390559">मिति खोज्नुहोस्</translation>
 <translation id="5245201184978705914">ट्रान्सक्रिप्ट बनाउन सकिएन</translation>
 <translation id="5251174953851719648">सामग्री रिफ्रेस गर्नुहोस्</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> नामक डिभाइसमा कनेक्ट गरिएको छ, <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ</translation>
 <translation id="5258528442992323769">कुनै पनि डेस्क सेभ गरिएको छैन</translation>
 <translation id="5260676007519551770">डेस्क ४</translation>
+<translation id="5265391159779542051">परिणामहरू लोड गरिए</translation>
 <translation id="5270547718570958938">गूगल क्यालेण्डर</translation>
 <translation id="5277869901083657836">स्टाइलस टुलहरू टगल गर्नुहोस्</translation>
 <translation id="5278086053818066789">ChromeVox (बोलेर प्रतिक्रिया दिने सुविधा) अन/अफ गर्नुहोस्</translation>
@@ -1245,6 +1252,7 @@
 <translation id="5369717264580061086">Files एपमा प्रिभ्यू गर्नुहोस्</translation>
 <translation id="5377367976106153749">क्यामेरा प्रयोग गर्ने अनुमति दिने हो?</translation>
 <translation id="5379115545237091094">अत्यधिक प्रयासहरू भए</translation>
+<translation id="5383434787520761436">Google Drive को कुनै पनि फाइल छैन</translation>
 <translation id="5391307769715781764">सेभ गरिएको डेस्क बदल्ने हो?</translation>
 <translation id="5392327145184648521">ब्याट्रीको प्रतिशत निकालिँदै छ…</translation>
 <translation id="5393156353051693207">तपाईं आफ्ना एपहरूको क्रम पुनः मिलाउन चाहनुहुन्छ भने कुनै पनि ठाउँमा टच एण्ड होल्ड गर्नुहोस्</translation>
@@ -1500,6 +1508,7 @@
 <translation id="6210042900243040400">यसअघि <ph name="EMAIL" /> मा सेभ गरिएको <ph name="NAME" /> कनेक्ट गर्नुहोस्</translation>
 <translation id="6213808132343683860">आंशिक स्क्रिनसट खिच्नुहोस् वा स्क्रिन रेकर्डिङ गर्नुहोस्</translation>
 <translation id="621606890568890214">Google Classroom एक्स्पान्ड गर्नुहोस्</translation>
+<translation id="6216759484154215561">ब्राउजरमा "थप जान्नुहोस्" लिंक खोलियो</translation>
 <translation id="6220928844947387476">तपाईं अब एकै पटक आफूसँगै आफ्नो स्क्रिन रेकर्ड गर्न सक्नुहुन्छ</translation>
 <translation id="622484624075952240">तल</translation>
 <translation id="6228457605945141550">उज्यालो कम गर्नुहोस्‌</translation>
@@ -1595,6 +1604,7 @@
 <translation id="6565007273808762236">eSIM कनेक्सन उपलब्ध छैन</translation>
 <translation id="6570831796530454248">{0,plural, =1{एक घण्टाभित्र डिभाइस रिस्टार्ट गर्नुहोस्}other{# घण्टाभित्र डिभाइस रिस्टार्ट गर्नुहोस्}}</translation>
 <translation id="6570902864550063460">USB मार्फत चार्ज गरिँदै छ</translation>
+<translation id="6571006437522772306">Files मा खोज्नुहोस्</translation>
 <translation id="6574587113394758819">सुरक्षित रूपमा हेर्ने सुविधा अन गरिएको हुनाले <ph name="APP_TITLE" /> सम्बन्धी सूचना लुकाइएको छ</translation>
 <translation id="6574622320167699133">तपाईंको फोनमार्फत अनलक गरिएको। तपाईं Chromebook खोल्न चाहनुहुन्छ भने ट्याप गर्नुहोस् वा क्लिक गर्नुहोस्।</translation>
 <translation id="6578407462441924264">नामविहीन</translation>
@@ -1632,6 +1642,7 @@
 <translation id="6682029141988159141">क्लिपबोर्डमा भएको सामग्री पेस्ट गर्नुहोस्</translation>
 <translation id="6683022854667115063">हेडफोन</translation>
 <translation id="6686023075541098243">आफ्नो फोनमा भएका सूचनाहरू हेर्ने सुविधा सेटअप गर्नुहोस्</translation>
+<translation id="6694973220096431421">Google Drive मा खोज्नुहोस्</translation>
 <translation id="6696025732084565524">तपाईंको अलग्याउन मिल्ने किबोर्डलाई महत्त्वपूर्ण अद्यावधिक आवश्यक छ</translation>
 <translation id="6697913454192220372">नयाँ डेस्क हाल्नुहोस्</translation>
 <translation id="6700713906295497288">IME सम्बन्धी मेनुको बटन</translation>
@@ -1677,6 +1688,7 @@
 <translation id="6852628153543175788">१० मिनेट थप्नुहोस्</translation>
 <translation id="6855029042976311970">भर्खरै सम्पादन गरिएको</translation>
 <translation id="6856708615407876657">खोज परिणामका कोटीहरू टगल गर्नुहोस्</translation>
+<translation id="6856756288284651804">Chromebook अपडेट गरिएको छ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकेन्ड</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{एउटा अङ्क बाँकी छ}other{# वटा अङ्क बाँकी छन्}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> डाउनलोड गर्ने कार्य केही समयका लागि रोकिएको छ</translation>
@@ -1754,6 +1766,7 @@
 <translation id="7143207342074048698">जडान गर्दै...</translation>
 <translation id="7144942256906679589">ब्याट्रीको स्थिति</translation>
 <translation id="7145639536026937076">ब्याट्री <ph name="PERCENTAGE" />% छ र चार्ज हुँदै छ। ब्याट्री सेभर अन छ।</translation>
+<translation id="7147587499155271409">ब्राउजिङ हिस्ट्री छैन</translation>
 <translation id="7149149900052329230">आफ्ना लोकल फाइल र Google Drive का फाइलहरू Files एपबाटै व्यवस्थापन गर्नुहोस्।</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1781,12 +1794,14 @@
 <translation id="7302889331339392448">लाइभ क्याप्सन अफ छ।</translation>
 <translation id="7303365578352795231">अर्को यन्त्रमा जवाफ दिँदै।</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">कुनै पनि परिणाम भेटिएन</translation>
 <translation id="7312210124139670355">तपाईंका एड्मिन तपाईंको eSIM रिसेट गर्दै हुनुहुन्छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="7312761820869643657">डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्</translation>
 <translation id="7313193732017069507">क्यामेरा एक्स्पान्ड गर्नुहोस्</translation>
 <translation id="73289266812733869">चयन नगरिएको</translation>
 <translation id="7330397557116570022">स्पिच-टु-टेक्स्ट प्रयोग गर्न टेक्स्ट फिल्डमा जानुहोस्</translation>
 <translation id="7331646370422660166">alt + डाउन एरो</translation>
+<translation id="7336943714413713812">ब्राउजिङ हिस्ट्रीमा खोज्नुहोस्</translation>
 <translation id="7337660433630200387">+१० मिनेट</translation>
 <translation id="7340731148882810149">स्वतः क्लिक गर्ने सुविधाको मेनु</translation>
 <translation id="7346909386216857016">ठिक छ, बुझेँ</translation>
@@ -1847,6 +1862,7 @@
 डिभाइस सट डाउन गर्न डिभाइसमा रहेको पावर बटन फेरि थिचिराख्नुहोस्।</translation>
 <translation id="7523420897035067483">फोकस मोड अन हुँदा Do Not Disturb अन गर्नुहोस्</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7525067979554623046">सिर्जना गर्नुहोस्</translation>
 <translation id="7526573455193969409">नेटवर्कको अनुगमन गरिने सम्भावना छ</translation>
 <translation id="7536035074519304529">IP एड्रेस: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">बायाँ विन्डो मिलाउनुहोस्</translation>
@@ -1889,6 +1905,7 @@
 <translation id="7670953955701272011">Google पात्रोमा यो मिति खोल्नुहोस्</translation>
 <translation id="7671610481353807627">एपहरू रङअनुसार क्रमबद्ध गरिन्छन्</translation>
 <translation id="7672095158465655885"><ph name="NAME" /> मा कनेक्ट गरिएको छ, <ph name="SUBTEXT" /></translation>
+<translation id="7680417644536099065">क्याप्स लक अन गरियो</translation>
 <translation id="7682351277038250258">क्लिपबोर्डमा भएको सामग्रीलाई प्लेन टेक्स्टका रूपमा पेस्ट गर्नुहोस्</translation>
 <translation id="7684531502177797067"><ph name="CAMERA_NAME" /> लाई क्यामेरा इनपुटका रूपमा सेट गरियो।</translation>
 <translation id="7687172143976244806">तपाईंले खोल्नुभएको</translation>
@@ -2141,6 +2158,7 @@
 <translation id="8553395910833293175">सबै डेस्कलाई काम जिम्मा दिइसकिएको छ।</translation>
 <translation id="8555757996376137129">हालको डेस्क हटाउनुहोस्</translation>
 <translation id="8559845965695780508"><ph name="USER" /> ले सम्पादन गर्नुभएको</translation>
+<translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">तपाईंले अपनाई हेर्न सक्ने केही सुझाव यस प्रकार छन्</translation>
 <translation id="857201607579416096">मेनु सारेर स्क्रिनको फेदको दायाँ कुनामा लगियो।</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> थिच्नुहोस् र कुनै लिंकमा क्लिक गर्नुहोस्</translation>
@@ -2203,6 +2221,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">पुछारको दायाँ कुना, लन्चर, एड्रेस बार, बुकमार्क बार, खुला रहेको वेबसाइट र डाउनलोड गरिएका सामग्रीमध्ये एकबाट अर्कोमा जान अगाडि जानुहोस्</translation>
 <translation id="8792626944327216835">माइक्रोफोन</translation>
+<translation id="8797381270745758905">"पुनः प्रयास गर्नुहोस्" लिंकमा क्लिक गरियो</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">फोल्डर <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"मद्दत गर"</translation>
@@ -2251,6 +2270,7 @@
 <translation id="8951539504029375108">तपाईंको Chromebook मा स्वीकृत Thunderbolt यन्त्रहरू मात्र चल्छन्</translation>
 <translation id="8956420987536947088">आफूले यसअघि खोलेका विन्डो तथा एपहरू खोल्नुहोस्</translation>
 <translation id="8959380109429710384">तपाईंले फुल स्क्रिन म्याग्निफायर अन/अफ गर्ने किबोर्ड सर्टकट थिच्नुभयो। जुम इन गरिएका बेला यताउता सार्न Ctrl + Alt + एरो की प्रयोग गर्नुहोस्।</translation>
+<translation id="896335827708646237">सर्वसुलभताको द्रुत सेटिङ खोल्नुहोस्</translation>
 <translation id="8964525410783593407">१ घण्टा</translation>
 <translation id="8973885907461690937">मेनु जनाउने आइकनमा फोकस गर्नुहोस्</translation>
 <translation id="8980862970816311842">एप ग्रिडमा कुनै एपको आइकन फोल्डर भित्र/बाहिर सार्नुहोस्</translation>
@@ -2286,6 +2306,7 @@
 <translation id="9089416786594320554">आगत विधिहरू</translation>
 <translation id="9091406374499386796">लन्चरमा आफ्ना फाइल, एप र अन्य कुरा खोज्नुहोस्। तपाईं <ph name="PRODUCT_NAME" /> सम्बन्धी प्रश्नहरूका जवाफ प्राप्त गर्न पनि सक्नुहुन्छ।</translation>
 <translation id="9091626656156419976">हटाइएको प्रदर्शन <ph name="DISPLAY_NAME" /></translation>
+<translation id="9098750710832798892">तपाईंको क्लिपबोर्डमा कुनै पनि सामग्री कपी गरिएको छैन</translation>
 <translation id="9098969848082897657">फोन साइलेन्ट राख्नुहोस्</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> वा <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">पछिल्लो कारबाही अन्डू गर्नुहोस्</translation>
@@ -2295,6 +2316,7 @@
 <translation id="9139720510312328767">अर्को अक्षर मेटाउनुहोस्</translation>
 <translation id="9148058034647219655">बाहिर निस्कनुहोस्</translation>
 <translation id="9151906066336345901">इन्ड की</translation>
+<translation id="9159421884295554245">क्लिपबोर्डमा खोज्नुहोस्</translation>
 <translation id="9161053988251441839">सिफारिस गरिएका एपहरू</translation>
 <translation id="9168436347345867845">यो कार्य पछि गर्नुहोस्‌</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> सम्बन्धी १ परिणाम देखाउँदै</translation>

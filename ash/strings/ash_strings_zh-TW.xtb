@@ -668,6 +668,7 @@
 <translation id="3439896670700055005">重新載入目前網頁，而不使用快取內容</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">自訂滑鼠</translation>
+<translation id="3444385531800624797">正在載入結果</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="3445925074670675829">USB-C 裝置</translation>
 <translation id="3454555520521576458">可調整大小</translation>
@@ -993,7 +994,6 @@
 <translation id="4544483149666270818">選取要錄影的視窗</translation>
 <translation id="4545950850562423083">將目前網頁儲存為書籤</translation>
 <translation id="4548482551627849548">將使用中的視窗移至左側桌面</translation>
-<translation id="4549853322523631092">找不到結果。</translation>
 <translation id="4552748006424994716">為避免產生回音，可以設定僅限使用有線耳機聆聽麥克風的聲音。</translation>
 <translation id="4560576029703263363">開啟</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1209,6 +1209,7 @@
 <translation id="5253783950165989294">已連線至名為「<ph name="DEVICE_NAME" />」的裝置，電池電力：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">沒有已儲存的桌面</translation>
 <translation id="5260676007519551770">桌面 4</translation>
+<translation id="5265391159779542051">已載入結果</translation>
 <translation id="5270547718570958938">Google 日曆</translation>
 <translation id="5277869901083657836">切換觸控筆工具</translation>
 <translation id="5278086053818066789">開啟/關閉 ChromeVox (互動朗讀功能)</translation>
@@ -1504,6 +1505,7 @@
 <translation id="6210042900243040400">連線到 <ph name="EMAIL" /> 先前儲存的「<ph name="NAME" />」</translation>
 <translation id="6213808132343683860">擷取部分螢幕截圖或錄製部分螢幕畫面</translation>
 <translation id="621606890568890214">展開 Google Classroom</translation>
+<translation id="6216759484154215561">已在瀏覽器中開啟瞭解詳情連結</translation>
 <translation id="6220928844947387476">你現在可以同時錄製鏡頭畫面和螢幕畫面</translation>
 <translation id="622484624075952240">向下鍵</translation>
 <translation id="6228457605945141550">調低亮度</translation>
@@ -1788,6 +1790,7 @@
 <translation id="7302889331339392448">即時字幕功能已關閉。</translation>
 <translation id="7303365578352795231">正在透過其他裝置回答問題。</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7312210124139670355">管理員正在重設 eSIM 卡，請稍候片刻。</translation>
 <translation id="7312761820869643657">將裝置復原為先前的版本</translation>
 <translation id="7313193732017069507">展開相機調整大小的按鈕</translation>
@@ -1855,6 +1858,7 @@
 如要關閉裝置，請再次按住裝置上的電源按鈕。</translation>
 <translation id="7523420897035067483">在專注模式下啟用零打擾模式</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7525067979554623046">建立</translation>
 <translation id="7526573455193969409">網路可能會受到監控</translation>
 <translation id="7536035074519304529">IP 位址：<ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">更新左側視窗</translation>
@@ -2212,6 +2216,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">在以下位置間以反方向移動：右下角、啟動器、網址列、書籤列、開啟的網站和下載內容</translation>
 <translation id="8792626944327216835">麥克風</translation>
+<translation id="8797381270745758905">重試連結已啟用</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" />資料夾</translation>
 <translation id="880709030178078220">「說明」</translation>

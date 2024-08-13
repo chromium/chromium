@@ -408,6 +408,7 @@
 <translation id="2975121486251958312">Достапен е само режимот „Инкогнито“</translation>
 <translation id="2982481275546140226">Избриши податоци</translation>
 <translation id="298306318844797842">Додајте начин на плаќање…</translation>
+<translation id="2984370252102312100">отворени картички и групи картички</translation>
 <translation id="2989805286512600854">Отвори во нова картичка</translation>
 <translation id="300455800299409273">Криење на „Продолжете со картичкава“</translation>
 <translation id="3010025794097054078">Заштитете се од упади во податоци, небезбедни веб-сајтови и друго.</translation>
@@ -896,6 +897,7 @@
 <translation id="5415289094036440596">Криптографските клучеви не може да се споделат</translation>
 <translation id="5416022985862681400">Минатите 7 дена</translation>
 <translation id="5416455648658732408">Премести во група картички</translation>
+<translation id="5419613306346207284">Групи картички од сите уреди</translation>
 <translation id="5423269318075950257">Следи ја цената</translation>
 <translation id="5431252637281434233">Ќе се одјавите</translation>
 <translation id="543338862236136125">Измени ја лозинката</translation>
@@ -933,6 +935,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="556042886152191864">Копче</translation>
 <translation id="5572648434713976849">Ќе добивате подобрени предлози во лентата за адреси</translation>
 <translation id="5572684875078967866">Меморија</translation>
+<translation id="5585019845078534178">Картички</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Следи го пакетов}one{Следи ги сите пакети}other{Следи ги сите пакети}}</translation>
 <translation id="5597915316964418992">Отворете ја мрежата со апликации</translation>
 <translation id="560322036295180549">Исклучено од вашата организација</translation>
@@ -1125,7 +1128,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6445981559479772097">Пораката е испратена.</translation>
 <translation id="6447842834002726250">Колачиња</translation>
 <translation id="6449554712554071184">Ова трајно ќе ја избрише групата од вашиот уред.</translation>
-<translation id="6453018583485750254">Никогаш не е извршена проверка.</translation>
 <translation id="6459307836338400162">За повеќе поставки што се однесуваат на приватноста, безбедноста и прибирањето податоци, одете на <ph name="BEGIN_LINK" />Синхронизација<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Деталите се скриени</translation>
 <translation id="646394917185284261">Датотеки</translation>
@@ -1629,7 +1631,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8820817407110198400">Обележувачи</translation>
 <translation id="8825562130641217944">Добијте ги вашите обележувачи, лозинки и друго.</translation>
 <translation id="882557203579758546">Најди на страницата…</translation>
-<translation id="8838250347763484641">Префрлете ја лентата за адреси одозгора најдолу за приспособено доживување при прелистувањето.</translation>
 <translation id="8840513115188359703">Нема да ве одјавиме од сметката на Google.</translation>
 <translation id="8843129975935593190">Вашата организација ограничува што може да синхронизирате.</translation>
 <translation id="8849001918648564819">Скриен</translation>

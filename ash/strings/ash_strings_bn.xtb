@@ -668,6 +668,7 @@
 <translation id="3439896670700055005">ক্যাশ করা কন্টেন্ট ব্যবহার না করেই আপনার বর্তমান পৃষ্ঠাটি আবার লোড করুন</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">আপনার মাউস কাস্টমাইজ করুন</translation>
+<translation id="3444385531800624797">ফলাফল লোড করা হচ্ছে</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="3445925074670675829">USB-C ডিভাইস</translation>
 <translation id="3454555520521576458">পরিবর্তনযোগ্য আকার</translation>
@@ -996,7 +997,6 @@
 <translation id="4544483149666270818">রেকর্ড করতে একটি উইন্ডো বেছে নিন</translation>
 <translation id="4545950850562423083">বর্তমান পৃষ্ঠাটি বুকমার্ক হিসেবে সেভ করুন</translation>
 <translation id="4548482551627849548">চালু থাকা উইন্ডো বাঁদিকের ডেস্কে সরান</translation>
-<translation id="4549853322523631092">কোনও ফলাফল পাওয়া যায়নি।</translation>
 <translation id="4552748006424994716">ইকো যাতে না হয়, তার জন্য শুধুমাত্র তারযুক্ত হেডফোনের মাধ্যমে আপনার মাইক্রোফোন শুনতে পারবেন।</translation>
 <translation id="4560576029703263363">চালু করা আছে</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1212,6 +1212,7 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> নামের ডিভাইসে কানেক্ট করা হয়েছে, ব্যাটারি চার্জ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">সেভ করা কোনও ডেস্ক নেই</translation>
 <translation id="5260676007519551770">ডেস্ক ৪</translation>
+<translation id="5265391159779542051">ফলাফল লোড করা হয়েছে</translation>
 <translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">স্টাইলাস টুল টগল করুন</translation>
 <translation id="5278086053818066789">ChromeVox চালু/বন্ধ করুন (পড়ে শোনানো)</translation>
@@ -1507,6 +1508,7 @@
 <translation id="6210042900243040400">আগে থেকে <ph name="EMAIL" />-এ সেভ করা <ph name="NAME" /> কানেক্ট করুন</translation>
 <translation id="6213808132343683860">আংশিক স্ক্রিনশট বা স্ক্রিন রেকর্ডিং নিন</translation>
 <translation id="621606890568890214">Google Classroom বড় করুন</translation>
+<translation id="6216759484154215561">ব্রাউজারে আরও জানুন লিঙ্ক খোলা রয়েছে</translation>
 <translation id="6220928844947387476">আপনি এখন একই সময়ে নিজে এবং আপনার স্ক্রিন রেকর্ড করতে পারবেন</translation>
 <translation id="622484624075952240">নিচের</translation>
 <translation id="6228457605945141550">উজ্জ্বলতা কমান</translation>
@@ -1793,6 +1795,7 @@
 <translation id="7302889331339392448">লাইভ ক্যাপশন বন্ধ আছে।</translation>
 <translation id="7303365578352795231">অন্য ডিভাইসে উত্তর দেওয়া হচ্ছে।</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">কোনও ফলাফল পাওয়া যায়নি</translation>
 <translation id="7312210124139670355">আপনার অ্যাডমিনিস্ট্রেটর আপনার ই-সিম রিসেট করছেন। এতে কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="7312761820869643657">ডিভাইস আগের ভার্সনে আপডেট করুন</translation>
 <translation id="7313193732017069507">ক্যামেরা সামনে আনুন</translation>
@@ -1860,6 +1863,7 @@
 ডিভাইসটি বন্ধ করতে, আবার ডিভাইসের পাওয়ার বোতাম প্রেস করে ধরে রাখুন।</translation>
 <translation id="7523420897035067483">ফোকাস মোডে থাকাকালীন বিরক্ত করবে না ফিচার চালু করুন</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7525067979554623046">তৈরি করুন</translation>
 <translation id="7526573455193969409">নেটওয়ার্কের উপরে নজর রাখা হতে পারে</translation>
 <translation id="7536035074519304529">আইপি অ্যাড্রেস: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">বাঁদিকের উইন্ডো আপডেট করুন</translation>
@@ -2218,6 +2222,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">স্ক্রিনের নিচের দিকে ডান কোণে, লঞ্চার, অ্যাড্রেস বার, বুকমার্ক বার, খোলা আছে এমন ওয়েবসাইট এবং ডাউনলোডগুলির মধ্যে সুইচ করতে সামনের দিকে যান</translation>
 <translation id="8792626944327216835">মাইক্রোফোন</translation>
+<translation id="8797381270745758905">আবার চেষ্টা করুন লিঙ্ক চালু করা হয়েছে</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> ফোল্ডার</translation>
 <translation id="880709030178078220">"সহায়তা করুন"</translation>

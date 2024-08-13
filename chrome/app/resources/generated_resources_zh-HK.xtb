@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">使用您的麥克風和相機</translation>
 <translation id="1005333234656240382">要啟用 ADB 偵錯嗎？</translation>
 <translation id="1005671386794704751">玫瑰粉紅</translation>
+<translation id="1005919400326853998">在新對話框中查看「<ph name="CERT_NAME" />」的憑證詳情</translation>
 <translation id="1006033052970139968">已向應用程式、具有麥克風權限的網站及系統服務授予麥克風存取權</translation>
 <translation id="1006873397406093306">此擴充程式可讀取及變更您在網站上的資料。您可控制擴充程式可以存取的網站。</translation>
 <translation id="1007057452468855774">開「Google Play 商店」</translation>
@@ -2461,6 +2462,7 @@
 <translation id="272741954544380994">透過「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋圖片</translation>
 <translation id="2727633948226935816">不要再提醒我</translation>
 <translation id="2727712005121231835">實際大小</translation>
+<translation id="2727713483500953825">選取圖像/文字以透過「智能鏡頭」搜尋</translation>
 <translation id="2727744317940422214">抱歉，發生錯誤。請提供意見，並在說明中加上 #bruschetta。錯誤代碼：<ph name="ERROR" />。清理失敗，您可能需要手動清理。</translation>
 <translation id="2729327310379176711">Chrome 正在尋找新方法，以減少追蹤，並進一步提高瀏覽時的安全性。Chrome 亦會<ph name="ESTIMATE_INTERESTS_LINK" />，並讓您管理這些興趣。然後，您瀏覽的網站便可要求 Chrome 提供您的興趣，以向您展示廣告。</translation>
 <translation id="2729577602370119849">輕鬆存取和管理打印機</translation>
@@ -2752,6 +2754,7 @@
 <translation id="2926708162326352948">主題更新咗做上載咗嘅圖片</translation>
 <translation id="2927017729816812676">快取儲存空間</translation>
 <translation id="2928795416630981206">已允許追蹤攝錄機位置</translation>
+<translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome 已移除 1 個網站的權限}other{Chrome 已移除 {NUM_SITES} 個網站的權限}}</translation>
 <translation id="2931157624143513983">依可列印範圍自動調整</translation>
 <translation id="2931342457001070961">沒有連接麥克風</translation>
 <translation id="2932085390869194046">建議密碼…</translation>
@@ -3673,6 +3676,7 @@
 <translation id="3623598555687153298">此操作會移除顯示網站所儲存的資料，共 <ph name="TOTAL_USAGE" /></translation>
 <translation id="3624567683873126087">解鎖裝置和登入 Google 帳戶</translation>
 <translation id="3624583033347146597">選擇第三方 Cookie 偏好設定</translation>
+<translation id="3625345586754200168">試用「智能鏡頭」</translation>
 <translation id="3625481642044239431">所選的檔案無效，請再試一次。</translation>
 <translation id="3626296069957678981">如要為此 Chromebook 充電，請使用兼容的 Dell 電池。</translation>
 <translation id="3627320433825461852">還有不到 1 分鐘</translation>
@@ -4076,6 +4080,7 @@
 <translation id="3894983081771074056">鍵盤和滑鼠行為、語言偏好設定等</translation>
 <translation id="3895076768659607631">管理搜尋引擎…(&amp;M)</translation>
 <translation id="3895090224522145010">Kerberos 使用者名稱</translation>
+<translation id="3895097816015686240">開啟之前使用的視窗和分頁，輕鬆繼續未完成的操作</translation>
 <translation id="389521680295183045">網站可以要求偵測您使用裝置的時間</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{1 張圖片}other{# 張圖片}}</translation>
 <translation id="3897746662269329507">您的 <ph name="DEVICE_TYPE" /> 專為遊戲而設。「探索」應用程式會隨即開啟，讓您可存取數百個最新遊戲、查看遊戲優惠，並探索裝置內置的遊戲功能。</translation>
@@ -4822,6 +4827,7 @@
 <translation id="4450974146388585462">診斷</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> 偵測到有效的 TPM，能夠更安全地儲存您的資料。</translation>
 <translation id="4452898361839215358">或選取 PPD。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">透過「智能鏡頭」搜尋圖像或文字</translation>
 <translation id="4453430595102511050">請輕觸位於鍵盤右上角的指紋感應器。系統會妥善地將您的指紋資料儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="4453946976636652378">搜尋 <ph name="SEARCH_ENGINE_NAME" /> 或輸入網址</translation>
 <translation id="4457472090507035117">選取目前的語音：</translation>
@@ -5305,6 +5311,7 @@
 <translation id="4823484602432206655">讀取和變更使用者和裝置設定</translation>
 <translation id="4824037980212326045">Linux 備份與還原</translation>
 <translation id="4824958205181053313">要取消同步功能嗎？</translation>
+<translation id="4825462365587146530">在新分頁中進一步瞭解 Chrome Root Store。</translation>
 <translation id="4825532258163983651">無法刪除密鑰</translation>
 <translation id="4827134188176577524">Chrome Root Store 內含 Chrome Root Program 信任的「憑證機構」發出的憑證，且會持續接受審核。</translation>
 <translation id="4827283332383516812">刪除卡</translation>
@@ -6975,6 +6982,7 @@
 <translation id="6059276912018042191">最近開啟的 Chrome 分頁</translation>
 <translation id="6059652578941944813">憑證階層</translation>
 <translation id="6059925163896151826">USB 裝置</translation>
+<translation id="6060842547856900641">開啟「智能鏡頭」</translation>
 <translation id="6061408389284235459">已傳送通知給 <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">建立 QR 碼</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人與<ph name="SUPERVISED_USER_NAME" />的聲音相似，或有該人的錄音，便有可能存取該人的個人化結果。為節省電量，您可在<ph name="SUPERVISED_USER_NAME" />的「Google 助理」設定中選取，讓系統只有在裝置連接到電源時才啟動「Ok Google」。</translation>
@@ -11014,6 +11022,7 @@
 <translation id="8991766915726096402">本機資料復原</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - 記憶體用量 - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">即使忘記 <ph name="DEVICE_TYPE" /> 密碼，您仍可還原本機資料。您需要登入 Google 帳戶或使用復原帳戶功能。</translation>
+<translation id="8993198843374358393">複製「<ph name="CERT_NAME" />」的憑證雜湊</translation>
 <translation id="8993737615451556423">提供可加快、減慢及暫停語音朗讀的控制項</translation>
 <translation id="899384117894244799">移除受限制的使用者</translation>
 <translation id="8993853206419610596">展開所有要求</translation>
@@ -11221,6 +11230,7 @@
 <translation id="9128317794749765148">無法完成設定</translation>
 <translation id="9128335130883257666">打開<ph name="INPUT_METHOD_NAME" />嘅設定頁面</translation>
 <translation id="9128870381267983090">連接網絡</translation>
+<translation id="9129562557082598582">匯出全部<ph name="CERT_GROUP" /></translation>
 <translation id="9130015405878219958">輸入的模式無效。</translation>
 <translation id="9130208109420587135">修改群組名稱「<ph name="NAME" />」</translation>
 <translation id="9130364135697530260">此網站上的已嵌入內容可使用與你相關的既有資料</translation>

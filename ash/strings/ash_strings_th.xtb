@@ -668,6 +668,7 @@
 <translation id="3439896670700055005">โหลดหน้าปัจจุบันซ้ำโดยไม่ใช้เนื้อหาที่แคชไว้</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">ปรับแต่งเมาส์</translation>
+<translation id="3444385531800624797">กำลังโหลดผลลัพธ์</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> นาที</translation>
 <translation id="3445925074670675829">อุปกรณ์ USB-C</translation>
 <translation id="3454555520521576458">ปรับขนาดได้</translation>
@@ -991,7 +992,6 @@
 <translation id="4544483149666270818">เลือกหน้าต่างที่จะบันทึก</translation>
 <translation id="4545950850562423083">บันทึกหน้าปัจจุบันเป็นบุ๊กมาร์ก</translation>
 <translation id="4548482551627849548">ย้ายหน้าต่างที่เปิดใช้งานอยู่ไปยังเดสก์ทางด้านซ้าย</translation>
-<translation id="4549853322523631092">ไม่พบผลลัพธ์</translation>
 <translation id="4552748006424994716">คุณสามารถฟังเสียงจากไมค์เท่านั้นด้วยหูฟังแบบมีสายเพื่อหลีกเลี่ยงเสียงก้อง</translation>
 <translation id="4560576029703263363">เปิด</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1207,6 +1207,7 @@
 <translation id="5253783950165989294">เชื่อมต่ออยู่กับอุปกรณ์ชื่อ <ph name="DEVICE_NAME" />, แบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">ไม่มีเดสก์ที่บันทึกไว้</translation>
 <translation id="5260676007519551770">เดสก์ที่ 4</translation>
+<translation id="5265391159779542051">โหลดผลลัพธ์แล้ว</translation>
 <translation id="5270547718570958938">Google ปฏิทิน</translation>
 <translation id="5277869901083657836">เปิด/ปิดเครื่องมือสไตลัส</translation>
 <translation id="5278086053818066789">เปิด/ปิด ChromeVox (อธิบายและอ่านออกเสียง)</translation>
@@ -1502,6 +1503,7 @@
 <translation id="6210042900243040400">เชื่อมต่อ <ph name="NAME" /> ที่บันทึกไว้ก่อนหน้านี้ใน <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">จับภาพหน้าจอหรือบันทึกหน้าจอแบบบางส่วน</translation>
 <translation id="621606890568890214">ขยาย Google Classroom</translation>
+<translation id="6216759484154215561">เปิดลิงก์ดูข้อมูลเพิ่มเติมในเบราว์เซอร์แล้ว</translation>
 <translation id="6220928844947387476">ตอนนี้สามารถบันทึกตัวคุณเองไปพร้อมกับหน้าจอได้แล้ว</translation>
 <translation id="622484624075952240">ลง</translation>
 <translation id="6228457605945141550">ลดความสว่าง</translation>
@@ -1787,6 +1789,7 @@
 <translation id="7302889331339392448">คำบรรยายสดปิดอยู่</translation>
 <translation id="7303365578352795231">กำลังรับสายในอุปกรณ์อื่น</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">ไม่พบผลการค้นหา</translation>
 <translation id="7312210124139670355">ผู้ดูแลระบบกำลังรีเซ็ต eSIM การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="7312761820869643657">อัปเดตอุปกรณ์เป็นเวอร์ชันก่อนหน้า</translation>
 <translation id="7313193732017069507">ขยายขนาดกล้อง</translation>
@@ -1854,6 +1857,7 @@
 หากต้องการปิดอุปกรณ์ ให้กดปุ่มเปิด/ปิดบนอุปกรณ์ค้างไว้อีกครั้ง</translation>
 <translation id="7523420897035067483">เปิดใช้ฟีเจอร์ห้ามรบกวนขณะอยู่ในโหมดโฟกัส</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7525067979554623046">สร้าง</translation>
 <translation id="7526573455193969409">อาจมีการตรวจสอบเครือข่าย</translation>
 <translation id="7536035074519304529">ที่อยู่ IP: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">อัปเดตหน้าต่างด้านซ้าย</translation>
@@ -2212,6 +2216,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" /> <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">ย้ายไปข้างหน้าระหว่างมุมขวาล่าง, Launcher, แถบที่อยู่, แถบบุ๊กมาร์ก, เว็บไซต์ที่เปิดอยู่ และการดาวน์โหลด</translation>
 <translation id="8792626944327216835">ไมโครโฟน</translation>
+<translation id="8797381270745758905">เปิดใช้งานลิงก์ลองอีกครั้งแล้ว</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">โฟลเดอร์ <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"ช่วยเหลือ"</translation>

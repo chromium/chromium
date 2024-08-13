@@ -408,6 +408,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="2975121486251958312">Solo está disponible el modo Incógnito</translation>
 <translation id="2982481275546140226">Borrar datos</translation>
 <translation id="298306318844797842">Añadir método de pago...</translation>
+<translation id="2984370252102312100">Abrir pestañas y grupos de pestañas</translation>
 <translation id="2989805286512600854">Abrir en una pestaña nueva</translation>
 <translation id="300455800299409273">Oculta Continuar con esta pestaña</translation>
 <translation id="3010025794097054078">Protégete frente a brechas de seguridad de datos, sitios web no seguros y más.</translation>
@@ -896,6 +897,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5415289094036440596">Las llaves de acceso no se pueden compartir</translation>
 <translation id="5416022985862681400">Últimos 7 días</translation>
 <translation id="5416455648658732408">Mover a un grupo de pestañas</translation>
+<translation id="5419613306346207284">Grupos de pestañas de todos los dispositivos</translation>
 <translation id="5423269318075950257">Seguir precio</translation>
 <translation id="5431252637281434233">Tu sesión se cerrará</translation>
 <translation id="543338862236136125">Cambiar contraseña</translation>
@@ -933,6 +935,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="556042886152191864">Botón</translation>
 <translation id="5572648434713976849">Recibirás sugerencias mejoradas en la barra de direcciones</translation>
 <translation id="5572684875078967866">Almacenamiento de información</translation>
+<translation id="5585019845078534178">Tarjetas</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Seguir este paquete}other{Seguir todos los paquetes}}</translation>
 <translation id="5597915316964418992">Abre la cuadrícula de pestañas</translation>
 <translation id="560322036295180549">Desactivado por tu organización</translation>
@@ -1125,7 +1128,6 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="6445981559479772097">Mensaje enviado</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">Se eliminará permanentemente el grupo de tu dispositivo.</translation>
-<translation id="6453018583485750254">Comprobación no ejecutada.</translation>
 <translation id="6459307836338400162">Para ver más ajustes relacionados con la privacidad, la seguridad y la recogida de datos, consulta <ph name="BEGIN_LINK" />Sincronización<ph name="END_LINK" /> y <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Se han ocultado los detalles</translation>
 <translation id="646394917185284261">Archivos</translation>
@@ -1629,7 +1631,6 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8825562130641217944">Accede a tus marcadores, contraseñas y más.</translation>
 <translation id="882557203579758546">Buscar en la página…</translation>
-<translation id="8838250347763484641">Cambia la posición de la barra de direcciones a arriba o abajo para personalizar tu experiencia de navegación.</translation>
 <translation id="8840513115188359703">No se cerrará la sesión en tu cuenta de Google.</translation>
 <translation id="8843129975935593190">Tu organización limita lo que puedes sincronizar.</translation>
 <translation id="8849001918648564819">Oculto</translation>

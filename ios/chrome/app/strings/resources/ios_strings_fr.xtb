@@ -408,6 +408,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2975121486251958312">Seul le mode navigation privée est disponible</translation>
 <translation id="2982481275546140226">Effacer les données</translation>
 <translation id="298306318844797842">Ajouter un mode de paiement</translation>
+<translation id="2984370252102312100">Ouvrir des onglets et des groupes d'onglets</translation>
 <translation id="2989805286512600854">Ouvrir dans un nouvel onglet</translation>
 <translation id="300455800299409273">Masquer "Continuer avec cet onglet"</translation>
 <translation id="3010025794097054078">Protégez-vous contre les violations de données, les sites Web dangereux et plus encore.</translation>
@@ -896,6 +897,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5415289094036440596">Impossible de partager les clés d'accès</translation>
 <translation id="5416022985862681400">Sept derniers jours</translation>
 <translation id="5416455648658732408">Déplacer vers un groupe d'onglets</translation>
+<translation id="5419613306346207284">Groupes d'onglets de tous les appareils</translation>
 <translation id="5423269318075950257">Suivre les prix</translation>
 <translation id="5431252637281434233">Vous allez être déconnecté</translation>
 <translation id="543338862236136125">Modifier le mot de passe</translation>
@@ -933,6 +935,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="556042886152191864">Bouton</translation>
 <translation id="5572648434713976849">Vous obtiendrez des suggestions améliorées dans la barre d'adresse</translation>
 <translation id="5572684875078967866">Stockage des informations</translation>
+<translation id="5585019845078534178">Fiches</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Suivre ce colis}one{Suivre ce colis}other{Suivre tous les colis}}</translation>
 <translation id="5597915316964418992">Ouvrez la grille d'onglets</translation>
 <translation id="560322036295180549">Désactivé par votre organisation</translation>
@@ -1125,7 +1128,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6445981559479772097">Message envoyé.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">Le groupe sera définitivement supprimé de votre appareil.</translation>
-<translation id="6453018583485750254">Aucune vérification jusqu'à présent.</translation>
 <translation id="6459307836338400162">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez les pages <ph name="BEGIN_LINK" />Synchronisation<ph name="END_LINK" /> et <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Informations masquées</translation>
 <translation id="646394917185284261">Fichiers</translation>
@@ -1630,7 +1632,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8825562130641217944">Accédez à vos favoris, vos mots de passe, etc.</translation>
 <translation id="882557203579758546">Rechercher sur la page</translation>
-<translation id="8838250347763484641">Déplacez la barre d'adresse vers le haut ou le bas pour une expérience de navigation personnalisée.</translation>
 <translation id="8840513115188359703">Vous ne serez pas déconnecté de votre compte Google.</translation>
 <translation id="8843129975935593190">Votre entreprise limite les éléments que vous pouvez synchroniser.</translation>
 <translation id="8849001918648564819">Masqué</translation>

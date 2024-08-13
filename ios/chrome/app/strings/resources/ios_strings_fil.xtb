@@ -408,6 +408,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2975121486251958312">Incognito Mode lang ang Available</translation>
 <translation id="2982481275546140226">I-clear ang Data</translation>
 <translation id="298306318844797842">Magdagdag ng Paraan ng Pagbabayad...</translation>
+<translation id="2984370252102312100">Buksan ang Mga Tab at Grupo ng Tab</translation>
 <translation id="2989805286512600854">Buksan sa Bagong Tab</translation>
 <translation id="300455800299409273">I-hide ang "Magpatuloy sa Tab na Ito"</translation>
 <translation id="3010025794097054078">Manatiling ligtas laban sa mga paglabag sa data, hindi ligtas na website, at higit pa.</translation>
@@ -896,6 +897,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5415289094036440596">Hindi puwedeng i-share ang mga passkey</translation>
 <translation id="5416022985862681400">Huling 7 Araw</translation>
 <translation id="5416455648658732408">Ilipat sa Grupo ng Tab</translation>
+<translation id="5419613306346207284">Mga Grupo ng Tab mula sa lahat ng device</translation>
 <translation id="5423269318075950257">Subaybayan ang Presyo</translation>
 <translation id="5431252637281434233">Masa-sign out ka</translation>
 <translation id="543338862236136125">I-edit ang password</translation>
@@ -933,6 +935,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="556042886152191864">Pindutan</translation>
 <translation id="5572648434713976849">Makakakuha ka ng mas magagandang suhestyon sa address bar</translation>
 <translation id="5572684875078967866">Storage ng Impormasyon</translation>
+<translation id="5585019845078534178">Mga Card</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{Subaybayan ang Package na Ito}one{Subaybayan ang Lahat ng Package}other{Subaybayan ang Lahat ng Package}}</translation>
 <translation id="5597915316964418992">Buksan ang Grid ng Tab</translation>
 <translation id="560322036295180549">Na-off ng iyong organisasyon</translation>
@@ -1125,7 +1128,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6445981559479772097">Napadala na ang mensahe.</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6449554712554071184">Permanente nitong ide-delete ang grupo sa iyong device.</translation>
-<translation id="6453018583485750254">Hindi kailanman tumakbo ang pagsusuri.</translation>
 <translation id="6459307836338400162">Para sa higit pang setting na nauugnay sa privacy, seguridad, at pagkolekta ng data, tingnan ang <ph name="BEGIN_LINK" />Pag-sync<ph name="END_LINK" /> at <ph name="BEGIN_LINK" />Mga Serbisyo ng Google<ph name="END_LINK" />.</translation>
 <translation id="6459411599807878608">Na-hide na ang mga detalye</translation>
 <translation id="646394917185284261">Mga File</translation>
@@ -1629,7 +1631,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8820817407110198400">Mga Bookmark</translation>
 <translation id="8825562130641217944">Makuha ang iyong mga bookmark, password, at higit pa.</translation>
 <translation id="882557203579758546">Hanapin sa Page…</translation>
-<translation id="8838250347763484641">Ilipat ang iyong address bar sa itaas o ibaba para sa naka-customize na experience sa pag-browse.</translation>
 <translation id="8840513115188359703">Hindi ka masa-sign out sa iyong Google Account.</translation>
 <translation id="8843129975935593190">Nililimitahan ng iyong organisasyon kung ano ang puwede mong i-sync.</translation>
 <translation id="8849001918648564819">Nakatago</translation>

@@ -123,6 +123,7 @@
 <translation id="1605658421715042784">ఇమేజ్‌ను కాపీ చేయండి</translation>
 <translation id="1608337082864370066">కాపీ చేసిన చిత్రం కోసం వెతకండి</translation>
 <translation id="1612730193129642006">ట్యాబ్ గ్రిడ్‌ను చూపించండి</translation>
+<translation id="1612754831519568745">మీ సురక్షిత బ్రౌజింగ్ ప్రస్తుతం ఆఫ్‌లో ఉంది. హానికరమైన సైట్‌లు, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్‌ల నుండి రక్షణ పొందండి.</translation>
 <translation id="1620510694547887537">కెమెరా</translation>
 <translation id="1622717322707146952">"Google Calendarకు జోడించు" లేదా "Apple Calendarకు జోడించు" ఆప్షన్‌ను ఎంచుకోండి.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> వేరే చోట వాడిన పాస్‌వర్డ్‌లు</translation>
@@ -935,6 +936,7 @@
 <translation id="556042886152191864">బటన్</translation>
 <translation id="5572648434713976849">మీరు అడ్రస్ బార్‌లో మెరుగైన సూచనలను పొందుతారు</translation>
 <translation id="5572684875078967866">సమాచార స్టోరేజ్</translation>
+<translation id="5585019845078534178">కార్డ్‌లు</translation>
 <translation id="5591792606924434384">{COUNT,plural, =1{ఈ ప్యాకేజీని ట్రాక్ చేయండి}other{ప్యాకేజీలన్నింటినీ ట్రాక్ చేయండి}}</translation>
 <translation id="5597915316964418992">ట్యాబ్ గ్రిడ్‌ను తెరవండి</translation>
 <translation id="560322036295180549">మీ సంస్థ ఆఫ్ చేసింది</translation>
@@ -1127,7 +1129,6 @@
 <translation id="6445981559479772097">మెసేజ్‌ పంపబడింది.</translation>
 <translation id="6447842834002726250">కుక్కీలు</translation>
 <translation id="6449554712554071184">ఇలా చేస్తే, మీ పరికరం నుండి గ్రూప్ శాశ్వతంగా తొలగించబడుతుంది.</translation>
-<translation id="6453018583485750254">ఎప్పటికీ చెక్ రన్ చేయవద్దు.</translation>
 <translation id="6459307836338400162">గోప్యతకు, సెక్యూరిటీకి, డేటా కలెక్షన్‌కు సంబంధించిన మరిన్ని సెట్టింగ్‌ల కోసం, <ph name="BEGIN_LINK" />సింక్<ph name="END_LINK" />‌, <ph name="BEGIN_LINK" />Google సర్వీస్‌లు<ph name="END_LINK" /> రెండింటినీ చూడండి.</translation>
 <translation id="6459411599807878608">వివరాలు దాచబడ్డాయి</translation>
 <translation id="646394917185284261">Files</translation>
@@ -1336,6 +1337,7 @@
 <translation id="7470908168505178757">ట్యాబ్ గ్రూప్. కుదించబడింది.</translation>
 <translation id="7472734401283673885">కంపెనీ పేరు</translation>
 <translation id="7473891865547856676">వద్దు, ధన్యవాదాలు</translation>
+<translation id="7477974514217962959">{count,plural, =1{1 ట్యాబ్ గ్రూప్ మూసివేయబడింది, సేవ్ అయింది}other{{count} ట్యాబ్ గ్రూప్‌లు మూసివేయబడ్డాయి, సేవ్ అయ్యాయి}}</translation>
 <translation id="7488874549363591659">డెలివరీ చేయబడింది</translation>
 <translation id="7491131399623468277">సెట్టింగ్‌లకు వెళ్లండి…</translation>
 <translation id="749854780843431406">మీరు <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> బటన్‌ను క్లిక్ చేయడం ద్వారా కొత్త ట్యాబ్‌ను తెరవవచ్చు.</translation>
@@ -1631,7 +1633,6 @@
 <translation id="8820817407110198400">బుక్‌మార్క్‌లు</translation>
 <translation id="8825562130641217944">మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, అలాగే మరిన్నింటిని పొందండి.</translation>
 <translation id="882557203579758546">పేజీలో కనుగొనండి…</translation>
-<translation id="8838250347763484641">అనుకూలంగా మార్చబడిన బ్రౌజింగ్ ఎక్స్‌పీరియన్స్‌ను పొందడానికి, మీ అడ్రస్ బార్‌ను పైకి, లేదా కిందికి మార్చుకోండి.</translation>
 <translation id="8840513115188359703">మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు.</translation>
 <translation id="8843129975935593190">మీరు సింక్ చేయగల వాటిని మీ సంస్థ పరిమితం చేస్తుంది.</translation>
 <translation id="8849001918648564819">దాచబడింది</translation>

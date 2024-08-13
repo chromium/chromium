@@ -249,6 +249,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1831565490995294689">Select to open <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838011306813517425">Focus settings</translation>
 <translation id="1838895407229022812">Night Light is off.</translation>
+<translation id="1840920496749066704">°C</translation>
 <translation id="1854180393107901205">Stop casting</translation>
 <translation id="1862077610023398675">Hide controls</translation>
 <translation id="1862380676329487333">Update and sign out</translation>
@@ -317,7 +318,9 @@ Here are some things that you can try to get started.</translation>
 <translation id="2135456203358955318">Docked magnifier</translation>
 <translation id="2148716181193084225">Today</translation>
 <translation id="2149229036084364364">Go to previous track</translation>
+<translation id="2152796271648108398">Current weather</translation>
 <translation id="2152895518047545149">Looks like nothing is missing. Nice work!</translation>
+<translation id="2159568970844941445">No images in Files</translation>
 <translation id="2161132820593978283">Try camera framing so that you’ll be in the centre of the screen on video calls. Turn it on in Quick Settings.</translation>
 <translation id="216955976692983107">Tiled resize window towards the right</translation>
 <translation id="2185166372312820725">Go to previous tab</translation>
@@ -614,6 +617,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3264031581203585083">Hide all Google Drive suggestions</translation>
 <translation id="3265032511221679826">Turn on precise location access?</translation>
 <translation id="3269597722229482060">Right-click</translation>
+<translation id="3273040715184276344">Caps lock off.</translation>
 <translation id="3274634049061007184">View your phone's apps</translation>
 <translation id="3289364673986435196">Power menu</translation>
 <translation id="3289544412142055976">Linux apps aren’t currently supported</translation>
@@ -664,6 +668,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3439896670700055005">Reload current page without using cached content</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">Customise your mouse</translation>
+<translation id="3444385531800624797">Results loading</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C device</translation>
 <translation id="3454555520521576458">Resizable</translation>
@@ -992,7 +997,6 @@ One device connected.</translation>
 <translation id="4544483149666270818">Select a window to record</translation>
 <translation id="4545950850562423083">Save current page as bookmark</translation>
 <translation id="4548482551627849548">Move active window to desk on left</translation>
-<translation id="4549853322523631092">No results found.</translation>
 <translation id="4552748006424994716">To avoid an echo, you can listen to your mic only with wired headphones.</translation>
 <translation id="4560576029703263363">On</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1088,6 +1092,7 @@ One device connected.</translation>
 <translation id="4868492592575313542">activated</translation>
 <translation id="4871905435473761992">Show hotspot details. Your mobile network doesn't support hotspot.</translation>
 <translation id="4872237917498892622">Alt+Search or Shift</translation>
+<translation id="4872724534194216608">Search to calculate</translation>
 <translation id="4872852897273142380">Focus on or highlight bookmarks bar (if shown)</translation>
 <translation id="4876935764454575645">Audio selection</translation>
 <translation id="4881323000405981760">Effects are not supported on Linux apps</translation>
@@ -1201,11 +1206,13 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
 <translation id="523505283826916779">Accessibility settings</translation>
 <translation id="5238719049014159442">Open/close Launcher</translation>
 <translation id="5240725217819182328">Quick access to specific pages or actions within installed apps</translation>
+<translation id="5243355658487390559">Search date</translation>
 <translation id="5245201184978705914">Can't generate transcript</translation>
 <translation id="5251174953851719648">Refresh content</translation>
 <translation id="5253783950165989294">Connected to a device named <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% battery</translation>
 <translation id="5258528442992323769">No saved desks</translation>
 <translation id="5260676007519551770">Desk 4</translation>
+<translation id="5265391159779542051">Results loaded</translation>
 <translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">Toggle stylus tools</translation>
 <translation id="5278086053818066789">Turn on/off ChromeVox (spoken feedback)</translation>
@@ -1245,6 +1252,7 @@ No devices connected.</translation>
 <translation id="5369717264580061086">Preview file in Files app</translation>
 <translation id="5377367976106153749">Turn on camera access?</translation>
 <translation id="5379115545237091094">Too many attempts</translation>
+<translation id="5383434787520761436">No Google Drive files</translation>
 <translation id="5391307769715781764">Replace saved desk?</translation>
 <translation id="5392327145184648521">Calculating battery %…</translation>
 <translation id="5393156353051693207">Touch &amp; hold anywhere to reorder your apps</translation>
@@ -1500,6 +1508,7 @@ No devices connected.</translation>
 <translation id="6210042900243040400">Connect <ph name="NAME" /> previously saved to <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Take partial screenshot or screen recording</translation>
 <translation id="621606890568890214">Expand Google Classroom</translation>
+<translation id="6216759484154215561">Opened learn more link in the browser</translation>
 <translation id="6220928844947387476">You can now record yourself and your screen at the same time</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6228457605945141550">Turn brightness down</translation>
@@ -1595,6 +1604,7 @@ New install</translation>
 <translation id="6565007273808762236">eSIM connection unavailable</translation>
 <translation id="6570831796530454248">{0,plural, =1{Update device within an hour}other{Update device within # hours}}</translation>
 <translation id="6570902864550063460">Charging via USB</translation>
+<translation id="6571006437522772306">Search Files</translation>
 <translation id="6574587113394758819"><ph name="APP_TITLE" /> notification is hidden because viewing protection is on</translation>
 <translation id="6574622320167699133">Unlocked by your phone. Tap or click to enter.</translation>
 <translation id="6578407462441924264">Unnamed</translation>
@@ -1632,6 +1642,7 @@ New install</translation>
 <translation id="6682029141988159141">Paste content from clipboard</translation>
 <translation id="6683022854667115063">Headphones</translation>
 <translation id="6686023075541098243">Set up viewing your phone's notifications</translation>
+<translation id="6694973220096431421">Search Google Drive</translation>
 <translation id="6696025732084565524">Your detachable keyboard needs a critical update</translation>
 <translation id="6697913454192220372">Add new desk</translation>
 <translation id="6700713906295497288">IME menu button</translation>
@@ -1677,6 +1688,7 @@ New install</translation>
 <translation id="6852628153543175788">Add 10 minutes</translation>
 <translation id="6855029042976311970">Edited just now</translation>
 <translation id="6856708615407876657">Toggle search result categories</translation>
+<translation id="6856756288284651804">Chromebook updated</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{One digit remaining}other{# digits remaining}}</translation>
 <translation id="6867938213751067702">Download paused <ph name="FILENAME" /></translation>
@@ -1754,6 +1766,7 @@ New install</translation>
 <translation id="7143207342074048698">Connecting</translation>
 <translation id="7144942256906679589">Battery status</translation>
 <translation id="7145639536026937076">Battery at <ph name="PERCENTAGE" />% and charging. Battery Saver is on.</translation>
+<translation id="7147587499155271409">No browsing history</translation>
 <translation id="7149149900052329230">Manage your local files and your Google Drive files, all in the Files app.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1781,12 +1794,14 @@ New install</translation>
 <translation id="7302889331339392448">Live Caption is off.</translation>
 <translation id="7303365578352795231">Answering on another device.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">No results found</translation>
 <translation id="7312210124139670355">Your administrator is resetting your eSIM. This may take a few minutes.</translation>
 <translation id="7312761820869643657">Update device to previous version</translation>
 <translation id="7313193732017069507">Expand camera</translation>
 <translation id="73289266812733869">Unselected</translation>
 <translation id="7330397557116570022">Go to a text field to use dictation</translation>
 <translation id="7331646370422660166">alt + down arrow</translation>
+<translation id="7336943714413713812">Search browsing history</translation>
 <translation id="7337660433630200387">+10 min</translation>
 <translation id="7340731148882810149">Automatic clicks menu</translation>
 <translation id="7346909386216857016">OK, got it</translation>
@@ -1847,6 +1862,7 @@ New install</translation>
 To shut down the device, press and hold the power button on the device again.</translation>
 <translation id="7523420897035067483">Enable Do Not Disturb while in Focus</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7525067979554623046">Create</translation>
 <translation id="7526573455193969409">Network may be monitored</translation>
 <translation id="7536035074519304529">IP address: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Update the left window</translation>
@@ -1889,6 +1905,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7670953955701272011">Open this date in Google Calendar</translation>
 <translation id="7671610481353807627">Apps are sorted by colour</translation>
 <translation id="7672095158465655885">Connected to <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
+<translation id="7680417644536099065">Caps lock on</translation>
 <translation id="7682351277038250258">Paste content from clipboard as plain text</translation>
 <translation id="7684531502177797067">Camera input set to <ph name="CAMERA_NAME" />.</translation>
 <translation id="7687172143976244806">You opened</translation>
@@ -2141,6 +2158,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8553395910833293175">Already assigned to all desks.</translation>
 <translation id="8555757996376137129">Remove current desk</translation>
 <translation id="8559845965695780508"><ph name="USER" /> edited</translation>
+<translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">Here are a few suggestions to try</translation>
 <translation id="857201607579416096">Menu moved to the bottom-right corner of the screen.</translation>
 <translation id="8581946341807941670">Press <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> and click a link</translation>
@@ -2203,6 +2221,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">Move forwards between bottom-right corner, Launcher, address bar, bookmarks bar, website that's open and downloads</translation>
 <translation id="8792626944327216835">microphone</translation>
+<translation id="8797381270745758905">Retry link activated</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Folder <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">'Help'</translation>
@@ -2251,6 +2270,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8951539504029375108">Only approved Thunderbolt devices are compatible with your Chromebook</translation>
 <translation id="8956420987536947088">Open your previous windows and apps</translation>
 <translation id="8959380109429710384">You pressed the keyboard shortcut for the full-screen magnifier. Use Ctrl + Alt + arrows to move around the zoomed in view.</translation>
+<translation id="896335827708646237">Open accessibility Quick Settings</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Place focus on menu icon</translation>
 <translation id="8980862970816311842">Move an app icon in/out of a folder in app grid</translation>
@@ -2286,6 +2306,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9089416786594320554">Input methods</translation>
 <translation id="9091406374499386796">Search for your files, apps and more in the Launcher. You can also get answers to questions about your <ph name="PRODUCT_NAME" />.</translation>
 <translation id="9091626656156419976">Removed display <ph name="DISPLAY_NAME" /></translation>
+<translation id="9098750710832798892">No items copied to your Clipboard</translation>
 <translation id="9098969848082897657">Silence phone</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> or <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Undo last action</translation>
@@ -2295,6 +2316,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9139720510312328767">Delete next letter</translation>
 <translation id="9148058034647219655">Exit</translation>
 <translation id="9151906066336345901">end</translation>
+<translation id="9159421884295554245">Search Clipboard</translation>
 <translation id="9161053988251441839">SUGGESTED APPS</translation>
 <translation id="9168436347345867845">Do it later</translation>
 <translation id="9178475906033259337">Displaying one result for <ph name="QUERY" /></translation>

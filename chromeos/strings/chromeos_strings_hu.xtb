@@ -462,6 +462,7 @@
 <translation id="346423161771747987">Áram</translation>
 <translation id="346539236881580388">Új kép készítése</translation>
 <translation id="3484914941826596830">A firmware frissítése közben ne húzza ki a külső eszközt, és ne kapcsolja ki számítógépét. Ezt az ablakot kis méretre állíthatja. A frissítés eltarthat néhány percig, és előfordulhat, hogy közben nem működik a külső eszköz.</translation>
+<translation id="3485555238092220889">kisegítő lehetőségek művelet</translation>
 <translation id="3486220673238053218">definíció</translation>
 <translation id="3487866404496702283">Visszajelzés a mahi funkcióról</translation>
 <translation id="3488065109653206955">Részben aktiválva</translation>
@@ -979,7 +980,6 @@
 <translation id="6231648282154119906">A Google Biztonságos Böngészés automatikusan ellenőrzi a gyanús fájlokat az Ön által kiválasztott speciális védelem részeként</translation>
 <translation id="6232017090690406397">Akkumulátor</translation>
 <translation id="6234024205316847054">Főbb pontok megjelenítése</translation>
-<translation id="6235460611964961764">Adathasználat manuális visszaállítása</translation>
 <translation id="6243280677745499710">Jelenleg beállított</translation>
 <translation id="6250316632541035980">sonka és tojás</translation>
 <translation id="6265268291107409527">A kiválasztott billentyű: <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" />.</translation>

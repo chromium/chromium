@@ -249,6 +249,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1831565490995294689">Sélectionnez pour ouvrir <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838011306813517425">Paramètres du mode Sans distractions</translation>
 <translation id="1838895407229022812">Le mode Éclairage nocturne est désactivé.</translation>
+<translation id="1840920496749066704"> °C</translation>
 <translation id="1854180393107901205">Arrêter l'envoi de contenu</translation>
 <translation id="1862077610023398675">Masquer les commandes</translation>
 <translation id="1862380676329487333">Mettre à jour et se déconnecter</translation>
@@ -317,7 +318,9 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2135456203358955318">Loupe en mode ancré</translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="2149229036084364364">Revenir à la chanson précédente</translation>
+<translation id="2152796271648108398">Météo actuelle</translation>
 <translation id="2152895518047545149">On dirait qu'il ne manque rien. Bravo!</translation>
+<translation id="2159568970844941445">Aucune image dans Fichiers</translation>
 <translation id="2161132820593978283">Essayez le cadrage de l'appareil photo afin d'être au centre de l'écran lors des appels vidéo. Activez-le dans les paramètres rapides.</translation>
 <translation id="216955976692983107">Fenêtre de redimensionnement en tuile vers la droite</translation>
 <translation id="2185166372312820725">Accéder à l'onglet précédent</translation>
@@ -614,6 +617,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3264031581203585083">Masquer toutes les suggestions de Google Disque</translation>
 <translation id="3265032511221679826">Activer l'accès à la position exacte?</translation>
 <translation id="3269597722229482060">Clic droit</translation>
+<translation id="3273040715184276344">Verrouillage des majuscules désactivé</translation>
 <translation id="3274634049061007184">Affichez les applications de votre téléphone</translation>
 <translation id="3289364673986435196">Menu de l'interrupteur</translation>
 <translation id="3289544412142055976">Les applications Linux ne sont pas prises en charge actuellement</translation>
@@ -991,7 +995,6 @@ Un appareil connecté.</translation>
 <translation id="4544483149666270818">Sélectionnez une fenêtre à enregistrer</translation>
 <translation id="4545950850562423083">Enregistrer la page actuelle comme signet</translation>
 <translation id="4548482551627849548">Déplacer la fenêtre active vers le bureau à gauche</translation>
-<translation id="4549853322523631092">Aucun résultat trouvé.</translation>
 <translation id="4552748006424994716">Pour éviter l'écho, vous pouvez écouter le son provenant de votre micro uniquement avec un casque d'écoute filaire.</translation>
 <translation id="4560576029703263363">Activé</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1087,6 +1090,7 @@ Un appareil connecté.</translation>
 <translation id="4868492592575313542">activée</translation>
 <translation id="4871905435473761992">Afficher les détails du point d'accès sans fil. Votre réseau mobile ne prend pas en charge les points d'accès sans fil.</translation>
 <translation id="4872237917498892622">Alt + Recherche ou Maj.</translation>
+<translation id="4872724534194216608">Rechercher pour calculer</translation>
 <translation id="4872852897273142380">Sélectionner ou mettre en évidence la barre de favoris (si elle est visible)</translation>
 <translation id="4876935764454575645">Sélection audio</translation>
 <translation id="4881323000405981760">Les effets ne sont pas pris en charge dans les applications Linux</translation>
@@ -1200,6 +1204,7 @@ Vous pouvez également utiliser le raccourci-clavier. Tout d'abord, mettez le te
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
 <translation id="5238719049014159442">Ouvrir/fermer le lanceur</translation>
 <translation id="5240725217819182328">Accès rapide à des pages ou à des actions précises dans les applications installées</translation>
+<translation id="5243355658487390559">Rechercher la date</translation>
 <translation id="5245201184978705914">Impossible de générer la transcription</translation>
 <translation id="5251174953851719648">Actualiser le contenu</translation>
 <translation id="5253783950165989294">Connecté à un appareil nommé <ph name="DEVICE_NAME" />, dont le niveau de pile est à<ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -1244,6 +1249,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5369717264580061086">Consulter l'aperçu du fichier dans l'application Fichiers</translation>
 <translation id="5377367976106153749">Activer l'accès à l'appareil photo?</translation>
 <translation id="5379115545237091094">Trop de tentatives</translation>
+<translation id="5383434787520761436">Aucun fichier dans Google Disque</translation>
 <translation id="5391307769715781764">Remplacer le bureau enregistré?</translation>
 <translation id="5392327145184648521">Calcul du % de la pile en cours…</translation>
 <translation id="5393156353051693207">Maintenez le doigt n'importe où pour réorganiser vos applications</translation>
@@ -1594,6 +1600,7 @@ Nouvelle installation</translation>
 <translation id="6565007273808762236">Connexion eSIM non proposée</translation>
 <translation id="6570831796530454248">{0,plural, =1{Mettez à jour l'appareil d'ici une heure}one{Mettez à jour l'appareil d'ici # heure}other{Mettez à jour l'appareil d'ici # heures}}</translation>
 <translation id="6570902864550063460">Recharge par USB</translation>
+<translation id="6571006437522772306">Rechercher dans Fichiers</translation>
 <translation id="6574587113394758819">La notification de <ph name="APP_TITLE" /> est masquée parce que la protection de l'affichage est activée</translation>
 <translation id="6574622320167699133">Déverrouillé au moyen de votre téléphone. Touchez ou cliquez pour accéder.</translation>
 <translation id="6578407462441924264">Sans nom</translation>
@@ -1631,6 +1638,7 @@ Nouvelle installation</translation>
 <translation id="6682029141988159141">Coller le contenu du presse-papiers</translation>
 <translation id="6683022854667115063">Écouteurs</translation>
 <translation id="6686023075541098243">Configurer l'affichage des notifications de votre téléphone</translation>
+<translation id="6694973220096431421">Rechercher dans Google Disque</translation>
 <translation id="6696025732084565524">Votre clavier amovible nécessite une mise à jour critique</translation>
 <translation id="6697913454192220372">Ajouter un nouveau bureau</translation>
 <translation id="6700713906295497288">Bouton de menu IME</translation>
@@ -1676,6 +1684,7 @@ Nouvelle installation</translation>
 <translation id="6852628153543175788">Ajouter 10 minutes</translation>
 <translation id="6855029042976311970">Modifié au cours des dernières minutes</translation>
 <translation id="6856708615407876657">Basculer entre les catégories de résultats de recherche</translation>
+<translation id="6856756288284651804">Chromebook mis à jour</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Il reste 1 chiffre}one{Il reste # chiffre}other{Il reste # chiffres}}</translation>
 <translation id="6867938213751067702">Téléchargement de <ph name="FILENAME" /> interrompu</translation>
@@ -1753,6 +1762,7 @@ Nouvelle installation</translation>
 <translation id="7143207342074048698">Connexion…</translation>
 <translation id="7144942256906679589">État de la pile</translation>
 <translation id="7145639536026937076">Pile chargée à <ph name="PERCENTAGE" /> % et en cours de recharge. L'Économiseur de pile est activé.</translation>
+<translation id="7147587499155271409">Aucun historique de navigation</translation>
 <translation id="7149149900052329230">Gérez vos fichiers locaux et vos fichiers Google Disque dans l'application Fichiers.</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1780,12 +1790,14 @@ Nouvelle installation</translation>
 <translation id="7302889331339392448">Les sous-titres instantanés sont désactivés.</translation>
 <translation id="7303365578352795231">Réponse sur un autre appareil.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">Aucun résultat trouvé</translation>
 <translation id="7312210124139670355">Votre administrateur est en train de réinitialiser votre carte eSIM. Cette opération peut prendre quelques minutes.</translation>
 <translation id="7312761820869643657">Mettre à jour l'appareil vers la version précédente</translation>
 <translation id="7313193732017069507">Développer le bouton caméra</translation>
 <translation id="73289266812733869">Désélectionné</translation>
 <translation id="7330397557116570022">Accédez à un champ de texte pour utiliser la dictée</translation>
 <translation id="7331646370422660166">alt+flèche vers le bas</translation>
+<translation id="7336943714413713812">Rechercher dans l'historique de navigation</translation>
 <translation id="7337660433630200387">+ 10 min</translation>
 <translation id="7340731148882810149">Menu des clics automatiques</translation>
 <translation id="7346909386216857016">OK, j'ai compris</translation>
@@ -1846,6 +1858,7 @@ Nouvelle installation</translation>
 Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'appareil et maintenez-le enfoncé.</translation>
 <translation id="7523420897035067483">Activer Ne pas déranger pendant une séance du mode Sans distractions</translation>
 <translation id="7524043547948122239">Google Tâches</translation>
+<translation id="7525067979554623046">Créer</translation>
 <translation id="7526573455193969409">Le réseau peut être surveillé</translation>
 <translation id="7536035074519304529">Adresse IP : <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Mettre à jour la fenêtre de gauche</translation>
@@ -1888,6 +1901,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7670953955701272011">Ouvrir cette date dans Google Agenda</translation>
 <translation id="7671610481353807627">Les applications sont triées par couleur</translation>
 <translation id="7672095158465655885">Connecté à <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
+<translation id="7680417644536099065">Verrouillage des majuscules activé</translation>
 <translation id="7682351277038250258">Coller le contenu du presse-papiers en tant que texte brut</translation>
 <translation id="7684531502177797067">Caméra <ph name="CAMERA_NAME" /> activée.</translation>
 <translation id="7687172143976244806">Vous avez ouvert</translation>
@@ -2140,6 +2154,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8553395910833293175">Association déjà faite sur tous les bureaux.</translation>
 <translation id="8555757996376137129">Retirer le bureau actuel</translation>
 <translation id="8559845965695780508">Modifié par <ph name="USER" /></translation>
+<translation id="8569146227972631631"> °F</translation>
 <translation id="8569751806372591456">Voici quelques suggestions à essayer</translation>
 <translation id="857201607579416096">Le menu a été déplacé vers le coin inférieur droit de l'écran.</translation>
 <translation id="8581946341807941670">Appuyez sur <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, puis cliquez sur un lien</translation>
@@ -2249,6 +2264,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8951539504029375108">Seuls les appareils Thunderbolt approuvés sont compatibles avec votre Chromebook</translation>
 <translation id="8956420987536947088">Ouvrir vos fenêtres et vos applis précédentes</translation>
 <translation id="8959380109429710384">Vous avez appuyé sur le raccourci-clavier de la Loupe en mode Plein écran. Utilisez ctrl+alt+flèches pour déplacer le curseur sur l'affichage zoomé.</translation>
+<translation id="896335827708646237">Ouvrir les Paramètres rapides d'accessibilité</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Mettre l'icône du menu en évidence</translation>
 <translation id="8980862970816311842">Déplacer une icône d'application entre un dossier et la grille d'applications</translation>
@@ -2284,6 +2300,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="9089416786594320554">Méthodes d'entrée</translation>
 <translation id="9091406374499386796">Recherchez vos fichiers, vos applications et bien plus encore dans le lanceur. Vous pouvez également obtenir des réponses aux questions concernant votre <ph name="PRODUCT_NAME" />.</translation>
 <translation id="9091626656156419976">Affichage <ph name="DISPLAY_NAME" /> supprimé</translation>
+<translation id="9098750710832798892">Aucun élément n'a été copié dans votre Presse-papiers</translation>
 <translation id="9098969848082897657">Désactiver le son du téléphone</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Annuler la dernière action</translation>
@@ -2293,6 +2310,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="9139720510312328767">Supprimer la lettre suivante</translation>
 <translation id="9148058034647219655">Quitter</translation>
 <translation id="9151906066336345901">fin</translation>
+<translation id="9159421884295554245">Rechercher dans Presse-papiers</translation>
 <translation id="9161053988251441839">APPLICATIONS SUGGÉRÉES</translation>
 <translation id="9168436347345867845">Plus tard</translation>
 <translation id="9178475906033259337">Affichage de 1 résultat pour <ph name="QUERY" /></translation>
