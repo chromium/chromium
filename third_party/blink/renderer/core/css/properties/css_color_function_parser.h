@@ -38,18 +38,17 @@ class CORE_EXPORT ColorFunctionParser {
                       int index);
   bool ConsumeAlpha(CSSParserTokenStream& stream,
                     const CSSParserContext& context);
-  bool MakePerColorSpaceAdjustments();
+  void MakePerColorSpaceAdjustments();
 
-  static std::optional<double> TryResolveColorChannel(
+  static double ResolveColorChannel(
       const CSSValue* value,
       ChannelType channel_type,
       double percentage_base,
       const CSSColorChannelMap& color_channel_map);
-  static std::optional<double> TryResolveAlpha(
-      const CSSValue* value,
-      ChannelType channel_type,
-      const CSSColorChannelMap& color_channel_map);
-  static std::optional<double> TryResolveRelativeChannelValue(
+  static double ResolveAlpha(const CSSValue* value,
+                             ChannelType channel_type,
+                             const CSSColorChannelMap& color_channel_map);
+  static double ResolveRelativeChannelValue(
       const CSSValue* value,
       ChannelType channel_type,
       double percentage_base,

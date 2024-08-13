@@ -467,29 +467,12 @@ bool ColorFunctionParser::ConsumeAlpha(CSSParserTokenStream& stream,
   return false;
 }
 
-bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
-  // Legacy rgb needs percentage consistency. Percentages need to be mapped
-  // from the range [0, 1] to the [0, 255] that the color space uses.
-  // Percentages and bare numbers CAN be mixed in relative colors.
+void ColorFunctionParser::MakePerColorSpaceAdjustments() {
   if (color_space_ == Color::ColorSpace::kSRGBLegacy) {
-    bool uses_percentage = false;
-    bool uses_bare_numbers = false;
     for (int i = 0; i < 3; i++) {
       if (channel_types_[i] == ChannelType::kNone) {
         continue;
       }
-      if (channel_types_[i] == ChannelType::kPercentage) {
-        if (uses_bare_numbers && is_legacy_syntax_) {
-          return false;
-        }
-        uses_percentage = true;
-      } else if (channel_types_[i] == ChannelType::kNumber) {
-        if (uses_percentage && is_legacy_syntax_) {
-          return false;
-        }
-        uses_bare_numbers = true;
-      }
-
       if (!isfinite(channels_[i].value())) {
         channels_[i].value() = channels_[i].value() > 0 ? 255.0 : 0;
       } else if (!IsRelativeColor()) {
@@ -509,20 +492,9 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
     }
   }
 
-  // Legacy syntax is not allowed for hwb().
-  if (color_space_ == Color::ColorSpace::kHWB && is_legacy_syntax_) {
-    return false;
-  }
-
   if (color_space_ == Color::ColorSpace::kHSL ||
       color_space_ == Color::ColorSpace::kHWB) {
     for (int i : {1, 2}) {
-      if (channel_types_[i] == ChannelType::kNumber) {
-        // Legacy color syntax needs percentages.
-        if (is_legacy_syntax_) {
-          return false;
-        }
-      }
       // Raw numbers are interpreted as percentages in these color spaces.
       if (channels_[i].has_value()) {
         channels_[i] = channels_[i].value() / 100.0;
@@ -533,10 +505,9 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
       }
     }
   }
-  return true;
 }
 
-std::optional<double> ColorFunctionParser::TryResolveColorChannel(
+double ColorFunctionParser::ResolveColorChannel(
     const CSSValue* value,
     ChannelType channel_type,
     double percentage_base,
@@ -560,11 +531,11 @@ std::optional<double> ColorFunctionParser::TryResolveColorChannel(
     }
   }
 
-  return TryResolveRelativeChannelValue(value, channel_type, percentage_base,
-                                        color_channel_map);
+  return ResolveRelativeChannelValue(value, channel_type, percentage_base,
+                                     color_channel_map);
 }
 
-std::optional<double> ColorFunctionParser::TryResolveAlpha(
+double ColorFunctionParser::ResolveAlpha(
     const CSSValue* value,
     ChannelType channel_type,
     const CSSColorChannelMap& color_channel_map) {
@@ -584,11 +555,11 @@ std::optional<double> ColorFunctionParser::TryResolveAlpha(
     }
   }
 
-  return TryResolveRelativeChannelValue(
+  return ResolveRelativeChannelValue(
       value, channel_type, /*percentage_base=*/1.0, color_channel_map);
 }
 
-std::optional<double> ColorFunctionParser::TryResolveRelativeChannelValue(
+double ColorFunctionParser::ResolveRelativeChannelValue(
     const CSSValue* value,
     ChannelType channel_type,
     double percentage_base,
@@ -599,7 +570,7 @@ std::optional<double> ColorFunctionParser::TryResolveRelativeChannelValue(
     // "lab(from cyan l 0.5 0.5)".
     if (auto it = color_channel_map.find(identifier_value->GetValueID());
         it != color_channel_map.end()) {
-      return it->value;
+      return it->value.value();
     }
   }
 
@@ -613,12 +584,11 @@ std::optional<double> ColorFunctionParser::TryResolveRelativeChannelValue(
       case kCalcAngle:
         return calc_value->ComputeDegrees();
       default:
-        NOTREACHED_IN_MIGRATION();
-        return std::nullopt;
+        NOTREACHED();
     }
   }
 
-  return std::nullopt;
+  NOTREACHED();
 }
 
 bool ColorFunctionParser::IsRelativeColor() const {
@@ -688,10 +658,57 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
       }
     }
 
-    // "None" is not a part of the legacy syntax.
-    if (!stream.AtEnd() || (is_legacy_syntax_ && has_none_)) {
+    if (!stream.AtEnd()) {
       return nullptr;
     }
+
+    if (is_legacy_syntax_) {
+      // "None" is not a part of the legacy syntax.
+      if (has_none_) {
+        return nullptr;
+      }
+      // Legacy rgb needs percentage consistency. Percentages need to be mapped
+      // from the range [0, 1] to the [0, 255] that the color space uses.
+      // Percentages and bare numbers CAN be mixed in relative colors.
+      if (color_space_ == Color::ColorSpace::kSRGBLegacy) {
+        bool uses_percentage = false;
+        bool uses_bare_numbers = false;
+        for (int i = 0; i < 3; i++) {
+          if (channel_types_[i] == ChannelType::kNone) {
+            continue;
+          }
+          if (channel_types_[i] == ChannelType::kPercentage) {
+            if (uses_bare_numbers) {
+              return nullptr;
+            }
+            uses_percentage = true;
+          } else if (channel_types_[i] == ChannelType::kNumber) {
+            if (uses_percentage) {
+              return nullptr;
+            }
+            uses_bare_numbers = true;
+          }
+        }
+      }
+
+      // Legacy syntax is not allowed for hwb().
+      if (color_space_ == Color::ColorSpace::kHWB) {
+        return nullptr;
+      }
+
+      if (color_space_ == Color::ColorSpace::kHSL ||
+          color_space_ == Color::ColorSpace::kHWB) {
+        for (int i : {1, 2}) {
+          if (channel_types_[i] == ChannelType::kNumber) {
+            // Legacy color syntax needs percentages.
+            return nullptr;
+          }
+        }
+      }
+    }
+
+    // The parsing was successful, so we need to consume the input.
+    guard.Release();
 
     // We should be able to resolve channel values for all non-relative colors
     // and all relative colors where the origin color is resolvable at parse
@@ -700,12 +717,9 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
       // Resolve channel values.
       for (int i = 0; i < 3; i++) {
         if (channel_types_[i] != ChannelType::kNone) {
-          channels_[i] = TryResolveColorChannel(
+          channels_[i] = ResolveColorChannel(
               unresolved_channels_[i], channel_types_[i],
               function_metadata_->channel_percentage[i], color_channel_map_);
-          if (!channels_[i].has_value()) {
-            return nullptr;
-          }
 
           if (ColorChannelIsHue(color_space_, i)) {
             // Non-finite values should be clamped to the range [0, 360].
@@ -723,8 +737,8 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
 
       if (expect_alpha) {
         if (alpha_channel_type_ != ChannelType::kNone) {
-          alpha_ = TryResolveAlpha(unresolved_alpha_, alpha_channel_type_,
-                                   color_channel_map_);
+          alpha_ = ResolveAlpha(unresolved_alpha_, alpha_channel_type_,
+                                color_channel_map_);
         } else {
           alpha_.reset();
         }
@@ -732,9 +746,7 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
         alpha_ = color_channel_map_.at(CSSValueID::kAlpha);
       }
 
-      if (!MakePerColorSpaceAdjustments()) {
-        return nullptr;
-      }
+      MakePerColorSpaceAdjustments();
 
       resolved_color = Color::FromColorSpace(
           color_space_, channels_[0], channels_[1], channels_[2], alpha_);
@@ -742,9 +754,6 @@ CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
         resolved_color->ConvertToColorSpace(Color::ColorSpace::kSRGB);
       }
     }
-
-    // The parsing was successful, so we need to consume the input.
-    guard.Release();
 
     if (IsRelativeColor()) {
       context.Count(WebFeature::kCSSRelativeColor);
