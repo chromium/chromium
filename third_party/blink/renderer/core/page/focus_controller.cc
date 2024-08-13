@@ -226,7 +226,7 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
   const Element* NextInDomOrder(const Element& current) {
     Element* next = ElementTraversal::NextIncludingPseudo(current, root_);
     while (next && !IsOwnedByRoot(*next))
-      next = ElementTraversal::Next(*next, root_);
+      next = ElementTraversal::NextIncludingPseudo(*next, root_);
     return next;
   }
 
@@ -284,7 +284,7 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
     if (previous == root_)
       return nullptr;
     while (previous && !IsOwnedByRoot(*previous))
-      previous = ElementTraversal::Previous(*previous, root_);
+      previous = ElementTraversal::PreviousIncludingPseudo(*previous, root_);
     return previous;
   }
 
