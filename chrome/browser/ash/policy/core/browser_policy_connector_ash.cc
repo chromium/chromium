@@ -667,6 +667,10 @@ void BrowserPolicyConnectorAsh::RestartDeviceCloudPolicyInitializer() {
 
 base::flat_set<std::string> BrowserPolicyConnectorAsh::device_affiliation_ids()
     const {
+  if (!device_affiliation_ids_for_testing_.empty()) {
+    return device_affiliation_ids_for_testing_;
+  }
+
   const em::PolicyData* policy = GetDevicePolicy();
   if (policy) {
     const auto& ids = policy->device_affiliation_ids();

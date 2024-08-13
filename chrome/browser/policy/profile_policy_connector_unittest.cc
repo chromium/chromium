@@ -588,6 +588,8 @@ TEST_F(ProfilePolicyConnectorTest,
   base::HistogramTester histogram_tester;
   cloud_policy_store_->policy_map_.SetUserAffiliationIds({kAffiliationId1});
   cloud_policy_store_->policy_map_.SetDeviceAffiliationIds({kAffiliationId2});
+  g_browser_process->browser_policy_connector()
+      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId2});
 
   ProfilePolicyConnector connector;
   connector.Init(nullptr /* user */, &schema_registry_,
