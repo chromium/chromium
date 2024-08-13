@@ -80,6 +80,9 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
             case MagicStackEntry.ModuleType.SAFE_BROWSING:
                 bindSafeBrowsingView(magicStackEntry.getDescription());
                 break;
+            case MagicStackEntry.ModuleType.PASSWORDS:
+                bindCompromisedPasswordsView(magicStackEntry.getDescription());
+                break;
         }
 
         mModuleDelegate.onDataReady(ModuleType.SAFETY_HUB, mModel);
@@ -212,5 +215,26 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                     recordExternalInteractions(
                             ExternalInteractions.OPEN_SAFE_BROWSING_FROM_MAGIC_STACK);
                 });
+    }
+
+    private void bindCompromisedPasswordsView(String summary) {
+        mModel.set(
+                SafetyHubMagicStackViewProperties.HEADER,
+                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
+        mModel.set(
+                SafetyHubMagicStackViewProperties.TITLE,
+                mContext.getResources()
+                        .getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
+        mModel.set(SafetyHubMagicStackViewProperties.SUMMARY, summary);
+        mModel.set(
+                SafetyHubMagicStackViewProperties.BUTTON_TEXT,
+                mContext.getResources()
+                        .getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
+        mModel.set(
+                SafetyHubMagicStackViewProperties.ICON_DRAWABLE,
+                SettingsUtils.getTintedIcon(
+                        mContext,
+                        R.drawable.ic_password_manager_key,
+                        R.color.default_icon_color_accent1_baseline));
     }
 }

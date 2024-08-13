@@ -1144,7 +1144,7 @@
       <message name="IDS_SAFETY_HUB_MAGIC_STACK_MODULE_NAME" desc="Title for the Magic Stack card for all Safety Check modules.">
         Safety Check
       </message>
-      <message name="IDS_SAFETY_HUB_MAGIC_STACK_HIDE_TEXT" desc="Text that appears in the context menu when the Safety Check Magic Stack cards are long pressed. Hides and disables dhe Safety Check Magic Stack module when pressed.">
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_HIDE_TEXT" desc="Text that appears in the context menu when the Safety Check Magic Stack cards are long pressed. Hides and disables the Safety Check Magic Stack module when pressed.">
         Hide Safety Check card
       </message>
       <message name="IDS_SAFETY_HUB_MAGIC_STACK_NOTIFICATIONS_TITLE" desc="Title for the notification review Safety Check module on the Magic Stack. Shown when Safety Check has identified several sites that sent lots of notifications.">
@@ -1158,6 +1158,9 @@
       </message>
       <message name="IDS_SAFETY_HUB_MAGIC_STACK_SAFE_BROWSING_BUTTON_TEXT" desc="Action button for the Safe Browsing module of Safety Check in the Magic Stack. Open Safe Browsing settings when clicked.">
         Go to settings
+      </message>
+      <message name="IDS_SAFETY_HUB_MAGIC_STACK_COMPROMISED_PASSWORDS_TITLE" desc="Title for the password module of Safety Check in Magic Stack. Shown when Safety Check has identified compromised passwords that the user should change.">
+        Change passwords
       </message>
 
       <!-- Tab Grid Drag-and-drop IPH strings -->

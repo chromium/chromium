@@ -163,6 +163,32 @@ public class SafetyHubMagicStackMediatorTest {
     }
 
     @Test
+    public void testCompromisedPasswordsDisplayed() {
+        MagicStackEntry entry =
+                MagicStackEntry.create(DESCRIPTION, MagicStackEntry.ModuleType.PASSWORDS);
+        doReturn(entry).when(mMagicStackBridge).getModuleToShow();
+        mMediator.showModule();
+
+        verify(mModuleDelegate).onDataReady(eq(ModuleType.SAFETY_HUB), eq(mModel));
+        assertEquals(
+                mModel.get(SafetyHubMagicStackViewProperties.HEADER),
+                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
+        assertEquals(
+                mModel.get(SafetyHubMagicStackViewProperties.TITLE),
+                mContext.getResources()
+                        .getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
+        assertEquals(mModel.get(SafetyHubMagicStackViewProperties.SUMMARY), DESCRIPTION);
+        assertEquals(
+                mModel.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT),
+                mContext.getResources()
+                        .getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
+        assertEquals(
+                shadowOf(mModel.get(SafetyHubMagicStackViewProperties.ICON_DRAWABLE))
+                        .getCreatedFromResId(),
+                R.drawable.ic_password_manager_key);
+    }
+
+    @Test
     public void testDismissSafeBrowsing() {
         MagicStackEntry entry =
                 MagicStackEntry.create(DESCRIPTION, MagicStackEntry.ModuleType.SAFE_BROWSING);

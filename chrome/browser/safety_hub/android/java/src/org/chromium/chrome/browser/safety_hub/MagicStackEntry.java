@@ -18,12 +18,14 @@ class MagicStackEntry {
     @StringDef({
         ModuleType.SAFE_BROWSING,
         ModuleType.NOTIFICATION_PERMISSIONS,
-        ModuleType.REVOKED_PERMISSIONS
+        ModuleType.REVOKED_PERMISSIONS,
+        ModuleType.PASSWORDS
     })
     @interface ModuleType {
         String SAFE_BROWSING = "safe_browsing";
         String NOTIFICATION_PERMISSIONS = "notification_permissions";
         String REVOKED_PERMISSIONS = "revoked_permissions";
+        String PASSWORDS = "passwords";
     }
 
     private final String mDescription;

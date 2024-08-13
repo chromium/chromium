@@ -23,9 +23,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/safety_hub/password_status_check_result_android.h"
+#else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/safety_hub/extensions_result.h"
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 namespace {
 SafetyHubModuleInfoElement::SafetyHubModuleInfoElement() = default;
 SafetyHubModuleInfoElement::~SafetyHubModuleInfoElement() = default;
@@ -113,7 +115,19 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
                             base::Unretained(password_check_service)),
         stored_notifications);
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+#else   // !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kSafetyHubFollowup)) {
+    pref_dict_key_map_.emplace(safety_hub::SafetyHubModuleType::PASSWORDS,
+                               "passwords");
+    SetInfoElement(
+        safety_hub::SafetyHubModuleType::PASSWORDS,
+        MenuNotificationPriority::HIGH,
+        features::kPasswordCheckNotificationInterval.Get(),
+        base::BindRepeating(&PasswordStatusCheckResultAndroid::GetResult,
+                            base::Unretained(pref_service)),
+        stored_notifications);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Listen for changes to the Safe Browsing pref to accommodate the trigger
   // logic.
