@@ -5,8 +5,11 @@
 package org.chromium.chrome.browser.undo_tab_close_snackbar;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.util.Pair;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
@@ -23,6 +26,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -158,35 +162,58 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
         if (closedTabs.isEmpty()) return;
 
         boolean singleTab = closedTabs.size() == 1;
-        boolean deletingTabGroup = isDeletingTabGroup(closedTabs);
-
-        String templateText = getTemplateText(singleTab, deletingTabGroup);
-        int umaType = getUmaType(singleTab, deletingTabGroup, isAllTabs);
+        ClosureMetadata closureMetadata = buildClosureMetadata(closedTabs);
+        int umaType = getUmaType(singleTab, closureMetadata.isDeletingTabGroups, isAllTabs);
+        Pair<String, String> templateAndContent =
+                getTemplateAndContentText(closureMetadata, closedTabs);
 
         Object actionData = singleTab ? closedTabs.get(0).getId() : closedTabs;
-        String content;
-        if (singleTab && !deletingTabGroup) {
-            content = closedTabs.get(0).getTitle();
-        } else {
-            content = Integer.toString(closedTabs.size());
-        }
 
         mSnackbarManagable
                 .getSnackbarManager()
                 .showSnackbar(
-                        Snackbar.make(content, this, Snackbar.TYPE_ACTION, umaType)
+                        Snackbar.make(
+                                        templateAndContent.second,
+                                        this,
+                                        Snackbar.TYPE_ACTION,
+                                        umaType)
                                 .setDuration(
                                         isAllTabs
                                                 ? SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS
                                                 : SnackbarManager.DEFAULT_SNACKBAR_DURATION_MS)
-                                .setTemplateText(templateText)
+                                .setTemplateText(templateAndContent.first)
                                 .setAction(mContext.getString(R.string.undo), actionData)
                                 .setActionAccessibilityAnnouncement(
-                                        getUndoneAccessibilityAnnouncement(content, false)));
+                                        getUndoneAccessibilityAnnouncement(
+                                                templateAndContent.second, false)));
     }
 
-    private boolean isDeletingTabGroup(List<Tab> closedTabs) {
-        if (closedTabs.isEmpty()) return false;
+    private static class ClosureMetadata {
+        public final boolean isDeletingTabGroups;
+        public final boolean isTabGroupSyncEnabled;
+        public final Set<Integer> fullyClosingRootIds;
+        public final int ungroupedOrPartialGroupTabs;
+
+        ClosureMetadata(
+                boolean isDeletingTabGroups,
+                boolean isTabGroupSyncEnabled,
+                Set<Integer> fullyClosingRootIds,
+                int ungroupedOrPartialGroupTabs) {
+            this.isDeletingTabGroups = isDeletingTabGroups;
+            this.isTabGroupSyncEnabled = isTabGroupSyncEnabled;
+            this.fullyClosingRootIds = fullyClosingRootIds;
+            this.ungroupedOrPartialGroupTabs = ungroupedOrPartialGroupTabs;
+        }
+    }
+
+    private ClosureMetadata buildClosureMetadata(List<Tab> closedTabs) {
+        if (closedTabs.isEmpty()) {
+            return new ClosureMetadata(
+                    /* isDeletingTabGroups= */ false,
+                    /* isTabGroupSyncEnabled= */ false,
+                    /* fullyClosingRootIds= */ new HashSet<>(),
+                    /* ungroupedOrPartialGroupTabs= */ 0);
+        }
 
         assert !closedTabs.get(0).isIncognito();
 
@@ -196,37 +223,115 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
                                 .getTabModelFilterProvider()
                                 .getTabModelFilter(/* isIncognito= */ false);
         Profile profile = filter.getTabModel().getProfile();
-        if (profile == null || !profile.isNativeInitialized()) return false;
+        boolean tabGroupSyncEnabled =
+                profile != null
+                        && profile.isNativeInitialized()
+                        && TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
 
-        if (!TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) return false;
-
+        boolean isDeletingTabGroups = tabGroupSyncEnabled;
+        Set<Integer> fullyClosingRootIds = new HashSet<>();
+        int ungroupedOrPartialGroupTabs = 0;
         LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
                 filter.getLazyAllTabGroupIdsInComprehensiveModel(closedTabs);
         for (Tab tab : closedTabs) {
             // We are not deleting a tab group if:
-            // 1. Any tabs are not in a tab group.
-            // 2. Any of the tabs are in a group that is hiding.
-            // 3. The comprehensive model still contains tabs with that group ID meaning the tab
+            // 1. Any of the tabs are in a group that is hiding.
+            // 2. The comprehensive model still contains tabs with that group ID meaning the tab
             //    group is not being fully deleted as a result of this event.
             @Nullable Token tabGroupId = tab.getTabGroupId();
-            if (tabGroupId == null
-                    || filter.isTabGroupHiding(tabGroupId)
-                    || tabGroupIdsInComprehensiveModel.get().contains(tabGroupId)) {
-                return false;
+            if (tabGroupId == null) {
+                ungroupedOrPartialGroupTabs++;
+            } else if (tabGroupSyncEnabled && filter.isTabGroupHiding(tabGroupId)) {
+                fullyClosingRootIds.add(tab.getRootId());
+                isDeletingTabGroups = false;
+            } else if (tabGroupIdsInComprehensiveModel.get().contains(tabGroupId)) {
+                ungroupedOrPartialGroupTabs++;
+                isDeletingTabGroups = false;
+            } else {
+                // We are fully deleting any tab group that reaches this point.
+                fullyClosingRootIds.add(tab.getRootId());
             }
         }
-        return true;
+        return new ClosureMetadata(
+                isDeletingTabGroups,
+                tabGroupSyncEnabled,
+                fullyClosingRootIds,
+                ungroupedOrPartialGroupTabs);
     }
 
-    private String getTemplateText(boolean singleTab, boolean deletingTabGroup) {
-        if (deletingTabGroup) {
-            return singleTab
-                    ? mContext.getString(R.string.undo_bar_delete_single_tab_group_message)
-                    : mContext.getString(R.string.undo_bar_delete_tab_group_message);
+    private Pair<String, String> getTemplateAndContentText(
+            ClosureMetadata closureMetadata, List<Tab> closedTabs) {
+        int totalTabsCount = closedTabs.size();
+        int tabGroupsCount = closureMetadata.fullyClosingRootIds.size();
+        if (tabGroupsCount == 0) {
+            if (closureMetadata.ungroupedOrPartialGroupTabs == 1) {
+                return Pair.create(
+                        mContext.getString(R.string.undo_bar_close_message),
+                        closedTabs.get(0).getTitle());
+            } else if (closureMetadata.ungroupedOrPartialGroupTabs > 1) {
+                return Pair.create(
+                        mContext.getString(R.string.undo_bar_close_all_message),
+                        Integer.toString(totalTabsCount));
+            } else {
+                assert false : "Not reached.";
+                return Pair.create("", "");
+            }
+        } else if (tabGroupsCount == 1) {
+            if (closureMetadata.ungroupedOrPartialGroupTabs == 0) {
+                int rootId = closureMetadata.fullyClosingRootIds.iterator().next();
+                TabGroupModelFilter filter =
+                        (TabGroupModelFilter)
+                                mTabModelSelector
+                                        .getTabModelFilterProvider()
+                                        .getTabModelFilter(false);
+                @Nullable String tabGroupTitle = filter.getTabGroupTitle(rootId);
+                if (tabGroupTitle == null) {
+                    tabGroupTitle =
+                            mContext.getResources()
+                                    .getQuantityString(
+                                            R.plurals.bottom_tab_grid_title_placeholder,
+                                            totalTabsCount,
+                                            totalTabsCount);
+                }
+                @StringRes int templateRes = Resources.ID_NULL;
+                if (closureMetadata.isDeletingTabGroups) {
+                    templateRes = R.string.undo_bar_tab_group_deleted_message;
+                } else {
+                    templateRes =
+                            closureMetadata.isTabGroupSyncEnabled
+                                    ? R.string.undo_bar_tab_group_closed_and_saved_message
+                                    : R.string.undo_bar_tab_group_closed_message;
+                }
+                return Pair.create(mContext.getString(templateRes), tabGroupTitle);
+            }
         }
-        return singleTab
-                ? mContext.getString(R.string.undo_bar_close_message)
-                : mContext.getString(R.string.undo_bar_close_all_message);
+
+        // All other strings are some combination of x tab group(s), y tab(s).
+        Resources res = mContext.getResources();
+        String tabGroupsPart =
+                res.getQuantityString(
+                        R.plurals.undo_bar_tab_groups_part, tabGroupsCount, tabGroupsCount);
+        String tabGroupsAndTabsPart;
+        if (closureMetadata.ungroupedOrPartialGroupTabs > 0) {
+            tabGroupsAndTabsPart =
+                    res.getQuantityString(
+                            R.plurals.undo_bar_tab_groups_and_tabs_part,
+                            closureMetadata.ungroupedOrPartialGroupTabs,
+                            tabGroupsPart,
+                            closureMetadata.ungroupedOrPartialGroupTabs);
+        } else {
+            tabGroupsAndTabsPart = tabGroupsPart;
+        }
+        @StringRes int templateRes = Resources.ID_NULL;
+        if (closureMetadata.isDeletingTabGroups) {
+            templateRes = R.string.undo_bar_deleted_message;
+        } else {
+            templateRes =
+                    closureMetadata.isTabGroupSyncEnabled
+                            ? R.string.undo_bar_closed_and_saved_message
+                            : R.string.undo_bar_closed_message;
+        }
+        return Pair.create(mContext.getString(templateRes), tabGroupsAndTabsPart);
     }
 
     private int getUmaType(boolean singleTab, boolean deletingTabGroup, boolean isAllTabs) {

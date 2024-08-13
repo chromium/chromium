@@ -4910,11 +4910,35 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_UNDO_BAR_CLOSE_ALL_MESSAGE" desc="Message shown when you can undo a close all tabs action.">
         <ph name="TAB_COUNT">%1$s<ex>3</ex></ph> tabs closed
       </message>
-      <message name="IDS_UNDO_BAR_DELETE_TAB_GROUP_MESSAGE" desc="Message shown when you can undo a tab group deletion action.">
-        <ph name="TAB_COUNT">%1$s<ex>3</ex></ph> tabs deleted
+      <message name="IDS_UNDO_BAR_TAB_GROUP_DELETED_MESSAGE" desc="Message shown when you delete a tab group. This message is short for a sentence to indicate the tab group with the title TAB_GROUP_TITLE was deleted. The title can be anything as it is a user generated string.">
+        <ph name="TAB_GROUP_TITLE">%1$s<ex>Vacation</ex></ph> tab group deleted
       </message>
-      <message name="IDS_UNDO_BAR_DELETE_SINGLE_TAB_GROUP_MESSAGE" desc="Message shown when you can undo a tab group containing a single tab.">
-        <ph name="TAB_COUNT">%1$s<ex>1</ex></ph> tab deleted
+      <message name="IDS_UNDO_BAR_TAB_GROUP_CLOSED_AND_SAVED_MESSAGE" desc="Message shown when you close and save a tab group. This message is short for a sentence to indicate the tab group with the title TAB_GROUP_TITLE was closed and may be saved. The title can be anything as it is a user generated string.">
+        <ph name="TAB_GROUP_TITLE">%1$s<ex>Vacation</ex></ph> tab group closed and saved
+      </message>
+      <message name="IDS_UNDO_BAR_TAB_GROUP_CLOSED_MESSAGE" desc="Message shown when you close a tab group. This message is short for a sentence to indicate the tab group with the title TAB_GROUP_TITLE was closed and may be saved. The title can be anything as it is a user generated string.">
+        <ph name="TAB_GROUP_TITLE">%1$s<ex>Vacation</ex></ph> tab group closed
+      </message>
+      <message name="IDS_UNDO_BAR_TAB_GROUPS_PART" desc="Part of message shown when you close or delete multiple tab groups in combination with some tabs. See IDS_UNDO_BAR_TABS_PART for the next part.">
+        {TAB_GROUP_COUNT, plural,
+          =1 {<ph name="TAB_GROUPS_ONE">%1$d<ex>1</ex></ph> tab group}
+          other {<ph name="TAB_GROUPS_MANY">%1$d<ex>3</ex></ph> tab groups}
+        }
+      </message>
+      <message name="IDS_UNDO_BAR_TAB_GROUPS_AND_TABS_PART" desc="Part of message shown when you close or delete multiple tabs in combination with some tab groups. See IDS_UNDO_BAR_TAB_GROUPS_PART for the TAB_GROUPS_PART.">
+        {TAB_COUNT, plural,
+          =1 {<ph name="TAB_GROUPS_PART">%1$s<ex>3 tab groups</ex></ph>, <ph name="TAB_COUNT_ONE">%2$d<ex>1</ex></ph> tab}
+          other {<ph name="TAB_GROUPS_PART">%1$s<ex>3 tab groups</ex></ph>, <ph name="TAB_COUNT_MANY">%2$d<ex>3</ex></ph> tabs}
+        }
+      </message>
+      <message name="IDS_UNDO_BAR_DELETED_MESSAGE" desc="Message shown when you delete a combination of tabs and tab groups. See IDS_UNDO_BAR_TAB_GROUPS_AND_TABS_PART for TAB_GROUPS_AND_TABS_PART.">
+        <ph name="TAB_GROUPS_AND_TABS_PART">%1$s<ex>5 tab groups, 3 tabs</ex></ph> deleted
+      </message>
+      <message name="IDS_UNDO_BAR_CLOSED_AND_SAVED_MESSAGE" desc="Message shown when you closea combination of tabs and tab groups and the tab groups will be saved. See IDS_UNDO_BAR_TAB_GROUPS_AND_TABS_PART for TAB_GROUPS_AND_TABS_PART.">
+        <ph name="TAB_GROUPS_AND_TABS_PART">%1$s<ex>5 tab groups, 3 tabs</ex></ph> closed and saved
+      </message>
+      <message name="IDS_UNDO_BAR_CLOSED_MESSAGE" desc="Message shown when you close a combination of tabs and tab groups. See IDS_UNDO_BAR_TAB_GROUPS_AND_TABS_PART for TAB_GROUPS_AND_TABS_PART.">
+        <ph name="TAB_GROUPS_AND_TABS_PART">%1$s<ex>5 tab groups, 3 tabs</ex></ph> closed
       </message>
       <message name="IDS_CONFIRM_DELETE_MESSAGE" desc="Message shown or announced to get confirmation on whether a file should be deleted.">
         Do you want to delete <ph name="ITEM_TITLE">%1$s<ex>example.pdf</ex></ph>?
