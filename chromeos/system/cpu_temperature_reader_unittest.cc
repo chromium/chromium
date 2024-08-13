@@ -44,8 +44,7 @@ class CPUTemperatureReaderTest : public ::testing::Test {
   // Creates a file at |path| containing data |contents|.
   void CreateFileWithContents(const base::FilePath& path,
                               const std::string& contents) {
-    CHECK_EQ(WriteFile(path, contents.data(), contents.size()),
-             static_cast<int>(contents.size()));
+    CHECK(WriteFile(path, contents));
   }
 
   // Creates a temporary dir to act as the hwmon directory passed to |reader_|.
