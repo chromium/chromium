@@ -197,7 +197,6 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
  private:
   friend class AppListModelTest;
-  FRIEND_TEST_ALL_PREFIXES(AppListItemViewTest, AccessibleDescription);
 
   std::unique_ptr<AppListItemMetadata> metadata_;
 

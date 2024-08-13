@@ -260,12 +260,6 @@ class FixedLengthCodeInput : public AccessCodeInput {
 
   int active_input_index() { return active_input_index_; }
 
-  base::CallbackListSubscription AddActiveInputIndexChanged(
-      views::PropertyChangedCallback callback) {
-    return AddPropertyChangedCallback(&active_input_index_,
-                                      std::move(callback));
-  }
-
  private:
   // Moves focus to the current input field.
   void FocusActiveField();
