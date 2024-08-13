@@ -648,7 +648,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/firstrun/PolicyLoadListener.java",
   "java/src/org/chromium/chrome/browser/firstrun/SkipTosDialogPolicyListener.java",
   "java/src/org/chromium/chrome/browser/firstrun/SyncConsentFirstRunFragment.java",
-  "java/src/org/chromium/chrome/browser/firstrun/TabbedModeFirstRunActivity.java",
   "java/src/org/chromium/chrome/browser/firstrun/TosDialogBehaviorSharedPrefInvalidator.java",
   "java/src/org/chromium/chrome/browser/flags/BadFlagsSnackbarManager.java",
   "java/src/org/chromium/chrome/browser/fonts/FontPreloader.java",

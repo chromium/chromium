@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
-import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 
 /**
@@ -109,18 +108,7 @@ public class FreIntentCreator {
      * @param fromIntent The intent that was used to launch Chrome.
      */
     private static Intent createGenericFirstRunIntent(Context context, Intent fromIntent) {
-        // On tablets, where FRE activity is a dialog, transitions from fullscreen activities
-        // (the ones that use Theme.Chromium.TabbedMode, e.g. ChromeTabbedActivity) look ugly,
-        // because when FRE is started from CTA.onCreate(), currently running animation for CTA
-        // window is aborted. This is perceived as a flash of white and doesn't look good.
-        //
-        // To solve this, we added TabbedMode FRE activity, which has the same window background
-        // as Theme.Chromium.TabbedMode activities, but shows content in a FRE-like dialog.
-        Class<?> activityClass =
-                (context instanceof Activity) && SigninUtils.isTabletOrAuto((Activity) context)
-                        ? TabbedModeFirstRunActivity.class
-                        : FirstRunActivity.class;
-        Intent intent = new Intent(context, activityClass);
+        Intent intent = new Intent(context, FirstRunActivity.class);
         intent.putExtra(
                 FirstRunActivity.EXTRA_COMING_FROM_CHROME_ICON,
                 TextUtils.equals(fromIntent.getAction(), Intent.ACTION_MAIN));
@@ -166,8 +154,7 @@ public class FreIntentCreator {
     /** Returns whether the generic FRE is active. */
     private static boolean checkIsGenericFreActive() {
         for (Activity activity : ApplicationStatus.getRunningActivities()) {
-            // TabbedModeFirstRunActivity extends FirstRunActivity. LightweightFirstRunActivity
-            // does not.
+            // LightweightFirstRunActivity does not extends FirstRunActivity.
             if (activity instanceof FirstRunActivity) {
                 return true;
             }

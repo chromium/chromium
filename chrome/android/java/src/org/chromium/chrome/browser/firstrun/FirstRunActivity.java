@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.firstrun;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
@@ -32,7 +33,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
+import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
+import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.metrics.LowEntropySource;
@@ -191,6 +194,27 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
+    protected void onPreCreate() {
+        // On tablets, where FRE activity is a dialog, transitions from fullscreen activities
+        // (the ones that use Theme.Chromium.TabbedMode, e.g. ChromeTabbedActivity) look ugly,
+        // because when FRE is started from CTA.onCreate(), currently running animation for CTA
+        // window is aborted. This is perceived as a flash of white and doesn't look good.
+        //
+        // To solve this, we apply Theme.Chromium.TabbedMode on Tablet and Automotive here, to use
+        // the same window background as other tabbed mode activities using the same theme.
+        if (SigninUtils.isTabletOrAuto(this)) {
+            setTheme(R.style.Theme_Chromium_TabbedMode);
+        } else if (getResources()
+                .getConfiguration()
+                .isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE)) {
+            // For consistency with tablets, the status bar should be black on phones with large
+            // screen, where the FRE is shown as dialog.
+            StatusBarColorController.setStatusBarColor(getWindow(), Color.BLACK);
+        }
+        super.onPreCreate();
+    }
+
+    @Override
     protected Bundle transformSavedInstanceStateForOnCreate(Bundle savedInstanceState) {
         // We pass null to Activity.onCreate() so that it doesn't automatically restore
         // the FragmentManager state - as that may cause fragments to be loaded that have
@@ -206,9 +230,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     /**
-     * Creates the content view for this activity.
-     * The only thing subclasses can do is wrapping the view returned by super implementation
-     * in some extra layout.
+     * Creates the content view for this activity. The only thing subclasses can do is wrapping the
+     * view returned by super implementation in some extra layout.
      */
     @CallSuper
     protected View createContentView() {
@@ -219,7 +242,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
         mPager.setId(R.id.fre_pager);
         mPager.setOffscreenPageLimit(3);
-        return mPager;
+        return SigninUtils.wrapInDialogWhenLargeLayout(mPager);
     }
 
     @Override
@@ -631,9 +654,10 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     @Override
     public boolean canUseLandscapeLayout() {
-        return !getResources()
-                .getConfiguration()
-                .isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE);
+        return !SigninUtils.isTabletOrAuto(this)
+                && !getResources()
+                        .getConfiguration()
+                        .isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE);
     }
 
     public FirstRunFragment getCurrentFragmentForTesting() {

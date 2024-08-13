@@ -232,7 +232,7 @@
         android:excludeFromRecents="true"
         android:label="@string/fre_activity_label"
         android:launchMode="singleTop"
-        android:theme="@style/Theme.Chromium.DialogWhenLarge"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
         android:windowSoftInputMode="stateHidden|adjustPan">
     </activity>  # DIFF-ANCHOR: 2121eb0d
     <activity  # DIFF-ANCHOR: 67932092
@@ -245,16 +245,6 @@
         android:theme="@style/Theme.BrowserUI.AlertDialog.NoActionBar.DayNight"
         android:windowSoftInputMode="stateHidden|adjustPan">
     </activity>  # DIFF-ANCHOR: 67932092
-    <activity  # DIFF-ANCHOR: bb612a34
-        android:name="org.chromium.chrome.browser.firstrun.TabbedModeFirstRunActivity"
-        android:autoRemoveFromRecents="true"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
-        android:excludeFromRecents="true"
-        android:label="@string/fre_activity_label"
-        android:launchMode="singleTop"
-        android:theme="@style/Theme.Chromium.TabbedMode"
-        android:windowSoftInputMode="stateHidden|adjustPan">
-    </activity>  # DIFF-ANCHOR: bb612a34
     <activity  # DIFF-ANCHOR: 05911131
         android:name="org.chromium.chrome.browser.history.HistoryActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"

@@ -55,7 +55,7 @@ import java.util.List;
 @Config(
         manifest = Config.NONE,
         shadows = {FirstRunIntegrationUnitTest.MockChromeBrowserInitializer.class})
-@DisabledTest(message = "https://crbug.com/1477411")
+@DisabledTest(message = "https://crbug.com/358543444")
 public final class FirstRunIntegrationUnitTest {
     /** Do nothing version of {@link ChromeBrowserInitializer}. */
     @Implements(ChromeBrowserInitializer.class)
@@ -96,27 +96,10 @@ public final class FirstRunIntegrationUnitTest {
 
     /** Checks that the intent component targets the passed-in class. */
     private boolean checkIntentComponentClass(Intent intent, Class componentClass) {
-        return checkIntentComponentClassOneOf(intent, new Class[] {componentClass});
-    }
-
-    /** Checks that the intent component is one of the provided classes. */
-    private boolean checkIntentComponentClassOneOf(Intent intent, Class[] componentClassOptions) {
         if (intent == null || intent.getComponent() == null) return false;
 
-        String componentClassName = intent.getComponent().getClassName();
-        for (Class componentClassOption : componentClassOptions) {
-            if (componentClassOption.getName().equals(componentClassName)) return true;
-        }
-        return false;
-    }
-
-    /**
-     * Checks that intent is either for {@link FirstRunActivity} or
-     * {@link TabbedModeFirstRunActivity}.
-     */
-    private boolean checkIntentIsForFre(Intent intent) {
-        return checkIntentComponentClassOneOf(
-                intent, new Class[] {FirstRunActivity.class, TabbedModeFirstRunActivity.class});
+        String intentClassName = intent.getComponent().getClassName();
+        return componentClass.getName().equals(intentClassName);
     }
 
     /** Builds activity using the component class name from the provided intent. */
@@ -146,15 +129,12 @@ public final class FirstRunIntegrationUnitTest {
         }
     }
 
-    /**
-     * Checks that either {@link FirstRunActivity} or {@link TabbedModeFirstRunActivity}
-     * was launched.
-     */
+    /** Checks that {@link FirstRunActivity} was launched. */
     private void assertFirstRunActivityLaunched() {
         Intent launchedIntent = mShadowApplication.getNextStartedActivity();
         Assert.assertNotNull(launchedIntent);
 
-        Assert.assertTrue(checkIntentIsForFre(launchedIntent));
+        Assert.assertTrue(checkIntentComponentClass(launchedIntent, FirstRunActivity.class));
     }
 
     private <T extends Activity> Activity createActivity(Class<T> clazz, Intent intent) {
@@ -230,7 +210,7 @@ public final class FirstRunIntegrationUnitTest {
         launchWebappLauncherActivityProcessRelaunch(intent);
 
         Intent launchedIntent = mShadowApplication.getNextStartedActivity();
-        Assert.assertTrue(checkIntentIsForFre(launchedIntent));
+        Assert.assertTrue(checkIntentComponentClass(launchedIntent, FirstRunActivity.class));
         PendingIntent freCompleteLaunchIntent =
                 launchedIntent.getParcelableExtra(
                         FirstRunActivityBase.EXTRA_FRE_COMPLETE_LAUNCH_INTENT);

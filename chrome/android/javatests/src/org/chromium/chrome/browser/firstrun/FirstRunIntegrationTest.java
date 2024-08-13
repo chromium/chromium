@@ -93,7 +93,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 import org.chromium.content_public.common.ContentUrlConstants;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -128,7 +127,6 @@ public class FirstRunIntegrationTest {
             CollectionUtil.newHashSet(
                     ChromeLauncherActivity.class,
                     FirstRunActivity.class,
-                    TabbedModeFirstRunActivity.class,
                     ChromeTabbedActivity.class,
                     CustomTabActivity.class);
     private final Map<Class, ActivityMonitor> mMonitorMap = new HashMap<>();
@@ -137,7 +135,6 @@ public class FirstRunIntegrationTest {
 
     private FirstRunActivityTestObserver mTestObserver = new FirstRunActivityTestObserver();
     private Activity mLastActivity;
-    private Class mFirstRunActivityClass;
 
     @Before
     public void setUp() {
@@ -155,10 +152,6 @@ public class FirstRunIntegrationTest {
 
         mInstrumentation = InstrumentationRegistry.getInstrumentation();
         mContext = mInstrumentation.getTargetContext();
-        mFirstRunActivityClass =
-                DeviceFormFactor.isTablet()
-                        ? TabbedModeFirstRunActivity.class
-                        : FirstRunActivity.class;
         for (Class clazz : mSupportedActivities) {
             ActivityMonitor monitor = new ActivityMonitor(clazz.getName(), null, false);
             mMonitorMap.put(clazz, monitor);
@@ -283,7 +276,7 @@ public class FirstRunIntegrationTest {
     }
 
     private FirstRunActivity waitForFirstRunActivity() {
-        return (FirstRunActivity) waitForActivity(mFirstRunActivityClass);
+        return (FirstRunActivity) waitForActivity(FirstRunActivity.class);
     }
 
     /**
@@ -299,7 +292,7 @@ public class FirstRunIntegrationTest {
                     for (Activity runningActivity : ApplicationStatus.getRunningActivities()) {
                         @ActivityState
                         int state = ApplicationStatus.getStateForActivity(runningActivity);
-                        if (runningActivity.getClass() == mFirstRunActivityClass
+                        if (runningActivity.getClass() == FirstRunActivity.class
                                 && runningActivity != previousFreActivity
                                 && (state == ActivityState.STARTED
                                         || state == ActivityState.RESUMED)) {
@@ -376,7 +369,7 @@ public class FirstRunIntegrationTest {
         Assert.assertFalse(mLastActivity.isFinishing());
 
         // First run should be skipped for this Activity.
-        Assert.assertEquals(0, getMonitor(mFirstRunActivityClass).getHits());
+        Assert.assertEquals(0, getMonitor(FirstRunActivity.class).getHits());
     }
 
     @Test
