@@ -34,6 +34,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
@@ -427,7 +428,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
         Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
         kExitOverviewPresentationHistogram, "",
-        kEnterExitPresentationMaxLatency);
+        kEnterExitPresentationMaxLatency, /*emit_trace_event=*/true);
     presentation_time_recorder->RequestNext();
 
     base::UmaHistogramEnumeration(
@@ -496,13 +497,14 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       OnEndingAnimationComplete(/*canceled=*/false);
   } else {
     DCHECK(CanEnterOverview());
+    base::trace_event::EmitNamedTrigger("ash-overview-start");
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::EnterOverview",
                                       this);
 
     auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
         Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
         kEnterOverviewPresentationHistogram, "",
-        kEnterExitPresentationMaxLatency);
+        kEnterExitPresentationMaxLatency, /*emit_trace_event=*/true);
     presentation_time_recorder->RequestNext();
 
     base::UmaHistogramCounts100("Ash.Overview.DeskCount",

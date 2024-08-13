@@ -67,7 +67,8 @@ CreatePresentationTimeHistogramRecorder(
     ui::Compositor* compositor,
     const char* presentation_time_histogram_name,
     const char* max_latency_histogram_name = "",
-    base::TimeDelta maximum = base::Milliseconds(200));
+    base::TimeDelta maximum = base::Milliseconds(200),
+    bool emit_trace_event = false);
 
 }  // namespace ui
 

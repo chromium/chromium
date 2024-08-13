@@ -8,6 +8,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/not_fatal_until.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/env.h"
@@ -312,6 +313,9 @@ void WindowOcclusionTracker::MaybeComputeOcclusion() {
 
   base::AutoReset<int> auto_reset(
       &num_times_occlusion_recomputed_in_current_step_, 0);
+
+  TRACE_EVENT1("ui", "WindowOcclusionTracker::MaybeComputeOcclusion", "this",
+               reinterpret_cast<void*>(this));
 
   // Recompute occlusion states until either:
   // - They are stable, i.e. calling Window::SetOcclusionInfo() on all tracked

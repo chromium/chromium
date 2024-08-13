@@ -10,6 +10,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 
 namespace ash {
 
@@ -30,6 +31,8 @@ void OverviewWindowOcclusionCalculator::OnOverviewModeWillStart() {
   if (!features::IsDeskBarWindowOcclusionOptimizationEnabled()) {
     return;
   }
+  TRACE_EVENT0("ui",
+               "OverviewWindowOcclusionCalculator::OnOverviewModeWillStart");
   base::ScopedUmaHistogramTimer timer(
       "Ash.Overview.WindowOcclusionCalculator.EnterLatency");
   calculator_.emplace();
@@ -60,6 +63,9 @@ void OverviewWindowOcclusionCalculator::OnOverviewModeWillStart() {
 
 void OverviewWindowOcclusionCalculator::OnOverviewModeStartingAnimationComplete(
     bool canceled) {
+  TRACE_EVENT0("ui",
+               "OverviewWindowOcclusionCalculator::"
+               "OnOverviewModeStartingAnimationComplete");
   enter_overview_pause_.reset();
 }
 
@@ -70,6 +76,8 @@ void OverviewWindowOcclusionCalculator::OnOverviewModeEnding(
   // bar is going to be destroyed imminently, and they slow down overview exit
   // so the calculator is destroyed early here.
   if (calculator_) {
+    TRACE_EVENT0("ui",
+                 "OverviewWindowOcclusionCalculator::OnOverviewModeEnding");
     base::ScopedUmaHistogramTimer timer(
         "Ash.Overview.WindowOcclusionCalculator.ExitLatency");
     calculator_->RemoveObserver(this);
