@@ -2928,8 +2928,8 @@ interface EventTarget
     method addEventListener
     method constructor
     method dispatchEvent
-    method on
     method removeEventListener
+    method when
 interface External
     attribute @@toStringTag
     method AddSearchProvider

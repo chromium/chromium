@@ -149,9 +149,9 @@ TEST_F(EventTargetTest,
        ObservableSubscriptionBecomingInactiveRemovesEventListener) {
   V8TestingScope scope;
   EventTarget* event_target = EventTarget::Create(scope.GetScriptState());
-  Observable* observable =
-      event_target->on(AtomicString("test"),
-                       MakeGarbageCollected<ObservableEventListenerOptions>());
+  Observable* observable = event_target->when(
+      AtomicString("test"),
+      MakeGarbageCollected<ObservableEventListenerOptions>());
   EXPECT_FALSE(event_target->HasEventListeners());
 
   AbortController* controller = AbortController::Create(scope.GetScriptState());

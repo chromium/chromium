@@ -32,11 +32,11 @@ PASS screen.colorDepth == "LEFTOVER" is false
 PASS screen.dispatchEvent == "LEFTOVER" is false
 PASS screen.height == "LEFTOVER" is false
 PASS screen.isExtended == "LEFTOVER" is false
-PASS screen.on == "LEFTOVER" is false
 PASS screen.onchange == "LEFTOVER" is false
 PASS screen.orientation == "LEFTOVER" is false
 PASS screen.pixelDepth == "LEFTOVER" is false
 PASS screen.removeEventListener == "LEFTOVER" is false
+PASS screen.when == "LEFTOVER" is false
 PASS screen.width == "LEFTOVER" is false
 PASS scrollbars.visible == "LEFTOVER" is false
 PASS statusbar.visible == "LEFTOVER" is false
