@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogMa
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 
 /** Extension of {@link NativePageNavigationDelegate} with suggestions-specific methods. */
 public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateImpl {
@@ -52,11 +53,11 @@ public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateI
      * tabId) matching tab, closes `mTab` (assumed to be the NTP), and returns true. Otherwise does
      * nothing and returns false.
      *
-     * @param url The URL to search for.
+     * @param keyUrl The URL to search for.
      */
-    public boolean maybeSelectTabWithUrl(String url) {
+    public boolean maybeSelectTabWithUrl(GURL keyUrl) {
         TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
-        int index = TabModelUtils.getTabIndexByUrl(tabModel, url);
+        int index = TabModelUtils.getTabIndexByUrl(tabModel, keyUrl.getSpec());
         if (index == TabModel.INVALID_TAB_INDEX) return false;
 
         tabModel.setIndex(index, TabSelectionType.FROM_USER);
