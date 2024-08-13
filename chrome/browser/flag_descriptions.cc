@@ -3302,6 +3302,12 @@ const char kSafetyHubMagicStackName[] = "Safety Check v2 - Magic Stack";
 const char kSafetyHubMagicStackDescription[] =
     "When enabled, a magic stack card will be visible for Safety Check v2 if "
     "trigger conditions are met.";
+
+const char kSafetyHubFollowupName[] = "Followup for Safety Check v2";
+const char kSafetyHubFollowupDescription[] =
+    "Enables some follow up work for Safety Check v2 if, this includes some "
+    "enhancements to the passwords module on the Safety Check page and "
+    "enabling the password card on magic stack.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const char kSafetyHubAbusiveNotificationRevocationName[] =

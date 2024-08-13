@@ -1151,6 +1151,11 @@ BASE_FEATURE(kSafetyHub,
 BASE_FEATURE(kSafetyHubMagicStack,
              "SafetyHubMagicStack",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables Safety Hub followup work.
+BASE_FEATURE(kSafetyHubFollowup,
+             "SafetyHubFollowup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables or disables the Trust Safety Sentiment Survey for Safety Hub.

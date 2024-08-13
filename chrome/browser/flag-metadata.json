@@ -7967,7 +7967,8 @@
   {
     "name": "safety-hub",
     "owners": [
-      "sideyilmaz@chromium.org"
+      "sideyilmaz@chromium.org",
+      "chrome-browser-privacy-team@google.com"
     ],
     "expiry_milestone": 132
   },
@@ -7977,11 +7978,19 @@
     "expiry_milestone": 130
   },
   {
+    "name": "safety-hub-followup",
+    "owners": [
+      "zalmashni@google.com",
+      "chrome-browser-privacy-team@google.com"
+    ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "safety-hub-magic-stack",
     "owners": [
       "rubindl@chromium.org",
       "sideyilmaz@chromium.org",
-      "chrome-privacy-controls@google.com"
+      "chrome-browser-privacy-team@google.com"
     ],
     "expiry_milestone": 132
   },

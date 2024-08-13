@@ -1900,6 +1900,9 @@ extern const char kSafetyHubDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kSafetyHubMagicStackName[];
 extern const char kSafetyHubMagicStackDescription[];
+
+extern const char kSafetyHubFollowupName[];
+extern const char kSafetyHubFollowupDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 extern const char kSafetyHubAbusiveNotificationRevocationName[];
