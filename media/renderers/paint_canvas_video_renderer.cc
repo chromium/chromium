@@ -691,8 +691,6 @@ bool ValidFormatForDirectUploading(
     viz::RasterContextProvider* raster_context_provider,
     GrGLenum format,
     unsigned int type) {
-  const gpu::Capabilities& context_caps =
-      raster_context_provider->ContextCapabilities();
   switch (format) {
     case GL_RGBA:
       return type == GL_UNSIGNED_BYTE || type == GL_UNSIGNED_SHORT_4_4_4_4;
@@ -705,7 +703,9 @@ bool ValidFormatForDirectUploading(
     case GL_RGB8:
     case GL_RGB10_A2:
     case GL_RGBA4:
-      return context_caps.major_version >= 3;
+      // TODO(crbug.com/356649879): RasterContextProvider never has ES3 context.
+      // Use the correct WebGL major version here.
+      return false;
     default:
       return false;
   }
