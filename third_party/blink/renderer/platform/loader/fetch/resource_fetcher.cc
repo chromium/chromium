@@ -956,11 +956,17 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
     AtomicString initiator_type = resource->IsPreloadedByEarlyHints()
                                       ? AtomicString(kEarlyHintsInitiatorType)
                                       : resource->Options().initiator_info.name;
-    scheduled_resource_timing_reports_.push_back(
-        ScheduledResourceTimingInfo{std::move(info), initiator_type});
+    // If the fetch originated from user agent CSS we do not emit a resource
+    // timing entry.
+    if (initiator_type != fetch_initiator_type_names::kUacss) {
+      scheduled_resource_timing_reports_.push_back(
+          ScheduledResourceTimingInfo{std::move(info), initiator_type});
 
-    if (!resource_timing_report_timer_.IsActive())
-      resource_timing_report_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
+      if (!resource_timing_report_timer_.IsActive()) {
+        resource_timing_report_timer_.StartOneShot(base::TimeDelta(),
+                                                   FROM_HERE);
+      }
+    }
   }
   resource->SetIsLoadedFromMemoryCache();
 }
