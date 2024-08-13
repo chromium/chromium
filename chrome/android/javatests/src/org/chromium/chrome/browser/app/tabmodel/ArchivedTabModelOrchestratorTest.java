@@ -28,6 +28,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -220,7 +221,7 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Test
     @MediumTest
-    public void testRescueTabs() {
+    public void testRescueTabs_FeatureFlag() {
         finishLoading();
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
@@ -235,9 +236,32 @@ public class ArchivedTabModelOrchestratorTest {
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
 
-        runOnUiThreadBlocking(() -> mOrchestrator.maybeRescueArchivedTabs(mRegularTabCreator));
+        runOnUiThreadBlocking(() -> mOrchestrator.maybeRescueArchivedTabs());
 
         assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+    }
+
+    @Test
+    @MediumTest
+    public void testRescueTabs_ArchiveDisabled() {
+        finishLoading();
+        mActivityTestRule.loadUrlInNewTab(
+                mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+
+        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+
+        setupDeclutterSettingsForTest();
+        runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
+        runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
+
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
+
+        runOnUiThreadBlocking(() -> mTabArchiveSettings.setArchiveEnabled(false));
+
+        CriteriaHelper.pollUiThread(() -> mRegularTabModel.getCount() == 2);
         assertEquals(0, mArchivedTabModel.getCount());
     }
 

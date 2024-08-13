@@ -42,6 +42,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -293,6 +294,34 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         ActivityTestUtils.waitForFragmentToAttach(activity, TabArchiveSettingsFragment.class);
         assertEquals(1, mUserActionTester.getActionCount("Tabs.OpenArchivedTabsSettingsMenuItem"));
+    }
+
+    @Test
+    @MediumTest
+    public void testTurnOffArchiveThroughSettings() throws Exception {
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+        showDialog(2);
+
+        SettingsActivity activity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SettingsActivity.class,
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mRobot.actionRobot
+                                        .clickToolbarMenuButton()
+                                        .clickToolbarMenuItem("Settings");
+                            }
+                        });
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
+        ActivityTestUtils.waitForFragmentToAttach(activity, TabArchiveSettingsFragment.class);
+        assertEquals(1, mUserActionTester.getActionCount("Tabs.OpenArchivedTabsSettingsMenuItem"));
+
+        onView(withText("Never")).perform(click());
+        CriteriaHelper.pollUiThread(() -> mRegularTabModel.getCount() == 3);
+        assertEquals(0, mArchivedTabModel.getCount());
     }
 
     @Test
