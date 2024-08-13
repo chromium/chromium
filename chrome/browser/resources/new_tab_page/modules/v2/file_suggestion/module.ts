@@ -113,7 +113,7 @@ export class ModuleElement extends ModuleElementBase {
   }
 
   protected onFileClick_(e: Event) {
-    const clickFileEvent = new Event('usage', {composed: true});
+    const clickFileEvent = new Event('usage', {composed: true, bubbles: true});
     this.dispatchEvent(clickFileEvent);
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number(currentTarget.dataset['index']);
