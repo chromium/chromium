@@ -149,10 +149,6 @@ inline constexpr char kSessionIdSwitch[] =
 // The app ID of the program triggering recovery.
 inline constexpr char kAppGuidSwitch[] = "appguid";
 
-// Disables throttling for the crash reported until the following bug is fixed:
-// https://bugs.chromium.org/p/crashpad/issues/detail?id=23
-inline constexpr char kNoRateLimitSwitch[] = "no-rate-limit";
-
 // Causes crashpad handler to start a second instance to monitor the first
 // instance for exceptions.
 inline constexpr char kMonitorSelfSwitch[] = "monitor-self";
