@@ -20,8 +20,8 @@
 namespace {
 
 bool IsSubstring(std::string_view sub, std::string_view base) {
-  return base.data() <= sub.data() &&
-         base.data() + base.size() >= sub.data() + sub.size();
+  return sub.empty() || (base.data() <= sub.data() &&
+                         base.data() + base.size() >= sub.data() + sub.size());
 }
 
 std::optional<media::hls::SourceString> GetItemContent(
