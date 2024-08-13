@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace content {
@@ -107,6 +108,9 @@ class NavigationTransitionData {
     ++copy_output_request_sequence_number_;
   }
 
+  const SkBitmap& favicon() const { return favicon_; }
+  void set_favicon(const SkBitmap& favicon) { favicon_ = favicon; }
+
  private:
   // Whether this screenshot is supplied by the embedder.
   bool is_copied_from_embedder_ = false;
@@ -131,6 +135,9 @@ class NavigationTransitionData {
 
   // Used to record UMA in `BackForwardTransitionAnimator`
   std::optional<CacheHitOrMissReason> cache_hit_or_miss_reason_;
+
+  // The favicon used to compose the fallback UX.
+  SkBitmap favicon_;
 };
 
 }  // namespace content

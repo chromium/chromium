@@ -57,6 +57,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   void OnGestureInvoked() override;
   void OnContentForNavigationEntryShown() override;
   AnimationStage GetCurrentAnimationStage() override;
+  void SetFavicon(const SkBitmap& favicon) override;
 
   // `ui::ViewAndroidObserver`:
   void OnAttachedToWindow() override {}
