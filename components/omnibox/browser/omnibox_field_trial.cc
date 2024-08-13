@@ -1019,6 +1019,17 @@ MLConfig::MLConfig() {
           &omnibox::kMlUrlPiecewiseMappedSearchBlending,
           "MlUrlPiecewiseMappedSearchBlending_BreakPoints", "")
           .Get();
+  piecewise_mapped_search_blending_break_points_verbatim_url =
+      base::FeatureParam<std::string>(
+          &omnibox::kMlUrlPiecewiseMappedSearchBlending,
+          "MlUrlPiecewiseMappedSearchBlending_BreakPoints_VerbatimUrl",
+          piecewise_mapped_search_blending_break_points.c_str())
+          .Get();
+  piecewise_mapped_search_blending_break_points_search =
+      base::FeatureParam<std::string>(
+          &omnibox::kMlUrlPiecewiseMappedSearchBlending,
+          "MlUrlPiecewiseMappedSearchBlending_BreakPoints_Search", "0,0;1,1400")
+          .Get();
   piecewise_mapped_search_blending_relevance_bias =
       base::FeatureParam<int>(
           &omnibox::kMlUrlPiecewiseMappedSearchBlending,
@@ -1046,6 +1057,8 @@ MLConfig::MLConfig() {
                                false)
           .Get();
 }
+
+MLConfig::~MLConfig() = default;
 
 MLConfig::MLConfig(const MLConfig&) = default;
 
@@ -1100,11 +1113,29 @@ bool IsMlUrlScoreCachingEnabled() {
   return GetMLConfig().ml_url_score_caching;
 }
 
-std::vector<std::pair<double, int>> GetPiecewiseMappingBreakPoints() {
+std::vector<std::pair<double, int>> GetPiecewiseMappingBreakPoints(
+    PiecewiseMappingVariant mapping_variant) {
   std::vector<std::pair<double, int>> break_points;
 
-  std::string param_value = OmniboxFieldTrial::GetMLConfig()
-                                .piecewise_mapped_search_blending_break_points;
+  std::string param_value;
+  switch (mapping_variant) {
+    case PiecewiseMappingVariant::kRegular:
+      param_value = OmniboxFieldTrial::GetMLConfig()
+                        .piecewise_mapped_search_blending_break_points;
+      break;
+    case PiecewiseMappingVariant::kVerbatimUrl:
+      param_value =
+          OmniboxFieldTrial::GetMLConfig()
+              .piecewise_mapped_search_blending_break_points_verbatim_url;
+      break;
+    case PiecewiseMappingVariant::kSearch:
+      param_value = OmniboxFieldTrial::GetMLConfig()
+                        .piecewise_mapped_search_blending_break_points_search;
+      break;
+    default:
+      NOTREACHED();
+  }
+
   base::StringPairs pairs;
   if (base::SplitStringIntoKeyValuePairs(param_value, ',', ';', &pairs)) {
     for (const auto& p : pairs) {

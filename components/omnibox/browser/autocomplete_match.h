@@ -574,6 +574,9 @@ struct AutocompleteMatch {
   // shown.
   bool IsVerbatimType() const;
 
+  // Returns whether this match is a "verbatim URL" suggestion.
+  bool IsVerbatimUrlSuggestion() const;
+
   // Returns whether this match is a search suggestion provided by search
   // provider.
   bool IsSearchProviderSearchSuggestion() const;

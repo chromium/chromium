@@ -2247,10 +2247,19 @@ void AutocompleteController::
                "AutocompleteController::"
                "RunBatchUrlScoringModelPiecewiseMappedSearchBlending");
 
+  using PiecewiseMappingVariant = OmniboxFieldTrial::PiecewiseMappingVariant;
+
   const auto break_points = OmniboxFieldTrial::GetPiecewiseMappingBreakPoints();
   if (break_points.empty()) {
     return;
   }
+
+  const auto break_points_verbatim_url =
+      OmniboxFieldTrial::GetPiecewiseMappingBreakPoints(
+          PiecewiseMappingVariant::kVerbatimUrl);
+  const auto break_points_search =
+      OmniboxFieldTrial::GetPiecewiseMappingBreakPoints(
+          PiecewiseMappingVariant::kSearch);
 
   // Sort according to traditional scores.
   // This is needed in order to ensure that the relevance score assignment logic
@@ -2323,8 +2332,18 @@ void AutocompleteController::
     auto& match = internal_result_.matches_[scored_positions[i]];
     match.RecordAdditionalInfo("ml legacy relevance", match.relevance);
     match.RecordAdditionalInfo("ml model output", p_value);
+
+    const auto* break_points_for_transform = &break_points;
+    if (match.IsVerbatimUrlSuggestion() && !break_points_verbatim_url.empty()) {
+      break_points_for_transform = &break_points_verbatim_url;
+    } else if (AutocompleteMatch::IsSearchType(match.type) &&
+               !break_points_search.empty()) {
+      break_points_for_transform = &break_points_search;
+    }
     match.relevance =
-        ApplyPiecewiseScoringTransform(p_value, break_points) + relevance_bias;
+        ApplyPiecewiseScoringTransform(p_value, *break_points_for_transform) +
+        relevance_bias;
+
     match.shortcut_boosted = match.relevance > grouping_threshold;
   }
 

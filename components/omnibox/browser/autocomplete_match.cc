@@ -1402,6 +1402,13 @@ bool AutocompleteMatch::IsVerbatimType() const {
          is_keyword_verbatim_match;
 }
 
+bool AutocompleteMatch::IsVerbatimUrlSuggestion() const {
+  return type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
+         base::ranges::any_of(duplicate_matches, [](const auto& match) {
+           return match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+         });
+}
+
 bool AutocompleteMatch::IsSearchProviderSearchSuggestion() const {
   const bool from_search_provider =
       (provider && provider->type() == AutocompleteProvider::TYPE_SEARCH);
@@ -1483,10 +1490,7 @@ bool AutocompleteMatch::IsMlScoringEligible() const {
   // Verbatim URL suggestions are conditionally eligible for ML scoring.
   // A "verbatim URL" suggestion is any suggestion that is UWYT itself or has
   // been deduped with a UWYT suggestion.
-  if (type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
-      base::ranges::any_of(duplicate_matches, [](const auto& match) {
-        return match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED;
-      })) {
+  if (AutocompleteMatch::IsVerbatimUrlSuggestion()) {
     return ml_config.enable_ml_scoring_for_verbatim_urls;
   }
 
