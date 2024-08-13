@@ -38,6 +38,8 @@
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
+  base::CancelableOnceCallback<commerce::GetParcelStatusCallback::RunType>
+      _parcelFetchTimeoutClosure;
 }
 
 - (instancetype)
@@ -164,8 +166,9 @@
 #pragma mark - Private
 
 - (void)fetchTrackedParcels {
+  _parcelFetchTimeoutClosure.Cancel();
   __weak ParcelTrackingMediator* weakSelf = self;
-  _shoppingService->GetAllParcelStatuses(base::BindOnce(
+  _parcelFetchTimeoutClosure.Reset(base::BindOnce(
       ^(bool success,
         std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>> parcels) {
         ParcelTrackingMediator* strongSelf = weakSelf;
@@ -174,6 +177,7 @@
         }
         [strongSelf parcelStatusesSuccessfullyReceived:std::move(parcels)];
       }));
+  _shoppingService->GetAllParcelStatuses(_parcelFetchTimeoutClosure.callback());
 }
 
 // Handles a parcel tracking status fetch result from the
