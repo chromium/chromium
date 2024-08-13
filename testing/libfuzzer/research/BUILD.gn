@@ -5,8 +5,5 @@ visibility = [
 
 group("research") {
   testonly = true
-  deps = [
-    "domatolpm:research",
-    "fuzzilli_idl_fuzzing:research",
-  ]
+  deps = [ "fuzzilli_idl_fuzzing:research" ]
 }
