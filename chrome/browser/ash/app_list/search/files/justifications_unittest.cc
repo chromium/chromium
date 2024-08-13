@@ -18,9 +18,8 @@ namespace app_list::test {
 class JustificationsTest : public ::testing::Test {
  public:
   JustificationsTest() {
-    scoped_features_.InitWithFeatures(
-        {}, {ash::features::kLauncherContinueSectionWithRecents,
-             ash::features::kLauncherContinueSectionWithRecentsRollout});
+    scoped_features_.InitAndDisableFeature(
+        ash::features::kLauncherContinueSectionWithRecentsRollout);
   }
 
  private:
