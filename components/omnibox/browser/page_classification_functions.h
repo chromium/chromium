@@ -37,6 +37,11 @@ bool IsLensContextualSearchbox(
 bool IsCustomTab(
     ::metrics::OmniboxEventProto::PageClassification classification);
 
+// Checks (and asserts in development builds) if Page Classification is
+// obsolete and should not be used.
+void CheckObsoletePageClass(
+    ::metrics::OmniboxEventProto::PageClassification classification);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_PAGE_CLASSIFICATION_FUNCTIONS_H_

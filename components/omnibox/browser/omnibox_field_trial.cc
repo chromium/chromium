@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/url_index_private_data.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
@@ -260,9 +261,9 @@ void OmniboxFieldTrial::GetDemotionsByType(
       demotion_rule = "1:61,2:61,3:61,4:61,16:61,24:61";
     }
 #endif
-    if (current_page_classification ==
-            OmniboxEventProto::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS ||
-        current_page_classification == OmniboxEventProto::NTP_REALBOX) {
+    omnibox::CheckObsoletePageClass(current_page_classification);
+
+    if (current_page_classification == OmniboxEventProto::NTP_REALBOX) {
       demotion_rule = "1:10,2:10,3:10,4:10,5:10,16:10,17:10,24:10";
     }
   }
