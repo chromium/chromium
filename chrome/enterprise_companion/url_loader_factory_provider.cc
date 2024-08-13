@@ -227,12 +227,17 @@ base::SequenceBound<URLLoaderFactoryProvider> CreateOutOfProcessNetWorker(
   base::CommandLine command_line(exe_path);
   command_line.AppendSwitch(kNetWorkerSwitch);
 
+  // Attempt to execute the network process in the bootstrap context of the
+  // logged in user to pick up their proxy configuration and authorization. For
+  // background, see the Apple Documentation Archive's entry on "Bootstrap
+  // Contexts".
   std::optional<uid_t> uid = GuessLoggedInUser();
   if (!uid) {
     LOG(ERROR)
         << "Could not determine a logged-in user to impersonate for "
-           "networking. The root bootstrap namespace will be used, "
-           "which may cause proxy configuration or authorization to fail.";
+           "networking. The root bootstrap namespace (in formal Mach kernel "
+           "terms, the \"startup context\") will be used, which may cause "
+           "proxy configuration or authorization to fail.";
   } else {
     command_line.PrependWrapper(
         base::StringPrintf("/bin/launchctl asuser %d", *uid));
