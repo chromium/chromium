@@ -13,6 +13,7 @@
 #include "base/scoped_native_library.h"
 #include "base/types/pass_key.h"
 #include "services/on_device_model/ml/chrome_ml_api.h"
+#include "services/on_device_model/ml/gpu_blocklist.h"
 
 namespace ml {
 
@@ -63,7 +64,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ChromeML {
   bool IsGpuBlocked() const;
 
   void SetAllowGpuForTesting(bool allow_gpu) {
-    allow_gpu_for_testing_ = allow_gpu;
+    gpu_blocklist_.skip_for_testing = true;
   }
 
  private:
@@ -71,7 +72,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ChromeML {
       const std::optional<std::string>& library_name);
 
   ChromeMLHolder holder_;
-  bool allow_gpu_for_testing_ = false;
+  GpuBlocklist gpu_blocklist_;
 };
 
 }  // namespace ml

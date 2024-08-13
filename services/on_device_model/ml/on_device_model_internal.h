@@ -13,6 +13,10 @@ namespace ml {
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
 const on_device_model::OnDeviceModelShim* GetOnDeviceModelInternalImpl();
 
+COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
+const on_device_model::OnDeviceModelShim*
+GetOnDeviceModelInternalImplWithoutGpuBlocklistForTesting();
+
 }  // namespace ml
 
 #endif  // SERVICES_ON_DEVICE_MODEL_ML_ON_DEVICE_MODEL_INTERNAL_H_

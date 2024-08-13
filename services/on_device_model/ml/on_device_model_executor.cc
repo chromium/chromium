@@ -440,9 +440,6 @@ DISABLE_CFI_DLSYM
 LoadModelResult OnDeviceModelExecutor::Init(
     on_device_model::mojom::LoadModelParamsPtr params,
     base::OnceClosure on_complete) {
-  if (chrome_ml_->IsGpuBlocked()) {
-    return LoadModelResult::kGpuBlocked;
-  }
   on_device_model::ModelAssets assets = std::move(params->assets);
 
   if (assets.language_detection_model.IsValid()) {
