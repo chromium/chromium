@@ -21,6 +21,7 @@
 #include "pdf/pdf_ink_brush.h"
 #include "pdf/pdf_ink_transform.h"
 #include "pdf/test/mouse_event_builder.h"
+#include "pdf/test/pdf_ink_test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -39,14 +40,6 @@ using testing::Pair;
 namespace chrome_pdf {
 
 namespace {
-
-// Optional parameters that the `setAnnotationBrushMessage` may have, depending
-// on the brush type.
-struct AnnotationBrushMessageParams {
-  int color_r;
-  int color_g;
-  int color_b;
-};
 
 // Constants to support a layout of 2 pages, arranged vertically with a small
 // gap between them.
@@ -170,36 +163,9 @@ class FakeClient : public PdfInkModule::Client {
 
 class PdfInkModuleTest : public testing::Test {
  protected:
-  base::Value::Dict CreateSetAnnotationBrushMessage(
-      const std::string& type,
-      double size,
-      const AnnotationBrushMessageParams* params) {
-    base::Value::Dict message;
-    message.Set("type", "setAnnotationBrush");
-
-    base::Value::Dict data;
-    data.Set("type", type);
-    data.Set("size", size);
-    if (params) {
-      base::Value::Dict color;
-      color.Set("r", params->color_r);
-      color.Set("g", params->color_g);
-      color.Set("b", params->color_b);
-      data.Set("color", std::move(color));
-    }
-    message.Set("data", std::move(data));
-    return message;
-  }
-
-  base::Value::Dict CreateSetAnnotationModeMessage(bool enable) {
-    base::Value::Dict message;
-    message.Set("type", "setAnnotationMode");
-    message.Set("enable", enable);
-    return message;
-  }
-
   void EnableAnnotationMode() {
-    EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessage(true)));
+    EXPECT_TRUE(
+        ink_module().OnMessage(CreateSetAnnotationModeMessageForTesting(true)));
   }
 
   FakeClient& client() { return client_; }
@@ -224,8 +190,8 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageEraser) {
   EnableAnnotationMode();
   EXPECT_EQ(true, ink_module().enabled());
 
-  base::Value::Dict message =
-      CreateSetAnnotationBrushMessage("eraser", /*size=*/2.5, nullptr);
+  base::Value::Dict message = CreateSetAnnotationBrushMessageForTesting(
+      "eraser", /*size=*/2.5, nullptr);
   EXPECT_TRUE(ink_module().OnMessage(message));
 
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
@@ -240,10 +206,11 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
   EnableAnnotationMode();
   EXPECT_EQ(true, ink_module().enabled());
 
-  AnnotationBrushMessageParams message_params{/*color_r=*/10, /*color_g=*/255,
-                                              /*color_b=*/50};
-  base::Value::Dict message =
-      CreateSetAnnotationBrushMessage("pen", /*size=*/8.0, &message_params);
+  TestAnnotationBrushMessageParams message_params{/*color_r=*/10,
+                                                  /*color_g=*/255,
+                                                  /*color_b=*/50};
+  base::Value::Dict message = CreateSetAnnotationBrushMessageForTesting(
+      "pen", /*size=*/8.0, &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
 
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
@@ -261,9 +228,10 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   EnableAnnotationMode();
   EXPECT_EQ(true, ink_module().enabled());
 
-  AnnotationBrushMessageParams message_params{/*color_r=*/240, /*color_g=*/133,
-                                              /*color_b=*/0};
-  base::Value::Dict message = CreateSetAnnotationBrushMessage(
+  TestAnnotationBrushMessageParams message_params{/*color_r=*/240,
+                                                  /*color_g=*/133,
+                                                  /*color_b=*/0};
+  base::Value::Dict message = CreateSetAnnotationBrushMessageForTesting(
       "highlighter", /*size=*/4.5, &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
 
@@ -282,10 +250,10 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
   EnableAnnotationMode();
   EXPECT_EQ(true, ink_module().enabled());
 
-  AnnotationBrushMessageParams message_params{/*color_r=*/0, /*color_g=*/0,
-                                              /*color_b=*/0};
-  base::Value::Dict message =
-      CreateSetAnnotationBrushMessage("pen", /*size=*/4.5, &message_params);
+  TestAnnotationBrushMessageParams message_params{/*color_r=*/0, /*color_g=*/0,
+                                                  /*color_b=*/0};
+  base::Value::Dict message = CreateSetAnnotationBrushMessageForTesting(
+      "pen", /*size=*/4.5, &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
 
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
@@ -300,7 +268,8 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
 TEST_F(PdfInkModuleTest, HandleSetAnnotationModeMessage) {
   EXPECT_FALSE(ink_module().enabled());
 
-  base::Value::Dict message = CreateSetAnnotationModeMessage(/*enable=*/false);
+  base::Value::Dict message =
+      CreateSetAnnotationModeMessageForTesting(/*enable=*/false);
 
   EXPECT_TRUE(ink_module().OnMessage(message));
   EXPECT_FALSE(ink_module().enabled());
@@ -356,7 +325,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
 
   void RunStrokeCheckTest(bool annotation_mode_enabled) {
     EXPECT_TRUE(ink_module().OnMessage(
-        CreateSetAnnotationModeMessage(annotation_mode_enabled)));
+        CreateSetAnnotationModeMessageForTesting(annotation_mode_enabled)));
     EXPECT_EQ(annotation_mode_enabled, ink_module().enabled());
 
     ApplyStrokeWithMouseAtPointsMaybeHandled(
@@ -369,8 +338,9 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
 
   void SelectEraserTool() {
     // TODO(crbug.com/352720912): Test multiple eraser sizes.
-    EXPECT_TRUE(ink_module().OnMessage(
-        CreateSetAnnotationBrushMessage("eraser", /*size=*/3.0, nullptr)));
+    EXPECT_TRUE(
+        ink_module().OnMessage(CreateSetAnnotationBrushMessageForTesting(
+            "eraser", /*size=*/3.0, nullptr)));
   }
 
   PdfInkModule::DocumentStrokeInputPointsMap StrokeInputPositions() const {
@@ -840,7 +810,8 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoAnnotationModeDisabled) {
   EXPECT_EQ(1, client().stroke_finished_count());
 
   // Disable annotation mode. Undo/redo should still work.
-  EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessage(false)));
+  EXPECT_TRUE(
+      ink_module().OnMessage(CreateSetAnnotationModeMessageForTesting(false)));
   EXPECT_EQ(false, ink_module().enabled());
 
   PerformUndo();
