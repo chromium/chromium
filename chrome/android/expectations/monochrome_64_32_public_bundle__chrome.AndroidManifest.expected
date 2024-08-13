@@ -217,7 +217,8 @@
         android:exported="false"
         android:launchMode="singleInstancePerTask"
         android:taskAffinity=""
-        android:theme="@style/LauncherTheme">
+        android:theme="@style/LauncherTheme"
+        android:windowNoDisplay="true">
       <intent-filter>  # DIFF-ANCHOR: f18dfa5a
         <action android:name="org.chromium.chrome.browser.dragdrop.action.VIEW"/>
         <category android:name="android.intent.category.BROWSABLE"/>

@@ -415,6 +415,7 @@ by a child template that "extends" this file.
             android:taskAffinity=""
             android:excludeFromRecents="true"
             android:launchMode="singleInstancePerTask"
+            android:windowNoDisplay="true"
             android:exported="false">
             <intent-filter>
                 <action android:name="org.chromium.chrome.browser.dragdrop.action.VIEW" />
