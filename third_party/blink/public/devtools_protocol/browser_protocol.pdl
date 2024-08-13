@@ -1135,6 +1135,15 @@ experimental domain Extensions
       optional array of string keys
     returns
       object data
+  # Removes `keys` from extension storage in the given `area`.
+  command removeStorageItems
+    parameters
+      # ID of extension.
+      string id
+      # StorageArea to remove data from.
+      StorageArea storageArea
+      # Keys to remove.
+      array of string keys
 
 # Defines commands and events for Autofill.
 experimental domain Autofill

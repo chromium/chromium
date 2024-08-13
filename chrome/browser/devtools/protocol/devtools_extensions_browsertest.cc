@@ -44,6 +44,20 @@ class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
 
     return SendCommandSync("Extensions.loadUnpacked", std::move(params));
   }
+
+  const base::Value::Dict* SendStorageCommand(
+      const std::string& command,
+      const extensions::Extension* extension,
+      base::Value::List keys) {
+    base::Value::Dict storage_params;
+    storage_params.Set("id", extension->id());
+    storage_params.Set("storageArea", "local");
+    storage_params.Set("keys", std::move(keys));
+
+    const base::Value::Dict* get_result =
+        SendCommandSync(command, std::move(storage_params));
+    return get_result;
+  }
 };
 
 class DevToolsExtensionsProtocolWithUnsafeDebuggingTest
@@ -137,16 +151,24 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   agent_host_ = FindExtensionHost(extension->id());
   agent_host_->AttachClient(this);
 
-  base::Value::Dict storage_params;
-  storage_params.Set("id", extension->id());
-  storage_params.Set("storageArea", "local");
-  storage_params.Set("keys", base::Value::List().Append("foo"));
-
+  // Check only the requested keys are returned.
   const base::Value::Dict* get_result =
-      SendCommandSync("Extensions.getStorageItems", std::move(storage_params));
+      SendStorageCommand("Extensions.getStorageItems", extension,
+                         base::Value::List().Append("foo"));
   ASSERT_TRUE(get_result);
   ASSERT_EQ(*get_result->FindDict("data")->FindString("foo"), "bar");
   ASSERT_FALSE(get_result->FindDict("data")->contains("other"));
+
+  // Remove the `foo` key.
+  ASSERT_TRUE(SendStorageCommand("Extensions.removeStorageItems", extension,
+                                 base::Value::List().Append("foo")));
+
+  // Check the `foo` key no longer exists.
+  const base::Value::Dict* get_result_2 =
+      SendStorageCommand("Extensions.getStorageItems", extension,
+                         base::Value::List().Append("foo"));
+  ASSERT_TRUE(get_result_2);
+  ASSERT_FALSE(get_result_2->FindDict("data")->contains("foo"));
 }
 
 // Test to ensure that the target associated with an extension service worker
