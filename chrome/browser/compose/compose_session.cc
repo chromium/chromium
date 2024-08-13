@@ -23,6 +23,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "chrome/browser/compose/compose_ax_serialization_utils.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -440,15 +441,15 @@ void ComposeSession::MakeRequest(
     return;
   }
 
-  if (HasNecessaryPageContext()) {
-    RequestWithSession(std::move(request), request_reason, is_input_edited);
-  } else {
-    // Prepare the compose call, which will be invoked when inner text
-    // extraction is completed.
-    continue_compose_ = base::BindOnce(
-        &ComposeSession::RequestWithSession, weak_ptr_factory_.GetWeakPtr(),
-        std::move(request), request_reason, is_input_edited);
-  }
+  // Prepare the compose call, which will be invoked when all required page
+  // metadata is collected.
+  continue_compose_ = base::BindOnce(
+      &ComposeSession::RequestWithSession, weak_ptr_factory_.GetWeakPtr(),
+      std::move(request), request_reason, is_input_edited);
+  // In case AX tree or page collection isn't required, we can run the
+  // continuation immediately. Note that going through this call ensures we
+  // populate the context object correctly.
+  TryContinueComposeWithContext();
 }
 
 bool ComposeSession::HasNecessaryPageContext() const {
@@ -460,11 +461,6 @@ void ComposeSession::RequestWithSession(
     const optimization_guide::proto::ComposeRequest& request,
     compose::ComposeRequestReason request_reason,
     bool is_input_edited) {
-  if (!collect_inner_text_) {
-    // Make sure context is added for sessions with no inner text.
-    AddPageContentToSession("", std::nullopt, "");
-  }
-
   // Add timeout for high latency Compose requests.
   const compose::Config& config = compose::GetComposeConfig();
 
@@ -1033,30 +1029,6 @@ void ComposeSession::MaybeRefreshPageContext(bool has_selection) {
   has_checked_autocompose_ = true;
 }
 
-void ComposeSession::AddPageContentToSession(
-    std::string inner_text,
-    std::optional<uint64_t> node_offset,
-    std::string trimmed_inner_text) {
-  if (!session_) {
-    return;
-  }
-  optimization_guide::proto::ComposePageMetadata page_metadata;
-  page_metadata.set_page_url(web_contents_->GetLastCommittedURL().spec());
-  page_metadata.set_page_title(base::UTF16ToUTF8(web_contents_->GetTitle()));
-
-  if (node_offset.has_value()) {
-    page_metadata.set_page_inner_text_offset(node_offset.value());
-  }
-  page_metadata.set_trimmed_page_inner_text(trimmed_inner_text);
-
-  page_metadata.set_page_inner_text(std::move(inner_text));
-
-  optimization_guide::proto::ComposeRequest request;
-  *request.mutable_page_metadata() = std::move(page_metadata);
-
-  session_->AddContext(request);
-}
-
 void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
     int request_id,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
@@ -1090,15 +1062,23 @@ void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
     }
     compose::LogComposeDialogInnerTextOffsetFound(node_offset.has_value());
   }
-  AddPageContentToSession(std::move(inner_text), node_offset,
-                          std::move(trimmed_inner_text));
-  TryContinueCompose();
-}
 
-void ComposeSession::TryContinueCompose() {
-  if (HasNecessaryPageContext() && !continue_compose_.is_null()) {
-    std::move(continue_compose_).Run();
+  if (!session_) {
+    return;
   }
+
+  if (!page_metadata_) {
+    page_metadata_.emplace();
+  }
+
+  if (node_offset.has_value()) {
+    page_metadata_->set_page_inner_text_offset(node_offset.value());
+  }
+  page_metadata_->set_trimmed_page_inner_text(trimmed_inner_text);
+
+  page_metadata_->set_page_inner_text(std::move(inner_text));
+
+  TryContinueComposeWithContext();
 }
 
 void ComposeSession::UpdateAXSnapshotAndContinueComposeIfNecessary(
@@ -1109,11 +1089,40 @@ void ComposeSession::UpdateAXSnapshotAndContinueComposeIfNecessary(
   }
 
   got_ax_snapshot_ = true;
+  if (!page_metadata_) {
+    page_metadata_.emplace();
+  }
 
-  // TODO(crbug.com/350946976): Serialize and populate the necessary fields from
-  // `update` to `session_`.
+  ComposeAXSerializationUtils::PopulateAXTreeUpdate(
+      update, page_metadata_->mutable_ax_tree_update());
 
-  TryContinueCompose();
+  TryContinueComposeWithContext();
+}
+
+void ComposeSession::TryContinueComposeWithContext() {
+  if (!HasNecessaryPageContext() || continue_compose_.is_null()) {
+    return;
+  }
+
+  if (!collect_inner_text_ && !collect_ax_snapshot_) {
+    // Make sure we populate the url and title even if we're not collecting
+    // other context information.
+    page_metadata_.emplace();
+  }
+
+  optimization_guide::proto::ComposeRequest request;
+  if (page_metadata_) {
+    page_metadata_->set_page_url(web_contents_->GetLastCommittedURL().spec());
+    page_metadata_->set_page_title(
+        base::UTF16ToUTF8(web_contents_->GetTitle()));
+
+    *request.mutable_page_metadata() = std::move(*page_metadata_);
+    page_metadata_.reset();
+
+    session_->AddContext(request);
+  }
+
+  std::move(continue_compose_).Run();
 }
 
 void ComposeSession::RefreshInnerText() {

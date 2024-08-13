@@ -247,11 +247,6 @@ class ComposeSession
   void AddNewResponseToHistory(std::unique_ptr<ComposeState> new_state);
   void EraseForwardStatesInHistory();
 
-  // Adds page content to the session context.
-  void AddPageContentToSession(std::string inner_text,
-                               std::optional<uint64_t> node_offset,
-                               std::string trimmed_inner_text);
-
   // Makes compose or rewrite request.
   void MakeRequest(optimization_guide::proto::ComposeRequest request,
                    compose::ComposeRequestReason request_reason,
@@ -278,7 +273,9 @@ class ComposeSession
       const ui::AXTreeUpdate& update);
 
   // Continues the compose request if all page context has been received.
-  void TryContinueCompose();
+  // Note that this adds necessary metadata that may have been populated from
+  // innerText or AXSnapshot (or both).
+  void TryContinueComposeWithContext();
 
   // Returns true if the necessary page context has been received.
   bool HasNecessaryPageContext() const;
@@ -412,6 +409,8 @@ class ComposeSession
   base::Token session_id_;
 
   bool skip_feedback_ui_for_testing_ = false;
+
+  std::optional<optimization_guide::proto::ComposePageMetadata> page_metadata_;
 
   base::WeakPtrFactory<ComposeSession> weak_ptr_factory_;
 };
