@@ -182,6 +182,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   // Applies rounded_corner_bounds (bounds + radii_in_dps) to the surface tree.
   // `rounded_corner_bounds` should be in the coordinate space of the
+  // `root_surface`.
   void ApplyRoundedCornersToSurfaceTree(
       const gfx::RectF& bounds,
       const gfx::RoundedCornersF& radii_in_dps);
