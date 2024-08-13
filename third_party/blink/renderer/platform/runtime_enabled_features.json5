@@ -4902,11 +4902,6 @@
     {
       name: "WindowDefaultStatus",
     },
-    // Allows sites to request fullscreen when the set of screens change.
-    {
-      name: "WindowPlacementFullscreenOnScreensChange",
-      status: "experimental",
-    },
     {
       // Allows browser-providers writing suggestions to be turned on/off
       // through the attribute.

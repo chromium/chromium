@@ -152,7 +152,6 @@ source_set("headers") {
     "frame/frame_visual_properties.h",
     "frame/from_ad_state.h",
     "frame/history_user_activation_state.h",
-    "frame/transient_allow_fullscreen.h",
     "frame/user_activation_state.h",
     "frame/user_activation_update_source.h",
     "frame/view_transition_state.h",

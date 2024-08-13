@@ -9262,7 +9262,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3698" label="ThirdPartyAccess"/>
   <int value="3699" label="ThirdPartyActivation"/>
   <int value="3700" label="ThirdPartyAccessAndActivation"/>
-  <int value="3701" label="FullscreenAllowedByScreensChange"/>
+  <int value="3701" label="OBSOLETE_FullscreenAllowedByScreensChange"/>
   <int value="3702" label="NewLayoutOverflowDifferentBlock"/>
   <int value="3703" label="NewLayoutOverflowDifferentFlex"/>
   <int value="3704" label="NewLayoutOverflowDifferentAndAlreadyScrollsBlock"/>

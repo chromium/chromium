@@ -130,10 +130,6 @@ void ScreenDetails::UpdateScreenInfosImpl(LocalDOMWindow* window,
 
     // Enqueue a change event if screens were added or removed.
     if (added_or_removed) {
-      // Allow fullscreen requests shortly after user-generated screens changes.
-      // TODO(enne): consider doing this only when screens have been added.
-      window->GetFrame()->ActivateTransientAllowFullscreen();
-
       EnqueueEvent(*Event::Create(event_type_names::kScreenschange),
                    TaskType::kMiscPlatformAPI);
     }

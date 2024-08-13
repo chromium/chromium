@@ -1019,10 +1019,6 @@ bool LocalFrame::CanAccessEvent(
   }
 }
 
-bool LocalFrame::IsTransientAllowFullscreenActive() const {
-  return transient_allow_fullscreen_.IsActive();
-}
-
 void LocalFrame::Reload(WebFrameLoadType load_type) {
   DCHECK(IsReloadLoadType(load_type));
   if (!loader_.GetDocumentLoader()->GetHistoryItem())

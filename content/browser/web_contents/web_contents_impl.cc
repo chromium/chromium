@@ -1894,14 +1894,6 @@ WebContentsView* WebContentsImpl::GetView() const {
 void WebContentsImpl::OnScreensChange(bool is_multi_screen_changed) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnScreensChange",
                         "is_multi_screen_changed", is_multi_screen_changed);
-  // Allow fullscreen requests shortly after user-generated screens changes.
-  // TODO(crbug.com/40165350): Mac should not activate this on local process
-  // display::Screen signals, but via RenderWidgetHostViewMac screen updates.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWindowPlacementFullscreenOnScreensChange)) {
-    transient_allow_fullscreen_.Activate();
-  }
-
   // Mac display info may originate from a remote process hosting the NSWindow;
   // this local process display::Screen signal should not trigger updates.
   // TODO(crbug.com/40165350): Unify screen info plumbing, caching, etc.
@@ -10424,15 +10416,8 @@ bool WebContentsImpl::IsTransientActivationRequiredForHtmlFullscreen() {
     return false;
   }
 
-  RenderFrameHostImpl* host = GetPrimaryMainFrame();
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWindowPlacementFullscreenOnScreensChange) &&
-      IsWindowManagementGranted(host) &&
-      transient_allow_fullscreen_.IsActive()) {
-    return false;
-  }
-
   // Require transient activation shortly after a same-origin WebContents exit.
+  RenderFrameHostImpl* host = GetPrimaryMainFrame();
   auto* last_exits = GetFullscreenUserData(GetBrowserContext())->last_exits();
   auto last_exit = last_exits->find(host->GetLastCommittedOrigin());
   constexpr base::TimeDelta kCooldown = base::Seconds(5);

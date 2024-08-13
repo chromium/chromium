@@ -67,7 +67,6 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
-#include "third_party/blink/public/common/frame/transient_allow_fullscreen.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom.h"
@@ -2486,9 +2485,6 @@ class CONTENT_EXPORT WebContentsImpl
 
   // Records the last time we saw a screen orientation change.
   base::TimeTicks last_screen_orientation_change_time_;
-
-  // Manages a transient affordance for this page's frames to enter fullscreen.
-  blink::TransientAllowFullscreen transient_allow_fullscreen_;
 
   // Indicates how many sources are currently suppressing the unresponsive
   // renderer dialog.

@@ -767,16 +767,6 @@ void Fullscreen::EnforceRequestFullscreenConditions(
     return;
   }
 
-  // The algorithm is triggered by another event with transient affordances,
-  // e.g. permission-gated events for user-generated screens changes.
-  if (RuntimeEnabledFeatures::WindowPlacementFullscreenOnScreensChangeEnabled(
-          document.GetExecutionContext()) &&
-      document.GetFrame()->IsTransientAllowFullscreenActive()) {
-    UseCounter::Count(document, WebFeature::kFullscreenAllowedByScreensChange);
-    std::move(callback).Run(RequestFullscreenError::kNone);
-    return;
-  }
-
   // The context has permission to use fullscreen without transient activation,
   // and no blocking cooldown period is in effect from a recent fullscreen exit.
   //
