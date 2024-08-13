@@ -121,6 +121,12 @@ if (build_with_tflite_lib) {
 
 component("features") {
   sources = [
+    "feature_registry/enterprise_policy_registry.cc",
+    "feature_registry/enterprise_policy_registry.h",
+    "feature_registry/mqls_feature_registry.cc",
+    "feature_registry/mqls_feature_registry.h",
+    "feature_registry/settings_ui_registry.cc",
+    "feature_registry/settings_ui_registry.h",
     "insertion_ordered_set.h",
     "model_execution/feature_keys.h",
     "model_execution/model_execution_prefs.cc",
@@ -446,6 +452,9 @@ source_set("unit_tests") {
   sources = [
     "bloom_filter_unittest.cc",
     "command_line_top_host_provider_unittest.cc",
+    "feature_registry/enterprise_policy_registry_unittest.cc",
+    "feature_registry/mqls_feature_registry_unittest.cc",
+    "feature_registry/settings_ui_registry_unittest.cc",
     "hint_cache_unittest.cc",
     "hints_component_util_unittest.cc",
     "hints_fetcher_unittest.cc",
