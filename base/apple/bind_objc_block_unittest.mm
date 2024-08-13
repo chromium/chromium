@@ -10,6 +10,39 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 
+@interface CounterForBindObjcBlockTest : NSObject
+@property(nonatomic, assign) NSUInteger counter;
+@end
+
+@implementation CounterForBindObjcBlockTest
+@synthesize counter = _counter;
+@end
+
+@interface HelperForBindObjcBlockTest : NSObject
+
+- (instancetype)initWithCounter:(CounterForBindObjcBlockTest*)counter;
+- (void)incrementCounter;
+
+@end
+
+@implementation HelperForBindObjcBlockTest {
+  CounterForBindObjcBlockTest* _counter;
+}
+
+- (instancetype)initWithCounter:(CounterForBindObjcBlockTest*)counter {
+  if ((self = [super init])) {
+    _counter = counter;
+    DCHECK(_counter);
+  }
+  return self;
+}
+
+- (void)incrementCounter {
+  ++_counter.counter;
+}
+
+@end
+
 namespace {
 
 TEST(BindObjcBlockTest, TestScopedClosureRunnerExitScope) {
@@ -138,6 +171,118 @@ TEST(BindObjcBlockTest, TestBlockReleased) {
     });
   }
   EXPECT_NSEQ(nil, weak_nsobject);
+}
+
+// Tests that base::BindOnce(..., __strong NSObject*, ...) strongly captures
+// the Objective-C object.
+TEST(BindObjcBlockTest, TestBindOnceBoundStrongPointer) {
+  CounterForBindObjcBlockTest* counter =
+      [[CounterForBindObjcBlockTest alloc] init];
+  ASSERT_EQ(counter.counter, 0u);
+
+  base::OnceClosure closure;
+  @autoreleasepool {
+    HelperForBindObjcBlockTest* helper =
+        [[HelperForBindObjcBlockTest alloc] initWithCounter:counter];
+
+    // Creates a closure with a lambda taking the parameter as a __strong
+    // pointer and bound with a __strong pointer. This should retain the
+    // object.
+    closure = base::BindOnce(
+        [](HelperForBindObjcBlockTest* helper) { [helper incrementCounter]; },
+        helper);
+  }
+
+  // Check that calling the closure increments the counter since the helper
+  // object was captured strongly and thus is retained by the closure.
+  std::move(closure).Run();
+  EXPECT_EQ(counter.counter, 1u);
+}
+
+// Tests that base::BindOnce(..., __weak NSObject*, ...) weakly captures
+// the Objective-C object.
+TEST(BindObjcBlockTest, TestBindOnceBoundWeakPointer) {
+  CounterForBindObjcBlockTest* counter =
+      [[CounterForBindObjcBlockTest alloc] init];
+  ASSERT_EQ(counter.counter, 0u);
+
+  base::OnceClosure closure;
+  @autoreleasepool {
+    HelperForBindObjcBlockTest* helper =
+        [[HelperForBindObjcBlockTest alloc] initWithCounter:counter];
+
+    // Creates a closure with a lambda taking the parameter as a __strong
+    // pointer and bound with a __weak pointer. This should not retain the
+    // object.
+    __weak HelperForBindObjcBlockTest* weak_helper = helper;
+    closure = base::BindOnce(
+        [](HelperForBindObjcBlockTest* helper) { [helper incrementCounter]; },
+        weak_helper);
+  }
+
+  // Check that calling the closure does not increment the counter since
+  // the helper object was captured weakly and thus is not retained by
+  // the closure.
+  std::move(closure).Run();
+  EXPECT_EQ(counter.counter, 0u);
+}
+
+// Tests that base::BindRepeating(..., __strong NSObject*, ...) strongly
+// captures the Objective-C object.
+TEST(BindObjcBlockTest, TestBindRepeatingBoundStrongPointer) {
+  CounterForBindObjcBlockTest* counter =
+      [[CounterForBindObjcBlockTest alloc] init];
+  ASSERT_EQ(counter.counter, 0u);
+
+  base::RepeatingClosure closure;
+  @autoreleasepool {
+    HelperForBindObjcBlockTest* helper =
+        [[HelperForBindObjcBlockTest alloc] initWithCounter:counter];
+
+    // Creates a closure with a lambda taking the parameter as a __strong
+    // pointer and bound with a __strong pointer. This should retain the
+    // object.
+    closure = base::BindRepeating(
+        [](HelperForBindObjcBlockTest* helper) { [helper incrementCounter]; },
+        helper);
+  }
+
+  // Check that calling the closure increments the counter since the helper
+  // object was captured strongly and thus is retained by the closure.
+  closure.Run();
+  closure.Run();
+  closure.Run();
+  EXPECT_EQ(counter.counter, 3u);
+}
+
+// Tests that base::BindRepeating(..., __weak NSObject*, ...) weakly captures
+// the Objective-C object.
+TEST(BindObjcBlockTest, TestBindRepeatingBoundWeakPointer) {
+  CounterForBindObjcBlockTest* counter =
+      [[CounterForBindObjcBlockTest alloc] init];
+  ASSERT_EQ(counter.counter, 0u);
+
+  base::RepeatingClosure closure;
+  @autoreleasepool {
+    HelperForBindObjcBlockTest* helper =
+        [[HelperForBindObjcBlockTest alloc] initWithCounter:counter];
+
+    // Creates a closure with a lambda taking the parameter as a __strong
+    // pointer and bound with a __weak pointer. This should not retain the
+    // object.
+    __weak HelperForBindObjcBlockTest* weak_helper = helper;
+    closure = base::BindRepeating(
+        [](HelperForBindObjcBlockTest* helper) { [helper incrementCounter]; },
+        weak_helper);
+  }
+
+  // Check that calling the closure does not increment the counter since
+  // the helper object was captured weakly and thus is not retained by
+  // the closure.
+  closure.Run();
+  closure.Run();
+  closure.Run();
+  EXPECT_EQ(counter.counter, 0u);
 }
 
 }  // namespace
