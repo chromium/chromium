@@ -15,7 +15,7 @@ default: 0
 example_value: 0
 features:
   dynamic_refresh: true
-  per_profile: false
+  per_profile: true
 items:
 - caption: All system shortcuts will always activate as expected.
   name: Default
@@ -46,6 +46,6 @@ schema:
   - 4
   type: integer
 supported_on:
-- chrome_os:128-
+- chrome_os:127-
 tags: []
 type: int-enum
