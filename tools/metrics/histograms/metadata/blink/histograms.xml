@@ -661,7 +661,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.CompositingCommit.UpdateTime"
-    units="microseconds" expires_after="2024-12-08">
+    units="microseconds" expires_after="2025-02-09">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
@@ -2719,7 +2719,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.IntersectionObservation.UpdateTime"
-    units="microseconds" expires_after="2024-12-08">
+    units="microseconds" expires_after="2025-02-09">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
@@ -2908,7 +2908,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.Layout.UpdateTime" units="microseconds"
-    expires_after="2024-12-08">
+    expires_after="2025-02-09">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
@@ -3073,7 +3073,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.LCPElementLocatorSize" units="bytes"
-    expires_after="2024-12-08">
+    expires_after="2025-02-09">
   <owner>kouhei@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -3463,7 +3463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.MainFrame.UpdateTime" units="microseconds"
-    expires_after="2024-12-08">
+    expires_after="2025-02-09">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
@@ -3722,7 +3722,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.Paint.UpdateTime" units="microseconds"
-    expires_after="2024-12-08">
+    expires_after="2025-02-09">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
@@ -4325,7 +4325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.Style.UpdateTime" units="microseconds"
-    expires_after="2024-12-08">
+    expires_after="2025-02-09">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>
@@ -4377,7 +4377,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UpdateViewportIntersection.UpdateTime"
-    units="microseconds" expires_after="2024-12-08">
+    units="microseconds" expires_after="2025-02-09">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 
   <owner>pdr@chromium.org</owner>

@@ -42,7 +42,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FederatedService.StorageEvent" enum="FederatedStorageEvent"
-    expires_after="2024-11-03">
+    expires_after="2025-02-09">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>cros-federated-team@google.com</owner>

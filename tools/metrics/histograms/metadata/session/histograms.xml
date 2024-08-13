@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Session.Background.TotalDuration" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-09">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -1032,7 +1032,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSession" enum="BooleanSuccess"
-    expires_after="2024-12-08">
+    expires_after="2025-02-09">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -1043,7 +1043,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSessionFromCache"
-    enum="BooleanSuccess" expires_after="2024-12-08">
+    enum="BooleanSuccess" expires_after="2025-02-09">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -1054,7 +1054,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSessionFromCacheHasData"
-    enum="BooleanHasData" expires_after="2024-12-08">
+    enum="BooleanHasData" expires_after="2025-02-09">
   <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>

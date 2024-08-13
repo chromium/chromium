@@ -203,7 +203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.InterstitialReason"
-    enum="HttpsFirstModeInterstitialReason" expires_after="2024-12-08">
+    enum="HttpsFirstModeInterstitialReason" expires_after="2025-02-09">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.NavigationEvent"
-    enum="HttpsFirstModeNavigationEvent" expires_after="2024-12-08">
+    enum="HttpsFirstModeNavigationEvent" expires_after="2025-02-09">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -305,7 +305,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Security.HttpsFirstModeWithEngagementHeuristic.NavigationEvent"
-    enum="HttpsFirstModeNavigationEvent" expires_after="2024-12-08">
+    enum="HttpsFirstModeNavigationEvent" expires_after="2025-02-09">
   <owner>meacer@chromium.org</owner>
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -359,7 +359,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.NavigationRequestSecurityLevel"
-    enum="NavigationRequestSecurityLevel" expires_after="2024-12-08">
+    enum="NavigationRequestSecurityLevel" expires_after="2025-02-09">
   <owner>jdeblasio@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>

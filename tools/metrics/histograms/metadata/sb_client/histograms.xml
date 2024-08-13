@@ -181,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestDuration" units="ms"
-    expires_after="2025-02-02">
+    expires_after="2025-02-09">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
@@ -836,7 +836,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingImageEmbeddingResult"
-    enum="ClientSidePhishingImageEmbeddingResult" expires_after="2024-12-08">
+    enum="ClientSidePhishingImageEmbeddingResult" expires_after="2025-02-09">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

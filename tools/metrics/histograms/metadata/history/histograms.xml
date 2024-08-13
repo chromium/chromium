@@ -2438,7 +2438,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.HashTableLengthOnReaderInit"
-    units="entries" expires_after="2024-12-08">
+    units="entries" expires_after="2025-02-09">
   <owner>kyraseevers@chromium.org</owner>
   <owner>brgoldstein@google.com</owner>
   <summary>
@@ -2449,7 +2449,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.HashTableSizeOnTableCreate" units="MB"
-    expires_after="2024-12-08">
+    expires_after="2025-02-09">
   <owner>kyraseevers@chromium.org</owner>
   <owner>brgoldstein@google.com</owner>
   <summary>
@@ -2459,7 +2459,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.HashTableUsageOnLinkAdded"
-    units="fingerprints" expires_after="2024-12-08">
+    units="fingerprints" expires_after="2025-02-09">
   <owner>kyraseevers@chromium.org</owner>
   <owner>brgoldstein@google.com</owner>
   <summary>

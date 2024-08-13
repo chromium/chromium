@@ -233,7 +233,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Bookmarks.DefaultBookmarkFolderOutcome"
-    enum="IOSDefaultBookmarkFolderOutcome" expires_after="2024-12-08">
+    enum="IOSDefaultBookmarkFolderOutcome" expires_after="2025-02-09">
   <owner>mastiz@chromium.org</owner>
   <owner>arthurmilchior@chromium.org</owner>
   <component>1457392</component>
@@ -4099,7 +4099,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Spotlight.DonatedIntentType"
-    enum="IOSSpotlightDonatedIntentType" expires_after="2024-12-08">
+    enum="IOSSpotlightDonatedIntentType" expires_after="2025-02-09">
   <owner>stkhapugin@chromium.org</owner>
   <owner>ameurhosni@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -4142,7 +4142,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Spotlight.Origin" enum="IOSSpotlightOrigin"
-    expires_after="2024-12-08">
+    expires_after="2025-02-09">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>

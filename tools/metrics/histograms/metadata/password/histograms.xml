@@ -1462,7 +1462,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.FillingSuccessIOS" enum="BooleanSuccess"
-    expires_after="2024-12-08">
+    expires_after="2025-02-09">
   <owner>theocristea@google.com</owner>
   <owner>kazinova@google.com</owner>
   <owner>vsemeniuk@google.com</owner>
@@ -3565,7 +3565,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.SuccessfulSubmissionIndicatorEvent"
-    enum="SubmissionIndicatorEvent" expires_after="2024-12-08">
+    enum="SubmissionIndicatorEvent" expires_after="2025-02-09">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>

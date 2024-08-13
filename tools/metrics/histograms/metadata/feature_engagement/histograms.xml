@@ -627,7 +627,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.DismissalReason.iOS"
-    enum="InProductHelpDismissalReason" expires_after="2024-12-08">
+    enum="InProductHelpDismissalReason" expires_after="2025-02-09">
   <owner>lpromero@google.com</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -636,7 +636,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.Gestural.DismissalReason.iOS"
-    enum="InProductHelpDismissalReason" expires_after="2024-12-08">
+    enum="InProductHelpDismissalReason" expires_after="2025-02-09">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>adamta@google.com</owner>
   <summary>
@@ -668,7 +668,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.ShownTime.{IPHFeature}" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-09">
   <owner>lpromero@google.com</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
