@@ -1479,7 +1479,10 @@ class XDesktop(Desktop):
          # so the equivalent information gets logged in our main log file.
          "-logfile", "/dev/null",
          "-verbose", "3",
-         "-configdir", config_dir
+         "-configdir", config_dir,
+         # Pass a non-existent file, to prevent Xorg from reading the default
+         # config file: /etc/X11/xorg.conf
+         "-config", os.path.join(config_dir, "none")
         ] + extra_x_args, env=self._x_env())
     if not self.server_proc.pid:
       raise Exception("Could not start Xorg.")
