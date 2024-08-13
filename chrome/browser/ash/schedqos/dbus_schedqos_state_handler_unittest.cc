@@ -360,7 +360,7 @@ TEST_F(DBusSchedQOSStateHandlerTest, GetProcessPriority) {
 
   ASSERT_TRUE(process_.SetPriority(base::Process::Priority::kUserVisible));
   // base::Process::Priority::kUserVisible is translated as
-  // base::Process::Priority::kUserBlocking.
+  // base::Process::Priority::kUserBlocking on ChromeOS.
   EXPECT_EQ(process_.GetPriority(), base::Process::Priority::kUserBlocking);
 
   process_.ForgetPriority();
