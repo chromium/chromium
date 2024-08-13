@@ -220,7 +220,7 @@ std::string DeterminePageLanguage(const std::string& code,
   // translate::kUnknownLanguageCode.
   if (language.empty()) {
     translate::ReportLanguageVerification(
-        translate::LANGUAGE_VERIFICATION_MODEL_ONLY);
+        translate::LanguageVerificationType::kModelOnly);
     return model_detected_language;
   }
 
@@ -228,25 +228,25 @@ std::string DeterminePageLanguage(const std::string& code,
   if (model_detected_language.empty() ||
       model_detected_language == kUnknownLanguageCode) {
     translate::ReportLanguageVerification(
-        translate::LANGUAGE_VERIFICATION_MODEL_UNKNOWN);
+        translate::LanguageVerificationType::kModelUnknown);
     return language;
   }
 
   if (CanModelComplementSubCode(language, model_detected_language)) {
     translate::ReportLanguageVerification(
-        translate::LANGUAGE_VERIFICATION_MODEL_COMPLEMENTS_COUNTRY);
+        translate::LanguageVerificationType::kModelComplementsCountry);
     return model_detected_language;
   }
 
   if (IsSameOrSimilarLanguages(language, model_detected_language)) {
     translate::ReportLanguageVerification(
-        translate::LANGUAGE_VERIFICATION_MODEL_AGREES);
+        translate::LanguageVerificationType::kModelAgrees);
     return language;
   }
 
   if (MaybeServerWrongConfiguration(language, model_detected_language)) {
     translate::ReportLanguageVerification(
-        translate::LANGUAGE_VERIFICATION_MODEL_OVERRIDES);
+        translate::LanguageVerificationType::kModelOverrides);
     return model_detected_language;
   }
 
@@ -254,7 +254,7 @@ std::string DeterminePageLanguage(const std::string& code,
   // written in another language with confidence. In this case, Chrome doesn't
   // rely on any of the language codes, and gives up suggesting a translation.
   translate::ReportLanguageVerification(
-      translate::LANGUAGE_VERIFICATION_MODEL_DISAGREES);
+      translate::LanguageVerificationType::kModelDisagrees);
   return kUnknownLanguageCode;
 }
 

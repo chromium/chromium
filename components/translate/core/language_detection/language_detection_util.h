@@ -8,7 +8,7 @@
 #include <string>
 
 namespace translate {
-enum LanguageVerificationType : int;
+enum class LanguageVerificationType;
 
 // Given a detected language and whether that detection is reliable, returns the
 // ISO 639 language code of |utf8_text|. Returns

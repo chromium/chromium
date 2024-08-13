@@ -238,24 +238,23 @@ void TranslateAgent::PageCaptured(
     // only use page-provided languages.
     language = translate::DeterminePageLanguageNoModel(
         content_language, html_lang,
-        translate::LanguageVerificationType::
-            LANGUAGE_VERIFICATION_NO_PAGE_CONTENT);
+        translate::LanguageVerificationType::kNoPageContent);
   } else if (translate::IsTFLiteLanguageDetectionEnabled()) {
     // Use TFLite and page contents to assist with language detection.
     translate::LanguageDetectionModel& language_detection_model =
         GetLanguageDetectionModel();
     bool is_available = language_detection_model.IsAvailable();
-    language = is_available
-                   ? language_detection_model.DeterminePageLanguage(
-                         content_language, html_lang, contents->as_string(),
-                         &model_detected_language, &is_model_reliable,
-                         model_reliability_score)
-                   // If the model is not available do not run language
-                   // detection and only use page-provided languages.
-                   : translate::DeterminePageLanguageNoModel(
-                         content_language, html_lang,
-                         translate::LanguageVerificationType::
-                             LANGUAGE_VERIFICATION_MODEL_NOT_AVAILABLE);
+    language =
+        is_available
+            ? language_detection_model.DeterminePageLanguage(
+                  content_language, html_lang, contents->as_string(),
+                  &model_detected_language, &is_model_reliable,
+                  model_reliability_score)
+            // If the model is not available do not run language
+            // detection and only use page-provided languages.
+            : translate::DeterminePageLanguageNoModel(
+                  content_language, html_lang,
+                  translate::LanguageVerificationType::kModelNotAvailable);
     UMA_HISTOGRAM_BOOLEAN(
         "LanguageDetection.TFLiteModel.WasModelAvailableForDetection",
         is_available);
