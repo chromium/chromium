@@ -564,6 +564,24 @@ static_library("common") {
   }
 }
 
+# NOTE: This is separate from ":common" because it depends on
+# extensions/common/api:extensions_features, which in turn depends on
+# :common.
+source_set("core_api_provider") {
+  sources = [
+    "core_extensions_api_provider.cc",
+    "core_extensions_api_provider.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  deps = [
+    ":common",
+    "//extensions:extensions_resources",
+    "//extensions/common/api",
+    "//extensions/common/api:extensions_features",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
 
@@ -590,24 +608,6 @@ source_set("test_support") {
 # TODO(https://crbug.com/356905053): Gradually include more of these sources
 # in the desktop-android build.
 if (enable_extensions) {
-  # NOTE: This is separate from ":common" because it depends on
-  # extensions/common/api:extensions_features, which in turn depends on
-  # :common.
-  source_set("core_api_provider") {
-    sources = [
-      "core_extensions_api_provider.cc",
-      "core_extensions_api_provider.h",
-    ]
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-    deps = [
-      ":common",
-      "//extensions:extensions_resources",
-      "//extensions/common/api",
-      "//extensions/common/api:extensions_features",
-    ]
-  }
-
   source_set("unit_tests") {
     testonly = true
     sources = [
