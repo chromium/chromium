@@ -452,6 +452,9 @@ class CONTENT_EXPORT MediaStreamManager
       mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver);
   size_t num_video_capture_hosts() const { return video_capture_hosts_.size(); }
 
+  std::optional<url::Origin> GetOriginByVideoSessionId(
+      const base::UnguessableToken& session_id);
+
  private:
   friend class MediaStreamManagerTest;
   FRIEND_TEST_ALL_PREFIXES(MediaStreamManagerTest, DesktopCaptureDeviceStopped);
@@ -544,7 +547,6 @@ class CONTENT_EXPORT MediaStreamManager
       const std::string& label) const;
   DeviceRequest* FindRequest(const std::string& label) const;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Find a request by the session-ID of its video device.
   // (In case of multiple video devices - any of them would fit.)
   // TOOD(crbug.com/1466247): Remove this after making the Captured Surface
@@ -552,6 +554,7 @@ class CONTENT_EXPORT MediaStreamManager
   DeviceRequest* FindRequestByVideoSessionId(
       const base::UnguessableToken& session_id) const;
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   CapturedSurfaceController* GetCapturedSurfaceController(
       GlobalRenderFrameHostId capturer_rfh_id,
       const base::UnguessableToken& session_id,

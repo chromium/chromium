@@ -131,6 +131,7 @@ class CONTENT_EXPORT VideoCaptureManager
                      const media::VideoCaptureParams& capture_params,
                      VideoCaptureControllerID client_id,
                      VideoCaptureControllerEventHandler* client_handler,
+                     std::optional<url::Origin> origin,
                      DoneCB done_cb,
                      BrowserContext* browser_context);
 

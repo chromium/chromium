@@ -6323,6 +6323,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.StreamSharedSameOrigin" enum="Boolean"
+    expires_after="2025-02-09">
+  <owner>wtlee@chromium.org</owner>
+  <owner>chromeos-camera-app-eng@google.com</owner>
+  <summary>
+    Records when attempting to share a camera and the value represents whether
+    the origin requesting to share the camera stream is the same origin
+    initiating the video capture device.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Track.FrameDrop.{StreamType}"
     enum="VideoCaptureFrameDropReason" expires_after="2024-03-03">
   <owner>mcasas@chromium.org</owner>

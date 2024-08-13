@@ -217,7 +217,8 @@ void VideoCaptureController::AddClient(
     const VideoCaptureControllerID& id,
     VideoCaptureControllerEventHandler* event_handler,
     const media::VideoCaptureSessionId& session_id,
-    const media::VideoCaptureParams& params) {
+    const media::VideoCaptureParams& params,
+    std::optional<url::Origin> origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   std::ostringstream string_stream;
   string_stream << "VideoCaptureController::AddClient(): id = " << id
@@ -248,8 +249,10 @@ void VideoCaptureController::AddClient(
   }
 
   // If this is the first client added to the controller, cache the parameters.
-  if (controller_clients_.empty())
+  if (controller_clients_.empty()) {
     video_capture_format_ = params.requested_format;
+    first_client_origin_ = origin;
+  }
 
   // Signal error in case device is already in error state.
   if (state_ == blink::VIDEO_CAPTURE_STATE_ERROR) {
@@ -398,6 +401,11 @@ const std::optional<media::VideoCaptureFormat>
 VideoCaptureController::GetVideoCaptureFormat() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   return video_capture_format_;
+}
+
+const std::optional<url::Origin> VideoCaptureController::GetFirstClientOrigin()
+    const {
+  return first_client_origin_;
 }
 
 void VideoCaptureController::OnCaptureConfigurationChanged() {
