@@ -482,6 +482,7 @@ try_.gpu.optional_tests_builder(
             cq.location_filter(path_regexp = "chrome/browser/vr/.+"),
             cq.location_filter(path_regexp = "components/cdm/renderer/.+"),
             cq.location_filter(path_regexp = "content/browser/xr/.+"),
+            cq.location_filter(path_regexp = "content/test/data/gpu/.+"),
             cq.location_filter(path_regexp = "content/test/gpu/.+"),
             cq.location_filter(path_regexp = "device/vr/.+"),
             cq.location_filter(path_regexp = "gpu/.+"),

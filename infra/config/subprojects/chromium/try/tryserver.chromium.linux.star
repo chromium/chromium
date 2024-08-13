@@ -837,6 +837,7 @@ try_.gpu.optional_tests_builder(
             # Inclusion filters.
             cq.location_filter(path_regexp = "chrome/browser/vr/.+"),
             cq.location_filter(path_regexp = "content/browser/xr/.+"),
+            cq.location_filter(path_regexp = "content/test/data/gpu/.+"),
             cq.location_filter(path_regexp = "content/test/gpu/.+"),
             cq.location_filter(path_regexp = "gpu/.+"),
             cq.location_filter(path_regexp = "media/audio/.+"),
