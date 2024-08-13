@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/location.h"
 #include "cc/paint/paint_record.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/gfx/geometry/rect.h"
@@ -39,15 +38,9 @@ class COMPOSITOR_EXPORT PaintCache {
 
   void SetPaintRecord(cc::PaintRecord record, float device_scale_factor);
 
-  void SetPaintRecorderLocation(const base::Location& location);
-
   // Stored in an sk_sp because PaintOpBuffer requires this to append the cached
   // items into it.
   std::optional<cc::PaintRecord> record_;
-
-  // The location of ui::PaintRecorder where this cache is used. Used to prevent
-  // a cache from being reused by multiple recorders.
-  std::optional<base::Location> recorder_location_;
 
   // This allows paint cache to be device scale factor aware. If a request for
   // a cache entry is made that does not match the stored cache entry's DSF,

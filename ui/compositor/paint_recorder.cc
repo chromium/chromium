@@ -23,8 +23,7 @@ PaintRecorder::PaintRecorder(const PaintContext& context,
                              const gfx::Size& recording_size,
                              float recording_scale_x,
                              float recording_scale_y,
-                             PaintCache* cache,
-                             const base::Location& from_here)
+                             PaintCache* cache)
     : context_(context),
       record_canvas_(recording_size),
       canvas_(&record_canvas_, context.device_scale_factor_),
@@ -33,9 +32,6 @@ PaintRecorder::PaintRecorder(const PaintContext& context,
 #if DCHECK_IS_ON()
   DCHECK(!context_->inside_paint_recorder_);
   context_->inside_paint_recorder_ = true;
-  if (cache) {
-    cache->SetPaintRecorderLocation(from_here);
-  }
 #endif
   if (context_->is_pixel_canvas()) {
     canvas()->Save();
