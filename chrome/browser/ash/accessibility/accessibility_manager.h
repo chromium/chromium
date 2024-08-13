@@ -211,6 +211,10 @@ class AccessibilityManager
   // Returns true if FaceGaze is enabled.
   bool IsFaceGazeEnabled() const;
 
+  // Toggles whether FaceGaze is sending gesture detection information to
+  // settings.
+  void ToggleGestureInfoForSettings(bool enabled) const;
+
   // Requests the Autoclick extension find the bounds of the nearest scrollable
   // ancestor to the point in the screen, as given in screen coordinates.
   void RequestAutoclickScrollableBoundsForPoint(

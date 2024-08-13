@@ -115,6 +115,9 @@ class MockAccessibilityPrivate {
     /** @private {?FaceGazeAssets} */
     this.faceGazeAssets_ = null;
 
+    /** @private {function<boolean>} */
+    this.faceGazeGestureInfoToggleListener_ = null;
+
     /**
      * @private {function(!chrome.accessibilityPrivate.SelectToSpeakPanelAction,
      *     number=)}
@@ -256,6 +259,26 @@ class MockAccessibilityPrivate {
         this.selectToSpeakStateChangeListener_ = listener;
       },
     };
+
+    this.onToggleGestureInfoForSettings = {
+      /**
+       * Adds a listener to onToggleGestureInfoForSettings.
+       * @param {function<boolean>} listener
+       */
+      addListener: listener => {
+        this.faceGazeGestureInfoToggleListener_ = listener;
+      },
+
+      /**
+       * Removes the listener.
+       * @param {function<boolean>} listener
+       */
+      removeListener: listener => {
+        if (this.faceGazeGestureInfoToggleListener_ === listener) {
+          this.faceGazeGestureInfoToggleListener_ = null;
+        }
+      },
+    };
   }
 
   /**
@@ -356,6 +379,11 @@ class MockAccessibilityPrivate {
   /** @return {?FaceGazeAssets} */
   installFaceGazeAssets(callback) {
     callback(this.faceGazeAssets_);
+  }
+
+  /** Called in order to toggle FaceGaze gesture info for settings. */
+  toggleGestureInfoForSettings(enabled) {
+    this.callOnToggleGestureInfoForSettings(enabled);
   }
 
   /** @param {!chrome.accessibilityPrivate.ScreenPoint} point */
@@ -514,6 +542,18 @@ class MockAccessibilityPrivate {
   /** @return {!chrome.accessibilityPrivate.DictationBubbleProperties|null} */
   getDictationBubbleProps() {
     return this.dictationBubbleProps_;
+  }
+
+  /**
+   * Simulates toggling gesture info for FaceGaze Settings from
+   * AccessibilityManager, which occurs when the user activates or deactivates
+   * the page for FaceGaze gesture configuration settings.
+   * @param {boolean} activated
+   */
+  callOnToggleGestureInfoForSettings(enabled) {
+    if (this.faceGazeGestureInfoToggleListener_) {
+      this.faceGazeGestureInfoToggleListener_(enabled);
+    }
   }
 
   /** Simulates silencing ChromeVox */

@@ -577,6 +577,7 @@ enum HistogramValue {
   TTS_ON_VOICES_CHANGED = 555,
   OS_DIAGNOSTICS_ON_ROUTINE_FINISHED = 556,
   ACCESSIBILITY_PRIVATE_ON_CHROMEVOX_FOCUS_CHANGED = 557,
+  ACCESSIBILITY_PRIVATE_ON_TOGGLE_GESTURE_INFO_FOR_SETTINGS = 558,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

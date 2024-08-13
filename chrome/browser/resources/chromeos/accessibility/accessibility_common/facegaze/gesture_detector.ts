@@ -113,6 +113,11 @@ export const FacialGesturesToMediapipeGestures = new Map([
 export class GestureDetector {
   private static mediapipeFacialGestureSet_ =
       new Set(Object.values(MediapipeFacialGesture));
+  declare private static shouldSendGestureDetectionInfo_: boolean;
+
+  static toggleSendGestureDetectionInfo(enabled: boolean): void {
+    this.shouldSendGestureDetectionInfo_ = enabled;
+  }
 
   /**
    * Computes which FacialGestures were detected. Note that this will only
@@ -166,6 +171,9 @@ export class GestureDetector {
         continue;
       }
 
+      // TODO(b:341771347): Call API to send gesture information to the
+      // settings page.
+
       if (score < confidence) {
         continue;
       }
@@ -177,6 +185,6 @@ export class GestureDetector {
 }
 
 TestImportManager.exportForTesting(
-    ['FacialGesture', FacialGesture],
+    GestureDetector, ['FacialGesture', FacialGesture],
     ['MediapipeFacialGesture', MediapipeFacialGesture],
     ['FacialGesturesToMediapipeGestures', FacialGesturesToMediapipeGestures]);

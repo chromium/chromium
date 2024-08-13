@@ -68,6 +68,22 @@ AX_TEST_F(
       }
     });
 
+AX_TEST_F(
+    'FaceGazeTest',
+    'GestureDetectorUpdatesStateAfterToggleGestureInfoForSettingsEvent',
+    async function() {
+      await this.configureFaceGaze(new Config());
+
+      // Tests that GestureDetector updates its state after a
+      // toggleGestureInfoForSettings event is received from
+      // chrome.accessibilityPrivate.
+      this.mockAccessibilityPrivate.toggleGestureInfoForSettings(false);
+      assertFalse(GestureDetector.shouldSendGestureDetectionInfo_);
+
+      this.mockAccessibilityPrivate.toggleGestureInfoForSettings(true);
+      assertTrue(GestureDetector.shouldSendGestureDetectionInfo_);
+    });
+
 AX_TEST_F('FaceGazeTest', 'IntervalReusesForeheadLocation', async function() {
   const config =
       new Config().withMouseLocation({x: 600, y: 400}).withBufferSize(1);

@@ -189,6 +189,7 @@ FaceGazeTestBase = class extends E2ETestBase {
     assertNotNullNorUndefined(FaceGazeConstants);
     assertNotNullNorUndefined(FacialGesture);
     assertNotNullNorUndefined(FacialGesturesToMediapipeGestures);
+    assertNotNullNorUndefined(GestureDetector);
     assertNotNullNorUndefined(GestureHandler);
     assertNotNullNorUndefined(MacroName);
     assertNotNullNorUndefined(MediapipeFacialGesture);

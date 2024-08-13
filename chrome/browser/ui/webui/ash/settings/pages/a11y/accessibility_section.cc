@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/accessibility_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/a11y/facegaze_settings_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/select_to_speak_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/switch_access_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/tts_handler.h"
@@ -1381,6 +1382,7 @@ void AccessibilitySection::AddHandlers(content::WebUI* web_ui) {
       std::make_unique<::settings::FontHandler>(profile()));
   web_ui->AddMessageHandler(
       std::make_unique<::settings::CaptionsHandler>(profile()->GetPrefs()));
+  web_ui->AddMessageHandler(std::make_unique<FaceGazeSettingsHandler>());
 }
 
 int AccessibilitySection::GetSectionNameMessageId() const {

@@ -12,6 +12,8 @@ static_library("a11y") {
     "accessibility_handler.h",
     "accessibility_section.cc",
     "accessibility_section.h",
+    "facegaze_settings_handler.cc",
+    "facegaze_settings_handler.h",
     "select_to_speak_handler.cc",
     "select_to_speak_handler.h",
     "settings_with_tts_preview_handler.cc",

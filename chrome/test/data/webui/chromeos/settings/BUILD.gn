@@ -215,6 +215,7 @@ build_webui_tests("build") {
     "os_a11y_page/switch_access_subpage_test.ts",
     "os_a11y_page/test_captions_browser_proxy.ts",
     "os_a11y_page/test_chromevox_subpage_browser_proxy.ts",
+    "os_a11y_page/test_facegaze_subpage_browser_proxy.ts",
     "os_a11y_page/test_os_a11y_page_browser_proxy.ts",
     "os_a11y_page/test_select_to_speak_subpage_browser_proxy.ts",
     "os_a11y_page/test_switch_access_subpage_browser_proxy.ts",

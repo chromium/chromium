@@ -492,6 +492,8 @@ declare global {
 
       export const onToggleDictation: ChromeEvent<(activated: boolean) => void>;
 
+      export const onToggleGestureInfoForSettings:
+          ChromeEvent<(enabled: boolean) => void>;
     }
   }
 }

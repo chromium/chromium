@@ -26,6 +26,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './facegaze_actions_add_dialog.html.js';
 import {FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActions, FaceGazeCommandPair, FaceGazeGestures, FaceGazeUtils} from './facegaze_constants.js';
+import {FaceGazeSubpageBrowserProxy, FaceGazeSubpageBrowserProxyImpl} from './facegaze_subpage_browser_proxy.js';
 
 export interface FaceGazeAddActionDialogElement {
   $: {
@@ -61,6 +62,7 @@ export class FaceGazeAddActionDialogElement extends
     return {
       currentPage_: {
         type: Number,
+        observer: 'currentPageChanged_',
       },
 
       initialPage: {
@@ -175,6 +177,14 @@ export class FaceGazeAddActionDialogElement extends
   private displayedActions_: MacroName[] = FaceGazeActions;
   private displayedGestures_: FacialGesture[] = FaceGazeGestures;
 
+  private faceGazeSubpageBrowserProxy_: FaceGazeSubpageBrowserProxy;
+
+  constructor() {
+    super();
+    this.faceGazeSubpageBrowserProxy_ =
+        FaceGazeSubpageBrowserProxyImpl.getInstance();
+  }
+
   private getItemClass_(selected: boolean): 'selected'|'' {
     return selected ? 'selected' : '';
   }
@@ -237,6 +247,19 @@ export class FaceGazeAddActionDialogElement extends
     return this.currentPage_ === AddDialogPage.GESTURE_THRESHOLD;
   }
 
+  private currentPageChanged_(newPage: AddDialogPage, oldPage: AddDialogPage):
+      void {
+    // Only toggle request for gesture information on if we are on the gesture
+    // threshold page, which requires information about detected gestures,
+    // or toggle request off if we are switching away from the gesture
+    // threshold page.
+    if (newPage === AddDialogPage.GESTURE_THRESHOLD ||
+        oldPage === AddDialogPage.GESTURE_THRESHOLD) {
+      this.faceGazeSubpageBrowserProxy_.toggleGestureInfoForSettings(
+          newPage === AddDialogPage.GESTURE_THRESHOLD);
+    }
+  }
+
   private initialPageChanged_(page: AddDialogPage): void {
     this.currentPage_ = page;
   }
@@ -271,7 +294,7 @@ export class FaceGazeAddActionDialogElement extends
 
   // Button event handlers
   private onCancelButtonClick_(): void {
-    this.$.dialog.close();
+    this.close_();
   }
 
   private onActionNextButtonClick_(): void {
@@ -327,7 +350,7 @@ export class FaceGazeAddActionDialogElement extends
     if (this.selectedAction_ === null) {
       console.error(
           'FaceGaze Add Dialog clicked save button but no action has been selected. Closing dialog.');
-      this.$.dialog.close();
+      this.close_();
       return;
     }
 
@@ -344,13 +367,18 @@ export class FaceGazeAddActionDialogElement extends
         FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, this.selectedGesture_,
         Math.round(this.getThresholdSlider().value));
 
+    this.close_();
+  }
+
+  private close_(): void {
+    this.faceGazeSubpageBrowserProxy_.toggleGestureInfoForSettings(false);
     this.$.dialog.close();
   }
 
   private onKeydown_(e: KeyboardEvent): void {
     // Close dialog if 'esc' is pressed.
     if (e.key === 'Escape') {
-      this.$.dialog.close();
+      this.close_();
     }
   }
 
