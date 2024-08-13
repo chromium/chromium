@@ -147,6 +147,13 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     public void requestLayerUpdate(boolean animate) {
         assert isEnabled();
 
+        // TODO(crbug.com/359539294) Re-enable animations when integration of read aloud with the
+        // bottom chin is fixed.
+        // Turn off animations when chin is showing.
+        if (mLayers.get(LayerType.BOTTOM_CHIN) != null) {
+            animate = false;
+        }
+
         updateLayerVisibilities();
         recalculateLayerSizes();
         updateBrowserControlsHeight(animate);
