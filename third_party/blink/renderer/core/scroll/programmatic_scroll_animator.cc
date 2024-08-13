@@ -111,7 +111,6 @@ void ProgrammaticScrollAnimator::TickAnimation(base::TimeTicks monotonic_time) {
     run_state_ = RunState::kPostAnimationCleanup;
     AnimationFinished();
   } else if (!scrollable_area_->ScheduleAnimation()) {
-    ScrollOffsetChanged(offset, GetScrollType());
     ResetAnimationState();
   }
 }
