@@ -122,10 +122,6 @@ public abstract class CronetProvider {
                 + "]";
     }
 
-    /** Name of the HttpEngine Native {@link CronetProvider} class. */
-    private static final String HTTPENGINE_NATIVE_PROVIDER_CLASS =
-            "org.chromium.net.impl.HttpEngineNativeProvider";
-
     /** Name of the Java {@link CronetProvider} class. */
     private static final String JAVA_CRONET_PROVIDER_CLASS =
             "org.chromium.net.impl.JavaCronetProvider";
@@ -205,12 +201,6 @@ public abstract class CronetProvider {
                 context,
                 NATIVE_CRONET_PROVIDER_CLASS,
                 CronetLogger.CronetSource.CRONET_SOURCE_STATICALLY_LINKED,
-                providers,
-                false);
-        addCronetProviderImplByClassName(
-                context,
-                HTTPENGINE_NATIVE_PROVIDER_CLASS,
-                CronetLogger.CronetSource.CRONET_SOURCE_PLATFORM,
                 providers,
                 false);
         addCronetProviderImplByClassName(
