@@ -19,6 +19,8 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.OptIn;
+import androidx.browser.auth.ExperimentalAuthTab;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
@@ -33,6 +35,7 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
+import org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -245,6 +248,7 @@ public class LaunchIntentDispatcher {
     /**
      * @return Whether the intent is for launching a Custom Tab.
      */
+    @OptIn(markerClass = ExperimentalAuthTab.class)
     public static boolean isCustomTabIntent(Intent intent) {
         if (intent == null) return false;
         Log.w(
@@ -252,7 +256,8 @@ public class LaunchIntentDispatcher {
                 "CustomTabsIntent#shouldAlwaysUseBrowserUI() = "
                         + CustomTabsIntent.shouldAlwaysUseBrowserUI(intent));
         if (CustomTabsIntent.shouldAlwaysUseBrowserUI(intent)
-                || !intent.hasExtra(CustomTabsIntent.EXTRA_SESSION)) {
+                || (!intent.hasExtra(CustomTabsIntent.EXTRA_SESSION)
+                        && !AuthTabIntentDataProvider.isAuthTabIntent(intent))) {
             return false;
         }
         return IntentHandler.getUrlFromIntent(intent) != null;

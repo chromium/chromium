@@ -151,6 +151,8 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/contextualsearch/RelatedSearchesStampTest.java",
   "junit/src/org/chromium/chrome/browser/contextualsearch/SelectionClientManagerTest.java",
   "junit/src/org/chromium/chrome/browser/cookies/CanonicalCookieTest.java",
+  "junit/src/org/chromium/chrome/browser/customtabs/AuthTabColorProviderUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/customtabs/AuthTabIntentDataProviderUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/BaseCustomTabRootUiCoordinatorUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/ClientManagerTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/CloseButtonNavigatorTest.java",
