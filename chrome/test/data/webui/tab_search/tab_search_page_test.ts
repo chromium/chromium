@@ -138,7 +138,7 @@ suite('TabSearchAppTest', () => {
   test('Default tab selection when data is present', async () => {
     await setupTest(createProfileData());
     assertNotEquals(
-        -1, tabSearchPage.getSelectedIndex(),
+        -1, tabSearchPage.getSelectedTabIndex(),
         'No default selection in the presence of data');
   });
 
@@ -150,12 +150,12 @@ suite('TabSearchAppTest', () => {
     setSearchText('bing');
     await microtasksFinished();
     verifyTabIds(queryRows(), [2]);
-    assertEquals(0, tabSearchPage.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedTabIndex());
 
     setSearchText('paypal');
     await microtasksFinished();
     verifyTabIds(queryRows(), [100]);
-    assertEquals(0, tabSearchPage.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedTabIndex());
   });
 
   test('Search text changes recently closed tab items', async () => {
@@ -199,7 +199,7 @@ suite('TabSearchAppTest', () => {
     setSearchText('Twitter');
     await microtasksFinished();
     assertEquals(0, queryRows().length);
-    assertEquals(-1, tabSearchPage.getSelectedIndex());
+    assertEquals(-1, tabSearchPage.getSelectedTabIndex());
   });
 
   test('Click on tab item triggers actions', async () => {
@@ -305,19 +305,19 @@ suite('TabSearchAppTest', () => {
 
     keyDownOn(searchField, 0, [], 'ArrowUp');
     await microtasksFinished();
-    assertEquals(-1, tabSearchPage.getSelectedIndex());
+    assertEquals(-1, tabSearchPage.getSelectedTabIndex());
 
     keyDownOn(searchField, 0, [], 'ArrowDown');
     await microtasksFinished();
-    assertEquals(-1, tabSearchPage.getSelectedIndex());
+    assertEquals(-1, tabSearchPage.getSelectedTabIndex());
 
     keyDownOn(searchField, 0, [], 'Home');
     await microtasksFinished();
-    assertEquals(-1, tabSearchPage.getSelectedIndex());
+    assertEquals(-1, tabSearchPage.getSelectedTabIndex());
 
     keyDownOn(searchField, 0, [], 'End');
     await microtasksFinished();
-    assertEquals(-1, tabSearchPage.getSelectedIndex());
+    assertEquals(-1, tabSearchPage.getSelectedTabIndex());
   });
 
   test('Keyboard navigation abides by item list range boundaries', async () => {
@@ -330,27 +330,27 @@ suite('TabSearchAppTest', () => {
 
     keyDownOn(searchField, 0, [], 'ArrowUp');
     await microtasksFinished();
-    assertEquals(numTabs - 1, tabSearchPage.getSelectedIndex());
+    assertEquals(numTabs - 1, tabSearchPage.getSelectedTabIndex());
 
     keyDownOn(searchField, 0, [], 'ArrowDown');
     await microtasksFinished();
-    assertEquals(0, tabSearchPage.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedTabIndex());
 
     keyDownOn(searchField, 0, [], 'ArrowDown');
     await microtasksFinished();
-    assertEquals(1, tabSearchPage.getSelectedIndex());
+    assertEquals(1, tabSearchPage.getSelectedTabIndex());
 
     keyDownOn(searchField, 0, [], 'ArrowUp');
     await microtasksFinished();
-    assertEquals(0, tabSearchPage.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedTabIndex());
 
     keyDownOn(searchField, 0, [], 'End');
     await microtasksFinished();
-    assertEquals(numTabs - 1, tabSearchPage.getSelectedIndex());
+    assertEquals(numTabs - 1, tabSearchPage.getSelectedTabIndex());
 
     keyDownOn(searchField, 0, [], 'Home');
     await microtasksFinished();
-    assertEquals(0, tabSearchPage.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedTabIndex());
   });
 
   test(
@@ -379,7 +379,7 @@ suite('TabSearchAppTest', () => {
     for (const key of ['ArrowUp', 'ArrowDown', 'Home', 'End']) {
       keyDownOn(searchField, 0, ['shift'], key);
       await microtasksFinished();
-      assertEquals(0, tabSearchPage.getSelectedIndex());
+      assertEquals(0, tabSearchPage.getSelectedTabIndex());
     }
   });
 
@@ -390,7 +390,7 @@ suite('TabSearchAppTest', () => {
         createProfileData({windows: []}));
     await microtasksFinished();
     verifyTabIds(queryRows(), []);
-    assertEquals(-1, tabSearchPage.getSelectedIndex());
+    assertEquals(-1, tabSearchPage.getSelectedTabIndex());
   });
 
   test('On tabs changed, tab item selection preserved or updated', async () => {
@@ -399,13 +399,13 @@ suite('TabSearchAppTest', () => {
 
     const searchField = tabSearchPage.$.searchField;
     keyDownOn(searchField, 0, [], 'ArrowDown');
-    assertEquals(1, tabSearchPage.getSelectedIndex());
+    assertEquals(1, tabSearchPage.getSelectedTabIndex());
 
     testProxy.getCallbackRouterRemote().tabsChanged(createProfileData({
       windows: [testData.windows[0]!],
     }));
     await microtasksFinished();
-    assertEquals(1, tabSearchPage.getSelectedIndex());
+    assertEquals(1, tabSearchPage.getSelectedTabIndex());
 
     testProxy.getCallbackRouterRemote().tabsChanged(createProfileData({
       windows: [{
@@ -415,7 +415,7 @@ suite('TabSearchAppTest', () => {
       }],
     }));
     await microtasksFinished();
-    assertEquals(0, tabSearchPage.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedTabIndex());
   });
 
   test('refresh on tab updated', async () => {
@@ -544,10 +544,10 @@ suite('TabSearchAppTest', () => {
     setSearchText('Apple');
     await microtasksFinished();
     verifyTabIds(queryRows(), [6, 4]);
-    assertEquals(0, tabSearchPage.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedTabIndex());
     keyDownOn(searchField, 0, [], 'ArrowDown');
     assertEquals('Apple', tabSearchPage.getSearchTextForTesting());
-    assertEquals(1, tabSearchPage.getSelectedIndex());
+    assertEquals(1, tabSearchPage.getSelectedTabIndex());
 
     // When hidden visibilitychange should reset selection and search text.
     Object.defineProperty(
@@ -556,7 +556,7 @@ suite('TabSearchAppTest', () => {
     await microtasksFinished();
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
     assertEquals('', tabSearchPage.getSearchTextForTesting());
-    assertEquals(0, tabSearchPage.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedTabIndex());
 
     // State should match that of the hidden state when visible again.
     Object.defineProperty(
@@ -565,7 +565,7 @@ suite('TabSearchAppTest', () => {
     await microtasksFinished();
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
     assertEquals('', tabSearchPage.getSearchTextForTesting());
-    assertEquals(0, tabSearchPage.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedTabIndex());
   });
 
   test('Verify tab switch is called correctly', async () => {
@@ -796,7 +796,7 @@ suite('TabSearchAppTest', () => {
     await setupTest(createProfileData());
 
     // Ensure there is a selected item.
-    assertEquals(0, tabSearchPage.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedTabIndex());
 
     keyDownOn(tabSearchPage.getSearchInput(), 0, [], 'Enter');
     // Assert switchToTab() was called appropriately for an unfiltered tab list.
@@ -808,7 +808,7 @@ suite('TabSearchAppTest', () => {
     await setupTest(createProfileData());
 
     // Ensure there is a selected item.
-    assertEquals(0, tabSearchPage.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedTabIndex());
     const tabSearchItem =
         tabSearchPage.$.tabsList.querySelector('tab-search-item')!;
 

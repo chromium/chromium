@@ -136,7 +136,7 @@ suite('InfiniteListTest', () => {
     // item, this one is rendered on the view.
     await infiniteList.setSelected(itemCount - 1);
     let domTabItems = queryRows();
-    const selectedTabItem = domTabItems[infiniteList.getSelected()];
+    const selectedTabItem = domTabItems[infiniteList.selected];
     assertNotEquals(null, selectedTabItem);
     assertEquals(25, domTabItems.length);
 
@@ -149,7 +149,7 @@ suite('InfiniteListTest', () => {
     infiniteList.items = sampleTabItems(sampleSiteNames(itemCount));
     await microtasksFinished();
     domTabItems = queryRows();
-    const theSelectedTabItem = domTabItems[infiniteList.getSelected()];
+    const theSelectedTabItem = domTabItems[infiniteList.selected];
     assertNotEquals(null, theSelectedTabItem);
 
     // Assert the selected item is still visible in the view.
@@ -169,7 +169,7 @@ suite('InfiniteListTest', () => {
       infiniteList.items = tabItems.slice(0, i);
       await microtasksFinished();
       assertEquals(i, queryRows().length);
-      assertEquals(i - 1, infiniteList.getSelected());
+      assertEquals(i - 1, infiniteList.selected);
     }
   });
 
@@ -186,7 +186,7 @@ suite('InfiniteListTest', () => {
       await microtasksFinished();
 
       const selectedIndex = ((i + 1) % tabItems.length);
-      assertEquals(selectedIndex, infiniteList.getSelected());
+      assertEquals(selectedIndex, infiniteList.selected);
       assertTabItemAndNeighborsInViewBounds(
           infiniteList, queryRows(), selectedIndex);
     }
@@ -204,7 +204,7 @@ suite('InfiniteListTest', () => {
       await infiniteList.navigate('ArrowUp');
 
       const selectIndex = (i - 1 + tabItems.length) % tabItems.length;
-      assertEquals(selectIndex, infiniteList.getSelected());
+      assertEquals(selectIndex, infiniteList.selected);
       assertTabItemAndNeighborsInViewBounds(
           infiniteList, queryRows(), selectIndex);
     }
@@ -223,13 +223,21 @@ suite('InfiniteListTest', () => {
     assertEquals(2, queryClassElements(SAMPLE_SECTION_CLASS).length);
     assertEquals(4, queryRows().length);
 
-    await infiniteList.setSelected(0);
+    await infiniteList.setSelected(1);
 
-    const selectableItemCount = 2 * tabItems.length;
-    for (let i = 0; i < selectableItemCount; i++) {
+    const itemCount = 2 * tabItems.length + 2;
+    for (let i = 1; i < itemCount; i++) {
+      if (listItems[i] instanceof TitleItem) {
+        // Title items should be skipped.
+        assertEquals(i + 1, infiniteList.selected);
+        continue;
+      }
       await infiniteList.navigate('ArrowDown');
-
-      assertEquals((i + 1) % selectableItemCount, infiniteList.getSelected());
+      // Navigation increments by 1 in most cases, or by 2 to skip over a title
+      // item.
+      const expectedIndex =
+          listItems[(i + 1) % itemCount] instanceof TitleItem ? i + 2 : i + 1;
+      assertEquals(expectedIndex % itemCount, infiniteList.selected);
       assertTrue(!!infiniteList.selectedItem);
       const item = infiniteList.selectedItem as TabSearchItemElement;
       assertTrue(item.data instanceof TabData);

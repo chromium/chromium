@@ -6,20 +6,24 @@
  * @fileoverview 'infinite-list' is a component optimized for showing a list of
  * items that overflows the view and requires scrolling. For performance
  * reasons, the DOM items are incrementally added to the view as the user
- * scrolls through the list. The component expects a `max-height` property to be
- * specified in order to determine how many HTML elements to render initially.
- * Each list item's HTML element is creating using the template property, which
- * should be set to a function returning a TemplateResult corresponding to a
- * passed in list item and selection index. The `items` property specifies an
- * array of list item data. The component leverages CrSelectableMixin to manage
- * item selection. Selectable items should be designated as follows:
- * - The top level HTML element in the template result for such items should
- *   should have a "selectable" CSS class.
- * - The isSelectable property on infinite-list should be set to a function that
- *   returns whether an item passed to it is selectable.
+ * scrolls through the list.
+ * The component expects a `max-height` property to be specified in order to
+ * determine how many HTML elements to render initially.
+ * Each list item's HTML element is creating using the `template` property,
+ * which should be set to a function returning a TemplateResult corresponding
+ * to a passed in list item and index in the list.
+ * The `items` property specifies an array of list item data.
+ * The `isSelectable()` property should return true when a selectable list
+ * item from `items` is passed in, and false otherwise. It defaults to returning
+ * true for all items. This is used for navigating through the list in response
+ * to key presses as non-selectable items are treated as non-navigable. Note
+ * that the list assumes the majority of items are selectable/navigable (as is
+ * the case in tab search). Passing in a list with a very large number of
+ * non-selectable items may result in reduced performance when navigating.
+ * The `selected` property is the index of the selected item in the list, or
+ * NO_SELECTION if nothing is selected.
  */
 
-import {CrSelectableMixin} from 'chrome://resources/cr_elements/cr_selectable_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {CrLitElement, html, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -32,15 +36,14 @@ export const NO_SELECTION: number = -1;
 export const selectorNavigationKeys: readonly string[] =
     Object.freeze(['ArrowUp', 'ArrowDown', 'Home', 'End']);
 
-const InfiniteListElementBase = CrSelectableMixin(CrLitElement);
-
 export interface InfiniteList {
   $: {
     container: HTMLElement,
+    slot: HTMLSlotElement,
   };
 }
 
-export class InfiniteList<T = object> extends InfiniteListElementBase {
+export class InfiniteList<T = object> extends CrLitElement {
   static get is() {
     return 'infinite-list';
   }
@@ -53,14 +56,14 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
     // Render items into light DOM using the client provided template
     render(
         this.items.slice(0, this.numItemsDisplayed_)
-            .map(item => this.template(item)),
+            .map((item, index) => this.template(item, index)),
         this, {
           host: (this.getRootNode() as ShadowRoot).host,
         });
 
     // Render container + slot into shadow DOM
     return html`<div id="container" @keydown=${this.onKeyDown_}>
-      <slot></slot>
+      <slot id="slot" @slotchange=${this.onSlotChange_}></slot>
     </div>`;
   }
 
@@ -70,18 +73,20 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
       numItemsDisplayed_: {type: Number},
       items: {type: Array},
       isSelectable: {type: Object},
+      selected: {type: Number},
       template: {type: Object},
     };
   }
 
   maxHeight?: number;
   items: T[] = [];
-  template: (item: T) => TemplateResult = () => html``;
-  // Overridden from CrSelectableMixin
-  override selectable: string = '.selectable';
-  isSelectable: (item: T) => boolean = (_item) => false;
+  template: (item: T, index: number) => TemplateResult = () => html``;
+  selected: number = NO_SELECTION;
+  isSelectable: (item: T) => boolean = (_item) => true;
   protected numItemsDisplayed_: number = 0;
-  protected numItemsSelectable_: number = 0;
+  private selectedItem_: Element|null = null;
+  private firstSelectableIndex_: number = NO_SELECTION;
+  private lastSelectableIndex_: number = NO_SELECTION;
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
@@ -95,17 +100,18 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
       this.style.maxHeight = `${this.maxHeight}px`;
     }
 
-    if (changedProperties.has('items') || changedProperties.has('selectable')) {
+    if (changedProperties.has('items') ||
+        changedProperties.has('isSelectable')) {
       // Perform state updates.
       if (this.items.length === 0) {
-        this.numItemsSelectable_ = 0;
         this.numItemsDisplayed_ = 0;
       } else {
-        this.numItemsSelectable_ =
-            this.items.filter(item => this.isSelectable(item)).length;
         this.numItemsDisplayed_ =
             Math.min(this.numItemsDisplayed_, this.items.length);
       }
+      this.firstSelectableIndex_ = this.getNextSelectableIndex_(-1);
+      this.lastSelectableIndex_ =
+          this.getPreviousSelectableIndex_(this.items.length);
     }
   }
 
@@ -120,8 +126,54 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
     }
 
     if (changedProperties.has('selected')) {
+      this.updateSelectedItem_();
       this.onSelectedChanged_();
     }
+  }
+
+  private getNextSelectableIndex_(index: number): number {
+    const increment =
+        this.items.slice(index + 1).findIndex(item => this.isSelectable(item));
+    return increment === -1 ? NO_SELECTION : index + 1 + increment;
+  }
+
+  private getPreviousSelectableIndex_(index: number): number {
+    return index < 0 ? NO_SELECTION :
+                       this.items.slice(0, index).findLastIndex(
+                           item => this.isSelectable(item));
+  }
+
+  private onSlotChange_() {
+    this.updateSelectedItem_();
+    this.fire('rendered-items-changed');
+  }
+
+  private updateSelectedItem_() {
+    if (!this.items) {
+      return;
+    }
+
+    const domItem = this.selected === NO_SELECTION ?
+        null :
+        this.$.slot.assignedElements()[this.selected] || null;
+    if (domItem === this.selectedItem_) {
+      return;
+    }
+
+    if (this.selectedItem_ !== null) {
+      this.selectedItem_.classList.toggle('selected', false);
+    }
+
+    if (domItem !== null) {
+      domItem.classList.toggle('selected', true);
+    }
+
+    this.selectedItem_ = domItem;
+    this.fire('selected-change', {item: this.selectedItem_});
+  }
+
+  get selectedItem(): Element|null {
+    return this.selectedItem_;
   }
 
   /**
@@ -148,10 +200,11 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
 
   async scrollIndexIntoView(index: number) {
     assert(
-        index >= 0 && index < this.numItemsSelectable_,
+        index >= this.firstSelectableIndex_ &&
+            index <= this.lastSelectableIndex_,
         'Index is out of range.');
-    await this.ensureSelectableDomItemAvailable_(index);
-    this.getSelectableDomItem_(index)!.scrollIntoView(
+    await this.updateNumItemsDisplayed_(index + 1);
+    this.getDomItem_(index)!.scrollIntoView(
         {behavior: 'smooth', block: 'nearest'});
   }
 
@@ -160,29 +213,32 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
    * @param focusItem Whether to focus the selected item.
    */
   async navigate(key: string, focusItem?: boolean) {
-    if ((key === 'ArrowUp' && this.selected === 0) || key === 'End') {
+    if ((key === 'ArrowUp' && this.selected === this.firstSelectableIndex_) ||
+        key === 'End') {
       await this.ensureAllDomItemsAvailable();
-      this.selected = this.numItemsSelectable_ - 1;
+      this.selected = this.lastSelectableIndex_;
     } else {
       switch (key) {
         case 'ArrowUp':
-          this.selectPrevious();
+          this.selected = this.getPreviousSelectableIndex_(this.selected);
           break;
         case 'ArrowDown':
-          this.selectNext();
+          const next = this.getNextSelectableIndex_(this.selected);
+          this.selected =
+              next === NO_SELECTION ? this.getNextSelectableIndex_(-1) : next;
           break;
         case 'Home':
-          this.selected = 0;
+          this.selected = this.firstSelectableIndex_;
           break;
         case 'End':
-          this.selected = this.numItemsSelectable_ - 1;
+          this.selected = this.lastSelectableIndex_;
           break;
       }
     }
 
     if (focusItem) {
       await this.updateComplete;
-      (this.selectedItem as HTMLElement).focus({preventScroll: true});
+      (this.selectedItem_ as HTMLElement).focus({preventScroll: true});
     }
   }
 
@@ -202,33 +258,8 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
     return (lastDomItem.offsetTop + lastDomItem.offsetHeight) / domItems.length;
   }
 
-  /**
-   * Create and insert as many DOM items as necessary to ensure the selectable
-   * item at the specified index is present.
-   */
-  private async ensureSelectableDomItemAvailable_(selectableItemIndex: number) {
-    const additionalSelectableItemsToRender =
-        selectableItemIndex + 1 - this.queryItems().length;
-    if (additionalSelectableItemsToRender <= 0) {
-      return;
-    }
-
-    let selectableItemsFound = 0;
-    let itemIndex = this.numItemsDisplayed_;
-    while (selectableItemsFound < additionalSelectableItemsToRender) {
-      assert(itemIndex < this.items.length);
-      if (this.isSelectable(this.items[itemIndex]!)) {
-        selectableItemsFound++;
-      }
-      itemIndex++;
-    }
-    await this.updateNumItemsDisplayed_(itemIndex + 1);
-  }
-
-  private getSelectableDomItem_(selectableItemIndex: number): HTMLElement|null {
-    const indexSelector = `[data-selection-index="${selectableItemIndex}"]`;
-    return this.querySelector(
-        `:scope > :is(${this.selectable})${indexSelector}`);
+  private getDomItem_(index: number): Element|null {
+    return this.$.slot.assignedElements()[index] || null;
   }
 
   async fillCurrentViewHeight() {
@@ -288,6 +319,10 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
   }
 
   private async updateNumItemsDisplayed_(itemsToDisplay: number) {
+    if (itemsToDisplay <= this.numItemsDisplayed_) {
+      return;
+    }
+
     this.numItemsDisplayed_ = itemsToDisplay;
     await this.updateComplete;
   }
@@ -296,14 +331,14 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
    * @return Whether a list item is selected and focused.
    */
   private isItemSelectedAndFocused_(): boolean {
-    if (!this.selectedItem) {
+    if (!this.selectedItem_) {
       return false;
     }
     const deepActiveElement = getDeepActiveElement();
 
-    return this.selectedItem === deepActiveElement ||
-        (!!this.selectedItem.shadowRoot &&
-         this.selectedItem.shadowRoot.activeElement === deepActiveElement);
+    return this.selectedItem_ === deepActiveElement ||
+        (!!this.selectedItem_.shadowRoot &&
+         this.selectedItem_.shadowRoot.activeElement === deepActiveElement);
   }
 
   /**
@@ -346,13 +381,13 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
       // Since the new selectable items' length might be smaller than the old
       // selectable items' length, we need to check if the selected index is
       // still valid and if not adjust it.
-      if ((this.selected as number) >= this.numItemsSelectable_) {
-        this.selected = this.numItemsSelectable_ - 1;
+      if ((this.selected as number) >= this.lastSelectableIndex_) {
+        this.selected = this.lastSelectableIndex_;
       }
 
       // Restore focus to the selected item if necessary.
       if (itemSelectedAndFocused && this.selected !== NO_SELECTION) {
-        (this.selectedItem as HTMLElement).focus();
+        (this.selectedItem_ as HTMLElement).focus();
       }
     }
 
@@ -404,28 +439,30 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
     }
 
     const selectedIndex = this.selected;
-    if (selectedIndex === 0) {
+    if (selectedIndex === this.firstSelectableIndex_) {
       this.scrollTo({top: 0, behavior: 'smooth'});
       return;
     }
 
-    if (selectedIndex === this.numItemsSelectable_ - 1) {
-      this.selectedItem!.scrollIntoView({behavior: 'smooth'});
+    if (selectedIndex === this.lastSelectableIndex_) {
+      this.selectedItem_!.scrollIntoView({behavior: 'smooth'});
       return;
     }
 
-    const previousItem =
-        this.getSelectableDomItem_((this.selected as number) - 1)!;
-    if (previousItem.offsetTop < this.scrollTop) {
+    const previousIndex = this.getPreviousSelectableIndex_(this.selected);
+    const previousItem = previousIndex === NO_SELECTION ?
+        null :
+        this.getDomItem_(previousIndex) as HTMLElement;
+    if (!!previousItem && (previousItem.offsetTop < this.scrollTop)) {
       previousItem.scrollIntoView({behavior: 'smooth', block: 'nearest'});
       return;
     }
 
-    const nextItemIndex = (this.selected as number) + 1;
-    if (nextItemIndex < this.numItemsSelectable_) {
-      await this.ensureSelectableDomItemAvailable_(nextItemIndex);
+    const nextItemIndex = this.getNextSelectableIndex_(this.selected);
+    if (nextItemIndex !== NO_SELECTION) {
+      await this.updateNumItemsDisplayed_(nextItemIndex + 1);
 
-      const nextItem = this.getSelectableDomItem_(nextItemIndex)!;
+      const nextItem = this.getDomItem_(nextItemIndex) as HTMLElement;
       if (nextItem.offsetTop + nextItem.offsetHeight >
           this.scrollTop + this.offsetHeight) {
         nextItem.scrollIntoView({behavior: 'smooth', block: 'nearest'});
@@ -433,13 +470,8 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
     }
   }
 
-  /**
-   * Resets the selector's selection to the undefined state. This method
-   * suppresses a closure validation that would require modifying the
-   * IronSelectableBehavior's annotations for the selected property.
-   */
   resetSelected() {
-    this.selected = undefined as unknown as string | number;
+    this.selected = NO_SELECTION;
   }
 
   async setSelected(index: number) {
@@ -450,15 +482,11 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
 
     if (index !== this.selected) {
       assert(
-          index < this.numItemsSelectable_, 'Selection index is out of range.');
-      await this.ensureSelectableDomItemAvailable_(index);
+          index <= this.lastSelectableIndex_,
+          'Selection index is out of range.');
+      await this.updateNumItemsDisplayed_(index + 1);
       this.selected = index;
     }
-  }
-
-  /** @return The selected index or -1 if none selected. */
-  getSelected(): number {
-    return this.selected !== undefined ? this.selected as number : NO_SELECTION;
   }
 }
 

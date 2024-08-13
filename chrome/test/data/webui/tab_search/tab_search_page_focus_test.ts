@@ -55,30 +55,30 @@ suite('TabSearchAppFocusTest', () => {
     tabSearchItems[0]!.focus();
     // Once an item is focused, arrow keys should change focus too.
     keyDownOn(tabSearchItems[0]!, 0, [], 'ArrowDown');
-    await eventToPromise('iron-select', tabSearchPage.$.tabsList);
+    await eventToPromise('selected-change', tabSearchPage.$.tabsList);
     await microtasksFinished();
     assertEquals(tabSearchItems[1], getDeepActiveElement());
 
     keyDownOn(tabSearchItems[1]!, 0, [], 'ArrowUp');
-    await eventToPromise('iron-select', tabSearchPage.$.tabsList);
+    await eventToPromise('selected-change', tabSearchPage.$.tabsList);
     await microtasksFinished();
     assertEquals(tabSearchItems[0], getDeepActiveElement());
 
     keyDownOn(tabSearchItems[1]!, 0, [], 'End');
-    await eventToPromise('iron-select', tabSearchPage.$.tabsList);
+    await eventToPromise('selected-change', tabSearchPage.$.tabsList);
     await microtasksFinished();
     assertEquals(
         tabSearchItems[tabSearchItems.length - 1], getDeepActiveElement());
 
     keyDownOn(tabSearchItems[tabSearchItems.length - 1]!, 0, [], 'Home');
-    await eventToPromise('iron-select', tabSearchPage.$.tabsList);
+    await eventToPromise('selected-change', tabSearchPage.$.tabsList);
     await microtasksFinished();
     assertEquals(tabSearchItems[0], getDeepActiveElement());
 
     // On restoring focus to the search field, a list item should be selected if
     // available.
     searchInput.focus();
-    assertEquals(0, tabSearchPage.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedTabIndex());
   });
 
   test('KeyPress', async () => {
@@ -140,7 +140,7 @@ suite('TabSearchAppFocusTest', () => {
       tabItems[i]!.focus();
       await microtasksFinished();
 
-      assertEquals(i, tabSearchPage.getSelectedIndex());
+      assertEquals(i, tabSearchPage.getSelectedTabIndex());
       assertTabItemAndNeighborsInViewBounds(tabsDiv, tabItems, i);
     }
   });
@@ -204,7 +204,7 @@ suite('TabSearchAppFocusTest', () => {
     assertTrue(!!recentlyClosedTitleExpandButton);
 
     // Expand the `Recently Closed` section.
-    recentlyClosedTitleExpandButton!.click();
+    recentlyClosedTitleExpandButton.click();
 
     await microtasksFinished();
     const tabsDiv = tabSearchPage.$.tabsList;
