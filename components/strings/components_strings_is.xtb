@@ -52,6 +52,7 @@
 <translation id="1089439967362294234">Breyta aðgangsorði</translation>
 <translation id="1089599132348386324">Þú getur breytt þessu hvenær sem er í stillingum Chrome.</translation>
 <translation id="1090629319939036170">VR valmynd</translation>
+<translation id="1091463901118115503">Halda áfram að lesa</translation>
 <translation id="1091779689406092804">skjámyndir</translation>
 <translation id="1094777233105318927">Upplýsingar um vafrann, stýrikerfið, tækið, uppsettan hugbúnað og skýrslur</translation>
 <translation id="1096545575934602868">Þessi reitur á ekki að vera með meira en <ph name="MAX_ITEMS_LIMIT" /> færslur. Færslum umfram það verður hent.</translation>
@@ -537,6 +538,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1974060860693918893">Ítarlegt</translation>
 <translation id="1975457531113383421">Innbakki</translation>
 <translation id="1975584088563498795">Pósthólf 10</translation>
+<translation id="1976610264358655503">Þú skoðar þetta oft</translation>
 <translation id="1978555033938440688">Fastbúnaðarútgáfa</translation>
 <translation id="1979156660928743046">Upplýsingar um efni</translation>
 <translation id="1988881251331415125">Ef stafsetningin er rétt skaltu <ph name="BEGIN_LINK" />prófa að keyra bilanaleit á tengigetu<ph name="END_LINK" />.</translation>
@@ -868,6 +870,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2565789370591907825">Læsing og notkun lyklaborðs</translation>
 <translation id="2570734079541893434">Stjórna stillingum</translation>
 <translation id="257136025287118539">Kerfisstjórinn þinn er að færa skrárnar þínar yfir í <ph name="CLOUD_PROVIDER" />. Þú getur breytt þessum skrám þegar flutningi er lokið.</translation>
+<translation id="2571488850200220306">Í öryggisskyni getur viðkomandi einnig séð upplýsingar um stýrikerfi tækisins, vafraútgáfu og uppsettan hugbúnað</translation>
 <translation id="2573170131138724450">Sjónvörp</translation>
 <translation id="257674075312929031">Hópur</translation>
 <translation id="2586657967955657006">Klippiborð</translation>
@@ -886,6 +889,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2619052155095999743">Setja inn</translation>
 <translation id="2625385379895617796">Klukkan þín er á undan</translation>
 <translation id="262745152991669301">Getur beðið um að tengjast við USB-tæki</translation>
+<translation id="2628224721443278970">Skrá inn í Microsoft OneDrive</translation>
 <translation id="2634124572758952069">IP-tala þjóns <ph name="HOST_NAME" /> fannst ekki.</translation>
 <translation id="2639739919103226564">Staða:</translation>
 <translation id="2647086987482648627">Vefnaður (hálfglans)</translation>
@@ -1829,6 +1833,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4377125064752653719">Þú reyndir að ná í <ph name="DOMAIN" /> en vottorðið sem þjónninn gaf upp hefur verið afturkallað af útgefandanum. Þetta merkir að alls ekki skuli treysta öryggisskilríkjum þjónsins. Þú gætir verið að eiga samskipti við tölvuþrjót.</translation>
 <translation id="4378154925671717803">Sími</translation>
 <translation id="4384395682990721132">A4x3</translation>
+<translation id="4387692837058041921">Hlé var gert á upphleðslu í Microsoft OneDrive</translation>
 <translation id="4390472908992056574">Brún</translation>
 <translation id="4397059608630092079">Alltaf staðfesta þegar sjálfvirk útfylling er notuð</translation>
 <translation id="4397978002248035985">Opnar sprettiglugga til að staðfesta á vefsvæði bankans þíns</translation>
@@ -1931,6 +1936,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4636930964841734540">Upplýsingar</translation>
 <translation id="4640225694041297329">Sýna niðurstöður síðustu 7 daga</translation>
 <translation id="464342062220857295">Leitareiginleikar</translation>
+<translation id="4644567637638438744">Aðeins er hægt að hlaða upp skrám ef þú ert innskráð(ur) í Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Öfug röð, snýr niður</translation>
 <translation id="4646534391647090355">Fara þangað núna</translation>
 <translation id="4648262692072505866">Tætigildi verður að vera á sniðinu SHA-256.</translation>
@@ -2774,6 +2780,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6240964651812394252">Til að nota Google-aðgangsorðastjórnun með stýrikerfinu þínu skaltu endurræsa Chrome og veita aðgang að aðgangsorðastjórnun tölvunnar. Fliparnir þínir opnast aftur eftir endurræsingu.</translation>
 <translation id="6241121617266208201">Fela tillögur</translation>
 <translation id="624499991300733384">Prentsamsetningarþjónusta</translation>
+<translation id="6246868321321344665">Fyrirtækið þitt getur séð vefskoðunargögn, t.d. aðgangsorð og feril, bæði á vinnu- og einkaprófílum</translation>
 <translation id="6250932670816326647">Bað- og líkamsvörur</translation>
 <translation id="6251906504834538140">{0,plural, =1{Lokað er á tilfærslu skráar}one{Lokað er á tilfærslu <ph name="FILE_COUNT" /> skráar}other{Lokað er á tilfærslu <ph name="FILE_COUNT" /> skráa}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo á Enter til að stjórna skrám sem þú hefur sótt í Chrome</translation>
@@ -3043,6 +3050,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">myndavél</translation>
 <translation id="6734506549556896534">Hermileikir</translation>
+<translation id="6735783933931458444">Þú skoðar þetta oft á þessum tíma dags</translation>
 <translation id="6737708609449480586">Bakkelsi</translation>
 <translation id="6738516213925468394">Gögnin þín voru dulkóðuð með <ph name="BEGIN_LINK" />aðgangsorði samstillingar<ph name="END_LINK" /> <ph name="TIME" />. Sláðu það inn til að hefja samstillingu.</translation>
 <translation id="6740851646645036700">Hámarksfjölda beiðna um rithjálp er náð í bili. Reyndu aftur síðar.</translation>
@@ -3760,6 +3768,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8041089156583427627">Senda ábendingu</translation>
 <translation id="8041940743680923270">Nota altækt sjálfgildi (spyrja)</translation>
 <translation id="8043255123207491407">Sjá skilmála seljanda</translation>
+<translation id="8044986521421349135">Nýjasti flipinn þinn</translation>
 <translation id="8046360364391076336">Iðnaðarhráefni og búnaður</translation>
 <translation id="8052898407431791827">Afritað á klippiborð</translation>
 <translation id="8057023045886711556">Grínmyndir</translation>
@@ -4309,6 +4318,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9101450247048146228">Notkun og hreyfingar myndavéla (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Bakki 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> notast yfirleitt við dulkóðun til að vernda upplýsingarnar þínar. Þegar Chromium reyndi að tengjast <ph name="SITE" /> í þetta skiptið sendi vefsvæðið óvenjuleg og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir að þykjast vera <ph name="SITE" /> eða innskráningarskjár fyrir Wi-Fi hefur truflað tenginguna. Upplýsingarnar þínar eru enn öruggar vegna þess að Chromium sleit tengingunni áður en skipst var á gögnum.</translation>
+<translation id="9107199998619088551"><ph name="MANAGER" /> hefur umsjón með prófílnum þínum</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" /> hefur umsjón með vafranum þínum</translation>
 <translation id="91108059142052966">Reglur stjórnenda útiloka skjádeilingu með <ph name="APPLICATION_TITLE" /> þegar trúnaðarefni er sýnilegt</translation>
 <translation id="9114524666733003316">Staðfestir kort...</translation>

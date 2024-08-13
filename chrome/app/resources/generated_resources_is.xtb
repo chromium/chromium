@@ -2462,6 +2462,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="272741954544380994">Leita að mynd með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Ekki minna mig aftur á</translation>
 <translation id="2727712005121231835">Raunstærð</translation>
+<translation id="2727713483500953825">Veldu mynd/texta til að leita eftir með Linsu</translation>
 <translation id="2727744317940422214">Eitthvað fór úrskeiðis. Sendu ábendingu með #bruschetta í lýsingunni. Villukóðinn er <ph name="ERROR" />. Hreinsun mistókst, þú gætir þurft að framkvæma hana handvirkt.</translation>
 <translation id="2729327310379176711">Chrome leitar nýrra leiða til að draga úr rakningu og efla öryggi á meðan þú vafrar. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> og gerir þér kleift að stjórna þeim. Þá geta þau vefsvæði sem þú heimsækir fengið upplýsingar um áhugasvið þín hjá Chrome til að birta þér auglýsingar.</translation>
 <translation id="2729577602370119849">Hafðu greiðan aðgang að prenturum og stjórnaðu þeim á einfaldan hátt</translation>
@@ -3202,6 +3203,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3269093882174072735">Hlaða mynd</translation>
 <translation id="326911502853238749">Ekki sýna <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Kveiktu á samstillingu til að afrita efnið þitt og nota það í hvaða tæki sem er</translation>
+<translation id="3269209112443570745">Nýtt! Auðveld leið til að leita að því sem er á skjánum</translation>
 <translation id="3269612321104318480">Ljósblágrænn og hvítur</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Skrá}one{# skrá}other{# skrár}}</translation>
 <translation id="326999365752735949">Sækir breytingaskrá</translation>
@@ -3672,11 +3674,13 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3621202678540785336">Inntak</translation>
 <translation id="3621807901162200696">Hjálpa til við að bæta eiginleika og afköst ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{forrit}one{# forrit}other{# forrit}}</translation>
+<translation id="3622716124581627104">Berðu kennsl á hluti eða staði og afritaðu eða þýddu texta. Þegar þú notar Google-linsu er skjámynd af síðunni send til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">Litur blikks á skjá</translation>
 <translation id="362333465072914957">Bíður eftir útgáfu vottorðs frá útgefanda</translation>
 <translation id="3623598555687153298">Þetta eyðir <ph name="TOTAL_USAGE" /> af gögnum sem vefsvæði sem eru birt geyma</translation>
 <translation id="3624567683873126087">Opnaðu tækið og skráðu þig inn á Google-reikning</translation>
 <translation id="3624583033347146597">Veldu stillingar fyrir fótspor frá þriðja aðila</translation>
+<translation id="3625345586754200168">Prófa Linsu</translation>
 <translation id="3625481642044239431">Ógild skrá valin. Reyndu aftur.</translation>
 <translation id="3626296069957678981">Til að hlaða þessa Chromebook tölvu skaltu nota samhæfa rafhlöðu frá Dell.</translation>
 <translation id="3627320433825461852">Minna en 1 mínúta eftir</translation>
@@ -4833,6 +4837,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4450974146388585462">Greina</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> greindi virkt TPM þar sem hægt er að vista gögnin þín á öruggari hátt.</translation>
 <translation id="4452898361839215358">eða veldu PPD. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Leitaðu eftir hvaða mynd eða texta sem er með Linsu</translation>
 <translation id="4453430595102511050">Snertu fingrafaralesarann efst í hægra horni lyklaborðsins. Fingrafaragögnin þín eru í öruggri geymslu og fara aldrei út fyrir <ph name="DEVICE_TYPE" />-tækið þitt.</translation>
 <translation id="4453946976636652378">Leitaðu á <ph name="SEARCH_ENGINE_NAME" /> eða sláðu inn vefslóð</translation>
 <translation id="4457472090507035117">Velja núverandi rödd:</translation>
@@ -6991,6 +6996,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6059276912018042191">Nýlegir Chrome flipar</translation>
 <translation id="6059652578941944813">Stigveldi vottorða</translation>
 <translation id="6059925163896151826">USB-tæki</translation>
+<translation id="6060842547856900641">Opna Linsu</translation>
 <translation id="6061408389284235459">Tilkynning var send á <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Búa til QR-kóða</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Athugaðu:<ph name="END_BOLD" /> Einhver með svipaða rödd eða upptöku gæti fengið aðgang að sérsniðnum niðurstöðum <ph name="SUPERVISED_USER_NAME" />. Þú getur valið í stillingum Hjálpara <ph name="SUPERVISED_USER_NAME" /> að kveikja eingöngu á „Ok, Google“ þegar þetta tæki er tengt við aflgjafa til að spara rafhlöðuna.</translation>

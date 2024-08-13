@@ -475,7 +475,6 @@
 <translation id="3226612997184048185">Εάν αποθηκεύσετε τους σελιδοδείκτες σας και στον Λογαριασμό σας Google, μπορείτε να παρακολουθείτε τις τιμές των προϊόντων στο Chrome και να λαμβάνετε ειδοποιήσεις όταν παρατηρείται πτώση τιμών</translation>
 <translation id="3227557059438308877">Google Chrome ως κλειδί ασφαλείας</translation>
 <translation id="3232293466644486101">Διαγραφή δεδομένων περιήγησης…</translation>
-<translation id="3232459301230493791">Διαγράφηκαν <ph name="TAB_COUNT" /> καρτέλες</translation>
 <translation id="3232754137068452469">Εφαρμογή ιστού</translation>
 <translation id="3236059992281584593">Απομένει 1 λεπτό</translation>
 <translation id="3237087289225714896">Βασική προφόρτωση:</translation>
@@ -1444,7 +1443,6 @@
 <translation id="7759809451544302770">Προαιρετικά</translation>
 <translation id="7762668264895820836">Κάρτα SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Προσθήκη διεύθυνσης</translation>
-<translation id="776533689993750361">Διαγράφηκε <ph name="TAB_COUNT" /> καρτέλα</translation>
 <translation id="7772032839648071052">Επιβεβαίωση φράσης πρόσβασης</translation>
 <translation id="7772375229873196092">Κλείσιμο <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}}</translation>

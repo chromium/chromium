@@ -868,6 +868,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2565789370591907825">Blocco e uso della tastiera</translation>
 <translation id="2570734079541893434">Gestisci impostazioni</translation>
 <translation id="257136025287118539">L'amministratore sta spostando i tuoi file su <ph name="CLOUD_PROVIDER" />. Puoi modificare questi file al termine del caricamento.</translation>
+<translation id="2571488850200220306">Per garantire la sicurezza, può anche vedere il sistema operativo del dispositivo, la versione del browser e il software installato</translation>
 <translation id="2573170131138724450">Televisori</translation>
 <translation id="257674075312929031">Gruppo</translation>
 <translation id="2586657967955657006">Appunti</translation>
@@ -2770,6 +2771,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6240964651812394252">Per usare Gestore delle password di Google con il tuo sistema operativo, riavvia Chrome e consenti l'accesso al gestore delle password del tuo computer. Le schede verranno riaperte dopo il riavvio.</translation>
 <translation id="6241121617266208201">Nascondi suggerimenti</translation>
 <translation id="624499991300733384">Servizio compositore di stampa</translation>
+<translation id="6246868321321344665">La tua organizzazione può vedere i dati di navigazione, ad esempio le password e la cronologia, sia nel profilo di lavoro sia in quello personale</translation>
 <translation id="6250932670816326647">Prodotti per il corpo e per il bagno</translation>
 <translation id="6251906504834538140">{0,plural, =1{Spostamento del file bloccato}other{Spostamento di <ph name="FILE_COUNT" /> file bloccato}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Invio per gestire i file che hai scaricato in Chrome</translation>
@@ -4306,6 +4308,7 @@ Ulteriori dettagli:
 <translation id="9101450247048146228">Uso e movimento della videocamera (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Vassoio 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> in genere utilizza la crittografia per proteggere le tue informazioni. Questa volta, quando Chromium ha provato a connettersi a <ph name="SITE" />, il sito web ha restituito credenziali insolite e sbagliate. È possibile che un malintenzionato stia cercando di spacciarsi per il sito <ph name="SITE" /> oppure che una schermata di accesso alla rete Wi-Fi abbia interrotto la connessione. Le tue informazioni sono ancora al sicuro perché Chromium ha interrotto la connessione prima che avvenissero scambi di dati.</translation>
+<translation id="9107199998619088551"><ph name="MANAGER" /> gestisce il tuo profilo</translation>
 <translation id="9107467864910557787">Il browser in uso è gestito da <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Il criterio dell'amministratore disattiva la condivisione dello schermo con <ph name="APPLICATION_TITLE" /> quando sono visibili contenuti riservati</translation>
 <translation id="9114524666733003316">Conferma della carta...</translation>

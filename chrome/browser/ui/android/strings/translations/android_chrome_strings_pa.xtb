@@ -475,7 +475,6 @@
 <translation id="3226612997184048185">ਜੇ ਤੁਸੀਂ ਵੀ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਨੂੰ ਰੱਖਿਅਤ ਕਰਦੇ ਹੋ ਤਾਂ, ਤੁਸੀਂ Chrome ਵਿੱਚ ਉਤਪਾਦਾਂ ਦੀਆਂ ਕੀਮਤਾਂ ਨੂੰ ਟਰੈਕ ਕਰ ਸਕਦੇ ਹੋ ਅਤੇ ਕੀਮਤਾਂ ਡਿੱਗਣ 'ਤੇ ਸੂਚਨਾ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="3227557059438308877">Google Chrome ਨੂੰ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਜੋਂ ਵਰਤਣਾ</translation>
 <translation id="3232293466644486101">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ…</translation>
-<translation id="3232459301230493791"><ph name="TAB_COUNT" /> ਟੈਬਾਂ ਨੂੰ ਮਿਟਾਇਆ ਗਿਆ</translation>
 <translation id="3232754137068452469">ਵੈੱਬ ਐਪ</translation>
 <translation id="3236059992281584593">1 ਮਿੰਟ ਬਾਕੀ</translation>
 <translation id="3237087289225714896">ਮਿਆਰੀ ਪ੍ਰੀਲੋਡਿੰਗ:</translation>
@@ -1444,7 +1443,6 @@
 <translation id="7759809451544302770">ਵਿਕਲਪਿਕ</translation>
 <translation id="7762668264895820836">SD ਕਾਰਡ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">ਪਤਾ ਜੋੜੋ</translation>
-<translation id="776533689993750361"><ph name="TAB_COUNT" /> ਟੈਬ ਨੂੰ ਮਿਟਾਇਆ ਗਿਆ</translation>
 <translation id="7772032839648071052">ਪਾਸਫਰੇਜ਼ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ਹੋਰ}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ਹੋਰ}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ਹੋਰ}}</translation>

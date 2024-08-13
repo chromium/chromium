@@ -114,6 +114,7 @@
 <translation id="2559253115192232574">Vēlāk kāda jūsu apmeklēta vietne var pieprasīt pārlūkam Chrome atļauju skatīt jūsu intereses, lai personalizētu jums rādāmās reklāmas. Pārlūks Chrome var kopīgot līdz trim interesēm.</translation>
 <translation id="2563121210305478421">Vai atkārtoti palaist pārlūkprogrammu Chrome?</translation>
 <translation id="2569974318947988067">Pārlūkā Chrome tiks mēģināts navigācijai izmantot HTTPS.</translation>
+<translation id="2571392474191184472">Pārlūku Chrome pārvalda jūsu organizācija</translation>
 <translation id="2574930892358684005">Lietotājs <ph name="EXISTING_USER" /> jau ir pierakstījies šajā Chrome profilā. Lai atdalītu pārlūkošanu, pārlūkā Chrome varat izveidot atsevišķu profilu.</translation>
 <translation id="2580411288591421699">Nevar instalēt to pašu Google Chrome versiju, kas jau darbojas. Lūdzu, aizveriet Google Chrome un mēģiniet vēlreiz.</translation>
 <translation id="2586406160782125153">Veicot šo darbību, no šīs ierīces tiks dzēsti pārlūkošanas dati. Lai vēlāk izgūtu datus, pierakstieties pārlūkā Chrome kā <ph name="USER_EMAIL" />.</translation>
@@ -447,6 +448,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="7177959540995930968">Chrome iestatījumos varat uzzināt vairāk par šīm funkcijām.</translation>
 <translation id="7193885263065350793">Jūsu organizācija aizver pārlūku Chrome, ja tas <ph name="TIMEOUT_DURATION" /> netiek izmantots.</translation>
 <translation id="7242029209006116544">Jūs pierakstāties ar pārvaldītu kontu un nodrošināt, ka tā administrators var pārvaldīt jūsu Google Chrome profilu. Jūsu Chrome dati, piemēram, lietotnes, grāmatzīmes, vēsture, paroles un citi iestatījumi tiks neatgriezeniski saistīti ar lietotāju <ph name="USER_NAME" />. Varēsiet dzēst šos datus, izmantojot Google kontu informācijas paneli, taču nevarēsiet saistīt šos datus ar citu kontu. Ja vēlaties, varat izveidot jaunu profilu, lai atsevišķi glabātu Chrome datus. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075">Pārlūku Chrome pārvalda organizācija “<ph name="MANAGER" />”</translation>
 <translation id="7295052994004373688">Šī valoda tiek izmantota, lai attēlotu Google Chrome lietotāja saskarni</translation>
 <translation id="7296210096911315575">Svarīga informācija par izmantošanu un drošību</translation>
 <translation id="7302361266603927550">Noteikti jūsu Chrome dati vēl nav saglabāti jūsu Google kontā. Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, šie dati tiks dzēsti.</translation>
@@ -581,6 +583,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="8989968390305463310">Pārlūkošanas vēsture ietekmē to, kādas reklāmas jums tiek rādītas, un tālāk redzamās aptuveni noteiktās intereses. Lai aizsargātu jūsu konfidencialitāti, Chrome automātiski katru mēnesi pakāpeniski dzēš jūsu intereses. Intereses var tikt atjaunotas, ja vien nenoņemat tās.</translation>
 <translation id="8999117580775242387">Ja HTTPS nav pieejams, pārlūkā Chrome bez brīdinājuma tiks izmantots nedrošs savienojums.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ir pieejams Chrome atjauninājums}=1{Ir pieejams Chrome atjauninājums}zero{Chrome atjauninājums ir pieejams jau # dienu}one{Chrome atjauninājums ir pieejams jau # dienu}other{Chrome atjauninājums ir pieejams jau # dienas}}</translation>
+<translation id="9014771989710951291">Pārlūku Chrome pārvalda vairākas organizācijas</translation>
 <translation id="9024318700713112071">Iestatīt Chrome kā noklusējuma pārlūku</translation>
 <translation id="9053892488859122171">Chrome OS Flex sistēma</translation>
 <translation id="9090566250983691233">Uzzināt, kāpēc pārlūkā Chrome daži faili tiek bloķēti</translation>

@@ -868,6 +868,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2565789370591907825">Clo bysellfwrdd a defnydd</translation>
 <translation id="2570734079541893434">Rheoli gosodiadau</translation>
 <translation id="257136025287118539">Mae eich gweinyddwr yn symud eich ffeiliau i <ph name="CLOUD_PROVIDER" />. Gallwch addasu'r ffeiliau hyn unwaith y bydd yr uwchlwytho wedi'i gwblhau.</translation>
+<translation id="2571488850200220306">Er mwyn helpu i sicrhau diogelwch, gall hefyd weld OS y ddyfais, fersiwn porwr, a pha feddalwedd sydd wedi'i gosod</translation>
 <translation id="2573170131138724450">Teledu</translation>
 <translation id="257674075312929031">Grŵp</translation>
 <translation id="2586657967955657006">Clipfwrdd</translation>
@@ -2774,6 +2775,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6240964651812394252">I ddefnyddio Rheolwr Cyfrineiriau Google gyda'ch system weithredu, ail-lansiwch Chrome a chaniatáu mynediad at reolwr cyfrineiriau eich cyfrifiadur. Bydd eich tabiau yn ailagor ar ôl ail-lansio.</translation>
 <translation id="6241121617266208201">Cuddio awgrymiadau</translation>
 <translation id="624499991300733384">Gwasanaeth Cysodwr Argraffu</translation>
+<translation id="6246868321321344665">Gall eich sefydliad weld data pori, fel cyfrineiriau a hanes mewn proffiliau gwaith a phroffiliau personol</translation>
 <translation id="6250932670816326647">Cynhyrchion Bath a Chorff</translation>
 <translation id="6251906504834538140">{0,plural, =1{Ffeil wedi'i rhwystro rhag cael ei symud}zero{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu symud}two{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu symud}few{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu symud}many{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu symud}other{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu symud}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pwyswch Tab yna Enter i reoli ffeiliau rydych wedi'u lawrlwytho yn Chrome</translation>
@@ -4309,6 +4311,7 @@ Manylion ychwanegol:
 <translation id="9101450247048146228">Symudiad a defnydd camera (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Hambwrdd 1</translation>
 <translation id="9103872766612412690">Mae <ph name="SITE" /> fel arfer yn defnyddio amgryptio i amddiffyn eich gwybodaeth. Pan geisiodd Chromium gysylltu â <ph name="SITE" /> y tro hwn, anfonodd y wefan manylion adnabod anarferol ac anghywir yn ôl. Gall hyn ddigwydd pan fydd ymosodwr yn ceisio gweithredu fel <ph name="SITE" />, neu pan fydd sgrîn mewngofnodi Wi-Fi wedi torri ar draws y cysylltiad. Mae eich gwybodaeth yn dal yn ddiogel oherwydd stopiodd Chromium y cysylltiad cyn i unrhyw ddata gael eu cyfnewid.</translation>
+<translation id="9107199998619088551">Mae <ph name="MANAGER" /> yn rheoli eich proffil</translation>
 <translation id="9107467864910557787">Rheolir eich porwr gan <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Mae polisi gweinyddwr yn analluogi rhannu sgrîn â <ph name="APPLICATION_TITLE" /> pan fydd cynnwys cyfrinachol yn weladwy</translation>
 <translation id="9114524666733003316">Wrthi'n cadarnhau'r cerdyn...</translation>

@@ -2448,6 +2448,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="272741954544380994">Cerca immagine con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Non visualizzare più il promemoria</translation>
 <translation id="2727712005121231835">Dimensioni reali</translation>
+<translation id="2727713483500953825">Seleziona immagini/testo per cercare con Lens</translation>
 <translation id="2727744317940422214">Si è verificato un problema. Invia un feedback con #bruschetta nella descrizione. Il codice di errore è <ph name="ERROR" />. Pulizia non riuscita, potrebbe essere necessario procedere manualmente.</translation>
 <translation id="2729327310379176711">Chrome sta trovando nuovi modi per ridurre il monitoraggio e migliorare la sicurezza durante la navigazione. Chrome inoltre <ph name="ESTIMATE_INTERESTS_LINK" /> e ti consente di gestirli. Dopodiché i siti che visiti possono chiedere a Chrome di conoscere i tuoi interessi per mostrarti annunci.</translation>
 <translation id="2729577602370119849">Accedi alle stampanti e gestiscile facilmente</translation>
@@ -3662,6 +3663,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3623598555687153298">Questa operazione comporterà l'eliminazione di <ph name="TOTAL_USAGE" /> di dati memorizzati dai siti visualizzati</translation>
 <translation id="3624567683873126087">Sblocca il dispositivo e accedi all'Account Google</translation>
 <translation id="3624583033347146597">Scegli le preferenze relative ai cookie di terze parti</translation>
+<translation id="3625345586754200168">Prova Lens</translation>
 <translation id="3625481642044239431">File non valido selezionato. Riprova.</translation>
 <translation id="3626296069957678981">Per ricaricare questo Chromebook devi usare una batteria Dell compatibile.</translation>
 <translation id="3627320433825461852">Meno di un minuto rimanente</translation>
@@ -4818,6 +4820,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4450974146388585462">Diagnostica</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ha rilevato un TPM attivo che può memorizzare i tuoi dati in modo più sicuro.</translation>
 <translation id="4452898361839215358">oppure seleziona un file PPD. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Cerca qualsiasi immagine o testo con Lens</translation>
 <translation id="4453430595102511050">Tocca il sensore di impronte digitali nell'angolo in alto a destra della tastiera. I dati relativi alla tua impronta vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Cerca su <ph name="SEARCH_ENGINE_NAME" /> o digita un URL</translation>
 <translation id="4457472090507035117">Seleziona la voce corrente:</translation>
@@ -6972,6 +6975,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6059276912018042191">Schede Chrome recenti</translation>
 <translation id="6059652578941944813">Gerarchia certificati</translation>
 <translation id="6059925163896151826">Dispositivi USB</translation>
+<translation id="6060842547856900641">Apri Lens</translation>
 <translation id="6061408389284235459">Una notifica è stata inviata a <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Crea codice QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: anche qualcuno con una voce simile o in possesso di una registrazione della sua voce potrebbe essere in grado di accedere ai risultati personali di <ph name="SUPERVISED_USER_NAME" />. Per consumare meno batteria, puoi configurare le impostazioni dell'assistente di <ph name="SUPERVISED_USER_NAME" /> in modo che "Hey Google" sia attivo solo quando il dispositivo è connesso a una fonte di alimentazione.</translation>

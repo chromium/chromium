@@ -475,7 +475,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3226612997184048185">Si vous enregistrez également vos favoris dans votre compte Google, vous pouvez suivre le prix de produits dans Chrome et être averti lorsqu'ils baissent</translation>
 <translation id="3227557059438308877">Utiliser Google Chrome comme clé de sécurité</translation>
 <translation id="3232293466644486101">Supprimer les données de navigation…</translation>
-<translation id="3232459301230493791"><ph name="TAB_COUNT" /> onglets supprimés</translation>
 <translation id="3232754137068452469">Application Web</translation>
 <translation id="3236059992281584593">1 minute restante</translation>
 <translation id="3237087289225714896">Préchargement standard :</translation>
@@ -1444,7 +1443,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7759809451544302770">Facultatif</translation>
 <translation id="7762668264895820836">Carte SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Ajouter une adresse</translation>
-<translation id="776533689993750361"><ph name="TAB_COUNT" /> onglet supprimé</translation>
 <translation id="7772032839648071052">Confirmez la phrase secrète</translation>
 <translation id="7772375229873196092">Fermer <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}}</translation>

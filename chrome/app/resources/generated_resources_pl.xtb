@@ -2433,7 +2433,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="272741954544380994">Wyszukaj obraz za pomocą: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Nie przypominaj więcej</translation>
 <translation id="2727712005121231835">Rzeczywisty rozmiar</translation>
-<translation id="2727713483500953825">Wybierz obrazy/tekst, aby przeszukać je za pomocą Obiektywu</translation>
+<translation id="2727713483500953825">Wybierz obrazy lub tekst, które chcesz przeszukać za pomocą Obiektywu</translation>
 <translation id="2727744317940422214">Coś poszło nie tak. Prześlij opinię z hashtagiem #bruschetta w opisie. Kod błędu: <ph name="ERROR" />. Nie udało się wyczyścić – być może trzeba to będzie zrobić ręcznie.</translation>
 <translation id="2729327310379176711">Chrome testuje nowe sposoby na ograniczenie śledzenia i zwiększenie bezpieczeństwa użytkowników. Przeglądarka <ph name="ESTIMATE_INTERESTS_LINK" /> i umożliwia Ci zarządzanie nimi. Następnie odwiedzane przez Ciebie witryny mogą pytać Chrome o Twoje zainteresowania.</translation>
 <translation id="2729577602370119849">Łatwy dostęp do drukarek i proste zarządzanie nimi</translation>
@@ -10162,7 +10162,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Dodatkową pomoc znajdziesz na: g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
-<translation id="8383614331548401927">Podsumowanie powitania</translation>
+<translation id="8383614331548401927">Podsumowanie ostatnich działań</translation>
 <translation id="8386091599636877289">Nie znaleziono zasady.</translation>
 <translation id="8387361103813440603">Nie zezwolono na sprawdzanie lokalizacji</translation>
 <translation id="8387617938027387193">Potwierdź, że to Ty</translation>

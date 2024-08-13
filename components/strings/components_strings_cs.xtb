@@ -868,6 +868,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2565789370591907825">Zámek a používání klávesnice</translation>
 <translation id="2570734079541893434">Spravovat nastavení</translation>
 <translation id="257136025287118539">Váš administrátor přesouvá vaše soubory do služby <ph name="CLOUD_PROVIDER" />. Po dokončení nahrávání můžete tyto soubory upravit.</translation>
+<translation id="2571488850200220306">Aby byla zajištěna bezpečnost, může také vidět operační systém zařízení, verzi prohlížeče a nainstalovaný software</translation>
 <translation id="2573170131138724450">Televizory</translation>
 <translation id="257674075312929031">Skupina</translation>
 <translation id="2586657967955657006">Schránka</translation>
@@ -2769,6 +2770,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6240964651812394252">Pokud chcete Správce hesel Google používat s operačním systémem, spusťte Chrome znovu a povolte přístup ke správci hesel v počítači. Karty se po opětovném spuštění znovu otevřou.</translation>
 <translation id="6241121617266208201">Skrýt návrhy</translation>
 <translation id="624499991300733384">Služba tvůrce tisku</translation>
+<translation id="6246868321321344665">Vaše organizace může vidět údaje o prohlížení, jako jsou hesla a historie v pracovních i osobních profilech</translation>
 <translation id="6250932670816326647">Koupelová a tělová kosmetika</translation>
 <translation id="6251906504834538140">{0,plural, =1{Přesunutí souboru je blokováno}few{Přesunutí <ph name="FILE_COUNT" /> souborů je blokováno}many{Přesunutí <ph name="FILE_COUNT" /> souboru je blokováno}other{Přesunutí <ph name="FILE_COUNT" /> souborů je blokováno}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter můžete spravovat soubory, které jste v Chromu stáhli</translation>
@@ -4304,6 +4306,7 @@ Další podrobnosti:
 <translation id="9101450247048146228">Používání a natáčení kamer (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Přihrádka 1</translation>
 <translation id="9103872766612412690">Web <ph name="SITE" /> vaše informace běžně chrání šifrováním. Když se prohlížeč Chromium k webu <ph name="SITE" /> pokusil připojit tentokrát, web vrátil neobvyklé a nesprávné identifikační údaje. K tomuto problému může dojít, pokud se za web <ph name="SITE" /> pokouší vydávat nějaký útočník nebo pokud bylo připojení přerušeno přihlašovací obrazovkou sítě Wi-Fi. Vaše informace jsou i nadále v bezpečí, protože prohlížeč Chromium připojení přerušil dříve, než došlo k odeslání jakýchkoliv dat.</translation>
+<translation id="9107199998619088551">Váš profil spravuje organizace <ph name="MANAGER" /></translation>
 <translation id="9107467864910557787">Prohlížeč je spravován doménou <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Zásada administrátora zakazuje sdílení obrazovky s aplikací <ph name="APPLICATION_TITLE" />, když je viditelný důvěrný obsah</translation>
 <translation id="9114524666733003316">Ověřování karty...</translation>

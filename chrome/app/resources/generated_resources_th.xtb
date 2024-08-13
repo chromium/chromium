@@ -3187,6 +3187,7 @@
 <translation id="3269093882174072735">โหลดภาพ</translation>
 <translation id="326911502853238749">ไม่แสดง<ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">เปิดการซิงค์เพื่อสำรองข้อมูลและใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
+<translation id="3269209112443570745">ใหม่! วิธีง่ายๆ ในการค้นหาสิ่งที่อยู่บนหน้าจอ</translation>
 <translation id="3269612321104318480">สีน้ำเงินอมเขียวอ่อนและสีขาว</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ไฟล์}other{# ไฟล์}}</translation>
 <translation id="326999365752735949">กำลังดาวน์โหลดความต่าง</translation>
@@ -3657,6 +3658,7 @@
 <translation id="3621202678540785336">อินพุต</translation>
 <translation id="3621807901162200696">ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{1 แอป}other{# แอป}}</translation>
+<translation id="3622716124581627104">ระบุสิ่งหรือสถานที่ต่างๆ แล้วคัดลอกหรือแปลข้อความ เมื่อใช้ Google Lens ระบบจะส่งภาพหน้าจอของหน้าเว็บไปยัง Google <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">สีของการกะพริบหน้าจอ</translation>
 <translation id="362333465072914957">กำลังรอให้ CA ออกใบรับรอง</translation>
 <translation id="3623598555687153298">การดำเนินการนี้จะลบข้อมูลซึ่งจัดเก็บโดยเว็บไซต์ที่แสดงรวมทั้งสิ้น <ph name="TOTAL_USAGE" /></translation>

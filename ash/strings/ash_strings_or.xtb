@@ -668,6 +668,7 @@
 <translation id="3439896670700055005">କେଶ ହୋଇଥିବା ବିଷୟବସ୍ତୁ ବ୍ୟବହାର ନକରି ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ପୃଷ୍ଠାକୁ ପୁଣି ଲୋଡ କରନ୍ତୁ</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">ଆପଣଙ୍କ ମାଉସକୁ ପର୍ସନାଲାଇଜ କରନ୍ତୁ</translation>
+<translation id="3444385531800624797">ଫଳାଫଳ ଲୋଡ କରାଯାଉଛି</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ମିନିଟ୍</translation>
 <translation id="3445925074670675829">USB-C ଡିଭାଇସ୍</translation>
 <translation id="3454555520521576458">ରିସାଇଜ୍ କରାଯାଇପାରୁଥିବା</translation>
@@ -1211,6 +1212,7 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> ନାମକ ଏକ ଡିଭାଇସ୍ ସହ ସଂଯୋଗ କରାଯାଇଛି, ବ୍ୟାଟେରୀରେ <ph name="BATTERY_PERCENTAGE" />% ଚାର୍ଜ ଅଛି</translation>
 <translation id="5258528442992323769">କୌଣସି ସେଭ ହୋଇଥିବା ଡେସ୍କ ନାହିଁ</translation>
 <translation id="5260676007519551770">ଡେସ୍କ 4</translation>
+<translation id="5265391159779542051">ଫଳାଫଳ ଲୋଡ କରାଯାଇଛି</translation>
 <translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">ଷ୍ଟାଇଲସ ଟୁଲଗୁଡ଼ିକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="5278086053818066789">ChromeVoxକୁ ଚାଲୁ/ବନ୍ଦ କରନ୍ତୁ (କଥିତ ମତାମତ)</translation>
@@ -1506,6 +1508,7 @@
 <translation id="6210042900243040400"><ph name="EMAIL" />ରେ ପୂର୍ବରୁ ସେଭ କରାଯାଇଥିବା <ph name="NAME" /> ସହ କନେକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="6213808132343683860">ଆଂଶିକ ସ୍କ୍ରିନସଟ ନିଅନ୍ତୁ କିମ୍ବା ସ୍କ୍ରିନ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="621606890568890214">Google Classroomକୁ ବିସ୍ତାର କରନ୍ତୁ</translation>
+<translation id="6216759484154215561">ବ୍ରାଉଜରରେ 'ଅଧିକ ଜାଣନ୍ତୁ' ଲିଙ୍କ ଖୋଲାଯାଇଛି</translation>
 <translation id="6220928844947387476">ଆପଣ ବର୍ତ୍ତମାନ ନିଜକୁ ଏବଂ ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ସମାନ ସମୟରେ ରେକର୍ଡ କରିପାରିବେ</translation>
 <translation id="622484624075952240">ଡାଉନ୍‍ କୀ</translation>
 <translation id="6228457605945141550">ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
@@ -2217,6 +2220,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">ନିମ୍ନ ଡାହାଣ କୋଣ, ଲଞ୍ଚର, ଠିକଣା ବାର, ବୁକମାର୍କ ବାର, ଖୋଲା ଥିବା ୱେବସାଇଟ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକ ମଧ୍ୟରେ ଆଗକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="8792626944327216835">ମାଇକ୍ରୋଫୋନ୍</translation>
+<translation id="8797381270745758905">ପୁଣି ଚେଷ୍ଟା କରିବା ଲିଙ୍କକୁ ସକ୍ରିୟ କରାଯାଇଛି</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> ଫୋଲ୍ଡର୍</translation>
 <translation id="880709030178078220">"ସହାୟତା"</translation>

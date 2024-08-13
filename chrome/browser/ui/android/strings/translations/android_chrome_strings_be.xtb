@@ -475,7 +475,6 @@
 <translation id="3226612997184048185">Калі вы захаваеце закладкі таксама ў сваім Уліковым запісе Google, вы зможаце сачыць за цэнамі на тавары ў Chrome і атрымліваць апавяшчэнні аб іх зніжэнні</translation>
 <translation id="3227557059438308877">Google Chrome як ключ бяспекі</translation>
 <translation id="3232293466644486101">Выдаліць даныя пра работу ў браўзеры…</translation>
-<translation id="3232459301230493791">Выдалена ўкладак: <ph name="TAB_COUNT" /></translation>
 <translation id="3232754137068452469">Вэб-праграма</translation>
 <translation id="3236059992281584593">Засталася 1 хвіліна</translation>
 <translation id="3237087289225714896">Стандартная перадзагрузка:</translation>
@@ -764,6 +763,7 @@
 <translation id="4687718960473379118">Рэклама, якая прапануецца сайтамі</translation>
 <translation id="469286762610133730">Атрымлівайце больш цікавае змесціва</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
+<translation id="4698061626562952596">Праглядайце неактыўныя ўкладкі тут</translation>
 <translation id="4699172675775169585">Відарысы і файлы ў кэшы</translation>
 <translation id="4710167854527459075">Спачатку новыя</translation>
 <translation id="4719927025381752090">Прапаноўваць пераклад</translation>
@@ -1450,7 +1450,6 @@
 <translation id="7759809451544302770">Неабавязкова</translation>
 <translation id="7762668264895820836">SD-карта <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Дадаць адрас</translation>
-<translation id="776533689993750361">Выдалена <ph name="TAB_COUNT" /> укладка</translation>
 <translation id="7772032839648071052">Пацвердзіце фразу-пароль</translation>
 <translation id="7772375229873196092">Закрыццё праграмы "<ph name="APP_NAME" />"</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>

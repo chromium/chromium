@@ -475,7 +475,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3226612997184048185">Chrome-da məhsul qiymətlərini izləmək və qiymət enəndə bildiriş almaq üçün əlfəcinləri Google Hesabında da saxlayın</translation>
 <translation id="3227557059438308877">Təhlükəsizlik Açarı olaraq Google Chrome</translation>
 <translation id="3232293466644486101">Baxış datasını silin…</translation>
-<translation id="3232459301230493791"><ph name="TAB_COUNT" /> tab silindi</translation>
 <translation id="3232754137068452469">Veb Tətbiq</translation>
 <translation id="3236059992281584593">1 dəqiqə qaldı</translation>
 <translation id="3237087289225714896">Standart əvvəlcədən yükləmə:</translation>
@@ -1442,7 +1441,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7759809451544302770">İstəyə görə</translation>
 <translation id="7762668264895820836">SD Kart <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Ünvan əlavə edin</translation>
-<translation id="776533689993750361"><ph name="TAB_COUNT" /> tab silindi</translation>
 <translation id="7772032839648071052">Parolu təsdiq edin</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> tətbiqini bağlayın</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 və <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> digəri}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 və <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> digəri}}</translation>

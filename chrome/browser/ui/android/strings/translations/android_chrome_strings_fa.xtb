@@ -475,7 +475,6 @@
 <translation id="3226612997184048185">‏اگر نشانک‌ها را در «حساب Google» هم ذخیره کنید، می‌توانید قیمت محصولات را در Chrome پیگیری کنید و از کاهش قیمت‌ها مطلع شوید</translation>
 <translation id="3227557059438308877">‏Google Chrome به‌عنوان «کلید ایمنی»</translation>
 <translation id="3232293466644486101">حذف کردن داده‌های مرور…</translation>
-<translation id="3232459301230493791">‫<ph name="TAB_COUNT" /> برگه حذف شد</translation>
 <translation id="3232754137068452469">برنامه وب</translation>
 <translation id="3236059992281584593">۱ دقیقه باقی‌مانده است</translation>
 <translation id="3237087289225714896">پیش‌بارگذاری استاندارد:</translation>
@@ -1451,7 +1450,6 @@
 <translation id="7759809451544302770">اختیاری</translation>
 <translation id="7762668264895820836">‏کارت SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">افزودن آدرس</translation>
-<translation id="776533689993750361">‫<ph name="TAB_COUNT" /> برگه حذف شد</translation>
 <translation id="7772032839648071052">تأیید گذرعبارت</translation>
 <translation id="7772375229873196092">بستن <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش پرداخت دیگر}one{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش پرداخت دیگر}other{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش پرداخت دیگر}}</translation>

@@ -868,6 +868,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2565789370591907825">Tastatursperre und ‑nutzung</translation>
 <translation id="2570734079541893434">Einstellungen verwalten</translation>
 <translation id="257136025287118539">Dein Administrator verschiebt deine Dateien nach <ph name="CLOUD_PROVIDER" />. Du kannst diese Dateien ändern, sobald der Upload abgeschlossen ist.</translation>
+<translation id="2571488850200220306">Für mehr Sicherheit kann sie auch das Betriebssystem, die Browserversion und die installierte Software des Geräts sehen</translation>
 <translation id="2573170131138724450">Fernseher</translation>
 <translation id="257674075312929031">Gruppe</translation>
 <translation id="2586657967955657006">Zwischenablage</translation>
@@ -2772,6 +2773,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6240964651812394252">Wenn du den Google Passwortmanager mit deinem Betriebssystem verwenden möchtest, starte Chrome neu und erlaube den Zugriff auf den Passwortmanager deines Computers. Deine Tabs werden nach dem Neustart wieder geöffnet.</translation>
 <translation id="6241121617266208201">Vorschläge ausblenden</translation>
 <translation id="624499991300733384">Druck-Setzdienst</translation>
+<translation id="6246868321321344665">Deine Organisation kann Browserdaten wie Passwörter und den Verlauf sowohl in deinem Arbeitsprofil als auch in deinem privaten Profil sehen</translation>
 <translation id="6250932670816326647">Bade- und Körperpflegeprodukte</translation>
 <translation id="6251906504834538140">{0,plural, =1{Datei kann nicht verschoben werden}other{<ph name="FILE_COUNT" /> Dateien können nicht verschoben werden}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um in Chrome heruntergeladene Dateien zu verwalten</translation>
@@ -4310,6 +4312,7 @@ Weitere Details:
 <translation id="9101450247048146228">Kamera-Nutzung und ‑Bewegung (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Fach 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> schützt deine Daten in der Regel durch Verschlüsselung. Als Chromium dieses Mal versuchte, eine Verbindung zu <ph name="SITE" /> herzustellen, gab die Website ungewöhnliche und falsche Anmeldedaten zurück. Entweder versucht ein Angreifer, sich als <ph name="SITE" /> auszugeben, oder die Verbindung wurde durch eine WLAN-Anmeldeseite unterbrochen. Da Chromium die Verbindung vor dem Austausch von Daten unterbrochen hat, sind deine Informationen weiterhin sicher.</translation>
+<translation id="9107199998619088551">Dein Profil wird von <ph name="MANAGER" /> verwaltet</translation>
 <translation id="9107467864910557787">Der Browser wird von <ph name="MANAGER" /> verwaltet</translation>
 <translation id="91108059142052966">Die Administratorrichtlinie blockiert die Bildschirmfreigabe mit <ph name="APPLICATION_TITLE" />, wenn vertrauliche Inhalte sichtbar sind</translation>
 <translation id="9114524666733003316">Karte wird bestätigt…</translation>

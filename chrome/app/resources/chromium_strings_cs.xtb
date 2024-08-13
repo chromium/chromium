@@ -126,6 +126,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="2915996080311180594">Restartovat později</translation>
 <translation id="2928420929544864228">Instalace byla dokončena.</translation>
 <translation id="2945997411976714835">Chyba instalace: Instalační proces se nepodařilo spustit.</translation>
+<translation id="2970426615109535079">Chromium spravuje vaše organizace</translation>
 <translation id="2977470724722393594">Chromium je aktuální</translation>
 <translation id="2977506796191543575">Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chromium Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky</translation>
 <translation id="2987208172821108655">Chromium může tyto karty deaktivovat, aby při procházení vše lépe fungovalo a uvolnily se zdroje.</translation>
@@ -226,6 +227,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="4423735387467980091">Přizpůsobit a ovládat Chromium</translation>
 <translation id="4427306783828095590">Vylepšená ochrana vás lépe ochrání před phishingem a malwarem</translation>
 <translation id="4434353761996769206">Chyba instalačního programu: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438870983368648614">Chromium spravuje organizace <ph name="MANAGER" /></translation>
 <translation id="4447409407328223819">O Chrome for Testing</translation>
 <translation id="4501471624619070934">Instalace se nezdařila, protože přístup je v této zemi omezen.</translation>
 <translation id="4510853178268397146">Pro toto rozšíření nebyly publikovány postupy v oblasti ochrany soukromí, například informace o tom, jak shromažďuje a používá data. Chromium vám doporučuje odstranit ho.</translation>
@@ -494,6 +496,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8550334526674375523">Tento pracovní profil je zcela oddělen od vašeho osobního profilu.</translation>
 <translation id="8555465886620020932">Chyba služby: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Když se přihlásíte pomocí účtu Google, může vám Chromium kontrolovat hesla</translation>
+<translation id="8576826849825683917">Chromium spravuje několik organizací</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autoři prohlížeče Chromium. Všechna práva vyhrazena.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Jak tyto údaje využíváme:<ph name="END_BOLD" /> Weby mohou v prohlížeči Chromium ukládat informace o vašich zájmech. Např. když navštívíte web, kde se prodávají boty na maraton, web může definovat váš zájem jako běhání maratonů. Když později navštívíte jiný web s registrací na závod, může se vám na něm na základě vašich zájmů zobrazit reklama na boty na běhání.</translation>
 <translation id="8619360774459241877">Spouštění prohlížeče Chromium...</translation>

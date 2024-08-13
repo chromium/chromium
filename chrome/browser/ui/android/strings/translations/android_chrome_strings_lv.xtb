@@ -475,7 +475,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3226612997184048185">Ja saglabāsiet grāmatzīmes arī Google kontā, varēsiet izsekot produktu cenām pārlūkā Chrome un saņemt paziņojumus par cenu kritumiem.</translation>
 <translation id="3227557059438308877">Pārlūka Google Chrome izmantošana drošības atslēgas vietā</translation>
 <translation id="3232293466644486101">Dzēst pārlūkošanas datus…</translation>
-<translation id="3232459301230493791">Izdzēsta(-as) <ph name="TAB_COUNT" /> cilne(-es).</translation>
 <translation id="3232754137068452469">Tīmekļa lietotne</translation>
 <translation id="3236059992281584593">Atlikusi 1 min</translation>
 <translation id="3237087289225714896">Standarta iepriekšēja ielāde:</translation>
@@ -1444,7 +1443,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7759809451544302770">Neobligātas</translation>
 <translation id="7762668264895820836">SD karte <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Pievienot adresi</translation>
-<translation id="776533689993750361">Izdzēsta <ph name="TAB_COUNT" /> cilne.</translation>
 <translation id="7772032839648071052">Apstipriniet ieejas frāzi</translation>
 <translation id="7772375229873196092">Aizvērt <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}zero{<ph name="PAYMENT_METHOD_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>

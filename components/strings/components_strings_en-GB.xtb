@@ -52,6 +52,7 @@
 <translation id="1089439967362294234">Change Password</translation>
 <translation id="1089599132348386324">You can change your mind at any time in Chrome settings.</translation>
 <translation id="1090629319939036170">VR Menu</translation>
+<translation id="1091463901118115503">Continue reading</translation>
 <translation id="1091779689406092804">screenshots</translation>
 <translation id="1094777233105318927">Information about your browser, OS, device, installed software and files</translation>
 <translation id="1096545575934602868">This field should not have more than <ph name="MAX_ITEMS_LIMIT" /> entries. All further entries will be discarded.</translation>
@@ -537,6 +538,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1975457531113383421">Input tray</translation>
 <translation id="1975584088563498795">Mailbox 10</translation>
+<translation id="1976610264358655503">Your visit often</translation>
 <translation id="1978555033938440688">Firmware Version</translation>
 <translation id="1979156660928743046">Media information</translation>
 <translation id="1988881251331415125">If spelling is correct, <ph name="BEGIN_LINK" />try running connectivity Diagnostics<ph name="END_LINK" />.</translation>
@@ -774,6 +776,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="239429038616798445">This delivery method isn’t available. Try a different method.</translation>
 <translation id="2395840535409704129">Water Sports</translation>
 <translation id="2396249848217231973">&amp;Undo delete</translation>
+<translation id="2399344929880464793">This IBAN is saved in your Google Account so that you can use it across Google services.</translation>
 <translation id="2399868464369312507">Google Chrome is trying to edit payment methods.</translation>
 <translation id="2400600116338235695">Can ask to connect to serial ports</translation>
 <translation id="2404884497378469141">Try copying your files again</translation>
@@ -887,6 +890,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2619052155095999743">Insert</translation>
 <translation id="2625385379895617796">Your clock is ahead</translation>
 <translation id="262745152991669301">Can ask to connect to USB devices</translation>
+<translation id="2628224721443278970">Sign in to Microsoft OneDrive</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />’s server IP address could not be found.</translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="2647086987482648627">Fabric (semi-gloss)</translation>
@@ -1047,6 +1051,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2967098518029543669">save it in your Google Account</translation>
 <translation id="297173220375858963">Desktop publishing</translation>
 <translation id="2972581237482394796">&amp;Redo</translation>
+<translation id="2974468223369775963">This IBAN couldn't be saved in your Google Account. It's been saved to Chrome on this device instead. Chrome will ask you again the next time that you use this IBAN.</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, currently selected. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Lock and use your keyboard</translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1830,6 +1835,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4377125064752653719">You attempted to reach <ph name="DOMAIN" />, but the certificate that the server presented has been revoked by its issuer. This means that the security credentials the server presented absolutely should not be trusted. You may be communicating with an attacker.</translation>
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4384395682990721132">A4 x 3</translation>
+<translation id="4387692837058041921">File upload to Microsoft OneDrive has been paused</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4397059608630092079">Always verify when using autofill</translation>
 <translation id="4397978002248035985">Opens a pop-up to verify on your bank's website</translation>
@@ -1932,6 +1938,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4636930964841734540">Info</translation>
 <translation id="4640225694041297329">Show results from the last seven days</translation>
 <translation id="464342062220857295">Search features</translation>
+<translation id="4644567637638438744">Files can only be uploaded if you are signed in to Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Reverse order face down</translation>
 <translation id="4646534391647090355">Take me there now</translation>
 <translation id="4648262692072505866">Hash must be of format SHA-256.</translation>
@@ -3031,6 +3038,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6704458454638854812">The property 'custom_size' is set; expected name to be 'custom'.</translation>
 <translation id="6706005862292023715">Curtains and Window Treatments</translation>
 <translation id="6706210727756204531">Scope</translation>
+<translation id="6706678697074905703">This IBAN couldn't be saved in your Google Account. It's been saved to Chrome on this device instead.</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6710213216561001401">Previous</translation>
 <translation id="6710594484020273272">&lt;Type search term&gt;</translation>
@@ -3045,6 +3053,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6734506549556896534">Simulation games</translation>
+<translation id="6735783933931458444">You visit often at this time of day</translation>
 <translation id="6737708609449480586">Baked Goods</translation>
 <translation id="6738516213925468394">Your data was encrypted with your <ph name="BEGIN_LINK" />sync passphrase<ph name="END_LINK" /> on <ph name="TIME" />. Enter it to start sync.</translation>
 <translation id="6740851646645036700">You've reached your writing help limit for now. Please try again later.</translation>
@@ -3762,6 +3771,7 @@ Additional details:
 <translation id="8041089156583427627">Send feedback</translation>
 <translation id="8041940743680923270">Use global default (Ask)</translation>
 <translation id="8043255123207491407">See seller's terms and conditions</translation>
+<translation id="8044986521421349135">Your most recent tab</translation>
 <translation id="8046360364391076336">Industrial Materials and Equipment</translation>
 <translation id="8052898407431791827">Copied to clipboard</translation>
 <translation id="8057023045886711556">Comedy films</translation>
@@ -3829,6 +3839,7 @@ Additional details:
 <translation id="8183800802493617952">Family-Orientated Games and Activities</translation>
 <translation id="8184538546369750125">Use global default (Allow)</translation>
 <translation id="8186706823560132848">Software</translation>
+<translation id="8188830160449823068">IBAN saved to device only</translation>
 <translation id="8189557652711717875">The search engine that you choose will be used for features such as searching from the address bar and from images on web pages.</translation>
 <translation id="8190193880870196235">Managed by an extension</translation>
 <translation id="8194412401381329820">You cannot use this page from a managed account on this unmanaged device. All managed accounts will be locked if you use this page, except accounts managed by the same entity as this device (affiliated accounts).</translation>

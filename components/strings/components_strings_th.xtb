@@ -52,6 +52,7 @@
 <translation id="1089439967362294234">เปลี่ยนรหัสผ่าน</translation>
 <translation id="1089599132348386324">คุณเปลี่ยนใจได้ทุกเมื่อในการตั้งค่า Chrome</translation>
 <translation id="1090629319939036170">เมนู VR</translation>
+<translation id="1091463901118115503">อ่านต่อ</translation>
 <translation id="1091779689406092804">ภาพหน้าจอ</translation>
 <translation id="1094777233105318927">ข้อมูลเกี่ยวกับเบราว์เซอร์ ระบบปฏิบัติการ อุปกรณ์ ซอฟต์แวร์ที่ติดตั้ง และไฟล์</translation>
 <translation id="1096545575934602868">ช่องนี้ต้องมีข้อมูลไม่เกิน <ph name="MAX_ITEMS_LIMIT" /> รายการ ระบบจะทิ้งรายการอื่นๆ ทั้งหมด</translation>
@@ -537,6 +538,7 @@
 <translation id="1974060860693918893">ขั้นสูง</translation>
 <translation id="1975457531113383421">ถาดกระดาษเข้า</translation>
 <translation id="1975584088563498795">กล่องจดหมาย 10</translation>
+<translation id="1976610264358655503">คุณเข้าชมบ่อย</translation>
 <translation id="1978555033938440688">เวอร์ชันของเฟิร์มแวร์</translation>
 <translation id="1979156660928743046">ข้อมูลสื่อ</translation>
 <translation id="1988881251331415125">หากการสะกดถูกต้อง ให้<ph name="BEGIN_LINK" />ลองเรียกใช้การวินิจฉัยการเชื่อมต่อ<ph name="END_LINK" /></translation>
@@ -887,6 +889,7 @@
 <translation id="2619052155095999743">แทรก</translation>
 <translation id="2625385379895617796">นาฬิกาเร็วเกินไป</translation>
 <translation id="262745152991669301">สามารถขอเชื่อมต่อกับอุปกรณ์ USB ได้</translation>
+<translation id="2628224721443278970">ลงชื่อเข้าใช้ Microsoft OneDrive</translation>
 <translation id="2634124572758952069">ไม่พบที่อยู่ IP ของเซิร์ฟเวอร์ <ph name="HOST_NAME" /></translation>
 <translation id="2639739919103226564">สถานะ:</translation>
 <translation id="2647086987482648627">ผ้า (กึ่งเงา)</translation>
@@ -1829,6 +1832,7 @@
 <translation id="4377125064752653719">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่ใบรับรองที่เซิร์ฟเวอร์แจ้งมาถูกเพิกถอนโดยผู้ออกใบรับรอง ซึ่งหมายความว่าข้อมูลรับรองด้านความปลอดภัยที่เซิร์ฟเวอร์แจ้งมานั้นไม่สามารถเชื่อถือได้ คุณอาจกำลังติดต่อกับคนที่คิดจะโจมตีคุณ</translation>
 <translation id="4378154925671717803">โทรศัพท์</translation>
 <translation id="4384395682990721132">A4x3</translation>
+<translation id="4387692837058041921">หยุดอัปโหลดไฟล์ไปยัง Microsoft OneDrive ชั่วคราว</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4397059608630092079">ยืนยันเสมอเมื่อใช้การป้อนข้อความอัตโนมัติ</translation>
 <translation id="4397978002248035985">เปิดป๊อปอัปเพื่อยืนยันในเว็บไซต์ของธนาคาร</translation>
@@ -1931,6 +1935,7 @@
 <translation id="4636930964841734540">ข้อมูล</translation>
 <translation id="4640225694041297329">แสดงผลลัพธ์จาก 7 วันที่ผ่านมา</translation>
 <translation id="464342062220857295">ฟีเจอร์การค้นหา</translation>
+<translation id="4644567637638438744">คุณจะอัปโหลดไฟล์ได้ เมื่อลงชื่อเข้าใช้ Microsoft OneDrive แล้วเท่านั้น</translation>
 <translation id="4644670975240021822">ลำดับย้อนกลับคว่ำหน้าลง</translation>
 <translation id="4646534391647090355">พาฉันไปที่นั่นเลย</translation>
 <translation id="4648262692072505866">แฮชต้องอยู่ในรูปแบบ SHA-256</translation>
@@ -3044,6 +3049,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">กล้อง</translation>
 <translation id="6734506549556896534">เกมจำลองเหตุการณ์</translation>
+<translation id="6735783933931458444">คุณเข้าชมบ่อย ณ เวลานี้ของวัน</translation>
 <translation id="6737708609449480586">สินค้าเบเกอรี</translation>
 <translation id="6738516213925468394">ข้อมูลของคุณเข้ารหัสลับไว้ด้วย<ph name="BEGIN_LINK" />รหัสผ่านการซิงค์<ph name="END_LINK" />เมื่อ <ph name="TIME" /> ป้อนรหัสผ่านเพื่อเริ่มซิงค์</translation>
 <translation id="6740851646645036700">ขณะนี้คุณขอความช่วยเหลือในการเขียนถึงขีดจำกัดแล้ว โปรดลองอีกครั้งในภายหลัง</translation>
@@ -3763,6 +3769,7 @@
 <translation id="8041089156583427627">ส่งความคิดเห็น</translation>
 <translation id="8041940743680923270">ใช้ค่าเริ่มต้นสากล (ถาม)</translation>
 <translation id="8043255123207491407">ดูข้อกำหนดและเงื่อนไขของผู้ขาย</translation>
+<translation id="8044986521421349135">แท็บล่าสุดของคุณ</translation>
 <translation id="8046360364391076336">วัสดุและอุปกรณ์อุตสาหกรรม</translation>
 <translation id="8052898407431791827">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="8057023045886711556">ภาพยนตร์ตลก</translation>

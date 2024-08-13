@@ -127,6 +127,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="2915996080311180594">Sonra yenidən başladın</translation>
 <translation id="2928420929544864228">Quraşdırma tamamlandı.</translation>
 <translation id="2945997411976714835">Quraşdırma xətası: Quraşdırıcı prosesini başlatmaq mümkün olmadı.</translation>
+<translation id="2970426615109535079">Təşkilatınız Chromium-u idarə edir</translation>
 <translation id="2977470724722393594">Chromium güncəldir</translation>
 <translation id="2977506796191543575">Sayt parolunuzu oğurlamağa çalışdıqda və ya zərərli fayl endirdiyinizdə Chromium səhifə məzmunundan kiçik nümunələr də daxil olmaqla, URL'ləri Təhlükəsiz Baxışa göndərə bilər</translation>
 <translation id="2987208172821108655">Chromium baxış təcrübənizi yaxşılaşdırmaq və resursları boşaltmaq üçün bu tabları deaktiv edə bilər.</translation>
@@ -225,6 +226,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="4423735387467980091">Fərdiləşdirin və Chromium'u kontrol edin</translation>
 <translation id="4427306783828095590">Təkmil qoruma ilə fişinq və zərərli proqramların bloklanması üçün daha çox iş görülür</translation>
 <translation id="4434353761996769206">Quraşdırıcı xətası: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438870983368648614"><ph name="MANAGER" /> Chromium-u idarə edir</translation>
 <translation id="4447409407328223819">Sınaq üçün Chrome haqqında</translation>
 <translation id="4501471624619070934">Bu ölkədə giriş məhdudlaşdırıldığı üçün quraşdırma alınmadı.</translation>
 <translation id="4510853178268397146">Bu artırma datanın toplanma və istifadə qaydası kimi məxfilik təcrübələrini dərc etməyib. Chromium onu silməyinizi tövsiyə edir.</translation>
@@ -491,6 +493,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8550334526674375523">Bu iş profili şəxsi profilinizdən tamamilə ayrıdır.</translation>
 <translation id="8555465886620020932">Xidmət xətası: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Google Hesabınız ilə daxil olduqda Chromium parollarınızı yoxlaya bilər</translation>
+<translation id="8576826849825683917">Bir neçə təşkilat Chromium-u idarə edir</translation>
 <translation id="8586442755830160949">Müəlliflik Hüququ <ph name="YEAR" /> Chromium Müəllifləri. Bütün hüquqlar qorunur.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Bu datanı necə istifadə edirik:<ph name="END_BOLD" /> Saytlar maraqlarınız haqqında Chromium ilə məlumat saxlaya bilər. Məsələn, marafona ayaqqabı almaq üçün sayta daxil olsanız, sayt marağınızı qaçış marafonu kimi müəyyən edə bilər. Sonra yarışa yazılmaq üçün başqa sayta daxil olsanız, həmin sayt maraqlarınız əsasında sizə qaçış ayaqqabısı reklamı göstərə bilər.</translation>
 <translation id="8619360774459241877">Chromium başlayır...</translation>

@@ -868,6 +868,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2565789370591907825">Billentyűzet zárolása és használata</translation>
 <translation id="2570734079541893434">Beállítások kezelése</translation>
 <translation id="257136025287118539">A rendszergazda áthelyezi az Ön fájljait a következő szolgáltatásba: <ph name="CLOUD_PROVIDER" />. A feltöltés végeztével Ön módosíthatja ezeket a fájlokat.</translation>
+<translation id="2571488850200220306">A biztonság érdekében látja azt is, hogy az eszközön milyen operációs rendszer, böngészőverzió és telepített szoftverek találhatók</translation>
 <translation id="2573170131138724450">Televíziók</translation>
 <translation id="257674075312929031">Csoport</translation>
 <translation id="2586657967955657006">Vágólap</translation>
@@ -2772,6 +2773,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6240964651812394252">Ha az operációs rendszerrel szeretné használni a Jelszókezelőt, indítsa újra a Chrome-ot, és engedélyezze a számítógép jelszókezelőjéhez való hozzáférést. Megnyitott lapjai az újraindítás után újra meg fognak nyílni.</translation>
 <translation id="6241121617266208201">Javaslatok elrejtése</translation>
 <translation id="624499991300733384">Nyomatösszeállító szolgáltatás</translation>
+<translation id="6246868321321344665">Szervezete láthatja a munka- és a személyes profilok böngészési adatait is (például a jelszavakat és az előzményeket).</translation>
 <translation id="6250932670816326647">Fürdő- és testápoló termékek</translation>
 <translation id="6251906504834538140">{0,plural, =1{A fájl áthelyezése le van tiltva}other{<ph name="FILE_COUNT" /> fájl áthelyezése le van tiltva}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter gombot a Chrome-ban letöltött fájlok kezeléséhez.</translation>
@@ -4309,6 +4311,7 @@ További részletek:
 <translation id="9101450247048146228">Kamera használata és mozgatása (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">1. tálca</translation>
 <translation id="9103872766612412690">A(z) <ph name="SITE" /> webhely rendes esetben titkosítást alkalmaz az Ön adatainak védelme érdekében. Amikor a Chromium most csatlakozni próbált, a(z) <ph name="SITE" /> webhely szokatlan és helytelen hitelesítési adatokat küldött vissza.Ez olyankor fordulhat elő, amikor egy támadó megpróbálja magát kiadni a(z) <ph name="SITE" /> webhelynek, vagy valamilyen Wi-Fi-bejelentkezési képernyő megszakította a kapcsolatot. Adatai továbbra is biztonságban vannak, mivel a Chromium még azt megelőzően megszakította a kapcsolatot, hogy bármiféle adatcserére sor kerülhetett volna.</translation>
+<translation id="9107199998619088551">A(z) <ph name="MANAGER" /> kezeli az Ön profilját</translation>
 <translation id="9107467864910557787">Böngészőjét a(z) <ph name="MANAGER" /> kezeli</translation>
 <translation id="91108059142052966">Rendszergazdai házirend tiltja a(z) <ph name="APPLICATION_TITLE" /> alkalmazással való képernyőmegosztást, ha bizalmas tartalom látható a képernyőn.</translation>
 <translation id="9114524666733003316">Kártya ellenőrzése…</translation>

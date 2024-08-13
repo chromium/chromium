@@ -126,6 +126,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="2915996080311180594">Redémarrer plus tard</translation>
 <translation id="2928420929544864228">Installation terminée.</translation>
 <translation id="2945997411976714835">Erreur d'installation : le processus d'installation n'a pas pu démarrer.</translation>
+<translation id="2970426615109535079">Votre organisation gère Chromium</translation>
 <translation id="2977470724722393594">Chromium est à jour</translation>
 <translation id="2977506796191543575">Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chromium peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la navigation sécurisée</translation>
 <translation id="2987208172821108655">Chromium peut rendre ces onglets inactifs pour améliorer votre expérience de navigation et libérer des ressources.</translation>
@@ -226,6 +227,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="4423735387467980091">Personnaliser et commander Chrome</translation>
 <translation id="4427306783828095590">La protection renforcée en fait plus pour bloquer l'hameçonnage et les logiciels nuisibles</translation>
 <translation id="4434353761996769206">Erreur du programme d'installation : <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438870983368648614"><ph name="MANAGER" /> gère Chromium</translation>
 <translation id="4447409407328223819">À propos de Chrome for Testing</translation>
 <translation id="4501471624619070934">L'installation a échoué, car l'accès est restreint dans ce pays.</translation>
 <translation id="4510853178268397146">Cette extension n'a pas publié de pratiques en matière de confidentialité, telles que la manière dont elle collecte et utilise les données. Chromium vous recommande de la retirer.</translation>
@@ -494,6 +496,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8550334526674375523">Ce profil professionnel est distinct de votre profil personnel.</translation>
 <translation id="8555465886620020932">Erreur liée au service : <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google</translation>
+<translation id="8576826849825683917">Plusieurs organisations gèrent Chromium</translation>
 <translation id="8586442755830160949">© <ph name="YEAR" /> Les auteurs de Chrome. Tous droits réservés.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données :<ph name="END_BOLD" /> les sites peuvent stocker des renseignements sur vos centres d'intérêt dans Chromium. Par exemple, si vous visitez un site pour acheter des chaussures pour un marathon, le site pourrait définir votre centre d'intérêt comme la course de marathons. Ultérieurement, si vous visitez un autre site pour vous inscrire à une course, celui-ci peut vous montrer une annonce pour des chaussures de course en fonction de vos centres d'intérêt.</translation>
 <translation id="8619360774459241877">Lancement de Chromium en cours…</translation>

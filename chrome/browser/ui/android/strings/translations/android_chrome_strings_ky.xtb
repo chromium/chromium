@@ -475,7 +475,6 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3226612997184048185">Эгер кыстармаларды Google аккаунтуңузга сактап койсоңуз, товарлардын бааларына Chrome'до көз салып, баалар төмөндөгөндө кабар аласыз</translation>
 <translation id="3227557059438308877">Google Chrome'ду Коопсуздук ачкычы катары колдонуу</translation>
 <translation id="3232293466644486101">Серептөө дайындарын өчүрүү…</translation>
-<translation id="3232459301230493791"><ph name="TAB_COUNT" /> өтмөк өчүрүлдү</translation>
 <translation id="3232754137068452469">Веб колдонмо</translation>
 <translation id="3236059992281584593">1 мүн. калды</translation>
 <translation id="3237087289225714896">Стандарттуу алдын ала жүктөө:</translation>
@@ -1444,7 +1443,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7759809451544302770">Кошумча</translation>
 <translation id="7762668264895820836"><ph name="SD_CARD_NUMBER" />-SD-карта</translation>
 <translation id="7764225426217299476">Дарек кошуу</translation>
-<translation id="776533689993750361"><ph name="TAB_COUNT" /> өтмөк өчүрүлдү</translation>
 <translation id="7772032839648071052">Купуя сөз айкашын ырастаңыз</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> өтмөгүн жабуу</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>

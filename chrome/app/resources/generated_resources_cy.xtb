@@ -2464,6 +2464,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="272741954544380994">Chwilio Llun gyda <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Peidio â fy atgoffa eto</translation>
 <translation id="2727712005121231835">Maint Gwirioneddol</translation>
+<translation id="2727713483500953825">Dewiswch ddelweddau/testun i chwilio gyda Lens</translation>
 <translation id="2727744317940422214">Mae'n ddrwg gennym, aeth rhywbeth o'i le. Ffeiliwch adborth gyda #bruschetta yn y disgrifiad. Y cod gwall yw <ph name="ERROR" />. Wedi methu â glanhau. Mae'n bosib y bydd angen i chi wneud hynny eich hun.</translation>
 <translation id="2729327310379176711">Mae Chrome yn dod o hyd i ffyrdd newydd o leihau olrhain a'ch cadw hyd yn oed yn fwy diogel wrth i chi bori. Mae Chrome hefyd yn <ph name="ESTIMATE_INTERESTS_LINK" /> ac yn eich galluogi i'w rheoli. Yna, gall gwefannau rydych yn ymweld â nhw ofyn i Chrome am eich diddordebau i ddangos hysbysebion i chi.</translation>
 <translation id="2729577602370119849">Cyrchu a rheoli argraffyddion yn hawdd</translation>
@@ -3679,6 +3680,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3623598555687153298">Bydd hyn yn dileu <ph name="TOTAL_USAGE" /> o ddata sydd wedi'u storio gan y gwefannau a ddangosir</translation>
 <translation id="3624567683873126087">Datglowch y ddyfais a mewngofnodwch i Gyfrif Google</translation>
 <translation id="3624583033347146597">Dewiswch eich dewisiadau cwci trydydd parti</translation>
+<translation id="3625345586754200168">Rhowch gynnig ar Lens</translation>
 <translation id="3625481642044239431">Wedi dewis ffeil annilys. Rhowch gynnig arall arni.</translation>
 <translation id="3626296069957678981">I wefru'r Chromebook hwn, defnyddiwch batri Dell cydnaws.</translation>
 <translation id="3627320433825461852">Llai na 1 funud ar ôl</translation>
@@ -4835,6 +4837,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4450974146388585462">Diagnosio</translation>
 <translation id="445099924538929605">Canfu <ph name="DEVICE_OS" /> TPM gweithredol a all storio'ch data yn fwy diogel.</translation>
 <translation id="4452898361839215358">neu dewiswch PPD. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Chwiliwch unrhyw ddelwedd neu destun gyda Lens</translation>
 <translation id="4453430595102511050">Cyffyrddwch â'r synhwyrydd olion bysedd ar gornel dde uchaf eich bysellfwrdd. Mae eich data ôl bys wedi'u storio yn ddiogel a byth yn gadael eich <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Chwiliwch <ph name="SEARCH_ENGINE_NAME" /> neu teipiwch URL</translation>
 <translation id="4457472090507035117">Dewis y llais presennol:</translation>
@@ -6993,6 +6996,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6059276912018042191">Tabiau Chrome diweddar</translation>
 <translation id="6059652578941944813">Hierarchaeth Tystysgrifau</translation>
 <translation id="6059925163896151826">Dyfeisiau USB</translation>
+<translation id="6060842547856900641">Agor Lens</translation>
 <translation id="6061408389284235459">Anfonwyd hysbysiad at <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Creu Cod QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Sylwer:<ph name="END_BOLD" /> Mae'n bosib y bydd llais neu recordiad tebyg yn gallu cael mynediad at ganlyniadau personol <ph name="SUPERVISED_USER_NAME" />. I arbed batri, gallwch ddewis i gael "Hei Google" ymlaen yng ngosodiadau Assistant <ph name="SUPERVISED_USER_NAME" /> ar y ddyfais hon pan fydd wedi'i chysylltu â chyflenwad pŵer yn unig.</translation>

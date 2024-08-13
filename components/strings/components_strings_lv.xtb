@@ -868,6 +868,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2565789370591907825">Tastatūras bloķēšana un lietošana</translation>
 <translation id="2570734079541893434">Pārvaldīt iestatījumus</translation>
 <translation id="257136025287118539">Jūsu administrators pārvieto jūsu failus uz pakalpojumu <ph name="CLOUD_PROVIDER" />. Kad failu augšupielāde būs pabeigta, varēsiet tos pārveidot.</translation>
+<translation id="2571488850200220306">Lai palīdzētu gādāt par drošību, administrators var arī skatīt ierīces operētājsistēmu, pārlūkprogrammas versiju un instalēto programmatūru.</translation>
 <translation id="2573170131138724450">Televizori</translation>
 <translation id="257674075312929031">Grupa</translation>
 <translation id="2586657967955657006">Starpliktuve</translation>
@@ -2773,6 +2774,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6240964651812394252">Lai izmantotu Google paroļu pārvaldnieku ar savu operētājsistēmu, atkārtoti palaidiet pārlūku Chrome un atļaujiet piekļuvi datora paroļu pārvaldniekam. Jūsu cilnes tiks atkal atvērtas pēc atkārtotas palaišanas.</translation>
 <translation id="6241121617266208201">Paslēpt ieteikumus</translation>
 <translation id="624499991300733384">Drukājamā satura salikšanas pakalpojums</translation>
+<translation id="6246868321321344665">Jūsu organizācija var skatīt pārlūkošanas datus, piemēram, paroles un vēsturi, gan darba, gan personīgajā profilā.</translation>
 <translation id="6250932670816326647">Ķermeņa kopšanas un vannas produkti</translation>
 <translation id="6251906504834538140">{0,plural, =1{Faila pārvietošana ir bloķēta}zero{<ph name="FILE_COUNT" /> failu pārvietošana ir bloķēta}one{<ph name="FILE_COUNT" /> faila pārvietošana ir bloķēta}other{<ph name="FILE_COUNT" /> failu pārvietošana ir bloķēta}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, lai pārvaldītu pārlūkā Chrome lejupielādētos failus, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter</translation>
@@ -4311,6 +4313,7 @@ Papildu informācija:
 <translation id="9101450247048146228">Kameras lietojums un kustība (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">1. paplāte</translation>
 <translation id="9103872766612412690">Vietnē <ph name="SITE" /> informācijas aizsargāšanai parasti tiek izmantota šifrēšana. Kad pārlūkā Chromium tika mēģināts izveidot savienojumu ar vietni <ph name="SITE" />, šoreiz tā nosūtīja neparastus un nepareizus akreditācijas datus. Iespējams, tas notika, jo uzbrucējs mēģināja uzdoties par vietni <ph name="SITE" />, vai arī Wi-Fi pierakstīšanās ekrāns pārtrauca savienojumu. Jūsu informācija joprojām ir drošībā, jo pārlūks Chromium pārtrauca savienojumu, pirms tika veikta jebkādu datu apmaiņa.</translation>
+<translation id="9107199998619088551">Jūsu profilu pārvalda organizācija “<ph name="MANAGER" />”</translation>
 <translation id="9107467864910557787">Jūsu pārlūku pārvalda <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Saskaņā ar administratora iestatīto politiku ekrāna kopīgošana ar lietojumprogrammu <ph name="APPLICATION_TITLE" /> tiek atspējota, kad ir redzams konfidenciāls saturs.</translation>
 <translation id="9114524666733003316">Notiek kartes apstiprināšana...</translation>

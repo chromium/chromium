@@ -2450,6 +2450,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="272741954544380994">Rechercher une image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Ne pas me le rappeler</translation>
 <translation id="2727712005121231835">Taille réelle</translation>
+<translation id="2727713483500953825">Sélectionner des images ou des textes à rechercher avec Lentille</translation>
 <translation id="2727744317940422214">Désolés, une erreur s'est produite. Veuillez soumettre vos commentaires en indiquant #bruschetta dans la description. Le code d'erreur est <ph name="ERROR" />. Le nettoyage a échoué, vous devrez peut-être le faire manuellement.</translation>
 <translation id="2729327310379176711">Chrome trouve continuellement de nouvelles façons de réduire le suivi et d'encore mieux vous protéger lors de votre navigation. En outre, Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> tout en vous permettant de les gérer. Ainsi, les sites que vous visitez peuvent demander à Chrome vos centres d'intérêt pour vous montrer des annonces adaptées.</translation>
 <translation id="2729577602370119849">Accédez aux imprimantes et gérez-les facilement</translation>
@@ -3666,6 +3667,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3623598555687153298">Cette action supprimera <ph name="TOTAL_USAGE" /> de données stockées par les sites affichés</translation>
 <translation id="3624567683873126087">Déverrouiller l'appareil et se connecter au compte Google</translation>
 <translation id="3624583033347146597">Choisir vos préférences en matière de témoins tiers</translation>
+<translation id="3625345586754200168">Essayer Lentille</translation>
 <translation id="3625481642044239431">Fichier sélectionné non valide. Réessayez.</translation>
 <translation id="3626296069957678981">Pour recharger ce Chromebook, servez-vous d'une pile compatible conçue par Dell.</translation>
 <translation id="3627320433825461852">Moins d'une minute</translation>
@@ -4822,6 +4824,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4450974146388585462">Analyser</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> a détecté un TPM actif qui permet de stocker vos données de façon plus sécurisée.</translation>
 <translation id="4452898361839215358">ou sélectionnez un PPD. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Rechercher n'importe quel texte ou image avec Lentille</translation>
 <translation id="4453430595102511050">Touchez le capteur d'empreintes digitales dans le coin supérieur droit de votre clavier. Les données liées à votre empreinte digitale sont stockées de façon sécurisée et ne quittent jamais votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Effectuer une recherche avec <ph name="SEARCH_ENGINE_NAME" /> ou entrer une URL</translation>
 <translation id="4457472090507035117">Sélectionner la voix actuelle :</translation>
@@ -6978,6 +6981,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6059276912018042191">Onglets Chrome récents</translation>
 <translation id="6059652578941944813">Hiérarchie des certificats</translation>
 <translation id="6059925163896151826">Appareils USB</translation>
+<translation id="6060842547856900641">Ouvrir Lentille</translation>
 <translation id="6061408389284235459">Une notification a été envoyée à <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Créer un code QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Remarque :<ph name="END_BOLD" /> Une personne ayant une voix semblable à la sienne ou disposant d'un enregistrement de celle-ci pourrait accéder aux résultats personnalisés de <ph name="SUPERVISED_USER_NAME" />. Pour économiser la pile, dans les paramètres de l'Assistant de <ph name="SUPERVISED_USER_NAME" />, vous pouvez sélectionner d'activer « Ok Google » uniquement lorsque cet appareil est connecté à une source d'alimentation.</translation>

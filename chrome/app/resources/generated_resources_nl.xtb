@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">Je microfoon en camera gebruiken</translation>
 <translation id="1005333234656240382">ADB-foutopsporing aanzetten?</translation>
 <translation id="1005671386794704751">Roze</translation>
+<translation id="1005919400326853998">Certificaatgegevens voor <ph name="CERT_NAME" /> bekijken in een nieuw dialoogvenster</translation>
 <translation id="1006033052970139968">Microfoontoegang is toegestaan voor apps, websites met microfoonrechten en systeemservices</translation>
 <translation id="1006873397406093306">Deze extensie kan je gegevens op sites lezen en wijzigen. Je bepaalt tot welke sites de extensie toegang heeft.</translation>
 <translation id="1007057452468855774">Google Play Store aanzetten</translation>
@@ -2741,6 +2742,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2926708162326352948">Thema geüpdatet naar geüploade afbeelding</translation>
 <translation id="2927017729816812676">Cache-opslag</translation>
 <translation id="2928795416630981206">Toestemming om je camerapositie bij te houden</translation>
+<translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome heeft rechten van 1 site verwijderd}other{Chrome heeft rechten van {NUM_SITES} sites verwijderd}}</translation>
 <translation id="2931157624143513983">Aanpassen aan afdrukgebied</translation>
 <translation id="2931342457001070961">Geen microfoon aangesloten</translation>
 <translation id="2932085390869194046">Wachtwoord voorstellen…</translation>
@@ -4070,6 +4072,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3894983081771074056">Onder andere toetsenbord- en muisgedrag en taalvoorkeuren</translation>
 <translation id="3895076768659607631">Zoek&amp;machines beheren…</translation>
 <translation id="3895090224522145010">Kerberos-gebruikersnaam</translation>
+<translation id="3895097816015686240">Open je vorige vensters en tabbladen om makkelijk verder te gaan waar je gebleven was</translation>
 <translation id="389521680295183045">Sites kunnen vragen of ze mogen weten wanneer je je apparaat actief gebruikt</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{een afbeelding}other{# afbeeldingen}}</translation>
 <translation id="3897746662269329507">Je <ph name="DEVICE_TYPE" /> is speciaal gebouwd voor games. Hierna wordt de app Ontdekken geopend. Hier vind je honderden van de nieuwste games, gameaanbiedingen en de ingebouwde gamefuncties van je apparaat.</translation>
@@ -5304,6 +5307,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4823484602432206655">Gebruikers- en apparaatinstellingen lezen en wijzigen</translation>
 <translation id="4824037980212326045">Back-up en herstel voor Linux</translation>
 <translation id="4824958205181053313">Synchronisatie annuleren?</translation>
+<translation id="4825462365587146530">Krijg meer informatie over de Chrome Root Store in een nieuw tabblad.</translation>
 <translation id="4825532258163983651">Kan toegangscode niet verwijderen</translation>
 <translation id="4827134188176577524">De Chrome Root Store bevat certificaten van certificeringsinstanties die worden vertrouwd door het Chrome-rootprogramma. Deze worden voortdurend gecontroleerd.</translation>
 <translation id="4827283332383516812">Kaart verwijderen</translation>
@@ -11016,6 +11020,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8991766915726096402">Herstel van lokale gegevens</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Geheugengebruik - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Als je je <ph name="DEVICE_TYPE" />-wachtwoord bent vergeten, kun je je lokale gegevens nog steeds herstellen. Log hiervoor in op je Google-account of gebruik accountherstel.</translation>
+<translation id="8993198843374358393">Certificaathash kopiëren voor <ph name="CERT_NAME" /></translation>
 <translation id="8993737615451556423">Biedt opties om de leesstem te versnellen, te vertragen en te onderbreken</translation>
 <translation id="899384117894244799">Gebruiker met beperkte rechten verwijderen</translation>
 <translation id="8993853206419610596">Alle verzoeken uitvouwen</translation>
@@ -11223,6 +11228,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9128317794749765148">Installatie is niet voltooid</translation>
 <translation id="9128335130883257666">Instellingenpagina openen voor <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="9128870381267983090">Verbinding maken met netwerk</translation>
+<translation id="9129562557082598582">Alle <ph name="CERT_GROUP" /> exporteren</translation>
 <translation id="9130015405878219958">Ongeldige modus opgegeven.</translation>
 <translation id="9130208109420587135">Groepsnaam <ph name="NAME" /> bewerken</translation>
 <translation id="9130364135697530260">Ingesloten content op deze site kan informatie gebruiken die over jou is opgeslagen</translation>

@@ -52,6 +52,7 @@
 <translation id="1089439967362294234">שינוי סיסמה</translation>
 <translation id="1089599132348386324">‏יש לך אפשרות לשנות את הבחירה בכל שלב בהגדרות של Chrome.</translation>
 <translation id="1090629319939036170">‏תפריט VR</translation>
+<translation id="1091463901118115503">הקראה רצופה</translation>
 <translation id="1091779689406092804">צילומי מסך</translation>
 <translation id="1094777233105318927">מידע על הדפדפן, מערכת ההפעלה, המכשיר, התוכנות שהותקנו והקבצים</translation>
 <translation id="1096545575934602868">השדה הזה יכול לכלול עד <ph name="MAX_ITEMS_LIMIT" /> רשומות. כל הרשומות הנוספות יימחקו.</translation>
@@ -537,6 +538,7 @@
 <translation id="1974060860693918893">מתקדם</translation>
 <translation id="1975457531113383421">מגש הזנה</translation>
 <translation id="1975584088563498795">תיבת דואר 10</translation>
+<translation id="1976610264358655503">ביקרת לעיתים קרובות</translation>
 <translation id="1978555033938440688">גרסת קושחה</translation>
 <translation id="1979156660928743046">פרטי מדיה</translation>
 <translation id="1988881251331415125">אם האיות תקין, <ph name="BEGIN_LINK" />יש לנסות להפעיל אבחון קישוריות<ph name="END_LINK" />.</translation>
@@ -887,6 +889,7 @@
 <translation id="2619052155095999743">הוסף</translation>
 <translation id="2625385379895617796">השעון שלך מקדים</translation>
 <translation id="262745152991669301">‏האתר יכול לבקש הרשאה להתחבר אל התקני USB</translation>
+<translation id="2628224721443278970">‏כניסה ל-Microsoft OneDrive</translation>
 <translation id="2634124572758952069">‏לא ניתן היה למצוא את כתובת ה-IP של השרת של <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">סטטוס:</translation>
 <translation id="2647086987482648627">Fabric (Semi-Gloss)</translation>
@@ -1830,6 +1833,7 @@
 <translation id="4377125064752653719">ניסית להשיג את <ph name="DOMAIN" />, אך האישור שהשרת הציג בוטל על ידי המנפיק שלו. פירוש הדבר שאין כל אפשרות לתת אמון באישורי האבטחה שהשרת הציג. ייתכן שהתקשורת שלך היא עם תוקף.</translation>
 <translation id="4378154925671717803">טלפון</translation>
 <translation id="4384395682990721132">A4x3</translation>
+<translation id="4387692837058041921">‏העלאת הקובץ אל Microsoft OneDrive הושהתה</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4397059608630092079">תמיד יתבצע אימות במהלך שימוש במילוי אוטומטי</translation>
 <translation id="4397978002248035985">ייפתח חלון קופץ לאימות באתר הבנק</translation>
@@ -1932,6 +1936,7 @@
 <translation id="4636930964841734540">מידע</translation>
 <translation id="4640225694041297329">הצגת תוצאות מ-7 הימים האחרונים</translation>
 <translation id="464342062220857295">תכונות חיפוש</translation>
+<translation id="4644567637638438744">‏אפשר להעלות קבצים רק אם התחברת ל-Microsoft OneDrive</translation>
 <translation id="4644670975240021822">בסדר הפוך עם הפנים כלפי מטה</translation>
 <translation id="4646534391647090355">אני רוצה לעבור לשם עכשיו</translation>
 <translation id="4648262692072505866">‏הגיבוב חייב להיות בפורמט SHA-256.</translation>
@@ -3050,6 +3055,7 @@ Del</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">מצלמה</translation>
 <translation id="6734506549556896534">משחקי הדמיה</translation>
+<translation id="6735783933931458444">ביקרת לעיתים קרובות בשעה הזו של היום</translation>
 <translation id="6737708609449480586">מוצרי מאפה</translation>
 <translation id="6738516213925468394">הנתונים שלך הוצפנו באמצעות <ph name="BEGIN_LINK" />ביטוי סיסמה לסנכרון<ph name="END_LINK" /> בתאריך <ph name="TIME" />. צריך להזין אותו כדי להתחיל את הסנכרון.</translation>
 <translation id="6740851646645036700">הגעת למגבלת העזרה בכתיבה. אפשר לנסות שוב אחר כך.</translation>
@@ -3767,6 +3773,7 @@ Del</translation>
 <translation id="8041089156583427627"> שליחת משוב</translation>
 <translation id="8041940743680923270">שימוש בברירת המחדל הכללית (יש לשאול)</translation>
 <translation id="8043255123207491407">הצגת התנאים וההגבלות של בית העסק</translation>
+<translation id="8044986521421349135">הכרטיסייה האחרונה שנכנסת אליה</translation>
 <translation id="8046360364391076336">חומרים וציוד תעשייתי</translation>
 <translation id="8052898407431791827">הועתק ללוח</translation>
 <translation id="8057023045886711556">סרטי קומדיה</translation>

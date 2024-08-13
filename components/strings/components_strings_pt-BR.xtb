@@ -52,6 +52,7 @@
 <translation id="1089439967362294234">Alterar senha</translation>
 <translation id="1089599132348386324">Você pode mudar isso quando quiser nas configurações do Chrome.</translation>
 <translation id="1090629319939036170">Menu de RV</translation>
+<translation id="1091463901118115503">Continuar lendo</translation>
 <translation id="1091779689406092804">capturas de tela</translation>
 <translation id="1094777233105318927">Informações sobre seu navegador, SO, dispositivo, softwares instalados e arquivos</translation>
 <translation id="1096545575934602868">Esse campo não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as outras entradas serão descartadas.</translation>
@@ -537,6 +538,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1974060860693918893">Avançado</translation>
 <translation id="1975457531113383421">Bandeja de entrada</translation>
 <translation id="1975584088563498795">Caixa de e-mails 10</translation>
+<translation id="1976610264358655503">Você visita com frequência</translation>
 <translation id="1978555033938440688">Versão do firmware</translation>
 <translation id="1979156660928743046">Informações de mídia</translation>
 <translation id="1988881251331415125">Se o endereço estiver correto, <ph name="BEGIN_LINK" />tente executar o Diagnóstico de Conectividade<ph name="END_LINK" />.</translation>
@@ -868,6 +870,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2565789370591907825">Bloqueio e uso do teclado</translation>
 <translation id="2570734079541893434">Gerenciar configurações</translation>
 <translation id="257136025287118539">O administrador está movendo seus arquivos para <ph name="CLOUD_PROVIDER" />. Você poderá modificar esses arquivos quando o upload for concluído.</translation>
+<translation id="2571488850200220306">Para garantir a segurança, o administrador também pode ver o SO do dispositivo, a versão do navegador e os softwares instalados</translation>
 <translation id="2573170131138724450">Televisões</translation>
 <translation id="257674075312929031">Grupo</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
@@ -886,6 +889,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2619052155095999743">Inserir</translation>
 <translation id="2625385379895617796">Seu relógio está adiantado</translation>
 <translation id="262745152991669301">Pode pedir para se conectar a dispositivos USB</translation>
+<translation id="2628224721443278970">Fazer login no Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Não foi possível encontrar o endereço IP do servidor de <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="2647086987482648627">Tecido (semibrilho)</translation>
@@ -1829,6 +1833,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4377125064752653719">Você tentou acessar <ph name="DOMAIN" />, mas o certificado que o servidor apresentou foi revogado pelo seu emissor. Isso significa que as credenciais de segurança que o servidor apresentou não são nem um pouco seguras. Talvez você esteja se comunicando com um invasor.</translation>
 <translation id="4378154925671717803">Telefone</translation>
 <translation id="4384395682990721132">A4x3</translation>
+<translation id="4387692837058041921">O upload do arquivo para o Microsoft OneDrive foi pausado</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4397059608630092079">Sempre confirmar ao usar o preenchimento automático</translation>
 <translation id="4397978002248035985">Abre um pop-up de confirmação no site do seu banco</translation>
@@ -1931,6 +1936,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4636930964841734540">Informações</translation>
 <translation id="4640225694041297329">Mostrar resultados dos últimos 7 dias</translation>
 <translation id="464342062220857295">Recursos de pesquisa</translation>
+<translation id="4644567637638438744">Só é possível fazer upload de arquivos se você tiver feito login no Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Ordem reversa virada para baixo</translation>
 <translation id="4646534391647090355">Acessar agora</translation>
 <translation id="4648262692072505866">O hash precisa estar no formato SHA-256.</translation>
@@ -2774,6 +2780,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6240964651812394252">Para usar o Gerenciador de senhas do Google com seu sistema operacional, reinicie o Chrome e permita o acesso ao gerenciador de senhas do computador. Suas guias serão reabertas após a reinicialização.</translation>
 <translation id="6241121617266208201">Ocultar sugestões</translation>
 <translation id="624499991300733384">Serviço de criação de impressão</translation>
+<translation id="6246868321321344665">Sua organização pode ver dados de navegação, como senhas e histórico, nos seus perfis de trabalho e pessoal</translation>
 <translation id="6250932670816326647">Produtos para banho e corpo</translation>
 <translation id="6251906504834538140">{0,plural, =1{A transferência do arquivo está bloqueada}one{A transferência de <ph name="FILE_COUNT" /> arquivo está bloqueada}other{A transferência de <ph name="FILE_COUNT" /> arquivos está bloqueada}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para gerenciar arquivos baixados no Chrome</translation>
@@ -3043,6 +3050,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">câmera</translation>
 <translation id="6734506549556896534">Jogos de simulação</translation>
+<translation id="6735783933931458444">Você visita com frequência neste horário</translation>
 <translation id="6737708609449480586">Produtos assados</translation>
 <translation id="6738516213925468394">Seus dados foram criptografados com sua <ph name="BEGIN_LINK" />senha longa de sincronização<ph name="END_LINK" /> em <ph name="TIME" />. Digite-a para iniciar a sincronização.</translation>
 <translation id="6740851646645036700">Você atingiu o limite da ajuda para escrever. Tente de novo mais tarde.</translation>
@@ -3760,6 +3768,7 @@ Mais detalhes:
 <translation id="8041089156583427627">Enviar feedback</translation>
 <translation id="8041940743680923270">Usar padrão global (Perguntar)</translation>
 <translation id="8043255123207491407">Consulte os Termos e Condições do vendedor</translation>
+<translation id="8044986521421349135">Sua guia mais recente</translation>
 <translation id="8046360364391076336">Materiais e equipamentos industriais</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
 <translation id="8057023045886711556">Comédias</translation>
@@ -4311,6 +4320,7 @@ Mais detalhes:
 <translation id="9101630580131696064">Bandeja 1</translation>
 <translation id="9103872766612412690">O site <ph name="SITE" /> geralmente usa criptografia para proteger suas informações. Quando o Chromium tentou se conectar a <ph name="SITE" /> dessa vez, o website retornou credenciais
 incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser <ph name="SITE" /> ou quando uma tela de login por Wi-Fi interrompeu a conexão. Suas informações ainda estão protegidas, porque o Chromium interrompeu a conexão antes que os dados fossem trocados.</translation>
+<translation id="9107199998619088551"><ph name="MANAGER" /> gerencia seu perfil</translation>
 <translation id="9107467864910557787">Seu navegador é gerenciado por <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">A política do administrador desativará o compartilhamento de tela com <ph name="APPLICATION_TITLE" /> quando houver conteúdo confidencial visível</translation>
 <translation id="9114524666733003316">Confirmando cartão…</translation>

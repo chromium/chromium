@@ -475,7 +475,6 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="3226612997184048185">Uma futhi ulondoloza amabhukhimakhi ku-Google Account yakho, ungakwazi ukulandelela izintengo zomkhiqizo ku-Chrome futhi uthole isaziso uma intengo yehla.</translation>
 <translation id="3227557059438308877">I-Google Chrome Njengokhiye Wokuqinisekisa Ubunikazi</translation>
 <translation id="3232293466644486101">Sula idatha yopheqululo…</translation>
-<translation id="3232459301230493791">Amathebhu angu-<ph name="TAB_COUNT" /> asuliwe</translation>
 <translation id="3232754137068452469">Uhlelo lokusebenza lwewebhu</translation>
 <translation id="3236059992281584593">1 iminithi elisele</translation>
 <translation id="3237087289225714896">Ukulayisha kusengaphambili okujwayelekile:</translation>
@@ -1444,7 +1443,6 @@ Ukuze ushintshe le sethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-Chrome
 <translation id="7759809451544302770">Ongakukhetha</translation>
 <translation id="7762668264895820836">Ikhadi le-SD elingu-<ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Engeza ikheli</translation>
-<translation id="776533689993750361">Ithebhu elingu-<ph name="TAB_COUNT" /> lisuliwe</translation>
 <translation id="7772032839648071052">Qinisekisa umushwana wokungena</translation>
 <translation id="7772375229873196092">Vala i-<ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 nokungu-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ngaphezulu}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 nokungu-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ngaphezulu}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 nokungu-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ngaphezulu}}</translation>

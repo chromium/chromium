@@ -475,7 +475,6 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3226612997184048185">Ako oznake spremate i na Google račun, cijene proizvoda možete pratiti u Chromeu i primati obavijesti kad cijena padne</translation>
 <translation id="3227557059438308877">Google Chrome kao sigurnosni ključ</translation>
 <translation id="3232293466644486101">Brisanje podataka o pregledavanju…</translation>
-<translation id="3232459301230493791">Izbrisane su kartice (<ph name="TAB_COUNT" />)</translation>
 <translation id="3232754137068452469">Web-aplikacija</translation>
 <translation id="3236059992281584593">Još 1 min</translation>
 <translation id="3237087289225714896">Standardno predučitavanje:</translation>
@@ -1444,7 +1443,6 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7759809451544302770">Izborno</translation>
 <translation id="7762668264895820836">SD kartica <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Dodajte adresu</translation>
-<translation id="776533689993750361">Izbrisana je <ph name="TAB_COUNT" /> kartica</translation>
 <translation id="7772032839648071052">Potvrdi zaporku</translation>
 <translation id="7772375229873196092">Zatvori aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>

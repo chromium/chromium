@@ -668,6 +668,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3439896670700055005">Ringarko faqen aktuale pa përdorur përmbajtjen e ruajtur në memorien specifike</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">Personalizo miun</translation>
+<translation id="3444385531800624797">Rezultatet po ngarkohen</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Pajisja USB-C</translation>
 <translation id="3454555520521576458">Me madhësi të ndryshueshme</translation>
@@ -1211,6 +1212,7 @@ Gjithashtu, mund të përdorësh shkurtoren e tastierës. Fillimisht thekso teks
 <translation id="5253783950165989294">U lidh me një pajisje me emrin "<ph name="DEVICE_NAME" />". Niveli i baterisë <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Nuk ka asnjë tavolinë pune të ruajtur</translation>
 <translation id="5260676007519551770">Tavolina e punës 4</translation>
+<translation id="5265391159779542051">Rezultatet u ngarkuan</translation>
 <translation id="5270547718570958938">Kalendari i Google</translation>
 <translation id="5277869901083657836">Aktivizo/çaktivizo veglat e stillolapsit</translation>
 <translation id="5278086053818066789">Aktivizo/çaktivizo ChromeVox (komentet me zë)</translation>
@@ -1506,6 +1508,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6210042900243040400">Lidh pajisjen <ph name="NAME" /> që është ruajtur më parë te <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Nxirr regjistrimin e ekranit ose pamjen e pjesshme të ekranit</translation>
 <translation id="621606890568890214">Zgjero "Klasën e Google"</translation>
+<translation id="6216759484154215561">U hap lidhja "mëso më shumë" në shfletues</translation>
 <translation id="6220928844947387476">Tani mund të regjistrosh veten dhe ekranin në të njëjtën kohë</translation>
 <translation id="622484624075952240">Poshtë</translation>
 <translation id="6228457605945141550">Ul ndriçimin</translation>
@@ -2218,6 +2221,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">Kalo prapa mes këndit të poshtëm djathtas, "Nisësit", shiritit të adresave, shiritit të faqeshënuesve, uebsajtit që është i hapur dhe shkarkimeve</translation>
 <translation id="8792626944327216835">mikrofoni</translation>
+<translation id="8797381270745758905">Lidhja "riprovo" u aktivizua</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Dosja <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Ndihmë"</translation>

@@ -475,7 +475,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3226612997184048185">Če v računu Google shranite tudi zaznamke, lahko v Chromu spremljate cene izdelkov in prejmete obvestilo, ko se cena zniža</translation>
 <translation id="3227557059438308877">Google Chrome kot varnostni ključ</translation>
 <translation id="3232293466644486101">Izbriši podatke brskanja …</translation>
-<translation id="3232459301230493791">Izbrisanih je toliko zavihkov: <ph name="TAB_COUNT" /></translation>
 <translation id="3232754137068452469">Spletna aplikacija</translation>
 <translation id="3236059992281584593">Še 1 min</translation>
 <translation id="3237087289225714896">Standardno vnaprejšnje nalaganje:</translation>
@@ -1444,7 +1443,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7759809451544302770">Izbirno</translation>
 <translation id="7762668264895820836">Kartica SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Dodaj naslov</translation>
-<translation id="776533689993750361">Izbrisan je <ph name="TAB_COUNT" /> zavihek</translation>
 <translation id="7772032839648071052">Potrdi geslo</translation>
 <translation id="7772375229873196092">Zapri aplikacijo <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}two{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>

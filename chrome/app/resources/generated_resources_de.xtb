@@ -2445,6 +2445,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="272741954544380994">Bild an <ph name="VISUAL_SEARCH_PROVIDER" /> senden</translation>
 <translation id="2727633948226935816">Nicht mehr erinnern</translation>
 <translation id="2727712005121231835">Originalgröße</translation>
+<translation id="2727713483500953825">Bilder/Text auswählen, um mit Lens zu suchen</translation>
 <translation id="2727744317940422214">Ein Fehler ist aufgetreten. Gib bitte Feedback und verwende #bruschetta in der Beschreibung. Fehlercode: <ph name="ERROR" /> Die Bereinigung ist fehlgeschlagen. Du musst sie gegebenenfalls manuell vornehmen.</translation>
 <translation id="2729327310379176711">Chrome entwickelt neue Möglichkeiten, das Tracking zu reduzieren und beim Surfen zu deinem Schutz beizutragen. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> und ermöglicht es dir, sie zu verwalten Anschließend können Websites, die du besuchst, Chrome nach deinen Interessen fragen, um dir Werbung anzuzeigen.</translation>
 <translation id="2729577602370119849">Einfach auf deine Drucker zugreifen und diese verwalten</translation>
@@ -3658,6 +3659,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3623598555687153298">Dadurch werden <ph name="TOTAL_USAGE" /> an von angezeigten Websites gespeicherten Daten gelöscht</translation>
 <translation id="3624567683873126087">Gerät entsperren und im Google-Konto anmelden</translation>
 <translation id="3624583033347146597">Einstellungen für Cookies von Drittanbietern festlegen</translation>
+<translation id="3625345586754200168">Lens ausprobieren</translation>
 <translation id="3625481642044239431">Ungültige Datei ausgewählt. Versuche es noch einmal.</translation>
 <translation id="3626296069957678981">Nutze zum Laden dieses Chromebooks einen kompatiblen Akku von Dell.</translation>
 <translation id="3627320433825461852">Noch weniger als 1 Minute</translation>
@@ -4814,6 +4816,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4450974146388585462">Diagnose</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> hat ein aktives TPM erkannt, das deine Daten sicherer speichern kann.</translation>
 <translation id="4452898361839215358">oder PPD-Datei auswählen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Mit Lens in einem Bild oder Text suchen</translation>
 <translation id="4453430595102511050">Lege einen Finger auf den Fingerabdrucksensor rechts oben an der Tastatur. Dein Fingerabdruck wird sicher gespeichert und verlässt dein <ph name="DEVICE_TYPE" /> nie.</translation>
 <translation id="4453946976636652378">Mit <ph name="SEARCH_ENGINE_NAME" /> suchen oder eine URL eingeben</translation>
 <translation id="4457472090507035117">Aktuelle Stimme auswählen:</translation>
@@ -6967,6 +6970,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6059276912018042191">Zuletzt geöffnete Chrome-Tabs</translation>
 <translation id="6059652578941944813">Zertifikathierarchie</translation>
 <translation id="6059925163896151826">USB-Geräte</translation>
+<translation id="6060842547856900641">Lens öffnen</translation>
 <translation id="6061408389284235459">Eine Benachrichtigung wurde an <ph name="DEVICE_NAME" /> gesendet</translation>
 <translation id="6063284707309177505">QR-Code erstellen</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Eine Person mit einer ähnlichen Stimme wie <ph name="SUPERVISED_USER_NAME" /> oder einer Aufnahme der Stimme kann möglicherweise auf die persönlichen Ergebnisse deines Kindes zugreifen. Zur Schonung des Akkus kannst du in den Assistant-Einstellungen von <ph name="SUPERVISED_USER_NAME" /> festlegen, dass „Hey Google“ nur aktiviert ist, wenn dieses Gerät an eine Stromquelle angeschlossen ist.</translation>

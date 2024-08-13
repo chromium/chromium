@@ -475,7 +475,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3226612997184048185">Ha Google-fiókjába is menti könyvjelzőit, a Chrome-ban nyomon követheti a termékek árait, és értesítést kaphat, amikor az árak csökkennek.</translation>
 <translation id="3227557059438308877">A Google Chrome mint biztonsági kulcs</translation>
 <translation id="3232293466644486101">Böngészési adatok törlése…</translation>
-<translation id="3232459301230493791"><ph name="TAB_COUNT" /> lap törölve</translation>
 <translation id="3232754137068452469">Internetes alkalmazás</translation>
 <translation id="3236059992281584593">1 perc van hátra</translation>
 <translation id="3237087289225714896">Normál előtöltés:</translation>
@@ -1444,7 +1443,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7759809451544302770">Nem kötelező</translation>
 <translation id="7762668264895820836">SD-kártya (<ph name="SD_CARD_NUMBER" />)</translation>
 <translation id="7764225426217299476">Cím hozzáadása</translation>
-<translation id="776533689993750361"><ph name="TAB_COUNT" /> lap törölve</translation>
 <translation id="7772032839648071052">Összetett jelszó megerősítése</translation>
 <translation id="7772375229873196092">A(z) <ph name="APP_NAME" /> bezárása</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>

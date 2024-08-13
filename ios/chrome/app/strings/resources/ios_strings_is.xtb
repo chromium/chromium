@@ -127,6 +127,7 @@
 <translation id="1622717322707146952">Veldu „Bæta við Google-dagatal“ eða „Bæta við Apple Calendar“.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> endurnýtt aðgangsorð</translation>
 <translation id="1636234353664774105">Notaðu leiðsagnareiginleikann til að fá leiðarlýsingu á áfangastað með stöðugri leiðsögn.</translation>
+<translation id="1641068175940982148">Opna <ph name="GROUP_TITLE" />, hóp með <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">Örugg vefnotkun</translation>
 <translation id="1641316430523156212">Fylgja</translation>
 <translation id="1644574205037202324">Ferill</translation>
@@ -402,6 +403,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2952246431280799028">Haltu inni á heimilisfangi.</translation>
 <translation id="2952278131021475699">Myndavélarleit Linsu</translation>
 <translation id="2958718410589002129">Aðgangsorð</translation>
+<translation id="2963044753825419640">Leyfðu vefsvæðum og forritum að uppfæra fyrirliggjandi reikninga sjálfkrafa og nota aðgangslykla þegar þeir bjóðast</translation>
 <translation id="2964349545761222050">Loka á fótspor frá þriðja aðila</translation>
 <translation id="2965328226365382335">Undanfarnar 15 mínútur</translation>
 <translation id="2969979262385602596">Innskráning mistókst. Reyndu aftur síðar.</translation>
@@ -759,6 +761,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, aðeins í þessu tæki, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Nýr huliðsflipi</translation>
 <translation id="4766112107778026136">Tillögur og fylgir</translation>
+<translation id="4769198578611055647">Auðveldar þér aðgang að vistuðum aðgangslyklum í öllum tækjum</translation>
 <translation id="4775879719735953715">Sjálfgefinn vafri</translation>
 <translation id="4779732376610430319">Opna stillingar ...</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1042,6 +1045,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6067849159007176401">Bæta við vafravernd</translation>
 <translation id="607620096698446287">Ekki tókst að hlaða upp <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6084848228346514841">Velja flipa</translation>
+<translation id="6089212833343035912">PIN-númer Google-aðgangsorðastjórnunar</translation>
 <translation id="6100617279104942061">Skráð(ur) inn sem <ph name="USER_EMAIL" />. Opnar stillingar.</translation>
 <translation id="6103540626693881831">Dulkóðun í tækinu</translation>
 <translation id="6119050551270742952">Opin vefsíða er í huliðsstillingu</translation>
@@ -1261,6 +1265,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7022197654033719543">Upplýsingar um vefsvæði</translation>
 <translation id="7029809446516969842">Aðgangsorð</translation>
 <translation id="704692552158601232">Sjálfgefið vafraforrit</translation>
+<translation id="7051147526307793383">Leyfa sjálfvirkar uppfærslur á aðgangslyklum</translation>
 <translation id="7055240621761583113">Fylla aðgangsorðið sjálfkrafa út</translation>
 <translation id="7063811929043357292">Foreldri þitt stjórnar reikningnum þínum.
 <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>

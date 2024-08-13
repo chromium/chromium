@@ -475,7 +475,6 @@
 <translation id="3226612997184048185">သင့် Google Account တွင် လိပ်စာများလည်း သိမ်းထားပါက Chrome တွင် ထုတ်ကုန်ဈေးများကို ခြေရာခံနိုင်ပြီး ဈေးကျသွားပါက အကြောင်းကြားချက် ရယူနိုင်ပါသည်</translation>
 <translation id="3227557059438308877">Google Chrome ကို 'လုံခြုံရေးကီး' အဖြစ်</translation>
 <translation id="3232293466644486101">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ဖျက်ရန်…</translation>
-<translation id="3232459301230493791">တဘ် <ph name="TAB_COUNT" /> ခု ဖျက်လိုက်သည်</translation>
 <translation id="3232754137068452469">ဝဘ် အက်ပ်</translation>
 <translation id="3236059992281584593">၁ မိနစ် ကျန်သည်</translation>
 <translation id="3237087289225714896">ပုံမှန် ကြိုဖွင့်မှု-</translation>
@@ -1443,7 +1442,6 @@
 <translation id="7759809451544302770">လိုချင်မှ လုပ်ရန်</translation>
 <translation id="7762668264895820836">SD ကတ် <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">လိပ်စာများ ထည့်သွင်းပါ</translation>
-<translation id="776533689993750361">တဘ် <ph name="TAB_COUNT" /> ခု ဖျက်လိုက်သည်</translation>
 <translation id="7772032839648071052">စကားစုဝှက်ကို အတည်ပြုရန်</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> ကိုပိတ်ပါ</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}}</translation>

@@ -776,6 +776,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="239429038616798445">Deze verzendmethode is niet beschikbaar. Kies een andere methode.</translation>
 <translation id="2395840535409704129">Watersport</translation>
 <translation id="2396249848217231973">&amp;Verwijderen ongedaan maken</translation>
+<translation id="2399344929880464793">Dit IBAN is opgeslagen in je Google-account, zodat je het in Google-services kunt gebruiken.</translation>
 <translation id="2399868464369312507">Google Chrome probeert betaalmethoden te bewerken.</translation>
 <translation id="2400600116338235695">Kan vragen of deze site verbinding mag maken met seriële poorten</translation>
 <translation id="2404884497378469141">Probeer je bestanden opnieuw te kopiëren</translation>
@@ -1050,6 +1051,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2967098518029543669">sla je het op in je Google-account</translation>
 <translation id="297173220375858963">Desktoppublishing</translation>
 <translation id="2972581237482394796">&amp;Opnieuw</translation>
+<translation id="2974468223369775963">Dit IBAN kan niet worden opgeslagen in je Google-account. Het is opgeslagen in Chrome op dit apparaat. Chrome vraagt het je opnieuw wanneer je dit IBAN weer gebruikt.</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, momenteel geselecteerd. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Je toetsenbord vergrendelen en gebruiken</translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1760,7 +1762,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4275830172053184480">Je apparaat opnieuw opstarten</translation>
 <translation id="4276974990916607331">Nee, bedankt</translation>
 <translation id="4277028893293644418">Wachtwoord opnieuw instellen</translation>
-<translation id="4277529130885813215">Een ander apparaat gebruiken</translation>
+<translation id="4277529130885813215">Ander apparaat gebruiken</translation>
 <translation id="4277937682389409325">Lokaal adres</translation>
 <translation id="4278390842282768270">Toegestaan</translation>
 <translation id="4281998142035485137">{0,plural, =1{Vertrouwelijk bestand openen?}other{Vertrouwelijke bestanden openen?}}</translation>
@@ -3030,6 +3032,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6704458454638854812">De property 'custom_size' is ingesteld. De verwachte naam is 'custom'.</translation>
 <translation id="6706005862292023715">Gordijnen en raamdecoratie</translation>
 <translation id="6706210727756204531">Bereik</translation>
+<translation id="6706678697074905703">Dit IBAN kan niet worden opgeslagen in je Google-account. Het is opgeslagen in Chrome op dit apparaat.</translation>
 <translation id="6709133671862442373">Nieuws</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6710594484020273272">&lt;Typ een zoekterm&gt;</translation>
@@ -3830,6 +3833,7 @@ Aanvullende informatie:
 <translation id="8183800802493617952">Familie-activiteiten en -spellen</translation>
 <translation id="8184538546369750125">Algemene standaardinstelling gebruiken (Toestaan)</translation>
 <translation id="8186706823560132848">Software</translation>
+<translation id="8188830160449823068">IBAN alleen op apparaat opgeslagen</translation>
 <translation id="8189557652711717875">De zoekmachine die je kiest, wordt gebruikt voor functies zoals zoeken via de adresbalk en vanuit afbeeldingen op webpagina's.</translation>
 <translation id="8190193880870196235">Beheerd door een extensie</translation>
 <translation id="8194412401381329820">Je kunt deze pagina niet gebruiken vanuit een beheerd account op dit onbeheerde apparaat. Alle beheerde accounts worden vergrendeld als je deze pagina gebruikt, behalve accounts die worden beheerd door dezelfde entiteit als dit apparaat (aangesloten accounts).</translation>

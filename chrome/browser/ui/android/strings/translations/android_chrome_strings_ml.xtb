@@ -475,7 +475,6 @@
 <translation id="3226612997184048185">ബുക്ക്‌മാർക്കുകൾ നിങ്ങളുടെ Google Account-ലും സംരക്ഷിക്കുകയാണെങ്കിൽ, Chrome-ൽ ഉൽപ്പന്ന വിലകൾ ട്രാക്ക് ചെയ്യാനും അവയുടെ വില കുറയുമ്പോൾ അറിയിപ്പ് നേടാനുമാകും</translation>
 <translation id="3227557059438308877">സുരക്ഷാ കീ ആയി Google Chrome</translation>
 <translation id="3232293466644486101">ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുക…</translation>
-<translation id="3232459301230493791"><ph name="TAB_COUNT" /> ടാബുകൾ ഇല്ലാതാക്കി</translation>
 <translation id="3232754137068452469">വെബ് ആപ്പ്</translation>
 <translation id="3236059992281584593">ഒരു മിനിറ്റ് ശേഷിക്കുന്നു</translation>
 <translation id="3237087289225714896">സാധാരണ മുൻകൂട്ടി ലോഡ് ചെയ്യൽ:</translation>
@@ -1451,7 +1450,6 @@
 <translation id="7759809451544302770">ഓപ്‌ഷണൽ</translation>
 <translation id="7762668264895820836">SD കാർഡ് <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">വിലാസം ചേർക്കുക</translation>
-<translation id="776533689993750361"><ph name="TAB_COUNT" /> ടാബ് ഇല്ലാതാക്കി</translation>
 <translation id="7772032839648071052">പാസ്ഫ്രേസ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> അടയ്‌ക്കുക</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>

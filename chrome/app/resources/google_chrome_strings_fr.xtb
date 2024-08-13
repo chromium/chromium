@@ -115,6 +115,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2559253115192232574">Ensuite, un site que vous consultez pourra demander à Chrome de voir vos centres d'intérêt pour personnaliser les annonces qui vous sont présentées. Chrome peut partager jusqu'à trois centres d'intérêt.</translation>
 <translation id="2563121210305478421">Relancer Chrome ?</translation>
 <translation id="2569974318947988067">Chrome tentera de faire passer la navigation en HTTPS</translation>
+<translation id="2571392474191184472">Votre organisation gère Chrome</translation>
 <translation id="2574930892358684005">L'utilisateur <ph name="EXISTING_USER" /> est déjà connecté à ce profil Chrome. Chrome peut vous créer un profil de navigation individuel.</translation>
 <translation id="2580411288591421699">Impossible d'installer la version de Google Chrome qui est en cours d'exécution. Fermez Google Chrome et réessayez.</translation>
 <translation id="2586406160782125153">Cette action aura pour effet de supprimer vos données de navigation de cet appareil. Pour récupérer vos données ultérieurement, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
@@ -451,6 +452,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="7177959540995930968">Vous pouvez en savoir plus sur ces fonctionnalités dans les paramètres Chrome.</translation>
 <translation id="7193885263065350793">Votre organisation ferme Chrome lorsqu'il n'est pas utilisé pendant <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Vous vous connectez avec un compte géré et donnez le contrôle de votre profil Google Chrome à son administrateur. Vos données Chrome, telles que les applications, les favoris, l'historique, les mots de passe et les autres paramètres, vont être définitivement associées à <ph name="USER_NAME" />. Vous pouvez supprimer ces données via le tableau de bord des comptes Google, mais vous ne pouvez pas les associer à un autre compte. Vous pouvez éventuellement créer un nouveau profil pour maintenir vos données Chrome séparées. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075"><ph name="MANAGER" /> gère Chrome</translation>
 <translation id="7295052994004373688">Cette langue est utilisée pour l'interface utilisateur de Google Chrome</translation>
 <translation id="7296210096911315575">Informations importantes concernant l'utilisation et la sécurité</translation>
 <translation id="7302361266603927550">Certaines de vos données Chrome n'ont pas encore été enregistrées dans votre compte Google. Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
@@ -585,6 +587,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8989968390305463310">Votre historique de navigation influe sur les annonces que vous voyez et les centres d'intérêt estimés ci-dessous. Pour protéger votre confidentialité, Chrome supprime automatiquement vos centres d'intérêt tous les mois. Les centres d'intérêt peuvent s'actualiser, sauf si vous les supprimez.</translation>
 <translation id="8999117580775242387">Lorsque HTTPS n'est pas disponible, Chrome utilise une connexion non sécurisée sans vous avertir</translation>
 <translation id="8999208279178790196">{0,plural, =0{Une mise à jour de Chrome est disponible}=1{Une mise à jour de Chrome est disponible}one{Une mise à jour de Chrome est disponible depuis # jour}other{Une mise à jour de Chrome est disponible depuis # jours}}</translation>
+<translation id="9014771989710951291">Plusieurs organisations gèrent Chrome</translation>
 <translation id="9024318700713112071">Définir Chrome comme navigateur par défaut</translation>
 <translation id="9053892488859122171">Système ChromeOS Flex</translation>
 <translation id="9090566250983691233">Découvrez pourquoi Chrome bloque certains fichiers</translation>

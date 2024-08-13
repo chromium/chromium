@@ -475,7 +475,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="3226612997184048185">अगर आपने बुकमार्क Google खाते में भी सेव किए हैं, तो आपको Chrome में प्रॉडक्ट की कीमतें ट्रैक करने का विकल्प मिलेगा. साथ ही, प्रॉडक्ट की कीमत में गिरावट आने पर आपको सूचना दी जाएगी</translation>
 <translation id="3227557059438308877">Google Chrome, सुरक्षा कुंजी के रूप में</translation>
 <translation id="3232293466644486101">ब्राउज़िंग डेटा मिटाएं…</translation>
-<translation id="3232459301230493791"><ph name="TAB_COUNT" /> टैब मिटाए गए</translation>
 <translation id="3232754137068452469">वेब ऐप्लिकेशन</translation>
 <translation id="3236059992281584593">1 मिनट शेष</translation>
 <translation id="3237087289225714896">पहले से लोड करने की स्टैंडर्ड सुविधा:</translation>
@@ -764,6 +763,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="4687718960473379118">साइट की ओर से सुझाए गए विज्ञापन</translation>
 <translation id="469286762610133730">कॉन्टेंट के बेहतर सुझाव पाएं</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}}</translation>
+<translation id="4698061626562952596">यहां जाकर इनऐक्टिव टैब देखें</translation>
 <translation id="4699172675775169585">कैश इमेज और फ़ाइलें</translation>
 <translation id="4710167854527459075">नए के क्रम से लगाएं</translation>
 <translation id="4719927025381752090">अनुवाद करना ऑफ़र करें</translation>
@@ -1444,7 +1444,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="7759809451544302770">वैकल्पिक</translation>
 <translation id="7762668264895820836">SD कार्ड <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">पता जोड़ें</translation>
-<translation id="776533689993750361"><ph name="TAB_COUNT" /> टैब मिटाया गया</translation>
 <translation id="7772032839648071052">'पासफ़्रेज' की पुष्टि करें</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> को बंद करें</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}}</translation>

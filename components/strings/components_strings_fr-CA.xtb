@@ -868,6 +868,7 @@
 <translation id="2565789370591907825">Verrouillage et utilisation du clavier</translation>
 <translation id="2570734079541893434">Gérer les paramètres</translation>
 <translation id="257136025287118539">Votre administrateur déplace vos fichiers vers <ph name="CLOUD_PROVIDER" />. Vous pouvez modifier ces fichiers une fois le téléversement terminé.</translation>
+<translation id="2571488850200220306">Pour assurer la sécurité, il peut également consulter le système d'exploitation et la version du navigateur de l'appareil, ainsi que les logiciels installés</translation>
 <translation id="2573170131138724450">Téléviseurs</translation>
 <translation id="257674075312929031">Groupe</translation>
 <translation id="2586657967955657006">Presse-papiers</translation>
@@ -2774,6 +2775,7 @@
 <translation id="6240964651812394252">Pour utiliser le gestionnaire de mots de passe Google avec votre système d'exploitation, relancez Chrome et autorisez l'accès au gestionnaire de mots de passe de votre ordinateur. Vos onglets s'ouvriront à nouveau après la relance.</translation>
 <translation id="6241121617266208201">Masquer les suggestions</translation>
 <translation id="624499991300733384">Service de composition d'impression</translation>
+<translation id="6246868321321344665">Votre organisation peut consulter les données de navigation, comme les mots de passe et l'historique dans les profils professionnels et personnels</translation>
 <translation id="6250932670816326647">Produits pour le bain et le corps</translation>
 <translation id="6251906504834538140">{0,plural, =1{Le déplacement du fichier a été bloqué}one{Le déplacement de <ph name="FILE_COUNT" /> fichier a été bloqué}other{Le déplacement de <ph name="FILE_COUNT" /> fichiers a été bloqué}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour gérer les fichiers que vous avez téléchargés dans Chrome</translation>
@@ -4309,6 +4311,7 @@ Détails supplémentaires :
 <translation id="9101450247048146228">Mouvement et utilisation de la caméra (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Bac 1</translation>
 <translation id="9103872766612412690">Un chiffrement est normalement utilisé sur le site <ph name="SITE" /> pour protéger vos données personnelles. Lors de la dernière tentative de connexion de Chromium au site <ph name="SITE" />, des identifiants inhabituels et incorrects ont été retournés. Cela peut arriver lorsqu'un individu malveillant tente de se faire passer pour <ph name="SITE" /> ou qu'un écran de connexion Wi-Fi a interrompu la connexion. Vos données restent sécurisées, car Chromium a interrompu la connexion avant l'échange des données.</translation>
+<translation id="9107199998619088551"><ph name="MANAGER" /> gère votre profil</translation>
 <translation id="9107467864910557787">Votre navigateur est géré par <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">La politique définie par l'administrateur désactive le partage d'écran avec <ph name="APPLICATION_TITLE" /> lorsque le contenu affiché est confidentiel</translation>
 <translation id="9114524666733003316">Confirmation de la carte en cours…</translation>

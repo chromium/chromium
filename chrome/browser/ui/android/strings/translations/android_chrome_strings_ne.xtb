@@ -475,7 +475,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3226612997184048185">तपाईं आफ्ना बुकमार्कहरू Google खातामा पनि सेभ गर्नुहुन्छ भने तपाईं Chrome मा उत्पादनका मूल्यहरू ट्र्याक गर्न र मूल्य घट्दा सूचना प्राप्त गर्न सक्नुहुन्छ</translation>
 <translation id="3227557059438308877">सुरक्षा साँचोका रूपमा Google Chrome</translation>
 <translation id="3232293466644486101">ब्राउजिङ डेटा मेटाउनुहोस्…</translation>
-<translation id="3232459301230493791"><ph name="TAB_COUNT" /> वटा ट्याब मेटाइए</translation>
 <translation id="3232754137068452469">वेब एप</translation>
 <translation id="3236059992281584593">१ मिनेट बाँकी छ</translation>
 <translation id="3237087289225714896">पेज प्रिलोड गर्ने डिफल्ट मोड:</translation>
@@ -763,6 +762,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4687718960473379118">साइटले सिफारिस गरेका विज्ञापनहरू</translation>
 <translation id="469286762610133730">अझ उत्कृष्ट सामग्री प्राप्त गर्नुहोस्</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}}</translation>
+<translation id="4698061626562952596">यहाँ गई आफ्ना निष्क्रिय ट्याबहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="4699172675775169585">क्यास गरिएका फोटो र फाइलहरू</translation>
 <translation id="4710167854527459075">सबैभन्दा नयाँ सुरुमा आउने गरी क्रमबद्ध गर्नुहोस्</translation>
 <translation id="4719927025381752090">अनुवादको गर्न प्रस्ताव गर्नुहोस्</translation>
@@ -908,6 +908,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5355191726083956201">'उन्नत सुरक्षा' सक्रिय छ</translation>
 <translation id="5364112109233799727">तपाईं जुन पेजका बारेमा प्रतिक्रिया दिँदै हुनुहुन्छ उक्त पेजको URL लाई Google मा पठाइने छ र समीक्षकहरू यो सुविधाको गुणस्तर सुधार गर्ने प्रयोजनका लागि उक्त पेजको समीक्षा गर्न सक्ने छन्</translation>
 <translation id="5375577065097716013">Google लेन्समार्फत फोटो खोज्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
+<translation id="5394331612381306435">इन्कोग्निटोबाट बाहिरिनुहोस्</translation>
 <translation id="5395376160638294582">तपाईं आफ्नो Google खातामा भएको Chrome सम्बन्धी जानकारी सधैँ प्रयोग गर्न सक्नुहुन्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="539881862970320163">भरपर्दो पासवर्ड पासवर्ड हाल्न सिफारिस गरिएको छ। किबोर्ड लुकाइएको छ।</translation>
 <translation id="5401851137404501592"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि यो साइटसँग तपाईंको नाम, इमेल ठेगाना र प्रोफाइल फोटो सेयर गर्ने छ।</translation>
@@ -1068,6 +1069,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6138832295072039549">यहाँ गई आफ्नो साइटसम्बन्धी सेटिङ परिवर्तन गर्नुहोस्</translation>
 <translation id="6140912465461743537">देश/क्षेत्र</translation>
 <translation id="6142183503755612900">तपाईं जुनसुकै बेला सेटिङमा गई आफ्नो डिफल्ट सर्च इन्जिन परिवर्तन गर्न सक्नुहुन्छ</translation>
+<translation id="6143892791267458416">\u0020र ती ट्याब <ph name="DAYS_ARCHIVED" /> दिनपछि बन्द गरिन्छन्</translation>
 <translation id="614890671148262506">यो साइटलाई सधैँ सूचनाहरू पठाउने अनुमति दिनुहोस्</translation>
 <translation id="6150320133806434356">बुकमार्क सेभ गरियो</translation>
 <translation id="6150706324143004339">आफ्नो Google खातामा Chrome को डेटा सेभ गर्न तथा सो डेटा प्रयोग गर्न Chrome अपडेट गर्नुहोस्</translation>
@@ -1099,6 +1101,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6278428485366576908">विषयवस्तु</translation>
 <translation id="6284472661216707937">पासवर्डहरू भएका तपाईंका सबै डिभाइस बन्द गरिएका छन्</translation>
 <translation id="6295158916970320988">सबै साइटहरू</translation>
+<translation id="6296366034485697675">एक्स्पोर्ट गर्नुहोस् र मेटाउनुहोस्</translation>
 <translation id="6303969859164067831">साइन आउट गरी सिंक प्रक्रिया निष्क्रिय पार्नुहोस्</translation>
 <translation id="6312687380483398334">वेब एपहरू (मौन)</translation>
 <translation id="6315386555979018699">मेटाउनुहोस् र जारी राख्नुहोस्</translation>
@@ -1275,6 +1278,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6978717888677691380">तपाईंले ब्लक गरेका साइटहरू</translation>
 <translation id="6979737339423435258">सुरूबाट नै</translation>
 <translation id="6987047470128880212">यो डिभाइसमा इन्कोग्निटो मोड उपलब्ध छैन</translation>
+<translation id="6991701761229081516">तपाईंका पासवर्डहरू CSV फाइलका रूपमा डाउनलोड गरिने छन्। उक्त फाइल एक्सेस गर्ने अनुमति दिइएका एपलगायतका सो अनुमति भएका सबै जना ती पासवर्ड हेर्न सक्ने छन्। एक्स्पोर्ट गरिएका पासवर्डहरू Chrome बाट मेटाइने छन्।</translation>
 <translation id="6996145122199359148">यो पेज डाउनलोड गर्नुहोस्</translation>
 <translation id="7013762323294215682">यो पासकी पासवर्ड म्यानेजरमा सेभ गरिने छ। यो पासकी प्रयोग गर्ने अनुमति भएका जोकोहीले यो पासकी प्रयोग गर्न सक्ने छन्।</translation>
 <translation id="7020741890149022655">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हाल्नुहोस् <ph name="BEGIN_NEW" />नयाँ सुविधा<ph name="END_NEW" /></translation>
@@ -1328,6 +1332,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7221869452894271364">यस पृष्ठलाई रिलोड गर्नुहोस्</translation>
 <translation id="7224097611345298931">Chrome र <ph name="CHROME_CHANNEL" /> का यो डिभाइसमा मात्र सेभ गरिएका सबै पासवर्डहरू मर्ज गरिएका छन्। तपाईं आफूले दुवै एपमा सेभ गरेका सबै पासवर्डहरू स्वतः भर्न सक्नुहुन्छ।</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{१ डाउनलोड विचारधीन छ}other{# डाउनलोडहरू विचारधीन छन्}}</translation>
+<translation id="7230064152164845085">इन्कोग्निटो प्रयोग गर्नुहोस्</translation>
 <translation id="72415438529550637">पासवर्ड सिफारिस गर्ने सुविधा बन्द गरिएको छ।</translation>
 <translation id="7252076891734325316">आफ्नो फोन कम्प्युटरको छेउमा राख्नुहोस्</translation>
 <translation id="7260367682327802201">तपाईंको Android डिभाइसमा यस्तै सेटिङ हुन सक्छ। Chrome र तपाईंको Android डिभाइसमा विज्ञापनको पर्फर्मेन्स मापन गर्ने सुविधा अन गरिएको छ भने कुनै पनि कम्पनी तपाईंले खोल्ने वेबसाइट र तपाईंले प्रयोग गर्ने एपहरूमा देखाइने विज्ञापनको प्रभावकारिता मापन गर्न सक्षम हुन सक्छन्।</translation>
@@ -1410,6 +1415,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7583262514280211622">तपाईंको अध्ययन सूची यहाँ देखिने छ</translation>
 <translation id="758603037873046260">यो पेज सेभ गर्न साइन इन गर्नुहोस्</translation>
 <translation id="7588219262685291874">तपाईंको डिभाइसमा ब्याट्री सेभर मोड अन हुँदा अँध्यारो थिम अन गर्नुहोस्</translation>
+<translation id="7592322927044331376">सर्वप्रथम Chrome बाट पासवर्डहरू एक्स्पोर्ट गर्नुहोस् र मेटाउनुहोस्</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> लाई <ph name="TOP_ORIGIN" /> का सम्बन्धमा कोड पेस गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्न दिनुहोस्</translation>
 <translation id="7596558890252710462">अपरेटिङ सिस्टम</translation>
 <translation id="7603168929588204083">मिति अवैध छ</translation>
@@ -1443,7 +1449,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7759809451544302770">वैकल्पिक</translation>
 <translation id="7762668264895820836">SD कार्ड <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">ठेगाना थप्नुहोस्</translation>
-<translation id="776533689993750361"><ph name="TAB_COUNT" /> ट्याब मेटाइयो</translation>
 <translation id="7772032839648071052">पासफ्रेज पक्का</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />बन्द गर्नुहोस्</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> थप}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> थप}}</translation>
@@ -1690,6 +1695,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8856931513242997049">सूचनासम्बन्धी अनुमतिको फ्लो बन्द गरियो</translation>
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> लाई फेरि अनुमतिहरू दिइएका छन्</translation>
 <translation id="8865415417596392024">तपाईंको खातामा रहेको Chrome को डेटा</translation>
+<translation id="8888527824584402177">तपाईंले <ph name="DAYS_INACTIVE" /> दिनसम्म प्रयोग नगरेका ट्याबहरू सारेर यहाँ लगिन्छन्<ph name="AUTODELETE_SECTION" />। तपाईं जुनसुकै बेला <ph name="SETTINGS_TITLE" /> मा गई यो सेटिङ बदल्न सक्नुहुन्छ।</translation>
 <translation id="8898822736010347272">नयाँ खतराहरू पत्ता लगाउन र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई सुरक्षित राख्न Google लाई तपाईंले हेर्ने केही पृष्ठका URL, प्रणालीसम्बन्धी निश्चित जानकारी र पृष्ठका केही सामग्रीहरू पठाउँछ।</translation>
 <translation id="8909135823018751308">साझा गर्नुहोस्...</translation>
 <translation id="8921980840204105660">तपाईं आफूले चलाउने अन्य डिभाइसमार्फत आफ्ना बुकमार्कहरू प्राप्त गर्न चाहनुहुन्छ भने सिंक गर्नुहोस्</translation>

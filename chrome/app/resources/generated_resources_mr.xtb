@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">तुमचा मायक्रोफोन आणि कॅमेरा वापरा</translation>
 <translation id="1005333234656240382">ADB डीबगिंग सुरू करायचे?</translation>
 <translation id="1005671386794704751">रोझ</translation>
+<translation id="1005919400326853998">नवीन डायलॉगमध्ये <ph name="CERT_NAME" /> यासाठी सर्टिफिकेटचे तपशील पहा</translation>
 <translation id="1006033052970139968">मायक्रोफोनची परवानगी असलेली ॲप्स, वेबसाइट आणि सिस्टीम सेवा यांसाठी मायक्रोफोन ॲक्सेसची अनुमती आहे</translation>
 <translation id="1006873397406093306">हे एक्सटेंशन साइटवरील तुमचा डेटा वाचेल आणि बदलेल. एक्सटेंशन कोणत्या साइट फॉलो करते हे तुम्ही नियंत्रित करू शकता.</translation>
 <translation id="1007057452468855774">Google Play Store सुरू करा</translation>
@@ -2460,6 +2461,7 @@
 <translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून इमेज शोधा</translation>
 <translation id="2727633948226935816">मला पुन्‍हा स्‍मरण करून देऊ नका</translation>
 <translation id="2727712005121231835">वास्तविक आकार</translation>
+<translation id="2727713483500953825">Lens वापरून शोधण्यासाठी इमेज/मजकूर निवडा</translation>
 <translation id="2727744317940422214">सॉरी, काहीतरी चूक झाली. कृपया वर्णनात #bruschetta सह फीडबॅक नोंदवा. एरर कोड <ph name="ERROR" /> आहे. साफ करणे पूर्ण करता आले नाही, तुम्हाला ते मॅन्युअली करावे लागू शकते.</translation>
 <translation id="2729327310379176711">ट्रॅकिंग कमी करण्यासाठी आणि तुम्ही ब्राउझ करत असताना तुम्हाला आणखी सुरक्षित ठेवण्यासाठी Chrome नवीन मार्ग शोधत आहे. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> हेदेखील करते आणि तुम्हाला ते व्यवस्थापित करू देते. त्यानंतर, तुम्ही भेट देता त्या साइट तुम्हाला जाहिराती दाखवण्यासाठी Chrome ला तुमच्या स्वारस्यांबद्दल विचारू शकतात.</translation>
 <translation id="2729577602370119849">प्रिंटर सहजपणे अ‍ॅक्सेस आणि व्यवस्थापित करा</translation>
@@ -2752,6 +2754,7 @@
 <translation id="2926708162326352948">थीम ही अपलोड केलेल्या इमेजवर अपडेट केली आहे</translation>
 <translation id="2927017729816812676">कॅशे स्टोरेज</translation>
 <translation id="2928795416630981206">तुमच्या कॅमेराचे स्थान ट्रॅक करण्याची अनुमती आहे</translation>
+<translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome ने १ साइटवरून परवानग्या काढून टाकल्या}other{Chrome ने {NUM_SITES} साइटवरून परवानग्या काढून टाकल्या}}</translation>
 <translation id="2931157624143513983">प्रिंट करण्यायोग्य भागात बसवा</translation>
 <translation id="2931342457001070961">कोणताही मायक्रोफोन कनेक्ट केलेला नाही</translation>
 <translation id="2932085390869194046">पासवर्ड सुचवा...</translation>
@@ -3200,6 +3203,7 @@
 <translation id="3269093882174072735">इमेज लोड करा</translation>
 <translation id="326911502853238749"><ph name="MODULE_NAME" /> दाखवू नका</translation>
 <translation id="3269175001434213183">तुमच्या आशयाचा बॅकअप घेण्यासाठी आणि तो कोणत्याही डिव्हाइसवर वापरण्यासाठी सिंक सुरू करा</translation>
+<translation id="3269209112443570745">नवीन! तुमच्या स्क्रीनवर काय आहे हे शोधण्याचा सोपा मार्ग</translation>
 <translation id="3269612321104318480">फिकट टील आणि पांढरा</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{फाइल}other{# फाइल}}</translation>
 <translation id="326999365752735949">फरक डाउनलोड करत आहे</translation>
@@ -3670,11 +3674,13 @@
 <translation id="3621202678540785336">इनपुट</translation>
 <translation id="3621807901162200696">ChromeOS च्या वैशिष्ट्यांमध्ये आणि परफॉर्मन्समध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{अ‍ॅप}other{# अ‍ॅप्स}}</translation>
+<translation id="3622716124581627104">गोष्टी किंवा ठिकाणे ओळखा आणि मजकूर कॉपी किंवा भाषांतरित करा. तुम्ही Google Lens वापरता, तेव्हा पेजचा स्क्रीनशॉट Google ला पाठवला जातो. <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">फ्लॅश होणाऱ्या स्क्रीनचा रंग</translation>
 <translation id="362333465072914957">CA ने सर्टिफिकेट जारी करण्याची प्रतीक्षा करत आहे</translation>
 <translation id="3623598555687153298">यामुळे प्रदर्शित केलेल्या साइटनी स्टोअर केलेला <ph name="TOTAL_USAGE" /> डेटा हटवला जाईल</translation>
 <translation id="3624567683873126087">डिव्हाइस अनलॉक करा आणि Google खात्यामध्ये साइन इन करा</translation>
 <translation id="3624583033347146597">तुमची तृतीय पक्ष कुकी प्राधान्ये निवडा</translation>
+<translation id="3625345586754200168">Lens वापरून पहा</translation>
 <translation id="3625481642044239431">चुकीची फाइल निवडली. पुन्हा प्रयत्न करा.</translation>
 <translation id="3626296069957678981">ही Chromebook चार्ज करण्यासाठी, कंपॅटिबल Dell बॅटरी वापरा.</translation>
 <translation id="3627320433825461852">1 मिनिटापेक्षा कमी बाकी</translation>
@@ -4080,6 +4086,7 @@
 <translation id="3894983081771074056">कीबोर्ड आणि माउस वर्तन, भाषा प्राधान्ये आणि बरेच काही</translation>
 <translation id="3895076768659607631">शोध इंजीन व्यवस्थापित करा...</translation>
 <translation id="3895090224522145010">Kerberos वापरकर्ता नाव</translation>
+<translation id="3895097816015686240">तुम्ही जिथे सोडले तिथून सहजपणे पुढे सुरू ठेवण्यासाठी तुमच्या मागील विंडो आणि टॅब उघडा</translation>
 <translation id="389521680295183045">तुम्ही तुमचे डिव्हाइस सक्रियपणे कधी वापरता त्याबद्दल जाणून घेण्यासाठी साइट विचारू शकतात</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{इमेज}other{# इमेज}}</translation>
 <translation id="3897746662269329507">तुमचे <ph name="DEVICE_TYPE" /> गेमिंगसाठी तयार केलेले आहे. पुढे Explore अ‍ॅप उघडेल, ज्यामध्ये तुम्ही शेकडो नवीनतम गेम अ‍ॅक्सेस करू शकता, गेमिंगच्या ऑफर पाहू शकता आणि तुमच्या डिव्हाइसमध्ये असलेली गेमिंगसंबंधित वैशिष्‍ट्ये पाहू शकता.</translation>
@@ -4829,6 +4836,7 @@
 <translation id="4450974146388585462">निदान करा</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ने अ‍ॅक्टिव्ह TPM डिटेक्ट केले आहे जे तुमचा डेटा आणखी सुरक्षितरीत्या स्टोअर करू शकते.</translation>
 <translation id="4452898361839215358">किंवा PPD निवडा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Lens वापरून कोणतीही इमेज किंवा मजकूर शोधा</translation>
 <translation id="4453430595102511050">तुमच्या कीबोर्डच्या सर्वात वरच्या उजव्या कोपऱ्यातील फिंगरप्रिंट सेन्सरला स्पर्श करा. तुमचा फिंगरप्रिंट डेटा सुरक्षितपणे स्टोअर केला जातो आणि तुमच्या <ph name="DEVICE_TYPE" /> मध्येच राहतो.</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> वर शोधा किंवा URL टाइप करा</translation>
 <translation id="4457472090507035117">विद्यमान आवाज निवडा:</translation>
@@ -5312,6 +5320,7 @@
 <translation id="4823484602432206655">वापरकर्ता आणि डिव्हाइस सेटिंग्ज वाचा आणि बदला</translation>
 <translation id="4824037980212326045">Linux बॅकअप आणि रिस्टोअर</translation>
 <translation id="4824958205181053313">सिंक रद्द करायचे?</translation>
+<translation id="4825462365587146530">नवीन टॅबमध्ये Chrome Root Store बद्दल अधिक जाणून घ्या.</translation>
 <translation id="4825532258163983651">पासकी हटवू शकत नाही</translation>
 <translation id="4827134188176577524">Chrome Root Store मध्ये Chrome Root प्रोग्राम मधील विश्वासार्ह प्रमाणपत्र अधिकाऱ्यांकडील प्रमाणपत्र असते
       आणि त्यांचे सतत पुनरावलोकन केले जाते.</translation>
@@ -6990,6 +6999,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6059276912018042191">अलीकडील Chrome टॅब</translation>
 <translation id="6059652578941944813">सर्टिफिकेट पदानुक्रम</translation>
 <translation id="6059925163896151826">USB डिव्हाइसेस</translation>
+<translation id="6060842547856900641">Lens उघडा</translation>
 <translation id="6061408389284235459"><ph name="DEVICE_NAME" /> ला सूचना पाठवली गेली होती</translation>
 <translation id="6063284707309177505">QR कोड तयार करा</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />टीप:<ph name="END_BOLD" /> सारखाच आवाज किंवा रेकॉर्डिंग कदाचित <ph name="SUPERVISED_USER_NAME" /> चे वैयक्तिक परिणाम अ‍ॅक्सेस करू शकेल. बॅटरी वाचवण्यासाठी, हे डिव्हाइस एखाद्या पॉवर स्रोताशी कनेक्ट केले असेल तेव्हाच “Ok Google” सुरू असावे असे तुम्ही <ph name="SUPERVISED_USER_NAME" /> च्या Assistant सेटिंग्जमध्ये निवडू शकता.</translation>
@@ -11031,6 +11041,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8991766915726096402">स्थानिक डेटा रिकव्हरी</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - मेमरी वापर - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">तुम्ही तुमच्या <ph name="DEVICE_TYPE" /> चा पासवर्ड विसरल्यास, तुम्ही तरीही तुमचा स्थानिक डेटा रिस्टोअर करू शकता. तुम्ही तुमच्या Google खाते मध्ये साइन इन करणे किंवा खाते रिकव्हरी वापरणे आवश्यक आहे.</translation>
+<translation id="8993198843374358393"><ph name="CERT_NAME" /> साठी सर्टिफिकेट हॅश कॉपी करा</translation>
 <translation id="8993737615451556423">वाचनाच्या आवाजाची गती वाढवण्यासाठी, कमी करण्यासाठी आणि विराम देण्यासाठी नियंत्रणे पुरवते</translation>
 <translation id="899384117894244799">प्रतिबंधित वापरकर्ता काढा</translation>
 <translation id="8993853206419610596">सर्व विनंत्यांचा विस्तार करा</translation>
@@ -11238,6 +11249,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9128317794749765148">सेट करणे पूर्ण करू शकलो नाही</translation>
 <translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" /> साठी सेटिंग्ज पेज उघडा</translation>
 <translation id="9128870381267983090">नेटवर्कशी कनेक्ट करा</translation>
+<translation id="9129562557082598582">सर्व <ph name="CERT_GROUP" /> एक्सपोर्ट करा</translation>
 <translation id="9130015405878219958">चुकीचे मोड एंटर केले.</translation>
 <translation id="9130208109420587135"><ph name="NAME" /> गटाचे नाव संपादित करा</translation>
 <translation id="9130364135697530260">या साइटवर एंबेड केलेल्या आशयाने तुमच्याविषयी सेव्ह केलेली माहिती ते वापरू शकत नाही</translation>

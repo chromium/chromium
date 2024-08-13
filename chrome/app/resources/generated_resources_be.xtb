@@ -3192,6 +3192,7 @@
 <translation id="3269093882174072735">Загрузіць відарыс</translation>
 <translation id="326911502853238749">Не паказваць нічога з катэгорыі "<ph name="MODULE_NAME" />"</translation>
 <translation id="3269175001434213183">Уключыце сінхранізацыю, каб ствараць рэзервовыя копіі сваіх даных і выкарыстоўваць іх на іншых прыладах</translation>
+<translation id="3269209112443570745">Навінка! Просты спосаб пошуку па змесціве экрана</translation>
 <translation id="3269612321104318480">Светла-бірузовы і белы</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}one{# файл}few{# файлы}many{# файлаў}other{# файла}}</translation>
 <translation id="326999365752735949">Спампоўванне розніцы</translation>
@@ -3662,6 +3663,7 @@
 <translation id="3621202678540785336">Увод</translation>
 <translation id="3621807901162200696">Дапамагаць паляпшаць функцыі і прадукцыйнасць Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{праграму}one{# праграму}few{# праграмы}many{# праграм}other{# праграмы}}</translation>
+<translation id="3622716124581627104">Вызначайце аб’екты ці месцы і капіруйце ці перакладайце тэкст. Калі вы выкарыстоўваеце Google Аб’ектыў, здымак экрана старонкі адпраўляецца ў Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">Колер міргання экрана</translation>
 <translation id="362333465072914957">Чакаецца атрыманне сертыфіката ад ЦС</translation>
 <translation id="3623598555687153298">Будзе выдалена <ph name="TOTAL_USAGE" /> даных, захаваных указанымі сайтамі</translation>

@@ -475,7 +475,6 @@
 <translation id="3226612997184048185">જો તમે બુકમાર્કને તમારા Google એકાઉન્ટમાં પણ સાચવશો, તો તમે પ્રોડક્ટની કિંમતો Chromeમાં ટ્રૅક કરી શકશો તેમજ જ્યારે પણ કિંમતમાં ઘટાડો થાય ત્યારે નોટિફિકેશન મેળવશો</translation>
 <translation id="3227557059438308877">સિક્યુરિટી કી તરીકે Google Chrome</translation>
 <translation id="3232293466644486101">બ્રાઉઝિંગ ડેટા ડિલીટ કરો…</translation>
-<translation id="3232459301230493791"><ph name="TAB_COUNT" /> ટૅબ ડિલીટ કર્યા</translation>
 <translation id="3232754137068452469">વેબ ઍપ</translation>
 <translation id="3236059992281584593">1 મિનિટ બાકી</translation>
 <translation id="3237087289225714896">પહેલેથી લોડ કરવાનો માનક મોડ:</translation>
@@ -764,6 +763,7 @@
 <translation id="4687718960473379118">સાઇટ દ્વારા સૂચવેલી જાહેરાતો</translation>
 <translation id="469286762610133730">બહેતર કન્ટેન્ટ મેળવો</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
+<translation id="4698061626562952596">તમારા નિષ્ક્રિય ટૅબનો અહીં રિવ્યૂ કરો</translation>
 <translation id="4699172675775169585">કૅશ કરેલી છબીઓ અને ફાઇલો</translation>
 <translation id="4710167854527459075">નવું પહેલા મુજબ સૉર્ટ</translation>
 <translation id="4719927025381752090">અનુવાદ કરવાનું ઑફર કરો</translation>
@@ -1450,7 +1450,6 @@
 <translation id="7759809451544302770">વૈકલ્પિક</translation>
 <translation id="7762668264895820836">SD કાર્ડ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">સરનામું ઉમેરો</translation>
-<translation id="776533689993750361"><ph name="TAB_COUNT" /> ટૅબ ડિલીટ કર્યું</translation>
 <translation id="7772032839648071052">પાસફ્રેઝની પુષ્ટિ કરો</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />ને બંધ કરો</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>

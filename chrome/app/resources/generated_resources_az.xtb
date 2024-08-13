@@ -2447,6 +2447,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> ilə şəkil axtarın</translation>
 <translation id="2727633948226935816">Daha yadıma salmayın</translation>
 <translation id="2727712005121231835">Aktual Ölçü</translation>
+<translation id="2727713483500953825">Linza ilə axtarmaq üçün şəkillər/mətn seçin</translation>
 <translation id="2727744317940422214">Xəta baş verdi. Təsvirdə #bruschetta ilə rəy bildirin. Xəta kodu: <ph name="ERROR" />. Təmizlənmədi. Bunu əl ilə etməli ola bilərsiniz.</translation>
 <translation id="2729327310379176711">Chrome izləməni azaltmaq və gözdən keçirərkən sizi daha da təhlükəsiz saxlamaq üçün yeni yollar tapır. Chrome həmçinin <ph name="ESTIMATE_INTERESTS_LINK" /> və onları idarə etmənizə imkan verir. Sonra ziyarət etdiyiniz saytlar sizə reklam göstərmək üçün Chrome'dan maraqlarınızı tələb edə bilər.</translation>
 <translation id="2729577602370119849">Printerlərə asanlıqla daxil olub, idarə edin</translation>
@@ -3662,6 +3663,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3623598555687153298">Göstərilən saytların saxladığı <ph name="TOTAL_USAGE" /> data silinəcək</translation>
 <translation id="3624567683873126087">Cihazı kiliddən çıxarın və Google Hesabına daxil olun</translation>
 <translation id="3624583033347146597">Üçüncü tərəf kuki tərcihlərinizi seçin</translation>
+<translation id="3625345586754200168">Linzanı sınayın</translation>
 <translation id="3625481642044239431">Yanlış fayl seçilib. Yenidən cəhd edin.</translation>
 <translation id="3626296069957678981">Bu Chromebook'un enerji yığması üçün uyğun Dell batareyasından istifadə edin.</translation>
 <translation id="3627320433825461852">1 dəqiqədən az vaxt qalıb</translation>
@@ -4816,6 +4818,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4450974146388585462">Diaqnoz edin</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> datanızı daha etibarlı şəkildə saxlaya biləcək aktiv TPM aşkar etdi.</translation>
 <translation id="4452898361839215358">və ya PPD seçin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Linza ilə istənilən şəkil və ya mətni axtarın</translation>
 <translation id="4453430595102511050">Klaviaturanızın yuxarı sağ küncündə olan barmaq izi sensoruna toxunun. Barmaq izi datanız təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazınızdan kənara ötürülmür.</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> üzrə axtarış edin və ya link yazın</translation>
 <translation id="4457472090507035117">Cari səs seçin:</translation>
@@ -6972,6 +6975,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6059276912018042191">Son Chrome tabları</translation>
 <translation id="6059652578941944813">Sertifikat İyerarxiyası</translation>
 <translation id="6059925163896151826">USB cihazları</translation>
+<translation id="6060842547856900641">Linzanı açın</translation>
 <translation id="6061408389284235459"><ph name="DEVICE_NAME" /> cihazına bildiriş göndərilib</translation>
 <translation id="6063284707309177505">QR Kodu yaradın</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Qeyd:<ph name="END_BOLD" /> Oxşar səs və ya səsyazısı <ph name="SUPERVISED_USER_NAME" /> adlı şəxsin fərdi nəticələrinə daxil ola bilər. Batareyaya qənaət etmək üçün <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçinin Assistentinin ayarlarında "Ok Google" seçiminin yalnız bu cihaz enerji mənbəyinə qoşulu olduqda yanılı olmasını seçə bilərsiniz.</translation>

@@ -868,6 +868,7 @@
 <translation id="2565789370591907825">Klaviatura kilidi və istifadəsi</translation>
 <translation id="2570734079541893434">Ayarları idarə edin</translation>
 <translation id="257136025287118539">Administratorunuz fayllarınızı <ph name="CLOUD_PROVIDER" /> bölməsinə köçürür. Yükləmə tamamlandıqdan sonra bu faylları dəyişdirə bilərsiniz.</translation>
+<translation id="2571488850200220306">Təhlükəsizliyi təmin etmək üçün o, cihazın əməliyyat sistemini, brauzer versiyasını və hansı proqram təminatının quraşdırıldığını da görə bilər</translation>
 <translation id="2573170131138724450">Televizorlar</translation>
 <translation id="257674075312929031">Qrup</translation>
 <translation id="2586657967955657006">Mübadilə buferi</translation>
@@ -2770,6 +2771,7 @@
 <translation id="6240964651812394252">Əməliyyat sisteminiz ilə Google Parol menecerindən istifadə üçün Chrome-u yenidən başladın və kompüterin parol menecerinə giriş imkanı verin. Yenidən başlatmadan sonra tablar təkrar açılacaq.</translation>
 <translation id="6241121617266208201">Təklifləri gizlədin</translation>
 <translation id="624499991300733384">Çap məhsullarının tərtibi xidməti</translation>
+<translation id="6246868321321344665">Təşkilat həm iş, həm də şəxsi profillərdə parollar və tarixçə kimi baxış datasını görə bilər</translation>
 <translation id="6250932670816326647">Hamam və Bədən Məhsulları</translation>
 <translation id="6251906504834538140">{0,plural, =1{Faylın köçürülməsi bloklandı}other{<ph name="FILE_COUNT" /> faylın köçürülməsi bloklandı}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome'da endirdiyiniz faylları idarə edin</translation>
@@ -4305,6 +4307,7 @@
 <translation id="9101450247048146228">Kameranın istifadəsi və hərəkəti (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Qab 1</translation>
 <translation id="9103872766612412690">Məlumatınızı qorumaq üçün <ph name="SITE" /> adətən şifrələmə istifadə edir. Chromium bu dəfə <ph name="SITE" /> üzərinə qoşulmağa çalışanda sayt qeyri-adi və yanlış kredensialları qaytarmağa başladı. Bu, hücum edən özünü <ph name="SITE" /> kimi apardıqda, və ya Wi-Fi tərəfindən bağlantı kəsintisi olduqda baş verir. Məlumatınız hələ də güvənlidir, çünki Chromium datanın mübadiləsindən öncə bağlantını kəsib.</translation>
+<translation id="9107199998619088551"><ph name="MANAGER" /> profilinizi idarə edir</translation>
 <translation id="9107467864910557787">Brauzeriniz <ph name="MANAGER" /> tərəfindən idarə edilir</translation>
 <translation id="91108059142052966">Administrator suyasəti məxfi məzmun göründüyü zaman <ph name="APPLICATION_TITLE" /> ilə ekran paylaşımını deaktiv edir</translation>
 <translation id="9114524666733003316">Kart təsdiqlənir...</translation>

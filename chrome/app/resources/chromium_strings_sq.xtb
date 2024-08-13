@@ -126,6 +126,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="2915996080311180594">Rinise më vonë</translation>
 <translation id="2928420929544864228">Instalimi përfundoi.</translation>
 <translation id="2945997411976714835">Gabim gjatë instalimit: Nisja e procesit të instaluesit dështoi.</translation>
+<translation id="2970426615109535079">Organizata jote menaxhon Chromium</translation>
 <translation id="2977470724722393594">Chromium është i përditësuar</translation>
 <translation id="2977506796191543575">Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chromium mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqeve, te "Shfletimi i sigurt".</translation>
 <translation id="2987208172821108655">Chromium mund t'i bëjë joaktive këto skeda për të përmirësuar përvojën tënde të shfletimit dhe për të liruar burimet.</translation>
@@ -226,6 +227,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="4423735387467980091">Personalizo dhe kontrollo Chromium</translation>
 <translation id="4427306783828095590">Mbrojtja e përmirësuar bën edhe më shumë për bllokimin e mashtrimeve dhe softuerëve keqdashës</translation>
 <translation id="4434353761996769206">Gabim i instaluesit: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438870983368648614"><ph name="MANAGER" /> menaxhon Chromium</translation>
 <translation id="4447409407328223819">Rreth Chrome for Testing</translation>
 <translation id="4501471624619070934">Instalimi nuk u krye sepse qasja është e kufizuar në këtë shtet.</translation>
 <translation id="4510853178268397146">Kjo shtesë nuk i ka publikuar praktikat e privatësisë, si p.sh. se si i mbledh dhe i përdor të dhënat. Chromium rekomandon që ta heqësh atë.</translation>
@@ -494,6 +496,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8550334526674375523">Ky profil pune është plotësisht i veçuar nga profili yt personal.</translation>
 <translation id="8555465886620020932">Gabim shërbimi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium mund t'i kontrollojë fjalëkalimet e tua kur të identifikohesh me "Llogarinë tënde të Google"</translation>
+<translation id="8576826849825683917">Disa organizata menaxhojnë Chromium</translation>
 <translation id="8586442755830160949">Të drejtat e autorit <ph name="YEAR" /> Autorët e Chromium. Të gjitha të drejtat të rezervuara.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Si i përdorim këto të dhëna:<ph name="END_BOLD" /> Sajtet mund të ruajnë informacione për interesat e tua në Chromium. Për shembull, nëse viziton një sajt për të blerë këpucë për një maratonë, sajti mund ta përcaktojë interesin tënd si vrapim në maratona. Më vonë, nëse viziton një sajt tjetër për t'u regjistruar për një garë, ai sajt mund të të shfaqë një reklamë për këpucë vrapimi bazuar në interesat e tua.</translation>
 <translation id="8619360774459241877">Po hapet Chromium...</translation>

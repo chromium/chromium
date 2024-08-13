@@ -2453,6 +2453,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="272741954544380994">Otsi pilti teenusega <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Ära tuleta rohkem meelde</translation>
 <translation id="2727712005121231835">Tegelik suurus</translation>
+<translation id="2727713483500953825">Valige pildid/tekst, mida Lensiga otsida</translation>
 <translation id="2727744317940422214">Kahjuks läks midagi valesti. Tagasiside esitamiseks lisage kirjeldusse teemaviide #bruschetta. Veakood on <ph name="ERROR" />. Kustutamine ebaõnnestus, peate seda võib-olla käsitsi tegema.</translation>
 <translation id="2729327310379176711">Chrome otsib uusi viise, kuidas vähendada jälgimist ja kaitsta teid sirvimisel veelgi paremini. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> ja võimaldab teil neid hallata. Seejärel saavad teie külastatavad saidid küsida Chrome'ilt teie huvide kohta, et teile reklaame kuvada.</translation>
 <translation id="2729577602370119849">Lihtne juurdepääs printeritele ja nende haldamisele</translation>
@@ -3669,6 +3670,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3623598555687153298">See kustutab <ph name="TOTAL_USAGE" /> ulatuses kuvatud saitide salvestatud andmeid</translation>
 <translation id="3624567683873126087">Avage seade ja logige oma Google'i kontole sisse</translation>
 <translation id="3624583033347146597">Valige oma kolmanda osapoole küpsisefailide eelistused</translation>
+<translation id="3625345586754200168">Proovige Lensi</translation>
 <translation id="3625481642044239431">Valiti kehtetu fail. Proovige uuesti.</translation>
 <translation id="3626296069957678981">Kasutage selle Chromebooki laadimiseks ühilduvat Delli akut.</translation>
 <translation id="3627320433825461852">Jäänud on vähem kui 1 minut</translation>
@@ -4826,6 +4828,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4450974146388585462">Diagnoosi</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> tuvastas aktiivse TPM-i, millega saab teie andmeid salvestada turvalisemalt.</translation>
 <translation id="4452898361839215358">või valige PPD. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Otsige Lensiga mis tahes pilti või teksti</translation>
 <translation id="4453430595102511050">Puudutage klaviatuuri paremas ülanurgas olevat sõrmejäljeandurit. Teie sõrmejäljeandmed talletatakse turvaliselt ja neid ei edastata seadmest <ph name="DEVICE_TYPE" /> väljapoole.</translation>
 <translation id="4453946976636652378">Otsige teenusega <ph name="SEARCH_ENGINE_NAME" /> või sisestage URL</translation>
 <translation id="4457472090507035117">Valige praegune hääl:</translation>
@@ -6985,6 +6988,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6059276912018042191">Hiljutised Chrome'i vahelehed</translation>
 <translation id="6059652578941944813">Sertifikaatide hierarhia</translation>
 <translation id="6059925163896151826">USB-seadmed</translation>
+<translation id="6060842547856900641">Ava Lens</translation>
 <translation id="6061408389284235459">Seadmesse <ph name="DEVICE_NAME" /> saadeti märguanne</translation>
 <translation id="6063284707309177505">Loo QR-kood</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Märkus.<ph name="END_BOLD" /> Lapse <ph name="SUPERVISED_USER_NAME" /> personaalsetele tulemustele võib juurde pääseda ka sarnase hääle või tema hääle salvestise abil. Aku säästmiseks võite kasutaja <ph name="SUPERVISED_USER_NAME" /> assistendi seadetes valida, et funktsioon „Ok Google” on ainult siis sisse lülitatud, kui seade on toiteallikaga ühendatud.</translation>

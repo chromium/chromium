@@ -668,6 +668,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3439896670700055005">Actualiser la page active sans tenir compte du contenu mis en cache</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">Personnaliser votre souris</translation>
+<translation id="3444385531800624797">Chargement des résultats…</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Appareil USB de type C</translation>
 <translation id="3454555520521576458">Redimensionnable</translation>
@@ -1211,6 +1212,7 @@ Vous pouvez aussi utiliser le raccourci clavier. Mettez d'abord le texte en surb
 <translation id="5253783950165989294">Connecté à un appareil nommé "<ph name="DEVICE_NAME" />", batterie à <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5258528442992323769">Aucun bureau enregistré</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
+<translation id="5265391159779542051">Résultats chargés</translation>
 <translation id="5270547718570958938">Google Agenda</translation>
 <translation id="5277869901083657836">Activer/Désactiver les outils de stylet</translation>
 <translation id="5278086053818066789">Activer/Désactiver ChromeVox (commentaires audio)</translation>
@@ -1506,6 +1508,7 @@ Aucun appareil connecté.</translation>
 <translation id="6210042900243040400">Associer les <ph name="NAME" /> précédemment enregistrés dans <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Effectuer une capture d'écran partielle ou enregistrer une partie de l'écran</translation>
 <translation id="621606890568890214">Développer Google Classroom</translation>
+<translation id="6216759484154215561">Lien "En savoir plus" ouvert dans le navigateur</translation>
 <translation id="6220928844947387476">Vous pouvez maintenant enregistrer votre écran et vous-même en même temps</translation>
 <translation id="622484624075952240">Bas</translation>
 <translation id="6228457605945141550">Réduire la luminosité</translation>
@@ -2218,6 +2221,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">Basculer vers l'avant entre l'angle inférieur droit, le lanceur d'applications, la barre d'adresse, la barre de favoris, le site Web ouvert et les téléchargements</translation>
 <translation id="8792626944327216835">le micro</translation>
+<translation id="8797381270745758905">Lien "Réessayer" activé</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Dossier <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Aide"</translation>

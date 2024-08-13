@@ -123,10 +123,12 @@
 <translation id="1605658421715042784">तस्बिर कपी गर्नुहोस्</translation>
 <translation id="1608337082864370066">प्रतिलिपि गरिएको छविको खोजी गर्नुहोस्</translation>
 <translation id="1612730193129642006">ट्याबको ग्रिड देखाउनुहोस्</translation>
+<translation id="1612754831519568745">हाल सुरक्षित ब्राउजिङ अफ छ। खतरनाक साइट, डाउनलोड र एक्स्टेन्सनहरूबाट सुरक्षित रहनुहोस्।</translation>
 <translation id="1620510694547887537">क्यामेरा</translation>
 <translation id="1622717322707146952">“Google पात्रोमा हाल्नुहोस्“ वा “Apple पात्रोमा हाल्नुहोस्" चयन गर्नुहोस्।</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> वटा पासवर्ड पहिले नै प्रयोग गरिएका छन्</translation>
 <translation id="1636234353664774105">नेभिगेट गर्ने सुविधा प्रयोग गरेर आफ्नो गन्तव्यसम्म जाने बाटोसम्बन्धी विस्तृत जानकारी प्राप्त गर्नुहोस्</translation>
+<translation id="1641068175940982148"><ph name="GROUP_TITLE" /> खोल्नुहोस्, <ph name="NUMBER_OF_TABS" /> वटा ट्याब भएको समूह, <ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउजिङ</translation>
 <translation id="1641316430523156212">फलो गर्नुहोस्</translation>
 <translation id="1644574205037202324">इतिहास</translation>
@@ -402,6 +404,7 @@
 <translation id="2952246431280799028">ठेगानामा टच एण्ड होल्ड गर्नुहोस्।</translation>
 <translation id="2952278131021475699">लेन्स क्यामेरा प्रयोग गरी खोज्ने सुविधा</translation>
 <translation id="2958718410589002129">पासवर्डहरू</translation>
+<translation id="2963044753825419640">पासकी प्रयोग गर्ने सुविधा उपलब्ध हुँदा वेबसाइट तथा एपहरूलाई हालका खाताहरू पासकी प्रयोग गर्न मिल्ने गरी स्वतः अपग्रेड गर्न दिनुहोस्</translation>
 <translation id="2964349545761222050">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाउनुहोस्</translation>
 <translation id="2965328226365382335">अन्तिम 15 मिनेट</translation>
 <translation id="2969979262385602596">भित्र जान असफल भयो। कृपया पछि पुन: प्रयास गर्नुहोस्।</translation>
@@ -759,6 +762,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, यो डिभाइसमा मात्र, <ph name="URL" /></translation>
 <translation id="4751645464639803239">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="4766112107778026136">डिस्कभर तथा फलोइङ</translation>
+<translation id="4769198578611055647">तपाईं यसका सहायताले कुनै पनि डिभाइसमा सेभ गरिएका पासकी एक्सेस गर्न सक्नुहुन्छ</translation>
 <translation id="4775879719735953715">डिफल्ट ब्राउजर</translation>
 <translation id="4779732376610430319">सेटिङमा जानुहोस्…</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1042,6 +1046,7 @@
 <translation id="6067849159007176401">Browsing Protection अन गर्नुहोस्</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) अपलोड गर्न सकिएन</translation>
 <translation id="6084848228346514841">ट्याबहरू चयन गर्नुहोस्</translation>
+<translation id="6089212833343035912">Google पासवर्ड म्यानेजरको PIN</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> का नामबाट साइन इन गरिएको छ। यसले सेटिङ खोल्छ।</translation>
 <translation id="6103540626693881831">डिभाइसमै चल्ने इन्क्रिप्सन</translation>
 <translation id="6119050551270742952">हालको वेबपृष्ठ इन्कोग्निटो मोडमा छ</translation>
@@ -1261,6 +1266,7 @@
 <translation id="7022197654033719543">साइटसम्बन्धी जानकारी</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
 <translation id="704692552158601232">डिफल्ट ब्राउजर एप</translation>
+<translation id="7051147526307793383">पासकी स्वतः अपग्रेड गर्न दिनुहोस्</translation>
 <translation id="7055240621761583113">पासवर्ड अटोफिल गर्नुहोस्</translation>
 <translation id="7063811929043357292">तपाईंका अभिभावक तपाईंको खाता व्यवस्थापन गर्नुहुन्छ।
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
@@ -1336,6 +1342,7 @@
 <translation id="7470908168505178757">ट्याब समूह। कोल्याप्स गरियो।</translation>
 <translation id="7472734401283673885">कम्पनीको नाम</translation>
 <translation id="7473891865547856676">पर्दैन, धन्यवाद</translation>
+<translation id="7477974514217962959">{count,plural, =1{एउटा ट्याब समूह बन्द र सेभ गरियो}other{{count} वटा ट्याब समूह बन्द र सेभ गरिए}}</translation>
 <translation id="7488874549363591659">डेलिभर गरियो</translation>
 <translation id="7491131399623468277">सेटिङमा जानुहोस्…</translation>
 <translation id="749854780843431406">तपाईं <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> बटन थिचेर नयाँ ट्याब खोल्न सक्नुहुन्छ।</translation>

@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">ඔබේ මයික්‍රෆෝනය සහ කැමරාව භාවිතා කරන්න</translation>
 <translation id="1005333234656240382">ADB නිදොස් කිරීම සබල කරන්නද?</translation>
 <translation id="1005671386794704751">රෝස</translation>
+<translation id="1005919400326853998"><ph name="CERT_NAME" /> සඳහා සහතික විස්තර නව සංවාදයකින් බලන්න</translation>
 <translation id="1006033052970139968">යෙදුම්, මයික්‍රොෆෝන අවසරය සහිත වෙබ් අඩවි, සහ පද්ධති සේවා සඳහා මයික්‍රොෆෝන ප්‍රවේශය ඉඩ දෙනු ලැබේ</translation>
 <translation id="1006873397406093306">මෙම දිගුවට වෙබ් අඩවි මත ඔබේ දත්ත කියවීමටත් වෙනස් කිරීමටත් හැකි වෙයි ඔබට දිගුවට ප්‍රවේශ විය හැක්කේ කුමන වෙබ් අඩවිවලටද යන්න පාලන කළ හැක.</translation>
 <translation id="1007057452468855774">Google Play Store ක්‍රියාත්මක කරන්න</translation>
@@ -2450,6 +2451,7 @@
 <translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> සමගින් රූපය සොයන්න</translation>
 <translation id="2727633948226935816">නැවත මට මතක් නොකරන්න</translation>
 <translation id="2727712005121231835">සත්‍ය ප්‍රමාණය</translation>
+<translation id="2727713483500953825">Lens සමග සෙවීමට රූප/පෙළ තෝරන්න</translation>
 <translation id="2727744317940422214">කණගාටුයි, යමක් වැරදී ඇත. විස්තරයේ #bruschetta සමග ප්‍රතිපෝෂණය ගොනු කරන්න. දෝෂ කේතය <ph name="ERROR" /> වේ. පිරිසිදු කිරීම අසමත් විය, ඔබ එය හස්තීයව සිදු කිරීමට අවශ්‍ය විය හැක.</translation>
 <translation id="2729327310379176711">Chrome ලුහුබැඳීම අඩු කිරීමට සහ ඔබ බ්‍රවුස් කරන විට ඔබව වඩාත් සුරක්ෂිතව තබා ගැනීමට නව ක්‍රම සොයා ගනිමින් සිටී. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> කර ඒවා කළමනාකරණය කිරීමට ඔබට හැකියාව ද ලබා දෙයි. එවිට, ඔබ පිවිසෙන අඩවි ඔබට දැන්වීම් පෙන්වීමට ඔබේ රුචිකත්වයන් සඳහා Chrome වෙතින් විමසා සිටිය හැක.</translation>
 <translation id="2729577602370119849">මුද්‍රක වෙත පහසුවෙන් ප්‍රවේශ වී කළමනාකරණය කරන්න</translation>
@@ -2742,6 +2744,7 @@
 <translation id="2926708162326352948">උඩුගත කළ රූපයට තේමාව යාවත්කාලීන කරන ලදි</translation>
 <translation id="2927017729816812676">හැඹිලි ගබඩාව</translation>
 <translation id="2928795416630981206">ඔබගේ කැමරා පිහිටුම හඹා යාමට ඉඩ දේ</translation>
+<translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome 1 අඩවියකින් අවසර ඉවත් කරන ලදි}one{Chrome අඩවි {NUM_SITES}කින් අවසර ඉවත් කරන ලදි}other{Chrome අඩවි {NUM_SITES}කින් අවසර ඉවත් කරන ලදි}}</translation>
 <translation id="2931157624143513983">මුද්‍රණ කළ හැකි ප්‍රදේශයට ගළපන්න</translation>
 <translation id="2931342457001070961">මයික්‍රෆෝනයක් සම්බන්ධ නැත</translation>
 <translation id="2932085390869194046">මුරපදය යෝජනා කරන්න...</translation>
@@ -3663,6 +3666,7 @@
 <translation id="3623598555687153298">මෙය සංදර්ශන වන අඩවිවලින් ගබඩා කරනු ලැබූ <ph name="TOTAL_USAGE" /> ක දත්ත මකා දමයි</translation>
 <translation id="3624567683873126087">උපාංගය අගුලු හැර Google ගිණුමට පුරන්න</translation>
 <translation id="3624583033347146597">ඔබගේ තෙවන පාර්ශ්ව කුකී මනාප තෝරන්න</translation>
+<translation id="3625345586754200168">Lens උත්සාහ කරන්න</translation>
 <translation id="3625481642044239431">වලංගු නොවන ගොනුවක් තෝරා ඇත. නැවත උත්සාහ කරන්න.</translation>
 <translation id="3626296069957678981">මෙම Chromebook එක ආරෝපණ කිරීමට, ගැළපෙන Dell බැටරියක් භාවිත කරන්න.</translation>
 <translation id="3627320433825461852">විනාඩි 1කට අඩු කාලයක් ඉතිරිව ඇත</translation>
@@ -4069,6 +4073,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3894983081771074056">යතුරු පුවරුව සහ මූසිකයේ හැසිරීම, භාෂා මනාප, සහ තවත් දේ</translation>
 <translation id="3895076768659607631">&amp;සෙවීම් එන්ජින් කළමනාකරණය කරන්න...</translation>
 <translation id="3895090224522145010">Kerberos පරිශීලක නාමය</translation>
+<translation id="3895097816015686240">ඔබ නතර කළ තැනින් පහසුවෙන් ඉදිරියට යාමට ඔබේ පෙර කවුළු සහ පටිති විවෘත කරන්න</translation>
 <translation id="389521680295183045">ඔබ ඔබගේ උපාංගය සක්‍රියව භාවිත කරන විට දැන ගැනීමට අඩවි ඉල්ලිය හැකිය</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{රූපයක්}one{රූප #}other{රූප #}}</translation>
 <translation id="3897746662269329507">ඔබේ <ph name="DEVICE_TYPE" /> ක්‍රීඩා කිරීම සඳහා නිමවා ඇත. ඔබට නවතම ක්‍රීඩා සිය ගණනකට ප්‍රවේශ විය හැකි, ක්‍රීඩා දීමනා බැලිය හැකි, සහ ඔබේ උපාංගය සමග එන ක්‍රීඩා විශේෂාංග සොයා ගත හැකි Explore යෙදුම මීළඟට විවෘත වේ.</translation>
@@ -4820,6 +4825,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4450974146388585462">හඳුනා ගන්න</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ඔබගේ දත්ත වඩාත් ආරක්ෂිතව ගබඩා කල හැකි සක්‍රිය TPM එකක් සොයා ගත්තේය.</translation>
 <translation id="4452898361839215358">හෝ PPD තෝරන්න. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Lens සමග ඕනෑම රූපයක් හෝ පෙළක් සොයන්න</translation>
 <translation id="4453430595102511050">ඔබේ යතුරුපුවරුවේ ඉහළ දකුණු කෙළවරේ ඇඟිලි සලකුණු සංවේදකය ස්පර්ශ කරන්න. ඔබේ ඇඟිලි සලකුණු දත්ත ආරක්ෂිතව ගබඩා කෙරෙන අතර කිසි විටක ඔබේ <ph name="DEVICE_TYPE" /> හැර නොයයි.</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> සොයන්න හෝ URL යතුරු ලියන්න</translation>
 <translation id="4457472090507035117">වත්මන් හඬ තෝරන්න:</translation>
@@ -5303,6 +5309,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4823484602432206655">පරිශීලක සහ උපාංගය සැකසීම් කියවා වෙනස් කරන්න</translation>
 <translation id="4824037980212326045">ලිනක්ස් උපස්ථය සහ ප්‍රතිසාධනය</translation>
 <translation id="4824958205181053313">සමමුහූර්තය අවලංගු කරන්නේද?</translation>
+<translation id="4825462365587146530">නව පටිත්තකින් Chrome මූල ගබඩාව ගැන තව දැන ගන්න.</translation>
 <translation id="4825532258163983651">මුරයතුර මකා දැමිය නොහැක</translation>
 <translation id="4827134188176577524">Chrome මූල ගබඩාව හි Chrome මූල වැඩසටහන මගින් විශ්වාස කරන සහතික බලධාරීන්ගේ
       සහතික අඩංගු වන අතර, අඛණ්ඩ පදනමක් මත අඛණ්ඩව සමාලෝචනය කරනු ලැබේ.</translation>
@@ -6978,6 +6985,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6059276912018042191">මෑත Chrome ටැබ</translation>
 <translation id="6059652578941944813">සහතික ධූරාවලිය</translation>
 <translation id="6059925163896151826">USB උපාංග</translation>
+<translation id="6060842547856900641">Lens විවෘත කරන්න</translation>
 <translation id="6061408389284235459"><ph name="DEVICE_NAME" /> වෙත දැනුම්දීමක් යවන ලදි</translation>
 <translation id="6063284707309177505">QR කේතය තනන්න</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />සටහන:<ph name="END_BOLD" /> ඒ හා සමාන කටහඬ හෝ පටිගත කිරීමකට <ph name="SUPERVISED_USER_NAME" />ගේ පුද්ගලික ප්‍රතිඵල වෙත ප්‍රවේශ විය හැකිය. බැටරිය සුරැකීමට, මෙම උපාංගය බල මූලාශ්‍රයකට සම්බන්ධ විට පමණක් “Hey Google” ක්‍රියාත්මක කිරීමට ඔබට <ph name="SUPERVISED_USER_NAME" />ගේ සහායක සැකසීම් තුළ තෝරා ගත හැකිය.</translation>
@@ -11018,6 +11026,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8991766915726096402">ස්ථානික දත්ත ප්‍රතිසාධනය</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - මතකය භාවිතය - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">ඔබට ඔබේ <ph name="DEVICE_TYPE" /> මුරපදය අමතක වුවහොත්, ඔබට තවමත් ඔබේ ස්ථානික දත්ත ප්‍රතිසාධන කළ හැක. ඔබට ඔබේ Google ගිණුමට පුරනය වීමට හෝ ගිණුම් ප්‍රතිසාධනය භාවිත කිරීමට අවශ්‍ය වෙයි.</translation>
+<translation id="8993198843374358393"><ph name="CERT_NAME" /> සඳහා සහතික හැෂ් පිටපත් කරන්න</translation>
 <translation id="8993737615451556423">කියවීමේ හඬ වේගවත් කිරීමට, වේගය අඩු කිරීමට සහ විරාම කිරීමට පාලන සපයයි</translation>
 <translation id="899384117894244799">සීමා කළ පරිශීලකයා ඉවත් කරන්න</translation>
 <translation id="8993853206419610596">සියලු ඉල්ලීම් පුළුල් කරන්න</translation>
@@ -11225,6 +11234,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9128317794749765148">සැකසීම සම්පූර්ණ කළ නොහැකි විය</translation>
 <translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" /> සඳහා සැකසීම් පිටුව විවෘත කරන්න</translation>
 <translation id="9128870381267983090">ජාලයට සබඳ වන්න</translation>
+<translation id="9129562557082598582"><ph name="CERT_GROUP" /> සියල්ල නිර්යාත කරන්න</translation>
 <translation id="9130015405878219958">අවලංගු ප්‍රකාරය ඇතුළු කෙරිණි.</translation>
 <translation id="9130208109420587135">සමූහයේ නම සංස්කරණය කරන්න <ph name="NAME" /></translation>
 <translation id="9130364135697530260">මෙම අඩවිය හත කාවද්දන ලද අන්තර්ගතයට ඔවුන් ඔබ ගැන සුරැකී ඇති තොරතුරු භාවිත කළ හැක</translation>

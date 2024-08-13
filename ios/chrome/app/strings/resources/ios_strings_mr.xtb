@@ -123,10 +123,12 @@
 <translation id="1605658421715042784">इमेज कॉपी करा</translation>
 <translation id="1608337082864370066">कॉपी केलेली इमेज शोधा</translation>
 <translation id="1612730193129642006">टॅब ग्रिड दाखवा</translation>
+<translation id="1612754831519568745">तुमचे सुरक्षित ब्राउझिंग सध्या बंद आहे. धोकादायक साइट, डाउनलोड आणि एक्स्टेंशन यांपासून संरक्षण मिळवा.</translation>
 <translation id="1620510694547887537">कॅमेरा</translation>
 <translation id="1622717322707146952">“Google Calendar मध्ये जोडा” किंवा “Apple Calendar मध्ये जोडा” निवडा.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> पुन्हा वापरलेले पासवर्ड</translation>
 <translation id="1636234353664774105">नेव्हिगेशन वैशिष्ट्य वापरून टर्न बाय टर्न मार्गदर्शनासह तुमच्या गंतव्यस्थानी जाण्यासाठी दिशानिर्देश मिळवा</translation>
+<translation id="1641068175940982148"><ph name="GROUP_TITLE" /> उघडा, <ph name="NUMBER_OF_TABS" /> चा गट, <ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउझिंग</translation>
 <translation id="1641316430523156212">फॉलो करा</translation>
 <translation id="1644574205037202324">इतिहास</translation>
@@ -402,6 +404,7 @@
 <translation id="2952246431280799028">पत्त्याला स्पर्श करून धरून ठेवा.</translation>
 <translation id="2952278131021475699">Lens कॅमेरा वापरून शोध</translation>
 <translation id="2958718410589002129">पासवर्ड</translation>
+<translation id="2963044753825419640">पासकी उपलब्ध असताना त्या वापरण्यासाठी सद्य खाती आपोआप अपग्रेड करण्याची वेबसाइट आणि अ‍ॅप्सना अनुमती द्या</translation>
 <translation id="2964349545761222050">तृतीय पक्ष कुकी ब्लॉक करा</translation>
 <translation id="2965328226365382335">अंतिम 15 मिनिटे</translation>
 <translation id="2969979262385602596">साइन इन करण्यात अयशस्वी. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
@@ -759,6 +762,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, फक्त या डिव्हाइसवर, <ph name="URL" /></translation>
 <translation id="4751645464639803239">नवीन गुप्त टॅब</translation>
 <translation id="4766112107778026136">Discover आणि फॉलो करत आहे</translation>
+<translation id="4769198578611055647">यामुळे तुम्हाला कोणत्याही डिव्हाइसवर सेव्ह केलेल्या पासकी अ‍ॅक्सेस करण्यात मदत होते</translation>
 <translation id="4775879719735953715">डीफॉल्ट ब्राउझर</translation>
 <translation id="4779732376610430319">सेटिंग्जवर जा...</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1042,6 +1046,7 @@
 <translation id="6067849159007176401">ब्राउझ करण्यासंबंधित संरक्षण जोडा</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) अपलोड करता आली नाही</translation>
 <translation id="6084848228346514841">टॅब निवडा</translation>
+<translation id="6089212833343035912">Google Password Manager पिन</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> म्हणून साइन इन केले आहे. या बटणामुळे सेटिंग्ज उघडतात.</translation>
 <translation id="6103540626693881831">डिव्हाइसवरील एंक्रिप्शन</translation>
 <translation id="6119050551270742952">सध्याचे वेबपेज गुप्त मोडमध्ये सुरू आहे</translation>
@@ -1262,6 +1267,7 @@
 <translation id="7022197654033719543">साइटची माहिती</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
 <translation id="704692552158601232">डीफॉल्ट ब्राउझर अ‍ॅप</translation>
+<translation id="7051147526307793383">ऑटोमॅटिक पासकी अपग्रेडना अनुमती द्या</translation>
 <translation id="7055240621761583113">पासवर्ड ऑटोफिल करा</translation>
 <translation id="7063811929043357292">तुमचे खाते तुमच्या पालकांद्वारे व्यवस्थापित केले जाते.
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -1337,6 +1343,7 @@
 <translation id="7470908168505178757">टॅब गट. कोलॅप्स केला आहे.</translation>
 <translation id="7472734401283673885">कंपनीचे नाव</translation>
 <translation id="7473891865547856676">नाही, नको</translation>
+<translation id="7477974514217962959">{count,plural, =1{१ टॅब गट बंद केला आणि सेव्ह केला}other{{count} टॅब गट बंद केले आणि सेव्ह केले}}</translation>
 <translation id="7488874549363591659">डिलिव्हर केले</translation>
 <translation id="7491131399623468277">सेटिंग्ज वर जा…</translation>
 <translation id="749854780843431406">तुम्ही <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> बटण वापरून नवीन टॅब उघडू शकता.</translation>

@@ -868,6 +868,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2565789370591907825">Teklatuaren blokeoa eta erabilera</translation>
 <translation id="2570734079541893434">Kudeatu ezarpenak</translation>
 <translation id="257136025287118539">Administratzaileak <ph name="CLOUD_PROVIDER" /> zerbitzura eramango ditu fitxategiak. Kargatu ondoren aldatu ahalko dituzu.</translation>
+<translation id="2571488850200220306">Segurtasuna bermatzeko, gailuaren sistema eragilea, arakatzailearen bertsioa eta instalatutako softwarea ikus ditzake</translation>
 <translation id="2573170131138724450">Telebistak</translation>
 <translation id="257674075312929031">Taldekatu</translation>
 <translation id="2586657967955657006">Arbela</translation>
@@ -2769,6 +2770,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6240964651812394252">Pasahitz-kudeatzailea zure sistema eragilearekin erabiltzeko, exekutatu berriro Chrome eta eman ordenagailuaren pasahitz-kudeatzailea erabiltzeko baimena. Berriro exekutatu ondoren, berriro irekiko dira fitxak.</translation>
 <translation id="6241121617266208201">Ezkutatu iradokizunak</translation>
 <translation id="624499991300733384">Inprimatze-konposizioaren zerbitzua</translation>
+<translation id="6246868321321344665">Zure erakundeak laneko profileko nahiz profil pertsonaleko arakatze-datuak ikus ditzake; adibidez, pasahitzak eta historia</translation>
 <translation id="6250932670816326647">Bainugelarako eta gorputzerako produktuak</translation>
 <translation id="6251906504834538140">{0,plural, =1{Fitxategia ezin da mugitu}other{<ph name="FILE_COUNT" /> fitxategi ezin dira mugitu}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" Chrome-ren bidez deskargatu dituzun fitxategiak kudeatzeko</translation>
@@ -4304,6 +4306,7 @@ Xehetasun gehiago:
 <translation id="9101450247048146228">Kameraren erabilera eta mugimendua (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">1. erretilua</translation>
 <translation id="9103872766612412690">Eskuarki, <ph name="SITE" /> webguneak enkriptatzea erabiltzen du informazioa babesteko. Chromium <ph name="SITE" /> webgunera konektatzen saiatu denean, webguneak kredentzial desegokiak eta ezohikoak bidali ditu. Erasotzaile bat <ph name="SITE" /> webgunearen plantak egiten ari delako gerta daiteke hori, edo Wi-Fi sarean saioa hasteko pantailak konexioa eten duelako. Zure informazioa seguru dago, datuak trukatu aurretik eten baitu Chromium-ek konexioa.</translation>
+<translation id="9107199998619088551"><ph name="MANAGER" /> erabiltzaileak kudeatzen du zure profila</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" /> domeinuak kudeatzen du arakatzailea</translation>
 <translation id="91108059142052966">Administratzailearen gidalerroek <ph name="APPLICATION_TITLE" /> bidez pantaila partekatzea eragozten dute isilpeko edukia ikusgai dagoenean</translation>
 <translation id="9114524666733003316">Txartela berresten…</translation>

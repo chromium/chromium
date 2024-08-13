@@ -3201,6 +3201,7 @@
 <translation id="3269093882174072735">טעינת תמונה</translation>
 <translation id="326911502853238749">אין להציג <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">הפעלת הסנכרון כדי לגבות את הנתונים ולהשתמש בהם בכל מכשיר</translation>
+<translation id="3269209112443570745">חדש! דרך קלה לחפש את מה שמוצג במסך</translation>
 <translation id="3269612321104318480">כחול-ירקרק בהיר ולבן</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{קובץ}one{# קבצים}two{# קבצים}other{# קבצים}}</translation>
 <translation id="326999365752735949">הורדת ההבדלים מתבצעת</translation>
@@ -3671,6 +3672,7 @@
 <translation id="3621202678540785336">קלט</translation>
 <translation id="3621807901162200696">‏עזרה בשיפור התכונות והביצועים של ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{אפליקציה}one{# אפליקציות}two{# אפליקציות}other{# אפליקציות}}</translation>
+<translation id="3622716124581627104">‏אפשר לנסות לזהות דברים או מקומות ולהעתיק או לתרגם טקסטים. כשמשתמשים ב-Google Lens, צילום מסך של הדף נשלח אל Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">צבע המסך בזמן הבהוב</translation>
 <translation id="362333465072914957">‏בהמתנה להנפקת אישור על ידי ה-CA</translation>
 <translation id="3623598555687153298">הפעולה הזו תגרום למחיקת <ph name="TOTAL_USAGE" /> של נתונים שאוחסנו על ידי האתרים המוצגים</translation>

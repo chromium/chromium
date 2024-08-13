@@ -52,6 +52,7 @@
 <translation id="1089439967362294234">પાસવર્ડ બદલો</translation>
 <translation id="1089599132348386324">તમે કોઈપણ સમયે Chrome સેટિંગમાં જઈને તમારો નિર્ણય બદલી શકો છો.</translation>
 <translation id="1090629319939036170">VR મેનૂ</translation>
+<translation id="1091463901118115503">વાંચન ચાલુ રાખો</translation>
 <translation id="1091779689406092804">સ્ક્રીનશૉટ</translation>
 <translation id="1094777233105318927">તમારા બ્રાઉઝર, OS, ડિવાઇસ, ઇન્સ્ટૉલ કરેલા સૉફ્ટવેર અને ફાઇલો વિશેની માહિતી</translation>
 <translation id="1096545575934602868">આ ફીલ્ડમાં <ph name="MAX_ITEMS_LIMIT" /> કરતાં વધારે એન્ટ્રી હોવી જોઈએ નહી. વધારાની બધી એન્ટ્રીને કાઢી નાખવામાં આવશે.</translation>
@@ -537,6 +538,7 @@
 <translation id="1974060860693918893">વિગતવાર</translation>
 <translation id="1975457531113383421">ઇનપુટ ટ્રે</translation>
 <translation id="1975584088563498795">મેઇલબૉક્સ 10</translation>
+<translation id="1976610264358655503">તમારી વારંવાર મુલાકાત</translation>
 <translation id="1978555033938440688">ફર્મવેયર વર્ઝન</translation>
 <translation id="1979156660928743046">મીડિયા સંબંધી માહિતી</translation>
 <translation id="1988881251331415125">જો જોડણી સાચી હોય, તો <ph name="BEGIN_LINK" />કનેક્ટિવિટી નિદાન ચલાવવાનો પ્રયાસ કરી જુઓ<ph name="END_LINK" />.</translation>
@@ -888,6 +890,7 @@
 <translation id="2619052155095999743">શામેલ કરો</translation>
 <translation id="2625385379895617796">તમારી ઘડિયાળ આગળ છે</translation>
 <translation id="262745152991669301">USB ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
+<translation id="2628224721443278970">Microsoft OneDriveમાં સાઇન ઇન કરો</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />નું સર્વર IP ઍડ્રેસ ન મળ્યું.</translation>
 <translation id="2639739919103226564">સ્થિતિ:</translation>
 <translation id="2647086987482648627">કાપડ (સેમી-ગ્લોસ)</translation>
@@ -1832,6 +1835,7 @@
 <translation id="4377125064752653719">તમે <ph name="DOMAIN" /> પર પહોંચવાનો પ્રયાસ કર્યો, પણ સર્વર દ્વારા પ્રસ્તુત કરવામાં આવેલું પ્રમાણપત્ર તેના રજૂકર્તા દ્વારા જ રદ કરવામાં આવ્યું છે. આનો અર્થ છે કે સર્વરે પ્રસ્તુત કરેલા સુરક્ષા પ્રમાણપત્રો પૂર્ણપણે વિશ્વસનીય નથી. તમે કોઈ હુમલાખોર જોડે વાત કરતા હોઈ શકો છો.</translation>
 <translation id="4378154925671717803">ફોન</translation>
 <translation id="4384395682990721132">A4x3</translation>
+<translation id="4387692837058041921">Microsoft OneDrive પર ફાઇલ અપલોડની પ્રક્રિયા થોભાવવામાં આવી છે</translation>
 <translation id="4390472908992056574">બ્રિમ</translation>
 <translation id="4397059608630092079">ઑટોમૅટિક રીતે ભરવાની સુવિધાનો ઉપયોગ કરતી વખતે હંમેશાં ચકાસણી કરો</translation>
 <translation id="4397978002248035985">તમારી બેંકની વેબસાઇટ પર ચકાસણી કરવા માટે પૉપ-અપ ખોલે છે</translation>
@@ -1934,6 +1938,7 @@
 <translation id="4636930964841734540">માહિતી</translation>
 <translation id="4640225694041297329">છેલ્લા 7 દિવસના પરિણામો બતાવો</translation>
 <translation id="464342062220857295">શોધ સુવિધાઓ</translation>
+<translation id="4644567637638438744">જો તમે Microsoft OneDriveમાં સાઇન ઇન કર્યું હોય તો જ ફાઇલો અપલોડ કરી શકાય છે</translation>
 <translation id="4644670975240021822">ઉલ્ટા ક્રમમાં નીચે તરફ</translation>
 <translation id="4646534391647090355">મને હવે ડાઉનલોડ હોમ પર લઈ જાઓ</translation>
 <translation id="4648262692072505866">હૅશનું ફૉર્મેટ SHA-256 હોવું આવશ્યક છે.</translation>
@@ -3048,6 +3053,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">કૅમેરા</translation>
 <translation id="6734506549556896534">સિમ્યુલેશન ગેમ</translation>
+<translation id="6735783933931458444">તમે દિવસના આ સમયે વારંવાર મુલાકાત લો છો</translation>
 <translation id="6737708609449480586">બૅક કરેલી વસ્તુઓ</translation>
 <translation id="6738516213925468394">તમારો ડેટા <ph name="TIME" />ના રોજ તમારા <ph name="BEGIN_LINK" />સિંક પાસફ્રેઝ<ph name="END_LINK" /> સાથે એન્ક્રિપ્ટ કરવામાં આવ્યો હતો. સિંક શરૂ કરવા માટે એ દાખલ કરો.</translation>
 <translation id="6740851646645036700">તમે અત્યારે તમારી લેખન સંબંધી સહાયની મર્યાદા સુધી પહોંચી ગયા છો. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
@@ -3765,6 +3771,7 @@
 <translation id="8041089156583427627">પ્રતિસાદ મોકલો</translation>
 <translation id="8041940743680923270">વૈશ્વિક ડિફોલ્ટનો ઉપયોગ કરો (કહો)</translation>
 <translation id="8043255123207491407">વિક્રેતાના નિયમો અને શરતો જુઓ</translation>
+<translation id="8044986521421349135">તમારું સૌથી તાજેતરનું ટૅબ</translation>
 <translation id="8046360364391076336">ઔદ્યોગિક સામગ્રી અને સાધન</translation>
 <translation id="8052898407431791827">ક્લિપબોર્ડ પર કૉપિ કર્યો</translation>
 <translation id="8057023045886711556">રમૂજી મૂવી</translation>

@@ -38,8 +38,10 @@
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating</translation>
 <translation id="266935134738038806">Visit site</translation>
 <translation id="2677748264148917807">Leave</translation>
+<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab added, <ph name="ANY_CHANGED" /> changed, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_ADDED" /> tabs added, <ph name="ANY_CHANGED" /> changed, <ph name="ANY_CLOSED" /> closed}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Created <ph name="NUM_HOURS_ONE" /> hour ago}other{Created <ph name="NUM_HOURS_MANY" /> hours ago}}</translation>
 <translation id="2801787514987684416">View shop info?</translation>
+<translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> tab closed}other{<ph name="MANY_CLOSED" /> tabs closed}}</translation>
 <translation id="2894757982205307093">New tab in group</translation>
 <translation id="2928243913527329289">Google | About this store</translation>
 <translation id="2977480621796371840">Remove from group</translation>
@@ -50,6 +52,7 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> price drop on <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> tab group colour icon</translation>
 <translation id="3194464645767632461">rating</translation>
+<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab added, <ph name="ANY_CHANGED" /> changed}other{<ph name="MANY_ADDED" /> tabs added, <ph name="ANY_CHANGED" /> changed}}</translation>
 <translation id="3291470810748040983">You'll get an alert when there's a lower price in an open tab</translation>
 <translation id="3322827343001922122">Open the tab group action menu for tab group <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Suggestion: <ph name="NUMBER_OF_TABS" /> tabs seem related. Group them?</translation>
@@ -71,6 +74,7 @@
 <translation id="4159784952369912983">Purple</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Expand <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_ONE" /> tab.}other{Expand <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="427987768447457592">New tab group</translation>
+<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> tab changed, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_CHANGED" /> tabs changed, <ph name="ANY_CLOSED" /> closed}}</translation>
 <translation id="4371591986692297148">Inactive</translation>
 <translation id="4460014764210899310">Ungroup</translation>
 <translation id="4590027107044272416">You can now open a new tab here</translation>
@@ -92,6 +96,7 @@
 <translation id="5076161749301278626">See store reviews?</translation>
 <translation id="5082793167783849073">Quickly compare pages by making a group. To start, touch and hold a link.</translation>
 <translation id="5094423602314093681">Remove tab(s) and delete group?</translation>
+<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab added}other{<ph name="MANY_ADDED" /> tabs added}}</translation>
 <translation id="5161254044473106830">Title required</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Close tab group with <ph name="TABS_COUNT_ONE" /> tab.}other{Close tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="5339733443032484186">Your last tab</translation>
@@ -100,6 +105,7 @@
 <translation id="5494920125229734069">Select all</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Close tab group with <ph name="TABS_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />.}other{Close tab group with <ph name="TABS_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">View shop info, option available near top of the screen</translation>
+<translation id="5627941783489838464">No tab updates</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restore tab}other{Restore tabs}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link from Chrome}other{<ph name="TABS_COUNT_MANY" /> links from Chrome}}</translation>
 <translation id="575494663145460764">Get alerts for price drops?</translation>
@@ -124,6 +130,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Move tab left</translation>
 <translation id="6615455863669487791">Show me</translation>
+<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> tab changed}other{<ph name="MANY_CHANGED" /> tabs changed}}</translation>
 <translation id="6694634756612002311">Manage sharing</translation>
 <translation id="6744956528665271406">Edit group colour</translation>
 <translation id="6856809498882026482">Hide multi-select mode</translation>
@@ -165,6 +172,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Close <ph name="TABS_COUNT_ONE" /> selected tab}other{Close <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
 <translation id="8398929769197326728">New folder – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Settings</translation>
+<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab added, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_ADDED" /> tabs added, <ph name="ANY_CLOSED" /> closed}}</translation>
 <translation id="8631711675211020168">Everyone will immediately lose access to the <ph name="GROUP_NAME" /> tab group, and it will be deleted from all devices</translation>
 <translation id="8633025649649592204">Recent activity</translation>
 <translation id="870736955561925754">Close tab and delete group?</translation>

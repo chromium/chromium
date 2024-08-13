@@ -475,7 +475,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3226612997184048185">Wenn du auch deine Lesezeichen in deinem Google-Konto speicherst, kannst du in Chrome Produktpreise im Auge behalten und dich benachrichtigen lassen, wenn der Preis sinkt</translation>
 <translation id="3227557059438308877">Google Chrome als Sicherheitsschlüssel</translation>
 <translation id="3232293466644486101">Browserdaten löschen…</translation>
-<translation id="3232459301230493791"><ph name="TAB_COUNT" /> Tabs gelöscht</translation>
 <translation id="3232754137068452469">Web-App</translation>
 <translation id="3236059992281584593">1 Minute übrig</translation>
 <translation id="3237087289225714896">Standard-Vorabladen:</translation>
@@ -1444,7 +1443,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7759809451544302770">Optional</translation>
 <translation id="7762668264895820836">SD-Karte <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Adresse hinzufügen</translation>
-<translation id="776533689993750361"><ph name="TAB_COUNT" /> Tab gelöscht</translation>
 <translation id="7772032839648071052">Passphrase bestätigen</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> schließen</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}}</translation>

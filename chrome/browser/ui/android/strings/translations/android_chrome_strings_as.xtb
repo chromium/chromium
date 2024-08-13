@@ -475,7 +475,6 @@
 <translation id="3226612997184048185">যদি আপুনি নিজৰ Google একাউণ্টত নিজৰ বুকমাৰ্কসমূহো ছেভ কৰে, আপুনি Chromeত প্ৰ’ডাক্টৰ দামসমূহ ট্ৰেক কৰিব পাৰে আৰু দাম কৰিলে জাননী পাব পাৰে</translation>
 <translation id="3227557059438308877">এটা সুৰক্ষা সম্পৰ্কীয় চাবি হিচাপে Google Chrome</translation>
 <translation id="3232293466644486101">ব্ৰাউজিঙৰ ডেটা মচক…</translation>
-<translation id="3232459301230493791"><ph name="TAB_COUNT" /> টা টেব মচা হৈছে</translation>
 <translation id="3232754137068452469">ৱেব এপ্‌</translation>
 <translation id="3236059992281584593">১ মিনিট বাকী আছে</translation>
 <translation id="3237087289225714896">মান্য আগতীয়া ল’ডিং:</translation>
@@ -1451,7 +1450,6 @@
 <translation id="7759809451544302770">ঐচ্ছিক</translation>
 <translation id="7762668264895820836">এছডি কাৰ্ড <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">ঠিকনা যোগ কৰক</translation>
-<translation id="776533689993750361"><ph name="TAB_COUNT" />টা টেব মচা হৈছে</translation>
 <translation id="7772032839648071052">পাছফ্ৰেজ নিশ্চিত কৰক</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> বন্ধ কৰক</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা}}</translation>

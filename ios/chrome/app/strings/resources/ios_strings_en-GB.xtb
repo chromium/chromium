@@ -123,10 +123,12 @@
 <translation id="1605658421715042784">Copy image</translation>
 <translation id="1608337082864370066">Search for copied image</translation>
 <translation id="1612730193129642006">Show Tab Grid</translation>
+<translation id="1612754831519568745">Your Safe Browsing is currently off. Get protection from dangerous sites, downloads and extensions.</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622717322707146952">Select “Add to Google Calendar“ or “Add to Apple Calendar.“</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> reused passwords</translation>
 <translation id="1636234353664774105">Get directions to your destination with turn-by-turn guidance using the navigation feature.</translation>
+<translation id="1641068175940982148">Open <ph name="GROUP_TITLE" />, group of <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641316430523156212">Follow</translation>
 <translation id="1644574205037202324">History</translation>
@@ -402,6 +404,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2952246431280799028">Touch &amp; hold an address.</translation>
 <translation id="2952278131021475699">Lens Camera Search</translation>
 <translation id="2958718410589002129">Passwords</translation>
+<translation id="2963044753825419640">Allow websites and apps to automatically upgrade existing accounts to use passkeys when available</translation>
 <translation id="2964349545761222050">Block third-party cookies</translation>
 <translation id="2965328226365382335">Last 15 Minutes</translation>
 <translation id="2969979262385602596">Failed to sign in. Please try again later.</translation>
@@ -759,6 +762,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Only on this device, <ph name="URL" /></translation>
 <translation id="4751645464639803239">New incognito tab</translation>
 <translation id="4766112107778026136">Discover and following</translation>
+<translation id="4769198578611055647">Helps you access saved passkeys on any device</translation>
 <translation id="4775879719735953715">Default Browser</translation>
 <translation id="4779732376610430319">Go To Settings...</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1042,6 +1046,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6067849159007176401">Add Browsing Protection</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) could not be uploaded</translation>
 <translation id="6084848228346514841">Select tabs</translation>
+<translation id="6089212833343035912">Google Password Manager PIN</translation>
 <translation id="6100617279104942061">Signed in as <ph name="USER_EMAIL" />. Opens settings.</translation>
 <translation id="6103540626693881831">On-device encryption</translation>
 <translation id="6119050551270742952">Current web page is on Incognito</translation>
@@ -1261,6 +1266,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7022197654033719543">Site information</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="704692552158601232">Default browser app</translation>
+<translation id="7051147526307793383">Allow automatic passkey upgrades</translation>
 <translation id="7055240621761583113">Autofill the password</translation>
 <translation id="7063811929043357292">Your account is managed by your parent.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -1336,6 +1342,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7470908168505178757">Tab group. Collapsed.</translation>
 <translation id="7472734401283673885">Company Name</translation>
 <translation id="7473891865547856676">No Thanks</translation>
+<translation id="7477974514217962959">{count,plural, =1{1 tab group closed and saved}other{{count} tab groups closed and saved}}</translation>
 <translation id="7488874549363591659">Delivered</translation>
 <translation id="7491131399623468277">Go to Settings…</translation>
 <translation id="749854780843431406">You can open a new tab from the <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> button.</translation>

@@ -2444,6 +2444,7 @@
 <translation id="272741954544380994"><ph name="VISUAL_SEARCH_PROVIDER" /> ମାଧ୍ୟମରେ ଇମେଜ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="2727633948226935816">ମୋତେ ପୁଣି ମନେ ପକାନ୍ତୁ ନାହିଁ</translation>
 <translation id="2727712005121231835">ପ୍ରକୃତ ଆକାର</translation>
+<translation id="2727713483500953825">Lens ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରିବାକୁ ଇମେଜ/ଟେକ୍ସଟକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="2727744317940422214">କ୍ଷମା କରିବେ, କିଛି ତ୍ରୁଟି ହୋଇଛି। ଦୟାକରି ବର୍ଣ୍ଣନାରେ #bruschetta ସହ ମତାମତ ଦାଖଲ କରନ୍ତୁ। ତ୍ରୁଟି କୋଡ ହେଉଛି <ph name="ERROR" />। ଖାଲି କରିବା ବିଫଳ ହୋଇଛି, ଆପଣଙ୍କୁ ଏହା ମାନୁଆଲୀ କରିବାକୁ ଆବଶ୍ୟକ ପଡ଼ିପାରେ।</translation>
 <translation id="2729327310379176711">ଟ୍ରାକିଂକୁ ହ୍ରାସ କରିବା ଏବଂ ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ଆପଣଙ୍କୁ ଆହୁରି ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ Chrome ନୂଆ ଉପାୟଗୁଡ଼ିକ ଖୋଜୁଛି। Chrome ମଧ୍ୟ <ph name="ESTIMATE_INTERESTS_LINK" /> କରେ ଏବଂ ସେଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ ଆପଣଙ୍କୁ ସକ୍ଷମ କରିଥାଏ। ତା'ପରେ, ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟଗୁଡ଼ିକ ଆପଣଙ୍କୁ ବିଜ୍ଞାପନଗୁଡ଼ିକ ଦେଖାଇବା ପାଇଁ ଆପଣଙ୍କ ରୁଚିଗୁଡ଼ିକ ବିଷୟରେ Chromeକୁ ପଚାରିପାରେ।</translation>
 <translation id="2729577602370119849">ପ୍ରିଣ୍ଟରଗୁଡ଼ିକୁ ସହଜରେ ଆକ୍ସେସ କରି ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -3659,6 +3660,7 @@
 <translation id="3623598555687153298">ଏହା ଡିସପ୍ଲେ ହୋଇଥିବା ସାଇଟଗୁଡ଼ିକ ଦ୍ୱାରା ଷ୍ଟୋର କରାଯାଇଥିବା <ph name="TOTAL_USAGE" /> ଡାଟାକୁ ଡିଲିଟ କରିଦେବ</translation>
 <translation id="3624567683873126087">ଡିଭାଇସ୍ ଅନ୍‌ଲକ୍ କରନ୍ତୁ ଏବଂ Google ଆକାଉଣ୍ଟକୁ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="3624583033347146597">ଆପଣଙ୍କ ତୃତୀୟ-ପକ୍ଷ କୁକୀ ପସନ୍ଦଗୁଡ଼ିକୁ ବାଛନ୍ତୁ</translation>
+<translation id="3625345586754200168">Lens ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="3625481642044239431">ଅବୈଧ ଫାଇଲ୍ ବଛାଯାଇଛି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3626296069957678981">ଏହି Chromebookକୁ ଚାର୍ଜ କରିବା ପାଇଁ, ଏକ ସୁସଙ୍ଗତ Dell ବ୍ୟାଟେରୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="3627320433825461852">1 ମିନିଟ୍‌ରୁ କମ୍‌ ସମୟ ରହିଲା</translation>
@@ -4814,6 +4816,7 @@
 <translation id="4450974146388585462">ନିର୍ଣ୍ଣୟ କରନ୍ତୁ</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ଏକ ସକ୍ରିୟ TPM ଚିହ୍ନଟ କରିଛି ଯାହା ଆପଣଙ୍କ ଡାଟାକୁ ଅଧିକ ସୁରକ୍ଷିତ ଭାବେ ଷ୍ଟୋର କରିପାରିବ।</translation>
 <translation id="4452898361839215358">କିମ୍ବା PPD ଚୟନ କରନ୍ତୁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Lens ମାଧ୍ୟମରେ ଯେ କୌଣସି ଇମେଜ କିମ୍ବା ଟେକ୍ସଟକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4453430595102511050">ଆପଣଙ୍କ କୀବୋର୍ଡର ଶୀର୍ଷ ଡାହାଣ କୋଣରେ ଥିବା ଟିପଚିହ୍ନ ସେନ୍ସରକୁ ସ୍ପର୍ଶ କରନ୍ତୁ। ଆପଣଙ୍କ ଟିପଚିହ୍ନ ଡାଟାକୁ ସୁରକ୍ଷିତ ଭାବେ ଷ୍ଟୋର କରାଯାଇଛି ଏବଂ ଏହାକୁ କେବେ ବି ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରୁ କାଢ଼ି ଦିଆଯାଏ ନାହିଁ।</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" />ରେ ଖୋଜନ୍ତୁ କିମ୍ବା ଏକ URL ଲେଖନ୍ତୁ</translation>
 <translation id="4457472090507035117">ବର୍ତ୍ତମାନର ସ୍ୱରକୁ ଚୟନ କରନ୍ତୁ:</translation>
@@ -6968,6 +6971,7 @@
 <translation id="6059276912018042191">ବର୍ତ୍ତମାନର Chrome ଟାବଗୁଡ଼ିକ</translation>
 <translation id="6059652578941944813">ସାର୍ଟିଫିକେଟ୍ ଅନୁକ୍ରମ</translation>
 <translation id="6059925163896151826">USB ଡିଭାଇସ୍‌ଗୁଡ଼ିକ</translation>
+<translation id="6060842547856900641">Lens ଖୋଲନ୍ତୁ</translation>
 <translation id="6061408389284235459"><ph name="DEVICE_NAME" />କୁ ଏକ ବିଜ୍ଞପ୍ତି ପଠାଯାଇଛି</translation>
 <translation id="6063284707309177505">QR କୋଡ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />ଧ୍ୟାନ ଦିଅନ୍ତୁ:<ph name="END_BOLD" /> ଏକ ସମାନ ଭଏସ୍ କିମ୍ବା ରେକର୍ଡିଂ <ph name="SUPERVISED_USER_NAME" />ର ବ୍ୟକ୍ତିଗତ ଫଳାଫଳକୁ ଆକ୍ସେସ୍ କରିବାରେ ସମର୍ଥ ହୋଇପାରେ। ବ୍ୟାଟେରୀ ସେଭ୍ କରିବାକୁ, ଏହି ଡିଭାଇସଟି ଏକ ପାୱାର ସୋର୍ସ ସହ ସଂଯୁକ୍ତ ଥିବା ବେଳେ କେବଳ, ଆପଣ <ph name="SUPERVISED_USER_NAME" />ର Assistant ସେଟିଂସରେ “Hey Google” ସୁବିଧାକୁ ଚାଲୁ ରଖିବା ଚୟନ କରିପାରିବେ।</translation>

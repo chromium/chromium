@@ -3203,6 +3203,7 @@
 <translation id="3269093882174072735">इमेज लोड करें</translation>
 <translation id="326911502853238749"><ph name="MODULE_NAME" /> न दिखाएं</translation>
 <translation id="3269175001434213183">कॉन्टेंट का बैक अप लेने और इसे किसी भी डिवाइस पर इस्तेमाल करने के लिए, सिंक करने की सुविधा चालू करें</translation>
+<translation id="3269209112443570745">नई सुविधा! स्क्रीन पर मौजूद कॉन्टेंट को खोजने का आसान तरीका</translation>
 <translation id="3269612321104318480">हल्का नीला-हरा और सफ़ेद</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{फ़ाइल}one{# फ़ाइल}other{# फ़ाइलें}}</translation>
 <translation id="326999365752735949">अंतर डाउनलोड करना</translation>
@@ -3673,6 +3674,7 @@
 <translation id="3621202678540785336">इनपुट</translation>
 <translation id="3621807901162200696">ChromeOS की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में मदद करें</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{एक ऐप्लिकेशन}one{# ऐप्लिकेशन}other{# ऐप्लिकेशन}}</translation>
+<translation id="3622716124581627104">चीज़ों या जगहों की पहचान करें और टेक्स्ट को कॉपी करें या उसका अनुवाद करें. Google Lens का इस्तेमाल करने पर, Google को उस पेज का एक स्क्रीनशॉट भेजा जाता है. <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">स्क्रीन के फ़्लैश का रंग</translation>
 <translation id="362333465072914957">प्रमाणपत्र जारी करने के लिए सीए का इंतज़ार</translation>
 <translation id="3623598555687153298">इससे, देखी गई साइटों के सेव किए गए कुल डेटा में से <ph name="TOTAL_USAGE" /> डेटा मिट जाएगा</translation>

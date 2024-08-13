@@ -127,6 +127,7 @@
 <translation id="1622717322707146952">‏בוחרים באפשרות 'הוספה ליומן Google' או 'הוספה ל-Apple Calendar'.</translation>
 <translation id="1626771852476987600">יש <ph name="COUNT" /> סיסמאות בשימוש חוזר</translation>
 <translation id="1636234353664774105">קבלת מסלול מפורט ליעד בעזרת תכונת הניווט</translation>
+<translation id="1641068175940982148">פתיחה של <ph name="GROUP_TITLE" />, קבוצה של <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">גלישה בטוחה</translation>
 <translation id="1641316430523156212">מעקב</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
@@ -402,6 +403,7 @@
 <translation id="2952246431280799028">לוחצים לחיצה ארוכה על כתובת.</translation>
 <translation id="2952278131021475699">‏חיפוש באמצעות המצלמה ב-Lens</translation>
 <translation id="2958718410589002129">סיסמאות</translation>
+<translation id="2963044753825419640">מתן הרשאה לאתרים ולאפליקציות לשדרג אוטומטית חשבונות קיימים לשימוש במפתחות גישה, אם הם זמינים</translation>
 <translation id="2964349545761222050">‏חסימה של קובצי cookie מצדדים שלישיים</translation>
 <translation id="2965328226365382335">ב-15 הדקות האחרונות</translation>
 <translation id="2969979262385602596">לא ניתן היה להיכנס לחשבון. יש לנסות שוב מאוחר יותר.</translation>
@@ -759,6 +761,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />, ‏<ph name="STATE" />, רק במכשיר הזה, <ph name="URL" /></translation>
 <translation id="4751645464639803239">כרטיסייה פרטית חדשה</translation>
 <translation id="4766112107778026136">‏Discover והפיד 'במעקב'</translation>
+<translation id="4769198578611055647">הפעולה הזו עוזרת לך לגשת למפתחות הגישה ששמורים בכל מכשיר</translation>
 <translation id="4775879719735953715">דפדפן ברירת המחדל</translation>
 <translation id="4779732376610430319">להגדרות…</translation>
 <translation id="4787847736989526091">‫<ph name="VALUE" />,‏ <ph name="ADDITIONAL_INFO" /></translation>
@@ -1042,6 +1045,7 @@
 <translation id="6067849159007176401">הוספת הגנה על הגלישה</translation>
 <translation id="607620096698446287">לא ניתן להעלות את <ph name="FILENAME" /> ‏(<ph name="FILESIZE" />)</translation>
 <translation id="6084848228346514841">בחירת כרטיסיות</translation>
+<translation id="6089212833343035912">‏קוד אימות למנהל הסיסמאות של Google</translation>
 <translation id="6100617279104942061">נכנסת לחשבון בתור <ph name="USER_EMAIL" />. ההגדרות ייפתחו.</translation>
 <translation id="6103540626693881831">הצפנה במכשיר</translation>
 <translation id="6119050551270742952">דף האינטרנט הנוכחי מוצג במצב אנונימי</translation>
@@ -1261,6 +1265,7 @@
 <translation id="7022197654033719543">פרטי האתר</translation>
 <translation id="7029809446516969842">סיסמאות</translation>
 <translation id="704692552158601232">אפליקציית ברירת המחדל לדפדפן</translation>
+<translation id="7051147526307793383">הפעלת שדרוגים אוטומטיים של מפתחות גישה</translation>
 <translation id="7055240621761583113">מילוי אוטומטי של הסיסמה</translation>
 <translation id="7063811929043357292">החשבון מנוהל על ידי ההורה שלך.
 <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>

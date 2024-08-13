@@ -668,6 +668,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3439896670700055005">Aktuelle Seite ohne zwischengespeicherte Inhalte aktualisieren</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">Maus anpassen</translation>
+<translation id="3444385531800624797">Ergebnisse werden geladen</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C-Gerät</translation>
 <translation id="3454555520521576458">Größe kann geändert werden</translation>
@@ -1211,6 +1212,7 @@ Du kannst auch die entsprechende Tastenkombination verwenden. Markiere dazu zuer
 <translation id="5253783950165989294">Mit einem Gerät namens „<ph name="DEVICE_NAME" />“ verbunden, <ph name="BATTERY_PERCENTAGE" /> % Akku</translation>
 <translation id="5258528442992323769">Keine gespeicherten Desktops</translation>
 <translation id="5260676007519551770">Desktop 4</translation>
+<translation id="5265391159779542051">Ergebnisse geladen</translation>
 <translation id="5270547718570958938">Google Kalender</translation>
 <translation id="5277869901083657836">Eingabestift-Tools ein-/ausblenden</translation>
 <translation id="5278086053818066789">ChromeVox aktivieren oder deaktivieren (gesprochenes Feedback)</translation>
@@ -1506,6 +1508,7 @@ Keine Geräte verbunden.</translation>
 <translation id="6210042900243040400"><ph name="NAME" /> verbinden, wurde(n) bereits in <ph name="EMAIL" /> gespeichert</translation>
 <translation id="6213808132343683860">Screenshot oder Bildschirmaufzeichnung eines Bildschirmausschnitts erstellen</translation>
 <translation id="621606890568890214">Google Classroom maximieren</translation>
+<translation id="6216759484154215561">Link „Weitere Informationen“ im Browser geöffnet</translation>
 <translation id="6220928844947387476">Jetzt kannst du dich selbst und deinen Bildschirm gleichzeitig aufnehmen</translation>
 <translation id="622484624075952240">Abwärts</translation>
 <translation id="6228457605945141550">Helligkeit verringern</translation>
@@ -2218,6 +2221,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">Zwischen der unteren rechten Ecke, dem Launcher, der Adressleiste, der Lesezeichenleiste, der geöffneten Website und den Downloads vorwärtsgehen</translation>
 <translation id="8792626944327216835">Mikrofon</translation>
+<translation id="8797381270745758905">Link „Noch einmal versuchen“ aktiviert</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Ordner <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">„Hilfe“</translation>

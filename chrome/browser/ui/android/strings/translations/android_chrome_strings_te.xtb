@@ -475,7 +475,6 @@
 <translation id="3226612997184048185">మీ బుక్‌మార్క్‌లను Google ఖాతాలో కూడా సేవ్ చేస్తే, మీరు Chromeలో ప్రోడక్ట్ ధరలను ట్రాక్ చేయవచ్చు, ధర తగ్గినప్పుడు తెలియజేయబడుతుంది</translation>
 <translation id="3227557059438308877">'సెక్యూరిటీ కీ'గా Google Chrome</translation>
 <translation id="3232293466644486101">బ్రౌజింగ్ డేటాను తొలగించండి…</translation>
-<translation id="3232459301230493791"><ph name="TAB_COUNT" /> ట్యాబ్‌లను తొలగించారు</translation>
 <translation id="3232754137068452469">వెబ్ యాప్‌</translation>
 <translation id="3236059992281584593">1 నిమిషం మిగిలి ఉంది</translation>
 <translation id="3237087289225714896">స్టాండర్డ్ ప్రీ - లోడింగ్:</translation>
@@ -764,6 +763,7 @@
 <translation id="4687718960473379118">సైట్ సూచించిన యాడ్‌లు</translation>
 <translation id="469286762610133730">మెరుగైన కంటెంట్ పొందండి</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
+<translation id="4698061626562952596">మీ ఇన్‌యాక్టివ్ ట్యాబ్‌లను ఇక్కడ రివ్యూ చేయండి</translation>
 <translation id="4699172675775169585">కాష్ చేసిన చిత్రాలు మరియు ఫైళ్లు</translation>
 <translation id="4710167854527459075">సరికొత్తవి సార్ట్ చేయి</translation>
 <translation id="4719927025381752090">అనువదించమని ఆఫర్ చేయి</translation>
@@ -1450,7 +1450,6 @@
 <translation id="7759809451544302770">ఐచ్ఛికం</translation>
 <translation id="7762668264895820836">SD కార్డ్ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">అడ్రస్‌ను జోడించండి</translation>
-<translation id="776533689993750361"><ph name="TAB_COUNT" /> ట్యాబ్‌ను తొలగించారు</translation>
 <translation id="7772032839648071052">రహస్య పదబంధాన్ని నిర్ధారించండి</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />ను మూసివేయండి</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>

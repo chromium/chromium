@@ -475,7 +475,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3226612997184048185">Nếu cũng lưu dấu trang trong Tài khoản Google, bạn có thể theo dõi giá sản phẩm trong Chrome và nhận thông báo khi sản phẩm giảm giá</translation>
 <translation id="3227557059438308877">Dùng Google Chrome làm khóa bảo mật</translation>
 <translation id="3232293466644486101">Xoá dữ liệu duyệt web…</translation>
-<translation id="3232459301230493791">Đã xoá <ph name="TAB_COUNT" /> thẻ</translation>
 <translation id="3232754137068452469">Ứng dụng web</translation>
 <translation id="3236059992281584593">Còn 1 phút</translation>
 <translation id="3237087289225714896">Chế độ tải trước tiêu chuẩn:</translation>
@@ -1445,7 +1444,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7759809451544302770">Tùy chọn</translation>
 <translation id="7762668264895820836">Thẻ SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Thêm địa chỉ</translation>
-<translation id="776533689993750361">Đã xoá <ph name="TAB_COUNT" /> thẻ</translation>
 <translation id="7772032839648071052">Xác nhận cụm mật khẩu</translation>
 <translation id="7772375229873196092">Đóng <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> tùy chọn khác}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> tùy chọn khác}}</translation>

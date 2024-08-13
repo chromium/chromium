@@ -2449,6 +2449,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="272741954544380994">Rechercher l'image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Ne plus afficher ce rappel</translation>
 <translation id="2727712005121231835">Taille réelle</translation>
+<translation id="2727713483500953825">Sélectionner des images/du texte pour rechercher avec Lens</translation>
 <translation id="2727744317940422214">Désolé, un problème est survenu. Veuillez envoyer vos commentaires en incluant #bruschetta dans la description. Code d'erreur : <ph name="ERROR" />. Échec du nettoyage. Vous devrez peut-être le faire manuellement.</translation>
 <translation id="2729327310379176711">Chrome travaille à trouver de nouvelles façons de réduire le suivi et d'encore mieux vous protéger lorsque vous naviguez. De plus, il <ph name="ESTIMATE_INTERESTS_LINK" /> et vous permet de les gérer. Ensuite, les sites que vous consultez peuvent les lui demander afin de vous montrer des annonces.</translation>
 <translation id="2729577602370119849">Accédez aux imprimantes et gérez-les facilement</translation>
@@ -3662,6 +3663,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3623598555687153298">Cela effacera <ph name="TOTAL_USAGE" /> des données stockées par les sites affichés</translation>
 <translation id="3624567683873126087">Déverrouiller l'appareil et se connecter au compte Google</translation>
 <translation id="3624583033347146597">Sélectionner vos préférences concernant les cookies tiers</translation>
+<translation id="3625345586754200168">Essayer Lens</translation>
 <translation id="3625481642044239431">Le fichier sélectionné n'est pas valide. Veuillez réessayer.</translation>
 <translation id="3626296069957678981">Pour charger ce Chromebook, utilisez une batterie Dell compatible.</translation>
 <translation id="3627320433825461852">Moins d'1 minute restante</translation>
@@ -4818,6 +4820,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4450974146388585462">Analyser</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> a détecté un TPM actif qui peut stocker vos données de façon plus sécurisée.</translation>
 <translation id="4452898361839215358">ou sélectionnez un PPD. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Rechercher dans une image ou un texte avec Lens</translation>
 <translation id="4453430595102511050">Appuyez sur le lecteur d'empreinte digitale en haut à droite de votre clavier. Les données liées à votre empreinte digitale sont stockées de façon sécurisée et ne quittent jamais votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Effectuez une recherche sur <ph name="SEARCH_ENGINE_NAME" /> ou saisissez une URL</translation>
 <translation id="4457472090507035117">Sélectionner la voix actuelle :</translation>
@@ -6975,6 +6978,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6059276912018042191">Onglets Chrome récents</translation>
 <translation id="6059652578941944813">Hiérarchie des certificats</translation>
 <translation id="6059925163896151826">Appareils USB</translation>
+<translation id="6060842547856900641">Ouvrir Lens</translation>
 <translation id="6061408389284235459">Une notification a été envoyée à <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Créer un code QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Il se peut qu'une voix similaire ou un enregistrement puissent accéder aux résultats personnels de <ph name="SUPERVISED_USER_NAME" />. Afin d'économiser la batterie, configurez les paramètres de l'Assistant de <ph name="SUPERVISED_USER_NAME" /> pour que "Hey Google" ne soit actif que quand l'appareil est branché à l'alimentation.</translation>

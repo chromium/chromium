@@ -475,7 +475,6 @@
 <translation id="3226612997184048185">‏אם הסימניות שלך נשמרות גם בחשבון Google, יש לך אפשרות לעקוב אחרי מחירי מוצרים ב-Chrome ולקבל הודעות כשהמחירים יורדים</translation>
 <translation id="3227557059438308877">‏Google Chrome כמפתח אבטחה</translation>
 <translation id="3232293466644486101">מחיקת נתוני הגלישה מתבצעת…</translation>
-<translation id="3232459301230493791">‫<ph name="TAB_COUNT" /> כרטיסיות נמחקו</translation>
 <translation id="3232754137068452469">אפליקציית אינטרנט</translation>
 <translation id="3236059992281584593">נותרה דקה אחת</translation>
 <translation id="3237087289225714896">טעינה רגילה מראש:</translation>
@@ -764,6 +763,7 @@
 <translation id="4687718960473379118">מודעות שאתרים מציעים</translation>
 <translation id="469286762610133730">התוכן שמופיע כאן יכול להתאים לך יותר</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> נוספת}one{‏<ph name="SHIPPING_OPTION_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> נוספות}two{‏<ph name="SHIPPING_OPTION_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> נוספות}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> נוספות}}</translation>
+<translation id="4698061626562952596">כאן אפשר לראות את הכרטיסיות הלא פעילות</translation>
 <translation id="4699172675775169585">תמונות וקבצים במטמון</translation>
 <translation id="4710167854527459075">מיון לפי החדש ביותר</translation>
 <translation id="4719927025381752090">הצגת הצעות לתרגום</translation>
@@ -1444,7 +1444,6 @@
 <translation id="7759809451544302770">אופציונלי</translation>
 <translation id="7762668264895820836">‏כרטיס SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">הוספת כתובת</translation>
-<translation id="776533689993750361">כרטיסייה אחת (<ph name="TAB_COUNT" />) נמחקה</translation>
 <translation id="7772032839648071052">אישור משפט-סיסמה</translation>
 <translation id="7772375229873196092">סגירת <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוסף}one{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}two{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}other{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}}</translation>

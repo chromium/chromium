@@ -475,7 +475,6 @@
 <translation id="3226612997184048185">এছাড়াও, আপনি বুকমার্ক Google অ্যাকাউন্টে সেভ করলে Chrome-এ প্রোডাক্টের দাম ট্র্যাক করার সুবিধা পাবেন এবং সেই সাথে প্রোডাক্টের দাম কমলে আপনাকে বিজ্ঞপ্তি দিয়ে জানানো হবে।</translation>
 <translation id="3227557059438308877">নিরাপত্তা কী হিসেবে Google Chrome ব্যবহার</translation>
 <translation id="3232293466644486101">ব্রাউজ করা ডেটা মুছে দিন…</translation>
-<translation id="3232459301230493791"><ph name="TAB_COUNT" />টি ট্যাব মুছে ফেলা হয়েছে</translation>
 <translation id="3232754137068452469">ওয়েব অ্যাপ</translation>
 <translation id="3236059992281584593">১ মিনিট বাকি আছে</translation>
 <translation id="3237087289225714896">স্ট্যান্ডার্ড প্রিলোডিং:</translation>
@@ -1444,7 +1443,6 @@
 <translation id="7759809451544302770">ঐচ্ছিক</translation>
 <translation id="7762668264895820836"><ph name="SD_CARD_NUMBER" /> টি এসডি কার্ড</translation>
 <translation id="7764225426217299476">ঠিকানা যোগ করুন</translation>
-<translation id="776533689993750361"><ph name="TAB_COUNT" />টি ট্যাব মুছে ফেলা হয়েছে</translation>
 <translation id="7772032839648071052">পাসফ্রেজ নিশ্চিত করুন</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> বন্ধ করুন</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> আরও অনেক}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> আরও অনেক}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> আরও অনেক}}</translation>

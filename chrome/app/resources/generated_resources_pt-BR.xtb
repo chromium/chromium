@@ -2462,6 +2462,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="272741954544380994">Pesquisar imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Não me lembrar novamente</translation>
 <translation id="2727712005121231835">Tamanho real</translation>
+<translation id="2727713483500953825">Selecione imagens/texto para pesquisar com o Lens</translation>
 <translation id="2727744317940422214">Algo deu errado. Envie um feedback com a #bruschetta na descrição. O código de erro é <ph name="ERROR" />. Falha na limpeza. Talvez ela precise ser feita manualmente.</translation>
 <translation id="2729327310379176711">O Chrome está buscando novas formas de reduzir o rastreamento e proteger você ainda mais durante a navegação. Ele também <ph name="ESTIMATE_INTERESTS_LINK" /> e permite que você gerencie todos eles. Com isso, os sites que você visita podem solicitar seus interesses ao Chrome para mostrar anúncios.</translation>
 <translation id="2729577602370119849">Acesse e gerencie impressoras com facilidade</translation>
@@ -3201,6 +3202,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3269093882174072735">Carregar imagem</translation>
 <translation id="326911502853238749">Não mostrar <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Ative a sincronização para fazer backup e usar seus dados em qualquer dispositivo</translation>
+<translation id="3269209112443570745">Novo! Uma maneira fácil de pesquisar o que está na sua tela</translation>
 <translation id="3269612321104318480">Verde-água e branco</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Arquivo}one{# arquivo}other{# arquivos}}</translation>
 <translation id="326999365752735949">Fazendo o download do diff</translation>
@@ -3672,11 +3674,13 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3621807901162200696">Ajudar a melhorar os recursos e o desempenho do ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{um app}one{# app}other{# apps}}</translation>
+<translation id="3622716124581627104">Identifique itens ou lugares e copie ou traduza textos. Quando você usa o Lens, uma captura de tela da página é enviada ao Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">Cor do flash da tela</translation>
 <translation id="362333465072914957">Esperando um certificado CA</translation>
 <translation id="3623598555687153298">Essa ação vai excluir <ph name="TOTAL_USAGE" /> de dados armazenados pelos sites mostrados</translation>
 <translation id="3624567683873126087">Desbloquear dispositivo e fazer login na Conta do Google</translation>
 <translation id="3624583033347146597">Escolha suas preferências de cookies de terceiros</translation>
+<translation id="3625345586754200168">Testar o Lens</translation>
 <translation id="3625481642044239431">Arquivo inválido selecionado. Tente novamente.</translation>
 <translation id="3626296069957678981">Para carregar este Chromebook, use uma bateria Dell compatível.</translation>
 <translation id="3627320433825461852">Menos de 1 minuto restante</translation>
@@ -4833,6 +4837,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4450974146388585462">Diagnosticar</translation>
 <translation id="445099924538929605">O <ph name="DEVICE_OS" /> detectou um TPM ativo que pode salvar dados com mais segurança.</translation>
 <translation id="4452898361839215358">ou selecione um. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Pesquise qualquer imagem ou texto com o Lens</translation>
 <translation id="4453430595102511050">Toque no sensor de impressão digital no canto superior direito do teclado. Seus dados de impressão digital são armazenados de forma segura e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Pesquisar no <ph name="SEARCH_ENGINE_NAME" /> ou digitar URL</translation>
 <translation id="4457472090507035117">Selecione a voz atual:</translation>
@@ -6992,6 +6997,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6059276912018042191">Guias recentes do Chrome</translation>
 <translation id="6059652578941944813">Hierarquia de certificados</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
+<translation id="6060842547856900641">Abrir o Lens</translation>
 <translation id="6061408389284235459">Uma notificação foi enviada para o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Criar QR code</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Observação<ph name="END_BOLD" />: uma voz parecida ou uma gravação pode conseguir acessar os resultados personalizados de <ph name="SUPERVISED_USER_NAME" />. Para economizar bateria, você pode acessar as configurações do Google Assistente de <ph name="SUPERVISED_USER_NAME" /> e ativar o "Ok Google" apenas quando o dispositivo estiver conectado a uma fonte de energia.</translation>

@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">Use your microphone and camera</translation>
 <translation id="1005333234656240382">Enable ADB debugging?</translation>
 <translation id="1005671386794704751">Rose</translation>
+<translation id="1005919400326853998">View certificate details for <ph name="CERT_NAME" /> in a new dialogue</translation>
 <translation id="1006033052970139968">Microphone access is allowed for apps, websites with the microphone permission and system services</translation>
 <translation id="1006873397406093306">This extension can read and change your data on sites. You can control which sites the extension can access.</translation>
 <translation id="1007057452468855774">Turn on Google Play Store</translation>
@@ -2754,6 +2755,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2926708162326352948">Theme updated to uploaded image</translation>
 <translation id="2927017729816812676">Cache Storage</translation>
 <translation id="2928795416630981206">Allowed to track your camera position</translation>
+<translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome removed permissions from 1 site}other{Chrome removed permissions from {NUM_SITES} sites}}</translation>
 <translation id="2931157624143513983">Fit to printable area</translation>
 <translation id="2931342457001070961">No microphone connected</translation>
 <translation id="2932085390869194046">Suggest password...</translation>
@@ -3202,6 +3204,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3269093882174072735">Load image</translation>
 <translation id="326911502853238749">Don't show <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Turn on sync to back up your stuff and use it on any device</translation>
+<translation id="3269209112443570745">New! An easy way to search what's on your screen</translation>
 <translation id="3269612321104318480">Light teal and white</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{File}other{# files}}</translation>
 <translation id="326999365752735949">Downloading diff</translation>
@@ -3672,6 +3675,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3621202678540785336">Input</translation>
 <translation id="3621807901162200696">Help improve Chrome OS features and performance</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{an app}other{# apps}}</translation>
+<translation id="3622716124581627104">Identify things or places and copy or translate text. When you use Google Lens, a screenshot of the page is sent to Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">Flash screen colour</translation>
 <translation id="362333465072914957">Waiting for the CA to issue a certificate</translation>
 <translation id="3623598555687153298">This will delete <ph name="TOTAL_USAGE" /> of data stored by displayed sites</translation>
@@ -4083,6 +4087,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3894983081771074056">Keyboard and mouse behaviour, language preferences and more</translation>
 <translation id="3895076768659607631">&amp;Manage Search Engines…</translation>
 <translation id="3895090224522145010">Kerberos username</translation>
+<translation id="3895097816015686240">Open your previous windows and tabs to easily continue where you left off</translation>
 <translation id="389521680295183045">Sites can ask to know when you're actively using your device</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{an image}other{# images}}</translation>
 <translation id="3897746662269329507">Your <ph name="DEVICE_TYPE" /> is built for gaming. The Explore app will open next where you can access hundreds of the latest games, see gaming offers and discover gaming features that come with your device.</translation>
@@ -5318,6 +5323,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4823484602432206655">Read and change user and device settings</translation>
 <translation id="4824037980212326045">Linux backup and restore</translation>
 <translation id="4824958205181053313">Cancel sync?</translation>
+<translation id="4825462365587146530">Learn more about the Chrome Root Store in a new tab.</translation>
 <translation id="4825532258163983651">Can't delete passkey</translation>
 <translation id="4827134188176577524">The Chrome Root Store contains certificates from certificate authorities trusted by the
       Chrome Root Program and is reviewed on an ongoing basis.</translation>
@@ -11036,6 +11042,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8991766915726096402">Local Data Recovery</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Memory usage - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">If you forget your <ph name="DEVICE_TYPE" /> password, you can still restore your local data. You'll need to sign in to your Google Account or use account recovery.</translation>
+<translation id="8993198843374358393">Copy certificate hash for <ph name="CERT_NAME" /></translation>
 <translation id="8993737615451556423">Provides controls to speed up, slow down and pause the reading voice</translation>
 <translation id="899384117894244799">Remove restricted user</translation>
 <translation id="8993853206419610596">Expand all requests</translation>
@@ -11243,6 +11250,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9128317794749765148">Setup couldn't complete</translation>
 <translation id="9128335130883257666">Open settings page for <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="9128870381267983090">Connect to network</translation>
+<translation id="9129562557082598582">Export all <ph name="CERT_GROUP" /></translation>
 <translation id="9130015405878219958">Invalid mode entered.</translation>
 <translation id="9130208109420587135">Edit group name <ph name="NAME" /></translation>
 <translation id="9130364135697530260">Embedded content on this site can use info they've saved about you</translation>

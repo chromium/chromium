@@ -774,6 +774,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="239429038616798445">Daardie versendingmetode is nie beskikbaar nie. Probeer 'n ander metode.</translation>
 <translation id="2395840535409704129">Watersportsoorte</translation>
 <translation id="2396249848217231973">Ontdoen uitvee</translation>
+<translation id="2399344929880464793">Hierdie IBAN is in jou Google-rekening gestoor sodat jy dit in alle Google-dienste kan gebruik.</translation>
 <translation id="2399868464369312507">Google Chrome probeer tans om betaalmetodes te wysig.</translation>
 <translation id="2400600116338235695">Kan vra om aan reekspoorte te koppel</translation>
 <translation id="2404884497378469141">Probeer jou lêers weer kopieer</translation>
@@ -868,6 +869,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2565789370591907825">Sleutelbordslot en -gebruik</translation>
 <translation id="2570734079541893434">Bestuur instellings</translation>
 <translation id="257136025287118539">Jou administrateur skuif jou lêers na <ph name="CLOUD_PROVIDER" />. Jy kan hierdie lêers wysig sodra die oplaai voltooi is.</translation>
+<translation id="2571488850200220306">Dit kan ook die toestel se bedryfstelsel en blaaierweergawe sien, en watter sagteware geïnstalleer is, om te help om sekuriteit te verseker</translation>
 <translation id="2573170131138724450">Televisies</translation>
 <translation id="257674075312929031">Groep</translation>
 <translation id="2586657967955657006">Knipbord</translation>
@@ -1046,6 +1048,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2967098518029543669">Stoor dit in jou Google-rekening</translation>
 <translation id="297173220375858963">Rekenaarpublisering</translation>
 <translation id="2972581237482394796">Herdoen</translation>
+<translation id="2974468223369775963">Hierdie IBAN kon nie in jou Google-rekening gestoor word nie. Dit word in plaas daarvan in Chrome op hierdie toestel gestoor. Chrome sal jou weer vra die volgende keer as jy hierdie IBAN gebruik.</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, tans gekies. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Sluit en gebruik jou sleutelbord</translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -2774,6 +2777,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6240964651812394252">Herbegin Chrome en laat jou rekenaar se wagwoordbestuurder toe om Google Wagwoordbestuurder met jou bedryfstelsel te gebruik. Jou oortjies sal weer oopmaak nadat jy herbegin het.</translation>
 <translation id="6241121617266208201">Versteek voorstelle</translation>
 <translation id="624499991300733384">Druksamestellerdiens</translation>
+<translation id="6246868321321344665">Jou organisasie kan in sowel werk- as persoonlike profiele blaaierdata sien, soos wagwoorde en geskiedenis</translation>
 <translation id="6250932670816326647">Bad- en liggaamprodukte</translation>
 <translation id="6251906504834538140">{0,plural, =1{Lêer kan weens blokkering nie geskuif word nie}other{<ph name="FILE_COUNT" /> lêers kan weens blokkering nie geskuif word nie}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om lêers te bestuur wat jy in Chrome afgelaai het</translation>
@@ -3029,6 +3033,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6704458454638854812">Die eienskap "custom_size" is gestel; daar word verwag dat die naam "custom" (gepasmaak) sal wees.</translation>
 <translation id="6706005862292023715">Gordyn- en vensterbehandeling</translation>
 <translation id="6706210727756204531">Omvang</translation>
+<translation id="6706678697074905703">Hierdie IBAN kon nie in jou Google-rekening gestoor word nie. Dit word in plaas daarvan in Chrome op hierdie toestel gestoor.</translation>
 <translation id="6709133671862442373">Nuus</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6710594484020273272">&lt;Tik soekterm in&gt;</translation>
@@ -3827,6 +3832,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8183800802493617952">Gesinsgerigte speletjies en aktiwiteite</translation>
 <translation id="8184538546369750125">Gebruik globale verstek (Laat toe)</translation>
 <translation id="8186706823560132848">Sagteware</translation>
+<translation id="8188830160449823068">IBAN slegs op toestel gestoor</translation>
 <translation id="8189557652711717875">Die soekenjin wat jy kies, sal vir kenmerke gebruik word soos soek vanaf die adresbalk en vanaf prente op webblaaie.</translation>
 <translation id="8190193880870196235">Bestuur deur 'n uitbreiding</translation>
 <translation id="8194412401381329820">Jy kan nie hierdie bladsy van ’n bestuurde rekening op hierdie onbestuurde toestel af gebruik nie. Alle bestuurde rekeninge sal gesluit wees as jy hierdie bladsy gebruik, behalwe rekeninge wat deur dieselfde entiteit as hierdie toestel bestuur word (geaffilieerde rekeninge).</translation>
@@ -4309,6 +4315,7 @@ Bykomende besonderhede:
 <translation id="9101450247048146228">Kameragebruik en beweging (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Laai 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> gebruik gewoonlik enkripsie om jou inligting te beskerm. Toe Chromium hierdie keer aan <ph name="SITE" /> probeer koppel het, het die webwerf ongewone en verkeerde eiebewyse teruggestuur. Dit kan gebeur wanneer 'n aanvaller probeer voorgee om <ph name="SITE" /> te wees, óf wanneer 'n Wi-Fi-aanmeldskerm die verbinding onderbreek het. Jou inligting is steeds veilig, want Chromium het die verbinding gestaak voordat enige data uitgeruil is.</translation>
+<translation id="9107199998619088551"><ph name="MANAGER" /> bestuur jou profiel</translation>
 <translation id="9107467864910557787">Jou blaaier word bestuur deur <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Administrateursbeleid deaktiveer skermdeling met <ph name="APPLICATION_TITLE" /> wanneer vertroulike inhoud sigbaar is</translation>
 <translation id="9114524666733003316">Bevestig tans kaart …</translation>

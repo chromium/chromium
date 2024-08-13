@@ -52,6 +52,7 @@
 <translation id="1089439967362294234">Parolni o‘zgartirish</translation>
 <translation id="1089599132348386324">Fikringiz oʻzgarsa, buni istalgan vaqt Chrome sozlamalari orqali oʻzgartirish mumkin.</translation>
 <translation id="1090629319939036170">VR menyu</translation>
+<translation id="1091463901118115503">Oʻqishda davom etish</translation>
 <translation id="1091779689406092804">skrinshotlar</translation>
 <translation id="1094777233105318927">Brauzer, OT, qurilma, oʻrnatilgan dasturlar va fayllar haqidagi axborot</translation>
 <translation id="1096545575934602868">Bu maydonchadagi elementlar soni <ph name="MAX_ITEMS_LIMIT" /> yozuvdan oshmasligi kerak. Barcha ortiqchasi rad etiladi.</translation>
@@ -536,6 +537,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1974060860693918893">Qo‘shimcha</translation>
 <translation id="1975457531113383421">Kiritish tarnovi</translation>
 <translation id="1975584088563498795">Pochta qutisi 10</translation>
+<translation id="1976610264358655503">Koʻp ochilgan sahifalar</translation>
 <translation id="1978555033938440688">Mikrodastur versiyasi</translation>
 <translation id="1979156660928743046">Media axborot</translation>
 <translation id="1988881251331415125">Xatosiz kiritilgan boʻlsa, <ph name="BEGIN_LINK" />Ulanish diagnostikasini<ph name="END_LINK" /> ishga tushiring.</translation>
@@ -867,6 +869,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2565789370591907825">Klaviaturani boshqarish</translation>
 <translation id="2570734079541893434">Sozlamalarni boshqarish</translation>
 <translation id="257136025287118539">Administrator fayllaringizni <ph name="CLOUD_PROVIDER" /> omboriga koʻchirmoqda. Bu fayllarni faqat yuklanganidan keyin tahrirlash mumkin.</translation>
+<translation id="2571488850200220306">Xavfsizlikni taʼminlash maqsadida administrator qurilmadagi OT, brauzer versiyasi va oʻrnatilgan dasturlarni ham koʻrishi mumkin.</translation>
 <translation id="2573170131138724450">Televizorlar</translation>
 <translation id="257674075312929031">Guruh</translation>
 <translation id="2586657967955657006">Klipbord</translation>
@@ -885,6 +888,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2619052155095999743">Joylash</translation>
 <translation id="2625385379895617796">Soatingiz oldinda</translation>
 <translation id="262745152991669301">USB qurilmalarga ulanish uchun ruxsat soʻrashi mumkin</translation>
+<translation id="2628224721443278970">Microsoft OneDrive hisobiga kirish</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> serverining IP manzili topilmadi.</translation>
 <translation id="2639739919103226564">Holat:</translation>
 <translation id="2647086987482648627">Mato (yarim yaltiroq)</translation>
@@ -1824,6 +1828,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4377125064752653719">Siz <ph name="DOMAIN" /> saytiga o‘tmoqchi bo‘ldingiz, lekin server taqdim qilgan sertifikat noshiri tomonidan bekor qilingan. Bu server bergan havfsizlik hisob ma’lumotlari ishonchsizligini bildiradi. Siz firibgarlar saytiga kirgan bo‘lishingiz mumkin.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4384395682990721132">A4x3</translation>
+<translation id="4387692837058041921">Microsoft OneDrive omboriga fayl yuklash pauza qilindi</translation>
 <translation id="4390472908992056574">Maydonchalar</translation>
 <translation id="4397059608630092079">Avtomatik kiritishda har doim tasdiqlansin</translation>
 <translation id="4397978002248035985">Tasdiqlash uchun qalqib chiquvchi oynada bank sayti ochiladi</translation>
@@ -1926,6 +1931,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4636930964841734540">Ma’lumot</translation>
 <translation id="4640225694041297329">Oxirgi 7 kunlik natijalarni chiqarish</translation>
 <translation id="464342062220857295">Funksiyalar qidiruvi</translation>
+<translation id="4644567637638438744">Microsoft OneDrive omboriga fayllarni faqat hisobga kirilganda yuklash mumkin</translation>
 <translation id="4644670975240021822">Teskari tartibda orqa tomonida</translation>
 <translation id="4646534391647090355">Hoziroq ochish</translation>
 <translation id="4648262692072505866">Hesh SHA-256 formatida boʻlishi kerak.</translation>
@@ -2768,6 +2774,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6240964651812394252">Parollar menejeridan operatsion tizimda foydalanish uchun Chromeni qaytadan oching va kompyuterdagi parollar menejeridan foydalanishga ruxsat bering. Qayta ishga tushirilgandan keyin varaqlar qayta ochiladi.</translation>
 <translation id="6241121617266208201">Tavsiyalarni berkitish</translation>
 <translation id="624499991300733384">Bosmani nashrlash xizmati</translation>
+<translation id="6246868321321344665">Tashkilotingiz ishga oid va shaxsiy profillardagi parollar va tarix kabi brauzer maʼlumotlarini koʻrishi mumkin</translation>
 <translation id="6250932670816326647">Vanna va tana uchun mahsulotlar</translation>
 <translation id="6251906504834538140">{0,plural, =1{Faylni koʻchirish taqiqlangan}other{<ph name="FILE_COUNT" /> ta faylni koʻchirish taqiqlangan}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeda yuklab olingan fayllarni boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
@@ -3037,6 +3044,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Simulyatorlar</translation>
+<translation id="6735783933931458444">Odatda bu vaqtda ochiladigan sahifalar</translation>
 <translation id="6737708609449480586">Pishiriqlar</translation>
 <translation id="6738516213925468394">Maʼlumotlaringiz <ph name="TIME" /> sanasida <ph name="BEGIN_LINK" />kodli ibora<ph name="END_LINK" /> bilan shifrlangan. Sinxronizatsiyani boshlash uchun uni kiriting.</translation>
 <translation id="6740851646645036700">Matn yordamchisidan foydalanish kunlik limitiga yetdi. Keyinroq qayta urining.</translation>
@@ -3754,6 +3762,7 @@ Batafsil axborot:
 <translation id="8041089156583427627">Fikr-mulohaza</translation>
 <translation id="8041940743680923270">Global parametrdan foydalanish (so‘ralsin)</translation>
 <translation id="8043255123207491407">Sotuvchining foydalanish shartlari</translation>
+<translation id="8044986521421349135">Eng oxirgi varaq</translation>
 <translation id="8046360364391076336">Sanoat materiallari va jihozlari</translation>
 <translation id="8052898407431791827">Vaqtinchalik xotiraga nusxalandi</translation>
 <translation id="8057023045886711556">Komediyalar</translation>
@@ -4303,6 +4312,7 @@ Batafsil axborot:
 <translation id="9101450247048146228">Kameradan foydalanish va siljitish (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Tarnov 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> sayti ma’lumotlaringizni himoyalash uchun shifrlashdan foydalanadi, lekin hozir Chromium <ph name="SITE" /> saytiga ulanish uchun uringanda, ushbu sayt shubhali va noto‘g‘ri tasdiqlash ma’lumotlarini qaytarmoqda. Bunday holat zararli sayt o‘zini <ph name="SITE" /> o‘rnida ko‘rsatayotganda yoki Wi-Fi ulanishi uzilib qolganda yuz berishi mumkin. Shaxsiy ma’lumotlaringizga hech qanday xavf tug‘ilgani yo‘q, chunki Chromium aloqani ma’lumotlar almashinuvidan oldin uzib qo‘ydi.</translation>
+<translation id="9107199998619088551">Profilingiz <ph name="MANAGER" /> boshqaruvida</translation>
 <translation id="9107467864910557787">Brauzeringiz <ph name="MANAGER" /> tomonidan boshqariladi</translation>
 <translation id="91108059142052966">Maxfiy axborotlar koʻrinib turganda administrator ekran namoyishini <ph name="APPLICATION_TITLE" /> uchun taqiqlagan</translation>
 <translation id="9114524666733003316">Karta tasdiqlanmoqda...</translation>

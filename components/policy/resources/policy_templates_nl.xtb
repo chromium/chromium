@@ -3488,6 +3488,17 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 <translation id="3660562134618097814">SAML IdP-cookies overdragen tijdens het inloggen</translation>
 <translation id="3662660961914441274">Gebruikersbestanden lokaal opslaan uitzetten</translation>
 <translation id="3665437376055221832">De gebruiker alleen vragen als geen enkel certificaat overeenkomt met de automatische selectie.</translation>
+<translation id="3667467644216039144">Hiermee stel je een lijst met typen browsergegevens in die moeten worden verwijderd als de gebruiker alle browservensters sluit.
+
+Waarschuwing: Als je dit beleid instelt, kan dit gevolgen hebben voor lokale persoonsgegevens en kunnen deze definitief worden verwijderd. We raden je aan de instellingen te testen voordat je ze implementeert om te voorkomen dat persoonsgegevens per ongeluk worden verwijderd.
+
+De beschikbare gegevenstypen zijn browsegeschiedenis (<ph name="DATA_TYPE_BROWSING_HISTORY" />), downloadgeschiedenis (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cachegeheugen (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), automatisch invullen (<ph name="DATA_TYPE_AUTOFILL" />), wachtwoorden (<ph name="DATA_TYPE_PASSWORD" />), site-instellingen (<ph name="DATA_TYPE_SITE_SETTINGS" />) en gegevens van gehoste apps (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Dit beleid krijgt geen voorrang op <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> worden ingesteld op Waar. Vanaf Chrome 115 geldt dat als je dit beleid instelt, synchronisatie voor de betreffende gegevenstypen wordt uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.
+
+Als de gegevensverwijdering om een of andere reden is gestart maar niet is afgerond, worden de browsegegevens gewist als het profiel weer wordt geladen.
+
+Als <ph name="PRODUCT_NAME" /> niet correct wordt afgesloten (bijvoorbeeld als de browser of het OS crasht), worden de browsegegevens niet gewist, omdat het sluiten van de browser niet het gevolg was van het sluiten van alle browservensters door de gebruiker.</translation>
 <translation id="3671773704245936868">Markering toetsenbordfocus uitzetten</translation>
 <translation id="3674010627788940405">CORS-verzoekheaders zonder jokertekens niet ondersteunen.</translation>
 <translation id="3675303748198647471">setTimeout(…, 0) wordt vaak gebruikt om lange JavaScript-taken uit te splitsen.
@@ -6718,6 +6729,27 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
       Als je dit beleid toepast of niet instelt, kunnen gebruikers Chrome for Testing installeren en uitvoeren.
 
       Als je dit beleid niet toepast, kunnen gebruikers Chrome for Testing niet uitvoeren. Gebruikers kunnen Chrome for Testing nog steeds installeren, maar de functie wordt niet uitgevoerd met de profielen waarvoor dit beleid niet wordt toegepast.</translation>
+<translation id="6258646807927528870">Hiermee stel je een lijst in met regels voor gegevensbeheer om datalekken te voorkomen.
+
+      Elke regel bestaat uit het volgende:
+- Voorwaardevelden die die regel activeren. Een regel wordt alleen geactiveerd als een gebruikersactie overeenkomt met alle ingevulde velden in de velden <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> en <ph name="DATA_CONTROLS_NOT" />. Voor subvelden van een lijst hoeft er maar één item overeen te komen. Zo hoeft er maar één URL-patroon overeen te komen om de regel te activeren.
+      - Een lijst met beperkingen die moeten worden toegepast. Afhankelijk van de beperking zijn misschien alleen <ph name="DATA_CONTROLS_SOURCES" />- of <ph name="DATA_CONTROLS_DESTINATIONS" />-voorwaarden beschikbaar.
+
+      Regels kunnen om deze redenen worden toegevoegd:
+- Bepalen welke klembordgegevens mogen worden gedeeld tussen de bronnen en de bestemmingen.
+      - Bepalen of screenshots worden geblokkeerd op basis van de brontabbladen.
+
+      Als het beleid <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> is ingesteld op Waar, worden geactiveerde regels gemeld aan de beheerder.
+      Het beperkingsniveau kan worden ingesteld op BLOCK, WARN of REPORT.
+      - Als het beperkingsniveau is ingesteld op BLOCK, is de actie niet toegestaan.
+      - Als het beperkingsniveau is ingesteld op WARN, krijgt de gebruiker een waarschuwing en kan die ervoor kiezen door te gaan met de actie of deze te annuleren.
+      - Als het beperkingsniveau is ingesteld op REPORT, wordt de gebruikersactie niet onderbroken maar wordt er een melding gestuurd als het beleid <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> aanstaat.
+
+      Opmerkingen:
+- Gebruik de volgende indeling voor de URL-patronen (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+- Zie ook het beleid <ph name="DATA_LEAK_PREVENTION_RULES_LIST" /> voor regels om datalekken te voorkomen die specifiek zijn voor <ph name="PRODUCT_OS_NAME" />.
+
+      Als je het beleid niet instelt, worden er geen beperkingen toegepast.</translation>
 <translation id="6258658183356534534">De GREASE-updatefunctie voor User-Agent Client Hints beheren.</translation>
 <translation id="6261643884958898336">ID-gegevens van machine rapporteren</translation>
 <translation id="6264247808139384018">Als je het beleid toepast of niet instelt, kunnen gebruikers die een wachtwoord gebruiken voor verificatie het scherm vergrendelen.

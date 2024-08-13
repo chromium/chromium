@@ -128,6 +128,7 @@
 <translation id="1622717322707146952">Выберыце Add to Google Calendar ("Дадаць у Google Каляндар") або Add to Apple Calendar ("Дадаць у Calendar ад Apple").</translation>
 <translation id="1626771852476987600">Ужытых раней пароляў: <ph name="COUNT" /></translation>
 <translation id="1636234353664774105">З дапамогай функцыі навігацыі будуйце маршруты да пунктаў прызначэння з пакрокавымі інструкцыямі</translation>
+<translation id="1641068175940982148">Адкрыць групу "<ph name="GROUP_TITLE" />", групу з колькасцю ўкладак: <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">Бяспечны прагляд</translation>
 <translation id="1641316430523156212">Падпісацца</translation>
 <translation id="1644574205037202324">Гісторыя</translation>
@@ -403,6 +404,7 @@
 <translation id="2952246431280799028">Націсніце на адрас і ўтрымлівайце.</translation>
 <translation id="2952278131021475699">Пошук з дапамогай камеры і Аб’ектыва</translation>
 <translation id="2958718410589002129">Паролі</translation>
+<translation id="2963044753825419640">Вэб-сайты і праграмы будуць аўтаматычна абнаўляць існуючыя ўліковыя запісы і выкарыстоўваць ключы доступу, калі гэта магчыма</translation>
 <translation id="2964349545761222050">Блакіраваць староннія файлы cookie</translation>
 <translation id="2965328226365382335">За апошнія 15 хвілін</translation>
 <translation id="2969979262385602596">Не ўдалося ўвайсці. Паўтарыце спробу пазней.</translation>
@@ -760,6 +762,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, толькі на гэтай прыладзе, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Новая ўкладка інкогніта</translation>
 <translation id="4766112107778026136">Рэкамендацыі і падпіскі</translation>
+<translation id="4769198578611055647">Дае магчымасць выкарыстоўваць захаваныя ключы доступу на любой прыладзе</translation>
 <translation id="4775879719735953715">Стандартны браўзер</translation>
 <translation id="4779732376610430319">Перайсці ў налады...</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1043,6 +1046,7 @@
 <translation id="6067849159007176401">Дадайце абарону прагляду вэб-сайтаў</translation>
 <translation id="607620096698446287">Не ўдалося запампаваць файл "<ph name="FILENAME" />" (<ph name="FILESIZE" />)</translation>
 <translation id="6084848228346514841">Выбраць укладкі</translation>
+<translation id="6089212833343035912">PIN-код Менеджара пароляў Google</translation>
 <translation id="6100617279104942061">Вы ўвайшлі як <ph name="USER_EMAIL" />. Адкрывае налады.</translation>
 <translation id="6103540626693881831">Шыфраванне на прыладзе</translation>
 <translation id="6119050551270742952">Вэб-старонка адкрыта ў рэжыме інкогніта</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7022197654033719543">Звесткі пра сайт</translation>
 <translation id="7029809446516969842">Паролі</translation>
 <translation id="704692552158601232">Стандартны браўзер</translation>
+<translation id="7051147526307793383">Дазволіць аўтаматычнае абнаўленне ключоў доступу</translation>
 <translation id="7055240621761583113">Запоўніць поле пароля аўтаматычна</translation>
 <translation id="7063811929043357292">Вашым уліковым запісам кіруюць бацькі.
 <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>

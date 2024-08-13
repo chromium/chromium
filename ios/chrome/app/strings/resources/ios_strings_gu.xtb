@@ -128,6 +128,7 @@
 <translation id="1622717322707146952">“Google Calendarમાં ઉમેરો“ અથવા “Apple Calendar પર ઉમેરો“ પસંદ કરો.</translation>
 <translation id="1626771852476987600">ફરીથી ઉપયોગમાં લેવાયેલા <ph name="COUNT" /> પાસવર્ડ</translation>
 <translation id="1636234353664774105">નૅવિગેશન સુવિધાનો ઉપયોગ કરીને વારા ફરતી માર્ગદર્શન સાથે તમારા નિર્ધારિત સ્થાન માટે દિશાનિર્દેશો મેળવો</translation>
+<translation id="1641068175940982148"><ph name="GROUP_TITLE" /> ખોલો, <ph name="NUMBER_OF_TABS" />નું ગ્રૂપ, <ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">સલામત બ્રાઉઝિંગ</translation>
 <translation id="1641316430523156212">ફૉલો કરો</translation>
 <translation id="1644574205037202324">ઇતિહાસ</translation>
@@ -403,6 +404,7 @@
 <translation id="2952246431280799028">કોઈ ઍડ્રેસને ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="2952278131021475699">Lens કૅમેરા વડે શોધની સુવિધા</translation>
 <translation id="2958718410589002129">પાસવર્ડ</translation>
+<translation id="2963044753825419640">જ્યારે ઉપલબ્ધ હોય ત્યારે પાસકીનો ઉપયોગ કરવા માટે વેબસાઇટ અને ઍપને ઑટોમૅટિક રીતે અપગ્રેડ કરવાની મંજૂરી આપો</translation>
 <translation id="2964349545761222050">ત્રીજા પક્ષની કુકીને બ્લૉક કરો</translation>
 <translation id="2965328226365382335">છેલ્લી 15 મિનિટ</translation>
 <translation id="2969979262385602596">સાઇન ઇન કરવામાં નિષ્ફળ. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.</translation>
@@ -760,6 +762,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, માત્ર આ જ ડિવાઇસ પર, <ph name="URL" /></translation>
 <translation id="4751645464639803239">નવું છૂપું ટૅબ</translation>
 <translation id="4766112107778026136">Discover અને ફૉલો કરી રહ્યાં છીએ</translation>
+<translation id="4769198578611055647">કોઈપણ ડિવાઇસ પર સાચવેલી પાસકી ઍક્સેસ કરવામાં તમને સહાય કરે છે</translation>
 <translation id="4775879719735953715">ડિફૉલ્ટ બ્રાઉઝર</translation>
 <translation id="4779732376610430319">સેટિંગ પર જાઓ...</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1043,6 +1046,7 @@
 <translation id="6067849159007176401">બ્રાઉઝિંગમાં સુરક્ષિતતા વધારો</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) અપલોડ કરી શકાઈ નથી</translation>
 <translation id="6084848228346514841">કોઈ ટૅબ પસંદ કરો</translation>
+<translation id="6089212833343035912">Google Password Manager પિન</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> તરીકે સાઇન ઇન થયાં. સેટિંગ ખોલે છે.</translation>
 <translation id="6103540626693881831">ડિવાઇસ પર એન્ક્રિપ્શન</translation>
 <translation id="6119050551270742952">વર્તમાન વેબપેજ છૂપા મોડમાં છે</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7022197654033719543">સાઇટની માહિતી</translation>
 <translation id="7029809446516969842">પાસવર્ડ</translation>
 <translation id="704692552158601232">ડિફૉલ્ટ બ્રાઉઝર ઍપ</translation>
+<translation id="7051147526307793383">ઑટોમૅટિક પાસકી અપગ્રેડની મંજૂરી આપો</translation>
 <translation id="7055240621761583113">ઑટોમૅટિક રીતે પાસવર્ડ ભરો</translation>
 <translation id="7063811929043357292">તમારું એકાઉન્ટ તમારા માતાપિતા દ્વારા મેનેજ કરવામાં આવે છે.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>

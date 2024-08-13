@@ -2460,6 +2460,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="272741954544380994">Képkeresés a következővel: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Ne emlékeztessen újra</translation>
 <translation id="2727712005121231835">Valós méret</translation>
+<translation id="2727713483500953825">A Lens segítségével való kereséshez használni kívánt képek/szöveg kiválasztása</translation>
 <translation id="2727744317940422214">Sajnos hiba történt. Küldjön be visszajelzést, és a leírásban használja a #bruschetta jelölést. A hibakód: <ph name="ERROR" />. A takarítás sikertelen volt, ezért előfordulhat, hogy manuálisan kell elvégeznie.</translation>
 <translation id="2729327310379176711">A Chrome új módokat keres a nyomon követés csökkentésére és a még biztonságosabb böngészésre. A Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, és lehetővé teszi a kezelésüket is. Ezután a felkeresett webhelyek az Ön érdeklődési köreinek megosztására kérhetik a Chrome-ot, hogy hirdetéseket jelenítsenek meg.</translation>
 <translation id="2729577602370119849">Egyszerűen elérhet és kezelhet nyomtatókat</translation>
@@ -3675,6 +3676,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3623598555687153298">Ezzel törli a megjelenített webhelyek által tárolt, összesen <ph name="TOTAL_USAGE" />-nyi adatot</translation>
 <translation id="3624567683873126087">Eszköz feloldása, és bejelentkezés Google-fiókba</translation>
 <translation id="3624583033347146597">Harmadik féltől származó cookie-k beállítása</translation>
+<translation id="3625345586754200168">A Lens kipróbálása</translation>
 <translation id="3625481642044239431">A kiválasztott fájl érvénytelen. Próbálja újra.</translation>
 <translation id="3626296069957678981">A Chromebook töltéséhez kompatibilis Dell akkumulátort használjon.</translation>
 <translation id="3627320433825461852">Kevesebb mint 1 perc van hátra</translation>
@@ -4830,6 +4832,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4450974146388585462">Elemzés</translation>
 <translation id="445099924538929605">A(z) <ph name="DEVICE_OS" /> olyan aktív TPM-et észlelt, amely biztonságosabban tárolhatja az Ön adatait.</translation>
 <translation id="4452898361839215358">vagy PPD kiválasztása. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
+<translation id="4453144231461812959">Bármilyen képre vagy szövegre rákereshet a Lens segítségével</translation>
 <translation id="4453430595102511050">Érintse meg a billentyűzet jobb felső sarkában található ujjlenyomat-érzékelőt. Az ujjlenyomatadatokat a(z) <ph name="DEVICE_TYPE" /> biztonságosan tárolja, és soha nem kerülnek ki az eszközről.</translation>
 <translation id="4453946976636652378">Keressen a(z) <ph name="SEARCH_ENGINE_NAME" /> segítségével, vagy írja be az URL-t</translation>
 <translation id="4457472090507035117">Az aktuális hang kiválasztása:</translation>
@@ -6989,6 +6992,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6059276912018042191">Nemrég megnyitott Chrome-lapok</translation>
 <translation id="6059652578941944813">Tanúsítvány-hierarchia</translation>
 <translation id="6059925163896151826">USB-eszközök</translation>
+<translation id="6060842547856900641">A Lens megnyitása</translation>
 <translation id="6061408389284235459">Értesítést küldtünk a következő eszközre: <ph name="DEVICE_NAME" />.</translation>
 <translation id="6063284707309177505">QR-kód létrehozása</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Megjegyzés<ph name="END_BOLD" />: Előfordulhat, hogy hasonló hangú személy vagy hangfelvétel segítségével is hozzá lehet férni <ph name="SUPERVISED_USER_NAME" /> személyes találataihoz. Az akkumulátor üzemidejének növelése érdekében <ph name="SUPERVISED_USER_NAME" /> Segédjének beállításaiban megadhatja, hogy csak akkor legyen bekapcsolva az „Ok Google” parancsszó, amikor az eszköz áramforrásra csatlakozik.</translation>

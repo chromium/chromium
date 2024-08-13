@@ -2450,6 +2450,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="272741954544380994">Rasmni <ph name="VISUAL_SEARCH_PROVIDER" /> orqali qidirish</translation>
 <translation id="2727633948226935816">Boshqa eslatilmasin</translation>
 <translation id="2727712005121231835">Asl hajmi</translation>
+<translation id="2727713483500953825">Lens orqali qidirish uchun rasm/matn tanlang</translation>
 <translation id="2727744317940422214">Xatolik yuz berdi. Fikr-mulohaza yuborish orqali bizga xabar bering. Uning tavsifiga #bruschetta tegini qoʻshing. Xatolik kodi: <ph name="ERROR" /> Tozalanmadi, mustaqil urinib koʻring.</translation>
 <translation id="2729327310379176711">Chrome brauzerdagi harakatlaringiz kuzatuvini kamaytirishning yangi usullarini ishlab chiqadi. Shuningdek, Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> va ularni boshqarish imkonini beradi. Keyin siz kiradigan saytlar reklama chiqarish uchun Chromedan qiziqishlaringizni koʻrishga ruxsat soʻrashi mumkin.</translation>
 <translation id="2729577602370119849">Printerlarni oson ochish va boshqarish</translation>
@@ -3188,6 +3189,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3269093882174072735">Tasvirni yuklash</translation>
 <translation id="326911502853238749"><ph name="MODULE_NAME" /> chiqarilmasin</translation>
 <translation id="3269175001434213183">Maʼlumotlaringizni zaxiralash va istalgan qurilmada ochish uchun sinxronizatsiyani yoqing</translation>
+<translation id="3269209112443570745">Yangi! Ekrandagi elementlarni oson qidirish usuli</translation>
 <translation id="3269612321104318480">Och moviy va oq</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fayl}other{# ta fayl}}</translation>
 <translation id="326999365752735949">diff vositasi yuklab olinmoqda</translation>
@@ -3658,11 +3660,13 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3621202678540785336">Kirish</translation>
 <translation id="3621807901162200696">ChromeOS funksiyalari va unumdorligini yaxshilashga yordam bering</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{ilova}other{# ta ilova}}</translation>
+<translation id="3622716124581627104">Obyekt yoki joylarni aniqlash, nusxalash yoki matn tarjima qilish. Google Lens ishlatilganda sahifa skrinshoti Google serverlariga yuboriladi. <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">Ekran miltillashi rangi</translation>
 <translation id="362333465072914957">Sertikatlash markazi sertifikatni tasdiqlashi kutilmoqda</translation>
 <translation id="3623598555687153298">Ochilgan saytlar saqlagan <ph name="TOTAL_USAGE" /> maʼlumotlar oʻchirib tashlanadi</translation>
 <translation id="3624567683873126087">Qurilmani qulfdan chiqarish va Google hisobiga kirish</translation>
 <translation id="3624583033347146597">Tashqi cookie sozlamalarini tanlang</translation>
+<translation id="3625345586754200168">Lensni sinash</translation>
 <translation id="3625481642044239431">Yaroqsiz fayl tanlandi. Qaytadan urining.</translation>
 <translation id="3626296069957678981">Bu Chromebookni faqat sinalgan Dell batareyasi orqali quvvatlang.</translation>
 <translation id="3627320433825461852">1 daqiqadan kam vaqt qoldi</translation>
@@ -4819,6 +4823,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4450974146388585462">Ulanish tekshiruvi</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> maʼlumotlaringizni xavfsiz saqlaydigan faol TPM harakatini aniqladi.</translation>
 <translation id="4452898361839215358">yoki PPD faylini tanlang. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Lens orqali istalgan rasm yoki matnni qidiring</translation>
 <translation id="4453430595102511050">Klaviaturaning yuqori oʻng burchagidagi barmoq izi skaneriga tegining. Barmoq izlaringiz yaxshi himoya ostida va faqat <ph name="DEVICE_TYPE" /> qurilmangizda saqlanadi.</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> orqali qidiring yoki URL manzilni kiriting</translation>
 <translation id="4457472090507035117">Joriy ovozni tanlash:</translation>
@@ -6976,6 +6981,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6059276912018042191">Chromedagi oxirgi varaqlar</translation>
 <translation id="6059652578941944813">Sertifikatlar iyerarxiyasi</translation>
 <translation id="6059925163896151826">USB qurilmalar</translation>
+<translation id="6060842547856900641">Lensni ochish</translation>
 <translation id="6061408389284235459"><ph name="DEVICE_NAME" /> qurilmasiga bildirishnoma yuborildi</translation>
 <translation id="6063284707309177505">QR kod yaratish</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Eslatma:<ph name="END_BOLD" /> Oʻxshash yoki yozib olingan ovozlar ham <ph name="SUPERVISED_USER_NAME" />ning shaxsiy natijalarini olishi mumkin. Batareyani tejash uchun <ph name="SUPERVISED_USER_NAME" />ning Assistent sozlamalari orqali “Ok Google” faqat qurilma quvvat manbasiga ulanganda ishlashini tanlash mumkin.</translation>

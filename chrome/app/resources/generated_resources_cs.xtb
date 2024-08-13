@@ -2450,6 +2450,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="272741954544380994">Vyhledat obrázek pomocí: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Již nepřipomínat</translation>
 <translation id="2727712005121231835">Skutečná velikost</translation>
+<translation id="2727713483500953825">Vyberte obrázky/text, které chcete vyhledat pomocí Lens</translation>
 <translation id="2727744317940422214">Litujeme, něco se pokazilo. Zašlete nám prosím zpětnou vazbu s hashtagem #bruschetta v popisu. Kód chyby je <ph name="ERROR" />. Vyčištění se nezdařilo, je možné, že ho budete muset provést ručně.</translation>
 <translation id="2729327310379176711">Chrome hledá nové způsoby, jak snížit míru sledování a chránit vás na internetu ještě lépe. Chrome také <ph name="ESTIMATE_INTERESTS_LINK" /> a umožňuje vám je spravovat. Navštívené weby pak mohou Chrome požádat o sdílení vašich zájmů, aby vám mohly zobrazovat reklamy.</translation>
 <translation id="2729577602370119849">Snadný přístup a správa tiskáren</translation>
@@ -3663,6 +3664,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3623598555687153298">Tímto vymažete <ph name="TOTAL_USAGE" /> dat, která uložily zobrazené weby</translation>
 <translation id="3624567683873126087">Odemknout zařízení a přihlásit se k účtu Google</translation>
 <translation id="3624583033347146597">Vyberte předvolby pro soubory cookie třetích stran</translation>
+<translation id="3625345586754200168">Vyzkoušejte Lens</translation>
 <translation id="3625481642044239431">Byl vybrán neplatný soubor. Zkuste to znovu.</translation>
 <translation id="3626296069957678981">Chcete-li tento Chromebook nabít, použijte kompatibilní baterii Dell.</translation>
 <translation id="3627320433825461852">Zbývá méně než minuta</translation>
@@ -4818,6 +4820,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4450974146388585462">Diagnostikovat</translation>
 <translation id="445099924538929605">Systém <ph name="DEVICE_OS" /> zjistil aktivní čip TPM, který umožňuje ukládat data bezpečněji.</translation>
 <translation id="4452898361839215358">nebo vyberte PPD. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Vyhledejte libovolný obrázek nebo text pomocí Lens</translation>
 <translation id="4453430595102511050">Dotkněte se snímače otisků prstů v pravém horním rohu klávesnice. Otisk prstu je bezpečně uložen a nikdy neopouští <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Zadejte dotaz pro vyhledávač <ph name="SEARCH_ENGINE_NAME" /> nebo adresu URL</translation>
 <translation id="4457472090507035117">Vybrat aktuální hlas:</translation>
@@ -6971,6 +6974,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6059276912018042191">Nedávno použité karty Chromu</translation>
 <translation id="6059652578941944813">Hierarchie certifikátů</translation>
 <translation id="6059925163896151826">Zařízení USB</translation>
+<translation id="6060842547856900641">Otevřít aplikaci Lens</translation>
 <translation id="6061408389284235459">Do zařízení <ph name="DEVICE_NAME" /> bylo odesláno oznámení</translation>
 <translation id="6063284707309177505">Vytvořit QR kód</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Poznámka<ph name="END_BOLD" />: K osobním výsledkům uživatele <ph name="SUPERVISED_USER_NAME" /> může získat přístup někdo s podobným hlasem nebo nahrávkou jeho hlasu. Pokud chcete šetřit baterii, můžete v nastavení Asistenta uživatele <ph name="SUPERVISED_USER_NAME" /> nastavit, aby příkaz „Ok Google“ fungoval, jen když je toto zařízení připojené ke zdroji napájení.</translation>

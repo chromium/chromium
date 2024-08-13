@@ -869,6 +869,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2565789370591907825">Klaviatuuri lukustamine ja kasutamine</translation>
 <translation id="2570734079541893434">Seadete haldamine</translation>
 <translation id="257136025287118539">Teie administraator teisaldab teie failid asukohta <ph name="CLOUD_PROVIDER" />. Saate neid faile muuta, kui üleslaadimine on lõppenud.</translation>
+<translation id="2571488850200220306">Turvalisuse tagamiseks näeb see ka seadme OS-i, brauseri versiooni ja installitud tarkvara</translation>
 <translation id="2573170131138724450">Telerid</translation>
 <translation id="257674075312929031">Grupeeri</translation>
 <translation id="2586657967955657006">Lõikelaud</translation>
@@ -2776,6 +2777,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6240964651812394252">Google'i paroolihalduri kasutamiseks oma operatsioonisüsteemiga käivitage Chrome uuesti ja lubage juurdepääs oma arvuti paroolihaldurile. Pärast uuesti käivitamist avanevad teie vahelehed taas.</translation>
 <translation id="6241121617266208201">Peida soovitused</translation>
 <translation id="624499991300733384">Prindi koostamisteenus</translation>
+<translation id="6246868321321344665">Teie organisatsioon näeb nii töö- kui ka isiklikel profiilidel sirvimisandmeid, nagu paroolid ja ajalugu</translation>
 <translation id="6250932670816326647">Vanni- ja kehatooted</translation>
 <translation id="6251906504834538140">{0,plural, =1{Faili teisaldamine on blokeeritud}other{<ph name="FILE_COUNT" /> faili teisaldamine on blokeeritud}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'is allalaaditud failide haldamiseks vajutage tabulaatorit ja seejärel sisestusklahvi.</translation>
@@ -4313,6 +4315,7 @@ Lisateave:
 <translation id="9101450247048146228">Kaamera kasutamine ja liigutamine (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Salv 1</translation>
 <translation id="9103872766612412690">Sait <ph name="SITE" /> kasutab teie teabe kaitsmiseks tavaliselt krüpteerimist. Kui Chromium püüdis seekord saidiga <ph name="SITE" /> ühendust luua, tagastas veebisait ebatavalised ja valed mandaadid. See võib juhtuda siis, kui ründaja proovib teeselda, et on sait <ph name="SITE" />, või WiFi sisselogimisekraan on ühenduse katkestanud. Teie teave on endiselt kaitstud, sest Chromium peatas ühenduse enne andmevahetust.</translation>
+<translation id="9107199998619088551"><ph name="MANAGER" /> haldab teie profiili</translation>
 <translation id="9107467864910557787">Teie brauserit haldab <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Administraatori eeskirjad keelavad ekraanikuva jagamise rakendusega <ph name="APPLICATION_TITLE" />, kui konfidentsiaalne sisu on nähtaval</translation>
 <translation id="9114524666733003316">Kaardi kinnitamine …</translation>

@@ -475,7 +475,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3226612997184048185">Google Hesabınıza yer işaretlerinizi de kaydediyorsanız Chrome'da ürün fiyatlarını takip edebilir ve fiyat düştüğünde bildirim alabilirsiniz</translation>
 <translation id="3227557059438308877">Güvenlik Anahtarı olarak Google Chrome</translation>
 <translation id="3232293466644486101">Tarama verilerini silme</translation>
-<translation id="3232459301230493791"><ph name="TAB_COUNT" /> sekme silindi</translation>
 <translation id="3232754137068452469">Web Uygulaması</translation>
 <translation id="3236059992281584593">1 dk. kaldı</translation>
 <translation id="3237087289225714896">Standart önceden yükleme:</translation>
@@ -1444,7 +1443,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7759809451544302770">İsteğe bağlı</translation>
 <translation id="7762668264895820836">SD Kart <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Adres ekle</translation>
-<translation id="776533689993750361"><ph name="TAB_COUNT" /> sekme silindi</translation>
 <translation id="7772032839648071052">Parolayı onayla</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> penceresini kapat</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ve <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ödeme yöntemi daha}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ve <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ödeme yöntemi daha}}</translation>

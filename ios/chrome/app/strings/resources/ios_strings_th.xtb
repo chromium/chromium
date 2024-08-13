@@ -127,6 +127,7 @@
 <translation id="1622717322707146952">เลือก "เพิ่มใน Google ปฏิทิน" หรือ "เพิ่มใน Apple Calendar"</translation>
 <translation id="1626771852476987600">มีรหัสผ่านที่ใช้ซ้ำ <ph name="COUNT" /> รายการ</translation>
 <translation id="1636234353664774105">ขอเส้นทางไปยังจุดหมายของคุณพร้อมคำแนะนำแบบเลี้ยวต่อเลี้ยวโดยใช้ฟีเจอร์การนำทาง</translation>
+<translation id="1641068175940982148">เปิด <ph name="GROUP_TITLE" /> กลุ่มของ <ph name="NUMBER_OF_TABS" /> แท็บ<ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641316430523156212">ติดตาม</translation>
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
@@ -402,6 +403,7 @@
 <translation id="2952246431280799028">แตะที่อยู่ค้างไว้</translation>
 <translation id="2952278131021475699">การค้นหาด้วยกล้องโดยใช้ Lens</translation>
 <translation id="2958718410589002129">รหัสผ่าน</translation>
+<translation id="2963044753825419640">อนุญาตให้เว็บไซต์และแอปอัปเกรดบัญชีที่มีอยู่เพื่อใช้พาสคีย์โดยอัตโนมัติ (หากมี)</translation>
 <translation id="2964349545761222050">บล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="2965328226365382335">15 นาทีล่าสุด</translation>
 <translation id="2969979262385602596">ไม่สามารถลงชื่อเข้าใช้ได้ โปรดลองอีกครั้งในภายหลัง</translation>
@@ -759,6 +761,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, เฉพาะในอุปกรณ์นี้, <ph name="URL" /></translation>
 <translation id="4751645464639803239">แท็บไม่ระบุตัวตนใหม่</translation>
 <translation id="4766112107778026136">สำรวจและกำลังติดตาม</translation>
+<translation id="4769198578611055647">ช่วยให้คุณเข้าถึงพาสคีย์ที่บันทึกไว้ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="4775879719735953715">เบราว์เซอร์เริ่มต้น</translation>
 <translation id="4779732376610430319">ไปที่การตั้งค่า...</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1042,6 +1045,7 @@
 <translation id="6067849159007176401">เพิ่มการปกป้องขณะท่องเว็บ</translation>
 <translation id="607620096698446287">อัปโหลด <ph name="FILENAME" /> (<ph name="FILESIZE" />) ไม่ได้</translation>
 <translation id="6084848228346514841">เลือกแท็บ</translation>
+<translation id="6089212833343035912">PIN ของเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="6100617279104942061">ลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL" /> เปิดการตั้งค่า</translation>
 <translation id="6103540626693881831">การเข้ารหัสในอุปกรณ์</translation>
 <translation id="6119050551270742952">หน้าเว็บนี้อยู่ในโหมดไม่ระบุตัวตน</translation>
@@ -1261,6 +1265,7 @@
 <translation id="7022197654033719543">ข้อมูลเว็บไซต์</translation>
 <translation id="7029809446516969842">รหัสผ่าน</translation>
 <translation id="704692552158601232">แอปเบราว์เซอร์เริ่มต้น</translation>
+<translation id="7051147526307793383">อนุญาตให้อัปเกรดพาสคีย์อัตโนมัติ</translation>
 <translation id="7055240621761583113">ป้อนรหัสผ่านอัตโนมัติ</translation>
 <translation id="7063811929043357292">บัญชีของคุณได้รับการจัดการโดยผู้ปกครอง
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>

@@ -127,6 +127,7 @@
 <translation id="1622717322707146952">Selecione "Adicionar ao Google Agenda" ou "Adicionar ao Calendário Apple".</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> senhas reutilizadas</translation>
 <translation id="1636234353664774105">Confira rotas para seu destino usando o recurso de navegação guiada</translation>
+<translation id="1641068175940982148">Abrir <ph name="GROUP_TITLE" />, grupo de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">Navegação segura</translation>
 <translation id="1641316430523156212">Seguir</translation>
 <translation id="1644574205037202324">Histórico</translation>
@@ -402,6 +403,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2952246431280799028">Toque em um endereço e pressione.</translation>
 <translation id="2952278131021475699">Pesquisa com a câmera do Lens</translation>
 <translation id="2958718410589002129">Senhas</translation>
+<translation id="2963044753825419640">Permitir que sites e apps façam upgrade automático das contas para usar chaves de acesso quando disponíveis</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
 <translation id="2965328226365382335">Últimos 15 minutos</translation>
 <translation id="2969979262385602596">Falha durante o login. Tente novamente mais tarde.</translation>
@@ -759,6 +761,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, somente neste dispositivo, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Nova guia anônima</translation>
 <translation id="4766112107778026136">Discover e seguindo</translation>
+<translation id="4769198578611055647">Ajuda você a acessar as chaves de acesso salvas em qualquer dispositivo</translation>
 <translation id="4775879719735953715">Navegador padrão</translation>
 <translation id="4779732376610430319">Acessar as configurações…</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1042,6 +1045,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6067849159007176401">Adicionar proteção à navegação</translation>
 <translation id="607620096698446287">Não foi possível fazer upload do arquivo <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6084848228346514841">Selecionar guias</translation>
+<translation id="6089212833343035912">PIN do Gerenciador de senhas do Google</translation>
 <translation id="6100617279104942061">Login feito como <ph name="USER_EMAIL" />. Abre as configurações.</translation>
 <translation id="6103540626693881831">Criptografia no dispositivo</translation>
 <translation id="6119050551270742952">Esta pág. está no modo anônimo</translation>
@@ -1261,6 +1265,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7022197654033719543">Informações do site</translation>
 <translation id="7029809446516969842">Senhas</translation>
 <translation id="704692552158601232">App de navegação padrão</translation>
+<translation id="7051147526307793383">Permitir upgrades automáticos para chaves de acesso</translation>
 <translation id="7055240621761583113">Preencher a senha automaticamente</translation>
 <translation id="7063811929043357292">Sua conta é gerenciada pelo seu familiar responsável.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>

@@ -2446,6 +2446,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="272741954544380994">Kërko për imazhin me: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Mos më kujto më</translation>
 <translation id="2727712005121231835">Madhësia aktuale</translation>
+<translation id="2727713483500953825">Zgjidh imazhet/tekstin për të kërkuar me "Lenten"</translation>
 <translation id="2727744317940422214">Më vjen keq, ndodhi një gabim. Jep komente me #bruschetta në përshkrim. Kodi i gabimit është <ph name="ERROR" />. Pastrimi dështoi. Mund të duhet ta bësh këtë në mënyrë manuale.</translation>
 <translation id="2729327310379176711">Chrome po gjen mënyra të reja për të zvogëluar gjurmimin dhe për të të mbajtur edhe më të sigurt kur shfleton. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> dhe bën të mundur që t'i menaxhosh ato. Më pas, sajtet që viziton mund të pyesin Chrome për interesat e tu për të të shfaqur reklama.</translation>
 <translation id="2729577602370119849">Qasu dhe menaxho me lehtësi printerët</translation>
@@ -3659,6 +3660,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3623598555687153298">Kjo do të fshijë <ph name="TOTAL_USAGE" /> të dhëna të ruajtura nga sajtet e shfaqura</translation>
 <translation id="3624567683873126087">Shkyçe pajisjen dhe identifikohu në "Llogarinë e Google"</translation>
 <translation id="3624583033347146597">Zgjidh preferencat e kukive të palëve të treta</translation>
+<translation id="3625345586754200168">Provo "Lenten"</translation>
 <translation id="3625481642044239431">Është zgjedhur një skedar i pavlefshëm. Provo përsëri.</translation>
 <translation id="3626296069957678981">Për të karikuar këtë Chromebook, përdor një bateri të përputhshme Dell.</translation>
 <translation id="3627320433825461852">Mbetet më pak se 1 minutë</translation>
@@ -4815,6 +4817,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4450974146388585462">Diagnostiko</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> zbuloi një TPM aktive, e cila mund t'i ruajë të dhënat e tua në mënyrë më të sigurt.</translation>
 <translation id="4452898361839215358">ose zgjidh skedarin PPD. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Kërko çdo imazh ose tekst me "Lenten"</translation>
 <translation id="4453430595102511050">Prek sensorin e gjurmës së gishtit në këndin lart djathtas të tastierës. Të dhënat e gjurmëve të tua të gishtave ruhen në mënyrë të sigurt dhe asnjëherë nuk largohen nga pajisja jote <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Kërko në <ph name="SEARCH_ENGINE_NAME" /> ose shkruaj adresën URL</translation>
 <translation id="4457472090507035117">Zgjidh zërin aktual:</translation>
@@ -6971,6 +6974,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6059276912018042191">Skedat e fundit të Chrome</translation>
 <translation id="6059652578941944813">Hierarkia e certifikatave</translation>
 <translation id="6059925163896151826">Pajisjet USB</translation>
+<translation id="6060842547856900641">Hap "Lenten"</translation>
 <translation id="6061408389284235459">Një njoftim u dërgua te <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Krijo kod QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Shënim.<ph name="END_BOLD" /> Një zë i ngjashëm ose një regjistrim mund të jetë në gjendje që të ketë qasje te rezultatet personale të <ph name="SUPERVISED_USER_NAME" />. Për të kursyer baterinë, mund të zgjedhësh te cilësimet e "Asistentit" të <ph name="SUPERVISED_USER_NAME" /> që “Ok Google” të jetë aktiv vetëm kur kjo pajisje është e lidhur me një burim energjie.</translation>

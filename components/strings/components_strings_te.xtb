@@ -52,6 +52,7 @@
 <translation id="1089439967362294234">పాస్‌వర్డ్‌ని మార్చు</translation>
 <translation id="1089599132348386324">మీరు మనస్సు మార్చుకుంటే, మీ ఆసక్తిని Chrome సెట్టింగ్‌లలో ఎప్పుడైనా మార్చుకోవచ్చు.</translation>
 <translation id="1090629319939036170">VR మెనూ</translation>
+<translation id="1091463901118115503">చదవడాన్ని కొనసాగించండి</translation>
 <translation id="1091779689406092804">స్క్రీన్‌షాట్‌లు</translation>
 <translation id="1094777233105318927">మీ బ్రౌజర్, OS, పరికరం, ఇన్‌స్టాల్ చేసిన సాఫ్ట్‌వేర్, ఫైళ్ల గురించిన సమాచారం</translation>
 <translation id="1096545575934602868">ఈ ఫీల్డ్‌లో <ph name="MAX_ITEMS_LIMIT" /> కంటే ఎక్కువ నమోదులు ఉండకూడదు. తదుపరి అన్ని నమోదులు విస్మరించబడతాయి.</translation>
@@ -532,6 +533,7 @@
 <translation id="1974060860693918893">అధునాతన సెట్టింగ్‌లు</translation>
 <translation id="1975457531113383421">ఇన్‌పుట్ ట్రే</translation>
 <translation id="1975584088563498795">మెయిల్‌బాక్స్ 10</translation>
+<translation id="1976610264358655503">మీరు తరచుగా దీన్ని సందర్శిస్తారు</translation>
 <translation id="1978555033938440688">ఫర్మ్‌వేర్ వెర్షన్</translation>
 <translation id="1979156660928743046">మీడియా సమాచారం</translation>
 <translation id="1988881251331415125">స్పెల్లింగ్ సరైనది అయితే, <ph name="BEGIN_LINK" />కనెక్టివిటీ సమస్య విశ్లేషణలను రన్ చేయడానికి ట్రై చేయండి<ph name="END_LINK" />.</translation>
@@ -883,6 +885,7 @@
 <translation id="2619052155095999743">చొప్పించండి</translation>
 <translation id="2625385379895617796">మీ గడియారం సమయం భవిష్యత్తులో ఉంది</translation>
 <translation id="262745152991669301">USB పరికరాలకు కనెక్ట్ చేయడానికి సైట్ అనుమతి అడగవచ్చు</translation>
+<translation id="2628224721443278970">Microsoft OneDriveకు సైన్ ఇన్ చేయండి</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> యొక్క సర్వర్ IP అడ్రస్‌ కనుగొనబడలేదు.</translation>
 <translation id="2639739919103226564">స్థితి: </translation>
 <translation id="2647086987482648627">ఫ్యాబ్రిక్ (సెమీ-గ్లాస్)</translation>
@@ -1827,6 +1830,7 @@
 <translation id="4377125064752653719"><ph name="DOMAIN" />ను చేరుకోవడానికి మీరు ప్రయత్నించారు, కానీ సర్వర్ అందించిన ప్రమాణపత్రాన్ని దాన్ని జారీ చేసినవారు రద్దు చేశారు. సర్వర్ అందించిన భద్రత ఆధారాలు ఖచ్చితంగా విశ్వసించబడలేదని దీని అర్థం. మీరు దాడి చేసే వారితో కమ్యూనికేట్ చేస్తూ ఉండవచ్చు.</translation>
 <translation id="4378154925671717803">ఫోన్</translation>
 <translation id="4384395682990721132">A4x3</translation>
+<translation id="4387692837058041921">Microsoft OneDriveకు అప్‌లోడ్ చేసిన ఫైల్ పాజ్ అయింది</translation>
 <translation id="4390472908992056574">బ్రిమ్</translation>
 <translation id="4397059608630092079">ఆటోఫిల్‌ను ఉపయోగిస్తున్నప్పుడు ఎల్లప్పుడూ వెరిఫై చేయండి</translation>
 <translation id="4397978002248035985">మీ బ్యాంక్ వెబ్‌సైట్‌లో వెరిఫై చేయడానికి పాప్-అప్‌ను తెరుస్తుంది</translation>
@@ -1929,6 +1933,7 @@
 <translation id="4636930964841734540">సమాచారం</translation>
 <translation id="4640225694041297329">గత 7 రోజుల ఫలితాలను చూడండి</translation>
 <translation id="464342062220857295">శోధన ఫీచర్‌లు</translation>
+<translation id="4644567637638438744">మీరు Microsoft OneDriveకు సైన్ ఇన్ చేసి ఉంటే మాత్రమే, ఫైళ్లు అప్‌లోడ్ అవుతాయి</translation>
 <translation id="4644670975240021822">వ్యతిరేక క్రమంలో ఉన్న ఫేస్ డౌన్</translation>
 <translation id="4646534391647090355">ఇప్పుడు నన్ను అక్కడకు తీసుకు వెళ్లు</translation>
 <translation id="4648262692072505866">హ్యాష్ SHA-256 ఫార్మాట్‌లో ఉండాలి.</translation>
@@ -3043,6 +3048,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">కెమెరా</translation>
 <translation id="6734506549556896534">సిమ్యులేషన్ గేమ్‌లు</translation>
+<translation id="6735783933931458444">మీరు తరచుగా రోజులో ఇదే సమయానికి సందర్శిస్తారు</translation>
 <translation id="6737708609449480586">బేక్ చేసిన పదార్థాలు</translation>
 <translation id="6738516213925468394"><ph name="TIME" /> తేదీన మీ <ph name="BEGIN_LINK" />సింక్‌ రహస్య పదబంధం <ph name="END_LINK" />తో మీ డేటా ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది. సింక్‌ను ప్రారంభించడానికి దీన్ని నమోదు చేయండి.</translation>
 <translation id="6740851646645036700">మీరు ప్రస్తుతం మీ రాయడంలో సహాయ పరిమితిని రీచ్ అయ్యారు. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
@@ -3760,6 +3766,7 @@
 <translation id="8041089156583427627">ప్రతిస్పందనను పంపండి</translation>
 <translation id="8041940743680923270">సార్వజనీన డిఫాల్ట్‌ను ఉపయోగించండి (అడుగు)</translation>
 <translation id="8043255123207491407">విక్రేత నియమాలు, షరతులు చూడండి</translation>
+<translation id="8044986521421349135">మీ అత్యంత ఇటీవలి ట్యాబ్</translation>
 <translation id="8046360364391076336">పారిశ్రామిక వస్తువులు &amp; ఎక్విప్‌మెంట్</translation>
 <translation id="8052898407431791827">క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది</translation>
 <translation id="8057023045886711556">కామెడీ సినిమాలు</translation>

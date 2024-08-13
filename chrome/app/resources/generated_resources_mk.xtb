@@ -2462,6 +2462,7 @@
 <translation id="272741954544380994">Пребарајте ја сликата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Не потсетувај ме повторно</translation>
 <translation id="2727712005121231835">Вистинска големина</translation>
+<translation id="2727713483500953825">Изберете слики/текст за да пребарате со Lens</translation>
 <translation id="2727744317940422214">За жал, нешто тргна наопаку. Испратете повратни информации со #bruschetta во описот. Кодот за грешката е <ph name="ERROR" />. Подзачистувањето не успеа. Можеби ќе треба да го направите рачно.</translation>
 <translation id="2729327310379176711">Chrome наоѓа нови начини да го намали следењето и уште повеќе да ја одржува вашата безбедност додека прелистувате. Chrome исто така <ph name="ESTIMATE_INTERESTS_LINK" /> и ви овозможува да управувате со нив. Потоа, сајтовите што ги посетувате можат да го прашаат Chrome за вашите интереси за да ви прикажуваат реклами.</translation>
 <translation id="2729577602370119849">Лесен пристап и управување со печатачите</translation>
@@ -3677,6 +3678,7 @@
 <translation id="3623598555687153298">Ова ќе избрише податоците (<ph name="TOTAL_USAGE" />) што ги складирале прикажаните сајтови</translation>
 <translation id="3624567683873126087">Отклучи го уредот и најави се на сметката на Google</translation>
 <translation id="3624583033347146597">Изберете ги поставките за колаче од трета страна</translation>
+<translation id="3625345586754200168">Испробајте ја Lens</translation>
 <translation id="3625481642044239431">Избравте неважечка датотека. Обидете се повторно.</translation>
 <translation id="3626296069957678981">За да го наполните овој Chromebook, користете компатибилна батерија од Dell.</translation>
 <translation id="3627320433825461852">Преостанува помалку од 1 минута</translation>
@@ -4833,6 +4835,7 @@
 <translation id="4450974146388585462">Дијагностицирај</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> откри активен TPM што може побезбедно да ги складира вашите податоци.</translation>
 <translation id="4452898361839215358">или изберете PPD. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Пребарајте слика или текст со Lens</translation>
 <translation id="4453430595102511050">Допрете го сензорот за отпечатоци најгоре десно на тастатурата. Податоците за отпечатокот безбедно се складираат и никогаш не го напуштаат <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Пребарајте во <ph name="SEARCH_ENGINE_NAME" /> или напишете URL-адреса</translation>
 <translation id="4457472090507035117">Изберете тековен глас:</translation>
@@ -6991,6 +6994,7 @@
 <translation id="6059276912018042191">Неодамнешни картички на Chrome</translation>
 <translation id="6059652578941944813">Хиерархија на сертификат</translation>
 <translation id="6059925163896151826">USB-уреди</translation>
+<translation id="6060842547856900641">Отворете ја Lens</translation>
 <translation id="6061408389284235459">Известување е испратено на <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Создај QR-код</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Напомена:<ph name="END_BOLD" /> некој со сличен глас или снимка ќе може да пристапи до личните резултати на <ph name="SUPERVISED_USER_NAME" />. За да заштедите батерија, во поставките за „Помошникот“ на <ph name="SUPERVISED_USER_NAME" /> може да изберете „Ok Google“ да биде вклучено само кога уредов е поврзан со извор на напојување.</translation>

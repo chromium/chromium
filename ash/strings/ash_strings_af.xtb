@@ -668,6 +668,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3439896670700055005">Herlaai huidige bladsy sonder om gekaste inhoud te gebruik</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">Pasmaak jou muis</translation>
+<translation id="3444385531800624797">Resultate laai tans</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB C-toestel</translation>
 <translation id="3454555520521576458">Grootte kan verander word</translation>
@@ -1212,6 +1213,7 @@ Jy kan ook die kortpadsleutels gebruik. Merk eers die teks en druk dan <ph name=
 <translation id="5253783950165989294">Gekoppel aan 'n toestel genaamd <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% battery</translation>
 <translation id="5258528442992323769">Geen gestoorde lessenaars nie</translation>
 <translation id="5260676007519551770">Lessenaar 4</translation>
+<translation id="5265391159779542051">Resultate is gelaai</translation>
 <translation id="5270547718570958938">Google Kalender</translation>
 <translation id="5277869901083657836">Wissel stilusnutsgoed</translation>
 <translation id="5278086053818066789">Skakel ChromeVox aan/af (gesproke terugvoer)</translation>
@@ -1507,6 +1509,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="6210042900243040400">Koppel <ph name="NAME" /> wat vroeër in <ph name="EMAIL" /> gestoor is</translation>
 <translation id="6213808132343683860">Neem gedeeltelike skermskoot of skermopname</translation>
 <translation id="621606890568890214">Vou Google Klaskamer uit</translation>
+<translation id="6216759484154215561">“Meer inligting”-skakel is in die blaaier oopgemaak</translation>
 <translation id="6220928844947387476">Jy kan jouself en jou skerm nou op dieselfde tyd opneem</translation>
 <translation id="622484624075952240">Af</translation>
 <translation id="6228457605945141550">Verlaag helderheid</translation>
@@ -2219,6 +2222,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">Beweeg vorentoe tussen regter onderste hoek, Lanseerder, adresbalk, boekmerkbalk, webwerf wat oop is en aflaaie</translation>
 <translation id="8792626944327216835">mikrofoon</translation>
+<translation id="8797381270745758905">“Probeer weer”-skakel is geaktiveer</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Vouer <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"Help"</translation>

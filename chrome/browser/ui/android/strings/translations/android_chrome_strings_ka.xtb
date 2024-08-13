@@ -475,7 +475,6 @@
 <translation id="3226612997184048185">თუ თქვენს სანიშნეებს Google ანგარიშშიც ინახავთ, შეგიძლიათ თვალი მიადევნოთ პროდუქტების ფასებს Chrome-ში და შეიტყოთ, როცა ფასი დაიკლებს</translation>
 <translation id="3227557059438308877">Google Chrome უსაფრთხოების გასაღების სახით</translation>
 <translation id="3232293466644486101">დათვალიერების მონაცემების წაშლა…</translation>
-<translation id="3232459301230493791"><ph name="TAB_COUNT" /> ჩანართი წაიშალა</translation>
 <translation id="3232754137068452469">ვებ-აპი</translation>
 <translation id="3236059992281584593">დარჩენილია 1 წთ</translation>
 <translation id="3237087289225714896">სტანდარტული წინაწარი ჩატვირთვა:</translation>
@@ -910,6 +909,7 @@
 <translation id="5355191726083956201">გაძლიერებული დაცვა ჩართულია</translation>
 <translation id="5364112109233799727">იმ გვერდის URL, რომელთან დაკავშირებითაც გვაწვდით გამოხმაურებას, გაეგზავნება Google-ს და ის, შესაძლოა, ადამიანებმა შეამოწმონ ამ ფუნქციის გაუმჯობესების მიზნით</translation>
 <translation id="5375577065097716013">მოიძიეთ სურათი Google Lens-ით <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
+<translation id="5394331612381306435">ინკოგნიტო რეჟიმიდან გასვლა</translation>
 <translation id="5395376160638294582">იზრუნეთ, რომ ყოველთვის გამოიყენოთ Chrome-ის მონაცემები თქვენს Google ანგარიშში</translation>
 <translation id="539881862970320163">შემოთავაზებულია ძლიერი პაროლი. კლავიატურა დამალულია.</translation>
 <translation id="5401851137404501592">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამ საიტს გაუზიარებს თქვენს სახელს, ელფოსტის მისამართსა და პროფილის სურათს.</translation>
@@ -1070,6 +1070,7 @@
 <translation id="6138832295072039549">შეინახეთ თქვენი საიტის პარამეტრები აქ</translation>
 <translation id="6140912465461743537">ქვეყანა/რეგიონი</translation>
 <translation id="6142183503755612900">ნაგულისხმევის შეცვლას ნებისმიერ დროს შეძლებთ პარამეტრებიდან</translation>
+<translation id="6143892791267458416">\u0020და დაიხურება <ph name="DAYS_ARCHIVED" /> დღის შემდეგ</translation>
 <translation id="614890671148262506">ამ საიტიდან შეტყობინებების ყოველთვის დაშვება</translation>
 <translation id="6150320133806434356">სანიშნე შეინახა</translation>
 <translation id="6150706324143004339">თქვენს Google ანგარიშში Chrome-ის მონაცემები რომ გამოიყენოთ და შეინახოთ, განაახლეთ Chrome</translation>
@@ -1101,6 +1102,7 @@
 <translation id="6278428485366576908">თემა</translation>
 <translation id="6284472661216707937">პაროლები თქვენს ყველა მოწყობილობაზე დახურულია</translation>
 <translation id="6295158916970320988">ყველა საიტი</translation>
+<translation id="6296366034485697675">ექსპორტი და წაშლა</translation>
 <translation id="6303969859164067831">გამოსვლა და სინქრონიზაციის გამორთვა</translation>
 <translation id="6312687380483398334">ვებ-აპები (ჩუმი)</translation>
 <translation id="6315386555979018699">წაშლა და გაგრძელება</translation>
@@ -1277,6 +1279,7 @@
 <translation id="6978717888677691380">თქვენ მიერ დაბლოკილი საიტები</translation>
 <translation id="6979737339423435258">ყველა დროის</translation>
 <translation id="6987047470128880212">ინკოგნიტო რეჟიმი ამ მოწყობილობაზე ხელმისაწვდომი არ არის</translation>
+<translation id="6991701761229081516">თქვენი პაროლები ჩამოიტვირთება CSV ფაილის სახით. ისინი ხილული იქნება ყველა ადამიანისა თუ აპისთვის, რომლებსაც ფაილზე წვდომა აქვთ. დაექსპორტებული პაროლები წაიშლება Chrome-იდან.</translation>
 <translation id="6996145122199359148">ამ გვერდის ჩამოტვირთვა</translation>
 <translation id="7013762323294215682">წვდომის ეს გასაღები შეინახება თქვენს პაროლების მმართველში. მისით სარგებლობას შეძლებს ყველა, ვისთვისაც ხელმისაწვდომია წვდომის ეს გასაღები.</translation>
 <translation id="7020741890149022655">საკითხავ სიაში დამატება <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
@@ -1330,6 +1333,7 @@
 <translation id="7221869452894271364">ამ გვერდის ხელახლა ჩატვირთვა</translation>
 <translation id="7224097611345298931">ამ მოწყობილობაში Chrome-ისა და <ph name="CHROME_CHANNEL" />-ისთვის შენახული პაროლები გაერთიანდა. ორივე აპში შეგიძლიათ, ავტომატურად შეავსოთ თქვენ მიერ შენახული ყველა პაროლი.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ჩამოტვირთვა მოლოდინის რეჟიმშია}other{# ჩამოტვირთვა მოლოდინის რეჟიმშია}}</translation>
+<translation id="7230064152164845085">ინკოგნიტო რეჟიმზე გადართვა</translation>
 <translation id="72415438529550637">პაროლის შემოთავაზება დახურულია.</translation>
 <translation id="7252076891734325316">მოათავსეთ ტელეფონი კომპიუტერთან უფრო ახლოს</translation>
 <translation id="7260367682327802201">თქვენს Android მოწყობილობას, შესაძლოა, ჰქონდეს მსგავსი პარამეტრი. თუ რეკლამის ეფექტურობის გაზომვა ჩართულია როგორც Chrome-ში, ისე თქვენს Android მოწყობილობაზე, შესაბამისი კომპანია შეძლებს რეკლამის ეფექტურობის გაზომვას თქვენ მიერ მონახულებული ვებსაიტებისა და გამოყენებული აპების მასშტაბით.</translation>
@@ -1412,6 +1416,7 @@
 <translation id="7583262514280211622">აქ თქვენს საკითხავ სიას იპოვით</translation>
 <translation id="758603037873046260">შედით ამ გვერდის შესანახად</translation>
 <translation id="7588219262685291874">მუქი თემის ჩართვა მოწყობილობაზე ბატარეის დამზოგის გააქტიურებისას</translation>
+<translation id="7592322927044331376">პირველ რიგში, დააექსპორტეთ და წაშალეთ პაროლები Chrome-იდან</translation>
 <translation id="7594687499944811403">ნება დართეთ <ph name="EMBEDDED_ORIGIN" />-ს, რომ დაადასტუროს თქვენი ვინაობა <ph name="TOP_ORIGIN" />-ისთვის</translation>
 <translation id="7596558890252710462">ოპერაციული სისტემა</translation>
 <translation id="7603168929588204083">თარიღი არასწორია</translation>
@@ -1445,7 +1450,6 @@
 <translation id="7759809451544302770">არასავალდებულო</translation>
 <translation id="7762668264895820836">SD ბარათი <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">მისამართის დამატება</translation>
-<translation id="776533689993750361"><ph name="TAB_COUNT" /> ჩანართი წაიშალა</translation>
 <translation id="7772032839648071052">დაადასტურეთ პაროლი</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />-ის დახურვა</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> სხვა}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> სხვა}}</translation>
@@ -1692,6 +1696,7 @@
 <translation id="8856931513242997049">შეტყობინების ნებართვის ნაკადი დახურულია</translation>
 <translation id="8863714995118816041">ნებართვების ხელახლა დაიშვა <ph name="SITE_NAME" />-ისთვის</translation>
 <translation id="8865415417596392024">თქვენს ანგარიშში შენახული Chrome მონაცემები</translation>
+<translation id="8888527824584402177">ჩანართები, რომლებიც არ გამოგიყენებიათ <ph name="DAYS_INACTIVE" /> დღის განმავლობაში, აქ გადმოვა<ph name="AUTODELETE_SECTION" />. ამის შეცვლა ნებისმიერ დროს შეგიძლიათ აქ: <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8898822736010347272">Google-ს გაუგზავნის თქვენ მიერ მონახულებული ზოგიერთი გვერდის URL-ებს, სისტემის შეზღუდულ ინფორმაციასა და გვერდების გარკვეულ კონტენტს ვების ყველა მომხმარებლისთვის ახალი საფრთხეების აღმოსაჩენად და დასაბლოკად.</translation>
 <translation id="8909135823018751308">გაზიარება…</translation>
 <translation id="8921980840204105660">შეასრულეთ სინქრონიზაცია, თქვენი სხვა მოწყობილობებიდან სანიშნეები რომ მიიღოთ</translation>

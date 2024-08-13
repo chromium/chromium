@@ -2448,6 +2448,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="272741954544380994">Bilatu irudia <ph name="VISUAL_SEARCH_PROVIDER" /> bidez</translation>
 <translation id="2727633948226935816">Ez gogorarazi berriro</translation>
 <translation id="2727712005121231835">Benetako tamaina</translation>
+<translation id="2727713483500953825">Hautatu Lens bidez bilatu nahi dituzun irudiak edo testua</translation>
 <translation id="2727744317940422214">Arazoren bat izan da. Bidali oharrak azalpenean #bruschetta idatzita. Errore-kodea <ph name="ERROR" /> da. Garbiketak huts egin du. Eskuz egin beharko duzu agian.</translation>
 <translation id="2729327310379176711">Jarraipena murrizteko eta arakatu bitartean seguruago egon zaitezen modu berriak bilatzen ari ditu Chrome-k. Halaber, <ph name="ESTIMATE_INTERESTS_LINK" />, eta haiek kudeatzeko aukera ematen. Interesak igarri ondoren, bisitatzen dituzun webguneek zein interes dituzun galde diezaiokete Chrome-ri, iragarkiak erakuste aldera.</translation>
 <translation id="2729577602370119849">Atzitu eta kudeatu inprimagailuak erraz</translation>
@@ -3661,6 +3662,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3623598555687153298">Bistaratutako webguneek gordetako datuen <ph name="TOTAL_USAGE" /> ezabatuko dira</translation>
 <translation id="3624567683873126087">Desblokeatu gailua eta hasi saioa Google-ko kontuan</translation>
 <translation id="3624583033347146597">Aukeratu hirugarrenen cookieen hobespenak</translation>
+<translation id="3625345586754200168">Probatu Lens</translation>
 <translation id="3625481642044239431">Balio ez duen fitxategi bat hautatu da. Saiatu berriro.</translation>
 <translation id="3626296069957678981">Chromebook gailua kargatzeko, erabili Dell-eko bateria bateragarri bat.</translation>
 <translation id="3627320433825461852">Minutu bat baino gutxiago gelditzen da</translation>
@@ -4817,6 +4819,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4450974146388585462">Diagnostikatu</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> sistemak TPM aktibo bat hauteman du; haren bidez, segurtasun handiagoz gorde daitezke datuak.</translation>
 <translation id="4452898361839215358">Bestela, hautatu PPD bat. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
+<translation id="4453144231461812959">Bilatu edozein irudi edo testu Lens bidez</translation>
 <translation id="4453430595102511050">Sakatu teklatuaren goiko eskuinaldeko izkinan dagoen hatz-marken sentsorea. Zure hatz-markaren datuak modu seguruan gordeko dira eta ez dira inoiz aterako <ph name="DEVICE_TYPE" /> gailutik.</translation>
 <translation id="4453946976636652378">Bilatu <ph name="SEARCH_ENGINE_NAME" /> erabilita edo idatzi URL bat</translation>
 <translation id="4457472090507035117">Hautatu oraingo ahotsa:</translation>
@@ -6970,6 +6973,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6059276912018042191">Azkenaldian erabilitako Chrome-ko fitxak</translation>
 <translation id="6059652578941944813">Ziurtagirien hierarkia</translation>
 <translation id="6059925163896151826">USB bidezko ailuak</translation>
+<translation id="6060842547856900641">Ireki Lens</translation>
 <translation id="6061408389284235459">Jakinarazpen bat bidali da <ph name="DEVICE_NAME" /> gailura</translation>
 <translation id="6063284707309177505">Sortu QR kodea</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Oharra:<ph name="END_BOLD" /> baliteke zurearen antzekoa den ahots bat edo zure ahotsaren grabaketa bat erabilita <ph name="SUPERVISED_USER_NAME" /> erabiltzailearen emaitza pertsonalak atzitu ahal izatea. Bateria aurrezteko, hautatu "Hey Google" gailu hau energia-iturri batera konektatuta dagoenean soilik aktibatzeko aukera <ph name="SUPERVISED_USER_NAME" /> erabiltzailearen Laguntzailea zerbitzuaren ezarpenetan.</translation>

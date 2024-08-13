@@ -475,7 +475,6 @@
 <translation id="3226612997184048185">如果您还将书签保存在 Google 账号中，则可在 Chrome 中跟踪商品价格，并在降价时收到通知</translation>
 <translation id="3227557059438308877">使用 Google Chrome 作为安全密钥</translation>
 <translation id="3232293466644486101">删除浏览数据…</translation>
-<translation id="3232459301230493791">已删除 <ph name="TAB_COUNT" /> 个标签页</translation>
 <translation id="3232754137068452469">网络应用</translation>
 <translation id="3236059992281584593">还剩 1 分钟</translation>
 <translation id="3237087289225714896">标准预加载：</translation>
@@ -1448,7 +1447,6 @@
 <translation id="7759809451544302770">可选</translation>
 <translation id="7762668264895820836">SD 卡 <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">添加地址</translation>
-<translation id="776533689993750361">已删除 <ph name="TAB_COUNT" /> 个标签页</translation>
 <translation id="7772032839648071052">确认密码</translation>
 <translation id="7772375229873196092">关闭<ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}}</translation>

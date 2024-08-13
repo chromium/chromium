@@ -668,6 +668,7 @@
 <translation id="3439896670700055005">ਕੈਸ਼ੇ ਕੀਤੀ ਸਮੱਗਰੀ ਵਰਤੇ ਬਿਨਾਂ ਮੌਜੂਦਾ ਪੰਨੇ ਨੂੰ ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">ਆਪਣੇ ਮਾਊਸ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
+<translation id="3444385531800624797">ਨਤੀਜੇ ਲੋਡ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ਮਿੰਟ</translation>
 <translation id="3445925074670675829">USB-C ਡੀਵਾਈਸ</translation>
 <translation id="3454555520521576458">ਆਕਾਰ ਬਦਲਣਯੋਗ</translation>
@@ -1212,6 +1213,7 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> ਨਾਮ ਵਾਲੇ ਕਿਸੇ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ ਹੈ, <ph name="BATTERY_PERCENTAGE" />% ਬੈਟਰੀ</translation>
 <translation id="5258528442992323769">ਕੋਈ ਰੱਖਿਅਤ ਕੀਤੀ ਡਿਸਕ ਨਹੀਂ</translation>
 <translation id="5260676007519551770">ਡੈਸਕ 4</translation>
+<translation id="5265391159779542051">ਨਤੀਜੇ ਲੋਡ ਕੀਤੇ ਗਏ</translation>
 <translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">ਸਟਾਈਲਸ ਟੂਲਾਂ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="5278086053818066789">ChromeVox ਨੂੰ ਚਾਲੂ/ਬੰਦ ਕਰੋ (ਬੋਲੀ ਪ੍ਰਤੀਕਰਮ)</translation>
@@ -1507,6 +1509,7 @@
 <translation id="6210042900243040400"><ph name="EMAIL" /> ਵਿੱਚ ਪਹਿਲਾਂ ਤੋਂ ਰੱਖਿਅਤ ਕੀਤੇ <ph name="NAME" /> ਨੂੰ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="6213808132343683860">ਅੰਸ਼ਕ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ ਜਾਂ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਕਰੋ</translation>
 <translation id="621606890568890214">Google Classroom ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
+<translation id="6216759484154215561">ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ 'ਹੋਰ ਜਾਣੋ' ਖੋਲ੍ਹਿਆ ਗਿਆ</translation>
 <translation id="6220928844947387476">ਤੁਸੀਂ ਹੁਣ ਖੁਦ ਨੂੰ ਅਤੇ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਇੱਕੋ ਸਮੇਂ ਰਿਕਾਰਡ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="622484624075952240">ਹੇਠਾਂ</translation>
 <translation id="6228457605945141550">ਚਮਕ ਘਟਾਓ</translation>
@@ -2219,6 +2222,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">ਹੇਠਲੇ ਸੱਜੇ ਕੋਨੇ, ਲਾਂਚਰ, ਪਤਾ ਬਾਰ, ਬੁੱਕਮਾਰਕ ਬਾਰ, ਖੁੱਲ੍ਹੀ ਵੈੱਬਸਾਈਟ ਅਤੇ ਡਾਊਨਲੋਡਾਂ ਵਿਚਾਲੇ ਅੱਗੇ ਵੱਲ ਜਾਓ</translation>
 <translation id="8792626944327216835">ਮਾਈਕ੍ਰੋਫ਼ੋਨ</translation>
+<translation id="8797381270745758905">ਲਿੰਕ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਦੀ ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">ਫੋਲਡਰ <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"ਮਦਦ"</translation>

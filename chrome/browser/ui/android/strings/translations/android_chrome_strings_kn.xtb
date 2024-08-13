@@ -475,7 +475,6 @@
 <translation id="3226612997184048185">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಸಹ ನೀವು ಸೇವ್ ಮಾಡಿದರೆ, ನೀವು Chrome ನಲ್ಲಿ ಉತ್ಪನ್ನದ ಬೆಲೆಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಬಹುದು ಮತ್ತು ಬೆಲೆ ಕಡಿಮೆಯಾದಾಗ ಸೂಚನೆ ಪಡೆಯಬಹುದು</translation>
 <translation id="3227557059438308877">ಭದ್ರತಾ ಕೀಲಿಯಾಗಿ Google Chrome ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="3232293466644486101">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ…</translation>
-<translation id="3232459301230493791"><ph name="TAB_COUNT" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3232754137068452469">ವೆಬ್ ಅಪ್ಲಿಕೇಶನ್</translation>
 <translation id="3236059992281584593">1 ನಿಮಿಷ ಉಳಿದಿದೆ</translation>
 <translation id="3237087289225714896">ಪ್ರಮಾಣಿತ ಮುಂಚಿತ ಲೋಡ್ ಮಾಡುವಿಕೆ:</translation>
@@ -1450,7 +1449,6 @@
 <translation id="7759809451544302770">ಐಚ್ಛಿಕ</translation>
 <translation id="7762668264895820836">ಎಸ್‌ಡಿ ಕಾರ್ಡ್ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">ವಿಳಾಸ ಸೇರಿಸಿ</translation>
-<translation id="776533689993750361"><ph name="TAB_COUNT" /> ಟ್ಯಾಬ್ ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7772032839648071052">ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> ಅನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
