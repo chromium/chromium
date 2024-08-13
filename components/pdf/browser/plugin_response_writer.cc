@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/system/string_data_source.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
+#include "pdf/pdf_features.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -92,7 +93,9 @@ $3
 PluginResponseWriter::PluginResponseWriter(
     const PdfStreamDelegate::StreamInfo& stream_info,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client)
-    : body_(GenerateResponse(stream_info)), client_(std::move(client)) {}
+    : body_(GenerateResponse(stream_info)),
+      client_(std::move(client)),
+      require_corp_(stream_info.require_corp) {}
 
 PluginResponseWriter::~PluginResponseWriter() = default;
 
@@ -100,6 +103,14 @@ void PluginResponseWriter::Start(base::OnceClosure done_callback) {
   auto response = network::mojom::URLResponseHead::New();
   response->headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  // Allow the PDF plugin to be embedded in cross-origin sites if the original
+  // PDF has a COEP: require-corp header.
+  if (chrome_pdf::features::IsOopifPdfEnabled() && require_corp_) {
+    response->headers->AddHeader("Cross-Origin-Embedder-Policy",
+                                 "require-corp");
+    response->headers->AddHeader("Cross-Origin-Resource-Policy",
+                                 "cross-origin");
+  }
   response->mime_type = "text/html";
 
   mojo::ScopedDataPipeProducerHandle producer;
