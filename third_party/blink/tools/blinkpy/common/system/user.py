@@ -139,10 +139,11 @@ class User(object):
             webbrowser.get()
             return True
         except webbrowser.Error:
+            _log.warning(
+                'Failed to get default browser, not showing results...')
             return False
 
     def open_url(self, url):
         if not self.can_open_url():
-            _log.warning('Failed to open %s', url)
             return
         webbrowser.open(url)
