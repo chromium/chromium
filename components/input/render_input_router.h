@@ -73,6 +73,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   void ProgressFlingIfNeeded(base::TimeTicks current_time);
   void StopFling();
 
+  bool IsAnyScrollGestureInProgress() const;
+
   blink::mojom::FrameWidgetInputHandler* GetFrameWidgetInputHandler();
 
   void SetView(RenderWidgetHostViewInput* view);

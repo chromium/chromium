@@ -238,11 +238,15 @@ void BackForwardTransitionAnimator::OnGestureProgressed(
 
 void BackForwardTransitionAnimator::OnGestureCancelled() {
   CHECK_EQ(state_, State::kStarted);
+  StartInputSuppression();
   AdvanceAndProcessState(State::kDisplayingCancelAnimation);
 }
 
 void BackForwardTransitionAnimator::OnGestureInvoked() {
   CHECK_EQ(state_, State::kStarted);
+
+  StartInputSuppression();
+
   if (!StartNavigationAndTrackRequest()) {
     // `BackForwardTransitionAnimationManagerAndroid` will destroy `this` upon
     // return if the animation is aborted.
@@ -251,11 +255,13 @@ void BackForwardTransitionAnimator::OnGestureInvoked() {
     }
     return;
   }
+
   // `StartNavigationAndTrackRequest()` sets `navigation_state_`.
   if (navigation_state_ == NavigationState::kBeforeUnloadDispatched) {
     AdvanceAndProcessState(State::kDisplayingCancelAnimation);
     return;
   }
+
   CHECK_EQ(navigation_state_, NavigationState::kStarted);
   AdvanceAndProcessState(State::kDisplayingInvokeAnimation);
 }
@@ -1395,6 +1401,15 @@ int BackForwardTransitionAnimator::GetViewportWidthPx() const {
       ->GetNativeView()
       ->GetPhysicalBackingSize()
       .width();
+}
+
+void BackForwardTransitionAnimator::StartInputSuppression() {
+  CHECK(!ignore_input_scope_);
+
+  ignore_input_scope_.emplace(animation_manager_->web_contents_view_android()
+                                  ->web_contents()
+                                  ->IgnoreInputEvents(
+                                      /*audit_callback=*/std::nullopt));
 }
 
 }  // namespace content

@@ -2319,9 +2319,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 
 // Test that input isn't dispatched to the renderer while the transition
 // animation is in progress.
-// TODO(bokan): Re-enable once crbug.com/344620149 is fixed.
 IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
-                       DISABLED_SuppressRendererInputDuringTransition) {
+                       SuppressRendererInputDuringTransition) {
   DisableBackForwardCacheForTesting(
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
@@ -2352,15 +2351,21 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
         blink::WebInputEvent::Type::kUndefined);
     SimulateGestureScrollSequence(web_contents(), gfx::Point(100, 100),
                                   gfx::Vector2dF(0, 50));
-    RunUntilInputProcessed(
-        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+    {
+      SCOPED_TRACE("process_scroll");
+      RunUntilInputProcessed(
+          web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+    }
     EXPECT_EQ(input_watcher.last_sent_event_type(),
               blink::WebInputEvent::Type::kUndefined);
 
     SimulateTapDownAt(web_contents(), gfx::Point(100, 100));
     SimulateTapAt(web_contents(), gfx::Point(100, 100));
-    RunUntilInputProcessed(
-        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+    {
+      SCOPED_TRACE("process_tap");
+      RunUntilInputProcessed(
+          web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+    }
 
     EXPECT_EQ(input_watcher.last_sent_event_type(),
               blink::WebInputEvent::Type::kUndefined);
@@ -2368,9 +2373,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
     SimulateMouseClick(web_contents(),
                        blink::WebInputEvent::Modifiers::kNoModifiers,
                        blink::WebMouseEvent::Button::kLeft);
-
-    RunUntilInputProcessed(
-        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+    {
+      SCOPED_TRACE("process_mouse_click");
+      RunUntilInputProcessed(
+          web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+    }
     EXPECT_EQ(input_watcher.last_sent_event_type(),
               blink::WebInputEvent::Type::kUndefined);
   }
@@ -2388,8 +2395,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
         blink::WebInputEvent::Type::kUndefined);
     SimulateTapDownAt(web_contents(), gfx::Point(100, 100));
     SimulateTapAt(web_contents(), gfx::Point(100, 100));
-    RunUntilInputProcessed(
-        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+
+    {
+      SCOPED_TRACE("process_not_suppressed_tap");
+      RunUntilInputProcessed(
+          web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+    }
     EXPECT_EQ(input_watcher.last_sent_event_type(),
               blink::WebInputEvent::Type::kGestureTap);
   }

@@ -180,6 +180,15 @@ void RenderInputRouter::StopFling() {
   input_router()->StopFling();
 }
 
+bool RenderInputRouter::IsAnyScrollGestureInProgress() const {
+  for (size_t i = 0; i < is_in_gesture_scroll_.size(); i++) {
+    if (is_in_gesture_scroll_[i]) {
+      return true;
+    }
+  }
+  return false;
+}
+
 blink::mojom::WidgetInputHandler* RenderInputRouter::GetWidgetInputHandler() {
   TRACE_EVENT("input", "RenderInputRouter::GetWidgetInputHandler");
 

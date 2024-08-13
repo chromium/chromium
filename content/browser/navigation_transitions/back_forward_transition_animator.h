@@ -297,6 +297,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   int GetViewportWidthPx() const;
 
+  void StartInputSuppression();
+
   const BackForwardTransitionAnimationManager::NavigationDirection
       nav_direction_;
 
@@ -410,6 +412,10 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   // The indeterminate progress bar shown during the invoke animation.
   std::unique_ptr<ProgressBar> progress_bar_;
+
+  // A transition suppresses sending input events to the renderer during the
+  // animation.
+  std::optional<WebContentsImpl::ScopedIgnoreInputEvents> ignore_input_scope_;
 
   State state_;
 };
