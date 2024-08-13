@@ -54,20 +54,15 @@ std::optional<FeatureConfig> CreateNewUserGestureInProductHelpConfig(
     const char* action_event,
     const char* trigger_event,
     const char* used_event,
-    const char* dismiss_button_tap_event) {
+    const char* dismiss_button_tap_event,
+    const int total_max_occurrences = 2) {
   // Maximum storage days for iOS gesture IPHs in days. Note that they only
   // triggered for users who installed Chrome on iOS in the last specific number
   // of days, so this could be used as the maximum storage period of respective
   // events.
   const uint32_t kMaxStorageDays = 61;
-  // The IPH only shows once every `kGestureInProductHelpDaysBetweenOccurrences`
-  // days, and has a total maximum occurrence of the param value of
-  // `kGestureInProductHelpMaxOccurrence`.
-  int days_between_occurrences = base::GetFieldTrialParamByFeatureAsInt(
-      feature, kGestureInProductHelpDaysBetweenOccurrences,
-      /*default=*/kMaxStorageDays);
-  int total_max_occurrences = base::GetFieldTrialParamByFeatureAsInt(
-      feature, kGestureInProductHelpMaxOccurrence, /*default=*/1);
+  // The IPH only shows once a week, and honors `total_max_occurrences`.
+  int kDaysBetweenOccurrences = 7;
 
   std::optional<FeatureConfig> config = FeatureConfig();
   config->valid = true;
@@ -76,10 +71,10 @@ std::optional<FeatureConfig> CreateNewUserGestureInProductHelpConfig(
   // The user hasn't done the action suggested by the IPH.
   config->used = EventConfig(used_event, Comparator(EQUAL, 0), kMaxStorageDays,
                              kMaxStorageDays);
-  // The IPH shows at most once per `days_between_occurrences`.
+  // The IPH shows at most once per 7 days.
   config->trigger =
-      EventConfig(trigger_event, Comparator(EQUAL, 0), days_between_occurrences,
-                  days_between_occurrences);
+      EventConfig(trigger_event, Comparator(EQUAL, 0), kDaysBetweenOccurrences,
+                  kDaysBetweenOccurrences);
   config->event_configs.insert(
       EventConfig(trigger_event, Comparator(LESS_THAN, total_max_occurrences),
                   kMaxStorageDays, kMaxStorageDays));
@@ -88,7 +83,7 @@ std::optional<FeatureConfig> CreateNewUserGestureInProductHelpConfig(
   // if it hasn't.
   config->event_configs.insert(
       EventConfig(action_event, Comparator(GREATER_THAN_OR_EQUAL, 2),
-                  days_between_occurrences, days_between_occurrences));
+                  kDaysBetweenOccurrences, kDaysBetweenOccurrences));
   // The user hasn't explicitly dismissed the same IPH before.
   config->event_configs.insert(EventConfig(dismiss_button_tap_event,
                                            Comparator(EQUAL, 0),
@@ -2072,36 +2067,14 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   }
 
   if (kIPHiOSPullToRefreshFeature.name == feature->name) {
-    // Maximum storage days for iOS gesture IPHs in days. Note that they only
-    // triggered for users who installed Chrome on iOS in the last specific
-    // number of days, so this could be used as the maximum storage period of
-    // respective events.
-    const uint32_t kMaxStorageDays = 61;
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
-    // The user hasn't done the action suggested by the IPH.
-    config->used =
-        EventConfig(feature_engagement::events::kIOSMultiGestureRefreshUsed,
-                    Comparator(EQUAL, 0), kMaxStorageDays, kMaxStorageDays);
-    // The IPH shows at most once per week, twice in a lifetime.
-    config->trigger =
-        EventConfig("iph_pull_to_refresh_trigger", Comparator(EQUAL, 0), 7, 7);
-    config->event_configs.insert(EventConfig("iph_pull_to_refresh_trigger",
-                                             Comparator(LESS_THAN, 2),
-                                             kMaxStorageDays, kMaxStorageDays));
-    // The IPH only shows when user performs the action that should trigger the
-    // IPH at least twice since the last time the IPH shows, or since
-    // installation if it hasn't.
-    config->event_configs.insert(
-        EventConfig(feature_engagement::events::kIOSPullToRefreshUsed,
-                    Comparator(GREATER_THAN_OR_EQUAL, 2), 7, 7));
-    // The user hasn't explicitly dismissed the same IPH before.
-    config->event_configs.insert(EventConfig(
-        feature_engagement::events::kIOSPullToRefreshIPHDismissButtonTapped,
-        Comparator(EQUAL, 0), kMaxStorageDays, kMaxStorageDays));
-    return config;
+    // The IPH of the pull-to-refresh feature for the current tab.
+    return CreateNewUserGestureInProductHelpConfig(
+        *feature, /*action_event=*/
+        feature_engagement::events::kIOSMultiGestureRefreshUsed,
+        /*trigger_event=*/"iph_pull_to_refresh_trigger", /*used_event=*/
+        feature_engagement::events::kIOSPullToRefreshUsed,
+        /*dismiss_button_tap_event=*/
+        feature_engagement::events::kIOSPullToRefreshIPHDismissButtonTapped);
   }
 
   if (kIPHiOSReplaceSyncPromosWithSignInPromos.name == feature->name) {
@@ -2125,37 +2098,15 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   }
 
   if (kIPHiOSTabGridSwipeRightForIncognito.name == feature->name) {
-    // Maximum storage days for iOS gesture IPHs in days. Note that they only
-    // triggered for users who installed Chrome on iOS in the last specific
-    // number of days, so this could be used as the maximum storage period of
-    // respective events.
-    const uint32_t kMaxStorageDays = 61;
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
-    // The user hasn't done the action suggested by the IPH.
-    config->used =
-        EventConfig(feature_engagement::events::kIOSSwipeRightForIncognitoUsed,
-                    Comparator(EQUAL, 0), kMaxStorageDays, kMaxStorageDays);
-    // The IPH shows at most once per week, twice in a lifetime.
-    config->trigger = EventConfig("swipe_left_for_incognito_trigger",
-                                  Comparator(EQUAL, 0), 7, 7);
-    config->event_configs.insert(EventConfig("swipe_left_for_incognito_trigger",
-                                             Comparator(LESS_THAN, 2),
-                                             kMaxStorageDays, kMaxStorageDays));
-    // The IPH only shows when user performs the action that should trigger the
-    // IPH at least twice since the last time the IPH shows, or since
-    // installation if it hasn't.
-    config->event_configs.insert(
-        EventConfig(feature_engagement::events::kIOSIncognitoPageControlTapped,
-                    Comparator(GREATER_THAN_OR_EQUAL, 2), 7, 7));
-    // The user hasn't explicitly dismissed the same IPH before.
-    config->event_configs.insert(
-        EventConfig(feature_engagement::events::
-                        kIOSSwipeRightForIncognitoIPHDismissButtonTapped,
-                    Comparator(EQUAL, 0), kMaxStorageDays, kMaxStorageDays));
-    return config;
+    // The IPH of the tab grid swipe feature.
+    return CreateNewUserGestureInProductHelpConfig(
+        *feature, /*action_event=*/
+        feature_engagement::events::kIOSIncognitoPageControlTapped,
+        /*trigger_event=*/"swipe_left_for_incognito_trigger", /*used_event=*/
+        feature_engagement::events::
+            kIOSSwipeRightForIncognitoUsed, /*dismiss_button_tap_event=*/
+        feature_engagement::events::
+            kIOSSwipeRightForIncognitoIPHDismissButtonTapped);
   }
 
   if (kIPHiOSSwipeBackForwardFeature.name == feature->name) {
@@ -2166,7 +2117,8 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         /*trigger_event=*/"swipe_back_forward_trigger", /*used_event=*/
         feature_engagement::events::kIOSSwipeBackForwardUsed,
         /*dismiss_button_tap_event=*/
-        feature_engagement::events::kIOSSwipeBackForwardIPHDismissButtonTapped);
+        feature_engagement::events::kIOSSwipeBackForwardIPHDismissButtonTapped,
+        /*total_max_occurrences=*/1);
   }
 
   if (kIPHiOSSwipeToolbarToChangeTabFeature.name == feature->name) {

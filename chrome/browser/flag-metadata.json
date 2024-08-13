@@ -5385,16 +5385,6 @@
     "expiry_milestone": 121
   },
   {
-    "name": "ios-iph-swipe-back-forward",
-    "owners": ["ginnyhuang@chromium.org", "bling-flags@google.com"],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "ios-iph-swipe-toolbar-to-change-tab",
-    "owners": ["ginnyhuang@chromium.org", "bling-flags@google.com"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "ios-keyboard-accessory-upgrade",
     "owners": [ "noemies@chromium.org", "sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com" ],
     "expiry_milestone": 135

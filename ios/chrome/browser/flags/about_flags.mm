@@ -1654,17 +1654,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMinorModeRestrictionsForHistorySyncOptInDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(::switches::kMinorModeRestrictionsForHistorySyncOptIn)},
-    {"ios-iph-swipe-back-forward",
-     flag_descriptions::kIPHiOSSwipeBackForwardFeatureName,
-     flag_descriptions::kIPHiOSSwipeBackForwardFeatureDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(feature_engagement::kIPHiOSSwipeBackForwardFeature)},
-    {"ios-iph-swipe-toolbar-to-change-tab",
-     flag_descriptions::kIPHiOSSwipeToolbarToChangeTabFeatureName,
-     flag_descriptions::kIPHiOSSwipeToolbarToChangeTabFeatureDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         feature_engagement::kIPHiOSSwipeToolbarToChangeTabFeature)},
     {"autofill-enable-card-benefits-for-american-express",
      flag_descriptions::kAutofillEnableCardBenefitsForAmericanExpressName,
      flag_descriptions::

@@ -246,14 +246,6 @@ BASE_DECLARE_FEATURE(kDefaultBrowserEligibilitySlidingWindow);
 extern const base::FeatureParam<int>
     kDefaultBrowserEligibilitySlidingWindowParam;
 
-// The param name for the lifetime maximum occurrence for gesture in-product
-// help features.
-extern const char kGestureInProductHelpMaxOccurrence[];
-
-// The param name for the minimum number of days between two impressions for
-// each type of in-product help feature.
-extern const char kGestureInProductHelpDaysBetweenOccurrences[];
-
 // Non-FET feature flag that enables the generic default browser promo to be
 // displayed without matching all the criteria and in depth metrics collection
 // for the displayed promo.

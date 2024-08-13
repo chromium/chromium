@@ -650,18 +650,6 @@ const char kIPHForSafariSwitcherName[] = "IPH for Safari Switcher";
 const char kIPHForSafariSwitcherDescription[] =
     "Enables displaying IPH for users who are considered Safari Switcher";
 
-const char kIPHiOSSwipeBackForwardFeatureName[] = "IPH for Swipe Back/Forward";
-const char kIPHiOSSwipeBackForwardFeatureDescription[] =
-    "Enables displaying the gesture IPH instructing users to swipe back or "
-    "forward on the currently opened website to navigate to the previous or "
-    "next one visited.";
-
-const char kIPHiOSSwipeToolbarToChangeTabFeatureName[] =
-    "IPH for Swipe Toolbar To Change Tab";
-const char kIPHiOSSwipeToolbarToChangeTabFeatureDescription[] =
-    "Enables displaying the gesture IPH instructing users to swipe the toolbar "
-    "to navigate to the previous or next tab in the tab list.";
-
 const char kLensFiltersAblationModeEnabledName[] =
     "Lens filters ablation mode enabled";
 const char kLensFiltersAblationModeEnabledDescription[] =

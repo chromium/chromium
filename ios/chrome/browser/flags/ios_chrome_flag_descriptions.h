@@ -551,15 +551,6 @@ extern const char kIOSTipsNotificationsDescription[];
 extern const char kIPHForSafariSwitcherName[];
 extern const char kIPHForSafariSwitcherDescription[];
 
-// Title and description for the flag to enable the tab swipe back/forward IPH.
-extern const char kIPHiOSSwipeBackForwardFeatureName[];
-extern const char kIPHiOSSwipeBackForwardFeatureDescription[];
-
-// Title and description for the flag to enable the swipe toolbar to switch tab
-// IPH.
-extern const char kIPHiOSSwipeToolbarToChangeTabFeatureName[];
-extern const char kIPHiOSSwipeToolbarToChangeTabFeatureDescription[];
-
 // Title and description for the flag to enable the Lens filters ablation mode.
 extern const char kLensFiltersAblationModeEnabledName[];
 extern const char kLensFiltersAblationModeEnabledDescription[];

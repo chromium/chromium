@@ -581,10 +581,10 @@ BASE_FEATURE(kIPHiOSPromoStaySafeFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSSwipeBackForwardFeature,
              "IPH_iOSSwipeBackForward",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSSwipeToolbarToChangeTabFeature,
              "IPH_iOSSwipeToolbarToChangeTab",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPostDefaultAbandonmentPromoFeature,
              "IPH_iOSPostDefaultAbandonmentPromo",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -619,10 +619,6 @@ constexpr base::FeatureParam<int> kDefaultBrowserEligibilitySlidingWindowParam{
     &kDefaultBrowserEligibilitySlidingWindow,
     /*name=*/"sliding-window-days",
     /*default_value=*/180};
-
-const char kGestureInProductHelpMaxOccurrence[] = "gesture-iph-max-occurrence";
-const char kGestureInProductHelpDaysBetweenOccurrences[] =
-    "gesture-iph-days-between-occurrences";
 
 BASE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment,
              "DefaultBrowserTriggerCriteriaExperiment",
