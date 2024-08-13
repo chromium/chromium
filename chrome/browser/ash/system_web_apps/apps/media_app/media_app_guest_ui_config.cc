@@ -108,8 +108,6 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   source->AddBoolean("colorThemes", true);
   source->AddBoolean("photosAvailableForImage", photos_integration_supported);
   source->AddBoolean("photosAvailableForVideo", photos_integration_supported);
-  source->AddBoolean("pdfA11yOcr", base::FeatureList::IsEnabled(
-                                       ash::features::kMediaAppPdfA11yOcr));
 
   // TODO(b:356518781): rename the boolean to e.g. pdfContextMenu.
   // If true, show a context menu on right click on PDF surface. And if Mahi

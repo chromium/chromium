@@ -1904,12 +1904,6 @@ BASE_FEATURE(kMacAddressRandomization,
              "MacAddressRandomization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables PDF contents to be read using assistive technologies via OCR in the
-// Media App.
-BASE_FEATURE(kMediaAppPdfA11yOcr,
-             "MediaAppPdfA11yOcr",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Mahi on PDF contents in the Media App.
 BASE_FEATURE(kMediaAppPdfMahi,
              "MediaAppPdfMahi",
