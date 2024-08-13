@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "components/component_updater/pref_names.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -264,14 +265,21 @@ ModelExecutionFeaturesController::GetCurrentUserValidityResult(
   return ModelExecutionFeaturesController::UserValidityResult::kValid;
 }
 
-bool ModelExecutionFeaturesController::IsDeviceCapableForHistorySearch() const {
+ModelExecutionFeaturesController::SettingsVisibilityResult
+ModelExecutionFeaturesController::ShouldHideHistorySearch() const {
 #if !BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-  return false;
+  return SettingsVisibilityResult::kNotVisibleHardwareUnsupported;
 #else
+  // Component updates policy check.
+  if (!local_state_->GetBoolean(::prefs::kComponentUpdatesEnabled)) {
+    return SettingsVisibilityResult::kNotVisibleEnterprisePolicy;
+  }
+
+  // Performance class check.
   std::string allowed_classes_string =
       features::internal::kPerformanceClassListForHistorySearch.Get();
   if (allowed_classes_string == "*" || allowed_classes_string.empty()) {
-    return true;
+    return SettingsVisibilityResult::kUnknown;
   }
 
   int perf_class = local_state_->GetInteger(
@@ -279,7 +287,9 @@ bool ModelExecutionFeaturesController::IsDeviceCapableForHistorySearch() const {
   std::vector<std::string_view> allowed_classes_list = base::SplitStringPiece(
       allowed_classes_string, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
-  return base::Contains(allowed_classes_list, base::ToString(perf_class));
+  return base::Contains(allowed_classes_list, base::ToString(perf_class))
+             ? SettingsVisibilityResult::kUnknown
+             : SettingsVisibilityResult::kNotVisibleHardwareUnsupported;
 #endif
 }
 
@@ -318,11 +328,12 @@ bool ModelExecutionFeaturesController::IsSettingVisible(
   }
 
   // Check feature-specific requirements.
-  if (feature == UserVisibleFeatureKey::kHistorySearch &&
-      !IsDeviceCapableForHistorySearch()) {
-    metrics_recorder.SetResult(
-        feature, SettingsVisibilityResult::kNotVisibleHardwareUnsupported);
-    return false;
+  if (feature == UserVisibleFeatureKey::kHistorySearch) {
+    SettingsVisibilityResult result = ShouldHideHistorySearch();
+    if (result != SettingsVisibilityResult::kUnknown) {
+      metrics_recorder.SetResult(feature, result);
+      return false;
+    }
   }
 
   // If the setting is currently enabled by user, then we should show the

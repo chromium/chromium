@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/component_updater/pref_names.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -39,6 +40,8 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
     prefs::RegisterProfilePrefs(pref_service_->registry());
     model_execution::prefs::RegisterProfilePrefs(pref_service_->registry());
     model_execution::prefs::RegisterLocalStatePrefs(local_state_->registry());
+    local_state_->registry()->RegisterBooleanPref(
+        ::prefs::kComponentUpdatesEnabled, true, PrefRegistry::LOSSY_PREF);
   }
 
   void CreateController(
@@ -455,6 +458,41 @@ TEST_F(ModelExecutionFeaturesControllerTest,
       "OptimizationGuide.ModelExecution.SettingsVisibilityResult.HistorySearch",
       ModelExecutionFeaturesController::SettingsVisibilityResult::
           kVisibleFieldTrialEnabled,
+      1);
+
+  histogram_tester()->ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.SettingsVisibilityResult.HistorySearch",
+      2);
+}
+
+TEST_F(ModelExecutionFeaturesControllerTest,
+       HistorySearchSettingsIsHiddenWithComponentUpdatesDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitWithFeatures(
+      {features::internal::kHistorySearchSettingsVisibility}, {});
+
+  CreateController();
+
+  EnableSignIn();
+
+  // Visible by default since the feature is on.
+  EXPECT_TRUE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
+  histogram_tester()->ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.SettingsVisibilityResult.HistorySearch",
+      ModelExecutionFeaturesController::SettingsVisibilityResult::
+          kVisibleFieldTrialEnabled,
+      1);
+
+  // Not visible if component updates are disabled.
+  local_state()->SetBoolean(::prefs::kComponentUpdatesEnabled, false);
+  EXPECT_FALSE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
+  histogram_tester()->ExpectBucketCount(
+      "OptimizationGuide.ModelExecution.SettingsVisibilityResult.HistorySearch",
+      ModelExecutionFeaturesController::SettingsVisibilityResult::
+          kNotVisibleEnterprisePolicy,
       1);
 
   histogram_tester()->ExpectTotalCount(

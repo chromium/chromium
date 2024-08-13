@@ -325,6 +325,7 @@ static_library("core") {
   if (!is_fuchsia || !optimize_for_size) {
     deps += [
       ":on_device_model_execution_proto_generator",
+      "//components/component_updater",
       "//components/version_info",
       "//services/data_decoder/public/cpp",
       "//third_party/re2",
@@ -556,6 +557,11 @@ source_set("unit_tests") {
   if (!is_ios) {
     deps += [ "//components/services/unzip/content" ]
   }
+
+  if (!is_fuchsia || !optimize_for_size) {
+    deps += [ "//components/component_updater" ]
+  }
+
   if (build_with_tflite_lib) {
     deps += [
       "//third_party/abseil-cpp:absl",
