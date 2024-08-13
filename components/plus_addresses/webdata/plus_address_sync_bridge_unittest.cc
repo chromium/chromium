@@ -44,13 +44,15 @@ using DataChangedBySyncCallbackMock =
 
 class PlusAddressSyncBridgeTest : public testing::Test {
  public:
-  PlusAddressSyncBridgeTest()
-      : db_backend_(base::MakeRefCounted<WebDatabaseBackend>(
-            base::FilePath(WebDatabase::kInMemoryPath),
-            /*delegate=*/nullptr,
-            base::SingleThreadTaskRunner::GetCurrentDefault())) {
-    db_backend_->AddTable(std::make_unique<PlusAddressTable>());
-    db_backend_->InitDatabase();
+  PlusAddressSyncBridgeTest() {
+    // Table and bridge operate on the DB sequence - UI sequence doesn't matter.
+    webdatabase_service_ = base::MakeRefCounted<WebDatabaseService>(
+        base::FilePath(WebDatabase::kInMemoryPath),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+    webdatabase_service_->AddTable(std::make_unique<PlusAddressTable>());
+    webdatabase_service_->LoadDatabase();
+    task_environment_.RunUntilIdle();
     RecreateBridge();
   }
 
@@ -70,14 +72,15 @@ class PlusAddressSyncBridgeTest : public testing::Test {
 
   void RecreateBridge() {
     bridge_ = std::make_unique<PlusAddressSyncBridge>(
-        mock_processor_.CreateForwardingProcessor(), db_backend_,
-        on_data_changed_callback_.Get());
+        mock_processor_.CreateForwardingProcessor(),
+        webdatabase_service_->GetBackend(), on_data_changed_callback_.Get());
   }
 
   PlusAddressSyncBridge& bridge() { return *bridge_; }
 
   PlusAddressTable& table() {
-    return *PlusAddressTable::FromWebDatabase(db_backend_->database());
+    return *PlusAddressTable::FromWebDatabase(
+        webdatabase_service_->GetBackend()->database());
   }
 
   syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
@@ -91,7 +94,7 @@ class PlusAddressSyncBridgeTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  scoped_refptr<WebDatabaseBackend> db_backend_;
+  scoped_refptr<WebDatabaseService> webdatabase_service_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   testing::NiceMock<DataChangedBySyncCallbackMock> on_data_changed_callback_;
   std::unique_ptr<PlusAddressSyncBridge> bridge_;
