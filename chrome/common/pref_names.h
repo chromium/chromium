@@ -511,6 +511,7 @@ inline constexpr char kResolveTimezoneByGeolocationMigratedToMethod[] =
     "settings.resolve_timezone_by_geolocation_migrated_to_method";
 
 // A string pref set to the current input method.
+// TODO: b/308389509 - Remove this constant to complete migration.
 inline constexpr char kLanguageCurrentInputMethod[] =
     "settings.language.current_input_method";
 

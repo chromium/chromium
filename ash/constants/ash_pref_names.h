@@ -2446,6 +2446,10 @@ inline constexpr char kDnsOverHttpsIncludedDomains[] =
 // Language related Prefs
 //-----------------------------------------------------------------------------
 
+// A string pref set to the current input method.
+inline constexpr char kLanguageCurrentInputMethod[] =
+    "settings.language.current_input_method";
+
 // A string pref (comma-separated list) that corresponds to the set of enabled
 // 1P input method engine IDs.
 inline constexpr char kLanguagePreloadEngines[] =
