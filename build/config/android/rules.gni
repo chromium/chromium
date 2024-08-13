@@ -4,6 +4,7 @@
 
 import("//build/config/android/abi.gni")
 import("//build/config/android/copy_ex.gni")
+import("//build/config/chrome_build.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build_overrides/build.gni")
@@ -1964,6 +1965,10 @@ if (!is_robolectric && enable_java_templates) {
       if (defined(invoker.write_clang_profiling_data) &&
           invoker.write_clang_profiling_data) {
         defines += [ "_WRITE_CLANG_PROFILING_DATA" ]
+      }
+
+      if (is_desktop_android) {
+        defines += [ "_IS_DESKTOP_ANDROID" ]
       }
     }
   }
