@@ -1149,6 +1149,10 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
   std::erase_if(processed_fields, [](ProcessedField field) {
     return field.server_hints_non_credential_field;
   });
+  // Server classified all fields as not related to credentials, early return.
+  if (processed_fields.empty()) {
+    return FormParsingResult();
+  }
 
   // (2) If that failed, try to parse with autocomplete attributes.
   if (!significant_fields.is_single_username) {
