@@ -89,6 +89,7 @@ public class HubManagerImpl implements HubManager, HubController {
 
     @Override
     public void destroy() {
+        mHubVisibilitySupplier.set(false);
         mPaneManager.getFocusedPaneSupplier().removeObserver(mOnFocusedPaneChanged);
         mPaneManager.destroy();
         destroyHubCoordinator();
@@ -167,8 +168,8 @@ public class HubManagerImpl implements HubManager, HubController {
     public void onHubLayoutDoneHiding() {
         // TODO(crbug.com/40283238): Consider deferring this destruction till after a timeout.
         mHubContainerView.removeAllViews();
-        destroyHubCoordinator();
         mHubVisibilitySupplier.set(false);
+        destroyHubCoordinator();
     }
 
     @Override

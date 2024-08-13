@@ -441,7 +441,12 @@ public class TabSwitcherPaneMediator
     }
 
     private void onVisibilityChanged(boolean visible) {
-        if (visible) mOnTabSwitcherShown.run();
+        if (visible) {
+            mOnTabSwitcherShown.run();
+        } else {
+            hideDialogs();
+        }
+
         notifyBackPressStateChangedInternal();
     }
 

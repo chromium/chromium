@@ -242,8 +242,12 @@ public class TabSwitcherPaneMediatorUnitTest {
     @Test
     @SmallTest
     public void testLateTabModelFilterWhileVisible() {
+        when(mTabListEditorController.isVisible()).thenReturn(true);
         // Reset to simulate the UI is shown with no tab model filter set.
         mIsVisibleSupplier.set(false);
+        verify(mTabGridDialogController).hideDialog(false);
+        verify(mTabListEditorController).hide();
+        when(mTabListEditorController.isVisible()).thenReturn(false);
         mTabModelFilterSupplier.set(null);
         verify(mTabModelFilter, times(1)).addObserver(mTabModelObserverCaptor.capture());
 
