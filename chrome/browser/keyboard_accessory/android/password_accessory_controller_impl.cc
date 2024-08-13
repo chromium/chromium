@@ -194,7 +194,6 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
 
   std::vector<PasskeySection> passkeys_to_add;
   std::vector<UserInfo> info_to_add;
-  std::vector<FooterCommand> footer_commands_to_add;
   base::span<const PlusProfile> plus_profiles =
       plus_profiles_provider_
           ? plus_profiles_provider_->GetAffiliatedPlusProfiles()
@@ -230,40 +229,6 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
 
   if (password_manager::PasswordManagerDriver* driver =
           driver_supplier_.Run((&GetWebContents()))) {
-    if (webauthn::WebAuthnCredManDelegate::CredManMode() !=
-        webauthn::WebAuthnCredManDelegate::kNotEnabled) {
-      if (auto* delegate =
-              password_client_->GetWebAuthnCredManDelegateForDriver(driver)) {
-        if (delegate->HasPasskeys()) {
-          footer_commands_to_add.emplace_back(
-              l10n_util::GetStringUTF16(
-                  IDS_PASSWORD_MANAGER_ACCESSORY_SELECT_PASSKEY),
-              autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
-        }
-      }
-    }
-  }
-
-  if (all_passwords_helper_.available_credentials().has_value() &&
-      IsSecureSite() && origin.GetURL().SchemeIsCryptographic() &&
-      all_passwords_helper_.available_credentials().value() > 0) {
-    footer_commands_to_add.emplace_back(
-        l10n_util::GetStringUTF16(
-            IDS_PASSWORD_MANAGER_ACCESSORY_SELECT_PASSWORD),
-        autofill::AccessoryAction::USE_OTHER_PASSWORD);
-  }
-
-  if (is_password_field &&
-      last_focused_field_info_->is_manual_generation_available) {
-    std::u16string generate_password_title = l10n_util::GetStringUTF16(
-        IDS_PASSWORD_MANAGER_ACCESSORY_GENERATE_PASSWORD_BUTTON_TITLE);
-    footer_commands_to_add.emplace_back(
-        generate_password_title,
-        autofill::AccessoryAction::GENERATE_PASSWORD_MANUAL);
-  }
-
-  if (password_manager::PasswordManagerDriver* driver =
-          driver_supplier_.Run((&GetWebContents()))) {
     if (password_manager::WebAuthnCredentialsDelegate* credentials_delegate =
             password_client_->GetWebAuthnCredentialsDelegateForDriver(driver)) {
       if (auto passkeys = credentials_delegate->GetPasskeys()) {
@@ -274,41 +239,13 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
                                        passkey.credential_id());
         }
       }
-      if (credentials_delegate->IsAndroidHybridAvailable()) {
-        std::u16string passkey_other_device_title = l10n_util::GetStringUTF16(
-            IDS_PASSWORD_MANAGER_ACCESSORY_USE_DEVICE_PASSKEY);
-        footer_commands_to_add.emplace_back(
-            passkey_other_device_title,
-            autofill::AccessoryAction::CROSS_DEVICE_PASSKEY);
-      }
     }
-  }
-
-  auto manage_passwords_message_id =
-      passkeys_to_add.empty()
-          ? IDS_PASSWORD_MANAGER_ACCESSORY_ALL_PASSWORDS_LINK
-          : IDS_PASSWORD_MANAGER_ACCESSORY_ALL_PASSWORDS_AND_PASSKEYS_LINK;
-  std::u16string manage_passwords_title =
-      l10n_util::GetStringUTF16(manage_passwords_message_id);
-  footer_commands_to_add.emplace_back(
-      manage_passwords_title, autofill::AccessoryAction::MANAGE_PASSWORDS);
-
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled)) {
-    footer_commands_to_add.emplace_back(
-        l10n_util::GetStringUTF16(
-            IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
-        autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
-    footer_commands_to_add.emplace_back(
-        l10n_util::GetStringUTF16(
-            IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID),
-        autofill::AccessoryAction::SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
   }
 
   bool has_suggestions = !info_to_add.empty() || !passkeys_to_add.empty();
   AccessorySheetData data = autofill::CreateAccessorySheetData(
       autofill::AccessoryTabType::PASSWORDS, GetTitle(has_suggestions, origin),
-      std::move(info_to_add), std::move(footer_commands_to_add));
+      std::move(info_to_add), CreateManagePasswordsFooter());
   base::ranges::for_each(std::move(passkeys_to_add),
                          [&data](PasskeySection section) {
                            data.add_passkey_section(std::move(section));
@@ -617,6 +554,87 @@ PasswordAccessoryControllerImpl::PasswordAccessoryControllerImpl(
       driver_supplier_(std::move(driver_supplier)),
       show_migration_warning_callback_(
           std::move(show_migration_warning_callback)) {}
+
+std::vector<FooterCommand>
+PasswordAccessoryControllerImpl::CreateManagePasswordsFooter() const {
+  std::vector<FooterCommand> footer_commands_to_add;
+  if (password_manager::PasswordManagerDriver* driver =
+          driver_supplier_.Run((&GetWebContents()))) {
+    if (webauthn::WebAuthnCredManDelegate::CredManMode() !=
+        webauthn::WebAuthnCredManDelegate::kNotEnabled) {
+      if (auto* delegate =
+              password_client_->GetWebAuthnCredManDelegateForDriver(driver)) {
+        if (delegate->HasPasskeys()) {
+          footer_commands_to_add.emplace_back(
+              l10n_util::GetStringUTF16(
+                  IDS_PASSWORD_MANAGER_ACCESSORY_SELECT_PASSKEY),
+              autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
+        }
+      }
+    }
+  }
+
+  if (all_passwords_helper_.available_credentials().has_value() &&
+      IsSecureSite() &&
+      GetFocusedFrameOrigin().GetURL().SchemeIsCryptographic() &&
+      all_passwords_helper_.available_credentials().value() > 0) {
+    footer_commands_to_add.emplace_back(
+        l10n_util::GetStringUTF16(
+            IDS_PASSWORD_MANAGER_ACCESSORY_SELECT_PASSWORD),
+        autofill::AccessoryAction::USE_OTHER_PASSWORD);
+  }
+
+  const bool is_password_field = last_focused_field_info_->focused_field_type ==
+                                 FocusedFieldType::kFillablePasswordField;
+  if (is_password_field &&
+      last_focused_field_info_->is_manual_generation_available) {
+    std::u16string generate_password_title = l10n_util::GetStringUTF16(
+        IDS_PASSWORD_MANAGER_ACCESSORY_GENERATE_PASSWORD_BUTTON_TITLE);
+    footer_commands_to_add.emplace_back(
+        generate_password_title,
+        autofill::AccessoryAction::GENERATE_PASSWORD_MANUAL);
+  }
+
+  bool has_passkeys = false;
+  if (password_manager::PasswordManagerDriver* driver =
+          driver_supplier_.Run((&GetWebContents()))) {
+    if (password_manager::WebAuthnCredentialsDelegate* credentials_delegate =
+            password_client_->GetWebAuthnCredentialsDelegateForDriver(driver)) {
+      has_passkeys = credentials_delegate->GetPasskeys() &&
+                     !credentials_delegate->GetPasskeys()->empty();
+      if (credentials_delegate->IsAndroidHybridAvailable()) {
+        std::u16string passkey_other_device_title = l10n_util::GetStringUTF16(
+            IDS_PASSWORD_MANAGER_ACCESSORY_USE_DEVICE_PASSKEY);
+        footer_commands_to_add.emplace_back(
+            passkey_other_device_title,
+            autofill::AccessoryAction::CROSS_DEVICE_PASSKEY);
+      }
+    }
+  }
+
+  auto manage_passwords_message_id =
+      has_passkeys
+          ? IDS_PASSWORD_MANAGER_ACCESSORY_ALL_PASSWORDS_AND_PASSKEYS_LINK
+          : IDS_PASSWORD_MANAGER_ACCESSORY_ALL_PASSWORDS_LINK;
+  std::u16string manage_passwords_title =
+      l10n_util::GetStringUTF16(manage_passwords_message_id);
+  footer_commands_to_add.emplace_back(
+      manage_passwords_title, autofill::AccessoryAction::MANAGE_PASSWORDS);
+
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled)) {
+    footer_commands_to_add.emplace_back(
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
+        autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
+    footer_commands_to_add.emplace_back(
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID),
+        autofill::AccessoryAction::SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
+  }
+
+  return footer_commands_to_add;
+}
 
 void PasswordAccessoryControllerImpl::WebContentsDestroyed() {
   // Remove itself to avoid that pointers to other `WebContentsUserData` objects

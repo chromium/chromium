@@ -150,6 +150,10 @@ class PasswordAccessoryControllerImpl
   // WebContentsObserver:
   void WebContentsDestroyed() override;
 
+  // Constructs a vector of available manual fallback actions subject to
+  // enabled features and available user data.
+  std::vector<autofill::FooterCommand> CreateManagePasswordsFooter() const;
+
   // Enables or disables saving for the focused origin. This involves removing
   // or adding blocklisted entry in the |PasswordStore|.
   void ChangeCurrentOriginSavePasswordsStatus(bool enabled);
