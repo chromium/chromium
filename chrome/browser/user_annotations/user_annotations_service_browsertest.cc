@@ -4,6 +4,7 @@
 
 #include "components/user_annotations/user_annotations_service.h"
 
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -139,6 +140,66 @@ IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceBrowserTest, FormSubmissionFlow) {
 
   GURL url(
       embedded_test_server()->GetURL("a.com", "/autofill_address_form.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  ASSERT_TRUE(SubmitForm(web_contents()->GetPrimaryMainFrame()));
+
+  EXPECT_EQ(1,
+            optimization_guide::RetryForHistogramUntilCountReached(
+                &histogram_tester, "UserAnnotations.DidAddFormSubmission", 1));
+  histogram_tester.ExpectUniqueSample("UserAnnotations.DidAddFormSubmission",
+                                      true, 1);
+
+  base::test::TestFuture<
+      std::vector<optimization_guide::proto::UserAnnotationsEntry>>
+      test_future;
+  service()->RetrieveAllEntries(test_future.GetCallback());
+
+  auto entries = test_future.Take();
+  EXPECT_FALSE(entries.empty());
+}
+
+class UserAnnotationsServiceExplicitAllowlistBrowserTest
+    : public UserAnnotationsServiceBrowserTest {
+ protected:
+  void InitializeFeatureList() override {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kUserAnnotations,
+        {{"allowed_hosts_for_form_submissions", "allowed.com"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
+                       NotOnAllowlist) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(embedded_test_server()->GetURL("notallowed.com",
+                                          "/autofill_address_form.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  ASSERT_TRUE(SubmitForm(web_contents()->GetPrimaryMainFrame()));
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount("UserAnnotations.DidAddFormSubmission", 0);
+
+  base::test::TestFuture<
+      std::vector<optimization_guide::proto::UserAnnotationsEntry>>
+      test_future;
+  service()->RetrieveAllEntries(test_future.GetCallback());
+
+  auto entries = test_future.Take();
+  EXPECT_TRUE(entries.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(UserAnnotationsServiceExplicitAllowlistBrowserTest,
+                       OnAllowlist) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(embedded_test_server()->GetURL("allowed.com",
+                                          "/autofill_address_form.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_TRUE(SubmitForm(web_contents()->GetPrimaryMainFrame()));

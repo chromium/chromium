@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "url/gurl.h"
 
 namespace user_annotations {
 
@@ -14,6 +15,9 @@ BASE_DECLARE_FEATURE(kUserAnnotations);
 
 // Whether the user annotations feature is enabled.
 bool IsUserAnnotationsEnabled();
+
+// Whether the form submission for `url` should be added to user annotations.
+bool ShouldAddFormSubmissionForURL(const GURL& url);
 
 }  // namespace user_annotations
 

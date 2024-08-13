@@ -17,6 +17,8 @@ static_library("user_annotations") {
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
   ]
+
+  deps = [ "//url" ]
 }
 
 static_library("test_support") {
@@ -31,11 +33,15 @@ static_library("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "user_annotations_service_unittest.cc" ]
+  sources = [
+    "user_annotations_features_unittest.cc",
+    "user_annotations_service_unittest.cc",
+  ]
   deps = [
     ":test_support",
     ":user_annotations",
     "//base/test:test_support",
     "//testing/gtest",
+    "//url",
   ]
 }

@@ -76,6 +76,10 @@ void UserAnnotationsWebContentsObserver::RenderFrameDeleted(
 void UserAnnotationsWebContentsObserver::OnFormSubmitted(
     autofill::AutofillManager& manager,
     const autofill::FormData& form) {
+  if (!user_annotations::ShouldAddFormSubmissionForURL(form.url())) {
+    return;
+  }
+
   web_contents()->RequestAXTreeSnapshot(
       base::BindOnce(&UserAnnotationsWebContentsObserver::OnAXTreeSnapshotted,
                      weak_ptr_factory_.GetWeakPtr(), form),
