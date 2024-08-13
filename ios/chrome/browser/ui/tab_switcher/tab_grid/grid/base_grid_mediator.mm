@@ -506,7 +506,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   if (!IsTabGroupSyncEnabled() || closedGroups < 1) {
     return;
   }
-  [self.tabGroupsHandler showTabGroupSnackbarAfterClosingGroups:closedGroups];
+  [self.tabGroupsHandler
+      showTabGridTabGroupSnackbarAfterClosingGroups:closedGroups];
   [self.tabGridToolbarHandler showSavedTabGroupIPH];
 }
 

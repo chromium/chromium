@@ -49,7 +49,7 @@ class WebStateID;
                          sourceButtonItem:(UIBarButtonItem*)sourceButtonItem;
 
 // Displays a snackbar after closing tab groups locally.
-- (void)showTabGroupSnackbarAfterClosingGroups:(int)numberOfClosedGroups;
+- (void)showTabGridTabGroupSnackbarAfterClosingGroups:(int)numberOfClosedGroups;
 
 @end
 

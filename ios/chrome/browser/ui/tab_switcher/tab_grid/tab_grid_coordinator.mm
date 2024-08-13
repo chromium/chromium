@@ -1644,10 +1644,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                                animated:YES];
 }
 
-- (void)showTabGroupsPanel {
+- (void)showTabGroupsPanelAnimated:(BOOL)animated {
   CHECK(IsTabGroupSyncEnabled());
   [self.baseViewController setCurrentPageAndPageControl:TabGridPageTabGroups
-                                               animated:YES];
+                                               animated:animated];
 }
 
 #pragma mark - SnackbarCoordinatorDelegate

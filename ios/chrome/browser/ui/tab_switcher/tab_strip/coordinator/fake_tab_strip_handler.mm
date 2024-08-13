@@ -38,4 +38,8 @@
                                sourceView:(UIView*)sourceView {
 }
 
+- (void)showTabStripTabGroupSnackbarAfterClosingGroups:
+    (int)numberOfClosedGroups {
+}
+
 @end

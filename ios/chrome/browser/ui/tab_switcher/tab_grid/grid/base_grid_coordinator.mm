@@ -319,7 +319,8 @@
       self.browser->GetCommandDispatcher(), TabGroupConfirmationCommands);
 }
 
-- (void)showTabGroupSnackbarAfterClosingGroups:(int)numberOfClosedGroups {
+- (void)showTabGridTabGroupSnackbarAfterClosingGroups:
+    (int)numberOfClosedGroups {
   if (!IsTabGroupSyncEnabled()) {
     return;
   }
@@ -338,7 +339,7 @@
   __weak id<TabGridCommands> tabGridHandler =
       HandlerForProtocol(dispatcher, TabGridCommands);
   void (^openTabGroupPanelAction)() = ^{
-    [tabGridHandler showTabGroupsPanel];
+    [tabGridHandler showTabGroupsPanelAnimated:YES];
   };
 
   // Create and config the snackbar.

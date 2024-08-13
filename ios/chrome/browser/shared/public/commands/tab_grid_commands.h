@@ -24,7 +24,7 @@
 - (void)showRecentTabsForText:(NSString*)text;
 
 // Shows the tab groups panel.
-- (void)showTabGroupsPanel;
+- (void)showTabGroupsPanelAnimated:(BOOL)animated;
 
 @end
 

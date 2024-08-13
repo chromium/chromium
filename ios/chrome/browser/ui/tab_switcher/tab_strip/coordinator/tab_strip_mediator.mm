@@ -818,6 +818,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   if (IsTabGroupSyncEnabled()) {
     tab_groups::utils::CloseTabGroupLocally(
         tabGroupItem.tabGroup, self.webStateList, _tabGroupSyncService);
+    [self.tabStripHandler showTabStripTabGroupSnackbarAfterClosingGroups:1];
   } else {
     CloseAllWebStatesInGroup(*self.webStateList, tabGroupItem.tabGroup,
                              WebStateList::CLOSE_USER_ACTION);
