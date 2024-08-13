@@ -256,8 +256,11 @@ PickerSearchResult PickerSearchResult::NewWindow(
   return PickerSearchResult(NewWindowData{.type = type});
 }
 
-PickerSearchResult PickerSearchResult::CapsLock(bool enabled) {
-  return PickerSearchResult(CapsLockData{.enabled = enabled});
+PickerSearchResult PickerSearchResult::CapsLock(
+    bool enabled,
+    CapsLockData::Shortcut shortcut) {
+  return PickerSearchResult(
+      CapsLockData{.enabled = enabled, .shortcut = shortcut});
 }
 
 PickerSearchResult PickerSearchResult::CaseTransform(

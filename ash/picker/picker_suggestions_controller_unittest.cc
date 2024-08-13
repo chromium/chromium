@@ -114,7 +114,10 @@ TEST_F(PickerSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
-  EXPECT_CALL(callback, Run(Contains(PickerSearchResult::CapsLock(true))))
+  EXPECT_CALL(callback,
+              Run(Contains(PickerSearchResult::CapsLock(
+                  /*enabled=*/true,
+                  PickerSearchResult::CapsLockData::Shortcut::kAltSearch))))
       .Times(1);
 
   controller.GetSuggestions(model, callback.Get());
@@ -131,7 +134,10 @@ TEST_F(PickerSuggestionsControllerTest,
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
-  EXPECT_CALL(callback, Run(Contains(PickerSearchResult::CapsLock(false))))
+  EXPECT_CALL(callback,
+              Run(Contains(PickerSearchResult::CapsLock(
+                  /*enabled=*/false,
+                  PickerSearchResult::CapsLockData::Shortcut::kAltSearch))))
       .Times(1);
 
   controller.GetSuggestions(model, callback.Get());

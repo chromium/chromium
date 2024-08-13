@@ -361,7 +361,7 @@ std::u16string PickerListItemView::GetAccessibilityLabel() const {
   if (shortcut_hint_view_ != nullptr) {
     label = l10n_util::GetStringFUTF16(
         IDS_PICKER_LIST_ITEM_WITH_SHORTCUT_ACCESSIBLE_NAME, label,
-        shortcut_hint_view_->GetAccessibleName());
+        shortcut_hint_view_->GetShortcutText());
   }
 
   switch (badge_action_) {

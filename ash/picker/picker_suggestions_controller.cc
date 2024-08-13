@@ -7,6 +7,7 @@
 #include "ash/picker/model/picker_mode_type.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/picker_clipboard_history_provider.h"
+#include "ash/picker/picker_shortcuts.h"
 #include "ash/picker/search/picker_date_search.h"
 #include "ash/picker/search/picker_math_search.h"
 #include "ash/public/cpp/picker/picker_category.h"
@@ -50,7 +51,8 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
 
   if (model.GetMode() == PickerModeType::kUnfocused ||
       model.GetMode() == PickerModeType::kNoSelection) {
-    callback.Run({PickerSearchResult::CapsLock(!model.is_caps_lock_enabled())});
+    callback.Run({PickerSearchResult::CapsLock(
+        !model.is_caps_lock_enabled(), GetPickerShortcutForCapsLock())});
   }
 
   if (base::Contains(model.GetAvailableCategories(),

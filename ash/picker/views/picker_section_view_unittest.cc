@@ -199,8 +199,11 @@ TEST_F(PickerSectionViewTest, CapsLockResultShowsShortcutHint) {
   PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                  &submenu_controller);
 
-  section_view.AddResult(PickerSearchResult::CapsLock(/*enabled=*/true),
-                         &preview_controller, base::DoNothing());
+  section_view.AddResult(
+      PickerSearchResult::CapsLock(
+          /*enabled=*/true,
+          PickerSearchResult::CapsLockData::Shortcut::kAltSearch),
+      &preview_controller, base::DoNothing());
 
   base::span<const raw_ptr<PickerItemView>> items =
       section_view.item_views_for_testing();

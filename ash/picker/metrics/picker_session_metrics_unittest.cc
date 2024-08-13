@@ -224,7 +224,11 @@ TEST_F(PickerSessionMetricsTest, UpdatesCapsLockPrefsWhenSelected) {
   {
     PickerSessionMetrics metrics(&prefs);
     metrics.SetCapsLockDisplayed(true);
-    metrics.SetSelectedResult(PickerSearchResult::CapsLock(true), 0);
+    metrics.SetSelectedResult(
+        PickerSearchResult::CapsLock(
+            /*enabled=*/true,
+            PickerSearchResult::CapsLockData::Shortcut::kAltSearch),
+        0);
     metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kFormat);
   }
 
@@ -262,7 +266,11 @@ TEST_F(PickerSessionMetricsTest, HalvesCapsLockPrefs) {
   {
     PickerSessionMetrics metrics(&prefs);
     metrics.SetCapsLockDisplayed(true);
-    metrics.SetSelectedResult(PickerSearchResult::CapsLock(true), 0);
+    metrics.SetSelectedResult(
+        PickerSearchResult::CapsLock(
+            /*enabled=*/true,
+            PickerSearchResult::CapsLockData::Shortcut::kAltSearch),
+        0);
     metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kFormat);
   }
 

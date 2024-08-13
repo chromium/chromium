@@ -1069,6 +1069,8 @@ component("ash") {
     "picker/picker_paste_request.h",
     "picker/picker_rich_media.cc",
     "picker/picker_rich_media.h",
+    "picker/picker_shortcuts.cc",
+    "picker/picker_shortcuts.h",
     "picker/picker_suggestions_controller.cc",
     "picker/picker_suggestions_controller.h",
     "picker/picker_transform_case.cc",

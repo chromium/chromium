@@ -6,9 +6,9 @@
 
 #include <memory>
 #include <string>
-#include <string_view>
-#include <vector>
 
+#include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "base/strings/strcat.h"
@@ -31,7 +31,6 @@
 namespace ash {
 namespace {
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr int kShortcutIconSize = 16;
 
 std::unique_ptr<views::Label> CreateShortcutTextLabel(
@@ -42,31 +41,65 @@ std::unique_ptr<views::Label> CreateShortcutTextLabel(
   label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
   return label;
 }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
 
-PickerShortcutHintView::PickerShortcutHintView() {
+PickerShortcutHintView::PickerShortcutHintView(
+    PickerSearchResult::CapsLockData::Shortcut shortcut) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
-// TODO: b/331285414 - Shortcut hint strings and icon should be moved into
-// open source.
+  switch (shortcut) {
+    case PickerSearchResult::CapsLockData::Shortcut::kAltLauncher: {
+      auto* alt_label = AddChildView(
+          CreateShortcutTextLabel(l10n_util::GetStringUTF16(IDS_ASH_ALT_KEY)));
+      auto* plus_label = AddChildView(CreateShortcutTextLabel(u" + "));
+      AddChildView(
+          std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+              kGdLauncherIcon, cros_tokens::kCrosSysOnSurfaceVariant,
+              kShortcutIconSize)));
+      shortcut_text_ = base::StrCat(
+          {alt_label->GetText(), plus_label->GetText(),
+           l10n_util::GetStringUTF16(IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER)});
+      break;
+    }
+    case PickerSearchResult::CapsLockData::Shortcut::kAltSearch: {
+      auto* alt_label = AddChildView(
+          CreateShortcutTextLabel(l10n_util::GetStringUTF16(IDS_ASH_ALT_KEY)));
+      auto* plus_label = AddChildView(CreateShortcutTextLabel(u" + "));
+      AddChildView(
+          std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+              kGdSearchIcon, cros_tokens::kCrosSysOnSurfaceVariant,
+              kShortcutIconSize)));
+      shortcut_text_ = base::StrCat(
+          {alt_label->GetText(), plus_label->GetText(),
+           l10n_util::GetStringUTF16(IDS_ASH_SHORTCUT_MODIFIER_SEARCH)});
+      break;
+    }
+    case PickerSearchResult::CapsLockData::Shortcut::kFnRightAlt: {
+      // TODO: b/331285414 - Shortcut hint strings and icon should be moved into
+      // open source.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  auto* fn_label = AddChildView(
-      CreateShortcutTextLabel(l10n_util::GetStringUTF16(IDS_ASH_FN_KEY)));
-  auto* plus_label = AddChildView(CreateShortcutTextLabel(u" + "));
-  AddChildView(
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kRightAltInternalIcon, cros_tokens::kCrosSysOnSurfaceVariant,
-          kShortcutIconSize)));
-
-  SetAccessibleName(
-      base::StrCat({fn_label->GetText(), plus_label->GetText(),
-                    l10n_util::GetStringUTF16(IDS_KEYBOARD_RIGHT_ALT_LABEL)}));
+      auto* fn_label = AddChildView(
+          CreateShortcutTextLabel(l10n_util::GetStringUTF16(IDS_ASH_FN_KEY)));
+      auto* plus_label = AddChildView(CreateShortcutTextLabel(u" + "));
+      AddChildView(
+          std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+              kRightAltInternalIcon, cros_tokens::kCrosSysOnSurfaceVariant,
+              kShortcutIconSize)));
+      shortcut_text_ = base::StrCat(
+          {fn_label->GetText(), plus_label->GetText(),
+           l10n_util::GetStringUTF16(IDS_KEYBOARD_RIGHT_ALT_LABEL)});
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      break;
+    }
+  }
 }
 
 PickerShortcutHintView::~PickerShortcutHintView() = default;
+
+const std::u16string& PickerShortcutHintView::GetShortcutText() const {
+  return shortcut_text_;
+}
 
 BEGIN_METADATA(PickerShortcutHintView)
 END_METADATA

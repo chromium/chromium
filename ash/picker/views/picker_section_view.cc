@@ -308,10 +308,8 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
             item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
                 data.enabled ? kPickerCapsLockOnIcon : kPickerCapsLockOffIcon,
                 cros_tokens::kCrosSysOnSurface));
-            // TODO: b/350385392 - The shortcut hint shouldn't be shown if the
-            // user has customized the shortcut.
             item_view->SetShortcutHintView(
-                std::make_unique<PickerShortcutHintView>());
+                std::make_unique<PickerShortcutHintView>(data.shortcut));
             return item_view;
           },
           [&](const PickerSearchResult::CaseTransformData& data) -> ReturnType {

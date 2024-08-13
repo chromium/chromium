@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/picker/picker_shortcuts.h"
 #include "ash/picker/views/picker_strings.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
@@ -62,8 +63,8 @@ std::vector<PickerSearchResult> PickerActionSearch(
                   options.caps_lock_state_to_search
                       ? IDS_PICKER_CAPS_LOCK_ON_MENU_LABEL
                       : IDS_PICKER_CAPS_LOCK_OFF_MENU_LABEL))) {
-    matches.push_back(
-        PickerSearchResult::CapsLock(options.caps_lock_state_to_search));
+    matches.push_back(PickerSearchResult::CapsLock(
+        options.caps_lock_state_to_search, GetPickerShortcutForCapsLock()));
   }
 
   if (options.search_case_transforms) {

@@ -535,7 +535,9 @@ TEST_F(PickerControllerTest, OpenNewGoogleDocOpensGoogleDocs) {
 TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOnCapsLock) {
   controller().ToggleWidget();
 
-  controller().OpenResult(PickerSearchResult::CapsLock(true));
+  controller().OpenResult(PickerSearchResult::CapsLock(
+      /*enabled=*/true,
+      PickerSearchResult::CapsLockData::Shortcut::kAltSearch));
 
   input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
   ASSERT_TRUE(ime_keyboard);
@@ -545,7 +547,9 @@ TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOnCapsLock) {
 TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOffCapsLock) {
   controller().ToggleWidget();
 
-  controller().OpenResult(PickerSearchResult::CapsLock(false));
+  controller().OpenResult(PickerSearchResult::CapsLock(
+      /*enabled=*/false,
+      PickerSearchResult::CapsLockData::Shortcut::kAltSearch));
 
   input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
   ASSERT_TRUE(ime_keyboard);
@@ -849,9 +853,13 @@ TEST_F(PickerControllerTest, SearchesCapsLockOnWhenCapsLockIsOff) {
   controller().StartSearch(u"caps", /*category=*/{},
                            search_future.GetRepeatingCallback());
 
-  EXPECT_THAT(search_future.Take(),
-              Contains(Property(&PickerSearchResultsSection::results,
-                                Contains(PickerSearchResult::CapsLock(true)))));
+  EXPECT_THAT(
+      search_future.Take(),
+      Contains(Property(
+          &PickerSearchResultsSection::results,
+          Contains(PickerSearchResult::CapsLock(
+              /*enabled=*/true,
+              PickerSearchResult::CapsLockData::Shortcut::kAltSearch)))));
 }
 
 TEST_F(PickerControllerTest, SearchesCapsLockOffWhenCapsLockIsOn) {
@@ -864,8 +872,11 @@ TEST_F(PickerControllerTest, SearchesCapsLockOffWhenCapsLockIsOn) {
 
   EXPECT_THAT(
       search_future.Take(),
-      Contains(Property(&PickerSearchResultsSection::results,
-                        Contains(PickerSearchResult::CapsLock(false)))));
+      Contains(Property(
+          &PickerSearchResultsSection::results,
+          Contains(PickerSearchResult::CapsLock(
+              /*enabled=*/false,
+              PickerSearchResult::CapsLockData::Shortcut::kAltSearch)))));
 }
 
 TEST_F(PickerControllerTest, DoesNotSearchCaseTransformWhenNoSelectedText) {

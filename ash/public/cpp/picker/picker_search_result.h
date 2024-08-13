@@ -183,7 +183,14 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   };
 
   struct CapsLockData {
+    enum class Shortcut {
+      kAltLauncher,
+      kAltSearch,
+      kFnRightAlt,
+    };
+
     bool enabled;
+    Shortcut shortcut;
 
     bool operator==(const CapsLockData&) const;
   };
@@ -261,7 +268,8 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
       std::optional<chromeos::editor_menu::PresetQueryCategory> category,
       std::optional<std::string> preset_query_id);
   static PickerSearchResult NewWindow(NewWindowData::Type type);
-  static PickerSearchResult CapsLock(bool enabled);
+  static PickerSearchResult CapsLock(bool enabled,
+                                     CapsLockData::Shortcut shortcut);
   static PickerSearchResult CaseTransform(CaseTransformData::Type type);
 
   const Data& data() const;

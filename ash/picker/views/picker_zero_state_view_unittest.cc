@@ -202,11 +202,14 @@ TEST_F(PickerZeroStateViewTest, DisplayingCapsLockResultSetsCapsLockDisplayed) {
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
-            std::move(callback).Run({PickerSearchResult::DriveFile(
-                                         /*id=*/std::nullopt,
-                                         /*title=*/u"test drive file",
-                                         /*url=*/GURL(), base::FilePath()),
-                                     PickerSearchResult::CapsLock(true)});
+            std::move(callback).Run(
+                {PickerSearchResult::DriveFile(
+                     /*id=*/std::nullopt,
+                     /*title=*/u"test drive file",
+                     /*url=*/GURL(), base::FilePath()),
+                 PickerSearchResult::CapsLock(
+                     /*enabled=*/true,
+                     PickerSearchResult::CapsLockData::Shortcut::kAltSearch)});
           });
   EXPECT_CALL(mock_delegate, SetCapsLockDisplayed(true)).Times(1);
 
@@ -227,11 +230,14 @@ TEST_F(PickerZeroStateViewTest,
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
-            std::move(callback).Run({PickerSearchResult::CapsLock(true),
-                                     PickerSearchResult::DriveFile(
-                                         /*id=*/std::nullopt,
-                                         /*title=*/u"test drive file",
-                                         /*url=*/GURL(), base::FilePath())});
+            std::move(callback).Run(
+                {PickerSearchResult::CapsLock(
+                     /*enabled=*/true,
+                     PickerSearchResult::CapsLockData::Shortcut::kAltSearch),
+                 PickerSearchResult::DriveFile(
+                     /*id=*/std::nullopt,
+                     /*title=*/u"test drive file",
+                     /*url=*/GURL(), base::FilePath())});
           });
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -268,11 +274,14 @@ TEST_F(PickerZeroStateViewTest, PutsCapsLockInMoreCategoryForBottomCase) {
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
       .WillOnce(
           [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
-            std::move(callback).Run({PickerSearchResult::CapsLock(true),
-                                     PickerSearchResult::DriveFile(
-                                         /*id=*/std::nullopt,
-                                         /*title=*/u"test drive file",
-                                         /*url=*/GURL(), base::FilePath())});
+            std::move(callback).Run(
+                {PickerSearchResult::CapsLock(
+                     /*enabled=*/true,
+                     PickerSearchResult::CapsLockData::Shortcut::kAltSearch),
+                 PickerSearchResult::DriveFile(
+                     /*id=*/std::nullopt,
+                     /*title=*/u"test drive file",
+                     /*url=*/GURL(), base::FilePath())});
           });
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
