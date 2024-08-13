@@ -36,14 +36,6 @@ BASE_FEATURE(kUseEcoQoSForBackgroundProcess,
              "UseEcoQoSForBackgroundProcess",
              FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables intermediate priority (kUserVisible) and sets EcoQoS level for
-// kUserVisible priority process. Otherwise when feature is disabled,
-// Priority::kUserVisible has same behavior as Priority::kUserBlocking, and can
-// be translated as Priority::kUserBlocking in GetPriority().
-BASE_FEATURE(kEnableIntermediatePriority,
-             "EnableIntermediatePriority",
-             FEATURE_DISABLED_BY_DEFAULT);
-
 Process::Process(ProcessHandle handle)
     : process_(handle), is_current_process_(false) {
   CHECK_NE(handle, ::GetCurrentProcess());
@@ -264,24 +256,6 @@ Process::Priority Process::GetPriority() const {
       (priority == IDLE_PRIORITY_CLASS)) {
     return Priority::kBestEffort;
   }
-
-  PROCESS_POWER_THROTTLING_STATE power_throttling = {
-      .Version = PROCESS_POWER_THROTTLING_CURRENT_VERSION,
-      .ControlMask = 0ul,
-      .StateMask = 0ul,
-  };
-  const bool ret =
-      ::GetProcessInformation(Handle(), ProcessPowerThrottling,
-                              &power_throttling, sizeof(power_throttling));
-
-  // Return Priority::kUserVisible if EcoQoS is supported and set.
-  if (ret != 0 &&
-      power_throttling.ControlMask ==
-          PROCESS_POWER_THROTTLING_EXECUTION_SPEED &&
-      power_throttling.StateMask == PROCESS_POWER_THROTTLING_EXECUTION_SPEED) {
-    return Priority::kUserVisible;
-  }
-
   return Priority::kUserBlocking;
 }
 
@@ -296,19 +270,14 @@ bool Process::SetPriority(Priority priority) {
                                    ? IDLE_PRIORITY_CLASS
                                    : NORMAL_PRIORITY_CLASS;
 
-  // If Eco QoS level is not supported or kEnableIntermediatePriority feature
-  // disabled, Priority::kUserVisible has same behavior as
-  // Priority::kUserBlocking, and can be translated as Priority::kUserBlocking.
   if (base::win::OSInfo::GetInstance()->version() >=
-      base::win::Version::WIN11) {
+          base::win::Version::WIN11 &&
+      FeatureList::IsEnabled(kUseEcoQoSForBackgroundProcess)) {
     PROCESS_POWER_THROTTLING_STATE power_throttling;
     RtlZeroMemory(&power_throttling, sizeof(power_throttling));
     power_throttling.Version = PROCESS_POWER_THROTTLING_CURRENT_VERSION;
 
-    if ((priority == Priority::kBestEffort &&
-         FeatureList::IsEnabled(kUseEcoQoSForBackgroundProcess)) ||
-        (priority == Priority::kUserVisible &&
-         FeatureList::IsEnabled(kEnableIntermediatePriority))) {
+    if (priority == Priority::kBestEffort) {
       // Sets Eco QoS level.
       power_throttling.ControlMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED;
       power_throttling.StateMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED;

@@ -50,8 +50,6 @@ class ProcessPriorityDelegate;
 
 #if BUILDFLAG(IS_WIN)
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseEcoQoSForBackgroundProcess);
-
-BASE_EXPORT BASE_DECLARE_FEATURE(kEnableIntermediatePriority);
 #endif
 
 // Provides a move-only encapsulation of a process.
@@ -206,14 +204,13 @@ class BASE_EXPORT Process {
     // to the user. Lowest priority.
     kBestEffort,
 
-    // The process contributes to content that is visible to the user, but the
-    // work don't have significant performance or latency requirement, so it can
-    // run in energy efficient manner. Moderate priority.
+    // The process contributes to content that is visible to the user. High
+    // priority.
     kUserVisible,
 
     // The process contributes to content that is of the utmost importance to
     // the user, like producing audible content, or visible content in the
-    // main frame. High priority.
+    // focused window. Highest priority.
     kUserBlocking,
   };
 

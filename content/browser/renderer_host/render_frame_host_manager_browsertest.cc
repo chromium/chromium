@@ -5970,8 +5970,8 @@ class AssertForegroundHelper {
 #else   // BUILDFLAG(IS_APPLE)
   // Same as above without the Mac specific base::PortProvider.
   void AssertForegroundAndRepost(const base::Process& renderer_process) {
-    ASSERT_NE(renderer_process.GetPriority(),
-              base::Process::Priority::kBestEffort);
+    ASSERT_EQ(renderer_process.GetPriority(),
+              base::Process::Priority::kUserBlocking);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AssertForegroundHelper::AssertForegroundAndRepost,
