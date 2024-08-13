@@ -8,15 +8,19 @@ assert(is_chromeos_ash, "OnTask is only supported in Ash")
 
 static_library("on_task") {
   sources = [
+    "on_task_blocklist.cc",
+    "on_task_blocklist.h",
     "on_task_session_manager.cc",
     "on_task_session_manager.h",
     "on_task_system_web_app_manager.h",
   ]
 
   deps = [
+    "//ash/constants:constants",
     "//base",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/proto",
+    "//components/policy/core/browser",
     "//components/sessions:session_id",
   ]
 }

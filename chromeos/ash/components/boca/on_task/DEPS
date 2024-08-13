@@ -1,4 +1,6 @@
 include_rules = [
+  "+ash/constants",
   "+ash/webui/boca_ui",
+  "+components/policy/core/browser",
   "+components/sessions/core/session_id.h"
 ]

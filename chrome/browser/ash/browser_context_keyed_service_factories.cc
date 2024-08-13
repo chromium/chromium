@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/bluetooth/debug_logs_manager_factory.h"
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
+#include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
 #include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/calendar/calendar_keyed_service_factory.h"
@@ -209,6 +210,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   KioskAppUpdateServiceFactory::GetInstance();
   LockScreenAppsFactory::GetInstance();
   LockScreenReauthManagerFactory::GetInstance();
+  LockedSessionWindowTrackerFactory::GetInstance();
   login::SecurityTokenSessionControllerFactory::GetInstance();
   login::SigninPartitionManager::Factory::GetInstance();
   LoginScreenExtensionsContentScriptManagerFactory::GetInstance();

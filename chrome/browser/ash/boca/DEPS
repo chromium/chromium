@@ -23,10 +23,15 @@ include_rules = [
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_command_controller.h",
   "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_list_observer.h",
   "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/tabs/tab_enums.h",
+  "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
   "+chrome/browser/ui/chromeos/window_pin_util.h",
   "+chrome/test/base/testing_browser_process.h",
   "+chrome/test/base/testing_profile.h",
   "+chrome/test/base/testing_profile_manager.h",
+  "+chrome/test/base/browser_with_test_window_test.h",
   "+components/sessions/core/session_id.h"
+
 ]
