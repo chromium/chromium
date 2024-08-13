@@ -57,21 +57,6 @@ const gfx::Rect kOverlayBottomRightRect(128, 128, 128, 128);
 // by the test suites and helper functions.
 const AggregatedRenderPassId kDefaultRootPassId{1};
 
-class MockDCLayerOutputSurface : public FakeSkiaOutputSurface {
- public:
-  static std::unique_ptr<MockDCLayerOutputSurface> Create() {
-    auto provider = TestContextProvider::Create();
-    provider->BindToCurrentSequence();
-    return std::make_unique<MockDCLayerOutputSurface>(std::move(provider));
-  }
-
-  explicit MockDCLayerOutputSurface(scoped_refptr<ContextProvider> provider)
-      : FakeSkiaOutputSurface(std::move(provider)) {}
-
-  // OutputSurface implementation.
-  MOCK_METHOD1(SetEnableDCLayers, void(bool));
-};
-
 std::unique_ptr<AggregatedRenderPass> CreateRenderPass(
     AggregatedRenderPassId render_pass_id = kDefaultRootPassId) {
   gfx::Rect output_rect(0, 0, 256, 256);
@@ -245,7 +230,7 @@ class OverlayProcessorTestBase : public testing::Test {
   }
 
   void SetUp() override {
-    output_surface_ = MockDCLayerOutputSurface::Create();
+    output_surface_ = FakeSkiaOutputSurface::Create3d();
     output_surface_->BindToClient(&output_surface_client_);
 
     resource_provider_ = std::make_unique<DisplayResourceProviderSkia>();
@@ -267,7 +252,7 @@ class OverlayProcessorTestBase : public testing::Test {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<MockDCLayerOutputSurface> output_surface_;
+  std::unique_ptr<FakeSkiaOutputSurface> output_surface_;
   cc::FakeOutputSurfaceClient output_surface_client_;
   std::unique_ptr<DisplayResourceProviderSkia> resource_provider_;
   std::optional<DisplayResourceProviderSkia::LockSetForExternalUse>
@@ -2548,7 +2533,7 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, ForceSwapChainForCapture) {
   }
 }
 
-TEST_P(OverlayProcessorWinSurfacePlaneTest, SetEnableDCLayers) {
+TEST_P(OverlayProcessorWinSurfacePlaneTest, UseDCompSurfaceWithVideo) {
   overlay_processor_->SetUsingDCLayersForTesting(kDefaultRootPassId, false);
   // Draw 60 frames with overlay video quads.
   for (int i = 0; i < 60; i++) {
@@ -2571,12 +2556,9 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, SetEnableDCLayers) {
     SurfaceDamageRectList surface_damage_rect_list;
     damage_rect_ = gfx::Rect(1, 1, 10, 10);
 
-    // There will be full damage and SetEnableDCLayers(true) will be called on
-    // the first frame.
+    // Full damage on the first frame.
     const gfx::Rect expected_damage =
         (i == 0) ? pass_list.back()->output_rect : gfx::Rect();
-
-    EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(_)).Times(0);
 
     ProcessForOverlays(&pass_list, render_pass_filters,
                        render_pass_backdrop_filters, SurfaceDamageRectList(),
@@ -2620,16 +2602,14 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, SetEnableDCLayers) {
 
     damage_rect_ = gfx::Rect(1, 1, 10, 10);
 
-    // There will be full damage and SetEnableDCLayers(false) will be called
-    // after 60 consecutive frames with no overlays. The first frame without
-    // overlays will also have full damage, but no call to SetEnableDCLayers.
+    // There will be full damage and needs_synchronous_dcomp_commit will be
+    // false after 60 consecutive frames with no overlays. The first frame
+    // without overlays will also have full damage.
     const gfx::Rect expected_damage = (i == 0 || (i + 1) == 60)
                                           ? pass_list.back()->output_rect
                                           : damage_rect_;
 
     const bool in_dc_layer_hysteresis = i + 1 < 60;
-
-    EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(_)).Times(0);
 
     ProcessForOverlays(&pass_list, render_pass_filters,
                        render_pass_backdrop_filters, SurfaceDamageRectList(),
