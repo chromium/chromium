@@ -201,6 +201,11 @@ export interface KeyboardAmbientLightSensorObserverInterface {
                                                  boolean): void;
 }
 
+export interface LidStateObserverInterface {
+  // Fired when the lid state is changed.
+  onLidStateChanged(isLidOpen: boolean): void;
+}
+
 export type ButtonPressObserverInterface =
     InputDeviceSettingsProviderTypes.ButtonPressObserverInterface;
 

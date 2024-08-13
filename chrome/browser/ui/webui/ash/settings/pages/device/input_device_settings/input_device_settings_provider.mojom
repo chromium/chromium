@@ -86,6 +86,13 @@ interface KeyboardAmbientLightSensorObserver {
     bool keyboard_ambient_light_sensor_enabled);
 };
 
+// Implemented by clients that wish to be notified when the lid state changes.
+interface LidStateObserver {
+  // OnLidStateChanged calls are triggered when the lid of the device opens or
+  // closes.
+  OnLidStateChanged(bool is_lid_open);
+};
+
 // Interface for fetching and configuring input device settings in OSSettings.
 interface InputDeviceSettingsProvider {
   // Registers an observer which will be notified every time
@@ -131,6 +138,10 @@ interface InputDeviceSettingsProvider {
   // returns whether the keyboard ambient light sensor is currently enabled.
   ObserveKeyboardAmbientLightSensor(
     pending_remote<KeyboardAmbientLightSensorObserver> observer);
+
+  // Registers an observer for lid state changes and returns lid initial state.
+  ObserveLidState(pending_remote<LidStateObserver> observer) =>
+    (bool is_lid_open);
 
   // Restore the keyboard remappings to default based on its id.
   RestoreDefaultKeyboardRemappings(uint32 device_id);

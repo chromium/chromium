@@ -340,6 +340,25 @@ class FakeKeyboardAmbientLightSensorObserver
   bool keyboard_ambient_light_sensor_enabled_ = true;
 };
 
+class FakeLidStateObserver : public mojom::LidStateObserver {
+ public:
+  // mojom::LidStateObserver:
+  void OnLidStateChanged(bool is_lid_open) override {
+    ++num_lid_state_change_calls_;
+    is_lid_open_ = is_lid_open;
+  }
+
+  bool is_lid_open() { return is_lid_open_; }
+
+  int num_lid_state_change_calls() const { return num_lid_state_change_calls_; }
+
+  mojo::Receiver<mojom::LidStateObserver> receiver{this};
+
+ private:
+  int num_lid_state_change_calls_ = 0;
+  bool is_lid_open_ = true;
+};
+
 class FakeKeyboardBrightnessControlDelegate
     : public KeyboardBrightnessControlDelegate {
  public:
@@ -1160,6 +1179,30 @@ TEST_F(InputDeviceSettingsProviderTest, KeyboardBrightnessObserverTest) {
 
   EXPECT_EQ(expected_brightness, fake_observer.keyboard_brightness());
   EXPECT_EQ(2, fake_observer.num_times_called());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, LidStateObserverTest) {
+  FakeLidStateObserver fake_observer;
+  base::test::TestFuture<bool> future;
+
+  // Attach a lid state observer.
+  provider_->ObserveLidState(fake_observer.receiver.BindNewPipeAndPassRemote(),
+                             future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+
+  // Open the lid.
+  provider_->LidEventReceived(chromeos::PowerManagerClient::LidState::OPEN,
+                              /*timestamp=*/{});
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(fake_observer.is_lid_open());
+  EXPECT_EQ(1, fake_observer.num_lid_state_change_calls());
+
+  // Close the lid.
+  provider_->LidEventReceived(chromeos::PowerManagerClient::LidState::CLOSED,
+                              /*timestamp=*/{});
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(fake_observer.is_lid_open());
+  EXPECT_EQ(2, fake_observer.num_lid_state_change_calls());
 }
 
 TEST_F(InputDeviceSettingsProviderTest,
