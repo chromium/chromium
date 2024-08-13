@@ -27,6 +27,7 @@ import {
   createBiDiServerProcess,
   parseCommandLineArgs,
   createLogFile,
+  log,
 } from './bidi-server.mjs';
 import {installAndGetChromePath} from './path-getter/path-getter.mjs';
 // Changing the current work directory to the package directory.
@@ -41,10 +42,10 @@ const PYTEST_THIS_CHUNK = argv['this-chunk'];
 
 /**
  *
- * @param {import('child_process').ChildProcessWithoutNullStreams} process
+ * @param {import('child_process').ChildProcessWithoutNullStreams} subprocess
  * @returns
  */
-async function matchLine(process) {
+async function matchLine(subprocess) {
   let resolver;
   let rejecter;
   const promise = new Promise((resolve, reject) => {
@@ -57,9 +58,9 @@ async function matchLine(process) {
   function check() {
     for (const line of stdout.split(/\n/g)) {
       if (/.*(BiDi server|ChromeDriver) was started successfully/.test(line)) {
-        process.off('exit', onExit);
-        process.stdout.off('data', onStdout);
-        process.stderr.off('data', onStdout);
+        subprocess.off('exit', onExit);
+        subprocess.stdout.off('data', onStdout);
+        subprocess.stderr.off('data', onStdout);
 
         resolver();
         break;
@@ -73,15 +74,15 @@ async function matchLine(process) {
   }
 
   function onExit() {
-    process.off('exit', onExit);
-    process.stdout.off('data', onStdout);
-    process.stderr.off('data', onStdout);
+    subprocess.off('exit', onExit);
+    subprocess.stdout.off('data', onStdout);
+    subprocess.stderr.off('data', onStdout);
     rejecter(stdout);
   }
 
-  process.stdout.on('data', onStdout);
-  process.stderr.on('data', onStdout);
-  process.on('exit', onExit);
+  subprocess.stdout.on('data', onStdout);
+  subprocess.stderr.on('data', onStdout);
+  subprocess.on('exit', onExit);
 
   return await promise;
 }
@@ -140,10 +141,9 @@ if (serverProcess.stdout) {
 }
 
 await matchLine(serverProcess).catch((error) => {
-  // eslint-disable-next-line no-console
-  console.log('Could not match line exiting...');
-  // eslint-disable-next-line no-console
-  console.error(error);
+  serverProcess.kill();
+  log('Could not match line exiting...');
+  log(error);
   process.exit(1);
 });
 
@@ -194,6 +194,11 @@ if (e2eProcess.stdout) {
   e2eProcess.stdout.pipe(process.stdout);
   e2eProcess.stdout.pipe(addPrefix()).pipe(syncFileStreams);
 }
+
+e2eProcess.on('error', () => {
+  serverProcess.kill();
+  process.exit(1);
+});
 
 e2eProcess.on('exit', (status) => {
   serverProcess.kill();

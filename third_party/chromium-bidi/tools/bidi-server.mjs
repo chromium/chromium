@@ -27,7 +27,7 @@ import {
   installAndGetChromePath,
 } from './path-getter/path-getter.mjs';
 
-function log(...message) {
+export function log(...message) {
   // eslint-disable-next-line no-console
   console.log(`(${basename(process.argv[1])})`, ...message);
 }

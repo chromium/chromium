@@ -35,6 +35,11 @@ if (subprocess.stdout) {
   subprocess.stdout.pipe(fileWriteStream);
 }
 
+subprocess.on('error', () => {
+  subprocess.kill();
+  process.exit(1);
+});
+
 subprocess.on('exit', (status) => {
   process.exit(status || 0);
 });
