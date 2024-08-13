@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/user_type_filter.h"
+#include "chrome/browser/resources/preinstalled_web_apps/internal/container_util.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
@@ -32,6 +33,9 @@ std::string GetLaunchQueryParams(const std::optional<DeviceInfo>& device_info) {
   std::vector<std::string> launch_query_params;
   launch_query_params.emplace_back("cros_source=c");
 
+  const bool for_debug =
+      chromeos::features::IsContainerAppPreinstallDebugEnabled();
+
   // Attempt to retrieve the activation time threshold from the command-line
   // switch. Note that this switch will only be used for testing purposes.
   base::Time activation_time_threshold =
@@ -41,8 +45,12 @@ std::string GetLaunchQueryParams(const std::optional<DeviceInfo>& device_info) {
   // Fall back to the actual activation time threshold.
   // See PRD for more information re: the threshold (http://shortn/_a762eSA1pF).
   if (activation_time_threshold.is_null()) {
+    const container_util::ActivationTimeThreshold threshold =
+        container_util::GetActivationTimeThreshold(for_debug);
     CHECK(base::Time::FromUTCExploded(
-        base::Time::Exploded{.year = 2024, .month = 5, .day_of_month = 28},
+        base::Time::Exploded{.year = threshold.year,
+                             .month = threshold.month,
+                             .day_of_month = threshold.day_of_month},
         &activation_time_threshold));
   }
 
@@ -53,7 +61,8 @@ std::string GetLaunchQueryParams(const std::optional<DeviceInfo>& device_info) {
   if (device_info.value_or(DeviceInfo{})
           .oobe_timestamp.value_or(base::Time::Now()) >=
       activation_time_threshold) {
-    launch_query_params.emplace_back("cros_activation=true");
+    launch_query_params.emplace_back(
+        container_util::GetActivationUrlParam(for_debug));
   }
 
   return base::JoinString(launch_query_params, "&");
