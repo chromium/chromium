@@ -269,6 +269,7 @@ source_set("browser") {
     "//components/google/core/common",
     "//components/heap_profiling/multi_process",
     "//components/history/core/browser:browser",
+    "//components/ip_protection:browser",
     "//components/ip_protection:ip_protection",
     "//components/js_injection/browser",
     "//components/js_injection/common",

@@ -580,6 +580,7 @@ test("android_webview_unittests") {
     "//components/embedder_support/android:util",
     "//components/embedder_support/android/metrics:metrics",
     "//components/flags_ui:flags_ui",
+    "//components/ip_protection:browser",
     "//components/ip_protection:ip_protection",
     "//components/metrics",
     "//components/metrics:component_metrics",
