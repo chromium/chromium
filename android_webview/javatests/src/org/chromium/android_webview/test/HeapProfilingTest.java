@@ -50,7 +50,6 @@ public class HeapProfilingTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1370781")
     public void testModeBrowserDynamicPseudo() {
         HeapProfilingTestShim shim = new HeapProfilingTestShim();
         Assert.assertTrue(shim.runTestForMode("browser", true, "pseudo", false, false));
@@ -66,7 +65,6 @@ public class HeapProfilingTest extends AwParameterizedTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1370781")
     public void testModeBrowserDynamicPseudoSamplePartial() {
         HeapProfilingTestShim shim = new HeapProfilingTestShim();
         Assert.assertTrue(shim.runTestForMode("browser", true, "pseudo", true, false));
