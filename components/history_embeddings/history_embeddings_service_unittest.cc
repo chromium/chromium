@@ -462,12 +462,16 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterTerms) {
     service_->Search("query without terms", {}, 3,
                      future.GetRepeatingCallback());
     SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query without terms");
     EXPECT_GT(result.count, 0u);
   }
   {
     base::test::TestFuture<SearchResult> future;
     service_->Search("term1 in query", {}, 3, future.GetRepeatingCallback());
     SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "term1 in query");
     EXPECT_EQ(result.count, 0u);
   }
   {
@@ -475,6 +479,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterTerms) {
     service_->Search("query ending with term2", {}, 3,
                      future.GetRepeatingCallback());
     SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query ending with term2");
     EXPECT_EQ(result.count, 0u);
   }
   {
@@ -482,6 +488,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterTerms) {
     service_->Search("query ending with tErM2", {}, 3,
                      future.GetRepeatingCallback());
     SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query ending with tErM2");
     EXPECT_EQ(result.count, 0u);
   }
   {
@@ -489,6 +497,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterTerms) {
     service_->Search("query containing filTer phrAse", {}, 3,
                      future.GetRepeatingCallback());
     SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query containing filTer phrAse");
     EXPECT_EQ(result.count, 0u);
   }
   {
@@ -496,6 +506,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterTerms) {
     service_->Search("query containing thefilter phrase-and-more", {}, 3,
                      future.GetRepeatingCallback());
     SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query containing thefilter phrase-and-more");
     EXPECT_EQ(result.count, 0u);
   }
   {
@@ -503,6 +515,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterTerms) {
     service_->Search("query containing the filterphrase inexactly", {}, 3,
                      future.GetRepeatingCallback());
     SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query containing the filterphrase inexactly");
     EXPECT_GT(result.count, 0u);
   }
   {
@@ -510,6 +524,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterTerms) {
     service_->Search("query with term3 in the middle", {}, 3,
                      future.GetRepeatingCallback());
     SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query with term3 in the middle");
     EXPECT_EQ(result.count, 0u);
   }
   {
@@ -517,6 +533,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterTerms) {
     service_->Search("query with TERM3 in the middle", {}, 3,
                      future.GetRepeatingCallback());
     SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query with TERM3 in the middle");
     EXPECT_EQ(result.count, 0u);
   }
   {
@@ -524,6 +542,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterTerms) {
     service_->Search("query with inexact te'rm3 in the middle", {}, 3,
                      future.GetRepeatingCallback());
     SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query with inexact te'rm3 in the middle");
     EXPECT_GT(result.count, 0u);
   }
   {
@@ -531,6 +551,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterTerms) {
     service_->Search("query with 'term3', surrounded by punctuation", {}, 3,
                      future.GetRepeatingCallback());
     SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query with 'term3', surrounded by punctuation");
     EXPECT_EQ(result.count, 0u);
   }
   {
@@ -538,6 +560,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterTerms) {
     service_->Search("query with non-ASCII ∅ character but no terms", {}, 3,
                      future.GetRepeatingCallback());
     SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query with non-ASCII ∅ character but no terms");
     EXPECT_EQ(result.count, 0u);
   }
 }
