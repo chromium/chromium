@@ -475,15 +475,13 @@ class ObservableArrayExoticObjectHandler {
                              BackingListWrappable& backing_list,
                              v8::Local<v8::Value> v8_length,
                              ExceptionState& exception_state) {
-    v8::TryCatch try_catch(isolate);
+    TryRethrowScope rethrow_scope(isolate, exception_state);
     v8::Local<v8::Uint32> v8_length_uint32;
     if (!v8_length->ToUint32(current_context).ToLocal(&v8_length_uint32)) {
-      exception_state.RethrowV8Exception(try_catch.Exception());
       return false;
     }
     v8::Local<v8::Number> v8_length_number;
     if (!v8_length->ToNumber(current_context).ToLocal(&v8_length_number)) {
-      exception_state.RethrowV8Exception(try_catch.Exception());
       return false;
     }
     if (v8_length_uint32->Value() != v8_length_number->Value()) {

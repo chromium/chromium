@@ -32,9 +32,9 @@ v8::Local<v8::Module> ModuleTestBase::CompileModule(
       ScriptSourceLocationType::kExternalFile, ModuleType::kJavaScript,
       ParkableString(source.Impl()), nullptr,
       network::mojom::ReferrerPolicy::kDefault);
+  TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
   return ModuleRecord::Compile(script_state, params, ScriptFetchOptions(),
-                               TextPosition::MinimumPosition(),
-                               exception_state);
+                               TextPosition::MinimumPosition(), rethrow_scope);
 }
 
 class SaveResultFunction final : public ScriptFunction::Callable {

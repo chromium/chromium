@@ -377,13 +377,14 @@ v8::Local<v8::Value> XMLHttpRequest::ResponseJSON(
   DCHECK_EQ(response_type_code_, kResponseTypeJSON);
   DCHECK(!error_);
   DCHECK_EQ(state_, kDone);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   // Catch syntax error. Swallows an exception (when thrown) as the
   // spec says. https://xhr.spec.whatwg.org/#response-body
   v8::Local<v8::Value> json =
       FromJSONString(isolate, isolate->GetCurrentContext(),
-                     response_text_.ToString(), exception_state);
-  if (exception_state.HadException()) {
-    exception_state.ClearException();
+                     response_text_.ToString(), rethrow_scope);
+  if (rethrow_scope.HasCaught()) {
+    rethrow_scope.SwallowException();
     return v8::Null(isolate);
   }
   return json;

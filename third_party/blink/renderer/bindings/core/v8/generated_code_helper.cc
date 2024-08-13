@@ -255,13 +255,12 @@ bool IsEsIterableObject(v8::Isolate* isolate,
 
   // step 9.1. Let method be ? GetMethod(V, @@iterator).
   // https://tc39.es/ecma262/#sec-getmethod
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   v8::Local<v8::Value> iterator_key = v8::Symbol::GetIterator(isolate);
   v8::Local<v8::Value> iterator_value;
   if (!value.As<v8::Object>()
            ->Get(isolate->GetCurrentContext(), iterator_key)
            .ToLocal(&iterator_value)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return false;
   }
 

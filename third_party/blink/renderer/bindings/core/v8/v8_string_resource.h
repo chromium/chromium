@@ -110,13 +110,9 @@ class V8StringResource {
   }
 
   bool PrepareSlow(ExceptionState& exception_state) {
-    v8::TryCatch try_catch(isolate_);
-    if (!v8_object_->ToString(isolate_->GetCurrentContext())
-             .ToLocal(&v8_object_)) {
-      exception_state.RethrowV8Exception(try_catch.Exception());
-      return false;
-    }
-    return true;
+    TryRethrowScope rethrow_scope(isolate_, exception_state);
+    return v8_object_->ToString(isolate_->GetCurrentContext())
+        .ToLocal(&v8_object_);
   }
 
   bool IsValid() const;

@@ -293,6 +293,8 @@ class PLATFORM_EXPORT TryRethrowScope {
   }
 
   bool HasCaught() { return try_catch_.HasCaught(); }
+  void SwallowException() { return try_catch_.Reset(); }
+  v8::Local<v8::Value> GetException() { return try_catch_.Exception(); }
 
   v8::TryCatch try_catch_;
   ExceptionState& exception_state_;

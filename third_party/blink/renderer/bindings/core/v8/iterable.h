@@ -99,7 +99,7 @@ class PairSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
                V8ForEachIteratorCallback* callback,
                const ScriptValue& this_arg,
                ExceptionState& exception_state) {
-    v8::TryCatch try_catch(script_state->GetIsolate());
+    TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
 
     v8::Local<v8::Value> v8_callback_this_value = this_arg.V8Value();
     IDLTypeDefaultConstructible<KeyType> key;
@@ -121,7 +121,6 @@ class PairSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
                        ScriptValue(script_state->GetIsolate(), v8_key),
                        this_value)
               .IsNothing()) {
-        exception_state.RethrowV8Exception(try_catch.Exception());
         return;
       }
     }
@@ -169,7 +168,7 @@ class ValueSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
                V8ForEachIteratorCallback* callback,
                const ScriptValue& this_arg,
                ExceptionState& exception_state) {
-    v8::TryCatch try_catch(script_state->GetIsolate());
+    TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
 
     v8::Local<v8::Value> v8_callback_this_value = this_arg.V8Value();
     IDLTypeDefaultConstructible<ValueType> value;
@@ -186,7 +185,6 @@ class ValueSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
               ->Invoke(v8_callback_this_value, script_value, script_value,
                        this_value)
               .IsNothing()) {
-        exception_state.RethrowV8Exception(try_catch.Exception());
         return;
       }
     }

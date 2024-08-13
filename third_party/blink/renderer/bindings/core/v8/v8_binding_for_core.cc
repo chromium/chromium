@@ -889,14 +889,17 @@ v8::Local<v8::Value> FromJSONString(v8::Isolate* isolate,
                                     v8::Local<v8::Context> context,
                                     const String& stringified_json,
                                     ExceptionState& exception_state) {
-  v8::Local<v8::Value> parsed;
-  v8::TryCatch try_catch(isolate);
-  if (!v8::JSON::Parse(context, V8String(isolate, stringified_json))
-           .ToLocal(&parsed)) {
-    if (try_catch.HasCaught())
-      exception_state.RethrowV8Exception(try_catch.Exception());
-  }
+  TryRethrowScope rethrow_scope(isolate, exception_state);
+  return FromJSONString(isolate, context, stringified_json, rethrow_scope);
+}
 
+v8::Local<v8::Value> FromJSONString(v8::Isolate* isolate,
+                                    v8::Local<v8::Context> context,
+                                    const String& stringified_json,
+                                    TryRethrowScope&) {
+  v8::Local<v8::Value> parsed;
+  std::ignore = v8::JSON::Parse(context, V8String(isolate, stringified_json))
+                    .ToLocal(&parsed);
   return parsed;
 }
 
