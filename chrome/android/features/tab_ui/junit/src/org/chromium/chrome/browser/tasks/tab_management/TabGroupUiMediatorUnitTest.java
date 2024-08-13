@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -96,6 +97,7 @@ public class TabGroupUiMediatorUnitTest {
     @Mock BottomControlsCoordinator.BottomControlsVisibilityController mVisibilityController;
     @Mock TabGroupUiMediator.ResetHandler mResetHandler;
     @Mock TabModelSelectorImpl mTabModelSelector;
+    @Mock TabContentManager mTabContentManager;
     @Mock TabCreatorManager mTabCreatorManager;
     @Mock TabCreator mTabCreator;
     @Mock LayoutStateProvider mLayoutManager;
@@ -196,6 +198,7 @@ public class TabGroupUiMediatorUnitTest {
                         mResetHandler,
                         mModel,
                         mTabModelSelector,
+                        mTabContentManager,
                         mTabCreatorManager,
                         mLayoutStateProviderSupplier,
                         mIncognitoStateProvider,
@@ -347,6 +350,7 @@ public class TabGroupUiMediatorUnitTest {
 
         listener.onClick(mView);
 
+        verify(mTabContentManager).cacheTabThumbnail(mTab2);
         verify(mResetHandler).resetGridWithListOfTabs(mTabGroup2);
     }
 

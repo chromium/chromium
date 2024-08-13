@@ -210,6 +210,7 @@ public class TabGroupUiCoordinator
                             this,
                             mModel,
                             mTabModelSelector,
+                            mTabContentManager,
                             mTabCreatorManager,
                             mLayoutStateProviderSupplier,
                             mIncognitoStateProvider,
