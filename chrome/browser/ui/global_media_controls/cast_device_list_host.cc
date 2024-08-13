@@ -151,6 +151,13 @@ void CastDeviceListHost::SelectDevice(const std::string& device_id) {
 
 void CastDeviceListHost::OnModelUpdated(
     const media_router::CastDialogModel& model) {
+  if (base::FeatureList::IsEnabled(
+          media_router::kShowCastPermissionRejectedError) &&
+      model.is_permission_rejected()) {
+    client_->OnPermissionRejected();
+    return;
+  }
+
   sinks_ = model.media_sinks();
   std::vector<global_media_controls::mojom::DevicePtr> devices;
   for (const auto& sink : sinks_) {

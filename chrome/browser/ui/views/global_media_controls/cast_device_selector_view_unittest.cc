@@ -112,7 +112,7 @@ TEST_F(CastDeviceSelectorViewTest, CloseButtonCheck) {
 TEST_F(CastDeviceSelectorViewTest, DeviceEntryCheck) {
   CreateCastDeviceSelectorView(/*show_devices=*/true);
   view()->OnDevicesUpdated(CreateDevices());
-  EXPECT_FALSE(view()->GetHasIssueForTesting());
+  EXPECT_FALSE(view()->GetHasDeviceIssueForTesting());
   EXPECT_NE(view()->GetDeviceContainerViewForTesting(), nullptr);
   for (views::View* child :
        view()->GetDeviceContainerViewForTesting()->children()) {
@@ -133,7 +133,7 @@ TEST_F(CastDeviceSelectorViewTest, DeviceEntryWithIssueCheck) {
 
   CreateCastDeviceSelectorView(/*show_devices=*/true);
   view()->OnDevicesUpdated(std::move(devices));
-  EXPECT_TRUE(view()->GetHasIssueForTesting());
+  EXPECT_TRUE(view()->GetHasDeviceIssueForTesting());
   EXPECT_NE(view()->GetDeviceContainerViewForTesting(), nullptr);
   for (views::View* child :
        view()->GetDeviceContainerViewForTesting()->children()) {
@@ -143,4 +143,12 @@ TEST_F(CastDeviceSelectorViewTest, DeviceEntryWithIssueCheck) {
     EXPECT_EQ(base::UTF16ToUTF8(device_button->status_text_label()->GetText()),
               kTestDeviceStatusText);
   }
+}
+
+TEST_F(CastDeviceSelectorViewTest, ShowPermissionRejectedError) {
+  CreateCastDeviceSelectorView(/*show_devices=*/false);
+  view()->OnPermissionRejected();
+  EXPECT_TRUE(view()->GetCloseButtonForTesting()->GetVisible());
+  EXPECT_TRUE(view()->GetPermissionRejectedViewForTesting()->GetVisible());
+  EXPECT_FALSE(view()->GetDeviceContainerViewForTesting()->GetVisible());
 }

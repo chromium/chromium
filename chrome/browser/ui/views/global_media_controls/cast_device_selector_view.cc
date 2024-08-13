@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -155,6 +156,10 @@ CastDeviceSelectorView::CastDeviceSelectorView(
       views::BoxLayout::Orientation::kVertical);
   device_container_view_->SetBetweenChildSpacing(kDeviceContainerSeparator);
 
+  // Create the container view to hold the permission rejected error.
+  permission_rejected_view_ =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+
   if (show_devices) {
     ShowDevices();
   } else {
@@ -194,7 +199,8 @@ bool CastDeviceSelectorView::IsDeviceSelectorExpanded() {
 void CastDeviceSelectorView::OnDevicesUpdated(
     std::vector<global_media_controls::mojom::DevicePtr> devices) {
   device_container_view_->RemoveAllChildViews();
-  has_issue_ = false;
+  has_permission_rejected_issue_ = false;
+  has_device_issue_ = false;
   for (const auto& device : devices) {
     auto device_view = BuildCastDeviceEntryView(
         base::BindRepeating(&CastDeviceSelectorView::OnCastDeviceSelected,
@@ -203,11 +209,37 @@ void CastDeviceSelectorView::OnDevicesUpdated(
         base::UTF8ToUTF16(device->status_text));
     device_container_view_->AddChildView(std::move(device_view));
   }
-  if (media_item_ui_updated_view_) {
-    media_item_ui_updated_view_->UpdateDeviceSelectorAvailability(
-        device_container_view_->children().size() > 0);
-    media_item_ui_updated_view_->UpdateDeviceSelectorIssue(has_issue_);
+  UpdateVisibility();
+}
+
+void CastDeviceSelectorView::OnPermissionRejected() {
+  // TODO(crbug.com/358821864): Do not show the permission error if users have
+  // dismissed it.
+  if (has_permission_rejected_issue_) {
+    return;
   }
+  has_permission_rejected_issue_ = true;
+
+  auto* permission_rejected_label_ = permission_rejected_view_->AddChildView(
+      std::make_unique<views::StyledLabel>());
+  permission_rejected_label_->SetBorder(
+      views::CreateEmptyBorder(kCastHeaderRowInsets));
+  permission_rejected_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  permission_rejected_label_->SetDefaultEnabledColorId(
+      media_color_theme_.secondary_foreground_color_id);
+
+  size_t offset;
+  std::u16string settings_text_for_link = l10n_util::GetStringUTF16(
+      IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK);
+  permission_rejected_label_->SetText(l10n_util::GetStringFUTF16(
+      IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LABEL,
+      settings_text_for_link, &offset));
+  base::RepeatingClosure open_settings_cb = base::BindRepeating([]() {
+    // TODO(crbug.com/358725038): Open the system settings on click.
+  });
+  permission_rejected_label_->AddStyleRange(
+      gfx::Range(offset, offset + settings_text_for_link.length()),
+      views::StyledLabel::RangeStyleInfo::CreateForLink(open_settings_cb));
   UpdateVisibility();
 }
 
@@ -239,7 +271,7 @@ std::unique_ptr<HoverButton> CastDeviceSelectorView::BuildCastDeviceEntryView(
         std::move(callback), icon, device_name, status_text,
         media_color_theme_.secondary_foreground_color_id,
         media_color_theme_.error_foreground_color_id);
-    has_issue_ = true;
+    has_device_issue_ = true;
   } else {
     // Create the device entry button with a static icon view.
     device_entry_button = std::make_unique<HoverButton>(
@@ -266,9 +298,12 @@ void CastDeviceSelectorView::OnCastDeviceSelected(
 }
 
 void CastDeviceSelectorView::UpdateVisibility() {
-  // Show the view if user requests to show the list and there are also
-  // available devices.
-  SetVisible(is_expanded_ && (device_container_view_->children().size() > 0));
+  // Show the view if user requests to show the list and the device selector is
+  // available.
+  SetVisible(is_expanded_ && IsDeviceSelectorAvailable());
+
+  device_container_view_->SetVisible(!has_permission_rejected_issue_);
+  permission_rejected_view_->SetVisible(has_permission_rejected_issue_);
 
   // Visibility changes can result in size changes, which should change sizes of
   // parent views too.
@@ -276,6 +311,10 @@ void CastDeviceSelectorView::UpdateVisibility() {
 
   // Update the casting state on the parent view.
   if (media_item_ui_updated_view_) {
+    media_item_ui_updated_view_->UpdateDeviceSelectorAvailability(
+        IsDeviceSelectorAvailable());
+    media_item_ui_updated_view_->UpdateDeviceSelectorIssue(
+        has_device_issue_ || has_permission_rejected_issue_);
     media_item_ui_updated_view_->UpdateDeviceSelectorVisibility(is_expanded_);
   }
 }
@@ -288,11 +327,15 @@ void CastDeviceSelectorView::CloseButtonPressed() {
   HideDevices();
 }
 
+bool CastDeviceSelectorView::IsDeviceSelectorAvailable() {
+  return !device_container_view_->children().empty() ||
+         has_permission_rejected_issue_;
+}
 ///////////////////////////////////////////////////////////////////////////////
 // Helper functions for testing:
 
-bool CastDeviceSelectorView::GetHasIssueForTesting() {
-  return has_issue_;
+bool CastDeviceSelectorView::GetHasDeviceIssueForTesting() {
+  return has_device_issue_;
 }
 
 global_media_controls::MediaActionButton*
@@ -302,6 +345,10 @@ CastDeviceSelectorView::GetCloseButtonForTesting() {
 
 views::View* CastDeviceSelectorView::GetDeviceContainerViewForTesting() {
   return device_container_view_;
+}
+
+views::View* CastDeviceSelectorView::GetPermissionRejectedViewForTesting() {
+  return permission_rejected_view_;
 }
 
 BEGIN_METADATA(CastDeviceSelectorView)

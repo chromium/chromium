@@ -92,6 +92,7 @@ class MediaItemUIDeviceSelectorView
   // mojom::DeviceObserver
   void OnDevicesUpdated(
       std::vector<global_media_controls::mojom::DevicePtr> devices) override;
+  void OnPermissionRejected() override {}
 
   // MediaItemUIFooterView::Delegate
   void OnDeviceSelected(int tag) override;
@@ -149,6 +150,7 @@ class MediaItemUIDeviceSelectorView
   raw_ptr<ExpandDeviceSelectorLabel> expand_label_ = nullptr;
   raw_ptr<ExpandDeviceSelectorButton> dropdown_button_ = nullptr;
   raw_ptr<views::View> device_entry_views_container_ = nullptr;
+  raw_ptr<views::View> permission_error_view_container_ = nullptr;
 
   base::CallbackListSubscription audio_device_subscription_;
   base::CallbackListSubscription is_device_switching_enabled_subscription_;

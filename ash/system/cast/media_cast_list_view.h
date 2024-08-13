@@ -56,6 +56,7 @@ class ASH_EXPORT MediaCastListView
   // global_media_controls::mojom::DeviceListClient:
   void OnDevicesUpdated(
       std::vector<global_media_controls::mojom::DevicePtr> devices) override;
+  void OnPermissionRejected() override {}
 
  private:
   friend class MediaCastAudioSelectorViewTest;

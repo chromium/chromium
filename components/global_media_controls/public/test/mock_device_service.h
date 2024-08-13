@@ -53,6 +53,7 @@ class MockDeviceListClient : public MockMojoImpl<mojom::DeviceListClient> {
   ~MockDeviceListClient() override;
 
   MOCK_METHOD(void, OnDevicesUpdated, (std::vector<mojom::DevicePtr> devices));
+  MOCK_METHOD(void, OnPermissionRejected, ());
 };
 
 // This class should only be used by tests for GlobalMediaControls classes.
