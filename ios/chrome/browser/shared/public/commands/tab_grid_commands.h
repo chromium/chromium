@@ -23,6 +23,9 @@
 // Shows the recent tabs panel searching for `text`.
 - (void)showRecentTabsForText:(NSString*)text;
 
+// Shows the tab groups panel.
+- (void)showTabGroupsPanel;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_TAB_GRID_COMMANDS_H_

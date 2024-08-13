@@ -453,7 +453,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   }
 
   if (IsTabGroupSyncEnabled() && !deleteGroup) {
-    // TODO(crbug.com/329627077): Add a mechanism to show it only once.
+    [self.tabGroupsHandler showTabGroupSnackbarAfterClosingGroups:1];
     [self.tabGridToolbarHandler showSavedTabGroupIPH];
     tab_groups::TabGroupSyncService* syncService =
         tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(

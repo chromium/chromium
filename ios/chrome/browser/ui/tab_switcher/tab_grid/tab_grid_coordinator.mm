@@ -1642,6 +1642,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                                animated:YES];
 }
 
+- (void)showTabGroupsPanel {
+  CHECK(IsTabGroupSyncEnabled());
+  [self.baseViewController setCurrentPageAndPageControl:TabGridPageTabGroups
+                                               animated:YES];
+}
+
 #pragma mark - SnackbarCoordinatorDelegate
 
 - (CGFloat)snackbarCoordinatorBottomOffsetForCurrentlyPresentedView:
