@@ -40,7 +40,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_controller_impl.h"
 #include "chrome/browser/ash/app_mode/kiosk_launch_state.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_load_failed_observer.h"
-#include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
+#include "chrome/browser/ash/app_mode/load_profile.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
