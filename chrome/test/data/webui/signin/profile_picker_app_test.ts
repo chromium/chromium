@@ -17,7 +17,6 @@ import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, Routes} fr
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {microtasksFinished, whenCheck} from 'chrome://webui-test/test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
@@ -31,7 +30,6 @@ suite('ProfilePickerAppTest', function() {
     navigateTo(route);
     testElement = document.createElement('profile-picker-app');
     document.body.appendChild(testElement);
-    return waitBeforeNextRender(testElement);
   }
 
   setup(function() {
