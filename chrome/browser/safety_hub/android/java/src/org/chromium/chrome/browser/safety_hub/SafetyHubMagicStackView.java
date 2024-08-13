@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -48,6 +50,7 @@ class SafetyHubMagicStackView extends LinearLayout {
 
     void setSummary(String summary) {
         mSummaryView.setText(summary);
+        mSummaryView.setVisibility(TextUtils.isEmpty(summary) ? View.GONE : View.VISIBLE);
     }
 
     void setIconDrawable(Drawable icon) {
