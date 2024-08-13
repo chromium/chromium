@@ -24,7 +24,10 @@ HttpStreamKey::HttpStreamKey(url::SchemeHostPort destination,
     : destination_(std::move(destination)),
       privacy_mode_(privacy_mode),
       socket_tag_(std::move(socket_tag)),
-      network_anonymization_key_(std::move(network_anonymization_key)),
+      network_anonymization_key_(
+          NetworkAnonymizationKey::IsPartitioningEnabled()
+              ? std::move(network_anonymization_key)
+              : NetworkAnonymizationKey()),
       secure_dns_policy_(secure_dns_policy),
       disable_cert_network_fetches_(disable_cert_network_fetches) {
   CHECK(socket_tag_ == SocketTag()) << "Socket tag is not supported yet";
