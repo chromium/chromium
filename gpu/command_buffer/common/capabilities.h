@@ -67,9 +67,6 @@ struct GPU_EXPORT Capabilities {
 
   bool mesa_framebuffer_flip_y = false;
 
-  int major_version = 2;
-  int minor_version = 0;
-
   // Used by OOP raster.
   bool context_supports_distance_field_text = true;
 
@@ -128,6 +125,9 @@ struct GPU_EXPORT GLCapabilities {
 
   PerStagePrecisions vertex_shader_precisions;
   PerStagePrecisions fragment_shader_precisions;
+
+  int major_version = 2;
+  int minor_version = 0;
 
   int max_combined_texture_image_units = 0;
   int max_cube_map_texture_size = 0;

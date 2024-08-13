@@ -182,15 +182,6 @@ void PopulateNumericCapabilities(Capabilities* caps,
                                  const FeatureInfo* feature_info) {
   DCHECK(caps != nullptr);
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &caps->max_texture_size);
-
-  if (feature_info->IsWebGL2OrES3OrHigherContext()) {
-    caps->major_version = 3;
-    if (feature_info->IsES31ForTestingContext()) {
-      caps->minor_version = 1;
-    } else {
-      caps->minor_version = 0;
-    }
-  }
 }
 
 void PopulateGLCapabilities(GLCapabilities* caps,
@@ -288,6 +279,15 @@ void PopulateGLCapabilities(GLCapabilities* caps,
       feature_info->feature_flags().chromium_framebuffer_multisample ||
       feature_info->IsWebGL2OrES3OrHigherContext()) {
     glGetIntegerv(GL_MAX_SAMPLES, &caps->max_samples);
+  }
+
+  if (feature_info->IsWebGL2OrES3OrHigherContext()) {
+    caps->major_version = 3;
+    if (feature_info->IsES31ForTestingContext()) {
+      caps->minor_version = 1;
+    } else {
+      caps->minor_version = 0;
+    }
   }
 }
 

@@ -243,8 +243,8 @@ class GLES2ImplementationTest : public testing::Test {
       capabilities_.sync_query = sync_query;
       gl_capabilities_.occlusion_query_boolean = occlusion_query_boolean;
       gl_capabilities_.timer_queries = timer_queries;
-      capabilities_.major_version = major_version;
-      capabilities_.minor_version = minor_version;
+      gl_capabilities_.major_version = major_version;
+      gl_capabilities_.minor_version = minor_version;
       EXPECT_CALL(*gpu_control_, GetCapabilities())
           .WillOnce(ReturnRef(capabilities_));
       EXPECT_CALL(*gpu_control_, GetGLCapabilities())
