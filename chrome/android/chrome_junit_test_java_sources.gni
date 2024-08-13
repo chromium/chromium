@@ -339,6 +339,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/status_indicator/StatusIndicatorMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/suggestions/SuggestionsImageFetcherTest.java",
   "junit/src/org/chromium/chrome/browser/suggestions/SuggestionsNavigationDelegateUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/suggestions/UrlSimilarityScorerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/suggestions/tile/MostVisitedMediatorUnitTest.java",
   "junit/src/org/chromium/chrome/browser/suggestions/tile/TileGroupDelegateImplUnitTest.java",
   "junit/src/org/chromium/chrome/browser/suggestions/tile/TileInteractionDelegateTest.java",
