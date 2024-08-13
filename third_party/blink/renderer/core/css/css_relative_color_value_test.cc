@@ -32,4 +32,27 @@ TEST(CSSRelativeColorValueTest, Equals) {
   EXPECT_NE(*value1, *value3);
 }
 
+TEST(CSSRelativeColorValueTest, CustomCSSText) {
+  ScopedCSSRelativeColorSupportsCurrentcolorForTest scoped_feature_for_test(
+      true);
+
+  const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+
+  const String test_cases[] = {
+      "rgb(from currentcolor r g b)",   "hsl(from currentcolor h s l / 0.5)",
+      "hwb(from currentcolor h w b)",   "lab(from currentcolor l a b)",
+      "oklab(from currentcolor l a b)", "lch(from currentcolor l c h)",
+      "oklch(from currentcolor l c h)", "color(from currentcolor srgb r g b)"};
+
+  for (const String& test_case : test_cases) {
+    const CSSValue* value =
+        CSSParser::ParseSingleValue(CSSPropertyID::kColor, test_case, context);
+    EXPECT_TRUE(value->IsRelativeColorValue());
+    const cssvalue::CSSRelativeColorValue* color =
+        To<cssvalue::CSSRelativeColorValue>(value);
+    EXPECT_EQ(color->CssText(), test_case);
+  }
+}
+
 }  // namespace blink

@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/css/css_relative_color_value.h"
 
 #include "base/memory/values_equivalent.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink::cssvalue {
@@ -25,8 +27,33 @@ CSSRelativeColorValue::CSSRelativeColorValue(
       alpha_(alpha) {}
 
 String CSSRelativeColorValue::CustomCSSText() const {
-  // TODO(crbug.com/325309578): Serialize unresolved relative color values.
-  return String();
+  // https://drafts.csswg.org/css-color-5/#serial-relative-color
+  StringBuilder result;
+  const bool serialize_as_color_function =
+      Color::IsPredefinedColorSpace(color_interpolation_space_);
+  if (serialize_as_color_function) {
+    result.Append("color");
+  } else {
+    result.Append(Color::ColorSpaceToString(color_interpolation_space_));
+  }
+  result.Append("(from ");
+  result.Append(origin_color_->CssText());
+  result.Append(" ");
+  if (serialize_as_color_function) {
+    result.Append(Color::ColorSpaceToString(color_interpolation_space_));
+    result.Append(" ");
+  }
+  result.Append(channel1_->CssText());
+  result.Append(" ");
+  result.Append(channel2_->CssText());
+  result.Append(" ");
+  result.Append(channel3_->CssText());
+  if (alpha_ != nullptr) {
+    result.Append(" / ");
+    result.Append(alpha_->CssText());
+  }
+  result.Append(")");
+  return result.ReleaseString();
 }
 
 void CSSRelativeColorValue::TraceAfterDispatch(blink::Visitor* visitor) const {

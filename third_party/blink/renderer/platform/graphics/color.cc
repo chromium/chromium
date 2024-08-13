@@ -970,11 +970,11 @@ String Color::ColorSpaceToString(Color::ColorSpace color_space) {
     case Color::ColorSpace::kOklch:
       return "oklch";
     case Color::ColorSpace::kSRGBLegacy:
-      return "RGB Legacy";
+      return "rgb";
     case Color::ColorSpace::kHSL:
-      return "HSL";
+      return "hsl";
     case Color::ColorSpace::kHWB:
-      return "HWB";
+      return "hwb";
     case ColorSpace::kNone:
       NOTREACHED_IN_MIGRATION();
       return "None";
