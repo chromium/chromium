@@ -38,6 +38,7 @@ class LensOverlayUrlBuilderTest : public testing::Test {
         {
             {"results-search-url", kResultsSearchBaseUrl},
             {"use-search-context-for-text-only-requests", "true"},
+            {"use-search-context-for-multimodal-requests", "true"},
         });
   }
 

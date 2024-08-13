@@ -161,11 +161,11 @@ constexpr base::FeatureParam<int> kLensOverlayClusterInfoLifetimeSeconds{
 
 constexpr base::FeatureParam<bool>
     kUseSearchContextForTextOnlyLensOverlayRequests{
-        &kLensOverlay, "use-search-context-for-text-only-requests", true};
+        &kLensOverlay, "use-search-context-for-text-only-requests", false};
 
 constexpr base::FeatureParam<bool>
     kUseSearchContextForMultimodalLensOverlayRequests{
-        &kLensOverlay, "use-search-context-for-multimodal-requests", true};
+        &kLensOverlay, "use-search-context-for-multimodal-requests", false};
 
 constexpr base::FeatureParam<int> kLensOverlayTapRegionHeight{
     &kLensOverlay, "tap-region-height", 300};

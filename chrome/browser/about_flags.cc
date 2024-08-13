@@ -3058,6 +3058,7 @@ const FeatureEntry::FeatureParam kLensOverlayPersistentOmniboxEntryPoint[] = {
 const FeatureEntry::FeatureParam kLensOverlaySearchBubble[] = {
     {"search-bubble", "true"},
     {"use-search-context-for-text-only-requests", "true"},
+    {"use-search-context-for-multimodal-requests", "true"},
 };
 
 const FeatureEntry::FeatureVariation kLensOverlayVariations[] = {
