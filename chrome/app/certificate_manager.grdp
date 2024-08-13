@@ -31,6 +31,9 @@
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_VIEW_LINK" desc="Label for a link to view the imported platform certs.">
         View imported certificates from Windows
       </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_MANAGE_LINK_ARIA_DESCRIPTION" desc="Text read by screen readers for the row that opens the Windows certificate management application. When clicked, it will open the Windows certificate manager application in a separate window. This text will only be announced by a screen reader and will not be visible in the UI.">
+        Opens in a separate application
+      </message>
     </if>
 
     <if expr="is_linux">
@@ -57,6 +60,9 @@
       </message>
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_VIEW_LINK" desc="Label for a link to view the imported platform certs.">
         View imported certificates from MacOS
+      </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_MANAGE_LINK_ARIA_DESCRIPTION" desc="Text read by screen readers for the row that opens the Mac certificate management application. When clicked, it will open the Mac certificate management application in a separate window. This text will only be announced by a screen reader and will not be visible in the UI.">
+        Opens in a separate application
       </message>
     </if>
 

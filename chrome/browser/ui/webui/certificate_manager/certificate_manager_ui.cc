@@ -103,6 +103,8 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       {"certificateManagerV2PlatformCertsManageLink",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_MANAGE_LINK},
+      {"certificateManagerV2PlatformCertsManageLinkAriaDescription",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_MANAGE_LINK_ARIA_DESCRIPTION},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       {"certificateManagerV2PlatformCertsViewLink",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_VIEW_LINK},
