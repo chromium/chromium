@@ -72,7 +72,9 @@ base::expected<std::optional<uint64_t>, ParseError> ParseDeduplicationKey(
     const base::Value::Dict&);
 
 base::expected<base::TimeDelta, ParseError> ParseLegacyDuration(
-    const base::Value&);
+    const base::Value&,
+    base::TimeDelta clamp_min,
+    base::TimeDelta clamp_max);
 
 base::expected<std::optional<SuitableOrigin>, ParseError>
 ParseAggregationCoordinator(const base::Value::Dict&);

@@ -188,6 +188,11 @@ TEST(SourceRegistrationTest, Parse) {
           ValueIs(Field(&SourceRegistration::expiry, base::Days(30))),
       },
       {
+          "expiry_clamped_gt_max_int32",
+          R"json({"expiry": 2147483648, "destination": "https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::expiry, base::Days(30))),
+      },
+      {
           "expiry_not_rounded_to_whole_day",
           R"json({"expiry":86401,"destination":"https://d.example"})json",
           ValueIs(Field(&SourceRegistration::expiry, base::Seconds(86401))),
@@ -299,6 +304,14 @@ TEST(SourceRegistrationTest, Parse) {
           R"json({"aggregatable_report_window":259200,"expiry":172800,"destination":"https://d.example"})json",
           ValueIs(Field(&SourceRegistration::aggregatable_report_window,
                         base::Seconds(172800))),
+      },
+      {
+          "aggregatable_report_window_clamped_gt_max_int32",
+          R"json({
+            "aggregatable_report_window": 2147483648,
+            "expiry": 127800,
+            "destination":"https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::expiry, base::Seconds(127800))),
       },
       {
           "debug_key_valid",

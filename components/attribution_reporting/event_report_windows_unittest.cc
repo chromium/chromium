@@ -280,6 +280,13 @@ TEST(EventReportWindowsTest, Parse) {
           .expiry = base::Seconds(86400),
       },
       {
+          .desc = "event_report_window_clamped_gt_max_int32",
+          .json = R"json({"event_report_window": 2147483648})json",
+          .matches = ValueIs(*EventReportWindows::FromDefaults(
+              base::Seconds(86400), SourceType::kNavigation)),
+          .expiry = base::Seconds(86400),
+      },
+      {
           "event_report_windows_wrong_type",
           R"json({"event_report_windows":0})json",
           ErrorIs(SourceRegistrationError::kEventReportWindowsWrongType),

@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <functional>
 #include <iterator>
 #include <optional>
@@ -213,12 +212,13 @@ EventReportWindows::FromJSON(const base::Value::Dict& registration,
         SourceRegistrationError::kBothEventReportWindowFieldsFound);
   } else if (singular_window) {
     ASSIGN_OR_RETURN(
-        base::TimeDelta report_window, ParseLegacyDuration(*singular_window),
+        base::TimeDelta report_window,
+        ParseLegacyDuration(*singular_window,
+                            /*clamp_min=*/kMinReportWindow,
+                            /*clamp_max=*/expiry),
         [](ParseError) {
           return SourceRegistrationError::kEventReportWindowValueInvalid;
         });
-
-    report_window = std::clamp(report_window, kMinReportWindow, expiry);
 
     return EventReportWindows(report_window, source_type);
   } else if (multiple_windows) {

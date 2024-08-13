@@ -5844,6 +5844,9 @@ data/attribution_reporting/interop/attribution_destination_sorting.json
 data/attribution_reporting/interop/basic.json
 data/attribution_reporting/interop/basic_aggregatable.json
 data/attribution_reporting/interop/channel_capacity.json
+data/attribution_reporting/interop/clamp_aggregatable_report_window.json
+data/attribution_reporting/interop/clamp_event_report_window.json
+data/attribution_reporting/interop/clamp_expiry.json
 data/attribution_reporting/interop/custom_trigger_data.json
 data/attribution_reporting/interop/dedup_key.json
 data/attribution_reporting/interop/dedup_key_report_window_ordering.json

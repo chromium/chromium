@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -97,26 +96,26 @@ base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
                    });
 
   if (const base::Value* value = registration.Find(kExpiry)) {
-    ASSIGN_OR_RETURN(result.expiry, ParseLegacyDuration(*value),
+    ASSIGN_OR_RETURN(result.expiry,
+                     ParseLegacyDuration(*value,
+                                         /*clamp_min=*/kMinSourceExpiry,
+                                         /*clamp_max=*/kMaxSourceExpiry),
                      [](ParseError) {
                        return SourceRegistrationError::kExpiryValueInvalid;
                      });
-
-    result.expiry =
-        std::clamp(result.expiry, kMinSourceExpiry, kMaxSourceExpiry);
 
     result.expiry = AdjustExpiry(result.expiry, source_type);
   }
 
   if (const base::Value* value = registration.Find(kAggregatableReportWindow)) {
     ASSIGN_OR_RETURN(
-        result.aggregatable_report_window, ParseLegacyDuration(*value),
+        result.aggregatable_report_window,
+        ParseLegacyDuration(*value,
+                            /*clamp_min=*/kMinReportWindow,
+                            /*clamp_max=*/result.expiry),
         [](ParseError) {
           return SourceRegistrationError::kAggregatableReportWindowValueInvalid;
         });
-
-    result.aggregatable_report_window = std::clamp(
-        result.aggregatable_report_window, kMinReportWindow, result.expiry);
   } else {
     result.aggregatable_report_window = result.expiry;
   }

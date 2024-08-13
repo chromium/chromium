@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cmath>
 #include <optional>
 #include <sstream>
@@ -119,6 +120,11 @@ bool ParseDebugReporting(const base::Value::Dict& dict) {
   return dict.FindBool(kDebugReporting).value_or(false);
 }
 
+bool HasFractionalPart(double v) {
+  double int_part;
+  return std::modf(v, &int_part) != 0;
+}
+
 template <typename T>
 base::expected<T, ParseError> ParseIntFromIntOrDouble(
     const base::Value& value) {
@@ -133,8 +139,7 @@ base::expected<T, ParseError> ParseIntFromIntOrDouble(
     }
     return static_cast<T>(*int_value);
   } else if (std::optional<double> double_value = value.GetIfDouble()) {
-    if (double int_part;
-        std::modf(*double_value, &int_part) != 0 ||
+    if (HasFractionalPart(*double_value) ||
         !base::IsValueInRangeForNumericType<T>(*double_value)) {
       return base::unexpected(ParseError());
     }
@@ -145,7 +150,9 @@ base::expected<T, ParseError> ParseIntFromIntOrDouble(
 }
 
 base::expected<base::TimeDelta, ParseError> ParseLegacyDuration(
-    const base::Value& value) {
+    const base::Value& value,
+    const base::TimeDelta clamp_min,
+    const base::TimeDelta clamp_max) {
   // Note: The full range of uint64 seconds cannot be represented in the
   // resulting `base::TimeDelta`, but this is fine because `base::Seconds()`
   // properly clamps out-of-bound values and because the Attribution
@@ -157,15 +164,20 @@ base::expected<base::TimeDelta, ParseError> ParseLegacyDuration(
     if (!base::StringToUint64(*str, &seconds)) {
       return base::unexpected(ParseError());
     }
-    return base::Seconds(seconds);
-  }
-
-  ASSIGN_OR_RETURN(int int_value, ParseInt(value));
-
-  if (int_value < 0) {
+    return std::clamp(base::Seconds(seconds), clamp_min, clamp_max);
+  } else if (std::optional<int> int_value = value.GetIfInt()) {
+    if (*int_value < 0) {
+      return base::unexpected(ParseError());
+    }
+    return std::clamp(base::Seconds(*int_value), clamp_min, clamp_max);
+  } else if (std::optional<double> double_value = value.GetIfDouble()) {
+    if (*double_value < 0 || HasFractionalPart(*double_value)) {
+      return base::unexpected(ParseError());
+    }
+    return std::clamp(base::Seconds(*double_value), clamp_min, clamp_max);
+  } else {
     return base::unexpected(ParseError());
   }
-  return base::Seconds(int_value);
 }
 
 base::expected<std::optional<SuitableOrigin>, ParseError>
