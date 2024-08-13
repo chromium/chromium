@@ -39,11 +39,16 @@ TEST(CSSRelativeColorValueTest, CustomCSSText) {
   const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
-  const String test_cases[] = {
-      "rgb(from currentcolor r g b)",   "hsl(from currentcolor h s l / 0.5)",
-      "hwb(from currentcolor h w b)",   "lab(from currentcolor l a b)",
-      "oklab(from currentcolor l a b)", "lch(from currentcolor l c h)",
-      "oklch(from currentcolor l c h)", "color(from currentcolor srgb r g b)"};
+  const String test_cases[] = {"rgb(from currentcolor r g b)",
+                               "hsl(from currentcolor h s l / 0.5)",
+                               "hwb(from currentcolor h w b)",
+                               "lab(from currentcolor l a b)",
+                               "oklab(from currentcolor l a b)",
+                               "lch(from currentcolor l c h)",
+                               "oklch(from currentcolor l c h)",
+                               "color(from currentcolor srgb r g b)",
+                               "rgb(from currentcolor none none none)",
+                               "rgb(from currentcolor b g r / none)"};
 
   for (const String& test_case : test_cases) {
     const CSSValue* value =

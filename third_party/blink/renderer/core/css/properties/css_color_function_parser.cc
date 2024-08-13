@@ -383,6 +383,7 @@ bool ColorFunctionParser::ConsumeChannel(CSSParserTokenStream& stream,
                                          const CSSParserContext& context,
                                          int i) {
   if (css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(stream)) {
+    unresolved_channels_[i] = CSSIdentifierValue::Create(CSSValueID::kNone);
     channel_types_[i] = ChannelType::kNone;
     has_none_ = true;
     return true;
@@ -451,6 +452,7 @@ bool ColorFunctionParser::ConsumeAlpha(CSSParserTokenStream& stream,
 
   if (css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(stream)) {
     has_none_ = true;
+    unresolved_alpha_ = CSSIdentifierValue::Create(CSSValueID::kNone);
     alpha_channel_type_ = ChannelType::kNone;
     return true;
   }

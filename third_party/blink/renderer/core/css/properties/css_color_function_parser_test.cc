@@ -145,4 +145,46 @@ TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_CalcAlpha) {
   EXPECT_EQ(alpha->CssText(), "calc(alpha / 2)");
 }
 
+TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_NoneKeyword) {
+  ScopedCSSRelativeColorSupportsCurrentcolorForTest scoped_feature_for_test(
+      true);
+
+  const String test_case = "rgb(from currentcolor none none none / none)";
+  CSSTokenizer tokenizer(test_case);
+  CSSParserTokenStream stream(tokenizer);
+
+  const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+
+  ColorFunctionParser parser;
+  const CSSValue* result =
+      parser.ConsumeFunctionalSyntaxColor(stream, *context);
+  EXPECT_TRUE(result->IsRelativeColorValue());
+  const cssvalue::CSSRelativeColorValue* color =
+      To<cssvalue::CSSRelativeColorValue>(result);
+
+  const CSSValue& origin = color->OriginColor();
+  EXPECT_TRUE(origin.IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(origin).GetValueID(),
+            CSSValueID::kCurrentcolor);
+
+  EXPECT_EQ(color->ColorInterpolationSpace(), Color::ColorSpace::kSRGBLegacy);
+
+  const CSSValue& channel1 = color->Channel1();
+  EXPECT_TRUE(channel1.IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(channel1).GetValueID(), CSSValueID::kNone);
+
+  const CSSValue& channel2 = color->Channel2();
+  EXPECT_TRUE(channel2.IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(channel2).GetValueID(), CSSValueID::kNone);
+
+  const CSSValue& channel3 = color->Channel3();
+  EXPECT_TRUE(channel3.IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(channel3).GetValueID(), CSSValueID::kNone);
+
+  const CSSValue* alpha = color->Alpha();
+  EXPECT_TRUE(alpha->IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(alpha)->GetValueID(), CSSValueID::kNone);
+}
+
 }  // namespace blink
