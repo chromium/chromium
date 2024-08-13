@@ -236,7 +236,21 @@
     Search <ph name="KEYWORD_SUFFIX">$1<ex>Youtube</ex>, type a query and press Enter to search</ph>
   </message>
 
-  <!-- Accessibility suffix for suggestions when the remove button is focused. -->
+  <!-- Accessibility labels for the omnibox thumbs up feedback button. -->
+  <message name="IDS_ACC_THUMBS_UP_SUGGESTION_FOCUSED_PREFIX" desc="Announcement when thumbs up feedback button is focused.">
+    Thumbs up button, press Enter to submit feedback that you like, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>
+  </message>
+  <message name="IDS_ACC_THUMBS_UP_SUGGESTION_BUTTON" desc="Announcement when thumbs up feedback button is focused.">
+    Thumbs up button, press Enter to submit feedback that you like this suggestion
+  </message>
+  <!-- Accessibility labels for the omnibox thumbs down feedback button. -->
+  <message name="IDS_ACC_THUMBS_DOWN_SUGGESTION_FOCUSED_PREFIX" desc="Announcement when thumbs down feedback button is focused.">
+    Thumbs down button, press Enter to open a form for submitting detailed feedback on why you dislike, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>
+  </message>
+  <message name="IDS_ACC_THUMBS_DOWN_SUGGESTION_BUTTON" desc="Announcement when thumbs down feedback button is focused.">
+    Thumbs down button, press Enter to open a form for submitting detailed feedback on why you dislike this suggestion
+  </message>
+  <!-- Accessibility labels for the omnibox suggestion remove button. -->
   <message name="IDS_ACC_REMOVE_SUGGESTION_SUFFIX" desc="Suffix for suggestions with remove suggestion button to explain keystroke used to remove suggestion.">
     <ph name="REMOVE_SUGGESTION_SUFFIX">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to Remove Suggestion.
   </message>

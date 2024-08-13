@@ -43,6 +43,7 @@
 using metrics::OmniboxEventProto;
 using Selection = OmniboxPopupSelection;
 using testing::_;
+using testing::DoAll;
 using testing::Return;
 using testing::SaveArg;
 
@@ -788,6 +789,8 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
     match.allowed_to_be_default_match = true;
     matches.push_back(match);
   }
+  // Make the thumbs up/down selection available on match index 1.
+  matches[1].type = AutocompleteMatchType::HISTORY_EMBEDDINGS;
   // Make match index 1 deletable to verify we can step to that.
   matches[1].deletable = true;
   // Make match index 2 only have an associated keyword to verify we can step
@@ -839,6 +842,8 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   // Step by states forward.
   for (auto selection : {
            Selection(1, Selection::NORMAL),
+           Selection(1, Selection::FOCUSED_BUTTON_THUMBS_UP),
+           Selection(1, Selection::FOCUSED_BUTTON_THUMBS_DOWN),
            Selection(1, Selection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
            Selection(2, Selection::NORMAL),
            Selection(2, Selection::KEYWORD_MODE),
@@ -865,6 +870,8 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
            Selection(2, Selection::KEYWORD_MODE),
            Selection(2, Selection::NORMAL),
            Selection(1, Selection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
+           Selection(1, Selection::FOCUSED_BUTTON_THUMBS_DOWN),
+           Selection(1, Selection::FOCUSED_BUTTON_THUMBS_UP),
            Selection(1, Selection::NORMAL),
            Selection(0, Selection::NORMAL),
            Selection(5, Selection::NORMAL),
@@ -1225,6 +1232,93 @@ TEST_F(OmniboxEditModelPopupTest, OpenActionSelectionLogsOmniboxEvent) {
   histogram_tester.ExpectUniqueSample("Omnibox.EventCount", 1, 1);
 }
 #endif
+
+TEST_F(OmniboxEditModelPopupTest, OpenThumbsDownSelectionShowsFeedback) {
+  // Set the input on the controller.
+  controller()->autocomplete_controller()->input_ = AutocompleteInput(
+      u"a", metrics::OmniboxEventProto::NTP, TestSchemeClassifier());
+
+  // Set the matches on the controller.
+  ACMatches matches;
+  {
+    AutocompleteMatch match(nullptr, 1000, false,
+                            AutocompleteMatchType::SEARCH_SUGGEST);
+    match.allowed_to_be_default_match = true;
+    match.fill_into_edit = u"a1";
+    match.inline_autocompletion = u"1";
+    matches.push_back(match);
+  }
+  {
+    AutocompleteMatch match(nullptr, 999, false,
+                            AutocompleteMatchType::HISTORY_EMBEDDINGS);
+    match.fill_into_edit = u"a2";
+    match.destination_url = GURL("https://foo/");
+    matches.push_back(match);
+  }
+  auto* result = &controller()->autocomplete_controller()->published_result_;
+  result->AppendMatches(matches);
+  result->SortAndCull(controller()->autocomplete_controller()->input_,
+                      /*template_url_service=*/nullptr,
+                      triggered_feature_service());
+
+  // Inform the model of the controller result set changes.
+  model()->OnPopupResultChanged();
+
+  // Simulate OmniboxController updating the popup, then check initial state.
+  model()->OnPopupDataChanged(std::u16string(),
+                              /*is_temporary_text=*/false, u"a1",
+                              std::u16string(), std::u16string(), false,
+                              std::u16string(), {});
+  EXPECT_EQ(Selection(0, Selection::NORMAL), model()->GetPopupSelection());
+  EXPECT_EQ(u"a1", model()->text());
+  EXPECT_FALSE(model()->is_temporary_text());
+
+  // Tab down to second match.
+  model()->OnTabPressed(false);
+  EXPECT_EQ(Selection(1, Selection::NORMAL), model()->GetPopupSelection());
+  EXPECT_EQ(u"a2", model()->text());
+  EXPECT_TRUE(model()->is_temporary_text());
+
+  // Tab to focus the thumbs up button.
+  model()->OnTabPressed(false);
+  EXPECT_EQ(Selection(1, Selection::FOCUSED_BUTTON_THUMBS_UP),
+            model()->GetPopupSelection());
+  EXPECT_EQ(u"a2", model()->text());
+  EXPECT_TRUE(model()->is_temporary_text());
+
+  EXPECT_EQ(FeedbackType::kNone, result->match_at(1)->feedback_type);
+
+  // Simulate pressing the thumbs up button.
+  model()->OpenSelection(OmniboxPopupSelection(
+      1, OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP));
+  EXPECT_EQ(FeedbackType::kThumbsUp, result->match_at(1)->feedback_type);
+
+  // Tab to focus the thumbs down button.
+  model()->OnTabPressed(false);
+  EXPECT_EQ(Selection(1, Selection::FOCUSED_BUTTON_THUMBS_DOWN),
+            model()->GetPopupSelection());
+  EXPECT_EQ(u"a2", model()->text());
+  EXPECT_TRUE(model()->is_temporary_text());
+
+  // Verify feedback form is requested only once.
+  std::u16string input_text;
+  GURL destination_url;
+  EXPECT_CALL(*client(), ShowFeedbackPage(_, _))
+      .Times(1)
+      .WillOnce(DoAll(SaveArg<0>(&input_text), SaveArg<1>(&destination_url)));
+
+  // Simulate pressing the thumbs down button.
+  model()->OpenSelection(OmniboxPopupSelection(
+      1, OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_DOWN));
+  EXPECT_EQ(FeedbackType::kThumbsDown, result->match_at(1)->feedback_type);
+  EXPECT_EQ(u"a", input_text);
+  EXPECT_EQ("https://foo/", destination_url.spec());
+
+  // Simulate pressing the thumbs down button.
+  model()->OpenSelection(OmniboxPopupSelection(
+      1, OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_DOWN));
+  EXPECT_EQ(FeedbackType::kNone, result->match_at(1)->feedback_type);
+}
 
 TEST_F(OmniboxEditModelTest, OmniboxEscapeHistogram) {
   // Escape should incrementally revert temporary text, close the popup, clear

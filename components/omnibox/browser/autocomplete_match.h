@@ -97,6 +97,12 @@ enum class IphType {
   kHistoryEmbeddingsSettingsPromo,
 };
 
+enum class FeedbackType {
+  kNone,
+  kThumbsUp,
+  kThumbsDown,
+};
+
 // AutocompleteMatch ----------------------------------------------------------
 
 // A single result line with classified spans.  The autocomplete popup displays
@@ -958,6 +964,9 @@ struct AutocompleteMatch {
   // their contents/description text.
   std::u16string iph_link_text;
   GURL iph_link_url;
+
+  // The user feedback on the match.
+  FeedbackType feedback_type = FeedbackType::kNone;
 
   // So users of AutocompleteMatch can use the same ellipsis that it uses.
   static const char16_t kEllipsis[];

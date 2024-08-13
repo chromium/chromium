@@ -27,6 +27,10 @@ DEFINE_ENUM_CONVERTERS(OmniboxPopupSelection::LineState,
                        {OmniboxPopupSelection::KEYWORD_MODE, u"KEYWORD_MODE"},
                        {OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
                         u"FOCUSED_BUTTON_ACTION"},
+                       {OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP,
+                        u"FOCUSED_BUTTON_THUMBS_UP"},
+                       {OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_DOWN,
+                        u"FOCUSED_BUTTON_THUMBS_DOWN"},
                        {OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION,
                         u"FOCUSED_BUTTON_REMOVE_SUGGESTION"})
 

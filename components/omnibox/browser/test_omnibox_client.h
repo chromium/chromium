@@ -61,6 +61,9 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
               (const GURL& page_url,
                FaviconFetchedCallback on_favicon_fetched));
   MOCK_METHOD(void,
+              ShowFeedbackPage,
+              (const std::u16string& input_text, const GURL& destination_url));
+  MOCK_METHOD(void,
               OnAutocompleteAccept,
               (const GURL& destination_url,
                TemplateURLRef::PostContent* post_content,
