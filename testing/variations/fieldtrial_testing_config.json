@@ -9247,55 +9247,6 @@
             ]
         }
     ],
-    "ExtensionPageHats": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "PanelNotSeen",
-                    "params": {
-                        "extension-page-trigger-id": "42JiNWbpq0ugnJ3q1cK0Q7uYnB1P",
-                        "extension-survey-arm": "ExtensionsSafetyHubHaTSArms::kReviewPanelNotShown",
-                        "prob": "1",
-                        "settings-time": "10s"
-                    },
-                    "enable_features": [
-                        "HappinessTrackingSurveysExtensionsSafetyHub"
-                    ]
-                },
-                {
-                    "name": "PanelSeen",
-                    "params": {
-                        "extension-page-trigger-id": "Zxq6GQvXC0ugnJ3q1cK0Q3gXah4x",
-                        "extension-survey-arm": "ExtensionsSafetyHubHaTSArms::kReviewPanelShown",
-                        "prob": "1",
-                        "settings-time": "10s"
-                    },
-                    "enable_features": [
-                        "HappinessTrackingSurveysExtensionsSafetyHub"
-                    ]
-                },
-                {
-                    "name": "PanelInteraction",
-                    "params": {
-                        "extension-page-trigger-id": "evSXEigVW0ugnJ3q1cK0UapaYUbK",
-                        "extension-survey-arm": "ExtensionsSafetyHubHaTSArms::kReviewPanelInteraction",
-                        "prob": "1",
-                        "settings-time": "10s"
-                    },
-                    "enable_features": [
-                        "HappinessTrackingSurveysExtensionsSafetyHub"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExtensionParentalControlsOnLinuxMacWindows": [
         {
             "platforms": [

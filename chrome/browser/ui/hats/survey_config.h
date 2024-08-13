@@ -33,7 +33,6 @@ extern const char kHatsSurveyTriggerDownloadWarningPageIgnore[];
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const char kHatsSurveyTriggerGetMostChrome[];
 #endif
-extern const char kHatsSurveyTriggerExtensions[];
 extern const char kHatsSurveyTriggerM1AdPrivacyPage[];
 extern const char kHatsSurveyTriggerM1TopicsSubpage[];
 extern const char kHatsSurveyTriggerM1FledgeSubpage[];

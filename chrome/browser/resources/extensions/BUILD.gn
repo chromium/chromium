@@ -63,7 +63,6 @@ build_webui("build") {
     "service.ts",
     "shortcut_util.ts",
     "site_permissions/site_settings_mixin.ts",
-    "extension_hats_browser_proxy.ts",
     "url_util.ts",
   ]
 
