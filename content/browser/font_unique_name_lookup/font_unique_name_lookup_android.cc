@@ -18,7 +18,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/cstring_view.h"
-#include "base/strings/string_piece_rust.h"
+#include "base/strings/string_view_rust.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"

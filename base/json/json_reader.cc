@@ -13,7 +13,7 @@
 #include "base/rust_buildflags.h"
 
 #if BUILDFLAG(BUILD_RUST_JSON_READER)
-#include "base/strings/string_piece_rust.h"
+#include "base/strings/string_view_rust.h"
 #include "third_party/rust/serde_json_lenient/v0_2/wrapper/functions.h"
 #include "third_party/rust/serde_json_lenient/v0_2/wrapper/lib.rs.h"
 #endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
@@ -58,27 +58,27 @@ ContextPointer& DictSetList(ContextPointer& ctx,
   auto& dict = reinterpret_cast<base::Value&>(ctx).GetDict();
   base::Value::List list;
   list.reserve(reserve);
-  dict.Set(base::RustStrToStringPiece(key), std::move(list));
+  dict.Set(base::RustStrToStringView(key), std::move(list));
   return reinterpret_cast<ContextPointer&>(
-      *dict.Find(base::RustStrToStringPiece(key)));
+      *dict.Find(base::RustStrToStringView(key)));
 }
 
 ContextPointer& DictSetDict(ContextPointer& ctx, rust::Str key) {
   auto& dict = reinterpret_cast<base::Value&>(ctx).GetDict();
-  dict.Set(base::RustStrToStringPiece(key), base::Value(base::Value::Dict()));
+  dict.Set(base::RustStrToStringView(key), base::Value(base::Value::Dict()));
   return reinterpret_cast<ContextPointer&>(
-      *dict.Find(base::RustStrToStringPiece(key)));
+      *dict.Find(base::RustStrToStringView(key)));
 }
 
 void DictSetNone(ContextPointer& ctx, rust::Str key) {
   auto& dict = reinterpret_cast<base::Value&>(ctx).GetDict();
-  dict.Set(base::RustStrToStringPiece(key), base::Value());
+  dict.Set(base::RustStrToStringView(key), base::Value());
 }
 
 template <class T, class As = T>
 void DictSetValue(ContextPointer& ctx, rust::Str key, T v) {
   auto& dict = reinterpret_cast<base::Value&>(ctx).GetDict();
-  dict.Set(base::RustStrToStringPiece(key), base::Value(As{v}));
+  dict.Set(base::RustStrToStringView(key), base::Value(As{v}));
 }
 
 JSONReader::Result DecodeJSONInRust(std::string_view json,
@@ -117,7 +117,7 @@ JSONReader::Result DecodeJSONInRust(std::string_view json,
   auto& ctx = reinterpret_cast<ContextPointer&>(value);
   serde_json_lenient::DecodeError error;
   bool ok = serde_json_lenient::decode_json(
-      base::StringPieceToRustSlice(json), rust_options, functions, ctx, error);
+      base::StringViewToRustSlice(json), rust_options, functions, ctx, error);
 
   if (!ok) {
     return base::unexpected(base::JSONReader::Error{

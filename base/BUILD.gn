@@ -1109,7 +1109,7 @@ component("base") {
   if (build_rust_base_conversions) {
     sources += [
       "containers/span_rust.h",
-      "strings/string_piece_rust.h",
+      "strings/string_view_rust.h",
     ]
 
     # Base provides conversions between CXX types and base types (e.g.

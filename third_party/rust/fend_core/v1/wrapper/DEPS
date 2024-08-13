@@ -1,6 +1,6 @@
 include_rules = [
   # For string conversions and concatenations.
-  '+base/strings/string_piece_rust.h',
+  '+base/strings/string_view_rust.h',
   '+base/strings/strcat.h',
   # For unit tests.
   '+testing/gtest/include/gtest/gtest.h',
