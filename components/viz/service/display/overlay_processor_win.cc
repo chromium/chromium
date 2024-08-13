@@ -38,6 +38,15 @@ constexpr gfx::Insets kDCLayerDebugBorderInsets = gfx::Insets(-2);
 // been produced.
 constexpr int kNumberOfFramesBeforeDisablingDCLayers = 60;
 
+// The maximum number of quads to attempt for delegated compositing. This is an
+// arbitrary conservative value picked from experimentation. We don't expect to
+// hit these limits in practice, but this guards against degenerate cases.
+constexpr size_t kTooManyQuads = 2048;
+
+// Rounded corners have a higher performance cost in DWM so this value is lower
+// than |kTooManyQuads|.
+constexpr int kTooManyQuadsWithRoundedCorners = 256;
+
 gfx::Rect UpdateRenderPassFromOverlayData(
     const DCLayerOverlayProcessor::RenderPassOverlayData& overlay_data,
     AggregatedRenderPass* render_pass,
@@ -489,6 +498,10 @@ OverlayProcessorWin::TryDelegatedCompositing(
     return base::unexpected(DelegationStatus::kCompositedCopyRequest);
   }
 
+  if (root_render_pass->quad_list.size() > kTooManyQuads) {
+    return base::unexpected(DelegationStatus::kCompositedTooManyQuads);
+  }
+
   if (root_render_pass->is_color_conversion_pass) {
     // We don't expect to handle a color conversion pass (e.g. for frames with
     // HDR content) with delegated compositing. See: crbug.com/41497086
@@ -497,6 +510,8 @@ OverlayProcessorWin::TryDelegatedCompositing(
 
   DelegatedCompositingResult result;
   result.candidates.reserve(root_render_pass->quad_list.size());
+
+  int draw_quad_rounded_corner_count = 0;
 
   // Try to promote all the quads in the root pass to overlay.
   for (auto it = root_render_pass->quad_list.begin();
@@ -554,6 +569,14 @@ OverlayProcessorWin::TryDelegatedCompositing(
     }
 
     result.candidates.push_back(std::move(dc_layer).value());
+
+    const auto& candidate = result.candidates.back();
+    if (!candidate.rounded_corners.IsEmpty()) {
+      draw_quad_rounded_corner_count++;
+      if (draw_quad_rounded_corner_count > kTooManyQuadsWithRoundedCorners) {
+        return base::unexpected(DelegationStatus::kCompositedTooManyQuads);
+      }
+    }
   }
 
   return base::ok(std::move(result));

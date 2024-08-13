@@ -2831,6 +2831,43 @@ TEST_F(OverlayProcessorWinDelegatedCompositingTest, SingleQuad) {
               }));
 }
 
+// Check that we don't try delegated compositing when there are too many quads.
+TEST_F(OverlayProcessorWinDelegatedCompositingTest, TooManyQuads) {
+  AggregatedRenderPassList pass_list;
+
+  auto pass = CreateRenderPass();
+  auto* sqs = pass->CreateAndAppendSharedQuadState();
+  for (int i = 0; i < 2049; i++) {
+    CreateSolidColorQuadAt(sqs, SkColors::kRed, pass.get(),
+                           gfx::Rect(i, 0, 50, 50));
+  }
+  pass_list.push_back(std::move(pass));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationFailure();
+  EXPECT_THAT(result.candidates(), testing::IsEmpty());
+}
+
+// Check that we don't try delegated compositing when there are too many complex
+// quads. This limit is lower since they have a larger performance hit in DWM.
+TEST_F(OverlayProcessorWinDelegatedCompositingTest, TooManyComplexQuads) {
+  AggregatedRenderPassList pass_list;
+
+  auto pass = CreateRenderPass();
+  auto* sqs = pass->CreateAndAppendSharedQuadState();
+  sqs->mask_filter_info =
+      gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(0, 0, 50, 50), 50));
+  for (int i = 0; i < 257; i++) {
+    CreateSolidColorQuadAt(sqs, SkColors::kRed, pass.get(),
+                           gfx::Rect(i, 0, 50, 50));
+  }
+  pass_list.push_back(std::move(pass));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationFailure();
+  EXPECT_THAT(result.candidates(), testing::IsEmpty());
+}
+
 // Check that, when delegated compositing fails, we still successfully promote
 // videos to overlay.
 TEST_F(OverlayProcessorWinDelegatedCompositingTest,
