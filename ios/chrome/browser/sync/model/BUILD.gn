@@ -128,6 +128,7 @@ source_set("device_info_sync_service_factory") {
     "//ios/chrome/browser/push_notification/model:push_notification_service_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/common",
   ]
