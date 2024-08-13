@@ -27,6 +27,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
@@ -726,6 +727,10 @@ void DemoSession::OnSessionStateChanged() {
         LOG(WARNING) << "Demo Mode domain: "
                      << InstallAttributes::Get()->GetDomain();
       }
+
+      // When the session successfully starts, we record the action
+      // DemoMode.DemoSessionStarts.
+      base::RecordAction(base::UserMetricsAction("DemoMode.DemoSessionStarts"));
 
       break;
     default:

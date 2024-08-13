@@ -9169,6 +9169,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="DemoMode.DemoSessionStarts">
+  <owner>wanghaifan@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <description>
+    Recorded when a new demo session starts. It should count the number of demo
+    sessions.
+  </description>
+</action>
+
 <action name="DemoMode.ExitFromShelf">
   <owner>michaelpg@chromium.org</owner>
   <owner>wzang@chromium.org</owner>
