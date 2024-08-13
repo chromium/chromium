@@ -25,12 +25,6 @@ class V8ContextDescription;
 
 namespace v8_memory {
 
-// Helper function to convert a WorkerToken to an ExecutionContext token.
-// TODO(crbug.com/40148083): There should be automatic type conversion for this
-// added to MultiToken<>.
-[[nodiscard]] blink::ExecutionContextToken ToExecutionContextToken(
-    const blink::WorkerToken& token);
-
 // Determines if the provided frame has a cross-process parent frame.
 [[nodiscard]] bool HasCrossProcessParent(const FrameNode* frame_node);
 

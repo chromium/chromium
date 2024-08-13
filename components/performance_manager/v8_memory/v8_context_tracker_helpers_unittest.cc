@@ -43,19 +43,6 @@ class V8ContextTrackerHelpersTest : public GraphTestHarness {
 
 }  // namespace
 
-TEST_F(V8ContextTrackerHelpersTest, ToExecutionContextToken) {
-  blink::DedicatedWorkerToken dedicated;
-  blink::ServiceWorkerToken service;
-  blink::SharedWorkerToken shared;
-
-  EXPECT_EQ(blink::ExecutionContextToken(dedicated),
-            ToExecutionContextToken(blink::WorkerToken(dedicated)));
-  EXPECT_EQ(blink::ExecutionContextToken(service),
-            ToExecutionContextToken(blink::WorkerToken(service)));
-  EXPECT_EQ(blink::ExecutionContextToken(shared),
-            ToExecutionContextToken(blink::WorkerToken(shared)));
-}
-
 TEST_F(V8ContextTrackerHelpersTest, HasCrossProcessParent) {
   // Fails for a main-frame.
   EXPECT_FALSE(HasCrossProcessParent(mock_graph->frame.get()));

@@ -133,13 +133,6 @@ class ExecutionContextObserverDefaultImpl : public ExecutionContextObserver {
       const PriorityAndReason& previous_value) override {}
 };
 
-// Helper function for converting from a WorkerToken to an
-// ExecutionContextToken.
-// TODO(crbug.com/40148083): Get rid of this once MultiToken handles compatible
-// assignment.
-blink::ExecutionContextToken ToExecutionContextToken(
-    const blink::WorkerToken& token);
-
 }  // namespace execution_context
 }  // namespace performance_manager
 

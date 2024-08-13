@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//build/config/rust.gni")
+import("//build/nocompile.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
@@ -494,6 +495,10 @@ source_set("common_unittests_sources") {
     "//v8:v8_libplatform",
   ]
 
+  if (enable_nocompile_tests) {
+    deps += [ ":blink_common_nocompile_tests" ]
+  }
+
   if (!is_android) {
     # TODO(crbug.com/845384): Enable these tests also on Android. Currently
     # they are excluded as they require V8 environment but V8 snapshot is
@@ -563,6 +568,17 @@ if (use_fuzzing_engine_with_lpm) {
     deps = [
       ":common",
       "//content/public/common",
+    ]
+  }
+}
+
+if (enable_nocompile_tests) {
+  nocompile_source_set("blink_common_nocompile_tests") {
+    sources = [ "tokens/multi_token_nocompile.nc" ]
+
+    deps = [
+      "//base",
+      "//third_party/blink/public/common",
     ]
   }
 }
