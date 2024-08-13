@@ -48,11 +48,11 @@ class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
   const base::Value::Dict* SendStorageCommand(
       const std::string& command,
       const extensions::Extension* extension,
-      base::Value::List keys) {
+      base::Value::Dict extra_params) {
     base::Value::Dict storage_params;
     storage_params.Set("id", extension->id());
     storage_params.Set("storageArea", "local");
-    storage_params.Set("keys", std::move(keys));
+    storage_params.Merge(std::move(extra_params));
 
     const base::Value::Dict* get_result =
         SendCommandSync(command, std::move(storage_params));
@@ -129,6 +129,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   base::Value::Dict values_to_set;
   values_to_set.Set("foo", "bar");
   values_to_set.Set("other", "value");
+  values_to_set.Set("remove-on-clear", "value");
 
   //  Set some dummy values in storage.
   base::RunLoop run_loop;
@@ -152,23 +153,36 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   agent_host_->AttachClient(this);
 
   // Check only the requested keys are returned.
-  const base::Value::Dict* get_result =
-      SendStorageCommand("Extensions.getStorageItems", extension,
-                         base::Value::List().Append("foo"));
+  const base::Value::Dict* get_result = SendStorageCommand(
+      "Extensions.getStorageItems", extension,
+      base::Value::Dict().Set("keys", base::Value::List().Append("foo")));
   ASSERT_TRUE(get_result);
   ASSERT_EQ(*get_result->FindDict("data")->FindString("foo"), "bar");
   ASSERT_FALSE(get_result->FindDict("data")->contains("other"));
 
   // Remove the `foo` key.
-  ASSERT_TRUE(SendStorageCommand("Extensions.removeStorageItems", extension,
-                                 base::Value::List().Append("foo")));
+  ASSERT_TRUE(SendStorageCommand(
+      "Extensions.removeStorageItems", extension,
+      base::Value::Dict().Set("keys", base::Value::List().Append("foo"))));
 
   // Check the `foo` key no longer exists.
-  const base::Value::Dict* get_result_2 =
-      SendStorageCommand("Extensions.getStorageItems", extension,
-                         base::Value::List().Append("foo"));
+  const base::Value::Dict* get_result_2 = SendStorageCommand(
+      "Extensions.getStorageItems", extension,
+      base::Value::Dict().Set("keys", base::Value::List().Append("foo")));
   ASSERT_TRUE(get_result_2);
   ASSERT_FALSE(get_result_2->FindDict("data")->contains("foo"));
+
+  // Clear the storage area.
+  ASSERT_TRUE(SendStorageCommand("Extensions.clearStorageItems", extension,
+                                 base::Value::Dict()));
+
+  // Check the `remove-on-clear` key no longer exists.
+  const base::Value::Dict* get_result_3 = SendStorageCommand(
+      "Extensions.getStorageItems", extension,
+      base::Value::Dict().Set("keys",
+                              base::Value::List().Append("remove-on-clear")));
+  ASSERT_TRUE(get_result_3);
+  ASSERT_FALSE(get_result_3->FindDict("data")->contains("remove-on-clear"));
 }
 
 // Test to ensure that the target associated with an extension service worker

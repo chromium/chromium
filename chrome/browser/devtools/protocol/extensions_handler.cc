@@ -226,3 +226,34 @@ void ExtensionsHandler::OnRemoveStorageItemsFinished(
 
   std::move(callback)->sendSuccess();
 }
+
+void ExtensionsHandler::ClearStorageItems(
+    const protocol::String& id,
+    const protocol::String& storage_area,
+    std::unique_ptr<ClearStorageItemsCallback> callback) {
+  GetExtensionAndStorageFrontendResult result =
+      GetExtensionAndStorageFrontend(target_id_, id, storage_area);
+
+  if (result.error) {
+    std::move(callback)->sendFailure(
+        protocol::Response::InvalidRequest(*result.error));
+    return;
+  }
+
+  result.frontend->Clear(
+      result.extension.get(), result.storage_namespace,
+      base::BindOnce(&ExtensionsHandler::OnClearStorageItemsFinished,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ExtensionsHandler::OnClearStorageItemsFinished(
+    std::unique_ptr<ClearStorageItemsCallback> callback,
+    extensions::StorageFrontend::ResultStatus status) {
+  if (!status.success) {
+    std::move(callback)->sendFailure(
+        protocol::Response::ServerError(*status.error));
+    return;
+  }
+
+  std::move(callback)->sendSuccess();
+}
