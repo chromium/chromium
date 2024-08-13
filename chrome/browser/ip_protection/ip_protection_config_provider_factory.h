@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CONFIG_PROVIDER_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "chrome/browser/ip_protection/ip_protection_config_provider.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
