@@ -4802,6 +4802,15 @@ if (is_android) {
     sources = [ "android/application_status_listener.h" ]
   }
 
+  android_library("service_loader_java") {
+    deps = [
+      ":resetters_java",
+      "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+    sources = [ "android/java/src/org/chromium/base/ServiceLoaderUtil.java" ]
+  }
+
   android_library("resetters_java") {
     deps = [
       "//build/android:build_java",
