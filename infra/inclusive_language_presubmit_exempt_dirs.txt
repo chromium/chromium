@@ -123,6 +123,7 @@ components/cast/named_message_port_connector 2 2
 components/cbor 2 2
 components/certificate_transparency 1 1
 components/domain_reliability 4 2
+components/enterprise/obfuscation/core 3 1
 components/gcm_driver 1 1
 components/infobars/android/java/src/org/chromium/components/infobars 1 1
 components/input 2 1
@@ -305,17 +306,12 @@ third_party/afl/src/qemu_mode 1 1
 third_party/android_build_tools/compose_compiler 1 1
 third_party/android_build_tools/json 1 1
 third_party/android_deps_autorolled 1 1
-third_party/android_deps/buildSrc/src/main/groovy 45 2
+third_party/android_deps/buildSrc/src/main/groovy 36 2
 third_party/android_deps/libs 1 1
 third_party/android_deps/libs/com_google_auto_auto_common 1 1
 third_party/android_deps/libs/com_google_auto_service_auto_service 1 1
 third_party/android_deps/libs/com_google_auto_service_auto_service_annotations 1 1
-third_party/android_deps/libs/com_google_errorprone_error_prone_annotation 1 1
 third_party/android_deps/libs/com_google_errorprone_error_prone_annotations 1 1
-third_party/android_deps/libs/com_google_errorprone_error_prone_check_api 1 1
-third_party/android_deps/libs/com_google_errorprone_error_prone_core 1 1
-third_party/android_deps/libs/com_google_errorprone_error_prone_type_annotations 1 1
-third_party/android_deps/libs/com_google_protobuf_protobuf_java 1 1
 third_party/android_deps/libs/com_google_protobuf_protobuf_javalite 1 1
 third_party/android_toolchain 1 1
 third_party/arcore-android-sdk 1 1
