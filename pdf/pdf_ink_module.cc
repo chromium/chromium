@@ -119,6 +119,10 @@ PdfInkModule::~PdfInkModule() = default;
 void PdfInkModule::Draw(SkCanvas& canvas) {
   auto skia_renderer = InkSkiaRenderer::Create();
 
+  const gfx::Vector2dF origin_offset = client_->GetViewportOriginOffset();
+  const PageOrientation rotation = client_->GetOrientation();
+  const float zoom = client_->GetZoom();
+
   for (const auto& [page_index, page_strokes] : strokes_) {
     if (!client_->IsPageVisible(page_index)) {
       continue;
@@ -126,9 +130,9 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
 
     // Use an updated transform based on the page and its position in the
     // viewport.
-    InkAffineTransform transform = GetInkRenderTransform(
-        client_->GetViewportOriginOffset(), client_->GetOrientation(),
-        client_->GetPageContentsRect(page_index), client_->GetZoom());
+    const gfx::Rect content_rect = client_->GetPageContentsRect(page_index);
+    const InkAffineTransform transform =
+        GetInkRenderTransform(origin_offset, rotation, content_rect, zoom);
     if (draw_render_transform_callback_for_testing_) {
       draw_render_transform_callback_for_testing_.Run(transform);
     }
@@ -147,9 +151,11 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
   auto in_progress_stroke = CreateInProgressStrokeSegmentsFromInputs();
   if (!in_progress_stroke.empty()) {
     DrawingStrokeState& state = drawing_stroke_state();
-    InkAffineTransform transform = GetInkRenderTransform(
-        client_->GetViewportOriginOffset(), client_->GetOrientation(),
-        client_->GetPageContentsRect(state.page_index), client_->GetZoom());
+
+    const gfx::Rect content_rect =
+        client_->GetPageContentsRect(state.page_index);
+    const InkAffineTransform transform =
+        GetInkRenderTransform(origin_offset, rotation, content_rect, zoom);
     if (draw_render_transform_callback_for_testing_) {
       draw_render_transform_callback_for_testing_.Run(transform);
     }
