@@ -2219,6 +2219,33 @@ message PolicyFetchTimestamp {
   optional int64 timestamp = 2;
 }
 
+// Affiliation Information, with more deails about the reason of unaffiliation
+message AffiliationState {
+  // A boolean indicates whether the profile is affiliated with the device.
+  optional bool is_affiliated = 1;
+
+  // If profile is not affiliated, what's the reason.
+  enum UnaffiliationReason {
+    // Unknown
+    UNKNOWN = 0;
+
+    // User is not managed.
+    USER_UNMANAGED = 1;
+
+    // User is managed but device is not managed.
+    DEVICE_UNMANAGED = 2;
+
+    // User is managed but device is managed only by a platform source which
+    // doesn't have domain information.
+    DEVICE_MANAGED_BY_PLATFORM = 3;
+
+    // User and device are both managed by cloud service. But they use
+    // different domains.
+    DEVICE_MANANGED_DIFFERENT_DOMAIN = 4;
+  }
+  optional UnaffiliationReason unaffiliation_reason = 2;
+}
+
 // Chrome user profile level status, used by activated Profiles. Profile name is
 // not listed here as they are in the ChromeUserProfileBasicInfo.
 message ChromeUserProfileInfo {
@@ -2237,6 +2264,9 @@ message ChromeUserProfileInfo {
 
   // Gaia account information if the Profile is signed in.
   optional ChromeSignedInUser chrome_signed_in_user = 4;
+
+  // The state of affiliation.
+  optional AffiliationState affiliation = 11;
 
   // A list of extensions installed in the browser.
   repeated Extension extensions = 5;

@@ -94,6 +94,8 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
   // Returns affiliation IDs contained in the PolicyData corresponding to the
   // profile.
   base::flat_set<std::string> user_affiliation_ids() const;
+  void SetUserAffiliationIdsForTesting(
+      const base::flat_set<std::string>& user_affiliation_ids);
 
   // PolicyService::Observer:
   void OnPolicyServiceInitialized(PolicyDomain domain) override;
@@ -220,6 +222,8 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
       local_test_infobar_visibility_manager_;
 
   base::RetainingOneShotTimer management_status_metrics_timer_;
+
+  base::flat_set<std::string> user_affiliation_ids_for_testing_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Returns |true| when this is the main profile.

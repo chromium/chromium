@@ -40,6 +40,8 @@ class ProfileReportGeneratorIOS : public ProfileReportGenerator::Delegate {
   bool Init(const base::FilePath& path) override;
   void GetSigninUserInfo(
       enterprise_management::ChromeUserProfileInfo* report) override;
+  void GetAffiliationInfo(
+      enterprise_management::ChromeUserProfileInfo* report) override;
   void GetExtensionInfo(
       enterprise_management::ChromeUserProfileInfo* report) override;
   void GetExtensionRequest(

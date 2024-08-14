@@ -54,6 +54,10 @@ void ProfileReportGeneratorIOS::GetSigninUserInfo(
       base::SysNSStringToUTF8(account_info.gaiaID));
 }
 
+void ProfileReportGeneratorIOS::GetAffiliationInfo(enterprise_management::ChromeUserProfileInfo* report) {
+  // Affiliation information is currently not supported on iOS.
+}
+
 void ProfileReportGeneratorIOS::GetExtensionInfo(
     enterprise_management::ChromeUserProfileInfo* report) {
   // Extensions aren't supported on iOS.

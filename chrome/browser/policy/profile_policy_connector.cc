@@ -574,11 +574,19 @@ void ProfilePolicyConnector::TriggerProxiedPoliciesWaitTimeoutForTesting() {
 
 base::flat_set<std::string> ProfilePolicyConnector::user_affiliation_ids()
     const {
+  if (!user_affiliation_ids_for_testing_.empty()) {
+    return user_affiliation_ids_for_testing_;
+  }
   auto* store = GetActualPolicyStore();
   if (!store || !store->has_policy())
     return {};
   const auto& ids = store->policy()->user_affiliation_ids();
   return {ids.begin(), ids.end()};
+}
+
+void ProfilePolicyConnector::SetUserAffiliationIdsForTesting(
+    const base::flat_set<std::string>& user_affiliation_ids) {
+  user_affiliation_ids_for_testing_ = user_affiliation_ids;
 }
 
 void ProfilePolicyConnector::OnPolicyServiceInitialized(PolicyDomain domain) {
