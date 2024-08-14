@@ -485,6 +485,9 @@
   <message name="IDS_PRICE_TRACKING_DESCRIPTION_TRACKED" desc="The description text for the price tracking section of price insights when the product is already being tracked.">
     You're already tracking this product
   </message>
+  <message name="IDS_PRICE_HISTORY_TITLE_WITH_VARIANTS" desc="The title of the Price History section in the Shopping Insights side panel when we have variants.">
+    Price History Across the Web for This Option
+  </message>
   <if expr="use_titlecase">
     <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
       Price History Across the Web

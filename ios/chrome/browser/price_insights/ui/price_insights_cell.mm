@@ -114,7 +114,11 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
     NSString* secondarySubtitle;
 
     title = self.item.canPriceTrack
-                ? l10n_util::GetNSString(IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION)
+                ? [self hasVariants]
+                      ? l10n_util::GetNSString(
+                            IDS_PRICE_HISTORY_TITLE_WITH_VARIANTS)
+                      : l10n_util::GetNSString(
+                            IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION)
                 : self.item.title;
     NSString* priceHistoryDescription =
         self.item.canPriceTrack
