@@ -6644,6 +6644,8 @@
       },
       {
         "args": [
+          "--test-launcher-bot-mode",
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
           "--platform",
           "iPhone 14",
           "--version",
@@ -6692,6 +6694,8 @@
       },
       {
         "args": [
+          "--test-launcher-bot-mode",
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
           "--platform",
           "iPhone 15",
           "--version",
@@ -6744,6 +6748,8 @@
           "--enable-features=SkiaGraphite",
           "--skia-graphite-backend=dawn",
           "--use-gpu-in-tests",
+          "--test-launcher-bot-mode",
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
           "--platform",
           "iPhone 14",
           "--version",
@@ -6796,6 +6802,8 @@
           "--enable-features=SkiaGraphite",
           "--skia-graphite-backend=dawn",
           "--use-gpu-in-tests",
+          "--test-launcher-bot-mode",
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
           "--platform",
           "iPhone 15",
           "--version",
@@ -6848,6 +6856,8 @@
           "--enable-features=SkiaGraphite",
           "--skia-graphite-backend=metal",
           "--use-gpu-in-tests",
+          "--test-launcher-bot-mode",
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
           "--platform",
           "iPhone 14",
           "--version",
@@ -6900,6 +6910,8 @@
           "--enable-features=SkiaGraphite",
           "--skia-graphite-backend=metal",
           "--use-gpu-in-tests",
+          "--test-launcher-bot-mode",
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
           "--platform",
           "iPhone 15",
           "--version",

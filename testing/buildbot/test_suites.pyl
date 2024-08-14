@@ -3929,7 +3929,12 @@
       'leveldb_unittests': {},
       'libjingle_xmpp_unittests': {},
       'liburlpattern_unittests': {},
-      'media_unittests': {},
+      'media_unittests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter',
+        ],
+      },
       'media_unittests_skia_graphite_dawn': {
         'test': 'media_unittests',
         'args': [
@@ -3937,6 +3942,8 @@
           '--enable-features=SkiaGraphite',
           '--skia-graphite-backend=dawn',
           '--use-gpu-in-tests',
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter',
         ],
       },
       'media_unittests_skia_graphite_metal': {
@@ -3946,6 +3953,8 @@
           '--enable-features=SkiaGraphite',
           '--skia-graphite-backend=metal',
           '--use-gpu-in-tests',
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter',
         ],
       },
       'midi_unittests': {},
