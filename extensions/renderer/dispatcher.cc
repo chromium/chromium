@@ -868,20 +868,11 @@ void Dispatcher::LoadExtensions(
 
     RendererExtensionRegistry* extension_registry =
         RendererExtensionRegistry::Get();
-    // TODO(kalman): This test is deliberately not a CHECK (though I wish it
-    // could be) and uses extension->id() not params.id:
-    // 1. For some reason params.id can be empty. I've only seen it with
-    //    the webstore extension, in tests, and I've spent some time trying to
-    //    figure out why - but cost/benefit won.
-    // 2. The browser only sends this IPC to RenderProcessHosts once, but the
-    //    Dispatcher is attached to a RenderThread. Presumably there is a
-    //    mismatch there. In theory one would think it's possible for the
-    //    browser to figure this out itself - but again, cost/benefit.
-    if (!extension_registry->Insert(extension)) {
-      // TODO(devlin): This may be fixed by crbug.com/528026. Monitor, and
-      // consider making this a release CHECK.
-      NOTREACHED_IN_MIGRATION();
-    }
+    // TODO(jlulejian): This is deliberately a CHECK because other parts of the
+    // renderer assume that an extension has been loaded (e.g. specifically
+    // worker script evaluation process). If this fails, other CHECK()s and
+    // logic will fail too.
+    CHECK(extension_registry->Insert(extension));
 
     unloaded_extensions_.erase(extension->id());
 
