@@ -125,7 +125,7 @@ BASE_FEATURE(kIOSDockingPromoPreventDeregistrationKillswitch,
 
 BASE_FEATURE(kNonModalDefaultBrowserPromoCooldownRefactor,
              "NonModalDefaultBrowserPromoCooldownRefactor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int>
     kNonModalDefaultBrowserPromoCooldownRefactorParam{

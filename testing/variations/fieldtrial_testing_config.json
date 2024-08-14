@@ -14334,24 +14334,6 @@
             ]
         }
     ],
-    "NonModalPromoCooldownSeparation": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "CooldownDays14_2024_06_02",
-                    "params": {
-                        "cooldown-days": "14"
-                    },
-                    "enable_features": [
-                        "NonModalDefaultBrowserPromoCooldownRefactor"
-                    ]
-                }
-            ]
-        }
-    ],
     "NonStandardAppearanceValueSliderVertical": [
         {
             "platforms": [
