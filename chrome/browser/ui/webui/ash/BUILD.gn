@@ -244,6 +244,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/cloud_upload:unit_tests",
     "//chrome/browser/ui/webui/ash/emoji:unit_tests",
     "//chrome/browser/ui/webui/ash/enterprise_reporting:unit_tests",
+    "//chrome/browser/ui/webui/ash/lobster:unit_tests",
     "//chrome/browser/ui/webui/ash/login:unit_tests",
     "//chrome/browser/ui/webui/ash/mako:unit_tests",
     "//chrome/browser/ui/webui/ash/parent_access:unit_tests",

@@ -8492,6 +8492,7 @@ static_library("browser_generated_files") {
       "//chrome/browser/ui/webui/ash/enterprise_reporting:mojo_bindings",
       "//chrome/browser/ui/webui/ash/extended_updates:mojo_bindings",
       "//chrome/browser/ui/webui/ash/launcher_internals:mojo_bindings",
+      "//chrome/browser/ui/webui/ash/lobster:lobster_mojom",
       "//chrome/browser/ui/webui/ash/login/mojom:mojom",
       "//chrome/browser/ui/webui/ash/manage_mirrorsync:mojo_bindings",
       "//chrome/browser/ui/webui/ash/office_fallback:mojo_bindings",

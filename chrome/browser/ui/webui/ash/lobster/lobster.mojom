@@ -1,0 +1,55 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module lobster.mojom;
+
+import "url/mojom/url.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+struct Candidate {
+    uint32 id;
+    url.mojom.Url data_url;
+};
+
+// Response codes when querying from the server.
+[Extensible]
+enum StatusCode {
+    [Default] kUnknown,
+    kOk,
+    kBlockedOutputs,
+    kNoInternetConnection,
+    kResourceExhausted,
+    kInvalidArgument,
+    kBackendFailure,
+    kUnsupportedLanguage,
+    kRestrictedRegion,
+};
+
+// Errors after sending request to server.
+struct Error {
+    StatusCode code@0;
+    string message@1;
+};
+
+// Responses from the server.
+union Response {
+    array<Candidate> candidates@0;
+    Error error@1;
+};
+
+// The UI uses this interface to communicate with the service.
+interface LobsterPageHandler {
+  // Returns any image candidates generated.
+  RequestCandidates@0(string query, uint32 num_candidates)
+    => (Response response);
+
+  // Downloads a single full sized image to the user’s downloads folder.
+  DownloadCandidate@1(uint32 candidate_id) => (bool status);
+
+  // Queues the given candidate for insertion in a text field.
+  CommitAsInsert@2(uint32 candidate_id) => (bool status);
+
+  // Queues the given candidate for download
+  CommitAsDownload@3(uint32 candidate_id) => (bool status);
+};

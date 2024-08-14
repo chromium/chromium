@@ -24,29 +24,11 @@ LobsterSessionImpl::~LobsterSessionImpl() {
 }
 
 void LobsterSessionImpl::DownloadCandidate(int candidate_id,
-                                           StatusCallback callback) {
-  std::optional<LobsterImageCandidate> candidate =
-      candidate_store_.FindCandidateById(candidate_id);
-  if (!candidate.has_value()) {
-    LOG(ERROR) << "No candidate found.";
-    std::move(callback).Run(false);
-    return;
-  }
-
-  client_->InflateCandidate(
-      candidate->seed, candidate->query,
-      base::BindOnce(
-          [](StatusCallback status_callback, const LobsterResult& result) {
-            if (!result.has_value()) {
-              LOG(ERROR) << "No image candidate";
-              std::move(status_callback).Run(false);
-              return;
-            }
-
-            // TODO: b:348283703 - Add download logic here.
-            std::move(status_callback).Run(true);
-          },
-          std::move(callback)));
+                                           StatusCallback status_callback) {
+  // TODO: b:348283703 - Add download logic here.
+  InflateCandidateAndPerformAction(candidate_id,
+                                   base::BindOnce([](std::string_view) {}),
+                                   std::move(status_callback));
 }
 
 void LobsterSessionImpl::RequestCandidates(const std::string& query,
@@ -58,6 +40,22 @@ void LobsterSessionImpl::RequestCandidates(const std::string& query,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void LobsterSessionImpl::CommitAsInsert(int candidate_id,
+                                        StatusCallback status_callback) {
+  // TODO: b:348283703 - Add commit as insert logic here.
+  InflateCandidateAndPerformAction(candidate_id,
+                                   base::BindOnce([](std::string_view) {}),
+                                   std::move(status_callback));
+}
+
+void LobsterSessionImpl::CommitAsDownload(int candidate_id,
+                                          StatusCallback status_callback) {
+  // TODO: b:348283703 - Add commit as download logic here.
+  InflateCandidateAndPerformAction(candidate_id,
+                                   base::BindOnce([](std::string_view) {}),
+                                   std::move(status_callback));
+}
+
 void LobsterSessionImpl::OnRequestCandidates(RequestCandidatesCallback callback,
                                              const LobsterResult& result) {
   if (result.has_value()) {
@@ -66,6 +64,39 @@ void LobsterSessionImpl::OnRequestCandidates(RequestCandidatesCallback callback,
     }
   }
   std::move(callback).Run(result);
+}
+
+void LobsterSessionImpl::InflateCandidateAndPerformAction(
+    int candidate_id,
+    ActionCallback action_callback,
+    StatusCallback status_callback) {
+  std::optional<LobsterImageCandidate> candidate =
+      candidate_store_.FindCandidateById(candidate_id);
+  if (!candidate.has_value()) {
+    LOG(ERROR) << "No candidate found.";
+    std::move(status_callback).Run(false);
+    return;
+  }
+
+  client_->InflateCandidate(
+      candidate->seed, candidate->query,
+      base::BindOnce(
+          [](ActionCallback action_callback, const LobsterResult& result) {
+            if (!result.has_value()) {
+              LOG(ERROR) << "No image candidate";
+              return false;
+            }
+
+            // TODO: b/348283703 - Return the value of action callback.
+            std::move(action_callback).Run((*result)[0].image_bytes);
+            return true;
+          },
+          std::move(action_callback))
+          .Then(base::BindOnce(
+              [](StatusCallback status_callback, bool success) {
+                std::move(status_callback).Run(success);
+              },
+              std::move(status_callback))));
 }
 
 }  // namespace ash

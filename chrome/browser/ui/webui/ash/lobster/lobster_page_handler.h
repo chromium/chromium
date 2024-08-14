@@ -10,24 +10,27 @@
 #include "ash/public/cpp/lobster/lobster_result.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/webui/ash/lobster/lobster.mojom.h"
 
 namespace ash {
 
 class LobsterSession;
 
-class LobsterPageHandler {
+class LobsterPageHandler : public lobster::mojom::LobsterPageHandler {
  public:
-  using StatusCallback = base::OnceCallback<void(bool)>;
-
   explicit LobsterPageHandler(LobsterSession* active_session);
 
-  ~LobsterPageHandler();
+  ~LobsterPageHandler() override;
 
-  void DownloadCandidate(int candidate_id, StatusCallback);
-
+  // lobster::mojom::LobsterPageHandler overrides
   void RequestCandidates(const std::string& query,
-                         int num_candidates,
-                         RequestCandidatesCallback);
+                         uint32_t num_candidates,
+                         RequestCandidatesCallback) override;
+  void DownloadCandidate(uint32_t candidate_id,
+                         DownloadCandidateCallback) override;
+  void CommitAsInsert(uint32_t candidate_id, CommitAsInsertCallback) override;
+  void CommitAsDownload(uint32_t candidate_id,
+                        CommitAsDownloadCallback) override;
 
  private:
   // Not owned by this class

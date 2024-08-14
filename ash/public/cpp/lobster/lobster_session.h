@@ -21,7 +21,8 @@ class ASH_PUBLIC_EXPORT LobsterSession {
   virtual ~LobsterSession() = default;
 
   virtual void DownloadCandidate(int candidate_id, StatusCallback) = 0;
-
+  virtual void CommitAsInsert(int candidate_id, StatusCallback callback) = 0;
+  virtual void CommitAsDownload(int candidate_id, StatusCallback callback) = 0;
   virtual void RequestCandidates(const std::string& query,
                                  int num_candidates,
                                  RequestCandidatesCallback) = 0;
