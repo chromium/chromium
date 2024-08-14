@@ -28,6 +28,9 @@ class LensOverlayTabHelper : public web::WebStateUserData<LensOverlayTabHelper>,
     is_showing_lens_overlay_ = is_showing_lens_overlay;
   }
 
+  // Updates the lens overlay web state tab switcher snapshot.
+  void UpdateSnapshot();
+
   // Sets the Lens Overlay commands handler.
   void SetLensOverlayCommandsHandler(id<LensOverlayCommands> commands_handler) {
     commands_handler_ = commands_handler;

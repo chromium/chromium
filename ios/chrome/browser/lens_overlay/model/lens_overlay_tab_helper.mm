@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 
 LensOverlayTabHelper::LensOverlayTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
@@ -35,6 +36,10 @@ void LensOverlayTabHelper::WasShown(web::WebState* web_state) {
 void LensOverlayTabHelper::WasHidden(web::WebState* web_state) {
   CHECK_EQ(web_state, web_state_, kLensOverlayNotFatalUntil);
 
+  //  Before hiding the UI, update the snapshot so that lens overlay is visible
+  //  in the tab switcher.
+  UpdateSnapshot();
+
   if (is_showing_lens_overlay_) {
     [commands_handler_ hideLensUI:YES];
   }
@@ -48,6 +53,15 @@ void LensOverlayTabHelper::WebStateDestroyed(web::WebState* web_state) {
   }
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
+}
+
+void LensOverlayTabHelper::UpdateSnapshot() {
+  SnapshotTabHelper* snapshotTabHelper =
+      SnapshotTabHelper::FromWebState(web_state_);
+
+  if (snapshotTabHelper) {
+    snapshotTabHelper->UpdateSnapshotWithCallback(nil);
+  }
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(LensOverlayTabHelper)

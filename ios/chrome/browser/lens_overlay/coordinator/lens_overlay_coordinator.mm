@@ -124,6 +124,10 @@
   _mediator.resultConsumer = self;
 }
 
+- (UIViewController*)viewController {
+  return _containerViewController;
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -208,6 +212,7 @@
   // different tab. In this case mark the stale tab helper as not shown.
   if (_associatedTabHelper) {
     _associatedTabHelper->SetLensOverlayShown(false);
+    _associatedTabHelper->UpdateSnapshot();
     _associatedTabHelper = nil;
   }
 

@@ -94,6 +94,7 @@
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_coordinator.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
@@ -3335,14 +3336,36 @@ enum class ToolbarKind {
   }
 
   WebStateList* webStateList = self.browser->GetWebStateList();
-  DCHECK_NE(webStateList->GetIndexOfWebState(webState),
-            WebStateList::kInvalidIndex);
 
-  if (!self.webUsageEnabled || webState != webStateList->GetActiveWebState()) {
+  if (webStateList->GetIndexOfWebState(webState) ==
+      WebStateList::kInvalidIndex) {
     return @[];
   }
 
+  LensOverlayTabHelper* lensOverlayTabHelper =
+      LensOverlayTabHelper::FromWebState(webState);
+
+  BOOL webStateHasLensOverlay = IsLensOverlayAvailable() &&
+                                lensOverlayTabHelper &&
+                                lensOverlayTabHelper->IsLensOverlayShown();
+
   NSMutableArray<UIView*>* overlays = [NSMutableArray array];
+
+  // A lens overlay is mapped to the given web state.
+  if (webStateHasLensOverlay) {
+    UIView* lensOverlayView = _lensOverlayCoordinator.viewController.view;
+
+    if (lensOverlayView) {
+      [overlays addObject:lensOverlayView];
+    }
+  }
+
+  // If the given web state is inactive or web usage is disabled, refrain from
+  // adding any additional overlays. For inactive web states, only the lens
+  // overlay is permitted to be added.
+  if (!self.webUsageEnabled || webState != webStateList->GetActiveWebState()) {
+    return overlays;
+  }
 
   UIView* downloadManagerView = _downloadManagerCoordinator.viewController.view;
   if (downloadManagerView) {
