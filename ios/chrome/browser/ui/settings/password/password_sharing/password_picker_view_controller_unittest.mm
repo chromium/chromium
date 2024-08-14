@@ -102,6 +102,16 @@ class PasswordPickerViewControllerTest
         base::apple::ObjCCastStrict<TableViewURLCell>(cell);
     EXPECT_NSEQ(expected_text, URLCell.URLLabel.text);
   }
+
+  void CheckCellTitleText(NSString* expected_text, int section, int row) {
+    UITableViewCell* cell =
+        [controller() tableView:controller().tableView
+            cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row
+                                                     inSection:section]];
+    TableViewURLCell* URLCell =
+        base::apple::ObjCCastStrict<TableViewURLCell>(cell);
+    EXPECT_NSEQ(expected_text, URLCell.titleLabel.text);
+  }
 };
 
 TEST_F(PasswordPickerViewControllerTest, TestPasswordPickerLayout) {
@@ -180,4 +190,43 @@ TEST_F(PasswordPickerViewControllerTest, TestSettingAccessoryType) {
   CheckCellAccessoryType(UITableViewCellAccessoryNone, 0, 1);
   CheckCellAccessoryType(UITableViewCellAccessoryNone, 0, 2);
   CheckCellAccessoryType(UITableViewCellAccessoryCheckmark, 0, 3);
+}
+
+TEST_F(PasswordPickerViewControllerTest, TestPasswordsAreSortedBeforePasskeys) {
+  // Create 3 passkey credentials and 3 password credentials with sequential
+  // usernames. After the `setCredentials` call passwords should end up sorted
+  // before passkeys.
+  std::vector<CredentialUIEntry> credentials;
+
+  for (int i = 1; i <= 3; i++) {
+    PasskeyCredential passkey_credential(
+        PasskeyCredential::Source::kGooglePasswordManager,
+        PasskeyCredential::RpId("example.com"),
+        PasskeyCredential::CredentialId({1, 2, 3, 4}),
+        PasskeyCredential::UserId(),
+        PasskeyCredential::Username("user" + base::NumberToString(i)));
+    CredentialUIEntry passkey(std::move(passkey_credential));
+    credentials.push_back(passkey);
+  }
+
+  for (int i = 4; i <= 6; i++) {
+    const std::u16string url = u"http://www.example.com/";
+    auto form = PasswordForm();
+    form.username_value = u"user" + base::NumberToString16(i);
+    form.url = GURL(url);
+    form.signon_realm = form.url.spec();
+    form.federation_origin = url::SchemeHostPort(GURL(url));
+    credentials.push_back(CredentialUIEntry(form));
+  }
+
+  PasswordPickerViewController* password_picker_controller =
+      static_cast<PasswordPickerViewController*>(controller());
+  [password_picker_controller setCredentials:credentials];
+
+  CheckCellTitleText(@"user4", 0, 0);
+  CheckCellTitleText(@"user5", 0, 1);
+  CheckCellTitleText(@"user6", 0, 2);
+  CheckCellTitleText(@"user1", 0, 3);
+  CheckCellTitleText(@"user2", 0, 4);
+  CheckCellTitleText(@"user3", 0, 5);
 }
