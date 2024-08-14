@@ -33,6 +33,10 @@ SANDBOX_INTERCEPT NtExports g_nt;
 
 namespace {
 
+// Uses value of FILE_INFORMATION_CLASS defined in Wdm.h but not in user-mode.
+// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ne-wdm-_file_information_class
+constexpr uint32_t FileRenameInformation = 10;
+
 #if defined(_WIN64)
 // Align a pointer to the next allocation granularity boundary.
 inline char* AlignToBoundary(void* ptr, size_t increment) {

@@ -40,12 +40,6 @@ typedef NTSTATUS(WINAPI* NtOpenFileFunction)(OUT PHANDLE FileHandle,
 
 typedef NTSTATUS(WINAPI* NtCloseFunction)(IN HANDLE Handle);
 
-// Uses undocumented value not in FILE_INFORMATION_CLASS.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wenum-constexpr-conversion"
-constexpr auto FileRenameInformation = static_cast<FILE_INFORMATION_CLASS>(10);
-#pragma clang diagnostic push
-
 typedef struct _FILE_RENAME_INFORMATION {
   BOOLEAN ReplaceIfExists;
   HANDLE RootDirectory;
