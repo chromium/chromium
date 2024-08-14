@@ -23,6 +23,13 @@ namespace ash {
 
 class SessionControllerImpl;
 
+enum class BrightnessAction {
+  kDecreaseBrightness = 0,
+  kIncreaseBrightness = 1,
+  kToggleBrightness = 2,
+  kSetBrightness = 3,
+};
+
 // A class which controls keyboard brightness when Alt+F6, Alt+F7 or a
 // multimedia key for keyboard brightness is pressed.
 class ASH_EXPORT KeyboardBrightnessController
@@ -48,6 +55,7 @@ class ASH_EXPORT KeyboardBrightnessController
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
+  void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // PowerManagerClient::Observer:
   void KeyboardAmbientLightSensorEnabledChanged(
@@ -87,6 +95,8 @@ class ASH_EXPORT KeyboardBrightnessController
   void OnReceiveKeyboardBrightnessAfterLogin(
       std::optional<double> keyboard_brightness);
 
+  void RecordHistogramForBrightnessAction(BrightnessAction brightness_action);
+
   // The current AccountId, used to set and retrieve prefs. Expected to be
   // nullopt on the login screen, but will be set on login.
   std::optional<AccountId> active_account_id_;
@@ -94,6 +104,14 @@ class ASH_EXPORT KeyboardBrightnessController
   raw_ptr<PrefService> local_state_;                   // unowned.
   raw_ptr<PrefService> pref_service_;                  // unowned.
   raw_ptr<SessionControllerImpl> session_controller_;  // unowned.
+
+  // Timestamp of the last session change, e.g. when going from the login screen
+  // to the desktop, or from startup to the login screen.
+  base::TimeTicks last_session_change_time_;
+
+  // Used for metrics recording. True if and only if a brightness adjustment has
+  // occurred.
+  bool has_brightness_been_adjusted_ = false;
 
   // True if the keyboard ambient light sensor value has already been restored
   // for a user's first login.

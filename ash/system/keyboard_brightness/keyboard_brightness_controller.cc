@@ -9,12 +9,14 @@
 #include "ash/login/login_screen_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/power/power_status.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/known_user.h"
 
 namespace ash {
@@ -110,6 +112,37 @@ KeyboardBrightnessChangeSourceToCause(KeyboardBrightnessChangeSource source) {
   }
 }
 
+std::string GetBrightnessActionName(BrightnessAction brightness_action) {
+  switch (brightness_action) {
+    case BrightnessAction::kDecreaseBrightness:
+      return "Decrease";
+    case BrightnessAction::kIncreaseBrightness:
+      return "Increase";
+    case BrightnessAction::kToggleBrightness:
+      return "Toggle";
+    case BrightnessAction::kSetBrightness:
+      return "Set";
+  }
+}
+
+// Returns true if the device is currently connected to a charger.
+// Note: This is the same logic that ambient_controller.cc uses.
+bool IsChargerConnected() {
+  DCHECK(PowerStatus::IsInitialized());
+  auto* power_status = PowerStatus::Get();
+  if (power_status->IsBatteryPresent()) {
+    // If battery is charging, that implies sufficient power is connected. If
+    // battery is not charging, return true only if an official, non-USB charger
+    // is connected. This will happen if the battery is fully charged or
+    // charging is delayed by Adaptive Charging.
+    return power_status->IsBatteryCharging() ||
+           power_status->IsMainsChargerConnected();
+  }
+
+  // Chromeboxes have no battery.
+  return power_status->IsLinePowerConnected();
+}
+
 }  // namespace
 
 KeyboardBrightnessController::KeyboardBrightnessController(
@@ -138,6 +171,10 @@ KeyboardBrightnessController::KeyboardBrightnessController(
 
   // Add LoginScreenController observer.
   Shell::Get()->login_screen_controller()->data_dispatcher()->AddObserver(this);
+
+  // Record a timestamp when this is constructed so last_session_change_time_ is
+  // guaranteed to have a value.
+  last_session_change_time_ = base::TimeTicks::Now();
 }
 
 KeyboardBrightnessController::~KeyboardBrightnessController() {
@@ -212,6 +249,14 @@ void KeyboardBrightnessController::OnActiveUserPrefServiceChanged(
                 RestoreKeyboardAmbientLightSensorSettingOnFirstLogin,
             weak_ptr_factory_.GetWeakPtr()));
   }
+}
+
+// SessionObserver:
+void KeyboardBrightnessController::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  // Whenever the SessionState changes (e.g. LOGIN_PRIMARY to ACTIVE), record
+  // the timestamp.
+  last_session_change_time_ = base::TimeTicks::Now();
 }
 
 // PowerManagerClient::Observer:
@@ -323,14 +368,17 @@ void KeyboardBrightnessController::OnFocusPod(const AccountId& account_id) {
 
 void KeyboardBrightnessController::HandleKeyboardBrightnessDown() {
   chromeos::PowerManagerClient::Get()->DecreaseKeyboardBrightness();
+  RecordHistogramForBrightnessAction(BrightnessAction::kDecreaseBrightness);
 }
 
 void KeyboardBrightnessController::HandleKeyboardBrightnessUp() {
   chromeos::PowerManagerClient::Get()->IncreaseKeyboardBrightness();
+  RecordHistogramForBrightnessAction(BrightnessAction::kIncreaseBrightness);
 }
 
 void KeyboardBrightnessController::HandleToggleKeyboardBacklight() {
   chromeos::PowerManagerClient::Get()->ToggleKeyboardBacklight();
+  RecordHistogramForBrightnessAction(BrightnessAction::kToggleBrightness);
 }
 
 void KeyboardBrightnessController::HandleSetKeyboardBrightness(
@@ -345,6 +393,12 @@ void KeyboardBrightnessController::HandleSetKeyboardBrightness(
           : power_manager::SetBacklightBrightnessRequest_Transition_INSTANT);
   request.set_cause(KeyboardBrightnessChangeSourceToCause(source));
   chromeos::PowerManagerClient::Get()->SetKeyboardBrightness(request);
+
+  // Record the brightness action only if it was not initiated by the system's
+  // brightness restoration.
+  if (source != KeyboardBrightnessChangeSource::kRestoredFromUserPref) {
+    RecordHistogramForBrightnessAction(BrightnessAction::kSetBrightness);
+  }
 }
 
 void KeyboardBrightnessController::HandleGetKeyboardAmbientLightSensorEnabled(
@@ -472,6 +526,47 @@ void KeyboardBrightnessController::OnReceiveKeyboardBrightnessAfterLogin(
   known_user.SetPath(
       active_account_id_.value(), prefs::kKeyboardBrightnessPercent,
       std::make_optional<base::Value>(keyboard_brightness.value()));
+}
+
+void KeyboardBrightnessController::RecordHistogramForBrightnessAction(
+    BrightnessAction brightness_action) {
+  // Only record the first brightness adjustment (resets on reboot).
+  if (has_brightness_been_adjusted_) {
+    return;
+  }
+  has_brightness_been_adjusted_ = true;
+
+  CHECK(!last_session_change_time_.is_null());
+
+  const base::TimeDelta time_since_last_session_change =
+      base::TimeTicks::Now() - last_session_change_time_;
+
+  // Don't record a metric if the first brightness adjustment occurred >1 hour
+  // after the last session change.
+  if (time_since_last_session_change >= base::Hours(1)) {
+    return;
+  }
+
+  const session_manager::SessionState session_state =
+      session_controller_->GetSessionState();
+  const bool is_on_login_screen =
+      session_state == session_manager::SessionState::LOGIN_PRIMARY ||
+      session_state == session_manager::SessionState::LOGIN_SECONDARY;
+  const bool is_active_session =
+      session_state == session_manager::SessionState::ACTIVE;
+
+  // Disregard brightness events that don't occur on the login screen or in an
+  // active user session.
+  if (!(is_on_login_screen || is_active_session)) {
+    return;
+  }
+
+  base::UmaHistogramLongTimes100(
+      base::StrCat({"ChromeOS.Keyboard.TimeUntilFirstBrightnessChange.",
+                    is_on_login_screen ? "OnLoginScreen" : "AfterLogin", ".",
+                    GetBrightnessActionName(brightness_action), "Brightness.",
+                    IsChargerConnected() ? "Charger" : "Battery", "Power"}),
+      time_since_last_session_change);
 }
 
 }  // namespace ash
