@@ -31,7 +31,7 @@ import javax.annotation.concurrent.GuardedBy;
 @JNINamespace("base")
 public class PostTask {
     private static final String TAG = "PostTask";
-    public static final boolean ENABLE_TASK_ORIGINS = BuildConfig.ENABLE_ASSERTS;
+    static final boolean ENABLE_TASK_ORIGINS = BuildConfig.ENABLE_ASSERTS;
     private static final Object sPreNativeTaskRunnerLock = new Object();
 
     @GuardedBy("sPreNativeTaskRunnerLock")

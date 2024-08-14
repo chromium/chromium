@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.init;
+package org.chromium.base.task;
 
 import androidx.test.filters.SmallTest;
 
@@ -13,10 +13,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.JavaUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.task.ChainedTasks;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskOriginException;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
