@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol SystemIdentity;
+@class FakeSystemIdentity;
 @class FakeSystemIdentityDetails;
 
 // Stores identities.  The key is the identity's gaia id, and identities
@@ -18,17 +18,18 @@
 // order being stable and deterministic.
 @interface FakeSystemIdentityManagerStorage : NSObject <NSFastEnumeration>
 
-// Returns whether `identity` is contained in the store.
-- (BOOL)containsIdentity:(id<SystemIdentity>)identity;
+// Returns whether an identity with `gaiaID` is contained in the store.
+- (BOOL)containsIdentityWithGaiaID:(NSString*)gaiaID;
 
 // Returns details for `identity` or nil if the identity is unknown.
-- (FakeSystemIdentityDetails*)detailsForIdentity:(id<SystemIdentity>)identity;
+- (FakeSystemIdentityDetails*)detailsForGaiaID:(NSString*)gaiaID;
 
 // Adds `identity`. Does nothing if `identity` is already stored.
-- (void)addIdentity:(id<SystemIdentity>)identity;
+- (void)addFakeIdentity:(FakeSystemIdentity*)identity;
 
-// Removes `identity`. Does nothing if `identity` is not stored.
-- (void)removeIdentity:(id<SystemIdentity>)identity;
+// Removes an identity with `gaiaID`. Does nothing if the identity is not
+// stored.
+- (void)removeIdentityWithGaiaID:(NSString*)gaiaID;
 
 @end
 

@@ -16,8 +16,9 @@
 #include "ios/chrome/browser/signin/model/system_identity_manager.h"
 #include "ios/chrome/browser/signin/model/system_identity_manager_observer.h"
 
-@protocol SystemIdentity;
+@class FakeSystemIdentity;
 @class FakeSystemIdentityManagerStorage;
+@protocol SystemIdentity;
 
 // An implementation of SystemIdentityManager that is used during test.
 // It allows faking the list of identities available on the system.
@@ -29,7 +30,8 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
       base::RepeatingCallback<void(HandleMDMCallback)>;
 
   FakeSystemIdentityManager();
-  explicit FakeSystemIdentityManager(NSArray<id<SystemIdentity>>* identities);
+  explicit FakeSystemIdentityManager(
+      NSArray<FakeSystemIdentity*>* fake_identities);
   ~FakeSystemIdentityManager() final;
 
   // Converts `manager` into a `FakeSystemIdentityManager*` if possible

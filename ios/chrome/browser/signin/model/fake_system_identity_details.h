@@ -15,7 +15,7 @@
 #include "ios/chrome/browser/signin/model/capabilities_types.h"
 
 @class FakeRefreshAccessTokenError;
-@protocol SystemIdentity;
+@class FakeSystemIdentity;
 
 using FakeSystemIdentityCapabilitiesMap = base::flat_map<std::string, bool>;
 
@@ -24,7 +24,7 @@ using FakeSystemIdentityCapabilitiesMap = base::flat_map<std::string, bool>;
 @interface FakeSystemIdentityDetails : NSObject
 
 // The identity.
-@property(nonatomic, readonly, strong) id<SystemIdentity> identity;
+@property(nonatomic, readonly, strong) FakeSystemIdentity* fakeIdentity;
 
 // The capabilities for the associated SystemIdentity.
 @property(nonatomic, readonly)
@@ -43,7 +43,7 @@ using FakeSystemIdentityCapabilitiesMap = base::flat_map<std::string, bool>;
     AccountCapabilitiesTestMutator* pendingCapabilitiesMutator;
 
 // Designated initializer.
-- (instancetype)initWithIdentity:(id<SystemIdentity>)identity
+- (instancetype)initWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
