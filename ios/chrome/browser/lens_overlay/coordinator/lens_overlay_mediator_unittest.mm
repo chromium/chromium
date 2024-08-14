@@ -20,16 +20,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-@interface FakeSnapshotConsumer : NSObject <LensOverlaySnapshotConsumer>
-@property(nonatomic, copy) void (^onSnapshotLoaded)();
-@end
-@implementation FakeSnapshotConsumer
-- (void)loadSnapshot:(UIImage*)snapshot {
-  self.onSnapshotLoaded();
-}
-
-@end
-
 @interface FakeResultConsumer : NSObject <LensOverlayResultConsumer>
 @property(nonatomic, assign) GURL lastPushedURL;
 @end
@@ -47,7 +37,6 @@ class LensOverlayMediatorTest : public PlatformTest {
   LensOverlayMediatorTest() {
     mediator_ = [[LensOverlayMediator alloc] init];
     mock_result_consumer_ = [[FakeResultConsumer alloc] init];
-    fake_snapshot_consumer_ = [[FakeSnapshotConsumer alloc] init];
     mock_omnibox_coordinator_ =
         [OCMockObject mockForClass:OmniboxCoordinator.class];
     mock_toolbar_consumer_ =
@@ -55,7 +44,6 @@ class LensOverlayMediatorTest : public PlatformTest {
     fake_web_state_ = std::make_unique<web::FakeWebState>();
 
     mediator_.resultConsumer = mock_result_consumer_;
-    mediator_.snapshotConsumer = fake_snapshot_consumer_;
     mediator_.omniboxCoordinator = mock_omnibox_coordinator_;
     mediator_.toolbarConsumer = mock_toolbar_consumer_;
     mediator_.webState = fake_web_state_.get();
@@ -67,27 +55,10 @@ class LensOverlayMediatorTest : public PlatformTest {
   LensOverlayMediator* mediator_;
 
   FakeResultConsumer* mock_result_consumer_;
-  FakeSnapshotConsumer* fake_snapshot_consumer_;
   id mock_omnibox_coordinator_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   OCMockObject<LensToolbarConsumer>* mock_toolbar_consumer_;
 };
-
-TEST_F(LensOverlayMediatorTest, ShouldRouteTheImageToTheConsumerWhenStarted) {
-  __block BOOL didReceiveSnapshot = false;
-
-  // Given a test snapshot image.
-  UIImage* testSnapshot = [[UIImage alloc] init];
-  fake_snapshot_consumer_.onSnapshotLoaded = ^void() {
-    didReceiveSnapshot = true;
-  };
-
-  // When the mediator starts the flow with the snapshot image.
-  [mediator_ startWithSnapshot:testSnapshot];
-
-  // Then the consumer should receive the snapshot.
-  EXPECT_TRUE(didReceiveSnapshot);
-}
 
 /// Tests that the omnibox and toolbar are updated on omnibox focus.
 TEST_F(LensOverlayMediatorTest, FocusOmnibox) {

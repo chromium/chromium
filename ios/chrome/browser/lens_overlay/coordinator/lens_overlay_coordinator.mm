@@ -86,7 +86,6 @@
   [_selectionViewController setLensOverlayDelegate:_mediator];
   _mediator.commandsHandler = self;
 
-  [_mediator startWithSnapshot:snapshot];
   [_selectionViewController start];
 
   return YES;

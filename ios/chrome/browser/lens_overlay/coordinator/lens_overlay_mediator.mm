@@ -32,10 +32,6 @@
   return self;
 }
 
-- (void)startWithSnapshot:(UIImage*)snapshot {
-  [self.snapshotConsumer loadSnapshot:snapshot];
-}
-
 - (void)setWebState:(web::WebState*)webState {
   if (_webState) {
     _webState->RemoveObserver(_webStateObserverBridge.get());

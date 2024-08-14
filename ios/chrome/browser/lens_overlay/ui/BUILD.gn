@@ -6,7 +6,6 @@ source_set("protocols") {
   sources = [
     "lens_omnibox_mutator.h",
     "lens_overlay_result_consumer.h",
-    "lens_overlay_snapshot_consumer.h",
     "lens_toolbar_consumer.h",
   ]
   frameworks = [ "UIKit.framework" ]

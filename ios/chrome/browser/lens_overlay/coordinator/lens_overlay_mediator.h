@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_omnibox_mutator.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_result_consumer.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_snapshot_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 
@@ -33,9 +32,6 @@ class WebState;
 // Handler for the Lens Overlay commands;
 @property(nonatomic, weak) id<LensOverlayCommands> commandsHandler;
 
-// Consumer for the captured snapshot image.
-@property(nonatomic, weak) id<LensOverlaySnapshotConsumer> snapshotConsumer;
-
 /// Coordinator to interact with the omnibox.
 @property(nonatomic, weak) OmniboxCoordinator* omniboxCoordinator;
 
@@ -47,9 +43,6 @@ class WebState;
 
 /// Releases managed objects.
 - (void)disconnect;
-
-// Starts the main workflow for a given `snapshot` image.
-- (void)startWithSnapshot:(UIImage*)snapshot;
 
 @end
 
