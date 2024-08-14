@@ -51,6 +51,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/drivefs/drivefs_bootstrap.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
+#include "chromeos/ash/components/drivefs/drivefs_search_query.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-shared.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/drivefs/mojom/notifications.mojom-forward.h"
@@ -1417,6 +1418,27 @@ void DriveIntegrationService::SearchDriveByFileName(
   drive_query->query_source = query_source;
 
   GetDriveFsHost()->PerformSearch(std::move(drive_query), std::move(callback));
+}
+
+std::unique_ptr<drivefs::DriveFsSearchQuery>
+DriveIntegrationService::CreateSearchQueryByFileName(
+    std::string query,
+    int max_results,
+    drivefs::mojom::QueryParameters::SortField sort_field,
+    drivefs::mojom::QueryParameters::SortDirection sort_direction,
+    drivefs::mojom::QueryParameters::QuerySource query_source) const {
+  if (!GetDriveFsHost()) {
+    return nullptr;
+  }
+
+  auto drive_query = drivefs::mojom::QueryParameters::New();
+  drive_query->title = query;
+  drive_query->page_size = max_results;
+  drive_query->sort_field = sort_field;
+  drive_query->sort_direction = sort_direction;
+  drive_query->query_source = query_source;
+
+  return GetDriveFsHost()->CreateSearchQuery(std::move(drive_query));
 }
 
 void DriveIntegrationService::OnEnableMirroringStatusUpdate(

@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/drivefs_http_client.h"
 #include "chromeos/ash/components/drivefs/drivefs_search.h"
+#include "chromeos/ash/components/drivefs/drivefs_search_query.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/drivefs/mojom/notifications.mojom.h"
 #include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
@@ -113,6 +114,11 @@ class DriveFsHost::MountState : public DriveFsSession {
     };
     return DriveFsConnection::Create(delegate->CreateMojoListener(),
                                      std::move(config));
+  }
+
+  std::unique_ptr<DriveFsSearchQuery> CreateSearchQuery(
+      mojom::QueryParametersPtr query) {
+    return search_->CreateQuery(std::move(query));
   }
 
   mojom::QueryParameters::QuerySource SearchDriveFs(
@@ -358,6 +364,14 @@ mojom::DriveFs* DriveFsHost::GetDriveFsInterface() const {
     return nullptr;
   }
   return mount_state_->drivefs_interface();
+}
+
+std::unique_ptr<DriveFsSearchQuery> DriveFsHost::CreateSearchQuery(
+    mojom::QueryParametersPtr query) {
+  if (!mount_state_ || !mount_state_->is_mounted()) {
+    return nullptr;
+  }
+  return mount_state_->CreateSearchQuery(std::move(query));
 }
 
 mojom::QueryParameters::QuerySource DriveFsHost::PerformSearch(

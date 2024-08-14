@@ -31,11 +31,17 @@ DriveFsSearch::DriveFsSearch(
 
 DriveFsSearch::~DriveFsSearch() = default;
 
+std::unique_ptr<DriveFsSearchQuery> DriveFsSearch::CreateQuery(
+    mojom::QueryParametersPtr query_params) {
+  return std::make_unique<DriveFsSearchQuery>(weak_ptr_factory_.GetWeakPtr(),
+                                              std::move(query_params));
+}
+
 mojom::QueryParameters::QuerySource DriveFsSearch::PerformSearch(
     mojom::QueryParametersPtr query,
     mojom::SearchQuery::GetNextPageCallback callback) {
-  auto search_query = std::make_unique<DriveFsSearchQuery>(
-      weak_ptr_factory_.GetWeakPtr(), std::move(query));
+  std::unique_ptr<DriveFsSearchQuery> search_query =
+      CreateQuery(std::move(query));
   drivefs::mojom::QueryParameters::QuerySource source = search_query->source();
 
   DriveFsSearchQuery* raw_search_query = search_query.get();

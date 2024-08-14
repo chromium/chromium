@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_SEARCH_H_
 #define CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_SEARCH_H_
 
+#include <memory>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -20,6 +22,8 @@ class NetworkConnectionTracker;
 
 namespace drivefs {
 
+class DriveFsSearchQuery;
+
 // Handles search queries to DriveFS.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSearch
     : public DriveFsSearchQueryDelegate {
@@ -32,6 +36,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSearch
   DriveFsSearch& operator=(const DriveFsSearch&) = delete;
 
   ~DriveFsSearch() override;
+
+  // Starts a new query, but does not call `GetNextPage`.
+  // The returned `DriveFsSearchQuery` can be destructed at any time to stop any
+  // in-flight `GetNextPage` calls.
+  std::unique_ptr<DriveFsSearchQuery> CreateQuery(
+      mojom::QueryParametersPtr query_params);
 
   // Starts DriveFs search query and returns whether it will be
   // performed localy or remotely. Assumes DriveFS to be mounted.

@@ -48,6 +48,7 @@ class SequencedTaskRunner;
 
 namespace drivefs {
 class DriveFsHost;
+class DriveFsSearchQuery;
 
 namespace mojom {
 class DriveFs;
@@ -261,6 +262,13 @@ class DriveIntegrationService : public KeyedService,
       drivefs::mojom::QueryParameters::SortDirection sort_direction,
       drivefs::mojom::QueryParameters::QuerySource query_source,
       SearchDriveByFileNameCallback callback) const;
+  // Returns nullptr if DriveFS is not mounted.
+  std::unique_ptr<drivefs::DriveFsSearchQuery> CreateSearchQueryByFileName(
+      std::string query,
+      int max_results,
+      drivefs::mojom::QueryParameters::SortField sort_field,
+      drivefs::mojom::QueryParameters::SortDirection sort_direction,
+      drivefs::mojom::QueryParameters::QuerySource query_source) const;
 
   // Returns the metadata for Drive file at |local_path|.
   void GetMetadata(const base::FilePath& local_path,

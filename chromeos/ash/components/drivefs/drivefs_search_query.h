@@ -20,8 +20,6 @@ class DriveFsSearchQueryDelegate;
 
 // A single search query to DriveFS.
 // Destroy this class to stop any searches.
-//
-// Currently only used by `DriveFsSearch`.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSearchQuery {
  public:
   DriveFsSearchQuery(base::WeakPtr<DriveFsSearchQueryDelegate> delegate,
