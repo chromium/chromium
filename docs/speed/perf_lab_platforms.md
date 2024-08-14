@@ -12,9 +12,6 @@
  * [android-go-wembley_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-go-wembley_webview-perf): Android U.
  * [android-pixel-fold-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel-fold-perf): Android U.
  * [android-pixel-tangor-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel-tangor-perf): Android U.
- * [android-pixel2-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2-perf): Android OPM1.171019.021.
- * [android-pixel2-perf-calibration](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2-perf-calibration): Android OPM1.171019.021.
- * [android-pixel2_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2_webview-perf): Android OPM1.171019.021.
  * [android-pixel4-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4-perf): Android R.
  * [android-pixel4_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4_webview-perf): Android R.
  * [android-pixel6-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-perf): Android T.
@@ -58,8 +55,6 @@
  * android-new-pixel-perf-pgo: Android T.
  * android-new-pixel-pro-perf: Android T.
  * android-new-pixel-pro-perf-pgo: Android T.
- * android-pixel2-perf-pgo: Android OPM1.171019.021.
- * android-pixel2_webview-perf-pgo: Android OPM1.171019.021.
  * android-pixel4-perf-pgo: Android R.
  * android-pixel6-pro-perf-pgo: Android T.
 
@@ -81,10 +76,6 @@
  * win-11-perf-pgo: Windows Dell PowerEdge R350.
 
 ## FYI Platforms
-
-### Android
-
- * [android-pixel2-perf-fyi](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2-perf-fyi): Android OPM1.171019.021.
 
 ### Chromeos
 

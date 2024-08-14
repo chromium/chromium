@@ -111,7 +111,6 @@
     },
 
     'chromium.perf.calibration': {
-      'android-pixel2-perf-calibration': 'official_minimal_symbols_android_arm64',
       'linux-perf-calibration': 'official_linux_perf',
     },
 
