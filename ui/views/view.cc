@@ -644,7 +644,6 @@ void View::SetVisible(bool visible) {
     // of its descendants.
     GetViewAccessibility().UpdateFocusableStateRecursive();
     GetViewAccessibility().UpdateInvisibleState();
-    AdvanceFocusIfNecessary();
 
     AdvanceFocusIfNecessary();
 
