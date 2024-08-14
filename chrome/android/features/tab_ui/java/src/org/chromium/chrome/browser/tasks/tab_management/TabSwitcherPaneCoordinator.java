@@ -37,6 +37,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.invitation_dialog.DataSharingInvitationDialogCoordinator;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -147,6 +148,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param scrimCoordinator The scrim coordinator to use for the tab grid dialog.
      * @param modalDialogManager The modal dialog manager for the activity.
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
+     * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
+     *     UI and DataSharing services.
      * @param messageManager The {@link TabSwitcherMessageManager} for the message service.
      * @param parentView The view to use as a parent.
      * @param resetHandler The tab list reset handler for the pane.
@@ -169,6 +172,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull BottomSheetController bottomSheetController,
+            @NonNull DataSharingTabManager dataSharingTabManager,
             @NonNull TabSwitcherMessageManager messageManager,
             @NonNull ViewGroup parentView,
             @NonNull TabSwitcherResetHandler resetHandler,
@@ -217,6 +221,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                 activity,
                                                 browserControlsStateProvider,
                                                 bottomSheetController,
+                                                dataSharingTabManager,
                                                 tabModelFilterSupplier,
                                                 tabContentManager,
                                                 tabCreatorManager,

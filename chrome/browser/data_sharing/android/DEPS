@@ -1,0 +1,4 @@
+include_rules = [
+  "+chrome/android/features/tab_ui",
+  "+components/browser_ui/share",
+]

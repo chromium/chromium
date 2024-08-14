@@ -20,9 +20,12 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.ParseURLStatus;
@@ -30,6 +33,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Unit test for {@link DataSharingTabManager} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -45,6 +49,9 @@ public class DataSharingTabManagerUnitTest {
     @Mock private DataSharingService mDataSharingService;
     @Mock private DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
     @Mock private Profile mProfile;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
+    @Mock private WindowAndroid mWindowAndroid;
 
     private DataSharingTabManager mDataSharingTabManager;
     private SavedTabGroup mSavedTabGroup;
@@ -54,8 +61,15 @@ public class DataSharingTabManagerUnitTest {
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         ObservableSupplier<Profile> profileSupplier = new ObservableSupplierImpl<Profile>(mProfile);
+        Supplier<BottomSheetController> bottomSheetControllerSupplier =
+                new ObservableSupplierImpl<BottomSheetController>(mBottomSheetController);
         mDataSharingTabManager =
-                new DataSharingTabManager(mDataSharingTabSwitcherDelegate, profileSupplier);
+                new DataSharingTabManager(
+                        mDataSharingTabSwitcherDelegate,
+                        profileSupplier,
+                        bottomSheetControllerSupplier,
+                        mShareDelegateSupplier,
+                        mWindowAndroid);
 
         mSavedTabGroup = new SavedTabGroup();
         mSavedTabGroup.collaborationId = GROUP_ID;
@@ -75,6 +89,7 @@ public class DataSharingTabManagerUnitTest {
 
     @Test
     public void testInviteFlowWithExistingTabGroup() {
+        doReturn(mProfile).when(mProfile).getOriginalProfile();
         doReturn(
                         new DataSharingService.ParseURLResult(
                                 new GroupToken(GROUP_ID, "accessToken"), ParseURLStatus.SUCCESS))
@@ -92,6 +107,7 @@ public class DataSharingTabManagerUnitTest {
 
     @Test
     public void testInviteFlowWithNewTabGroup() {
+        doReturn(mProfile).when(mProfile).getOriginalProfile();
         doReturn(
                         new DataSharingService.ParseURLResult(
                                 new GroupToken(GROUP_ID, ACCESS_TOKEN), ParseURLStatus.SUCCESS))

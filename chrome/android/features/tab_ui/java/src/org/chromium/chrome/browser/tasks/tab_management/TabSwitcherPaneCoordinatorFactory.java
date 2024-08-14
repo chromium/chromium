@@ -17,6 +17,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -55,6 +56,7 @@ public class TabSwitcherPaneCoordinatorFactory {
     private final ModalDialogManager mModalDialogManager;
     private final @TabListMode int mMode;
     private final @NonNull BottomSheetController mBottomSheetController;
+    private final DataSharingTabManager mDataSharingTabManager;
     private final @NonNull BackPressManager mBackPressManager;
 
     private @Nullable TabSwitcherMessageManager mMessageManager;
@@ -73,6 +75,8 @@ public class TabSwitcherPaneCoordinatorFactory {
      * @param snackbarManager The activity level snackbar manager.
      * @param modalDialogManager The modal dialog manager for the activity.
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
+     * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
+     *     UI and DataSharing services.
      * @param backPressManager Manages the different back press handlers throughout the app.
      */
     TabSwitcherPaneCoordinatorFactory(
@@ -88,6 +92,7 @@ public class TabSwitcherPaneCoordinatorFactory {
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull BottomSheetController bottomSheetController,
+            @NonNull DataSharingTabManager dataSharingTabManager,
             @NonNull BackPressManager backPressManager) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;
@@ -104,6 +109,7 @@ public class TabSwitcherPaneCoordinatorFactory {
         mSnackbarManager = snackbarManager;
         mModalDialogManager = modalDialogManager;
         mBottomSheetController = bottomSheetController;
+        mDataSharingTabManager = dataSharingTabManager;
         mMode =
                 TabUiFeatureUtilities.shouldUseListMode()
                         ? TabListCoordinator.TabListMode.LIST
@@ -146,6 +152,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                 mScrimCoordinator,
                 mModalDialogManager,
                 mBottomSheetController,
+                mDataSharingTabManager,
                 mMessageManager,
                 parentView,
                 resetHandler,

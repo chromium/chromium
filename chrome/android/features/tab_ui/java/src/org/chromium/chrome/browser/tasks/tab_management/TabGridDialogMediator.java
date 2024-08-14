@@ -28,8 +28,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
-import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -61,12 +62,11 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -174,13 +174,11 @@ public class TabGridDialogMediator
     private final AnimationSourceViewProvider mAnimationSourceViewProvider;
     private final DialogHandler mTabGridDialogHandler;
     private final Runnable mScrimClickRunnable;
-    private final Runnable mShowShareBottomSheetRunnable;
     private final @Nullable SnackbarManager mSnackbarManager;
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private final String mComponentName;
     private final @NonNull BottomSheetController mBottomSheetController;
     private final Runnable mShowColorPickerPopupRunnable;
-    private final Runnable mShowInviteFlowUIRunnable;
     private final ActionConfirmationManager mActionConfirmationManager;
 
     private TabGridDialogMenuCoordinator mTabGridDialogMenuCoordinator;
@@ -192,6 +190,7 @@ public class TabGridDialogMediator
     private boolean mIsUpdatingTitle;
     private String mCurrentGroupModifiedTitle;
     private @Nullable CollaborationActivityMessageCardViewModel mCollaborationActivityPropertyModel;
+    private DataSharingTabManager mDataSharingTabManager;
 
     TabGridDialogMediator(
             Activity activity,
@@ -205,10 +204,9 @@ public class TabGridDialogMediator
             @Nullable SnackbarManager snackbarManager,
             @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator,
             @NonNull BottomSheetController bottomSheetController,
-            Runnable showShareBottomSheetRunnable,
+            @NonNull DataSharingTabManager dataSharingTabManager,
             String componentName,
             Runnable showColorPickerPopupRunnable,
-            Runnable showInviteFlowUIRunnable,
             @Nullable ActionConfirmationManager actionConfirmationManager) {
         mModel = model;
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
@@ -223,11 +221,9 @@ public class TabGridDialogMediator
         mActivity = activity;
         mSharedImageTilesCoordinator = sharedImageTilesCoordinator;
         mBottomSheetController = bottomSheetController;
-        mShowShareBottomSheetRunnable = showShareBottomSheetRunnable;
         mShowColorPickerPopupRunnable = showColorPickerPopupRunnable;
-        mShowInviteFlowUIRunnable = showInviteFlowUIRunnable;
         mActionConfirmationManager = actionConfirmationManager;
-
+        mDataSharingTabManager = dataSharingTabManager;
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
@@ -370,8 +366,10 @@ public class TabGridDialogMediator
                                                 Snackbar.TYPE_ACTION,
                                                 Snackbar.UMA_TAB_CLOSE_UNDO)
                                         .setTemplateText(
-                                                mActivity.getString(R.string.undo_bar_close_message))
-                                        .setAction(mActivity.getString(R.string.undo), tab.getId()));
+                                                mActivity.getString(
+                                                        R.string.undo_bar_close_message))
+                                        .setAction(
+                                                mActivity.getString(R.string.undo), tab.getId()));
                     }
 
                     private void dismissMultipleTabSnackbar(List<Tab> tabs) {
@@ -922,41 +920,42 @@ public class TabGridDialogMediator
 
     private View.OnClickListener getShareBarClickListener() {
         return view -> {
-            // TODO(b/325082444): Ask data sharing service about if the tab group is shared.
-            mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
-            // TODO(crbug.com/348731400): Trigger this when IS_TAB_GROUP_SHARED becomes true then
-            // observe for changes to any of the tab count events we care about.
-            showOrUpdateCollaborationActivityMessageCard();
-            showShareBottomSheet();
-
-            // TODO(b/325082444): This is used for prototyping purposes for now, should be removed
-            // and called from Data Sharing service.
-            new DataSharingNotificationManager(mActivity)
-                    .showNotification(
-                            mActivity
-                                    .getResources()
-                                    .getString(R.string.data_sharing_origin_fallback));
+            handleShareClick();
         };
     }
 
-    private void showShareBottomSheet() {
-        mShowShareBottomSheetRunnable.run();
+    private void handleShareClick() {
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID);
+
         mModel.set(TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE, true);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
-            mShowInviteFlowUIRunnable.run();
-        }
+        String tabGroupDisplayName = mModel.get(TabGridDialogProperties.HEADER_TITLE);
 
-        mBottomSheetController.addObserver(
-                new EmptyBottomSheetObserver() {
-                    @Override
-                    public void onSheetClosed(@StateChangeReason int reason) {
-                        // TODO(haileywang): Refresh data sharing service data after sheet
-                        // submission.
-                        mModel.set(TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE, false);
-                        mBottomSheetController.removeObserver(this);
+        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+        Tab tab = filter.getTabModel().getTabById(mCurrentTabId);
+        LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
+
+        mDataSharingTabManager.createGroupFlow(
+                mActivity,
+                tabGroupDisplayName,
+                localTabGroupId,
+                (groupCreated) -> {
+                    mModel.set(TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE, false);
+                    if (groupCreated) {
+                        // TODO(b/325082444): Ask data sharing service about if the tab group is
+                        // shared.
+                        setIsTabGroupShared(/* isTabGroupShared= */ true);
                     }
                 });
+    }
+
+    private void setIsTabGroupShared(boolean isTabGroupShared) {
+        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, isTabGroupShared);
+        if (isTabGroupShared) {
+            showOrUpdateCollaborationActivityMessageCard();
+        } else {
+            removeCollaborationActivityMessageCard();
+        }
     }
 
     private List<Tab> getRelatedTabs(int tabId) {

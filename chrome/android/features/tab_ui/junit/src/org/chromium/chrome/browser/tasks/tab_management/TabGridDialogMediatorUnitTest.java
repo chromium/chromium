@@ -58,6 +58,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -144,9 +145,8 @@ public class TabGridDialogMediatorUnitTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private Runnable mShowShareBottomSheetRunnable;
+    @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private Runnable mShowColorPickerPopupRunnable;
-    @Mock private Runnable mShowInviteFlowUIRunnable;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
@@ -227,10 +227,9 @@ public class TabGridDialogMediatorUnitTest {
                         mSnackbarManager,
                         /* SharedImageTilesCoordinator= */ null,
                         mBottomSheetController,
-                        mShowShareBottomSheetRunnable,
+                        mDataSharingTabManager,
                         /* componentName= */ "",
                         mShowColorPickerPopupRunnable,
-                        mShowInviteFlowUIRunnable,
                         mActionConfirmationManager);
 
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
@@ -832,10 +831,9 @@ public class TabGridDialogMediatorUnitTest {
                         mSnackbarManager,
                         /* SharedImageTilesCoordinator= */ null,
                         mBottomSheetController,
-                        mShowShareBottomSheetRunnable,
+                        mDataSharingTabManager,
                         /* componentName= */ "",
                         mShowColorPickerPopupRunnable,
-                        mShowInviteFlowUIRunnable,
                         mActionConfirmationManager);
 
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
@@ -1256,10 +1254,9 @@ public class TabGridDialogMediatorUnitTest {
                         mSnackbarManager,
                         /* SharedImageTilesCoordinator= */ null,
                         mBottomSheetController,
-                        mShowShareBottomSheetRunnable,
+                        mDataSharingTabManager,
                         /* componentName= */ "",
                         mShowColorPickerPopupRunnable,
-                        mShowInviteFlowUIRunnable,
                         mActionConfirmationManager);
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
 
@@ -1311,10 +1308,9 @@ public class TabGridDialogMediatorUnitTest {
                         mSnackbarManager,
                         /* SharedImageTilesCoordinator= */ null,
                         mBottomSheetController,
-                        mShowShareBottomSheetRunnable,
+                        mDataSharingTabManager,
                         /* componentName= */ "",
                         mShowColorPickerPopupRunnable,
-                        mShowInviteFlowUIRunnable,
                         mActionConfirmationManager);
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
         // Mock that the dialog is hidden and animation source view, header title and scrim click
@@ -1361,10 +1357,9 @@ public class TabGridDialogMediatorUnitTest {
                         mSnackbarManager,
                         /* SharedImageTilesCoordinator= */ null,
                         mBottomSheetController,
-                        mShowShareBottomSheetRunnable,
+                        mDataSharingTabManager,
                         /* componentName= */ "",
                         mShowColorPickerPopupRunnable,
-                        mShowInviteFlowUIRunnable,
                         mActionConfirmationManager);
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
         // Mock that the dialog is hidden and animation source view is set to some mock view for

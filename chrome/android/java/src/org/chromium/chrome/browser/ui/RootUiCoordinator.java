@@ -536,7 +536,12 @@ public class RootUiCoordinator
                 };
 
         mDataSharingTabManager =
-                new DataSharingTabManager(mDataSharingTabSwitcherDelegate, mProfileSupplier);
+                new DataSharingTabManager(
+                        mDataSharingTabSwitcherDelegate,
+                        mProfileSupplier,
+                        this::getBottomSheetController,
+                        mShareDelegateSupplier,
+                        mWindowAndroid);
 
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
         mTopUiThemeColorProvider =
@@ -1612,6 +1617,7 @@ public class RootUiCoordinator
                             mAppMenuDelegate,
                             mActivityLifecycleDispatcher,
                             mBottomSheetController,
+                            mDataSharingTabManager,
                             mTabContentManagerSupplier.get(),
                             mTabCreatorManagerSupplier.get(),
                             mSnackbarManagerSupplier.get(),

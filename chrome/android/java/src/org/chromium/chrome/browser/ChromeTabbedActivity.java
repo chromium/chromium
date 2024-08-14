@@ -901,6 +901,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 getSnackbarManager(),
                                 getModalDialogManager(),
                                 mRootUiCoordinator.getBottomSheetController(),
+                                mRootUiCoordinator.getDataSharingTabManager(),
                                 mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
                                 mNewTabButtonClickListener,
                                 isIncognito,
