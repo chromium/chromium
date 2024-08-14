@@ -168,10 +168,8 @@ TEST_F(AmbientPhotoCacheTest, AttachTokenToDownloadRequest) {
   auto* pending_requests = test_url_loader_factory().pending_requests();
   EXPECT_EQ(pending_requests->size(), std::size_t{1});
   EXPECT_EQ(pending_requests->at(0).request.url, fake_url);
-  std::string header;
-  pending_requests->at(0).request.headers.GetHeader("Authorization", &header);
 
-  EXPECT_EQ(header,
+  EXPECT_EQ(pending_requests->at(0).request.headers.GetHeader("Authorization"),
             std::string("Bearer ") + TestAmbientClient::kTestAccessToken);
 }
 
@@ -190,10 +188,8 @@ TEST_F(AmbientPhotoCacheTest, AttachTokenToDownloadToTempFileRequest) {
   auto* pending_requests = test_url_loader_factory().pending_requests();
   EXPECT_EQ(pending_requests->size(), std::size_t{1});
   EXPECT_EQ(pending_requests->at(0).request.url, fake_url);
-  std::string header;
-  pending_requests->at(0).request.headers.GetHeader("Authorization", &header);
 
-  EXPECT_EQ(header,
+  EXPECT_EQ(pending_requests->at(0).request.headers.GetHeader("Authorization"),
             std::string("Bearer ") + TestAmbientClient::kTestAccessToken);
 }
 
