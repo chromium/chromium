@@ -12,6 +12,29 @@
 
 namespace plus_addresses {
 
+// Possible states of parsing the response body when a fetch completes in
+// `PlusAddressBlocklistData`.
+//
+// Needs to be kept in sync with `PlusAddressBlocklistDataParsingResult` in
+// tools/metrics/histograms/metadata/plus_addresses/enums.xml.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PlusAddressBlocklistDataParsingResult {
+  // The response body was empty.
+  kEmptyResponse = 0,
+
+  // The response body could not be parsed as
+  // `CompactPlusAddressBlockedFacets`
+  // proto message.
+  kParsingError = 1,
+
+  // Parsing was successful.
+  kSuccess = 2,
+
+  kMaxValue = kSuccess
+};
+
 // This holds the set of patterns that define the set of facets for which Plus
 // Addresses should not be offered. The data to populate it is read from the
 // Component Updater, which fetches it periodically from Google to get the

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "components/plus_addresses/blocked_facets.pb.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -13,6 +14,8 @@
 namespace plus_addresses {
 
 namespace {
+
+constexpr char kUmaKeyParsingResult[] = "PlusAddresses.Blocklist.ParsingResult";
 
 std::unique_ptr<re2::RE2> ConstructRegex(std::string pattern) {
   if (pattern.empty()) {
@@ -38,19 +41,25 @@ bool PlusAddressBlocklistData::PopulateDataFromComponent(
     const std::string& binary_pb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (binary_pb.empty()) {
-    // TODO(crbug.com/324556906): Emit parsing metrics.
+    base::UmaHistogramEnumeration(
+        kUmaKeyParsingResult,
+        PlusAddressBlocklistDataParsingResult::kEmptyResponse);
     return false;
   }
 
   CompactPlusAddressBlockedFacets blocked_facets;
   if (!blocked_facets.ParseFromString(binary_pb)) {
-    // TODO(crbug.com/324556906): Emit parsing metrics.
+    base::UmaHistogramEnumeration(
+        kUmaKeyParsingResult,
+        PlusAddressBlocklistDataParsingResult::kParsingError);
     return false;
   }
 
   exclusion_pattern_ = ConstructRegex(blocked_facets.exclusion_pattern());
   exception_pattern_ = ConstructRegex(blocked_facets.exception_pattern());
 
+  base::UmaHistogramEnumeration(
+      kUmaKeyParsingResult, PlusAddressBlocklistDataParsingResult::kSuccess);
   return true;
 }
 
