@@ -1186,7 +1186,9 @@ class BaseActionSanitizer():
         files = self.target.sources.union(self.target.inputs)
         tool_files = {
             gn_utils.label_to_path(file)
-            for file in files if not is_supported_source_file(file)
+            for file in files
+            if not is_supported_source_file(file)
+            and not file.startswith("//out/")
         }
         tool_files.add(gn_utils.label_to_path(self.target.script))
         return tool_files
