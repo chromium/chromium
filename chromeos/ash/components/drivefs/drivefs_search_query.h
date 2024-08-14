@@ -32,12 +32,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSearchQuery {
 
   mojom::QueryParameters::QuerySource source();
 
-  // The supplied callback may not be called if the remote is not bound, or the
-  // remote is disconnected.
-  // Use
-  //     mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-  //         callback, drive::FILE_ERROR_ABORT, std::nullopt)
-  // to ensure it is always called.
+  // `callback` is guaranteed to be eventually called. If the remote is
+  // disconnected / unbound, it will be called with
+  // `{drive::FILE_ERROR_ABORT, std::nullopt}`.
   void GetNextPage(mojom::SearchQuery::GetNextPageCallback callback);
 
  private:

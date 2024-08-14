@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/drivefs/drivefs_search_query_delegate.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace drivefs {
@@ -72,9 +73,12 @@ void DriveFsSearchQuery::GetNextPage(
   // `remote_` might not be bound if `delegate_` was null when `Init()` was
   // called.
   if (remote_.is_bound()) {
-    remote_->GetNextPage(base::BindOnce(&DriveFsSearchQuery::OnGetNextPage,
-                                        weak_ptr_factory_.GetWeakPtr(),
-                                        std::move(callback)));
+    remote_->GetNextPage(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+        base::BindOnce(&DriveFsSearchQuery::OnGetNextPage,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+        drive::FILE_ERROR_ABORT, std::nullopt));
+  } else {
+    OnGetNextPage(std::move(callback), drive::FILE_ERROR_ABORT, std::nullopt);
   }
 }
 

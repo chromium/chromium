@@ -325,11 +325,9 @@ void DriveRecentFileSuggestionProvider::PerformSearch(
     base::RepeatingClosure callback) {
   drive_service->GetDriveFsHost()->PerformSearch(
       std::move(query),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(
-              &DriveRecentFileSuggestionProvider::OnSearchRequestComplete,
-              weak_factory_.GetWeakPtr(), search_type, std::move(callback)),
-          drive::FileError::FILE_ERROR_ABORT, /*items=*/std::nullopt));
+      base::BindOnce(
+          &DriveRecentFileSuggestionProvider::OnSearchRequestComplete,
+          weak_factory_.GetWeakPtr(), search_type, std::move(callback)));
 }
 
 void DriveRecentFileSuggestionProvider::MaybeUpdateItemSuggestCache(

@@ -7,7 +7,9 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
+#include "base/check.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
@@ -25,7 +27,8 @@
 namespace drivefs {
 namespace {
 
-using testing::_;
+using ::testing::_;
+using ::testing::FieldsAre;
 
 class MockMojomQuery : public mojom::SearchQuery {
  public:
@@ -407,6 +410,33 @@ TEST_F(DriveFsSearchTest, Search_NoErrorCaching) {
                                    PopulateSearch(3));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(called);
+}
+
+TEST_F(DriveFsSearchTest, Search_SearchQueryRemoteDisconnected) {
+  DriveFsSearch search(&mock_drivefs_, network_connection_tracker_.get(),
+                       &clock_);
+
+  auto mojom_query = std::make_unique<MockMojomQuery>();
+  EXPECT_CALL(mock_drivefs_, StartSearchQuery)
+      .WillOnce([&](mojo::PendingReceiver<mojom::SearchQuery> query,
+                    mojom::QueryParametersPtr query_params) {
+        CHECK(mojom_query);
+        mojom_query->Bind(std::move(query));
+      });
+
+  mojom::QueryParametersPtr params = mojom::QueryParameters::New();
+  params->query_source = mojom::QueryParameters::QuerySource::kCloudOnly;
+
+  base::test::TestFuture<drive::FileError,
+                         std::optional<std::vector<mojom::QueryItemPtr>>>
+      next_page_future;
+  mojom::QueryParameters::QuerySource source =
+      search.PerformSearch(std::move(params), next_page_future.GetCallback());
+  EXPECT_EQ(mojom::QueryParameters::QuerySource::kCloudOnly, source);
+  mojom_query.reset();
+
+  EXPECT_THAT(next_page_future.Take(),
+              FieldsAre(drive::FileError::FILE_ERROR_ABORT, _));
 }
 
 }  // namespace drivefs

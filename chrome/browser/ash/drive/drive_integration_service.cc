@@ -1377,11 +1377,7 @@ void DriveIntegrationService::GetQuickAccessItems(
       base::BindOnce(&DriveIntegrationService::OnGetQuickAccessItems,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
-  GetDriveFsHost()->PerformSearch(
-      std::move(query),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          std::move(on_response), FILE_ERROR_ABORT,
-          std::optional<std::vector<drivefs::mojom::QueryItemPtr>>()));
+  GetDriveFsHost()->PerformSearch(std::move(query), std::move(on_response));
 }
 
 void DriveIntegrationService::OnGetQuickAccessItems(
@@ -1420,11 +1416,7 @@ void DriveIntegrationService::SearchDriveByFileName(
   drive_query->sort_direction = sort_direction;
   drive_query->query_source = query_source;
 
-  GetDriveFsHost()->PerformSearch(
-      std::move(drive_query),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          std::move(callback), FILE_ERROR_ABORT,
-          std::optional<std::vector<drivefs::mojom::QueryItemPtr>>()));
+  GetDriveFsHost()->PerformSearch(std::move(drive_query), std::move(callback));
 }
 
 void DriveIntegrationService::OnEnableMirroringStatusUpdate(
