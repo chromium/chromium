@@ -1201,8 +1201,7 @@ INSTANTIATE_TEST_SUITE_P(
             .has_selection_action = PickerActionType::kInsert,
         },
         {
-            .result =
-                PickerSearchResult::Category(PickerCategory::kExpressions),
+            .result = PickerSearchResult::Category(PickerCategory::kEmojisGifs),
             .unfocused_action = PickerActionType::kDo,
             .no_selection_action = PickerActionType::kDo,
             .has_selection_action = PickerActionType::kDo,

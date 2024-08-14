@@ -40,7 +40,7 @@ TEST(PickerModel, AvailableCategoriesWithNoSelectedTextHasCorrectOrdering) {
   EXPECT_THAT(
       model.GetAvailableCategories(),
       ElementsAre(PickerCategory::kEditorWrite, PickerCategory::kLinks,
-                  PickerCategory::kExpressions, PickerCategory::kClipboard,
+                  PickerCategory::kEmojisGifs, PickerCategory::kClipboard,
                   PickerCategory::kDriveFiles, PickerCategory::kLocalFiles,
                   PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths));
 }
@@ -94,7 +94,7 @@ TEST(PickerModel, AvailableCategoriesDoesNotContainExpressionsForUrlFields) {
   PickerModel model(&client, &fake_ime_keyboard,
                     PickerModel::EditorStatus::kEnabled);
   EXPECT_THAT(model.GetAvailableCategories(),
-              Not(Contains(PickerCategory::kExpressions)));
+              Not(Contains(PickerCategory::kEmojisGifs)));
 }
 
 TEST(PickerModel, AvailableCategoriesOmitsEditorRewriteWhenDisabled) {

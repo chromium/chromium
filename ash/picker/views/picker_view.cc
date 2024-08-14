@@ -243,7 +243,7 @@ std::u16string GetNoResultsFoundDescription(PickerCategory category) {
       return l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT);
     case PickerCategory::kEditorWrite:
     case PickerCategory::kEditorRewrite:
-    case PickerCategory::kExpressions:
+    case PickerCategory::kEmojisGifs:
       NOTREACHED_NORETURN();
   }
 }
@@ -292,7 +292,7 @@ PickerView::PickerView(PickerViewDelegate* delegate,
 
   AddMainContainerView(layout_type);
   if (base::Contains(delegate_->GetAvailableCategories(),
-                     PickerCategory::kExpressions)) {
+                     PickerCategory::kEmojisGifs)) {
     AddEmojiBarView();
   }
 
@@ -440,7 +440,7 @@ void PickerView::SelectMoreResults(PickerSectionType type) {
 
 void PickerView::ShowEmojiPicker(ui::EmojiPickerCategory category) {
   PickerSessionMetrics& session_metrics = delegate_->GetSessionMetrics();
-  session_metrics.SetSelectedCategory(PickerCategory::kExpressions);
+  session_metrics.SetSelectedCategory(PickerCategory::kEmojisGifs);
 
   if (auto* widget = GetWidget()) {
     widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
@@ -684,7 +684,7 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
   session_metrics.SetSelectedCategory(category);
   selected_category_ = category;
 
-  if (category == PickerCategory::kExpressions) {
+  if (category == PickerCategory::kEmojisGifs) {
     if (auto* widget = GetWidget()) {
       // TODO(b/316936394): Correctly handle opening of emoji picker. Probably
       // best to wait for the IME on focus event, or save some coordinates and

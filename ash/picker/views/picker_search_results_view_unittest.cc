@@ -154,7 +154,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithCategories) {
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kNone,
-      {{PickerSearchResult::Category(PickerCategory::kExpressions)}},
+      {{PickerSearchResult::Category(PickerCategory::kEmojisGifs)}},
       /*has_more_results=*/false));
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(1));
@@ -689,8 +689,7 @@ INSTANTIATE_TEST_SUITE_P(
     PickerSearchResultsViewResultSelectionTest,
     testing::ValuesIn<PickerSearchResultTestCase>({
         {"Text", PickerSearchResult::Text(u"result")},
-        {"Category",
-         PickerSearchResult::Category(PickerCategory::kExpressions)},
+        {"Category", PickerSearchResult::Category(PickerCategory::kEmojisGifs)},
         {"LocalFile",
          PickerSearchResult::LocalFile(u"local", base::FilePath())},
         {"DriveFile", PickerSearchResult::DriveFile(std::nullopt,

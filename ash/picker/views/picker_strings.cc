@@ -37,7 +37,7 @@ std::u16string GetLabelForPickerCategory(PickerCategory category) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case PickerCategory::kLinks:
       return l10n_util::GetStringUTF16(IDS_PICKER_LINKS_CATEGORY_LABEL);
-    case PickerCategory::kExpressions:
+    case PickerCategory::kEmojisGifs:
       return l10n_util::GetStringUTF16(IDS_PICKER_EXPRESSIONS_CATEGORY_LABEL);
     case PickerCategory::kClipboard:
       return l10n_util::GetStringUTF16(IDS_PICKER_CLIPBOARD_CATEGORY_LABEL);
@@ -75,7 +75,7 @@ std::u16string GetSearchFieldPlaceholderTextForPickerCategory(
           IDS_PICKER_UNITS_MATHS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
     case PickerCategory::kEditorWrite:
     case PickerCategory::kEditorRewrite:
-    case PickerCategory::kExpressions:
+    case PickerCategory::kEmojisGifs:
       NOTREACHED_NORETURN();
   }
 }

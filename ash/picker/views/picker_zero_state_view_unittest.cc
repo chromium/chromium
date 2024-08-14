@@ -76,7 +76,7 @@ constexpr base::span<const PickerCategory> kAllCategories = {(PickerCategory[]){
     PickerCategory::kEditorWrite,
     PickerCategory::kEditorRewrite,
     PickerCategory::kLinks,
-    PickerCategory::kExpressions,
+    PickerCategory::kEmojisGifs,
     PickerCategory::kClipboard,
     PickerCategory::kDriveFiles,
     PickerCategory::kLocalFiles,
@@ -138,7 +138,7 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
   widget->SetFullscreen(true);
   MockZeroStateViewDelegate mock_delegate;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      &mock_delegate, std::vector<PickerCategory>{PickerCategory::kExpressions},
+      &mock_delegate, std::vector<PickerCategory>{PickerCategory::kEmojisGifs},
       kPickerWidth, &asset_fetcher_, &submenu_controller_,
       &preview_controller_));
   widget->Show();
@@ -150,7 +150,7 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
               Not(IsEmpty()));
 
   EXPECT_CALL(mock_delegate,
-              SelectZeroStateCategory(PickerCategory::kExpressions))
+              SelectZeroStateCategory(PickerCategory::kEmojisGifs))
       .Times(1);
 
   PickerItemView* category_view = view->category_section_views_for_testing()
