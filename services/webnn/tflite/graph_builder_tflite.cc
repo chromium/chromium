@@ -56,6 +56,11 @@ struct TensorTypeMap<uint32_t> {
   static constexpr ::tflite::TensorType value =
       ::tflite::TensorType::TensorType_UINT32;
 };
+template <>
+struct TensorTypeMap<int64_t> {
+  static constexpr ::tflite::TensorType value =
+      ::tflite::TensorType::TensorType_INT64;
+};
 
 static constexpr auto kFloatDataTypes = base::MakeFixedFlatSet<OperandDataType>(
     {OperandDataType::kFloat16, OperandDataType::kFloat32});
@@ -245,6 +250,41 @@ std::vector<uint32_t> GetIndexOfSortedValue(base::span<const uint32_t> axes) {
   base::ranges::sort(sorted_indices, base::ranges::less(),
                      [axes](uint32_t index) { return axes[index]; });
   return sorted_indices;
+}
+
+// An element in row `i` and column `j` of a matrix is in the upper-triangular
+// portion if `j >= i + diagonal`. It is in the lower-triangular portion if
+// `j <= i + diagonal`.
+//
+// This function generates an upper-triangular or lower-triangular matrix
+// with the given mask value. For example, the matrices below are the upper-
+// and lower-triangular [3, 3] tensors with a mask value of 1:
+// [ 1, 1, 1                    [ 1, 0, 0
+//   0, 1, 1,                     1, 1, 0,
+//   0, 0, 1]                     1, 1, 1]
+template <typename DataType>
+std::vector<DataType> FillMaskTriangular(base::span<const int32_t> dimensions,
+                                         bool upper,
+                                         int32_t diagonal,
+                                         DataType mask) {
+  CHECK_EQ(dimensions.size(), 2u);
+  const int32_t height = dimensions[0];
+  const int32_t width = dimensions[1];
+  std::vector<DataType> filled_matrix(height * width);
+  for (int32_t i = 0; i < height; ++i) {
+    for (int32_t j = 0; j < width; ++j) {
+      // `i + diagonal` has been validated to not overflow by the caller.
+      bool fill_mask_value = upper ? j >= i + diagonal : j <= i + diagonal;
+      if (fill_mask_value) {
+        // Get the index in the flat array with the location.
+        int32_t index = (i * width) + j;
+        CHECK_LT(base::checked_cast<size_t>(index), filled_matrix.size());
+        filled_matrix[index] = mask;
+      }
+    }
+  }
+
+  return filled_matrix;
 }
 
 }  // namespace
@@ -551,11 +591,14 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
     case mojom::Operation::Tag::kTranspose:
       operator_offset = SerializeTranspose(*op.get_transpose());
       break;
+    case mojom::Operation::Tag::kTriangular: {
+      ASSIGN_OR_RETURN(operator_offset,
+                       SerializeTriangular(*op.get_triangular()));
+      break;
+    }
     case mojom::Operation::Tag::kWhere:
       operator_offset = SerializeWhere(*op.get_where());
       break;
-    case mojom::Operation::Tag::kTriangular:
-      return base::unexpected(NotSupportedOperatorError(op));
   }
   operators_.emplace_back(operator_offset);
 
@@ -3933,6 +3976,74 @@ auto GraphBuilderTflite::SerializeTanh(const mojom::Tanh& tanh)
       ::tflite::BuiltinOperator_TANH,
       operand_to_index_map_.at(tanh.input_operand_id),
       operand_to_index_map_.at(tanh.output_operand_id));
+}
+
+auto GraphBuilderTflite::SerializeTriangular(
+    const mojom::Triangular& triangular)
+    -> base::expected<OperatorOffset, std::string> {
+  const mojom::Operand& input_operand = GetOperand(triangular.input_operand_id);
+  // The input shape has been validated to not overflow before creating tensor.
+  const auto signed_input_dimensions =
+      ToSignedDimensions(input_operand.descriptor.shape());
+  CHECK(signed_input_dimensions.has_value());
+  auto input_rank = signed_input_dimensions->size();
+  CHECK_GE(input_rank, 2u);
+  const int32_t height = (*signed_input_dimensions)[input_rank - 2];
+  const int32_t width = (*signed_input_dimensions)[input_rank - 1];
+  const std::array<int32_t, 2> mask_dimensions = {height, width};
+  auto checked_diagonal = base::MakeCheckedNum<int32_t>(triangular.diagonal) +
+                          std::max(height, width);
+  if (!checked_diagonal.IsValid()) {
+    return base::unexpected("The diagonal is too large.");
+  }
+
+  // Mask the input with an element-wise multiplication. For example:
+  // [ 2, 3                           [0, 0,           [0, 0,
+  //   4, 5,   element-wise mul        1, 0,      =>    4, 0,
+  //   6, 7]                           1, 1]            6, 7]
+  //
+  // TODO(crbug.com/359729258): Save GPU memory consumption.
+  int32_t mask_tensor_index;
+  OperandDataType data_type = input_operand.descriptor.data_type();
+  switch (data_type) {
+    case OperandDataType::kFloat32:
+      mask_tensor_index = SerializeTensorWithBuffer<float>(
+          /*buffer=*/FillMaskTriangular<float>(
+              mask_dimensions, triangular.upper, triangular.diagonal, 1.0),
+          /*dimensions=*/mask_dimensions);
+      break;
+    case OperandDataType::kInt32:
+      mask_tensor_index = SerializeTensorWithBuffer<int32_t>(
+          /*buffer=*/FillMaskTriangular<int32_t>(
+              mask_dimensions, triangular.upper, triangular.diagonal, 1),
+          /*dimensions=*/mask_dimensions);
+      break;
+    case OperandDataType::kUint32:
+      mask_tensor_index = SerializeTensorWithBuffer<uint32_t>(
+          /*buffer=*/FillMaskTriangular<uint32_t>(
+              mask_dimensions, triangular.upper, triangular.diagonal, 1u),
+          /*dimensions=*/mask_dimensions);
+      break;
+    case OperandDataType::kInt64:
+      mask_tensor_index = SerializeTensorWithBuffer<int64_t>(
+          /*buffer=*/FillMaskTriangular<int64_t>(
+              mask_dimensions, triangular.upper, triangular.diagonal, 1),
+          /*dimensions=*/mask_dimensions);
+      break;
+    case OperandDataType::kInt8:
+    case OperandDataType::kUint8:
+    case OperandDataType::kFloat16:
+    case OperandDataType::kUint64:
+      // TODO(crbug.com/359758892): Add the unsupported data types in
+      // opSupportLimits.
+      return base::unexpected(base::StrCat(
+          {DataTypeToString(data_type), " is not supported for triangular."}));
+  }
+
+  return SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_MUL,
+      operand_to_index_map_.at(triangular.input_operand_id), mask_tensor_index,
+      operand_to_index_map_.at(triangular.output_operand_id));
 }
 
 auto GraphBuilderTflite::SerializeTranspose(const mojom::Transpose& transpose)

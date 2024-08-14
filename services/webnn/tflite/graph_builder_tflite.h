@@ -35,7 +35,7 @@ namespace internal {
 template <typename T, typename... U>
 concept IsAnyOf = (std::same_as<T, U> || ...);
 template <typename T>
-concept IsSupportedTensorType = IsAnyOf<T, float, int32_t, uint32_t>;
+concept IsSupportedTensorType = IsAnyOf<T, float, int32_t, uint32_t, int64_t>;
 
 }  // namespace internal
 
@@ -473,6 +473,8 @@ class GraphBuilderTflite final {
       const mojom::Split& split);
   OperatorOffset SerializeTan(const mojom::ElementWiseUnary& tan);
   OperatorOffset SerializeTanh(const mojom::Tanh& tanh);
+  base::expected<OperatorOffset, std::string> SerializeTriangular(
+      const mojom::Triangular& triangular);
   OperatorOffset SerializeTranspose(const mojom::Transpose& transpose);
   OperatorOffset SerializeWhere(const mojom::Where& where);
 
