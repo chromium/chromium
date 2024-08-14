@@ -126,9 +126,10 @@ TEST_F(GCMUnregistrationRequestTest, RequestDataPassedToFetcher) {
   const net::HttpRequestHeaders* headers =
       GetExtraHeadersForURL(kRegistrationURL);
   ASSERT_TRUE(headers);
-  std::string auth_header;
-  headers->GetHeader(net::HttpRequestHeaders::kAuthorization, &auth_header);
-  base::StringTokenizer auth_tokenizer(auth_header, " :");
+  std::optional<std::string> auth_header =
+      headers->GetHeader(net::HttpRequestHeaders::kAuthorization);
+  ASSERT_TRUE(auth_header);
+  base::StringTokenizer auth_tokenizer(auth_header.value(), " :");
   ASSERT_TRUE(auth_tokenizer.GetNext());
   EXPECT_EQ(kLoginHeader, auth_tokenizer.token_piece());
   ASSERT_TRUE(auth_tokenizer.GetNext());
@@ -337,9 +338,10 @@ TEST_F(InstaceIDDeleteTokenRequestTest, RequestDataPassedToFetcher) {
   const net::HttpRequestHeaders* headers =
       GetExtraHeadersForURL(kRegistrationURL);
   ASSERT_TRUE(headers);
-  std::string auth_header;
-  headers->GetHeader(net::HttpRequestHeaders::kAuthorization, &auth_header);
-  base::StringTokenizer auth_tokenizer(auth_header, " :");
+  std::optional<std::string> auth_header =
+      headers->GetHeader(net::HttpRequestHeaders::kAuthorization);
+  ASSERT_TRUE(auth_header);
+  base::StringTokenizer auth_tokenizer(auth_header.value(), " :");
   ASSERT_TRUE(auth_tokenizer.GetNext());
   EXPECT_EQ(kLoginHeader, auth_tokenizer.token_piece());
   ASSERT_TRUE(auth_tokenizer.GetNext());
