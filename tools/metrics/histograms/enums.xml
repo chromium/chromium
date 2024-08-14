@@ -26588,6 +26588,7 @@ Called by update_use_counter_css.py.-->
   <int value="798" label="interpolate-size"/>
   <int value="799" label="view-transition-group"/>
   <int value="800" label="position-area"/>
+  <int value="801" label="text-box"/>
 </enum>
 
 <enum name="MediaEncryptionType">

@@ -5437,6 +5437,12 @@
       runtime_flag: "CSSTextAutoSpace",
     },
     {
+      name: "text-box",
+      longhands: ["text-box-trim", "text-box-edge"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSTextBoxTrim",
+    },
+    {
       name: "text-box-edge",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,

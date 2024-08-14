@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#propdef-text-box">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+
+<script>
+// `normal | <text-box-trim> || <text-box-edge>`
+test_valid_value('text-box', 'normal');
+
+// `<text-box-trim>`: `none | trim-start | trim-end | trim-both`
+test_valid_value('text-box', 'none', 'normal');
+test_valid_value('text-box', 'trim-start');
+test_valid_value('text-box', 'trim-end');
+test_valid_value('text-box', 'trim-both');
+
+// `<text-box-edge>`: `auto | <text-edge>`
+test_valid_value('text-box', 'none auto', 'normal');
+test_valid_value('text-box', 'trim-start auto', 'trim-start');
+test_valid_value('text-box', 'trim-both auto', 'trim-both');
+
+// `<text-edge>`
+test_valid_value('text-box', 'text');
+test_valid_value('text-box', 'cap alphabetic');
+
+// Both `<text-box-trim>` and `<text-box-edge>`
+test_valid_value('text-box', 'trim-both text', 'text');
+test_valid_value('text-box', 'trim-start text');
+test_valid_value('text-box', 'trim-start cap alphabetic');
+</script>

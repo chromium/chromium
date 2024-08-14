@@ -854,6 +854,7 @@ enum CSSSampleId {
     kInterpolateSize = 798,
     kViewTransitionGroup = 799,
     kPositionArea = 800,
+    kTextBox = 801,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

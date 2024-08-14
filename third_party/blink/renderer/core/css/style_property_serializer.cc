@@ -647,6 +647,8 @@ String StylePropertySerializer::SerializeShorthand(
       return GetLayeredShorthandValue(maskPositionShorthand());
     case CSSPropertyID::kMask:
       return GetLayeredShorthandValue(maskShorthand());
+    case CSSPropertyID::kTextBox:
+      return TextBoxValue();
     case CSSPropertyID::kTextEmphasis:
       return GetShorthandValue(textEmphasisShorthand());
     case CSSPropertyID::kTextSpacing:
@@ -2310,6 +2312,39 @@ String StylePropertySerializer::ContainIntrinsicSizeValue() const {
   }
   // Otherwise just serialize them in sequence.
   return GetShorthandValue(containIntrinsicSizeShorthand());
+}
+
+String StylePropertySerializer::TextBoxValue() const {
+  const auto* trim_value = DynamicTo<CSSIdentifierValue>(
+      property_set_.GetPropertyCSSValue(GetCSSPropertyTextBoxTrim()));
+  CHECK(trim_value);
+  const CSSValueID trim_id = trim_value->GetValueID();
+  const CSSValue* edge_value =
+      property_set_.GetPropertyCSSValue(GetCSSPropertyTextBoxEdge());
+  CHECK(edge_value);
+
+  // If `text-box-edge: auto`, produce `normal` or `<text-box-trim>`.
+  if (const auto* edge_identifier = DynamicTo<CSSIdentifierValue>(edge_value)) {
+    const CSSValueID edge_id = edge_identifier->GetValueID();
+    if (edge_id == CSSValueID::kAuto) {
+      if (trim_id == CSSValueID::kNone) {
+        return getValueName(CSSValueID::kNormal);
+      }
+      return trim_value->CssText();
+    }
+  }
+
+  // Omit `text-box-trim` if `trim-both`, not when it's initial.
+  if (trim_id == CSSValueID::kTrimBoth) {
+    return edge_value->CssText();
+  }
+
+  // Otherwise build a multi-value list.
+  StringBuilder result;
+  result.Append(trim_value->CssText());
+  result.Append(kSpaceCharacter);
+  result.Append(edge_value->CssText());
+  return result.ToString();
 }
 
 String StylePropertySerializer::TextSpacingValue() const {

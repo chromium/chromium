@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#propdef-text-box">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+
+<script>
+// invalid keyword
+test_invalid_value('text-box', 'em');
+test_invalid_value('text-box', 'normal text');
+test_invalid_value('text-box', 'text normal');
+test_invalid_value('text-box', 'auto leading');
+test_invalid_value('text-box', 'leading auto');
+</script>

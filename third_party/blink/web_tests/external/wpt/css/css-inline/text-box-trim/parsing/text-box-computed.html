@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-inline-3/#propdef-text-box">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+<div id="target"></div>
+<script>
+// `normal | <text-box-trim> || <text-box-edge>`
+test_computed_value('text-box', 'normal');
+
+// `<text-box-trim>`: `none | trim-start | trim-end | trim-both`
+test_computed_value('text-box', 'none', 'normal');
+test_computed_value('text-box', 'trim-start');
+test_computed_value('text-box', 'trim-end');
+test_computed_value('text-box', 'trim-both');
+
+// `<text-box-edge>`: `auto | <text-edge>`
+test_computed_value('text-box', 'none auto', 'normal');
+test_computed_value('text-box', 'trim-start auto', 'trim-start');
+test_computed_value('text-box', 'trim-both auto', 'trim-both');
+
+// `<text-edge>`
+test_computed_value('text-box', 'text');
+test_computed_value('text-box', 'cap alphabetic');
+
+// Both `<text-box-trim>` and `<text-box-edge>`
+test_computed_value('text-box', 'trim-both text', 'text');
+test_computed_value('text-box', 'trim-start text');
+test_computed_value('text-box', 'trim-start cap alphabetic');
+</script>

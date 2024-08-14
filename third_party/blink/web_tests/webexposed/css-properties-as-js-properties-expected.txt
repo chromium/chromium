@@ -454,6 +454,7 @@ textAlign
 textAlignLast
 textAnchor
 textAutospace
+textBox
 textBoxEdge
 textBoxTrim
 textCombineUpright

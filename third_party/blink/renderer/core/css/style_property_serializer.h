@@ -82,6 +82,7 @@ class CORE_EXPORT StylePropertySerializer {
   bool AppendFontLonghandValueIfNotNormal(const CSSProperty&,
                                           WTF::StringBuilder& result) const;
   String OffsetValue() const;
+  String TextBoxValue() const;
   String TextDecorationValue() const;
   String TextSpacingValue() const;
   String ContainIntrinsicSizeValue() const;

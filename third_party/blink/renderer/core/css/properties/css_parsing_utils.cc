@@ -7605,6 +7605,12 @@ CSSValue* ConsumeTextBoxEdge(CSSParserTokenStream& stream) {
   return over_type;
 }
 
+// Consume the `text-box-trim` production.
+CSSValue* ConsumeTextBoxTrim(CSSParserTokenStream& stream) {
+  return ConsumeIdent<CSSValueID::kNone, CSSValueID::kTrimStart,
+                      CSSValueID::kTrimEnd, CSSValueID::kTrimBoth>(stream);
+}
+
 // Consume the `autospace` production.
 // https://drafts.csswg.org/css-text-4/#typedef-autospace
 CSSValue* ConsumeAutospace(CSSParserTokenStream& stream) {

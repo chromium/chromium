@@ -795,6 +795,9 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-timeline
         scroll-timeline-axis
         scroll-timeline-name
+    text-box
+        text-box-edge
+        text-box-trim
     text-decoration
         text-decoration-color
         text-decoration-line

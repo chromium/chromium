@@ -60,6 +60,11 @@ class CORE_EXPORT TextBoxEdge {
   const Type& Over() const { return over_; }
   const Type& Under() const { return under_; }
 
+  bool IsAuto() const { return Over() == Type::kAuto; }
+  bool IsUnderDefault() const {
+    return Under() == Type::kAuto || Under() == Type::kText;
+  }
+
  private:
   static constexpr Type ComputeMissingUnderEdge(Type over) {
     switch (over) {

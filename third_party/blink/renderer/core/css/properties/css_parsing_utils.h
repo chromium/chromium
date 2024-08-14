@@ -641,6 +641,7 @@ bool ConsumeRadii(CSSValue* horizontal_radii[4],
 
 CSSValue* ConsumeTextDecorationLine(CSSParserTokenStream&);
 CSSValue* ConsumeTextBoxEdge(CSSParserTokenStream&);
+CSSValue* ConsumeTextBoxTrim(CSSParserTokenStream&);
 
 // Consume the `autospace` production.
 // https://drafts.csswg.org/css-text-4/#typedef-autospace
