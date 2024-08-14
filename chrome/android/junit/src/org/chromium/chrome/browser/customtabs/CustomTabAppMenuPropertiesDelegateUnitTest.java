@@ -90,7 +90,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    public void authViewMenuItemVisibility() {
+    public void authTabMenuItemVisibility() {
         Context context =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
@@ -104,7 +104,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         mDecorView,
                         mBookmarkModelSupplier,
                         mVerifier,
-                        CustomTabsUiType.DEFAULT,
+                        CustomTabsUiType.AUTH_TAB,
                         /* menuEntries= */ new ArrayList<String>(),
                         /* isOpenedByChrome= */ true,
                         /* showShare= */ true,
@@ -112,7 +112,6 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* showDownload= */ true,
                         /* isIncognito= */ false,
                         /* isOffTheRecord= */ false,
-                        /* isAuthTab= */ true,
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,
                         /* hasClientPackage= */ false);

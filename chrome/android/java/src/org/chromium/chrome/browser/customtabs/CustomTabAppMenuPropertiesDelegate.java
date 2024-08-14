@@ -61,7 +61,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     private final boolean mIsOpenedByChrome;
     private final boolean mIsIncognitoBranded;
     private final boolean mIsOffTheRecord;
-    private final boolean mIsAuthTab;
     private final boolean mIsStartIconMenu;
 
     private final List<String> mMenuEntries;
@@ -88,7 +87,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             boolean showDownload,
             boolean isIncognitoBranded,
             boolean isOffTheRecord,
-            boolean isAuthTab,
             boolean isStartIconMenu,
             Supplier<ReadAloudController> readAloudControllerSupplier,
             boolean hasClientPackage) {
@@ -107,12 +105,11 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         mUiType = uiType;
         mMenuEntries = menuEntries;
         mIsOpenedByChrome = isOpenedByChrome;
-        mShowShare = showShare && !isAuthTab;
+        mShowShare = showShare && mUiType != CustomTabsUiType.AUTH_TAB;
         mShowStar = showStar;
         mShowDownload = showDownload;
         mIsIncognitoBranded = isIncognitoBranded;
         mIsOffTheRecord = isOffTheRecord;
-        mIsAuthTab = isAuthTab;
         mIsStartIconMenu = isStartIconMenu;
         mHasClientPackage = hasClientPackage;
     }
@@ -156,13 +153,13 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 updateDirectShareMenuItem(menu.findItem(R.id.direct_share_menu_id));
             }
 
-            boolean openInChromeItemVisible = !mIsAuthTab;
-            boolean bookmarkItemVisible = mShowStar && !mIsAuthTab;
-            boolean downloadItemVisible = mShowDownload && !mIsAuthTab;
-            boolean addToHomeScreenVisible = !mIsAuthTab;
+            boolean openInChromeItemVisible = true;
+            boolean bookmarkItemVisible = mShowStar;
+            boolean downloadItemVisible = mShowDownload;
+            boolean addToHomeScreenVisible = true;
             boolean requestDesktopSiteVisible = true;
             boolean tryAddingReadAloud = ReadAloudFeatures.isEnabledForOverflowMenuInCCT();
-            boolean historyItemVisible = !mIsAuthTab;
+            boolean historyItemVisible = true;
             if (!HistoryManager.isAppSpecificHistoryEnabled() || !mHasClientPackage) {
                 historyItemVisible = false;
             }
@@ -205,6 +202,13 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 addToHomeScreenVisible = false;
                 requestDesktopSiteVisible = true;
                 tryAddingReadAloud = false;
+            } else if (mUiType == CustomTabsUiType.AUTH_TAB) {
+                openInChromeItemVisible = false;
+                bookmarkItemVisible = false;
+                downloadItemVisible = false;
+                addToHomeScreenVisible = false;
+                tryAddingReadAloud = false;
+                historyItemVisible = false;
             }
 
             if (!FirstRunStatus.getFirstRunFlowComplete()) {
