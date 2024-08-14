@@ -214,6 +214,7 @@ source_set("browser_tests") {
   if (is_chromeos_ash) {
     deps += [
       "//chrome/browser/ash",
+      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/crostini:test_support",
       "//chrome/browser/ash/extended_updates/test:test_support",
       "//chrome/browser/ash/login/ui",

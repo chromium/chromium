@@ -96,14 +96,6 @@ source_set("unit_tests") {
 
   deps = [
     ":oauth2",
-    "//base/test:test_support",
-    "//chrome/test:test_support",
-    "//chromeos/printing",
-    "//components/sync:test_support",
-    "//content/test:test_support",
-    "//net/traffic_annotation:test_support",
-    "//services/network:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
+    "//chrome/browser/ash:test_support",
   ]
 }

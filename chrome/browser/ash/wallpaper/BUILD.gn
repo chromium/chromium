@@ -37,17 +37,7 @@ source_set("browser_tests") {
     ":wallpaper",
     "//ash",
     "//base",
-    "//base/test:test_support",
-    "//chrome/browser/ash/drive",
-    "//chrome/browser/ash/drive:test_support",
-    "//chrome/browser/ash/profiles",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
+    "//chrome/browser/ash:test_support",
     "//chromeos/ash/components/drivefs:test_support",
-    "//chromeos/ash/components/drivefs/mojom",
-    "//content/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//ui/gfx:test_support",
   ]
 }

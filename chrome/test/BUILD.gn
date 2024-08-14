@@ -926,9 +926,7 @@ static_library("test_support") {
       "//chrome/browser/ash/login/enrollment",
       "//chrome/browser/ash/login/enrollment:test_support",
       "//chrome/browser/ash/login/test:test_support",
-      "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ash/profiles",
-      "//chrome/browser/ash/settings:test_support",
       "//chrome/browser/ash/system_web_apps",
       "//chromeos/ash/components/account_manager",
       "//chromeos/ash/components/dbus/session_manager",
@@ -989,11 +987,6 @@ static_library("test_support") {
       "//google_apis",
       "//google_apis:test_support",
       "//net:test_support",
-    ]
-
-    allow_circular_includes_from += [
-      "//chrome/browser/ash/login/users:test_support",
-      "//chrome/browser/ash/settings:test_support",
     ]
   }
 
@@ -1254,6 +1247,7 @@ if (is_chromeos && is_chromeos_device) {
 
       deps += [
         ":ash_integration_test_support",
+        "//chrome/browser/ash:test_support",
         "//chrome/browser/ash/file_manager",
         "//chrome/browser/ui/ash",
         "//chrome/test/base/chromeos/crosier:proto",
@@ -4769,6 +4763,7 @@ if (!is_android) {
         "//chrome/browser/apps/link_capturing",
         "//chrome/browser/ash",
         "//chrome/browser/ash:browser_tests",
+        "//chrome/browser/ash:test_support",
         "//chrome/browser/ash/app_list/search/test:browser_test_support",
         "//chrome/browser/ash/app_restore",
         "//chrome/browser/ash/app_restore:browser_tests",
@@ -4829,7 +4824,6 @@ if (!is_android) {
         "//chrome/browser/ash/policy/reporting/metrics_reporting/network",
         "//chrome/browser/ash/policy/reporting/os_updates",
         "//chrome/browser/ash/policy/status_collector",
-        "//chrome/browser/ash/printing/history:test_support",
         "//chrome/browser/ash/scalable_iph:test_support",
         "//chrome/browser/ash/settings",
         "//chrome/browser/ash/settings:test_support",
@@ -8482,10 +8476,10 @@ test("unit_tests") {
       "//chrome/browser/apps/app_preload_service:unit_tests",
       "//chrome/browser/apps/app_service/promise_apps/proto",
       "//chrome/browser/ash",
+      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash:unit_tests",
       "//chrome/browser/ash/app_list:unit_tests",
       "//chrome/browser/ash/app_list/app_service",
-      "//chrome/browser/ash/app_list/arc:test_support",
       "//chrome/browser/ash/app_list/arc:unit_tests",
       "//chrome/browser/ash/app_list/internal_app",
       "//chrome/browser/ash/app_list/search/ranking:proto",
@@ -8519,7 +8513,6 @@ test("unit_tests") {
       "//chrome/browser/ash/login/smart_lock",
       "//chrome/browser/ash/login/ui:test_support",
       "//chrome/browser/ash/login/users",
-      "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ash/login/users/avatar",
       "//chrome/browser/ash/magic_boost",
       "//chrome/browser/ash/magic_boost:test_support",
@@ -10261,7 +10254,6 @@ static_library("test_support_unit") {
     "//chrome/common",
     "//mojo/core/test:test_support",
   ]
-
   deps = [
     "//chrome/browser/autofill",
     "//components/autofill/content/browser:test_support",
@@ -10281,7 +10273,7 @@ static_library("test_support_unit") {
 
     deps += [
       "//ash:test_support",
-      "//chrome/browser/ash/login/users:test_support",
+      "//chrome/browser/ash:test_support",
       "//chrome/browser/ui/chromeos/read_write_cards",
       "//chrome/browser/ui/quick_answers",
     ]
@@ -10681,6 +10673,7 @@ if (!is_android) {
         "//chrome:strings",
         "//chrome/browser",
         "//chrome/browser/ash",
+        "//chrome/browser/ash:test_support",
         "//chrome/browser/ash/accessibility",
         "//chrome/browser/ash/accessibility:test_support",
         "//chrome/browser/devtools",
@@ -11866,6 +11859,7 @@ source_set("sync_integration_test_support") {
       "//ash/app_list:test_support",
       "//ash/components/arc:arc_test_support",
       "//ash/components/arc/mojom",
+      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/app_list/test:test_support",
       "//chrome/browser/ash/arc",
       "//chrome/browser/ash/arc/session",

@@ -378,6 +378,7 @@ source_set("unit_tests") {
     "//ash",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/customization",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login/screens",

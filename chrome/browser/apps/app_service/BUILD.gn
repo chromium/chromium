@@ -524,8 +524,8 @@ source_set("unit_tests") {
       "//chrome/browser/apps/app_service/app_install:unit_tests",
       "//chrome/browser/apps/app_service/promise_apps/proto",
       "//chrome/browser/ash",
+      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/app_list/arc",
-      "//chrome/browser/ash/app_list/arc:test_support",
       "//chrome/browser/ash/app_list/internal_app",
       "//chrome/browser/ash/apps",
       "//chrome/browser/ash/arc",
@@ -601,6 +601,7 @@ source_set("test_support") {
     ]
 
     deps += [
+      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/login/users:test_support",
       "//components/webapk:proto",
     ]

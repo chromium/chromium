@@ -32,6 +32,7 @@ test("usage_time_limit_unittests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash",
+    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/child_accounts:test_support",
     "//chromeos/ash/components/settings",
