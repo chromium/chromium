@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tabs_animation_commands.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_constants.h"
@@ -191,14 +192,19 @@
       BrowsingDataRemoverFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   browsingDataRemover->SetCachedTabsInfo(cachedTabsInfo);
-  [handler
-      animateTabsClosureForTabs:activeTabsToClose
-                         groups:tabGroupsWithTabsToClose
-                allInactiveTabs:allInactiveTabsWillClose
-              completionHandler:^{
-                browsingDataRemover->RemoveInRange(
-                    beginTime, endTime, BrowsingDataRemoveMask::CLOSE_TABS, {});
-              }];
+  [handler animateTabsClosureForTabs:activeTabsToClose
+                              groups:tabGroupsWithTabsToClose
+                     allInactiveTabs:allInactiveTabsWillClose
+                   completionHandler:^{
+                     browsingDataRemover->RemoveInRange(
+                         beginTime, endTime, BrowsingDataRemoveMask::CLOSE_TABS,
+                         base::BindOnce([]() {
+                           // Add vibration at the end of the animation
+                           // including after the tabs rearrange.
+                           TriggerHapticFeedbackForNotification(
+                               UINotificationFeedbackTypeSuccess);
+                         }));
+                   }];
 }
 
 // Disconnects all instances.

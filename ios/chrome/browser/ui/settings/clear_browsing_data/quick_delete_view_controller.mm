@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_mutator.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_presentation_commands.h"
@@ -345,6 +346,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 - (void)deletionFinished {
   self.isLoading = NO;
   self.isConfirmed = YES;
+  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
 
   // Add an artificial delay for dimissing the UI, so the user is able to see
   // the confirmation state.
