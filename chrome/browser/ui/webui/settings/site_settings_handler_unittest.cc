@@ -1000,6 +1000,9 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   const std::string_view kTrackingProtection =
       site_settings::ContentSettingsTypeToGroupName(
           ContentSettingsType::TRACKING_PROTECTION);
+  const std::string_view kStorageAccess =
+      site_settings::ContentSettingsTypeToGroupName(
+          ContentSettingsType::STORAGE_ACCESS);
 
   const ContentSettingsType kPermissionNotifications =
       ContentSettingsType::NOTIFICATIONS;
@@ -1536,6 +1539,76 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
   // to run at the end of the test.
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
+}
+
+TEST_F(SiteSettingsHandlerTest, GetAllSitesIncludesStorage) {
+  SetupModel();
+
+  base::Value::List get_all_sites_args;
+  get_all_sites_args.Append(kCallbackId);
+
+  // Test all sites is empty when there are no preferences.
+  handler()->HandleGetAllSites(get_all_sites_args);
+  EXPECT_EQ(1U, web_ui()->call_data().size());
+
+  // Add a couple of double-keyed exceptions and check that they appear for the
+  // primary (embedded) site using a representative URL.
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  const GURL embedded_url("https://altostrat.com");
+  const GURL embedding_url1("https://examplepetstore.com");
+  const GURL embedding_url2("https://cymbalgroup.com");
+  map->SetContentSettingDefaultScope(embedded_url, embedding_url1,
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(embedded_url, embedding_url2,
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_ALLOW);
+  handler()->HandleGetAllSites(get_all_sites_args);
+
+  {
+    const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+    EXPECT_EQ("cr.webUIResponse", data.function_name());
+    EXPECT_EQ(kCallbackId, data.arg1()->GetString());
+    ASSERT_TRUE(data.arg2()->GetBool());
+    const base::Value::List& site_groups = data.arg3()->GetList();
+    EXPECT_EQ(1UL, site_groups.size());
+    for (const base::Value& site_group_val : site_groups) {
+      const base::Value::Dict& site_group = site_group_val.GetDict();
+      const base::Value::List& origin_list =
+          CHECK_DEREF(site_group.FindList("origins"));
+      EXPECT_THAT(CHECK_DEREF(site_group.FindString("groupingKey")),
+                  IsEtldPlus1("altostrat.com"));
+      EXPECT_EQ(1UL, origin_list.size());
+    }
+  }
+
+  // Now remove the double-keyed exceptions using SetOriginPermissions and
+  // verify that the list is empty.
+  base::Value::List reset_args;
+  reset_args.Append(embedded_url.spec());
+  reset_args.Append(std::move(kStorageAccess));
+  reset_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_DEFAULT));
+
+  handler()->HandleSetOriginPermissions(reset_args);
+
+  handler()->HandleGetAllSites(get_all_sites_args);
+
+  {
+    const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+    EXPECT_EQ("cr.webUIResponse", data.function_name());
+    EXPECT_EQ(kCallbackId, data.arg1()->GetString());
+    ASSERT_TRUE(data.arg2()->GetBool());
+    const base::Value::List& site_groups = data.arg3()->GetList();
+    EXPECT_EQ(0UL, site_groups.size());
+  }
+
+  // Each call to HandleGetAllSites() above added a callback to the profile's
+  // browsing_data::LocalStorageHelper, so make sure these aren't stuck waiting
+  // to run at the end of the test.
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(SiteSettingsHandlerTest, Cookies) {
@@ -2466,6 +2539,64 @@ TEST_F(SiteSettingsHandlerTest, GetAndSetOriginPermissions) {
   ValidateOrigin(origin_with_port, origin_with_port, origin,
                  CONTENT_SETTING_ASK,
                  site_settings::SiteSettingSource::kDefault, 4U);
+}
+
+TEST_F(SiteSettingsHandlerTest, SetOriginPermissionsForStorageAccess) {
+  const GURL origin_a_with_port("https://www.example.com:443");
+  const GURL origin_b_with_port("https://www.examplepetstore.com:443");
+  // The display name won't show the port if it's default for that scheme.
+  const std::string origin_a_display_name("example.com");
+  const std::string origin_b_display_name("examplepetstore.com");
+  // The resulting pattern will be broadened to the scheme+eTLD+1 level.
+  const std::string origin_a_pattern("https://[*.]example.com");
+  const std::string origin_b_pattern("https://[*.]examplepetstore.com");
+
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  // Allow storage access for this origin/embedding pair, in both directions.
+  // This is an unlikely scenario in practice but we want users to be able to
+  // clear an embedding relationship between two sites from either site.
+  map->SetContentSettingDefaultScope(origin_a_with_port, origin_b_with_port,
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(origin_b_with_port, origin_a_with_port,
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_ALLOW);
+
+  base::Value::List get_exception_list_args;
+  get_exception_list_args.Append(kCallbackId);
+  get_exception_list_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  handler()->HandleGetStorageAccessExceptionList(get_exception_list_args);
+
+  // Verify that the group exception was created correctly.
+  ValidateStorageAccessList(/*expected_total_calls=*/3U,
+                            /*expected_num_groups=*/2U);
+
+  ValidateStorageAccessException(
+      origin_a_pattern, origin_a_display_name, CONTENT_SETTING_ALLOW,
+      {{origin_b_pattern, origin_b_display_name, /*incognito=*/false}},
+      /*index=*/0U);
+
+  ValidateStorageAccessException(
+      origin_b_pattern, origin_b_display_name, CONTENT_SETTING_ALLOW,
+      {{origin_a_pattern, origin_a_display_name, /*incognito=*/false}},
+      /*index=*/1U);
+
+  // Reset things to default for STORAGE_ACCESS on origin_a.
+  base::Value::List reset_args;
+  reset_args.Append(origin_a_with_port.spec());
+  reset_args.Append(std::move(kStorageAccess));
+  reset_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_DEFAULT));
+  handler()->HandleSetOriginPermissions(reset_args);
+  EXPECT_EQ(5U, web_ui()->call_data().size());
+
+  // Verify that there are no storage access exceptions after resetting.
+  handler()->HandleGetStorageAccessExceptionList(get_exception_list_args);
+  ValidateStorageAccessList(/*expected_total_calls=*/6U,
+                            /*expected_num_groups=*/0U);
 }
 
 TEST_F(SiteSettingsHandlerTest, GetAndSetForInvalidURLs) {

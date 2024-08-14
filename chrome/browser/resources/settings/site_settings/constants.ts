@@ -52,6 +52,7 @@ export enum ContentSettingsTypes {
   SOUND = 'sound',
   STORAGE_ACCESS = 'storage-access',
   TRACKING_PROTECTION = 'tracking-protection',
+  TOP_LEVEL_STORAGE_ACCESS = 'top-level-storage-access',
   USB_DEVICES = 'usb-devices',
   VR = 'vr',
   WINDOW_MANAGEMENT = 'window-management',

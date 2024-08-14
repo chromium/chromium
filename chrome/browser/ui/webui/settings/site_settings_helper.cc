@@ -159,6 +159,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::KEYBOARD_LOCK, "keyboard-lock"},
     {ContentSettingsType::POINTER_LOCK, "pointer-lock"},
     {ContentSettingsType::TRACKING_PROTECTION, "tracking-protection"},
+    {ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, "top-level-storage-access"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required, for example if the content setting
@@ -211,7 +212,6 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     // called from UI, so we don't need a representation JS string.
     {ContentSettingsType::DEPRECATED_PPAPI_BROKER, nullptr},
     {ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, nullptr},
-    {ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, nullptr},
     // TODO(crbug.com/40253587): Update JavaScript string representation when
     // desktop UI is implemented.
     {ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION, nullptr},
@@ -546,6 +546,8 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
       ContentSettingsType::SENSORS,
       ContentSettingsType::SERIAL_GUARD,
       ContentSettingsType::SOUND,
+      ContentSettingsType::STORAGE_ACCESS,
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
       ContentSettingsType::USB_GUARD,
       ContentSettingsType::VR,
       ContentSettingsType::WINDOW_MANAGEMENT,

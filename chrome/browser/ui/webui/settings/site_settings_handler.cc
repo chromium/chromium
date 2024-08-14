@@ -70,6 +70,7 @@
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -158,6 +159,14 @@ constexpr ContentSettingsType kChooserDataContentSettingsTypes[] = {
     ContentSettingsType::HID_CHOOSER_DATA,
     ContentSettingsType::SERIAL_CHOOSER_DATA,
     ContentSettingsType::USB_CHOOSER_DATA,
+};
+
+// Content types related to the double-patterned storage access settings.
+// Entries in this array will be included in the results from HandleGetAllSites
+// in addition to all the single-patterned settings.
+constexpr ContentSettingsType kStorageAccessSettingsTypes[] = {
+    ContentSettingsType::STORAGE_ACCESS,
+    ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -1158,6 +1167,20 @@ void SiteSettingsHandler::HandleGetAllSites(const base::Value::List& args) {
     }
   }
 
+  // Include any storage access permissions; list the primary (embedded) site
+  // using a representative URL.
+  for (auto content_type : kStorageAccessSettingsTypes) {
+    auto exceptions = map->GetSettingsForOneType(content_type);
+    for (const auto& e : exceptions) {
+      if (e.primary_pattern != ContentSettingsPattern::Wildcard()) {
+        auto origin =
+            url::Origin::Create(e.primary_pattern.ToRepresentativeUrl());
+        InsertOriginIntoGroup(&all_sites_map_, origin);
+        origin_permission_set_.insert(origin);
+      }
+    }
+  }
+
   // Get device chooser permission exceptions.
   for (auto content_type : kChooserDataContentSettingsTypes) {
     std::string_view group_name =
@@ -1536,6 +1559,7 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
   ContentSetting setting;
   CHECK(content_settings::ContentSettingFromString(value, &setting));
   std::vector<ContentSettingsType> types;
+  std::vector<ContentSettingsPattern> additional_patterns_for_infobar;
   if (type_string) {
     ContentSettingsType content_type =
         site_settings::ContentSettingsTypeFromGroupName(*type_string);
@@ -1590,6 +1614,47 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
           ->RemoveEmbargoAndResetCounts(origin, content_type);
     }
     map->SetContentSettingDefaultScope(origin, origin, content_type, setting);
+
+    const content_settings::WebsiteSettingsInfo::ScopingType scoping_type =
+        content_settings::WebsiteSettingsRegistry::GetInstance()
+            ->Get(content_type)
+            ->scoping_type();
+
+    // TODO(crbug.com/356170740) Refactor to eliminate the need for listing
+    // content settings in here.
+    if (setting == CONTENT_SETTING_DEFAULT &&
+        (scoping_type == content_settings::WebsiteSettingsInfo::
+                             REQUESTING_AND_TOP_SCHEMEFUL_SITE_SCOPE ||
+         scoping_type == content_settings::WebsiteSettingsInfo::
+                             REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE)) {
+      // In order to correctly set the reload infobanner on pages that have
+      // embedded content from the origin being reset, we need to keep track of
+      // any associated secondary patterns before we change anything.
+      for (const auto& content_setting_pattern :
+           map->GetSettingsForOneType(content_type)) {
+        if (content_setting_pattern.primary_pattern.Matches(origin) &&
+            content_setting_pattern.secondary_pattern !=
+                ContentSettingsPattern::Wildcard()) {
+          // Including the primary pattern isn't necessary since that matches
+          // the origin we were called with, and is already handled by the
+          // general-case logic.
+          additional_patterns_for_infobar.push_back(
+              content_setting_pattern.secondary_pattern);
+        }
+      }
+
+      // The user probably expects that clearing double-keyed permissions will
+      // clear the permissions in both directions. They may clear siteA's
+      // permissions in order to prevent siteA embedded in siteB from accessing
+      // its cookies, but they may also be aware that siteB is embedding siteA
+      // and wish to clear the association via siteB's site details listing.
+      map->ClearSettingsForOneTypeWithPredicate(
+          content_type, [&](const ContentSettingPatternSource& pattern_source) {
+            return pattern_source.primary_pattern.Matches(origin) ||
+                   pattern_source.secondary_pattern.Matches(origin);
+          });
+    }
+
     if (content_type == ContentSettingsType::SOUND) {
       ContentSetting default_setting =
           map->GetDefaultContentSetting(ContentSettingsType::SOUND, nullptr);
@@ -1613,13 +1678,20 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
   // Show an infobar reminding the user to reload tabs where their site
   // permissions have been updated.
   // Info bar should only be shown on pages with the same origin and
-  // on the same profile
+  // on the same profile, or on any pages where changes to a double-keyed
+  // setting occurred.
   for (Browser* it : *BrowserList::GetInstance()) {
     TabStripModel* tab_strip = it->tab_strip_model();
     for (int i = 0; i < tab_strip->count(); ++i) {
       content::WebContents* web_contents = tab_strip->GetWebContentsAt(i);
       GURL tab_url = web_contents->GetLastCommittedURL();
-      if (url::IsSameOriginWith(origin, tab_url) &&
+      const bool tab_is_same_origin = url::IsSameOriginWith(origin, tab_url);
+      const bool tab_might_embed_origin = base::ranges::any_of(
+          additional_patterns_for_infobar, [&](const auto& additional_pattern) {
+            return additional_pattern.Matches(tab_url);
+          });
+
+      if ((tab_is_same_origin || tab_might_embed_origin) &&
           it->profile()->GetOriginalProfile() ==
               profile_->GetOriginalProfile()) {
         infobars::ContentInfoBarManager* infobar_manager =
