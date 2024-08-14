@@ -178,9 +178,6 @@ static const CGFloat kOffsetForConnectedCell = 16;
 @end
 
 @implementation ManualFillPasswordCell {
-  // If `YES`, autofill button is shown for the cell.
-  BOOL _showAutofillFormButton;
-
   // If `YES`, the user should be asked to re-authenticate before autofilling
   // the entire form.
   BOOL _shouldReauthToAutofill;
@@ -221,7 +218,6 @@ static const CGFloat kOffsetForConnectedCell = 16;
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton
          shouldReauthToAutofill:(BOOL)shouldReauthToAutofill {
-  _showAutofillFormButton = showAutofillFormButton;
   _shouldReauthToAutofill = shouldReauthToAutofill;
 
   if (self.contentView.subviews.count == 0) {
@@ -312,10 +308,14 @@ static const CGFloat kOffsetForConnectedCell = 16;
     self.grayLine.hidden = YES;
   }
 
-  if (ShouldCreateAutofillFormButton(_showAutofillFormButton)) {
+  if (showAutofillFormButton) {
+    CHECK(IsKeyboardAccessoryUpgradeEnabled());
     AddViewToVerticalLeadViews(self.autofillFormButton,
                                ManualFillCellView::ElementType::kOther,
                                verticalLeadViews);
+    self.autofillFormButton.hidden = NO;
+  } else {
+    self.autofillFormButton.hidden = YES;
   }
 
   // Set and activate constraints.
@@ -391,7 +391,6 @@ static const CGFloat kOffsetForConnectedCell = 16;
       kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
-  if (ShouldCreateAutofillFormButton(_showAutofillFormButton)) {
     self.autofillFormButton = CreateAutofillFormButton();
     [self.contentView addSubview:self.autofillFormButton];
     [self.autofillFormButton addTarget:self
@@ -399,7 +398,6 @@ static const CGFloat kOffsetForConnectedCell = 16;
                       forControlEvents:UIControlEventTouchUpInside];
     AppendHorizontalConstraintsForViews(
         staticConstraints, @[ self.autofillFormButton ], self.layoutGuide);
-  }
 
   [NSLayoutConstraint activateConstraints:staticConstraints];
 }

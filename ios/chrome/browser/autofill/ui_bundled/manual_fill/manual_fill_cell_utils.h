@@ -190,10 +190,6 @@ UIButton* CreateOverflowMenuButton();
 // desired location within the horizontal safe area.
 UIView* CreateGraySeparatorForContainer(UIView* container);
 
-// Returns YES if the button used to fill the current form with the manual fill
-// entity data should be shown.
-BOOL ShouldCreateAutofillFormButton(BOOL show_button);
-
 // Creates the button used to fill the current form with the manual fill entity
 // data.
 UIButton* CreateAutofillFormButton();
