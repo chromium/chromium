@@ -367,6 +367,12 @@ BASE_FEATURE(kBatchMainThreadReleaseCallbacks,
              "BatchMainThreadReleaseCallbacks",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Remove gpu process reference if gpu context is loss, and gpu channel cannot
+// be established due to said gpu process exiting.
+BASE_FEATURE(kShutdownForFailedChannelCreation,
+             "ShutdownForFailedChannelCreation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, snapshot the root surface when it is evicted.
 BASE_FEATURE(kSnapshotEvictedRootSurface,
              "SnapshotEvictedRootSurface",
