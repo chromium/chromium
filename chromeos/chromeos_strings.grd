@@ -5834,8 +5834,8 @@
         <message name="IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_CHECKBOX" translateable="false" desc="Checkbox for Google internal account to attach bluetooth logs from the current session.">
           Attach bluetooth history and information. <ph name="BEGIN_LINK1">&lt;a id="bluetoothLogsInfoLink"&gt;</ph>View more details<ph name="END_LINK1">&lt;/a&gt;</ph>.
         </message>
-        <message name="IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_MESSAGE" translateable="false" desc="Message shown after user clicks on the bluetooth logs hyperlink">
-          Include bluetooth logs which captures information such as btsnoop and HCI logs from your current session. The logs will be filtered to remove as much personal identifiable information as possible.&#10;&#10;The information is stored for up to 90 days and access is restricted to the team working on this issue.
+        <message name="IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_MESSAGE" translateable="false" desc="Message shown after user (Googlers only) clicks on the bluetooth logs hyperlink">
+          Include bluetooth logs which capture information such as btsnoop and HCI logs from your current session. The logs will be filtered to remove as much personal identifiable information as possible. The information is stored for up to one year and access is restricted to the team working on this issue.&#10;&#10;Additionally, if you have consented to extended bluetooth debugging via go/fw-dump-consent: If a problem with the bluetooth controller is detected, a firmware dump will be included, which may include unencrypted bluetooth packet data, over a very short time frame. This data may be shared with the controller's (third-party) manufacturer for troubleshooting controller issues.
         </message>
         <message name="IDS_FEEDBACK_TOOL_WIFI_DEBUG_LOGS_CHECKBOX" translateable="false" desc="Checkbox for Google internal account to attach Wifi debug logs from the current session.">
           Attach additional Wi-Fi information. <ph name="BEGIN_LINK1">&lt;a id="wifiDebugLogsInfoLink"&gt;</ph>View more details<ph name="END_LINK1">&lt;/a&gt;</ph>.
