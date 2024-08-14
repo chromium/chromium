@@ -321,7 +321,8 @@
 
 - (void)showTabGridTabGroupSnackbarAfterClosingGroups:
     (int)numberOfClosedGroups {
-  if (!IsTabGroupSyncEnabled()) {
+  if (!IsTabGroupSyncEnabled() ||
+      self.browser->GetBrowserState()->IsOffTheRecord()) {
     return;
   }
 

@@ -722,12 +722,31 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   if (!self.webStateList) {
     return;
   }
-  auto indexToKeepSearchCriteria = WebStateSearchCriteria(item.identifier);
+  int indexToKeep = GetWebStateIndex(self.webStateList,
+                                     WebStateSearchCriteria(item.identifier));
+
+  int closedGroupCount = 0;
+  if (IsTabGroupSyncEnabled()) {
+    for (const TabGroup* group : _webStateList->GetGroups()) {
+      // Remove the local tab group mapping if the `indexToKeep` is not in the
+      // group.
+      if (!group->range().contains(indexToKeep) &&
+          _tabGroupSyncService->GetGroup(group->tab_group_id())) {
+        _tabGroupSyncService->RemoveLocalTabGroupMapping(group->tab_group_id());
+        closedGroupCount++;
+      }
+    }
+  }
+
   // Closes all non-pinned items except for `item`.
-  CloseOtherWebStates(
-      *(self.webStateList),
-      GetWebStateIndex(self.webStateList, indexToKeepSearchCriteria),
-      WebStateList::CLOSE_USER_ACTION);
+  CloseOtherWebStates(*(self.webStateList), indexToKeep,
+                      WebStateList::CLOSE_USER_ACTION);
+
+  // Show the tab group snackbar if some groups have been closed.
+  if (IsTabGroupSyncEnabled() && closedGroupCount > 0) {
+    [self.tabStripHandler
+        showTabStripTabGroupSnackbarAfterClosingGroups:closedGroupCount];
+  }
 }
 
 - (void)createNewGroupWithItem:(TabSwitcherItem*)item {
