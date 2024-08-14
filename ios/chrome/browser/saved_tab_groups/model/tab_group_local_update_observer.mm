@@ -209,6 +209,10 @@ void TabGroupLocalUpdateObserver::DidFinishNavigation(
     return;
   }
 
+  if (!utils::IsSaveableNavigation(navigation_context)) {
+    return;
+  }
+
   UpdateLocalWebStateInSyncedGroup(web_state);
 }
 
