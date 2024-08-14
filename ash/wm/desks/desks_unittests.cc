@@ -10626,6 +10626,11 @@ TEST_P(DeskBarTest, DeskCreationRemovalMetrics) {
           : DesksCreationRemovalSource::kButton,
       1);
 
+  // Long press doesn't register if there have been touch events on the desk bar
+  // prior to trying to long press. Close and reopen the desk bar.
+  if (features::IsSavedDeskUiRevampEnabled()) {
+    CloseDeskBar();
+  }
   OpenDeskBar();
 
   // Combine desks.

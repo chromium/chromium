@@ -2201,6 +2201,9 @@ TEST_F(SavedDeskTest, UnsupportedAppsDialog) {
 // disabled when all windows on the desk are unsupported or there are no windows
 // with Full Restore app ids. See crbug.com/1277763.
 TEST_F(SavedDeskTest, AllUnsupportedAppsDisablesSaveDeskButtons) {
+  // Need expanded bar to open context menu.
+  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kKeyboard);
+
   disable_app_id_check_.reset();
 
   // Use `CreateTestWindow()` instead of `CreateAppWindow()`, which by default
@@ -2217,25 +2220,27 @@ TEST_F(SavedDeskTest, AllUnsupportedAppsDisablesSaveDeskButtons) {
   // Open overview.
   ToggleOverview();
 
-  EXPECT_EQ(0, GetOverviewGridList()[0]->num_incognito_windows());
-  EXPECT_EQ(2, GetOverviewGridList()[0]->num_unsupported_windows());
-
   auto* root = Shell::Get()->GetPrimaryRootWindow();
   if (features::IsSavedDeskUiRevampEnabled()) {
-    auto* template_item = GetActiveDeskActionContextMenuItem(
-        root, DeskActionContextMenu::kSaveAsTemplate);
-    auto* save_later_item = GetActiveDeskActionContextMenuItem(
-        root, DeskActionContextMenu::kSaveForLater);
+    DeskActionContextMenu* menu = DesksTestApi::GetContextMenuForDesk(
+        DeskBarViewBase::Type::kOverview, /*index=*/0);
+    auto* template_item = DesksTestApi::GetDeskActionContextMenuItem(
+        menu, DeskActionContextMenu::kSaveAsTemplate);
+    auto* save_later_item = DesksTestApi::GetDeskActionContextMenuItem(
+        menu, DeskActionContextMenu::kSaveForLater);
     ASSERT_TRUE(template_item);
     ASSERT_TRUE(save_later_item);
     EXPECT_FALSE(template_item->GetEnabled());
     EXPECT_FALSE(save_later_item->GetEnabled());
-  } else {
-    EXPECT_EQ(views::Button::STATE_DISABLED,
-              GetSaveDeskAsTemplateButtonForRoot(root)->GetState());
-    EXPECT_EQ(views::Button::STATE_DISABLED,
-              GetSaveDeskForLaterButtonForRoot(root)->GetState());
+    return;
   }
+
+  EXPECT_EQ(0, GetOverviewGridList()[0]->num_incognito_windows());
+  EXPECT_EQ(2, GetOverviewGridList()[0]->num_unsupported_windows());
+  EXPECT_EQ(views::Button::STATE_DISABLED,
+            GetSaveDeskAsTemplateButtonForRoot(root)->GetState());
+  EXPECT_EQ(views::Button::STATE_DISABLED,
+            GetSaveDeskForLaterButtonForRoot(root)->GetState());
 }
 
 // Tests that adding and removing unsupported windows is counted correctly.
