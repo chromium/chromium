@@ -19592,6 +19592,33 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ManualFallback_ExpandIcon_OpenAddress">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user opened the Address Manual Fallback view through the keyboard
+    accessory's expand icon. iOS only.
+  </description>
+</action>
+
+<action name="ManualFallback_ExpandIcon_OpenPassword">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user opened the Password Manual Fallback view through the keyboard
+    accessory's expand icon. iOS only.
+  </description>
+</action>
+
+<action name="ManualFallback_ExpandIcon_OpenPaymenMethod">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user opened the Payment Method Manual Fallback view through the keyboard
+    accessory's expand icon. iOS only.
+  </description>
+</action>
+
 <action name="ManualFallback_OpenCreditCard">
   <owner>djean@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
