@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/dns_response.h"
 
 #include <algorithm>
@@ -141,18 +136,6 @@ DnsRecordParser::DnsRecordParser(base::span<const uint8_t> packet,
     : packet_(packet), num_records_(num_records), cur_(offset) {
   CHECK_LE(offset, packet_.size());
 }
-
-DnsRecordParser::DnsRecordParser(const void* packet,
-                                 size_t length,
-                                 size_t offset,
-                                 size_t num_records)
-    : DnsRecordParser(
-          // TODO(crbug.com/40284755): This span construction can not be sound
-          // here. This DnsRecordParser constructor should be removed.
-          UNSAFE_BUFFERS(
-              base::span(static_cast<const uint8_t*>(packet), length)),
-          offset,
-          num_records) {}
 
 unsigned DnsRecordParser::ReadName(const void* const vpos,
                                    std::string* out) const {
@@ -458,9 +441,10 @@ bool DnsResponse::InitParse(size_t nbytes, const DnsQuery& query) {
   if (base::NetToHost16(header()->qdcount) != 1)
     return false;
 
+  base::span<const uint8_t> subspan =
+      io_buffer_->span().subspan(kHeaderSize, question.size());
   // Match the question section.
-  if (question !=
-      std::string_view(io_buffer_->data() + kHeaderSize, question.size())) {
+  if (question != base::as_string_view(subspan)) {
     return false;
   }
 
@@ -478,7 +462,7 @@ bool DnsResponse::InitParse(size_t nbytes, const DnsQuery& query) {
   // Construct the parser. Only allow parsing up to `num_records` records. If
   // more records are present in the buffer, it's just garbage extra data after
   // the formal end of the response and should be ignored.
-  parser_ = DnsRecordParser(io_buffer_->data(), nbytes,
+  parser_ = DnsRecordParser(io_buffer_->span().first(nbytes),
                             kHeaderSize + question.size(), num_records);
   return true;
 }
@@ -499,8 +483,8 @@ bool DnsResponse::InitParseWithoutQuery(size_t nbytes) {
   // Only allow parsing up to `num_records` records. If more records are present
   // in the buffer, it's just garbage extra data after the formal end of the
   // response and should be ignored.
-  parser_ =
-      DnsRecordParser(io_buffer_->data(), nbytes, kHeaderSize, num_records);
+  parser_ = DnsRecordParser(io_buffer_->span().first(nbytes), kHeaderSize,
+                            num_records);
 
   unsigned qdcount = base::NetToHost16(header()->qdcount);
   for (unsigned i = 0; i < qdcount; ++i) {

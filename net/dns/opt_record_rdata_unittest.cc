@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/341324165): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/opt_record_rdata.h"
 
 #include <algorithm>
@@ -87,7 +82,7 @@ TEST(OptRecordRdataTest, ParseOptRecordWithShorterSizeThanData) {
       0xDE, 0xAD, 0xBE, 0xEF  // OPT data
   };
 
-  DnsRecordParser parser(rdata, sizeof(rdata), 0, /*num_records=*/0);
+  DnsRecordParser parser(rdata, 0, /*num_records=*/0);
   std::string_view rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
 
   std::unique_ptr<OptRecordRdata> rdata_obj =
@@ -104,7 +99,7 @@ TEST(OptRecordRdataTest, ParseOptRecordWithLongerSizeThanData) {
       0xDE, 0xAD   // OPT data
   };
 
-  DnsRecordParser parser(rdata, sizeof(rdata), 0, /*num_records=*/0);
+  DnsRecordParser parser(rdata, 0, /*num_records=*/0);
   std::string_view rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
 
   std::unique_ptr<OptRecordRdata> rdata_obj =

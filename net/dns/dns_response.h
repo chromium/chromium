@@ -78,12 +78,6 @@ class NET_EXPORT_PRIVATE DnsRecordParser {
                   size_t offset,
                   size_t num_records);
 
-  // TODO(crbug.com/40284755): Deprecated, use the span-based constructor.
-  UNSAFE_BUFFER_USAGE DnsRecordParser(const void* packet,
-                                      size_t length,
-                                      size_t offset,
-                                      size_t num_records);
-
   DnsRecordParser(const DnsRecordParser&);
   DnsRecordParser(DnsRecordParser&&);
   DnsRecordParser& operator=(const DnsRecordParser&);
