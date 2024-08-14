@@ -445,6 +445,12 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
     // Media.
     case kKeyboardShortcutMediaLaunchApp1:
       return &kKsvOverviewIcon;
+    case kKeyboardShortcutMediaLaunchApp1Refresh:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return &kOverviewRefreshIcon;
+#else
+      return &kKsvOverviewIcon;
+#endif
     case kKeyboardShortcutMediaFastForward:
       return &kKsMediaFastForwardIcon;
     case kKeyboardShortcutMediaPause:
@@ -462,6 +468,12 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kKsvBrightnessDownIcon;
     case kKeyboardShortcutBrightnessUp:
       return &kKsvBrightnessUpIcon;
+    case kKeyboardShortcutBrightnessUpRefresh:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return &kBrightnessUpRefreshIcon;
+#else
+      return &kKsvBrightnessUpIcon;
+#endif
     // Volume.
     case kKeyboardShortcutVolumeMute:
       return &kKsvMuteIcon;

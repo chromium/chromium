@@ -88,6 +88,7 @@ std::optional<int> GetStringIdForIconCode(IconCode icon_code) {
     case ash::SearchResultTextItem::kKeyboardShortcutZoom:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ZOOM_TOGGLE;
     case ash::SearchResultTextItem::kKeyboardShortcutMediaLaunchApp1:
+    case ash::SearchResultTextItem::kKeyboardShortcutMediaLaunchApp1Refresh:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_LAUNCH_APPLICATION1;
     case ash::SearchResultTextItem::kKeyboardShortcutMediaFastForward:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_MEDIA_FAST_FORWARD;
@@ -106,6 +107,7 @@ std::optional<int> GetStringIdForIconCode(IconCode icon_code) {
     case ash::SearchResultTextItem::kKeyboardShortcutKeyboardBrightnessDown:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_KEYBOARD_BRIGHTNESS_DOWN;
     case ash::SearchResultTextItem::kKeyboardShortcutBrightnessUp:
+    case ash::SearchResultTextItem::kKeyboardShortcutBrightnessUpRefresh:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BRIGHTNESS_UP;
     case ash::SearchResultTextItem::kKeyboardShortcutKeyboardBrightnessUp:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_KEYBOARD_BRIGHTNESS_UP;
@@ -191,7 +193,9 @@ std::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
     case (KeyboardCode::VKEY_ZOOM):
       return IconCode::kKeyboardShortcutZoom;
     case (KeyboardCode::VKEY_MEDIA_LAUNCH_APP1):
-      return IconCode::kKeyboardShortcutMediaLaunchApp1;
+      return ash::Shell::Get()->keyboard_capability()->UseRefreshedIcons()
+                 ? IconCode::kKeyboardShortcutMediaLaunchApp1Refresh
+                 : IconCode::kKeyboardShortcutMediaLaunchApp1;
     case (KeyboardCode::VKEY_MEDIA_NEXT_TRACK):
       return IconCode::kKeyboardShortcutMediaTrackNext;
     case (KeyboardCode::VKEY_MEDIA_PREV_TRACK):
@@ -207,7 +211,9 @@ std::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
     case (KeyboardCode::VKEY_BRIGHTNESS_DOWN):
       return IconCode::kKeyboardShortcutBrightnessDown;
     case (KeyboardCode::VKEY_BRIGHTNESS_UP):
-      return IconCode::kKeyboardShortcutBrightnessUp;
+      return ash::Shell::Get()->keyboard_capability()->UseRefreshedIcons()
+                 ? IconCode::kKeyboardShortcutBrightnessUpRefresh
+                 : IconCode::kKeyboardShortcutBrightnessUp;
     case (KeyboardCode::VKEY_VOLUME_MUTE):
       return IconCode::kKeyboardShortcutVolumeMute;
     case (KeyboardCode::VKEY_VOLUME_DOWN):
@@ -308,6 +314,22 @@ KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
        {u"Settings", IconCode::kKeyboardShortcutSettings},
        {u"ViewAllApps", IconCode::kKeyboardShortcutAllApps},
        {u"ZoomToggle", IconCode::kKeyboardShortcutZoom}});
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  static constexpr auto kRefreshIconCodes =
+      base::MakeFixedFlatMap<std::u16string_view, IconCode>(
+          {{u"LaunchApplication1",
+            IconCode::kKeyboardShortcutMediaLaunchApp1Refresh},
+           {u"BrightnessUp", IconCode::kKeyboardShortcutBrightnessUpRefresh}});
+
+  // If there is a refreshed version of the given key, give priority to the new
+  // icons.
+  auto it_refresh = kRefreshIconCodes.find(key_string);
+  if (ash::Shell::Get()->keyboard_capability()->UseRefreshedIcons() &&
+      it_refresh != kRefreshIconCodes.end()) {
+    return it_refresh->second;
+  }
+#endif
 
   auto it = kIconCodes.find(key_string);
   if (it == kIconCodes.end()) {

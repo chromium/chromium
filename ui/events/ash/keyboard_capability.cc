@@ -1171,6 +1171,10 @@ ui::mojom::MetaKey KeyboardCapability::GetMetaKeyToDisplay() const {
   }
 }
 
+bool KeyboardCapability::UseRefreshedIcons() const {
+  return GetMetaKeyToDisplay() == mojom::MetaKey::kLauncherRefresh;
+}
+
 void KeyboardCapability::OnDeviceListsComplete() {
   TrimKeyboardInfoMap();
 }

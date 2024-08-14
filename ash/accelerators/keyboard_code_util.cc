@@ -103,11 +103,23 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
     case ui::VKEY_ZOOM:
       return &ash::kKsvFullscreenIcon;
     case ui::VKEY_MEDIA_LAUNCH_APP1:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return Shell::Get()->keyboard_capability()->UseRefreshedIcons()
+                 ? &kOverviewRefreshIcon
+                 : &ash::kKsvOverviewIcon;
+#else
       return &ash::kKsvOverviewIcon;
+#endif
     case ui::VKEY_BRIGHTNESS_DOWN:
       return &ash::kKsvBrightnessDownIcon;
     case ui::VKEY_BRIGHTNESS_UP:
-      return &ash::kKsvBrightnessUpIcon;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return Shell::Get()->keyboard_capability()->UseRefreshedIcons()
+                 ? &kBrightnessUpRefreshIcon
+                 : &ash::kKsvBrightnessUpIcon;
+#else
+      return &ash::kKsvOverviewIcon;
+#endif
     case ui::VKEY_VOLUME_MUTE:
       return &ash::kKsvMuteIcon;
     case ui::VKEY_VOLUME_DOWN:
