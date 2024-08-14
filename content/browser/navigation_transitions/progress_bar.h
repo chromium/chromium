@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_NAVIGATION_TRANSITIONS_PROGRESS_BAR_H_
 
 #include "cc/slim/solid_color_layer.h"
+#include "content/common/content_export.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframe_effect.h"
 
@@ -17,7 +18,7 @@ namespace content {
 
 // Provides an indeterminate progress bar displayed between navigation start and
 // commit.
-class ProgressBar : public gfx::FloatAnimationCurve::Target {
+class CONTENT_EXPORT ProgressBar : public gfx::FloatAnimationCurve::Target {
  public:
   ProgressBar(int width_physical, const ui::ProgressBarConfig& config);
   ~ProgressBar() override;
