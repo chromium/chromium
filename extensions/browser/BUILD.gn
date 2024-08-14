@@ -24,17 +24,12 @@ group("browser") {
     "//extensions/browser:browser_sources",
   ]
 
-  # TODO(https://crbug.com/356905053): Remove this if-block once APIs are
-  # compiled on desktop android. Individual APIs can be toggled at the
-  # //extensions/browser/api/BUILD.gn layer.
-  if (enable_extensions) {
-    public_deps += [
-      # Includes all API implementations and the ExtensionsApiClient
-      # interface. Moving an API from src/chrome to src/extensions implies
-      # it can be cleanly disabled with enable_extensions=false.
-      "//extensions/browser/api",
-    ]
-  }
+  public_deps += [
+    # Includes all API implementations and the ExtensionsApiClient
+    # interface. Moving an API from src/chrome to src/extensions implies
+    # it can be cleanly disabled with enable_extensions=false.
+    "//extensions/browser/api",
+  ]
 }
 
 source_set("url_fetcher") {
@@ -54,18 +49,9 @@ source_set("browser_context_keyed_service_factories") {
   ]
 
   deps = [
-    # TODO(https://crbug.com/356905053): Remove the buildflags dep when we
-    # no longer conditionally-include API factories.
     "//extensions/browser:core_keyed_service_factories",
-    "//extensions/buildflags",
+    "//extensions/browser/api:api_keyed_service_factories",
   ]
-
-  # TODO(https://crbug.com/356905053): Remove this if-block once APIs are
-  # compiled on desktop android. Individual APIs can be toggled at the
-  # //extensions/browser/api/BUILD.gn layer.
-  if (enable_extensions) {
-    deps += [ "//extensions/browser/api:api_keyed_service_factories" ]
-  }
 }
 
 # A helper to instantiate all the necessary core system keyed services
@@ -764,6 +750,10 @@ source_set("test_support") {
     "api/idle/test_idle_provider.h",
     "api/sockets_udp/test_udp_echo_server.cc",
     "api/sockets_udp/test_udp_echo_server.h",
+    "background_script_executor.cc",
+    "background_script_executor.h",
+    "browsertest_util.cc",
+    "browsertest_util.h",
     "extension_host_test_helper.cc",
     "extension_host_test_helper.h",
     "mock_display_info_provider.cc",
@@ -772,6 +762,8 @@ source_set("test_support") {
     "mock_screen.h",
     "preload_check_test_util.cc",
     "preload_check_test_util.h",
+    "script_result_queue.cc",
+    "script_result_queue.h",
     "service_worker/service_worker_test_utils.cc",
     "service_worker/service_worker_test_utils.h",
     "test_event_router_observer.cc",
@@ -802,20 +794,6 @@ source_set("test_support") {
     "//testing/gtest",
     "//ui/base/idle:idle",
   ]
-
-  # TODO(https://crbug.com/356905053): These sources depend, directly or
-  # indirectly, on the chrome.test API (test_api.*). Remove this if-block when
-  # the test API is compiled on the experimental desktop-android build.
-  if (enable_extensions) {
-    sources += [
-      "background_script_executor.cc",
-      "background_script_executor.h",
-      "browsertest_util.cc",
-      "browsertest_util.h",
-      "script_result_queue.cc",
-      "script_result_queue.h",
-    ]
-  }
 
   if (is_chromeos_ash) {
     sources += [

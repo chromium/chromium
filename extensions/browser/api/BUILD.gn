@@ -25,9 +25,15 @@ group("api") {
 # TODO(https://crbug.com/356905053): Remove this if-block once APIs are compiled
 # on desktop android. Individual APIs can be toggled instead of the entire
 # group.
-if (enable_extensions) {
-  group("api_implementations") {
-    public_deps = [
+group("api_implementations") {
+  # The group of APIs included in both normal desktop builds and the
+  # experimental desktop-android build.
+  # TODO(https://crbug.com/356905053): Continue moving more APIs here.
+  public_deps = [ "//extensions/browser/api/test" ]
+
+  # APIs that are currently not supported on desktop-android.
+  if (enable_extensions) {
+    public_deps += [
       "//extensions/browser:browser_sources",
       "//extensions/browser/api/alarms",
       "//extensions/browser/api/app_current_window_internal",
@@ -66,7 +72,6 @@ if (enable_extensions) {
       "//extensions/browser/api/system_memory",
       "//extensions/browser/api/system_network",
       "//extensions/browser/api/system_storage",
-      "//extensions/browser/api/test",
       "//extensions/browser/api/user_scripts",
       "//extensions/browser/api/virtual_keyboard_private",
     ]

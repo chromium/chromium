@@ -3,69 +3,17 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//extensions/buildflags/buildflags.gni")
 
-extensions_api_schema_files_ = [
-  "alarms.idl",
-  "app_current_window_internal.idl",
-  "app_runtime.idl",
-  "app_view_guest_internal.json",
-  "app_window.idl",
-  "audio.idl",
-  "automation.idl",
-  "automation_internal.idl",
-  "bluetooth.idl",
-  "bluetooth_low_energy.idl",
-  "bluetooth_private.idl",
-  "bluetooth_socket.idl",
-  "cec_private.idl",
-  "clipboard.idl",
-  "declarative_net_request.idl",
-  "dns.idl",
-  "events.json",
-  "extension_options_internal.idl",
-  "extension_types.json",
-  "feedback_private.idl",
-  "file_handlers.idl",
-  "file_system.idl",
-  "guest_view_internal.json",
-  "management.json",
-  "hid.idl",
-  "i18n.json",
-  "icon_variants.idl",
-  "idle.json",
-  "metrics_private.json",
-  "mime_handler_private.idl",
-  "mime_handler_view_guest_internal.json",
-  "mojo_private.idl",
-  "networking_private.idl",
-  "offscreen.idl",
-  "power.idl",
-  "printer_provider.idl",
-  "printer_provider_internal.idl",
-  "runtime.json",
-  "serial.idl",
-  "scripts_internal.idl",
-  "socket.idl",
-  "sockets_tcp.idl",
-  "sockets_tcp_server.idl",
-  "sockets_udp.idl",
-  "storage.json",
-  "system_cpu.idl",
-  "system_display.idl",
-  "system_memory.idl",
-  "system_network.idl",
-  "system_storage.idl",
-  "test.json",
-  "types.json",
-  "user_scripts.idl",
-  "usb.idl",
-  "virtual_keyboard.idl",
-  "virtual_keyboard_private.json",
-  "web_request.json",
-  "web_view_internal.json",
-]
+# APIs and features included in both normal desktop builds and the experimental
+# desktop-android build.
+# TODO(https://crbug.com/356905053): Continue moving more here.
+extensions_api_schema_files_ = [ "test.json" ]
 
-extensions_manifest_only_schema_files_ = [
+# Schemas that should be used only to auto-generate the C++ types.
+# In many cases, this includes schemas used to generate types used in manifest
+# parsing.
+extensions_types_only_schema_files_ = [
   "content_scripts.idl",
   "cross_origin_isolation.idl",
   "extensions_manifest_types.json",
@@ -77,23 +25,109 @@ extensions_manifest_only_schema_files_ = [
   "web_accessible_resources_mv2.idl",
 ]
 
-if (is_chromeos_ash) {
+# APIs that are not currently supported on the experimental desktop-android.
+if (enable_extensions) {
   extensions_api_schema_files_ += [
-    "diagnostics.idl",
-    "lock_screen_data.idl",
-    "media_perception_private.idl",
+    "alarms.idl",
+    "app_current_window_internal.idl",
+    "app_runtime.idl",
+    "app_view_guest_internal.json",
+    "app_window.idl",
+    "audio.idl",
+    "automation.idl",
+    "automation_internal.idl",
+    "bluetooth.idl",
+    "bluetooth_low_energy.idl",
+    "bluetooth_private.idl",
+    "bluetooth_socket.idl",
+    "cec_private.idl",
+    "clipboard.idl",
+    "declarative_net_request.idl",
+    "dns.idl",
+    "events.json",
+    "extension_options_internal.idl",
+    "extension_types.json",
+    "feedback_private.idl",
+    "file_handlers.idl",
+    "file_system.idl",
+    "guest_view_internal.json",
+    "management.json",
+    "hid.idl",
+    "i18n.json",
+    "icon_variants.idl",
+    "idle.json",
+    "metrics_private.json",
+    "mime_handler_private.idl",
+    "mime_handler_view_guest_internal.json",
+    "mojo_private.idl",
+    "networking_private.idl",
+    "offscreen.idl",
+    "power.idl",
+    "printer_provider.idl",
+    "printer_provider_internal.idl",
+    "runtime.json",
+    "serial.idl",
+    "socket.idl",
+    "sockets_tcp.idl",
+    "sockets_tcp_server.idl",
+    "sockets_udp.idl",
+    "storage.json",
+    "system_cpu.idl",
+    "system_display.idl",
+    "system_memory.idl",
+    "system_network.idl",
+    "system_storage.idl",
+    "scripts_internal.idl",
+    "types.json",
+    "user_scripts.idl",
+    "usb.idl",
+    "virtual_keyboard.idl",
+    "virtual_keyboard_private.json",
+    "web_request.json",
+    "web_view_internal.json",
   ]
+
+  if (is_chromeos_ash) {
+    extensions_api_schema_files_ += [
+      "diagnostics.idl",
+      "lock_screen_data.idl",
+      "media_perception_private.idl",
+    ]
+  }
+
+  if (is_chromeos) {
+    extensions_api_schema_files_ += [ "webcam_private.idl" ]
+  }
 }
 
-if (is_chromeos) {
-  extensions_api_schema_files_ += [ "webcam_private.idl" ]
+# In the experimental desktop-android configuration, we still need to compile
+# the C++ types for certain APIs, since they are used from outside the
+# extensions layer. These should be removed as we add support for the full
+# API by moving these entries to the `extensions_api_schema_files_` above.
+if (enable_desktop_android_extensions) {
+  extensions_types_only_schema_files_ += [
+    "declarative_net_request.idl",
+    "scripts_internal.idl",
+    "types.json",
+    "web_request.json",
+    "extension_types.json",
+    "usb.idl",
+    "system_display.idl",
+    "clipboard.idl",
+    "events.json",
+    "icon_variants.idl",
+    "file_handlers.idl",
+    "storage.json",
+    "virtual_keyboard.idl",
+    "virtual_keyboard_private.json",
+  ]
 }
 
 extensions_api_schema_files =
     get_path_info(extensions_api_schema_files_, "abspath")
 
-extensions_manifest_only_schema_files =
-    get_path_info(extensions_manifest_only_schema_files_, "abspath")
+extensions_types_only_schema_files =
+    get_path_info(extensions_types_only_schema_files_, "abspath")
 
 extensions_api_uncompiled_sources =
     get_path_info([ "web_request_internal.json" ], "abspath")
