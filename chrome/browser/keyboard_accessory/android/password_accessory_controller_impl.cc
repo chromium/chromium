@@ -562,12 +562,14 @@ PasswordAccessoryControllerImpl::PasswordAccessoryControllerImpl(
 std::vector<FooterCommand>
 PasswordAccessoryControllerImpl::CreateManagePasswordsFooter() const {
   std::vector<FooterCommand> footer_commands_to_add;
+  bool has_passkeys = false;
   if (password_manager::PasswordManagerDriver* driver =
           driver_supplier_.Run((&GetWebContents()))) {
     if (webauthn::WebAuthnCredManDelegate::CredManMode() !=
         webauthn::WebAuthnCredManDelegate::kNotEnabled) {
       if (auto* delegate =
               password_client_->GetWebAuthnCredManDelegateForDriver(driver)) {
+        has_passkeys |= delegate->HasPasskeys();
         if (delegate->HasPasskeys()) {
           footer_commands_to_add.emplace_back(
               l10n_util::GetStringUTF16(
@@ -599,13 +601,12 @@ PasswordAccessoryControllerImpl::CreateManagePasswordsFooter() const {
         autofill::AccessoryAction::GENERATE_PASSWORD_MANUAL);
   }
 
-  bool has_passkeys = false;
   if (password_manager::PasswordManagerDriver* driver =
           driver_supplier_.Run((&GetWebContents()))) {
     if (password_manager::WebAuthnCredentialsDelegate* credentials_delegate =
             password_client_->GetWebAuthnCredentialsDelegateForDriver(driver)) {
-      has_passkeys = credentials_delegate->GetPasskeys() &&
-                     !credentials_delegate->GetPasskeys()->empty();
+      has_passkeys |= credentials_delegate->GetPasskeys() &&
+                      !credentials_delegate->GetPasskeys()->empty();
       if (credentials_delegate->IsAndroidHybridAvailable()) {
         std::u16string passkey_other_device_title = l10n_util::GetStringUTF16(
             IDS_PASSWORD_MANAGER_ACCESSORY_USE_DEVICE_PASSKEY);
