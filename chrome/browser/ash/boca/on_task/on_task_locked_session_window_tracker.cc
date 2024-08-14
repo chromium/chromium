@@ -47,10 +47,9 @@ void LockedSessionWindowTracker::RefreshUrlBlocklist() {
            .is_valid()) {
     return;
   }
-  const GURL& url =
-      browser_->tab_strip_model()->GetActiveWebContents()->GetVisibleURL();
 
-  on_task_blocklist_->RefreshForUrlBlocklist(url);
+  on_task_blocklist_->RefreshForUrlBlocklist(
+      browser_->tab_strip_model()->GetActiveWebContents());
 }
 
 void LockedSessionWindowTracker::MaybeCloseBrowser(
