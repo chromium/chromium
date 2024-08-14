@@ -26,13 +26,13 @@
 
 namespace {
 // Height of the top header.
-const CGFloat kHeaderHeight = 58;
+const CGFloat kHeaderHeight = 66;
+
+// Top margin between the header and the top of the panel.
+const CGFloat kHeaderTopMargin = 24;
 
 // Size of the close button.
 const CGFloat kCloseButtonIconSize = 30;
-
-// Top margin for the close button.
-const CGFloat kCloseButtonTopMargin = 10;
 
 // Margin between the close button and the trailing edge of the screen.
 const CGFloat kCloseButtonTrailingMargin = 16;
@@ -143,18 +143,9 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
     [_headerView.heightAnchor constraintEqualToConstant:kHeaderHeight],
   ]];
 
-  [self createCloseButton];
   [self createDragHandleView];
-
-  [_headerView.contentView addSubview:_closeButton];
   [_headerView.contentView addSubview:_dragHandleView];
   [NSLayoutConstraint activateConstraints:@[
-    [_closeButton.topAnchor
-        constraintEqualToAnchor:_headerView.contentView.topAnchor
-                       constant:kCloseButtonTopMargin],
-    [_headerView.contentView.trailingAnchor
-        constraintEqualToAnchor:_closeButton.trailingAnchor
-                       constant:kCloseButtonTrailingMargin],
     [_headerView.centerXAnchor
         constraintEqualToAnchor:_dragHandleView.centerXAnchor],
     [_dragHandleView.topAnchor
@@ -198,8 +189,17 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   [NSLayoutConstraint activateConstraints:@[
     [logo.centerXAnchor
         constraintEqualToAnchor:_headerView.contentView.centerXAnchor],
-    [logo.centerYAnchor
-        constraintEqualToAnchor:_headerView.contentView.centerYAnchor],
+    [logo.topAnchor constraintEqualToAnchor:_headerView.contentView.topAnchor
+                                   constant:kHeaderTopMargin],
+  ]];
+
+  [self createCloseButton];
+  [_headerView.contentView addSubview:_closeButton];
+  [NSLayoutConstraint activateConstraints:@[
+    [_headerView.contentView.trailingAnchor
+        constraintEqualToAnchor:_closeButton.trailingAnchor
+                       constant:kCloseButtonTrailingMargin],
+    [_closeButton.centerYAnchor constraintEqualToAnchor:logo.centerYAnchor],
   ]];
 
   [self.view layoutIfNeeded];
