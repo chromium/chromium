@@ -10,6 +10,10 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button_factory.h"
 
+namespace {
+constexpr int kEyeIconSize = 20;
+}  // namespace
+
 std::unique_ptr<views::ToggleImageButton> CreateRevealButton(
     views::ImageButton::PressedCallback callback) {
   auto button =
@@ -24,9 +28,10 @@ std::unique_ptr<views::ToggleImageButton> CreateRevealButton(
               l10n_util::GetStringUTF16(IDS_WEBAUTHN_HIDE_PIN))
           .Build();
   SetImageFromVectorIconWithColorId(button.get(), vector_icons::kVisibilityIcon,
-                                    ui::kColorIcon, ui::kColorIconDisabled);
+                                    ui::kColorIcon, ui::kColorIconDisabled,
+                                    kEyeIconSize);
   SetToggledImageFromVectorIconWithColorId(
       button.get(), vector_icons::kVisibilityOffIcon, ui::kColorIcon,
-      ui::kColorIconDisabled);
+      ui::kColorIconDisabled, kEyeIconSize);
   return button;
 }
