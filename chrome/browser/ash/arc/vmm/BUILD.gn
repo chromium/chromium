@@ -61,7 +61,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/arc/idle_manager",
     "//chrome/browser/ash/arc/instance_throttle",
     "//chrome/browser/ash/arc/session",

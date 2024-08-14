@@ -9,7 +9,7 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 component("system_clock") {
   defines = [ "IS_SYSTEM_CLOCK_IMPL" ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//dbus",
   ]

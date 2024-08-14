@@ -215,7 +215,6 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_manager:test_support",

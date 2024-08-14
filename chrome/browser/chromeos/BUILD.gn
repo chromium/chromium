@@ -491,6 +491,7 @@ source_set("chromeos") {
 
 static_library("test_support") {
   testonly = true
+
   sources = [
     "extensions/login_screen/login/cleanup/mock_cleanup_handler.cc",
     "extensions/login_screen/login/cleanup/mock_cleanup_handler.h",
@@ -515,6 +516,7 @@ static_library("test_support") {
     "printing/print_preview/test/scoped_print_preview_webcontents_manager_for_testing.cc",
     "printing/print_preview/test/scoped_print_preview_webcontents_manager_for_testing.h",
   ]
+
   public_deps = [
     ":chromeos",
     "//base",
@@ -538,8 +540,8 @@ static_library("test_support") {
   if (is_chromeos_ash) {
     public_deps += [
       "//chrome/browser/ash",
-      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/app_mode:test_support",
+      "//chrome/browser/ash/login/users:test_support",
     ]
     deps += [ "//chrome/browser/ash/policy/dlp" ]
   }
@@ -588,6 +590,7 @@ source_set("unit_tests") {
     "../../common/extensions/api/file_browser_handlers/file_browser_handler_manifest_unittest.cc",
     "../../common/extensions/api/file_system_provider/file_system_provider_handler_unittest.cc",
   ]
+
   deps = [
     ":chromeos",
     ":system_stack_sampled_metrics_status_proto",
@@ -683,15 +686,17 @@ source_set("unit_tests") {
       "reporting/websites/website_metrics_retriever_ash_unittest.cc",
       "reporting/websites/website_usage_telemetry_periodic_collector_ash_unittest.cc",
     ]
+
     deps += [
       "//ash:test_support",
       "//ash/constants",
       "//chrome/browser/ash",
-      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crosapi:test_support",
       "//chrome/browser/ash/login/ui:test_support",
+      "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ash/printing:test_support",
+      "//chrome/browser/ash/printing/history:test_support",
       "//chrome/browser/ash/printing/print_management",
       "//chrome/browser/ash/system_web_apps/test_support:test_support",
       "//chrome/browser/chromeos/tablet_mode:unit_tests",
@@ -721,7 +726,6 @@ source_set("unit_tests") {
       sources +=
           [ "extensions/printing_metrics/printing_metrics_api_unittest.cc" ]
       deps += [
-        "//chrome/browser/ash:test_support",
         "//chrome/browser/ash/printing/history:print_job_info_proto",
         "//chrome/browser/chromeos/extensions/printing_metrics",
         "//chrome/common/extensions/api",
@@ -739,6 +743,7 @@ source_set("unit_tests") {
       "reporting/websites/website_metrics_retriever_lacros_unittest.cc",
       "reporting/websites/website_usage_telemetry_periodic_collector_lacros_unittest.cc",
     ]
+
     deps += [
       "//chromeos/lacros",
       "//chromeos/startup",

@@ -18,6 +18,8 @@ static_library("test_support") {
     "overview_tracing_test_handler.h",
   ]
 
+  public_deps = [ "//chrome/browser/ash/app_list/arc:test_support" ]
+
   deps = [
     "//ash:test_support",
     "//ash/constants",
@@ -25,7 +27,6 @@ static_library("test_support") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/tracing",
     "//chrome/browser/profiles:profile",

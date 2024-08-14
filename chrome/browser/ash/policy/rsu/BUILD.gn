@@ -31,7 +31,6 @@ source_set("unit_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/attestation:test_support",
     "//chrome/browser/ash/policy/rsu",
     "//chrome/browser/ash/settings:test_support",

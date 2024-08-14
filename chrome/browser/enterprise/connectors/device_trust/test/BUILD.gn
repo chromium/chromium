@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 source_set("test_support") {
   testonly = true
+
   public = [
     "device_trust_browsertest_base.h",
     "device_trust_management_mixin.h",
@@ -32,7 +33,7 @@ source_set("test_support") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash:test_support" ]
+    deps += [ "//chrome/browser/ash/login/test:test_support" ]
   }
 
   if (is_win || is_mac || is_linux) {

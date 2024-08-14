@@ -56,7 +56,6 @@ source_set("unit_tests") {
 
   deps = [
     ":usb",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/crostini:test_support",

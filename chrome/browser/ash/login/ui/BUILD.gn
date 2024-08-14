@@ -227,7 +227,6 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/login/lock:test_support",
