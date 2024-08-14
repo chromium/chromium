@@ -407,16 +407,13 @@ DnsResponse::DnsResponse(size_t length)
     : io_buffer_(base::MakeRefCounted<IOBufferWithSize>(length)),
       io_buffer_size_(length) {}
 
-DnsResponse::DnsResponse(const void* data, size_t length, size_t answer_offset)
-    : io_buffer_(base::MakeRefCounted<IOBufferWithSize>(length)),
-      io_buffer_size_(length),
-      parser_(io_buffer_->data(),
-              length,
+DnsResponse::DnsResponse(base::span<const uint8_t> data, size_t answer_offset)
+    : io_buffer_(base::MakeRefCounted<IOBufferWithSize>(data.size())),
+      io_buffer_size_(data.size()),
+      parser_(io_buffer_->span(),
               answer_offset,
               std::numeric_limits<size_t>::max()) {
-  DCHECK(data);
-  std::copy(static_cast<const char*>(data),
-            static_cast<const char*>(data) + length, io_buffer_->data());
+  io_buffer_->span().copy_from(data);
 }
 
 // static

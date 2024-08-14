@@ -157,7 +157,7 @@ class NET_EXPORT_PRIVATE DnsResponse {
   DnsResponse(scoped_refptr<IOBuffer> buffer, size_t size);
 
   // Constructs a response from |data|. Used for testing purposes only!
-  DnsResponse(const void* data, size_t length, size_t answer_offset);
+  DnsResponse(base::span<const uint8_t> data, size_t answer_offset);
 
   static DnsResponse CreateEmptyNoDataResponse(uint16_t id,
                                                bool is_authoritative,
