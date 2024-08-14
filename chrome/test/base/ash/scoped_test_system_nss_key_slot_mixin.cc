@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
+#include "chrome/test/base/ash/scoped_test_system_nss_key_slot_mixin.h"
 
 #include <memory>
 

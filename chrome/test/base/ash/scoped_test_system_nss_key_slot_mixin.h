@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_SCOPED_TEST_SYSTEM_NSS_KEY_SLOT_MIXIN_H_
-#define CHROME_BROWSER_ASH_SCOPED_TEST_SYSTEM_NSS_KEY_SLOT_MIXIN_H_
+#ifndef CHROME_TEST_BASE_ASH_SCOPED_TEST_SYSTEM_NSS_KEY_SLOT_MIXIN_H_
+#define CHROME_TEST_BASE_ASH_SCOPED_TEST_SYSTEM_NSS_KEY_SLOT_MIXIN_H_
 
 #include <pk11pub.h>
 
@@ -47,4 +47,4 @@ class ScopedTestSystemNSSKeySlotMixin final : public InProcessBrowserTestMixin {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_SCOPED_TEST_SYSTEM_NSS_KEY_SLOT_MIXIN_H_
+#endif  // CHROME_TEST_BASE_ASH_SCOPED_TEST_SYSTEM_NSS_KEY_SLOT_MIXIN_H_

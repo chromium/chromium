@@ -1327,10 +1327,6 @@ copy("mojo_service_manager_policy") {
 
 static_library("test_support") {
   testonly = true
-  sources = [
-    "scoped_test_system_nss_key_slot_mixin.cc",
-    "scoped_test_system_nss_key_slot_mixin.h",
-  ]
 
   allow_circular_includes_from = [
     "//chrome/test:test_support",

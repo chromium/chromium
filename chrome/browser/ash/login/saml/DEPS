@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/test_support",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h",
   "+chrome/browser/ash/settings",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part_ash.h",

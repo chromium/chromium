@@ -21,7 +21,6 @@ import("//chrome/common/features.gni")
 import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//chrome/test/include_js_tests.gni")
 import("//chrome/version.gni")
-import("//chromeos/ash/components/assistant/assistant.gni")
 import("//components/allocation_recorder/testing/testing.gni")
 import("//components/captive_portal/core/features.gni")
 import("//components/compose/features.gni")
@@ -893,6 +892,8 @@ static_library("test_support") {
       "../browser/enterprise/connectors/analysis/source_destination_test_util.h",
       "base/ash/js_test_api.cc",
       "base/ash/js_test_api.h",
+      "base/ash/scoped_test_system_nss_key_slot_mixin.cc",
+      "base/ash/scoped_test_system_nss_key_slot_mixin.h",
       "base/browser_process_platform_part_test_api_chromeos.cc",
       "base/browser_process_platform_part_test_api_chromeos.h",
       "base/chromeos/ash_browser_test_starter.cc",
@@ -982,6 +983,7 @@ static_library("test_support") {
       "//components/component_updater/ash",
       "//components/component_updater/ash:test_support",
       "//components/policy/test_support",
+      "//crypto:test_support",
       "//google_apis",
       "//google_apis:test_support",
       "//net:test_support",
