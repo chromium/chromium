@@ -629,7 +629,7 @@ void ExtensionActionViewController::ShowPopup(
   // ExtensionViewHost). This doesn't necessarily mean that the popup has
   // completed rendering on the screen.
   has_opened_popup_ = true;
-  platform_delegate_->ShowPopup(std::move(popup_host), by_user, show_action,
+  platform_delegate_->ShowPopup(std::move(popup_host), show_action,
                                 std::move(callback));
   view_delegate_->OnPopupShown(by_user);
 }

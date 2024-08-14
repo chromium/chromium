@@ -82,10 +82,9 @@ void ExtensionPopup::ShowPopup(
     std::unique_ptr<extensions::ExtensionViewHost> host,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow,
-    bool by_user,
     PopupShowAction show_action,
     ShowPopupCallback callback) {
-  auto* popup = new ExtensionPopup(std::move(host), anchor_view, arrow, by_user,
+  auto* popup = new ExtensionPopup(std::move(host), anchor_view, arrow,
                                    show_action, std::move(callback));
   views::BubbleDialogDelegateView::CreateBubble(popup);
 
@@ -240,7 +239,6 @@ ExtensionPopup::ExtensionPopup(
     std::unique_ptr<extensions::ExtensionViewHost> host,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow,
-    bool by_user,
     PopupShowAction show_action,
     ShowPopupCallback callback)
     : BubbleDialogDelegateView(anchor_view,
@@ -248,7 +246,6 @@ ExtensionPopup::ExtensionPopup(
                                views::BubbleBorder::STANDARD_SHADOW,
                                /*autosize=*/true),
       host_(std::move(host)),
-      by_user_(by_user),
       show_action_(show_action),
       shown_callback_(std::move(callback)),
       deferred_close_weak_ptr_factory_(this) {
@@ -300,8 +297,7 @@ ExtensionPopup::ExtensionPopup(
 void ExtensionPopup::ShowBubble() {
   // Don't show the popup if there are visible security dialogs. This protects
   // the security dialogs from spoofing.
-  if (!by_user_ &&
-      extensions::SecurityDialogTracker::GetInstance()
+  if (extensions::SecurityDialogTracker::GetInstance()
           ->BrowserHasVisibleSecurityDialogs(host_->GetBrowser())) {
     CloseDeferredIfNecessary();
     return;

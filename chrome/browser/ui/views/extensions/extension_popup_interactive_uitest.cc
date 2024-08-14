@@ -545,10 +545,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   popup_waiter.WaitForHostDestroyed();
 }
 
-// Tests that a user-triggered extenion popup can show regardless if a security
-// dialog is present.
+// Tests that a user-triggered extenion popup is blocked by visible security
+// dialogs.
 IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
-                       UserTriggeredPopupIsNotBlockedBySecurityUI) {
+                       UserTriggeredPopupIsBlockedBySecurityUI) {
   // Start an embedded test server that serves a slow responding image.
   static constexpr char kSlowImgURL[] = "/slow-img";
   net::test_server::ControllableHttpResponse slow_img_response(
@@ -596,7 +596,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   slow_img_response.Send("image_body");
   slow_img_response.Done();
 
-  // The extension popup should be shown.
-  popup_waiter.WaitForHostCompletedFirstLoad();
-  WaitForLastExtensionPopupVisible();
+  // The extension should be destroyed without showing.
+  popup_waiter.WaitForHostDestroyed();
 }
