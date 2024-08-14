@@ -2781,12 +2781,14 @@ WebContents::ScopedIgnoreInputEvents WebContentsImpl::IgnoreInputEvents(
     } while (web_input_event_audit_callbacks_.contains(callback_id));
     web_input_event_audit_callbacks_[callback_id] = std::move(*audit_callback);
   } else {
+#if BUILDFLAG(IS_ANDROID)
     CHECK(ignore_input_events_count_ != 0 ||
           !GetPrimaryMainFrame()
                ->GetRenderWidgetHost()
                ->GetRenderInputRouter()
                ->IsAnyScrollGestureInProgress())
         << "Input suppression started mid gesture";
+#endif
     ++ignore_input_events_count_;
   }
 
@@ -2801,6 +2803,7 @@ WebContents::ScopedIgnoreInputEvents WebContentsImpl::IgnoreInputEvents(
             CHECK(wc->web_input_event_audit_callbacks_.contains(*callback_id));
             wc->web_input_event_audit_callbacks_.erase(*callback_id);
           } else {
+#if BUILDFLAG(IS_ANDROID)
             // Reset gesture detection so that we don't continue to generate new
             // gestures from suppressed touches. These suppressed gestures would
             // otherwise confuse the event stream validator when input is
@@ -2815,6 +2818,7 @@ WebContents::ScopedIgnoreInputEvents WebContentsImpl::IgnoreInputEvents(
                     ->ResetGestureDetection();
               }
             }
+#endif
             --wc->ignore_input_events_count_;
           }
         }
