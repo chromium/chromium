@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.price_insights;
 
 import android.view.View;
+import android.widget.ScrollView;
 
 import androidx.annotation.Nullable;
 
@@ -14,9 +15,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 /** An implementation of {@link BottomSheetContent} for the price insights bottom sheet content. */
 public class PriceInsightsBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
+    private final ScrollView mScrollView;
 
-    public PriceInsightsBottomSheetContent(View contentView) {
+    public PriceInsightsBottomSheetContent(View contentView, ScrollView scrollView) {
         mContentView = contentView;
+        mScrollView = scrollView;
     }
 
     /* BottomSheetContent implementation. */
@@ -33,6 +36,9 @@ public class PriceInsightsBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getVerticalScrollOffset() {
+        if (mScrollView != null) {
+            return mScrollView.getScrollY();
+        }
         return 0;
     }
 

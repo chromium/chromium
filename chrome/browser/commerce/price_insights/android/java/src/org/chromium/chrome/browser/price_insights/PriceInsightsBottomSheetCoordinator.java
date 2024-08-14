@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.price_insights;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 
@@ -102,7 +103,8 @@ public class PriceInsightsBottomSheetCoordinator {
 
     /** Request to show the price insights bottom sheet. */
     public void requestShowContent() {
-        mBottomSheetContent = new PriceInsightsBottomSheetContent(mPriceInsightsView);
+        ScrollView scrollView = (ScrollView) mPriceInsightsView.findViewById(R.id.scroll_view);
+        mBottomSheetContent = new PriceInsightsBottomSheetContent(mPriceInsightsView, scrollView);
         mBottomSheetMediator.requestShowContent();
         mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
     }

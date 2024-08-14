@@ -16,8 +16,10 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.test.filters.SmallTest;
@@ -141,15 +143,17 @@ public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivity
                 });
         verify(mMockBottomSheetController, times(1))
                 .requestShowContent(mBottomSheetContentCaptor.capture(), eq(true));
-        TextView priceTrackingTitle = getTextView(R.id.price_tracking_title);
-        TextView priceTrackingDescription = getTextView(R.id.price_tracking_description);
-        TextView priceTrackingButton = getTextView(R.id.price_tracking_button);
+        ScrollView scrollView = (ScrollView) getView(R.id.scroll_view);
+        TextView priceTrackingTitle = (TextView) getView(R.id.price_tracking_title);
+        TextView priceTrackingDescription = (TextView) getView(R.id.price_tracking_description);
+        TextView priceTrackingButton = (TextView) getView(R.id.price_tracking_button);
         Drawable priceTrackingButtonDrawable =
                 priceTrackingButton.getCompoundDrawablesRelative()[0];
-        TextView priceHistoryTitleView = getTextView(R.id.price_history_title);
-        TextView openUrlButton = getTextView(R.id.open_jackpot_url_button);
+        TextView priceHistoryTitleView = (TextView) getView(R.id.price_history_title);
+        TextView openUrlButton = (TextView) getView(R.id.open_jackpot_url_button);
         Drawable openUrlButtonDrawable = openUrlButton.getCompoundDrawablesRelative()[2];
 
+        assertNotNull(scrollView);
         assertEquals(PRODUCT_TITLE, priceTrackingTitle.getText());
         assertEquals(PRICE_TRACKING_DESCRIPTION, priceTrackingDescription.getText());
         assertEquals(PRICE_TRACKING_DISABLED_BUTTON_TEXT, priceTrackingButton.getText());
@@ -191,11 +195,10 @@ public class PriceInsightsBottomSheetCoordinatorTest extends BlankUiTestActivity
                 .hideContent(mBottomSheetContentCaptor.capture(), eq(true));
     }
 
-    private TextView getTextView(int viewId) {
+    private View getView(@IdRes int viewId) {
         View view = mBottomSheetContentCaptor.getValue().getContentView();
         assertNotNull(view);
-
-        return (TextView) view.findViewById(viewId);
+        return view.findViewById(viewId);
     }
 
     private void setShoppingServiceGetPriceInsightsInfoForUrl() {
