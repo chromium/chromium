@@ -120,6 +120,7 @@ base::FilePath SelectFileDialog::GetShortenedFilePath(
 // These are overridden by Android's SelectFileDialog subclass.
 void SelectFileDialog::SetAcceptTypes(std::vector<std::u16string> types) {}
 void SelectFileDialog::SetUseMediaCapture(bool use_media_capture) {}
+void SelectFileDialog::SetOpenWritable(bool open_writable) {}
 #endif
 
 void SelectFileDialog::SelectFile(

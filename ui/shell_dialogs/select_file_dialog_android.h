@@ -41,6 +41,7 @@ class SelectFileDialogImpl : public SelectFileDialog {
   void ListenerDestroyed() override;
   void SetAcceptTypes(std::vector<std::u16string> types) override;
   void SetUseMediaCapture(bool use_media_capture) override;
+  void SetOpenWritable(bool open_writable) override;
 
   // Called when it is time to display the file picker.
   void SelectFileImpl(SelectFileDialog::Type type,
@@ -63,6 +64,7 @@ class SelectFileDialogImpl : public SelectFileDialog {
 
   std::vector<std::u16string> accept_types_;
   bool use_media_capture_ = false;
+  bool open_writable_ = false;
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };

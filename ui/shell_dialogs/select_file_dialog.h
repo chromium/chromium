@@ -172,6 +172,10 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   // offering whatever means the system has of recording media (audio, video,
   // etc) as a "file" choice.
   virtual void SetUseMediaCapture(bool use_media_capture);
+
+  // Set whether files should be opened as writable using the
+  // ACTION_OPEN_DOCUMENT Intent rather than ACTION_GET_CONTENT.
+  virtual void SetOpenWritable(bool open_writable);
 #endif
 
   // Selects a File.
