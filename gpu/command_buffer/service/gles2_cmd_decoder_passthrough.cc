@@ -1382,6 +1382,8 @@ gpu::GLCapabilities GLES2DecoderPassthroughImpl::GetGLCapabilities() {
       feature_info_->feature_flags().occlusion_query_boolean;
   caps.timer_queries = feature_info_->feature_flags().ext_disjoint_timer_query;
 
+  caps.sync_query = feature_info_->feature_flags().chromium_sync_query;
+
   return caps;
 }
 

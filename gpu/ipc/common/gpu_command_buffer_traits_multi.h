@@ -135,6 +135,8 @@ IPC_STRUCT_TRAITS_BEGIN(gpu::GLCapabilities)
 
   IPC_STRUCT_TRAITS_MEMBER(occlusion_query_boolean)
   IPC_STRUCT_TRAITS_MEMBER(timer_queries)
+
+  IPC_STRUCT_TRAITS_MEMBER(sync_query)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(gpu::CommandBuffer::State)

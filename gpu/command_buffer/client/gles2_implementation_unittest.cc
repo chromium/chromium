@@ -241,6 +241,7 @@ class GLES2ImplementationTest : public testing::Test {
       gl_capabilities_.bind_generates_resource_chromium =
           bind_generates_resource_service ? 1 : 0;
       capabilities_.sync_query = sync_query;
+      gl_capabilities_.sync_query = sync_query;
       gl_capabilities_.occlusion_query_boolean = occlusion_query_boolean;
       gl_capabilities_.timer_queries = timer_queries;
       gl_capabilities_.major_version = major_version;

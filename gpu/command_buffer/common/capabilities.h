@@ -180,6 +180,8 @@ struct GPU_EXPORT GLCapabilities {
 
   bool occlusion_query_boolean = false;
   bool timer_queries = false;
+
+  bool sync_query = false;
 };
 
 }  // namespace gpu

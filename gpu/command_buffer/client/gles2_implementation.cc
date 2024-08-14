@@ -6493,7 +6493,7 @@ void GLES2Implementation::BeginQueryEXT(GLenum target, GLuint id) {
       break;
     case GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM:
     case GL_COMMANDS_COMPLETED_CHROMIUM:
-      if (!capabilities_.sync_query) {
+      if (!gl_capabilities_.sync_query) {
         SetGLError(GL_INVALID_OPERATION, "glBeginQueryEXT",
                    "not enabled for commands completed queries");
         return;

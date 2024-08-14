@@ -3529,6 +3529,8 @@ GLCapabilities GLES2DecoderImpl::GetGLCapabilities() {
       feature_info_->feature_flags().occlusion_query_boolean;
   caps.timer_queries = query_manager_->GPUTimingAvailable();
 
+  caps.sync_query = feature_info_->feature_flags().chromium_sync_query;
+
   return caps;
 }
 
