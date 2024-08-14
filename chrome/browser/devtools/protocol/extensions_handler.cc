@@ -195,6 +195,38 @@ void ExtensionsHandler::OnGetStorageItemsFinished(
       std::make_unique<base::Value::Dict>(std::move(data)));
 }
 
+void ExtensionsHandler::SetStorageItems(
+    const protocol::String& id,
+    const protocol::String& storage_area,
+    std::unique_ptr<protocol::DictionaryValue> values,
+    std::unique_ptr<SetStorageItemsCallback> callback) {
+  GetExtensionAndStorageFrontendResult result =
+      GetExtensionAndStorageFrontend(target_id_, id, storage_area);
+
+  if (result.error) {
+    std::move(callback)->sendFailure(
+        protocol::Response::InvalidRequest(*result.error));
+    return;
+  }
+
+  result.frontend->Set(
+      result.extension.get(), result.storage_namespace, values->Clone(),
+      base::BindOnce(&ExtensionsHandler::OnSetStorageItemsFinished,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ExtensionsHandler::OnSetStorageItemsFinished(
+    std::unique_ptr<SetStorageItemsCallback> callback,
+    extensions::StorageFrontend::ResultStatus status) {
+  if (!status.success) {
+    std::move(callback)->sendFailure(
+        protocol::Response::ServerError(*status.error));
+    return;
+  }
+
+  std::move(callback)->sendSuccess();
+}
+
 void ExtensionsHandler::RemoveStorageItems(
     const protocol::String& id,
     const protocol::String& storage_area,

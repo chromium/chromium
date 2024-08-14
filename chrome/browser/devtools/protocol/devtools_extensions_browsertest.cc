@@ -126,31 +126,20 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   // Ensure service worker has had time to initialize.
   EXPECT_TRUE(activated_listener.WaitUntilSatisfied());
 
-  base::Value::Dict values_to_set;
-  values_to_set.Set("foo", "bar");
-  values_to_set.Set("other", "value");
-  values_to_set.Set("remove-on-clear", "value");
-
-  //  Set some dummy values in storage.
-  base::RunLoop run_loop;
-  extensions::StorageFrontend::Get(browser()->profile())
-      ->Set(extension, extensions::StorageAreaNamespace::kLocal,
-            std::move(values_to_set),
-            base::BindOnce(
-                [](base::OnceClosure quit_closure,
-                   extensions::StorageFrontend::ResultStatus status) {
-                  ASSERT_TRUE(status.success);
-                  std::move(quit_closure).Run();
-                },
-                run_loop.QuitClosure()));
-  run_loop.Run();
-
-  // Extensions.getStorageItems is only allowed from a target associated with
+  // Access to storage commands is only allowed from a target associated with
   // the extension. Attach to the extension service worker to be able to test
   // the method.
   DetachProtocolClient();
   agent_host_ = FindExtensionHost(extension->id());
   agent_host_->AttachClient(this);
+
+  //  Set some dummy values in storage.
+  ASSERT_TRUE(SendStorageCommand(
+      "Extensions.setStorageItems", extension,
+      base::Value::Dict().Set("values", base::Value::Dict()
+                                            .Set("foo", "bar")
+                                            .Set("other", "value")
+                                            .Set("remove-on-clear", "value"))));
 
   // Check only the requested keys are returned.
   const base::Value::Dict* get_result = SendStorageCommand(

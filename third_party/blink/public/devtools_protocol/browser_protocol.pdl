@@ -1151,6 +1151,16 @@ experimental domain Extensions
       string id
       # StorageArea to remove data from.
       StorageArea storageArea
+  # Sets `values` in extension storage in the given `storageArea`. The provided `values`
+  # will be merged with existing values in the storage area.
+  command setStorageItems
+    parameters
+      # ID of extension.
+      string id
+      # StorageArea to set data in.
+      StorageArea storageArea
+      # Values to set.
+      object values
 
 # Defines commands and events for Autofill.
 experimental domain Autofill
