@@ -98,6 +98,7 @@ ManagedMenuView::ManagedMenuView(views::Button* anchor_button, Browser* browser)
   GetViewAccessibility().SetName(GetAccessibleWindowTitle());
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+  SetButtonStyle(ui::DIALOG_BUTTON_OK, ui::ButtonStyle::kTonal);
   SetAcceptCallback(base::BindOnce(&ManagedMenuView::OpenManagementPage,
                                    weak_factory_.GetWeakPtr()));
   SetShowCloseButton(true);

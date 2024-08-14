@@ -420,6 +420,6 @@
     <ph name="MANAGER">$1<ex>The Company</ex></ph> manages your profile
   </message>
   <message name="IDS_MANAGEMENT_DIALOG_THINGS_TO_CONSIDER_SUBTITLE" desc="Subtitle of a section of things to consider regarding that an admin can do an see while managing the browser and profile.">
-    Things to consider
+    What this means
   </message>
 </grit-part>
