@@ -292,6 +292,7 @@ std::string BrowserTypeToString(Browser::Type type) {
 // Serializes the state of a RenderFrameHost relevant for this test into a
 // dictionary that can be stored as JSON. This includes the frame name and
 // current URL.
+// TODO(crbug.com/359418631): Add opener information to frames if possible.
 base::Value::Dict RenderFrameHostToJson(content::RenderFrameHost& rfh) {
   base::Value::Dict dict;
   if (!rfh.GetFrameName().empty()) {

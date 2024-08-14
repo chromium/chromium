@@ -270,6 +270,17 @@ base::Value::Dict ToDebugDict(const apps::AppLaunchParams& params) {
   return value;
 }
 
+// Returns true if an auxiliary browsing context is getting created, so
+// navigation should be done in the same container that it was triggered in.
+bool IsAuxiliaryBrowsingContext(const NavigateParams& nav_params) {
+  if ((nav_params.contents_to_insert &&
+       nav_params.contents_to_insert->HasOpener()) ||
+      nav_params.opener) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 std::optional<webapps::AppId> GetWebAppForActiveTab(const Browser* browser) {
@@ -902,10 +913,29 @@ std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
            DisplayMode::kBrowser;
   };
 
-  if (comes_from_app_browser) {
-    // Shift-clicks that come from an app browser always open in a new app
-    // container.
-    // TODO(crbug.com/351775835): Support DisplayMode of kBrowser as well.
+  const bool is_user_modified_click =
+      params.disposition == WindowOpenDisposition::NEW_WINDOW ||
+      params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
+
+  // Case: User-modified clicks.
+  if (comes_from_app_browser && is_user_modified_click) {
+    CHECK(params.browser->app_controller());
+    const webapps::AppId& current_app_id =
+        params.browser->app_controller()->app_id();
+
+    // Case: User modified clicks with an auxiliary browsing context.
+    if (IsAuxiliaryBrowsingContext(params)) {
+      // TOOD(crbug.com/359420120): Handle auxiliary browsing context behavior
+      // holistically.
+      Browser* app_window =
+          CreateWebAppWindowFromNavigationParamsAndEnqueueLaunch(
+              current_app_id, params,
+              /*should_enqueue_launch_params=*/
+              registrar.IsUrlInAppScope(params.url, current_app_id));
+      return std::optional<std::pair<Browser*, int>>({app_window, -1});
+    }
+
+    // Case: Shift-clicks with a new top level browsing context.
     if (params.disposition == WindowOpenDisposition::NEW_WINDOW &&
         controlling_app_id.has_value() &&
         OpensInStandaloneExperience(*controlling_app_id)) {
@@ -919,15 +949,10 @@ std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
       return std::optional<std::pair<Browser*, int>>({app_window, -1});
     }
 
-    CHECK(params.browser->app_controller());
-    const webapps::AppId& current_app_id =
-        params.browser->app_controller()->app_id();
-    // Middle clicks only open in a new app window (or an existing tab of an app
-    // if the app supports tabbed mode) if there is a same scope navigation
-    // happening from an app window.
+    // Case: Middle clicks with a new top level browsing context.
     if (params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
         OpensInStandaloneExperience(current_app_id) &&
-        registrar.IsUrlInAppExtendedScope(params.url, current_app_id) &&
+        registrar.IsUrlInAppScope(params.url, current_app_id) &&
         registrar.CapturesLinksInScope(current_app_id)) {
       if (!params.browser->app_controller()->ShouldHideNewTabButton()) {
         // Apps that support tabbed mode can open a new tab in the current app

@@ -2219,7 +2219,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaButton_MiddleClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2265,7 +2265,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaButton_MiddleClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2297,7 +2297,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaButton_MiddleClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2344,7 +2344,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaButton_MiddleClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2375,7 +2375,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaButton_MiddleClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2420,7 +2420,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaButton_MiddleClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2452,7 +2452,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaButton_MiddleClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2498,7 +2498,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaButton_MiddleClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2529,7 +2529,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaButton_ShiftClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2575,7 +2575,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaButton_ShiftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2607,7 +2607,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaButton_ShiftClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2654,7 +2654,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaButton_ShiftClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2685,7 +2685,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaButton_ShiftClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2730,7 +2730,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaButton_ShiftClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2762,7 +2762,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaButton_ShiftClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2808,7 +2808,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaButton_ShiftClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -3125,7 +3125,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaLink_MiddleClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -3213,7 +3213,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaLink_MiddleClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -3301,7 +3301,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaLink_MiddleClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -3345,7 +3345,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaLink_MiddleClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -3389,7 +3389,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaLink_MiddleClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -3433,7 +3433,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaLink_MiddleClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -3477,7 +3477,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaLink_ShiftClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -3521,7 +3521,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaLink_ShiftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -3565,7 +3565,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaLink_ShiftClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -3609,7 +3609,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaLink_ShiftClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -3653,7 +3653,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaLink_ShiftClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -3697,7 +3697,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaLink_ShiftClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -3741,7 +3741,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaLink_ShiftClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -3785,7 +3785,7 @@
          }
       },
       "AppWnd_ScopeA2A_ViaLink_ShiftClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -4174,19 +4174,11 @@
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
+                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
-                  } ]
-               }, {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_a/destination.html",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_a/destination.html"
                   } ]
                } ]
             }, {
@@ -4204,6 +4196,19 @@
                      "url": "/banners/link_capturing/scope_a/start.html"
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/destination.html",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_a/destination.html"
+                  } ]
                } ]
             } ]
          }
@@ -4246,20 +4251,11 @@
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
+                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
-                  } ]
-               }, {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_a/destination.html",
-                  "frame_name": "no_frame",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_a/destination.html"
                   } ]
                } ]
             }, {
@@ -4277,6 +4273,20 @@
                      "url": "/banners/link_capturing/scope_a/start.html"
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/destination.html",
+                  "frame_name": "no_frame",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_a/destination.html"
+                  } ]
                } ]
             } ]
          }
@@ -6051,24 +6061,16 @@
          }
       },
       "AppWnd_ScopeA2B_ViaButton_MiddleClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
+                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
-                  } ]
-               }, {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_b/destination.html",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_b/destination.html"
                   } ]
                } ]
             }, {
@@ -6087,11 +6089,24 @@
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
             } ]
          }
       },
       "AppWnd_ScopeA2B_ViaButton_MiddleClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -6123,25 +6138,16 @@
          }
       },
       "AppWnd_ScopeA2B_ViaButton_MiddleClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
+                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
-                  } ]
-               }, {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_b/destination.html",
-                  "frame_name": "no_frame",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_b/destination.html"
                   } ]
                } ]
             }, {
@@ -6160,11 +6166,25 @@
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "frame_name": "no_frame",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
             } ]
          }
       },
       "AppWnd_ScopeA2B_ViaButton_MiddleClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -6195,7 +6215,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaButton_MiddleClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -6234,7 +6254,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaButton_MiddleClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -6266,7 +6286,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaButton_MiddleClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -6306,7 +6326,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaButton_MiddleClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -6337,7 +6357,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaButton_ShiftClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -6382,7 +6402,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaButton_ShiftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -6414,7 +6434,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaButton_ShiftClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -6460,7 +6480,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaButton_ShiftClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -6491,7 +6511,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaButton_ShiftClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -6536,7 +6556,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaButton_ShiftClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -6568,7 +6588,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaButton_ShiftClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -6614,7 +6634,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaButton_ShiftClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -6931,7 +6951,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaLink_MiddleClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -6970,7 +6990,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaLink_MiddleClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -7009,7 +7029,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaLink_MiddleClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -7048,7 +7068,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaLink_MiddleClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -7087,7 +7107,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaLink_MiddleClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -7126,7 +7146,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaLink_MiddleClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -7165,7 +7185,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaLink_MiddleClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -7204,7 +7224,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaLink_MiddleClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -7243,7 +7263,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaLink_ShiftClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -7287,7 +7307,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaLink_ShiftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -7331,7 +7351,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaLink_ShiftClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -7375,7 +7395,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaLink_ShiftClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -7419,7 +7439,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaLink_ShiftClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -7463,7 +7483,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaLink_ShiftClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -7507,7 +7527,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaLink_ShiftClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -7551,7 +7571,7 @@
          }
       },
       "AppWnd_ScopeA2B_ViaLink_ShiftClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9282,7 +9302,7 @@
          }
       },
       "Tab_ScopeA2A_ViaButton_MiddleClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9313,7 +9333,7 @@
          }
       },
       "Tab_ScopeA2A_ViaButton_MiddleClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9336,7 +9356,7 @@
          }
       },
       "Tab_ScopeA2A_ViaButton_MiddleClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9368,7 +9388,7 @@
          }
       },
       "Tab_ScopeA2A_ViaButton_MiddleClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9391,7 +9411,7 @@
          }
       },
       "Tab_ScopeA2A_ViaButton_MiddleClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9421,7 +9441,7 @@
          }
       },
       "Tab_ScopeA2A_ViaButton_MiddleClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9444,7 +9464,7 @@
          }
       },
       "Tab_ScopeA2A_ViaButton_MiddleClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9475,7 +9495,7 @@
          }
       },
       "Tab_ScopeA2A_ViaButton_MiddleClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9498,7 +9518,7 @@
          }
       },
       "Tab_ScopeA2A_ViaButton_ShiftClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9533,7 +9553,7 @@
          }
       },
       "Tab_ScopeA2A_ViaButton_ShiftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9556,7 +9576,7 @@
          }
       },
       "Tab_ScopeA2A_ViaButton_ShiftClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9592,7 +9612,7 @@
          }
       },
       "Tab_ScopeA2A_ViaButton_ShiftClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9615,7 +9635,7 @@
          }
       },
       "Tab_ScopeA2A_ViaButton_ShiftClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9649,7 +9669,7 @@
          }
       },
       "Tab_ScopeA2A_ViaButton_ShiftClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9672,7 +9692,7 @@
          }
       },
       "Tab_ScopeA2A_ViaButton_ShiftClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9707,7 +9727,7 @@
          }
       },
       "Tab_ScopeA2A_ViaButton_ShiftClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9946,7 +9966,7 @@
          }
       },
       "Tab_ScopeA2A_ViaLink_MiddleClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9976,7 +9996,7 @@
          }
       },
       "Tab_ScopeA2A_ViaLink_MiddleClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -10006,7 +10026,7 @@
          }
       },
       "Tab_ScopeA2A_ViaLink_MiddleClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -10036,7 +10056,7 @@
          }
       },
       "Tab_ScopeA2A_ViaLink_MiddleClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -10066,7 +10086,7 @@
          }
       },
       "Tab_ScopeA2A_ViaLink_MiddleClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -10096,7 +10116,7 @@
          }
       },
       "Tab_ScopeA2A_ViaLink_MiddleClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -10126,7 +10146,7 @@
          }
       },
       "Tab_ScopeA2A_ViaLink_MiddleClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -10156,7 +10176,7 @@
          }
       },
       "Tab_ScopeA2A_ViaLink_MiddleClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -10186,7 +10206,7 @@
          }
       },
       "Tab_ScopeA2A_ViaLink_ShiftClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -10220,7 +10240,7 @@
          }
       },
       "Tab_ScopeA2A_ViaLink_ShiftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -10254,7 +10274,7 @@
          }
       },
       "Tab_ScopeA2A_ViaLink_ShiftClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -10288,7 +10308,7 @@
          }
       },
       "Tab_ScopeA2A_ViaLink_ShiftClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -10322,7 +10342,7 @@
          }
       },
       "Tab_ScopeA2A_ViaLink_ShiftClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -10356,7 +10376,7 @@
          }
       },
       "Tab_ScopeA2A_ViaLink_ShiftClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -10390,7 +10410,7 @@
          }
       },
       "Tab_ScopeA2A_ViaLink_ShiftClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -10424,7 +10444,7 @@
          }
       },
       "Tab_ScopeA2A_ViaLink_ShiftClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12152,7 +12172,7 @@
          }
       },
       "Tab_ScopeA2B_ViaButton_MiddleClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12183,7 +12203,7 @@
          }
       },
       "Tab_ScopeA2B_ViaButton_MiddleClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12206,7 +12226,7 @@
          }
       },
       "Tab_ScopeA2B_ViaButton_MiddleClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12238,7 +12258,7 @@
          }
       },
       "Tab_ScopeA2B_ViaButton_MiddleClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12261,7 +12281,7 @@
          }
       },
       "Tab_ScopeA2B_ViaButton_MiddleClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12291,7 +12311,7 @@
          }
       },
       "Tab_ScopeA2B_ViaButton_MiddleClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12314,7 +12334,7 @@
          }
       },
       "Tab_ScopeA2B_ViaButton_MiddleClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12345,7 +12365,7 @@
          }
       },
       "Tab_ScopeA2B_ViaButton_MiddleClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12368,7 +12388,7 @@
          }
       },
       "Tab_ScopeA2B_ViaButton_ShiftClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12403,7 +12423,7 @@
          }
       },
       "Tab_ScopeA2B_ViaButton_ShiftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12426,7 +12446,7 @@
          }
       },
       "Tab_ScopeA2B_ViaButton_ShiftClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12462,7 +12482,7 @@
          }
       },
       "Tab_ScopeA2B_ViaButton_ShiftClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12485,7 +12505,7 @@
          }
       },
       "Tab_ScopeA2B_ViaButton_ShiftClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12519,7 +12539,7 @@
          }
       },
       "Tab_ScopeA2B_ViaButton_ShiftClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12542,7 +12562,7 @@
          }
       },
       "Tab_ScopeA2B_ViaButton_ShiftClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12577,7 +12597,7 @@
          }
       },
       "Tab_ScopeA2B_ViaButton_ShiftClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12816,7 +12836,7 @@
          }
       },
       "Tab_ScopeA2B_ViaLink_MiddleClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12846,7 +12866,7 @@
          }
       },
       "Tab_ScopeA2B_ViaLink_MiddleClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12876,7 +12896,7 @@
          }
       },
       "Tab_ScopeA2B_ViaLink_MiddleClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12906,7 +12926,7 @@
          }
       },
       "Tab_ScopeA2B_ViaLink_MiddleClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12936,7 +12956,7 @@
          }
       },
       "Tab_ScopeA2B_ViaLink_MiddleClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12966,7 +12986,7 @@
          }
       },
       "Tab_ScopeA2B_ViaLink_MiddleClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12996,7 +13016,7 @@
          }
       },
       "Tab_ScopeA2B_ViaLink_MiddleClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -13026,7 +13046,7 @@
          }
       },
       "Tab_ScopeA2B_ViaLink_MiddleClick_WithoutOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -13056,7 +13076,7 @@
          }
       },
       "Tab_ScopeA2B_ViaLink_ShiftClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -13090,7 +13110,7 @@
          }
       },
       "Tab_ScopeA2B_ViaLink_ShiftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -13124,7 +13144,7 @@
          }
       },
       "Tab_ScopeA2B_ViaLink_ShiftClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -13158,7 +13178,7 @@
          }
       },
       "Tab_ScopeA2B_ViaLink_ShiftClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -13192,7 +13212,7 @@
          }
       },
       "Tab_ScopeA2B_ViaLink_ShiftClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -13226,7 +13246,7 @@
          }
       },
       "Tab_ScopeA2B_ViaLink_ShiftClick_WithoutOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -13260,7 +13280,7 @@
          }
       },
       "Tab_ScopeA2B_ViaLink_ShiftClick_WithoutOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -13328,7 +13348,7 @@
          }
       },
       "Tab_ScopeA2B_ViaServiceWorkerButton_LeftClick_WithoutOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
