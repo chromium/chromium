@@ -146,7 +146,8 @@ void PrivacySandboxDialogHandler::HandleShowDialog(
 void PrivacySandboxDialogHandler::NotifyServiceAboutPromptAction(
     PrivacySandboxService::PromptAction action) {
   DCHECK(privacy_sandbox_service_);
-  privacy_sandbox_service_->PromptActionOccurred(action);
+  privacy_sandbox_service_->PromptActionOccurred(
+      action, PrivacySandboxService::SurfaceType::kDesktop);
 }
 
 void PrivacySandboxDialogHandler::CloseDialog() {

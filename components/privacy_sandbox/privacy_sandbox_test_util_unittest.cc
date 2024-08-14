@@ -51,7 +51,7 @@ class MockPrivacySandboxServiceTestInterface
   MOCK_METHOD(std::string, TopicsConsentLastUpdateText, (), (override, const));
   MOCK_METHOD(void, ForceChromeBuildForTests, (bool), (override, const));
   MOCK_METHOD(int, GetRequiredPromptType, (), (override, const));
-  MOCK_METHOD(void, PromptActionOccurred, (int), (override, const));
+  MOCK_METHOD(void, PromptActionOccurred, (int, int), (override, const));
 };
 
 }  // namespace
@@ -364,7 +364,7 @@ TEST_F(PrivacySandboxBaseTestUtilTest, VerifyPromptActionOccurredInputKey) {
   constexpr int kArbitraryValue = 7;
   testing::Mock::VerifyAndClearExpectations(mock_privacy_sandbox_service());
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              PromptActionOccurred(kArbitraryValue));
+              PromptActionOccurred(kArbitraryValue, /*kDesktop*/ 0));
   ProvideInput(InputKey::kPromptAction, kArbitraryValue);
 }
 

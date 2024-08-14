@@ -323,8 +323,10 @@ void ProvideInput(const std::pair<InputKey, TestCaseItemValue>& input,
       return;
     }
     case (InputKey::kPromptAction): {
+      // TODO(crbug.com/359902106): Test various SurfaceTypes like we do for
+      // PromptAction here.
       privacy_sandbox_service->PromptActionOccurred(
-          GetItemValue<int>(input_value));
+          GetItemValue<int>(input_value), /*kDesktop*/ 0);
       return;
     }
     default: {

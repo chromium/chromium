@@ -209,8 +209,5 @@ android_resources("java_resources") {
 }
 
 java_cpp_enum("privacy_sandbox_enums") {
-  sources = [
-    "//chrome/browser/privacy_sandbox/privacy_sandbox_service.h",
-    "//components/privacy_sandbox/tracking_protection_onboarding.h",
-  ]
+  sources = [ "//chrome/browser/privacy_sandbox/privacy_sandbox_service.h" ]
 }

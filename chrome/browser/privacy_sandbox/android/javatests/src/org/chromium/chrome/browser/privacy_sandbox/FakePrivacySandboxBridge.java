@@ -198,7 +198,8 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public void promptActionOccurred(Profile profile, @PromptAction int action) {
+    public void promptActionOccurred(
+            Profile profile, @PromptAction int action, @SurfaceType int surfaceType) {
         mLastPromptAction = action;
     }
 

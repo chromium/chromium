@@ -57,6 +57,15 @@ class PrivacySandboxService : public KeyedService {
     kMaxValue = kM1NoticeRestricted,
   };
 
+  // A list of the client surfaces we show consents / notices on.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
+  enum class SurfaceType {
+    kDesktop = 0,
+    kBrApp = 1,
+    kAGACCT = 2,
+    kMaxValue = kAGACCT,
+  };
+
   // An exhaustive list of actions related to showing & interacting with the
   // prompt. Includes actions which do not impact consent / notice state.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
@@ -157,7 +166,8 @@ class PrivacySandboxService : public KeyedService {
   // calls to GetRequiredPromptType() are correct. This is expected to be
   // called appropriately by all locations showing the prompt. Metrics shared
   // between platforms will also be recorded.
-  virtual void PromptActionOccurred(PromptAction action) = 0;
+  virtual void PromptActionOccurred(PromptAction action,
+                                    SurfaceType surface_type) = 0;
 
   // Functions for coordinating the display of the Privacy Sandbox prompts
   // across multiple browser windows. Only relevant for Desktop.

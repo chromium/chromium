@@ -164,9 +164,11 @@ static jint JNI_PrivacySandboxBridge_GetRequiredPromptType(
 static void JNI_PrivacySandboxBridge_PromptActionOccurred(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
-    jint action) {
+    jint action,
+    jint surface_type) {
   GetPrivacySandboxService(j_profile)->PromptActionOccurred(
-      static_cast<PrivacySandboxService::PromptAction>(action));
+      static_cast<PrivacySandboxService::PromptAction>(action),
+      static_cast<PrivacySandboxService::SurfaceType>(surface_type));
 }
 
 static jboolean JNI_PrivacySandboxBridge_IsFirstPartySetsDataAccessEnabled(

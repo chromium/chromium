@@ -69,8 +69,10 @@ class PrivacySandboxDialogHandlerTest : public testing::Test {
   // received a prompt action (for those prompts that publish the event in the
   // handler rather than WebUI).
   void ShowDialog(PrivacySandboxService::PromptAction expected_action) {
-    EXPECT_CALL(*mock_privacy_sandbox_service(),
-                PromptActionOccurred(expected_action));
+    EXPECT_CALL(
+        *mock_privacy_sandbox_service(),
+        PromptActionOccurred(expected_action,
+                             PrivacySandboxService::SurfaceType::kDesktop));
     ShowDialog();
     base::Value::List args;
     args.Append(/*value=*/static_cast<int>(expected_action));
@@ -134,10 +136,10 @@ class PrivacySandboxConsentDialogHandlerTest
 TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleResizeDialog) {
   const int kDefaultDialogHeight = 350;
   EXPECT_CALL(*dialog_mock(), ResizeNativeView(kDefaultDialogHeight));
-  EXPECT_CALL(
-      *mock_privacy_sandbox_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kConsentClosedNoDecision));
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              PromptActionOccurred(
+                  PrivacySandboxService::PromptAction::kConsentClosedNoDecision,
+                  PrivacySandboxService::SurfaceType::kDesktop));
 
   base::Value::List args;
   args.Append(kCallbackId);
@@ -151,10 +153,10 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleResizeDialog) {
 }
 
 TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleShowDialog) {
-  EXPECT_CALL(
-      *mock_privacy_sandbox_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kConsentClosedNoDecision));
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              PromptActionOccurred(
+                  PrivacySandboxService::PromptAction::kConsentClosedNoDecision,
+                  PrivacySandboxService::SurfaceType::kDesktop));
 
   ShowDialog(PrivacySandboxService::PromptAction::kConsentShown);
 
@@ -165,14 +167,16 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleClickLearnMore) {
   ShowDialog(PrivacySandboxService::PromptAction::kConsentShown);
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               PromptActionOccurred(
-                  PrivacySandboxService::PromptAction::kConsentMoreInfoOpened));
+                  PrivacySandboxService::PromptAction::kConsentMoreInfoOpened,
+                  PrivacySandboxService::SurfaceType::kDesktop));
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               PromptActionOccurred(
-                  PrivacySandboxService::PromptAction::kConsentMoreInfoClosed));
-  EXPECT_CALL(
-      *mock_privacy_sandbox_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kConsentClosedNoDecision));
+                  PrivacySandboxService::PromptAction::kConsentMoreInfoClosed,
+                  PrivacySandboxService::SurfaceType::kDesktop));
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              PromptActionOccurred(
+                  PrivacySandboxService::PromptAction::kConsentClosedNoDecision,
+                  PrivacySandboxService::SurfaceType::kDesktop));
 
   base::Value::List more_info_opened_args;
   more_info_opened_args.Append(static_cast<int>(
@@ -194,11 +198,12 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleConsentAccepted) {
   EXPECT_CALL(*dialog_mock(), Close()).Times(0);
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               PromptActionOccurred(
-                  PrivacySandboxService::PromptAction::kConsentAccepted));
-  EXPECT_CALL(
-      *mock_privacy_sandbox_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kConsentClosedNoDecision))
+                  PrivacySandboxService::PromptAction::kConsentAccepted,
+                  PrivacySandboxService::SurfaceType::kDesktop));
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              PromptActionOccurred(
+                  PrivacySandboxService::PromptAction::kConsentClosedNoDecision,
+                  PrivacySandboxService::SurfaceType::kDesktop))
       .Times(0);
 
   base::Value::List args;
@@ -214,11 +219,12 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleConsentDeclined) {
   EXPECT_CALL(*dialog_mock(), Close()).Times(0);
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               PromptActionOccurred(
-                  PrivacySandboxService::PromptAction::kConsentDeclined));
-  EXPECT_CALL(
-      *mock_privacy_sandbox_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kConsentClosedNoDecision))
+                  PrivacySandboxService::PromptAction::kConsentDeclined,
+                  PrivacySandboxService::SurfaceType::kDesktop));
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              PromptActionOccurred(
+                  PrivacySandboxService::PromptAction::kConsentClosedNoDecision,
+                  PrivacySandboxService::SurfaceType::kDesktop))
       .Times(0);
 
   base::Value::List args;
@@ -233,16 +239,17 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest,
        NotifyServiceAboutPromptAction_Invokes_PromptActionOccured) {
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
-      PromptActionOccurred(PrivacySandboxService::PromptAction::kConsentShown));
+      PromptActionOccurred(PrivacySandboxService::PromptAction::kConsentShown,
+                           PrivacySandboxService::SurfaceType::kDesktop));
   handler()->NotifyServiceAboutPromptAction(
       PrivacySandboxService::PromptAction::kConsentShown);
 
   // This is needed because PromptActionOccurred is called again when
   // PrivacySandboxDialogHandler is destroyed in tearDown.
-  EXPECT_CALL(
-      *mock_privacy_sandbox_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kConsentClosedNoDecision));
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              PromptActionOccurred(
+                  PrivacySandboxService::PromptAction::kConsentClosedNoDecision,
+                  PrivacySandboxService::SurfaceType::kDesktop));
 }
 
 class PrivacySandboxNoticeDialogHandlerTest
@@ -274,7 +281,8 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleResizeDialog) {
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
       PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction));
+          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction,
+          PrivacySandboxService::SurfaceType::kDesktop));
 
   base::Value::List args;
   args.Append(kCallbackId);
@@ -291,7 +299,8 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleShowDialog) {
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
       PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction));
+          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction,
+          PrivacySandboxService::SurfaceType::kDesktop));
   ShowDialog(PrivacySandboxService::PromptAction::kNoticeShown);
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
@@ -303,11 +312,13 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleOpenSettings) {
   EXPECT_CALL(*dialog_mock(), Close());
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               PromptActionOccurred(
-                  PrivacySandboxService::PromptAction::kNoticeOpenSettings));
+                  PrivacySandboxService::PromptAction::kNoticeOpenSettings,
+                  PrivacySandboxService::SurfaceType::kDesktop));
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
       PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction))
+          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction,
+          PrivacySandboxService::SurfaceType::kDesktop))
       .Times(0);
 
   base::Value::List args;
@@ -323,11 +334,13 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleNoticeAcknowledge) {
   EXPECT_CALL(*dialog_mock(), Close());
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               PromptActionOccurred(
-                  PrivacySandboxService::PromptAction::kNoticeAcknowledge));
+                  PrivacySandboxService::PromptAction::kNoticeAcknowledge,
+                  PrivacySandboxService::SurfaceType::kDesktop));
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
       PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction))
+          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction,
+          PrivacySandboxService::SurfaceType::kDesktop))
       .Times(0);
 
   base::Value::List args;
@@ -342,7 +355,8 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest,
        NotifyServiceAboutPromptAction_Invokes_PromptActionOccured) {
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
-      PromptActionOccurred(PrivacySandboxService::PromptAction::kNoticeShown));
+      PromptActionOccurred(PrivacySandboxService::PromptAction::kNoticeShown,
+                           PrivacySandboxService::SurfaceType::kDesktop));
   handler()->NotifyServiceAboutPromptAction(
       PrivacySandboxService::PromptAction::kNoticeShown);
 
@@ -351,7 +365,8 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest,
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
       PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction));
+          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction,
+          PrivacySandboxService::SurfaceType::kDesktop));
 }
 
 class PrivacySandboxNoticeRestrictedDialogHandlerTest
@@ -384,10 +399,13 @@ TEST_F(PrivacySandboxNoticeRestrictedDialogHandlerTest, HandleOpenSettings) {
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
       PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kRestrictedNoticeOpenSettings));
-  EXPECT_CALL(*mock_privacy_sandbox_service(),
-              PromptActionOccurred(PrivacySandboxService::PromptAction::
-                                       kRestrictedNoticeClosedNoInteraction))
+          PrivacySandboxService::PromptAction::kRestrictedNoticeOpenSettings,
+          PrivacySandboxService::SurfaceType::kDesktop));
+  EXPECT_CALL(
+      *mock_privacy_sandbox_service(),
+      PromptActionOccurred(PrivacySandboxService::PromptAction::
+                               kRestrictedNoticeClosedNoInteraction,
+                           PrivacySandboxService::SurfaceType::kDesktop))
       .Times(0);
 
   base::Value::List args;
@@ -404,10 +422,13 @@ TEST_F(PrivacySandboxNoticeRestrictedDialogHandlerTest, HandleAcknowledge) {
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
       PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kRestrictedNoticeAcknowledge));
-  EXPECT_CALL(*mock_privacy_sandbox_service(),
-              PromptActionOccurred(PrivacySandboxService::PromptAction::
-                                       kRestrictedNoticeClosedNoInteraction))
+          PrivacySandboxService::PromptAction::kRestrictedNoticeAcknowledge,
+          PrivacySandboxService::SurfaceType::kDesktop));
+  EXPECT_CALL(
+      *mock_privacy_sandbox_service(),
+      PromptActionOccurred(PrivacySandboxService::PromptAction::
+                               kRestrictedNoticeClosedNoInteraction,
+                           PrivacySandboxService::SurfaceType::kDesktop))
       .Times(0);
 
   base::Value::List args;

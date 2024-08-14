@@ -419,8 +419,10 @@ void UpdateNoticeStorage(
   }
 }
 
-void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action) {
+void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action,
+                                                     SurfaceType surface_type) {
   RecordPromptActionMetrics(action);
+  // TODO(crbug.com/355238694): Incorporate SurfaceType to UpdateNoticeStorage.
   UpdateNoticeStorage(action, notice_storage_.get(), pref_service_.get());
 
   InformSentimentService(action);
