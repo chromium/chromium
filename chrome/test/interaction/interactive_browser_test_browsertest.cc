@@ -535,9 +535,6 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
 
   RunTestSequence(
       InstrumentTab(kTabId),
-      // This is needed to prevent subsequent navigation from causing the
-      // previous step to fail due to the element immediately losing visibility.
-      FlushEvents(),
       InParallel(Steps(NavigateWebContents(kTabId, url1),
                        NavigateWebContents(kTabId, url2)),
                  WaitForStateChange(kTabId, state_change)));
@@ -559,9 +556,6 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
 
   RunTestSequence(
       InstrumentTab(kTabId),
-      // This is needed to prevent subsequent navigation from causing the
-      // previous step to fail due to the element immediately losing visibility.
-      FlushEvents(),
       InParallel(Steps(NavigateWebContents(kTabId, url1),
                        NavigateWebContents(kTabId, url2)),
                  WaitForStateChange(kTabId, state_change)));

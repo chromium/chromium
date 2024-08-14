@@ -1685,4 +1685,15 @@ TEST_F(InteractiveTestTest, PollingElementStateObserver) {
       WaitForState(kPollingElementTestState, "baz"));
 }
 
+TEST_F(InteractiveTestTest, SubsequenceHidesElement) {
+  TestElement el1(kTestId1, kTestContext1);
+  TestElement el2(kTestId2, kTestContext1);
+
+  QueueActions([&]() { el1.Show(); }, [&]() { el2.Show(); });
+
+  RunTestSequenceInContext(
+      kTestContext1, WaitForShow(el1.identifier()),
+      InParallel(Do([&el1]() { el1.Hide(); }), WaitForShow(el2.identifier())));
+}
+
 }  // namespace ui::test

@@ -72,8 +72,9 @@ base::OnceCallback<Ret(Arg1, Arg2, Args...)> PushUnusedArgs2(
 // Sets step->must_remain_visible if it does not have a value.
 void SetDefaultMustRemainVisibleValue(InteractionSequence::Step* step,
                                       const InteractionSequence::Step* next) {
-  if (step->must_remain_visible.has_value())
+  if (step->must_remain_visible.has_value()) {
     return;
+  }
 
   // Default for types other than kShown is false.
   if (step->type != InteractionSequence::StepType::kShown) {
@@ -92,6 +93,14 @@ void SetDefaultMustRemainVisibleValue(InteractionSequence::Step* step,
   // default is false.
   if (next && next->type == InteractionSequence::StepType::kShown &&
       next->id == step->id && next->transition_only_on_event) {
+    step->must_remain_visible = false;
+    return;
+  }
+
+  // If the following step is a subsequence step, the default is also false.
+  // This is because the current step doesn't officially end until all required
+  // subsequences complete.
+  if (next && next->type == InteractionSequence::StepType::kSubsequence) {
     step->must_remain_visible = false;
     return;
   }
