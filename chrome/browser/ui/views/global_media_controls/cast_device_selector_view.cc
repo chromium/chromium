@@ -22,6 +22,10 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace {
 
 constexpr gfx::Size kCloseButtonSize{20, 20};
@@ -234,12 +238,20 @@ void CastDeviceSelectorView::OnPermissionRejected() {
   permission_rejected_label_->SetText(l10n_util::GetStringFUTF16(
       IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LABEL,
       settings_text_for_link, &offset));
+
+#if BUILDFLAG(IS_MAC)
   base::RepeatingClosure open_settings_cb = base::BindRepeating([]() {
-    // TODO(crbug.com/358725038): Open the system settings on click.
+    // TODO(crbug.com/358725038): Open the Local Network sub-pane in system
+    // settings directly once the feature request to Apple (FB14789617) is
+    // solved.
+    base::mac::OpenSystemSettingsPane(
+        base::mac::SystemSettingsPane::kPrivacySecurity);
   });
   permission_rejected_label_->AddStyleRange(
       gfx::Range(offset, offset + settings_text_for_link.length()),
       views::StyledLabel::RangeStyleInfo::CreateForLink(open_settings_cb));
+#endif
+
   UpdateVisibility();
 }
 

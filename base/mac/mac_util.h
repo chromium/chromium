@@ -111,6 +111,9 @@ enum class SystemSettingsPane {
   // Printers & Scanners
   kPrintersScanners,
 
+  // Privacy & Security
+  kPrivacySecurity,
+
   // Privacy & Security > Accessibility
   kPrivacySecurity_Accessibility,
 

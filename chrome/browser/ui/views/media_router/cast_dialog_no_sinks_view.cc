@@ -41,6 +41,10 @@
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace {
 
 class HoverButtonHandCursor : public HoverButton {
@@ -99,12 +103,18 @@ CastDialogNoSinksView::CastDialogNoSinksView(Profile* profile,
         settings_text_for_link, &offset));
     permission_rejected_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
+#if BUILDFLAG(IS_MAC)
     base::RepeatingClosure open_settings_cb = base::BindRepeating([]() {
-      // TODO(crbug.com/358725038): Open the system settings on click.
+      // TODO(crbug.com/358725038): Open the Local Network sub-pane in system
+      // settings directly once the feature request to Apple (FB14789617) is
+      // solved.
+      base::mac::OpenSystemSettingsPane(
+          base::mac::SystemSettingsPane::kPrivacySecurity);
     });
     permission_rejected_label_->AddStyleRange(
         gfx::Range(offset, offset + settings_text_for_link.length()),
         views::StyledLabel::RangeStyleInfo::CreateForLink(open_settings_cb));
+#endif
   } else {
     icon_ = AddChildView(CreateThrobber());
     label_ =
