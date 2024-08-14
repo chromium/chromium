@@ -115,12 +115,25 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
       std::unique_ptr<UserContext> user_context,
       std::optional<AuthenticationError> authentication_error);
   void OnAuthFactorsListed(
+      base::OnceClosure callback,
       std::unique_ptr<UserContext> user_context,
       std::optional<AuthenticationError> authentication_error);
   void OnAuthComplete(AuthInputType input_type,
                       std::unique_ptr<UserContext> user_context,
                       std::optional<AuthenticationError> authentication_error);
   void NotifySuccess(const AuthProofToken& token, base::TimeDelta timeout);
+
+  // Initialize the UI after we retrieve the available auth factors from
+  // cryptohome.
+  void InitUi();
+
+  // After a failed pin attempt we have to retrieve the updated auth factors
+  // configuration to can check the pin is still available or not.
+  void OnFailedPinAttempt();
+
+  // Checks the pin factor is still available using user_context_. It shpuld be
+  // called after auth factors configuration is updated.
+  bool IsPinLocked() const;
 
   std::unique_ptr<views::Widget> widget_;
 

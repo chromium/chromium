@@ -224,28 +224,39 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
   auth_factor_editor_->GetAuthFactorsConfiguration(
       std::move(user_context),
       base::BindOnce(&ActiveSessionAuthControllerImpl::OnAuthFactorsListed,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(&ActiveSessionAuthControllerImpl::InitUi,
+                                    weak_ptr_factory_.GetWeakPtr())));
 }
 
 void ActiveSessionAuthControllerImpl::OnAuthFactorsListed(
+    base::OnceClosure callback,
     std::unique_ptr<UserContext> user_context,
     std::optional<AuthenticationError> authentication_error) {
   if (authentication_error.has_value()) {
-    LOG(ERROR) << "Failed to start auth session, code "
+    LOG(ERROR) << "Failed to get auth factors configuration, code "
                << authentication_error->get_cryptohome_code();
     Close();
     return;
   }
 
+  available_factors_.Clear();
   const auto& config = user_context->GetAuthFactorsConfiguration();
+  user_context_ = std::move(user_context);
+
   if (config.FindFactorByType(cryptohome::AuthFactorType::kPassword)) {
     available_factors_.Put(AuthInputType::kPassword);
   }
 
-  if (config.FindFactorByType(cryptohome::AuthFactorType::kPin)) {
+  if (config.FindFactorByType(cryptohome::AuthFactorType::kPin) &&
+      !IsPinLocked()) {
     available_factors_.Put(AuthInputType::kPin);
   }
 
+  std::move(callback).Run();
+}
+
+void ActiveSessionAuthControllerImpl::InitUi() {
   auto contents_view = std::make_unique<ActiveSessionAuthView>(
       account_id_, title_, description_, available_factors_);
   contents_view_ = contents_view.get();
@@ -254,7 +265,6 @@ void ActiveSessionAuthControllerImpl::OnAuthFactorsListed(
   contents_view_observer_.Observe(contents_view_);
   contents_view_->AddObserver(this);
 
-  user_context_ = std::move(user_context);
   MoveToTheCenter();
   widget_->Show();
   ash::AuthParts::Get()
@@ -334,6 +344,11 @@ void ActiveSessionAuthControllerImpl::OnPinSubmit(const std::u16string& pin) {
                      weak_ptr_factory_.GetWeakPtr(), AuthInputType::kPin));
 }
 
+void ActiveSessionAuthControllerImpl::OnFailedPinAttempt() {
+  contents_view_->SetHasPin(available_factors_.Has(AuthInputType::kPin));
+  SetState(ActiveSessionAuthState::kInitialized);
+}
+
 void ActiveSessionAuthControllerImpl::OnAuthComplete(
     AuthInputType input_type,
     std::unique_ptr<UserContext> user_context,
@@ -345,7 +360,18 @@ void ActiveSessionAuthControllerImpl::OnAuthComplete(
         input_type == AuthInputType::kPassword
             ? IDS_ASH_IN_SESSION_AUTH_PASSWORD_INCORRECT
             : IDS_ASH_IN_SESSION_AUTH_PIN_INCORRECT));
-    SetState(ActiveSessionAuthState::kInitialized);
+    if (input_type == AuthInputType::kPassword) {
+      SetState(ActiveSessionAuthState::kInitialized);
+    } else {
+      auth_factor_editor_->GetAuthFactorsConfiguration(
+          std::move(user_context_),
+          base::BindOnce(
+              &ActiveSessionAuthControllerImpl::OnAuthFactorsListed,
+              weak_ptr_factory_.GetWeakPtr(),
+              base::BindOnce(
+                  &ActiveSessionAuthControllerImpl::OnFailedPinAttempt,
+                  weak_ptr_factory_.GetWeakPtr())));
+    }
   } else {
     uma_recorder_.RecordAuthSucceeded(input_type);
     SetState(input_type == AuthInputType::kPassword
@@ -375,6 +401,14 @@ void ActiveSessionAuthControllerImpl::NotifySuccess(const AuthProofToken& token,
 
 void ActiveSessionAuthControllerImpl::OnClose() {
   Close();
+}
+
+bool ActiveSessionAuthControllerImpl::IsPinLocked() const {
+  CHECK(user_context_);
+  const auto& config = user_context_->GetAuthFactorsConfiguration();
+  auto* pin_factor = config.FindFactorByType(cryptohome::AuthFactorType::kPin);
+  CHECK(pin_factor);
+  return pin_factor->GetPinStatus().IsLockedFactor();
 }
 
 void ActiveSessionAuthControllerImpl::SetState(ActiveSessionAuthState state) {
