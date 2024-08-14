@@ -18508,28 +18508,6 @@
             ]
         }
     ],
-    "PsRedesign": [
-        {
-            "platforms": [
-                "linux",
-                "windows",
-                "mac",
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "enable-toggles": "true"
-                    },
-                    "enable_features": [
-                        "PsRedesignAdPrivacyPage"
-                    ]
-                }
-            ]
-        }
-    ],
     "PumpFastToSleepAndroid": [
         {
             "platforms": [
