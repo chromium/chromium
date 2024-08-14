@@ -21,6 +21,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -75,6 +76,8 @@ DesktopMediaListView::DesktopMediaListView(
       active_style_(&single_style_),
       accessible_name_(accessible_name) {
   SetStyle(&single_style_);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
 }
 
 DesktopMediaListView::~DesktopMediaListView() {}
@@ -279,6 +282,5 @@ DesktopMediaSourceView* DesktopMediaListView::GetSelectedView() {
 }
 
 void DesktopMediaListView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kGroup;
   node_data->SetNameChecked(accessible_name_);
 }

@@ -89,13 +89,14 @@ class RatingsView : public views::View {
     SetID(ExtensionInstallDialogView::kRatingsViewId);
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));
+
+    GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
   }
   RatingsView(const RatingsView&) = delete;
   RatingsView& operator=(const RatingsView&) = delete;
   ~RatingsView() override = default;
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kStaticText;
     std::u16string accessible_text;
     if (rating_count_ == 0) {
       accessible_text = l10n_util::GetStringUTF16(

@@ -9983,6 +9983,7 @@ test("unit_tests") {
       "../browser/ui/views/desktop_capture/desktop_media_tab_list_unittest.cc",
       "../browser/ui/views/device_chooser_content_view_unittest.cc",
       "../browser/ui/views/download/download_in_progress_dialog_view_unittest.cc",
+      "../browser/ui/views/download/download_item_view_unittest.cc",
       "../browser/ui/views/extensions/chooser_dialog_view_unittest.cc",
       "../browser/ui/views/extensions/expandable_container_view_unittest.cc",
       "../browser/ui/views/extensions/extensions_menu_item_unittest.cc",

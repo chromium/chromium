@@ -32,6 +32,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
@@ -798,6 +799,38 @@ TEST_F(DesktopMediaPickerViewsSingleTabPaneTest,
   // this test will crash here.
   test_api_.PressKeyOnSourceAtIndex(
       0, ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RETURN, 0));
+}
+
+// Tests accessible properties of DesktopMediaListView and
+// DesktopMediaSourceView.
+TEST_F(DesktopMediaPickerViewsSingleTabPaneTest, AccessibleProperties) {
+  ui::AXNodeData data;
+  DesktopMediaSourceViewStyle style = DesktopMediaSourceViewStyle(
+      /*columns=*/2,
+      /*item_size=*/gfx::Size(266, 224),
+      /*icon_rect=*/gfx::Rect(),
+      /*label_rect=*/gfx::Rect(8, 196, 250, 36),
+      /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_CENTER,
+      /*image_rect=*/gfx::Rect(8, 8, 250, 180));
+
+  // DesktopMediaListView accessible properties test.
+  auto list_view = std::make_unique<DesktopMediaListView>(
+      test_api_.GetSelectedController(), style, style,
+      u"Sample accessible name");
+
+  list_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kGroup);
+
+  // DesktopMediaSourceView accessible properties test.
+  const content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_SCREEN,
+                                         content::DesktopMediaID::kFakeId);
+  auto source_view = std::make_unique<DesktopMediaSourceView>(list_view.get(),
+                                                              media_id, style);
+  data = ui::AXNodeData();
+
+  ASSERT_TRUE(source_view);
+  source_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
 }
 
 class DesktopMediaPickerPreferredDisplaySurfaceTest
