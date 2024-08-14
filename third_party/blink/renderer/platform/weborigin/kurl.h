@@ -29,8 +29,6 @@
 
 #include <iosfwd>
 #include <memory>
-
-#include "base/feature_list.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -358,15 +356,6 @@ PLATFORM_EXPORT String EncodeWithURLEscapeSequences(const String&);
 // function returns true if an occurrence of '%' is found and followed by
 // anything other than two hex-digits.
 PLATFORM_EXPORT bool HasInvalidURLEscapeSequences(const String&);
-
-// Some call sites of `KURL::Host` can be made more efficient by not making a
-// string copy and just using a StringView instead. This feature flag is used to
-// investigate how costly the copying is.
-//
-// The disabled cases at the call sites are intentionally inefficient.
-//
-// TODO(crbug.com/339026510): Remove after this investigation.
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kAvoidWastefulHostCopies);
 
 }  // namespace blink
 

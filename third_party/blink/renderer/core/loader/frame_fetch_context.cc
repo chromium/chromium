@@ -465,10 +465,7 @@ void FrameFetchContext::AddClientHintsIfNecessary(
 
   const scoped_refptr<SecurityOrigin> resource_origin =
       SecurityOrigin::Create(request.Url());
-  bool is_1p_origin =
-      IsFirstPartyOrigin(base::FeatureList::IsEnabled(kAvoidWastefulHostCopies)
-                             ? resource_origin.get()
-                             : SecurityOrigin::Create(request.Url()).get());
+  bool is_1p_origin = IsFirstPartyOrigin(resource_origin.get());
 
   std::optional<UserAgentMetadata> ua = GetUserAgentMetadata();
 
