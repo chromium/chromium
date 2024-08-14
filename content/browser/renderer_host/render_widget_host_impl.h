@@ -746,6 +746,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // getting rid of this.
   blink::VisualProperties GetInitialVisualProperties();
 
+  // Clears the state of the VisualProperties of this widget.
+  void ClearVisualProperties();
+
   // Pushes updated visual properties to the renderer as well as whether the
   // focused node should be scrolled into view.
   bool SynchronizeVisualProperties(bool scroll_focused_node_into_view,
