@@ -61,8 +61,6 @@ static_library("input_method") {
     "editor_geolocation_provider_from_finch.h",
     "editor_helpers.cc",
     "editor_helpers.h",
-    "editor_identity_utils.cc",
-    "editor_identity_utils.h",
     "editor_mediator.cc",
     "editor_mediator.h",
     "editor_mediator_factory.cc",
