@@ -103,10 +103,10 @@ class SystemProxyHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   ScopedTestingLocalState local_state_;
-  std::unique_ptr<TestingProfile> profile_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ash::ScopedDeviceSettingsTestHelper device_settings_test_helper_;
   ash::ScopedStubInstallAttributes test_install_attributes_;
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<SystemProxyHandler> system_proxy_handler_;
   std::unique_ptr<ash::SystemProxyManager> system_proxy_manager_;
 };

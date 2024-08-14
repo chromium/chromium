@@ -300,11 +300,11 @@ class ProfileAttributesStorageTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfileManager testing_profile_manager_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ash::ScopedCrosSettingsTestHelper>
       scoped_cros_settings_test_helper_;
 #endif
+  TestingProfileManager testing_profile_manager_;
   ProfileAttributesTestObserver observer_;
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>

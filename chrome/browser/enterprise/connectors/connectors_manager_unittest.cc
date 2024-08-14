@@ -197,6 +197,14 @@ class ConnectorsManagerTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // This is necessary so the URL flag code works on CrOS. If it's absent, a
+  // CrOS DCHECK fails when trying to access the
+  // BrowserPolicyConnectorAsh as it is not completely initialized.
+  ash::ScopedCrosSettingsTestHelper cros_settings_;
+#endif
+
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile, DanglingUntriaged> profile_;
 
@@ -207,13 +215,6 @@ class ConnectorsManagerTest : public testing::Test {
   bool expected_block_large_files_ = false;
 
   std::set<std::string> expected_mime_types_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // This is necessary so the URL flag code works on CrOS. If it's absent, a
-  // CrOS DCHECK fails when trying to access the
-  // BrowserPolicyConnectorAsh as it is not completely initialized.
-  ash::ScopedCrosSettingsTestHelper cros_settings_;
-#endif
 };
 
 // Platform policies should only act as a kill switch.

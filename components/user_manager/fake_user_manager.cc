@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
@@ -45,7 +46,9 @@ FakeUserManager::FakeUserManager(PrefService* local_state)
     : UserManagerBase(std::make_unique<FakeUserManagerDelegate>(),
                       new FakeTaskRunner(),
                       local_state,
-                      /*cros_settings=*/nullptr) {}
+                      ash::CrosSettings::IsInitialized()
+                          ? ash::CrosSettings::Get()
+                          : nullptr) {}
 
 FakeUserManager::~FakeUserManager() = default;
 
@@ -102,24 +105,6 @@ const user_manager::User* FakeUserManager::AddPublicAccountUser(
   user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
-}
-
-void FakeUserManager::RemoveUserFromList(const AccountId& account_id) {
-  const UserList::iterator it =
-      base::ranges::find(users_, account_id, &User::GetAccountId);
-  if (it != users_.end()) {
-    DeleteUser(*it);
-  }
-}
-
-void FakeUserManager::RemoveUserFromListForRecreation(
-    const AccountId& account_id) {
-  RemoveUserFromList(account_id);
-}
-
-void FakeUserManager::CleanStaleUserInformationFor(
-    const AccountId& account_id) {
-  RemoveUserFromList(account_id);
 }
 
 const UserList& FakeUserManager::GetUsers() const {

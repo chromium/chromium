@@ -72,7 +72,8 @@ FakeChromeUserManager::FakeChromeUserManager()
           std::make_unique<user_manager::FakeUserManagerDelegate>(),
           new FakeTaskRunner(),
           g_browser_process ? g_browser_process->local_state() : nullptr,
-          /*cros_settings=*/nullptr) {
+          ash::CrosSettings::IsInitialized() ? ash::CrosSettings::Get()
+                                             : nullptr) {
   ProfileHelper::SetProfileToUserForTestingEnabled(true);
 }
 
@@ -211,29 +212,6 @@ void FakeChromeUserManager::SwitchActiveUser(const AccountId& account_id) {
 }
 
 void FakeChromeUserManager::OnSessionStarted() {}
-
-void FakeChromeUserManager::RemoveUser(const AccountId& account_id,
-                                       user_manager::UserRemovalReason reason) {
-  // TODO(b/278643115): Unify the implementation with the real one.
-  NotifyUserToBeRemoved(account_id);
-  RemoveUserFromList(account_id);
-  NotifyUserRemoved(account_id, reason);
-}
-
-void FakeChromeUserManager::RemoveUserFromList(const AccountId& account_id) {
-  WallpaperControllerClientImpl* const wallpaper_client =
-      WallpaperControllerClientImpl::Get();
-  // `wallpaper_client` could be nullptr in tests.
-  if (wallpaper_client) {
-    wallpaper_client->RemoveUserWallpaper(account_id, base::DoNothing());
-  }
-
-  const user_manager::UserList::iterator it =
-      base::ranges::find(users_, account_id, &user_manager::User::GetAccountId);
-  if (it != users_.end()) {
-    DeleteUser(*it);
-  }
-}
 
 user_manager::UserList FakeChromeUserManager::GetUsersAllowedForMultiProfile()
     const {

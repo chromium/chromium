@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/account_id/account_id.h"
@@ -42,6 +43,7 @@ class ReportingUserTrackerTest : public ::testing::Test {
  private:
   ScopedTestingLocalState scoped_local_state_{
       TestingBrowserProcess::GetGlobal()};
+  ash::ScopedTestingCrosSettings cros_settings_;
   std::unique_ptr<ash::FakeChromeUserManager> user_manager_;
   std::unique_ptr<ReportingUserTracker> reporting_user_tracker_;
 };
@@ -85,6 +87,9 @@ TEST_F(ReportingUserTrackerTest, Persistency) {
 }
 
 TEST_F(ReportingUserTrackerTest, UserRemoval) {
+  // Add owner user to allow removing the following user.
+  user_manager().AddUser(AccountId::FromUserEmail("owner@test"));
+
   constexpr char kUserEmail[] = "test@test";
   // When user is removed, ShouldReportUser should be updated, too.
   const auto account_id = AccountId::FromUserEmail(kUserEmail);

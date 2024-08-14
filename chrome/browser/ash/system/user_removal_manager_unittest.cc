@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -43,6 +44,10 @@ class UserRemovalManagerTest : public testing::Test {
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   ScopedTestingLocalState local_state_;
+  ash::ScopedStubInstallAttributes install_attributes_{
+      ash::StubInstallAttributes::CreateCloudManaged("test.domain",
+                                                     "device_id")};
+  ash::ScopedTestingCrosSettings cros_settings_;
   user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_{
       std::make_unique<FakeChromeUserManager>()};
 };

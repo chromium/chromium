@@ -84,11 +84,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   UserList GetUnlockUsers() const override;
   const AccountId& GetOwnerAccountId() const override;
   void OnSessionStarted() override {}
-  void RemoveUser(const AccountId& account_id,
-                  UserRemovalReason reason) override {}
-  void RemoveUserFromList(const AccountId& account_id) override;
-  void RemoveUserFromListForRecreation(const AccountId& account_id) override;
-  void CleanStaleUserInformationFor(const AccountId& account_id) override;
   bool IsKnownUser(const AccountId& account_id) const override;
   const User* FindUser(const AccountId& account_id) const override;
   User* FindUserAndModify(const AccountId& account_id) override;

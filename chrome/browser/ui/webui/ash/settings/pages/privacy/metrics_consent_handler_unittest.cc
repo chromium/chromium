@@ -249,6 +249,13 @@ class MetricsConsentHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
 
+  // Set up stubs for StatsReportingController.
+  ScopedStubInstallAttributes scoped_install_attributes_;
+  FakeSessionManagerClient fake_session_manager_client_;
+  ScopedTestDeviceSettingsService scoped_device_settings_;
+  CrosSettingsHolder cros_settings_holder_{ash::DeviceSettingsService::Get(),
+                                           RegisterPrefs(&pref_service_)};
+
   std::unique_ptr<TestMetricsConsentHandler> handler_;
   std::unique_ptr<FakeChromeUserManager> test_user_manager_;
   std::unique_ptr<content::TestWebUI> web_ui_;
@@ -262,12 +269,6 @@ class MetricsConsentHandlerTest : public testing::Test {
   std::unique_ptr<TestUserMetricsServiceClient> test_metrics_service_client_;
   std::unique_ptr<metrics::MetricsService> test_metrics_service_;
 
-  // Set up stubs for StatsReportingController.
-  ScopedStubInstallAttributes scoped_install_attributes_;
-  FakeSessionManagerClient fake_session_manager_client_;
-  ScopedTestDeviceSettingsService scoped_device_settings_;
-  CrosSettingsHolder cros_settings_holder_{ash::DeviceSettingsService::Get(),
-                                           RegisterPrefs(&pref_service_)};
   policy::DevicePolicyBuilder device_policy_;
 
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_keys{

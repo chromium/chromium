@@ -81,9 +81,6 @@ class FakeChromeUserManager : public user_manager::UserManagerBase {
   void SwitchActiveUser(const AccountId& account_id) override;
   void SwitchToLastActiveUser() override;
   void OnSessionStarted() override;
-  void RemoveUser(const AccountId& account_id,
-                  user_manager::UserRemovalReason reason) override;
-  void RemoveUserFromList(const AccountId& account_id) override;
   bool IsKnownUser(const AccountId& account_id) const override;
   const user_manager::User* FindUser(
       const AccountId& account_id) const override;
