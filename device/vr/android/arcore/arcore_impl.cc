@@ -166,9 +166,7 @@ void CopyArCoreImage(const ArSession* session,
   // by the row stride to advance each of them to the next row.
   const size_t data_bytes_per_row = width * src_pixel_stride;
   for (uint32_t row = 0; row < height; ++row) {
-    out_pixels.first(data_bytes_per_row)
-        .copy_from(src_span.first(data_bytes_per_row));
-
+    out_pixels.copy_prefix_from(src_span.first(data_bytes_per_row));
     out_pixels = out_pixels.subspan(data_bytes_per_row);
     src_span = src_span.subspan(src_row_stride);
   }

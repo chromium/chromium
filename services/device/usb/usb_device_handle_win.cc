@@ -1039,8 +1039,7 @@ void UsbDeviceHandleWin::GotNodeConnectionInformation(
   size_t bytes_transferred =
       std::min(sizeof(USB_DEVICE_DESCRIPTOR), buffer->size());
   base::span(buffer->as_vector())
-      .first(bytes_transferred)
-      .copy_from(
+      .copy_prefix_from(
           base::byte_span_from_ref(node_connection_info->DeviceDescriptor)
               .first(bytes_transferred));
   std::move(callback).Run(UsbTransferStatus::COMPLETED, buffer,
@@ -1074,8 +1073,7 @@ void UsbDeviceHandleWin::GotDescriptorFromNodeConnection(
   bytes_transferred = std::min(bytes_transferred, original_buffer->size());
 
   base::span(original_buffer->as_vector())
-      .first(bytes_transferred)
-      .copy_from(
+      .copy_prefix_from(
           base::span(*request_buffer)
               .subspan(sizeof(USB_DESCRIPTOR_REQUEST), bytes_transferred));
   std::move(callback).Run(UsbTransferStatus::COMPLETED, original_buffer,

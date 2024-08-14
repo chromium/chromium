@@ -928,9 +928,8 @@ void UsbDeviceHandleUsbfs::TransferComplete(
       const auto actual_length =
           base::checked_cast<size_t>(transfer->urb.actual_length);
       base::span(transfer->buffer->as_vector())
-          .first(actual_length)
-          .copy_from(base::span(*transfer->control_transfer_buffer)
-                         .subspan(8u, actual_length));
+          .copy_prefix_from(base::span(*transfer->control_transfer_buffer)
+                                .subspan(8u, actual_length));
     }
 
     transfer->RunCallback(ConvertTransferResult(-transfer->urb.status),

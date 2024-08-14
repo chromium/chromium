@@ -136,9 +136,8 @@ size_t RaceNetworkRequestWriteBufferManager::CopyAndCompleteWriteDataWithSize(
   CHECK_GE(data_pipe_buffer_size_, num_bytes_to_consume);
   CHECK_GE(buffer_size(), num_bytes_to_consume);
   CHECK_GE(read_buffer.size(), num_bytes_to_consume);
-  base::as_writable_chars(buffer_)
-      .first(num_bytes_to_consume)
-      .copy_from(read_buffer.first(num_bytes_to_consume));
+  base::as_writable_chars(buffer_).copy_prefix_from(
+      read_buffer.first(num_bytes_to_consume));
   MojoResult result = EndWriteData(num_bytes_to_consume);
   CHECK_EQ(result, MOJO_RESULT_OK);
 

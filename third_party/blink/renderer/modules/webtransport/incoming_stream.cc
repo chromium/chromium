@@ -293,9 +293,7 @@ size_t IncomingStream::RespondBYOBRequestOrEnqueueBytes(
   if (ReadableStreamBYOBRequest* request = controller_->byobRequest()) {
     DOMArrayPiece view(request->view().Get());
     size_t byob_response_length = std::min(view.ByteLength(), source.size());
-    view.ByteSpan()
-        .first(byob_response_length)
-        .copy_from(source.first(byob_response_length));
+    view.ByteSpan().copy_prefix_from(source.first(byob_response_length));
     request->respond(script_state_, byob_response_length, exception_state);
     return byob_response_length;
   }

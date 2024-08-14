@@ -90,8 +90,7 @@ void FakeUsbDeviceHandle::ControlTransfer(
     if (direction == UsbTransferDirection::INBOUND) {
       auto source_data = UNSAFE_BUFFERS(base::span(data_.get(), size_));
       base::span(buffer->as_vector())
-          .first(bytes_transferred)
-          .copy_from(source_data.subspan(position_, bytes_transferred));
+          .copy_prefix_from(source_data.subspan(position_, bytes_transferred));
       position_ += bytes_transferred;
     }
 

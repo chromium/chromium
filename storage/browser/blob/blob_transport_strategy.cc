@@ -218,7 +218,7 @@ class DataPipeTransportStrategy : public BlobTransportStrategy {
               offset_in_builder_element, num_bytes);
       DCHECK(output_buffer.data());
 
-      output_buffer.first(num_bytes).copy_from(source_buffer.first(num_bytes));
+      output_buffer.copy_prefix_from(source_buffer.first(num_bytes));
       read_result = consumer_handle_->EndReadData(num_bytes);
       DCHECK_EQ(read_result, MOJO_RESULT_OK);
 

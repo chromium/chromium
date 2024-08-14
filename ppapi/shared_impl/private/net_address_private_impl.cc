@@ -158,7 +158,7 @@ PP_Bool GetAddress(const PP_NetAddress_Private* addr,
   if (src.size() > dest.size()) {
     return PP_FALSE;
   }
-  dest.first(src.size()).copy_from(src);
+  dest.copy_prefix_from(src);
   return PP_TRUE;
 }
 

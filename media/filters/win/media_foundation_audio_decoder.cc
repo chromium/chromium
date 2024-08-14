@@ -137,7 +137,7 @@ bool PopulateInputSample(IMFSample* sample, const DecoderBuffer& input) {
   RETURN_ON_FAILURE(!current_length, "Input length is zero", false);
   RETURN_ON_FAILURE(input.size() <= max_length, "Input length is too long",
                     false);
-  destination.first(input.size()).copy_from(input);
+  destination.copy_prefix_from(input);
 
   hr = buffer->SetCurrentLength(input.size());
   RETURN_ON_HR_FAILURE(hr, "Failed to set buffer length", false);

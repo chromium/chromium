@@ -1175,9 +1175,8 @@ MojoResult WebSocketChannelImpl::ProduceData(
     const size_t size_to_write = std::min(buffer.size(), data->size());
     DCHECK_GT(size_to_write, 0u);
 
-    base::as_writable_chars(buffer)
-        .first(size_to_write)
-        .copy_from(data->first(size_to_write));
+    base::as_writable_chars(buffer).copy_prefix_from(
+        data->first(size_to_write));
     *data = data->subspan(size_to_write);
 
     const MojoResult end_result = writable_->EndWriteData(size_to_write);

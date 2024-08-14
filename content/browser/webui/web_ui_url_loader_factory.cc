@@ -133,8 +133,8 @@ void ReadData(
   CHECK_GE(buffer.size(), output_size);
   CHECK_LE(output_offset + output_size, bytes->size());
 
-  buffer.first(output_size)
-      .copy_from(base::span(*bytes).subspan(output_offset, output_size));
+  buffer.copy_prefix_from(
+      base::span(*bytes).subspan(output_offset, output_size));
   result = pipe_producer_handle->EndWriteData(output_size);
   CHECK_EQ(result, MOJO_RESULT_OK);
 

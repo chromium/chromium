@@ -483,7 +483,7 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
 
   void WriteBuffer(mojo_base::BigBuffer src_buffer) override {
     ASSERT_LE(src_buffer.size(), buffer_.size());
-    base::span(buffer_).first(src_buffer.size()).copy_from(src_buffer);
+    base::span(buffer_).copy_prefix_from(src_buffer);
   }
 
   void OnConnectionError() {
@@ -725,7 +725,7 @@ bool IsBufferDataEqual(DOMArrayBuffer* array_buffer,
 MaybeShared<DOMArrayBufferView> CreateArrayBufferViewFromBytes(
     DOMArrayBuffer* array_buffer,
     base::span<const uint8_t> data) {
-  array_buffer->ByteSpan().first(data.size()).copy_from(data);
+  array_buffer->ByteSpan().copy_prefix_from(data);
   return MaybeShared<DOMArrayBufferView>(
       blink::DOMUint8Array::Create(array_buffer, /*byte_offset=*/0,
                                    /*length=*/array_buffer->ByteLength()));

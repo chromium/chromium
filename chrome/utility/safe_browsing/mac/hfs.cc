@@ -420,9 +420,7 @@ bool HFSForkReadStream::Read(base::span<uint8_t> buf, size_t* bytes_read) {
 
     base::span<uint8_t> current_data =
         base::span(current_extent_data_).subspan(extent_offset, bytes_to_copy);
-    buf.last(buffer_space_remaining)
-        .first(bytes_to_copy)
-        .copy_from(current_data);
+    buf.last(buffer_space_remaining).copy_prefix_from(current_data);
 
     buffer_space_remaining -= bytes_to_copy;
     *bytes_read += bytes_to_copy;

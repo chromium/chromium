@@ -817,7 +817,7 @@ bool UDIFBlockChunkReadStream::CopyOutDecompressed(base::span<uint8_t> buf,
   *bytes_read = std::min(buf.size(), decompress_buffer_.size() - offset_);
   base::span<uint8_t> src_data =
       base::span(decompress_buffer_).subspan(offset_, *bytes_read);
-  buf.first(*bytes_read).copy_from(src_data);
+  buf.copy_prefix_from(src_data);
   offset_ += *bytes_read;
   return true;
 }

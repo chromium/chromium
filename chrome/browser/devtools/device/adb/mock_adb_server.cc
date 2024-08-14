@@ -359,9 +359,8 @@ void SimpleHttpServer::Connection::OnDataRead(int count) {
 
     if (bytes_processed) {
       const size_t unprocessed_size = data_buffer.size() - bytes_processed;
-      input_buffer_->everything()
-          .first(unprocessed_size)
-          .copy_from(data_buffer.subspan(bytes_processed));
+      input_buffer_->everything().copy_prefix_from(
+          data_buffer.subspan(bytes_processed));
       input_buffer_->set_offset(unprocessed_size);
     }
   } while (bytes_processed);

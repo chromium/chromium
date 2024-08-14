@@ -88,7 +88,7 @@ void BufferImplTflite::WriteBufferImpl(mojo_base::BigBuffer src_buffer) {
              base::OnceClosure completion_closure) {
             // Memory copies are fast, avoid the overhead of posting a task to
             // thread pool and do the work synchronously.
-            content->AsSpan().first(src_buffer.size()).copy_from(src_buffer);
+            content->AsSpan().copy_prefix_from(src_buffer);
             std::move(completion_closure).Run();
           },
           state_->GetContent(), std::move(src_buffer)));

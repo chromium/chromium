@@ -232,9 +232,8 @@ void BluetoothSerialPortImpl::ReadMore() {
     const size_t num_remaining_bytes =
         receive_buffer_size_ - receive_buffer_next_byte_pos_;
     const size_t bytes_to_copy = std::min(num_remaining_bytes, buffer.size());
-    buffer.first(bytes_to_copy)
-        .copy_from(receive_buffer_->span().subspan(
-            receive_buffer_next_byte_pos_, bytes_to_copy));
+    buffer.copy_prefix_from(receive_buffer_->span().subspan(
+        receive_buffer_next_byte_pos_, bytes_to_copy));
     out_stream_->EndWriteData(bytes_to_copy);
     if (bytes_to_copy == num_remaining_bytes) {  // If copied the last byte.
       ResetReceiveBuffer();

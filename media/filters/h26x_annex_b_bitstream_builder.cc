@@ -35,7 +35,7 @@ void H26xAnnexBBitstreamBuilder::Grow() {
   auto grown = base::HeapArray<uint8_t>::Uninit(data_.size() + kGrowBytes);
   // The first `pos_` bytes in `data_` are initialized. Copy them but don't read
   // from the uninitialized stuff after it.
-  grown.first(pos_).copy_from(data_.first(pos_));
+  grown.copy_prefix_from(data_.first(pos_));
   data_ = std::move(grown);
 }
 
@@ -82,8 +82,8 @@ void H26xAnnexBBitstreamBuilder::FlushReg() {
       Grow();
     }
 
-    data_.subspan(pos_, bytes_in_reg)
-        .copy_from(base::span(reg_be).first(bytes_in_reg));
+    data_.subspan(pos_).copy_prefix_from(
+        base::span(reg_be).first(bytes_in_reg));
     bits_in_buffer_ = pos_ * 8u + bits_in_reg;
     pos_ += bytes_in_reg;
   }
