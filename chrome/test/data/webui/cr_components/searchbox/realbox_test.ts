@@ -301,7 +301,7 @@ suite('NewTabPageRealboxTest', () => {
   // Test Querying Autocomplete
   //============================================================================
 
-  test('left-clicking empty input queries autocomplete', async () => {
+  test('left-clicking the input queries autocomplete', async () => {
     // Query zero-prefix matches.
     realbox.$.input.value = '';
     // Left click queries autocomplete when matches are not showing.
@@ -347,10 +347,10 @@ suite('NewTabPageRealboxTest', () => {
     await testProxy.handler.whenCalled('onFocusChanged');
     assertEquals(2, testProxy.handler.getCallCount('onFocusChanged'));
 
-    // Left click does not query autocomplete when input is non-empty.
+    // Left click queries autocomplete when input is non-empty.
     realbox.$.input.value = '   ';
     realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
-    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
   });
 
   test('focusing the input does not query autocomplete', async () => {
