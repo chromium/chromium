@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/report_controller_initializer.h"
+#include "chrome/browser/ash/report_controller_initializer/report_controller_initializer.h"
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
