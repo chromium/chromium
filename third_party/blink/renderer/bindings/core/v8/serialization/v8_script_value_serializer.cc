@@ -818,15 +818,8 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     WriteUTF8String(
         config->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>()
             .GetString());
-    WriteUint32(config->GetValueIgnoringVisibility<
-                FencedFrameConfig::Attribute::kWidth>());
-    WriteUint32(config->GetValueIgnoringVisibility<
-                FencedFrameConfig::Attribute::kHeight>());
     WriteUint32(static_cast<uint32_t>(
         config->GetAttributeVisibility<FencedFrameConfig::Attribute::kURL>(
-            PassKey())));
-    WriteUint32(static_cast<uint32_t>(
-        config->GetAttributeVisibility<FencedFrameConfig::Attribute::kWidth>(
             PassKey())));
     WriteUint32(config->deprecated_should_freeze_initial_size(PassKey()));
     std::optional<KURL> urn_uuid = config->urn_uuid(PassKey());

@@ -696,20 +696,17 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
     }
     case kFencedFrameConfigTag: {
       String url_string, shared_storage_context, urn_uuid_string;
-      uint32_t width, height, has_shared_storage_context, has_container_size,
-          container_width, container_height, has_content_size, content_width,
-          content_height, freeze_initial_size;
+      uint32_t has_shared_storage_context, has_container_size, container_width,
+          container_height, has_content_size, content_width, content_height,
+          freeze_initial_size;
       KURL url;
       std::optional<KURL> urn_uuid;
-      FencedFrameConfig::AttributeVisibility url_visibility, size_visibility;
+      FencedFrameConfig::AttributeVisibility url_visibility;
       std::optional<gfx::Size> container_size, content_size;
 
-      if (!ReadUTF8String(&url_string) || !ReadUint32(&width) ||
-          !ReadUint32(&height) ||
+      if (!ReadUTF8String(&url_string) ||
           !ReadUint32Enum<FencedFrameConfig::AttributeVisibility>(
               &url_visibility) ||
-          !ReadUint32Enum<FencedFrameConfig::AttributeVisibility>(
-              &size_visibility) ||
           !ReadUint32(&freeze_initial_size) ||
           !ReadUTF8String(&urn_uuid_string)) {
         return nullptr;
@@ -757,9 +754,9 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
         return nullptr;
       }
 
-      return FencedFrameConfig::Create(
-          url, width, height, shared_storage_context, urn_uuid, container_size,
-          content_size, url_visibility, size_visibility, freeze_initial_size);
+      return FencedFrameConfig::Create(url, shared_storage_context, urn_uuid,
+                                       container_size, content_size,
+                                       url_visibility, freeze_initial_size);
     }
     default:
       break;

@@ -2484,8 +2484,6 @@ interface Fence
     method setReportEventDataForAutomaticBeacons
 interface FencedFrameConfig
     attribute @@toStringTag
-    getter height
-    getter width
     method constructor
     method setSharedStorageContext
 interface File : Blob
