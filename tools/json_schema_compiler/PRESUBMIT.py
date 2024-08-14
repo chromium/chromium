@@ -10,11 +10,11 @@ for more details about the presubmit API built into depot_tools.
 
 import sys
 
+PRESUBMIT_VERSION = '2.0.0'
 TEST_FILE_PATTERN = [r'.+_test.py$']
 # TODO(crbug.com/359623676): Fix the lint errors in these files and remove them
 # from the list.
 PYLINT_FILES_TO_SKIP = [
-    'PRESUBMIT.py',
     'code_util.py',
     'compiler.py',
     'cpp_generator.py',
@@ -47,37 +47,27 @@ PYLINT_FILES_TO_SKIP = [
 ]
 
 
-def _CheckExterns(input_api, output_api):
+def CheckExterns(input_api, output_api):
   """Make sure tool changes update the generated externs."""
   original_sys_path = sys.path
   try:
     sys.path.insert(0, input_api.PresubmitLocalPath())
+    # pylint: disable=import-outside-toplevel
     from generate_all_externs import Generate
+    # pylint: enable=import-outside-toplevel
   finally:
     sys.path = original_sys_path
 
   return Generate(input_api, output_api, dryrun=True)
 
 
-def _CheckPylint(input_api, output_api):
+def CheckPylint(input_api, output_api):
   return input_api.canned_checks.RunPylint(
       input_api, output_api, version='2.7', files_to_skip=PYLINT_FILES_TO_SKIP
   )
 
 
-def CheckChangeOnUpload(input_api, output_api):
-  ret = input_api.canned_checks.RunUnitTestsInDirectory(
+def CheckTests(input_api, output_api):
+  return input_api.canned_checks.RunUnitTestsInDirectory(
       input_api, output_api, '.', files_to_check=TEST_FILE_PATTERN
   )
-  ret += _CheckExterns(input_api, output_api)
-  ret += _CheckPylint(input_api, output_api)
-  return ret
-
-
-def CheckChangeOnCommit(input_api, output_api):
-  ret = input_api.canned_checks.RunUnitTestsInDirectory(
-      input_api, output_api, '.', files_to_check=TEST_FILE_PATTERN
-  )
-  ret += _CheckExterns(input_api, output_api)
-  ret += _CheckPylint(input_api, output_api)
-  return ret
