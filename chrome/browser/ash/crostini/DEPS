@@ -28,7 +28,7 @@ include_rules = [
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/ash/scheduler_configuration_manager.h",
+  "+chrome/browser/ash/scheduler_config",
   "+chrome/browser/ash/settings",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part_ash.h",

@@ -27,7 +27,7 @@ include_rules = [
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/policy/scheduled_task_handler",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/ash/scheduler_configuration_manager.h",
+  "+chrome/browser/ash/scheduler_config",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part.h",

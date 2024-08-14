@@ -47,6 +47,7 @@ static_library("app_restore") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/scheduler_config",
     "//chrome/browser/profiles:profile",
     "//chrome/common:buildflags",
     "//chromeos/ash/components/dbus/resourced",
