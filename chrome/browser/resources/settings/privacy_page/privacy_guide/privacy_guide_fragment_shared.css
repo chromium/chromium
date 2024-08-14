@@ -89,15 +89,15 @@ settings-collapse-radio-button:not(:first-of-type) {
   }
 }
 
-:host-context([is-privacy-guide-v2]) .headline,
-:host-context([is-privacy-guide-v2]) .cr-secondary-text,
-:host-context([is-privacy-guide-v2]) .header-phase2 picture,
-:host-context([is-privacy-guide-v2]) .fragment-content {
+.headline,
+.cr-secondary-text,
+.header-phase2 picture,
+.fragment-content {
   animation: fade-in var(--privacy-guide-animation-duration),
       slide-in 450ms;
 }
 
-:host-context([is-privacy-guide-v2]) .header-label-phase2 {
+.header-label-phase2 {
   animation: fade-in var(--privacy-guide-animation-duration);
 }
 
