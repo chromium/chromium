@@ -23,10 +23,10 @@ class Browser;
 @protocol GridToolbarsConfigurationProvider;
 @protocol GridToolbarsMutator;
 @protocol TabCollectionConsumer;
+@protocol TabGridCommands;
 @protocol TabGridIdleStatusHandler;
 @class TabGridModeHolder;
 @class TabGridToolbarsConfiguration;
-@protocol TabGridToolbarsMainTabGridDelegate;
 @protocol TabGridToolbarCommands;
 @protocol TabGroupsCommands;
 @class TabGroupInfo;
@@ -59,15 +59,14 @@ class WebState;
 // Contained grid which provides tab grid toolbar configuration.
 @property(nonatomic, weak) id<GridToolbarsConfigurationProvider>
     containedGridToolbarsProvider;
-// Action handler for the actions related to the tab grid .
-@property(nonatomic, weak) id<TabGridToolbarsMainTabGridDelegate>
-    toolbarTabGridDelegate;
 // Grid consumer.
 @property(nonatomic, weak) id<GridConsumer> gridConsumer;
 // Delegate to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
 // Tab Groups handler.
 @property(nonatomic, weak) id<TabGroupsCommands> tabGroupsHandler;
+// Tab Grid handler.
+@property(nonatomic, weak) id<TabGridCommands> tabGridHandler;
 // Handler for tab grid toolbar commands.
 @property(nonatomic, weak) id<TabGridToolbarCommands> tabGridToolbarHandler;
 // Tab grid idle status handler.

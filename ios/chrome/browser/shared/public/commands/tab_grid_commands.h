@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+class TabGroup;
+
 // Command protocol related to the Tab Grid.
 @protocol TabGridCommands
 
@@ -25,6 +27,10 @@
 
 // Shows the tab groups panel.
 - (void)showTabGroupsPanelAnimated:(BOOL)animated;
+
+// Exits the tab grid, opening the selected tab of the current page (if
+// relevant).
+- (void)exitTabGrid;
 
 @end
 

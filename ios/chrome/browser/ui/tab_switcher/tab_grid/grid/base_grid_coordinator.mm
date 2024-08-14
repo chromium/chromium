@@ -198,6 +198,8 @@
   self.mediator.browser = self.browser;
   self.mediator.delegate = self.gridMediatorDelegate;
   self.mediator.toolbarsMutator = self.toolbarsMutator;
+  self.mediator.tabGridHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), TabGridCommands);
 
   self.gridViewController.tabGridHandler =
       HandlerForProtocol(dispatcher, TabGridCommands);

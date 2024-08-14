@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view_delegate.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
@@ -363,7 +364,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - Accessibility
 
 - (BOOL)accessibilityPerformEscape {
-  [self doneButtonTapped:self];
+  [self.tabGridHandler exitTabGrid];
   return YES;
 }
 
@@ -509,6 +510,20 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   } else {
     self.remoteTabsViewController.searchTerms = searchTerms;
   }
+}
+
+- (void)updateActivePageToCurrent {
+  TabGridPage newActivePage = self.currentPage;
+
+  if (self.currentPage == TabGridPageRemoteTabs ||
+      self.currentPage == TabGridPageTabGroups) {
+    _idleThirdPage = YES;
+    newActivePage = self.activePage;
+  }
+
+  [self.mutator pageChanged:newActivePage
+                interaction:TabSwitcherPageChangeInteraction::kNone];
+  self.activePage = newActivePage;
 }
 
 #pragma mark - Public Properties
@@ -980,25 +995,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // The bottom toolbar configuration is applied when the UI is narrow but
     // vertically long or the selection mode is enabled.
     self.configuration = TabGridConfigurationBottomToolbar;
-  }
-}
-
-// YES if there are tabs present on `page`. For `TabGridPageRemoteTabs` or
-// `TabGridPageTabGroups`, YES if there are tabs on either of the other pages.
-- (BOOL)tabsPresentForPage:(TabGridPage)page {
-  switch (page) {
-    case TabGridPageRemoteTabs:
-    case TabGridPageTabGroups:
-      return !([self.regularTabsViewController isGridEmpty] &&
-               (!IsPinnedTabsEnabled() ||
-                [self.pinnedTabsViewController isCollectionEmpty]) &&
-               [self.incognitoTabsViewController isGridEmpty]);
-    case TabGridPageRegularTabs:
-      return !([self.regularTabsViewController isGridEmpty] &&
-               (!IsPinnedTabsEnabled() ||
-                [self.pinnedTabsViewController isCollectionEmpty]));
-    case TabGridPageIncognitoTabs:
-      return ![self.incognitoTabsViewController isGridEmpty];
   }
 }
 
@@ -1824,30 +1820,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 #pragma mark - TabGridToolbarsMainTabGridDelegate
-
-- (void)doneButtonTapped:(id)sender {
-  TabGridPage newActivePage = self.currentPage;
-
-  if (self.currentPage == TabGridPageRemoteTabs ||
-      self.currentPage == TabGridPageTabGroups) {
-    _idleThirdPage = YES;
-    newActivePage = self.activePage;
-  }
-
-  [self.mutator pageChanged:newActivePage
-                interaction:TabSwitcherPageChangeInteraction::kNone];
-  self.activePage = newActivePage;
-  // Holding the done button down when it is enabled could result in done tap
-  // being triggered on release after tabs have been closed and the button
-  // disabled. Ensure that action is only taken on a valid state.
-  if ([self tabsPresentForPage:newActivePage]) {
-    [self.tabPresentationDelegate showActiveTabInPage:newActivePage
-                                         focusOmnibox:NO];
-    // Record when users exit the tab grid to return to the current foreground
-    // tab.
-    base::RecordAction(base::UserMetricsAction("MobileTabGridDone"));
-  }
-}
 
 - (void)pageControlChangedValue:(id)sender {
   // Map the page control slider position (in the range 0.0-1.0) to an

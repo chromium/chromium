@@ -20,8 +20,8 @@ class FaviconLoader;
 @protocol GridToolbarsMutator;
 @protocol RecentTabsConsumer;
 @class SceneState;
+@protocol TabGridCommands;
 @class TabGridModeHolder;
-@protocol TabGridToolbarsMainTabGridDelegate;
 
 namespace feature_engagement {
 class Tracker;
@@ -61,9 +61,8 @@ class TabRestoreService;
 @property(nonatomic, weak) id<GridToolbarsMutator> toolbarsMutator;
 // Grid consumer.
 @property(nonatomic, weak) id<GridConsumer> gridConsumer;
-// Delegate handling the Tab Grid modifications.
-@property(nonatomic, weak) id<TabGridToolbarsMainTabGridDelegate>
-    toolbarTabGridDelegate;
+// Handler for the Tab Grid commands.
+@property(nonatomic, weak) id<TabGridCommands> tabGridHandler;
 
 - (instancetype)
     initWithSessionSyncService:

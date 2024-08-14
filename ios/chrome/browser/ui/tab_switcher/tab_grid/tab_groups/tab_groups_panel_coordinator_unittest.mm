@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/disabled_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_container_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
@@ -20,6 +22,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 @class TabGridToolbarsConfiguration;
 
@@ -75,30 +79,6 @@ std::unique_ptr<KeyedService> CreateMockSyncService(
 
 @end
 
-@interface TestToolbarTabGridDelegate
-    : NSObject <TabGridToolbarsMainTabGridDelegate>
-@end
-
-@implementation TestToolbarTabGridDelegate
-
-- (void)doneButtonTapped:(id)sender {
-  // No-op.
-}
-
-- (void)pageControlChangedValue:(id)sender {
-  // No-op.
-}
-
-- (void)pageControlChangedPageByDrag:(id)sender {
-  // No-op.
-}
-
-- (void)pageControlChangedPageByTap:(id)sender {
-  // No-op.
-}
-
-@end
-
 class TabGroupsPanelCoordinatorTest : public PlatformTest {
  protected:
   TabGroupsPanelCoordinatorTest() {
@@ -108,16 +88,20 @@ class TabGroupsPanelCoordinatorTest : public PlatformTest {
         base::BindRepeating(&CreateMockSyncService));
     browser_state_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+
+    tab_grid_handler_mock_ = OCMProtocolMock(@protocol(TabGridCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:tab_grid_handler_mock_
+                     forProtocol:@protocol(TabGridCommands)];
+
     base_view_controller_ = [[UIViewController alloc] init];
     toolbars_mutator_ = [[TestToolbarsMutator alloc] init];
-    toolbar_tab_grid_delegate_ = [[TestToolbarTabGridDelegate alloc] init];
     disabled_grid_view_controller_delegate_ =
         [[TestDisabledGridViewControllerDelegate alloc] init];
     coordinator_ = [[TabGroupsPanelCoordinator alloc]
             initWithBaseViewController:base_view_controller_
                         regularBrowser:browser_.get()
                        toolbarsMutator:toolbars_mutator_
-                toolbarTabGridDelegate:toolbar_tab_grid_delegate_
         disabledViewControllerDelegate:disabled_grid_view_controller_delegate_];
   }
 
@@ -128,9 +112,9 @@ class TabGroupsPanelCoordinatorTest : public PlatformTest {
   UIViewController* base_view_controller_;
   TestToolbarsMutator* toolbars_mutator_;
   TabGroupsPanelCoordinator* coordinator_;
-  TestToolbarTabGridDelegate* toolbar_tab_grid_delegate_;
   TestDisabledGridViewControllerDelegate*
       disabled_grid_view_controller_delegate_;
+  id tab_grid_handler_mock_;
 };
 
 // Tests that the mediator and view controllers are nil before `start`.
@@ -147,8 +131,6 @@ TEST_F(TabGroupsPanelCoordinatorTest, NoIncognitoPolicy_TabGroupsShown) {
 
   EXPECT_NE(nil, coordinator_.mediator);
   EXPECT_EQ(toolbars_mutator_, coordinator_.mediator.toolbarsMutator);
-  EXPECT_EQ(toolbar_tab_grid_delegate_,
-            coordinator_.mediator.toolbarTabGridDelegate);
   EXPECT_NE(nil, coordinator_.gridViewController);
   EXPECT_EQ(nil, coordinator_.disabledViewController);
   EXPECT_NE(nil, coordinator_.gridContainerViewController);
@@ -169,8 +151,6 @@ TEST_F(TabGroupsPanelCoordinatorTest, IncognitoDisabled_TabGroupsShown) {
 
   EXPECT_NE(nil, coordinator_.mediator);
   EXPECT_EQ(toolbars_mutator_, coordinator_.mediator.toolbarsMutator);
-  EXPECT_EQ(toolbar_tab_grid_delegate_,
-            coordinator_.mediator.toolbarTabGridDelegate);
   EXPECT_NE(nil, coordinator_.gridViewController);
   EXPECT_EQ(nil, coordinator_.disabledViewController);
   EXPECT_NE(nil, coordinator_.gridContainerViewController);
@@ -191,8 +171,6 @@ TEST_F(TabGroupsPanelCoordinatorTest, IncognitoForced_TabGroupsDisabled) {
 
   EXPECT_NE(nil, coordinator_.mediator);
   EXPECT_EQ(toolbars_mutator_, coordinator_.mediator.toolbarsMutator);
-  EXPECT_EQ(toolbar_tab_grid_delegate_,
-            coordinator_.mediator.toolbarTabGridDelegate);
   EXPECT_EQ(nil, coordinator_.gridViewController);
   EXPECT_NE(nil, coordinator_.disabledViewController);
   EXPECT_EQ(disabled_grid_view_controller_delegate_,

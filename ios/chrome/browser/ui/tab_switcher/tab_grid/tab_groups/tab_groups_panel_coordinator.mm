@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/disabled_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_container_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mediator.h"
@@ -28,8 +30,6 @@
 @implementation TabGroupsPanelCoordinator {
   // Mutator that handles toolbars changes.
   __weak id<GridToolbarsMutator> _toolbarsMutator;
-  // Delegate that handles toolbars actions.
-  __weak id<TabGridToolbarsMainTabGridDelegate> _toolbarTabGridDelegate;
   // Delegate that handles the screen when the Tab Groups panel is disabled.
   __weak id<DisabledGridViewControllerDelegate> _disabledViewControllerDelegate;
   // The coordinator to handle the confirmation dialog for the action taken for
@@ -41,8 +41,6 @@
         initWithBaseViewController:(UIViewController*)baseViewController
                     regularBrowser:(Browser*)regularBrowser
                    toolbarsMutator:(id<GridToolbarsMutator>)toolbarsMutator
-            toolbarTabGridDelegate:
-                (id<TabGridToolbarsMainTabGridDelegate>)toolbarTabGridDelegate
     disabledViewControllerDelegate:
         (id<DisabledGridViewControllerDelegate>)disabledViewControllerDelegate {
   CHECK(baseViewController);
@@ -54,7 +52,6 @@
                                    browser:regularBrowser];
   if (self) {
     _toolbarsMutator = toolbarsMutator;
-    _toolbarTabGridDelegate = toolbarTabGridDelegate;
     _disabledViewControllerDelegate = disabledViewControllerDelegate;
   }
   return self;
@@ -96,7 +93,8 @@
                       browserList:browserList];
 
   _mediator.toolbarsMutator = _toolbarsMutator;
-  _mediator.toolbarTabGridDelegate = _toolbarTabGridDelegate;
+  _mediator.tabGridHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), TabGridCommands);
   _mediator.consumer = _gridViewController;
   _mediator.delegate = self;
   _gridViewController.mutator = _mediator;
@@ -112,7 +110,6 @@
   }
   [_mediator disconnect];
   _mediator.toolbarsMutator = nil;
-  _mediator.toolbarTabGridDelegate = nil;
   _mediator = nil;
   _gridViewController = nil;
   _disabledViewController.delegate = nil;

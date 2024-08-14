@@ -11,8 +11,6 @@
 // method is the result of an action on a toolbar button.
 @protocol TabGridToolbarsMainTabGridDelegate
 
-- (void)doneButtonTapped:(id)sender;
-
 - (void)pageControlChangedValue:(id)sender;
 
 - (void)pageControlChangedPageByDrag:(id)sender;

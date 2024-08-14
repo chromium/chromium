@@ -35,6 +35,7 @@ enum class IPHDismissalReasonType;
 @protocol TabCollectionConsumer;
 @protocol TabCollectionDragDropHandler;
 @protocol TabGridActivityObserver;
+@protocol TabGridCommands;
 @protocol TabGridConsumer;
 @protocol TabContextMenuProvider;
 @protocol TabGridMutator;
@@ -101,6 +102,9 @@ enum class TabGridPageConfiguration {
                         UISearchBarDelegate>
 
 @property(nonatomic, weak) id<ApplicationCommands> handler;
+
+// Handler for the TabGrid commands.
+@property(nonatomic, weak) id<TabGridCommands> tabGridHandler;
 
 // Delegate for this view controller to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
@@ -198,6 +202,9 @@ enum class TabGridPageConfiguration {
 // Sets both the current page and page control's selected page to `page`.
 // Animation is used if `animated` is YES.
 - (void)setCurrentPageAndPageControl:(TabGridPage)page animated:(BOOL)animated;
+
+// Updates the active page to be the current page.
+- (void)updateActivePageToCurrent;
 
 @end
 

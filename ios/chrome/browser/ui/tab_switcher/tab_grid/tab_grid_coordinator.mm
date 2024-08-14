@@ -751,6 +751,20 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   return TabGridTransitionType::kNormal;
 }
 
+// YES if there are tabs present on `page`. Should be called for regular or
+// incognito.
+- (BOOL)tabsPresentForPage:(TabGridPage)page {
+  switch (page) {
+    case TabGridPageRegularTabs:
+      return !self.regularBrowser->GetWebStateList()->empty();
+    case TabGridPageIncognitoTabs:
+      return !self.incognitoBrowser->GetWebStateList()->empty();
+    case TabGridPageRemoteTabs:
+    case TabGridPageTabGroups:
+      NOTREACHED_NORETURN();
+  }
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -781,6 +795,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   baseViewController.tabPresentationDelegate = self;
   baseViewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
   baseViewController.delegate = self;
+  baseViewController.tabGridHandler = self;
   baseViewController.mutator = _mediator;
   _baseViewController = baseViewController;
 
@@ -819,7 +834,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       _regularGridCoordinator.pinnedTabsViewController;
   baseViewController.regularGridHandler = _regularGridCoordinator.gridHandler;
   self.regularTabsMediator = _regularGridCoordinator.regularGridMediator;
-  self.regularTabsMediator.toolbarTabGridDelegate = baseViewController;
 
   ChromeBrowserState* regularBrowserState =
       _regularBrowser ? _regularBrowser->GetBrowserState() : nullptr;
@@ -861,7 +875,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.incognitoTabsMediator
       initializeSupervisedUserCapabilitiesObserver:
           IdentityManagerFactory::GetForBrowserState(browser_state)];
-  self.incognitoTabsMediator.toolbarTabGridDelegate = baseViewController;
 
   baseViewController.incognitoGridHandler =
       _incognitoGridCoordinator.gridHandler;
@@ -885,7 +898,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
             initWithBaseViewController:_baseViewController
                         regularBrowser:_regularBrowser
                        toolbarsMutator:_toolbarsCoordinator.toolbarsMutator
-                toolbarTabGridDelegate:_baseViewController
         disabledViewControllerDelegate:_baseViewController];
 
     [_tabGroupsPanelCoordinator start];
@@ -940,7 +952,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                        GetForBrowserState(regularBrowserState)
                         modeHolder:_modeHolder];
     self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
-    self.remoteTabsMediator.toolbarTabGridDelegate = self.baseViewController;
+    self.remoteTabsMediator.tabGridHandler = self;
     baseViewController.remoteTabsViewController.imageDataSource =
         self.remoteTabsMediator;
     baseViewController.remoteTabsViewController.delegate =
@@ -1648,6 +1660,19 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   CHECK(IsTabGroupSyncEnabled());
   [self.baseViewController setCurrentPageAndPageControl:TabGridPageTabGroups
                                                animated:animated];
+}
+
+- (void)exitTabGrid {
+  [self.baseViewController updateActivePageToCurrent];
+  TabGridPage targetPage = self.baseViewController.activePage;
+
+  // Holding the done button down when it is enabled could result in done tap
+  // being triggered on release after tabs have been closed and the button
+  // disabled. Ensure that action is only taken on a valid state.
+  if (![self tabsPresentForPage:targetPage]) {
+    return;
+  }
+  [self showActiveTabInPage:targetPage focusOmnibox:NO];
 }
 
 #pragma mark - SnackbarCoordinatorDelegate

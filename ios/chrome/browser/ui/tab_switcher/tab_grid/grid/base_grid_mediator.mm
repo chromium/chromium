@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -74,7 +75,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_holder.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_observing.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_action_type.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
@@ -234,7 +234,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   _delegate = nil;
   _toolbarsMutator = nil;
   _containedGridToolbarsProvider = nil;
-  _toolbarTabGridDelegate = nil;
+  _tabGridHandler = nil;
   _gridConsumer = nil;
   _tabPresentationDelegate = nil;
 
@@ -1716,7 +1716,8 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
     // Records action when user exit the selection mode.
     base::RecordAction(base::UserMetricsAction("MobileTabGridSelectionDone"));
   } else {
-    [self.toolbarTabGridDelegate doneButtonTapped:sender];
+    base::RecordAction(base::UserMetricsAction("MobileTabGridDone"));
+    [self.tabGridHandler exitTabGrid];
   }
 }
 
