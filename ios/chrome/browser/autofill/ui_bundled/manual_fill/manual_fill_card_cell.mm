@@ -302,6 +302,7 @@ CGFloat GPayIconTopAnchorOffset() {
     }
 #endif
     GiveAccessibilityContextToCellAndButton(self, self.overflowMenuButton,
+                                            self.autofillFormButton,
                                             accessibilityLabel);
   }
 }

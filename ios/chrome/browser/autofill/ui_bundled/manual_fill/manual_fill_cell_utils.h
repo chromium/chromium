@@ -205,14 +205,15 @@ UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view,
 NSMutableAttributedString* CreateSiteNameLabelAttributedText(
     ManualFillSiteInfo* siteInfo);
 
-// Sets the cell's and its overflow menu button's accessibility label with the
-// given `accessibility_context`. `accessibility_context` contains information
-// on the position of the cell and its title (if any). Adding this information
-// to the accessibility labels gives more context on the UI elements, and,
-// therefore, allows accessibility users to better differentiate the different
-// cells and their buttons.
+// Sets the cell's as well as its overflow menu and "Autofill Form" buttons'
+// accessibility label with the given `accessibility_context`.
+// `accessibility_context` contains information on the position of the cell and
+// its title (if any). Adding this information to the accessibility labels gives
+// more context on the UI elements, and, therefore, allows accessibility users
+// to better differentiate the different cells and their buttons.
 void GiveAccessibilityContextToCellAndButton(TableViewCell* cell,
                                              UIButton* overflow_menu_button,
+                                             UIButton* autofill_form_button,
                                              NSString* accessibility_context);
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_CELL_UTILS_H_

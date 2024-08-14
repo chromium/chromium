@@ -17,6 +17,9 @@ NSString* const kExpandedManualFillHeaderTopViewID =
 NSString* const kExpandedManualFillChromeLogoID =
     @"ExpandedManualFillChromeLogoID";
 
+NSString* const kExpandedManualFillAutofillFormButtonID =
+    @"ExpandedManualFillAutofillFormButtonID";
+
 NSString* const kExpandedManualFillOverflowMenuID =
     @"ExpandedManualFillOverflowMenuID";
 

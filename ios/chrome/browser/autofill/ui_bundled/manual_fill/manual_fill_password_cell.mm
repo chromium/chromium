@@ -244,6 +244,7 @@ static const CGFloat kOffsetForConnectedCell = 16;
           [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
                                      attributedText.string];
       GiveAccessibilityContextToCellAndButton(self, self.overflowMenuButton,
+                                              self.autofillFormButton,
                                               accessibilityLabel);
     }
     self.siteNameLabel.hidden = NO;

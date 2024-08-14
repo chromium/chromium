@@ -201,6 +201,7 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
   if (IsKeyboardAccessoryUpgradeEnabled()) {
     GiveAccessibilityContextToCellAndButton(self, self.overflowMenuButton,
+                                            self.autofillFormButton,
                                             cellIndexAccessibilityLabel);
   }
 

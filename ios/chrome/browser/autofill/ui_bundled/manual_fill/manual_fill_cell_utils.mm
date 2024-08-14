@@ -566,6 +566,8 @@ UIView* CreateGraySeparatorForContainer(UIView* container) {
 
 UIButton* CreateAutofillFormButton() {
   UIButton* button = PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
+  button.accessibilityIdentifier =
+      manual_fill::kExpandedManualFillAutofillFormButtonID;
   UIButtonConfiguration* buttonConfiguration = button.configuration;
   buttonConfiguration.contentInsets =
       NSDirectionalEdgeInsetsMake(kAutofillFormButtonVerticalInsets, 0,
@@ -648,12 +650,17 @@ NSMutableAttributedString* CreateSiteNameLabelAttributedText(
 
 void GiveAccessibilityContextToCellAndButton(TableViewCell* cell,
                                              UIButton* overflow_menu_button,
+                                             UIButton* autofill_form_button,
                                              NSString* accessibility_context) {
   CHECK(cell);
   CHECK(overflow_menu_button);
+  CHECK(autofill_form_button);
 
   cell.accessibilityLabel = accessibility_context;
   overflow_menu_button.accessibilityLabel = l10n_util::GetNSStringF(
       IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL,
+      base::SysNSStringToUTF16(accessibility_context));
+  autofill_form_button.accessibilityLabel = l10n_util::GetNSStringF(
+      IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_ACCESSIBILITY_LABEL,
       base::SysNSStringToUTF16(accessibility_context));
 }

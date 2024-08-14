@@ -6234,6 +6234,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility label for the 3-dot menu button displayed in the manual fallback entity cells, which allows to take action on the entity (e.g., edit the entity). This label is ending with the accessibility label of the cell the button is displayed in.">
         More options for <ph name="CELL_ACCESSIBILITY_LABEL">$1<ex>1 of 3 passwords, twitter.com</ex></ph>
       </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility label for the button displayed in the password, payment method and address manual fallback cells, which allows the user to fill the current form with the autofill data. In contrast to all the other buttons on this screen (which fill a field), this button fills the entire form. This label is ending with the accessibility label of the cell the button is displayed in.">
+        Autofill Form with <ph name="CELL_ACCESSIBILITY_LABEL">$1<ex>1 of 3 passwords, twitter.com</ex></ph>
+      </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_TITLE" desc="Title of the button displayed in the password, payment method and address manual fallback cells, which allows the user to fill the current form with the autofill data. In contrast to all the other buttons on this screen (which fill a field), this button fills the entire form.">
         Autofill Form
       </message>
