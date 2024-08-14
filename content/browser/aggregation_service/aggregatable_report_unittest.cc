@@ -11,6 +11,7 @@
 #include <limits>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -47,7 +48,7 @@ namespace {
 
 testing::AssertionResult CborMapContainsKeyAndType(
     const cbor::Value::MapValue& map,
-    const std::string& key,
+    std::string_view key,
     cbor::Value::Type value_type) {
   const auto it = map.find(cbor::Value(key));
   if (it == map.end()) {

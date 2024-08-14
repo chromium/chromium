@@ -1597,7 +1597,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 })",
           kOriginStringA, kOriginStringA, kOriginStringA, kOriginStringA,
           kOriginStringA, kOriginStringA,
-          aggregation_service::kDefaultAggregationCoordinatorAwsCloud));
+          std::string(
+              aggregation_service::kDefaultAggregationCoordinatorAwsCloud)
+              .c_str()));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.priority = 2.0;

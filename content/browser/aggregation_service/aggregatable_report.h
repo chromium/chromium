@@ -212,7 +212,7 @@ class CONTENT_EXPORT AggregatableReport {
   const std::vector<AggregationServicePayload>& payloads() const {
     return payloads_;
   }
-  const std::string& shared_info() const { return shared_info_; }
+  std::string_view shared_info() const { return shared_info_; }
   std::optional<uint64_t> debug_key() const { return debug_key_; }
   const base::flat_map<std::string, std::string>& additional_fields() const {
     return additional_fields_;
@@ -391,7 +391,7 @@ class CONTENT_EXPORT AggregatableReportRequest {
   const AggregatableReportSharedInfo& shared_info() const {
     return shared_info_;
   }
-  const std::string& reporting_path() const { return reporting_path_; }
+  std::string_view reporting_path() const { return reporting_path_; }
   std::optional<uint64_t> debug_key() const { return debug_key_; }
   const base::flat_map<std::string, std::string>& additional_fields() const {
     return additional_fields_;

@@ -4,6 +4,7 @@
 
 #include <iterator>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -26,27 +27,28 @@ namespace {
 
 // If you change any of the switch strings, update the `kHelpMsg`,
 // `kAllowedSwitches` and `kRequiredSwitches` accordingly.
-constexpr char kSwitchHelp[] = "help";
-constexpr char kSwitchHelpShort[] = "h";
-constexpr char kSwitchOperation[] = "operation";
-constexpr char kSwitchBucket[] = "bucket";
-constexpr char kSwitchValue[] = "value";
-constexpr char kSwitchAlternativeAggregationMode[] =
+constexpr std::string_view kSwitchHelp = "help";
+constexpr std::string_view kSwitchHelpShort = "h";
+constexpr std::string_view kSwitchOperation = "operation";
+constexpr std::string_view kSwitchBucket = "bucket";
+constexpr std::string_view kSwitchValue = "value";
+constexpr std::string_view kSwitchAlternativeAggregationMode =
     "alternative-aggregation-mode";
-constexpr char kSwitchReportingOrigin[] = "reporting-origin";
-constexpr char kSwitchHelperKeyUrls[] = "helper-key-urls";
-constexpr char kSwitchHelperKeyFiles[] = "helper-key-files";
-constexpr char kSwitchOutputFile[] = "output-file";
-constexpr char kSwitchOutputUrl[] = "output-url";
-constexpr char kSwitchDisablePayloadEncryption[] = "disable-payload-encryption";
-constexpr char kSwitchAdditionalFields[] = "additional-fields";
-constexpr char kSwitchAdditionalSharedInfoFields[] =
+constexpr std::string_view kSwitchReportingOrigin = "reporting-origin";
+constexpr std::string_view kSwitchHelperKeyUrls = "helper-key-urls";
+constexpr std::string_view kSwitchHelperKeyFiles = "helper-key-files";
+constexpr std::string_view kSwitchOutputFile = "output-file";
+constexpr std::string_view kSwitchOutputUrl = "output-url";
+constexpr std::string_view kSwitchDisablePayloadEncryption =
+    "disable-payload-encryption";
+constexpr std::string_view kSwitchAdditionalFields = "additional-fields";
+constexpr std::string_view kSwitchAdditionalSharedInfoFields =
     "additional-shared-info-fields";
-constexpr char kSwitchEnableDebugMode[] = "enable-debug-mode";
-constexpr char kSwitchApiVersion[] = "api-version";
-constexpr char kSwitchApi[] = "api";
+constexpr std::string_view kSwitchEnableDebugMode = "enable-debug-mode";
+constexpr std::string_view kSwitchApiVersion = "api-version";
+constexpr std::string_view kSwitchApi = "api";
 
-constexpr char kHelpMsg[] = R"(
+constexpr std::string_view kHelpMsg = R"(
   aggregation_service_tool [--operation=<operation>] --bucket=<bucket>
   --value=<value> --aggregation-mode=<aggregation_mode>
   --reporting-origin=<reporting_origin>
@@ -137,7 +139,7 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  const std::vector<std::string> kAllowedSwitches = {
+  const std::vector<std::string_view> kAllowedSwitches = {
       kSwitchHelp,
       kSwitchHelpShort,
       kSwitchOperation,
@@ -171,10 +173,10 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  const std::vector<std::string> kRequiredSwitches = {
+  const std::vector<std::string_view> kRequiredSwitches = {
       kSwitchBucket, kSwitchValue, kSwitchReportingOrigin};
-  for (const std::string& required_switch : kRequiredSwitches) {
-    if (!command_line.HasSwitch(required_switch.c_str())) {
+  for (std::string_view required_switch : kRequiredSwitches) {
+    if (!command_line.HasSwitch(required_switch)) {
       LOG(ERROR) << "aggregation_service_tool expects " << required_switch
                  << " to be specified.";
       PrintHelp();
@@ -217,7 +219,7 @@ int main(int argc, char* argv[]) {
         base::SplitString(switch_value, /*separators=*/" ",
                           base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
-    for (const std::string& url_string : helper_key_url_strings) {
+    for (std::string_view url_string : helper_key_url_strings) {
       GURL helper_key_url(url_string);
       if (!network::IsUrlPotentiallyTrustworthy(helper_key_url)) {
         LOG(ERROR) << "Helper key URL " << url_string

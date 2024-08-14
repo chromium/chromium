@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AGGREGATION_SERVICE_AGGREGATION_COORDINATOR_UTILS_H_
 #define COMPONENTS_AGGREGATION_SERVICE_AGGREGATION_COORDINATOR_UTILS_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -12,10 +13,10 @@
 
 namespace aggregation_service {
 
-constexpr char kDefaultAggregationCoordinatorAwsCloud[] =
+inline constexpr std::string_view kDefaultAggregationCoordinatorAwsCloud =
     "https://publickeyservice.msmt.aws.privacysandboxservices.com";
 
-constexpr char kDefaultAggregationCoordinatorGcpCloud[] =
+inline constexpr std::string_view kDefaultAggregationCoordinatorGcpCloud =
     "https://publickeyservice.msmt.gcp.privacysandboxservices.com";
 
 COMPONENT_EXPORT(AGGREGATION_SERVICE)

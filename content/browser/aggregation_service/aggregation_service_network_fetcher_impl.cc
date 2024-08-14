@@ -249,7 +249,7 @@ void AggregationServiceNetworkFetcherImpl::OnError(
     const GURL& url,
     NetworkFetchCallback callback,
     FetchStatus error,
-    const std::string& error_msg) {
+    std::string_view error_msg) {
   CHECK_NE(error, FetchStatus::kSuccess);
   RecordFetchStatus(error);
 

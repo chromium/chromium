@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -43,7 +44,7 @@ using AssemblyCallback = AggregatableReportAssembler::AssemblyCallback;
 using PublicKeyFetchStatus = AggregationServiceKeyFetcher::PublicKeyFetchStatus;
 using AssemblyStatus = AggregatableReportAssembler::AssemblyStatus;
 
-constexpr char kReportAssemblerStatusHistogramName[] =
+constexpr std::string_view kReportAssemblerStatusHistogramName =
     "PrivacySandbox.AggregationService.ReportAssembler.Status";
 
 auto CloneRequestAndReturnReport(std::optional<AggregatableReportRequest>* out,

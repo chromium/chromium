@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -32,7 +33,7 @@ namespace aggregation_service {
 namespace {
 
 std::optional<content::TestAggregationService::Operation> ConvertToOperation(
-    const std::string& operation_string) {
+    std::string_view operation_string) {
   if (operation_string == "histogram")
     return content::TestAggregationService::Operation::kHistogram;
 
@@ -40,7 +41,7 @@ std::optional<content::TestAggregationService::Operation> ConvertToOperation(
 }
 
 std::optional<content::TestAggregationService::AggregationMode>
-ConvertToAggregationMode(const std::string& aggregation_mode_string) {
+ConvertToAggregationMode(std::string_view aggregation_mode_string) {
   if (aggregation_mode_string == "tee-based")
     return content::TestAggregationService::AggregationMode::kTeeBased;
   if (aggregation_mode_string == "experimental-poplar")
@@ -92,7 +93,7 @@ bool AggregationServiceTool::SetPublicKeys(
 
 bool AggregationServiceTool::SetPublicKeysFromFile(
     const GURL& url,
-    const std::string& json_file_path) {
+    std::string_view json_file_path) {
 #if BUILDFLAG(IS_WIN)
   base::FilePath json_file(base::UTF8ToWide(json_file_path));
 #else

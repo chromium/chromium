@@ -56,7 +56,7 @@
 namespace content {
 namespace {
 
-constexpr char kKeyAggregationServicePayloads[] =
+constexpr std::string_view kKeyAggregationServicePayloads =
     "aggregation_service_payloads";
 
 std::string ReadStringFromFile(const base::FilePath& file, bool trim = false) {
@@ -186,7 +186,7 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
   testing::AssertionResult VerifyReport(
       base::Value::Dict actual_report,
       base::Value::Dict expected_report,
-      const std::string& base64_encoded_expected_cleartext_payload) {
+      std::string_view base64_encoded_expected_cleartext_payload) {
     std::optional<base::Value> actual_payloads =
         actual_report.Extract(kKeyAggregationServicePayloads);
     if (!actual_payloads) {
@@ -209,7 +209,7 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
                 "the aggregation service payloads";
     }
 
-    static constexpr char kKeySharedInfo[] = "shared_info";
+    static constexpr std::string_view kKeySharedInfo = "shared_info";
     const std::string* shared_info = expected_report.FindString(kKeySharedInfo);
     if (!shared_info) {
       return testing::AssertionFailure()
@@ -236,8 +236,8 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
   testing::AssertionResult VerifyAggregationServicePayloads(
       base::Value::List actual_payloads,
       base::Value::List expected_payloads,
-      const std::string& base64_encoded_expected_cleartext_payload,
-      const std::string& shared_info) {
+      std::string_view base64_encoded_expected_cleartext_payload,
+      std::string_view shared_info) {
     if (actual_payloads.size() != 1u) {
       return testing::AssertionFailure()
              << kKeyAggregationServicePayloads
@@ -264,7 +264,7 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
              << "[0] not a dictionary in the expected report";
     }
 
-    static constexpr char kKeyPayload[] = "payload";
+    static constexpr std::string_view kKeyPayload = "payload";
 
     std::optional<base::Value> actual_encrypted_payload =
         actual_payload->Extract(kKeyPayload);
@@ -321,8 +321,8 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
 
   // Returns empty vector in case of an error.
   std::vector<uint8_t> DecryptPayload(
-      const std::string& base64_encoded_encrypted_payload,
-      const std::string& shared_info) {
+      std::string_view base64_encoded_encrypted_payload,
+      std::string_view shared_info) {
     std::optional<std::vector<uint8_t>> encrypted_payload =
         base::Base64Decode(base64_encoded_encrypted_payload);
     if (!encrypted_payload) {

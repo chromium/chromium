@@ -4,7 +4,6 @@
 
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 
-#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -28,7 +27,7 @@ std::vector<url::Origin> DefaultOrigins() {
           url::Origin::Create(GURL(kDefaultAggregationCoordinatorGcpCloud))};
 }
 
-std::vector<url::Origin> Parse(const std::string& unparsed) {
+std::vector<url::Origin> Parse(std::string_view unparsed) {
   std::vector<url::Origin> parsed;
 
   std::vector<std::string_view> tokens = base::SplitStringPiece(
@@ -53,7 +52,7 @@ class CoordinatorOrigins {
   CoordinatorOrigins() = default;
   ~CoordinatorOrigins() = default;
 
-  explicit CoordinatorOrigins(const std::string& unparsed)
+  explicit CoordinatorOrigins(std::string_view unparsed)
       : CoordinatorOrigins(Parse(unparsed)) {}
 
   explicit CoordinatorOrigins(std::vector<url::Origin> origins)

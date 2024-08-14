@@ -13,6 +13,7 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -61,8 +62,8 @@ namespace {
 constexpr size_t kBitsPerByte = 8;
 
 // Payload contents:
-constexpr char kHistogramValue[] = "histogram";
-constexpr char kOperationKey[] = "operation";
+constexpr std::string_view kHistogramValue = "histogram";
+constexpr std::string_view kOperationKey = "operation";
 
 std::vector<GURL> GetDefaultProcessingUrls(
     blink::mojom::AggregationServiceMode aggregation_mode,
@@ -582,7 +583,7 @@ bool FilteringIdsFitInMaxBytes(
 
 GURL GetAggregationServiceProcessingUrl(const url::Origin& origin) {
   GURL::Replacements replacements;
-  static constexpr char kEndpointPath[] =
+  static constexpr std::string_view kEndpointPath =
       ".well-known/aggregation-service/v1/public-keys";
   replacements.SetPathStr(kEndpointPath);
   return origin.GetURL().ReplaceComponents(replacements);
