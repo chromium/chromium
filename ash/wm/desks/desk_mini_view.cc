@@ -30,6 +30,7 @@
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
+#include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/float/float_controller.h"
@@ -90,6 +91,18 @@ bool ContainsAppWindows(Desk* desk) {
     return false;
   return desk->ContainsAppWindows() ||
          !DesksController::Get()->visible_on_all_desks_windows().empty();
+}
+
+// Returns true if the saved desks options are shown in the context menu, or if
+// they would have been shown but the Saved Desk UI revamp feature was not
+// enabled.
+bool ShouldRecordSavedDesksOptionsHistogram(Desk* desk,
+                                            DeskBarViewBase* bar_view) {
+  return desk->is_active() &&
+         (desk->ContainsAppWindows() ||
+          !DesksController::Get()->visible_on_all_desks_windows().empty()) &&
+         bar_view->type() == DeskBarViewBase::Type::kOverview &&
+         saved_desk_util::ShouldShowSavedDesksOptions();
 }
 
 }  // namespace
@@ -446,7 +459,6 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
       show_on_top ? views::MenuAnchorPosition::kBubbleTopRight
                   : views::MenuAnchorPosition::kBubbleBottomRight;
 
-  // TODO(http://b/346636911): Account for incognito windows.
   // TODO(hewer): Clarify with UX if the On*ButtonPressed functions should
   // appear when the context menu is not on the current desk or for the desks
   // button.
@@ -505,6 +517,15 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
           ? kDeskButtonDeskBarOpenContextMenuHistogramName
           : kOverviewDeskBarOpenContextMenuHistogramName,
       true);
+
+  // Holdback metrics for the Saved Desk UI revamp.
+  if (ShouldRecordSavedDesksOptionsHistogram(desk_, owner_bar_.get())) {
+    if (features::IsSavedDeskUiRevampEnabled()) {
+      base::UmaHistogramBoolean(kSavedDeskMenuOptionsShownHistogramName, true);
+    } else {
+      base::UmaHistogramBoolean(kSavedDeskButtonsShownHistogramName, true);
+    }
+  }
 
   desk_preview_->SetHighlightOverlayVisibility(true);
 
@@ -865,12 +886,14 @@ void DeskMiniView::OnDeskPreviewPressed() {
 
 void DeskMiniView::OnSaveDeskAsTemplateButtonPressed() {
   CHECK(IsInOverviewSession());
+  base::UmaHistogramBoolean(kSaveAsTemplatePressedHistogramName, true);
   GetOverviewSession()->saved_desk_presenter()->MaybeSaveActiveDeskAsSavedDesk(
       DeskTemplateType::kTemplate, root_window_);
 }
 
 void DeskMiniView::OnSaveDeskForLaterButtonPressed() {
   CHECK(IsInOverviewSession());
+  base::UmaHistogramBoolean(kSaveForLaterPressedHistogramName, true);
   GetOverviewSession()->saved_desk_presenter()->MaybeSaveActiveDeskAsSavedDesk(
       DeskTemplateType::kSaveAndRecall, root_window_);
 }

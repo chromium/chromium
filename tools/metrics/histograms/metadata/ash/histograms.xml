@@ -3337,6 +3337,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.DeskTemplate.SaveAsTemplatePressed" enum="BooleanHit"
+    expires_after="2025-08-12">
+  <owner>hewer@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Emitted every time the &quot;Save desk as template&quot; option in the desk
+    action context menu is pressed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.SavedDeskButtonsShown" enum="BooleanHit"
+    expires_after="2025-08-12">
+  <owner>hewer@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Emitted every time the desk action context menu opens and the saved desk
+    options are shown.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.SavedDeskMenuOptionsShown" enum="BooleanHit"
+    expires_after="2025-08-12">
+  <owner>hewer@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Emitted every time the desk action context menu opens and the saved desk
+    options are not shown, but would have if the Saved Desk UI revamp feature
+    was enabled.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.SaveForLaterPressed" enum="BooleanHit"
+    expires_after="2025-08-12">
+  <owner>hewer@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Emitted every time the &quot;Save desk for later&quot; option in the desk
+    action context menu is pressed.
+  </summary>
+</histogram>
+
 <histogram name="Ash.DeskTemplate.TabCount" units="count"
     expires_after="2025-02-01">
   <owner>dandersson@chromium.org</owner>
