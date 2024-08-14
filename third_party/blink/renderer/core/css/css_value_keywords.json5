@@ -794,6 +794,7 @@
     //
     // text-box-edge
     //
+    // "auto"
     // "alphabetic",
     // "text"
     //
@@ -802,7 +803,6 @@
     // "ideographic-ink",
     "cap",
     "ex",
-    "leading",
 
     //
     // text-box-trim

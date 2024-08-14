@@ -8733,7 +8733,7 @@ const CSSValue* TextBoxEdge::CSSValueFromComputedStyleInternal(
         return CSSIdentifierValue::Create(text_box_edge.Over());
       case kAlphabetic:
         break;
-      case kLeading:
+      case kAuto:
       case kText:
         NOTREACHED_NORETURN();
     }

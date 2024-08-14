@@ -1421,7 +1421,7 @@ const gCSSProperties2 = {
   'text-box-edge': {
     // https://drafts.csswg.org/css-inline-3/#text-edges
     types: [
-      { type: 'discrete', options: [ [ 'leading', 'text' ] ] }
+      { type: 'discrete', options: [ [ 'auto', 'text' ] ] }
     ]
   },
   'text-box-trim': {

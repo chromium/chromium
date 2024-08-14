@@ -7566,10 +7566,11 @@ CSSValue* ConsumeTextDecorationLine(CSSParserTokenStream& stream) {
 
 // Consume the `text-box-edge` production.
 CSSValue* ConsumeTextBoxEdge(CSSParserTokenStream& stream) {
-  if (CSSIdentifierValue* leading =
-          ConsumeIdent<CSSValueID::kLeading>(stream)) {
-    return leading;
+  if (CSSIdentifierValue* auto_value =
+          ConsumeIdent<CSSValueID::kAuto>(stream)) {
+    return auto_value;
   }
+
   CSSIdentifierValue* over_type =
       ConsumeIdent<CSSValueID::kText, CSSValueID::kCap, CSSValueID::kEx>(
           stream);
@@ -7579,8 +7580,7 @@ CSSValue* ConsumeTextBoxEdge(CSSParserTokenStream& stream) {
   // The second parameter is optional, the first parameter will be used for
   // both if the second parameter is not provided.
   if (CSSIdentifierValue* under_type =
-          ConsumeIdent<CSSValueID::kText, CSSValueID::kAlphabetic>(stream);
-      under_type) {
+          ConsumeIdent<CSSValueID::kText, CSSValueID::kAlphabetic>(stream)) {
     // Align with the CSS specification: "If only one value is specified,
     // both edges are assigned that same keyword if possible; else 'text' is
     // assumed as the missing value.".

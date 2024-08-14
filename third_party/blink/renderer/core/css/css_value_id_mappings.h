@@ -461,8 +461,8 @@ inline CSSValueID PlatformEnumToCSSValueID(WhiteSpaceCollapse v) {
 template <>
 inline TextBoxEdge::Type CssValueIDToPlatformEnum(CSSValueID id) {
   switch (id) {
-    case CSSValueID::kLeading:
-      return TextBoxEdge::Type::kLeading;
+    case CSSValueID::kAuto:
+      return TextBoxEdge::Type::kAuto;
     case CSSValueID::kText:
       return TextBoxEdge::Type::kText;
     case CSSValueID::kCap:
@@ -480,8 +480,8 @@ template <>
 inline CSSValueID PlatformEnumToCSSValueID(TextBoxEdge::Type type) {
   using enum TextBoxEdge::Type;
   switch (type) {
-    case kLeading:
-      return CSSValueID::kLeading;
+    case kAuto:
+      return CSSValueID::kAuto;
     case kText:
       return CSSValueID::kText;
     case kCap:

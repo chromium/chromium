@@ -30,17 +30,6 @@ namespace blink {
 
 namespace {
 
-FontHeight FontHeightWithLeading(const ComputedStyle& style,
-                                 const Font& font,
-                                 const FontMetrics& font_metrics,
-                                 FontBaseline baseline_type) {
-  FontHeight metrics = font_metrics.GetFontHeight(baseline_type);
-  const LayoutUnit line_height = style.ComputedLineHeightAsFixed(font);
-  const FontHeight leading = CalculateLeadingSpace(line_height, metrics);
-  metrics.AddLeading(leading);
-  return metrics;
-}
-
 FontHeight ComputeEmphasisMarkOutsets(const ComputedStyle& style,
                                       const Font& font) {
   if (style.GetTextEmphasisMark() == TextEmphasisMark::kNone)
@@ -187,15 +176,13 @@ void InlineBoxState::AdjustEdges(const ComputedStyle& style,
     return;
   }
   const FontMetrics& font_metrics = font_data->GetFontMetrics();
-  std::optional<FontHeight> font_height_with_leading;
   const TextBoxEdge text_box_edge = style.GetTextBoxEdge();
   if (should_apply_over) {
     switch (text_box_edge.Over()) {
-      case TextBoxEdge::Type::kLeading:
-        font_height_with_leading =
-            FontHeightWithLeading(style, font, font_metrics, baseline_type);
-        metrics.ascent = font_height_with_leading->ascent;
-        break;
+      case TextBoxEdge::Type::kAuto:
+        // `text-box-edge: auto` copies the value from `line-fit-edge`, which
+        // isn't implemented yet. Behaves the same as `text` when
+        // `line-fit-edge` has the initial value.
       case TextBoxEdge::Type::kText:
         metrics.ascent = font_metrics.FixedAscent(baseline_type);
         break;
@@ -212,13 +199,10 @@ void InlineBoxState::AdjustEdges(const ComputedStyle& style,
 
   if (should_apply_under) {
     switch (text_box_edge.Under()) {
-      case TextBoxEdge::Type::kLeading:
-        if (!font_height_with_leading) {
-          font_height_with_leading =
-              FontHeightWithLeading(style, font, font_metrics, baseline_type);
-        }
-        metrics.descent = font_height_with_leading->descent;
-        break;
+      case TextBoxEdge::Type::kAuto:
+        // `text-box-edge: auto` copies the value from `line-fit-edge`, which
+        // isn't implemented yet. Behaves the same as `text` when
+        // `line-fit-edge` has the initial value.
       case TextBoxEdge::Type::kText:
         metrics.descent = font_metrics.FixedDescent(baseline_type);
         break;
