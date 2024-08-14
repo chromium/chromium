@@ -2,21 +2,21 @@
 <title>::part():disabled grouping</title>
 <link rel="help" href="https://drafts.csswg.org/css-shadow-parts/">
 <style>
-  my-element::part(button) {
+  my-element::part(checkbox) {
     font-family: fantasy;
     background-color: #ff0000;
   }
   #grouped {
     color: #ff0000;
   }
-  my-element::part(button):disabled {
+  my-element::part(checkbox):checked {
     background-color: #00ff00;
   }
-  my-element::part(button):disabled,
+  my-element::part(checkbox):checked,
   #grouped {
     color: #00ff00;
   }
-  my-element::part(not-a-part):disabled,
+  my-element::part(not-a-part):checked,
   #grouped {
     font-family: monospace;
   }
@@ -36,13 +36,13 @@
           this.attachShadow({
             mode: "open",
           }).innerHTML = `
-              <button part="button" disabled>Test</button>
+              <input part="checkbox" type="checkbox" checked />
             `;
           this.elementInternals = this.attachInternals();
         }
 
         get inner() {
-          return this.shadowRoot.querySelector("[part=button]");
+          return this.shadowRoot.querySelector("[part=checkbox]");
         }
       },
     );
@@ -53,15 +53,15 @@
 
     test(() => {
         assert_equals(getComputedStyle(subject.inner).backgroundColor, GREEN);
-    }, "Styles applied to ::part(...):disabled");
+    }, "Styles applied to ::part(...):checked");
 
     test(() => {
         assert_equals(getComputedStyle(subject.inner).color, GREEN);
         assert_equals(getComputedStyle(grouped).color, GREEN);
-    }, "Styles applied via grouped selector including matched ::part(...):disabled");
+    }, "Styles applied via grouped selector including matched ::part(...):checked");
 
     test(() => {
         assert_equals(getComputedStyle(grouped).fontFamily, 'monospace');
-    }, "Styles applied via grouped selector including unmatched ::part(...):disabled");
+    }, "Styles applied via grouped selector including unmatched ::part(...):checked");
   </script>
 </body>

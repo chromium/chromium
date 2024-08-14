@@ -146177,7 +146177,7 @@
      },
      "text-box-trim": {
       "text-box-trim-accumulation-001.html": [
-       "08eedbdbfebc3263bcaefb2ce25727eceb1e91e7",
+       "d3b26de1620aff831ccd70ee5c7b201d298f0982",
        [
         null,
         [
@@ -146190,7 +146190,7 @@
        ]
       ],
       "text-box-trim-atomic-inline-001.html": [
-       "5f2d01c7dc723981a832fb802992083ccbf96c6b",
+       "8c5d28952d7261e3aa56c8010d995362748ade82",
        [
         null,
         [
@@ -146203,7 +146203,7 @@
        ]
       ],
       "text-box-trim-block-in-inline-end-001.html": [
-       "7b008a21f04396b8a1703e540d44600538f301aa",
+       "99ceb065258c086d3b7178dc55f1237bab513775",
        [
         null,
         [
@@ -146216,7 +146216,7 @@
        ]
       ],
       "text-box-trim-block-in-inline-end-002.html": [
-       "a1711e309cc61efe0cde5b8c0058a1f72c7eb223",
+       "b99e4ad885e00458f4d1ce700c4c0e331b27eb71",
        [
         null,
         [
@@ -146229,7 +146229,7 @@
        ]
       ],
       "text-box-trim-block-in-inline-end-003.html": [
-       "8ace67f78f60df6cf5fd4f53613d9d21cb4e0ba0",
+       "37dd9d15264126ceedd7013b4992d53a5d2a44f0",
        [
         null,
         [
@@ -146242,7 +146242,7 @@
        ]
       ],
       "text-box-trim-block-in-inline-end-004.html": [
-       "3c682a211f9ae45c2478876135a2c4e8a86b999a",
+       "3cb7a7d05ae970a02ba324d5576f0d468b0ddbcd",
        [
         null,
         [
@@ -146255,7 +146255,7 @@
        ]
       ],
       "text-box-trim-block-in-inline-start-001.html": [
-       "9d14a08bc2ab509955cf5be11cc797ff9f59e48c",
+       "e43da18dba4bde070398a8a8c543a9943a704409",
        [
         null,
         [
@@ -146268,7 +146268,7 @@
        ]
       ],
       "text-box-trim-block-in-inline-start-002.html": [
-       "67bfa343781cf35b3ce74297b35ee09c0f89fc05",
+       "88e8b0dd023f78836a9a066a5c3b9028fb721812",
        [
         null,
         [
@@ -146281,7 +146281,7 @@
        ]
       ],
       "text-box-trim-block-in-inline-start-003.html": [
-       "5227a4d13aa4bc6513516da4dd963f1891bb3a3b",
+       "4be84dfeba7e3cfdcd2199a6ca66e54f8cb3d16e",
        [
         null,
         [
@@ -146294,7 +146294,7 @@
        ]
       ],
       "text-box-trim-dynamic-001.html": [
-       "5cd25060934ef6a73aa0d01141adde8296103c08",
+       "5890e14f06cc0ea08f9611386df0653b6483f610",
        [
         null,
         [
@@ -146307,7 +146307,7 @@
        ]
       ],
       "text-box-trim-dynamic-002.html": [
-       "a921d4d0caa06c2974b7e1a3386c1100a97dae40",
+       "2d6ba096541fffb3779e629365609e63e691fe91",
        [
         null,
         [
@@ -146320,7 +146320,7 @@
        ]
       ],
       "text-box-trim-end-001.html": [
-       "0bca8de808803effcb766c52bc235f95c985d78c",
+       "0f6c277d9b7530e7ff3a3951b6511aba9bd4c1b2",
        [
         "css/css-inline/text-box-trim/text-box-trim-end-001.html?class=alphabetic",
         [
@@ -146423,7 +146423,7 @@
        ]
       ],
       "text-box-trim-end-empty-line-001.html": [
-       "30061b208d6b6b51bd917da180a9a44608392f1c",
+       "593f4724015647de8ea078ed60a4c4796f9ca914",
        [
         null,
         [
@@ -146436,7 +146436,7 @@
        ]
       ],
       "text-box-trim-float-clear-br-001.html": [
-       "985ae60c46db62bb01f8c886b11e4cb3289b48bc",
+       "18f2f8c88360d731b04beac0a4ce7f9f7eccbef8",
        [
         null,
         [
@@ -146449,7 +146449,7 @@
        ]
       ],
       "text-box-trim-float-clear-br-002.html": [
-       "5798525e476447347d36030319c024fcdc2db820",
+       "667126dc33d0f47b8e17f310b07c05c895e8b911",
        [
         null,
         [
@@ -146462,7 +146462,7 @@
        ]
       ],
       "text-box-trim-float-start-001.html": [
-       "99e4736baf09257d4f14577598f4f8d531c7c681",
+       "a4f15405c84ac5ece4ba0f6257852b41809c6d57",
        [
         null,
         [
@@ -146475,7 +146475,7 @@
        ]
       ],
       "text-box-trim-half-leading-block-box-001.html": [
-       "92ec181c51ffc2d88088a8456003ab423ffffbba",
+       "5734ee2e0fb32b26e015e2c417871c6514bb10d1",
        [
         null,
         [
@@ -146488,7 +146488,7 @@
        ]
       ],
       "text-box-trim-half-leading-block-box-002.html": [
-       "e095a2d49c20bf89f719038d8048eb06ab3c028f",
+       "7b31904e371acdfb016ea9f6cf42090f6a461411",
        [
         null,
         [
@@ -146501,7 +146501,7 @@
        ]
       ],
       "text-box-trim-half-leading-block-box-003.html": [
-       "916afde8905767f6b3a17949f5809ff440ebeb14",
+       "0f8a86fc44f56ef4513acdca607a6878a38a87fe",
        [
         null,
         [
@@ -146514,7 +146514,7 @@
        ]
       ],
       "text-box-trim-height-001.html": [
-       "d732592e51ad1d55b77fb295b9ba66dab8287ada",
+       "8ee447bcd3ac4053e64bf3b620c6fc1eaddf3231",
        [
         null,
         [
@@ -146527,7 +146527,7 @@
        ]
       ],
       "text-box-trim-height-002.html": [
-       "1249627f8385832598b1e4e5549eb1445b098b47",
+       "e23fadb74259900a060ab015531b617bad8604d5",
        [
         null,
         [
@@ -146540,7 +146540,7 @@
        ]
       ],
       "text-box-trim-initial-letter-end-001.html": [
-       "809666ee0d07e6b4cc4dc6a9509d188392d59ded",
+       "2dd491dc428c0579f950de9c543d1392fbb91774",
        [
         null,
         [
@@ -146553,7 +146553,7 @@
        ]
       ],
       "text-box-trim-initial-letter-start-001.html": [
-       "4f8d3a33e5b4e0200db0c89ff7902fea266a4843",
+       "42303b1ab1268043274b263c463b6eefbaedb54e",
        [
         null,
         [
@@ -146566,7 +146566,7 @@
        ]
       ],
       "text-box-trim-line-clamp-001.html": [
-       "e0af246db0e53665c5a54d3ad1a2064f52b61462",
+       "994f9284bb6d7edefe06fa3999ff7b6f76cd3caf",
        [
         null,
         [
@@ -146579,7 +146579,7 @@
        ]
       ],
       "text-box-trim-multicol-001.html": [
-       "69323e0aeffd2fb641cc0bbd1ef952103ed171ab",
+       "3f770f583fa0b670472c40768e8bc9c4041e10fa",
        [
         null,
         [
@@ -146592,7 +146592,7 @@
        ]
       ],
       "text-box-trim-multicol-002.html": [
-       "dbba108b16deac3c868cd47851337b7065ef7a18",
+       "6376d86727b1ee20fcf6129e4ac33f375b351d89",
        [
         null,
         [
@@ -146605,7 +146605,7 @@
        ]
       ],
       "text-box-trim-ruby-end-001.html": [
-       "5d0229fa373943ccebb7f0f7efc2a9dbc8b76a4c",
+       "0537e6e194d650ab20939e05051e1eefc4cb393a",
        [
         null,
         [
@@ -146618,7 +146618,7 @@
        ]
       ],
       "text-box-trim-ruby-start-001.html": [
-       "d673d0ab02d9e4d03567389ca3d4044cdc35a84c",
+       "bd1503b943682dccf95a5f4d5ea5c952576448a6",
        [
         null,
         [
@@ -146631,7 +146631,7 @@
        ]
       ],
       "text-box-trim-ruby-start-002.html": [
-       "9fd8be7dfc584e911d63a0bc791a291ddb2d8b9d",
+       "c8791f6709e7c5e3c2ca0eaedba1a7d3fdc4f534",
        [
         null,
         [
@@ -146644,7 +146644,7 @@
        ]
       ],
       "text-box-trim-start-001.html": [
-       "35ac848aa6291db0508fd4df3f0bf2e7f2f43e07",
+       "ec5f8bda115c1ed174d2c4286c6f03a6ed6c1452",
        [
         "css/css-inline/text-box-trim/text-box-trim-start-001.html?class=cap",
         [
@@ -146757,7 +146757,7 @@
        ]
       ],
       "text-box-trim-tall-line-001.html": [
-       "9a86e394cc05abff0eea25262f32e7589ef3b59e",
+       "07d599fd0f8dedd89923bb1e4aa7da8a62d240b8",
        [
         null,
         [
@@ -146770,7 +146770,7 @@
        ]
       ],
       "text-box-trim-text-emphasis-start-001.html": [
-       "2c38611ee32eea85a2fa2f7d27ded1d491dfc9cb",
+       "38e9c989767451a838e58b9519f0e004929f7804",
        [
         null,
         [
@@ -175522,6 +175522,84 @@
        [
         [
          "/css/css-scoping/reference/green-box.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-has-001.html": [
+      "79c89874c63af3b2fa14ed64e0711b006a8032dc",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-has-002.html": [
+      "33a705672aeb07fdaae71eb7fac583396f20d450",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-has-003.html": [
+      "58f1482564b0b29afd2a1c5dea7a7640d6b74a72",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-has-internal-001.tentative.html": [
+      "c2082de0ac306be835d1913e4b011b5503eac186",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-has-internal-002.tentative.html": [
+      "217ed9596c411a6d20b2cda5d972728a8e4da8eb",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "host-has-internal-003.tentative.html": [
+      "9c0a724834596d29f397a5434a83b5bbba658d46",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
          "=="
         ]
        ],
@@ -243222,7 +243300,7 @@
       ]
      ],
      "view-transition-types-matches.html": [
-      "bb625d86830ba4278e40d9094b1278c9b826201b",
+      "90dd02a80b8b7335b3fe7a30524b6dce652187d5",
       [
        null,
        [
@@ -268943,6 +269021,19 @@
        [
         [
          "/css/selectors/sharing-in-svg-use-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "user-invalid-form-submission-invalidation.html": [
+      "578ea8d4c50d28bb6809aa3fc093f371ea3eeaa0",
+      [
+       null,
+       [
+        [
+         "/css/selectors/user-invalid-form-submission-invalidation-ref.html",
          "=="
         ]
        ],
@@ -356170,6 +356261,10 @@
       "703cc99bb863b7a1bb79dd6a7a218308892c66ca",
       []
      ],
+     "user-invalid-form-submission-invalidation-ref.html": [
+      "1d1933b827a7d9b37543c4a7f29241d40d9243bd",
+      []
+     ],
      "visited-inheritance-ref.html": [
       "64300b13f4291f416eac17f70ff62e2febf604fe",
       []
@@ -404750,7 +404845,7 @@
        []
       ],
       "property-list.js": [
-       "2e5e876204be276ea6df70e92b960d94695be84b",
+       "6b4b0da88d3ab761d8a6efe220c6bc3aad7c1cc1",
        []
       ],
       "property-types.js": [
@@ -466329,13 +466424,29 @@
       ]
      },
      "text-box-trim": {
-      "inheritance.html": [
-       "a37a40e976da17c1fb7f7326d91141db434bcf59",
-       [
-        null,
-        {}
+      "parsing": {
+       "inheritance.html": [
+        "5ceea2d133e1e912072b52a0ac64a791d1e4c0cb",
+        [
+         null,
+         {}
+        ]
+       ],
+       "text-box-trim-computed.html": [
+        "a8a612a5b32eccb885ccbd7f7e71894db3c78936",
+        [
+         null,
+         {}
+        ]
+       ],
+       "text-box-trim-valid.html": [
+        "14e03c1e02492055a1f2bdca7397cee12c93ce4e",
+        [
+         null,
+         {}
+        ]
        ]
-      ],
+      },
       "text-box-edge-computed.html": [
        "50a963297ce430fd0b6c81db1f76e73a3c8aa36e",
        [
@@ -466358,14 +466469,7 @@
        ]
       ],
       "text-box-trim-om-001.html": [
-       "da66de0055546ef7e8a71bc115ffd170bc53f061",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-box-trim-valid.html": [
-       "61622774f6f33054ad97e74dde0b020619eb1d02",
+       "d46490be2f84306125dec2a81cd8ac2bf2c25992",
        [
         null,
         {}
@@ -472832,8 +472936,15 @@
        {}
       ]
      ],
+     "grouping-with-checked.html": [
+      "e7620b6f932b8d145dea9917784d35018f373491",
+      [
+       null,
+       {}
+      ]
+     ],
      "grouping-with-disabled.html": [
-      "187b40ba3b50ec9df0a91fde5ce79e80e0b3f002",
+      "8e479e66911b708190937ce36a846b904cdb4f79",
       [
        null,
        {}
@@ -593815,11 +593926,12 @@
         ]
        ],
        "control-active-with-multiple-clicks.html": [
-        "1b5c6a3b9398bb708a8445c579b3bf95140760a5",
+        "a14249ee8162d4e779be7bf1c4932e7a1efecb5e",
         [
          null,
          {
-          "testdriver": true
+          "testdriver": true,
+          "timeout": "long"
          }
         ]
        ],
@@ -641795,6 +641907,13 @@
       {
        "timeout": "long"
       }
+     ]
+    ],
+    "internal-resources-not-counted.html": [
+     "a746e2adfa32bee823a9b9607a73e68c0665e84f",
+     [
+      null,
+      {}
      ]
     ],
     "link-sequence-of-events.html": [
