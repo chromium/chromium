@@ -267,7 +267,6 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
                             const CSSTokenizedValue& tokenized_value,
                             const CSSParserContext& context) {
   using Parser = AtRuleDescriptorParser;
-  CSSParserTokenRange range = tokenized_value.range;
 
   switch (rule_type) {
     case StyleRule::kFontFace:
@@ -284,8 +283,11 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
       CSSParserTokenStream stream(tokenizer);
       return Parser::ParseAtCounterStyleDescriptor(id, stream, context);
     }
-    case StyleRule::kViewTransition:
-      return Parser::ParseAtViewTransitionDescriptor(id, range, context);
+    case StyleRule::kViewTransition: {
+      CSSTokenizer tokenizer(tokenized_value.text);
+      CSSParserTokenStream stream(tokenizer);
+      return Parser::ParseAtViewTransitionDescriptor(id, stream, context);
+    }
     case StyleRule::kCharset:
     case StyleRule::kContainer:
     case StyleRule::kStyle:
@@ -478,26 +480,26 @@ CSSValue* AtRuleDescriptorParser::ParseAtPropertyDescriptor(
 
 CSSValue* AtRuleDescriptorParser::ParseAtViewTransitionDescriptor(
     AtRuleDescriptorID id,
-    CSSParserTokenRange& range,
+    CSSParserTokenStream& stream,
     const CSSParserContext& context) {
   CSSValue* parsed_value = nullptr;
   switch (id) {
     case AtRuleDescriptorID::Navigation:
-      range.ConsumeWhitespace();
+      stream.ConsumeWhitespace();
       parsed_value =
           css_parsing_utils::ConsumeIdent<CSSValueID::kAuto, CSSValueID::kNone>(
-              range);
+              stream);
       break;
     case AtRuleDescriptorID::Types: {
       CSSValueList* types = CSSValueList::CreateSpaceSeparated();
       parsed_value = types;
-      while (!range.AtEnd()) {
-        range.ConsumeWhitespace();
-        if (range.Peek().Id() == CSSValueID::kNone) {
+      while (!stream.AtEnd()) {
+        stream.ConsumeWhitespace();
+        if (stream.Peek().Id() == CSSValueID::kNone) {
           return nullptr;
         }
         CSSCustomIdentValue* ident =
-            css_parsing_utils::ConsumeCustomIdent(range, context);
+            css_parsing_utils::ConsumeCustomIdent(stream, context);
         if (!ident || ident->Value().StartsWith("-ua-")) {
           return nullptr;
         }
@@ -509,7 +511,7 @@ CSSValue* AtRuleDescriptorParser::ParseAtViewTransitionDescriptor(
       break;
   }
 
-  if (!parsed_value || !range.AtEnd()) {
+  if (!parsed_value || !stream.AtEnd()) {
     return nullptr;
   }
 

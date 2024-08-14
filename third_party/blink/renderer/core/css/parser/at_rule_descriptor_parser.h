@@ -48,7 +48,7 @@ class AtRuleDescriptorParser {
                                                       CSSParserTokenStream&,
                                                       const CSSParserContext&);
   static CSSValue* ParseAtViewTransitionDescriptor(AtRuleDescriptorID,
-                                                   CSSParserTokenRange&,
+                                                   CSSParserTokenStream&,
                                                    const CSSParserContext&);
 };
 
