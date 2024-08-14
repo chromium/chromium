@@ -4,7 +4,7 @@
 
 // See https://wicg.github.io/video-rvfc/.
 
-dictionary VideoFrameMetadata {
+dictionary VideoFrameCallbackMetadata {
     // The time at which the user agent submitted the frame for composition.
     required DOMHighResTimeStamp presentationTime;
 

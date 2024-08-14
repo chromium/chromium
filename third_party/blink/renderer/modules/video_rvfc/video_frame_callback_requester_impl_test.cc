@@ -106,7 +106,7 @@ class VfcRequesterParameterVerifierCallback
       : loader_(loader) {}
   ~VfcRequesterParameterVerifierCallback() override = default;
 
-  void Invoke(double now, const VideoFrameMetadata* metadata) override {
+  void Invoke(double now, const VideoFrameCallbackMetadata* metadata) override {
     was_invoked_ = true;
     now_ = now;
 
