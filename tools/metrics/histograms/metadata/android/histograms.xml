@@ -6491,6 +6491,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.WebView.RestrictedContentBlocking.GetSupportedThreatTypes.CallDuration"
+    units="ms" expires_after="2025-08-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the duration of the call to
+    SafeBrowsingClient.getSupportedThreatTypes during the flow to determine if
+    restricted content blocking should be enabled.
+
+    This histogram is recorded when the task completes, which can be on either
+    success, failure, or timeout.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.RestrictedContentBlocking.GetSupportedThreatTypes.Result"
+    enum="AndroidWebViewSupportedThreatTypesResult" expires_after="2025-08-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the result of the call to SafeBrowsingClient.getSupportedThreatTypes
+    during the flow to determine if restricted content blocking should be
+    enabled. It will log success/failure/timeout.
+
+    This histogram is recorded when the task completes, which can be on either
+    success, failure, or timeout.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.SafeMode.ActionName"
     enum="AndroidWebViewSafeModeActionName" expires_after="never">
 <!-- expires-never: Needed for tracking SafeMode during an incident. -->
