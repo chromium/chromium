@@ -5,6 +5,7 @@
 #ifndef BASE_MEMORY_SHARED_MEMORY_MAPPING_H_
 #define BASE_MEMORY_SHARED_MEMORY_MAPPING_H_
 
+#include <array>
 #include <atomic>
 #include <cstddef>
 #include <type_traits>
@@ -22,26 +23,46 @@ namespace subtle {
 
 class PlatformSharedMemoryRegion;
 
-// Constraints on types that are safe to copy across memory spaces.
+// Constraints on types that are safe to copy across memory spaces. This is a
+// non-exhaustive list and further constraints may be added in the future.
 
+// `kIsAllowed` is true unless T is known to be dangerous over shared memory.
 template <typename T>
-struct LockFreeIfAtomic {
-  // Non-atomics aren't synchronized, so trivially don't contain locks.
-  static constexpr bool is_lock_free = true;
+struct SharedMemorySafetyChecker {
+  // Copying non-trivially-copyable objects across memory spaces is dangerous.
+  // This check isn't a separate specialization because many types that match
+  // other specializations are also trivially copyable, introducing ambiguity.
+  static constexpr bool kIsAllowed = std::is_trivially_copyable_v<T>;
+};
+
+// Pointers can't be shared across memory spaces.
+template <typename T>
+  requires(std::is_pointer_v<T> || std::is_member_pointer_v<T>)
+struct SharedMemorySafetyChecker<T> {
+  static constexpr bool kIsAllowed = false;
+};
+
+// Atomics are dangerous to share across memory spaces unless they're lock-free.
+template <typename T>
+struct SharedMemorySafetyChecker<std::atomic<T>> {
+  static constexpr bool kIsAllowed = std::atomic<T>::is_always_lock_free &&
+                                     SharedMemorySafetyChecker<T>::kIsAllowed;
+};
+
+// Each element of an array must itself be safe. Although arrays aren't outright
+// banned, prefer to use GetMemoryAsSpan<T> for array-like access.
+template <typename T, size_t N>
+struct SharedMemorySafetyChecker<T[N]> {
+  static constexpr bool kIsAllowed = SharedMemorySafetyChecker<T>::kIsAllowed;
+};
+
+template <typename T, size_t N>
+struct SharedMemorySafetyChecker<std::array<T, N>> {
+  static constexpr bool kIsAllowed = SharedMemorySafetyChecker<T>::kIsAllowed;
 };
 
 template <typename T>
-struct LockFreeIfAtomic<std::atomic<T>> {
-  static constexpr bool is_lock_free = std::atomic<T>::is_always_lock_free;
-};
-
-template <typename T>
-concept SharedMemorySafe =
-    // Copying non-trivially-copyable object across memory spaces is dangerous.
-    std::is_trivially_copyable_v<T> &&
-    // If T is a std::atomic, it's unsafe to share across memory spaces unless
-    // it's lock-free.
-    LockFreeIfAtomic<T>::is_lock_free;
+concept AllowedOverSharedMemory = SharedMemorySafetyChecker<T>::kIsAllowed;
 
 }  // namespace subtle
 
@@ -147,7 +168,7 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
   // Returns a pointer to a page-aligned const T if the mapping is valid and
   // large enough to contain a T, or nullptr otherwise.
   template <typename T>
-    requires subtle::SharedMemorySafe<T>
+    requires subtle::AllowedOverSharedMemory<T>
   const T* GetMemoryAs() const {
     if (!IsValid())
       return nullptr;
@@ -163,7 +184,7 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
   // will be returned. The first element, if any, is guaranteed to be
   // page-aligned.
   template <typename T>
-    requires subtle::SharedMemorySafe<T>
+    requires subtle::AllowedOverSharedMemory<T>
   span<const T> GetMemoryAsSpan() const {
     if (!IsValid())
       return span<const T>();
@@ -175,7 +196,7 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
   // large enough to contain |count| elements, or an empty span otherwise. The
   // first element, if any, is guaranteed to be page-aligned.
   template <typename T>
-    requires subtle::SharedMemorySafe<T>
+    requires subtle::AllowedOverSharedMemory<T>
   span<const T> GetMemoryAsSpan(size_t count) const {
     if (!IsValid())
       return span<const T>();
@@ -231,7 +252,7 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
   // Returns a pointer to a page-aligned T if the mapping is valid and large
   // enough to contain a T, or nullptr otherwise.
   template <typename T>
-    requires subtle::SharedMemorySafe<T>
+    requires subtle::AllowedOverSharedMemory<T>
   T* GetMemoryAs() const {
     if (!IsValid())
       return nullptr;
@@ -246,7 +267,7 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
   // enough to contain even one T: in that case, an empty span will be returned.
   // The first element, if any, is guaranteed to be page-aligned.
   template <typename T>
-    requires subtle::SharedMemorySafe<T>
+    requires subtle::AllowedOverSharedMemory<T>
   span<T> GetMemoryAsSpan() const {
     if (!IsValid())
       return span<T>();
@@ -258,7 +279,7 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
   // enough to contain |count| elements, or an empty span otherwise. The first
   // element, if any, is guaranteed to be page-aligned.
   template <typename T>
-    requires subtle::SharedMemorySafe<T>
+    requires subtle::AllowedOverSharedMemory<T>
   span<T> GetMemoryAsSpan(size_t count) const {
     if (!IsValid())
       return span<T>();
