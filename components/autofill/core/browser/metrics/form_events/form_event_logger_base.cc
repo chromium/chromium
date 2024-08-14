@@ -94,9 +94,7 @@ FormEventLoggerBase::~FormEventLoggerBase() {
 }
 
 void FormEventLoggerBase::OnDidInteractWithAutofillableForm(
-    const FormStructure& form,
-    AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
-  signin_state_for_metrics_ = signin_state_for_metrics;
+    const FormStructure& form) {
   if (!has_logged_interacted_) {
     has_logged_interacted_ = true;
     LogUkmInteractedWithForm(form.form_signature());
@@ -104,10 +102,7 @@ void FormEventLoggerBase::OnDidInteractWithAutofillableForm(
   }
 }
 
-void FormEventLoggerBase::OnDidPollSuggestions(
-    const FormFieldData& field,
-    AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
-  signin_state_for_metrics_ = signin_state_for_metrics;
+void FormEventLoggerBase::OnDidPollSuggestions(const FormFieldData& field) {
   // Record only one poll user action for consecutive polls of the same field.
   // This is to avoid recording too many poll actions (for example when a user
   // types in a field, triggering multiple queries) to make the analysis more
@@ -138,9 +133,7 @@ void FormEventLoggerBase::OnDidShowSuggestions(
     const FormStructure& form,
     const AutofillField& field,
     base::TimeTicks form_parsed_timestamp,
-    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     bool off_the_record) {
-  signin_state_for_metrics_ = signin_state_for_metrics;
   form_interactions_ukm_logger_->LogSuggestionsShown(
       form, field, form_parsed_timestamp, off_the_record);
 
@@ -182,10 +175,7 @@ void FormEventLoggerBase::RecordFillingOperation(
   }
 }
 
-void FormEventLoggerBase::OnDidRefill(
-    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-    const FormStructure& form) {
-  signin_state_for_metrics_ = signin_state_for_metrics;
+void FormEventLoggerBase::OnDidRefill(const FormStructure& form) {
   Log(FORM_EVENT_DID_DYNAMIC_REFILL, form);
 }
 
@@ -208,10 +198,7 @@ void FormEventLoggerBase::SetTimeFromInteractionToSubmission(
   time_from_interaction_to_submission_ = time_from_interaction_to_submission;
 }
 
-void FormEventLoggerBase::OnWillSubmitForm(
-    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-    const FormStructure& form) {
-  signin_state_for_metrics_ = signin_state_for_metrics;
+void FormEventLoggerBase::OnWillSubmitForm(const FormStructure& form) {
   // Not logging this kind of form if we haven't logged a user interaction.
   if (!has_logged_interacted_)
     return;
@@ -236,10 +223,7 @@ void FormEventLoggerBase::OnWillSubmitForm(
   base::RecordAction(base::UserMetricsAction("Autofill_OnWillSubmitForm"));
 }
 
-void FormEventLoggerBase::OnFormSubmitted(
-    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-    const FormStructure& form) {
-  signin_state_for_metrics_ = signin_state_for_metrics;
+void FormEventLoggerBase::OnFormSubmitted(const FormStructure& form) {
   // Not logging this kind of form if we haven't logged a user interaction.
   if (!has_logged_interacted_)
     return;

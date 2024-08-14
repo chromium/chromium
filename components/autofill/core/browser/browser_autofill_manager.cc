@@ -935,12 +935,12 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
       client().IsAutocompleteEnabled());
 
   if (IsAutofillProfileEnabled()) {
-    metrics_->address_form_event_logger.OnWillSubmitForm(
-        metrics_->signin_state_for_metrics, *submitted_form);
+    metrics_->address_form_event_logger.OnWillSubmitForm(*submitted_form);
   }
   if (IsAutofillPaymentMethodsEnabled()) {
-    metrics_->credit_card_form_event_logger.OnWillSubmitForm(
-        metrics_->signin_state_for_metrics, *submitted_form);
+    metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
+        metrics_->signin_state_for_metrics);
+    metrics_->credit_card_form_event_logger.OnWillSubmitForm(*submitted_form);
   }
 
   submitted_form->set_submission_source(source);
@@ -978,12 +978,12 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   submitted_form->set_submission_source(source);
 
   if (IsAutofillProfileEnabled()) {
-    metrics_->address_form_event_logger.OnFormSubmitted(
-        metrics_->signin_state_for_metrics, *submitted_form);
+    metrics_->address_form_event_logger.OnFormSubmitted(*submitted_form);
   }
   if (IsAutofillPaymentMethodsEnabled()) {
-    metrics_->credit_card_form_event_logger.OnFormSubmitted(
-        metrics_->signin_state_for_metrics, *submitted_form);
+    metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
+        metrics_->signin_state_for_metrics);
+    metrics_->credit_card_form_event_logger.OnFormSubmitted(*submitted_form);
     if (touch_to_fill_delegate_) {
       touch_to_fill_delegate_->LogMetricsAfterSubmission(*submitted_form);
     }
@@ -1224,8 +1224,11 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
   if (got_autofillable_form) {
     auto* logger = GetEventFormLogger(*autofill_field);
     if (logger) {
-      logger->OnDidInteractWithAutofillableForm(
-          *form_structure, metrics_->signin_state_for_metrics);
+      if (logger == &metrics_->credit_card_form_event_logger) {
+        metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
+            metrics_->signin_state_for_metrics);
+      }
+      logger->OnDidInteractWithAutofillableForm(*form_structure);
     }
   }
 
@@ -1800,8 +1803,7 @@ void BrowserAutofillManager::OnDidFillAddressFormFillingSuggestion(
     return;
   }
   metrics_->address_form_event_logger.OnDidFillFormFillingSuggestion(
-      profile, *form_structure, *autofill_field,
-      metrics_->signin_state_for_metrics, trigger_source);
+      profile, *form_structure, *autofill_field, trigger_source);
 }
 
 void BrowserAutofillManager::UndoAutofill(
@@ -2001,9 +2003,12 @@ void BrowserAutofillManager::DidShowSuggestions(
 
   auto* logger = GetEventFormLogger(*autofill_field);
   if (logger) {
+    if (logger == &metrics_->credit_card_form_event_logger) {
+      metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
+          metrics_->signin_state_for_metrics);
+    }
     logger->OnDidShowSuggestions(*form_structure, *autofill_field,
                                  form_structure->form_parsed_timestamp(),
-                                 metrics_->signin_state_for_metrics,
                                  client().IsOffTheRecord());
   } else if (autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
     // Suggestions were triggered on an ac=unrecognized address field.
@@ -2492,8 +2497,9 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
   CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
   if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
     if (is_refill) {
-      metrics_->credit_card_form_event_logger.OnDidRefill(
-          metrics_->signin_state_for_metrics, form_structure);
+      metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
+          metrics_->signin_state_for_metrics);
+      metrics_->credit_card_form_event_logger.OnDidRefill(form_structure);
     } else {
       metrics_->credit_card_form_event_logger.RecordFillingOperation(
           form_structure.global_id(), safe_filled_fields,
@@ -2521,15 +2527,14 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
     if (!trigger_autofill_field
              .ShouldSuppressSuggestionsAndFillingByDefault()) {
       if (is_refill) {
-        metrics_->address_form_event_logger.OnDidRefill(
-            metrics_->signin_state_for_metrics, form_structure);
+        metrics_->address_form_event_logger.OnDidRefill(form_structure);
       } else {
         metrics_->address_form_event_logger.RecordFillingOperation(
             form_structure.global_id(), safe_filled_fields,
             safe_filled_autofill_fields);
         metrics_->address_form_event_logger.OnDidFillFormFillingSuggestion(
             *profile, form_structure, trigger_autofill_field,
-            metrics_->signin_state_for_metrics, trigger_details.trigger_source);
+            trigger_details.trigger_source);
       }
     } else if (!is_refill) {
       metrics_->address_form_event_logger.RecordFillingOperation(
@@ -2645,8 +2650,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     }
   }
 #endif
-  metrics_->address_form_event_logger.OnDidPollSuggestions(
-      trigger_field, metrics_->signin_state_for_metrics);
+  metrics_->address_form_event_logger.OnDidPollSuggestions(trigger_field);
 
   const FieldType trigger_field_type =
       trigger_autofill_field ? trigger_autofill_field->Type().GetStorableType()
@@ -2760,8 +2764,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     FieldType trigger_field_type,
     AutofillSuggestionTriggerSource trigger_source,
     autofill_metrics::SuggestionRankingContext& ranking_context) {
-  metrics_->credit_card_form_event_logger.OnDidPollSuggestions(
-      trigger_field, metrics_->signin_state_for_metrics);
+  metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
+      metrics_->signin_state_for_metrics);
+  metrics_->credit_card_form_event_logger.OnDidPollSuggestions(trigger_field);
 
   std::vector<Suggestion> suggestions;
   CreditCardSuggestionSummary summary;

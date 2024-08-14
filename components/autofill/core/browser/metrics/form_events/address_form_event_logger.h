@@ -49,7 +49,6 @@ class AddressFormEventLogger : public FormEventLoggerBase {
       const AutofillProfile& profile,
       const FormStructure& form,
       const AutofillField& field,
-      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
       const AutofillTriggerSource trigger_source);
 
   void OnDidUndoAutofill();
