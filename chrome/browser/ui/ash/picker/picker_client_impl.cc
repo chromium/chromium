@@ -492,6 +492,10 @@ void PickerClientImpl::SetProfile(Profile* profile) {
   file_suggester_ = std::make_unique<PickerFileSuggester>(profile_);
   link_suggester_ = std::make_unique<PickerLinkSuggester>(profile_);
   thumbnail_loader_ = std::make_unique<PickerThumbnailLoader>(profile_);
+
+  if (controller_ != nullptr) {
+    controller_->OnClientProfileSet();
+  }
 }
 
 std::unique_ptr<app_list::SearchProvider>

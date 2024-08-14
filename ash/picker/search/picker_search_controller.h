@@ -26,12 +26,13 @@ class PickerClient;
 
 class ASH_EXPORT PickerSearchController {
  public:
-  explicit PickerSearchController(
-      PickerClient* client,
-      base::TimeDelta burn_in_period);
+  explicit PickerSearchController(PickerClient* client,
+                                  base::TimeDelta burn_in_period);
   PickerSearchController(const PickerSearchController&) = delete;
   PickerSearchController& operator=(const PickerSearchController&) = delete;
   ~PickerSearchController();
+
+  void LoadEmojiLanguagesFromPrefs();
 
   void StartSearch(std::u16string_view query,
                    std::optional<PickerCategory> category,

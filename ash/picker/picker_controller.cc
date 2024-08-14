@@ -343,6 +343,14 @@ void PickerController::SetClient(PickerClient* client) {
   }
 }
 
+void PickerController::OnClientProfileSet() {
+  if (client_ == nullptr || search_controller_ == nullptr) {
+    return;
+  }
+
+  search_controller_->LoadEmojiLanguagesFromPrefs();
+}
+
 void PickerController::ToggleWidget(
     const base::TimeTicks trigger_event_timestamp) {
   CHECK(client_);

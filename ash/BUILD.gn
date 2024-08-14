@@ -4518,6 +4518,7 @@ test("ash_unittests") {
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/emoji",
+    "//chromeos/ash/components/emoji:resources_grit",
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/components/fwupd",
     "//chromeos/ash/components/game_mode",
