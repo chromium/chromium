@@ -26,7 +26,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "services/on_device_model/ml/chrome_ml.h"
-#include "services/on_device_model/ml/language_detector.h"
 #include "services/on_device_model/ml/session_accessor.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
@@ -406,21 +405,30 @@ OnDeviceModelExecutor::CreateSession(std::optional<uint32_t> adaptation_id) {
       max_tokens_ - kReserveTokensForSafety, adaptation_id);
 }
 
-on_device_model::mojom::LanguageDetectionResultPtr
-OnDeviceModelExecutor::DetectLanguage(const std::string& text) {
-  if (!language_detector_) {
-    return nullptr;
+void OnDeviceModelExecutor::DetectLanguage(
+    const std::string& text,
+    on_device_model::mojom::OnDeviceModel::DetectLanguageCallback callback) {
+  if (!ts_model_) {
+    std::move(callback).Run(nullptr);
+    return;
   }
-  return language_detector_->DetectLanguage(text);
+  ts_model_.AsyncCall(&TsModel::DetectLanguage)
+      .WithArgs(text)
+      .Then(std::move(callback));
 }
 
 DISABLE_CFI_DLSYM
-on_device_model::mojom::SafetyInfoPtr OnDeviceModelExecutor::ClassifyTextSafety(
-    const std::string& text) {
+void OnDeviceModelExecutor::ClassifyTextSafety(
+    const std::string& text,
+    on_device_model::mojom::OnDeviceModel::ClassifyTextSafetyCallback
+        callback) {
   if (!ts_model_) {
-    return nullptr;
+    std::move(callback).Run(nullptr);
+    return;
   }
-  return ts_model_->ClassifyTextSafety(text);
+  ts_model_.AsyncCall(&TsModel::ClassifyTextSafety)
+      .WithArgs(text)
+      .Then(std::move(callback));
 }
 
 DISABLE_CFI_DLSYM
@@ -442,21 +450,16 @@ LoadModelResult OnDeviceModelExecutor::Init(
     base::OnceClosure on_complete) {
   on_device_model::ModelAssets assets = std::move(params->assets);
 
-  if (assets.language_detection_model.IsValid()) {
-    language_detector_ =
-        LanguageDetector::Create(std::move(assets.language_detection_model));
-    if (!language_detector_) {
-      LOG(ERROR) << "Failed to initialize language detection";
-      return LoadModelResult::kFailedToLoadLibrary;
-    }
-  }
-
+  on_device_model::mojom::ModelAssetsPtr ts_assets;
   if (assets.ts_data.IsValid()) {
-    auto ts_assets = on_device_model::mojom::ModelAssets::New();
+    ts_assets = on_device_model::mojom::ModelAssets::New();
     ts_assets->ts_data = std::move(assets.ts_data);
     ts_assets->ts_sp_model = std::move(assets.ts_sp_model);
-    ts_model_ =
-        TsModel::Create(*chrome_ml_, std::move(ts_assets), language_detector_);
+  }
+
+  if (ts_assets || assets.language_detection_model.IsValid()) {
+    ts_model_ = TsModel::Create(*chrome_ml_, std::move(ts_assets),
+                                std::move(assets.language_detection_model));
     if (!ts_model_) {
       LOG(ERROR) << "Invalid TS model data supplied";
       return LoadModelResult::kFailedToLoadLibrary;

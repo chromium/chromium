@@ -22,8 +22,6 @@ component("ml") {
     "chrome_ml.cc",
     "gpu_blocklist.cc",
     "gpu_blocklist.h",
-    "language_detector.cc",
-    "language_detector.h",
     "on_device_model_executor.cc",
     "on_device_model_internal.cc",
     "session_accessor.cc",

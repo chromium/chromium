@@ -138,12 +138,12 @@ class ModelWrapper final : public mojom::OnDeviceModel {
 
   void ClassifyTextSafety(const std::string& text,
                           ClassifyTextSafetyCallback callback) override {
-    std::move(callback).Run(model_->ClassifyTextSafety(text));
+    model_->ClassifyTextSafety(text, std::move(callback));
   }
 
   void DetectLanguage(const std::string& text,
                       DetectLanguageCallback callback) override {
-    std::move(callback).Run(model_->DetectLanguage(text));
+    model_->DetectLanguage(text, std::move(callback));
   }
 
   void LoadAdaptation(mojom::LoadAdaptationParamsPtr params,

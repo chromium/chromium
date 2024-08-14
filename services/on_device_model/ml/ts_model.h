@@ -9,9 +9,10 @@
 
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ref.h"
+#include "base/threading/sequence_bound.h"
+#include "components/translate/core/language_detection/language_detection_model.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/chrome_ml_api.h"
-#include "services/on_device_model/ml/language_detector.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
@@ -21,20 +22,25 @@ class TsModel final {
  public:
   ~TsModel();
 
-  static std::unique_ptr<TsModel> Create(
+  static base::SequenceBound<std::unique_ptr<TsModel>> Create(
       const ChromeML& chrome_ml,
-      on_device_model::mojom::ModelAssetsPtr params,
-      scoped_refptr<LanguageDetector> language_detector);
+      on_device_model::mojom::ModelAssetsPtr ts_assets,
+      base::File language_detection_file);
 
   on_device_model::mojom::SafetyInfoPtr ClassifyTextSafety(
       const std::string& text);
+  on_device_model::mojom::LanguageDetectionResultPtr DetectLanguage(
+      std::string_view text);
 
  private:
-  explicit TsModel(const ChromeML& chrome_ml,
-                   scoped_refptr<LanguageDetector> language_detector);
+  explicit TsModel(
+      const ChromeML& chrome_ml,
+      std::unique_ptr<translate::LanguageDetectionModel> language_detector);
+  void InitTextSafetyModel();
+
   const raw_ref<const ChromeML> chrome_ml_;
-  ChromeMLTSModel model_;
-  scoped_refptr<LanguageDetector> language_detector_;
+  ChromeMLTSModel model_ = 0;
+  std::unique_ptr<translate::LanguageDetectionModel> language_detector_;
   base::MemoryMappedFile data_;
   base::MemoryMappedFile sp_model_;
 };

@@ -28,8 +28,6 @@
 
 namespace ml {
 
-class LanguageDetector;
-
 // Uses the ChromeML API to create a model based on the params passed to
 // |Create()|. This is the main interface for interacting with the model.
 class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor
@@ -48,10 +46,14 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor
   // on_device_model::OnDeviceModel:
   std::unique_ptr<Session> CreateSession(
       std::optional<uint32_t> adaptation_id) override;
-  on_device_model::mojom::SafetyInfoPtr ClassifyTextSafety(
-      const std::string& text) override;
-  on_device_model::mojom::LanguageDetectionResultPtr DetectLanguage(
-      const std::string& text) override;
+  void ClassifyTextSafety(
+      const std::string& text,
+      on_device_model::mojom::OnDeviceModel::ClassifyTextSafetyCallback
+          callback) override;
+  void DetectLanguage(
+      const std::string& text,
+      on_device_model::mojom::OnDeviceModel::DetectLanguageCallback callback)
+      override;
   base::expected<uint32_t, on_device_model::mojom::LoadModelResult>
   LoadAdaptation(on_device_model::mojom::LoadAdaptationParamsPtr params,
                  base::OnceClosure on_complete) override;
@@ -65,8 +67,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor
 
   const raw_ref<const ChromeML> chrome_ml_;
 
-  scoped_refptr<LanguageDetector> language_detector_;
-  std::unique_ptr<TsModel> ts_model_;
+  base::SequenceBound<std::unique_ptr<TsModel>> ts_model_;
 
   // TODO(b/323572952): Allow disposing of adaptation weights.
   std::vector<std::unique_ptr<base::MemoryMappedFile>> adaptation_data_;
