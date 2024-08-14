@@ -73,6 +73,13 @@ void ChromeLabsCoordinator::Show(ShowUserType user_type) {
 
   flags_state_ = about_flags::GetCurrentFlagsState();
 
+  if (features::IsToolbarPinningEnabled()) {
+    BrowserView::GetBrowserViewForBrowser(browser_)
+        ->toolbar()
+        ->pinned_toolbar_actions_container()
+        ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, true);
+  }
+
   auto chrome_labs_bubble_view =
       std::make_unique<ChromeLabsBubbleView>(GetChromeLabsButton(), browser_);
   chrome_labs_bubble_view_tracker_.SetView(chrome_labs_bubble_view.get());

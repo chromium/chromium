@@ -93,6 +93,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
@@ -2500,12 +2501,9 @@ bool BrowserView::WidgetOwnedByAnchorContainsPoint(
 bool BrowserView::IsBorderlessModeEnabled() const {
   return borderless_mode_enabled_ && window_management_permission_granted_;
 }
-
 void BrowserView::ShowChromeLabs() {
-  if (toolbar()->GetChromeLabsButton() &&
-      toolbar()->GetChromeLabsButton()->GetVisible()) {
-    browser_->GetFeatures().chrome_labs_coordinator()->ShowOrHide();
-  }
+  CHECK(IsChromeLabsEnabled());
+  browser_->GetFeatures().chrome_labs_coordinator()->ShowOrHide();
 }
 
 views::WebView* BrowserView::GetContentsWebView() {

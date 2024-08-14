@@ -102,7 +102,8 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(views::Button* anchor_view,
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::Arrow::TOP_RIGHT,
                                views::BubbleBorder::DIALOG_SHADOW,
-                               true) {
+                               true),
+      browser_(browser) {
   SetProperty(views::kElementIdentifierKey, kToolbarChromeLabsBubbleElementId);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetShowCloseButton(true);
@@ -191,6 +192,11 @@ ChromeLabsBubbleView::~ChromeLabsBubbleView() {
   if (features::IsToolbarPinningEnabled()) {
     CHECK(chrome_labs_action_item_);
     chrome_labs_action_item_->SetIsShowingBubble(false);
+
+    BrowserView::GetBrowserViewForBrowser(browser_)
+        ->toolbar()
+        ->pinned_toolbar_actions_container()
+        ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, false);
   }
 }
 
