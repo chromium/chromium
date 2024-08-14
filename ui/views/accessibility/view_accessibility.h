@@ -52,6 +52,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
                                    const ax::mojom::Event)>;
   using AXVirtualViews = AXVirtualView::AXVirtualViews;
 
+  enum class State { kUninitialized, kInitializing, kInitialized };
+
   static std::unique_ptr<ViewAccessibility> Create(View* view);
 
   ViewAccessibility(const ViewAccessibility&) = delete;
@@ -494,6 +496,12 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void OnWidgetUpdated(Widget* widget, Widget* old_widget);
 
+  void CompleteCacheInitialization();
+
+  bool is_initialized() const {
+    return initialization_state_ == State::kInitialized;
+  }
+
  protected:
   explicit ViewAccessibility(View* view);
 
@@ -508,6 +516,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   FRIEND_TEST_ALL_PREFIXES(ViewTest, ViewAccessibilityReadyToNotifyEvents);
   FRIEND_TEST_ALL_PREFIXES(ViewTest,
                            WidgetObserverViewWidgetClosedViewReparented);
+
+  // Fully initialize the cache.
+  void CompleteCacheInitializationRecursive();
 
   // Initializes the role attribute on the `data_` object with the one returned
   // from `View::GetAccessibleNodeData` called on the owning view to ensure that
@@ -602,6 +613,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   bool ready_to_notify_events_ = false;
 
   bool is_widget_closed_ = false;
+
+  State initialization_state_ = State::kUninitialized;
 
   base::ScopedObservation<Widget, WidgetObserver> observation_{this};
 };

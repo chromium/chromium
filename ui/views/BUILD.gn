@@ -1441,6 +1441,7 @@ test("views_unittests") {
   if (has_native_accessibility) {
     sources += [
       "accessibility/ax_virtual_view_unittest.cc",
+      "accessibility/view_accessibility_unittest.cc",
       "accessibility/view_ax_platform_node_delegate_unittest.cc",
     ]
   }

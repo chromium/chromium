@@ -5658,6 +5658,14 @@ TEST_F(WidgetTest, ShouldSaveWindowPlacement) {
   }
 }
 
+TEST_F(WidgetTest, RootViewAccessibilityCacheInitialized) {
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  widget->Show();
+
+  EXPECT_TRUE(widget->GetRootView()->GetViewAccessibility().is_initialized());
+}
+
 // Parameterized test that verifies the behavior of SetAspectRatio with respect
 // to the excluded margin.
 class WidgetSetAspectRatioTest

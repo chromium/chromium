@@ -7021,6 +7021,24 @@ TEST(ViewTestUnfixtured, ViewLayerSizeStayInSync) {
   view = nullptr;
 }
 
+TEST_F(ViewTest, CompleteAXCacheInitializationOnChildViewAddedWithAXOn) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  auto parent = std::make_unique<View>();
+  auto* child = parent->AddChildView(std::make_unique<View>());
+  EXPECT_TRUE(child->GetViewAccessibility().is_initialized());
+}
+
+TEST_F(ViewTest, DoNotCompleteAXCacheInitializationOnChildViewAddedWithAXOff) {
+  auto parent = std::make_unique<View>();
+  auto* child = parent->AddChildView(std::make_unique<View>());
+
+  // TODO(https://crbug.com/325137417): We should only complete the
+  // initialization of the accessible cache when we know an accessibility API
+  // client fetches information from the browser. We currently don't. Change
+  // EXPECT_TRUE to EXPECT_FALSE when we do.
+  EXPECT_TRUE(child->GetViewAccessibility().is_initialized());
+}
+
 using BaseActionViewInterfaceTest = ViewsTestBase;
 
 TEST_F(BaseActionViewInterfaceTest, TestActionChanged) {

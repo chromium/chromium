@@ -29,6 +29,14 @@ class VIEWS_EXPORT ViewAccessibilityUtils {
   // Copies the accessible attributes from `source` to `destination`. If
   // attributes are set in both, the ones in source takes precedence.
   static void Merge(const ui::AXNodeData& source, ui::AXNodeData& destination);
+
+  // Iterates through the attributes set in `a` and validates they are not in
+  // `b`. This function acts as a guardrail to prevent Views authors from
+  // setting attributes both in the cache before it gets fully initialized and
+  // during the initialization step, through the
+  // `View::OnAccessibilityInitializing` function.
+  static void ValidateAttributesNotSet(const ui::AXNodeData& new_data,
+                                       const ui::AXNodeData& existing_data);
 };
 
 }  // namespace views

@@ -459,6 +459,13 @@ void Widget::Init(InitParams params) {
     owned_native_widget_ = base::WrapUnique(native_widget_raw_ptr);
   }
   root_view_.reset(CreateRootView());
+
+  // The root view must always be fully initialized so we at least expose one
+  // accessible element to the platform APIs. This is necessary for us to detect
+  // accessibility API usage and fully enable accessibility support for all
+  // views.
+  root_view_->GetViewAccessibility().CompleteCacheInitialization();
+
   // Once the root view is added to the widget, it should be marked as ready to
   // send accessible event notifications. From that point on, any view that is
   // connected to the RootView will be able to send accessible events.

@@ -63,9 +63,14 @@ bool IsValidRoleForViews(ax::mojom::Role role) {
 
 }  // namespace
 
-#define RETURN_IF_UNAVAILABLE() \
-  if (is_widget_closed_)        \
-    return;
+#define RETURN_IF_UNAVAILABLE()                                          \
+  if (is_widget_closed_) {                                               \
+    return;                                                              \
+  }                                                                      \
+  CHECK(initialization_state_ != State::kInitializing)                   \
+      << "Accessibility cache setters must not be used during complete " \
+         "initialization of the accessibility cache. Instead, set the "  \
+         "attributes directly on `AXNodeData` parameter.";
 
 #if !BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
 // static
@@ -994,6 +999,27 @@ void ViewAccessibility::set_accessibility_events_callback(
   accessibility_events_callback_ = std::move(callback);
 }
 
+void ViewAccessibility::CompleteCacheInitializationRecursive() {
+  internal::ScopedChildrenLock lock(view_);
+  initialization_state_ = State::kInitializing;
+
+  ui::AXNodeData data;
+  view_->OnAccessibilityInitializing(&data);
+
+#if DCHECK_IS_ON()
+  views::ViewAccessibilityUtils::ValidateAttributesNotSet(data, data_);
+#endif
+
+  // Merge it with the cache.
+  views::ViewAccessibilityUtils::Merge(/*source*/ data, /*destination*/ data_);
+
+  initialization_state_ = State::kInitialized;
+
+  for (auto& child : view_->children()) {
+    child->GetViewAccessibility().CompleteCacheInitializationRecursive();
+  }
+}
+
 void ViewAccessibility::InitializeRoleIfNeeded() {
   RETURN_IF_UNAVAILABLE();
   if (data_.role != ax::mojom::Role::kUnknown) {
@@ -1047,6 +1073,14 @@ void ViewAccessibility::OnWidgetUpdated(Widget* widget, Widget* old_widget) {
   // chance that the view was reparented to a non-closed widget. If so, we must
   // update `is_widget_closed_` in case the new widget is not closed.
   SetWidgetClosedRecursive(widget, widget->IsClosed());
+}
+
+void ViewAccessibility::CompleteCacheInitialization() {
+  if (initialization_state_ == State::kInitialized) {
+    return;
+  }
+
+  CompleteCacheInitializationRecursive();
 }
 
 void ViewAccessibility::PruneSubtree() {
