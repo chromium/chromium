@@ -65,7 +65,6 @@ class SupervisedUserCapabilitiesObserver
       identity_manager_observation_{this};
 
   raw_ptr<signin::IdentityManager> identity_manager_;
-  base::flat_map<std::string, signin::Tribool> capabilities_map_;
 };
 
 }  // namespace supervised_user
