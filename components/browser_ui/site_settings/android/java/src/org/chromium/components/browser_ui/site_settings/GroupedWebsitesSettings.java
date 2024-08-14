@@ -220,7 +220,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         TextMessagePreference relatedSitesText = new TextMessagePreference(getContext(), null);
         boolean shouldRelatedSitesPrefBeVisible =
                 getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled()
-                        && getSiteSettingsDelegate().isRelatedWebSetsDataAccessEnabled()
+                        && getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
                         && mSiteGroup.getRWSInfo() != null;
         relatedSitesText.setVisible(shouldRelatedSitesPrefBeVisible);
         relatedSitesHeader.setVisible(shouldRelatedSitesPrefBeVisible);
@@ -243,7 +243,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                         public boolean isPreferenceControlledByPolicy(Preference preference) {
                             for (var site : mSiteGroup.getWebsites()) {
                                 if (getSiteSettingsDelegate()
-                                        .isPartOfManagedRelatedWebSet(
+                                        .isPartOfManagedRelatedWebsiteSet(
                                                 site.getAddress().getOrigin())) {
                                     return true;
                                 }

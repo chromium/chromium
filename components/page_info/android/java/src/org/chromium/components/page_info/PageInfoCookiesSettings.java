@@ -291,8 +291,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         }
 
         assert getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled()
-                        && getSiteSettingsDelegate().isRelatedWebSetsDataAccessEnabled()
-                : "Related Web Sets UI and access should be enabled to show RWS info.";
+                        && getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
+                : "Related Website Sets UI and access should be enabled to show RWS info.";
 
         mRWSInUse.setVisible(true);
         mRWSInUse.setTitle(R.string.cookie_info_fps_title);
@@ -305,7 +305,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                     @Override
                     public boolean isPreferenceControlledByPolicy(Preference preference) {
                         return getSiteSettingsDelegate()
-                                .isPartOfManagedRelatedWebSet(currentOrigin);
+                                .isPartOfManagedRelatedWebsiteSet(currentOrigin);
                     }
                 });
         if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()) {

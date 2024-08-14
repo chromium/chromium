@@ -140,20 +140,20 @@ public interface SiteSettingsDelegate {
     void dismissPrivacySandboxSnackbar();
 
     /***
-     * @return true if Related Web Sets data access is enabled.
+     * @return true if Related Website Sets data access is enabled.
      */
-    boolean isRelatedWebSetsDataAccessEnabled();
+    boolean isRelatedWebsiteSetsDataAccessEnabled();
 
     /***
-     * @return true if Related Web Sets data access is managed.
+     * @return true if Related Website Sets data access is managed.
      */
-    boolean isRelatedWebSetsDataAccessManaged();
+    boolean isRelatedWebsiteSetsDataAccessManaged();
 
     /***
      * @param origin to check.
-     * @return true if the origin is part of the managed RelatedWebSet.
+     * @return true if the origin is part of the managed RelatedWebsiteSet.
      */
-    boolean isPartOfManagedRelatedWebSet(String origin);
+    boolean isPartOfManagedRelatedWebsiteSet(String origin);
 
     /***
      * @return true if the Tracking Protection UI should be displayed.
@@ -183,9 +183,9 @@ public interface SiteSettingsDelegate {
     boolean isBlockAll3PCDEnabledInTrackingProtection();
 
     /***
-     * @return Enables/disables Related Web Sets data access.
+     * @return Enables/disables Related Website Sets data access.
      */
-    void setRelatedWebSetsDataAccessEnabled(boolean enabled);
+    void setRelatedWebsiteSetsDataAccessEnabled(boolean enabled);
 
     /**
      * Gets the First Party Sets owner hostname given a FPS member origin.
@@ -193,7 +193,7 @@ public interface SiteSettingsDelegate {
      * @param memberOrigin FPS member origin.
      * @return A string containing the owner hostname, null if it doesn't exist.
      */
-    String getRelatedWebSetOwner(String memberOrigin);
+    String getRelatedWebsiteSetOwner(String memberOrigin);
 
     /**
      * Returns whether the current implementation of the delegate is able to launch the Clear

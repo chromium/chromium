@@ -946,7 +946,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         TextMessagePreference relatedSitesText = new TextMessagePreference(getContext(), null);
         boolean shouldRelatedSitesPrefBeVisible =
                 getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled()
-                        && getSiteSettingsDelegate().isRelatedWebSetsDataAccessEnabled()
+                        && getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
                         && mSite.getRWSCookieInfo() != null;
         relatedSitesHeader.setVisible(shouldRelatedSitesPrefBeVisible);
         relatedSitesText.setVisible(shouldRelatedSitesPrefBeVisible);
@@ -967,7 +967,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                         @Override
                         public boolean isPreferenceControlledByPolicy(Preference preference) {
                             return getSiteSettingsDelegate()
-                                    .isPartOfManagedRelatedWebSet(mSite.getAddress().getOrigin());
+                                    .isPartOfManagedRelatedWebsiteSet(
+                                            mSite.getAddress().getOrigin());
                         }
                     });
             relatedSitesHeader.addPreference(relatedSitesText);

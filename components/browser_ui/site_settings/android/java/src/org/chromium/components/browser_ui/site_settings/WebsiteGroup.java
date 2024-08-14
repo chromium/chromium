@@ -25,7 +25,7 @@ public class WebsiteGroup implements WebsiteEntry {
     private final long mTotalUsage;
     // Total number of cookies associated with the websites.
     private final int mCookiesCount;
-    // Related Web Sets info relative to the eTLD+1.
+    // Related Website Sets info relative to the eTLD+1.
     private RWSCookieInfo mRWSInfo;
 
     /**

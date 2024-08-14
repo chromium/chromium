@@ -138,7 +138,7 @@ class WebsitePreference extends ChromeImageViewPreference {
 
     protected String buildSummary() {
         if (mSiteSettingsDelegate.isPrivacySandboxFirstPartySetsUIFeatureEnabled()
-                && mSiteSettingsDelegate.isRelatedWebSetsDataAccessEnabled()
+                && mSiteSettingsDelegate.isRelatedWebsiteSetsDataAccessEnabled()
                 && mSite.getRWSCookieInfo() != null) {
             var rwsInfo = mSite.getRWSCookieInfo();
             return getContext()

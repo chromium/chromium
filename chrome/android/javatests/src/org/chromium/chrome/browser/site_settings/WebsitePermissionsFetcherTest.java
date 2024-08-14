@@ -1431,14 +1431,14 @@ public class WebsitePermissionsFetcherTest {
 
     @Test
     @SmallTest
-    public void testGetRelatedWebSetsOwnersAndMergeInfoIntoWebsites() {
+    public void testGetRelatedWebsiteSetsOwnersAndMergeInfoIntoWebsites() {
         for (var entry : RWS_MEMBER_TO_OWNER_MAP.entrySet()) {
             Mockito.doReturn(entry.getValue())
                     .when(mSiteSettingsDelegate)
-                    .getRelatedWebSetOwner(entry.getKey());
+                    .getRelatedWebsiteSetOwner(entry.getKey());
         }
 
-        Mockito.doReturn(true).when(mSiteSettingsDelegate).isRelatedWebSetsDataAccessEnabled();
+        Mockito.doReturn(true).when(mSiteSettingsDelegate).isRelatedWebsiteSetsDataAccessEnabled();
         Mockito.doReturn(true)
                 .when(mSiteSettingsDelegate)
                 .isPrivacySandboxFirstPartySetsUIFeatureEnabled();

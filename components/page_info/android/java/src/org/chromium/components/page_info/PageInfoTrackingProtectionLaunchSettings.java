@@ -259,7 +259,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
     /**
      * Returns a boolean indicating if the RWS info has been shown or not.
      *
-     * @param rwsInfo Related Web Sets info to show.
+     * @param rwsInfo Related Website Sets info to show.
      * @param currentOrigin PageInfo current origin.
      * @return a boolean indicating if the RWS info has been shown or not.
      */
@@ -270,7 +270,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         }
 
         assert getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled()
-                        && getSiteSettingsDelegate().isRelatedWebSetsDataAccessEnabled()
+                        && getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
                 : "First Party Sets UI and access should be enabled to show FPS info.";
 
         mRWSInUse.setVisible(true);
@@ -284,7 +284,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
                     @Override
                     public boolean isPreferenceControlledByPolicy(Preference preference) {
                         return getSiteSettingsDelegate()
-                                .isPartOfManagedRelatedWebSet(currentOrigin);
+                                .isPartOfManagedRelatedWebsiteSet(currentOrigin);
                     }
                 });
 

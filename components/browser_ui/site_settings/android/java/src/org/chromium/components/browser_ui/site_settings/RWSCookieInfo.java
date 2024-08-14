@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableList;
 import java.io.Serializable;
 import java.util.List;
 
-/** Related Web Sets information for a given website. */
+/** Related Website Sets information for a given website. */
 public class RWSCookieInfo implements Serializable {
     private final String mOwnerHost;
     private final List<Website> mMembers;

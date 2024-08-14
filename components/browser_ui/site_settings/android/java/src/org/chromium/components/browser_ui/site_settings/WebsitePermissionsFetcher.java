@@ -273,7 +273,7 @@ public class WebsitePermissionsFetcher {
         public void fetchPreferencesForCategoryAndPopulateRwsInfo(
                 SiteSettingsCategory category, @NonNull WebsitePermissionsCallback callback) {
             TaskQueue queue = createFetchersForCategory(category);
-            queue.add(new RelatedWebSetsInfoFetcher());
+            queue.add(new RelatedWebsiteSetsInfoFetcher());
 
             queue.add(new PermissionsAvailableCallbackRunner(callback));
             queue.next();
@@ -633,24 +633,25 @@ public class WebsitePermissionsFetcher {
             }
         }
 
-        private class RelatedWebSetsInfoFetcher extends Task {
-            private boolean canDealWithRelatedWebSetsInfo() {
+        private class RelatedWebsiteSetsInfoFetcher extends Task {
+            private boolean canDealWithRelatedWebsiteSetsInfo() {
                 return mSiteSettingsDelegate != null
                         && mSiteSettingsDelegate.isPrivacySandboxFirstPartySetsUIFeatureEnabled()
-                        && mSiteSettingsDelegate.isRelatedWebSetsDataAccessEnabled();
+                        && mSiteSettingsDelegate.isRelatedWebsiteSetsDataAccessEnabled();
             }
 
             @Override
             public void run() {
-                if (canDealWithRelatedWebSetsInfo()) {
+                if (canDealWithRelatedWebsiteSetsInfo()) {
                     Map<String, List<Website>> rwsOwnerToMembers =
                             buildOwnerToMembersMapFromFetchedSites();
 
-                    // For each {@link Website} sets its RelatedWebSet info: the RWS Owner and the
+                    // For each {@link Website} sets its RelatedWebsiteSet info: the RWS Owner and
+                    // the
                     // number of members of that RWS.
                     for (Website site : mSites.values()) {
                         String rwsOwnerHostname =
-                                mSiteSettingsDelegate.getRelatedWebSetOwner(
+                                mSiteSettingsDelegate.getRelatedWebsiteSetOwner(
                                         site.getAddress().getOrigin());
                         if (rwsOwnerHostname == null
                                 || rwsOwnerToMembers.get(rwsOwnerHostname) == null) continue;
@@ -674,7 +675,7 @@ public class WebsitePermissionsFetcher {
                 for (Website site : mSites.values()) {
                     String rwsMemberHostname = site.getAddress().getDomainAndRegistry();
                     String rwsOwnerHostname =
-                            mSiteSettingsDelegate.getRelatedWebSetOwner(
+                            mSiteSettingsDelegate.getRelatedWebsiteSetOwner(
                                     site.getAddress().getOrigin());
                     if (rwsOwnerHostname == null) continue;
                     List<Website> members = rwsOwnerToMember.get(rwsOwnerHostname);

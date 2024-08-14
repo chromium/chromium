@@ -19,7 +19,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
-/** Related Web Sets preference page. It's a TriStateCookieSettingsPreference subpage. */
+/** Related Website Sets preference page. It's a TriStateCookieSettingsPreference subpage. */
 public class RWSCookieSettings extends BaseSiteSettingsFragment
         implements Preference.OnPreferenceChangeListener {
     public static final String ALLOW_RWS_COOKIE_PREFERENCE = "allow_rws";
@@ -75,7 +75,7 @@ public class RWSCookieSettings extends BaseSiteSettingsFragment
                         getSiteSettingsDelegate().getManagedPreferenceDelegate());
         mAllowRWSPreference.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
         mAllowRWSPreference.setChecked(
-                getSiteSettingsDelegate().isRelatedWebSetsDataAccessEnabled());
+                getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled());
 
         if (!isBlockThirdPartyCookieSelected()) {
             mAllowRWSPreference.setEnabled(false);
@@ -93,7 +93,7 @@ public class RWSCookieSettings extends BaseSiteSettingsFragment
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String key = preference.getKey();
         if (ALLOW_RWS_COOKIE_PREFERENCE.equals(key)) {
-            getSiteSettingsDelegate().setRelatedWebSetsDataAccessEnabled((boolean) newValue);
+            getSiteSettingsDelegate().setRelatedWebsiteSetsDataAccessEnabled((boolean) newValue);
         } else {
             assert false : "Should not be reached";
         }
@@ -110,7 +110,7 @@ public class RWSCookieSettings extends BaseSiteSettingsFragment
         public boolean isPreferenceControlledByPolicy(Preference preference) {
             String key = preference.getKey();
             if (ALLOW_RWS_COOKIE_PREFERENCE.equals(key)) {
-                return getSiteSettingsDelegate().isRelatedWebSetsDataAccessManaged();
+                return getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessManaged();
             } else {
                 assert false : "Should not be reached";
             }
