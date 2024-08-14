@@ -980,12 +980,12 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeContentActionCreated"
-    enum="DeclarativeContentActionType" expires_after="2024-09-20">
+    enum="DeclarativeContentActionType" expires_after="2025-09-20">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
-    Number of times a declarative content action is created within an extension.
-    Emitted when a new declarative content action is created.
+    Number of times declarative content actions types are created. Emitted each
+    time a new declarative content action type is created for an extension.
   </summary>
 </histogram>
 
