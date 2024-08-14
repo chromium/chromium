@@ -291,6 +291,7 @@ TEST_F(
   }
 }
 
+// TODO(crbug.com/334053709): Add test with reporting IDs.
 TEST_F(InterestGroupKAnonymityManagerTest,
        RegisterAdKeysAsJoinedPerformsJoinSet) {
   const GURL top_frame = GURL("https://www.example.com/foo");
@@ -301,8 +302,9 @@ TEST_F(InterestGroupKAnonymityManagerTest,
 
   const std::string kAd1KAnonBidKey =
       HashedKAnonKeyForAdBid(group, GURL(kAdURL).spec());
-  const std::string kAd1KAnonReportNameKey =
-      HashedKAnonKeyForAdNameReporting(group, group.ads.value()[0]);
+  const std::string kAd1KAnonReportNameKey = HashedKAnonKeyForAdNameReporting(
+      group, group.ads.value()[0],
+      /*selected_buyer_and_seller_reporting_id=*/std::nullopt);
 
   auto manager = CreateManager();
   EXPECT_FALSE(GetGroup(manager.get(), owner, name));

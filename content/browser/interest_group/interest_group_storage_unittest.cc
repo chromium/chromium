@@ -442,17 +442,24 @@ TEST_F(InterestGroupStorageTest, GetGroupDoesNotReturnOutdatedKanonKeys) {
   g.ads = ads;
   g.ad_components = ad_components;
   std::string kanon_bid1 = blink::HashedKAnonKeyForAdBid(g, ad1_url.spec());
-  std::string kanon_report1 =
-      blink::HashedKAnonKeyForAdNameReporting(g, g.ads.value()[0]);
+  std::string kanon_report1 = blink::HashedKAnonKeyForAdNameReporting(
+      g, g.ads.value()[0],
+      /*selected_buyer_and_seller_reporting_id=*/std::nullopt);
+  std::string kanon_report1a = blink::HashedKAnonKeyForAdNameReporting(
+      g, g.ads.value()[0], std::string("selectable_id1"));
+  std::string kanon_report1b = blink::HashedKAnonKeyForAdNameReporting(
+      g, g.ads.value()[0], std::string("selectable_id2"));
   std::string kanon_bid2 = blink::HashedKAnonKeyForAdBid(g, ad2_url.spec());
-  std::string kanon_report2 =
-      blink::HashedKAnonKeyForAdNameReporting(g, g.ads.value()[1]);
+  std::string kanon_report2 = blink::HashedKAnonKeyForAdNameReporting(
+      g, g.ads.value()[1],
+      /*selected_buyer_and_seller_reporting_id=*/std::nullopt);
   std::string kanon_component_1 = blink::HashedKAnonKeyForAdComponentBid(
       g.ad_components.value()[0].render_url());
 
   storage->JoinInterestGroup(g, test_origin.GetURL());
   std::vector<std::string> expected_positive_returned_keys = {
-      kanon_bid1, kanon_report1, kanon_bid2, kanon_report2, kanon_component_1};
+      kanon_bid1, kanon_report1, kanon_report1a,   kanon_report1b,
+      kanon_bid2, kanon_report2, kanon_component_1};
   storage->UpdateKAnonymity(group_key, expected_positive_returned_keys,
                             base::Time::Now(), true);
 
@@ -474,7 +481,8 @@ TEST_F(InterestGroupStorageTest, GetGroupDoesNotReturnOutdatedKanonKeys) {
   update.ads = {ads[0]};
   storage->UpdateInterestGroup(group_key, update);
 
-  expected_positive_returned_keys = {kanon_bid1, kanon_report1};
+  expected_positive_returned_keys = {kanon_bid1, kanon_report1, kanon_report1a,
+                                     kanon_report1b};
   EXPECT_THAT(
       storage->GetInterestGroup(group_key)->hashed_kanon_keys,
       testing::UnorderedElementsAreArray(expected_positive_returned_keys));
@@ -515,14 +523,21 @@ TEST_F(InterestGroupStorageTest,
   g.ads = ads;
   g.ad_components = ad_components;
   std::string kanon_bid1 = blink::HashedKAnonKeyForAdBid(g, ad1_url.spec());
-  std::string kanon_report1 =
-      blink::HashedKAnonKeyForAdNameReporting(g, g.ads.value()[0]);
+  std::string kanon_report1 = blink::HashedKAnonKeyForAdNameReporting(
+      g, g.ads.value()[0],
+      /*selected_buyer_and_seller_reporting_id=*/std::nullopt);
+  std::string kanon_report1a = blink::HashedKAnonKeyForAdNameReporting(
+      g, g.ads.value()[0], std::string("selectable_id1"));
+  std::string kanon_report1b = blink::HashedKAnonKeyForAdNameReporting(
+      g, g.ads.value()[0], std::string("selectable_id2"));
   std::string kanon_bid2 = blink::HashedKAnonKeyForAdBid(g, ad2_url.spec());
-  std::string kanon_report2 =
-      blink::HashedKAnonKeyForAdNameReporting(g, g.ads.value()[1]);
+  std::string kanon_report2 = blink::HashedKAnonKeyForAdNameReporting(
+      g, g.ads.value()[1],
+      /*selected_buyer_and_seller_reporting_id=*/std::nullopt);
   std::string kanon_bid3 = blink::HashedKAnonKeyForAdBid(g, ad3_url.spec());
-  std::string kanon_report3 =
-      blink::HashedKAnonKeyForAdNameReporting(g, g.ads.value()[2]);
+  std::string kanon_report3 = blink::HashedKAnonKeyForAdNameReporting(
+      g, g.ads.value()[2],
+      /*selected_buyer_and_seller_reporting_id=*/std::nullopt);
   std::string kanon_component_1 = blink::HashedKAnonKeyForAdComponentBid(
       g.ad_components.value()[0].render_url());
   std::string kanon_component_2 = blink::HashedKAnonKeyForAdComponentBid(
@@ -540,8 +555,9 @@ TEST_F(InterestGroupStorageTest,
     // The keys have never been updated.
     EXPECT_EQ(k_anon_update_data->update_time, base::Time::Min());
     // All  keys are new. All keys are returned.
-    std::vector<std::string> all_kanon_keys = {kanon_bid1, kanon_bid2,
-                                               kanon_report1, kanon_report2};
+    std::vector<std::string> all_kanon_keys = {kanon_bid1,     kanon_bid2,
+                                               kanon_report1,  kanon_report1a,
+                                               kanon_report1b, kanon_report2};
     EXPECT_THAT(k_anon_update_data->hashed_keys,
                 testing::UnorderedElementsAreArray(all_kanon_keys));
     EXPECT_THAT(k_anon_update_data->newly_added_hashed_keys,
@@ -559,8 +575,9 @@ TEST_F(InterestGroupStorageTest,
         storage->JoinInterestGroup(g, test_origin.GetURL());
     ASSERT_TRUE(k_anon_update_data.has_value());
     EXPECT_EQ(k_anon_update_data->update_time, update_time);
-    std::vector<std::string> all_kanon_keys = {kanon_bid1, kanon_bid2,
-                                               kanon_report1, kanon_report2};
+    std::vector<std::string> all_kanon_keys = {kanon_bid1,     kanon_bid2,
+                                               kanon_report1,  kanon_report1a,
+                                               kanon_report1b, kanon_report2};
     // No new keys. The set of all keys is the same.
     EXPECT_THAT(k_anon_update_data->hashed_keys,
                 testing::UnorderedElementsAreArray(all_kanon_keys));
@@ -577,8 +594,9 @@ TEST_F(InterestGroupStorageTest,
     ASSERT_TRUE(k_anon_update_data.has_value());
     EXPECT_EQ(k_anon_update_data->update_time, update_time);
     std::vector<std::string> all_kanon_keys = {
-        kanon_bid1,    kanon_bid2,    kanon_bid3,        kanon_report1,
-        kanon_report2, kanon_report3, kanon_component_1, kanon_component_2};
+        kanon_bid1,        kanon_bid2,       kanon_bid3,    kanon_report1,
+        kanon_report1a,    kanon_report1b,   kanon_report2, kanon_report3,
+        kanon_component_1, kanon_component_2};
     // Expect that the new keys are represented.
     EXPECT_THAT(k_anon_update_data->hashed_keys,
                 testing::UnorderedElementsAreArray(all_kanon_keys));
@@ -597,6 +615,7 @@ TEST_F(InterestGroupStorageTest,
     ASSERT_TRUE(k_anon_update_data.has_value());
     EXPECT_EQ(k_anon_update_data->update_time, update_time);
     std::vector<std::string> all_kanon_keys = {kanon_bid1, kanon_report1,
+                                               kanon_report1a, kanon_report1b,
                                                kanon_component_2};
     // There are no new keys.
     EXPECT_THAT(k_anon_update_data->hashed_keys,
@@ -614,8 +633,9 @@ TEST_F(InterestGroupStorageTest,
     ASSERT_TRUE(k_anon_update_data.has_value());
     EXPECT_EQ(k_anon_update_data->update_time, update_time);
     std::vector<std::string> all_kanon_keys = {
-        kanon_bid1, kanon_report1, kanon_bid2,       kanon_report2,
-        kanon_bid3, kanon_report3, kanon_component_1};
+        kanon_bid1,     kanon_report1, kanon_report1a,
+        kanon_report1b, kanon_bid2,    kanon_report2,
+        kanon_bid3,     kanon_report3, kanon_component_1};
     EXPECT_THAT(k_anon_update_data->hashed_keys,
                 testing::UnorderedElementsAreArray(all_kanon_keys));
     EXPECT_THAT(k_anon_update_data->newly_added_hashed_keys,
@@ -677,11 +697,13 @@ TEST_F(InterestGroupStorageTest,
     EXPECT_EQ(k_anon_update_data->update_time, update_time);
     EXPECT_THAT(k_anon_update_data->hashed_keys,
                 testing::UnorderedElementsAreArray(
-                    {kanon_bid1, kanon_bid2, kanon_report1, kanon_report2,
-                     kanon_component_1, kanon_component_2}));
+                    {kanon_bid1, kanon_bid2, kanon_report1, kanon_report1a,
+                     kanon_report1b, kanon_report2, kanon_component_1,
+                     kanon_component_2}));
     EXPECT_THAT(k_anon_update_data->newly_added_hashed_keys,
                 testing::UnorderedElementsAreArray(
-                    {kanon_bid1, kanon_bid2, kanon_report1, kanon_report2}));
+                    {kanon_bid1, kanon_bid2, kanon_report1, kanon_report1a,
+                     kanon_report1b, kanon_report2}));
   }
 
   // Do an interest group update that doesn't have the ads or ad_components
@@ -695,8 +717,9 @@ TEST_F(InterestGroupStorageTest,
     EXPECT_EQ(k_anon_update_data->update_time, update_time);
     EXPECT_THAT(k_anon_update_data->hashed_keys,
                 testing::UnorderedElementsAreArray(
-                    {kanon_bid1, kanon_bid2, kanon_report1, kanon_report2,
-                     kanon_component_1, kanon_component_2}));
+                    {kanon_bid1, kanon_bid2, kanon_report1, kanon_report1a,
+                     kanon_report1b, kanon_report2, kanon_component_1,
+                     kanon_component_2}));
     EXPECT_THAT(k_anon_update_data->newly_added_hashed_keys,
                 testing::IsEmpty());
   }
@@ -711,8 +734,16 @@ TEST_F(InterestGroupStorageTest,
     g.bidding_url = update.bidding_url;
     kanon_bid1 = blink::HashedKAnonKeyForAdBid(g, ad1_url.spec());
     kanon_bid2 = blink::HashedKAnonKeyForAdBid(g, ad2_url.spec());
-    kanon_report1 = blink::HashedKAnonKeyForAdNameReporting(g, ads[0]);
-    kanon_report2 = blink::HashedKAnonKeyForAdNameReporting(g, ads[1]);
+    kanon_report1 = blink::HashedKAnonKeyForAdNameReporting(
+        g, ads[0],
+        /*selected_buyer_and_seller_reporting_id=*/std::nullopt);
+    kanon_report1a = blink::HashedKAnonKeyForAdNameReporting(
+        g, ads[0], std::string("selectable_id1"));
+    kanon_report1b = blink::HashedKAnonKeyForAdNameReporting(
+        g, ads[0], std::string("selectable_id2"));
+    kanon_report2 = blink::HashedKAnonKeyForAdNameReporting(
+        g, ads[1],
+        /*selected_buyer_and_seller_reporting_id=*/std::nullopt);
 
     std::optional<InterestGroupKanonUpdateParameter> k_anon_update_data =
         storage->UpdateInterestGroup(group_key, update);
@@ -720,11 +751,13 @@ TEST_F(InterestGroupStorageTest,
     EXPECT_EQ(k_anon_update_data->update_time, update_time);
     EXPECT_THAT(k_anon_update_data->hashed_keys,
                 testing::UnorderedElementsAreArray(
-                    {kanon_bid1, kanon_bid2, kanon_report1, kanon_report2,
-                     kanon_component_1, kanon_component_2}));
+                    {kanon_bid1, kanon_bid2, kanon_report1, kanon_report1a,
+                     kanon_report1b, kanon_report2, kanon_component_1,
+                     kanon_component_2}));
     EXPECT_THAT(k_anon_update_data->newly_added_hashed_keys,
                 testing::UnorderedElementsAreArray(
-                    {kanon_bid1, kanon_bid2, kanon_report1, kanon_report2}));
+                    {kanon_bid1, kanon_bid2, kanon_report1, kanon_report1a,
+                     kanon_report1b, kanon_report2}));
   }
 
   // Do an interest group update that updates the bidding URL, ads, and ad
@@ -738,7 +771,9 @@ TEST_F(InterestGroupStorageTest,
     g.ads = {ads[2]};
     g.bidding_url = update.bidding_url;
     kanon_bid3 = blink::HashedKAnonKeyForAdBid(g, ad3_url.spec());
-    kanon_report3 = blink::HashedKAnonKeyForAdNameReporting(g, ads[2]);
+    kanon_report3 = blink::HashedKAnonKeyForAdNameReporting(
+        g, ads[2],
+        /*selected_buyer_and_seller_reporting_id=*/std::nullopt);
 
     std::optional<InterestGroupKanonUpdateParameter> k_anon_update_data =
         storage->UpdateInterestGroup(group_key, update);
@@ -1232,11 +1267,13 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
       blink::InterestGroup::Ad(ad3_url, "component_metadata3"));
 
   std::string kanon_bid1 = blink::HashedKAnonKeyForAdBid(g, ad1_url.spec());
-  std::string kanon_report1 =
-      blink::HashedKAnonKeyForAdNameReporting(g, g.ads.value()[0]);
+  std::string kanon_report1 = blink::HashedKAnonKeyForAdNameReporting(
+      g, g.ads.value()[0],
+      /*selected_buyer_and_seller_reporting_id=*/std::nullopt);
   std::string kanon_bid2 = blink::HashedKAnonKeyForAdBid(g, ad2_url.spec());
-  std::string kanon_report2 =
-      blink::HashedKAnonKeyForAdNameReporting(g, g.ads.value()[1]);
+  std::string kanon_report2 = blink::HashedKAnonKeyForAdNameReporting(
+      g, g.ads.value()[1],
+      /*selected_buyer_and_seller_reporting_id=*/std::nullopt);
   std::string kanon_component_1 = blink::HashedKAnonKeyForAdComponentBid(
       g.ad_components.value()[0].render_url());
   std::string kanon_component_2 = blink::HashedKAnonKeyForAdComponentBid(
@@ -1591,8 +1628,9 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
   // Update the k-anonymity data.
   base::Time update_kanon_time = base::Time::Now();
   std::string ad1_bid_kanon = blink::HashedKAnonKeyForAdBid(g, ad1_url.spec());
-  std::string ad1_report_kanon =
-      blink::HashedKAnonKeyForAdNameReporting(g, g.ads.value()[0]);
+  std::string ad1_report_kanon = blink::HashedKAnonKeyForAdNameReporting(
+      g, g.ads.value()[0],
+      /*selected_buyer_and_seller_reporting_id=*/std::nullopt);
   std::string ad2_bid_kanon = blink::HashedKAnonKeyForAdComponentBid(ad2_url);
   storage->UpdateKAnonymity(interest_group_key,
                             {ad1_bid_kanon, ad1_report_kanon, ad2_bid_kanon},
@@ -3028,8 +3066,9 @@ TEST_F(InterestGroupStorageTest, SetGetLastKAnonReported) {
 
   task_environment().FastForwardBy(base::Seconds(1));
 
-  std::string group_name_key =
-      blink::HashedKAnonKeyForAdNameReporting(g, g.ads->at(0));
+  std::string group_name_key = blink::HashedKAnonKeyForAdNameReporting(
+      g, g.ads->at(0),
+      /*selected_buyer_and_seller_reporting_id=*/std::nullopt);
   last_report = storage->GetLastKAnonymityReported(group_name_key);
   EXPECT_EQ(last_report, base::Time::Min());
   storage->UpdateLastKAnonymityReported(group_name_key);

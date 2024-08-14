@@ -127,6 +127,7 @@ class EventReportingAttestationBrowserClient : public TestContentBrowserClient {
 // to auction worklets and sending reports. All tests use mock auction worklets.
 // Passing arguments correctly to reporting worklets is not covered by these
 // tests, but rather by the AuctionRunner tests.
+// TODO(crbug.com/334053709): Add test with reporting IDs.
 class InterestGroupAuctionReporterTest
     : public RenderViewHostTestHarness,
       public AuctionWorkletManager::Delegate {
@@ -197,8 +198,9 @@ class InterestGroupAuctionReporterTest
     std::vector<std::string> k_anon_keys_to_join{
         HashedKAnonKeyForAdBid(interest_group,
                                (*interest_group.ads)[0].render_url()),
-        HashedKAnonKeyForAdNameReporting(interest_group,
-                                         (*interest_group.ads)[0]),
+        HashedKAnonKeyForAdNameReporting(
+            interest_group, (*interest_group.ads)[0],
+            /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
     };
     k_anon_keys_to_join_ =
         base::flat_set<std::string>(std::move(k_anon_keys_to_join));

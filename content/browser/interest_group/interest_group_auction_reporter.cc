@@ -79,7 +79,9 @@ const blink::InterestGroup::Ad& ChosenAd(
 
 bool IsKAnonForReporting(
     const SingleStorageInterestGroup& storage_interest_group,
-    const blink::InterestGroup::Ad& chosen_ad) {
+    const blink::InterestGroup::Ad& chosen_ad,
+    base::optional_ref<const std::string>
+        selected_buyer_and_seller_reporting_id) {
   // K-anonymity enforcement is always disabled for the testing population.
   if (base::FeatureList::IsEnabled(
           features::kCookieDeprecationFacilitatedTesting)) {
@@ -93,7 +95,8 @@ bool IsKAnonForReporting(
   }
 
   std::string reporting_key = HashedKAnonKeyForAdNameReporting(
-      storage_interest_group->interest_group, chosen_ad);
+      storage_interest_group->interest_group, chosen_ad,
+      selected_buyer_and_seller_reporting_id);
   return storage_interest_group->hashed_kanon_keys.contains(reporting_key);
 }
 
@@ -562,8 +565,9 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
 
   auto chosen_ad = ChosenAd(winning_bid_info_.storage_interest_group,
                             winning_bid_info_.render_url);
-  if (IsKAnonForReporting(winning_bid_info_.storage_interest_group,
-                          chosen_ad)) {
+  if (IsKAnonForReporting(
+          winning_bid_info_.storage_interest_group, chosen_ad,
+          winning_bid_info_.selected_buyer_and_seller_reporting_id)) {
     browser_signal_buyer_and_seller_reporting_id =
         chosen_ad.buyer_and_seller_reporting_id;
     browser_signal_selected_buyer_and_seller_reporting_id =
@@ -805,8 +809,8 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
   // An exception to this is contextual bids, which have access to page
   // information anyway.
   if (winning_bid_info_.provided_as_additional_bid ||
-      IsKAnonForReporting(winning_bid_info_.storage_interest_group,
-                          chosen_ad)) {
+      IsKAnonForReporting(winning_bid_info_.storage_interest_group, chosen_ad,
+                          selected_buyer_and_seller_reporting_id)) {
     SetReportWinReportingIds(
         winning_bid_info_.storage_interest_group->interest_group.name,
         winning_bid_info_.selected_buyer_and_seller_reporting_id, chosen_ad,

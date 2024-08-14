@@ -6199,8 +6199,9 @@ function scoreAd(
       ::testing::UnorderedElementsAre(
           HashedKAnonKeyForAdBid(interest_group,
                                  interest_group.ads.value()[0].render_url()),
-          HashedKAnonKeyForAdNameReporting(interest_group,
-                                           interest_group.ads.value()[0])));
+          HashedKAnonKeyForAdNameReporting(
+              interest_group, interest_group.ads.value()[0],
+              /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
 }
 
 // Add an interest group, and run an ad auction. Seller rejects the bid. Bid
@@ -10982,8 +10983,9 @@ function scoreAd(
           ::testing::UnorderedElementsAre(
               HashedKAnonKeyForAdBid(
                   interest_group, interest_group.ads.value()[0].render_url()),
-              HashedKAnonKeyForAdNameReporting(interest_group,
-                                               interest_group.ads.value()[0])));
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group, interest_group.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
       break;
     }
     case auction_worklet::mojom::KAnonymityBidMode::kEnforce: {
@@ -10996,8 +10998,9 @@ function scoreAd(
           ::testing::UnorderedElementsAre(
               HashedKAnonKeyForAdBid(
                   interest_group, interest_group.ads.value()[0].render_url()),
-              HashedKAnonKeyForAdNameReporting(interest_group,
-                                               interest_group.ads.value()[0])));
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group, interest_group.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
       break;
     }
   }

@@ -280,6 +280,7 @@ _CONFIG = [
             'base::MakeClampedNum',
 
             # //base/strings/strcat.h.
+            'base::StrAppend',
             'base::StrCat',
 
             # Debugging helpers from //base/debug are allowed everywhere.
@@ -340,6 +341,13 @@ _CONFIG = [
             # Blink code shouldn't need to be qualified with the Blink namespace,
             # but there are exceptions, e.g. traits for Mojo.
             'blink::.+',
+        ],
+    },
+    {
+        'paths': ['third_party/blink/common/interest_group/interest_group.cc'],
+        'allowed': [
+            # For hashing of k-anonymity keys
+            'crypto::SHA256HashString',
         ],
     },
     {

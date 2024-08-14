@@ -3790,8 +3790,11 @@ base::flat_set<std::string> InterestGroupAuction::GetKAnonKeysToJoin() const {
         *scored_bid->bid->interest_group;
     k_anon_keys_to_join.push_back(blink::HashedKAnonKeyForAdBid(
         interest_group, scored_bid->bid->bid_ad->render_url()));
+    // TODO(crbug.com/334053709): Use the selected_buyer_and_seller_reporting_id
+    // from scored_bid->bid when that field has been added.
     k_anon_keys_to_join.push_back(blink::HashedKAnonKeyForAdNameReporting(
-        interest_group, *scored_bid->bid->bid_ad));
+        interest_group, *scored_bid->bid->bid_ad,
+        /*selected_buyer_and_seller_reporting_id=*/std::nullopt));
     for (const blink::AdDescriptor& ad_component_descriptor :
          scored_bid->bid->ad_component_descriptors) {
       k_anon_keys_to_join.push_back(

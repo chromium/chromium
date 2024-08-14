@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
@@ -31,11 +32,6 @@ namespace blink {
 
 constexpr char kKAnonKeyForAdComponentBidPrefix[] = "ComponentBid\n";
 constexpr char kKAnonKeyForAdBidPrefix[] = "AdBid\n";
-constexpr char kKAnonKeyForAdNameReportingBuyerAndSellerIdPrefix[] =
-    "BuyerAndSellerReportId\n";
-constexpr char kKAnonKeyForAdNameReportingBuyerReportIdPrefix[] =
-    "BuyerReportId\n";
-constexpr char kKAnonKeyForAdNameReportingNamePrefix[] = "NameReport\n";
 
 // Interest group used by FLEDGE auctions. Typemapped to
 // blink::mojom::InterestGroup, primarily so the typemap can include validity
@@ -181,7 +177,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   std::optional<AdditionalBidKey> additional_bid_key;
   std::optional<url::Origin> aggregation_coordinator_origin;
 
-  static_assert(__LINE__ == 184, R"(
+  static_assert(__LINE__ == 180, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class
@@ -289,12 +285,16 @@ HashedKAnonKeyForAdComponentBid(const GURL& ad_url);
 // do not provide the interest group name to reportWin.
 // DEPRECATED_KAnonKeyForAdNameReporting should only be used for upgrades of
 // the InterestGroups database. Use HashedKAnonKeyForAdNameReporting instead.
-std::string BLINK_COMMON_EXPORT
-DEPRECATED_KAnonKeyForAdNameReporting(const InterestGroup& group,
-                                      const InterestGroup::Ad& ad);
+std::string BLINK_COMMON_EXPORT DEPRECATED_KAnonKeyForAdNameReporting(
+    const InterestGroup& group,
+    const InterestGroup::Ad& ad,
+    base::optional_ref<const std::string>
+        selected_buyer_and_seller_reporting_id);
 std::string BLINK_COMMON_EXPORT
 HashedKAnonKeyForAdNameReporting(const InterestGroup& group,
-                                 const InterestGroup::Ad& ad);
+                                 const InterestGroup::Ad& ad,
+                                 base::optional_ref<const std::string>
+                                     selected_buyer_and_seller_reporting_id);
 
 }  // namespace blink
 

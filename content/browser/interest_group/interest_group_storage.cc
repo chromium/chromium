@@ -773,8 +773,16 @@ std::set<std::string> GetAllKanonKeys(
   if (interest_group.ads.has_value() &&
       interest_group.bidding_url.has_value()) {
     for (auto& ad : *interest_group.ads) {
-      hashed_keys.emplace(
-          blink::HashedKAnonKeyForAdNameReporting(interest_group, ad));
+      hashed_keys.emplace(blink::HashedKAnonKeyForAdNameReporting(
+          interest_group, ad,
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt));
+      if (ad.selectable_buyer_and_seller_reporting_ids) {
+        for (const std::string& selectable_id :
+             *ad.selectable_buyer_and_seller_reporting_ids) {
+          hashed_keys.emplace(blink::HashedKAnonKeyForAdNameReporting(
+              interest_group, ad, selectable_id));
+        }
+      }
       hashed_keys.emplace(
           blink::HashedKAnonKeyForAdBid(interest_group, ad.render_url()));
     }
@@ -1966,7 +1974,10 @@ bool UpgradeV16SchemaToV17(sql::Database& db,
       for (auto& ad : *ig.ads) {
         if (!MaybeCreateKAnonEntryForV17DatabaseUpgrade(
                 db, interest_group_key,
-                blink::DEPRECATED_KAnonKeyForAdNameReporting(ig, ad), now)) {
+                blink::DEPRECATED_KAnonKeyForAdNameReporting(
+                    ig, ad,
+                    /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
+                now)) {
           return false;
         }
         if (!MaybeCreateKAnonEntryForV17DatabaseUpgrade(

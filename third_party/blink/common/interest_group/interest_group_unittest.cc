@@ -25,20 +25,113 @@ TEST(InterestGroupTest, DEPRECATED_KAnonKeyForAdNameReporting) {
               /*buyer_and_seller_reporting_id=*/std::nullopt},
              {/*render_url=*/GURL("https://ad3.com"),
               /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+              /*buyer_reporting_id=*/std::nullopt,
+              /*buyer_and_seller_reporting_id=*/"bsid"},
+             {/*render_url=*/GURL("https://ad3.com"),
+              /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+              /*buyer_reporting_id=*/"bid",
+              /*buyer_and_seller_reporting_id=*/"bsid"},
+             {/*render_url=*/GURL("https://ad1.com"),
+              /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+              /*buyer_reporting_id=*/std::nullopt,
+              /*buyer_and_seller_reporting_id=*/std::nullopt},
+             {/*render_url=*/GURL("https://ad2.com"),
+              /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+              /*buyer_reporting_id=*/"bid",
+              /*buyer_and_seller_reporting_id=*/std::nullopt},
+             {/*render_url=*/GURL("https://ad3.com"),
+              /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+              /*buyer_reporting_id=*/std::nullopt,
+              /*buyer_and_seller_reporting_id=*/"bsid"},
+             {/*render_url=*/GURL("https://ad3.com"),
+              /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
               /*buyer_reporting_id=*/"bid",
               /*buyer_and_seller_reporting_id=*/"bsid"}}};
   EXPECT_EQ(
-      "NameReport\nhttps://example.org/\nhttps://example.org/bid.js\n"
-      "https://ad1.com/\nig_one",
-      DEPRECATED_KAnonKeyForAdNameReporting(ig, ig.ads->at(0)));
+      "NameReport\n"
+      "https://example.org/\nhttps://example.org/bid.js\nhttps://ad1.com/\n"
+      "ig_one",
+      DEPRECATED_KAnonKeyForAdNameReporting(
+          ig, ig.ads->at(0),
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt));
   EXPECT_EQ(
-      "BuyerReportId\nhttps://example.org/\nhttps://example.org/bid.js\n"
-      "https://ad2.com/\nbid",
-      DEPRECATED_KAnonKeyForAdNameReporting(ig, ig.ads->at(1)));
+      "BuyerReportId\n"
+      "https://example.org/\nhttps://example.org/bid.js\nhttps://ad2.com/\n"
+      "bid",
+      DEPRECATED_KAnonKeyForAdNameReporting(
+          ig, ig.ads->at(1),
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt));
   EXPECT_EQ(
-      "BuyerAndSellerReportId\nhttps://example.org/\n"
-      "https://example.org/bid.js\nhttps://ad3.com/\nbsid",
-      DEPRECATED_KAnonKeyForAdNameReporting(ig, ig.ads->at(2)));
+      "BuyerAndSellerReportId\n"
+      "https://example.org/\nhttps://example.org/bid.js\nhttps://ad3.com/\n"
+      "bsid",
+      DEPRECATED_KAnonKeyForAdNameReporting(
+          ig, ig.ads->at(2),
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt));
+  EXPECT_EQ(
+      "BuyerAndSellerReportId\n"
+      "https://example.org/\nhttps://example.org/bid.js\nhttps://ad3.com/\n"
+      "bsid",
+      DEPRECATED_KAnonKeyForAdNameReporting(
+          ig, ig.ads->at(3),
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt));
+  EXPECT_EQ(
+      std::string(
+          "SelectedBuyerAndSellerReportId\n"
+          "https://example.org/\nhttps://example.org/bid.js\nhttps://ad1.com/\n"
+          "\01\00\00\00\05sbsid\n\00\00\00\00\00\n\00\00\00\00\00",
+          118),
+      DEPRECATED_KAnonKeyForAdNameReporting(
+          ig, ig.ads->at(4),
+          /*selected_buyer_and_seller_reporting_id=*/std::string("sbsid")));
+  EXPECT_EQ(
+      std::string(
+          "SelectedBuyerAndSellerReportId\n"
+          "https://example.org/\nhttps://example.org/bid.js\nhttps://ad2.com/\n"
+          "\01\00\00\00\05sbsid\n\00\00\00\00\00\n\01\00\00\00\03bid",
+          121),
+      DEPRECATED_KAnonKeyForAdNameReporting(
+          ig, ig.ads->at(5),
+          /*selected_buyer_and_seller_reporting_id=*/std::string("sbsid")));
+  EXPECT_EQ(
+      std::string(
+          "SelectedBuyerAndSellerReportId\n"
+          "https://example.org/\nhttps://example.org/bid.js\nhttps://ad3.com/\n"
+          "\01\00\00\00\05sbsid\n\01\00\00\00\04bsid\n\00\00\00\00\00",
+          122),
+      DEPRECATED_KAnonKeyForAdNameReporting(
+          ig, ig.ads->at(6),
+          /*selected_buyer_and_seller_reporting_id=*/std::string("sbsid")));
+  EXPECT_EQ(
+      std::string(
+          "SelectedBuyerAndSellerReportId\n"
+          "https://example.org/\nhttps://example.org/bid.js\nhttps://ad3.com/\n"
+          "\01\00\00\00\05sbsid\n\01\00\00\00\04bsid\n\01\00\00\00\03bid",
+          125),
+      DEPRECATED_KAnonKeyForAdNameReporting(
+          ig, ig.ads->at(7),
+          /*selected_buyer_and_seller_reporting_id=*/std::string("sbsid")));
+}
+
+TEST(InterestGroupTest, HashedKAnonKeyForAdNameReportingReturnsDistinctHashes) {
+  InterestGroup ig;
+  ig.owner = url::Origin::Create(GURL("https://example.org"));
+  ig.name = "ig_one";
+  ig.bidding_url = GURL("https://example.org/bid.js");
+
+  // Without field length, both would have a key of "bsid\nbid\n".
+  ig.ads = {{{/*render_url=*/GURL("https://ad3.com"),
+              /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+              /*buyer_reporting_id=*/"bid\n",
+              /*buyer_and_seller_reporting_id=*/"bsid"},
+             {/*render_url=*/GURL("https://ad3.com"),
+              /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+              /*buyer_reporting_id=*/"",
+              /*buyer_and_seller_reporting_id=*/"bsid\nbid"}}};
+  EXPECT_NE(
+      HashedKAnonKeyForAdNameReporting(ig, ig.ads->at(0), std::string("sbsid")),
+      HashedKAnonKeyForAdNameReporting(ig, ig.ads->at(1),
+                                       std::string("sbsid")));
 }
 
 // Test ParseTrustedBiddingSignalsSlotSizeMode() and
