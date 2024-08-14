@@ -7479,6 +7479,7 @@ New install
         Chrome window
       </message>
       <message name="IDS_PICKER_MORE_CATEGORY_TYPE_SECTION_TITLE"
+        meaning="Heading text in a section for items that do not belong to other sections, in the sense of 'Additional' or 'Other'"
         desc="This string appears as the heading text of a section. This section contains several selectable menu items. This section is the last section on page, and contains menu items that do not belong to the previous sections.">
         More
       </message>
