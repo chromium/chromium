@@ -4913,13 +4913,15 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWarmUpByPointerBrowserTest,
   EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   AddAnchor("in_scope_url", in_scope_url);
+  AddAnchor("out_scope_url", out_scope_url);
 
   // To ensure that the pointerover event is triggered, move the pointer away
   // from the anchor area.
   SimulateMouseEventAndWait(blink::WebMouseEvent::Type::kMouseMove,
                             blink::WebMouseEvent::Button::kNoButton,
-                            gfx::Point(1000, 1000));
+                            gfx::Point(0, 0));
 
+  SimulateMouseMoveWithElementIdAndWait("out_scope_url");
   SimulateMouseMoveWithElementIdAndWait("in_scope_url");
 
   if (GetParam().enable_warm_up_by_pointerdown) {
