@@ -1528,46 +1528,6 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
-<histogram name="IOS.HomeCustomization.MagicStack.ParcelTracking.Enabled"
-    enum="Boolean" expires_after="2025-08-11">
-  <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <summary>
-    Records whether the Parcel Tracking module is currently enabled in the Magic
-    Stack from the Home Customization menu. Logged on each NTP impression.
-  </summary>
-</histogram>
-
-<histogram name="IOS.HomeCustomization.MagicStack.SafetyCheck.Enabled"
-    enum="Boolean" expires_after="2025-08-11">
-  <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <summary>
-    Records whether the Safety Check module is currently enabled in the Magic
-    Stack from the Home Customization menu. Logged on each NTP impression.
-  </summary>
-</histogram>
-
-<histogram name="IOS.HomeCustomization.MagicStack.SetUpList.Enabled"
-    enum="Boolean" expires_after="2025-08-11">
-  <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <summary>
-    Records whether the Set Up List module is currently enabled in the Magic
-    Stack from the Home Customization menu. Logged on each NTP impression.
-  </summary>
-</histogram>
-
-<histogram name="IOS.HomeCustomization.MagicStack.TabResumption.Enabled"
-    enum="Boolean" expires_after="2025-08-11">
-  <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <summary>
-    Records whether the Tab Resumption module is currently enabled in the Magic
-    Stack from the Home Customization menu. Logged on each NTP impression.
-  </summary>
-</histogram>
-
 <histogram name="IOS.InactiveTabs.Settings.Threshold"
     enum="InactiveTabsThresholdSettingType" expires_after="2025-01-26">
   <owner>alionadangla@chromium.org</owner>
@@ -2484,16 +2444,6 @@ the generic promo launch. -->
   <summary>
     The type of NTP impressions on iOS, split by the feed visibility. Logged
     each time an NTP is made visible.
-  </summary>
-</histogram>
-
-<histogram name="IOS.NTP.Impression.CustomizationState"
-    enum="IOSNTPImpressionCustomizationState" expires_after="2025-08-11">
-  <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <summary>
-    The current visibility of NTP components chosen from the customization menu.
-    Logged each time an NTP is made visible.
   </summary>
 </histogram>
 

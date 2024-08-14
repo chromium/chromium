@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
-#import "ios/chrome/browser/home_customization/utils/home_customization_metrics_recorder.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
@@ -117,7 +116,6 @@
 
 - (void)toggleModuleVisibilityForType:(CustomizationToggleType)type
                               enabled:(BOOL)enabled {
-  [HomeCustomizationMetricsRecorder recordCellToggled:type];
   switch (type) {
     // Main page toggles.
     case CustomizationToggleType::kMostVisited:

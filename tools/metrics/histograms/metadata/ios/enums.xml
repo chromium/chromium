@@ -423,23 +423,6 @@ the generic promo launch. -->
   <int value="2" label="Enable notifications tapped"/>
 </enum>
 
-<enum name="IOSNTPImpressionCustomizationState">
-  <int value="0" label="All components enabled"/>
-  <int value="1"
-      label="Most Visited Tiles and Magic Stack enabled; Feed disabled"/>
-  <int value="2"
-      label="Most Visited Tiles and Feed enabled; Magic Stack disabled"/>
-  <int value="3"
-      label="Magic Stack and Feed enabled; Most Visited Tiles disabled"/>
-  <int value="4"
-      label="Most Visited Tiles enabled; Magic Stack and Feed disabled"/>
-  <int value="5"
-      label="Magic Stack enabled; Most Visited Tiles and Feed disabled"/>
-  <int value="6"
-      label="Feed enabled; Most Visited Tiles and Magic Stack disabled"/>
-  <int value="7" label="All components disabled"/>
-</enum>
-
 <enum name="IOSNTPImpressionType">
   <int value="0" label="Feed disabled"/>
   <int value="1" label="Feed visible"/>

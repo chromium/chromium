@@ -13960,68 +13960,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="IOS.HomeCustomization.MagicStackPage.ParcelTracking.Toggled">
-  <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <description>
-    Reported when the Parcel Tracking cell is toggled from the Magic Stack page
-    in the Home Customization menu.
-  </description>
-</action>
-
-<action name="IOS.HomeCustomization.MagicStackPage.SafetyCheck.Toggled">
-  <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <description>
-    Reported when the Safety Check cell is toggled from the Magic Stack page in
-    the Home Customization menu.
-  </description>
-</action>
-
-<action name="IOS.HomeCustomization.MagicStackPage.SetUpList.Toggled">
-  <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <description>
-    Reported when the Set Up list cell is toggled from the Magic Stack page in
-    the Home Customization menu.
-  </description>
-</action>
-
-<action name="IOS.HomeCustomization.MagicStackPage.TabResumption.Toggled">
-  <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <description>
-    Reported when the Tab Resumption cell is toggled from the Magic Stack page
-    in the Home Customization menu.
-  </description>
-</action>
-
-<action name="IOS.HomeCustomization.MainPage.Feed.Toggled">
-  <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <description>
-    Reported when the Feed cell is toggled from the Home Customization menu.
-  </description>
-</action>
-
-<action name="IOS.HomeCustomization.MainPage.MagicStack.Toggled">
-  <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <description>
-    Reported when the Magic Stack cell is toggled from the Home Customization
-    menu.
-  </description>
-</action>
-
-<action name="IOS.HomeCustomization.MainPage.MostVisited.Toggled">
-  <owner>adamta@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <description>
-    Reported when the Most Visited cell is toggled from the Home Customization
-    menu.
-  </description>
-</action>
-
 <action name="IOS.InsecureFormCancel">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>

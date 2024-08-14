@@ -21,11 +21,6 @@ extern const char kNTPTimeSpentHistogram[];
 extern const char kStartTimeSpentHistogram[];
 extern const char kNTPImpressionHistogram[];
 extern const char kStartImpressionHistogram[];
-extern const char kNTPImpressionCustomizationStateHistogram[];
 extern const char kNTPOverscrollActionHistogram[];
-extern const char kMagicStackSetUpListEnabledHistogram[];
-extern const char kMagicStackSafetyCheckEnabledHistogram[];
-extern const char kMagicStackTabResumptionEnabledHistogram[];
-extern const char kMagicStackParcelTrackingEnabledHistogram[];
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_METRICS_NEW_TAB_PAGE_METRICS_CONSTANTS_H_

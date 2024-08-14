@@ -8,8 +8,6 @@ source_set("utils") {
     "home_customization_constants.mm",
     "home_customization_helper.h",
     "home_customization_helper.mm",
-    "home_customization_metrics_recorder.h",
-    "home_customization_metrics_recorder.mm",
   ]
   deps = [
     "//ios/chrome/app/strings",
