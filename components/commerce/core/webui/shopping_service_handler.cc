@@ -987,16 +987,16 @@ void ShoppingServiceHandler::SetUrlsForProductSpecificationsSet(
   // If an url is valid, but longer than mojo can handle, mojo will replace the
   // url with `GURL().` To avoid passing ShoppingService empty urls, we filter
   // them out before passing the list to `SetUrls.`
-  std::vector<GURL> valid_urls;
+  std::vector<UrlInfo> valid_url_infos;
   for (const auto& url : urls) {
     if (url.is_valid()) {
-      valid_urls.push_back(url);
+      valid_url_infos.emplace_back(url, std::u16string());
     }
   }
 
   const auto& set =
-      shopping_service_->GetProductSpecificationsService()->SetUrls(uuid,
-                                                                    valid_urls);
+      shopping_service_->GetProductSpecificationsService()->SetUrls(
+          uuid, valid_url_infos);
   if (set.has_value()) {
     std::move(callback).Run(ProductSpecsSetToMojo(set.value()));
   } else {

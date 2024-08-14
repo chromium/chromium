@@ -247,7 +247,8 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest, IconExecute) {
   ASSERT_FALSE(controller_->IsInRecommendedSet());
 
   // First click would add the product to the product specifications set.
-  std::vector<GURL> expected_urls = {GURL(kTestUrl2), GURL(kTestUrl1)};
+  std::vector<UrlInfo> expected_urls = {UrlInfo(GURL(kTestUrl2), u""),
+                                        UrlInfo(GURL(kTestUrl1), u"")};
   EXPECT_CALL(*mock_product_specifications_service_,
               SetUrls(product_group->uuid, expected_urls))
       .Times(1);
@@ -255,7 +256,7 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest, IconExecute) {
   ASSERT_TRUE(controller_->IsInRecommendedSet());
 
   // Second click would remove the product from the product specifications set.
-  expected_urls = {GURL(kTestUrl2)};
+  expected_urls = {UrlInfo(GURL(kTestUrl2), u"")};
   EXPECT_CALL(*mock_product_specifications_service_,
               SetUrls(product_group->uuid, expected_urls))
       .Times(1);

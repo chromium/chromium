@@ -59,7 +59,7 @@ class ProductSpecificationsService
   // ProductSpecificationsSet will be returned, otherwise nullopt.
   virtual const std::optional<ProductSpecificationsSet> SetUrls(
       const base::Uuid& uuid,
-      const std::vector<GURL>& urls);
+      const std::vector<UrlInfo>& urls);
 
   // Set the name for a product specifications set associated with the provided
   // Uuid. If a set with the provided Uuid exists, an updated

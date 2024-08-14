@@ -86,7 +86,7 @@ class ProductSpecificationsSet {
   // Product urls for each item in the set
   const std::vector<GURL> urls() const;
 
-  const std::vector<UrlInfo> url_infos() { return url_infos_; }
+  const std::vector<UrlInfo> url_infos() const { return url_infos_; }
 
   // Name of the set
   const std::string& name() const { return name_; }

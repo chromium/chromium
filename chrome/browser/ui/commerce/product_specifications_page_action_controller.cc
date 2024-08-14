@@ -134,20 +134,25 @@ void ProductSpecificationsPageActionController::OnIconClicked() {
   if (!product_specifications_set.has_value()) {
     return;
   }
-  std::vector<GURL> existing_urls = product_specifications_set->urls();
+  std::vector<UrlInfo> existing_url_infos =
+      product_specifications_set->url_infos();
   if (!is_in_recommended_set_) {
-    existing_urls.push_back(current_url_);
+    existing_url_infos.emplace_back(current_url_, std::u16string());
     is_in_recommended_set_ = true;
   } else {
-    auto it =
-        std::find(existing_urls.begin(), existing_urls.end(), current_url_);
-    if (it != existing_urls.end()) {
-      existing_urls.erase(it);
+    GURL current_url = current_url_;
+    auto it = base::ranges::find_if(
+        existing_url_infos, [&current_url](const UrlInfo& query_url_info) {
+          return query_url_info.url == current_url;
+        });
+
+    if (it != existing_url_infos.end()) {
+      existing_url_infos.erase(it);
     }
     is_in_recommended_set_ = false;
   }
   product_specifications_service_->SetUrls(product_group_for_page_->uuid,
-                                           std::move(existing_urls));
+                                           std::move(existing_url_infos));
   NotifyHost();
 }
 

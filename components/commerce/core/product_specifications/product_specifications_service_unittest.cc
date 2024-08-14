@@ -553,7 +553,8 @@ TEST_F(ProductSpecificationsServiceTest, TestSetUrls) {
                   IsSetWithUuid(uuid_to_modify)))
       .Times(1);
 
-  const std::vector<GURL> new_urls = {GURL("http://example.com/updated")};
+  const std::vector<UrlInfo> new_urls = {
+      UrlInfo(GURL("http://example.com/updated"), u"")};
 
   service()->SetUrls(uuid_to_modify, new_urls);
 
@@ -561,7 +562,7 @@ TEST_F(ProductSpecificationsServiceTest, TestSetUrls) {
       service()->GetSetByUuid(uuid_to_modify);
 
   EXPECT_TRUE(updated_set.has_value());
-  EXPECT_EQ(new_urls[0].spec(), updated_set->urls()[0].spec());
+  EXPECT_EQ(new_urls[0].url.spec(), updated_set->urls()[0].spec());
   EXPECT_GT(updated_set->update_time(), specifications[0].update_time());
   EXPECT_EQ(updated_set->creation_time(), specifications[0].creation_time());
 }
@@ -622,7 +623,8 @@ TEST_F(ProductSpecificationsServiceTest, TestSetNameAndUrls_BadId) {
               OnProductSpecificationsSetNameUpdate(testing::_, testing::_))
       .Times(0);
 
-  const std::vector<GURL> new_urls = {GURL("http://example.com/updated")};
+  const std::vector<UrlInfo> new_urls = {
+      UrlInfo(GURL("http://example.com/updated"), u"")};
 
   service()->SetUrls(uuid_to_modify, new_urls);
   service()->SetName(uuid_to_modify, "new name");
@@ -822,9 +824,9 @@ TEST_F(ProductSpecificationsServiceTest, TestSetUrlsMultiSpecifics) {
   base::RunLoop().RunUntilIdle();
   CheckProductSpecificationsExists(sets);
 
-  std::vector<GURL> new_urls{GURL("https://x.example.com"),
-                             GURL("https://y.example.com"),
-                             GURL("https://z.example.com")};
+  std::vector<UrlInfo> new_urls{UrlInfo(GURL("https://x.example.com"), u""),
+                                UrlInfo(GURL("https://y.example.com"), u""),
+                                UrlInfo(GURL("https://z.example.com"), u"")};
 
   const ProductSpecificationsSet set_to_modify = sets[1];
 
@@ -832,7 +834,7 @@ TEST_F(ProductSpecificationsServiceTest, TestSetUrlsMultiSpecifics) {
       *observer(),
       OnProductSpecificationsSetUpdate(
           HasProductSpecsNameUrl(set_to_modify.name(), set_to_modify.urls()),
-          HasProductSpecsNameUrl(set_to_modify.name(), new_urls)))
+          HasProductSpecsNameUrlInfos(set_to_modify.name(), new_urls)))
       .Times(1);
   service()->SetUrls(set_to_modify.uuid(), new_urls);
   base::RunLoop().RunUntilIdle();
@@ -846,7 +848,7 @@ TEST_F(ProductSpecificationsServiceTest, TestSetUrlsMultiSpecifics) {
     }
   }
   EXPECT_NE(nullptr, modified_set) << "Couldn't find modified set";
-  EXPECT_EQ(new_urls, modified_set->urls());
+  EXPECT_EQ(new_urls, modified_set->url_infos());
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestSetNameMultiSpecifics) {
@@ -971,11 +973,11 @@ TEST_F(ProductSpecificationsServiceSyncDisabledTest,
 }
 
 TEST_F(ProductSpecificationsServiceSyncDisabledTest, TestSetUrls) {
-  EXPECT_EQ(
-      std::nullopt,
-      service()->SetUrls(
-          base::Uuid::ParseLowercase("50000000-0000-0000-0000-000000000000"),
-          {GURL("https://a.example.com"), GURL("https://b.example.com")}));
+  EXPECT_EQ(std::nullopt,
+            service()->SetUrls(base::Uuid::ParseLowercase(
+                                   "50000000-0000-0000-0000-000000000000"),
+                               {UrlInfo(GURL("https://a.example.com"), u""),
+                                UrlInfo(GURL("https://b.example.com"), u"")}));
 }
 
 TEST_F(ProductSpecificationsServiceSyncDisabledTest, TestSetName) {
@@ -1049,9 +1051,10 @@ TEST_F(ProductSpecificationsServiceTest, TestMultiSpecificsSetUrls) {
       to_remove.push_back(specifics);
     }
   }
-  service()->SetUrls(set_to_modify->uuid(), {GURL("https://x.example.com"),
-                                             GURL("https://y.example.com"),
-                                             GURL("https://z.example.com")});
+  service()->SetUrls(set_to_modify->uuid(),
+                     {UrlInfo(GURL("https://x.example.com"), u""),
+                      UrlInfo(GURL("https://y.example.com"), u""),
+                      UrlInfo(GURL("https://z.example.com"), u"")});
   std::vector<sync_pb::ProductComparisonSpecifics> to_add;
   // New Item level specifics should be added as the other part of simulating
   // SetUrls(...) then syncing to another device.
@@ -1265,6 +1268,30 @@ TEST_F(ProductSpecificationsServiceWithTitleTest, TestTitle) {
                               });
     EXPECT_TRUE(iter != set_with_titles->url_infos().end());
   }
+}
+
+TEST_F(ProductSpecificationsServiceWithTitleTest, SetUrlWithTitle) {
+  const ProductSpecificationsSet added_set =
+      service()
+          ->AddProductSpecificationsSet(
+              kProductSpecsName,
+              {UrlInfo(GURL(kProductOneUrl), u"product one title"),
+               UrlInfo(GURL(kProductTwoUrl), u"product two title")})
+          .value();
+  service()->SetUrls(added_set.uuid(),
+                     {UrlInfo(GURL("https://x.example.com/"), u"product x"),
+                      UrlInfo(GURL("https://y.example.com/"), u"product y")});
+
+  std::optional<ProductSpecificationsSet> updated_set =
+      service()->GetSetByUuid(added_set.uuid());
+  EXPECT_TRUE(updated_set.has_value());
+  std::map<GURL, UrlInfo> lookup;
+  for (const auto& url_info : updated_set->url_infos()) {
+    lookup[url_info.url] = url_info;
+  }
+  EXPECT_EQ(2u, lookup.size());
+  EXPECT_EQ(u"product x", lookup[GURL("https://x.example.com/")].title);
+  EXPECT_EQ(u"product y", lookup[GURL("https://y.example.com/")].title);
 }
 
 }  // namespace commerce

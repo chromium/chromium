@@ -388,7 +388,7 @@ ProductSpecificationsService::AddProductSpecificationsSet(
 
 const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
-                                      const std::vector<GURL>& urls) {
+                                      const std::vector<UrlInfo>& url_infos) {
   if (!bridge_->IsSyncEnabled()) {
     return std::nullopt;
   }
@@ -410,12 +410,12 @@ ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
     bridge_->DeleteSpecifics(specifics_to_remove);
     // SetUrls has not been updated to include title yet, so use
     // GetUrlInfos(...) to convert GURLs -> UrlInfos with a blank title.
-    bridge_->AddSpecifics(CreateItemLevelSpecifics(uuid.AsLowercaseString(),
-                                                   GetUrlInfos(urls), now));
+    bridge_->AddSpecifics(
+        CreateItemLevelSpecifics(uuid.AsLowercaseString(), url_infos, now));
     ProductSpecificationsSet updated_set(
         uuid.AsLowercaseString(),
         top_level_specific->creation_time_unix_epoch_millis(),
-        now.InMillisecondsSinceUnixEpoch(), urls, previous_set->name());
+        now.InMillisecondsSinceUnixEpoch(), url_infos, previous_set->name());
     NotifyProductSpecificationsUpdate(previous_set.value(), updated_set);
     return updated_set;
   } else {
@@ -427,9 +427,9 @@ ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
     sync_pb::ProductComparisonSpecifics original = entry->second;
     sync_pb::ProductComparisonSpecifics& specifics = entry->second;
     specifics.clear_data();
-    for (const GURL& url : urls) {
+    for (const UrlInfo& url_info : url_infos) {
       sync_pb::ComparisonData* data = specifics.add_data();
-      data->set_url(url.spec());
+      data->set_url(url_info.url.spec());
     }
     specifics.set_update_time_unix_epoch_millis(
         base::Time::Now().InMillisecondsSinceUnixEpoch());
