@@ -126,6 +126,11 @@ void ContentIndexServiceImpl::CheckOfflineCapability(
     int64_t service_worker_registration_id,
     const GURL& launch_url,
     CheckOfflineCapabilityCallback callback) {
+  if (!launch_url.is_valid()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
   // TODO(rayankans): Figure out if we can check the service worker specified
   // by |service_worker_registration_id| rather than any service worker.
   service_worker_context_->CheckOfflineCapability(
