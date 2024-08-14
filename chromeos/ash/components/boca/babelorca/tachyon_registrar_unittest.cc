@@ -19,7 +19,7 @@
 
 namespace ash::babelorca {
 
-constexpr char kDeviceId[] = "device-id";
+constexpr char kClientUuid[] = "client-uuid";
 constexpr char kTachyonToken[] = "tachyon-token";
 
 TEST(TachyonRegistrarTest, SuccessfulRegistration) {
@@ -28,7 +28,7 @@ TEST(TachyonRegistrarTest, SuccessfulRegistration) {
   FakeTachyonAuthedClient authed_client;
   TachyonRegistrar registrar(&authed_client, TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  registrar.Register(kDeviceId, test_future.GetCallback());
+  registrar.Register(kClientUuid, test_future.GetCallback());
   SignInGaiaResponse signin_response;
   signin_response.mutable_auth_token()->set_payload(kTachyonToken);
   authed_client.ExecuteResponseCallback(signin_response.SerializeAsString());
@@ -45,7 +45,7 @@ TEST(TachyonRegistrarTest, FailedRegistration) {
   FakeTachyonAuthedClient authed_client;
   TachyonRegistrar registrar(&authed_client, TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  registrar.Register(kDeviceId, test_future.GetCallback());
+  registrar.Register(kClientUuid, test_future.GetCallback());
   authed_client.ExecuteResponseCallback(base::unexpected(
       ResponseCallbackWrapper::TachyonRequestError::kHttpError));
 

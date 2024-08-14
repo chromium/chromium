@@ -40,7 +40,7 @@ class TachyonRegistrar {
 
   ~TachyonRegistrar();
 
-  void Register(const std::string& device_id,
+  void Register(const std::string& client_uuid,
                 base::OnceCallback<void(bool)> success_cb);
 
   // Tachyon token fetched from registration response. `nullopt` if registration

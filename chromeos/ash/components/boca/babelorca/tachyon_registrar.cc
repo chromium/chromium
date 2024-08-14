@@ -21,6 +21,7 @@
 #include "chromeos/ash/components/boca/babelorca/response_callback_wrapper_impl.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_constants.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace ash::babelorca {
@@ -40,22 +41,17 @@ TachyonRegistrar::~TachyonRegistrar() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void TachyonRegistrar::Register(const std::string& device_id,
+void TachyonRegistrar::Register(const std::string& client_uuid,
                                 base::OnceCallback<void(bool)> success_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto signin_request = std::make_unique<SignInGaiaRequest>();
   signin_request->set_app(kTachyonAppName);
   // Request header
-  RequestHeader* request_header = signin_request->mutable_header();
-  request_header->set_app(kTachyonAppName);
-  request_header->set_request_id(
-      base::Uuid::GenerateRandomV4().AsLowercaseString());
-  ClientInfo* client_info = request_header->mutable_client_info();
-  client_info->set_api_version(ApiVersion::V4);
-  client_info->set_platform_type(Platform::DESKTOP);
+  RequestHeader request_header = GetRequestHeaderTemplate();
+  *signin_request->mutable_header() = std::move(request_header);
   // Register data
   RegisterData* register_data = signin_request->mutable_register_data();
-  register_data->mutable_device_id()->set_id(device_id);
+  register_data->mutable_device_id()->set_id(client_uuid);
   register_data->mutable_device_id()->set_type(DeviceIdType::CLIENT_UUID);
 
   auto response_callback_wrapper =
