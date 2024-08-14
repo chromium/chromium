@@ -111,6 +111,7 @@ def _Generate(options, native_sources, java_sources, priority_java_sources):
   dicts = []
   for jni_obj in _Flatten(jni_objs_by_path,
                           native_sources_set & java_sources_set):
+    print(jni_obj.filename + f' {len(jni_obj.called_by_natives)} |||')
     dicts.append(DictionaryGenerator(jni_obj, options).Generate())
 
   priority_java_sources = set(

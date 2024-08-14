@@ -10082,21 +10082,6 @@
             ]
         }
     ],
-    "GcmNativeBackgroundTask": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GcmNativeBackgroundTask"
-                    ]
-                }
-            ]
-        }
-    ],
     "GenGpuDiskCacheKeyPrefixInGpuService": [
         {
             "platforms": [

@@ -229,6 +229,7 @@ class JniObject:
     self.natives = natives
 
     called_by_natives = []
+    print(self.filename + f' {len(parsed_file.called_by_natives)}')
     for parsed_called_by_native in parsed_file.called_by_natives:
       called_by_natives.append(
           CalledByNative(parsed_called_by_native,

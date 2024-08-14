@@ -246,7 +246,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kForceListTabSwitcher,
     &kFullscreenInsetsApiMigration,
     &kFullscreenInsetsApiMigrationOnAutomotive,
-    &kGcmNativeBackgroundTask,
     &kGtsCloseTabAnimation,
     &kIncognitoReauthenticationForAndroid,
     &kIncognitoScreenshot,
@@ -728,13 +727,6 @@ BASE_FEATURE(kFullscreenInsetsApiMigration,
 BASE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive,
              "FullscreenInsetsApiMigrationOnAutomotive",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// TODO(b/41490045): This flag should be cleaned up as soon as there is enough
-// data to prove that this reduces ANRs and doesn't significantly regress
-// notifications.
-BASE_FEATURE(kGcmNativeBackgroundTask,
-             "GcmNativeBackgroundTask",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Will likely rollout with waterfall and be used as a killswitch, but is
 // default disabled for now until the animation is polished.
