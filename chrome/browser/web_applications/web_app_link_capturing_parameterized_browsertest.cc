@@ -449,8 +449,7 @@ class WebContentsCreationMonitor : public ui_test_utils::AllTabsObserver {
 // Example usage:
 // out/Default/browser_tests \
 // --gtest_filter=*WebAppLinkCapturingParameterizedBrowserTest.* \
-// --rebaseline-link-capturing-test --run-all-tests
-//
+// --rebaseline-link-capturing-test --run-all-tests --test-launcher-jobs=40
 class WebAppLinkCapturingParameterizedBrowserTest
     : public web_app::WebAppBrowserTestBase,
       public testing::WithParamInterface<LinkCaptureTestParam> {
@@ -830,14 +829,8 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
               browser_a->type());
   }
 
-  // Install app 'B' if required.
-  if (!WillNavigateA2A()) {
-    InstallTestWebApp(embedded_test_server()->GetURL(kDestinationPageScopeB));
-  }
-
   {
     content::DOMMessageQueue message_queue;
-
     // Perform action (launch destination page).
     WebContentsCreationMonitor monitor;
     SimulateClickOnElement(contents_a, GetElementId(), GetClickMethod());
@@ -923,6 +916,26 @@ INSTANTIATE_TEST_SUITE_P(
                         Destination::kScopeA2BRedirectA   // Redirect back to A.
                         ),
         testing::Values(NavigationElement::kElementServiceWorkerButton),
+        testing::Values(ClickMethod::kLeftClick),
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+INSTANTIATE_TEST_SUITE_P(
+    Capturable,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        // TODO: Add kNavigateExisting.
+        testing::Values(
+            blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting),
+        testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
+        // TODO: Add redirection cases.
+        testing::Values(Destination::kScopeA2A,  // Navigate A -> A.
+                        Destination::kScopeA2B   // Navigate A -> B.
+                        ),
+        testing::Values(NavigationElement::kElementLink,
+                        NavigationElement::kElementButton),
+        // TODO: Add shift and middle click cases.
         testing::Values(ClickMethod::kLeftClick),
         testing::Values(OpenerMode::kNoOpener),
         testing::Values(NavigationTarget::kBlank)),
