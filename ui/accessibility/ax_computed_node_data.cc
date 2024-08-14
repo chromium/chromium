@@ -7,7 +7,6 @@
 #include "base/check_op.h"
 #include "base/i18n/break_iterator.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,6 +24,46 @@ namespace ui {
 AXComputedNodeData::AXComputedNodeData(const AXNode& node) : owner_(&node) {}
 
 AXComputedNodeData::~AXComputedNodeData() = default;
+
+// static
+bool AXComputedNodeData::CanComputeAttribute(
+    const ax::mojom::IntAttribute attribute,
+    const AXNode* node) {
+  // NOTE: This method must be kept strictly in sync with parent deferral logic
+  // in AXInlineTextBox::(next|previous)OnLine.
+  if (attribute != ax::mojom::IntAttribute::kNextOnLineId &&
+      attribute != ax::mojom::IntAttribute::kPreviousOnLineId) {
+    return false;
+  }
+
+  if (!::features::IsAccessibilityPruneRedundantInlineConnectivityEnabled()) {
+    return false;
+  }
+
+  // Inline text boxes share the same next- or previous-on-line ID with the
+  // parent when traversing across the parent's boundary. Determination of the
+  // next- or previous-on-line IDs for this type of connectivity is expensive
+  // during the serialization process. Unnecessary to duplicate the effort.
+  if (node->data().role != ax::mojom::Role::kInlineTextBox) {
+    return false;
+  }
+
+  if (!node->GetParent()) {
+    return false;
+  }
+
+  if (node == node->GetParent()->GetFirstChild() &&
+      attribute == ax::mojom::IntAttribute::kPreviousOnLineId) {
+    return node->GetParent()->data().HasIntAttribute(attribute);
+  }
+
+  if (node == node->GetParent()->GetLastChild() &&
+      attribute == ax::mojom::IntAttribute::kNextOnLineId) {
+    return node->GetParent()->data().HasIntAttribute(attribute);
+  }
+
+  return false;
+}
 
 int AXComputedNodeData::GetOrComputeUnignoredIndexInParent() const {
   DCHECK(!owner_->IsIgnored())
@@ -101,40 +140,14 @@ bool AXComputedNodeData::GetOrComputeIsDescendantOfPlatformLeaf() const {
   return *is_descendant_of_leaf_;
 }
 
-bool AXComputedNodeData::HasOrCanComputeAttribute(
-    const ax::mojom::IntAttribute attribute) const {
-  if (owner_->data().HasIntAttribute(attribute)) {
-    return true;
-  }
-
-  return CanComputeAttribute(attribute);
-}
-
-bool AXComputedNodeData::CanComputeAttribute(
-    const ax::mojom::IntAttribute attribute) const {
-  if (!::features::IsAccessibilityPruneRedundantInlineConnectivityEnabled()) {
-    return false;
-  }
-
-  // Inline text boxes share the same next- or previous-on-line ID with the
-  // parent when traversing across the parent's boundary. Determination of the
-  // next- or previous-on-line IDs for this type of connectivity is expensive
-  // during the serialization process. Unnecessary to duplicate the effort.
-  if (owner_->data().role != ax::mojom::Role::kInlineTextBox) {
-    return false;
-  }
-
-  if (owner_ == owner_->GetParent()->GetFirstChild() &&
-      attribute == ax::mojom::IntAttribute::kPreviousOnLineId) {
-    return true;
-  }
-
-  if (owner_ == owner_->GetParent()->GetLastChild() &&
-      attribute == ax::mojom::IntAttribute::kNextOnLineId) {
-    return true;
-  }
-
-  return false;
+bool AXComputedNodeData::ComputeAttribute(
+    const ax::mojom::IntAttribute attribute,
+    int* value) const {
+  DCHECK(CanComputeAttribute(attribute, owner_));
+  // The first inline text box can infer its previous online ID from the parent
+  // static text. The last inline text box can infer its next online ID from the
+  // parent.
+  return owner_->GetParent()->data().GetIntAttribute(attribute, value);
 }
 
 bool AXComputedNodeData::HasOrCanComputeAttribute(
@@ -171,28 +184,6 @@ bool AXComputedNodeData::HasOrCanComputeAttribute(
       return true;
     default:
       return false;
-  }
-}
-
-std::optional<int> AXComputedNodeData::GetOrComputeAttribute(
-    const ax::mojom::IntAttribute attribute) const {
-  int value;
-  if (owner_->data().GetIntAttribute(attribute, &value)) {
-    return value;
-  }
-
-  if (!CanComputeAttribute(attribute)) {
-    return std::nullopt;
-  }
-
-  DCHECK(owner_->data().role == ax::mojom::Role::kInlineTextBox);
-  switch (attribute) {
-    case ax::mojom::IntAttribute::kPreviousOnLineId:
-    case ax::mojom::IntAttribute::kNextOnLineId:
-      return owner_->GetParent()->data().GetIntAttribute(attribute);
-
-    default:
-      NOTREACHED_NORETURN();
   }
 }
 

@@ -911,19 +911,28 @@ AXSelection AXNode::GetUnignoredSelection() const {
 }
 
 bool AXNode::HasIntAttribute(ax::mojom::IntAttribute attribute) const {
-  return GetComputedNodeData().HasOrCanComputeAttribute(attribute);
+  if (data().HasIntAttribute(attribute)) {
+    return true;
+  }
+  return AXComputedNodeData::CanComputeAttribute(attribute, this);
 }
+
 int AXNode::GetIntAttribute(ax::mojom::IntAttribute attribute) const {
+  int value;
+  if (GetIntAttribute(attribute, &value)) {
+    return value;
+  }
   // If missing, return the default value for AXNodeData::GetIntAttribute
-  return GetComputedNodeData().GetOrComputeAttribute(attribute).value_or(0);
+  return 0;
 }
+
 bool AXNode::GetIntAttribute(ax::mojom::IntAttribute attribute,
                              int* value) const {
-  std::optional<int> maybe_value =
-      GetComputedNodeData().GetOrComputeAttribute(attribute);
-  if (maybe_value) {
-    *value = maybe_value.value();
+  if (data().GetIntAttribute(attribute, value)) {
     return true;
+  }
+  if (AXComputedNodeData::CanComputeAttribute(attribute, this)) {
+    return GetComputedNodeData().ComputeAttribute(attribute, value);
   }
   return false;
 }
