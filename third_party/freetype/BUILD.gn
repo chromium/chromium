@@ -4,6 +4,7 @@
 
 import("//build/config/cast.gni")
 import("//build/config/freetype/freetype.gni")
+import("//build/config/sanitizers/sanitizers.gni")
 import("//third_party/harfbuzz-ng/harfbuzz.gni")
 
 assert(!use_system_freetype, "Not used when using system freetype.")
@@ -143,6 +144,12 @@ source_set("freetype_source") {
   }
 
   defines += [ "FT2_BUILD_LIBRARY" ]
+
+  # Reduce the max number of hinting instructions per glyph when fuzzing.
+  # The default limit is 1,000,000. Reduce to a more realistic 10,000.
+  if (use_fuzzing_engine) {
+    defines += [ "TT_CONFIG_OPTION_MAX_RUNNABLE_OPCODES=10000" ]
+  }
 
   if (use_system_harfbuzz) {
     configs += [ "//third_party/harfbuzz-ng:harfbuzz_from_pkgconfig" ]
