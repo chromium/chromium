@@ -38,13 +38,6 @@ IsolatedWebAppValidator::ValidateIntegrityBlock(
         "Web Bundle IDs of type ProxyMode are not supported.");
   }
 
-  if (integrity_block.signature_stack().size() > 1 &&
-      !integrity_block.is_v2()) {
-    return base::unexpected(base::StringPrintf(
-        "Expected exactly 1 signature for the v1 integrity block, but got %zu.",
-        integrity_block.signature_stack().size()));
-  }
-
   auto derived_web_bundle_id = integrity_block.web_bundle_id();
   if (derived_web_bundle_id != expected_web_bundle_id) {
     return base::unexpected(base::StringPrintf(

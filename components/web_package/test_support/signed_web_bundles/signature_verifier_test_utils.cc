@@ -152,4 +152,12 @@ base::expected<void, SignedWebBundleSignatureVerifier::Error> VerifySignatures(
   return future.Take();
 }
 
+web_package::IntegrityBlockAttributes GetAttributesForSignedWebBundleId(
+    const std::string& signed_web_bundle_id) {
+  cbor::Value::MapValue cbor_map;
+  cbor_map.emplace(web_package::kWebBundleIdAttributeName,
+                   signed_web_bundle_id);
+  return {signed_web_bundle_id,
+          *cbor::Writer::Write(cbor::Value(std::move(cbor_map)))};
+}
 }  // namespace web_package::test

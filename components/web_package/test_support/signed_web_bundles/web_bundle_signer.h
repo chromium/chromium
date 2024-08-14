@@ -27,6 +27,7 @@ class WebBundleSigner {
     kInvalidIntegrityBlockStructure = kMinValue,
     kInvalidVersion,
     kNoSignedWebBundleId,
+    kNoAttributes,
     kEmptySignatureList,
     kMaxValue = kEmptySignatureList
   };

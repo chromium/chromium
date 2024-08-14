@@ -139,7 +139,7 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
 
   auto parsed_integrity_block =
       web_package::test::ParseIntegrityBlock(signed_web_bundle);
-  EXPECT_EQ(parsed_integrity_block.attributes().web_bundle_id(),
+  EXPECT_EQ(parsed_integrity_block.web_bundle_id().id(),
             ib_attributes.web_bundle_id);
 
   web_package::SignedWebBundleSignatureVerifier signature_verifier;

@@ -173,7 +173,9 @@ TEST_F(SignedWebBundleMetadataTest, FailsWhenBundleInvalid) {
   base::expected<SignedWebBundleMetadata, std::string> metadata =
       metadata_future.Get();
 
-  EXPECT_THAT(metadata, ErrorIs(HasSubstr("Unexpected array structure")));
+  EXPECT_THAT(
+      metadata,
+      ErrorIs(HasSubstr("Integrity block array of length 6 - should be 4.")));
 }
 
 }  // namespace

@@ -15,6 +15,7 @@
 #include "base/containers/extend.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/overloaded.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected_macros.h"
 #include "components/cbor/values.h"
@@ -220,6 +221,7 @@ cbor::Value CreateIntegrityBlock(
   if (errors_for_testing.Has(IntegrityBlockErrorForTesting::kInvalidVersion)) {
     integrity_block.emplace_back(
         cbor::Value::BinaryValue({'1', 'p', '\0', '\0'}));  // Invalid.
+    integrity_block.emplace_back(cbor::Value::MapValue{});
   } else if (ib_attributes) {
     // Presence of `ib_attributes` indicates integrity block v2.
     integrity_block.emplace_back(kIntegrityBlockV2VersionBytes);
@@ -231,6 +233,9 @@ cbor::Value CreateIntegrityBlock(
                  IntegrityBlockErrorForTesting::kNoSignedWebBundleId)) {
     integrity_block.emplace_back(kIntegrityBlockV2VersionBytes);
     integrity_block.emplace_back(cbor::Value::MapValue{});
+  } else if (errors_for_testing.Has(
+                 IntegrityBlockErrorForTesting::kNoAttributes)) {
+    integrity_block.emplace_back(kIntegrityBlockV2VersionBytes);
   } else {
     NOTREACHED()
         << "Absence of `ib_attributes` indicates integrity block v1, which "
@@ -308,7 +313,8 @@ void FillIdAttributesIfPossibleAndNecessary(
     const WebBundleSigner::IntegrityBlockErrorsForTesting& errors_for_testing) {
   if (ib_attributes || key_pairs.empty() ||
       errors_for_testing.Has(
-          IntegrityBlockErrorForTesting::kNoSignedWebBundleId)) {
+          IntegrityBlockErrorForTesting::kNoSignedWebBundleId) ||
+      errors_for_testing.Has(IntegrityBlockErrorForTesting::kNoAttributes)) {
     return;
   }
   ib_attributes = {.web_bundle_id = absl::visit(

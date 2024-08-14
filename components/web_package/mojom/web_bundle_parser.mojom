@@ -103,8 +103,8 @@ struct BundleIntegrityBlock {
   uint64 size;
   array<BundleIntegrityBlockSignatureStackEntry> signature_stack;
 
-  // Attributes of this integrity block (only for v2).
-  BundleIntegrityBlockAttributes? attributes;
+  // Attributes of this integrity block.
+  BundleIntegrityBlockAttributes attributes;
 };
 
 // Mapped to `web_package::Ed25519PublicKey`

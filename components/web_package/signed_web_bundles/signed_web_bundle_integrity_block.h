@@ -53,30 +53,25 @@ class SignedWebBundleIntegrityBlock {
     return signature_stack_;
   }
 
-  // Returns the inferred id of the web bundle.
-  //   * For the v1 integrity block the id is derived from the lowermost
-  //   signature in the stack.
-  //   * For the v2 integrity block the id is specified as a separate attribute.
-  SignedWebBundleId web_bundle_id() const;
+  // Returns the id of the web bundle specified in integrity block attributes.
+  const SignedWebBundleId& web_bundle_id() const { return web_bundle_id_; }
 
-  // Only v2 integrity blocks have their own attributes.
-  bool is_v2() const { return attributes_.has_value(); }
-
-  const IntegrityBlockAttributes& attributes() const {
-    CHECK(is_v2()) << " Attributes are only present in v2 integrity blocks.";
-    return *attributes_;
+  const std::vector<uint8_t>& attributes_cbor() const {
+    return attributes_cbor_;
   }
 
  private:
   explicit SignedWebBundleIntegrityBlock(
       uint64_t size_in_bytes,
       SignedWebBundleSignatureStack&& signature_stack,
-      std::optional<IntegrityBlockAttributes> attributes);
+      SignedWebBundleId web_bundle_id,
+      std::vector<uint8_t> attributes_cbor);
 
   uint64_t size_in_bytes_;
   SignedWebBundleSignatureStack signature_stack_;
 
-  std::optional<IntegrityBlockAttributes> attributes_;
+  SignedWebBundleId web_bundle_id_;
+  std::vector<uint8_t> attributes_cbor_;
 };
 
 }  // namespace web_package

@@ -28,6 +28,7 @@
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/integrity_block_attributes.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -213,8 +214,7 @@ struct SignedWebBundleAndKeys {
 
 SignedWebBundleAndKeys SignBundle(
     const std::vector<uint8_t>& unsigned_bundle,
-    const std::optional<WebBundleSigner::IntegrityBlockAttributes>&
-        ib_attributes,
+    std::optional<WebBundleSigner::IntegrityBlockAttributes> ib_attributes,
     WebBundleSigner::ErrorsForTesting errors_for_testing = {
         /*integrity_block_errors=*/{}, /*signatures_errors=*/{}},
     size_t num_signatures = 1) {
@@ -953,6 +953,25 @@ TEST_F(WebBundleParserTest, SignedBundleNoBundleId) {
                                  "attributes is missing or malformed."))))));
 }
 
+TEST_F(WebBundleParserTest, SignedBundleNoAttributes) {
+  WebBundleBuilder builder;
+  std::vector<uint8_t> unsigned_bundle = builder.CreateBundle();
+  auto bundle_and_keys = SignBundle(
+      unsigned_bundle,
+      {/*integrity_block_errors=*/{
+           WebBundleSigner::IntegrityBlockErrorForTesting::kNoAttributes},
+       /*signatures_errors=*/{}});
+  TestDataSource data_source(bundle_and_keys.bundle);
+
+  EXPECT_THAT(
+      ParseSignedBundleIntegrityBlock(&data_source),
+      ErrorIs(Pointee(AllOf(
+          Field(&mojom::BundleIntegrityBlockParseError::type,
+                Eq(mojom::BundleParseErrorType::kFormatError)),
+          Field(&mojom::BundleIntegrityBlockParseError::message,
+                Eq("Integrity block array of length 3 - should be 4."))))));
+}
+
 TEST_F(WebBundleParserTest, SignedBundleWrongSignatureLength) {
   auto unsigned_bundle = CreateSmallBundle();
   auto bundle_and_keys = SignBundle(
@@ -1032,9 +1051,9 @@ TEST_F(WebBundleParserTest, SignedBundleV2) {
   EXPECT_EQ(integrity_block->size,
             bundle_and_keys.bundle.size() - unsigned_bundle.size());
 
-  EXPECT_THAT(integrity_block->attributes,
-              Optional(Property(&IntegrityBlockAttributes::web_bundle_id,
-                                Eq(kWebBundleId))));
+  EXPECT_THAT(
+      integrity_block->attributes,
+      Property(&IntegrityBlockAttributes::web_bundle_id, Eq(kWebBundleId)));
 
   // There should be exactly one signature stack entry, corresponding to the
   // public key that was used to sign the web bundle.

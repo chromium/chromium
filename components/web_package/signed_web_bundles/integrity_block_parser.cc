@@ -6,6 +6,7 @@
 
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
+#include "base/strings/to_string.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/web_package/input_reader.h"
@@ -52,7 +53,7 @@ void IntegrityBlockParser::StartParsing(
       /*magic_bytes_header=*/kMaxCBORItemHeaderSize +
       /*magic_bytes=*/kIntegrityBlockMagicBytes.size() +
       /*version_bytes_header=*/kMaxCBORItemHeaderSize +
-      /*version_bytes=*/kIntegrityBlockV1VersionBytes.size();
+      /*version_bytes=*/kIntegrityBlockV2VersionBytes.size();
   data_source_->Read(
       0, kMagicBytesAndVersionHeaderLength,
       base::BindOnce(&IntegrityBlockParser::ParseMagicBytesAndVersion,
@@ -75,8 +76,9 @@ void IntegrityBlockParser::ParseMagicBytesAndVersion(
 
   if (*array_length < 2) {
     RunErrorCallback(
-        "The array size is too short -- expected at least two elements (magic "
-        "bytes and version).");
+        "Integrity block array size is too short -- expected at least 2 "
+        "elements, got " +
+        base::ToString(*array_length) + ".");
     return;
   }
 
@@ -88,26 +90,25 @@ void IntegrityBlockParser::ParseMagicBytesAndVersion(
   std::optional<base::span<const uint8_t>> version_bytes =
       ReadByteStringWithHeader(input);
   if (version_bytes == kIntegrityBlockV1VersionBytes) {
-    if (array_length != kIntegrityBlockV1TopLevelArrayLength) {
-      RunErrorCallback("Unexpected array structure for v1 version.");
-      return;
-    }
-    offset_in_stream_ = input.CurrentOffset();
-    ReadSignatureStack();
-  } else if (version_bytes == kIntegrityBlockV2VersionBytes) {
-    if (array_length != kIntegrityBlockV2TopLevelArrayLength) {
-      RunErrorCallback("Unexpected array structure for v2 version.");
-      return;
-    }
-    offset_in_stream_ = input.CurrentOffset();
-    ReadAttributes();
-  } else {
     RunErrorCallback(
-        "Unexpected version bytes: expected `1b\\0\\0` (for v1) or `2b\\0\\0` "
-        "(for v2).",
-        mojom::BundleParseErrorType::kVersionError);
+        "Integrity Block V1 has been deprecated since M129. Please re-sign "
+        "your bundle.");
     return;
   }
+  if (version_bytes != kIntegrityBlockV2VersionBytes) {
+    RunErrorCallback("Unexpected version bytes: expected `2b\\0\\0` (for v2).",
+                     mojom::BundleParseErrorType::kVersionError);
+    return;
+  }
+  if (*array_length != kIntegrityBlockV2TopLevelArrayLength) {
+    RunErrorCallback("Integrity block array of length " +
+                     base::ToString(*array_length) + " - should be " +
+                     base::ToString(kIntegrityBlockV2TopLevelArrayLength) +
+                     ".");
+    return;
+  }
+  offset_in_stream_ = input.CurrentOffset();
+  ReadAttributes();
 }
 
 void IntegrityBlockParser::ReadAttributes() {
@@ -232,7 +233,7 @@ void IntegrityBlockParser::RunSuccessCallback() {
       mojom::BundleIntegrityBlock::New();
   integrity_block->size = offset_in_stream_;
   integrity_block->signature_stack = std::move(signature_stack_);
-  integrity_block->attributes = std::move(attributes_);
+  integrity_block->attributes = std::move(*attributes_);
 
   std::move(complete_callback_)
       .Run(base::BindOnce(std::move(result_callback_),

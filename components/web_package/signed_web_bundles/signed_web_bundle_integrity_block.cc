@@ -34,23 +34,24 @@ SignedWebBundleIntegrityBlock::Create(
                             std::move(error);
                    });
 
-  if (integrity_block->attributes) {
-    RETURN_IF_ERROR(SignedWebBundleId::Create(
-        integrity_block->attributes->web_bundle_id()));
-  }
+  ASSIGN_OR_RETURN(
+      auto web_bundle_id,
+      SignedWebBundleId::Create(integrity_block->attributes.web_bundle_id()));
 
-  return SignedWebBundleIntegrityBlock(integrity_block->size,
-                                       std::move(signature_stack),
-                                       std::move(integrity_block->attributes));
+  return SignedWebBundleIntegrityBlock(
+      integrity_block->size, std::move(signature_stack),
+      std::move(web_bundle_id), std::move(integrity_block->attributes.cbor()));
 }
 
 SignedWebBundleIntegrityBlock::SignedWebBundleIntegrityBlock(
     const uint64_t size_in_bytes,
     SignedWebBundleSignatureStack&& signature_stack,
-    std::optional<IntegrityBlockAttributes> attributes)
+    SignedWebBundleId web_bundle_id,
+    std::vector<uint8_t> attributes_cbor)
     : size_in_bytes_(size_in_bytes),
       signature_stack_(signature_stack),
-      attributes_(std::move(attributes)) {
+      web_bundle_id_(std::move(web_bundle_id)),
+      attributes_cbor_(std::move(attributes_cbor)) {
   CHECK_GT(size_in_bytes_, 0ul);
 }
 
@@ -60,29 +61,9 @@ SignedWebBundleIntegrityBlock& SignedWebBundleIntegrityBlock::operator=(
     const SignedWebBundleIntegrityBlock&) = default;
 
 bool SignedWebBundleIntegrityBlock::operator==(
-    const SignedWebBundleIntegrityBlock& other) const {
-  return size_in_bytes_ == other.size_in_bytes_ &&
-         signature_stack_ == other.signature_stack_ &&
-         attributes_ == other.attributes_;
-}
+    const SignedWebBundleIntegrityBlock& other) const = default;
 
 bool SignedWebBundleIntegrityBlock::operator!=(
-    const SignedWebBundleIntegrityBlock& other) const {
-  return !operator==(other);
-}
-
-SignedWebBundleId SignedWebBundleIntegrityBlock::web_bundle_id() const {
-  if (attributes_) {
-    return *SignedWebBundleId::Create(attributes_->web_bundle_id());
-  }
-  return absl::visit(
-      base::Overloaded{[](const auto& signature_info) {
-                         return SignedWebBundleId::CreateForPublicKey(
-                             signature_info.public_key());
-                       },
-                       [](const SignedWebBundleSignatureInfoUnknown&)
-                           -> SignedWebBundleId { NOTREACHED_NORETURN(); }},
-      signature_stack_.entries()[0].signature_info());
-}
+    const SignedWebBundleIntegrityBlock& other) const = default;
 
 }  // namespace web_package

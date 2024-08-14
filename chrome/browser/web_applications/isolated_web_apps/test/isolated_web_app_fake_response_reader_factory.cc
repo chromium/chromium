@@ -12,7 +12,9 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
+#include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 
 namespace web_app {
 
@@ -28,8 +30,13 @@ web_package::SignedWebBundleIntegrityBlock CreateDummyIntegrityBlock() {
       web_package::mojom::SignatureInfoEd25519::New());
   entry->signature_info->get_ed25519()->public_key =
       test::GetDefaultEd25519KeyPair().public_key;
-
+  auto signed_web_bundle_id =
+      web_package::SignedWebBundleId::CreateForPublicKey(
+          test::GetDefaultEd25519KeyPair().public_key);
   raw_integrity_block->signature_stack.push_back(std::move(entry));
+  raw_integrity_block->attributes =
+      web_package::test::GetAttributesForSignedWebBundleId(
+          signed_web_bundle_id.id());
 
   auto integrity_block = web_package::SignedWebBundleIntegrityBlock::Create(
       std::move(raw_integrity_block));

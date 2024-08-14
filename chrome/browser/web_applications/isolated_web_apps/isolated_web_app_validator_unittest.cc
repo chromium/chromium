@@ -18,6 +18,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
+#include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -27,6 +28,7 @@
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
+#include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -91,6 +93,11 @@ class IsolatedWebAppValidatorTest : public ::testing::Test {
       return entry;
     });
 
+    auto signed_web_bundle_id =
+        web_package::SignedWebBundleId::CreateForPublicKey(public_keys[0]);
+    raw_integrity_block->attributes =
+        web_package::test::GetAttributesForSignedWebBundleId(
+            signed_web_bundle_id.id());
     auto integrity_block = web_package::SignedWebBundleIntegrityBlock::Create(
         std::move(raw_integrity_block));
     CHECK(integrity_block.has_value()) << integrity_block.error();
@@ -116,15 +123,6 @@ class IsolatedWebAppValidatorTest : public ::testing::Test {
 };
 
 using IsolatedWebAppValidatorIntegrityBlockTest = IsolatedWebAppValidatorTest;
-
-TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, TwoPublicKeys) {
-  auto integrity_block = MakeIntegrityBlock({kPublicKey1, kPublicKey2});
-
-  EXPECT_THAT(
-      validator_.ValidateIntegrityBlock(kWebBundleId1, integrity_block,
-                                        /*dev_mode=*/false, trust_checker_),
-      ErrorIs(HasSubstr("Expected exactly 1 signature")));
-}
 
 TEST_F(IsolatedWebAppValidatorIntegrityBlockTest,
        WebBundleIdAndPublicKeyDiffer) {
