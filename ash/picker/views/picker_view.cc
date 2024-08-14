@@ -563,6 +563,12 @@ void PickerView::UpdateActivePage() {
   std::u16string_view query =
       base::TrimWhitespace(search_field_view_->GetQueryText(), base::TRIM_ALL);
 
+  if (query == last_query_ && selected_category_ == last_selected_category_) {
+    return;
+  }
+  last_query_ = std::u16string(query);
+  last_selected_category_ = selected_category_;
+
   delegate_->GetSessionMetrics().UpdateSearchQuery(query);
 
   if (!query.empty()) {

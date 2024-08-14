@@ -242,6 +242,12 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   //   results to a category, then clears the search query, new results will be
   //   fetched as the `last_suggested_results_category_ != selected_category_`.
   std::optional<PickerCategory> last_suggested_results_category_;
+  // The whitespace-trimmed query and category when `UpdateActivePage()` was
+  // last called.
+  // Used for avoid unnecessary searches if `UpdateActivePage()` is called again
+  // with the same {query, selected_category}.
+  std::u16string last_query_;
+  std::optional<PickerCategory> last_selected_category_;
 
   PickerKeyEventHandler key_event_handler_;
   PickerSubmenuController submenu_controller_;

@@ -926,6 +926,43 @@ TEST_F(PickerViewTest, SearchTrimsLeftAndRightSpaces) {
   EXPECT_EQ(future.Take(), u"a");
 }
 
+TEST_F(PickerViewTest, SearchIsNotRerunIfSpacesAreAddedToEnds) {
+  base::test::TestFuture<std::u16string> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
+            // This will crash if it is run multiple times.
+            future.SetValue(std::u16string(query));
+            callback.Run({{PickerSearchResultsSection(
+                PickerSectionType::kClipboard,
+                {{PickerSearchResult::Text(u"result")}},
+                /*has_more_results=*/false)}});
+            // Signals that all results are done.
+            callback.Run({});
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  EXPECT_EQ(future.Get(), u"a");
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_SPACE, ui::EF_NONE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_SPACE, ui::EF_NONE);
+  // [a..|]
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_HOME, ui::EF_NONE);
+  // [|a..]
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_SPACE, ui::EF_NONE);
+  // [.|a..]
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_SPACE, ui::EF_NONE);
+  // [..|a..]
+  ASSERT_EQ(picker_view->search_field_view_for_testing()
+                .textfield_for_testing()
+                .GetText(),
+            u"  a  ");
+}
+
 TEST_F(PickerViewTest,
        SearchingFromZeroStateDoesNotImmediatelySwitchToResults) {
   base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
