@@ -466,7 +466,7 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
         PreloadingData::GetOrCreateForWebContents(web_contents());
     PreloadingURLMatchCallback matcher =
         PreloadingDataImpl::GetPrefetchServiceMatcher(
-            GetPrefetchService(),
+            *GetPrefetchService(),
             PrefetchContainer::Key(referring_document_token, prefetch_url));
 
     auto* attempt = static_cast<PreloadingAttemptImpl*>(
