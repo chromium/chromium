@@ -9195,6 +9195,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DemoMode.Setup.RetryButtonClicked">
+  <owner>wanghaifan@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <description>
+    Recorded when the retry button during the demo mode setup process is
+    clicked. The retry button appears when there is a setup failure.
+  </description>
+</action>
+
 <action name="DemoMode_AttractLoop_Break">
   <owner>brandonmendez@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
