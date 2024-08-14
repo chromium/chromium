@@ -2462,21 +2462,21 @@ const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
 
 const FeatureEntry::FeatureParam
     kMostVitedTilesReselect_enable_partial_match_arm1[] = {
-        {"lax_host", "true"},
+        {"lax_scheme_host", "true"},
         {"lax_ref", "true"},
         {"lax_query", "false"},
         {"lax_path", "false"},
 };
 const FeatureEntry::FeatureParam
     kMostVitedTilesReselect_enable_partial_match_arm2[] = {
-        {"lax_host", "true"},
+        {"lax_scheme_host", "true"},
         {"lax_ref", "true"},
         {"lax_query", "true"},
         {"lax_path", "false"},
 };
 const FeatureEntry::FeatureParam
     kMostVitedTilesReselect_enable_partial_match_arm3[] = {
-        {"lax_host", "true"},
+        {"lax_scheme_host", "true"},
         {"lax_ref", "true"},
         {"lax_query", "true"},
         {"lax_path", "true"},

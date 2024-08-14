@@ -25,12 +25,6 @@ import org.chromium.url.GURL;
 /** Extension of {@link NativePageNavigationDelegate} with suggestions-specific methods. */
 public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateImpl {
 
-    private static final String MOST_VISITED_TILES_RESELECT_LAX_HOST_PARAM = "lax_host";
-    public static final BooleanCachedFieldTrialParameter MOST_VISITED_TILES_RESELECT_LAX_HOST =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.MOST_VISITED_TILES_RESELECT,
-                    MOST_VISITED_TILES_RESELECT_LAX_HOST_PARAM,
-                    false);
     private static final String MOST_VISITED_TILES_RESELECT_LAX_PATH_PARAM = "lax_path";
     public static final BooleanCachedFieldTrialParameter MOST_VISITED_TILES_RESELECT_LAX_PATH =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
@@ -49,6 +43,14 @@ public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateI
                     ChromeFeatureList.MOST_VISITED_TILES_RESELECT,
                     MOST_VISITED_TILES_RESELECT_LAX_REF_PARAM,
                     false);
+    private static final String MOST_VISITED_TILES_RESELECT_LAX_SCHEME_HOST_PARAM =
+            "lax_scheme_host";
+    public static final BooleanCachedFieldTrialParameter
+            MOST_VISITED_TILES_RESELECT_LAX_SCHEME_HOST =
+                    ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                            ChromeFeatureList.MOST_VISITED_TILES_RESELECT,
+                            MOST_VISITED_TILES_RESELECT_LAX_SCHEME_HOST_PARAM,
+                            false);
 
     public SuggestionsNavigationDelegate(
             Activity activity,
@@ -86,12 +88,12 @@ public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateI
     public boolean maybeSelectTabWithUrl(GURL keyUrl) {
         TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
 
-        boolean laxHost = MOST_VISITED_TILES_RESELECT_LAX_HOST.getValue();
+        boolean laxSchemeHost = MOST_VISITED_TILES_RESELECT_LAX_SCHEME_HOST.getValue();
         boolean laxRef = MOST_VISITED_TILES_RESELECT_LAX_REF.getValue();
         boolean laxQuery = MOST_VISITED_TILES_RESELECT_LAX_QUERY.getValue();
         boolean laxPath = MOST_VISITED_TILES_RESELECT_LAX_PATH.getValue();
         UrlSimilarityScorer scorer =
-                new UrlSimilarityScorer(keyUrl, laxHost, laxRef, laxQuery, laxPath);
+                new UrlSimilarityScorer(keyUrl, laxSchemeHost, laxRef, laxQuery, laxPath);
         int index = scorer.findTabWithMostSimilarUrl(tabModel);
         if (index == TabList.INVALID_TAB_INDEX) return false;
 

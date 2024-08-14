@@ -193,7 +193,7 @@ public class UrlSimilarityScorerUnitTest {
     @SmallTest
     public void testGetSimilarityIntermediate() {
         GURL testUrl = new GURL("https://example.com");
-        UrlSimilarityScorer scorer = makeLaxHostRefScorer(testUrl);
+        UrlSimilarityScorer scorer = makeLaxSchemeHostRefScorer(testUrl);
         StringToInt f = (String urlStr) -> scorer.scoreSimilarity(new GURL(urlStr));
         assertEquals(IDENTICAL, f.run("https://example.com"));
         assertEquals(MISMATCHED, f.run("http://example.com"));
@@ -214,7 +214,7 @@ public class UrlSimilarityScorerUnitTest {
     @SmallTest
     public void testGetSimilarityLax_KeyUrlRoot() {
         GURL testUrl = new GURL("https://example.com");
-        UrlSimilarityScorer scorer = makeLaxHostRefQueryPathScorer(testUrl);
+        UrlSimilarityScorer scorer = makeLaxSchemeHostRefQueryPathScorer(testUrl);
         StringToInt f = (String urlStr) -> scorer.scoreSimilarity(new GURL(urlStr));
         assertEquals(IDENTICAL, f.run("https://example.com"));
         assertEquals(MISMATCHED, f.run("http://example.com"));
@@ -242,10 +242,11 @@ public class UrlSimilarityScorerUnitTest {
     @SmallTest
     public void testGetSimilarityLax_KeyUrlDirectory() {
         GURL testUrl = new GURL("https://m.example.com/path/?query=1#ref");
-        UrlSimilarityScorer scorer = makeLaxHostRefQueryPathScorer(testUrl);
+        UrlSimilarityScorer scorer = makeLaxSchemeHostRefQueryPathScorer(testUrl);
         StringToInt f = (String urlStr) -> scorer.scoreSimilarity(new GURL(urlStr));
         assertEquals(MISMATCHED, f.run("https://example.com"));
         assertEquals(MISMATCHED, f.run("http://m.example.com/path/?query=1#ref"));
+
         assertEquals(MISMATCHED, f.run("https://m.example.com:8000/path/?query=1#ref"));
         assertEquals(MISMATCHED, f.run("https://www.example.com"));
         assertEquals(990, f.run("https://example.com/path")); // File.
@@ -263,16 +264,36 @@ public class UrlSimilarityScorerUnitTest {
         assertEquals(MISMATCHED, f.run("https://www.not-example.com"));
         assertEquals(MISMATCHED, f.run("https://www.not-example.com/path?query=1#ref"));
         assertEquals(MISMATCHED, f.run("https://www.not-example.com/path/?query=1#ref"));
+
+        // Repeat for https -> http.
+        assertEquals(MISMATCHED, f.run("http://m.example.com:8000/path/?query=1#ref"));
+        assertEquals(MISMATCHED, f.run("http://www.example.com"));
+        assertEquals(MISMATCHED, f.run("http://example.com/path")); // File.
+        assertEquals(MISMATCHED, f.run("http://example.com/path/")); // Directory.
+        assertEquals(MISMATCHED, f.run("http://example.com/path/a/b/c/d/e/f/g/h"));
+        assertEquals(MISMATCHED, f.run("http://example.com/?query=1"));
+        assertEquals(MISMATCHED, f.run("http://example.com/#ref"));
+        assertEquals(MISMATCHED, f.run("http://example.com/path?query=1")); // File.
+        assertEquals(MISMATCHED, f.run("http://example.com/path#ref")); // File.
+        assertEquals(MISMATCHED, f.run("http://example.com/path/?query=1")); // Directory.
+        assertEquals(MISMATCHED, f.run("http://example.com/path/#ref")); // Directory.
+        assertEquals(MISMATCHED, f.run("http://www.example.com/path?query=1#ref")); // File.
+        assertEquals(MISMATCHED, f.run("http://m.example.com/path/?query=1#ref"));
+        assertEquals(MISMATCHED, f.run("http://touch.example.com/path?query=1#ref"));
+        assertEquals(MISMATCHED, f.run("http://www.not-example.com"));
+        assertEquals(MISMATCHED, f.run("http://www.not-example.com/path?query=1#ref"));
+        assertEquals(MISMATCHED, f.run("http://www.not-example.com/path/?query=1#ref"));
     }
 
     @Test
     @SmallTest
     public void testGetSimilarityLax_KeyUrlFile() {
         GURL testUrl = new GURL("http://touch.example.com:1234/path?query=1#ref");
-        UrlSimilarityScorer scorer = makeLaxHostRefQueryPathScorer(testUrl);
+        UrlSimilarityScorer scorer = makeLaxSchemeHostRefQueryPathScorer(testUrl);
         StringToInt f = (String urlStr) -> scorer.scoreSimilarity(new GURL(urlStr));
         assertEquals(MISMATCHED, f.run("http://example.com:1234"));
-        assertEquals(MISMATCHED, f.run("https://touch.example.com:1234/path?query=1#ref"));
+        assertEquals(993, f.run("https://touch.example.com:1234/path?query=1#ref"));
+
         assertEquals(MISMATCHED, f.run("http://touch.example.com/path?query=1#ref"));
         assertEquals(MISMATCHED, f.run("http://www.example.com:1234"));
         assertEquals(990, f.run("http://example.com:1234/path")); // File.
@@ -290,6 +311,25 @@ public class UrlSimilarityScorerUnitTest {
         assertEquals(MISMATCHED, f.run("http://www.not-example.com:1234"));
         assertEquals(MISMATCHED, f.run("http://www.not-example.com:1234/path?query=1#ref"));
         assertEquals(MISMATCHED, f.run("http://www.not-example.com:1234/path/?query=1#ref"));
+
+        // Repeat for http -> https.
+        assertEquals(MISMATCHED, f.run("https://touch.example.com/path?query=1#ref"));
+        assertEquals(MISMATCHED, f.run("https://www.example.com:1234"));
+        assertEquals(990, f.run("https://example.com:1234/path")); // File.
+        assertEquals(990, f.run("https://example.com:1234/path/")); // Directory.
+        assertEquals(910, f.run("https://example.com:1234/path/a/b/c/d/e/f/g/h"));
+        assertEquals(MISMATCHED, f.run("https://example.com:1234/?query=1"));
+        assertEquals(MISMATCHED, f.run("https://example.com:1234/#ref"));
+        assertEquals(992, f.run("https://example.com:1234/path?query=1")); // File.
+        assertEquals(991, f.run("https://example.com:1234/path#ref")); // File.
+        assertEquals(992, f.run("https://example.com:1234/path/?query=1")); // Directory.
+        assertEquals(991, f.run("https://example.com:1234/path/#ref")); // Directory.
+        assertEquals(993, f.run("https://www.example.com:1234/path?query=1#ref")); // File.
+        assertEquals(993, f.run("https://m.example.com:1234/path/?query=1#ref"));
+        assertEquals(993, f.run("https://touch.example.com:1234/path?query=1#ref"));
+        assertEquals(MISMATCHED, f.run("https://www.not-example.com:1234"));
+        assertEquals(MISMATCHED, f.run("https://www.not-example.com:1234/path?query=1#ref"));
+        assertEquals(MISMATCHED, f.run("https://www.not-example.com:1234/path/?query=1#ref"));
     }
 
     @Test
@@ -311,14 +351,15 @@ public class UrlSimilarityScorerUnitTest {
                 batchFindTabWithMostSimilarUrl(candidateUrls, makeExactMatchScorer(keyUrl1)));
         assertArrayEquals(
                 new int[] {bad, bad, bad, 3, 4, 5},
-                batchFindTabWithMostSimilarUrl(candidateUrls, makeLaxHostRefScorer(keyUrl1)));
+                batchFindTabWithMostSimilarUrl(candidateUrls, makeLaxSchemeHostRefScorer(keyUrl1)));
         assertArrayEquals(
                 new int[] {bad, bad, 2, 3, 4, 5},
-                batchFindTabWithMostSimilarUrl(candidateUrls, makeLaxHostRefQueryScorer(keyUrl1)));
+                batchFindTabWithMostSimilarUrl(
+                        candidateUrls, makeLaxSchemeHostRefQueryScorer(keyUrl1)));
         assertArrayEquals(
                 new int[] {bad, 1, 2, 3, 4, 5},
                 batchFindTabWithMostSimilarUrl(
-                        candidateUrls, makeLaxHostRefQueryPathScorer(keyUrl1)));
+                        candidateUrls, makeLaxSchemeHostRefQueryPathScorer(keyUrl1)));
 
         GURL keyUrl2 = new GURL("https://www.example.com/#ref");
         assertArrayEquals(
@@ -326,14 +367,15 @@ public class UrlSimilarityScorerUnitTest {
                 batchFindTabWithMostSimilarUrl(candidateUrls, makeExactMatchScorer(keyUrl2)));
         assertArrayEquals(
                 new int[] {bad, bad, bad, 3, 3, 3},
-                batchFindTabWithMostSimilarUrl(candidateUrls, makeLaxHostRefScorer(keyUrl2)));
+                batchFindTabWithMostSimilarUrl(candidateUrls, makeLaxSchemeHostRefScorer(keyUrl2)));
         assertArrayEquals(
                 new int[] {bad, bad, 2, 3, 3, 3},
-                batchFindTabWithMostSimilarUrl(candidateUrls, makeLaxHostRefQueryScorer(keyUrl2)));
+                batchFindTabWithMostSimilarUrl(
+                        candidateUrls, makeLaxSchemeHostRefQueryScorer(keyUrl2)));
         assertArrayEquals(
                 new int[] {bad, 1, 2, 3, 3, 3},
                 batchFindTabWithMostSimilarUrl(
-                        candidateUrls, makeLaxHostRefQueryPathScorer(keyUrl2)));
+                        candidateUrls, makeLaxSchemeHostRefQueryPathScorer(keyUrl2)));
 
         GURL keyUrl3 = new GURL("https://m.example.com/?query");
         assertArrayEquals(
@@ -341,14 +383,15 @@ public class UrlSimilarityScorerUnitTest {
                 batchFindTabWithMostSimilarUrl(candidateUrls, makeExactMatchScorer(keyUrl3)));
         assertArrayEquals(
                 new int[] {bad, bad, 2, 2, 2, 2},
-                batchFindTabWithMostSimilarUrl(candidateUrls, makeLaxHostRefScorer(keyUrl3)));
+                batchFindTabWithMostSimilarUrl(candidateUrls, makeLaxSchemeHostRefScorer(keyUrl3)));
         assertArrayEquals(
                 new int[] {bad, bad, 2, 2, 2, 2},
-                batchFindTabWithMostSimilarUrl(candidateUrls, makeLaxHostRefQueryScorer(keyUrl3)));
+                batchFindTabWithMostSimilarUrl(
+                        candidateUrls, makeLaxSchemeHostRefQueryScorer(keyUrl3)));
         assertArrayEquals(
                 new int[] {bad, 1, 2, 2, 2, 2},
                 batchFindTabWithMostSimilarUrl(
-                        candidateUrls, makeLaxHostRefQueryPathScorer(keyUrl3)));
+                        candidateUrls, makeLaxSchemeHostRefQueryPathScorer(keyUrl3)));
 
         GURL keyUrl4 = new GURL("https://mobile.example.com/path");
         assertArrayEquals(
@@ -356,14 +399,15 @@ public class UrlSimilarityScorerUnitTest {
                 batchFindTabWithMostSimilarUrl(candidateUrls, makeExactMatchScorer(keyUrl4)));
         assertArrayEquals(
                 new int[] {bad, bad, bad, bad, bad, bad},
-                batchFindTabWithMostSimilarUrl(candidateUrls, makeLaxHostRefScorer(keyUrl4)));
-        assertArrayEquals(
-                new int[] {bad, 1, 1, 1, 1, 1},
-                batchFindTabWithMostSimilarUrl(candidateUrls, makeLaxHostRefQueryScorer(keyUrl4)));
+                batchFindTabWithMostSimilarUrl(candidateUrls, makeLaxSchemeHostRefScorer(keyUrl4)));
         assertArrayEquals(
                 new int[] {bad, 1, 1, 1, 1, 1},
                 batchFindTabWithMostSimilarUrl(
-                        candidateUrls, makeLaxHostRefQueryPathScorer(keyUrl4)));
+                        candidateUrls, makeLaxSchemeHostRefQueryScorer(keyUrl4)));
+        assertArrayEquals(
+                new int[] {bad, 1, 1, 1, 1, 1},
+                batchFindTabWithMostSimilarUrl(
+                        candidateUrls, makeLaxSchemeHostRefQueryPathScorer(keyUrl4)));
     }
 
     private TabList createTabList(List<GURL> urlList) {
@@ -382,37 +426,37 @@ public class UrlSimilarityScorerUnitTest {
     private UrlSimilarityScorer makeExactMatchScorer(GURL keyUrl) {
         return new UrlSimilarityScorer(
                 keyUrl,
-                /* laxHost= */ false,
+                /* laxSchemeHost= */ false,
                 /* laxRef= */ false,
                 /* laxQuery= */ false,
                 /* laxPath= */ false);
     }
 
-    private UrlSimilarityScorer makeLaxHostRefScorer(GURL keyUrl) {
+    private UrlSimilarityScorer makeLaxSchemeHostRefScorer(GURL keyUrl) {
         return new UrlSimilarityScorer(
                 keyUrl,
-                /* laxHost= */ true,
+                /* laxSchemeHost= */ true,
                 /* laxRef= */ true,
                 /* laxQuery= */ false,
                 /* laxPath= */ false);
     }
 
-    private UrlSimilarityScorer makeLaxHostRefQueryScorer(GURL keyUrl) {
+    private UrlSimilarityScorer makeLaxSchemeHostRefQueryScorer(GURL keyUrl) {
         return new UrlSimilarityScorer(
                 keyUrl,
-                /* laxHost= */ true,
+                /* laxSchemeHost= */ true,
                 /* laxRef= */ true,
                 /* laxQuery= */ true,
                 /* laxPath= */ false);
     }
 
-    private UrlSimilarityScorer makeLaxHostRefQueryPathScorer(GURL keyUrl) {
+    private UrlSimilarityScorer makeLaxSchemeHostRefQueryPathScorer(GURL keyUrl) {
         return new UrlSimilarityScorer(
                 keyUrl,
-                /* doCanonicalizeHost= */ true,
-                /* lenientRef= */ true,
-                /* lenientQuery= */ true,
-                /* lenientPath= */ true);
+                /* laxSchemeHost= */ true,
+                /* laxRef= */ true,
+                /* laxQuery= */ true,
+                /* laxPath= */ true);
     }
 
     /**

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.suggestions;
 import android.annotation.SuppressLint;
 
 import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -34,13 +35,13 @@ public class UrlSimilarityScorer {
 
     private final GURL mKeyUrl;
     // Match parameters, ordered so intended usage would specify "true" before "false".
-    private final boolean mLaxHost;
+    private final boolean mLaxSchemeHost;
     private final boolean mLaxRef;
     private final boolean mLaxQuery;
     private final boolean mLaxPath;
 
     // Cached parts of {@link mKeyUrl}, following standard order within a URL.
-    private final String mKeyScheme;
+    private final Set<String> mCompatibleSchemes;
     private final String mProcessedKeyHost;
     private final String mKeyPort;
     private final String mProcessedKeyPath;
@@ -49,21 +50,31 @@ public class UrlSimilarityScorer {
 
     /**
      * @param keyUrl URL to be compare against.
-     * @param laxHost Whether host differences (canonicalized) are allowed.
+     * @param laxSchemeHost Whether scheme differences (identical or http -> https) and / or host
+     *     differences (canonicalized) are allowed.
      * @param laxRef Whether #ref difference are allowed.
      * @param laxQuery Whether ?query difference are allowed.
      * @param laxPath Whether /path difference (limited to drill-down matches) are allowed.
      */
     public UrlSimilarityScorer(
-            GURL keyUrl, boolean laxHost, boolean laxRef, boolean laxQuery, boolean laxPath) {
+            GURL keyUrl, boolean laxSchemeHost, boolean laxRef, boolean laxQuery, boolean laxPath) {
         mKeyUrl = keyUrl;
-        mLaxHost = laxHost;
+        mLaxSchemeHost = laxSchemeHost;
         mLaxRef = laxRef;
         mLaxQuery = laxQuery;
         mLaxPath = laxPath;
 
-        mKeyScheme = mKeyUrl.getScheme();
-        mProcessedKeyHost = mLaxHost ? canonicalizeHost(mKeyUrl.getHost()) : mKeyUrl.getHost();
+        mCompatibleSchemes = new HashSet<String>();
+        String keyScheme = mKeyUrl.getScheme();
+        mCompatibleSchemes.add(keyScheme);
+        if (laxSchemeHost && keyScheme.contentEquals(UrlConstants.HTTP_SCHEME)) {
+            // Special case: Allow key scheme "http" to match candidate scheme "https", i.e.,
+            // enter security boundary.
+            mCompatibleSchemes.add(UrlConstants.HTTPS_SCHEME);
+        }
+
+        mProcessedKeyHost =
+                mLaxSchemeHost ? canonicalizeHost(mKeyUrl.getHost()) : mKeyUrl.getHost();
         mKeyPort = mKeyUrl.getPort();
         // If lax /path match, ensure /path used begin and end with "/" to erase the distinction
         // between directory and files, and simplify comparison.
@@ -140,15 +151,15 @@ public class UrlSimilarityScorer {
             return IDENTICAL;
         }
 
-        // Scheme difference (e.g., https:// vs. http://) is MISMATCHED for web security concerns.
         // Port difference (e.g., example.com:443 vs. example.com:8000) is MISMATCHED to support
-        // common usage.
-        if (!candidateUrl.getScheme().contentEquals(mKeyScheme)
-                || !candidateUrl.getPort().contentEquals(mKeyPort)) {
+        // common usage. Scheme compatibility is determined by lookup, and is MISMATCHED on failure.
+        if (!candidateUrl.getPort().contentEquals(mKeyPort)
+                || !mCompatibleSchemes.contains(candidateUrl.getScheme())) {
             return MISMATCHED;
         }
 
-        String host = mLaxHost ? canonicalizeHost(candidateUrl.getHost()) : candidateUrl.getHost();
+        String host =
+                mLaxSchemeHost ? canonicalizeHost(candidateUrl.getHost()) : candidateUrl.getHost();
         if (!host.contentEquals(mProcessedKeyHost)) {
             return MISMATCHED;
         }
