@@ -35,6 +35,13 @@
   }
 }
 
+- (void)recordCustomizationState:
+    (IOSNTPImpressionCustomizationState)impressionType {
+  UMA_HISTOGRAM_ENUMERATION(kNTPImpressionCustomizationStateHistogram,
+                            impressionType,
+                            IOSNTPImpressionCustomizationState::kMaxValue);
+}
+
 - (void)recordOverscrollActionForType:(OverscrollActionType)type {
   UMA_HISTOGRAM_ENUMERATION(kNTPOverscrollActionHistogram, type);
 }
@@ -57,6 +64,22 @@
 
 - (void)recordIdentityDiscTapped {
   base::RecordAction(base::UserMetricsAction(kNTPIdentityDiscTappedAction));
+}
+
+- (void)recordMagicStackCustomizationStateWithSetUpList:(BOOL)setUpListEnabled
+                                            safetyCheck:(BOOL)safetyCheckEnabled
+                                          tabResumption:
+                                              (BOOL)tabResumptionEnabled
+                                         parcelTracking:
+                                             (BOOL)parcelTrackingEnabled {
+  base::UmaHistogramBoolean(kMagicStackSetUpListEnabledHistogram,
+                            setUpListEnabled);
+  base::UmaHistogramBoolean(kMagicStackSafetyCheckEnabledHistogram,
+                            safetyCheckEnabled);
+  base::UmaHistogramBoolean(kMagicStackTabResumptionEnabledHistogram,
+                            tabResumptionEnabled);
+  base::UmaHistogramBoolean(kMagicStackParcelTrackingEnabledHistogram,
+                            parcelTrackingEnabled);
 }
 
 @end
