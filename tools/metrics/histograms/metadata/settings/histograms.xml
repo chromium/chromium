@@ -344,10 +344,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PrivacySandbox.AdMeasurement.Enabled"
     enum="BooleanEnabled" expires_after="2025-01-26">
-  <owner>sauski@google.com</owner>
-  <owner>olesiamarukhno@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <owner>kartoffel-core-eng@google.com</owner>
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
   <summary>
     Records the startup state of the ad measurement API for Privacy Sandbox GA
     M1. This is recorded during the profile start up.
@@ -367,8 +365,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Settings.PrivacySandbox.DialogDisplayHost"
     enum="SettingsPrivacySandboxDialogDisplayHostHash"
     expires_after="2024-09-01">
-  <owner>sauski@google.com</owner>
-  <owner>chrome-privacy-controls@google.com</owner>
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
   <summary>
     Records the host portion of the URL of the tab that the Privacy Sandbox
     dialog was displayed over. As the Privacy Sandbox dialog is only shown over
@@ -380,9 +378,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PrivacySandbox.DialogLoadTime" units="ms"
     expires_after="2024-09-01">
-  <owner>olesiamarukhno@google.com</owner>
-  <owner>sauski@google.com</owner>
-  <owner>chrome-privacy-controls@google.com</owner>
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
   <summary>
     Records the load time of the Privacy Sandbox Dialog. The load time is the
     time between the dialog view created and HTML loaded (DOMContentLoaded).
@@ -403,10 +400,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PrivacySandbox.Fledge.Enabled" enum="BooleanEnabled"
     expires_after="2025-01-26">
-  <owner>sauski@google.com</owner>
-  <owner>olesiamarukhno@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <owner>kartoffel-core-eng@google.com</owner>
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
   <summary>
     Records the startup state of the fledge API for Privacy Sandbox GA M1. This
     is recorded during the profile start up.
@@ -440,9 +435,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PrivacySandbox.PromptHelperEvent"
     enum="SettingsPrivacySandboxPromptHelperEvent" expires_after="2024-11-03">
-  <owner>sauski@google.com</owner>
-  <owner>olesiamarukhno@google.com</owner>
-  <owner>kartoffel-core-eng@google.com</owner>
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
   <summary>
     Records each event that occurs when the Privacy Sandbox prompt helper is
     attempting to find a suitable location to show any pending Privacy Sandbox
@@ -458,10 +452,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PrivacySandbox.PromptStartupState"
     enum="SettingsPrivacySandboxPromptStartupState" expires_after="2025-01-05">
-  <owner>sauski@google.com</owner>
-  <owner>olesiamarukhno@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <owner>kartoffel-core-eng@google.com</owner>
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
   <summary>
     Records the startup state of the privacy sandbox prompt for Privacy Sandbox
     GA M1. This is recorded during the profile start up.
@@ -480,10 +472,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PrivacySandbox.StartupState"
     enum="SettingsPrivacySandboxStartupStates" expires_after="2024-09-01">
-  <owner>sauski@google.com</owner>
-  <owner>harrisonsean@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <owner>chrome-privacy-controls@google.com</owner>
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
   <summary>
     Records the startup state of user prefs controlling Privacy Sandbox.
   </summary>
@@ -491,10 +481,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PrivacySandbox.Topics.Enabled" enum="BooleanEnabled"
     expires_after="2025-01-05">
-  <owner>sauski@google.com</owner>
-  <owner>olesiamarukhno@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <owner>kartoffel-core-eng@google.com</owner>
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
   <summary>
     Records the startup state of the topics API for Privacy Sandbox GA M1. This
     is recorded during the profile start up.
