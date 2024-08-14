@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sharing_message/fake_device_info.h"
+#include "components/sharing_message/ios_push/sharing_ios_push_sender.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_fcm_sender.h"
 #include "components/sharing_message/sharing_metrics.h"
@@ -70,6 +71,28 @@ class MockSharingFCMSender : public SharingFCMSender {
                     SendMessageCallback callback));
 };
 
+class MockSharingIOSPushSender : public sharing_message::SharingIOSPushSender {
+ public:
+  MockSharingIOSPushSender(
+      SharingSyncPreference* sync_preference,
+      syncer::DeviceInfoTracker* device_info_tracker,
+      syncer::LocalDeviceInfoProvider* local_device_info_provider)
+      : SharingIOSPushSender(
+            /*sharing_message_bridge=*/nullptr,
+            device_info_tracker,
+            local_device_info_provider) {}
+  MockSharingIOSPushSender(const MockSharingIOSPushSender&) = delete;
+  MockSharingIOSPushSender& operator=(const MockSharingIOSPushSender&) = delete;
+  ~MockSharingIOSPushSender() override = default;
+
+  MOCK_METHOD3(DoSendUnencryptedMessageToDevice,
+               void(const SharingTargetDeviceInfo& device,
+                    sync_pb::UnencryptedSharingMessage message,
+                    SendMessageCallback callback));
+  MOCK_METHOD1(CanSendSendTabPushMessage,
+               bool(const syncer::DeviceInfo& target_device_info));
+};
+
 class MockSendMessageDelegate
     : public SharingMessageSender::SendMessageDelegate {
  public:
@@ -123,10 +146,19 @@ class SharingMessageSenderTest : public testing::Test {
         &sharing_sync_preference_,
         fake_device_info_sync_service_.GetDeviceInfoTracker(),
         fake_device_info_sync_service_.GetLocalDeviceInfoProvider());
+    auto mock_sharing_ios_push_sender =
+        std::make_unique<MockSharingIOSPushSender>(
+            &sharing_sync_preference_,
+            fake_device_info_sync_service_.GetDeviceInfoTracker(),
+            fake_device_info_sync_service_.GetLocalDeviceInfoProvider());
     mock_sharing_fcm_sender_ = mock_sharing_fcm_sender.get();
+    mock_sharing_ios_push_sender_ = mock_sharing_ios_push_sender.get();
     sharing_message_sender_.RegisterSendDelegate(
         SharingMessageSender::DelegateType::kFCM,
         std::move(mock_sharing_fcm_sender));
+    sharing_message_sender_.RegisterSendDelegate(
+        SharingMessageSender::DelegateType::kIOSPush,
+        std::move(mock_sharing_ios_push_sender));
     sharing_sync_preference_.SetFCMRegistration(
         SharingSyncPreference::FCMRegistration(kAuthorizedEntity,
                                                base::Time::Now()));
@@ -162,6 +194,7 @@ class SharingMessageSenderTest : public testing::Test {
       fake_device_info_sync_service_.GetLocalDeviceInfoProvider(),
       base::SingleThreadTaskRunner::GetCurrentDefault()};
   raw_ptr<MockSharingFCMSender> mock_sharing_fcm_sender_;
+  raw_ptr<MockSharingIOSPushSender> mock_sharing_ios_push_sender_;
 };
 
 MATCHER_P(ProtoEquals, message, "") {
@@ -244,6 +277,38 @@ TEST_F(SharingMessageSenderTest, SendMessageToDevice_InternalError) {
   sharing_message_sender_.SendMessageToDevice(
       device_info, kTimeToLive, components_sharing_message::SharingMessage(),
       SharingMessageSender::DelegateType::kFCM, mock_callback.Get());
+}
+
+TEST_F(SharingMessageSenderTest, SendUnencryptedMessageToDevice_InternalError) {
+  SharingTargetDeviceInfo device_info = SetupReceiverDevice();
+
+  base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(testing::Eq(SharingSendMessageResult::kInternalError),
+                  testing::Eq(nullptr)));
+
+  auto simulate_internal_error =
+      [&](const SharingTargetDeviceInfo& device,
+          sync_pb::UnencryptedSharingMessage message,
+          sharing_message::SharingIOSPushSender::SendMessageCallback callback) {
+        // Message not sent successfully.
+        std::move(callback).Run(SharingSendMessageResult::kInternalError,
+                                std::nullopt, SharingChannelType::kUnknown);
+
+        // Callback already run with result timeout, ack received for same
+        // message id is ignored.
+        sharing_message_sender_.OnAckReceived(kSenderMessageID,
+                                              /*response=*/nullptr);
+      };
+
+  EXPECT_CALL(
+      *mock_sharing_ios_push_sender_,
+      DoSendUnencryptedMessageToDevice(testing::_, testing::_, testing::_))
+      .WillOnce(testing::Invoke(simulate_internal_error));
+
+  sharing_message_sender_.SendUnencryptedMessageToDevice(
+      device_info, sync_pb::UnencryptedSharingMessage(),
+      SharingMessageSender::DelegateType::kIOSPush, mock_callback.Get());
 }
 
 TEST_F(SharingMessageSenderTest, MessageSent_AckReceived) {

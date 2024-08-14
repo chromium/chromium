@@ -157,8 +157,7 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
     sharing_message_sender->RegisterSendDelegate(
         SharingMessageSender::DelegateType::kIOSPush,
         std::make_unique<sharing_message::SharingIOSPushSender>(
-            message_bridge, device_info_tracker, local_device_info_provider,
-            sync_service));
+            message_bridge, device_info_tracker, local_device_info_provider));
   }
 
   auto device_source = std::make_unique<SharingDeviceSourceSync>(

@@ -147,8 +147,7 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
       local_device_info_provider, task_runner);
   auto ios_push_sender =
       std::make_unique<sharing_message::SharingIOSPushSender>(
-          message_bridge, device_info_tracker, local_device_info_provider,
-          sync_service);
+          message_bridge, device_info_tracker, local_device_info_provider);
   sharing_message_sender->RegisterSendDelegate(
       SharingMessageSender::DelegateType::kIOSPush, std::move(ios_push_sender));
 

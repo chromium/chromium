@@ -17,7 +17,6 @@
 #include "components/sharing_message/sharing_utils.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/protocol/unencrypted_sharing_message.pb.h"
-#include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 
@@ -26,12 +25,10 @@ namespace sharing_message {
 SharingIOSPushSender::SharingIOSPushSender(
     SharingMessageBridge* sharing_message_bridge,
     const syncer::DeviceInfoTracker* device_info_tracker,
-    const syncer::LocalDeviceInfoProvider* local_device_info_provider,
-    syncer::SyncService* sync_service)
+    const syncer::LocalDeviceInfoProvider* local_device_info_provider)
     : sharing_message_bridge_(sharing_message_bridge),
       device_info_tracker_(device_info_tracker),
-      local_device_info_provider_(local_device_info_provider),
-      sync_service_(sync_service) {}
+      local_device_info_provider_(local_device_info_provider) {}
 
 SharingIOSPushSender::~SharingIOSPushSender() = default;
 
