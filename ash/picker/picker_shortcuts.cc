@@ -5,12 +5,30 @@
 #include "ash/picker/picker_shortcuts.h"
 
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/shell.h"
+#include "base/notreached.h"
+#include "ui/events/ash/keyboard_capability.h"
 
 namespace ash {
 
 PickerSearchResult::CapsLockData::Shortcut GetPickerShortcutForCapsLock() {
-  // TODO: b/350385392 - Get the correct shortcut for each keyboard capability.
-  return PickerSearchResult::CapsLockData::Shortcut::kAltSearch;
+  // The Shell may not exist in some tests. In this case, return the shortcut
+  // for the default keyboard.
+  if (!Shell::HasInstance()) {
+    return PickerSearchResult::CapsLockData::Shortcut::kAltSearch;
+  }
+
+  switch (Shell::Get()->keyboard_capability()->GetMetaKeyToDisplay()) {
+    case ui::mojom::MetaKey::kSearch:
+      return PickerSearchResult::CapsLockData::Shortcut::kAltSearch;
+    case ui::mojom::MetaKey::kLauncher:
+      return PickerSearchResult::CapsLockData::Shortcut::kAltLauncher;
+    case ui::mojom::MetaKey::kLauncherRefresh:
+      return PickerSearchResult::CapsLockData::Shortcut::kFnRightAlt;
+    case ui::mojom::MetaKey::kExternalMeta:
+    case ui::mojom::MetaKey::kCommand:
+      NOTREACHED_NORETURN();
+  }
 }
 
 }  // namespace ash

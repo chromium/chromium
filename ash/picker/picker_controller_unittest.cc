@@ -47,6 +47,7 @@
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/models/image_model.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/test/widget_test.h"
@@ -867,7 +868,7 @@ TEST_F(PickerControllerTest, SearchesCapsLockOnWhenCapsLockIsOff) {
           &PickerSearchResultsSection::results,
           Contains(PickerSearchResult::CapsLock(
               /*enabled=*/true,
-              PickerSearchResult::CapsLockData::Shortcut::kAltSearch)))));
+              PickerSearchResult::CapsLockData::Shortcut::kAltLauncher)))));
 }
 
 TEST_F(PickerControllerTest, SearchesCapsLockOffWhenCapsLockIsOn) {
@@ -884,7 +885,7 @@ TEST_F(PickerControllerTest, SearchesCapsLockOffWhenCapsLockIsOn) {
           &PickerSearchResultsSection::results,
           Contains(PickerSearchResult::CapsLock(
               /*enabled=*/false,
-              PickerSearchResult::CapsLockData::Shortcut::kAltSearch)))));
+              PickerSearchResult::CapsLockData::Shortcut::kAltLauncher)))));
 }
 
 TEST_F(PickerControllerTest, DoesNotSearchCaseTransformWhenNoSelectedText) {

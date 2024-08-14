@@ -3874,6 +3874,7 @@ test("ash_unittests") {
     "picker/picker_insert_media_request_unittest.cc",
     "picker/picker_insert_media_unittest.cc",
     "picker/picker_paste_request_unittest.cc",
+    "picker/picker_shortcuts_unittest.cc",
     "picker/picker_suggestions_controller_unittest.cc",
     "picker/picker_transform_case_unittest.cc",
     "picker/search/picker_action_search_unittest.cc",

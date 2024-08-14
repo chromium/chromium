@@ -117,7 +117,7 @@ TEST_F(PickerSuggestionsControllerTest,
   EXPECT_CALL(callback,
               Run(Contains(PickerSearchResult::CapsLock(
                   /*enabled=*/true,
-                  PickerSearchResult::CapsLockData::Shortcut::kAltSearch))))
+                  PickerSearchResult::CapsLockData::Shortcut::kAltLauncher))))
       .Times(1);
 
   controller.GetSuggestions(model, callback.Get());
@@ -137,7 +137,7 @@ TEST_F(PickerSuggestionsControllerTest,
   EXPECT_CALL(callback,
               Run(Contains(PickerSearchResult::CapsLock(
                   /*enabled=*/false,
-                  PickerSearchResult::CapsLockData::Shortcut::kAltSearch))))
+                  PickerSearchResult::CapsLockData::Shortcut::kAltLauncher))))
       .Times(1);
 
   controller.GetSuggestions(model, callback.Get());
