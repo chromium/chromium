@@ -100,17 +100,13 @@ std::string_view ToParamString(StartingPoint start) {
 enum class Destination {
   kScopeA2A,
   kScopeA2B,
-  kScopeA2ARedirectB,
-  kScopeA2BRedirectA,
 };
 
 std::string ToIdString(Destination scope) {
   switch (scope) {
     case Destination::kScopeA2A:
-    case Destination::kScopeA2ARedirectB:
       return kValueScopeA2A;
     case Destination::kScopeA2B:
-    case Destination::kScopeA2BRedirectA:
       return kValueScopeA2B;
   }
 }
@@ -121,10 +117,34 @@ std::string_view ToParamString(Destination scope) {
       return "ScopeA2A";
     case Destination::kScopeA2B:
       return "ScopeA2B";
-    case Destination::kScopeA2ARedirectB:
-      return "ScopeA2ARedirectB";
-    case Destination::kScopeA2BRedirectA:
-      return "ScopeA2BRedirectA";
+  }
+}
+
+enum class RedirectType {
+  kNone,
+  kServerSideViaA,
+  kServerSideViaB,
+};
+
+std::string ToIdString(RedirectType redirect, Destination final_destination) {
+  switch (redirect) {
+    case RedirectType::kNone:
+      return ToIdString(final_destination);
+    case RedirectType::kServerSideViaA:
+      return kValueScopeA2A;
+    case RedirectType::kServerSideViaB:
+      return kValueScopeA2B;
+  }
+}
+
+std::string_view ToParamString(RedirectType redirect) {
+  switch (redirect) {
+    case RedirectType::kNone:
+      return "Direct";
+    case RedirectType::kServerSideViaA:
+      return "ServerSideViaA";
+    case RedirectType::kServerSideViaB:
+      return "ServerSideViaB";
   }
 }
 
@@ -251,6 +271,7 @@ using LinkCaptureTestParam =
     std::tuple<blink::mojom::ManifestLaunchHandler_ClientMode,
                StartingPoint,
                Destination,
+               RedirectType,
                NavigationElement,
                ClickMethod,
                OpenerMode,
@@ -464,7 +485,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
   std::unique_ptr<net::test_server::HttpResponse> SimulateRedirectHandler(
       const net::test_server::HttpRequest& request) {
-    if (!WillNavigateA2AWithRedir() && !WillNavigateA2BWithRedir()) {
+    if (GetRedirectType() == RedirectType::kNone) {
       return nullptr;  // This test is not using redirects.
     }
     if (request.GetURL().spec().find("/destination.html") ==
@@ -472,12 +493,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
       return nullptr;  // Only redirect for destination pages.
     }
 
-    GURL redirect_from = embedded_test_server()->GetURL(
-        WillNavigateA2AWithRedir() ? kDestinationPageScopeA
-                                   : kDestinationPageScopeB);
-    GURL redirect_to = embedded_test_server()->GetURL(
-        WillNavigateA2AWithRedir() ? kDestinationPageScopeB
-                                   : kDestinationPageScopeA);
+    GURL redirect_from = GetRedirectIntermediateUrl();
+    GURL redirect_to = GetDestinationUrl();
 
     // We don't redirect requests for start.html, manifest files, etc. Only the
     // destination page the test wants to run.
@@ -532,8 +549,24 @@ class WebAppLinkCapturingParameterizedBrowserTest
   // created.
   base::Value::Dict& GetTestCaseDataFromParam() {
     testing::TestParamInfo<LinkCaptureTestParam> param(GetParam(), 0);
-    return *test_expectations_->GetDict().EnsureDict("tests")->EnsureDict(
-        LinkCaptureTestParamToString(param));
+    base::Value::Dict* result =
+        test_expectations_->GetDict().EnsureDict("tests")->EnsureDict(
+            LinkCaptureTestParamToString(param));
+
+    // Temporarily check expectations for the test name before redirect mode was
+    // a separate parameter as well to make it easier to migrate expectations.
+    // TODO(mek): Remove this migration code.
+    if (!result->contains("expected_state") &&
+        GetRedirectType() == RedirectType::kNone) {
+      std::string key = LinkCaptureTestParamToString(param);
+      base::ReplaceFirstSubstringAfterOffset(&key, 0, "_Direct", "");
+      *result = test_expectations_->GetDict()
+                    .EnsureDict("tests")
+                    ->EnsureDict(key)
+                    ->Clone();
+      test_expectations_->GetDict().EnsureDict("tests")->Remove(key);
+    }
+    return *result;
   }
 
   // This function is used during rebaselining to record (to a file) the results
@@ -600,26 +633,28 @@ class WebAppLinkCapturingParameterizedBrowserTest
     return std::get<Destination>(GetParam());
   }
 
-  // Returns `true` if the test should navigate to a page within the same scope.
-  bool WillNavigateA2A() const {
-    return GetDestination() == Destination::kScopeA2A;
+  GURL GetDestinationUrl() {
+    switch (GetDestination()) {
+      case Destination::kScopeA2A:
+        return embedded_test_server()->GetURL(kDestinationPageScopeA);
+      case Destination::kScopeA2B:
+        return embedded_test_server()->GetURL(kDestinationPageScopeB);
+    }
   }
 
-  // Returns `true` if the test should navigate to a page in a different scope.
-  bool WillNavigateA2B() const {
-    return GetDestination() == Destination::kScopeA2B;
+  RedirectType GetRedirectType() const {
+    return std::get<RedirectType>(GetParam());
   }
 
-  // Returns `true` if the test should navigate to a page in a different scope,
-  // but end up on the same scope due to an HTTP redirect.
-  bool WillNavigateA2AWithRedir() const {
-    return GetDestination() == Destination::kScopeA2ARedirectB;
-  }
-
-  // Returns `true` if the test should navigate to a page in the same scope, but
-  // end up on back scope A due to an HTTP redirect.
-  bool WillNavigateA2BWithRedir() const {
-    return GetDestination() == Destination::kScopeA2BRedirectA;
+  GURL GetRedirectIntermediateUrl() {
+    switch (GetRedirectType()) {
+      case RedirectType::kNone:
+        return GURL();
+      case RedirectType::kServerSideViaA:
+        return embedded_test_server()->GetURL(kDestinationPageScopeA);
+      case RedirectType::kServerSideViaB:
+        return embedded_test_server()->GetURL(kDestinationPageScopeB);
+    }
   }
 
   NavigationElement GetNavigationElement() const {
@@ -644,7 +679,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
   // in the navigation click.
   std::string GetElementId() {
     return base::JoinString(
-        {"id", ToIdString(GetNavigationElement()), ToIdString(GetDestination()),
+        {"id", ToIdString(GetNavigationElement()),
+         ToIdString(GetRedirectType(), GetDestination()),
          ToIdString(GetNavigationTarget()), ToIdString(GetOpenerMode())},
         "-");
   }
@@ -876,11 +912,9 @@ INSTANTIATE_TEST_SUITE_P(
             StartingPoint::kAppWindow,  // Starting point is app window.
             StartingPoint::kTab         // Starting point is a tab.
             ),
-        testing::Values(Destination::kScopeA2A,  // Navigate in-scope A.
-                        Destination::kScopeA2B,  // Navigate A -> B.
-                        Destination::kScopeA2ARedirectB,  // Redirect A -> B.
-                        Destination::kScopeA2BRedirectA   // Redirect back to A.
-                        ),
+        testing::Values(Destination::kScopeA2A,   // Navigate in-scope A.
+                        Destination::kScopeA2B),  // Navigate A -> B.
+        testing::Values(RedirectType::kNone),
         testing::Values(
             NavigationElement::kElementLink,   // Navigate via element.
             NavigationElement::kElementButton  // Navigate via button.
@@ -910,11 +944,9 @@ INSTANTIATE_TEST_SUITE_P(
             StartingPoint::kAppWindow,  // Starting point is app window.
             StartingPoint::kTab         // Starting point is a tab.
             ),
-        testing::Values(Destination::kScopeA2A,  // Navigate in-scope A.
-                        Destination::kScopeA2B,  // Navigate A -> B.
-                        Destination::kScopeA2ARedirectB,  // Redirect A -> B.
-                        Destination::kScopeA2BRedirectA   // Redirect back to A.
-                        ),
+        testing::Values(Destination::kScopeA2A,   // Navigate in-scope A.
+                        Destination::kScopeA2B),  // Navigate A -> B.
+        testing::Values(RedirectType::kNone),
         testing::Values(NavigationElement::kElementServiceWorkerButton),
         testing::Values(ClickMethod::kLeftClick),
         testing::Values(OpenerMode::kNoOpener),
@@ -929,10 +961,11 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(
             blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting),
         testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
-        // TODO: Add redirection cases.
         testing::Values(Destination::kScopeA2A,  // Navigate A -> A.
                         Destination::kScopeA2B   // Navigate A -> B.
                         ),
+        // TODO: Add redirection cases.
+        testing::Values(RedirectType::kNone),
         testing::Values(NavigationElement::kElementLink,
                         NavigationElement::kElementButton),
         // TODO: Add shift and middle click cases.
