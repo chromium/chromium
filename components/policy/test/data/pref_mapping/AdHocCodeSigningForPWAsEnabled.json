@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "mac"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "web_apps.use_adhoc_code_signing_for_app_shims",
+      "pref_location": "local_state",
+      "policy_settings": {
+        "scope": "user"
+      },
+      "default_value": false,
+      "values_to_test": [
+        false,
+        true
+      ]
+    }
+  }
+]

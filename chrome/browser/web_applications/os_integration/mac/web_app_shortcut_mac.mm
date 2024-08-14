@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/web_applications/os_integration/mac/apps_folder_support.h"
 #import "chrome/browser/web_applications/os_integration/mac/bundle_info_plist.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
@@ -24,6 +25,8 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 
@@ -68,8 +71,25 @@ bool UseAdHocSigningForWebAppShims() {
   if (@available(macOS 11.7, *)) {
     // macOS 11.7 and above can code sign at runtime without requiring that the
     // developer tools be installed.
-    return base::FeatureList::IsEnabled(
-        features::kUseAdHocSigningForWebAppShims);
+
+    // A disabled feature flag takes precedence over any enterprise policy.
+    if (!base::FeatureList::IsEnabled(
+            features::kUseAdHocSigningForWebAppShims)) {
+      return false;
+    }
+
+    // The browser's local_state can be null in tests. In that case there is no
+    // enterprise policy to consider.
+    if (PrefService* local_state = g_browser_process->local_state()) {
+      // Respect an enterprise policy if one is set.
+      if (local_state->IsManagedPreference(
+              prefs::kWebAppsUseAdHocCodeSigningForAppShims)) {
+        return local_state->GetBoolean(
+            prefs::kWebAppsUseAdHocCodeSigningForAppShims);
+      }
+    }
+
+    return true;
   }
 
   // Code signing on older macOS versions invokes `codesign_allocate` from the

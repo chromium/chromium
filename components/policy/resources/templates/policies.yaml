@@ -1290,6 +1290,7 @@ policies:
   1289: ShowGeminiIntroScreenEnabled
   1290: DeviceRestrictionSchedule
   1291: TabCompareSettings
+  1292: AdHocCodeSigningForPWAsEnabled
 
 atomic_groups:
   1: Homepage
