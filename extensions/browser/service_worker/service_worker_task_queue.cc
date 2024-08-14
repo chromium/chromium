@@ -807,11 +807,8 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
   // TODO(crbug.com/346732739): Handle this better than just logging an error
   // message.
   if (!success) {
-    // TODO(crbug.com/346732739): Uncomment this log message once `!success`
-    // doesn't include expected failure cases (e.g. unregistering before the
-    // initial registration completes).
-    // LOG(ERROR) << "Failed to unregistering service worker for extension id: "
-    //             << extension_id << " status was: " << (int)status;
+    LOG(ERROR) << "Failed to unregister service worker for extension id: "
+               << extension_id << " error status was: " << (int)status;
     base::UmaHistogramEnumeration(
         "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus3",
         status);
