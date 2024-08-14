@@ -43,11 +43,6 @@ namespace ash::kiosk {
 
 namespace {
 
-enum class MountedState { kMounted, kNotMounted, kServiceUnavailable };
-
-using CryptohomeMountStateCallback =
-    base::OnceCallback<void(MountedState result)>;
-
 bool IsTestOrLinuxChromeOS() {
   // This code should only run in Chrome OS, so not `IsRunningOnChromeOS()`
   // means it's either a test or linux-chromeos.
@@ -71,25 +66,27 @@ KioskAppLaunchError::Error LoginFailureToKioskLaunchError(
   }
 }
 
-MountedState ToResult(std::optional<user_data_auth::IsMountedReply> reply) {
+CryptohomeMountState ToResult(
+    std::optional<user_data_auth::IsMountedReply> reply) {
   if (!reply.has_value()) {
-    return MountedState::kServiceUnavailable;
+    return CryptohomeMountState::kServiceUnavailable;
   }
   if (IsTestOrLinuxChromeOS()) {
     // In tests and in linux-chromeos there is no real cryptohome, and the fake
     // one always replies with `is_mounted()` true. We override the reply so
     // Kiosk login can proceed.
-    return MountedState::kNotMounted;
+    return CryptohomeMountState::kNotMounted;
   }
-  return reply->is_mounted() ? MountedState::kMounted
-                             : MountedState::kNotMounted;
+  return reply->is_mounted() ? CryptohomeMountState::kMounted
+                             : CryptohomeMountState::kNotMounted;
 }
 
 void CheckCryptohomeMountState(CryptohomeMountStateCallback on_done) {
   UserDataAuthClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
       [](CryptohomeMountStateCallback on_done, bool service_is_ready) {
         if (!service_is_ready || !UserDataAuthClient::Get()) {
-          return std::move(on_done).Run(MountedState::kServiceUnavailable);
+          return std::move(on_done).Run(
+              CryptohomeMountState::kServiceUnavailable);
         }
 
         UserDataAuthClient::Get()->IsMounted(
@@ -103,11 +100,12 @@ void CheckCryptohomeMountState(CryptohomeMountStateCallback on_done) {
 // not yet available.
 std::unique_ptr<CancellableJob> CheckCryptohome(
     CryptohomeMountStateCallback on_done) {
-  return RunUpToNTimes<MountedState>(
+  return RunUpToNTimes<CryptohomeMountState>(
       /*n=*/5,
       /*job=*/base::BindRepeating(&CheckCryptohomeMountState),
-      /*should_retry=*/base::BindRepeating([](const MountedState& result) {
-        return result == MountedState::kServiceUnavailable;
+      /*should_retry=*/
+      base::BindRepeating([](const CryptohomeMountState& result) {
+        return result == CryptohomeMountState::kServiceUnavailable;
       }),
       std::move(on_done));
 }
@@ -272,9 +270,11 @@ void LogErrorToSyslog(KioskAppLaunchError::Error error) {
 // See docs on that function for more information.
 class ProfileLoader : public CancellableJob {
  public:
-  static std::unique_ptr<CancellableJob> Run(const AccountId& app_account_id,
-                                             KioskAppType app_type,
-                                             LoadProfileResultCallback on_done);
+  [[nodiscard]] static std::unique_ptr<CancellableJob> Run(
+      const AccountId& app_account_id,
+      KioskAppType app_type,
+      CheckCryptohomeCallback check_cryptohome,
+      LoadProfileResultCallback on_done);
 
   ProfileLoader(const ProfileLoader&) = delete;
   ProfileLoader& operator=(const ProfileLoader&) = delete;
@@ -283,6 +283,7 @@ class ProfileLoader : public CancellableJob {
  private:
   ProfileLoader(const AccountId& app_account_id,
                 KioskAppType app_type,
+                CheckCryptohomeCallback check_cryptohome,
                 LoadProfileResultCallback on_done);
 
   void CheckCryptohomeIsNotMounted();
@@ -294,8 +295,12 @@ class ProfileLoader : public CancellableJob {
   const AccountId account_id_;
   const KioskAppType app_type_;
 
+  // `current_step_` is a handle to the job currently being executed. The
+  // possible steps are listed in the callbacks below.
   std::unique_ptr<CancellableJob> current_step_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  CheckCryptohomeCallback check_cryptohome_;
+
   LoadProfileResultCallback on_done_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -304,39 +309,45 @@ class ProfileLoader : public CancellableJob {
 std::unique_ptr<CancellableJob> ProfileLoader::Run(
     const AccountId& app_account_id,
     KioskAppType app_type,
+    CheckCryptohomeCallback check_cryptohome,
     LoadProfileResultCallback on_done) {
-  auto loader = base::WrapUnique(
-      new ProfileLoader(app_account_id, app_type, std::move(on_done)));
+  auto loader = base::WrapUnique(new ProfileLoader(app_account_id, app_type,
+                                                   std::move(check_cryptohome),
+                                                   std::move(on_done)));
   loader->CheckCryptohomeIsNotMounted();
   return loader;
 }
 
 ProfileLoader::ProfileLoader(const AccountId& app_account_id,
                              KioskAppType app_type,
+                             CheckCryptohomeCallback check_cryptohome,
                              LoadProfileResultCallback on_done)
     : account_id_(app_account_id),
       app_type_(app_type),
+      check_cryptohome_(std::move(check_cryptohome)),
       on_done_(std::move(on_done)) {}
 
 ProfileLoader::~ProfileLoader() = default;
 
 void ProfileLoader::CheckCryptohomeIsNotMounted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  current_step_ = CheckCryptohome(base::BindOnce(
-      [](ProfileLoader* self, MountedState result) {
-        switch (result) {
-          case MountedState::kNotMounted:
-            return self->LoginAsKioskAccount();
-          case MountedState::kMounted:
-            return self->ReturnError(
-                KioskAppLaunchError::Error::kAlreadyMounted);
-          case MountedState::kServiceUnavailable:
-            return self->ReturnError(
-                KioskAppLaunchError::Error::kCryptohomedNotRunning);
-        }
-      },
-      // Safe because `this` owns `current_step_`
-      base::Unretained(this)));
+  current_step_ =
+      std::move(check_cryptohome_)
+          .Run(base::BindOnce(
+              [](ProfileLoader* self, CryptohomeMountState result) {
+                switch (result) {
+                  case CryptohomeMountState::kNotMounted:
+                    return self->LoginAsKioskAccount();
+                  case CryptohomeMountState::kMounted:
+                    return self->ReturnError(
+                        KioskAppLaunchError::Error::kAlreadyMounted);
+                  case CryptohomeMountState::kServiceUnavailable:
+                    return self->ReturnError(
+                        KioskAppLaunchError::Error::kCryptohomedNotRunning);
+                }
+              },
+              // Safe because `this` owns `current_step_`
+              base::Unretained(this)));
 }
 
 void ProfileLoader::LoginAsKioskAccount() {
@@ -388,7 +399,18 @@ void ProfileLoader::ReturnError(KioskAppLaunchError::Error result) {
 std::unique_ptr<CancellableJob> LoadProfile(const AccountId& app_account_id,
                                             KioskAppType app_type,
                                             LoadProfileResultCallback on_done) {
-  return ProfileLoader::Run(app_account_id, app_type, std::move(on_done));
+  return LoadProfileWithCallbacks(app_account_id, app_type,
+                                  base::BindOnce(&CheckCryptohome),
+                                  std::move(on_done));
+}
+
+std::unique_ptr<CancellableJob> LoadProfileWithCallbacks(
+    const AccountId& app_account_id,
+    KioskAppType app_type,
+    CheckCryptohomeCallback check_cryptohome,
+    LoadProfileResultCallback on_done) {
+  return ProfileLoader::Run(app_account_id, app_type,
+                            std::move(check_cryptohome), std::move(on_done));
 }
 
 }  // namespace ash::kiosk

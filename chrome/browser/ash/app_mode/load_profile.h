@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/app_mode/cancellable_job.h"
@@ -49,6 +48,26 @@ using LoadProfileResultCallback =
 // Convenience alias to declare references to `LoadProfile`. Useful for callers
 // to override `LoadProfile` in tests.
 using LoadProfileCallback = base::OnceCallback<decltype(LoadProfile)>;
+
+// Represents the cryptohome mounted state.
+enum class CryptohomeMountState { kMounted, kNotMounted, kServiceUnavailable };
+
+// Convenience alias to declare callbacks to the cryptohome mount state.
+using CryptohomeMountStateCallback =
+    base::OnceCallback<void(CryptohomeMountState result)>;
+
+// Convenience alias to declare functions that check cryptohome mount state.
+using CheckCryptohomeCallback =
+    base::OnceCallback<std::unique_ptr<CancellableJob>(
+        CryptohomeMountStateCallback callback)>;
+
+// Same as `LoadProfile` above but allows callers to replace the sub-callbacks
+// it executes. Useful in tests.
+[[nodiscard]] std::unique_ptr<CancellableJob> LoadProfileWithCallbacks(
+    const AccountId& app_account_id,
+    KioskAppType app_type,
+    CheckCryptohomeCallback check_cryptohome,
+    LoadProfileResultCallback on_done);
 
 }  // namespace ash::kiosk
 
