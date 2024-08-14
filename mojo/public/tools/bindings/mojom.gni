@@ -235,6 +235,14 @@ if (enable_scrambled_message_ids) {
 #       to a non-mojom C++ type, including necessary deps and headers required
 #       for the mapping to work. See the Typemaps section below.
 #
+#   ts_typemaps (optional)
+#       A list of typemaps to be applied to the generated ts bindings for this
+#       mojom target.
+#
+#       Every typemap is a GN scope describing how one or more mojom types maps
+#       to a non-mojom ts type, including the converter type name and the import
+#       path for the converter.
+#
 #   blink_cpp_typemaps (optional)
 #       Same as above, but for the Blink variant of generated C++ bindings.
 #
@@ -1235,6 +1243,7 @@ template("mojom") {
     }
 
     cpp_typemap_configs = []
+    ts_typemap_configs = []
     export_defines = []
     export_defines_overridden = false
     force_source_set = false
@@ -1269,6 +1278,9 @@ template("mojom") {
     } else {
       if (defined(invoker.cpp_typemaps)) {
         cpp_typemap_configs = invoker.cpp_typemaps
+      }
+      if (defined(invoker.ts_typemaps)) {
+        ts_typemap_configs = invoker.ts_typemaps
       }
       if (defined(invoker.export_define)) {
         export_defines_overridden = true
@@ -1477,6 +1489,8 @@ template("mojom") {
     # Write the typemapping configuration for this target out to a file to be
     # validated by a Python script. This helps catch mistakes that can't
     # be caught by logic in GN.
+    _mojom_target_name = target_name
+
     _typemap_config_filename =
         "$target_gen_dir/${target_name}${variant_suffix}.typemap_config"
     _typemap_stamp_filename = "${_typemap_config_filename}.validated"
@@ -1499,7 +1513,6 @@ template("mojom") {
       _rebased_typemap_configs += [ _rebased_config ]
     }
     write_file(_typemap_config_filename, _rebased_typemap_configs, "json")
-    _mojom_target_name = target_name
 
     action(_typemap_validator_target_name) {
       allow_remote = true
@@ -1513,13 +1526,35 @@ template("mojom") {
       ]
     }
 
+    _ts_typemap_config_filename =
+        "$target_gen_dir/${target_name}${variant_suffix}.ts_typemap_config"
+    _ts_typemap_stamp_filename = "${_ts_typemap_config_filename}.validated"
+    _ts_typemap_validator_target_name =
+        "${type_mappings_target_name}_ts__validator"
+    write_file(_ts_typemap_config_filename, ts_typemap_configs, "json")
+
+    action(_ts_typemap_validator_target_name) {
+      allow_remote = true
+      script = "$mojom_generator_root/validate_ts_typemap_config.py"
+      inputs = [ _ts_typemap_config_filename ]
+      outputs = [ _ts_typemap_stamp_filename ]
+      args = [
+        get_label_info(_mojom_target_name, "label_no_toolchain"),
+        rebase_path(_ts_typemap_config_filename, root_build_dir),
+        rebase_path(_ts_typemap_stamp_filename, root_build_dir),
+      ]
+    }
+
     action(type_mappings_target_name) {
       allow_remote = true
       inputs =
           mojom_generator_sources + jinja2_sources + [ _typemap_stamp_filename ]
       outputs = [ type_mappings_path ]
       script = "$mojom_generator_root/generate_type_mappings.py"
-      deps = [ ":$_typemap_validator_target_name" ]
+      deps = [
+        ":$_ts_typemap_validator_target_name",
+        ":$_typemap_validator_target_name",
+      ]
       args = [
         "--output",
         rebase_path(type_mappings_path, root_build_dir),
@@ -1544,10 +1579,15 @@ template("mojom") {
       }
 
       # Newer GN-based typemaps are aggregated into a single config.
-      inputs += [ _typemap_config_filename ]
+      inputs += [
+        _typemap_config_filename,
+        _ts_typemap_config_filename,
+      ]
       args += [
         "--cpp-typemap-config",
         rebase_path(_typemap_config_filename, root_build_dir),
+        "--ts-typemap-config",
+        rebase_path(_ts_typemap_config_filename, root_build_dir),
       ]
     }
 
