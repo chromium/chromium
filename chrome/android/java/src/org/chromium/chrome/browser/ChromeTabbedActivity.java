@@ -2212,7 +2212,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 && ChromeFeatureList.sSafetyHubMagicStack.isEnabled()) {
             SafetyHubMagicStackBuilder safetyHubMagicStackBuilder =
                     new SafetyHubMagicStackBuilder(
-                            this, mTabModelProfileSupplier, mTabModelSelector);
+                            this,
+                            mTabModelProfileSupplier,
+                            mTabModelSelector,
+                            getModalDialogManagerSupplier());
             moduleRegistry.registerModule(ModuleType.SAFETY_HUB, safetyHubMagicStackBuilder);
         }
 
