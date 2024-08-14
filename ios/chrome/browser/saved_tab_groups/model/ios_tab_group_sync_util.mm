@@ -9,6 +9,7 @@
 #import "components/saved_tab_groups/tab_group_sync_delegate.h"
 #import "components/saved_tab_groups/tab_group_sync_service.h"
 #import "components/saved_tab_groups/types.h"
+#import "components/saved_tab_groups/utils.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -17,6 +18,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 
 using tab_groups::SavedTabGroupTab;
 
@@ -209,6 +213,81 @@ void MoveTabGroupToBrowser(const TabGroup* source_tab_group,
 
   MoveTabGroupAcrossBrowsers(source_tab_group, source_browser,
                              destination_browser, destination_tab_group_index);
+}
+
+bool ShouldUpdateHistory(web::NavigationContext* navigation_context) {
+  web::WebState* web_state = navigation_context->GetWebState();
+
+  if (!web_state || web_state->GetBrowserState()->IsOffTheRecord()) {
+    return false;
+  }
+
+  // Failed navigations and 404 errors are not saved to history.
+  if (navigation_context->GetError()) {
+    return false;
+  }
+
+  if (navigation_context->GetResponseHeaders() &&
+      navigation_context->GetResponseHeaders()->response_code() == 404) {
+    return false;
+  }
+
+  if (!navigation_context->HasCommitted() ||
+      !web_state->GetNavigationManager()->GetLastCommittedItem()) {
+    // Navigation was replaced or aborted.
+    return false;
+  }
+
+  web::NavigationItem* last_committed_item =
+      web_state->GetNavigationManager()->GetLastCommittedItem();
+
+  // Back/forward navigations do not update history.
+  const ui::PageTransition transition =
+      last_committed_item->GetTransitionType();
+  if (transition & ui::PAGE_TRANSITION_FORWARD_BACK) {
+    return false;
+  }
+
+  return true;
+}
+
+bool IsSaveableNavigation(web::NavigationContext* navigation_context) {
+  // Please keep this in sync with TabGroupSyncUtils::IsSaveableNavigation as a
+  // best effort.
+
+  ui::PageTransition page_transition = navigation_context->GetPageTransition();
+
+  // TODO(crbug.com/359726089): Check all methods other than GET.
+  if (navigation_context->IsPost()) {
+    return false;
+  }
+  if (!ui::IsValidPageTransitionType(page_transition)) {
+    return false;
+  }
+  if (ui::PageTransitionIsRedirect(page_transition)) {
+    return false;
+  }
+
+  if (!ui::PageTransitionIsMainFrame(page_transition)) {
+    return false;
+  }
+
+  if (!navigation_context->HasCommitted()) {
+    return false;
+  }
+
+  if (!ShouldUpdateHistory(navigation_context)) {
+    return false;
+  }
+
+  // For renderer initiated navigation, in most cases these navigations will be
+  // auto triggered on restoration. So there is no need to save them.
+  if (navigation_context->IsRendererInitiated() &&
+      !navigation_context->HasUserGesture()) {
+    return false;
+  }
+
+  return IsURLValidForSavedTabGroups(navigation_context->GetUrl());
 }
 
 }  // namespace utils
