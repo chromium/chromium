@@ -39,6 +39,11 @@ class BrowsingTopicsPageLoadDataTracker
   int redirect_with_topics_invoked_count() const {
     return redirect_with_topics_invoked_count_;
   }
+
+  ukm::SourceId source_id_before_redirects() const {
+    return source_id_before_redirects_;
+  }
+
   bool topics_invoked() const { return topics_invoked_; }
 
  private:
@@ -48,7 +53,8 @@ class BrowsingTopicsPageLoadDataTracker
 
   BrowsingTopicsPageLoadDataTracker(content::Page& page,
                                     int redirect_count,
-                                    int redirect_with_topics_invoked_count);
+                                    int redirect_with_topics_invoked_count,
+                                    ukm::SourceId source_id_before_redirects);
 
   // Whether this page is eligible to observe topics (i.e. IP was publicly
   // routable AND permissions policy is "allow").
@@ -61,12 +67,15 @@ class BrowsingTopicsPageLoadDataTracker
   base::flat_set<HashedDomain> observed_hashed_context_domains_;
 
   // The number of previous pages that were loaded via client-side redirects
-  // (without user actigation).
+  // (without user activation).
   int redirect_count_;
 
   // The number of previous pages that were loaded via client-side redirects
-  // (without user actigation) that also invoked the Topics API.
+  // (without user activation) that also invoked the Topics API.
   int redirect_with_topics_invoked_count_;
+
+  // The UKM source ID of the page before the client-side redirects.
+  ukm::SourceId source_id_before_redirects_;
 
   bool topics_invoked_ = false;
 

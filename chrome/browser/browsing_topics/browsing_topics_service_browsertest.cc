@@ -2122,6 +2122,12 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
       kRedirectWithTopicsInvokedCountHistogramId,
       /*sample=*/0,
       /*expected_bucket_count=*/1);
+
+  // The redirect chain has only one page calling topics. We need at least two
+  // for this `TopicsRedirectChainDetected` event, so it's not being logged.
+  auto entries = ukm_recorder_->GetEntriesByName(
+      ukm::builders::BrowsingTopics_TopicsRedirectChainDetected::kEntryName);
+  EXPECT_EQ(0u, entries.size());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
@@ -2151,6 +2157,13 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
   histogram_tester.ExpectBucketCount(kRedirectWithTopicsInvokedCountHistogramId,
                                      /*sample=*/1,
                                      /*expected_count=*/1);
+
+  auto entries = ukm_recorder_->GetEntriesByName(
+      ukm::builders::BrowsingTopics_TopicsRedirectChainDetected::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  ukm_recorder_->ExpectEntrySourceHasUrl(entries.back(), main_frame_url1);
+  ukm_recorder_->ExpectEntryMetric(entries.back(), "NumberOfPagesCallingTopics",
+                                   2);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
