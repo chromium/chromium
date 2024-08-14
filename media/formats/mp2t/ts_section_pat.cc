@@ -56,6 +56,7 @@ bool TsSectionPat::ParsePsiSection(BitReader* bit_reader) {
 
   // Both the program table and the CRC have a size multiple of 4.
   // Note for pmt_pid_count: minus 4 to account for the CRC.
+  RCHECK(section_length > 0);
   RCHECK((section_length % 4) == 0);
   int pmt_pid_count = (section_length - 4) / 4;
 
