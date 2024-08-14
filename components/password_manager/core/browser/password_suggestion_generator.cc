@@ -221,15 +221,9 @@ void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
             });
 }
 
-void AddPasswordUsernameChildSuggestion(const std::u16string& username,
-                                        Suggestion& suggestion) {
-  suggestion.children.emplace_back(
-      username, SuggestionType::kPasswordFieldByFieldFilling);
-}
-
-void AddFillPasswordChildSuggestion(Suggestion& suggestion,
-                                    const CredentialUIEntry& credential,
-                                    IsCrossDomain is_cross_origin) {
+Suggestion CreateFillPasswordChildSuggestion(
+    const CredentialUIEntry& credential,
+    IsCrossDomain is_cross_origin) {
   Suggestion fill_password(
       l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
@@ -239,11 +233,10 @@ void AddFillPasswordChildSuggestion(Suggestion& suggestion,
       credential.GetFirstSignonRealm(),
       GetHumanReadableRealm(credential.GetFirstSignonRealm()),
       is_cross_origin.value());
-  suggestion.children.emplace_back(std::move(fill_password));
+  return fill_password;
 }
 
-void AddViewPasswordDetailsChildSuggestion(
-    Suggestion& suggestion,
+Suggestion CreateViewPasswordDetailsChildSuggestion(
     const Suggestion::PasswordSuggestionDetails& payload) {
   Suggestion view_password_details(
       l10n_util::GetStringUTF16(
@@ -251,7 +244,7 @@ void AddViewPasswordDetailsChildSuggestion(
       SuggestionType::kViewPasswordDetails);
   view_password_details.icon = Suggestion::Icon::kKey;
   view_password_details.payload = payload;
-  suggestion.children.emplace_back(std::move(view_password_details));
+  return view_password_details;
 }
 
 void AppendManualFallbackSuggestions(
@@ -288,11 +281,14 @@ void AppendManualFallbackSuggestions(
     suggestion.filtration_policy = filtration_policy;
 
     if (!replaced) {
-      AddPasswordUsernameChildSuggestion(maybe_username, suggestion);
+      suggestion.children.emplace_back(
+          maybe_username, SuggestionType::kPasswordFieldByFieldFilling);
     }
-    AddFillPasswordChildSuggestion(suggestion, credential, is_cross_origin);
+    suggestion.children.push_back(
+        CreateFillPasswordChildSuggestion(credential, is_cross_origin));
     suggestion.children.emplace_back(SuggestionType::kSeparator);
-    AddViewPasswordDetailsChildSuggestion(suggestion, payload);
+    suggestion.children.push_back(
+        CreateViewPasswordDetailsChildSuggestion(payload));
 
     suggestions->emplace_back(std::move(suggestion));
   }
