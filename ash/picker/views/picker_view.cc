@@ -46,6 +46,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chromeos/ash/grit/ash_resources.h"
@@ -559,7 +560,8 @@ void PickerView::UpdateSearchQueryAndActivePage(std::u16string query) {
 }
 
 void PickerView::UpdateActivePage() {
-  std::u16string_view query = search_field_view_->GetQueryText();
+  std::u16string_view query =
+      base::TrimWhitespace(search_field_view_->GetQueryText(), base::TRIM_ALL);
 
   delegate_->GetSessionMetrics().UpdateSearchQuery(query);
 
