@@ -213,7 +213,7 @@ std::u16string GetSearchFieldPlaceholderText(PickerModeType mode,
       return l10n_util::GetStringUTF16(
           is_editor_available
               ? IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT
-              : IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT);
+              : IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_WITHOUT_EDITOR_PLACEHOLDER_TEXT);
     default:
       NOTREACHED_NORETURN();
   }

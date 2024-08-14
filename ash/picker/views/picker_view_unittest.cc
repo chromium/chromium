@@ -446,7 +446,7 @@ TEST_F(PickerViewTest, SearchPlaceholderMatchesHasSelectionModeWithoutEditor) {
           .textfield_for_testing()
           .GetPlaceholderText(),
       l10n_util::GetStringUTF16(
-          IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT));
+          IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_WITHOUT_EDITOR_PLACEHOLDER_TEXT));
 }
 #endif
 
