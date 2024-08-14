@@ -8978,7 +8978,6 @@ test("unit_tests") {
       "../browser/extensions/extension_error_controller_unittest.cc",
       "../browser/extensions/extension_error_ui_default_unittest.cc",
       "../browser/extensions/extension_garbage_collector_unittest.cc",
-      "../browser/extensions/extension_icon_manager_unittest.cc",
       "../browser/extensions/extension_install_prompt_unittest.cc",
       "../browser/extensions/extension_management_unittest.cc",
       "../browser/extensions/extension_migrator_unittest.cc",

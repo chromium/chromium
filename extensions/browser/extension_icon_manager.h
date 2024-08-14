@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_ICON_MANAGER_H_
-#define CHROME_BROWSER_EXTENSIONS_EXTENSION_ICON_MANAGER_H_
+#ifndef EXTENSIONS_BROWSER_EXTENSION_ICON_MANAGER_H_
+#define EXTENSIONS_BROWSER_EXTENSION_ICON_MANAGER_H_
 
 #include <map>
 #include <set>
@@ -18,14 +18,14 @@ class BrowserContext;
 }
 
 namespace extensions {
+
 class Extension;
-}
 
 class ExtensionIconManager {
  public:
   class Observer {
    public:
-    virtual void OnImageLoaded(const extensions::ExtensionId& extension_id) = 0;
+    virtual void OnImageLoaded(const ExtensionId& extension_id) = 0;
   };
 
   ExtensionIconManager();
@@ -36,33 +36,31 @@ class ExtensionIconManager {
   virtual ~ExtensionIconManager();
 
   // Start loading the icon for the given extension.
-  void LoadIcon(content::BrowserContext* context,
-                const extensions::Extension* extension);
+  void LoadIcon(content::BrowserContext* context, const Extension* extension);
 
   // This returns an image of width/height kFaviconSize, loaded either from an
   // entry specified in the extension's 'icon' section of the manifest, or a
   // default extension icon.
-  gfx::Image GetIcon(const extensions::ExtensionId& extension_id);
+  gfx::Image GetIcon(const ExtensionId& extension_id);
 
   // Removes the extension's icon from memory.
-  void RemoveIcon(const extensions::ExtensionId& extension_id);
+  void RemoveIcon(const ExtensionId& extension_id);
 
   void set_monochrome(bool value) { monochrome_ = value; }
   void set_observer(Observer* observer) { observer_ = observer; }
 
  private:
-  void OnImageLoaded(const extensions::ExtensionId& extension_id,
-                     const gfx::Image& image);
+  void OnImageLoaded(const ExtensionId& extension_id, const gfx::Image& image);
 
   // Makes sure we've done one-time initialization of the default extension icon
   // default_icon_.
   void EnsureDefaultIcon();
 
   // Maps extension id to the icon for that extension.
-  std::map<extensions::ExtensionId, gfx::Image> icons_;
+  std::map<ExtensionId, gfx::Image> icons_;
 
   // Set of extension IDs waiting for icons to load.
-  std::set<extensions::ExtensionId> pending_icons_;
+  std::set<ExtensionId> pending_icons_;
 
   // The default icon we'll use if an extension doesn't have one.
   gfx::Image default_icon_;
@@ -75,4 +73,6 @@ class ExtensionIconManager {
   base::WeakPtrFactory<ExtensionIconManager> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_ICON_MANAGER_H_
+} // namespace extensions
+
+#endif  // EXTENSIONS_BROWSER_EXTENSION_ICON_MANAGER_H_

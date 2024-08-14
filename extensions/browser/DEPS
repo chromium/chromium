@@ -18,6 +18,7 @@ include_rules = [
   "+components/update_client",
   "+components/value_store",
   "+components/variations",
+  "+components/vector_icons",
   "+components/version_info",
   "+components/web_cache",
   "+components/web_modal",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_icon_manager.h"
+#include "extensions/browser/extension_icon_manager.h"
 
 #include <memory>
 
@@ -15,12 +15,11 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
-#include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extensions_test.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/extension_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/display/display_list.h"
@@ -64,7 +63,7 @@ class ScopedSetDeviceScaleFactor {
 
 // Our test class that takes care of managing the necessary threads for loading
 // extension icons, and waiting for those loads to happen.
-class ExtensionIconManagerTest : public testing::Test,
+class ExtensionIconManagerTest : public ExtensionsTest,
                                  public ExtensionIconManager::Observer {
  public:
   ExtensionIconManagerTest() : unwaited_image_loads_(0), waiting_(false) {}
@@ -94,8 +93,6 @@ class ExtensionIconManagerTest : public testing::Test,
   }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
-
   // The number of observed image loads that have not been waited for.
   int unwaited_image_loads_;
 
@@ -115,13 +112,12 @@ gfx::Image GetDefaultIcon() {
 
 // Tests loading an icon for an extension, removing it, then re-loading it.
 TEST_F(ExtensionIconManagerTest, LoadRemoveLoad) {
-  std::unique_ptr<Profile> profile(new TestingProfile());
   gfx::Image default_icon = GetDefaultIcon();
 
   base::FilePath test_dir;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir));
-  base::FilePath manifest_path = test_dir.AppendASCII(
-      "extensions/image_loading_tracker/app.json");
+  ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &test_dir));
+  base::FilePath manifest_path =
+      test_dir.AppendASCII("extension_icon_manager/manifest.json");
 
   JSONFileValueDeserializer deserializer(manifest_path);
   std::unique_ptr<base::Value> manifest =
@@ -138,7 +134,7 @@ TEST_F(ExtensionIconManagerTest, LoadRemoveLoad) {
   icon_manager.set_observer(this);
 
   // Load the icon.
-  icon_manager.LoadIcon(profile.get(), extension.get());
+  icon_manager.LoadIcon(browser_context(), extension.get());
   WaitForImageLoad();
   gfx::Image first_icon = icon_manager.GetIcon(extension->id());
   EXPECT_FALSE(gfx::test::AreImagesEqual(first_icon, default_icon));
@@ -148,7 +144,7 @@ TEST_F(ExtensionIconManagerTest, LoadRemoveLoad) {
 
   // Now re-load the icon - we should get the same result bitmap (and not the
   // default icon).
-  icon_manager.LoadIcon(profile.get(), extension.get());
+  icon_manager.LoadIcon(browser_context(), extension.get());
   WaitForImageLoad();
   gfx::Image second_icon = icon_manager.GetIcon(extension->id());
   EXPECT_FALSE(gfx::test::AreImagesEqual(second_icon, default_icon));
@@ -159,13 +155,12 @@ TEST_F(ExtensionIconManagerTest, LoadRemoveLoad) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests loading an icon for a component extension.
 TEST_F(ExtensionIconManagerTest, LoadComponentExtensionResource) {
-  std::unique_ptr<Profile> profile(new TestingProfile());
   gfx::Image default_icon = GetDefaultIcon();
 
   base::FilePath test_dir;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir));
-  base::FilePath manifest_path = test_dir.AppendASCII(
-      "extensions/file_manager/app.json");
+  ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &test_dir));
+  base::FilePath manifest_path =
+      test_dir.AppendASCII("extension_icon_manager/manifest.json");
 
   JSONFileValueDeserializer deserializer(manifest_path);
   std::unique_ptr<base::Value> manifest =
@@ -181,7 +176,7 @@ TEST_F(ExtensionIconManagerTest, LoadComponentExtensionResource) {
   ExtensionIconManager icon_manager;
   icon_manager.set_observer(this);
   // Load the icon.
-  icon_manager.LoadIcon(profile.get(), extension.get());
+  icon_manager.LoadIcon(browser_context(), extension.get());
   WaitForImageLoad();
   gfx::Image first_icon = icon_manager.GetIcon(extension->id());
   EXPECT_FALSE(gfx::test::AreImagesEqual(first_icon, default_icon));
@@ -191,7 +186,7 @@ TEST_F(ExtensionIconManagerTest, LoadComponentExtensionResource) {
 
   // Now re-load the icon - we should get the same result bitmap (and not the
   // default icon).
-  icon_manager.LoadIcon(profile.get(), extension.get());
+  icon_manager.LoadIcon(browser_context(), extension.get());
   WaitForImageLoad();
   gfx::Image second_icon = icon_manager.GetIcon(extension->id());
   EXPECT_FALSE(gfx::test::AreImagesEqual(second_icon, default_icon));
@@ -203,14 +198,13 @@ TEST_F(ExtensionIconManagerTest, LoadComponentExtensionResource) {
 // Test what bitmaps are loaded when various combinations of scale factors are
 // supported.
 TEST_F(ExtensionIconManagerTest, ScaleFactors) {
-  auto profile = std::make_unique<TestingProfile>();
   const gfx::Image default_icon = GetDefaultIcon();
   base::RunLoop loop1;
 
   base::FilePath test_dir;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir));
+  ASSERT_TRUE(base::PathService::Get(DIR_TEST_DATA, &test_dir));
   base::FilePath manifest_path =
-      test_dir.AppendASCII("extensions/context_menus/icons/manifest.json");
+      test_dir.AppendASCII("extension_icon_manager/manifest.json");
 
   JSONFileValueDeserializer deserializer(manifest_path);
   std::unique_ptr<base::Value> manifest =
@@ -249,7 +243,7 @@ TEST_F(ExtensionIconManagerTest, ScaleFactors) {
     ExtensionIconManager icon_manager;
     icon_manager.set_observer(this);
 
-    icon_manager.LoadIcon(profile.get(), extension.get());
+    icon_manager.LoadIcon(browser_context(), extension.get());
     WaitForImageLoad();
 
     gfx::Image icon = icon_manager.GetIcon(extension->id());
@@ -295,7 +289,7 @@ TEST_F(ExtensionIconManagerTest, ScaleFactors) {
   ScopedSetDeviceScaleFactor scoped_dsf(1.5f);
   ExtensionIconManager icon_manager;
   icon_manager.set_observer(this);
-  icon_manager.LoadIcon(profile.get(), extension.get());
+  icon_manager.LoadIcon(browser_context(), extension.get());
   WaitForImageLoad();
 
   gfx::ImageSkia icon = icon_manager.GetIcon(extension->id()).AsImageSkia();

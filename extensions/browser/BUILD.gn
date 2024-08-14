@@ -301,6 +301,8 @@ source_set("browser_sources") {
     "extension_host_registry.h",
     "extension_icon_image.cc",
     "extension_icon_image.h",
+    "extension_icon_manager.cc",
+    "extension_icon_manager.h",
     "extension_icon_placeholder.cc",
     "extension_icon_placeholder.h",
     "extension_navigation_throttle.cc",
@@ -522,6 +524,7 @@ source_set("browser_sources") {
     "//components/update_client",
     "//components/url_pattern_index",
     "//components/variations",
+    "//components/vector_icons",
     "//components/version_info",
     "//components/web_cache/browser",
     "//components/web_cache/browser:browser",
@@ -972,6 +975,7 @@ if (enable_extensions) {
       "extension_function_crash_keys_unittest.cc",
       "extension_function_histogram_value_unittest.cc",
       "extension_icon_image_unittest.cc",
+      "extension_icon_manager_unittest.cc",
       "extension_pref_value_map_unittest.cc",
       "extension_registrar_unittest.cc",
       "extension_registry_unittest.cc",
@@ -1055,6 +1059,7 @@ if (enable_extensions) {
       "//storage/browser:test_support",
       "//third_party/leveldatabase",
       "//third_party/zlib/google:zip",
+      "//ui/display:test_support",
     ]
 
     if (is_chromeos) {

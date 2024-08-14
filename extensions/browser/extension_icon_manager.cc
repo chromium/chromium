@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_icon_manager.h"
+#include "extensions/browser/extension_icon_manager.h"
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -24,27 +24,26 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/common_theme.h"
-#include "ui/native_theme/native_theme.h"
+
+namespace extensions {
 
 ExtensionIconManager::ExtensionIconManager() {}
 
 ExtensionIconManager::~ExtensionIconManager() {}
 
 void ExtensionIconManager::LoadIcon(content::BrowserContext* context,
-                                    const extensions::Extension* extension) {
+                                    const Extension* extension) {
   // Insert into pending_icons_ first because LoadImage can call us back
   // synchronously if the image is already cached.
   pending_icons_.insert(extension->id());
-  extensions::ImageLoader* loader = extensions::ImageLoader::Get(context);
+  ImageLoader* loader = ImageLoader::Get(context);
   loader->LoadImageAtEveryScaleFactorAsync(
       extension, gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize),
       base::BindOnce(&ExtensionIconManager::OnImageLoaded,
                      weak_ptr_factory_.GetWeakPtr(), extension->id()));
 }
 
-gfx::Image ExtensionIconManager::GetIcon(
-    const extensions::ExtensionId& extension_id) {
+gfx::Image ExtensionIconManager::GetIcon(const ExtensionId& extension_id) {
   auto iter = icons_.find(extension_id);
   gfx::Image* result = nullptr;
   if (iter == icons_.end()) {
@@ -60,15 +59,13 @@ gfx::Image ExtensionIconManager::GetIcon(
   return *result;
 }
 
-void ExtensionIconManager::RemoveIcon(
-    const extensions::ExtensionId& extension_id) {
+void ExtensionIconManager::RemoveIcon(const ExtensionId& extension_id) {
   icons_.erase(extension_id);
   pending_icons_.erase(extension_id);
 }
 
-void ExtensionIconManager::OnImageLoaded(
-    const extensions::ExtensionId& extension_id,
-    const gfx::Image& image) {
+void ExtensionIconManager::OnImageLoaded(const ExtensionId& extension_id,
+                                         const gfx::Image& image) {
   if (!image.IsEmpty()) {
     // We may have removed the icon while waiting for it to load. In that case,
     // do nothing.
@@ -95,3 +92,5 @@ void ExtensionIconManager::EnsureDefaultIcon() {
         vector_icons::kExtensionIcon, gfx::kFaviconSize, gfx::kGoogleGrey700));
   }
 }
+
+} // namespace extensions
