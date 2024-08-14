@@ -46,21 +46,23 @@ SupervisedUserVerificationPage::GetTypeForTesting() {
 void SupervisedUserVerificationPage::PopulateInterstitialStrings(
     base::Value::Dict& load_time_data) {
   PopulateStringsForSharedHTML(load_time_data);
-  load_time_data.Set("tabTitle", l10n_util::GetStringUTF16(
-                                     IDS_SUPERVISED_USER_VERIFY_IT_IS_YOU));
+  load_time_data.Set(
+      "tabTitle",
+      l10n_util::GetStringUTF16(IDS_SUPERVISED_USER_VERIFY_PAGE_TAB_TITLE));
   load_time_data.Set("optInLink", l10n_util::GetStringUTF16(
                                       IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
   load_time_data.Set(
       "enhancedProtectionMessage",
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
-  load_time_data.Set("heading", l10n_util::GetStringUTF16(
-                                    IDS_SUPERVISED_USER_VERIFY_IT_IS_YOU));
+  load_time_data.Set("heading",
+                     l10n_util::GetStringUTF16(
+                         IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_HEADING));
   load_time_data.Set("primaryParagraph",
                      l10n_util::GetStringUTF16(
                          IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_PARAGRAPH));
-  load_time_data.Set(
-      "primaryButtonText",
-      l10n_util::GetStringUTF16(IDS_SUPERVISED_USER_VERIFY_IT_IS_YOU));
+  load_time_data.Set("primaryButtonText",
+                     l10n_util::GetStringUTF16(
+                         IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_BUTTON));
 }
 
 void SupervisedUserVerificationPage::OnInterstitialClosing() {}

@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, BlockedInterceptionInterstitial) {
 IN_PROC_BROWSER_TEST_F(InterstitialUITest,
                        SupervisedUserVerificationInterstitial) {
   TestInterstitial(GURL("chrome://interstitials/supervised-user-verify"),
-                   "Verify it's you", IDS_SUPERVISED_USER_VERIFY_IT_IS_YOU);
+                   "YouTube", IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_HEADING);
 }
 #endif
 
