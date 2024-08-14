@@ -231,6 +231,7 @@ source_set("fake_system_identity_manager") {
     ":fake_system_identity",
     ":system_identity",
     ":system_identity_manager",
+    ":test_account_info",
     ":test_constants",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
@@ -265,6 +266,22 @@ source_set("fake_system_identity") {
   deps = [
     ":system_identity",
     "//base",
+  ]
+}
+
+source_set("test_account_info") {
+  testonly = true
+  sources = [
+    "test_account_info.h",
+    "test_account_info.mm",
+    "test_account_info_builder.h",
+    "test_account_info_builder.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    "//base",
+    "//components/signin/internal/identity_manager:capabilities",
+    "//components/signin/public/identity_manager:tribool",
   ]
 }
 
