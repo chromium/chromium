@@ -236,8 +236,7 @@ void CrashReportUploadThread::ProcessPendingReport(
       return;
 
     case CrashReportDatabase::kCannotRequestUpload:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   std::string response_body;

@@ -188,8 +188,7 @@ class TestExceptionPorts : public MachMultiprocess,
     } else if (who_crashes_ == kOtherThreadCrashes) {
       expect_behavior = EXCEPTION_STATE_IDENTITY;
     } else {
-      NOTREACHED_IN_MIGRATION();
-      expect_behavior = 0;
+      NOTREACHED();
     }
 
     EXPECT_EQ(behavior, expect_behavior);
@@ -286,7 +285,7 @@ class TestExceptionPorts : public MachMultiprocess,
           }
 
           default: {
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
           }
         }
       }
@@ -369,7 +368,7 @@ class TestExceptionPorts : public MachMultiprocess,
             break;
           }
           default: {
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
           }
         }
       }
@@ -520,7 +519,7 @@ class TestExceptionPorts : public MachMultiprocess,
         }
 
         default: {
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
         }
       }
     }

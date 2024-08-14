@@ -204,8 +204,7 @@ uint32_t SystemSnapshotMac::CPUX86Signature() const {
 #if defined(ARCH_CPU_X86_FAMILY)
   return ReadIntSysctlByName<uint32_t>("machdep.cpu.signature", 0);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 #endif
 }
 
@@ -215,8 +214,7 @@ uint64_t SystemSnapshotMac::CPUX86Features() const {
 #if defined(ARCH_CPU_X86_FAMILY)
   return ReadIntSysctlByName<uint64_t>("machdep.cpu.feature_bits", 0);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 #endif
 }
 
@@ -226,8 +224,7 @@ uint64_t SystemSnapshotMac::CPUX86ExtendedFeatures() const {
 #if defined(ARCH_CPU_X86_FAMILY)
   return ReadIntSysctlByName<uint64_t>("machdep.cpu.extfeature_bits", 0);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 #endif
 }
 
@@ -251,8 +248,7 @@ uint32_t SystemSnapshotMac::CPUX86Leaf7Features() const {
   CallCPUID(7, &eax, &ebx, &ecx, &edx);
   return ebx;
 #else
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 #endif
 }
 
@@ -290,8 +286,7 @@ bool SystemSnapshotMac::CPUX86SupportsDAZ() const {
   // Test the DAZ bit.
   return fxsave.mxcsr_mask & (1 << 6);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 #endif
 }
 

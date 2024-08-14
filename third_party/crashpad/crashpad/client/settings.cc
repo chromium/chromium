@@ -292,8 +292,7 @@ FileHandle Settings::GetHandleFromOptions(
       return OpenFileForReadAndWrite(
           file_path, options.mode, options.permissions);
   }
-  NOTREACHED_IN_MIGRATION();
-  return kInvalidFileHandle;
+  NOTREACHED();
 }
 
 Settings::ScopedLockedFileHandle Settings::OpenForReading() {

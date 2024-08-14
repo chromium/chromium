@@ -136,9 +136,7 @@ void MinidumpSystemInfoWriter::InitializeFromSnapshot(
       cpu_architecture = kMinidumpCPUArchitectureRISCV64Breakpad;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      cpu_architecture = kMinidumpCPUArchitectureUnknown;
-      break;
+      NOTREACHED();
   }
   SetCPUArchitecture(cpu_architecture);
 
@@ -185,9 +183,7 @@ void MinidumpSystemInfoWriter::InitializeFromSnapshot(
       operating_system = kMinidumpOSIOS;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      operating_system = kMinidumpOSUnknown;
-      break;
+      NOTREACHED();
   }
   SetOS(operating_system);
 

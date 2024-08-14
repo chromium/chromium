@@ -360,8 +360,7 @@ uint32_t SystemSnapshotWin::CPUX86Signature() const {
   __cpuid(cpu_info, 1);
   return cpu_info[0];
 #else
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 #endif
 }
 
@@ -375,8 +374,7 @@ uint64_t SystemSnapshotWin::CPUX86Features() const {
   return (static_cast<uint64_t>(cpu_info[2]) << 32) |
          static_cast<uint64_t>(cpu_info[3]);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 #endif
 }
 
@@ -391,8 +389,7 @@ uint64_t SystemSnapshotWin::CPUX86ExtendedFeatures() const {
   return (static_cast<uint64_t>(cpu_info[2]) << 32) |
          static_cast<uint64_t>(cpu_info[3]);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 #endif
 }
 
@@ -410,8 +407,7 @@ uint32_t SystemSnapshotWin::CPUX86Leaf7Features() const {
   __cpuidex(cpu_info, 7, 0);
   return cpu_info[1];
 #else
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 #endif
 }
 
@@ -441,8 +437,7 @@ bool SystemSnapshotWin::CPUX86SupportsDAZ() const {
   // Test the DAZ bit.
   return (mxcsr_mask & (1 << 6)) != 0;
 #else
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 #endif
 }
 

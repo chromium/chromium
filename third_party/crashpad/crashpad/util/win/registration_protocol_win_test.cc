@@ -98,8 +98,7 @@ void CheckAce(PACL acl,
       mask = label_ace->Mask;
     } break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   ASSERT_EQ(check_mask, mask);
