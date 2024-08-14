@@ -60,10 +60,13 @@ class SystemMediaControlsBridgeBrowsertest
         switches::autoplay::kNoUserGestureRequiredPolicy);
   }
 
-  void WaitForAppShimConnection(AppShimHost* app_shim_host) {
-    base::test::TestFuture<void> future;
-    app_shim_host->SetOnShimConnectedForTesting(future.GetCallback());
-    EXPECT_TRUE(future.Wait());
+  void MaybeWaitForAppShimConnection(AppShimHost* app_shim_host) {
+    // If the app shim has not yet connected, set the callback for testing.
+    if (!app_shim_host->HasBootstrapConnected()) {
+      base::test::TestFuture<void> future;
+      app_shim_host->SetOnShimConnectedForTesting(future.GetCallback());
+      EXPECT_TRUE(future.Wait());
+    }
   }
 
   void StartPlaybackAndWaitForStart(Browser* browser,
@@ -104,7 +107,7 @@ class SystemMediaControlsBridgeBrowsertest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, DISABLED_TwoApps) {
+IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, TwoApps) {
   // Install and launch a test media session PWA.
   webapps::AppId app_id1 =
       InstallPWA(https_server()->GetURL("/media/session/media-session.html"));
@@ -115,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, DISABLED_TwoApps) {
   apps::AppShimManager* app_shim_manager = apps::AppShimManager::Get();
   AppShimHost* app_shim_host =
       app_shim_manager->FindHost(web_app_browser1->profile(), app_id1);
-  WaitForAppShimConnection(app_shim_host);
+  MaybeWaitForAppShimConnection(app_shim_host);
 
   // At this point, WebAppSystemMediaControlsManager exists,
   // but no SystemMediaControls have been made yet. Before playing media, tell
@@ -141,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, DISABLED_TwoApps) {
   // Wait for 2nd app shim to connect.
   AppShimHost* app_shim_host2 =
       app_shim_manager->FindHost(web_app_browser2->profile(), app_id2);
-  WaitForAppShimConnection(app_shim_host2);
+  MaybeWaitForAppShimConnection(app_shim_host2);
 
   // Start playing the audio.
   StartPlaybackAndWaitForStart(web_app_browser2, "short-video-loop");
@@ -152,8 +155,7 @@ IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, DISABLED_TwoApps) {
   EXPECT_EQ(num_bridges_created_, 2);
 }
 
-IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
-                       DISABLED_OneBrowser) {
+IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, OneBrowser) {
   // Set up the browser SMCBridge listener.
   SetUpOnBridgeCreatedCallback(/*for_web_app=*/false);
 
@@ -171,8 +173,7 @@ IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
   EXPECT_EQ(num_bridges_created_, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
-                       DISABLED_OneBrowserOneApp) {
+IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, OneBrowserOneApp) {
   // Set up the browser SMCBridge listener.
   SetUpOnBridgeCreatedCallback(/*for_web_app=*/false);
 
@@ -200,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
   apps::AppShimManager* app_shim_manager = apps::AppShimManager::Get();
   AppShimHost* app_shim_host =
       app_shim_manager->FindHost(web_app_browser1->profile(), app_id1);
-  WaitForAppShimConnection(app_shim_host);
+  MaybeWaitForAppShimConnection(app_shim_host);
 
   // At this point, WebAppSystemMediaControlsManager exists,
   // but no SystemMediaControls have been made yet. Before playing media, tell
@@ -217,8 +218,7 @@ IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
   EXPECT_EQ(num_bridges_created_, 2);
 }
 
-IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
-                       DISABLED_DuplicateApp) {
+IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, DuplicateApp) {
   // Install and launch a test media session PWA.
   webapps::AppId app_id1 =
       InstallPWA(https_server()->GetURL("/media/session/media-session.html"));
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
   apps::AppShimManager* app_shim_manager = apps::AppShimManager::Get();
   AppShimHost* app_shim_host =
       app_shim_manager->FindHost(web_app_browser1->profile(), app_id1);
-  WaitForAppShimConnection(app_shim_host);
+  MaybeWaitForAppShimConnection(app_shim_host);
 
   // At this point, WebAppSystemMediaControlsManager exists,
   // but no SystemMediaControls have been made yet. Before playing media, tell
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
-                       DISABLED_CommandQuitOneApp) {
+                       CommandQuitOneApp) {
   // Install and launch a test media session PWA.
   webapps::AppId app_id1 =
       InstallPWA(https_server()->GetURL("/media/session/media-session.html"));
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest,
   apps::AppShimManager* app_shim_manager = apps::AppShimManager::Get();
   AppShimHost* app_shim_host =
       app_shim_manager->FindHost(web_app_browser1->profile(), app_id1);
-  WaitForAppShimConnection(app_shim_host);
+  MaybeWaitForAppShimConnection(app_shim_host);
 
   // Start playing the audio.
   StartPlaybackAndWaitForStart(web_app_browser1, "long-video-loop");
