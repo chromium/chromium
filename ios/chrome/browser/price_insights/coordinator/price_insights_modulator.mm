@@ -265,8 +265,7 @@ NSDate* getNSDateFromString(std::string date) {
   DCHECK(config->product_info.has_value());
 
   PriceInsightsItem* item = [[PriceInsightsItem alloc] init];
-  item.title = base::SysUTF8ToNSString(config->product_info->title);
-  item.variants =
+  item.title =
       base::SysUTF8ToNSString(config->product_info->product_cluster_title);
   item.currency = config->product_info->currency_code;
   item.country = config->product_info->country_code;
@@ -284,6 +283,12 @@ NSDate* getNSDateFromString(std::string date) {
 
   if (!config->price_insights_info.has_value()) {
     return item;
+  }
+
+  if (config->price_insights_info->has_multiple_catalogs &&
+      config->price_insights_info->catalog_attributes.has_value()) {
+    item.variants = base::SysUTF8ToNSString(
+        config->price_insights_info->catalog_attributes.value());
   }
 
   NSMutableDictionary* priceHistory = [[NSMutableDictionary alloc] init];

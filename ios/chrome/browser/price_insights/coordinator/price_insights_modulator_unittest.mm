@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/price_insights/coordinator/price_insights_modulator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "components/commerce/core/commerce_types.h"
@@ -29,7 +30,12 @@ using testing::_;
 namespace {
 
 const char kTestUrl[] = "https://www.merchant.com/price_drop_product";
+const char kTestBuyingOptionsUrl[] =
+    "https://www.merchant.com/price_drop_product/jackpot";
 const char kTestTitle[] = "Product";
+const char kVariant[] = "Variant";
+const char kCurrency[] = "USD";
+const char kCountry[] = "US";
 const uint64_t kClusterId = 123u;
 
 }  // namespace
@@ -154,4 +160,77 @@ TEST_F(PriceInsightsModulatorTest, TestSubscriptionStatusChange) {
   PriceInsightsItem* item = cell.priceInsightsItem;
 
   EXPECT_EQ(true, item.isPriceTracked);
+}
+
+// Tests that PriceInsightsItem has the correct data from
+// PriceInsightsItemConfiguration.
+TEST_F(PriceInsightsModulatorTest, TestPriceInsightsItemDataFromConfig) {
+  base::RunLoop run_loop;
+
+  commerce::ProductInfo info;
+  info.product_cluster_title = kTestTitle;
+  info.product_cluster_id = kClusterId;
+  info.currency_code = kCurrency;
+  info.country_code = kCountry;
+
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
+
+  commerce::PriceInsightsInfo price_info;
+  price_info.product_cluster_id = kClusterId;
+  price_info.catalog_history_prices.emplace_back("2021-01-01", 3330000);
+  price_info.catalog_history_prices.emplace_back("2021-01-02", 4440000);
+  price_info.catalog_attributes = kVariant;
+  price_info.currency_code = kCurrency;
+  price_info.jackpot_url = GURL(kTestBuyingOptionsUrl);
+  price_info.has_multiple_catalogs = true;
+
+  shopping_service_->SetIsSubscribedCallbackValue(true);
+  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+      std::move(price_info));
+
+  // Fetch data from the model.
+  price_insights_model_->FetchConfigurationForWebState(
+      web_state_ptr_,
+      base::BindOnce(&PriceInsightsModulatorTest::FetchConfigurationCallback,
+                     base::Unretained(this))
+          .Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+
+  PriceInsightsItemConfiguration* config =
+      static_cast<PriceInsightsItemConfiguration*>(
+          returned_configuration_.get());
+
+  shopping_service_->SetIsSubscribedCallbackValue(true);
+
+  PriceInsightsModulator* modulator = [[PriceInsightsModulator alloc]
+      initWithBaseViewController:base_view_controller_
+                         browser:browser_.get()
+               itemConfiguration:config->weak_ptr_factory.GetWeakPtr()];
+
+  // Start the modulator.
+  [modulator start];
+
+  UICollectionView* collection_view = [[UICollectionView alloc]
+             initWithFrame:CGRectZero
+      collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
+  PriceInsightsCell* cell = static_cast<PriceInsightsCell*>([collection_view
+      dequeueConfiguredReusableCellWithRegistration:modulator.panelBlockData
+                                                        .cellRegistration
+                                       forIndexPath:[NSIndexPath
+                                                        indexPathForRow:0
+                                                              inSection:0]
+                                               item:@"id"]);
+  PriceInsightsItem* item = cell.priceInsightsItem;
+
+  EXPECT_EQ(kTestTitle, base::SysNSStringToUTF8(item.title));
+  EXPECT_EQ(kVariant, base::SysNSStringToUTF8(item.variants));
+  EXPECT_EQ(kCurrency, item.currency);
+  EXPECT_EQ(kCountry, item.country);
+  EXPECT_EQ(2ul, [item.priceHistory count]);
+  EXPECT_EQ(GURL(kTestBuyingOptionsUrl), item.buyingOptionsURL);
+  EXPECT_EQ(true, item.canPriceTrack);
+  EXPECT_EQ(true, item.isPriceTracked);
+  EXPECT_EQ(GURL(kTestUrl), item.productURL);
+  EXPECT_EQ(kClusterId, item.clusterId);
 }
