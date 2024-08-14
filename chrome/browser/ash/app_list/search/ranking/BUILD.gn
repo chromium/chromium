@@ -46,6 +46,8 @@ static_library("ranking") {
     "util.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     ":proto",
     "//ash",

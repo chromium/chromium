@@ -27,6 +27,8 @@ static_library("util") {
     "score_normalizer.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     ":proto",
     "//ash",

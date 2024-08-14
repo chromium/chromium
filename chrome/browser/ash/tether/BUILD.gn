@@ -16,6 +16,8 @@ static_library("tether") {
     "tether_service_factory.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//base",
     "//chrome/browser/ash/device_sync",

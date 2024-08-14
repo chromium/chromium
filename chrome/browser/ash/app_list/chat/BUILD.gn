@@ -12,6 +12,8 @@ static_library("chat") {
     "chat_controller.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//base",
     "//chrome/browser/ash/app_list/search",

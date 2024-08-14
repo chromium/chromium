@@ -20,7 +20,10 @@ static_library("system_info") {
     "system_info_card_provider.h",
   ]
 
-  public_deps = [ "//chrome/browser/ui/webui/ash/settings/calculator" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash/settings/calculator",
+  ]
 
   deps = [
     "//ash/public/cpp",

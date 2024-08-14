@@ -12,6 +12,8 @@ static_library("sharesheet") {
     "arc_sharesheet_bridge.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/components/arc",
     "//ash/components/arc/mojom",

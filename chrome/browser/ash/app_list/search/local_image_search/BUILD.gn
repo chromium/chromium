@@ -34,6 +34,8 @@ static_library("local_image_search") {
     "sql_database.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/public/cpp",
     "//base",

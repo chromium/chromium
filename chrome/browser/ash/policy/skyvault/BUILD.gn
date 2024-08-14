@@ -36,6 +36,8 @@ static_library("skyvault") {
     "skyvault_rename_handler.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//ash/public/cpp",

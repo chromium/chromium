@@ -12,6 +12,8 @@ static_library("survey") {
     "arc_survey_service.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/components/arc",
     "//base",

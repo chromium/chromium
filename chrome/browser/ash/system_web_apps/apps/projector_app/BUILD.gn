@@ -14,6 +14,7 @@ static_library("projector_app") {
 
   public_deps = [
     "//ash/webui/projector_app",
+    "//chrome/browser:browser_public_dependencies",
     "//content/public/browser",
   ]
 

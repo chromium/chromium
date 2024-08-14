@@ -50,6 +50,8 @@ static_library("reporting") {
     "user_event_reporter_helper.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/components/arc:prefs",
     "//ash/components/arc/mojom",

@@ -51,6 +51,7 @@ static_library("oauth2") {
   ]
 
   public_deps = [
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
     "//chrome/browser/profiles:profile",
     "//components/sync/model",

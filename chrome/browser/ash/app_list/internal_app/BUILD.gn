@@ -12,6 +12,8 @@ static_library("internal_app") {
     "internal_app_metadata.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/public/cpp",
     "//ash/public/cpp/resources:ash_public_unscaled_resources",
