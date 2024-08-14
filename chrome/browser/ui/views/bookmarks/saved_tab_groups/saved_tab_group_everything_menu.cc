@@ -251,9 +251,7 @@ void STGEverythingMenu::PopulateTabGroupSubMenu(views::MenuItemView* parent) {
       latest_command_id,
       group_pinned ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
                    : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP,
-      ui::ImageModel::FromVectorIcon(group_pinned
-                                         ? kKeepPinFilledChromeRefreshIcon
-                                         : kKeepPinChromeRefreshIcon,
+      ui::ImageModel::FromVectorIcon(group_pinned ? kKeepFilledIcon : kKeepIcon,
                                      ui::kColorMenuIcon, kUIUpdateIconSize));
   submenu_model_->SetElementIdentifierAt(
       submenu_model_->GetIndexOfCommandId(latest_command_id).value(),
