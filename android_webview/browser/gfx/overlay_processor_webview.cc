@@ -606,6 +606,10 @@ class OverlayProcessorWebView::Manager
       transaction.SetCrop(surface, crop_rect);
       transaction.SetColorSpace(surface, resource->color_space(), std::nullopt);
       transaction.SetBuffer(surface, buffer, resource->TakeBeginReadFence());
+
+      if (gfx::SurfaceControl::SupportsSetFrameRate()) {
+        transaction.SetFrameRate(surface, resource->frame_rate());
+      }
     } else {
       // Android T has a bug where setting empty buffer to ASurfaceControl will
       // result in surface completely missing from ASurfaceTransactionStats in
@@ -637,9 +641,6 @@ class OverlayProcessorWebView::Manager
       }
 
       transaction.SetBuffer(surface, buffer, base::ScopedFD());
-    }
-    if (gfx::SurfaceControl::SupportsSetFrameRate()) {
-      transaction.SetFrameRate(surface, resource->frame_rate());
     }
   }
 
