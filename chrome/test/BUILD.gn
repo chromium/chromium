@@ -7866,6 +7866,7 @@ test("unit_tests") {
       "../browser/ui/views/webid/fedcm_modal_dialog_view_unittest.cc",
       "../browser/ui/webauthn/passkey_deleted_confirmation_controller_unittest.cc",
       "../browser/ui/webauthn/passkey_saved_confirmation_controller_unittest.cc",
+      "../browser/ui/webauthn/passkey_updated_confirmation_controller_unittest.cc",
       "../browser/ui/webauthn/sheet_models_unittest.cc",
       "../browser/ui/webid/identity_dialog_controller_unittest.cc",
       "../browser/ui/webui/about/about_ui_unittest.cc",

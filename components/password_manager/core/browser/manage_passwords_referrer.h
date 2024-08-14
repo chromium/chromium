@@ -99,10 +99,13 @@ enum class ManagePasswordsReferrer {
   // On Desktop, the bubble that notifies the user that a passkey was deleted.
   kPasskeyDeletedConfirmationBubble = 24,
 
+  // On Desktop, the bubble that notifies the user that a passkey was updated.
+  kPasskeyUpdatedConfirmationBubble = 25,
+
   // NOTE: When adding a new value to this enum that applies or could apply to
   // Android, make sure it is correctly handled by the internal credential
   // manager launcher java implementation.
-  kMaxValue = kPasskeyDeletedConfirmationBubble,
+  kMaxValue = kPasskeyUpdatedConfirmationBubble,
 };
 
 }  // namespace password_manager

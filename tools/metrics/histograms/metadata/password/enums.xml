@@ -567,6 +567,23 @@ chromium-metrics-reviews@google.com.
   <int value="20"
       label="Opened automatically / Notifying the user that their password
              store setting changed"/>
+  <int value="21"
+      label="Opened automatically / Notifying the user that their passkey was
+             saved"/>
+  <int value="22"
+      label="Opened automatically / Notifying the user that their invalid
+             passkey has been deleted and that they need to log in to create
+             a new one"/>
+  <int value="23"
+      label="Opened manually / Notifying the user that their invalid passkey
+             has been deleted and that they need to log in to create a new
+             one"/>
+  <int value="24"
+      label="Opened automatically / Notifying the user that their passkey
+             details have been updated."/>
+  <int value="25"
+      label="Opened manually / Notifying the user that their passkey details
+             have been updated."/>
 </enum>
 
 <enum name="PasswordBubbleFollowupType">
