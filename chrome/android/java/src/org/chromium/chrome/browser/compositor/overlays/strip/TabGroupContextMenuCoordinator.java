@@ -100,7 +100,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         /* didCloseCallback= */ null);
             } else if (menuId == org.chromium.chrome.R.id.open_new_tab_in_group) {
                 TabUiUtils.openNtpInGroup(
-                        tabGroupModelFilter, tabCreator, tabId, TabLaunchType.FROM_CHROME_UI);
+                        tabGroupModelFilter, tabCreator, tabId, TabLaunchType.FROM_TAB_GROUP_UI);
             }
         };
     }

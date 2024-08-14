@@ -212,7 +212,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         // Verify new tab opened in group.
         mOnItemClickedCallback.onClick(R.id.open_new_tab_in_group, mTabId);
         verify(mTabCreator)
-                .createNewTab(any(), eq(TabLaunchType.FROM_CHROME_UI), eq(tabsInGroup.get(0)));
+                .createNewTab(any(), eq(TabLaunchType.FROM_TAB_GROUP_UI), eq(tabsInGroup.get(0)));
     }
 
     private List<Tab> setUpTabGroupModelFilter() {
