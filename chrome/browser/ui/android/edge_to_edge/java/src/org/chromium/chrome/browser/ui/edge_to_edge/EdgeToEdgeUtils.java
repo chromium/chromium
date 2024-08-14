@@ -206,7 +206,9 @@ public class EdgeToEdgeUtils {
      * @return whether the given window's insets indicate a tappable bottom bar.
      */
     static boolean hasTappableBottomBar(Window window) {
-        return WindowInsetsCompat.toWindowInsetsCompat(window.getDecorView().getRootWindowInsets())
+        var rootInsets = window.getDecorView().getRootWindowInsets();
+        assert rootInsets != null;
+        return WindowInsetsCompat.toWindowInsetsCompat(rootInsets)
                         .getInsets(WindowInsetsCompat.Type.tappableElement())
                         .bottom
                 != 0;

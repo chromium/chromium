@@ -479,6 +479,15 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
+    public void disabledWhenNotActivityNotAttached() {
+        Activity activity = Robolectric.buildActivity(AppCompatActivity.class).create().get();
+        assertNull(activity.getWindow().getDecorView().getRootWindowInsets());
+        assertFalse(
+                "The activity is not supported before its root window insets is available.",
+                EdgeToEdgeControllerFactory.isSupportedConfiguration(activity));
+    }
+
+    @Test
     @Config(qualifiers = "xlarge")
     public void disabledWhenNotPhone() {
         // Even these always-draw flags do not override the device abilities.

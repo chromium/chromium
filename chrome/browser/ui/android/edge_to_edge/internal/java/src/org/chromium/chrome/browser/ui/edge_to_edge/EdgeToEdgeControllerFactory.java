@@ -108,12 +108,19 @@ public class EdgeToEdgeControllerFactory {
     }
 
     /**
-     * @return whether the configuration of the device should allow Edge To Edge.
+     * Returns whether the configuration of the device should allow Edge To Edge. Note the results
+     * are false-positive, if the method is called before the |activity|'s decor view being attached
+     * to the window.
      */
     public static boolean isSupportedConfiguration(Activity activity) {
         // Make sure we test SDK version before checking the Feature so Field Trials only collect
         // from qualifying devices.
         if (android.os.Build.VERSION.SDK_INT < VERSION_CODES.R) return false;
+
+        // The root view's window insets is needed to determine if we are in gesture nav mode.
+        if (activity.getWindow().getDecorView().getRootWindowInsets() == null) {
+            return false;
+        }
 
         return EdgeToEdgeUtils.isEnabled()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
