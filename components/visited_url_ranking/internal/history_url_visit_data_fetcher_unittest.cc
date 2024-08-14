@@ -75,22 +75,23 @@ class MockHistoryService : public history::HistoryService {
 
 struct HistoryScenario {
  public:
-  HistoryScenario(std::vector<base::Time> timestamps_arg,
+  HistoryScenario(base::Time current_time_arg,
+                  std::vector<base::Time> timestamps_arg,
                   size_t expected_same_day_group_visit_count_arg,
                   size_t expected_same_time_group_visit_count_arg)
-      : timestamps(timestamps_arg),
+      : current_time(std::move(current_time_arg)),
+        timestamps(std::move(timestamps_arg)),
         expected_same_day_group_visit_count(
             expected_same_day_group_visit_count_arg),
         expected_same_time_group_visit_count(
             expected_same_time_group_visit_count_arg) {}
-
   base::Time current_time;
   std::vector<base::Time> timestamps;
   size_t expected_same_day_group_visit_count = 0;
   size_t expected_same_time_group_visit_count = 0;
 };
 
-base::Time GetMidOfDay(base::Time time) {
+base::Time GetStartOfDay(base::Time time) {
   base::Time::Exploded time_exploded;
   time.LocalExplode(&time_exploded);
   time_exploded.hour = 0;
@@ -105,22 +106,28 @@ base::Time GetMidOfDay(base::Time time) {
   return base::Time();
 }
 
-const base::Time kTodayMidOfDay = GetMidOfDay(base::Time::Now());
-
 const HistoryScenario SampleScenario_OverlappingTimeGroup() {
+  base::Time today_mid_of_day =
+      GetStartOfDay(base::Time::Now()) + base::Hours(12);
   std::vector<base::Time> timestamps;
-  timestamps.push_back(kTodayMidOfDay + base::Hours(1));
-  timestamps.push_back(kTodayMidOfDay + base::Hours(2));
+  timestamps.push_back(today_mid_of_day + base::Hours(1));
+  timestamps.push_back(today_mid_of_day + base::Hours(2));
 
-  return {std::move(timestamps), 2, 2};
+  return {std::move(today_mid_of_day), std::move(timestamps), 2, 2};
 }
 
 const HistoryScenario SampleScenario_NonOverlappingTimeGroup() {
-  std::vector<base::Time> timestamps;
-  timestamps.push_back(kTodayMidOfDay - base::Hours(1));
-  timestamps.push_back(kTodayMidOfDay - base::Hours(2));
+  base::Time today_mid_of_day =
+      GetStartOfDay(base::Time::Now()) + base::Hours(12);
 
-  return {std::move(timestamps), 2, 0};
+  // The current day is split into four time groups of 6 hours each. The third
+  // group starts at exactly 12 PM, thus, the following two timestamps will
+  // belong to the prior time group.
+  std::vector<base::Time> timestamps;
+  timestamps.push_back(today_mid_of_day - base::Hours(1));
+  timestamps.push_back(today_mid_of_day - base::Hours(2));
+
+  return {std::move(today_mid_of_day), std::move(timestamps), 2, 0};
 }
 
 }  // namespace
@@ -134,7 +141,7 @@ using ResultOption = visited_url_ranking::FetchOptions::ResultOption;
 class HistoryURLVisitDataFetcherTest : public testing::Test {
  public:
   HistoryURLVisitDataFetcherTest() {
-    clock_.SetNow(kTodayMidOfDay + base::Hours(2));
+    clock_.SetNow(base::Time::Now());
 
     mock_history_service_ = std::make_unique<MockHistoryService>();
 
@@ -308,11 +315,11 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(SampleScenario_OverlappingTimeGroup(),
                       SampleScenario_NonOverlappingTimeGroup()));
 
-// TODO(crbug.com356853232): Refactor flaky test.
-TEST_P(HistoryURLVisitDataFetcherDataTest,
-       DISABLED_FetchURLVisitData_AggregateCounts) {
+TEST_P(HistoryURLVisitDataFetcherDataTest, FetchURLVisitData_AggregateCounts) {
   const auto scenario = GetParam();
+  clock_.SetNow(scenario.current_time);
   SetHistoryServiceExpectations(GetSampleAnnotatedVisitsForScenario(scenario));
+
   auto result = FetchAndGetResult(GetSampleFetchOptions());
   EXPECT_EQ(result.status, FetchResult::Status::kSuccess);
   EXPECT_EQ(result.data.size(), 1u);
