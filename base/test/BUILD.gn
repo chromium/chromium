@@ -556,6 +556,7 @@ if (enable_base_tracing) {
   perfetto_cc_proto_descriptor("gen_cc_chrome_track_event_descriptor") {
     descriptor_name = "chrome_track_event.descriptor"
     descriptor_target = "//base/tracing/protos:chrome_track_event"
+    namespace = "base::testing"
   }
 
   import("//base/tracing/stdlib/chrome/perfetto_sql_files.gni")
