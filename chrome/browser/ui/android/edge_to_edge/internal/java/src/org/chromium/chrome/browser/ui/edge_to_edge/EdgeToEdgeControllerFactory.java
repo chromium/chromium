@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -69,6 +70,8 @@ public class EdgeToEdgeControllerFactory {
      * Build the coordinator that manages the edge-to-edge bottom chin.
      *
      * @param androidView The Android view for the bottom chin.
+     * @param keyboardVisibilityDelegate A {@link KeyboardVisibilityDelegate} for watching keyboard
+     *     visibility events.
      * @param layoutManager The {@link LayoutManager} for adding new scene overlays.
      * @param edgeToEdgeController The {@link EdgeToEdgeController} for observing the edge-to-edge
      *     status and window bottom insets.
@@ -79,6 +82,7 @@ public class EdgeToEdgeControllerFactory {
      */
     public static Destroyable createBottomChin(
             View androidView,
+            KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             LayoutManager layoutManager,
             EdgeToEdgeController edgeToEdgeController,
             NavigationBarColorProvider navigationBarColorProvider,
@@ -86,6 +90,7 @@ public class EdgeToEdgeControllerFactory {
         assert isEdgeToEdgeBottomChinEnabled();
         return new EdgeToEdgeBottomChinCoordinator(
                 androidView,
+                keyboardVisibilityDelegate,
                 layoutManager,
                 edgeToEdgeController,
                 navigationBarColorProvider,

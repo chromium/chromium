@@ -1145,6 +1145,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     protected Destroyable createEdgeToEdgeBottomChin() {
         return EdgeToEdgeControllerFactory.createBottomChin(
                 mActivity.findViewById(R.id.edge_to_edge_bottom_chin),
+                mWindowAndroid.getKeyboardDelegate(),
                 mLayoutManager,
                 mEdgeToEdgeControllerSupplier.get(),
                 mSystemUiCoordinator.getNavigationBarColorController(),

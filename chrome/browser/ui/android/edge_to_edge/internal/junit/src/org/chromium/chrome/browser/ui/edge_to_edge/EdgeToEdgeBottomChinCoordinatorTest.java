@@ -18,11 +18,13 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class EdgeToEdgeBottomChinCoordinatorTest {
     @Mock private View mView;
+    @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private LayoutManager mLayoutManager;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private BottomControlsStacker mBottomControlsStacker;
@@ -39,6 +41,7 @@ public class EdgeToEdgeBottomChinCoordinatorTest {
         EdgeToEdgeBottomChinCoordinator coordinator =
                 new EdgeToEdgeBottomChinCoordinator(
                         mView,
+                        mKeyboardVisibilityDelegate,
                         mLayoutManager,
                         mEdgeToEdgeController,
                         mNavigationBarColorProvider,

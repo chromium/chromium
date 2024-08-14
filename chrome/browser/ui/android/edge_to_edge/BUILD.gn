@@ -48,6 +48,7 @@ android_library_factory("factory_java") {
     "//chrome/browser/ui/android/layouts:java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_utils_java",
   ]
 
   # This internal file will be replaced by a generated file so the resulting
