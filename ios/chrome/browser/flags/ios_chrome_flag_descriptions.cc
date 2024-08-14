@@ -437,12 +437,6 @@ const char kEnableFollowUIUpdateName[] = "Enable the Follow UI Update";
 const char kEnableFollowUIUpdateDescription[] =
     "Enable Follow UI Update for the Feed.";
 
-const char kEnableTraitCollectionRegistrationName[] =
-    "Enable Customizable Trait Registration";
-const char kEnableTraitCollectionRegistrationDescription[] =
-    "When enabled, UI elements will only observe and respond to the UITraits "
-    "to which they have been registered.";
-
 const char kEnableiPadFeedGhostCardsName[] = "Enable ghost cards on iPad feeds";
 const char kEnableiPadFeedGhostCardsDescription[] =
     "Enables ghost cards placeholder when feed is loading on iPads.";

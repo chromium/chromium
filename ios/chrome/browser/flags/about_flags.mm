@@ -1948,10 +1948,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPageInfoLastVisitedIOSName,
      flag_descriptions::kPageInfoLastVisitedIOSDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kPageInfoLastVisitedIOS)},
-    {"enable-trait-collection-registration",
-     flag_descriptions::kEnableTraitCollectionRegistrationName,
-     flag_descriptions::kEnableTraitCollectionRegistrationDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableTraitCollectionRegistration)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

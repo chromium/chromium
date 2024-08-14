@@ -751,9 +751,4 @@ extern const base::FeatureParam<base::TimeDelta>
 extern const base::FeatureParam<base::TimeDelta>
     kIdentityConfirmationMinTimeSinceSignin;
 
-// Feature flag to enable the registration of customized UITrait arrays. This
-// feature flag is related to the effort to remove invocations of
-// 'traitCollectionDidChange' which was deprecated in iOS 17.
-BASE_DECLARE_FEATURE(kEnableTraitCollectionRegistration);
-
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
