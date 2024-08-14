@@ -546,6 +546,9 @@ void ViewAccessibility::SetIsEditable(bool editable) {
 }
 
 void ViewAccessibility::SetBounds(const gfx::RectF& bounds) {
+  if (bounds == data_.relative_bounds.bounds) {
+    return;
+  }
   data_.relative_bounds.bounds = bounds;
   NotifyEvent(ax::mojom::Event::kLocationChanged, false);
 }
@@ -840,6 +843,9 @@ void ViewAccessibility::RemoveContainerLiveStatus() {
 }
 
 void ViewAccessibility::SetValue(const std::string& value) {
+  if (value == data_.GetStringAttribute(ax::mojom::StringAttribute::kValue)) {
+    return;
+  }
   data_.AddStringAttribute(ax::mojom::StringAttribute::kValue, value);
   NotifyEvent(ax::mojom::Event::kValueChanged, true);
 }
