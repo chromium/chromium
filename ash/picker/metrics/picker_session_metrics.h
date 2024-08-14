@@ -37,7 +37,13 @@ class ASH_EXPORT PickerSessionMetrics {
     kRedirected = 3,
     // User selects an action related to text format.
     kFormat = 4,
-    kMaxValue = kFormat,
+    // User opens a file.
+    kOpenFile = 5,
+    // User opens a link.
+    kOpenLink = 6,
+    // User creates a google workspace file or webpage.
+    kCreate = 7,
+    kMaxValue = kCreate,
   };
 
   PickerSessionMetrics();

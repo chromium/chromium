@@ -1222,6 +1222,9 @@
     <variant value="2">ABANDONED</variant>
     <variant value="3">REDIRECTED</variant>
     <variant value="4">FORMAT</variant>
+    <variant value="5">OPEN_FILE</variant>
+    <variant value="6">OPEN_LINK</variant>
+    <variant value="7">CREATE</variant>
   </enum>
 
   <enum name="PickerAction">

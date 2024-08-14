@@ -465,13 +465,19 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
           [](const PickerSearchResult::ClipboardData& data) {
             NOTREACHED_NORETURN();
           },
-          [](const PickerSearchResult::BrowsingHistoryData& data) {
+          [&](const PickerSearchResult::BrowsingHistoryData& data) {
+            session_metrics_->SetOutcome(
+                PickerSessionMetrics::SessionOutcome::kOpenLink);
             OpenLink(data.url);
           },
-          [](const PickerSearchResult::LocalFileData& data) {
+          [&](const PickerSearchResult::LocalFileData& data) {
+            session_metrics_->SetOutcome(
+                PickerSessionMetrics::SessionOutcome::kOpenFile);
             OpenFile(data.file_path);
           },
-          [](const PickerSearchResult::DriveFileData& data) {
+          [&](const PickerSearchResult::DriveFileData& data) {
+            session_metrics_->SetOutcome(
+                PickerSessionMetrics::SessionOutcome::kOpenLink);
             OpenLink(data.url);
           },
           [](const PickerSearchResult::CategoryData& data) {
@@ -483,7 +489,9 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
           [](const PickerSearchResult::EditorData& data) {
             NOTREACHED_NORETURN();
           },
-          [](const PickerSearchResult::NewWindowData& data) {
+          [&](const PickerSearchResult::NewWindowData& data) {
+            session_metrics_->SetOutcome(
+                PickerSessionMetrics::SessionOutcome::kCreate);
             OpenLink(GetUrlForNewWindow(data.type));
           },
           [&](const PickerSearchResult::CapsLockData& data) {

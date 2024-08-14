@@ -1754,8 +1754,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="0" label="Unknown"/>
   <int value="1" label="User inserts or copies a result."/>
   <int value="2" label="User abandons the session."/>
-  <int value="3" label="User selects an action to open another window."/>
+  <int value="3"
+      label="User selects an action to open another window, e.g. the Emoji
+             picker."/>
   <int value="4" label="User selects an action related to text format."/>
+  <int value="5" label="User opens a file."/>
+  <int value="6" label="User opens a link."/>
+  <int value="7" label="User creates a google workspace file or webpage."/>
 </enum>
 
 <enum name="PinAutosubmitBackfillEvent">

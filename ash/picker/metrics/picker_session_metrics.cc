@@ -90,6 +90,12 @@ cros_events::PickerSessionOutcome ConvertToCrosEventSessionOutcome(
       return cros_events::PickerSessionOutcome::REDIRECTED;
     case PickerSessionMetrics::SessionOutcome::kFormat:
       return cros_events::PickerSessionOutcome::FORMAT;
+    case PickerSessionMetrics::SessionOutcome::kOpenFile:
+      return cros_events::PickerSessionOutcome::OPEN_FILE;
+    case PickerSessionMetrics::SessionOutcome::kOpenLink:
+      return cros_events::PickerSessionOutcome::OPEN_LINK;
+    case PickerSessionMetrics::SessionOutcome::kCreate:
+      return cros_events::PickerSessionOutcome::CREATE;
   }
 }
 

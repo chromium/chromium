@@ -500,6 +500,8 @@ TEST_F(PickerControllerTest, InsertResultDelaysWidgetCloseForAccessibility) {
 }
 
 TEST_F(PickerControllerTest, OpenBrowsingHistoryResult) {
+  controller().ToggleWidget();
+
   EXPECT_CALL(mock_new_window_delegate(), OpenUrl(GURL("http://foo.com"), _, _))
       .Times(1);
 
@@ -508,6 +510,8 @@ TEST_F(PickerControllerTest, OpenBrowsingHistoryResult) {
 }
 
 TEST_F(PickerControllerTest, OpenDriveFileResult) {
+  controller().ToggleWidget();
+
   EXPECT_CALL(mock_new_window_delegate(), OpenUrl(GURL("http://foo.com"), _, _))
       .Times(1);
 
@@ -516,6 +520,8 @@ TEST_F(PickerControllerTest, OpenDriveFileResult) {
 }
 
 TEST_F(PickerControllerTest, OpenLocalFileResult) {
+  controller().ToggleWidget();
+
   EXPECT_CALL(mock_new_window_delegate(), OpenFile(base::FilePath("abc.png")))
       .Times(1);
 
@@ -524,6 +530,8 @@ TEST_F(PickerControllerTest, OpenLocalFileResult) {
 }
 
 TEST_F(PickerControllerTest, OpenNewGoogleDocOpensGoogleDocs) {
+  controller().ToggleWidget();
+
   EXPECT_CALL(mock_new_window_delegate(),
               OpenUrl(GURL("https://docs.new"), _, _))
       .Times(1);
