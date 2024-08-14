@@ -61,12 +61,8 @@ namespace blink {
 // std::numeric_limits<double>::lowest() because, if subtracted, it becomes
 // NaN which will make all following arithmetic NaN too (an unusable number).
 constexpr double kMinDistance = std::numeric_limits<int>::lowest();
-// Assign negative values to the distance value to give the candidate a higher
-// priority.
-// kPriorityClassA is for elements in separate layers such as pop-ups.
-// kPriorityClassB is for intersecting elements.
-constexpr double kPriorityClassA = kMinDistance / 2;
-constexpr double kPriorityClassB = kMinDistance / 4;
+constexpr double kPriorityClassA = kMinDistance;
+constexpr double kPriorityClassB = kMinDistance / 2;
 
 constexpr int kFudgeFactor = 2;
 
@@ -119,38 +115,20 @@ static bool RectsIntersectOnOrthogonalAxis(SpatialNavigationDirection direction,
   }
 }
 
-// Determines if a candidate element is in a specific direction.
-// It has to deal with overlapping situations.
-// See https://github.com/w3c/csswg-drafts/issues/4483 for details.
-
 // Return true if rect |a| is below |b|. False otherwise.
-// For overlapping rects, |a| is considered to be below |b|,
-// if the top edge of |a| is below the top edge of |b|.
+// For overlapping rects, |a| is considered to be below |b|
+// if both edges of |a| are below the respective ones of |b|.
 static inline bool Below(const PhysicalRect& a, const PhysicalRect& b) {
-  return a.Y() >= b.Bottom() || (a.Y() > b.Y() && a.IntersectsInclusively(b));
-}
-
-// Return true if rect |a| is above |b|. False otherwise.
-// For overlapping rects, |a| is considered to be above |b|,
-// if the bottom edge of |a| is above the bottom edge of |b|.
-static inline bool Above(const PhysicalRect& a, const PhysicalRect& b) {
-  return a.Bottom() <= b.Y() ||
-         (a.Bottom() < b.Bottom() && a.IntersectsInclusively(b));
+  return a.Y() >= b.Bottom() || (a.Y() >= b.Y() && a.Bottom() > b.Bottom() &&
+                                 a.X() < b.Right() && a.Right() > b.X());
 }
 
 // Return true if rect |a| is on the right of |b|. False otherwise.
-// For overlapping rects, |a| is considered to be on the right of |b|,
-// if the left edge of |a| is on the right of the left edge of |b|.
+// For overlapping rects, |a| is considered to be on the right of |b|
+// if both edges of |a| are on the right of the respective ones of |b|.
 static inline bool RightOf(const PhysicalRect& a, const PhysicalRect& b) {
-  return a.X() >= b.Right() || (a.X() > b.X() && a.IntersectsInclusively(b));
-}
-
-// Return true if rect |a| is on the left of |b|. False otherwise.
-// For overlapping rects, |a| is considered to be on the left of |b|,
-// if the right edge of |a| is on the left of the right edge of |b|.
-static inline bool LeftOf(const PhysicalRect& a, const PhysicalRect& b) {
-  return a.Right() <= b.X() ||
-         (a.Right() < b.Right() && a.IntersectsInclusively(b));
+  return a.X() >= b.Right() || (a.X() >= b.X() && a.Right() > b.Right() &&
+                                a.Y() < b.Bottom() && a.Bottom() > b.Y());
 }
 
 static bool IsRectInDirection(SpatialNavigationDirection direction,
@@ -158,11 +136,11 @@ static bool IsRectInDirection(SpatialNavigationDirection direction,
                               const PhysicalRect& target_rect) {
   switch (direction) {
     case SpatialNavigationDirection::kLeft:
-      return LeftOf(target_rect, cur_rect);
+      return RightOf(cur_rect, target_rect);
     case SpatialNavigationDirection::kRight:
       return RightOf(target_rect, cur_rect);
     case SpatialNavigationDirection::kUp:
-      return Above(target_rect, cur_rect);
+      return Below(cur_rect, target_rect);
     case SpatialNavigationDirection::kDown:
       return Below(target_rect, cur_rect);
     default:
@@ -652,33 +630,35 @@ double ComputeDistanceDataForNode(SpatialNavigationDirection direction,
   double distance = 0.0;
   PhysicalRect node_rect = candidate.rect_in_root_frame;
   PhysicalRect current_rect = current_interest.rect_in_root_frame;
-  if (node_rect.Contains(current_rect) ||
-      !IsRectInDirection(direction, current_rect, node_rect)) {
-    // When leaving an "insider", don't focus its underlying container box.
+  if (node_rect.Contains(current_rect)) {
+    // When leaving an "insider", don't focus its underlaying container box.
     // Go directly to the outside world. This avoids focus from being trapped
     // inside a container.
     return kMaxDistance;
   }
 
-  if (BothOnTopmostPaintLayerInStackingContext(current_interest, candidate)) {
-    // Prioritize "popup candidates" over other candidates by giving them a
-    // negative, < 0, distance number.
+  if (current_rect.Contains(node_rect)) {
+    // We give highest priority to "insiders", candidates that are completely
+    // inside the current focus rect, by giving them a negative, < 0, distance
+    // number.
     distance = kPriorityClassA;
-  } else if (current_rect.IntersectsInclusively(node_rect)) {
-    // We prioritize intersecting candidates, candidates that overlap
-    // the current focus rect, by giving them a negative, < 0, distance
-    // number. https://drafts.csswg.org/css-nav-1/#select-the-best-candidate
-    distance = kPriorityClassB;
 
-    // For intersecting candidates we cannot measure the distance from the
-    // outer box. Instead, we measure distance _from_ the focused container's
-    // rect's "opposite edge" in the navigated direction, just like we do when
-    // we look for candidates inside a focused scroll container.
+    // For insiders we cannot meassure the distance from the outer box. Instead,
+    // we meassure distance _from_ the focused container's rect's "opposite
+    // edge" in the navigated direction, just like we do when we look for
+    // candidates inside a focused scroll container.
     current_rect = OppositeEdge(direction, current_rect);
 
-    // This candidate overlaps the current focus rect so we can omit the
-    // overlap term of the equation. An "intersecting candidate" will always
-    // win against an "outsider".
+    // This candidate fully overlaps the current focus rect so we can omit the
+    // overlap term of the equation. An "insider" will always win against an
+    // "outsider".
+  } else if (!IsRectInDirection(direction, current_rect, node_rect)) {
+    return kMaxDistance;
+  } else if (BothOnTopmostPaintLayerInStackingContext(current_interest,
+                                                      candidate)) {
+    // Prioritize "popup candidates" over other candidates by giving them a
+    // negative, < 0, distance number.
+    distance = kPriorityClassB;
   }
 
   LayoutPoint exit_point;
