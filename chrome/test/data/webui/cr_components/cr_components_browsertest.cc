@@ -76,6 +76,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2Test,
       "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2Test, NavigationV2) {
+  RunTest("cr_components/certificate_manager/navigation_v2_test.js",
+          "mocha.run()");
+}
+
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, ColorChangeListener) {

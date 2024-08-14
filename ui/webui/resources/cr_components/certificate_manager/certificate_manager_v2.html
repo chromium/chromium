@@ -92,17 +92,17 @@
         selected="[[getSelectedTopLevelPage_(selectedPage_)]]"
         on-iron-activate="onMenuItemActivate_">
       <a id="localMenuItem" role="menuitem" class="cr-nav-menu-item"
-          path="localcerts" href="/localcerts" on-click="onMenuItemClick_">
+          path$="[[pageEnum_.LOCAL_CERTS]]" on-click="onMenuItemClick_">
         <cr-icon icon="cr:computer" class="menu-icon"></cr-icon>
         [[i18n('certificateManagerV2LocalCerts')]]
       </a>
       <a id="clientMenuItem" role="menuitem" class="cr-nav-menu-item"
-          path="clientcerts" href="/clientcerts" on-click="onMenuItemClick_">
+          path$="[[pageEnum_.CLIENT_CERTS]]" on-click="onMenuItemClick_">
         <cr-icon icon="certmanager:card" class="menu-icon"></cr-icon>
         [[i18n('certificateManagerV2ClientCerts')]]
       </a>
       <a id="crsMenuItem" role="menuitem" class="cr-nav-menu-item"
-          path="crscerts" href="/crscerts" on-click="onMenuItemClick_">
+          path$="[[pageEnum_.CRS_CERTS]]" on-click="onMenuItemClick_">
         <cr-icon icon="cr:chrome-product" class="menu-icon"></cr-icon>
         [[i18n('certificateManagerV2CRSCerts')]]
       </a>
@@ -112,7 +112,8 @@
   <cr-page-selector id="main" attr-for-selected="path"
       selected="[[selectedPage_]]">
 
-    <div id="clientCertSection" class="cr-centered-card-container" path="clientcerts">
+    <div id="clientCertSection" class="cr-centered-card-container"
+        path$="[[pageEnum_.CLIENT_CERTS]]">
       <h2>[[i18n('certificateManagerV2ClientCerts')]]</h2>
       [[i18n("certificateManagerV2ClientCertsDescription")]]
 
@@ -151,7 +152,8 @@
       </div>
     </div>
 
-    <div id="localCertSection" class="cr-centered-card-container" path="localcerts">
+    <div id="localCertSection" class="cr-centered-card-container"
+        path$="[[pageEnum_.LOCAL_CERTS]]">
       <h2>[[i18n('certificateManagerV2LocalCerts')]]</h2>
       [[i18n("certificateManagerV2LocalCertsDescription")]]
 
@@ -209,7 +211,8 @@
     </div>
 
     <!-- Chrome Root Store section -->
-    <div id="crsCertSection" class="cr-centered-card-container" path="crscerts">
+    <div id="crsCertSection" class="cr-centered-card-container"
+        path$="[[pageEnum_.CRS_CERTS]]">
       <h2>[[i18n('certificateManagerV2CRSCerts')]]</h2>
       [[i18n("certificateManagerV2CRSCertsDescription")]]
       <a href="[[crsLearnMoreUrl_]]" target="_blank"
@@ -225,7 +228,8 @@
       </certificate-list-v2>
     </div>
 
-    <certificate-subpage-v2 id="adminCertsSection" path="admincerts"
+    <certificate-subpage-v2 id="adminCertsSection"
+        path$="[[pageEnum_.ADMIN_CERTS]]"
         class="cr-centered-card-container"
         on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
         navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
@@ -233,7 +237,8 @@
         subpage-cert-lists="[[enterpriseSubpageLists_]]">
     </certificate-subpage-v2>
 
-    <certificate-subpage-v2 id="platformCertsSection" path="platformcerts"
+    <certificate-subpage-v2 id="platformCertsSection"
+        path$="[[pageEnum_.PLATFORM_CERTS]]"
         class="cr-centered-card-container"
         on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
         navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
@@ -242,7 +247,7 @@
     </certificate-subpage-v2>
 
     <certificate-subpage-v2 id="platformClientCertsSection"
-        path="platformclientcerts"
+        path$="[[pageEnum_.PLATFORM_CLIENT_CERTS]]"
         class="cr-centered-card-container"
         on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
         navigate-back-target="[[pageEnum_.CLIENT_CERTS]]"

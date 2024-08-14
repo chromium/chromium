@@ -46,14 +46,15 @@ import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
 import type {CertificatePasswordDialogElement} from './certificate_password_dialog.js';
 import type {CertificateSubpageV2Element, SubpageCertificateList} from './certificate_subpage_v2.js';
 import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
-import {Page} from './navigation_v2.js';
+import type {Route} from './navigation_v2.js';
+import {Page, RouteObserverMixin, Router} from './navigation_v2.js';
 
 interface PasswordResult {
   password: string|null;
 }
 
 const CertificateManagerV2ElementBase =
-    CrContainerShadowMixin(I18nMixin(PolymerElement));
+    RouteObserverMixin(CrContainerShadowMixin(I18nMixin(PolymerElement)));
 
 export interface CertificateManagerV2Element {
   $: {
@@ -205,7 +206,7 @@ export class CertificateManagerV2Element extends
     };
   }
 
-  private selectedPage_: Page = Page.LOCAL_CERTS;
+  private selectedPage_: Page;
   private toastMessage_: string;
   private showInfoDialog_: boolean = false;
   private infoDialogTitle_: string;
@@ -294,8 +295,9 @@ export class CertificateManagerV2Element extends
     e.preventDefault();
   }
 
-  private switchToPage_(page: Page) {
-    this.selectedPage_ = page;
+  override currentRouteChanged(route: Route, _: Route): void {
+    this.selectedPage_ = route.page;
+
     switch (this.selectedPage_) {
       case Page.ADMIN_CERTS:
       case Page.PLATFORM_CERTS:
@@ -315,7 +317,7 @@ export class CertificateManagerV2Element extends
   private onMenuItemActivate_(e: CustomEvent<{item: HTMLElement}>) {
     const page = e.detail.item.getAttribute('path');
     assert(page, 'Page is not available');
-    this.switchToPage_(page as Page);
+    Router.getInstance().navigateTo(page as Page);
   }
 
   private getSelectedTopLevelPage_(): string {
@@ -332,24 +334,24 @@ export class CertificateManagerV2Element extends
 
   private onPlatformCertsLinkRowClick_(e: Event) {
     e.preventDefault();
-    this.switchToPage_(Page.PLATFORM_CERTS);
+    Router.getInstance().navigateTo(Page.PLATFORM_CERTS);
     this.$.platformCertsSection.setInitialFocus();
   }
 
   private onClientPlatformCertsLinkRowClick_(e: Event) {
     e.preventDefault();
-    this.switchToPage_(Page.PLATFORM_CLIENT_CERTS);
+    Router.getInstance().navigateTo(Page.PLATFORM_CLIENT_CERTS);
     this.$.platformClientCertsSection.setInitialFocus();
   }
 
   private onAdminCertsInstalledLinkRowClick_(e: Event) {
     e.preventDefault();
-    this.switchToPage_(Page.ADMIN_CERTS);
+    Router.getInstance().navigateTo(Page.ADMIN_CERTS);
     this.$.adminCertsSection.setInitialFocus();
   }
 
   private onNavigateBack_(e: CustomEvent<{target: Page}>) {
-    this.switchToPage_(e.detail.target);
+    Router.getInstance().navigateTo(e.detail.target);
     focusWithoutInk(this.$.localMenuItem);
   }
 
