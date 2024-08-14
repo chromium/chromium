@@ -1864,10 +1864,10 @@ bool AttributionStorageSql::CreateSchema() {
   // trigger was registered, and should be used for clearing site data.
   // |report_time| is the time a <report, source> pair should be
   // reported, and is specified by |delegate_|.
-  // |context_origin| is the origin that secondarily owns the report for
-  // data-deletion purposes. For real reports, it is the destination origin on
-  // which the trigger was registered. For fake reports, it is the source
-  // origin.
+  // |context_origin| is the origin where the report was created. For
+  // real reports and null reports, it is the destination origin on which the
+  // trigger was registered. For fake event-level reports, it is the source
+  // origin. Used for checking settings and included in aggregatable reports.
   // |reporting_origin| is the reporting origin for the report and is the same
   // as the |reporting_origin| of its associated source.
   // |report_type| indicates whether it's an event-level or aggregatable report.
