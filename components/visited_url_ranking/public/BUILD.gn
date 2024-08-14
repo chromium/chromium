@@ -4,6 +4,8 @@
 
 source_set("public") {
   sources = [
+    "decoration.cc",
+    "decoration.h",
     "features.cc",
     "features.h",
     "fetch_options.cc",
