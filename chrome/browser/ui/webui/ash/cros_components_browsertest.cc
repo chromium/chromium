@@ -279,6 +279,18 @@ static constexpr const ComponentTestData kComponentsTestData[] = {
         .component_name = "cros-accordion-item",
         .gtest_name = "CrosAccordionItem",
     },
+    {
+        .script_src =
+            "chrome://resources/cros_components/icon_dropdown/icon-dropdown.js",
+        .component_name = "cros-icon-dropdown",
+        .gtest_name = "CrosIconDropdown",
+    },
+    {
+        .script_src = "chrome://resources/cros_components/icon_dropdown/"
+                      "icon-dropdown-option.js",
+        .component_name = "cros-icon-dropdown-option",
+        .gtest_name = "CrosIconDropdownOption",
+    },
     // TODO(b:332970280): Bring orca-feedback back once we can support safeHTML
     // properly.
     // {
