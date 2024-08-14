@@ -34,7 +34,7 @@ enum class PanelBlockImpressionType {
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml:IOSContextualPanelInfoBlockImpression)
 
 // Values of the UMA IOS.ContextualPanel.DismissedReason histogram. Must be
-// kept up to date with IOSContextualPanelInfoBlockImpression in enums.xml.
+// kept up to date with IOSContextualPanelDismissedReason in enums.xml.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // LINT.IfChange(ContextualPanelDismissedReason)
@@ -59,5 +59,20 @@ enum class EntrypointInteractionType {
   kMaxValue = Tapped,
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml:IOSContextualPanelEntrypointInteractionType)
+
+// Values of the UMA IOS.ContextualPanel.IPH.DismissedReason histogram (IPH here
+// is an acronym for in-product help). Must be kept up to date with
+// IOSContextualPanelIPHDismissedReason in enums.xml. These values are persisted
+// to logs. Entries should not be renumbered and numeric values should never be
+// reused.
+// LINT.IfChange(ContextualPanelIPHDismissedReason)
+enum class ContextualPanelIPHDismissedReason {
+  Other = 0,
+  UserDismissed = 1,
+  TimedOut = 2,
+  UserInteracted = 3,  // The user clicked on the IPH or the entrypoint.
+  kMaxValue = UserInteracted,
+};
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:IOSContextualPanelIPHDismissedReason)
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_UTILS_CONTEXTUAL_PANEL_METRICS_H_

@@ -13231,6 +13231,18 @@ Called by update_permissions_policy_enum.py.-->
 
 <!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h:PanelBlockImpressionType) -->
 
+<!-- LINT.IfChange(ContextualPanelIPHDismissedReason) -->
+
+<enum name="IOSContextualPanelIPHDismissedReason">
+  <int value="0" label="Other/unknown, such as switching tabs"/>
+  <int value="1"
+      label="User dismissed (swiped IPH or tapped outside web content area)"/>
+  <int value="2" label="Timed out"/>
+  <int value="3" label="User clicked IPH or entrypoint"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h:ContextualPanelIPHDismissedReason) -->
+
 <!-- LINT.IfChange(IOSContextualPanelItemType) -->
 
 <enum name="IOSContextualPanelItemType">

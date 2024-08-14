@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_coordinator.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
+#import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_coordinator.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/default_browser_promo_non_modal_commands.h"
@@ -1570,7 +1571,6 @@ enum class ToolbarKind {
   return webStateList ? webStateList->GetActiveWebState() : nullptr;
 }
 
-// TODO(crbug.com/343734676): Add metrics per dismissal reason type.
 - (void)contextualPanelEntrypointIPHDidDismissWithConfig:
             (base::WeakPtr<ContextualPanelItemConfiguration>)config
                                          dismissalReason:
@@ -1598,6 +1598,8 @@ enum class ToolbarKind {
   if (IPHDismissalReasonType == IPHDismissalReasonType::kTappedAnchorView ||
       IPHDismissalReasonType == IPHDismissalReasonType::kTappedIPH) {
     [self openContextualSheet];
+    [self recordContextualPanelEntrypointIPHDismissed:
+              ContextualPanelIPHDismissedReason::UserInteracted];
     return;
   }
 
@@ -1606,7 +1608,25 @@ enum class ToolbarKind {
       IPHDismissalReasonType == IPHDismissalReasonType::kTappedClose) {
     engagementTracker->NotifyEvent(
         config_ptr->iph_entrypoint_explicitly_dismissed);
+    [self recordContextualPanelEntrypointIPHDismissed:
+              ContextualPanelIPHDismissedReason::UserDismissed];
+    return;
   }
+
+  if (IPHDismissalReasonType == IPHDismissalReasonType::kTimedOut) {
+    [self recordContextualPanelEntrypointIPHDismissed:
+              ContextualPanelIPHDismissedReason::TimedOut];
+    return;
+  }
+
+  [self recordContextualPanelEntrypointIPHDismissed:
+            ContextualPanelIPHDismissedReason::Other];
+}
+
+- (void)recordContextualPanelEntrypointIPHDismissed:
+    (ContextualPanelIPHDismissedReason)dismissalReason {
+  base::UmaHistogramEnumeration("IOS.ContextualPanel.IPH.DismissedReason",
+                                dismissalReason);
 }
 
 #pragma mark - ActivityServiceCommands

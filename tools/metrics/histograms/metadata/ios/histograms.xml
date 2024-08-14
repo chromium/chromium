@@ -516,6 +516,16 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualPanelItemType" variants="ContextualPanelItemType"/>
 </histogram>
 
+<histogram name="IOS.ContextualPanel.IPH.DismissedReason"
+    enum="IOSContextualPanelIPHDismissedReason" expires_after="2025-06-30">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The reason the Contextual Panel's entrypoint in-product help (IPH) was
+    dismissed.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ContextualPanel.Model.InfoBlocksWithContentCount"
     units="count" expires_after="2025-06-30">
   <owner>rkgibson@google.com</owner>
