@@ -648,19 +648,35 @@ NSMutableAttributedString* CreateSiteNameLabelAttributedText(
   return attributedString;
 }
 
-void GiveAccessibilityContextToCellAndButton(TableViewCell* cell,
+void GiveAccessibilityContextToCellAndButton(UIView* cell_container,
                                              UIButton* overflow_menu_button,
                                              UIButton* autofill_form_button,
                                              NSString* accessibility_context) {
-  CHECK(cell);
+  CHECK(cell_container);
   CHECK(overflow_menu_button);
   CHECK(autofill_form_button);
 
-  cell.accessibilityLabel = accessibility_context;
+  cell_container.accessibilityLabel = accessibility_context;
   overflow_menu_button.accessibilityLabel = l10n_util::GetNSStringF(
       IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL,
       base::SysNSStringToUTF16(accessibility_context));
   autofill_form_button.accessibilityLabel = l10n_util::GetNSStringF(
       IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_ACCESSIBILITY_LABEL,
       base::SysNSStringToUTF16(accessibility_context));
+}
+
+void SetUpCellAccessibilityElements(TableViewCell* cell,
+                                    NSArray<UIView*>* accessibilityElements) {
+  // If the Keyboard Accessory Upgrade feature is disabled, keep the default
+  // accessibility behaviour.
+  if (!IsKeyboardAccessoryUpgradeEnabled()) {
+    return;
+  }
+
+  // The following two lines are needed to make the cell as a container, as well
+  // as its content, accessible.
+  cell.isAccessibilityElement = NO;
+  cell.contentView.isAccessibilityElement = YES;
+
+  cell.accessibilityElements = accessibilityElements;
 }
