@@ -49,7 +49,8 @@ class CONTENT_EXPORT PrefetchMatchResolver
   // Remove all of the prefetches from `in_progress_prefetch_matches_` and let
   // the browser know to fallback to regular navigation instead.
   void FallbackToRegularNavigationWhenMatchedPrefetchCookiesChanged(
-      PrefetchContainer& prefetch_container);
+      PrefetchContainer& prefetch_container,
+      const GURL& navigated_url);
   void WaitForPrefetch(PrefetchContainer& prefetch_container);
   void EndWaitForPrefetch(const GURL& prefetch_url);
   // Check if we are waiting already for the head of this `prefetch_container`.

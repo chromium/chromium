@@ -1314,7 +1314,8 @@ void PrefetchContainer::OnGetPrefetchToServe(bool blocked_until_head) {
   }
 }
 
-void PrefetchContainer::OnReturnPrefetchToServe(bool served) {
+void PrefetchContainer::OnReturnPrefetchToServe(bool served,
+                                                const GURL& navigated_url) {
   if (served) {
     UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.AfterClick.RedirectChainSize",
                              redirect_chain_.size());
@@ -1326,6 +1327,29 @@ void PrefetchContainer::OnReturnPrefetchToServe(bool served) {
         prefetch_type_,
         base::TimeTicks::Now() - blocked_until_head_start_time_.value(),
         served);
+  }
+
+  // Note that `PreloadingAttemptImpl::SetIsAccurateTriggering()` is called for
+  // prefetch in
+  //
+  // - A. `PreloadingDataImpl::DidStartNavigation()`
+  // - B. Here
+  //
+  // A covers prefetches that satisfy `bool(GetNonRedirectHead())` at that
+  // timing. B covers almost all ones that were once potentially matching to the
+  // navigation, including that was `kBlockUntilHead` state.
+  //
+  // Note that multiple calls are safe and set a correct value.
+  //
+  // Historical note: Before No-Vary-Search hint, the decision to use a
+  // prefetched response was made at A. With No-Vary-Search hint the decision to
+  // use an in-flight prefetched response is delayed until the headers are
+  // received from the server. This happens after `DidStartNavigation()`. At
+  // this point in the code we have already decided we are going to use the
+  // prefetch, so we can safely call `SetIsAccurateTriggering()`.
+  if (auto attempt = preloading_attempt()) {
+    static_cast<PreloadingAttemptImpl*>(attempt.get())
+        ->SetIsAccurateTriggering(navigated_url);
   }
 }
 

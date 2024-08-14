@@ -321,6 +321,7 @@ class CONTENT_EXPORT PrefetchService {
   // the cookie copy process for the given prefetch if needed, and updates its
   // state.
   HandlePrefetchContainerResult ReturnPrefetchToServe(
+      const PrefetchContainer::Key& key,
       const GURL& prefetch_url,
       PrefetchContainer::Reader reader,
       PrefetchMatchResolver& prefetch_match_resolver,
