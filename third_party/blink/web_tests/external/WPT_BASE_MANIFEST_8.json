@@ -9465,6 +9465,13 @@
     }
    },
    "console": {
+    "console-count-logging-manual.html": [
+     "640729f1a2164ed2ab7258481341ce4109b19726",
+     [
+      null,
+      {}
+     ]
+    ],
     "console-countReset-logging-manual.html": [
      "f0a9358fba5d74b82bb39000d5d42f18d6ea2795",
      [
@@ -146177,7 +146184,7 @@
      },
      "text-box-trim": {
       "text-box-trim-accumulation-001.html": [
-       "d3b26de1620aff831ccd70ee5c7b201d298f0982",
+       "d79c70764884004a6f8b81966e1f480079fa521d",
        [
         null,
         [
@@ -146320,7 +146327,7 @@
        ]
       ],
       "text-box-trim-end-001.html": [
-       "0f6c277d9b7530e7ff3a3951b6511aba9bd4c1b2",
+       "1240eccb7743c9ceaf0bb70757ec27d7ed7e3720",
        [
         "css/css-inline/text-box-trim/text-box-trim-end-001.html?class=alphabetic",
         [
@@ -146332,10 +146339,10 @@
         {}
        ],
        [
-        "css/css-inline/text-box-trim/text-box-trim-end-001.html?class=leading",
+        "css/css-inline/text-box-trim/text-box-trim-end-001.html?class=auto",
         [
          [
-          "/css/css-inline/text-box-trim/text-box-trim-end-001-ref.html?class=leading",
+          "/css/css-inline/text-box-trim/text-box-trim-end-001-ref.html?class=auto",
           "=="
          ]
         ],
@@ -146346,6 +146353,16 @@
         [
          [
           "/css/css-inline/text-box-trim/text-box-trim-end-001-ref.html?class=text",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-inline/text-box-trim/text-box-trim-end-001.html?class=vlr,auto",
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-end-001-ref.html?class=vlr,auto",
           "=="
          ]
         ],
@@ -146372,16 +146389,6 @@
         {}
        ],
        [
-        "css/css-inline/text-box-trim/text-box-trim-end-001.html?class=vlr,leading",
-        [
-         [
-          "/css/css-inline/text-box-trim/text-box-trim-end-001-ref.html?class=vlr,leading",
-          "=="
-         ]
-        ],
-        {}
-       ],
-       [
         "css/css-inline/text-box-trim/text-box-trim-end-001.html?class=vlr,text",
         [
          [
@@ -146402,10 +146409,10 @@
         {}
        ],
        [
-        "css/css-inline/text-box-trim/text-box-trim-end-001.html?class=vrl,leading",
+        "css/css-inline/text-box-trim/text-box-trim-end-001.html?class=vrl,auto",
         [
          [
-          "/css/css-inline/text-box-trim/text-box-trim-end-001-ref.html?class=vrl,leading",
+          "/css/css-inline/text-box-trim/text-box-trim-end-001-ref.html?class=vrl,auto",
           "=="
          ]
         ],
@@ -146644,7 +146651,17 @@
        ]
       ],
       "text-box-trim-start-001.html": [
-       "ec5f8bda115c1ed174d2c4286c6f03a6ed6c1452",
+       "d9c8d932e12d473529d28d86a5ce8b9f45b28142",
+       [
+        "css/css-inline/text-box-trim/text-box-trim-start-001.html?class=auto",
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-start-001-ref.html?class=auto",
+          "=="
+         ]
+        ],
+        {}
+       ],
        [
         "css/css-inline/text-box-trim/text-box-trim-start-001.html?class=cap",
         [
@@ -146660,16 +146677,6 @@
         [
          [
           "/css/css-inline/text-box-trim/text-box-trim-start-001-ref.html?class=ex",
-          "=="
-         ]
-        ],
-        {}
-       ],
-       [
-        "css/css-inline/text-box-trim/text-box-trim-start-001.html?class=leading",
-        [
-         [
-          "/css/css-inline/text-box-trim/text-box-trim-start-001-ref.html?class=leading",
           "=="
          ]
         ],
@@ -146696,10 +146703,10 @@
         {}
        ],
        [
-        "css/css-inline/text-box-trim/text-box-trim-start-001.html?class=vlr,leading",
+        "css/css-inline/text-box-trim/text-box-trim-start-001.html?class=vlr,auto",
         [
          [
-          "/css/css-inline/text-box-trim/text-box-trim-start-001-ref.html?class=vlr,leading",
+          "/css/css-inline/text-box-trim/text-box-trim-start-001-ref.html?class=vlr,auto",
           "=="
          ]
         ],
@@ -146710,6 +146717,16 @@
         [
          [
           "/css/css-inline/text-box-trim/text-box-trim-start-001-ref.html?class=vlr,text",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-inline/text-box-trim/text-box-trim-start-001.html?class=vrl,auto",
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-start-001-ref.html?class=vrl,auto",
           "=="
          ]
         ],
@@ -146730,16 +146747,6 @@
         [
          [
           "/css/css-inline/text-box-trim/text-box-trim-start-001-ref.html?class=vrl,ex",
-          "=="
-         ]
-        ],
-        {}
-       ],
-       [
-        "css/css-inline/text-box-trim/text-box-trim-start-001.html?class=vrl,leading",
-        [
-         [
-          "/css/css-inline/text-box-trim/text-box-trim-start-001-ref.html?class=vrl,leading",
           "=="
          ]
         ],
@@ -301520,10 +301527,6 @@
      "8b46969745cd6f32867b33a7179724d4aad5529f",
      []
     ],
-    "console-count-logging-expected.txt": [
-     "c8265234fedb9ea37c607c7761fe117aa7759936",
-     []
-    ],
     "console-is-a-namespace.any.shadowrealm-expected.txt": [
      "f1c2a17f287945caa185475f439de706f11d56b7",
      []
@@ -331613,7 +331616,7 @@
        []
       ],
       "text-box-trim-end-001-ref.html": [
-       "433670fda11201f97ec517456b0e0d58654ad2f2",
+       "dd1bf5f93f8537152d482b6962d9b759374375ba",
        []
       ],
       "text-box-trim-end-empty-line-001-ref.html": [
@@ -331665,7 +331668,7 @@
        []
       ],
       "text-box-trim-start-001-ref.html": [
-       "40067cc592504c4622ded772b545a3e3a29e57dd",
+       "c8bcf3ca06d67380723afa56dc7bf613fb73c2ac",
        []
       ],
       "text-box-trim-tall-line-001-ref.html": [
@@ -404845,7 +404848,7 @@
        []
       ],
       "property-list.js": [
-       "6b4b0da88d3ab761d8a6efe220c6bc3aad7c1cc1",
+       "1d3239a8de283a7e65f15cc8f01c16716052597d",
        []
       ],
       "property-types.js": [
@@ -417510,32 +417513,83 @@
       }
      ]
     ],
-    "idbobjectstore_count.htm": [
-     "6466d580416d3e3dcbe89a9db6825121995f33e4",
+    "idbobjectstore_count.any.js": [
+     "c28ba5caf8188a87858f8cf4741dc67f16eb95a7",
      [
-      null,
-      {}
-     ]
-    ],
-    "idbobjectstore_count2.htm": [
-     "6152eaf76e3f536f008b466c921aead78c32e31c",
+      "IndexedDB/idbobjectstore_count.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.count()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbobjectstore_count3.htm": [
-     "3d5fd17a2267948d5c7d647361bad35deb552b35",
+      "IndexedDB/idbobjectstore_count.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.count()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbobjectstore_count4.htm": [
-     "c328a91e33c193850973661b24e0a1393199d8bd",
+      "IndexedDB/idbobjectstore_count.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.count()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
+      "IndexedDB/idbobjectstore_count.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.count()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbobjectstore_createIndex.any.js": [
@@ -440474,15 +440528,6 @@
     }
    },
    "console": {
-    "console-count-logging.html": [
-     "4cdd607b7f2242652502c1f4123e7d161d95b179",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
     "console-is-a-namespace.any.js": [
      "1756ba6bc1b27d6b9398b4ce078a891b4a4540f5",
      [
@@ -466426,7 +466471,28 @@
      "text-box-trim": {
       "parsing": {
        "inheritance.html": [
-        "5ceea2d133e1e912072b52a0ac64a791d1e4c0cb",
+        "02425be6e657d162f4de0dfa374ed096927b9066",
+        [
+         null,
+         {}
+        ]
+       ],
+       "text-box-edge-computed.html": [
+        "6904e3731aaf7b998c01115ed0fd9acd37cf1b0e",
+        [
+         null,
+         {}
+        ]
+       ],
+       "text-box-edge-invalid.html": [
+        "8799c6f4e64d399205169ebbdc7b673002366433",
+        [
+         null,
+         {}
+        ]
+       ],
+       "text-box-edge-valid.html": [
+        "2c7edca182d3a9cb9471778c0de6327b96c26c29",
         [
          null,
          {}
@@ -466447,27 +466513,6 @@
         ]
        ]
       },
-      "text-box-edge-computed.html": [
-       "50a963297ce430fd0b6c81db1f76e73a3c8aa36e",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-box-edge-invalid.html": [
-       "401f8c61a39346a1438eefafc2d811fc87ca32b3",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-box-edge-valid.html": [
-       "36f37715b9947b8195de1f036e880d8a96d30bfa",
-       [
-        null,
-        {}
-       ]
-      ],
       "text-box-trim-om-001.html": [
        "d46490be2f84306125dec2a81cd8ac2bf2c25992",
        [
