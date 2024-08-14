@@ -41,12 +41,17 @@ struct Subscription {
   array<shopping_service.mojom.BookmarkProductInfo> product_infos;
 };
 
+// TODO(crbug.com/359684270) add more comments and investigate
+// mojo_base.mojom.Time or mojo_base.mojom.JSTime for creation_time
+// and update_time.
 struct ProductSpecificationsSet {
   string uuid;
   string name;
   string creation_time;
   string update_time;
-  array<url.mojom.Url> urls;
+  // Information about each item in the ProductSpecificationsSet
+  // such as URL and title.
+  array<shopping_service.mojom.UrlInfo> url_infos;
 };
 
 // Browser-side handler for requests from WebUI page.

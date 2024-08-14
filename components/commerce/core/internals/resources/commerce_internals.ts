@@ -11,7 +11,7 @@ import {CommerceInternalsApiProxy} from './commerce_internals_api_proxy.js';
 const SUBSCRIPTION_ROWS =
     ['Cluster ID', 'Domain', 'Price', 'Previous Price', 'Product'];
 const PRODUCT_SPECIFICATIONS_ROWS =
-    ['ID', 'Creation Time', 'Update Time', 'Name', 'URLs'];
+    ['ID', 'Creation Time', 'Update Time', 'Name', 'Title', 'URLs'];
 const CLUSTER_ID_COLUMN_IDX = 0;
 const DOMAIN_COLUMN_IDX = 1;
 const CURRENT_PRICE_COLUMN_IDX = 2;
@@ -22,7 +22,8 @@ const UUID_IDX = 0;
 const CREATION_TIME_IDX = 1;
 const UPDATE_TIME_IDX = 2;
 const NAME_IDX = 3;
-const URLS_IDX = 4;
+const TITLE_IDX = 4;
+const URLS_IDX = 5;
 
 function getProxy(): CommerceInternalsApiProxy {
   return CommerceInternalsApiProxy.getInstance();
@@ -219,10 +220,14 @@ function renderProductSpecifications() {
           columns[UPDATE_TIME_IDX]!.textContent =
               productSpecificationsSet[i]!.updateTime;
           columns[NAME_IDX]!.textContent = productSpecificationsSet[i]!.name;
-          for (const url of productSpecificationsSet[i]!.urls) {
-            const div = document.createElement('div');
-            div.textContent = url.url;
-            columns[URLS_IDX]!.appendChild(div);
+          for (const urlInfo of productSpecificationsSet[i]!.urlInfos) {
+            const divTitle = document.createElement('div');
+            divTitle.textContent = urlInfo.title;
+            divTitle.classList.add('product-specs-title');
+            columns[TITLE_IDX]!.appendChild(divTitle);
+            const divUrl = document.createElement('div');
+            divUrl.textContent = urlInfo.url.url;
+            columns[URLS_IDX]!.appendChild(divUrl);
           }
           table.appendChild(row);
         }
@@ -235,10 +240,11 @@ function createProductSpecificationsRow() {
   const creationTimeCell = document.createElement('td');
   const updateTimeCell = document.createElement('td');
   const nameCell = document.createElement('td');
+  const titleCell = document.createElement('td');
   const urlsCell = document.createElement('td');
   const row = document.createElement('tr');
   for (const cell
-           of [uuidCell, creationTimeCell, updateTimeCell, nameCell,
+           of [uuidCell, creationTimeCell, updateTimeCell, nameCell, titleCell,
                urlsCell]) {
     cell.vAlign = 'top';
     row.appendChild(cell);
