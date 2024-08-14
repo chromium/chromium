@@ -12,6 +12,7 @@
 #include <tuple>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/debug/stack_trace.h"
 #include "base/files/file_enumerator.h"
@@ -1348,7 +1349,7 @@ std::string TestLaunchProcess(const CommandLine& cmdline,
   write_pipe.Close();
 
   char buf[512];
-  int n = read_pipe.ReadAtCurrentPos(buf, sizeof(buf));
+  int n = UNSAFE_TODO(read_pipe.ReadAtCurrentPos(buf, sizeof(buf)));
 #if BUILDFLAG(IS_WIN)
   // Closed pipes fail with ERROR_BROKEN_PIPE on Windows, rather than
   // successfully reporting EOF.

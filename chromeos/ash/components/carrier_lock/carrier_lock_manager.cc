@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -351,7 +352,7 @@ void CarrierLockManager::Initialize() {
     base::File file(oem_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
     int64_t length = file.GetLength();
     base::FixedArray<char> buffer(length + 1);
-    file.Read(0, buffer.data(), length);
+    UNSAFE_TODO(file.Read(0, buffer.data(), length));
     buffer[length] = '\0';
     manufacturer_ = buffer.data();
   } else {
@@ -363,7 +364,7 @@ void CarrierLockManager::Initialize() {
     base::File file(model_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
     int64_t length = file.GetLength();
     base::FixedArray<char> buffer(length + 1);
-    file.Read(0, buffer.data(), length);
+    UNSAFE_TODO(file.Read(0, buffer.data(), length));
     buffer[length] = '\0';
     model_ = buffer.data();
   } else {

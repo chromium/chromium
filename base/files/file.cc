@@ -102,7 +102,8 @@ void File::Initialize(const FilePath& path, uint32_t flags) {
 std::optional<size_t> File::Read(int64_t offset, span<uint8_t> data) {
   span<char> chars = base::as_writable_chars(data);
   int size = checked_cast<int>(chars.size());
-  int result = Read(offset, chars.data(), size);
+  // SAFETY: `chars.size()` describes valid portion of `chars.data()`.
+  int result = UNSAFE_BUFFERS(Read(offset, chars.data(), size));
   if (result < 0) {
     return std::nullopt;
   }
@@ -117,7 +118,8 @@ bool File::ReadAndCheck(int64_t offset, span<uint8_t> data) {
 std::optional<size_t> File::ReadAtCurrentPos(span<uint8_t> data) {
   span<char> chars = base::as_writable_chars(data);
   int size = checked_cast<int>(chars.size());
-  int result = ReadAtCurrentPos(chars.data(), size);
+  // SAFETY: `chars.size()` describes valid portion of `chars.data()`.
+  int result = UNSAFE_BUFFERS(ReadAtCurrentPos(chars.data(), size));
   if (result < 0) {
     return std::nullopt;
   }
@@ -132,7 +134,8 @@ bool File::ReadAtCurrentPosAndCheck(span<uint8_t> data) {
 std::optional<size_t> File::Write(int64_t offset, span<const uint8_t> data) {
   span<const char> chars = base::as_chars(data);
   int size = checked_cast<int>(chars.size());
-  int result = Write(offset, chars.data(), size);
+  // SAFETY: `chars.size()` describes valid portion of `chars.data()`.
+  int result = UNSAFE_BUFFERS(Write(offset, chars.data(), size));
   if (result < 0) {
     return std::nullopt;
   }
@@ -147,7 +150,8 @@ bool File::WriteAndCheck(int64_t offset, span<const uint8_t> data) {
 std::optional<size_t> File::WriteAtCurrentPos(span<const uint8_t> data) {
   span<const char> chars = base::as_chars(data);
   int size = checked_cast<int>(chars.size());
-  int result = WriteAtCurrentPos(chars.data(), size);
+  // SAFETY: `chars.size()` describes valid portion of `chars.data()`.
+  int result = UNSAFE_BUFFERS(WriteAtCurrentPos(chars.data(), size));
   if (result < 0) {
     return std::nullopt;
   }

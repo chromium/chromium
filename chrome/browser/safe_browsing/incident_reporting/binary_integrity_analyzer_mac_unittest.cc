@@ -12,6 +12,7 @@
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -43,7 +44,7 @@ bool CorruptFileContent(const base::FilePath& file_path) {
   if (!file.IsValid())
     return false;
   char vec[] = {'\xAA'};
-  return file.Write(text_pos, vec, sizeof(vec)) == sizeof(vec);
+  return UNSAFE_TODO(file.Write(text_pos, vec, sizeof(vec))) == sizeof(vec);
 }
 
 }  // namespace

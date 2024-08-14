@@ -115,12 +115,14 @@ int File::ReadAtCurrentPos(char* data, int size) {
 
 int File::ReadNoBestEffort(int64_t offset, char* data, int size) {
   // TODO(dbeam): trace this separately?
-  return Read(offset, data, size);
+  // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE in header.
+  return UNSAFE_BUFFERS(Read(offset, data, size));
 }
 
 int File::ReadAtCurrentPosNoBestEffort(char* data, int size) {
   // TODO(dbeam): trace this separately?
-  return ReadAtCurrentPos(data, size);
+  // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE in header.
+  return UNSAFE_BUFFERS(ReadAtCurrentPos(data, size));
 }
 
 int File::Write(int64_t offset, const char* data, int size) {
@@ -165,7 +167,8 @@ int File::WriteAtCurrentPos(const char* data, int size) {
 }
 
 int File::WriteAtCurrentPosNoBestEffort(const char* data, int size) {
-  return WriteAtCurrentPos(data, size);
+  // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE in header.
+  return UNSAFE_BUFFERS(WriteAtCurrentPos(data, size));
 }
 
 int64_t File::GetLength() const {

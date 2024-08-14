@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -143,7 +144,7 @@ class ModelDataHolder {
 
     int64_t length = model_file->GetLength();
     CHECK_GE(buffer_size, length);
-    CHECK_EQ(model_file->Read(0, buffer, length), length);
+    CHECK_EQ(UNSAFE_TODO(model_file->Read(0, buffer, length)), length);
   }
 
   void AddModelFiles(base::flat_map<base::FilePath, base::File> model_files) {

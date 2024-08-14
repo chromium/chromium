@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
@@ -76,7 +77,8 @@ std::string ReadCorruptionInfo(const base::FilePath& path_base,
   base::File file(info_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (file.IsValid()) {
     std::string input_js(file_info.size, '\0');
-    if (file_info.size == file.Read(0, std::data(input_js), file_info.size)) {
+    if (file_info.size ==
+        UNSAFE_TODO(file.Read(0, std::data(input_js), file_info.size))) {
       std::optional<base::Value> val = base::JSONReader::Read(input_js);
       if (val && val->is_dict()) {
         std::string* s = val->GetDict().FindString("message");

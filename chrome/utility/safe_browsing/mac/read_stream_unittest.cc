@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -93,7 +94,7 @@ std::unique_ptr<ReadStream> ReadStreamTest<FileReadStreamTest>::CreateStream(
 
   for (size_t i = 0; i < data_size; ++i) {
     char value = i % 255;
-    EXPECT_EQ(1, test_helper_.file.WriteAtCurrentPos(&value, 1));
+    EXPECT_EQ(1, UNSAFE_TODO(test_helper_.file.WriteAtCurrentPos(&value, 1)));
   }
 
   test_helper_.file.Close();

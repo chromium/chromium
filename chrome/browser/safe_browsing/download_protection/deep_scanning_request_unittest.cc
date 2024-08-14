@@ -241,7 +241,7 @@ class DeepScanningRequestTest : public testing::Test {
           temp_dir_.GetPath().AppendASCII(base::StrCat({file_name, ".tmp"}));
       base::File file(current_path,
                       base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-      file.WriteAtCurrentPos(file_name, 7);
+      UNSAFE_TODO(file.WriteAtCurrentPos(file_name, 7));
       secondary_files_.push_back(current_path);
       secondary_files_targets_.push_back(final_path);
     }
@@ -254,8 +254,8 @@ class DeepScanningRequestTest : public testing::Test {
 
     base::File download(download_path_,
                         base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-    download.WriteAtCurrentPos(download_contents.c_str(),
-                               download_contents.size());
+    UNSAFE_TODO(download.WriteAtCurrentPos(download_contents.c_str(),
+                                           download_contents.size()));
     download.Close();
 
     EXPECT_CALL(item_, GetFullPath()).WillRepeatedly(ReturnRef(download_path_));

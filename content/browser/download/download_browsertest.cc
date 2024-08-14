@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -1184,7 +1185,8 @@ class DownloadContentTest : public ContentBrowserTest {
     pattern.resize(kBufferSize);
     data.resize(kBufferSize);
     for (int64_t offset = 0; offset < file_length;) {
-      int bytes_read = file.Read(offset, &data.front(), kBufferSize);
+      int bytes_read =
+          UNSAFE_TODO(file.Read(offset, &data.front(), kBufferSize));
       ASSERT_LT(0, bytes_read);
       ASSERT_GE(kBufferSize, bytes_read);
 
@@ -1343,8 +1345,9 @@ class ParallelDownloadTest : public DownloadContentTest {
               length - offset > kBufferSize ? kBufferSize : length - offset;
           output = TestDownloadHttpResponse::GetPatternBytes(
               parameters.pattern_generator_seed, offset, bytes_to_write);
-          EXPECT_EQ(bytes_to_write,
-                    file.Write(offset, output.data(), bytes_to_write));
+          EXPECT_EQ(
+              bytes_to_write,
+              UNSAFE_TODO(file.Write(offset, output.data(), bytes_to_write)));
           total_bytes += bytes_to_write;
           offset += bytes_to_write;
         }

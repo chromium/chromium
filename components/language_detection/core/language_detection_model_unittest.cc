@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/metrics_hashes.h"
@@ -26,7 +27,7 @@ base::File CreateInvalidModelFile() {
   base::File file(file_path, (base::File::FLAG_CREATE | base::File::FLAG_READ |
                               base::File::FLAG_WRITE |
                               base::File::FLAG_CAN_DELETE_ON_CLOSE));
-  EXPECT_TRUE(file.WriteAtCurrentPos("12345", 5));
+  EXPECT_TRUE(UNSAFE_TODO(file.WriteAtCurrentPos("12345", 5)));
   return file;
 }
 

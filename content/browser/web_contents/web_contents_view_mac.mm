@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #import "base/mac/mac_util.h"
 #import "base/mac/scoped_sending_event.h"
 #import "base/message_loop/message_pump_apple.h"
@@ -60,8 +61,8 @@ namespace {
 // stream.
 void PromiseWriterHelper(const DropData& drop_data, base::File file) {
   DCHECK(file.IsValid());
-  file.WriteAtCurrentPos(drop_data.file_contents.data(),
-                         drop_data.file_contents.length());
+  UNSAFE_TODO(file.WriteAtCurrentPos(drop_data.file_contents.data(),
+                                     drop_data.file_contents.length()));
 }
 
 WebContentsViewMac::RenderWidgetHostViewCreateFunction

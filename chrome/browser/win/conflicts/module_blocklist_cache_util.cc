@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -29,7 +30,7 @@ namespace {
 // Wrapper for base::File::ReadAtCurrentPost() that returns true only if all
 // the requested bytes were succesfully read from the file.
 bool SafeRead(base::File* file, char* data, int size) {
-  return file->ReadAtCurrentPos(data, size) == size;
+  return UNSAFE_TODO(file->ReadAtCurrentPos(data, size)) == size;
 }
 
 // Returns an iterator to the element equal to |value|, or |last| if it can't

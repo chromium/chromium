@@ -9,6 +9,7 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -44,7 +45,8 @@ void ReadLaunchEventsFromFifo(
   std::string data;
   while (true) {
     char buf[4096];
-    int read_count = f.ReadAtCurrentPosNoBestEffort(buf, sizeof buf);
+    int read_count =
+        UNSAFE_TODO(f.ReadAtCurrentPosNoBestEffort(buf, sizeof buf));
     if (read_count) {
       data += std::string(buf, read_count);
       // Assume that at any point the beginning of the data buffer is the start
