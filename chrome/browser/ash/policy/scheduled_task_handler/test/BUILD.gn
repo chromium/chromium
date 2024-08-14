@@ -43,7 +43,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/scheduled_task_handler",
     "//chrome/browser/ash/policy/scheduled_task_handler/test:test_support",

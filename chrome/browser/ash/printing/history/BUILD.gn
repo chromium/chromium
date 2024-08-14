@@ -65,11 +65,22 @@ source_set("unit_tests") {
 
   deps = [
     ":history",
-    "//chrome/browser/ash:test_support",
+    ":print_job_info_proto",
+    ":test_support",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/printing",
     "//chrome/browser/ash/printing:test_support",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/settings",
+    "//components/prefs:test_support",
+    "//components/reporting/client:report_queue",
     "//components/reporting/client:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }
 

@@ -77,7 +77,6 @@ source_set("browser_tests") {
     ":platform_keys",
     ":test_support",
     "//base",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/chromeos",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/policy:test_support",

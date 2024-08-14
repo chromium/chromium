@@ -295,7 +295,6 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/net",
     "//chrome/browser/profiles:profile",

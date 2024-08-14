@@ -57,7 +57,6 @@ source_set("unit_tests") {
     ":rollback_network_config",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/core:test_support",

@@ -48,7 +48,7 @@ source_set("unit_tests") {
     ":off_hours",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/settings:test_support",
     "//chromeos/ash/components/dbus/system_clock",
     "//chromeos/ash/components/policy",

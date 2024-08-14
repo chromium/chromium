@@ -22,7 +22,7 @@ static_library("test_support") {
   public_deps = [
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//components/user_manager",
     "//testing/gmock",
     "//ui/aura",

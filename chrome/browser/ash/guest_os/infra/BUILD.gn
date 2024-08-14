@@ -21,7 +21,6 @@ source_set("unit_tests") {
     ":infra",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/borealis/testing:test_support",
     "//testing/gmock",
     "//testing/gtest",

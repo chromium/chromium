@@ -82,6 +82,8 @@ static_library("test_support") {
     "scoped_testing_cros_settings.h",
   ]
 
+  public_deps = [ "//components/ownership" ]
+
   deps = [
     ":settings",
     "//base",
@@ -93,7 +95,7 @@ static_library("test_support") {
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/session_manager",
@@ -102,7 +104,6 @@ static_library("test_support") {
     "//chromeos/ash/components/settings",
     "//chromeos/dbus/power",
     "//chromeos/dbus/tpm_manager",
-    "//components/ownership",
     "//components/policy/proto",
     "//components/prefs",
     "//components/user_manager",
@@ -110,8 +111,6 @@ static_library("test_support") {
     "//content/test:test_support",
     "//testing/gtest",
   ]
-
-  allow_circular_includes_from = [ "//chrome/test:test_support" ]
 }
 
 source_set("unit_tests") {
