@@ -40,6 +40,9 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver {
       const ReadAnythingSidePanelController&) = delete;
   ~ReadAnythingSidePanelController() override;
 
+  // TODO(https://crbug.com/347770670): remove this.
+  void ResetForTabDiscard();
+
   void AddPageHandlerAsObserver(
       base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler);
   void RemovePageHandlerAsObserver(

@@ -424,6 +424,9 @@ std::unique_ptr<DetachedWebContents> TabStripModel::DetachWebContentsImpl(
   if (create_historical_tab) {
     id = delegate_->CreateHistoricalTab(tab->contents());
   }
+  if (reason == TabStripModelChange::RemoveReason::kDeleted) {
+    tab->DestroyTabFeatures();
+  }
 
   std::unique_ptr<tabs::TabModel> old_data =
       RemoveTabFromIndexImpl(index_at_time_of_removal);

@@ -102,9 +102,7 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
   }
 }
 
-ExtensionSidePanelCoordinator::~ExtensionSidePanelCoordinator() {
-  DeregisterEntry();
-}
+ExtensionSidePanelCoordinator::~ExtensionSidePanelCoordinator() = default;
 
 content::WebContents*
 ExtensionSidePanelCoordinator::GetHostWebContentsForTesting() const {

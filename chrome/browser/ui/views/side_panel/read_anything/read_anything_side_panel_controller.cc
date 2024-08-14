@@ -48,16 +48,18 @@ ReadAnythingSidePanelController::ReadAnythingSidePanelController(
 }
 
 ReadAnythingSidePanelController::~ReadAnythingSidePanelController() {
+  // Inform observers when |this| is destroyed so they can do their own cleanup.
+  for (ReadAnythingSidePanelController::Observer& obs : observers_) {
+    obs.OnSidePanelControllerDestroyed();
+  }
+}
+
+void ReadAnythingSidePanelController::ResetForTabDiscard() {
   auto* current_entry = side_panel_registry_->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   current_entry->RemoveObserver(this);
   side_panel_registry_->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
-
-  // Inform observers when |this| is destroyed so they can do their own cleanup.
-  for (ReadAnythingSidePanelController::Observer& obs : observers_) {
-    obs.OnSidePanelControllerDestroyed();
-  }
 }
 
 void ReadAnythingSidePanelController::AddPageHandlerAsObserver(

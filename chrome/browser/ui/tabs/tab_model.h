@@ -76,6 +76,11 @@ class TabModel final : public SupportsHandles<const TabModel>,
   static std::unique_ptr<content::WebContents> DestroyAndTakeWebContents(
       std::unique_ptr<TabModel> tab_model);
 
+  // When a tab is going to be removed from the tabstrip in preparation for
+  // destruction, `TabFeatures` should be destroyed first to ensure individual
+  // features do not need to handle the situation of existing outside the
+  // context of a tab strip.
+  void DestroyTabFeatures();
   TabFeatures* tab_features() { return tab_features_.get(); }
 
   // Returns a pointer to the parent TabCollection. This method is specifically

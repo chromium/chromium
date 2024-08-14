@@ -1022,9 +1022,15 @@ void SidePanelCoordinator::OnTabStripModelChanged(
     return;
   }
 
-  // Handle removing the previous tab's contextual registry if one exists.
+  // Handle removing the previous tab's contextual registry if one exists. In
+  // the event that the tab was removed for deletion, registry removal is
+  // already handled by SidePanelCoordinator::OnRegistryDestroying
+  bool removed_for_deletion =
+      (change.type() == TabStripModelChange::kRemoved) &&
+      (change.GetRemove()->contents[0].remove_reason ==
+       TabStripModelChange::RemoveReason::kDeleted);
   SidePanelRegistry* old_contextual_registry = nullptr;
-  if (selection.old_contents) {
+  if (!removed_for_deletion && selection.old_contents) {
     old_contextual_registry =
         SidePanelRegistry::GetDeprecated(selection.old_contents);
     if (old_contextual_registry) {

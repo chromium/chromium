@@ -189,7 +189,11 @@ void ExtensionSidePanelManager::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  coordinators_.erase(extension->id());
+  auto it = coordinators_.find(extension->id());
+  if (it != coordinators_.end()) {
+    it->second->DeregisterEntry();
+    coordinators_.erase(extension->id());
+  }
   MaybeRemoveActionItemForExtension(extension);
 }
 

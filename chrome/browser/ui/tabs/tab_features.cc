@@ -155,6 +155,7 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
                                       content::WebContents* new_contents) {
   // This method is transiently used to reset features that do not handle tab
   // discarding themselves.
+  read_anything_side_panel_controller_->ResetForTabDiscard();
   read_anything_side_panel_controller_.reset();
   read_anything_side_panel_controller_ =
       std::make_unique<ReadAnythingSidePanelController>(

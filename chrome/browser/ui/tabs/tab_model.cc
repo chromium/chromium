@@ -214,6 +214,10 @@ std::unique_ptr<content::WebContents> TabModel::DestroyAndTakeWebContents(
   return contents;
 }
 
+void TabModel::DestroyTabFeatures() {
+  tab_features_.reset();
+}
+
 // static
 TabInterface* TabInterface::GetFromContents(
     content::WebContents* web_contents) {
