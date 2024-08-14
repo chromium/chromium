@@ -2708,7 +2708,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2960942820860729477">Aktualisierungsrate</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (Verlängerung gewährt)</translation>
 <translation id="2961695502793809356">Klicken, um weiterzugehen. Gedrückt halten, um den Verlauf aufzurufen</translation>
-<translation id="29618148602069201">Thema</translation>
+<translation id="29618148602069201">Motiv</translation>
 <translation id="2963151496262057773">Das folgende Plug-in reagiert nicht: <ph name="PLUGIN_NAME" />. Möchtest du es anhalten?</translation>
 <translation id="2964193600955408481">WLAN deaktivieren</translation>
 <translation id="2964245677645334031">Nearby Share-Sichtbarkeit</translation>
@@ -3051,7 +3051,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3237871032310650497">Websitedaten für <ph name="SITE_NAME" /> löschen, die auf <ph name="PARTITION_SITE_NAME" /> partitioniert sind?</translation>
 <translation id="3238192140106069382">Verbindung wird hergestellt und geprüft</translation>
 <translation id="3239373508713281971">Zeitlimit entfernt für <ph name="APP_NAME" /></translation>
-<translation id="3240299564104448052">Du bis anscheinend offline.</translation>
+<translation id="3240299564104448052">Du bist anscheinend offline.</translation>
 <translation id="3240426699337459095">Link wurde kopiert.</translation>
 <translation id="3241638166094654466">Zellen in jeder Zeile:</translation>
 <translation id="3241680850019875542">Wähle das Stammverzeichnis der Erweiterung, die gepackt werden soll. Zur Aktualisierung einer Erweiterung wähle außerdem den privaten Schlüssel zur Wiederverwendung.</translation>
@@ -11084,7 +11084,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Kamera und Mikrofon zeichnen auf</translation>
 <translation id="984275831282074731">Zahlungsmethoden</translation>
 <translation id="984705303330760860">Sprachen für die Rechtschreibprüfung hinzufügen</translation>
-<translation id="98515147261107953">Querformat</translation>
+<translation id="98515147261107953">Landschaft</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Allgemein</translation>
 <translation id="987475089238841621">Sprachpakete werden für die Funktion „Automatische Untertitel“ verwendet und auf deinem Gerät gespeichert</translation>

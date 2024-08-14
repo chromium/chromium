@@ -3373,7 +3373,7 @@
 <translation id="3480612136143976912">يمكنك تخصيص حجم ونمط خط الشرح ضمن ميزة "النسخ النصي التلقائي". بعض التطبيقات والمواقع الإلكترونية ستستخدم أيضًا هذا الإعداد.</translation>
 <translation id="3480827850068960424">تم العثور على <ph name="NUM" /> علامات تبويب.</translation>
 <translation id="3481268647794498892">جارٍ الفتح في <ph name="ALTERNATIVE_BROWSER_NAME" /> خلال <ph name="COUNTDOWN_SECONDS" /> ثانية</translation>
-<translation id="348247802372410699">يمكنك اختيار نمط.</translation>
+<translation id="348247802372410699">اختيار نمط</translation>
 <translation id="348268549820508141">التعرُّف على الكلام</translation>
 <translation id="3482719661246593752">بإمكان <ph name="ORIGIN" /> عرض الملفات التالية:</translation>
 <translation id="3484595034894304035">يمكنك تخصيص الخلفية وشاشة الاستراحة والمظهر الداكن وغير ذلك.</translation>
@@ -3447,7 +3447,7 @@
 <translation id="3537099313456411235">‏يمكنك ربط الحساب <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> للوصول إلى ملفات Drive في تطبيق "الملفات".</translation>
 <translation id="3537881477201137177">يمكنك تعديل حجم القرص لاحقًا من خلال "الإعدادات".</translation>
 <translation id="3538066758857505094">‏حدث خطأ أثناء إلغاء تثبيت نظام التشغيل Linux. يُرجى إعادة المحاولة.</translation>
-<translation id="3539537154248488260">عرض أو إخفاء اقتراحات البحث</translation>
+<translation id="3539537154248488260">عرض أو إخفاء الصور المُلهمة</translation>
 <translation id="3540173484406326944">لا تتوفّر أيّ شبكة عبر <ph name="HOST_DEVICE_NAME" />.</translation>
 <translation id="354060433403403521">‏محول AC</translation>
 <translation id="354068948465830244">يمكن أن يؤدي ذلك إلى قراءة بيانات الموقع الإلكتروني وتغييرها</translation>
@@ -4639,7 +4639,7 @@
 <translation id="4411344321892622527">المواقع الإلكترونية غير المسموح لها بالانتقال للأعلى أو للأسفل في محتوى علامات التبويب التي تمّت مشاركتها وتكبيره أو تصغيره</translation>
 <translation id="4411578466613447185">موقّع الشفرة</translation>
 <translation id="4411719918614785832">‏يتم حفظ مفاتيح المرور هذه في Windows Hello على هذا الكمبيوتر. ولا يتم حفظها في حسابك على Google.</translation>
-<translation id="4412544493002546580">بإمكانك إعادة المحاولة أو اختيار إحدى الخلفيات المُلهمة أدناه.</translation>
+<translation id="4412544493002546580">بإمكانك إعادة المحاولة أو اختيار إحدى الصور المُلهمة أدناه.</translation>
 <translation id="4412547955014928315">هل تريد حذف البيانات والأذونات الخاصة بالموقع الإلكتروني <ph name="SITE_NAME" /> وكل المواقع الإلكترونية المدرَجة ضِمنه؟</translation>
 <translation id="4412632005703201014">‏يتم حاليًا نقل بيانات تطبيقات Chrome إلى "تطبيقات الويب التقدّمية". ثبَّتت مؤسستك تطبيق Chrome هذا على متصفِّحك. لفتح "تطبيق الويب التقدّمي" من قائمة التطبيقات، يُرجى التواصل أولاً مع المشرف وطلب إلغاء تثبيت تطبيق Chrome. في هذه الأثناء، يمكنك الانتقال إلى <ph name="EXTENSION_LAUNCH_URL" /> لفتح "<ph name="EXTENSION_NAME" />" على الويب.</translation>
 <translation id="4412698727486357573">مركز المساعدة</translation>
@@ -6370,7 +6370,7 @@
 <translation id="5756163054456765343">مركز المساعدة</translation>
 <translation id="5757187557809630523">المقطع الصوتي التالي</translation>
 <translation id="5758631781033351321">ستظهر لك "قائمة القراءة" هنا</translation>
-<translation id="5759397201362801675">يمكنك اختيار حالة مزاجية.</translation>
+<translation id="5759397201362801675">اختيار أجواء الصورة</translation>
 <translation id="5759728514498647443">يمكن قراءة المستندات التي ترسلها إلى الطباعة عبر <ph name="APP_NAME" /> بواسطة <ph name="APP_NAME" />.</translation>
 <translation id="5760318332127300368">‏حذف بيانات التصفّح (<ph name="URL" />) أيضًا، ما قد يؤدي إلى تسجيل خروجك من Google.com: <ph name="LEARN_MORE" /></translation>
 <translation id="5762787084360227629">‏إدخال معلومات حساب Google</translation>
@@ -7739,7 +7739,7 @@
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="6803766346203101854">يُسمَح لهذا الموقع الإلكتروني بحفظ البيانات على جهازك.</translation>
 <translation id="680488281839478944">توفّر الجهاز الافتراضي "<ph name="DEFAULT_VM_NAME" />"</translation>
-<translation id="6805478749741295868">‏هذه ميزة تجريبية تستخدم الذكاء الاصطناعي (AI) وقد تخطئ في بعض الأحيان.</translation>
+<translation id="6805478749741295868">‏هذه ميزة تجريبية تستخدم الذكاء الاصطناعي (AI) وقد ينشأ عنها نتائج غير دقيقة أحيانًا.</translation>
 <translation id="6805647936811177813">يُرجى تسجيل الدخول إلى <ph name="TOKEN_NAME" /> لاستيراد شهادة العميل من <ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">‏تفعيل تتبع RLZ في <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6806089545527108739">عدم السماح بإرسال الإشعارات والسؤال لاحقًا</translation>
@@ -10896,7 +10896,7 @@
 <translation id="9114663181201435112">تسجيل الدخول بسهولة</translation>
 <translation id="9115675100829699941">إ&amp;شارات مرجعية</translation>
 <translation id="9115932142612197835">‏لا يغيّر هذا الإعداد مدى توفّر ميزتَيْ "ترجمة Google" أو "عدسة Google".</translation>
-<translation id="9116366756388192417">يمكنك اختيار موضوع.</translation>
+<translation id="9116366756388192417">اختيار موضوع</translation>
 <translation id="9116799625073598554">تطبيق تدوين الملاحظات</translation>
 <translation id="9117030152748022724">إدارة تطبيقاتك</translation>
 <translation id="9119587891086680311">‏تستخدِم هذه الميزات الذكاء الاصطناعي (AI) ولا تزال في مرحلة التطوير المبكر، لذا قد تظهر بعض الأخطاء أحيانًا.</translation>
