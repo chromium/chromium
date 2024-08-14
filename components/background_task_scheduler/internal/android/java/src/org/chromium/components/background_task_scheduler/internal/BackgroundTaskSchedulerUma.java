@@ -181,6 +181,8 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
 
     @Override
     public void reportTaskFinished(int taskId, long taskDurationMs) {
+        cacheEvent(
+                "Android.BackgroundTaskScheduler.TaskFinished2", toUmaEnumValueFromTaskId(taskId));
         RecordHistogram.recordCustomTimesHistogram(
                 "Android.BackgroundTaskScheduler.TaskFinished."
                         + getHistogramPatternForTaskId(taskId),

@@ -538,8 +538,11 @@ chromium-metrics-reviews@google.com.
   <owner>knollr@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
-    Records that an exact task has been created. Recorded when the task is
+    Records that an exact task has been created. Cached when the task is
     scheduled.
+
+    Cached to SharedPreferences to be recorded in the next ChromeActivity start
+    instead of recorded immediately on background.
   </summary>
 </histogram>
 
@@ -560,7 +563,12 @@ chromium-metrics-reviews@google.com.
     enum="BackgroundTaskId" expires_after="2025-02-02">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
-  <summary>Records that a specific background task has been canceled.</summary>
+  <summary>
+    Records that a specific background task has been canceled.
+
+    Cached to SharedPreferences to be recorded in the next ChromeActivity start
+    instead of recorded immediately on background.
+  </summary>
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskCreated.WithExpiration"
@@ -570,7 +578,10 @@ chromium-metrics-reviews@google.com.
   <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records that a specific task has been created with an expiration deadline.
-    Recorded when the task is scheduled.
+    Cached when the task is scheduled.
+
+    Cached to SharedPreferences to be recorded in the next ChromeActivity start
+    instead of recorded immediately on background.
   </summary>
 </histogram>
 
@@ -581,7 +592,10 @@ chromium-metrics-reviews@google.com.
   <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records that a specific task has been created without the expiration feature
-    activated. Recorded when the task is scheduled.
+    activated. Cached when the task is scheduled.
+
+    Cached to SharedPreferences to be recorded in the next ChromeActivity start
+    instead of recorded immediately on background.
   </summary>
 </histogram>
 
@@ -591,8 +605,11 @@ chromium-metrics-reviews@google.com.
   <owner>knollr@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
-    Records that a specific background task has expired. Recorded before the
-    task is to be started.
+    Records that a specific background task has expired. Cached before the task
+    is to be started.
+
+    Cached to SharedPreferences to be recorded in the next ChromeActivity start
+    instead of recorded immediately on background.
   </summary>
 </histogram>
 
@@ -603,8 +620,29 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time (uptimeMillis) taken by a background task of type
     {TaskType}. Recorded when the task finished callback is invoked.
+
+    Differs from other Android.BackgroundTaskScheduler histograms in that it is
+    recorded immediately in background, instead of in the next time Chrome is
+    run in foreground, so cannot be directly compared.
   </summary>
   <token key="TaskType" variants="TaskType"/>
+</histogram>
+
+<histogram name="Android.BackgroundTaskScheduler.TaskFinished2"
+    enum="BackgroundTaskId" expires_after="2024-12-08">
+  <owner>hnakashima@chromium.org</owner>
+  <owner>smaier@chromium.org</owner>
+  <summary>
+    Records that a specific background task has finished.
+
+    Cached to SharedPreferences to be recorded in the next ChromeActivity start
+    instead of recorded immediately on background.
+
+    Differs from &quot;TaskFinished&quot; in that it is recorded in the same
+    session as &quot;TaskStarted&quot;, making them comparable for success rate
+    calculations and ensuring they are in the same experiment group (which is
+    not the case for &quot;TaskFinished&quot;).
+  </summary>
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskLoadedNative"
@@ -614,6 +652,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records that a task extending a NativeBackgroundTask started loading the
     native portion of Chrome.
+
+    Cached to SharedPreferences to be recorded in the next ChromeActivity start
+    instead of recorded immediately on background.
   </summary>
 </histogram>
 
@@ -623,6 +664,9 @@ chromium-metrics-reviews@google.com.
   <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records that a specific background task has failed to be scheduled.
+
+    Cached to SharedPreferences to be recorded in the next ChromeActivity start
+    instead of recorded immediately on background.
   </summary>
 </histogram>
 
@@ -632,6 +676,9 @@ chromium-metrics-reviews@google.com.
   <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records that a specific background task has been successfully scheduled.
+
+    Cached to SharedPreferences to be recorded in the next ChromeActivity start
+    instead of recorded immediately on background.
   </summary>
 </histogram>
 
@@ -639,7 +686,12 @@ chromium-metrics-reviews@google.com.
     enum="BackgroundTaskId" expires_after="2024-12-08">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
-  <summary>Records that a specific background task has been started.</summary>
+  <summary>
+    Records that a specific background task has been started.
+
+    Cached to SharedPreferences to be recorded in the next ChromeActivity start
+    instead of recorded immediately on background.
+  </summary>
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskStopped"
@@ -649,6 +701,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records that a specific background task has been stopped by Background Task
     Scheduler before it was able to complete itself.
+
+    Cached to SharedPreferences to be recorded in the next ChromeActivity start
+    instead of recorded immediately on background.
   </summary>
 </histogram>
 
