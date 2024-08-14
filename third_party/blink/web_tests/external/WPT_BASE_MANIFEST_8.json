@@ -128735,7 +128735,7 @@
       ]
      ],
      "variation-sequences.html": [
-      "91e46a84d71cc873e006bd59c328d54c8c614b52",
+      "c1f69a5be5875556b5c64e962169aa9efca19ade",
       [
        null,
        [
@@ -407918,14 +407918,6 @@
       "ad844ec4c80a9367245f2066aa720a337a68f04d",
       []
      ],
-     "triangular.https.any.worker_cpu-expected.txt": [
-      "78461c4776ba1e61d3d0e48ab2e981b8cdf410e9",
-      []
-     ],
-     "triangular.https.any_cpu-expected.txt": [
-      "78461c4776ba1e61d3d0e48ab2e981b8cdf410e9",
-      []
-     ],
      "where.https.any.worker_cpu-expected.txt": [
       "367a47132547637d6059290073c26086cdc2c951",
       []
@@ -466477,6 +466469,13 @@
          {}
         ]
        ],
+       "text-box-computed.html": [
+        "f1d013f50f38fd2686d7b925c237a3b58f26d03a",
+        [
+         null,
+         {}
+        ]
+       ],
        "text-box-edge-computed.html": [
         "6904e3731aaf7b998c01115ed0fd9acd37cf1b0e",
         [
@@ -466498,6 +466497,20 @@
          {}
         ]
        ],
+       "text-box-invalid.html": [
+        "0d34e15889afdb19c074c1869f16561cef5b7c72",
+        [
+         null,
+         {}
+        ]
+       ],
+       "text-box-shorthand.html": [
+        "2c886072a32adb68b7e7022e8a3c9bff08b6982c",
+        [
+         null,
+         {}
+        ]
+       ],
        "text-box-trim-computed.html": [
         "a8a612a5b32eccb885ccbd7f7e71894db3c78936",
         [
@@ -466507,6 +466520,13 @@
        ],
        "text-box-trim-valid.html": [
         "14e03c1e02492055a1f2bdca7397cee12c93ce4e",
+        [
+         null,
+         {}
+        ]
+       ],
+       "text-box-valid.html": [
+        "5863c56f54aa3bb0ed460c33d452fdb3d31e31b1",
         [
          null,
          {}
@@ -589569,6 +589589,13 @@
        ],
        "iframe-loading-eager.html": [
         "8acd99d23d569704a18d0a1cea13cb605b09c438",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe-loading-lazy-adopt-lazy-iframe-from-script-disabled-document.html": [
+        "724e8c1708d9dfc717b0287566f97cbaf0d07493",
         [
          null,
          {}
@@ -748931,7 +748958,7 @@
          ]
         ],
         "error.py": [
-         "ba23e77300042ca08878b7887d09e08f747845dd",
+         "c6c32b88dee99884637e308f9f5e17a3cb1cd480",
          [
           null,
           {}
@@ -748982,7 +749009,7 @@
        },
        "navigation_failed": {
         "navigation_failed.py": [
-         "fcab85fb075dc39a2b73fce0fda98aa02a2b1638",
+         "bf72e6e4278adc364f15f1ab3cbe4f6b7ae100f0",
          [
           null,
           {}
