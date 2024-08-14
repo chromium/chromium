@@ -17,12 +17,14 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_or_edit_tab_group_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_tab_group_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_tab_group_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_tab_group_transition_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_tab_group_view_controller.h"
 #import "ios/web/public/web_state_id.h"
 
 @interface CreateTabGroupCoordinator () <
-    CreateOrEditTabGroupViewControllerDelegate>
+    CreateOrEditTabGroupViewControllerDelegate,
+    CreateTabGroupMediatorDelegate>
 @end
 
 @implementation CreateTabGroupCoordinator {
@@ -82,6 +84,13 @@
                                                   animated:animated];
 }
 
+#pragma mark - CreateTabGroupMediatorDelegate
+
+- (void)createTabGroupMediatorEditedGroupWasExternallyMutated:
+    (CreateTabGroupMediator*)mediator {
+  [self.delegate createOrEditTabGroupCoordinatorDidDismiss:self animated:YES];
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -102,6 +111,7 @@
         initTabGroupEditionWithConsumer:_viewController
                                tabGroup:_tabGroup
                            webStateList:browser->GetWebStateList()];
+    _mediator.delegate = self;
   } else {
     _mediator = [[CreateTabGroupMediator alloc]
         initTabGroupCreationWithConsumer:_viewController
@@ -120,6 +130,7 @@
 }
 
 - (void)stop {
+  [_mediator disconnect];
   _mediator = nil;
 
   [_viewController.presentingViewController

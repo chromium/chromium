@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_creation_mutator.h"
 
 class Browser;
+@protocol CreateTabGroupMediatorDelegate;
 class TabGroup;
 @protocol TabGroupCreationConsumer;
 class WebStateList;
@@ -22,6 +23,9 @@ class WebStateID;
 
 // Mediator to manage the model layer of the tab group creation.
 @interface CreateTabGroupMediator : NSObject <TabGroupCreationMutator>
+
+// The delegate gets notified of lifecycle events.
+@property(nonatomic, weak) id<CreateTabGroupMediatorDelegate> delegate;
 
 // Init the tab group creation mediator with:
 // - `consumer` the UI that will receive updates.
@@ -40,6 +44,9 @@ class WebStateID;
                     (id<TabGroupCreationConsumer>)consumer
                                        tabGroup:(const TabGroup*)tabGroup
                                    webStateList:(WebStateList*)webStateList;
+
+// Disconnects the mediator's dependencies.
+- (void)disconnect;
 
 @end
 
