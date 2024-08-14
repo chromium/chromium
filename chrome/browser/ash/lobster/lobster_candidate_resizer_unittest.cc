@@ -61,24 +61,24 @@ TEST_F(LobsterCandidateResizerTest, InflateImageCallsSnapperProvider) {
                       .message = ""});
           }));
 
-  base::test::TestFuture<std::optional<ash::LobsterImageCandidate>> future;
+  base::test::TestFuture<const ash::LobsterResult&> future;
 
   resizer.InflateImage(
       /*seed=*/kFakeBaseGenerationSeed, /*query=*/"a nice strawberry",
       future.GetCallback());
 
   EXPECT_THAT(future.Get().value(),
-              EqLobsterImageCandidate(
+              testing::ElementsAre(EqLobsterImageCandidate(
                   /*expected_id=*/0,
                   /*expected_bitmap=*/
                   CreateTestBitmap(kFullImageDimensionLength,
                                    kFullImageDimensionLength),
                   /*expected_generation_seed=*/kFakeBaseGenerationSeed,
-                  /*expected_query=*/"a nice strawberry"));
+                  /*expected_query=*/"a nice strawberry")));
 }
 
 TEST_F(LobsterCandidateResizerTest,
-       InflateImageReturnsNullIfSnapperProviderReceivesErrorResponse) {
+       InflateImageReturnsErrorIfSnapperProviderReceivesErrorResponse) {
   MockSnapperProvider snapper_provider;
   LobsterCandidateIdGenerator id_generator;
   ImageFetcher image_fetcher(&snapper_provider, &id_generator);
@@ -101,16 +101,58 @@ TEST_F(LobsterCandidateResizerTest,
                          0, gfx::Size(kFullImageDimensionLength,
                                       kFullImageDimensionLength)),
                      {.status_code = manta::MantaStatusCode::kGenericError,
-                      .message = ""});
+                      .message = "dummy error"});
           }));
 
-  base::test::TestFuture<std::optional<ash::LobsterImageCandidate>> future;
+  base::test::TestFuture<const ash::LobsterResult&> future;
 
   resizer.InflateImage(
       /*seed=*/kFakeBaseGenerationSeed, /*query=*/"a nice strawberry",
       future.GetCallback());
 
   EXPECT_FALSE(future.Get().has_value());
+  EXPECT_EQ(future.Get().error(),
+            ash::LobsterError(/*status_code=*/ash::LobsterErrorCode::kUnknown,
+                              "dummy error"));
+}
+
+TEST_F(LobsterCandidateResizerTest,
+       InflateImageReturnsErrorIfSnapperProviderReturnsEmptyResponse) {
+  MockSnapperProvider snapper_provider;
+  LobsterCandidateIdGenerator id_generator;
+  ImageFetcher image_fetcher(&snapper_provider, &id_generator);
+  LobsterCandidateResizer resizer(&image_fetcher);
+
+  EXPECT_CALL(
+      snapper_provider,
+      Call(base::test::EqualsProto(CreateTestMantaRequest(
+               /*query=*/"a nice strawberry",
+               /*seed=*/kFakeBaseGenerationSeed, /*size=*/
+               gfx::Size(kFullImageDimensionLength, kFullImageDimensionLength),
+               /*num_outputs=*/1)),
+           testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [](const manta::proto::Request& request,
+             net::NetworkTrafficAnnotationTag traffic_annotation,
+             manta::MantaProtoResponseCallback done_callback) {
+            std::move(done_callback)
+                .Run(CreateFakeMantaResponse(
+                         0, gfx::Size(kFullImageDimensionLength,
+                                      kFullImageDimensionLength)),
+                     {.status_code = manta::MantaStatusCode::kOk,
+                      .message = ""});
+          }));
+
+  base::test::TestFuture<const ash::LobsterResult&> future;
+
+  resizer.InflateImage(
+      /*seed=*/kFakeBaseGenerationSeed, /*query=*/"a nice strawberry",
+      future.GetCallback());
+
+  EXPECT_FALSE(future.Get().has_value());
+  EXPECT_EQ(future.Get().error(),
+            ash::LobsterError(/*status_code=*/ash::LobsterErrorCode::kUnknown,
+                              /*message=*/"empty candidate response"));
 }
 
 }  // namespace

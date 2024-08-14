@@ -57,7 +57,7 @@ class LobsterSessionImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(LobsterSessionImplTest, RequestCandidatesWithTwoResults) {
+TEST_F(LobsterSessionImplTest, RequestCandidatesWithThreeResults) {
   auto lobster_client = std::make_unique<MockLobsterClient>();
 
   EXPECT_CALL(*lobster_client,
@@ -80,13 +80,13 @@ TEST_F(LobsterSessionImplTest, RequestCandidatesWithTwoResults) {
 
   LobsterSessionImpl session(std::move(lobster_client));
 
-  base::test::TestFuture<const std::vector<LobsterImageCandidate>&> future;
+  base::test::TestFuture<const LobsterResult&> future;
 
   session.RequestCandidates(/*query=*/"a nice strawberry", /*num_candidates=*/3,
                             future.GetCallback());
 
   EXPECT_THAT(
-      future.Get(),
+      future.Get().value(),
       testing::ElementsAre(
           LobsterImageCandidate(/*expected_id=*/0,
                                 /*expected_image_bytes=*/"a1b2c3",
@@ -99,7 +99,7 @@ TEST_F(LobsterSessionImplTest, RequestCandidatesWithTwoResults) {
                                 /*seed=*/22, /*query=*/"a nice strawberry")));
 }
 
-TEST_F(LobsterSessionImplTest, RequestCandidatesWithEmptyResults) {
+TEST_F(LobsterSessionImplTest, RequestCandidatesReturnsUnknownError) {
   auto lobster_client = std::make_unique<MockLobsterClient>();
 
   EXPECT_CALL(*lobster_client,
@@ -107,17 +107,20 @@ TEST_F(LobsterSessionImplTest, RequestCandidatesWithEmptyResults) {
                                 /*num_candidates=*/1, testing::_))
       .WillOnce(testing::Invoke([](std::string_view query, int num_candidates,
                                    RequestCandidatesCallback done_callback) {
-        std::move(done_callback).Run({});
+        std::move(done_callback)
+            .Run(base::unexpected(
+                LobsterError(LobsterErrorCode::kUnknown, "unknown error")));
       }));
 
   LobsterSessionImpl session(std::move(lobster_client));
 
-  base::test::TestFuture<const std::vector<LobsterImageCandidate>&> future;
+  base::test::TestFuture<const LobsterResult&> future;
 
   session.RequestCandidates(/*query=*/"a nice blueberry", /*num_candidates=*/1,
                             future.GetCallback());
 
-  EXPECT_TRUE(future.Get().empty());
+  EXPECT_EQ(future.Get().error(),
+            LobsterError(LobsterErrorCode::kUnknown, "unknown error"));
 }
 
 TEST_F(LobsterSessionImplTest, CanNotDownloadACandidateBeforeAnyRequest) {
@@ -126,9 +129,9 @@ TEST_F(LobsterSessionImplTest, CanNotDownloadACandidateBeforeAnyRequest) {
   ON_CALL(*lobster_client, InflateCandidate(1, testing::_, testing::_))
       .WillByDefault([](uint32_t seed, std::string_view query,
                         InflateCandidateCallback done_callback) {
-        std::move(done_callback)
-            .Run(std::make_optional<LobsterImageCandidate>(1, "a1b2c3", 30,
-                                                           "a nice raspberry"));
+        std::vector<LobsterImageCandidate> inflated_candidates = {
+            LobsterImageCandidate(1, "a1b2c3", 30, "a nice raspberry")};
+        std::move(done_callback).Run(inflated_candidates);
       });
 
   LobsterSessionImpl session(std::move(lobster_client));
@@ -158,9 +161,8 @@ TEST_F(LobsterSessionImplTest,
       });
 
   LobsterSessionImpl session(std::move(lobster_client));
-  session.RequestCandidates(
-      "a nice strawberry", 2,
-      base::BindOnce([](const std::vector<LobsterImageCandidate>&) {}));
+  session.RequestCandidates("a nice strawberry", 2,
+                            base::BindOnce([](const LobsterResult&) {}));
   RunUntilIdle();
 
   base::test::TestFuture<bool> future;
@@ -192,15 +194,16 @@ TEST_F(LobsterSessionImplTest, CanDownloadACandiateIfIdAvailableInPastRequest) {
           InflateCandidate(/*seed=*/21, testing::_, testing::_))
       .WillByDefault([](uint32_t seed, std::string_view query,
                         InflateCandidateCallback done_callback) {
-        std::move(done_callback)
-            .Run(std::make_optional<LobsterImageCandidate>(1, "a1b2c3", 30,
-                                                           "a nice raspberry"));
+        std::vector<LobsterImageCandidate> inflated_candidates = {
+            LobsterImageCandidate(/*id=*/0, /*image_bytes=*/"a1b2c3",
+                                  /*seed=*/30,
+                                  /*query=*/"a nice strawberry")};
+        std::move(done_callback).Run(std::move(inflated_candidates));
       });
 
   LobsterSessionImpl session(std::move(lobster_client));
-  session.RequestCandidates(
-      "a nice strawberry", 2,
-      base::BindOnce([](const std::vector<LobsterImageCandidate>&) {}));
+  session.RequestCandidates("a nice strawberry", 2,
+                            base::BindOnce([](const LobsterResult&) {}));
   RunUntilIdle();
 
   base::test::TestFuture<bool> future;

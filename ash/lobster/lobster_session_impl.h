@@ -32,9 +32,8 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
                          RequestCandidatesCallback) override;
 
  private:
-  void OnRequestCandidates(
-      RequestCandidatesCallback callback,
-      const std::vector<LobsterImageCandidate>& image_candidates);
+  void OnRequestCandidates(RequestCandidatesCallback callback,
+                           const LobsterResult& image_candidates);
 
   std::unique_ptr<LobsterClient> client_;
 

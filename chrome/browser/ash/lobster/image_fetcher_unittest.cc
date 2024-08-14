@@ -60,14 +60,14 @@ TEST_F(ImageFetcherTest, RequestCandidatesCallSnapperProvider) {
                       .message = ""});
           }));
 
-  base::test::TestFuture<const std::vector<ash::LobsterImageCandidate>&> future;
+  base::test::TestFuture<const ash::LobsterResult&> future;
 
   image_fetcher.RequestCandidates(
       /*query=*/"a lovely cake",
       /*num_candidates=*/2, future.GetCallback());
 
   EXPECT_THAT(
-      future.Get(),
+      future.Get().value(),
       testing::ElementsAre(
           EqLobsterImageCandidate(/*expected_id=*/0,
                                   /*expected_bitmap=*/
@@ -108,14 +108,14 @@ TEST_F(ImageFetcherTest, RequestFullSizeCandidatesCallSnapperProvider) {
                       .message = ""});
           }));
 
-  base::test::TestFuture<const std::vector<ash::LobsterImageCandidate>&> future;
+  base::test::TestFuture<const ash::LobsterResult&> future;
 
   image_fetcher.RequestFullSizeCandidate(
       /*query=*/"a lovely cake", /*seed=*/kFakeBaseGenerationSeed,
       future.GetCallback());
 
   EXPECT_THAT(
-      future.Get(),
+      future.Get().value(),
       testing::ElementsAre(EqLobsterImageCandidate(
           /*expected_id=*/0,
           /*expected_bitmap=*/
@@ -125,7 +125,7 @@ TEST_F(ImageFetcherTest, RequestFullSizeCandidatesCallSnapperProvider) {
 }
 
 TEST_F(ImageFetcherTest,
-       RequestCandidatesReturnsEmptyResponseIfMantaProviderHasAGenericError) {
+       RequestCandidatesReturnsUnknownErrorIfMantaProviderHasAGenericError) {
   MockSnapperProvider snapper_provider;
   LobsterCandidateIdGenerator id_generator;
   ImageFetcher image_fetcher(&snapper_provider, &id_generator);
@@ -148,13 +148,16 @@ TEST_F(ImageFetcherTest,
                       .message = "generic error"});
           }));
 
-  base::test::TestFuture<const std::vector<ash::LobsterImageCandidate>&> future;
+  base::test::TestFuture<const ash::LobsterResult&> future;
 
   image_fetcher.RequestCandidates(
       /*query=*/"a sweet candy",
       /*num_candidates=*/2, future.GetCallback());
 
-  EXPECT_EQ(future.Get().size(), 0u);
+  EXPECT_FALSE(future.Get().has_value());
+  EXPECT_EQ(
+      future.Get().error(),
+      ash::LobsterError(ash::LobsterErrorCode::kUnknown, "generic error"));
 }
 
 }  // namespace

@@ -16,7 +16,7 @@ LobsterPageHandler::LobsterPageHandler(LobsterSession* active_session)
 LobsterPageHandler::~LobsterPageHandler() = default;
 
 void LobsterPageHandler::DownloadCandidate(int candidate_id,
-                                           DownloadCandidateCallback callback) {
+                                           StatusCallback callback) {
   session_->DownloadCandidate(candidate_id, std::move(callback));
 }
 

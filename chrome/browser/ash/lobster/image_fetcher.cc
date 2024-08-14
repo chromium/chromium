@@ -6,11 +6,13 @@
 
 #include <string>
 
+#include "ash/public/cpp/lobster/lobster_result.h"
 #include "base/barrier_callback.h"
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/expected.h"
 #include "components/manta/snapper_provider.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -46,6 +48,33 @@ manta::proto::Request CreateMantaRequest(std::string_view query,
   }
 
   return request;
+}
+
+ash::LobsterErrorCode MantaToLobsterStatusCode(
+    manta::MantaStatusCode manta_status_code) {
+  switch (manta_status_code) {
+    case manta::MantaStatusCode::kGenericError:
+    case manta::MantaStatusCode::kMalformedResponse:
+    case manta::MantaStatusCode::kNoIdentityManager:
+      return ash::LobsterErrorCode::kUnknown;
+    case manta::MantaStatusCode::kInvalidInput:
+      return ash::LobsterErrorCode::kInvalidArgument;
+    case manta::MantaStatusCode::kResourceExhausted:
+    case manta::MantaStatusCode::kPerUserQuotaExceeded:
+      return ash::LobsterErrorCode::kResourceExhausted;
+    case manta::MantaStatusCode::kBackendFailure:
+      return ash::LobsterErrorCode::kBackendFailure;
+    case manta::MantaStatusCode::kNoInternetConnection:
+      return ash::LobsterErrorCode::kNoInternetConnection;
+    case manta::MantaStatusCode::kUnsupportedLanguage:
+      return ash::LobsterErrorCode::kUnsupportedLanguage;
+    case manta::MantaStatusCode::kBlockedOutputs:
+      return ash::LobsterErrorCode::kBlockedOutputs;
+    case manta::MantaStatusCode::kRestrictedCountry:
+      return ash::LobsterErrorCode::kRestrictedRegion;
+    case manta::MantaStatusCode::kOk:
+      NOTREACHED_NORETURN();
+  }
 }
 
 std::optional<ash::LobsterImageCandidate> ToLobsterImageCandidate(
@@ -112,7 +141,10 @@ void ImageFetcher::RequestCandidates(const std::string& query,
                                      ash::RequestCandidatesCallback callback) {
   if (provider_ == nullptr) {
     LOG(ERROR) << "Provider is not available";
-    std::move(callback).Run({});
+    std::move(callback).Run(base::unexpected(ash::LobsterError(
+        /*status_code=*/MantaToLobsterStatusCode(
+            manta::MantaStatusCode::kGenericError),
+        /*message=*/"Provider is not available")));
     return;
   }
 
@@ -133,7 +165,10 @@ void ImageFetcher::RequestFullSizeCandidate(
     ash::RequestCandidatesCallback callback) {
   if (provider_ == nullptr) {
     LOG(ERROR) << "Provider is not available";
-    std::move(callback).Run({});
+    std::move(callback).Run(base::unexpected(ash::LobsterError(
+        /*status_code=*/MantaToLobsterStatusCode(
+            manta::MantaStatusCode::kGenericError),
+        /*message=*/"Provider is not available")));
     return;
   }
 
@@ -154,6 +189,13 @@ void ImageFetcher::OnCandidatesRequested(
     ash::RequestCandidatesCallback callback,
     std::unique_ptr<manta::proto::Response> response,
     manta::MantaStatus status) {
+  if (status.status_code != manta::MantaStatusCode::kOk) {
+    std::move(callback).Run(base::unexpected(ash::LobsterError(
+        /*status_code=*/MantaToLobsterStatusCode(status.status_code),
+        /*message=*/status.message)));
+    return;
+  }
+
   std::unique_ptr<data_decoder::DataDecoder> data_decoder =
       std::make_unique<data_decoder::DataDecoder>();
   const auto barrier_callback =
@@ -180,5 +222,5 @@ void ImageFetcher::OnImagesSanitized(
       image_candidates.push_back(candidate.value());
     }
   }
-  std::move(callback).Run(image_candidates);
+  std::move(callback).Run(std::move(image_candidates));
 }

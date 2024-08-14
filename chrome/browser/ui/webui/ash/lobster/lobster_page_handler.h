@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ash/public/cpp/lobster/lobster_image_candidate.h"
+#include "ash/public/cpp/lobster/lobster_result.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
@@ -17,13 +17,13 @@ class LobsterSession;
 
 class LobsterPageHandler {
  public:
-  using DownloadCandidateCallback = base::OnceCallback<void(bool)>;
+  using StatusCallback = base::OnceCallback<void(bool)>;
 
   explicit LobsterPageHandler(LobsterSession* active_session);
 
   ~LobsterPageHandler();
 
-  void DownloadCandidate(int candidate_id, DownloadCandidateCallback);
+  void DownloadCandidate(int candidate_id, StatusCallback);
 
   void RequestCandidates(const std::string& query,
                          int num_candidates,

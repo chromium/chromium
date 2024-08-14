@@ -26,12 +26,6 @@ struct ASH_PUBLIC_EXPORT LobsterImageCandidate {
   }
 };
 
-using RequestCandidatesCallback =
-    base::OnceCallback<void(const std::vector<LobsterImageCandidate>&)>;
-
-using InflateCandidateCallback =
-    base::OnceCallback<void(std::optional<LobsterImageCandidate>)>;
-
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_LOBSTER_LOBSTER_IMAGE_CANDIDATE_H_

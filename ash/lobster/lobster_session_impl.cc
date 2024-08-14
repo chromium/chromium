@@ -36,9 +36,8 @@ void LobsterSessionImpl::DownloadCandidate(int candidate_id,
   client_->InflateCandidate(
       candidate->seed, candidate->query,
       base::BindOnce(
-          [](StatusCallback status_callback,
-             std::optional<LobsterImageCandidate> image_candidate) {
-            if (!image_candidate.has_value()) {
+          [](StatusCallback status_callback, const LobsterResult& result) {
+            if (!result.has_value()) {
               LOG(ERROR) << "No image candidate";
               std::move(status_callback).Run(false);
               return;
@@ -59,14 +58,14 @@ void LobsterSessionImpl::RequestCandidates(const std::string& query,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void LobsterSessionImpl::OnRequestCandidates(
-    RequestCandidatesCallback callback,
-    const std::vector<LobsterImageCandidate>& image_candidates) {
-  for (auto& image_candidate : image_candidates) {
-    candidate_store_.Cache(image_candidate);
+void LobsterSessionImpl::OnRequestCandidates(RequestCandidatesCallback callback,
+                                             const LobsterResult& result) {
+  if (result.has_value()) {
+    for (auto& image_candidate : *result) {
+      candidate_store_.Cache(image_candidate);
+    }
   }
-
-  std::move(callback).Run(image_candidates);
+  std::move(callback).Run(result);
 }
 
 }  // namespace ash

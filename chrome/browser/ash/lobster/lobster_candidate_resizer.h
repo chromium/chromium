@@ -8,20 +8,18 @@
 #include <string>
 
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
+#include "ash/public/cpp/lobster/lobster_result.h"
 #include "chrome/browser/ash/lobster/image_fetcher.h"
 #include "ui/gfx/geometry/size.h"
 
 class LobsterCandidateResizer {
  public:
-  using OnInflateCallback =
-      base::OnceCallback<void(std::optional<ash::LobsterImageCandidate>)>;
-
   explicit LobsterCandidateResizer(ImageFetcher* image_fetcher);
   ~LobsterCandidateResizer();
 
   void InflateImage(uint32_t seed,
                     const std::string& query,
-                    OnInflateCallback callback);
+                    ash::InflateCandidateCallback callback);
 
  private:
   raw_ptr<ImageFetcher> image_fetcher_;

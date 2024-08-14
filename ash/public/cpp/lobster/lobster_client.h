@@ -9,7 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/lobster/lobster_image_candidate.h"
+#include "ash/public/cpp/lobster/lobster_result.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
 #include "base/functional/callback.h"
