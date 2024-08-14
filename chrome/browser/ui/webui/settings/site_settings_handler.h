@@ -128,8 +128,8 @@ class SiteSettingsHandler
   // OnGetUsageInfo above.
   void HandleFetchUsageTotal(const base::Value::List& args);
 
-  // Asynchronously fetches the fps membership information label.
-  void HandleGetFpsMembershipLabel(const base::Value::List& args);
+  // Asynchronously fetches the rws membership information label.
+  void HandleGetRwsMembershipLabel(const base::Value::List& args);
 
   // Deletes the storage being used for a given host.
   void HandleClearUnpartitionedUsage(const base::Value::List& args);

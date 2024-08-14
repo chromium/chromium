@@ -172,9 +172,9 @@ class PageInfoBubbleViewTestApi {
             VIEW_ID_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_SUBTITLE);
   }
 
-  views::View* fps_button() {
+  views::View* rws_button() {
     return bubble_delegate_->GetViewByID(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_FPS_SETTINGS);
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS);
   }
 
   RichHoverButton* certificate_button() const {
@@ -301,7 +301,7 @@ class PageInfoBubbleViewTestApi {
     return actual_count;
   }
 
-  // Simulates updating the number of blocked and allowed sites and fps info.
+  // Simulates updating the number of blocked and allowed sites and rws info.
   void SetCookieInfo(const PageInfoUI::CookiesNewInfo& cookie_info) {
     presenter_->ui_for_testing()->SetCookieInfo(cookie_info);
   }

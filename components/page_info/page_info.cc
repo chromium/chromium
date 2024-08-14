@@ -784,16 +784,16 @@ void PageInfo::OpenCookiesSettingsView() {
 #endif
 }
 
-void PageInfo::OpenAllSitesViewFilteredToFps() {
+void PageInfo::OpenAllSitesViewFilteredToRws() {
 #if BUILDFLAG(IS_ANDROID)
   NOTREACHED_IN_MIGRATION();
 #else
-  auto fps_owner = delegate_->GetFpsOwner(site_url_);
+  auto fps_owner = delegate_->GetRwsOwner(site_url_);
   RecordPageInfoAction(page_info::PAGE_INFO_ALL_SITES_WITH_FPS_FILTER_OPENED);
   if (fps_owner) {
-    delegate_->ShowAllSitesSettingsFilteredByFpsOwner(*fps_owner);
+    delegate_->ShowAllSitesSettingsFilteredByRwsOwner(*fps_owner);
   } else {
-    delegate_->ShowAllSitesSettingsFilteredByFpsOwner(std::u16string());
+    delegate_->ShowAllSitesSettingsFilteredByRwsOwner(std::u16string());
   }
 
 #endif
@@ -1462,10 +1462,10 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxFirstPartySetsUI)) {
-    auto fps_owner = delegate_->GetFpsOwner(site_url_);
+    auto fps_owner = delegate_->GetRwsOwner(site_url_);
     if (fps_owner) {
-      cookies_info.fps_info = PageInfoUI::CookiesFpsInfo(*fps_owner);
-      cookies_info.fps_info->is_managed = delegate_->IsFpsManaged();
+      cookies_info.rws_info = PageInfoUI::CookiesRwsInfo(*fps_owner);
+      cookies_info.rws_info->is_managed = delegate_->IsRwsManaged();
     }
   }
 #endif

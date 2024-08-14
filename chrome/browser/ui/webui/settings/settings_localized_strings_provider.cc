@@ -1948,7 +1948,7 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
                          chrome::kTrackingProtectionHelpCenterURL);
 
   html_source->AddString("firstPartySetsLearnMoreURL",
-                         chrome::kFirstPartySetsLearnMoreURL);
+                         chrome::kRelatedWebsiteSetsLearnMoreURL);
 
   html_source->AddString("safeBrowsingHelpCenterURL",
                          chrome::kSafeBrowsingHelpCenterUpdatedURL);

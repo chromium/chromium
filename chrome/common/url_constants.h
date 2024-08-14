@@ -274,7 +274,7 @@ inline constexpr char16_t kFamilyGroupViewURL[] =
     u"https://myaccount.google.com/family/details?utm_source=cpwd";
 
 // "Learn more" URL for first party sets.
-inline constexpr char kFirstPartySetsLearnMoreURL[] =
+inline constexpr char kRelatedWebsiteSetsLearnMoreURL[] =
     "https://support.google.com/chrome?p=cpn_cookies"
     "#zippy=%2Callow-related-sites-to-access-your-activity";
 

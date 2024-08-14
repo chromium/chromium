@@ -211,11 +211,12 @@ net::SchemefulSite ConvertEtldToSchemefulSite(const std::string etld_plus1) {
                                  "/"));
 }
 
-// Validates that the list of sites are aligned with the first party sets
+// Validates that the list of sites are aligned with the related website sets
 // mapping.
-void ValidateSitesWithFps(
+void ValidateSitesWithRws(
     const base::Value::List& storage_and_cookie_list,
-    base::flat_map<net::SchemefulSite, net::SchemefulSite>& first_party_sets) {
+    base::flat_map<net::SchemefulSite, net::SchemefulSite>&
+        related_website_sets) {
   for (const base::Value& site_group_value : storage_and_cookie_list) {
     const base::Value::Dict& site_group = site_group_value.GetDict();
     GroupingKey grouping_key = GroupingKey::Deserialize(
@@ -226,11 +227,11 @@ void ValidateSitesWithFps(
     std::string etld_plus1 = *grouping_key.GetEtldPlusOne();
     auto schemeful_site = ConvertEtldToSchemefulSite(etld_plus1);
 
-    if (first_party_sets.count(schemeful_site)) {
+    if (related_website_sets.count(schemeful_site)) {
       // Ensure that the `fpsOwner` is set correctly and aligned with
-      // |first_party_sets| mapping of site group owners.
+      // |related_website_sets| mapping of site group owners.
       std::string owner_etldplus1 =
-          first_party_sets[schemeful_site].GetURL().host();
+          related_website_sets[schemeful_site].GetURL().host();
       ASSERT_EQ(owner_etldplus1, *site_group.FindString("fpsOwner"));
       if (owner_etldplus1 == "google.com") {
         ASSERT_EQ(2, *site_group.FindInt("fpsNumMembers"));
@@ -824,8 +825,8 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   void ValidateUsageInfo(const std::string& expected_usage_origin,
                          const std::string& expected_usage_string,
                          const std::string& expected_cookie_string,
-                         const std::string& expected_fps_member_count_string,
-                         const bool expected_fps_policy) {
+                         const std::string& expected_rws_member_count_string,
+                         const bool expected_rws_policy) {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
 
@@ -842,10 +843,10 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     EXPECT_EQ(expected_cookie_string, data.arg_nth(3)->GetString());
 
     ASSERT_TRUE(data.arg_nth(4)->is_string());
-    EXPECT_EQ(expected_fps_member_count_string, data.arg_nth(4)->GetString());
+    EXPECT_EQ(expected_rws_member_count_string, data.arg_nth(4)->GetString());
 
     ASSERT_TRUE(data.arg_nth(5)->is_bool());
-    EXPECT_EQ(expected_fps_policy, data.arg_nth(5)->GetBool());
+    EXPECT_EQ(expected_rws_policy, data.arg_nth(5)->GetBool());
   }
 
   void CreateIncognitoProfile() {
@@ -924,13 +925,13 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     return data.arg2()->GetList().Clone();
   }
 
-  void SetupDefaultFirstPartySets(MockPrivacySandboxService* mock_service) {
+  void SetupDefaultRelatedWebsiteSets(MockPrivacySandboxService* mock_service) {
     EXPECT_CALL(*mock_service, GetFirstPartySetOwner(_))
         .WillRepeatedly(
             [&](const GURL& url) -> std::optional<net::SchemefulSite> {
-              auto first_party_sets = GetTestFirstPartySets();
-              if (first_party_sets.count(net::SchemefulSite(url))) {
-                return first_party_sets[net::SchemefulSite(url)];
+              auto related_website_sets = GetTestRelatedWebsiteSets();
+              if (related_website_sets.count(net::SchemefulSite(url))) {
+                return related_website_sets[net::SchemefulSite(url)];
               }
 
               return std::nullopt;
@@ -938,18 +939,18 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   }
 
   base::flat_map<net::SchemefulSite, net::SchemefulSite>
-  GetTestFirstPartySets() {
-    base::flat_map<net::SchemefulSite, net::SchemefulSite> first_party_sets = {
-        {ConvertEtldToSchemefulSite("google.com"),
-         ConvertEtldToSchemefulSite("google.com")},
-        {ConvertEtldToSchemefulSite("google.com.au"),
-         ConvertEtldToSchemefulSite("google.com")},
-        {ConvertEtldToSchemefulSite("example.com"),
-         ConvertEtldToSchemefulSite("example.com")},
-        {ConvertEtldToSchemefulSite("unrelated.com"),
-         ConvertEtldToSchemefulSite("unrelated.com")}};
+  GetTestRelatedWebsiteSets() {
+    base::flat_map<net::SchemefulSite, net::SchemefulSite>
+        related_website_sets = {{ConvertEtldToSchemefulSite("google.com"),
+                                 ConvertEtldToSchemefulSite("google.com")},
+                                {ConvertEtldToSchemefulSite("google.com.au"),
+                                 ConvertEtldToSchemefulSite("google.com")},
+                                {ConvertEtldToSchemefulSite("example.com"),
+                                 ConvertEtldToSchemefulSite("example.com")},
+                                {ConvertEtldToSchemefulSite("unrelated.com"),
+                                 ConvertEtldToSchemefulSite("unrelated.com")}};
 
-    return first_party_sets;
+    return related_website_sets;
   }
 
   scoped_refptr<const extensions::Extension> LoadExtension(
@@ -6352,12 +6353,12 @@ TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
       expected_browsing_data_model_entries);
 }
 
-TEST_F(SiteSettingsHandlerTest, HandleGetFpsMembershipLabel) {
+TEST_F(SiteSettingsHandlerTest, HandleGetRwsMembershipLabel) {
   base::Value::List args;
   args.Append("getFpsMembershipLabel");
   args.Append(5);
   args.Append("google.com");
-  handler()->HandleGetFpsMembershipLabel(args);
+  handler()->HandleGetRwsMembershipLabel(args);
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
 
   EXPECT_EQ("cr.webUIResponse", data.function_name());
@@ -6383,7 +6384,7 @@ TEST_F(SiteSettingsHandlerTest, HandleGetFormattedBytes) {
 }
 
 TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
-  SetupDefaultFirstPartySets(mock_privacy_sandbox_service());
+  SetupDefaultRelatedWebsiteSets(mock_privacy_sandbox_service());
 
   EXPECT_CALL(*mock_privacy_sandbox_service(), IsPartOfManagedFirstPartySet(_))
       .Times(1)
@@ -6437,8 +6438,8 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
   ValidateUsageInfo("http://ungrouped.com//", "", "1 cookie", "", false);
 }
 
-TEST_F(SiteSettingsHandlerTest, FirstPartySetsMembership) {
-  SetupDefaultFirstPartySets(mock_privacy_sandbox_service());
+TEST_F(SiteSettingsHandlerTest, RelatedWebsiteSetsMembership) {
+  SetupDefaultRelatedWebsiteSets(mock_privacy_sandbox_service());
 
   EXPECT_CALL(*mock_privacy_sandbox_service(), IsPartOfManagedFirstPartySet(_))
       .Times(2)
@@ -6464,9 +6465,9 @@ TEST_F(SiteSettingsHandlerTest, FirstPartySetsMembership) {
   const base::Value::List& storage_and_cookie_list = data.arg2()->GetList();
   EXPECT_EQ(4U, storage_and_cookie_list.size());
 
-  auto first_party_sets = GetTestFirstPartySets();
+  auto related_website_sets = GetTestRelatedWebsiteSets();
 
-  ValidateSitesWithFps(storage_and_cookie_list, first_party_sets);
+  ValidateSitesWithRws(storage_and_cookie_list, related_website_sets);
 }
 
 TEST_F(SiteSettingsHandlerTest, IsolatedWebAppUsageInfo) {
@@ -6483,7 +6484,7 @@ TEST_F(SiteSettingsHandlerTest, IsolatedWebAppUsageInfo) {
   ValidateUsageInfo(
       /*expected_usage_host=*/iwa_url, /*expected_usage_string=*/"1,000 B",
       /*expected_cookie_string=*/"",
-      /*expected_fps_member_count_string=*/"", /*expected_fps_policy=*/false);
+      /*expected_rws_member_count_string=*/"", /*expected_rws_policy=*/false);
 }
 
 TEST_F(SiteSettingsHandlerTest, IsolatedWebAppClearSiteGroupDataAndCookies) {
@@ -6537,7 +6538,7 @@ TEST_F(SiteSettingsHandlerTest, IsolatedWebAppClearUnpartitionedUsage) {
       /*expected_usage_origin=*/iwa_url.spec(),
       /*expected_usage_string=*/"1,000 B",
       /*expected_cookie_string=*/"",
-      /*expected_fps_member_count_string=*/"", /*expected_fps_policy=*/false);
+      /*expected_rws_member_count_string=*/"", /*expected_rws_policy=*/false);
 
   base::Value::List clear_args;
   clear_args.Append(iwa_url.spec());
@@ -6550,7 +6551,7 @@ TEST_F(SiteSettingsHandlerTest, IsolatedWebAppClearUnpartitionedUsage) {
       /*expected_usage_origin=*/iwa_url.spec(),
       /*expected_usage_string=*/"",
       /*expected_cookie_string=*/"",
-      /*expected_fps_member_count_string=*/"", /*expected_fps_policy=*/false);
+      /*expected_rws_member_count_string=*/"", /*expected_rws_policy=*/false);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

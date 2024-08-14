@@ -228,7 +228,7 @@ class PageInfo : private content_settings::CookieControlsObserver,
 
   // Handles opening the link to show all sites settings with a filter for
   // current site's fps  and records the event.
-  void OpenAllSitesViewFilteredToFps();
+  void OpenAllSitesViewFilteredToRws();
 
   // Handles opening the cookies dialog and records the event.
   void OpenCookiesDialog();

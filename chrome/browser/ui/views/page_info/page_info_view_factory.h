@@ -39,7 +39,7 @@ class PageInfoViewFactory {
     VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
     VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE,
     VIEW_ID_PAGE_INFO_COOKIES_DESCRIPTION_LABEL,
-    VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_FPS_SETTINGS,
+    VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS,
     VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER,
     VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
     VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS_FILE_SYSTEM,
@@ -157,8 +157,8 @@ class PageInfoViewFactory {
   // Returns the icon for the 'Cookies and site data' button.
   static const ui::ImageModel GetCookiesAndSiteDataIcon();
 
-  // Returns the icon for the first party sets button.
-  static const ui::ImageModel GetFpsIcon();
+  // Returns the icon for the related website sets button.
+  static const ui::ImageModel GetRwsIcon();
 
   // Returns the image model for the vector icon.
   static const ui::ImageModel GetImageModel(const gfx::VectorIcon& icon);

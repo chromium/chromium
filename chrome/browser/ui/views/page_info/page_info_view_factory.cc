@@ -694,7 +694,7 @@ const ui::ImageModel PageInfoViewFactory::GetCookiesAndSiteDataIcon() {
 }
 
 // static
-const ui::ImageModel PageInfoViewFactory::GetFpsIcon() {
+const ui::ImageModel PageInfoViewFactory::GetRwsIcon() {
   return GetImageModel(vector_icons::kTenancyIcon);
 }
 

@@ -425,10 +425,10 @@ PageInfoUI::CookiesNewInfo::CookiesNewInfo(CookiesNewInfo&& cookie_info) =
     default;
 PageInfoUI::CookiesNewInfo::~CookiesNewInfo() = default;
 
-PageInfoUI::CookiesFpsInfo::CookiesFpsInfo(const std::u16string& owner_name)
+PageInfoUI::CookiesRwsInfo::CookiesRwsInfo(const std::u16string& owner_name)
     : owner_name(owner_name) {}
 
-PageInfoUI::CookiesFpsInfo::~CookiesFpsInfo() = default;
+PageInfoUI::CookiesRwsInfo::~CookiesRwsInfo() = default;
 
 PageInfoUI::ChosenObjectInfo::ChosenObjectInfo(
     const PageInfo::ChooserUIInfo& ui_info,

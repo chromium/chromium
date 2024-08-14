@@ -199,13 +199,13 @@ void ChromePageInfoDelegate::FocusWebContents() {
   browser->ActivateContents(web_contents_);
 }
 
-std::optional<std::u16string> ChromePageInfoDelegate::GetFpsOwner(
+std::optional<std::u16string> ChromePageInfoDelegate::GetRwsOwner(
     const GURL& site_url) {
   return PrivacySandboxServiceFactory::GetForProfile(GetProfile())
       ->GetFirstPartySetOwnerForDisplay(site_url);
 }
 
-bool ChromePageInfoDelegate::IsFpsManaged() {
+bool ChromePageInfoDelegate::IsRwsManaged() {
   return PrivacySandboxServiceFactory::GetForProfile(GetProfile())
       ->IsFirstPartySetsDataAccessManaged();
 }
@@ -259,11 +259,11 @@ void ChromePageInfoDelegate::ShowCookiesSettings() {
   chrome::ShowSettingsSubPage(browser, chrome::kCookieSettingsSubPage);
 }
 
-void ChromePageInfoDelegate::ShowAllSitesSettingsFilteredByFpsOwner(
-    const std::u16string& fps_owner) {
+void ChromePageInfoDelegate::ShowAllSitesSettingsFilteredByRwsOwner(
+    const std::u16string& rws_owner) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  chrome::ShowAllSitesSettingsFilteredByFpsOwner(browser,
-                                                 base::UTF16ToUTF8(fps_owner));
+  chrome::ShowAllSitesSettingsFilteredByRwsOwner(browser,
+                                                 base::UTF16ToUTF8(rws_owner));
 }
 
 void ChromePageInfoDelegate::OpenCookiesDialog() {
