@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import {InternalMicInfo} from './microphone_manager.js';
-import {Model, ModelId, ModelState} from './on_device_model/types.js';
+import {ModelLoader, ModelState} from './on_device_model/types.js';
 import {ReadonlySignal} from './reactive/signal.js';
 import {SodaSession} from './soda/types.js';
-import {assertExists} from './utils/assert.js';
 
 export abstract class PlatformHandler {
   /**
@@ -17,35 +16,14 @@ export abstract class PlatformHandler {
   abstract init(): Promise<void>;
 
   /**
-   * Maps from model ID to the ML model by the given ID installation state.
-   *
-   * The key should contain all member of all `ModelId`.
+   * The model loader for summarization.
    */
-  protected abstract readonly modelStates:
-    Map<ModelId, ReadonlySignal<ModelState>>;
-
-  getModelState(modelId: ModelId): ReadonlySignal<ModelState> {
-    return assertExists(this.modelStates.get(modelId));
-  }
+  abstract summaryModelLoader: ModelLoader<string>;
 
   /**
-   * Loads the model by the given model ID.
+   * The model loader for title suggestion.
    */
-  abstract loadModel(modelId: ModelId): Promise<Model>;
-
-  /**
-   * Requests download of the given model.
-   */
-  downloadModel(modelId: ModelId): void {
-    // TODO(pihsun): There's currently no way of requesting download of the
-    // model but not load it, so we load the model (which downloads the model)
-    // and then immediately unloads it. Check the performance overhead and
-    // consider adding another API for only downloading the model if the
-    // overhead is large.
-    void this.loadModel(modelId).then((model) => {
-      model.close();
-    });
-  }
+  abstract titleSuggestionModelLoader: ModelLoader<string[]>;
 
   /**
    * Requests installation of SODA library and language pack.

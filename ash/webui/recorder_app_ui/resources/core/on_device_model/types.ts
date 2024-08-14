@@ -2,16 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * All possible model IDs.
- *
- * TODO(pihsun): Abstract the "uuid" part of model, so the real uuid can be put
- * into platform/swa.
- */
-export enum ModelId {
-  GEMINI_XXS_IT_BASE = 'ee7c31c2-18e5-405a-b54e-f2607130a15d',
-  SUMMARY = '73caa678-45cb-4007-abb9-f04e431376da',
-}
+import {ReadonlySignal} from '../reactive/signal.js';
 
 /**
  * Model installation state.
@@ -43,7 +34,7 @@ export enum ModelResponseError {
 }
 
 // prettier-ignore
-export type ModelResponse<T = string> = {
+export type ModelResponse<T> = {
   kind: 'error',
   error: ModelResponseError,
 }|{
@@ -51,16 +42,37 @@ export type ModelResponse<T = string> = {
   result: T,
 };
 
-export interface Model {
+export abstract class ModelLoader<T> {
   /**
-   * Returns the suggested titles based on content.
+   * The state of the model.
    */
-  suggestTitles(content: string): Promise<ModelResponse<string[]>>;
+  abstract state: ReadonlySignal<ModelState>;
 
   /**
-   * Generates a short summarization of the given content.
+   * Loads the model.
    */
-  summarize(content: string): Promise<ModelResponse<string>>;
+  abstract load(): Promise<Model<T>>;
+
+  /**
+   * Requests download of the given model.
+   */
+  download(): void {
+    // TODO(pihsun): There's currently no way of requesting download of the
+    // model but not load it, so we load the model (which downloads the model)
+    // and then immediately unloads it. Check the performance overhead and
+    // consider adding another API for only downloading the model if the
+    // overhead is large.
+    void this.load().then((model) => {
+      model.close();
+    });
+  }
+}
+
+export interface Model<T> {
+  /**
+   * Returns the model response based on content.
+   */
+  execute(content: string): Promise<ModelResponse<T>>;
 
   /**
    * Closes the model connection.

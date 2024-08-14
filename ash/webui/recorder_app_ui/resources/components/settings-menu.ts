@@ -26,7 +26,6 @@ import {
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
-import {ModelId} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {
   settings,
@@ -163,12 +162,9 @@ export class SettingsMenu extends ReactiveLitElement {
     settings.mutate((s) => {
       s.summaryEnabled = SummaryEnableState.ENABLED;
     });
-    this.platformHandler.downloadModel(ModelId.SUMMARY);
+    this.platformHandler.summaryModelLoader.download();
     // The settings download both the model for summary and title suggestion.
-    // TODO(pihsun): Rename the summary-related settings and functions to be
-    // more accurate that it controls both settings for summary and title
-    // suggestion.
-    this.platformHandler.downloadModel(ModelId.GEMINI_XXS_IT_BASE);
+    this.platformHandler.titleSuggestionModelLoader.download();
   }
 
   private onSummaryToggle(ev: Event) {
@@ -180,7 +176,7 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private renderSummaryModelDescriptionAndAction() {
-    const state = this.platformHandler.getModelState(ModelId.SUMMARY).value;
+    const state = this.platformHandler.summaryModelLoader.state.value;
     if (state.kind === 'notInstalled') {
       // Shows the "download" button when the summary model is not installed,
       // even if it's already enabled by user. This shouldn't happen in normal
@@ -248,7 +244,7 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private renderSummaryModelSettings() {
-    if (this.platformHandler.getModelState(ModelId.SUMMARY).value.kind ===
+    if (this.platformHandler.summaryModelLoader.state.value.kind ===
         'unavailable') {
       return nothing;
     }

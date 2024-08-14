@@ -20,11 +20,7 @@ import {
   usePlatformHandler,
   useRecordingDataManager,
 } from '../core/lit/context.js';
-import {
-  Model,
-  ModelId,
-  ModelResponse,
-} from '../core/on_device_model/types.js';
+import {Model, ModelResponse} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 
@@ -69,26 +65,24 @@ export class DevPage extends ReactiveLitElement {
   // probably come together from some Promise -> signal utility?
   private readonly modelLoading = signal(false);
 
-  private readonly loadedModels = signal<Model[]|null>(null);
+  private readonly titleSuggestionModel = signal<Model<string[]>|null>(null);
 
   private readonly textareaRef = createRef<HTMLTextAreaElement>();
 
   /**
-   * Contains an array of each models response of the suggested titles.
+   * Contains model response of the suggested titles.
    */
-  private readonly titles = signal<Array<ModelResponse<string[]>>>([]);
+  private readonly titles = signal<ModelResponse<string[]>|null>(null);
 
   override disconnectedCallback(): void {
-    if (this.loadedModels.value !== null) {
-      for (const model of this.loadedModels.value) {
-        model.close();
-      }
-      this.loadedModels.value = null;
+    if (this.titleSuggestionModel.value !== null) {
+      this.titleSuggestionModel.value.close();
+      this.titleSuggestionModel.value = null;
     }
   }
 
   private async onSuggestTitleClick() {
-    if (this.loadedModels.value === null) {
+    if (this.titleSuggestionModel.value === null) {
       return;
     }
     const value = this.textareaRef.value?.value;
@@ -96,9 +90,7 @@ export class DevPage extends ReactiveLitElement {
       return;
     }
     // TODO(shik): Add loading state.
-    this.titles.value = await Promise.all(
-      this.loadedModels.value.map((m) => m.suggestTitles(value)),
-    );
+    this.titles.value = await this.titleSuggestionModel.value.execute(value);
   }
 
   private async onClearClicked() {
@@ -106,12 +98,10 @@ export class DevPage extends ReactiveLitElement {
   }
 
   private async onLoadModelClicked() {
-    const modelIds = [ModelId.GEMINI_XXS_IT_BASE, ModelId.SUMMARY];
     this.modelLoading.value = true;
     try {
-      this.loadedModels.value = await Promise.all(
-        modelIds.map((id) => this.platformHandler.loadModel(id)),
-      );
+      this.titleSuggestionModel.value =
+        await this.platformHandler.titleSuggestionModelLoader.load();
     } finally {
       // TODO(pihsun): Display / handle error better.
       this.modelLoading.value = false;
@@ -122,7 +112,7 @@ export class DevPage extends ReactiveLitElement {
     if (this.modelLoading.value) {
       return 'Loading...';
     }
-    if (this.loadedModels.value !== null) {
+    if (this.titleSuggestionModel.value !== null) {
       return 'Model loaded';
     }
     return nothing;
@@ -148,7 +138,7 @@ export class DevPage extends ReactiveLitElement {
         </div>
         ${
       when(
-        this.loadedModels.value !== null,
+        this.titleSuggestionModel.value !== null,
         () => html`
             <div class="section">
               <textarea ${ref(this.textareaRef)} rows=${5}></textarea>
