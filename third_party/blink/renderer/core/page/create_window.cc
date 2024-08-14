@@ -209,6 +209,9 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       window_features.background = true;
     } else if (key_string == "persistent") {
       window_features.persistent = true;
+    } else if (RuntimeEnabledFeatures::PartitionedPopinsEnabled(dom_window) &&
+               key_string == "popin") {
+      window_features.is_partitioned_popin = true;
     } else if (attribution_reporting_enabled &&
                key_string == "attributionsrc") {
       if (!window_features.attribution_srcs.has_value()) {
@@ -234,7 +237,8 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
     }
   }
 
-  window_features.is_popup = popup_state == PopupState::kPopup;
+  window_features.is_popup =
+      popup_state == PopupState::kPopup || window_features.is_partitioned_popin;
   if (popup_state == PopupState::kUnknown) {
     window_features.is_popup = !tool_bar || !menu_bar || !scrollbars ||
                                !status_bar || !window_features.resizable;

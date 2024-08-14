@@ -100,4 +100,19 @@ TEST_F(WindowFeaturesTest, Opener) {
   }
 }
 
+TEST_F(WindowFeaturesTest, PartitionedPopin) {
+  for (const bool& partitioned_popins_enabled : {false, true}) {
+    ScopedPartitionedPopinsForTest scoped_feature{partitioned_popins_enabled};
+    WebWindowFeatures window_features =
+        GetWindowFeaturesFromString("popin",
+                                    /*dom_window=*/nullptr);
+    EXPECT_EQ(partitioned_popins_enabled, window_features.is_partitioned_popin);
+    EXPECT_EQ(true, window_features.is_popup);
+    window_features = GetWindowFeaturesFromString("popin,popup=0",
+                                                  /*dom_window=*/nullptr);
+    EXPECT_EQ(partitioned_popins_enabled, window_features.is_partitioned_popin);
+    EXPECT_EQ(partitioned_popins_enabled, window_features.is_popup);
+  }
+}
+
 }  // namespace blink

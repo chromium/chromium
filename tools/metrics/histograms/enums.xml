@@ -34814,6 +34814,7 @@ Called by update_use_counter_feature_enum.py.-->
 <enum name="WindowProxyPageContext">
   <int value="0" label="Window"/>
   <int value="1" label="Popup"/>
+  <int value="2" label="PartitionedPopin"/>
 </enum>
 
 <enum name="WindowProxyStorageKeyComparison">

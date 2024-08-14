@@ -50,6 +50,10 @@ struct WebWindowFeatures {
 
   bool is_popup = false;
 
+  // Whether the created window is a partitioned popin. If true, `is_popup` must
+  // be true. See: https://explainers-by-googlers.github.io/partitioned-popins/
+  bool is_partitioned_popin = false;
+
   // The members above this line are transferred through mojo
   // in the form of |struct WindowFeatures| defined in window_features.mojom,
   // to be used across process boundaries.

@@ -1373,13 +1373,17 @@ WindowProxyFrameContext GetWindowProxyFrameContext(RenderFrameHostImpl* frame) {
 enum class WindowProxyPageContext {
   kWindow,
   kPopup,
+  kPartitionedPopin,
 };
 
 WindowProxyPageContext GetWindowProxyPageContext(RenderFrameHostImpl* frame) {
-  if (frame->delegate()->IsPopup()) {
+  if (frame->delegate()->IsPartitionedPopin()) {
+    return WindowProxyPageContext::kPartitionedPopin;
+  } else if (frame->delegate()->IsPopup()) {
     return WindowProxyPageContext::kPopup;
+  } else {
+    return WindowProxyPageContext::kWindow;
   }
-  return WindowProxyPageContext::kWindow;
 }
 
 // These are directly cast to UKM enums of the same name and logged,

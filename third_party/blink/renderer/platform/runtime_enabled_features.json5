@@ -3138,6 +3138,10 @@
       name: "Parakeet",
       origin_trial_feature_name: "Parakeet",
     },
+    {
+      name: "PartitionedPopins",
+      status: "experimental",
+    },
     // This is to add an option to enable the Reveal button on password inputs while waiting ::reveal gets standardized.
     {
       name: "PasswordReveal",
