@@ -70,6 +70,9 @@ const CGFloat kManagementContextMenuIconSize = 18;
 // True if the feed is currently expanded. When not expanded, the feed header
 // is shown, but not any of the feed content.
 - (bool)isFeedExpanded {
+  if (IsHomeCustomizationEnabled()) {
+    return YES;
+  }
   PrefService* prefService =
       ChromeBrowserState::FromBrowserState(self.browser->GetBrowserState())
           ->GetPrefs();

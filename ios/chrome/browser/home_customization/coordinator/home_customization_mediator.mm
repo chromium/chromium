@@ -85,7 +85,7 @@
       return _prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackEnabled);
     case CustomizationToggleType::kDiscover:
-      return _prefService->GetBoolean(prefs::kHomeCustomizationDiscoverEnabled);
+      return _prefService->GetBoolean(prefs::kArticlesForYouEnabled);
     default:
       NOTREACHED_NORETURN();
   }
@@ -127,8 +127,7 @@
                                enabled);
       break;
     case CustomizationToggleType::kDiscover:
-      _prefService->SetBoolean(prefs::kHomeCustomizationDiscoverEnabled,
-                               enabled);
+      _prefService->SetBoolean(prefs::kArticlesForYouEnabled, enabled);
       break;
 
     // Magic Stack page toggles.

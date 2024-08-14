@@ -654,8 +654,6 @@ inline constexpr char kHomeCustomizationMostVisitedEnabled[] =
     "ios.home_customization.most_visited.enabled";
 inline constexpr char kHomeCustomizationMagicStackEnabled[] =
     "ios.home_customization.magic_stack.enabled";
-inline constexpr char kHomeCustomizationDiscoverEnabled[] =
-    "ios.home_customization.discover.enabled";
 
 // Prefs indicating whether Magic Stack cards are enabled.
 inline constexpr char kHomeCustomizationMagicStackSetUpListEnabled[] =

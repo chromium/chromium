@@ -2045,8 +2045,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                    forUserPref:prefs::kHomeCustomizationMostVisitedEnabled];
   [ChromeEarlGrey setBoolValue:YES
                    forUserPref:prefs::kHomeCustomizationMagicStackEnabled];
-  [ChromeEarlGrey setBoolValue:YES
-                   forUserPref:prefs::kHomeCustomizationDiscoverEnabled];
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kArticlesForYouEnabled];
 }
 
 #pragma mark - Matchers

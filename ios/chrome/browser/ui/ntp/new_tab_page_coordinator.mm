@@ -1001,7 +1001,8 @@
 }
 
 - (BOOL)shouldFeedBeVisible {
-  return self.NTPMediator.feedHeaderVisible && [self.feedExpandedPref value];
+  return self.NTPMediator.feedHeaderVisible &&
+         ([self.feedExpandedPref value] || IsHomeCustomizationEnabled());
 }
 
 - (BOOL)isFollowingFeedAvailable {
@@ -1685,7 +1686,7 @@
     if (visible) {
       self.didAppearTime = base::TimeTicks::Now();
       if (self.NTPMediator.feedHeaderVisible) {
-        if ([self.feedExpandedPref value]) {
+        if ([self.feedExpandedPref value] || IsHomeCustomizationEnabled()) {
           [self.NTPMetricsRecorder
               recordHomeImpression:IOSNTPImpressionType::kFeedVisible
                     isStartSurface:[self isStartSurface]];
