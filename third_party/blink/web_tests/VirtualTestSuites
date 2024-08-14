@@ -343,6 +343,7 @@
   },
   {
     "prefix": "media-foundation-for-clear-dcomp",
+    "owners": ["media-dev@chromium.org", "frankli@microsoft.com"],
     "platforms": ["Win"],
     "bases": ["external/wpt/media-source",
               "media"],
@@ -352,6 +353,7 @@
   },
   {
     "prefix": "media-foundation-for-clear-frameserver",
+    "owners": ["media-dev@chromium.org", "frankli@microsoft.com"],
     "platforms": ["Win"],
     "bases": ["external/wpt/media-source",
               "media"],
