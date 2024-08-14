@@ -159,17 +159,6 @@ PatternAccountRestriction PatternAccountRestrictionFromPreference(
 
 }  // anonymous namespace.
 
-void ChromeAccountManagerService::Observer::OnIdentityListChanged() {
-  // Need to call `OnIdentityListChanged(bool)` until
-  // `InternalDriveService`, `InternalPhotosService` are migrated.
-  OnIdentityListChanged(/*notify_user=*/false);
-}
-
-void ChromeAccountManagerService::Observer::OnIdentityListChanged(
-    bool notify_user) {
-  NOTREACHED_IN_MIGRATION();
-}
-
 ChromeAccountManagerService::ChromeAccountManagerService(
     PrefService* pref_service,
     size_t profile_index)

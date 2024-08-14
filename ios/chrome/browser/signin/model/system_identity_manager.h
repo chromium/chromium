@@ -260,8 +260,6 @@ class SystemIdentityManager {
  protected:
   // Invokes `OnIdentityListChanged(...)` for all observers.
   void FireIdentityListChanged();
-  // DEPRECATED, please use `FireIdentityListChanged()`.
-  void FireIdentityListChanged(bool notify_user);
 
   // Invokes `OnIdentityUpdated(...)` for all observers.
   void FireIdentityUpdated(id<SystemIdentity> identity);

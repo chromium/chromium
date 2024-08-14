@@ -137,7 +137,6 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // Helper used to implement the asynchronous part of `ForgetIdentity`.
   void ForgetIdentityAsync(id<SystemIdentity> identity,
                            ForgetIdentityCallback callback,
-                           bool notify_user,
                            bool removed_by_user);
 
   // Helper used to implement the asynchronous part of `GetAccessToken`.

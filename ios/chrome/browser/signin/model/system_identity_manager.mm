@@ -125,12 +125,6 @@ void SystemIdentityManager::FireIdentityListChanged() {
   }
 }
 
-void SystemIdentityManager::FireIdentityListChanged(bool notify_user) {
-  // This method is needed until InternalSystemIdentityManager is migrated to
-  // call FireIdentityListChanged().
-  FireIdentityListChanged();
-}
-
 void SystemIdentityManager::FireIdentityUpdated(id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observers_) {
@@ -145,14 +139,4 @@ void SystemIdentityManager::FireIdentityAccessTokenRefreshFailed(
   for (auto& observer : observers_) {
     observer.OnIdentityAccessTokenRefreshFailed(identity, error);
   }
-}
-
-void SystemIdentityManagerObserver::OnIdentityListChanged() {
-  // Need to call `OnIdentityListChanged(bool)` until
-  // `InternalSystemIdentityManagerTest` is migrated.
-  OnIdentityListChanged(false);
-}
-
-void SystemIdentityManagerObserver::OnIdentityListChanged(bool notify_user) {
-  NOTREACHED_IN_MIGRATION();
 }

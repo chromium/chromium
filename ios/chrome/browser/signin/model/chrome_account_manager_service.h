@@ -40,9 +40,7 @@ class ChromeAccountManagerService : public KeyedService,
     // Handles identity list changed events.
     // Notifications with no account list update are possible, this has to be
     // handled by the observer.
-    virtual void OnIdentityListChanged();
-    // DEPRECATED, please use `OnIdentityListChanged()`.
-    virtual void OnIdentityListChanged(bool notify_user);
+    virtual void OnIdentityListChanged() {}
 
     // Called when the identity is updated.
     virtual void OnIdentityUpdated(id<SystemIdentity> identity) {}

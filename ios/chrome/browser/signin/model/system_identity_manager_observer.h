@@ -20,9 +20,7 @@ class SystemIdentityManagerObserver : public base::CheckedObserver {
   ~SystemIdentityManagerObserver() override = default;
 
   // Called when the list of identity has changed.
-  virtual void OnIdentityListChanged();
-  // DEPRECATED, please use `OnIdentityListChanged()`.
-  virtual void OnIdentityListChanged(bool notify_user);
+  virtual void OnIdentityListChanged() {}
 
   // Called when information about `identity` (such as the name or the image)
   // have been updated.

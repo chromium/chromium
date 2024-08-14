@@ -78,7 +78,7 @@ void FakeSystemIdentityManager::AddIdentity(id<SystemIdentity> identity) {
   FakeSystemIdentity* fake_identity =
       base::apple::ObjCCast<FakeSystemIdentity>(identity);
   [storage_ addFakeIdentity:fake_identity];
-  FireIdentityListChanged(/*notify_user*/ false);
+  FireIdentityListChanged();
 
   // Set up capabilities to remove the delay while displaying the history sync
   // opt-in screen for testing.
@@ -99,7 +99,7 @@ void FakeSystemIdentityManager::AddIdentityWithUnknownCapabilities(
   FakeSystemIdentity* fake_identity =
       base::apple::ObjCCast<FakeSystemIdentity>(identity);
   [storage_ addFakeIdentity:fake_identity];
-  FireIdentityListChanged(/*notify_user*/ false);
+  FireIdentityListChanged();
 }
 
 void FakeSystemIdentityManager::AddIdentityWithCapabilities(
@@ -119,7 +119,7 @@ void FakeSystemIdentityManager::AddIdentityWithCapabilities(
     bool value = capabilities[name].boolValue;
     mutator->SetCapability(stdString, value);
   }
-  FireIdentityListChanged(/*notify_user*/ false);
+  FireIdentityListChanged();
 }
 
 void FakeSystemIdentityManager::ForgetIdentityFromOtherApplication(
@@ -129,8 +129,7 @@ void FakeSystemIdentityManager::ForgetIdentityFromOtherApplication(
     return;
   }
 
-  ForgetIdentityAsync(identity, base::DoNothing(), /*notify_user=*/true,
-                      /*removed_by_user=*/false);
+  ForgetIdentityAsync(identity, base::DoNothing(), /*removed_by_user=*/false);
 }
 
 AccountCapabilitiesTestMutator*
@@ -154,7 +153,7 @@ AccountCapabilities FakeSystemIdentityManager::GetVisibleCapabilities(
 
 void FakeSystemIdentityManager::FireSystemIdentityReloaded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  FireIdentityListChanged(/*notify_user*/ true);
+  FireIdentityListChanged();
 }
 
 void FakeSystemIdentityManager::FireIdentityUpdatedNotification(
@@ -278,7 +277,7 @@ void FakeSystemIdentityManager::ForgetIdentity(
   PostClosure(FROM_HERE,
               base::BindOnce(&FakeSystemIdentityManager::ForgetIdentityAsync,
                              GetWeakPtr(), identity, std::move(callback),
-                             /*notify_user=*/false, /*removed_by_user=*/true));
+                             /*removed_by_user=*/true));
 }
 
 bool FakeSystemIdentityManager::IdentityRemovedByUser(NSString* gaia_id) {
@@ -395,7 +394,6 @@ FakeSystemIdentityManager::GetWeakPtr() {
 void FakeSystemIdentityManager::ForgetIdentityAsync(
     id<SystemIdentity> identity,
     ForgetIdentityCallback callback,
-    bool notify_user,
     bool removed_by_user) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (![storage_ containsIdentityWithGaiaID:identity.gaiaID]) {
@@ -409,7 +407,7 @@ void FakeSystemIdentityManager::ForgetIdentityAsync(
   }
   [storage_ removeIdentityWithGaiaID:identity.gaiaID];
 
-  FireIdentityListChanged(notify_user);
+  FireIdentityListChanged();
 
   std::move(callback).Run(/*error*/ nil);
 }
