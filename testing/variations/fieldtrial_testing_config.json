@@ -17034,7 +17034,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "max_pre_initialize_count": "3"
+                        "max_pre_initialize_count": "1"
                     },
                     "enable_features": [
                         "PreInitializePageAndFrameForSVGImage"
