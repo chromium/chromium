@@ -23,7 +23,9 @@
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/drivefs/drivefs_search_query.h"
 #include "components/drive/file_errors.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "url/gurl.h"
@@ -97,11 +99,20 @@ void DriveSearchProvider::Start(const std::u16string& query) {
   last_query_ = query;
   last_tokenized_query_.emplace(query, TokenizedString::Mode::kWords);
 
-  drive_service_->SearchDriveByFileName(
+  drivefs_search_query_ = drive_service_->CreateSearchQueryByFileName(
       base::UTF16ToUTF8(query), kMaxResults,
       drivefs::mojom::QueryParameters::SortField::kLastModified,
       drivefs::mojom::QueryParameters::SortDirection::kDescending,
-      query_source_,
+      query_source_);
+
+  if (drivefs_search_query_ == nullptr) {
+    Results empty_results;
+    SwapResults(&empty_results);
+    LogStatus(Status::kDriveUnavailable);
+    return;
+  }
+
+  drivefs_search_query_->GetNextPage(
       base::BindOnce(&DriveSearchProvider::OnSearchDriveByFileName,
                      weak_factory_.GetWeakPtr()));
 }
@@ -110,6 +121,7 @@ void DriveSearchProvider::StopQuery() {
   weak_factory_.InvalidateWeakPtrs();
   last_query_.clear();
   last_tokenized_query_.reset();
+  drivefs_search_query_.reset();
 }
 
 void DriveSearchProvider::OnSearchDriveByFileName(

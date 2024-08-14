@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_DRIVE_SEARCH_PROVIDER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_DRIVE_SEARCH_PROVIDER_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -25,6 +26,10 @@ class Profile;
 namespace drive {
 class DriveIntegrationService;
 }  // namespace drive
+
+namespace drivefs {
+class DriveFsSearchQuery;
+}
 
 namespace app_list {
 
@@ -66,6 +71,9 @@ class DriveSearchProvider : public SearchProvider {
 
   std::u16string last_query_;
   std::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
+  // Wraps the `drivefs::mojom::SearchQuery` for the current query.
+  // Resetting this will stop the search query.
+  std::unique_ptr<drivefs::DriveFsSearchQuery> drivefs_search_query_;
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<drive::DriveIntegrationService> drive_service_;
