@@ -444,13 +444,11 @@ void PictureLayerTiling::ComputeTilePriorityRects(
   gfx::Rect output_rects[4];
   for (size_t i = 0; i < std::size(input_rects); ++i)
     output_rects[i] = EnclosingContentsRectFromLayerRect(*input_rects[i]);
-  // Make sure the eventually rect is aligned to tile bounds.
-  output_rects[3] =
-      tiling_data_.ExpandRectIgnoringBordersToTileBounds(output_rects[3]);
 
   SetTilePriorityRects(content_to_screen_scale, output_rects[0],
                        output_rects[1], output_rects[2], output_rects[3],
                        occlusion_in_layer_space);
+  output_rects[3].Intersect(tiling_rect());
   SetLiveTilesRect(output_rects[3]);
 }
 
