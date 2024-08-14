@@ -36,6 +36,7 @@
 #include "extensions/renderer/user_script_set_manager.h"
 #include "extensions/renderer/v8_schema_registry.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "v8/include/v8-forward.h"
 
@@ -152,7 +153,8 @@ class Dispatcher : public content::RenderThreadObserver,
       v8::Local<v8::Context> v8_context,
       int64_t service_worker_version_id,
       const GURL& service_worker_scope,
-      const GURL& script_url);
+      const GURL& script_url,
+      const blink::ServiceWorkerToken& service_worker_token);
 
   void WillReleaseScriptContext(blink::WebLocalFrame* frame,
                                 const v8::Local<v8::Context>& context,

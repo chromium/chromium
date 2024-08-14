@@ -88,6 +88,7 @@
 #include "gin/converter.h"
 #include "services/network/public/mojom/cors.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -481,7 +482,8 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     v8::Local<v8::Context> v8_context,
     int64_t service_worker_version_id,
     const GURL& service_worker_scope,
-    const GURL& script_url) {
+    const GURL& script_url,
+    const blink::ServiceWorkerToken& service_worker_token) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
 
   // TODO(crbug.com/40626913): We may want to give service workers not
@@ -554,7 +556,8 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
   CHECK(worker_activation_token.has_value());
   worker_dispatcher->AddWorkerData(
       context_proxy, service_worker_version_id, worker_activation_token,
-      context, CreateBindingsSystem(worker_dispatcher, std::move(ipc_sender)));
+      service_worker_token, context,
+      CreateBindingsSystem(worker_dispatcher, std::move(ipc_sender)));
 
   // TODO(lazyboy): Make sure accessing |source_map_| in worker thread is
   // safe.

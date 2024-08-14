@@ -40,6 +40,7 @@
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom.h"
@@ -122,7 +123,8 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
     scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner,
     int32_t service_worker_route_id,
     const std::vector<std::string>& cors_exempt_header_list,
-    const blink::StorageKey& storage_key)
+    const blink::StorageKey& storage_key,
+    const blink::ServiceWorkerToken& service_worker_token)
     : service_worker_version_id_(service_worker_version_id),
       service_worker_scope_(service_worker_scope),
       script_url_(script_url),
@@ -142,7 +144,8 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
       start_timing_(std::move(start_timing)),
       service_worker_route_id_(service_worker_route_id),
       cors_exempt_header_list_(cors_exempt_header_list),
-      storage_key_(storage_key) {
+      storage_key_(storage_key),
+      service_worker_token_(service_worker_token) {
   DCHECK(initiator_thread_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(owner_);
   DCHECK(subresource_loaders);
@@ -323,7 +326,7 @@ void ServiceWorkerContextClient::WillEvaluateScript(
   DCHECK(proxy_);
   GetContentClient()->renderer()->WillEvaluateServiceWorkerOnWorkerThread(
       proxy_, v8_context, service_worker_version_id_, service_worker_scope_,
-      script_url_);
+      script_url_, service_worker_token_);
 }
 
 void ServiceWorkerContextClient::DidEvaluateScript(bool success) {

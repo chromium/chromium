@@ -23,6 +23,7 @@
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -165,10 +166,12 @@ class ServiceWorkerTaskQueue
 
   // Called once an extension Service Worker context was initialized but not
   // necessarily started executing its JavaScript.
-  void DidInitializeServiceWorkerContext(int render_process_id,
-                                         const ExtensionId& extension_id,
-                                         int64_t service_worker_version_id,
-                                         int thread_id);
+  void DidInitializeServiceWorkerContext(
+      int render_process_id,
+      const ExtensionId& extension_id,
+      int64_t service_worker_version_id,
+      int thread_id,
+      const blink::ServiceWorkerToken& service_worker_token);
   // Called once an extension Service Worker started running.
   // This can be thought as "loadstop", i.e. the global JS script of the worker
   // has completed executing.

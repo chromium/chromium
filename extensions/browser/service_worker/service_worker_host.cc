@@ -28,6 +28,7 @@
 #include "extensions/common/trace_util.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace extensions {
 
@@ -126,6 +127,7 @@ void ServiceWorkerHost::DidInitializeServiceWorkerContext(
     const ExtensionId& extension_id,
     int64_t service_worker_version_id,
     int worker_thread_id,
+    const blink::ServiceWorkerToken& service_worker_token,
     mojo::PendingAssociatedRemote<mojom::EventDispatcher> event_dispatcher) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::BrowserContext* browser_context = GetBrowserContext();
@@ -157,9 +159,9 @@ void ServiceWorkerHost::DidInitializeServiceWorkerContext(
   permissions_observer_.Observe(PermissionsManager::Get(browser_context));
 
   ServiceWorkerTaskQueue::Get(browser_context)
-      ->DidInitializeServiceWorkerContext(render_process_id, extension_id,
-                                          service_worker_version_id,
-                                          worker_thread_id);
+      ->DidInitializeServiceWorkerContext(
+          render_process_id, extension_id, service_worker_version_id,
+          worker_thread_id, service_worker_token);
   EventRouter::Get(browser_context)
       ->BindServiceWorkerEventDispatcher(render_process_id, worker_thread_id,
                                          std::move(event_dispatcher));

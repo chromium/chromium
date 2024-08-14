@@ -19,6 +19,7 @@
 #include "extensions/renderer/v8_schema_registry.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_proxy.h"
 
 namespace extensions {
@@ -36,6 +37,7 @@ class ServiceWorkerData
       blink::WebServiceWorkerContextProxy* proxy,
       int64_t service_worker_version_id,
       const std::optional<base::UnguessableToken>& activation_sequence,
+      const blink::ServiceWorkerToken& service_worker_token,
       ScriptContext* context,
       std::unique_ptr<NativeExtensionBindingsSystem> bindings_system);
 
@@ -93,6 +95,7 @@ class ServiceWorkerData
   raw_ptr<blink::WebServiceWorkerContextProxy> proxy_;
   const int64_t service_worker_version_id_;
   const std::optional<base::UnguessableToken> activation_sequence_;
+  const blink::ServiceWorkerToken service_worker_token_;
   const raw_ptr<ScriptContext, DanglingUntriaged> context_ = nullptr;
 
   std::unique_ptr<V8SchemaRegistry> v8_schema_registry_;

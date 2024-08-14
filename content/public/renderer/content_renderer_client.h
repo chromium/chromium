@@ -28,6 +28,7 @@
 #include "media/base/key_system_info.h"
 #include "media/base/key_systems_support_registration.h"
 #include "media/base/supported_types.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
@@ -386,7 +387,8 @@ class CONTENT_EXPORT ContentRendererClient {
       v8::Local<v8::Context> v8_context,
       int64_t service_worker_version_id,
       const GURL& service_worker_scope,
-      const GURL& script_url) {}
+      const GURL& script_url,
+      const blink::ServiceWorkerToken& service_worker_token) {}
 
   // Notifies that a service worker context has finished executing its top-level
   // JavaScript. This function is called from the worker thread.

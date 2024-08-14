@@ -43,6 +43,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/origin.h"
 
@@ -249,7 +250,8 @@ void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
     int render_process_id,
     const ExtensionId& extension_id,
     int64_t service_worker_version_id,
-    int thread_id) {
+    int thread_id,
+    const blink::ServiceWorkerToken& service_worker_token) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
@@ -273,7 +275,7 @@ void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
   ProcessManager::Get(browser_context_)
       ->StartTrackingServiceWorkerRunningInstance(
           {extension_id, render_process_id, service_worker_version_id,
-           thread_id});
+           thread_id, service_worker_token});
   RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
       ->ActivateExtensionInProcess(*extension, process_host);
 
@@ -979,8 +981,8 @@ void ServiceWorkerTaskQueue::OnDestruct(
   StopObserving(context);
 }
 
-// Listens to worker stops and removes invalid `WorkerId` from `WorkerIdSet`, if
-// it finds it.
+// Listens to worker stops and removes stopped worker from `WorkerIdSet`, if it
+// finds it.
 void ServiceWorkerTaskQueue::OnStopped(int64_t version_id, const GURL& scope) {
   // TODO(crbug.com/40936639): Confirming this is true in order to allow for
   // synchronous notification of this status change.
