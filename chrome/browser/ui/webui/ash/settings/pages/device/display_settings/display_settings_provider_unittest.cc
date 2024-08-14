@@ -238,6 +238,8 @@ class DisplaySettingsProviderTest : public ChromeAshTestBase {
 
   void SetUp() override {
     ChromeAshTestBase::SetUp();
+    feature_list_.InitAndDisableFeature(
+        features::kEnableBrightnessControlInSettings);
     provider_ = std::make_unique<DisplaySettingsProvider>();
     brightness_control_delegate_ =
         std::make_unique<FakeBrightnessControlDelegate>();
@@ -611,10 +613,6 @@ TEST_F(DisplaySettingsProviderTest, DisplayBrightnessSettingsObservation) {
 // the feature flag is disabled).
 TEST_F(DisplaySettingsProviderTest,
        SetInternalDisplayScreenBrightness_FeatureDisabled) {
-  feature_list_.Reset();
-  feature_list_.InitAndDisableFeature(
-      ash::features::kEnableBrightnessControlInSettings);
-
   // No histograms should have been recorded yet.
   histogram_tester_.ExpectTotalCount(
       "ChromeOS.Settings.Display.Internal.BrightnessSliderAdjusted",
@@ -704,10 +702,6 @@ TEST_F(DisplaySettingsProviderTest,
 // the feature flag is disabled).
 TEST_F(DisplaySettingsProviderTest,
        SetAmbientLightSensorEnabled_FeatureDisabled) {
-  feature_list_.Reset();
-  feature_list_.InitAndDisableFeature(
-      ash::features::kEnableBrightnessControlInSettings);
-
   // No histograms should have been recorded.
   histogram_tester_.ExpectTotalCount(
       "ChromeOS.Settings.Display.Internal.AutoBrightnessEnabled",
