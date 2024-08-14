@@ -66,16 +66,23 @@
 
 namespace {
 
+// Timings used for testing purposes. Infinite time for the tests to confidently
+// test the behaviors while a delay is ongoing.
+constexpr base::TimeDelta kInfiniteTimeForTesting = base::TimeDelta::Max();
+
 constexpr float kAvatarIconSigninPendingShrinkRatio = 0.75;
 
-static std::optional<base::TimeDelta> kTestingDuration;
-
 constexpr base::TimeDelta kShowNameDuration = base::Seconds(3);
+static std::optional<base::TimeDelta> g_show_name_duration_for_testing;
 
 constexpr base::TimeDelta kShowSigninPendingTextDelay = base::Minutes(50);
+static std::optional<base::TimeDelta>
+    g_show_signin_pending_text_delay_for_testing;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 constexpr base::TimeDelta kEnterpriseTextTransientDuration = base::Seconds(30);
+static std::optional<base::TimeDelta>
+    g_enterprise_text_transient_duration_for_testing;
 #endif
 
 ProfileAttributesStorage& GetProfileAttributesStorage() {
@@ -146,6 +153,10 @@ class StateProvider;
 class ExplicitStateProvider;
 class SyncErrorStateProvider;
 class SigninPendingStateProvider;
+class ShowIdentityNameStateProvider;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class ManagementStateProvider;
+#endif
 
 // Allows getting data from the underlying implementation of a `StateProvider`.
 // `StateVisitor::visit()` overrides to be added based on the need.
@@ -154,6 +165,10 @@ class StateVisitor {
   virtual void visit(const ExplicitStateProvider* state_provider) = 0;
   virtual void visit(const SyncErrorStateProvider* state_provider) = 0;
   virtual void visit(const SigninPendingStateProvider* state_provider) = 0;
+  virtual void visit(const ShowIdentityNameStateProvider* state_provider) = 0;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  virtual void visit(const ManagementStateProvider* state_provider) = 0;
+#endif
 };
 
 class StateObserver {
@@ -371,7 +386,12 @@ class ShowIdentityNameStateProvider : public StateProvider,
     MaybeShowIdentityName();
   }
 
+  void ForceDelayTimeoutForTesting() { OnIdentityAnimationTimeout(); }
+
  private:
+  // StateProvider:
+  void accept(StateVisitor& visitor) const override { visitor.visit(this); }
+
   // Initiates showing the identity.
   void OnUserIdentityChanged() {
     signin_ui_util::RecordAnimatedIdentityTriggered(&profile_.get());
@@ -413,7 +433,7 @@ class ShowIdentityNameStateProvider : public StateProvider,
         base::BindOnce(
             &ShowIdentityNameStateProvider::OnIdentityAnimationTimeout,
             weak_ptr_factory_.GetWeakPtr()),
-        kTestingDuration.value_or(kShowNameDuration));
+        g_show_name_duration_for_testing.value_or(kShowNameDuration));
   }
 
   void OnIdentityAnimationTimeout() {
@@ -436,7 +456,6 @@ class ShowIdentityNameStateProvider : public StateProvider,
     }
 
     Clear();
-    avatar_toolbar_button_->NotifyShowNameClearedForTesting();  // IN-TEST
   }
 
   // Clears the effects of the state being active.
@@ -569,7 +588,8 @@ class SigninPendingStateProvider : public StateProvider,
       base::TimeDelta elapsed_delay_time =
           base::Time::Now() - signed_in_pending_delay_start->time_;
       const base::TimeDelta delay =
-          kTestingDuration.value_or(kShowSigninPendingTextDelay);
+          g_show_signin_pending_text_delay_for_testing.value_or(
+              kShowSigninPendingTextDelay);
       if (elapsed_delay_time < delay) {
         StartTimerDelay(delay - elapsed_delay_time);
       } else {
@@ -594,6 +614,11 @@ class SigninPendingStateProvider : public StateProvider,
 
   // Only show the text when the delay timer is not running.
   bool ShouldShowText() const { return !display_text_delay_timer_.IsRunning(); }
+
+  void ForceTimerTimeoutForTesting() {
+    display_text_delay_timer_.FireNow();
+    display_text_delay_timer_.Stop();
+  }
 
  private:
   // StateProvider:
@@ -625,7 +650,8 @@ class SigninPendingStateProvider : public StateProvider,
                 kDiceResponseHandler_Signout) {
       profile_->SetUserData(kSigninPendingTimestampStartKey,
                             std::make_unique<TimeStampData>(base::Time::Now()));
-      StartTimerDelay(kTestingDuration.value_or(kShowSigninPendingTextDelay));
+      StartTimerDelay(g_show_signin_pending_text_delay_for_testing.value_or(
+          kShowSigninPendingTextDelay));
     }
 
     RequestUpdate();
@@ -652,7 +678,6 @@ class SigninPendingStateProvider : public StateProvider,
   void OnTimerDelayReached() {
     profile_->RemoveUserData(kSigninPendingTimestampStartKey);
     RequestUpdate();
-    avatar_toolbar_button_->NotifyShowSigninPausedDelayEnded();  // IN-TEST
   }
 
   raw_ref<Profile> profile_;
@@ -706,7 +731,16 @@ class ManagementStateProvider : public StateProvider,
            (!IsTransient() || temporarily_showing_);
   }
 
+  void ClearTransientTextForTesting() {
+    if (IsTransient()) {
+      ClearTransientText();
+    }
+  }
+
  private:
+  // StateProvider:
+  void accept(StateVisitor& visitor) const override { visitor.visit(this); }
+
   void OnBrowserAdded(Browser*) override {
     // This is required so that the enterprise text is shown when a profile is
     // opened.
@@ -730,7 +764,8 @@ class ManagementStateProvider : public StateProvider,
           FROM_HERE,
           base::BindOnce(&ManagementStateProvider::ClearTransientText,
                          weak_ptr_factory_.GetWeakPtr()),
-          kTestingDuration.value_or(kEnterpriseTextTransientDuration));
+          g_enterprise_text_transient_duration_for_testing.value_or(
+              kEnterpriseTextTransientDuration));
       enterprise_text_hide_scheduled_ = true;
       temporarily_showing_ = true;
     }
@@ -742,8 +777,6 @@ class ManagementStateProvider : public StateProvider,
 
     temporarily_showing_ = false;
     RequestUpdate();
-    avatar_toolbar_button_
-        ->NotifyManagementTransientTextClearedForTesting();  // IN-TEST
   }
 
   // Used to determine if the text should be shown permanently or not.
@@ -791,6 +824,12 @@ class StateProviderGetter : public StateVisitor {
   const SigninPendingStateProvider* AsSigninPending() {
     return signin_pending_state_;
   }
+  const ShowIdentityNameStateProvider* AsShowIdentity() {
+    return show_identity_state_;
+  }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  const ManagementStateProvider* AsManagement() { return management_state_; }
+#endif
 
  private:
   void visit(const ExplicitStateProvider* state_provider) override {
@@ -804,10 +843,22 @@ class StateProviderGetter : public StateVisitor {
   void visit(const SigninPendingStateProvider* state_provider) override {
     signin_pending_state_ = state_provider;
   }
+  void visit(const ShowIdentityNameStateProvider* state_provider) override {
+    show_identity_state_ = state_provider;
+  }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  void visit(const ManagementStateProvider* state_provider) override {
+    management_state_ = state_provider;
+  }
+#endif
 
   raw_ptr<const ExplicitStateProvider> explicit_state_ = nullptr;
   raw_ptr<const SyncErrorStateProvider> sync_error_state_ = nullptr;
   raw_ptr<const SigninPendingStateProvider> signin_pending_state_ = nullptr;
+  raw_ptr<const ShowIdentityNameStateProvider> show_identity_state_ = nullptr;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  raw_ptr<const ManagementStateProvider> management_state_ = nullptr;
+#endif
 };
 
 }  // namespace
@@ -1575,12 +1626,6 @@ void AvatarToolbarButtonDelegate::OnErrorStateOfRefreshTokenUpdatedForAccount(
   }
 }
 
-// static
-void AvatarToolbarButtonDelegate::SetTextDurationForTesting(
-    base::TimeDelta duration) {
-  kTestingDuration = duration;
-}
-
 void AvatarToolbarButtonDelegate::PaintIcon(
     gfx::Canvas* canvas,
     const gfx::Rect& icon_bounds) const {
@@ -1601,4 +1646,72 @@ void AvatarToolbarButtonDelegate::PaintIcon(
                               kColorTabDiscardRingFrameActive));
       return;
   }
+}
+
+// static
+base::AutoReset<std::optional<base::TimeDelta>>
+AvatarToolbarButtonDelegate::CreateScopedInfiniteDelayOverrideForTesting(
+    AvatarDelayType delay_type) {
+  switch (delay_type) {
+    case AvatarDelayType::kNameGreeting:
+      return base::AutoReset<std::optional<base::TimeDelta>>(
+          &g_show_name_duration_for_testing, kInfiniteTimeForTesting);
+    case AvatarDelayType::kSigninPendingText:
+      return base::AutoReset<std::optional<base::TimeDelta>>(
+          &g_show_signin_pending_text_delay_for_testing,
+          kInfiniteTimeForTesting);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    case AvatarDelayType::kManagementLabelTransientMode:
+      return base::AutoReset<std::optional<base::TimeDelta>>(
+          &g_enterprise_text_transient_duration_for_testing,
+          kInfiniteTimeForTesting);
+#endif
+  }
+}
+
+void AvatarToolbarButtonDelegate::TriggerTimeoutForTesting(
+    AvatarDelayType delay_type) {
+  switch (delay_type) {
+    case AvatarDelayType::kNameGreeting:
+      if (state_manager_->GetButtonActiveState() ==
+          ButtonState::kShowIdentityName) {
+        internal::ShowIdentityNameStateProvider* show_identity_state =
+            const_cast<internal::ShowIdentityNameStateProvider*>(
+                internal::StateProviderGetter(
+                    *state_manager_->GetActiveStateProvider())
+                    .AsShowIdentity());
+        show_identity_state->ForceDelayTimeoutForTesting();  // IN-TEST
+      }
+      break;
+    case AvatarDelayType::kSigninPendingText:
+      if (state_manager_->GetButtonActiveState() ==
+          ButtonState::kSigninPending) {
+        internal::SigninPendingStateProvider* signin_pending_state =
+            const_cast<internal::SigninPendingStateProvider*>(
+                internal::StateProviderGetter(
+                    *state_manager_->GetActiveStateProvider())
+                    .AsSigninPending());
+        signin_pending_state->ForceTimerTimeoutForTesting();  // IN-TEST
+      }
+      break;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    case AvatarDelayType::kManagementLabelTransientMode:
+      if (state_manager_->GetButtonActiveState() == ButtonState::kManagement) {
+        internal::ManagementStateProvider* management_state =
+            const_cast<internal::ManagementStateProvider*>(
+                internal::StateProviderGetter(
+                    *state_manager_->GetActiveStateProvider())
+                    .AsManagement());
+        management_state->ClearTransientTextForTesting();  // IN-TEST
+      }
+      break;
+#endif
+  }
+}
+
+// static
+base::AutoReset<std::optional<base::TimeDelta>> AvatarToolbarButtonDelegate::
+    CreateScopedZeroDelayOverrideSigninPendingTextForTesting() {
+  return base::AutoReset<std::optional<base::TimeDelta>>(
+      &g_show_signin_pending_text_delay_for_testing, base::Seconds(0));
 }
