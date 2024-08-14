@@ -6,6 +6,7 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -53,11 +54,7 @@ class Mv2DisabledDialogControllerInteractiveUITest
     InteractiveBrowserTest::SetUp();
   }
 
-  void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
-  }
-
-  const Extension* AddMV2Extension(
+  scoped_refptr<const Extension> AddMV2Extension(
       std::string_view name,
       mojom::ManifestLocation location = mojom::ManifestLocation::kInternal) {
     static constexpr char kManifest[] =
@@ -76,11 +73,12 @@ class Mv2DisabledDialogControllerInteractiveUITest
     loader.set_ignore_manifest_warnings(true);
     scoped_refptr<const Extension> extension =
         loader.LoadExtension(test_dir.Pack());
-    return extension.get();
+    return extension;
   }
 
-  const Extension* AddMV2ExtensionWithIcon(std::string_view name,
-                                           std::string icon_file) {
+  scoped_refptr<const Extension> AddMV2ExtensionWithIcon(
+      std::string_view name,
+      std::string icon_file) {
     static constexpr char kManifest[] =
         R"({
              "name": "%s",
@@ -108,7 +106,7 @@ class Mv2DisabledDialogControllerInteractiveUITest
     loader.set_ignore_manifest_warnings(true);
     scoped_refptr<const Extension> extension =
         loader.LoadExtension(test_dir.Pack());
-    return extension.get();
+    return extension;
   }
 
   ExtensionRegistry* extension_registry() {
@@ -117,15 +115,27 @@ class Mv2DisabledDialogControllerInteractiveUITest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  // Disable install verification.
+  ScopedInstallVerifierBypassForTest install_verifier_bypass_;
 };
 
 // Tests that extensions in disable dialog are uninstalled when the remove
 // button is selected.
+// TODO(crbug.com/358407359): Flaky on ChromeOS due to a race-condition with
+// informed restore dialog on Ash.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PRE_PRE_OnRemoveSelected DISABLED_PRE_PRE_OnRemoveSelected
+#define MAYBE_PRE_OnRemoveSelected DISABLED_PRE_OnRemoveSelected
+#define MAYBE_OnRemoveSelected DISABLED_OnRemoveSelected
+#else
+#define MAYBE_PRE_PRE_OnRemoveSelected PRE_PRE_OnRemoveSelected
+#define MAYBE_PRE_OnRemoveSelected PRE_OnRemoveSelected
+#define MAYBE_OnRemoveSelected OnRemoveSelected
+#endif
 // Stage 1: Install an MV2 extension.
-// TODO(crbug.com/358567086): Failing in multiple platforms.
 IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
-                       DISABLED_PRE_PRE_OnRemoveSelected) {
-  const Extension* extension = AddMV2Extension("MV2 Extension");
+                       MAYBE_PRE_PRE_OnRemoveSelected) {
+  scoped_refptr<const Extension> extension = AddMV2Extension("MV2 Extension");
 
   // Extension is not affected by the MV2 deprecation, yet. Thus, dialog is not
   // visible.
@@ -135,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 // Stage 2: Select the remove option in the disable dialog, which should
 // uninstall the extension.
 IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
-                       DISABLED_PRE_OnRemoveSelected) {
+                       MAYBE_PRE_OnRemoveSelected) {
   RunTestSequence(
       // Extension is disabled due to the MV2 deprecation stage.
       CheckResult(
@@ -162,18 +172,28 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 }
 // Stage 3: Dialog is not shown again, since user acknowledged it.
 IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
-                       DISABLED_OnRemoveSelected) {
+                       MAYBE_OnRemoveSelected) {
   RunTestSequence(
       EnsureNotPresent(kExtensionsMv2DisabledDialogRemoveButtonElementId));
 }
 
 // Tests that the extensions page is opened when the manage button is selected,
 // and the extension is left disabled.
-// TODO(crbug.com/358567086): Failing in multiple platforms.
+// TODO(crbug.com/358407359): Flaky on ChromeOS due to a race-condition with
+// informed restore dialog on Ash.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PRE_PRE_OnManageSelected DISABLED_PRE_PRE_OnManageSelected
+#define MAYBE_PRE_OnManageSelected DISABLED_PRE_OnManageSelected
+#define MAYBE_OnManageSelected DISABLED_OnManageSelected
+#else
+#define MAYBE_PRE_PRE_OnManageSelected PRE_PRE_OnManageSelected
+#define MAYBE_PRE_OnManageSelected PRE_OnManageSelected
+#define MAYBE_OnManageSelected OnManageSelected
+#endif
 // Stage 1: Install an MV2 extension.
 IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
-                       DISABLED_PRE_PRE_OnManageSelected) {
-  const Extension* extension = AddMV2Extension("MV2 Extension");
+                       MAYBE_PRE_PRE_OnManageSelected) {
+  scoped_refptr<const Extension> extension = AddMV2Extension("MV2 Extension");
 
   // Extension is not affected by the MV2 deprecation, yet. Thus, dialog is not
   // visible.
@@ -183,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 // Stage 2: Select the manage option in the disable dialog, which should open
 // the extensions page.
 IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
-                       DISABLED_PRE_OnManageSelected) {
+                       MAYBE_PRE_OnManageSelected) {
   RunTestSequence(
       InstrumentTab(kTabId),
       // Extension is disabled due to the MV2 deprecation stage.
@@ -211,18 +231,28 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 }
 // Stage 3: Dialog is not shown again, since user acknowledged it.
 IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
-                       DISABLED_OnManageSelected) {
+                       MAYBE_OnManageSelected) {
   RunTestSequence(
       EnsureNotPresent(kExtensionsMv2DisabledDialogManageButtonElementId));
 }
 
 // Tests the dialog is shown again on new sessions if the user didn't take an
 // action on the previous one (e.g dialog was closed for other reasons).
-// TODO(crbug.com/358567086): Failing in multiple platforms.
+// TODO(crbug.com/358407359): Flaky on ChromeOS due to a race-condition with
+// informed restore dialog on Ash.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PRE_PRE_NoUserAction DISABLED_PRE_PRE_NoUserAction
+#define MAYBE_PRE_NoUserAction DISABLED_PRE_NoUserAction
+#define MAYBE_NoUserAction DISABLED_NoUserAction
+#else
+#define MAYBE_PRE_PRE_NoUserAction PRE_PRE_NoUserAction
+#define MAYBE_PRE_NoUserAction PRE_NoUserAction
+#define MAYBE_NoUserAction NoUserAction
+#endif
 // Stage 1: Install an MV2 extension.
 IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
-                       DISABLED_PRE_PRE_NoUserAction) {
-  const Extension* extension = AddMV2Extension("MV2 Extension");
+                       MAYBE_PRE_PRE_NoUserAction) {
+  scoped_refptr<const Extension> extension = AddMV2Extension("MV2 Extension");
 
   // Extension is not affected by the MV2 deprecation, yet. Thus, dialog is not
   // visible.
@@ -231,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 }
 // Stage 2: Take no action on the dialog.
 IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
-                       DISABLED_PRE_NoUserAction) {
+                       MAYBE_PRE_NoUserAction) {
   RunTestSequence(
       // Extension is disabled due to the MV2 deprecation stage.
       CheckResult(
@@ -250,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 // Stage 3: Dialog is shown again, since user didn't take an action the previous
 // time it was shown.
 IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
-                       DISABLED_NoUserAction) {
+                       MAYBE_NoUserAction) {
   RunTestSequence(
       // Extension is disabled due to the MV2 deprecation stage.
       CheckResult(
@@ -265,9 +295,8 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 
 // Tests that only MV2 disabled extensions that can be uninstalled are included
 // in the dialog.
-// TODO(crbug.com/358567086): Failing in multiple platforms.
 IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
-                       DISABLED_PolicyInstalledExtensions) {
+                       PolicyInstalledExtensions) {
   const ExtensionId internal_extension_id =
       AddMV2Extension("Internal Extension", mojom::ManifestLocation::kInternal)
           ->id();
@@ -368,10 +397,18 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 
 // Tests that icons loaded asynchronously trigger the dialog after load is
 // finished.
-// TODO(crbug.com/358567086): Failing in multiple platforms.
+// TODO(crbug.com/358407359): Flaky on ChromeOS due to a race-condition with
+// informed restore dialog on Ash.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PRE_IconsLoaded DISABLED_PRE_IconsLoaded
+#define MAYBE_IconsLoaded DISABLED_IconsLoaded
+#else
+#define MAYBE_PRE_IconsLoaded PRE_IconsLoaded
+#define MAYBE_IconsLoaded IconsLoaded
+#endif
 // Stage 1: Load an MV2 extension with an icon.
 IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
-                       DISABLED_PRE_IconsLoaded) {
+                       MAYBE_PRE_IconsLoaded) {
   scoped_refptr<const Extension> extension_A =
       AddMV2ExtensionWithIcon("Extension A", "icon1.png");
   scoped_refptr<const Extension> extension_B =
@@ -391,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 // TODO(crbug.com/358407359): Flaky on ChromeOS due to a race-condition with
 // informed restore dialog on Ash.
 IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
-                       DISABLED_IconsLoaded) {
+                       MAYBE_IconsLoaded) {
   RunTestSequence(
       // Extensions are disabled due to the MV2 deprecation stage.
       CheckResult(
@@ -433,10 +470,18 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 }
 
 // Tests that the correct extension info is passed to the dialog.
-// TODO(crbug.com/358567086): Failing in multiple platforms.
+// TODO(crbug.com/358407359): Flaky on ChromeOS due to a race-condition with
+// informed restore dialog on Ash.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PRE_CorrectExtensionInfo DISABLED_PRE_CorrectExtensionInfo
+#define MAYBE_CorrectExtensionInfo DISABLED_CorrectExtensionInfo
+#else
+#define MAYBE_PRE_CorrectExtensionInfo PRE_CorrectExtensionInfo
+#define MAYBE_CorrectExtensionInfo CorrectExtensionInfo
+#endif
 // Stage 1: Load two MV2 extensions.
 IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
-                       DISABLED_PRE_CorrectExtensionInfo) {
+                       MAYBE_PRE_CorrectExtensionInfo) {
   scoped_refptr<const Extension> extension_A =
       AddMV2ExtensionWithIcon("Extension A", "icon1.png");
   scoped_refptr<const Extension> extension_B = AddMV2Extension("Extension B");
@@ -449,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
 }
 // Stage 2: Verify extension info passed to dialog is correct.
 IN_PROC_BROWSER_TEST_F(Mv2DisabledDialogControllerInteractiveUITest,
-                       DISABLED_CorrectExtensionInfo) {
+                       MAYBE_CorrectExtensionInfo) {
   RunTestSequence(
       // Wait for dialog to be visible. Other checks on this test will be done
       // "outside" of it.
