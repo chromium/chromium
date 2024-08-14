@@ -137,5 +137,9 @@ specific_include_rules = {
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelector.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelUtils.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManager.java"
+  ],
+  'TabHelpers\.java': [
+    "+chrome/android/java/src/org/chromium/chrome/browser/display_cutout/DisplayCutoutTabHelper.java",
+    "+chrome/browser/ui/android/edge_to_edge/internal/java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeControllerFactory.java"
   ]
 }
