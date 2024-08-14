@@ -701,7 +701,12 @@ template("mojom") {
         [ rebase_path("$dep_target_gen_dir/$dep_name.build_metadata",
                       target_gen_dir) ]
   }
-  write_file(build_metadata_filename, build_metadata, "json")
+  build_metadata_target_name = "${target_name}__build_metadata"
+  generated_file(build_metadata_target_name) {
+    outputs = [ build_metadata_filename ]
+    contents = build_metadata
+    output_conversion = "json"
+  }
 
   generate_js_fuzzing =
       (!defined(invoker.enable_js_fuzzing) || invoker.enable_js_fuzzing) &&
@@ -713,7 +718,7 @@ template("mojom") {
       (!defined(invoker.testonly) || !invoker.testonly)
 
   parser_target_name = "${target_name}__parser"
-  parser_deps = []
+  parser_deps = [ ":${build_metadata_target_name}" ]
   foreach(dep, all_deps) {
     _label = get_label_info(dep, "label_no_toolchain")
     parser_deps += [ "${_label}__parser" ]

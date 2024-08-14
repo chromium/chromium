@@ -60,6 +60,7 @@ if (renderer_ipc_fuzzing_enabled) {
     foreach(target, browser_exposed_mojom_targets) {
       inputs += [ get_label_info(target, "target_gen_dir") + "/" +
                   get_label_info(target, "name") + ".build_metadata" ]
+      deps += [ target + "__build_metadata" ]
     }
 
     # We cannot use the GN `metadata` mechanism here, because our initial
