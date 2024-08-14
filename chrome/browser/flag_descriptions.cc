@@ -3834,6 +3834,11 @@ const char kVcSegmentationInferenceBackendDescription[] =
     "Select segmentation backend to be used for running model inference "
     "during video conferencing, which may offload work from GPU.";
 
+const char kVcStudioLookName[] = "Enables Studio Look for video conferencing";
+const char kVcStudioLookDescription[] =
+    "Enables Studio Look and VC settings UI, which contains settings for Studio"
+    "Look.";
+
 const char kVcSegmentationModelName[] = "Use a different segmentation model";
 const char kVcSegmentationModelDescription[] =
     "Allows a different segmentation model to be used for blur and relighting, "

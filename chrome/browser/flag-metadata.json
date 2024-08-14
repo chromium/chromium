@@ -9234,6 +9234,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "vc-studio-look",
+    "owners": [ "okuji@chromium.org", "chromeos-camera-eng@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "vc-tray-mic-indicator",
     "owners": [ "normanbt@chromium.org", "chromeos-audio@google.com"],
     "expiry_milestone": 140

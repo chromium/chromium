@@ -118,7 +118,9 @@ TitleView::TitleView() {
 
   VideoConferenceTrayController::Get()->UpdateSidetoneSupportedState();
 
-  AddChildView(std::make_unique<SettingsButton>());
+  if (features::IsVcStudioLookEnabled()) {
+    AddChildView(std::make_unique<SettingsButton>());
+  }
 }
 
 void TitleView::OnSidetoneButtonClicked(const ui::Event& event) {
