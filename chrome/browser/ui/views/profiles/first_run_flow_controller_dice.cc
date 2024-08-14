@@ -389,19 +389,15 @@ class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
     ProfilePickerSignedInFlowController::Init();
   }
 
-  void FinishAndOpenBrowser(
-      PostHostClearedCallback post_host_cleared_callback) override {
+  void FinishAndOpenBrowserInternal(
+      PostHostClearedCallback post_host_cleared_callback,
+      bool is_continue_callback) override {
     // Do nothing if this has already been called. Note that this can get called
     // first time from a special case handling (such as the Settings link) and
     // than second time when the TurnSyncOnHelper finishes.
     if (!step_completed_callback_) {
       return;
     }
-
-    // The only callback we can receive in this flow is the one to
-    // finish configuring Sync. In this case we always want to
-    // immediately continue with that.
-    bool is_continue_callback = !post_host_cleared_callback->is_null();
     std::move(step_completed_callback_)
         .Run(std::move(post_host_cleared_callback), is_continue_callback,
              StepSwitchFinishedCallback());

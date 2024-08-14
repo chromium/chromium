@@ -311,6 +311,10 @@ inline constexpr char kGoogleAccountChooserURL[] =
 inline constexpr char kGoogleAccountDeviceActivityURL[] =
     "https://myaccount.google.com/device-activity?utm_source=chrome";
 
+// URL of the two factor authentication setup required intersitial.
+inline constexpr char kGoogleTwoFactorIntersitialURL[] =
+    "https://myaccount.google.com/interstitials/twosvrequired";
+
 // URL of the Google Password Manager.
 inline constexpr char kGooglePasswordManagerURL[] =
     "https://passwords.google.com";

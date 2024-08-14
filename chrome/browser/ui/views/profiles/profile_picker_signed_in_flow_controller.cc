@@ -4,24 +4,47 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 
+#include "base/strings/string_util.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_turn_sync_on_delegate.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
+#include "ui/base/window_open_disposition.h"
+
+namespace {
+// Returns  true if the url is a url that should be opened after a browser is
+// created following a profile profile creation. Now only the two factor
+// intersitial url is supported since that url is bypassed while in the profile
+// picker.
+bool ShouldOpenUrlAfterBrowserCreation(const GURL& url) {
+  return base::StartsWith(url.spec(), chrome::kGoogleTwoFactorIntersitialURL);
+}
+
+// Opens a new tab with `url` in `browser`. Tabs opened using this function will
+// not replace existing tabs.
+void OpenNewTabInBrowser(const GURL& url, Browser* browser) {
+  if (browser) {
+    browser->OpenGURL(url, WindowOpenDisposition::SINGLETON_TAB);
+  }
+}
+
+}  //  namespace
 
 ProfilePickerSignedInFlowController::ProfilePickerSignedInFlowController(
     ProfilePickerWebContentsHost* host,
@@ -42,6 +65,9 @@ ProfilePickerSignedInFlowController::ProfilePickerSignedInFlowController(
   // have to be profile creation flow, it can be profile onboarding.
   profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
       profile_, ProfileKeepAliveOrigin::kProfileCreationFlow);
+  if (ShouldOpenUrlAfterBrowserCreation(contents_->GetVisibleURL())) {
+    url_to_open_ = contents_->GetVisibleURL();
+  }
 }
 
 ProfilePickerSignedInFlowController::~ProfilePickerSignedInFlowController() {
@@ -77,6 +103,26 @@ void ProfilePickerSignedInFlowController::Init() {
 }
 
 void ProfilePickerSignedInFlowController::Cancel() {}
+
+void ProfilePickerSignedInFlowController::FinishAndOpenBrowser(
+    PostHostClearedCallback callback) {
+  bool is_continue_callback = !callback->is_null();
+  if (url_to_open_.is_valid()) {
+    auto open_url_callback = PostHostClearedCallback(
+        base::BindOnce(&OpenNewTabInBrowser, url_to_open_));
+    callback = is_continue_callback
+                   ? PostHostClearedCallback(base::BindOnce(
+                         [](PostHostClearedCallback cb1,
+                            PostHostClearedCallback cb2, Browser* browser) {
+                           std::move(*cb1).Run(browser);
+                           std::move(*cb2).Run(browser);
+                         },
+                         std::move(open_url_callback), std::move(callback)))
+                   : PostHostClearedCallback(std::move(open_url_callback));
+  }
+
+  FinishAndOpenBrowserInternal(std::move(callback), is_continue_callback);
+}
 
 void ProfilePickerSignedInFlowController::SwitchToSyncConfirmation() {
   DCHECK(IsInitialized());

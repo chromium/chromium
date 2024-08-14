@@ -66,7 +66,7 @@ class ProfilePickerSignedInFlowController
   // the browser window was successfully opened.
   // TODO(crbug.com/40242414): Tighten this contract by notifying the caller if
   // the browser open was not possible.
-  virtual void FinishAndOpenBrowser(PostHostClearedCallback callback) = 0;
+  void FinishAndOpenBrowser(PostHostClearedCallback callback);
 
   // Finishes the sign-in process by moving to the sync confirmation screen.
   virtual void SwitchToSyncConfirmation();
@@ -99,6 +99,9 @@ class ProfilePickerSignedInFlowController
   content::WebContents* contents() const { return contents_.get(); }
 
  protected:
+  virtual void FinishAndOpenBrowserInternal(PostHostClearedCallback callback,
+                                            bool is_continue_callback) = 0;
+
   // Returns the profile color, taking into account current policies.
   std::optional<SkColor> GetProfileColor() const;
 
@@ -157,6 +160,8 @@ class ProfilePickerSignedInFlowController
 
   // Path to a profile that should be displayed on the profile switch screen.
   base::FilePath switch_profile_path_;
+
+  GURL url_to_open_;
 
   base::WeakPtrFactory<ProfilePickerSignedInFlowController> weak_ptr_factory_{
       this};
