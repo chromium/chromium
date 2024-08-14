@@ -1208,7 +1208,7 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
       graph_info->id_to_operand_map.size() + 1, 0);
 
   for (uint64_t graph_output_id : graph_info->output_operands) {
-    ++node_output_edge_counts[graph_output_id];
+    ++node_output_edge_counts.at(graph_output_id);
   }
 
   // Iterate from the end of operations instead from the beginning, so we
@@ -1221,7 +1221,7 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
         GetOperationConnectivity(operation.get());
 
     for (uint64_t input_id : operation_connectivity.input_ids) {
-      ++node_output_edge_counts[input_id];
+      ++node_output_edge_counts.at(input_id);
     }
 
     // Try to find standalone activations that can be fused into preceding

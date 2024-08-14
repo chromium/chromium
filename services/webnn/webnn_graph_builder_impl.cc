@@ -2146,7 +2146,14 @@ WebNNGraphBuilderImpl::ValidateGraph(
   std::vector<uint64_t> graph_outputs;
   graph_outputs.reserve(graph_info.output_operands.size());
   base::flat_map<uint64_t, size_t> constant_id_to_byte_length_map;
+  // The operand id must start from 1.
+  uint64_t expected_operand_id = 1;
   for (auto& [id, operand] : graph_info.id_to_operand_map) {
+    // Validate that the operand ids are increasing and contiguous.
+    if (id != expected_operand_id++) {
+      return std::nullopt;
+    }
+
     const std::optional<std::string>& name = operand->name;
     switch (operand->kind) {
       case mojom::Operand::Kind::kInput: {
