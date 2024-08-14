@@ -2,12 +2,13 @@
   :host {
     --column-width: 220px;
     --last-column-overflow-x: visible;
+    --table-font-size: 12px;
     --table-gap: 8px;
   }
 
   #table {
     display: grid;
-    font-size: 12px;
+    font-size: var(--table-font-size);
     gap: var(--table-gap);
     grid-auto-flow: column;
     grid-template-columns: auto;
@@ -96,6 +97,17 @@
     margin-inline-end: 24px;
   }
 
+  .detail-summary {
+    font-size: 0; /* Hide spaces between summary texts. */
+    line-height: var(--table-font-size);
+    white-space: nowrap;
+  }
+
+  .detail-summary-text {
+    font-size: var(--table-font-size);
+    white-space: pre-line;
+  }
+
   .description-chip {
     background-color: var(--color-product-specifications-detail-chip-background);
     border-radius: 6px;
@@ -165,19 +177,18 @@
           </div>
           <template is="dom-if"
               if="[[showSummary_(detail.title, rowIndex, columns)]]">
-            <!-- The following section is messy to avoid spaces being rendered
-                 in place of new lines. -->
-            <!-- TODO(355476863): Figure out how to clean this up. -->
-            <div class="detail-summary"
-              ><template is="dom-repeat" items="[[detail.summary]]"
-                  as="summaryItem" index-as="summaryIndex"
-                >[[summaryItem.text]]<template
-                    is="dom-repeat" items="[[summaryItem.urls]]" as="urlInfo"
-                    index-as="urlIndex"
-                      ><description-citation
-                          url="[[urlInfo.url.url]]"
-                          index="[[computeCitationIndex_(detail.summary, summaryIndex, urlIndex)]]"
-                          ></description-citation></template></template>
+            <div class="detail-summary">
+              <template is="dom-repeat" items="[[detail.summary]]"
+                  as="summaryItem" index-as="summaryIndex">
+                <span class="detail-summary-text">[[summaryItem.text]]</span>
+                <template is="dom-repeat" items="[[summaryItem.urls]]"
+                    as="urlInfo" index-as="urlIndex">
+                  <description-citation url="[[urlInfo.url.url]]"
+                      index="[[computeCitationIndex_(detail.summary,
+                          summaryIndex, urlIndex)]]">
+                  </description-citation>
+                </template>
+              </template>
             </div>
           </template>
         </div>
