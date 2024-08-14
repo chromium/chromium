@@ -139,6 +139,7 @@ public class ChromeCachedFlags {
                         TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND,
                         TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_LOCAL_TABS_BACKEND,
                         TabResumptionModuleUtils.TAB_RESUMPTION_MAX_TILES_NUMBER,
+                        TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_DEFAULT_REASON,
                         TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_SEE_MORE,
                         TabResumptionModuleUtils.TAB_RESUMPTION_USE_DEFAULT_APP_FILTER,
                         TabResumptionModuleUtils.TAB_RESUMPTION_USE_SALIENT_IMAGE,

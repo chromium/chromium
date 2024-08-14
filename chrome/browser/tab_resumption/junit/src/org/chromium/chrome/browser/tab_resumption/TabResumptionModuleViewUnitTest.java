@@ -617,6 +617,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     @Test
     @SmallTest
     public void testRenderSingleForHistoryData_BrApp() throws Exception {
+        TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_DEFAULT_REASON.setForTesting(false);
         initModuleView();
 
         SuggestionEntry entry1 =
@@ -707,6 +708,54 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                 View.VISIBLE, tile1.findViewById(R.id.tile_pre_info_text).getVisibility());
         Assert.assertEquals(
                 REASON_TO_SHOW_TAB,
+                ((TextView) tile1.findViewById(R.id.tile_pre_info_text)).getText());
+
+        // Verifies that the maximum lines are 2 lines instead of the default 3 lines when a reason
+        // chip is shown.
+        TextView displayTextView = tile1.findViewById(R.id.tile_display_text);
+        Assert.assertEquals(
+                TabResumptionTileView.DISPLAY_TEXT_MAX_LINES_WITH_REASON,
+                displayTextView.getMaxLines());
+
+        Assert.assertEquals(View.GONE, tile1.findViewById(R.id.tile_app_chip).getVisibility());
+        Assert.assertEquals(
+                "Google Dog", ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
+        // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
+        Assert.assertEquals(
+                "www.google.com",
+                ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
+    }
+
+    @Test
+    @SmallTest
+    public void testRenderSingleWithDefaultReason() throws Exception {
+        initModuleView();
+        TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_DEFAULT_REASON.setForTesting(true);
+
+        SuggestionEntry entry1 =
+                new SuggestionEntry(
+                        SuggestionEntryType.HISTORY,
+                        "Source not to be shown",
+                        JUnitTestGURLs.GOOGLE_URL_DOG,
+                        "Google Dog",
+                        makeTimestamp(24 - 3, 0, 0),
+                        Tab.INVALID_TAB_ID,
+                        null,
+                        null);
+        mSuggestionBundle.entries.add(entry1);
+
+        Assert.assertEquals(0, mTileContainerView.getChildCount());
+
+        mModuleView.setSuggestionBundle(mSuggestionBundle);
+        Assert.assertEquals(1, mTileContainerView.getChildCount());
+
+        // The pre_info is displayed, while app chip isn't.
+        String expectedDefaultReason = "You visited 3 hr ago";
+        TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
+        Assert.assertEquals(
+                View.VISIBLE, tile1.findViewById(R.id.tile_pre_info_text).getVisibility());
+        Assert.assertEquals(
+                expectedDefaultReason,
                 ((TextView) tile1.findViewById(R.id.tile_pre_info_text)).getText());
 
         // Verifies that the maximum lines are 2 lines instead of the default 3 lines when a reason

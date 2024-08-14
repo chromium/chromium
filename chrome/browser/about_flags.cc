@@ -2399,6 +2399,13 @@ const FeatureEntry::FeatureParam
         {"use_salient_image", "true"},
 };
 const FeatureEntry::FeatureParam
+    kTabResumptionModule_single_tile_with_salient_image_show_default_reason[] =
+        {
+            {"max_tiles_number", "1"},     {"show_default_reason", "true"},
+            {"show_see_more", "true"},     {"use_default_app_filter", "true"},
+            {"use_salient_image", "true"},
+};
+const FeatureEntry::FeatureParam
     kTabResumptionModule_combine_tabs_with_salient_image[] = {
         {"show_see_more", "true"},
         {"show_tabs_in_one_module", "true"},
@@ -2423,6 +2430,13 @@ const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_arm3[] = {
     {"show_tabs_in_one_module", "true"}, {"use_default_app_filter", "true"},
     {"use_salient_image", "true"},
 };
+const FeatureEntry::FeatureParam
+    kTabResumptionModule_enable_v2_arm3_show_default_reason[] = {
+        {"disable_blend", "true"},          {"enable_v2", "true"},
+        {"max_tiles_number", "1"},          {"show_default_reason", "true"},
+        {"show_see_more", "true"},          {"show_tabs_in_one_module", "true"},
+        {"use_default_app_filter", "true"}, {"use_salient_image", "true"},
+};
 const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_arm4[] = {
     {"disable_blend", "true"},          {"enable_v2", "true"},
     {"show_see_more", "true"},          {"show_tabs_in_one_module", "true"},
@@ -2436,6 +2450,18 @@ const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_ml[] = {
     {"show_tabs_in_one_module", "true"},
     {"use_default_app_filter", "true"},
     {"use_salient_image", "true"},
+};
+const FeatureEntry::FeatureParam
+    kTabResumptionModule_enable_v2_ml_show_default_reason[] = {
+        {"enable_v2", "true"},
+        {"fetch_history_backend", "true"},
+        {"fetch_local_tabs_backend", "true"},
+        {"max_tiles_number", "1"},
+        {"show_default_reason", "true"},
+        {"show_see_more", "true"},
+        {"show_tabs_in_one_module", "true"},
+        {"use_default_app_filter", "true"},
+        {"use_salient_image", "true"},
 };
 const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
     {"Default app filter", kTabResumptionModule_defaul_app_filter,
@@ -2458,6 +2484,18 @@ const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
      std::size(kTabResumptionModule_enable_v2_arm4), nullptr},
     {"V2 ML (collect data)", kTabResumptionModule_enable_v2_ml,
      std::size(kTabResumptionModule_enable_v2_ml), nullptr},
+    {"Default app filter + Salient image + single tile + default reason",
+     kTabResumptionModule_single_tile_with_salient_image_show_default_reason,
+     std::size(
+         kTabResumptionModule_single_tile_with_salient_image_show_default_reason),
+     nullptr},
+    {"V2 Arm3 with default reason",
+     kTabResumptionModule_enable_v2_arm3_show_default_reason,
+     std::size(kTabResumptionModule_enable_v2_arm3_show_default_reason),
+     nullptr},
+    {"V2 ML with default reason",
+     kTabResumptionModule_enable_v2_ml_show_default_reason,
+     std::size(kTabResumptionModule_enable_v2_ml_show_default_reason), nullptr},
 };
 
 const FeatureEntry::FeatureParam

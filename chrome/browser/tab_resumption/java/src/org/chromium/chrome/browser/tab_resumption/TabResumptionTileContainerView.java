@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Size;
 import android.view.LayoutInflater;
@@ -134,7 +135,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
                 TabResumptionTileView tileView =
                         (TabResumptionTileView)
                                 LayoutInflater.from(getContext()).inflate(layoutId, this, false);
-                allTilesTexts += loadTileTexts(entry, isSingle, tileView);
+                allTilesTexts += loadTileTexts(entry, isSingle, tileView, recencyMs);
                 loadTileUrlImage(
                         entry,
                         urlImageProvider,
@@ -152,7 +153,10 @@ public class TabResumptionTileContainerView extends LinearLayout {
 
     /** Renders and returns the texts of a {@link TabResumptionTileView}. */
     private String loadTileTexts(
-            SuggestionEntry entry, boolean isSingle, TabResumptionTileView tileView) {
+            SuggestionEntry entry,
+            boolean isSingle,
+            TabResumptionTileView tileView,
+            long recencyMs) {
         Resources res = getContext().getResources();
         String domainUrl = TabResumptionModuleUtils.getDomainUrl(entry.url);
         if (isSingle) {
@@ -163,7 +167,10 @@ public class TabResumptionTileContainerView extends LinearLayout {
                     isHistory
                             ? tileView.maybeShowAppChip(mPackageManager, entry.type, entry.appId)
                             : null;
-            String preInfoText = appChipText == null ? entry.reasonToShowTab : null;
+            String preInfoText =
+                    appChipText == null
+                            ? getReasonToShowTab(entry.reasonToShowTab, recencyMs)
+                            : null;
             String postInfoText =
                     isHistory
                             ? domainUrl
@@ -186,6 +193,17 @@ public class TabResumptionTileContainerView extends LinearLayout {
                             entry.sourceName);
         }
         return tileView.setSuggestionTextsMulti(entry.title, infoText);
+    }
+
+    private String getReasonToShowTab(String reasonToShowTab, long recencyMs) {
+        if (TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_DEFAULT_REASON.getValue()
+                && TextUtils.isEmpty(reasonToShowTab)) {
+            String recencyString =
+                    TabResumptionModuleUtils.getRecencyString(getResources(), recencyMs);
+            return getContext()
+                    .getString(R.string.tab_resumption_module_default_reason, recencyString);
+        }
+        return reasonToShowTab;
     }
 
     /** Loads texts and images for the single Local Tab suggestion. */
