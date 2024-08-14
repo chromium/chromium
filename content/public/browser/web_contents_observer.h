@@ -387,11 +387,17 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
 
   // Document load events ------------------------------------------------------
 
-  // These three methods correspond to the points in time when a document starts
-  // loading for the first time (initiates outgoing requests), when incoming
-  // data subsequently starts arriving, and when it finishes loading. Note:
-  // There is no guarantee that calls to DidStartLoading/DidStopLoading are
-  // interleaved (e.g. there can be 2 calls to DidStartLoading in a row).
+  // These three methods correspond to the points in time when any document in
+  // the frame tree starts loading for the first time (initiates outgoing
+  // requests), when incoming data subsequently starts arriving, and when the
+  // whole frame tree finishes loading.
+  // Notes:
+  // - There is no guarantee that calls to DidStartLoading/DidStopLoading are
+  //   interleaved (e.g. there can be 2 calls to DidStartLoading in a row).
+  // - These functions are different and unrelated from DidFinishLoad, which
+  //   is a notification about a specific document instead of the whole frame
+  //   tree, and uses a slightly different trigger to signify that the load had
+  //   finished.
   virtual void DidStartLoading() {}
   virtual void DidStopLoading() {}
 
@@ -452,8 +458,12 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // content scripts marked "document_end" get injected into the frame.
   virtual void DOMContentLoaded(RenderFrameHost* render_frame_host) {}
 
-  // This method is invoked when the load is done, i.e. the spinner of the tab
-  // will stop spinning, and the onload event was dispatched.
+  // This method is invoked when the load is done for the document represented
+  // by `render_frame_host` on the renderer side, e.g. the onload event was
+  // dispatched. Note that this function is not related to
+  // `DidStartLoading()` or `DidStopLoading()` as those functions track the
+  // loading state of the whole frame tree and uses a different set of triggers
+  // to mark the load ending.
   //
   // If the WebContents is displaying replacement content, e.g. network error
   // pages, DidFinishLoad is invoked for frames that were not sending
