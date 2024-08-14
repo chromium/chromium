@@ -5,65 +5,20 @@
 #ifndef BASE_MEMORY_SHARED_MEMORY_MAPPING_H_
 #define BASE_MEMORY_SHARED_MEMORY_MAPPING_H_
 
-#include <array>
-#include <atomic>
 #include <cstddef>
-#include <type_traits>
 
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapper.h"
+#include "base/memory/shared_memory_safety_checker.h"
 #include "base/unguessable_token.h"
 
 namespace base {
 
 namespace subtle {
-
 class PlatformSharedMemoryRegion;
-
-// Constraints on types that are safe to copy across memory spaces. This is a
-// non-exhaustive list and further constraints may be added in the future.
-
-// `kIsAllowed` is true unless T is known to be dangerous over shared memory.
-template <typename T>
-struct SharedMemorySafetyChecker {
-  // Copying non-trivially-copyable objects across memory spaces is dangerous.
-  // This check isn't a separate specialization because many types that match
-  // other specializations are also trivially copyable, introducing ambiguity.
-  static constexpr bool kIsAllowed = std::is_trivially_copyable_v<T>;
-};
-
-// Pointers can't be shared across memory spaces.
-template <typename T>
-  requires(std::is_pointer_v<T> || std::is_member_pointer_v<T>)
-struct SharedMemorySafetyChecker<T> {
-  static constexpr bool kIsAllowed = false;
-};
-
-// Atomics are dangerous to share across memory spaces unless they're lock-free.
-template <typename T>
-struct SharedMemorySafetyChecker<std::atomic<T>> {
-  static constexpr bool kIsAllowed = std::atomic<T>::is_always_lock_free &&
-                                     SharedMemorySafetyChecker<T>::kIsAllowed;
-};
-
-// Each element of an array must itself be safe. Although arrays aren't outright
-// banned, prefer to use GetMemoryAsSpan<T> for array-like access.
-template <typename T, size_t N>
-struct SharedMemorySafetyChecker<T[N]> {
-  static constexpr bool kIsAllowed = SharedMemorySafetyChecker<T>::kIsAllowed;
-};
-
-template <typename T, size_t N>
-struct SharedMemorySafetyChecker<std::array<T, N>> {
-  static constexpr bool kIsAllowed = SharedMemorySafetyChecker<T>::kIsAllowed;
-};
-
-template <typename T>
-concept AllowedOverSharedMemory = SharedMemorySafetyChecker<T>::kIsAllowed;
-
 }  // namespace subtle
 
 // Base class for scoped handles to a shared memory mapping created from a

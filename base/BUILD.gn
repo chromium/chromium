@@ -422,6 +422,7 @@ component("base") {
     "memory/shared_memory_mapper.h",
     "memory/shared_memory_mapping.cc",
     "memory/shared_memory_mapping.h",
+    "memory/shared_memory_safety_checker.h",
     "memory/shared_memory_security_policy.cc",
     "memory/shared_memory_security_policy.h",
     "memory/shared_memory_tracker.cc",
