@@ -158,6 +158,14 @@ BrightnessChangeSourceToCause(
   }
 }
 
+PrefService* GetActivePrefService() {
+  if (!ash::Shell::HasInstance()) {
+    return nullptr;
+  }
+  DCHECK(ash::Shell::Get()->session_controller());
+  return ash::Shell::Get()->session_controller()->GetActivePrefService();
+}
+
 }  // namespace
 
 BrightnessControllerChromeos::BrightnessControllerChromeos(
@@ -303,10 +311,13 @@ void BrightnessControllerChromeos::SuspendImminent(
 
 void BrightnessControllerChromeos::OnFocusPod(const AccountId& account_id) {
   active_account_id_ = account_id;
-
-  if (features::IsBrightnessControlInSettingsEnabled()) {
-    RestoreBrightnessSettings(account_id);
+  if (!features::IsBrightnessControlInSettingsEnabled()) {
+    return;
   }
+  if (IsInitialBrightnessSetByPolicy()) {
+    return;
+  }
+  RestoreBrightnessSettings(account_id);
 }
 
 void BrightnessControllerChromeos::RestoreBrightnessSettings(
@@ -368,6 +379,10 @@ void BrightnessControllerChromeos::RestoreBrightnessSettingsOnFirstLogin() {
   }
 
   if (!active_pref_service_) {
+    return;
+  }
+
+  if (IsInitialBrightnessSetByPolicy()) {
     return;
   }
 
@@ -556,6 +571,21 @@ void BrightnessControllerChromeos::RecordHistogramForBrightnessAction(
                     GetBrightnessActionName(brightness_action), "Brightness.",
                     IsChargerConnected() ? "Charger" : "Battery", "Power"}),
       time_since_last_session_change);
+}
+
+bool BrightnessControllerChromeos::IsInitialBrightnessSetByPolicy() {
+  PrefService* pref_service = GetActivePrefService();
+  if (!pref_service) {
+    return false;
+  }
+
+  if (IsChargerConnected()) {
+    return pref_service->IsManagedPreference(
+        prefs::kPowerAcScreenBrightnessPercent);
+  } else {
+    return pref_service->IsManagedPreference(
+        prefs::kPowerBatteryScreenBrightnessPercent);
+  }
 }
 
 }  // namespace ash::system

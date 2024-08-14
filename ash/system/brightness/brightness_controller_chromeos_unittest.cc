@@ -1558,6 +1558,95 @@ TEST_F(BrightnessControllerChromeosTest,
 }
 
 TEST_F(BrightnessControllerChromeosTest,
+       RestoreBrightnessSettings_ScreenBrightnessPercentPolicySet) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableBrightnessControlInSettings);
+
+  // Set initial ALS status and brightness level.
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetAmbientLightSensorEnabled(request);
+  power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+
+  // Log in
+  ClearLogin();
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  user_manager::KnownUser known_user(local_state());
+  SimulateUserLogin(kUserEmail);
+
+  // Set brightness to 100%.
+  SetAmbientLightSensorEnabled(
+      false,
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+  SetBrightness(100.0,
+                power_manager::BacklightBrightnessChange_Cause_USER_REQUEST);
+  ExpectBrightnessPercent(100.0, "Brightness should be set to 100.");
+
+  // Manually set known_user's saved brightness to 10%.
+  known_user.SetPath(account_id, prefs::kInternalDisplayScreenBrightnessPercent,
+                     std::make_optional<base::Value>(10.0));
+  EXPECT_EQ(GetBrightnessPrefValue(known_user, account_id), 10.0);
+
+  // Simulate reboot.
+  LoginScreenFocusAccount(account_id);
+
+  // Expect the brightness is restored to 10%.
+  ExpectBrightnessPercent(10, "Brightness should be set to 10.");
+}
+
+TEST_F(BrightnessControllerChromeosTest,
+       RestoreBrightnessSettings_ScreenBrightnessPercentPolicyUnset) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableBrightnessControlInSettings);
+
+  // Set initial ALS status and brightness level.
+  power_manager::SetAmbientLightSensorEnabledRequest request;
+  request.set_sensor_enabled(true);
+  power_manager_client()->SetAmbientLightSensorEnabled(request);
+  power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
+
+  // Log in
+  ClearLogin();
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  user_manager::KnownUser known_user(local_state());
+  SimulateUserLogin(kUserEmail);
+
+  // Set brightness to 100%.
+  SetAmbientLightSensorEnabled(
+      false,
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+  SetBrightness(100.0,
+                power_manager::BacklightBrightnessChange_Cause_USER_REQUEST);
+  ExpectBrightnessPercent(100.0, "Brightness should be set to 100.");
+
+  // Manually set known_user's saved brightness to 10%.
+  known_user.SetPath(account_id, prefs::kInternalDisplayScreenBrightnessPercent,
+                     std::make_optional<base::Value>(10.0));
+  EXPECT_EQ(GetBrightnessPrefValue(known_user, account_id), 10.0);
+
+  // This time, set the brightness managed by policy to be true.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  static_cast<TestingPrefServiceSimple*>(prefs)->SetManagedPref(
+      prefs::kPowerBatteryScreenBrightnessPercent,
+      std::make_unique<base::Value>(true));
+  EXPECT_TRUE(
+      prefs->IsManagedPreference(prefs::kPowerBatteryScreenBrightnessPercent));
+
+  // "Unplug" the device from charger
+  SetBatteryPower();
+
+  // Simulate reboot, and log in.
+  LoginScreenFocusAccount(account_id);
+
+  // Expect the brightness is not restored to 10%.
+  brightness_control_delegate()->GetBrightnessPercent(
+      base::BindLambdaForTesting([](std::optional<double> brightness_percent) {
+        EXPECT_NE(brightness_percent.value(), 10.0);
+      }));
+}
+
+TEST_F(BrightnessControllerChromeosTest,
        RecordStartupAmbientLightSensorStatus) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kEnableBrightnessControlInSettings);

@@ -89,6 +89,7 @@ class ASH_EXPORT BrightnessControllerChromeos
   void OnGetHasAmbientLightSensor(std::optional<bool> has_sensor);
   void RestoreBrightnessSettings(const AccountId& account_id);
   void RestoreBrightnessSettingsOnFirstLogin();
+  bool IsInitialBrightnessSetByPolicy();
 
   raw_ptr<PrefService> local_state_;
   raw_ptr<SessionControllerImpl> session_controller_;
