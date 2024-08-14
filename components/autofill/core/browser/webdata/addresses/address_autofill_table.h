@@ -36,8 +36,9 @@ namespace autofill {
 //   guid               A guid string to uniquely identify the profile.
 //   use_count          The number of times this profile has been used to fill a
 //                      form.
-//   use_date           The date this profile was last used to fill a form, in
-//                      time_t.
+//   use_date           The last (use_date), second last (use_date2) and third
+//   use_date2          last date (use_date3) at which this profile was used to
+//   use_date3          fill a form, in time_t.
 //   date_modified      The date on which this profile was last modified, in
 //                      time_t.
 //   language_code      The BCP 47 language code used to format the address for
@@ -154,6 +155,7 @@ class AddressAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion114DropLegacyAddressTables();
   bool MigrateToVersion117AddProfileObservationColumn();
   bool MigrateToVersion121DropServerAddressTables();
+  bool MigrateToVersion132AddAdditionalLastUseDateColumns();
 
  private:
   // Reads profiles from the deprecated autofill_profiles table.

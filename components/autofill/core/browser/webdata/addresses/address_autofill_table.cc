@@ -31,6 +31,8 @@ constexpr std::string_view kLocalAddressesTable = "local_addresses";
 constexpr std::string_view kGuid = "guid";
 constexpr std::string_view kUseCount = "use_count";
 constexpr std::string_view kUseDate = "use_date";
+constexpr std::string_view kUseDate2 = "use_date2";
+constexpr std::string_view kUseDate3 = "use_date3";
 constexpr std::string_view kDateModified = "date_modified";
 constexpr std::string_view kLanguageCode = "language_code";
 constexpr std::string_view kLabel = "label";
@@ -341,13 +343,28 @@ std::string_view GetProfileTypeTokensTable(AutofillProfile::Source source) {
 bool AddProfileMetadataToTable(sql::Database* db,
                                const AutofillProfile& profile) {
   sql::Statement s;
-  InsertBuilder(db, s, GetProfileMetadataTable(profile.source()),
-                {kGuid, kUseCount, kUseDate, kDateModified, kLanguageCode,
-                 kLabel, kInitialCreatorId, kLastModifierId});
+  InsertBuilder(
+      db, s, GetProfileMetadataTable(profile.source()),
+      {kGuid, kUseCount, kUseDate, kUseDate2, kUseDate3, kDateModified,
+       kLanguageCode, kLabel, kInitialCreatorId, kLastModifierId});
+  auto bind_optional_time = [&s](int index, std::optional<base::Time> time) {
+    if (time) {
+      s.BindInt64(index, time->ToTimeT());
+    } else {
+      s.BindNull(index);
+    }
+  };
   int index = 0;
   s.BindString(index++, profile.guid());
   s.BindInt64(index++, profile.use_count());
   s.BindInt64(index++, profile.use_date().ToTimeT());
+  if (base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates)) {
+    bind_optional_time(index++, profile.use_date(2));
+    bind_optional_time(index++, profile.use_date(3));
+  } else {
+    s.BindNull(index++);
+    s.BindNull(index++);
+  }
   s.BindInt64(index++, profile.modification_date().ToTimeT());
   s.BindString(index++, profile.language_code());
   s.BindString(index++, profile.profile_label());
@@ -536,14 +553,26 @@ std::unique_ptr<AutofillProfile> GetProfileFromTypeTokensTable(
 bool ReadProfileMetadata(sql::Database* db, AutofillProfile& profile) {
   sql::Statement s;
   if (!SelectByGuid(db, s, GetProfileMetadataTable(profile.source()),
-                    {kUseCount, kUseDate, kDateModified, kLanguageCode, kLabel,
-                     kInitialCreatorId, kLastModifierId},
+                    {kUseCount, kUseDate, kUseDate2, kUseDate3, kDateModified,
+                     kLanguageCode, kLabel, kInitialCreatorId, kLastModifierId},
                     profile.guid())) {
     return false;
   }
+  auto as_optional_time = [&s](size_t index) -> std::optional<base::Time> {
+    if (s.GetColumnType(index) == sql::ColumnType::kNull) {
+      return std::nullopt;
+    }
+    return base::Time::FromTimeT(s.ColumnInt64(index));
+  };
   int index = 0;
   profile.set_use_count(s.ColumnInt64(index++));
-  profile.set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
+  profile.set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)), 1);
+  if (base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates)) {
+    profile.set_use_date(as_optional_time(index++), 2);
+    profile.set_use_date(as_optional_time(index++), 3);
+  } else {
+    index += 2;
+  }
   profile.set_modification_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
   profile.set_language_code(s.ColumnString(index++));
   profile.set_profile_label(s.ColumnString(index++));
@@ -626,6 +655,9 @@ bool AddressAutofillTable::MigrateToVersion(int version,
     case 121:
       *update_compatible_version = true;
       return MigrateToVersion121DropServerAddressTables();
+    case 132:
+      *update_compatible_version = false;
+      return MigrateToVersion132AddAdditionalLastUseDateColumns();
   }
   return true;
 }
@@ -1046,6 +1078,20 @@ bool AddressAutofillTable::MigrateToVersion121DropServerAddressTables() {
          transaction.Commit();
 }
 
+bool AddressAutofillTable::
+    MigrateToVersion132AddAdditionalLastUseDateColumns() {
+  auto migrate_table = [&](AutofillProfile::Source source) {
+    std::string_view table = GetProfileMetadataTable(source);
+    return AddColumn(db_, table, kUseDate2, "INTEGER") &&
+           AddColumn(db_, table, kUseDate3, "INTEGER");
+  };
+  sql::Transaction transaction(db_);
+  return transaction.Begin() &&
+         migrate_table(AutofillProfile::Source::kLocalOrSyncable) &&
+         migrate_table(AutofillProfile::Source::kAccount) &&
+         transaction.Commit();
+}
+
 bool AddressAutofillTable::InitLegacyProfileAddressesTable() {
   // The default value of 0 corresponds to the verification status
   // |kNoStatus|.
@@ -1092,7 +1138,11 @@ bool AddressAutofillTable::InitProfileMetadataTable(
                                  {kLanguageCode, "VARCHAR"},
                                  {kLabel, "VARCHAR"},
                                  {kInitialCreatorId, "INTEGER DEFAULT 0"},
-                                 {kLastModifierId, "INTEGER DEFAULT 0"}});
+                                 {kLastModifierId, "INTEGER DEFAULT 0"},
+                                 // The second and third last use date are null
+                                 // if the profile wasn't used often enough.
+                                 {kUseDate2, "INTEGER"},
+                                 {kUseDate3, "INTEGER"}});
 }
 
 bool AddressAutofillTable::InitProfileTypeTokensTable(

@@ -1509,3 +1509,27 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion130ToCurrent) {
                                             "payment_instrument_type"));
   }
 }
+
+TEST_F(WebDatabaseMigrationTest, MigrateVersion131ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_131.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(131, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesColumnExist("contact_info", "use_date2"));
+    EXPECT_FALSE(connection.DoesColumnExist("contact_info", "use_date3"));
+    EXPECT_FALSE(connection.DoesColumnExist("local_addresses", "use_date2"));
+    EXPECT_FALSE(connection.DoesColumnExist("local_addresses", "use_date3"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesColumnExist("contact_info", "use_date2"));
+    EXPECT_TRUE(connection.DoesColumnExist("contact_info", "use_date3"));
+    EXPECT_TRUE(connection.DoesColumnExist("local_addresses", "use_date2"));
+    EXPECT_TRUE(connection.DoesColumnExist("local_addresses", "use_date3"));
+  }
+}

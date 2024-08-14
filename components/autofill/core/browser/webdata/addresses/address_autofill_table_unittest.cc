@@ -21,8 +21,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/profile_token_quality_test_api.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
@@ -275,6 +273,32 @@ TEST_P(AddressAutofillTableProfileTest, ProfileTokenQuality) {
       test_api(profile.token_quality()).GetHashesForStoredType(NAME_FIRST),
       UnorderedElementsAre(ProfileTokenQualityTestApi::FormSignatureHash(12),
                            ProfileTokenQualityTestApi::FormSignatureHash(21)));
+}
+
+// Tests that last use dates are persisted, if present.
+TEST_P(AddressAutofillTableProfileTest, UseDates) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillTrackMultipleUseDates};
+  AutofillProfile profile = CreateAutofillProfile();
+  // Since the table stores time_ts, microseconds get lost in conversion.
+  const base::Time initial_use_date =
+      base::Time::FromTimeT(profile.use_date().ToTimeT());
+  ASSERT_FALSE(profile.use_date(2).has_value());
+  ASSERT_FALSE(profile.use_date(3).has_value());
+
+  table_.AddAutofillProfile(profile);
+  profile = *table_.GetAutofillProfile(profile.guid(), profile.source());
+  EXPECT_EQ(profile.use_date(1), initial_use_date);
+  EXPECT_FALSE(profile.use_date(2).has_value());
+  EXPECT_FALSE(profile.use_date(3).has_value());
+
+  profile.RecordUseDate(initial_use_date + base::Days(1));
+  profile.RecordUseDate(initial_use_date + base::Days(2));
+  table_.UpdateAutofillProfile(profile);
+  profile = *table_.GetAutofillProfile(profile.guid(), profile.source());
+  EXPECT_EQ(profile.use_date(1), initial_use_date + base::Days(2));
+  EXPECT_EQ(profile.use_date(2), initial_use_date + base::Days(1));
+  EXPECT_EQ(profile.use_date(3), initial_use_date);
 }
 
 TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {
