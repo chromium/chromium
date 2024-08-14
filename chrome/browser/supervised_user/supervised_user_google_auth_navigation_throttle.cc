@@ -170,6 +170,8 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
   std::unique_ptr<SupervisedUserVerificationPage> blocking_page =
       std::make_unique<SupervisedUserVerificationPage>(
           web_contents, profile->GetProfileUserName(), request_url,
+          SupervisedUserVerificationPage::VerificationPurpose::
+              REAUTH_REQUIRED_SITE,
           std::make_unique<SupervisedUserVerificationControllerClient>(
               web_contents, profile->GetPrefs(),
               g_browser_process->GetApplicationLocale(),

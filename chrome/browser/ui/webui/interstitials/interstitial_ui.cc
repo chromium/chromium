@@ -384,6 +384,22 @@ CreateSupervisedUserVerificationPage(content::WebContents* web_contents) {
   const GURL kRequestUrl("https://supervised-user-verification.example.net");
   return std::make_unique<SupervisedUserVerificationPage>(
       web_contents, "first.last@gmail.com", kRequestUrl,
+      SupervisedUserVerificationPage::VerificationPurpose::REAUTH_REQUIRED_SITE,
+      std::make_unique<SupervisedUserVerificationControllerClient>(
+          web_contents,
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())
+              ->GetPrefs(),
+          g_browser_process->GetApplicationLocale(),
+          GURL(chrome::kChromeUINewTabURL), kRequestUrl));
+}
+
+std::unique_ptr<SupervisedUserVerificationPage>
+CreateSupervisedUserVerificationPageForBlockedSite(
+    content::WebContents* web_contents) {
+  const GURL kRequestUrl("https://supervised-user-verification.example.net");
+  return std::make_unique<SupervisedUserVerificationPage>(
+      web_contents, "first.last@gmail.com", kRequestUrl,
+      SupervisedUserVerificationPage::VerificationPurpose::BLOCKED_SITE,
       std::make_unique<SupervisedUserVerificationControllerClient>(
           web_contents,
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
@@ -575,6 +591,9 @@ void InterstitialHTMLSource::StartDataRequest(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   } else if (path_without_query == "/supervised-user-verify") {
     interstitial_delegate = CreateSupervisedUserVerificationPage(web_contents);
+  } else if (path_without_query == "/supervised-user-verify-blocked-site") {
+    interstitial_delegate =
+        CreateSupervisedUserVerificationPageForBlockedSite(web_contents);
 #endif
   }
 
