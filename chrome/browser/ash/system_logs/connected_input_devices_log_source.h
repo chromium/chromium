@@ -33,7 +33,7 @@ class ConnectedInputDevicesLogSource : public SystemLogsSource {
                                  const std::string& pid_str);
 
   void OnTelemetryInfoProbeResponse(
-      base::OnceCallback<void(const std::string&)> callback,
+      base::OnceCallback<void(const std::string&, const std::string&)> callback,
       ash::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
   void OnDisconnect();
