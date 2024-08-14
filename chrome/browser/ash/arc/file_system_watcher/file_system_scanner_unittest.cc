@@ -129,7 +129,7 @@ class ArcFileSystemScannerTest : public ::testing::Test {
     base::FilePath parent = path.DirName();
     ModifyFile(path, ctime);
     ModifyDirectory(parent, ctime);
-    return WriteFile(path, "42", sizeof("42")) == sizeof("42");
+    return WriteFile(path, "42");
   }
 
   bool CreateDirectory(const base::FilePath& path, base::Time ctime) {

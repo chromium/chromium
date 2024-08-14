@@ -266,8 +266,7 @@ TEST_F(FileResultTest, FileMetadataPopulatedForDisplay) {
   volume_manager->RegisterDownloadsDirectoryForTesting(local_directory);
 
   base::FilePath path(local_directory.Append("test.jpg"));
-  ASSERT_TRUE(base::WriteFile(path, reinterpret_cast<const char*>(kJpegData),
-                              kJpegDataSize));
+  ASSERT_TRUE(base::WriteFile(path, kJpegData));
   ASSERT_TRUE(base::TouchFile(path, base::Time::FromSecondsSinceUnixEpoch(1),
                               base::Time::FromSecondsSinceUnixEpoch(2)));
   FileResult result(

@@ -734,9 +734,7 @@ void AmbientAshTestBase::CreateTestImageJpegFile(base::FilePath path,
   SkBitmap bitmap = gfx::test::CreateBitmap(width, height, color);
   std::vector<unsigned char> data;
   ASSERT_TRUE(gfx::JPEGCodec::Encode(std::move(bitmap), /*quality=*/50, &data));
-  size_t bytes_written = base::WriteFile(
-      path, reinterpret_cast<const char*>(data.data()), data.size());
-  ASSERT_EQ(data.size(), bytes_written);
+  ASSERT_TRUE(base::WriteFile(path, data));
 }
 
 void AmbientAshTestBase::SetScreenSaverDuration(int minutes) {

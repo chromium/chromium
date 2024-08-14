@@ -23,7 +23,7 @@
 namespace policy {
 
 bool CreateDummyFile(const base::FilePath& path) {
-  return WriteFile(path, "42", sizeof("42")) == sizeof("42");
+  return WriteFile(path, "42");
 }
 
 storage::FileSystemURL CreateFileSystemURL(const blink::StorageKey key,

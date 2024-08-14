@@ -38,7 +38,7 @@ class SkyvaultCaptureUploadNotificationTest : public BrowserWithTestWindowTest {
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_path_ = temp_dir_.GetPath().AppendASCII("test_capture.png");
-    base::WriteFile(file_path_, "test content", 12);
+    base::WriteFile(file_path_, "test content");
   }
 
   void TearDown() override { BrowserWithTestWindowTest::TearDown(); }
