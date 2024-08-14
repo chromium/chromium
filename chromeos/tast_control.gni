@@ -121,6 +121,15 @@ tast_disabled_tests_from_chrome_all = [
   # PWA change.
   "apps.Sharesheet",
 
+  # b/358376069, b/359411206: These lacros tests are failing at this
+  # moment but they will be removed soon.
+  "lacros.Activate.keep_alive",
+  "lacros.Activate.no_keep_alive",
+  "login.Chrome.lacros",
+  "security.ChromeSandboxed.lacros",
+  "security.GPUSandboxed.lacros",
+  "ui.StackSampledMetricsV2.lacros",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
