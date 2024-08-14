@@ -12153,6 +12153,21 @@
             ]
         }
     ],
+    "IncreaseWindowsTextContrast": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IncreaseWindowsTextContrast"
+                    ]
+                }
+            ]
+        }
+    ],
     "IncreasedCmdBufferParseSlice": [
         {
             "platforms": [
