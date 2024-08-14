@@ -155,8 +155,8 @@ class TestVideoCaptureClient final : public VideoCaptureDevice::Client {
                               int frame_feedback_id) override {
     NOTREACHED_NORETURN();
   }
-  void OnIncomingCapturedGfxBuffer(
-      gfx::GpuMemoryBuffer* buffer,
+  void OnIncomingCapturedImage(
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
       const VideoCaptureFormat& frame_format,
       int clockwise_rotation,
       base::TimeTicks reference_time,

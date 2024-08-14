@@ -97,17 +97,17 @@ void VideoCaptureDevice::Client::OnIncomingCapturedData(
                          /*frame_feedback_id=*/0);
 }
 
-void VideoCaptureDevice::Client::OnIncomingCapturedGfxBuffer(
-    gfx::GpuMemoryBuffer* buffer,
+void VideoCaptureDevice::Client::OnIncomingCapturedImage(
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     const VideoCaptureFormat& frame_format,
     int clockwise_rotation,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp) {
-  OnIncomingCapturedGfxBuffer(buffer, frame_format, clockwise_rotation,
-                              reference_time, timestamp,
-                              capture_begin_timestamp,
-                              /*frame_feedback_id=*/0);
+  OnIncomingCapturedImage(std::move(shared_image), frame_format,
+                          clockwise_rotation, reference_time, timestamp,
+                          capture_begin_timestamp,
+                          /*frame_feedback_id=*/0);
 }
 
 VideoCaptureDevice::~VideoCaptureDevice() = default;

@@ -30,12 +30,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/range/range.h"
 
-namespace gpu {
-
-class GpuMemoryBufferImpl;
-
-}  // namespace gpu
-
 namespace media {
 
 class CameraDeviceContext;
@@ -106,10 +100,11 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   // opened camera.  Used to configure and query camera frame rotation.
   void SetCameraDeviceContext(CameraDeviceContext* device_context);
 
-  // Detect document corners on the frame given by its gpu memory buffer if it
-  // is supported.
-  void MaybeDetectDocumentCorners(std::unique_ptr<gpu::GpuMemoryBufferImpl> gmb,
-                                  VideoRotation rotation);
+  // Detect document corners on the frame given by its mappable shared image if
+  // it is supported.
+  void MaybeDetectDocumentCorners(
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      VideoRotation rotation);
 
   bool IsMultipleStreamsEnabled();
 
@@ -158,7 +153,7 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   bool IsCloseToPreviousDetectionRequest();
 
   void DetectDocumentCornersOnMojoThread(
-      std::unique_ptr<gpu::GpuMemoryBufferImpl> image,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
       VideoRotation rotation);
 
   void OnDetectedDocumentCornersOnMojoThread(

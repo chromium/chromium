@@ -495,9 +495,9 @@ EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::ToMojom(
       return media::mojom::VideoCaptureError::
           kCrosHalV3BufferManagerHalRequestedTooManyBuffers;
     case media::VideoCaptureError::
-        kCrosHalV3BufferManagerFailedToCreateGpuMemoryBuffer:
+        kCrosHalV3BufferManagerFailedToCreateMappableSI:
       return media::mojom::VideoCaptureError::
-          kCrosHalV3BufferManagerFailedToCreateGpuMemoryBuffer;
+          kCrosHalV3BufferManagerFailedToCreateMappableSI;
     case media::VideoCaptureError::
         kCrosHalV3BufferManagerFailedToMapGpuMemoryBuffer:
       return media::mojom::VideoCaptureError::
@@ -1031,9 +1031,9 @@ bool EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::
           kCrosHalV3BufferManagerHalRequestedTooManyBuffers;
       return true;
     case media::mojom::VideoCaptureError::
-        kCrosHalV3BufferManagerFailedToCreateGpuMemoryBuffer:
+        kCrosHalV3BufferManagerFailedToCreateMappableSI:
       *output = media::VideoCaptureError::
-          kCrosHalV3BufferManagerFailedToCreateGpuMemoryBuffer;
+          kCrosHalV3BufferManagerFailedToCreateMappableSI;
       return true;
     case media::mojom::VideoCaptureError::
         kCrosHalV3BufferManagerFailedToMapGpuMemoryBuffer:
