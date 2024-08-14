@@ -102,6 +102,28 @@ TEST_F(TachyonAuthedClientImplTest, InitiallyAuthed) {
   EXPECT_EQ(request_data->content_data, request_string());
 }
 
+TEST_F(TachyonAuthedClientImplTest, InitiallyAuthedRequestString) {
+  fake_token_manager()->SetTokenString(
+      std::make_unique<std::string>(kOAuthToken1));
+  fake_token_manager()->SetFetchedVersion(1);
+
+  CreateAuthedClient();
+  authed_client()->StartAuthedRequestString(
+      TRAFFIC_ANNOTATION_FOR_TESTS, request_message()->SerializeAsString(),
+      kUrl, kMaxRetries, response_cb());
+  fake_client_ptr()->WaitForRequest();
+
+  EXPECT_THAT(fake_client_ptr()->GetOAuthToken(), testing::StrEq(kOAuthToken1));
+
+  auto* request_data = fake_client_ptr()->GetRequestData();
+  ASSERT_THAT(request_data, testing::NotNull());
+  EXPECT_EQ(request_data->max_retries, kMaxRetries);
+  EXPECT_EQ(request_data->oauth_retry_num, 0);
+  EXPECT_EQ(request_data->oauth_version, 1);
+  EXPECT_THAT(request_data->url, testing::StrEq(kUrl));
+  EXPECT_EQ(request_data->content_data, request_string());
+}
+
 TEST_F(TachyonAuthedClientImplTest, NotInitiallyAuthed) {
   CreateAuthedClient();
   authed_client()->StartAuthedRequest(TRAFFIC_ANNOTATION_FOR_TESTS,

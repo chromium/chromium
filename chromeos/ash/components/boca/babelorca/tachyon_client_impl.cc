@@ -58,7 +58,7 @@ void TachyonClientImpl::StartRequest(
 
   std::unique_ptr<network::SimpleURLLoader> url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
-                                       *(request_data->annotation_tag));
+                                       request_data->annotation_tag);
   auto* url_loader_ptr = url_loader.get();
   url_loader_ptr->AttachStringForUpload(request_data->content_data,
                                         "application/x-protobuf");

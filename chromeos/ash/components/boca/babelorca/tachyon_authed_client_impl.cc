@@ -52,27 +52,41 @@ void TachyonAuthedClientImpl::StartAuthedRequest(
     int max_retries,
     std::unique_ptr<ResponseCallbackWrapper> response_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::unique_ptr<RequestDataWrapper> request_data =
-      std::make_unique<RequestDataWrapper>(annotation_tag, url, max_retries,
-                                           std::move(response_cb));
   auto serialize_cb =
       base::BindOnce(SerializeProtoToString, std::move(request_proto));
   auto reply_post_cb =
       base::BindOnce(&TachyonAuthedClientImpl::OnRequestProtoSerialized,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(request_data));
+                     weak_ptr_factory_.GetWeakPtr(), annotation_tag, url,
+                     max_retries, std::move(response_cb));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, std::move(serialize_cb), std::move(reply_post_cb));
 }
 
+void TachyonAuthedClientImpl::StartAuthedRequestString(
+    const net::NetworkTrafficAnnotationTag& annotation_tag,
+    std::string request_string,
+    std::string_view url,
+    int max_retries,
+    std::unique_ptr<ResponseCallbackWrapper> response_cb) {
+  OnRequestProtoSerialized(annotation_tag, url, max_retries,
+                           std::move(response_cb), request_string);
+}
+
 void TachyonAuthedClientImpl::OnRequestProtoSerialized(
-    std::unique_ptr<RequestDataWrapper> request_data,
+    const net::NetworkTrafficAnnotationTag& annotation_tag,
+    std::string_view url,
+    int max_retries,
+    std::unique_ptr<ResponseCallbackWrapper> response_cb,
     std::optional<std::string> request_string) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!request_string) {
-    request_data->response_cb->Run(base::unexpected(
+    response_cb->Run(base::unexpected(
         ResponseCallbackWrapper::TachyonRequestError::kInternalError));
     return;
   }
+  std::unique_ptr<RequestDataWrapper> request_data =
+      std::make_unique<RequestDataWrapper>(annotation_tag, url, max_retries,
+                                           std::move(response_cb));
   request_data->content_data = std::move(*request_string);
   const std::string* oauth_token = oauth_token_manager_->GetTokenString();
   if (oauth_token) {

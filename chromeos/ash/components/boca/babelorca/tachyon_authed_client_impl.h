@@ -37,10 +37,19 @@ class TachyonAuthedClientImpl : public TachyonAuthedClient {
       std::string_view url,
       int max_retries,
       std::unique_ptr<ResponseCallbackWrapper> response_cb) override;
+  void StartAuthedRequestString(
+      const net::NetworkTrafficAnnotationTag& annotation_tag,
+      std::string request_string,
+      std::string_view url,
+      int max_retries,
+      std::unique_ptr<ResponseCallbackWrapper> response_cb) override;
 
  private:
   void OnRequestProtoSerialized(
-      std::unique_ptr<RequestDataWrapper> request_data,
+      const net::NetworkTrafficAnnotationTag& annotation_tag,
+      std::string_view url,
+      int max_retries,
+      std::unique_ptr<ResponseCallbackWrapper> response_cb,
       std::optional<std::string> request_string);
 
   void StartAuthedRequestInternal(

@@ -9,11 +9,7 @@
 #include <string>
 #include <string_view>
 
-#include "base/memory/raw_ref.h"
-
-namespace net {
-struct NetworkTrafficAnnotationTag;
-}  // namespace net
+#include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace ash::babelorca {
 
@@ -28,7 +24,7 @@ struct RequestDataWrapper {
 
   ~RequestDataWrapper();
 
-  raw_ref<const net::NetworkTrafficAnnotationTag> annotation_tag;
+  const net::NetworkTrafficAnnotationTag annotation_tag;
   const std::string_view url;
   const int max_retries;
   std::unique_ptr<ResponseCallbackWrapper> response_cb;
