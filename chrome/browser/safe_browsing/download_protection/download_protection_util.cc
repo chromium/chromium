@@ -262,7 +262,7 @@ SelectArchiveEntries(const google::protobuf::RepeatedPtrField<
 
 void LogDeepScanEvent(download::DownloadItem* item, DeepScanEvent event) {
   base::UmaHistogramEnumeration("SBClientDownload.DeepScanEvent3", event);
-  if (DownloadItemWarningData::IsEncryptedArchive(item)) {
+  if (DownloadItemWarningData::IsTopLevelEncryptedArchive(item)) {
     base::UmaHistogramEnumeration(
         "SBClientDownload.PasswordProtectedDeepScanEvent3", event);
   }

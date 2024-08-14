@@ -1269,6 +1269,6 @@ void DownloadItemModel::DetermineAndSetShouldPreferOpeningInBrowser(
   SetShouldPreferOpeningInBrowser(false);
 }
 
-bool DownloadItemModel::IsEncryptedArchive() const {
-  return DownloadItemWarningData::IsEncryptedArchive(download_);
+bool DownloadItemModel::IsTopLevelEncryptedArchive() const {
+  return DownloadItemWarningData::IsTopLevelEncryptedArchive(download_);
 }

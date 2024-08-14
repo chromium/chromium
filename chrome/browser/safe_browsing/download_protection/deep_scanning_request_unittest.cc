@@ -1259,7 +1259,7 @@ TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveSuccess) {
       ->SetExpectedFinalAction(
           enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
 
-  DownloadItemWarningData::SetIsEncryptedArchive(&item_, true);
+  DownloadItemWarningData::SetIsTopLevelEncryptedArchive(&item_, true);
   EXPECT_FALSE(DownloadItemWarningData::HasIncorrectPassword(&item_));
 
   request.Start();
@@ -1303,7 +1303,7 @@ TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveFailed) {
       ->SetExpectedFinalAction(
           enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
 
-  DownloadItemWarningData::SetIsEncryptedArchive(&item_, true);
+  DownloadItemWarningData::SetIsTopLevelEncryptedArchive(&item_, true);
   EXPECT_FALSE(DownloadItemWarningData::HasIncorrectPassword(&item_));
 
   request.Start();
@@ -1344,7 +1344,7 @@ TEST_F(DeepScanningReportingTest, ConsumerUnencryptedArchive) {
       ->SetExpectedFinalAction(
           enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
 
-  DownloadItemWarningData::SetIsEncryptedArchive(&item_, false);
+  DownloadItemWarningData::SetIsTopLevelEncryptedArchive(&item_, false);
   EXPECT_FALSE(DownloadItemWarningData::HasIncorrectPassword(&item_));
 
   request.Start();

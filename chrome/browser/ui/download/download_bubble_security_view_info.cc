@@ -388,7 +388,7 @@ void DownloadBubbleSecurityViewInfo::PopulateForInProgressOrComplete(
       return;
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING: {
       warning_summary_ = l10n_util::GetStringFUTF16(
-          model.IsEncryptedArchive()
+          model.IsTopLevelEncryptedArchive()
               ? IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT_ENCRYPTED_ARCHIVE
               : IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT_UPDATED,
           u"\n\n");

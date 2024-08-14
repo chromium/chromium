@@ -261,7 +261,7 @@ void DownloadBubbleContentsView::ProcessLocalPasswordInProgressClick(
 
 bool DownloadBubbleContentsView::IsEncryptedArchive(const ContentId& id) {
   if (DownloadUIModel* model = GetDownloadModel(id); model) {
-    return DownloadItemWarningData::IsEncryptedArchive(
+    return DownloadItemWarningData::IsTopLevelEncryptedArchive(
         model->GetDownloadItem());
   }
 

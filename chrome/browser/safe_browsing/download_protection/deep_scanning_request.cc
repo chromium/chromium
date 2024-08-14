@@ -687,7 +687,7 @@ void DeepScanningRequest::OnConsumerScanComplete(
   bool is_invalid_password =
       result == BinaryUploadService::Result::FILE_ENCRYPTED ||
       (result == BinaryUploadService::Result::SUCCESS &&
-       DownloadItemWarningData::IsEncryptedArchive(item_) &&
+       DownloadItemWarningData::IsTopLevelEncryptedArchive(item_) &&
        HasDecryptionFailedResult(response));
   bool is_success =
       result == BinaryUploadService::Result::SUCCESS && !is_invalid_password;
@@ -714,7 +714,7 @@ void DeepScanningRequest::OnConsumerScanComplete(
   }
 
   LogDeepScanResult(download_result, trigger_,
-                    DownloadItemWarningData::IsEncryptedArchive(item_));
+                    DownloadItemWarningData::IsTopLevelEncryptedArchive(item_));
 
   DCHECK(file_metadata_.count(current_path));
   file_metadata_.at(current_path).scan_response = std::move(response);
@@ -743,7 +743,7 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
   }
 
   LogDeepScanResult(download_result, trigger_,
-                    DownloadItemWarningData::IsEncryptedArchive(item_));
+                    DownloadItemWarningData::IsTopLevelEncryptedArchive(item_));
 
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item_));

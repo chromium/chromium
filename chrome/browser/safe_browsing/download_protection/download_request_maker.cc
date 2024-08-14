@@ -58,8 +58,8 @@ DownloadRequestMaker::TabUrls TabUrlsFromWebContents(
 void SetDownloadItemWarningData(download::DownloadItem* item,
                                 const std::optional<std::string>& password,
                                 const FileAnalyzer::Results& results) {
-  DownloadItemWarningData::SetIsEncryptedArchive(
-      item, results.encryption_info.is_encrypted);
+  DownloadItemWarningData::SetIsTopLevelEncryptedArchive(
+      item, results.encryption_info.is_top_level_encrypted);
   DownloadItemWarningData::SetIsFullyExtractedArchive(
       item, results.archive_summary.parser_status() ==
                     ClientDownloadRequest::ArchiveSummary::VALID &&

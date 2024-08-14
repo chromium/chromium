@@ -86,6 +86,9 @@ class ArchiveAnalyzer {
                               base::FilePath path,
                               int entry_size);
 
+  // Returns whether we're currently unpacking the top-level archive.
+  bool IsTopLevelArchive() const;
+
  private:
   // Tracks the relative path of the current archive within the overall archive
   // being analyzer. The top-level archive will have an empty path, but nested

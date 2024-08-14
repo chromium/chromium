@@ -31,6 +31,10 @@ void SevenZipAnalyzer::OnOpenError(seven_zip::Result result) {
   results()->analysis_result = ArchiveAnalysisResult::kFailedToOpen;
   results()->encryption_info.is_encrypted |=
       result == seven_zip::Result::kEncryptedHeaders;
+  if (IsTopLevelArchive()) {
+    results()->encryption_info.is_top_level_encrypted |=
+        result == seven_zip::Result::kEncryptedHeaders;
+  }
 }
 
 base::File SevenZipAnalyzer::OnTempFileRequest() {

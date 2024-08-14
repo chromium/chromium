@@ -152,21 +152,23 @@ void DownloadItemWarningData::AddWarningActionEvent(DownloadItem* download,
 }
 
 // static
-bool DownloadItemWarningData::IsEncryptedArchive(
+bool DownloadItemWarningData::IsTopLevelEncryptedArchive(
     const download::DownloadItem* download) {
-  return GetWithDefault(download,
-                        &DownloadItemWarningData::is_encrypted_archive_, false);
+  return GetWithDefault(
+      download, &DownloadItemWarningData::is_top_level_encrypted_archive_,
+      false);
 }
 
 // static
-void DownloadItemWarningData::SetIsEncryptedArchive(
+void DownloadItemWarningData::SetIsTopLevelEncryptedArchive(
     download::DownloadItem* download,
-    bool is_encrypted_archive) {
+    bool is_top_level_encrypted_archive) {
   if (!download) {
     return;
   }
 
-  GetOrCreate(download)->is_encrypted_archive_ = is_encrypted_archive;
+  GetOrCreate(download)->is_top_level_encrypted_archive_ =
+      is_top_level_encrypted_archive;
 }
 
 // static
