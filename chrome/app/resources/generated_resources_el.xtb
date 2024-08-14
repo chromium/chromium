@@ -2017,7 +2017,7 @@
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2413009156320833859">Προσαρμόστε ακόμα περισσότερο το πρόγραμμα περιήγησης με επεκτάσεις από το <ph name="BEGIN_LINK1" />Chrome Web Store<ph name="END_LINK1" /></translation>
 <translation id="2414159296888870200">Συνέχιση περιήγησης για <ph name="MODULE_TITLE" /></translation>
-<translation id="2414886740292270097">Σκούρο</translation>
+<translation id="2414886740292270097">Σκοτεινή</translation>
 <translation id="2415117815770324983">Θα αποσυνδεθείτε από τους περισσότερους ιστοτόπους. Θα παραμείνετε συνδεδεμένοι στον Λογαριασμό σας Google.</translation>
 <translation id="2416435988630956212">Πλήκτρα λειτουργίας πληκτρολογίου</translation>
 <translation id="2418307627282545839">Φωτεινά και απαλά χρώματα</translation>
@@ -2885,7 +2885,7 @@
 <translation id="3021066826692793094">Πεταλούδα</translation>
 <translation id="3021678814754966447">&amp;Προβολή Πηγαίου Κώδικα Πλαισίου</translation>
 <translation id="3021902017511220299">Η σάρωση απέτυχε. Αυτή η ενέργεια έχει αποκλειστεί από τον διαχειριστή σας.</translation>
-<translation id="3022072018423103125">Highlands</translation>
+<translation id="3022072018423103125">Υψίπεδα</translation>
 <translation id="3022361196600037287">Η συσκευή <ph name="DEVICE" /> θα καταργηθεί από αυτό το Chromebook και δεν θα αποθηκευτεί στον λογαριασμό <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Δεν έγινε κατανοητό.</translation>
 <translation id="3023464535986383522">Επιλέξτε για αυτόματη ανάγνωση</translation>
@@ -3143,7 +3143,7 @@
 <translation id="3230539834943294477">Προβολή άρθρων βοήθειας ή εύρεση υποστήριξης συσκευής</translation>
 <translation id="3232168089952388105">Θέλετε να κοινοποιήσετε πληροφορίες σχετικά με τη συσκευή σας;</translation>
 <translation id="3232368113895801406">Οι προτιμήσεις ασφαλείας δεν επιτρέπουν την εγκατάσταση απομονωμένων εφαρμογών. <ph name="CHANGE_PREFERENCE" /></translation>
-<translation id="323251815203765852">Δημιουργικό</translation>
+<translation id="323251815203765852">Δημιουργική</translation>
 <translation id="3232558119926886907">Στοίχιση στα δεξιά</translation>
 <translation id="3232754137068452469">Εφαρμογή ιστού</translation>
 <translation id="3233271424239923319">Δημιουργία αντιγράφων ασφαλείας για εφαρμογές και αρχεία Linux</translation>
@@ -4708,7 +4708,7 @@
 <translation id="436926121798828366">Μπορείτε να αλλάξετε αυτήν τη ρύθμιση ανά πάσα στιγμή στις ρυθμίσεις <ph name="SETTINGS_LINK" />.</translation>
 <translation id="4370975561335139969">Η διεύθυνση ηλεκτρονικού ταχυδρομείου και ο κωδικός πρόσβασης δεν ταιριάζουν</translation>
 <translation id="4373418556073552953">Σύνδεση με το τηλέφωνό σας Android</translation>
-<translation id="4373973310429385827">Lighthouse</translation>
+<translation id="4373973310429385827">Φάρος</translation>
 <translation id="4374805630006466253">Χρήση διαφορετικού τηλεφώνου ή tablet</translation>
 <translation id="4374831787438678295">Πρόγραμμα εγκατάστασης Linux</translation>
 <translation id="4375035964737468845">Άνοιγμα ληφθέντων αρχείων</translation>
@@ -5156,7 +5156,7 @@
 <translation id="469838979880025581">Οι ιστότοποι μπορούν να ζητούν να χρησιμοποιήσουν το μικρόφωνό σας</translation>
 <translation id="4699172675775169585">Εικόνες και αρχεία στην κρυφή μνήμη</translation>
 <translation id="4699357559218762027">(αυτόματη εκκίνηση)</translation>
-<translation id="4699473989647132421">Shoreline</translation>
+<translation id="4699473989647132421">Ακτογραμμή</translation>
 <translation id="4701025263201366865">Γονική σύνδεση</translation>
 <translation id="4701335814944566468">Προβλήθηκε χθες</translation>
 <translation id="470644585772471629">Αντιστροφή χρωμάτων</translation>
@@ -5325,7 +5325,7 @@
 <translation id="4837128290434901661">Αλλαγή στην Αναζήτηση Google;</translation>
 <translation id="4837926214103741331">Δεν έχετε εξουσιοδότηση για χρήση αυτής της συσκευής. Για να λάβετε άδεια σύνδεσης, επικοινωνήστε με τον κάτοχο της συσκευής.</translation>
 <translation id="4838170306476614339">Δείτε τις φωτογραφίες, τα πολυμέσα και τις ειδοποιήσεις του τηλεφώνου σας.</translation>
-<translation id="4838327282952368871">Ονειρικό</translation>
+<translation id="4838327282952368871">Ονειρική</translation>
 <translation id="4838836835474292213">Επιτρέπεται η πρόσβαση ανάγνωσης στο πρόχειρο</translation>
 <translation id="4838907349371614303">Ο κωδικός πρόσβασης ενημερώθηκε</translation>
 <translation id="4838958829619609362">Η επιλογή δεν είναι στα <ph name="LANGUAGE" /></translation>
@@ -6015,7 +6015,7 @@
 <translation id="534449933710420173">Φάκελος χωρίς όνομα</translation>
 <translation id="5345916423802287046">Εκκίνηση εφαρμογής κατά τη σύνδεση</translation>
 <translation id="5347920333985823270">Το Chrome υποστηρίζει έναν ιστό χωρίς χρέωση</translation>
-<translation id="5350116201946341974">Ευφάνταστο</translation>
+<translation id="5350116201946341974">Ευφάνταστη</translation>
 <translation id="5350293332385664455">Απενεργοποίηση Βοηθού Google</translation>
 <translation id="535123479159372765">Το κείμενο αντιγράφηκε από άλλη συσκευή</translation>
 <translation id="5352033265844765294">Χρονική σήμανση</translation>
@@ -7659,7 +7659,7 @@
 <translation id="6573497332121198392">Δεν είναι δυνατή η κατάργηση της συντόμευσης</translation>
 <translation id="6573915150656780875">Το Chromebook δεν λαμβάνει πλέον ενημερώσεις ασφάλειας και λογισμικού. Αποκτήστε ένα νέο Chromebook για την καλύτερη δυνατή εμπειρία.</translation>
 <translation id="657402800789773160">&amp;Επαναφόρτωση αυτής της σελίδας</translation>
-<translation id="6574848088505825541">Χιόνι</translation>
+<translation id="6574848088505825541">Χιονισμένη</translation>
 <translation id="6577097667107110805">Επιτρέπεται η αναζήτηση ή η χρήση εκτυπωτών στους οποίους έχει πρόσβαση η συσκευή σας</translation>
 <translation id="6577284282025554716">Η λήψη ακυρώθηκε: <ph name="FILE_NAME" /></translation>
 <translation id="6577777689940373106">Μια εφαρμογή σε αναμονή</translation>
@@ -8323,7 +8323,7 @@
 <translation id="7050037487872780845">Μη έγκυρη διαμόρφωση σημείου πρόσβασης Wi-Fi</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Ο κωδικός πρόσβασης αποθηκεύτηκε στον Λογαριασμό σας Google, <ph name="USER_EMAIL" />}other{Οι κωδικοί πρόσβασης αποθηκεύτηκαν στον Λογαριασμό σας Google, <ph name="USER_EMAIL" />}}</translation>
 <translation id="7052762602787632571">&amp;Διαγραφή δεδομένων περιήγησης…</translation>
-<translation id="705352103640172578">Waterfall</translation>
+<translation id="705352103640172578">Καταρράκτης</translation>
 <translation id="7053983685419859001">Αποκλεισμός</translation>
 <translation id="7055152154916055070">Αποκλεισμένη ανακατεύθυνση:</translation>
 <translation id="7055451306017383754">Η κατάργηση κοινοποίησης δεν ήταν δυνατή, επειδή μια εφαρμογή χρησιμοποιεί αυτόν τον φάκελο. Η κοινοποίηση του φακέλου θα καταργηθεί κατά τον επόμενο τερματισμό λειτουργίας του Parallels Desktop.</translation>
@@ -8652,7 +8652,7 @@
 <translation id="7311244614769792472">Δεν βρέθηκαν αποτελέσματα</translation>
 <translation id="7312040805247765153">Δεν είναι δυνατή η εγκατάσταση της εφαρμογής</translation>
 <translation id="7312210124139670355">Ο διαχειριστής σας επαναφέρει την eSIM. Ενδέχεται να χρειαστούν μερικά λεπτά.</translation>
-<translation id="7314989823816739632">Ρομαντικό</translation>
+<translation id="7314989823816739632">Ρομαντική</translation>
 <translation id="7317831949569936035">Εγγραφή του σχολείου</translation>
 <translation id="7319320447721994672">Εάν επισκεφτείτε έναν ιστότοπο που χρησιμοποιεί cookie, ίσως χρειαστεί να ενεργοποιήσετε προσωρινά τα cookie για να χρησιμοποιήσετε όλες τις λειτουργίες του ιστοτόπου.</translation>
 <translation id="7320213904474460808">Προεπιλογή δικτύου</translation>
@@ -9668,7 +9668,7 @@
 <translation id="8037801708772278989">Ελέγχθηκε μόλις τώρα</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Αντιγραφή 1 αρχείου στο <ph name="CLOUD_PROVIDER" />}other{Αντιγραφή {NUM_OF_FILES} αρχείων στο <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">Αποστολή σχολίων</translation>
-<translation id="8041093619605951337">Χαρούμενος</translation>
+<translation id="8041093619605951337">Χαρούμενη</translation>
 <translation id="8041267120753677077">Μετάδοση σε ροή των εφαρμογών του τηλεφώνου σας</translation>
 <translation id="8042142357103597104">Αδιαφάνεια κειμένου</translation>
 <translation id="8042331986490021244">Οι κωδικοί πρόσβασης κρυπτογραφούνται στη συσκευή σας προτού αποθηκευτούν στον Διαχειριστή κωδικών πρόσβασης Google</translation>
@@ -11299,7 +11299,7 @@
 <translation id="9203904171912129171">Επιλέξτε μια συσκευή</translation>
 <translation id="920410963177453528">Κάντε κλικ στο αναπτυσσόμενο μενού, για να επιλέξετε ένα άλλο πλαίσιο.</translation>
 <translation id="9206889157914079472">Λήψη σημειώσεων με γραφίδα από την οθόνη κλειδώματος</translation>
-<translation id="9207434080086272167">Ηλιοφάνεια</translation>
+<translation id="9207434080086272167">Ηλιόλουστη</translation>
 <translation id="9207669213427469593">Εάν μετακινήσετε ένα παράθυρο στη μία πλευρά για να χρησιμοποιήσετε τον διαχωρισμό οθόνης, θα δείτε προτάσεις παραθύρων για την άλλη πλευρά</translation>
 <translation id="9209563766569767417">Έλεγχος της ρύθμισης του κοντέινερ Linux</translation>
 <translation id="9214520840402538427">Ωχ!  Η περίοδος προετοιμασίας των ιδιοτήτων χρόνου εγκατάστασης έχει λήξει.  Επικοινωνήστε με τον εκπρόσωπο υποστήριξης.</translation>
@@ -11402,7 +11402,7 @@
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Εγγραφή από την κάμερα και το μικρόφωνο</translation>
 <translation id="984275831282074731">Τρόποι πληρωμής</translation>
 <translation id="984705303330760860">Προσθέστε τις γλώσσες ορθογραφικού ελέγχου</translation>
-<translation id="98515147261107953">Οριζόντια</translation>
+<translation id="98515147261107953">Τοπίο</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Γενικά</translation>
 <translation id="987475089238841621">Τα πακέτα γλωσσών χρησιμοποιούνται για τη λειτουργία Ζωντανοί υπότιτλοι και αποθηκεύονται στη συσκευή σας</translation>

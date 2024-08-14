@@ -8220,7 +8220,7 @@ Nếu bạn tắt chính sách này, thì hệ thống sẽ không bao giờ ghi
     Nếu bạn đặt chính sách này thành false, thì màn hình cảm biến sự có mặt của con người sẽ không hiển thị.
     Nếu bạn đặt chính sách này thành true, thì màn hình cảm biến sự có mặt của con người sẽ hiển thị.
     Nếu bạn không đặt chính sách này, thì giá trị mặc định false sẽ áp dụng cho người dùng do doanh nghiệp quản lý và giá trị true sẽ áp dụng cho người dùng không được quản lý.</translation>
-<translation id="7127980134843952133">Dữ liệu về các tệp đã tải xuống</translation>
+<translation id="7127980134843952133">Nhật ký tải xuống</translation>
 <translation id="7128513247945602297">Bật tính năng tự động nâng cấp nội dung hỗn hợp trên các trang web HTTPS</translation>
 <translation id="712963038874313213">Cung cấp playbook Ansible sẽ được thực thi trong vùng chứa Crostini mặc định.
 
