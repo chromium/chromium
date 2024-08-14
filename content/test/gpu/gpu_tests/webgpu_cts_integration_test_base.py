@@ -232,6 +232,11 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   def SetUpProcess(cls) -> None:
     super().SetUpProcess()
 
+    # TODO(crbug.com/344009517): Remove this and the associated logging once
+    # we can determine what is causing flaky websocket connection timeouts.
+    if host_information.IsWindows() and host_information.IsNvidiaGpu():
+      wss.WebsocketServer.enable_extra_logging = True
+
     cls.websocket_server = wss.WebsocketServer()
     cls.websocket_server.StartServer()
 
