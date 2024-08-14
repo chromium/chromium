@@ -6,8 +6,10 @@
 
 #import "base/test/task_environment.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/test/test_profile_state_agent.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 using ProfileStateTest = PlatformTest;
@@ -46,4 +48,23 @@ TEST_F(ProfileStateTest, initStages) {
     state.initStage = stage;
     EXPECT_EQ(state.initStage, stage);
   }
+}
+
+// Tests adding and removing profile state agents.
+TEST_F(ProfileStateTest, connectedAgents) {
+  ProfileState* state = [[ProfileState alloc] init];
+  EXPECT_NSEQ(state.connectedAgents, @[]);
+
+  [state addAgent:[[TestProfileStateAgent alloc] init]];
+  [state addAgent:[[TestProfileStateAgent alloc] init]];
+
+  EXPECT_EQ(state.connectedAgents.count, 2u);
+  for (TestProfileStateAgent* agent in state.connectedAgents) {
+    EXPECT_EQ(agent.profileState, state);
+  }
+
+  TestProfileStateAgent* firstAgent = state.connectedAgents.firstObject;
+  [state removeAgent:firstAgent];
+  EXPECT_EQ(state.connectedAgents.count, 1u);
+  EXPECT_EQ(firstAgent.profileState, nil);
 }

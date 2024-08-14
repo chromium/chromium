@@ -9,6 +9,7 @@ source_set("profile") {
     "profile_init_stage.h",
     "profile_state.h",
     "profile_state.mm",
+    "profile_state_agent.h",
   ]
   frameworks = [ "Foundation.framework" ]
   deps = [
@@ -26,6 +27,7 @@ source_set("unit_tests") {
   deps = [
     ":profile",
     "//base/test:test_support",
+    "//ios/chrome/app/profile/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//testing/gtest",
   ]
