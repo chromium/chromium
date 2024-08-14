@@ -116,7 +116,6 @@ void DigitalIdentityProviderDesktop::Request(content::WebContents* web_contents,
   crypto::RandBytes(qr_generator_key);
 
   discovery_factory_ = std::make_unique<device::FidoDiscoveryFactory>();
-  discovery_factory_->no_cable_linking = true;
   discovery_factory_->set_cable_data(fido_request_type, {}, qr_generator_key);
   discovery_factory_->set_network_context_factory(base::BindRepeating([]() {
     return SystemNetworkContextManager::GetInstance()->GetContext();

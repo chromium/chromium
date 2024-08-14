@@ -110,8 +110,6 @@ using RequestMode = AuthenticatorCommonImpl::RequestMode;
 
 namespace {
 
-constexpr int kNoCableLinkingTimeoutMod1000 = 643;
-
 WebAuthenticationDelegate* GetWebAuthenticationDelegate() {
   return GetContentClient()->browser()->GetWebAuthenticationDelegate();
 }
@@ -660,9 +658,6 @@ struct AuthenticatorCommonImpl::RequestState {
   std::optional<CredentialRequestResult> get_assertion_result;
   std::optional<CredentialRequestResult> make_credential_result;
   bool discoverable_credential_request = false;
-  // no_cable_linking requests that both QR-linked and pre-linked phones be
-  // ignored for this request.
-  bool no_cable_linking = false;
   // Indicates whether the current request is a modal WebAuthn call, a
   // conditional UI WebAuthn call, or a payment-related request.
   std::optional<RequestMode> mode;
@@ -736,7 +731,6 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
   req_state_->make_credential_result.reset();
   InitDiscoveryFactory();
 
-  discovery_factory()->no_cable_linking = req_state_->no_cable_linking;
   req_state_->request_delegate->ConfigureDiscoveries(
       req_state_->caller_origin, req_state_->relying_party_id, RequestSource(),
       device::FidoRequestType::kMakeCredential,
@@ -795,7 +789,6 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
   req_state_->get_assertion_result.reset();
   InitDiscoveryFactory();
 
-  discovery_factory()->no_cable_linking = req_state_->no_cable_linking;
   base::span<const device::CableDiscoveryData> cable_pairings;
   if (req_state_->ctap_get_assertion_request->cable_extension && IsFocused()) {
     cable_pairings = *req_state_->ctap_get_assertion_request->cable_extension;
@@ -883,15 +876,6 @@ void AuthenticatorCommonImpl::MakeCredential(
     req_state_->mode = RequestMode::kPayment;
   } else {
     req_state_->mode = RequestMode::kModalWebAuthn;
-  }
-
-  // TODO(crbug.com/40274309): remove this and everything else from
-  // the CL that added it if this is unused by June 2024.
-  if (options->timeout &&
-      base::FeatureList::IsEnabled(device::kWebAuthnLinkingExperimentation) &&
-      options->timeout->InMilliseconds() % 1000 ==
-          kNoCableLinkingTimeoutMod1000) {
-    req_state_->no_cable_linking = true;
   }
 
   BeginRequestTimeout(options->timeout);
@@ -1263,15 +1247,6 @@ void AuthenticatorCommonImpl::GetAssertion(
     req_state_->mode = RequestMode::kModalWebAuthn;
   }
   req_state_->hints.insert(options->hints.begin(), options->hints.end());
-
-  // TODO(crbug.com/40274309): remove this and everything else from
-  // the CL that added it if this is unused by June 2024.
-  if (options->timeout &&
-      base::FeatureList::IsEnabled(device::kWebAuthnLinkingExperimentation) &&
-      options->timeout->InMilliseconds() % 1000 ==
-          kNoCableLinkingTimeoutMod1000) {
-    req_state_->no_cable_linking = true;
-  }
 
   if (!options->is_conditional) {
     BeginRequestTimeout(options->timeout);
