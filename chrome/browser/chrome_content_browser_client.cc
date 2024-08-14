@@ -531,6 +531,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -8006,15 +8007,19 @@ void ChromeContentBrowserClient::OnKeepaliveRequestStarted(
   const auto timeout = GetKeepaliveTimerTimeout(context);
   keepalive_deadline_ = std::max(keepalive_deadline_, now + timeout);
   if (keepalive_deadline_ > now && !keepalive_timer_.IsRunning()) {
-    DVLOG(1) << "Starting a keepalive timer(" << timeout.InSecondsF()
-             << " seconds)";
-    keepalive_timer_.Start(
-        FROM_HERE, keepalive_deadline_ - now,
-        base::BindOnce(
-            &ChromeContentBrowserClient::OnKeepaliveTimerFired,
-            weak_factory_.GetWeakPtr(),
-            std::make_unique<ScopedKeepAlive>(
-                KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED)));
+    if (!KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
+      DVLOG(1) << "Starting a keepalive timer(" << timeout.InSecondsF()
+               << " seconds)";
+      keepalive_timer_.Start(
+          FROM_HERE, keepalive_deadline_ - now,
+          base::BindOnce(
+              &ChromeContentBrowserClient::OnKeepaliveTimerFired,
+              weak_factory_.GetWeakPtr(),
+              std::make_unique<ScopedKeepAlive>(
+                  KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED)));
+    } else {
+      DVLOG(1) << "Keepalive timer not started as browser is shutting down";
+    }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
