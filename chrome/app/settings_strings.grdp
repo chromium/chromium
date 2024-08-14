@@ -2306,8 +2306,11 @@
     Provides Google’s strongest account security for people at risk of targeted attacks
   </message>
 
-  <!-- HTTPS-First Mode -->
-  <message name="IDS_SETTINGS_HTTPS_ONLY_MODE" desc="Text for HTTPS-Only Mode toggle in Security settings">
+  <!-- Secure Connections -->
+  <message name="IDS_SETTINGS_SECURE_CONNECTIONS_SECTION_TITLE" desc="Title of the Secure Connections section in Security settings">
+    Secure connections
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_ONLY_MODE" desc="Text for HTTPS-First Mode toggle in Security settings">
     Always use secure connections
   </message>
   <message name="IDS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings">
@@ -2316,8 +2319,14 @@
   <message name="IDS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION_ADVANCED_PROTECTION" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings when the user can't change the setting">
     Use HTTPS whenever possible and get warned before loading sites that don’t support it. You can’t change this setting because you have Advanced Protection enabled.
   </message>
-  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_TITLE" desc="Title for HTTPS-First Mode section in Security settings">
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_TITLE" desc="Text for HTTPS-First Mode toggle in Security settings">
     Ask before using insecure connections
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_DESCRIPTION" desc="Secondary, continued explanation of HTTPS-First Mode in Security settings">
+    For sites that don’t support secure connections, get warned before visiting the site
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_DESCRIPTION_ADVANCED_PROTECTION" desc="Secondary, continued explanation of HTTPS-First Mode in Security settings when the user can't change the setting">
+    For sites that don’t support secure connections, get warned before visiting the site. You can’t change this setting because you have Advanced Protection enabled.
   </message>
   <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_FULL_LABEL" desc="Label for radio button to fully enable HTTPS-First Mode">
     See warnings before going to insecure sites (recommended)
@@ -2328,11 +2337,17 @@
   <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_DISABLED_LABEL" desc="Label for radio button to disable HTTPS-First Mode">
     Don't see any warnings before going to insecure sites
   </message>
-  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_STRICT_LABEL" desc="Label for radio button to enable HTTPS-First Strict mode">
-    Strict mode
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_STRICT_LABEL" desc="Label for radio button to enable the stricter form of HTTPS-First Mode">
+    Warns you for all insecure sites
   </message>
-  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_BALANCED_LABEL" desc="Label for radio button to enable HTTPS-First Balanced mode">
-    Balanced mode
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_STRICT_SUBLABEL" desc="Secondary, continued explanation for the stricter form of HTTPS-First Mode">
+    Warns you for both public sites, and private sites, such as your company’s intranet
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_BALANCED_LABEL" desc="Label for radio button to enable the less-strict form of HTTPS-First Mode">
+    Warns you for insecure public sites
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_BALANCED_SUBLABEL" desc="Secondary, continued explanation for the less strict form of HTTPS-First Mode">
+    Doesn’t warn you for private sites, such as your company’s intranet
   </message>
 
   <message name="IDS_SETTINGS_MANAGE_CERTIFICATES" desc="Text for manage certificates button in Privacy options">

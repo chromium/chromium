@@ -127,12 +127,21 @@ suite('Main', function() {
   // and that the radio options are correctly shown/hidden based on the top
   // level toggle.
   test('HttpsFirstModeControls', async () => {
-    const toggleButton =
+    // Check that the old toggle row under "Advanced" is _not_ present.
+    const oldToggle =
         page.shadowRoot!.querySelector<HTMLElement>('#httpsOnlyModeToggle');
+    assertFalse(!!oldToggle);
+
+    // Test the new settings UI.
+    const secureConnections = page.shadowRoot!.querySelector<HTMLElement>(
+        '#secureConnectionsSection');
+    const toggleButton =
+        page.shadowRoot!.querySelector<HTMLElement>('#httpsFirstModeToggle');
     const collapse = page.shadowRoot!.querySelector<HTMLElement>(
         '#httpsFirstModeRadioGroupCollapse');
     const radioGroup = page.shadowRoot!.querySelector<HTMLElement>(
         '#httpsFirstModeRadioGroup');
+    assertTrue(!!secureConnections);
     assertTrue(!!toggleButton);
     assertTrue(!!collapse);
     assertTrue(!!radioGroup);
@@ -192,8 +201,33 @@ suite('Main', function() {
         Router.getInstance().getCurrentRoute());
   });
 
-  // TODO(crbug.com/40937027): Add test for alternate sub-label when Advanced
-  // Protection is enabled.
+  // Tests that the correct Advanced Protection sublabel is used when the
+  // HTTPS-First Mode setting toggle has user control disabled.
+  test('HttpsFirstModeSettingAdvancedProtectionSubLabel', function() {
+    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#httpsFirstModeToggle');
+    assertTrue(!!toggle);
+    const defaultSubLabel =
+        loadTimeData.getString('httpsFirstModeSectionDescription');
+    assertEquals(defaultSubLabel, toggle.subLabel);
+
+    page.setPrefValue(
+        'generated.https_first_mode_enabled', HttpsFirstModeSetting.DISABLED);
+    page.set(
+        'prefs.generated.https_first_mode_enabled.userControlDisabled', true);
+    flush();
+    const lockedSubLabel =
+        loadTimeData.getString('httpsFirstModeDescriptionAdvancedProtection');
+    assertEquals(lockedSubLabel, toggle.subLabel);
+
+    page.setPrefValue(
+        'generated.https_first_mode_enabled',
+        HttpsFirstModeSetting.ENABLED_FULL);
+    page.set(
+        'prefs.generated.https_first_mode_enabled.userControlDisabled', true);
+    flush();
+    assertEquals(lockedSubLabel, toggle.subLabel);
+  });
 });
 
 suite('SecurityPageHappinessTrackingSurveys', function() {
@@ -376,8 +410,19 @@ suite('FlagsDisabled', function() {
   });
   // </if>
 
-  // Tests that toggling the HTTPS-Only Mode setting sets the associated pref.
+  // Tests the old HTTPS-Only Mode toggle UI.
+  // TODO(crbug.com/349860796): Remove this test once HttpsFirstBalancedMode is
+  // enabled by default.
   test('HttpsOnlyModeToggle', function() {
+    // Check that the new "Secure connections" section is not shown if the
+    // flag is disabled.
+    const secureConnections =
+        page.shadowRoot!.querySelector<HTMLElement>('secureConnectionsSection');
+    assertFalse(!!secureConnections);
+
+    // Test the old settings UI when the HttpsFirstBalancedMode flag is
+    // disabled. Checks that toggling the HTTPS-Only Mode setting sets the
+    // associated pref.
     const httpsOnlyModeToggle =
         page.shadowRoot!.querySelector<HTMLElement>('#httpsOnlyModeToggle');
     assertTrue(!!httpsOnlyModeToggle);

@@ -440,7 +440,10 @@
     Dangerous site. Chromium removed notifications.
   </message>
 
-  <!-- HTTPS-First Mode -->
+  <!-- Secure connections -->
+  <message name="IDS_SETTINGS_SECURE_CONNECTIONS_SECTION_DESCRIPTION" desc="Description for the Secure Connections section in Security settings, explaining the baseline behavior of the browser even if the 'Always use secure connections' toggle is disabled.">
+    Chromium upgrades insecure connections to HTTPS automatically when possible
+  </message>
   <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_SUBTITLE" desc="Subtitle for HTTPS-First Mode section in Security settings">
     Chromium will try to upgrade navigations to HTTPS
   </message>
@@ -452,14 +455,5 @@
   </message>
   <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_DISABLED_SUBLABEL" desc="Sublabel for radio button to disable HTTPS-First Mode">
     When HTTPS isn't available, Chromium will use an insecure connection without warning you
-  </message>
-  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_DESCRIPTION" desc="Description for HTTPS-First Mode section in Security settings">
-    When on, Chromium will ask you before loading sites that don't support HTTPS
-  </message>
-  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_STRICT_SUBLABEL" desc="Sublabel for radio button to enable HTTPS-First Strict Mode which explains what HTTPS-First Strict Mode does">
-    Chromium will ask you before loading any site using an insecure connection
-  </message>
-  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_BALANCED_SUBLABEL" desc="Sublabel for radio button to enable HTTPS-First Balanced Mode which explains what HTTPS-First Balanced Mode does">
-    Chromium will ask you before loading public sites using an insecure connection, but will allow HTTP connections for private networks
   </message>
 </grit-part>

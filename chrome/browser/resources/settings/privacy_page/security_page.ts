@@ -486,13 +486,28 @@ export class SettingsSecurityPageElement extends
     // text explaining that the feature is locked down for Advanced Protection
     // users is added.
     const generatedPref = this.getPref('generated.https_first_mode_enabled');
-    return this.i18n(
-        generatedPref.userControlDisabled ?
-            'httpsOnlyModeDescriptionAdvancedProtection' :
-            'httpsOnlyModeDescription');
+    if (this.enableHttpsFirstModeNewSettings_) {
+      return this.i18n(
+          generatedPref.userControlDisabled ?
+              'httpsFirstModeDescriptionAdvancedProtection' :
+              'httpsFirstModeSectionDescription');
+    } else {
+      return this.i18n(
+          generatedPref.userControlDisabled ?
+              'httpsOnlyModeDescriptionAdvancedProtection' :
+              'httpsOnlyModeDescription');
+    }
   }
 
-  private isHttpsFirstModeEnabled_(value: number): boolean {
+  private isHttpsFirstModeExpanded_(value: number): boolean {
+    // If the pref is not user-modifiable, we should only show the main toggle.
+    // (Note: this is not the case when the setting is policy-managed -- the
+    // radio group should be expanded and labeled with the enterprise
+    // indicator.)
+    const generatedPref = this.getPref('generated.https_first_mode_enabled');
+    if (generatedPref.userControlDisabled) {
+      return false;
+    }
     return value !== HttpsFirstModeSetting.DISABLED;
   }
 
