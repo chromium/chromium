@@ -88,6 +88,7 @@
 #include "net/http/http_server_properties.h"
 #include "net/http/http_stream.h"
 #include "net/http/http_stream_factory.h"
+#include "net/http/http_stream_pool.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -185,6 +186,9 @@ const char kAlternativeServiceHttpHeader[] =
     "Alt-Svc: h2=\"mail.example.org:443\"\r\n";
 
 int GetIdleSocketCountInTransportSocketPool(HttpNetworkSession* session) {
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    return session->http_stream_pool()->TotalIdleStreamCount();
+  }
   return session
       ->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
                       ProxyChain::Direct())
@@ -192,6 +196,13 @@ int GetIdleSocketCountInTransportSocketPool(HttpNetworkSession* session) {
 }
 
 bool IsTransportSocketPoolStalled(HttpNetworkSession* session) {
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    // When the HappyEyeballsV3 feature is enabled, we need to run pending tasks
+    // to ensure that HttpStreamFactory::JobController switches to
+    // HttpStreamPool.
+    base::RunLoop().RunUntilIdle();
+    return session->http_stream_pool()->IsPoolStalled();
+  }
   return session
       ->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
                       ProxyChain::Direct())
@@ -22379,6 +22390,12 @@ TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest) {
   session_deps_.socket_factory->AddSocketDataProvider(&http_data);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    session->http_stream_pool()->set_max_stream_sockets_per_group_for_testing(
+        1u);
+    session->http_stream_pool()->set_max_stream_sockets_per_pool_for_testing(
+        1u);
+  }
 
   // Start the SSL request.
   TestCompletionCallback ssl_callback;
@@ -22433,6 +22450,14 @@ TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest2) {
 
   // No data will be sent on the SSL socket.
   StaticSocketDataProvider ssl_data;
+  MockConnectCompleter ssl_connect_completer;
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    // When the HappyEyeballsV3 flag is enabled, the idle socket created by the
+    // following preconnect would be reused immedialy after the transaction is
+    // started when we don't delay Connect(). Use MockConnectCompleter to block
+    // Connect().
+    ssl_data.set_connect_data(MockConnect(&ssl_connect_completer));
+  }
   session_deps_.socket_factory->AddSocketDataProvider(&ssl_data);
 
   SSLSocketDataProvider ssl(ASYNC, OK);
@@ -22461,6 +22486,12 @@ TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest2) {
   session_deps_.socket_factory->AddSocketDataProvider(&http_data);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    session->http_stream_pool()->set_max_stream_sockets_per_group_for_testing(
+        1u);
+    session->http_stream_pool()->set_max_stream_sockets_per_pool_for_testing(
+        1u);
+  }
 
   // Preconnect an SSL socket.  A preconnect is needed because connect jobs are
   // cancelled when a normal transaction is cancelled.
@@ -22475,6 +22506,10 @@ TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest2) {
             http_trans.Start(&http_request, http_callback.callback(),
                              NetLogWithSource()));
   EXPECT_TRUE(IsTransportSocketPoolStalled(session.get()));
+
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    ssl_connect_completer.Complete(OK);
+  }
 
   // The SSL connection will automatically be closed once the connection is
   // established, to let the HTTP request start.
