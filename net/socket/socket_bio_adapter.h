@@ -90,7 +90,7 @@ class NET_EXPORT_PRIVATE SocketBIOAdapter {
   size_t GetAllocationSize() const;
 
  private:
-  int BIORead(char* out, int len);
+  int BIORead(base::span<uint8_t> out);
   void HandleSocketReadResult(int result);
   void OnSocketReadComplete(int result);
   void OnSocketReadIfReadyComplete(int result);
