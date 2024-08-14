@@ -1572,10 +1572,6 @@ void AttributionManagerImpl::NotifyAggregatableDebugReportSent(
 
 void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     const StoreSourceResult& result) {
-  if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting)) {
-    return;
-  }
-
   const auto is_operation_allowed = [&]() {
     return IsOperationAllowed(
         *storage_partition_,
@@ -1598,10 +1594,6 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
 void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     bool is_debug_cookie_set,
     const CreateReportResult& result) {
-  if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting)) {
-    return;
-  }
-
   const auto is_operation_allowed = [&]() {
     return IsOperationAllowed(
         *storage_partition_,
@@ -1860,10 +1852,6 @@ void AttributionManagerImpl::SetDebugMode(std::optional<bool> enabled,
 
 void AttributionManagerImpl::MaybeSendVerboseDebugReports(
     const OsRegistration& registration) {
-  if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting)) {
-    return;
-  }
-
   ContentBrowserClient::AttributionReportingOperation operation;
   const url::Origin* source_origin;
   const url::Origin* destination_origin;
@@ -1929,10 +1917,6 @@ void AttributionManagerImpl::ReportRegistrationHeaderError(
     const attribution_reporting::SuitableOrigin& context_origin,
     bool is_within_fenced_frame,
     GlobalRenderFrameHostId render_frame_id) {
-  if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting)) {
-    return;
-  }
-
   const auto is_operation_allowed = [&](const url::Origin& reporting_origin) {
     return GetContentClient()
         ->browser()
