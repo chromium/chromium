@@ -1232,7 +1232,6 @@ void LensOverlayController::BackgroundUI() {
   overlay_view_->SetVisible(false);
   HidePreselectionBubble();
   CloseSearchBubble();
-  tab_contents_observer_.reset();
   // Re-enable mouse and keyboard events to the tab contents web view.
   auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
   CHECK(contents_web_view);

@@ -3330,6 +3330,84 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(browser()->GetWebView()->GetEnabled());
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       OverlayInBackgroundClosesIfRendererExits) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Get the underlying tab before we open a new tab.
+  content::WebContents* underlying_tab_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Open the Overlay
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Opening a new tab to background the overlay UI.
+  WaitForPaint(kDocumentWithNamedElement,
+               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
+                   ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kBackground; }));
+
+  // Force the old tab renderer to crash.
+  content::RenderProcessHost* process =
+      underlying_tab_contents->GetPrimaryMainFrame()->GetProcess();
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(process);
+  process->ForceCrash();
+
+  // Overlay should close
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOff; }));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       OverlayInBackgroundClosesIfPageNavigates) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Get the underlying tab before we open a new tab.
+  content::WebContents* underlying_tab_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Open the Overlay
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Opening a new tab to background the overlay UI.
+  WaitForPaint(kDocumentWithNamedElement,
+               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
+                   ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kBackground; }));
+
+  // Navigate the old tab to a new URL.
+  const GURL new_url = embedded_test_server()->GetURL(kDocumentWithImage);
+  ASSERT_TRUE(content::NavigateToURL(underlying_tab_contents, new_url));
+
+  // Overlay should close
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOff; }));
+}
+
 class LensOverlayControllerBrowserFullscreenDisabled
     : public LensOverlayControllerBrowserTest {
  protected:
