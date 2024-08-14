@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -256,7 +255,6 @@ unsigned CSSStyleRule::insertRule(const ExecutionContext* execution_context,
     CSSStyleSheet::RuleMutationScope mutation_scope(this);
     style_rule_->WrapperInsertRule(index, new_rule);
     child_rule_cssom_wrappers_.insert(index, Member<CSSRule>(nullptr));
-    UseCountForSignalAffected();
     return index;
   }
 }
@@ -282,13 +280,6 @@ void CSSStyleRule::deleteRule(unsigned index, ExceptionState& exception_state) {
     child_rule_cssom_wrappers_[index]->SetParentRule(nullptr);
   }
   child_rule_cssom_wrappers_.EraseAt(index);
-  UseCountForSignalAffected();
-}
-
-void CSSStyleRule::UseCountForSignalAffected() {
-  if (style_rule_->HasSignalingChildRule()) {
-    CountUse(WebFeature::kCSSRuleWithSignalingChildModified);
-  }
 }
 
 }  // namespace blink

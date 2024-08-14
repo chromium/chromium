@@ -98,8 +98,6 @@ CSSSelector::CSSSelector(MatchType match_type,
           HasRareDataField::encode(false) | IsForPageField::encode(false) |
           IsImplicitlyAddedField::encode(false) |
           IsCoveredByBucketingField::encode(false) |
-          SignalField::encode(static_cast<unsigned>(Signal::kNone)) |
-          IsInvisibleField::encode(false) |
           AttributeMatchField::encode(static_cast<unsigned>(case_sensitivity)) |
           IsCaseSensitiveAttributeField::encode(
               HTMLDocument::IsCaseSensitiveAttribute(attribute))),
@@ -120,8 +118,6 @@ CSSSelector::CSSSelector(MatchType match_type,
           HasRareDataField::encode(true) | IsForPageField::encode(false) |
           IsImplicitlyAddedField::encode(false) |
           IsCoveredByBucketingField::encode(false) |
-          SignalField::encode(static_cast<unsigned>(Signal::kNone)) |
-          IsInvisibleField::encode(false) |
           AttributeMatchField::encode(static_cast<unsigned>(case_sensitivity)) |
           IsCaseSensitiveAttributeField::encode(
               HTMLDocument::IsCaseSensitiveAttribute(attribute))),

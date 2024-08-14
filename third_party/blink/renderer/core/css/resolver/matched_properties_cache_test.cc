@@ -20,23 +20,19 @@ class MatchedPropertiesCacheTestKey {
   STACK_ALLOCATED();
 
  public:
-  explicit MatchedPropertiesCacheTestKey(
-      String block_text,
-      unsigned hash,
-      const TreeScope& tree_scope,
-      const AddMatchedPropertiesOptions& options =
-          AddMatchedPropertiesOptions())
-      : key_(ParseBlock(block_text, tree_scope, options), hash) {}
+  explicit MatchedPropertiesCacheTestKey(String block_text,
+                                         unsigned hash,
+                                         const TreeScope& tree_scope)
+      : key_(ParseBlock(block_text, tree_scope), hash) {}
 
   const MatchedPropertiesCache::Key& InnerKey() const { return key_; }
 
  private:
   const MatchResult& ParseBlock(String block_text,
-                                const TreeScope& tree_scope,
-                                const AddMatchedPropertiesOptions& options) {
+                                const TreeScope& tree_scope) {
     auto* set = css_test_helpers::ParseDeclarationBlock(block_text);
     result_.BeginAddingAuthorRulesForTreeScope(tree_scope);
-    result_.AddMatchedProperties(set, CascadeOrigin::kAuthor, options);
+    result_.AddMatchedProperties(set, CascadeOrigin::kAuthor);
     return result_;
   }
 
@@ -351,59 +347,6 @@ TEST_F(MatchedPropertiesCacheTest, NoVariableDependency) {
   EXPECT_TRUE(cache.Find(key, style_a, *parent_a));
   EXPECT_TRUE(cache.Find(key, style_b, *parent_a));
   EXPECT_TRUE(cache.Find(key, style_b, *parent_b));
-}
-
-TEST_F(MatchedPropertiesCacheTest, Signaling) {
-  TestCache cache(GetDocument());
-
-  const ComputedStyle& parent_style = InitialStyle();
-  const ComputedStyle& style = InitialStyle();
-
-  TestKey key_non_signaling("top:1px", /* hash */ 1, GetDocument(),
-                            {.signal = CSSSelector::Signal::kNone});
-  TestKey key_signaling("top:1px", /* hash */ 1, GetDocument(),
-                        {.signal = CSSSelector::Signal::kBareDeclarationShift});
-
-  cache.Add(key_non_signaling, style, parent_style);
-
-  // We must not find a non-signaling entry in the cache using a signaling key,
-  // because a cache hit in that situation skips the cascade, which prevents
-  // any actual use-counting from happening.
-  EXPECT_FALSE(cache.Find(key_signaling, style, parent_style));
-}
-
-TEST_F(MatchedPropertiesCacheTest, InvisibleRuleInCache) {
-  TestCache cache(GetDocument());
-
-  const ComputedStyle& parent_style = InitialStyle();
-  const ComputedStyle& style = InitialStyle();
-
-  TestKey key_non_invisible("top:1px", /* hash */ 1, GetDocument(),
-                            {.is_invisible = false});
-  TestKey key_invisible("top:1px", /* hash */ 1, GetDocument(),
-                        {.is_invisible = true});
-
-  cache.Add(key_invisible, style, parent_style);
-
-  EXPECT_TRUE(cache.Find(key_invisible, style, parent_style));
-  EXPECT_FALSE(cache.Find(key_non_invisible, style, parent_style));
-}
-
-TEST_F(MatchedPropertiesCacheTest, NonInvisibleRuleInCache) {
-  TestCache cache(GetDocument());
-
-  const ComputedStyle& parent_style = InitialStyle();
-  const ComputedStyle& style = InitialStyle();
-
-  TestKey key_non_invisible("top:1px", /* hash */ 1, GetDocument(),
-                            {.is_invisible = false});
-  TestKey key_invisible("top:1px", /* hash */ 1, GetDocument(),
-                        {.is_invisible = true});
-
-  cache.Add(key_non_invisible, style, parent_style);
-
-  EXPECT_FALSE(cache.Find(key_invisible, style, parent_style));
-  EXPECT_TRUE(cache.Find(key_non_invisible, style, parent_style));
 }
 
 }  // namespace blink

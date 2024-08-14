@@ -71,8 +71,6 @@ class CORE_EXPORT CSSGroupingRule : public CSSRule {
     return Item(index, /*trigger_use_counters=*/false);
   }
 
-  void UseCountForSignalAffected() override;
-
   void Trace(Visitor*) const override;
 
  protected:

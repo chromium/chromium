@@ -70,7 +70,6 @@ class CORE_EXPORT StyleCascade {
 
   using CSSPendingSubstitutionValue = cssvalue::CSSPendingSubstitutionValue;
   using CSSFlipRevertValue = cssvalue::CSSFlipRevertValue;
-  using Signal = CSSSelector::Signal;
 
  public:
   StyleCascade(StyleResolverState& state) : state_(state) {}
@@ -505,21 +504,6 @@ class CORE_EXPORT StyleCascade {
   void MaybeUseCountRevert(const CSSValue&);
   void MaybeUseCountSummaryDisplayBlock();
 
-  // Expands the cascade for the incoming `MatchedProperties`, and adds
-  // pending signals (via `MaybeAddPendingSignal`) for the declarations
-  // that actually change the cascade map.
-  void ExpandSignals(const MatchedProperties&, int index, Signal);
-  void MaybeAddPendingSignal(const CSSPropertyName& name,
-                             CascadePriority priority,
-                             Signal signal);
-
-  // Looks at pending signals produced by `ExpandSignals`, and either triggers
-  // a real use-count for the signals (if the signaling declaration ended up
-  // winning the cascade), or ignores them.
-  void ProcessPendingSignals();
-  void ProcessPendingSignals(WebFeature,
-                             const HashMap<CSSPropertyName, CascadePriority>&);
-
   StyleResolverState& state_;
   MatchResult match_result_;
   CascadeInterpolations interpolations_;
@@ -571,26 +555,6 @@ class CORE_EXPORT StyleCascade {
   bool depends_on_cascade_affecting_property_ = false;
   // See comment in StyleCascade::AddExplicitDefaults (.cc file).
   bool effective_zoom_changed_ = false;
-  // If true, invisible rules will be added to the cascade, setting
-  // `has_invisible_rules_` to true whenever such rules are actually seen.
-  // Otherwise, invisible rules are silently ignored.
-  //
-  // Invisible rules are not supposed to have an observable effect on the result
-  // of the cascade, and exist entirely for use-counting purposes.
-  //
-  // Invisible rules are handled as follows in StyleCascade:
-  //
-  // We first cascade while allowing invisible rules. If we didn't end up with
-  // any invisible rules (the common case), then the result is what it needs to
-  // be, and we're done. If we *do* end up with any invisible rules, we have
-  // declarations in our cascade that are not supposed to be there, and we
-  // reset and cascade again, this time without allowing invisible rules.
-  bool allow_invisible_rules_ = true;
-  bool has_invisible_rules_ = false;
-  // Properties that had a signal (see CSSSelector::Signal) which changed
-  // the value of the cascade map.
-  HashMap<CSSPropertyName, CascadePriority>
-      pending_signals_[static_cast<wtf_size_t>(Signal::kMax)];
 };
 
 }  // namespace blink
