@@ -10,6 +10,7 @@ import {
 import {shorten} from '../../core/utils/utils.js';
 
 import {
+  FormatFeature,
   OnDeviceModelRemote,
   ResponseChunk,
   ResponseSummary,
@@ -43,11 +44,7 @@ format:
 3. TITLE 3 (descriptive, ~15 words)
 
 Reply:
-<ctrl23>
 `;
-
-export const SUMMARIZATION_PROMPT_TEMPLATE = `${PLACEHOLDER}
-Write an abstractive summary in 3-bullet points: <ctrl23>`;
 
 /**
  * The keys are id of the safety classes.
@@ -87,7 +84,13 @@ function parseResponse(res: string): string {
 }
 
 export class OnDeviceModel implements Model {
-  constructor(private readonly remote: OnDeviceModelRemote) {
+  constructor(
+    private readonly remote: OnDeviceModelRemote,
+    private readonly formatInput: (
+      feature: FormatFeature,
+      fields: Record<string, string>,
+    ) => Promise<string|null>,
+  ) {
     // TODO(pihsun): Handle disconnection error
   }
 
@@ -134,10 +137,17 @@ export class OnDeviceModel implements Model {
       return {kind: 'error', error: ModelResponseError.UNSAFE};
     }
     content = shorten(content, MAX_CONTENT_WORDS);
-    const prompt = TITLE_SUGGESTION_PROMPT_TEMPLATE.replace(
-      PLACEHOLDER,
-      content,
-    );
+    // TODO(pihsun): formatInput is bound to each model Id, which effectively
+    // means that whether suggestTitles / summarize would succeed depends on
+    // model Id. We might want to revisit the interface for the OnDeviceModel
+    // here to reflect that fact at type level.
+    const prompt = await this.formatInput(FormatFeature.kPrompt, {
+      prompt: TITLE_SUGGESTION_PROMPT_TEMPLATE.replace(PLACEHOLDER, content),
+    });
+    if (prompt === null) {
+      console.error('formatInput returns null, wrong model?');
+      return {kind: 'error', error: ModelResponseError.GENERAL};
+    }
     const res = await this.execute(prompt);
     if (await this.contentIsUnsafe(res, RESPONSE_SAFETY_SCORE_THRESHOLDS)) {
       return {kind: 'error', error: ModelResponseError.UNSAFE};
@@ -163,7 +173,13 @@ export class OnDeviceModel implements Model {
       return {kind: 'error', error: ModelResponseError.UNSAFE};
     }
     content = shorten(content, MAX_CONTENT_WORDS);
-    const prompt = SUMMARIZATION_PROMPT_TEMPLATE.replace(PLACEHOLDER, content);
+    const prompt = await this.formatInput(FormatFeature.kAudioSummary, {
+      transcription: content,
+    });
+    if (prompt === null) {
+      console.error('formatInput returns null, wrong model?');
+      return {kind: 'error', error: ModelResponseError.GENERAL};
+    }
     const res = await this.execute(prompt);
     if (await this.contentIsUnsafe(res, RESPONSE_SAFETY_SCORE_THRESHOLDS)) {
       return {kind: 'error', error: ModelResponseError.UNSAFE};

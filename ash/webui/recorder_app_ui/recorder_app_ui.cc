@@ -259,6 +259,21 @@ void RecorderAppUI::LoadModel(
   model_progress_receivers_.Add(this, std::move(progress_receiver), uuid);
 }
 
+void RecorderAppUI::FormatModelInput(
+    const base::Uuid& model_id,
+    on_device_model::mojom::FormatFeature feature,
+    const base::flat_map<std::string, std::string>& fields,
+    FormatModelInputCallback callback) {
+  EnsureOnDeviceModelService();
+
+  if (!on_device_model_service_) {
+    std::move(callback).Run(std::nullopt);
+  }
+
+  on_device_model_service_->FormatInput(model_id, feature, fields,
+                                        std::move(callback));
+}
+
 void RecorderAppUI::Progress(double progress) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

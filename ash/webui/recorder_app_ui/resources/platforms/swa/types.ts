@@ -17,6 +17,9 @@ export {
   StreamingResponderCallbackRouter,
 } from '../../mojom/on_device_model.mojom-webui.js';
 export {
+  FormatFeature,
+} from '../../mojom/on_device_model_service.mojom-webui.js';
+export {
   type ModelState,
   ModelStateMonitorReceiver,
   ModelStateType,

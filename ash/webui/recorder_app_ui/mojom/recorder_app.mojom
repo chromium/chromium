@@ -7,6 +7,7 @@ module ash.recorder_app.mojom;
 import "chromeos/services/machine_learning/public/mojom/soda.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
 import "services/on_device_model/public/mojom/on_device_model.mojom";
+import "services/on_device_model/public/mojom/on_device_model_service.mojom";
 
 // The state of the SODA or on-device model installation.
 enum ModelStateType {
@@ -66,6 +67,22 @@ interface PageHandler {
       mojo_base.mojom.Uuid model_id,
       pending_receiver<on_device_model.mojom.OnDeviceModel> model)
       => (on_device_model.mojom.LoadModelResult result);
+
+
+  // Formats the input fields with the model uuid and feature combination.
+  // The `fields` will represent the corresponding input key value pairs for
+  // different model uuid and feature combinations.
+  // The `result` can be nullopt if the model uuid and feature combination is
+  // invalid or not supported.
+  //
+  // For example, a feature may need "name" & "something" & "action" to complete
+  // the following string: "I'm {name}, I have {something}, please {action} for
+  // me.". And different feature may require different sets of key value pairs.
+  FormatModelInput(
+      mojo_base.mojom.Uuid uuid,
+      on_device_model.mojom.FormatFeature feature,
+      map<string, string> fields)
+      => (string? result);
 
   // Adds a new monitor for model state change.
   // Returns the current state.

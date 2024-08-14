@@ -36,6 +36,7 @@ import {
 import {OnDeviceModel} from './on_device_model.js';
 import {MojoSodaSession} from './soda_session.js';
 import {
+  FormatFeature,
   LoadModelResult,
   ModelState as MojoModelState,
   ModelStateMonitorReceiver,
@@ -126,7 +127,18 @@ export class PlatformHandler extends PlatformHandlerBase {
       // TODO(pihsun): Dedicated error type?
       throw new Error(`Load model failed: ${result}`);
     }
-    return new OnDeviceModel(newModel);
+    const formatInput = async (
+      feature: FormatFeature,
+      fields: Record<string, string>,
+    ) => {
+      const {result} = await this.remote.formatModelInput(
+        {value: modelId},
+        feature,
+        fields,
+      );
+      return result;
+    };
+    return new OnDeviceModel(newModel, formatInput);
   }
 
   override installSoda(): void {

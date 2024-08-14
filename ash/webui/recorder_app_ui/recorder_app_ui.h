@@ -102,6 +102,11 @@ class RecorderAppUI
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
       LoadModelCallback callback) override;
 
+  void FormatModelInput(const base::Uuid& model_id,
+                        on_device_model::mojom::FormatFeature feature,
+                        const base::flat_map<std::string, std::string>& fields,
+                        FormatModelInputCallback callback) override;
+
   void AddModelMonitor(
       const base::Uuid& model_id,
       ::mojo::PendingRemote<recorder_app::mojom::ModelStateMonitor> monitor,
