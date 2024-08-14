@@ -83,38 +83,38 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
                 url,
                 new PrefetchCallback() {
                     @Override
-                    public void onPrefetchStarted() {
-                        prefetchCallback.onPrefetchStarted();
+                    public void onStarted() {
+                        prefetchCallback.onStarted();
                     }
 
                     @Override
-                    public void onPrefetchResponseStarted() {
-                        prefetchCallback.onPrefetchResponseStarted();
+                    public void onResponseStarted() {
+                        prefetchCallback.onResponseStarted();
                     }
 
                     @Override
-                    public void onPrefetchResponseCompleted() {
-                        prefetchCallback.onPrefetchResponseCompleted();
+                    public void onResponseHeaderReceived() {
+                        prefetchCallback.onResponseHeaderReceived();
                     }
 
                     @Override
-                    public void onPrefetchDeterminedHead() {
-                        prefetchCallback.onPrefetchDeterminedHead();
+                    public void onCompleted() {
+                        prefetchCallback.onCompleted();
                     }
 
                     @Override
-                    public void onPrefetchFailed(String failureMessage) {
-                        prefetchCallback.onPrefetchFailed(failureMessage);
+                    public void onFailed(String failureMessage) {
+                        prefetchCallback.onFailed(failureMessage);
                     }
 
                     @Override
-                    public void onPrefetchServed() {
-                        prefetchCallback.onPrefetchServed();
+                    public void onResponseServed() {
+                        prefetchCallback.onResponseServed();
                     }
 
                     @Override
-                    public void onPrefetchServeFailed(String failureMessage) {
-                        prefetchCallback.onPrefetchFailed(failureMessage);
+                    public void onResponseServeFailed(String failureMessage) {
+                        prefetchCallback.onResponseServeFailed(failureMessage);
                     }
                 },
                 callbackExecutor);

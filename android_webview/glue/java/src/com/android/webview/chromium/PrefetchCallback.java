@@ -12,17 +12,17 @@ import org.chromium.android_webview.common.Lifetime;
 @Lifetime.Temporary
 public interface PrefetchCallback {
 
-    void onPrefetchStarted();
+    void onStarted();
 
-    void onPrefetchResponseStarted();
+    void onResponseStarted();
 
-    void onPrefetchResponseCompleted();
+    void onResponseHeaderReceived();
 
-    void onPrefetchDeterminedHead();
+    void onCompleted();
 
-    void onPrefetchFailed(@Nullable String failureMessage);
+    void onFailed(@Nullable String failureMessage);
 
-    void onPrefetchServed();
+    void onResponseServed();
 
-    void onPrefetchServeFailed(@Nullable String failureMessage);
+    void onResponseServeFailed(@Nullable String failureMessage);
 }
