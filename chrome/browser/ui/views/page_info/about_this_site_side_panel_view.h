@@ -39,9 +39,6 @@ class AboutThisSiteSidePanelView final
 
   void OpenUrl(const content::OpenURLParams& params);
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   base::WeakPtr<AboutThisSiteSidePanelView> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
