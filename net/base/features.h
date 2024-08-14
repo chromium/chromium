@@ -566,6 +566,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kReportingApiEnableEnterpriseCookieIssues);
 // Optimize parsing data: URLs.
 NET_EXPORT BASE_DECLARE_FEATURE(kOptimizeParsingDataUrls);
 
+// Enables support for codepoints defined in draft-ietf-tls-tls13-pkcs1, which
+// enable RSA keys to be used with client certificates even if they do not
+// support RSA-PSS.
+NET_EXPORT BASE_DECLARE_FEATURE(kLegacyPKCS1ForTLS13);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
