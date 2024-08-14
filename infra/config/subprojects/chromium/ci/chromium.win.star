@@ -373,9 +373,7 @@ ci.builder(
 
 ci.thin_tester(
     name = "win11-arm64-rel-tests",
-    # TODO(https://crbug.com/341773363): Until the testing pool is stabilized,
-    # this builder shouldn't be getting branched
-    # branch_selector = branches.selector.WINDOWS_BRANCHES,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = "Windows11 ARM64 Release Tester.",
     triggered_by = ["ci/win-arm64-rel"],
     builder_spec = builder_config.builder_spec(
