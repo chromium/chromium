@@ -128,6 +128,25 @@ suite('<facegaze-actions-card>', () => {
     assertFalse(addButton.disabled);
   });
 
+  test(
+      'actions disables configuration controls if toggle is turned off',
+      async () => {
+        await initPage();
+
+        faceGazeActionsCard.set(
+            'prefs.settings.a11y.face_gaze.actions_enabled.value', true);
+        await flushTasks();
+
+        const addButton = getAddButton();
+        assertFalse(addButton.disabled);
+
+        faceGazeActionsCard.set(
+            'prefs.settings.a11y.face_gaze.actions_enabled.value', false);
+        await flushTasks();
+
+        assertTrue(addButton.disabled);
+      });
+
   test('actions initializes command pairs from prefs', async () => {
     prefElement = document.createElement('settings-prefs');
     document.body.appendChild(prefElement);

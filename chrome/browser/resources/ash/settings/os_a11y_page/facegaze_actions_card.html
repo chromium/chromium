@@ -47,7 +47,7 @@
               type="input"
               label="[[getGestureDisplayText_(item.gesture)]]"
               on-click="onConfigureGestureButtonClick_"
-              disabled="[[disabled]]">
+              disabled="[[disableConfigureControls_]]">
           </cros-chip>
         </template>
         <template is="dom-if" if="[[!item.gesture]]" restamp>
@@ -55,7 +55,7 @@
               type="input"
               label="Assign a gesture"
               on-click="onAssignGestureButtonClick_"
-              disabled="[[disabled]]">
+              disabled="[[disableConfigureControls_]]">
             <iron-icon icon="cr:add" slot="icon"></iron-icon>
           </cros-chip>
         </template>
@@ -69,7 +69,7 @@
         id="addActionButton"
         class="button"
         on-click="onAddActionButtonClick_"
-        disabled="[[disabled]]">
+        disabled="[[disableConfigureControls_]]">
       <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
       $i18n{faceGazeActionsAddAction}
     </cr-button>

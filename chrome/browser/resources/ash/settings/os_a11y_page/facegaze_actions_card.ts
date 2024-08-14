@@ -64,6 +64,12 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
         type: Boolean,
       },
 
+      disableConfigureControls_: {
+        type: Boolean,
+        computed:
+            'shouldDisableConfigureControls_(disabled, prefs.settings.a11y.face_gaze.actions_enabled.value)',
+      },
+
       commandPairs_: {
         type: Array,
         value: () => [],
@@ -110,6 +116,11 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   private getCurrentAssignedGestures_(): Record<FacialGesture, MacroName> {
     return {...this.get(FACE_GAZE_GESTURE_TO_MACROS_PREF)} as
         Record<FacialGesture, MacroName>;
+  }
+
+  private shouldDisableConfigureControls_(): boolean {
+    return this.disabled ||
+        !this.getPref('settings.a11y.face_gaze.actions_enabled').value;
   }
 
   private onAddActionButtonClick_(): void {
