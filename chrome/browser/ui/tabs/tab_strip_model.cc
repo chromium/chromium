@@ -302,9 +302,7 @@ int TabStripModel::InsertWebContentsAt(
     int add_types,
     std::optional<tab_groups::TabGroupId> group) {
   return InsertDetachedTabAt(
-      index,
-      std::make_unique<tabs::TabModel>(std::move(contents),
-                                       delegate()->IsNormalWindow()),
+      index, std::make_unique<tabs::TabModel>(std::move(contents), this),
       add_types, group);
 }
 
@@ -951,8 +949,7 @@ void TabStripModel::AddWebContents(
     ui::PageTransition transition,
     int add_types,
     std::optional<tab_groups::TabGroupId> group) {
-  auto tab = std::make_unique<tabs::TabModel>(std::move(contents),
-                                              delegate()->IsNormalWindow());
+  auto tab = std::make_unique<tabs::TabModel>(std::move(contents), this);
   AddTab(std::move(tab), index, transition, add_types, group);
 }
 
