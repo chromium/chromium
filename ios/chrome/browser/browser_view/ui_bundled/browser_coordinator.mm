@@ -3774,17 +3774,19 @@ enum class ToolbarKind {
 }
 #pragma mark - QuickDeleteCommands
 
-- (void)showQuickDelete {
+- (void)showQuickDeleteAndCanPerformTabsClosureAnimation:
+    (BOOL)canPerformTabsClosureAnimation {
   CHECK(IsIosQuickDeleteEnabled());
   CHECK(!self.browser->GetBrowserState()->IsOffTheRecord());
 
   [_quickDeleteCoordinator stop];
 
   _quickDeleteCoordinator = [[QuickDeleteCoordinator alloc]
-      initWithBaseViewController:top_view_controller::
-                                     TopPresentedViewControllerFrom(
-                                         self.viewController)
-                         browser:self.browser];
+          initWithBaseViewController:top_view_controller::
+                                         TopPresentedViewControllerFrom(
+                                             self.viewController)
+                             browser:self.browser
+      canPerformTabsClosureAnimation:canPerformTabsClosureAnimation];
   [_quickDeleteCoordinator start];
 }
 

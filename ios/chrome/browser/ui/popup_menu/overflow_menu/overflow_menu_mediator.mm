@@ -2038,7 +2038,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   RecordAction(UserMetricsAction("MobileMenuClearBrowsingData"));
   [self dismissMenu];
   if (IsIosQuickDeleteEnabled()) {
-    [self.quickDeleteHandler showQuickDelete];
+    [self.quickDeleteHandler
+        showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
   } else {
     [self.settingsHandler showClearBrowsingDataSettings];
   }

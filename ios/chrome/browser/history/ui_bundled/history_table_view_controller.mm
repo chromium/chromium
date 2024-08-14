@@ -1281,7 +1281,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     }
     id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), QuickDeleteCommands);
-    [quickDeleteHandler showQuickDelete];
+    [quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:NO];
     return;
   }
 

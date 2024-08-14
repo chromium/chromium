@@ -52,7 +52,8 @@
               browsingDataCounterWrapperProducer:producer
                                  identityManager:identityManager
                              browsingDataRemover:browsingDataRemover
-                             discoverFeedService:discoverFeedService];
+                             discoverFeedService:discoverFeedService
+                  canPerformTabsClosureAnimation:NO];
 
   _viewController = [[QuickDeleteBrowsingDataViewController alloc] init];
   _viewController.delegate = self;

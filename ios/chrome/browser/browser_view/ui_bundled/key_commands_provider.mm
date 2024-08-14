@@ -529,7 +529,7 @@ using base::UserMetricsAction;
 - (void)keyCommand_clearBrowsingData {
   RecordAction(UserMetricsAction("MobileKeyCommandClearBrowsingData"));
   if (IsIosQuickDeleteEnabled()) {
-    [_quickDeleteHandler showQuickDelete];
+    [_quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
   } else {
     [_settingsHandler showClearBrowsingDataSettings];
   }

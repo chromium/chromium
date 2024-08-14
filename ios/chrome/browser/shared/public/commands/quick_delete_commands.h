@@ -10,8 +10,11 @@
 // Commands related to Quick Delete.
 @protocol QuickDeleteCommands
 
-// Shows Quick Delete.
-- (void)showQuickDelete;
+// Shows Quick Delete and indicates if the tabs closure animation can be
+// performed. The animation should only be performed if Quick Delete is opened
+// on top of a tab or the tab grid.
+- (void)showQuickDeleteAndCanPerformTabsClosureAnimation:
+    (BOOL)canPerformTabsClosureAnimation;
 
 // Stops Quick Delete.
 - (void)stopQuickDelete;

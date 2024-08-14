@@ -101,7 +101,9 @@ const CGFloat kSymbolSize = 18;
                      action:^{
                        [omniboxHandler cancelOmniboxEdit];
                        if (IsIosQuickDeleteEnabled()) {
-                         [quickDeleteHandler showQuickDelete];
+                         [quickDeleteHandler
+                             showQuickDeleteAndCanPerformTabsClosureAnimation:
+                                 YES];
                        } else {
                          [settingsHandler showClearBrowsingDataSettings];
                        }

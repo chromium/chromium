@@ -130,7 +130,7 @@
   if (IsIosQuickDeleteEnabled()) {
     id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), QuickDeleteCommands);
-    [quickDeleteHandler showQuickDelete];
+    [quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:NO];
   } else {
     self.clearBrowsingDataCoordinator = [[ClearBrowsingDataCoordinator alloc]
         initWithBaseNavigationController:self.baseNavigationController

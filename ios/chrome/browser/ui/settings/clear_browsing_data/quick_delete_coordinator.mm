@@ -39,6 +39,21 @@
   QuickDeleteViewController* _viewController;
   QuickDeleteMediator* _mediator;
   QuickDeleteBrowsingDataCoordinator* _browsingDataCoordinator;
+
+  // The tabs closure animation should only be performed if Quick Delete is
+  // opened on top of a tab or the tab grid.
+  BOOL _canPerformTabsClosureAnimation;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+            canPerformTabsClosureAnimation:
+                (BOOL)canPerformTabsClosureAnimation {
+  if (self = [super initWithBaseViewController:viewController
+                                       browser:browser]) {
+    _canPerformTabsClosureAnimation = canPerformTabsClosureAnimation;
+  }
+  return self;
 }
 
 #pragma mark - ChromeCoordinator
@@ -58,12 +73,13 @@
   DiscoverFeedService* discoverFeedService =
       DiscoverFeedServiceFactory::GetForBrowserState(browserState);
 
-  _mediator =
-      [[QuickDeleteMediator alloc] initWithPrefs:browserState->GetPrefs()
-              browsingDataCounterWrapperProducer:producer
-                                 identityManager:identityManager
-                             browsingDataRemover:browsingDataRemover
-                             discoverFeedService:discoverFeedService];
+  _mediator = [[QuickDeleteMediator alloc]
+                           initWithPrefs:browserState->GetPrefs()
+      browsingDataCounterWrapperProducer:producer
+                         identityManager:identityManager
+                     browsingDataRemover:browsingDataRemover
+                     discoverFeedService:discoverFeedService
+          canPerformTabsClosureAnimation:_canPerformTabsClosureAnimation];
 
   _viewController = [[QuickDeleteViewController alloc] init];
   _mediator.consumer = _viewController;
@@ -126,6 +142,7 @@
                                   cachedTabsInfo:
                                       (tabs_closure_util::WebStateIDToTime)
                                           cachedTabsInfo {
+  CHECK(_canPerformTabsClosureAnimation);
   CHECK_EQ(Browser::Type::kRegular, self.browser->type());
 
   // Get the active and inactive WebStates and the TabGroups of WebStates with a

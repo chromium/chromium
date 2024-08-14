@@ -85,6 +85,7 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/ui/authentication/signout_action_sheet",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",

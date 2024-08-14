@@ -609,6 +609,56 @@ void ExpectClearBrowsingDataNavigationHistograms(
   // Check that the tab has been closed.
   [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
   GREYAssertTrue([ChromeEarlGrey mainTabCount] == 0, @"Tabs were not closed.");
+
+  // Check that Quick Delete is not opened.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_nil()];
+
+  // Check that tab grid is shown. Quick Delete was opened from the three dot
+  // menu, and as such the animation should be triggered and the tab grid should
+  // be visible by the end.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
+      performAction:grey_tap()];
+}
+
+// Tests that when Quick Delete is opened from Privacy Settings and tabs are
+// selected as a data type, that the privacy settings are still visible after
+// the deletion.
+- (void)testTabsForDeletionFromPrivacySettings {
+  // Set pref to close tabs.
+  [ChromeEarlGrey setBoolValue:true
+                   forUserPref:browsing_data::prefs::kCloseTabs];
+
+  // Load page in tab.
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  [self openQuickDeleteFromPrivacySettings];
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+
+  // Check that the tab has been closed.
+  [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 0, @"Tabs were not closed.");
+
+  // Check that Quick Delete is not opened.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:[self quickDeleteTitle]];
+
+  // Quick Delete was opened from privacy settings, and as such no animation
+  // should be triggered, and the privacy settings should still be visible by
+  // the end.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_SETTINGS_PRIVACY_TITLE))]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests that inactive tabs are shown as a possible type to be deleted on the

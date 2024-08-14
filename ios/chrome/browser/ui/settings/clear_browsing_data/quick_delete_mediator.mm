@@ -75,6 +75,8 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
+
+  BOOL _canPerformTabsClosureAnimation;
 }
 
 - (instancetype)initWithPrefs:(PrefService*)prefs
@@ -82,8 +84,8 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
         (BrowsingDataCounterWrapperProducer*)counterWrapperProducer
                        identityManager:(signin::IdentityManager*)identityManager
                    browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
-                   discoverFeedService:
-                       (DiscoverFeedService*)discoverFeedService {
+                   discoverFeedService:(DiscoverFeedService*)discoverFeedService
+        canPerformTabsClosureAnimation:(BOOL)canPerformTabsClosureAnimation {
   if (self = [super init]) {
     _prefs = prefs;
     _counterWrapperProducer = counterWrapperProducer;
@@ -99,6 +101,8 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
 
     // Start observing preferences.
     [self observePreferences];
+
+    _canPerformTabsClosureAnimation = canPerformTabsClosureAnimation;
   }
   return self;
 }
@@ -186,21 +190,25 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
     removeMask |= BrowsingDataRemoveMask::REMOVE_FORM_DATA;
   }
 
-  // no-op for `browsing_data::prefs::kCloseTabs` as tabs will be closed in the
-  // animation flow.
-  // TODO(crbug.com/354112735): Close tabs through `_browsingDataRemover` when
-  // Quick Delete is not triggered on top of a tab or the tab grid, i.e. not
-  // from the three dot menu.
+  bool shouldCloseTabs = _prefs->GetBoolean(browsing_data::prefs::kCloseTabs);
+
+  // If we cannot perform the tabs closure animation, then close the tabs when
+  // deleting the other data.
+  if (shouldCloseTabs && !_canPerformTabsClosureAnimation) {
+    _browsingDataRemover->SetCachedTabsInfo(_cachedTabsInfo);
+    removeMask |= BrowsingDataRemoveMask::CLOSE_TABS;
+  }
 
   browsing_data::TimePeriod timePeriod = static_cast<browsing_data::TimePeriod>(
       _prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
   base::Time beginTime = browsing_data::CalculateBeginDeleteTime(timePeriod);
   base::Time endTime = browsing_data::CalculateEndDeleteTime(timePeriod);
 
-  bool shouldCloseTabs = _prefs->GetBoolean(browsing_data::prefs::kCloseTabs);
-
   base::OnceClosure removeBrowsingDataCompletion;
-  if (shouldCloseTabs) {
+
+  // If we can perform the tabs closure animation, then don't close the tabs
+  // right away, but perform the animation which will eventually close the tabs.
+  if (shouldCloseTabs && _canPerformTabsClosureAnimation) {
     __weak __typeof(self) weakSelf = self;
     removeBrowsingDataCompletion = base::BindOnce(
         [](__typeof(self) strongSelf, base::Time beginTime,
@@ -299,9 +307,7 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
 // WebStates within [`beginTime`, `endTime`[.
 - (void)triggerTabsClosureAnimationWithBeginTime:(base::Time)beginTime
                                          endTime:(base::Time)endTime {
-  // TODO(crbug.com/354112735): Only trigger the tabs animation when Quick
-  // Delete is triggered on top of a tab or the tab grid, i.e. from the three
-  // dot menu.
+  CHECK(_canPerformTabsClosureAnimation);
   [_presentationHandler
       triggerTabsClosureAnimationWithBeginTime:beginTime
                                        endTime:endTime

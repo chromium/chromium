@@ -87,7 +87,8 @@ class QuickDeleteMediatorTest : public PlatformTest {
             fake_browsing_data_counter_wrapper_producer_
                            identityManager:identityManager
                        browsingDataRemover:browsing_data_remover
-                       discoverFeedService:discover_feed_service];
+                       discoverFeedService:discover_feed_service
+            canPerformTabsClosureAnimation:NO];
   }
 
   ~QuickDeleteMediatorTest() override {
