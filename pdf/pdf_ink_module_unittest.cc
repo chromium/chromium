@@ -33,8 +33,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
+using testing::_;
 using testing::ElementsAre;
 using testing::ElementsAreArray;
+using testing::InSequence;
 using testing::Pair;
 
 namespace chrome_pdf {
@@ -108,6 +110,8 @@ class FakeClient : public PdfInkModule::Client {
   }
 
   void StrokeFinished() override { ++stroke_finished_count_; }
+
+  MOCK_METHOD(void, UpdateInkCursorImage, (SkBitmap bitmap), (override));
 
   int VisiblePageIndexFromPoint(const gfx::PointF& point) override {
     for (size_t i = 0; i < page_layouts_.size(); ++i) {
@@ -188,7 +192,7 @@ TEST_F(PdfInkModuleTest, UnknownMessage) {
 // Verify that a set eraser message sets the annotation brush to an eraser.
 TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageEraser) {
   EnableAnnotationMode();
-  EXPECT_EQ(true, ink_module().enabled());
+  EXPECT_TRUE(ink_module().enabled());
 
   base::Value::Dict message = CreateSetAnnotationBrushMessageForTesting(
       "eraser", /*size=*/2.5, nullptr);
@@ -204,7 +208,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageEraser) {
 // given params.
 TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
   EnableAnnotationMode();
-  EXPECT_EQ(true, ink_module().enabled());
+  EXPECT_TRUE(ink_module().enabled());
 
   TestAnnotationBrushMessageParams message_params{/*color_r=*/10,
                                                   /*color_g=*/255,
@@ -226,7 +230,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
 // highlighter, with the given params.
 TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   EnableAnnotationMode();
-  EXPECT_EQ(true, ink_module().enabled());
+  EXPECT_TRUE(ink_module().enabled());
 
   TestAnnotationBrushMessageParams message_params{/*color_r=*/240,
                                                   /*color_g=*/133,
@@ -248,7 +252,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
 // brush.
 TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
   EnableAnnotationMode();
-  EXPECT_EQ(true, ink_module().enabled());
+  EXPECT_TRUE(ink_module().enabled());
 
   TestAnnotationBrushMessageParams message_params{/*color_r=*/0, /*color_g=*/0,
                                                   /*color_b=*/0};
@@ -281,6 +285,58 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationModeMessage) {
   message.Set("enable", false);
   EXPECT_TRUE(ink_module().OnMessage(message));
   EXPECT_FALSE(ink_module().enabled());
+}
+
+TEST_F(PdfInkModuleTest, MaybeSetCursorWhenTogglingAnnotationMode) {
+  EXPECT_FALSE(ink_module().enabled());
+
+  EXPECT_CALL(client(), UpdateInkCursorImage(_))
+      .WillOnce(
+          [this](SkBitmap bitmap) { EXPECT_TRUE(ink_module().enabled()); });
+
+  base::Value::Dict message =
+      CreateSetAnnotationModeMessageForTesting(/*enable=*/true);
+  EXPECT_TRUE(ink_module().OnMessage(message));
+  EXPECT_TRUE(ink_module().enabled());
+
+  message.Set("enable", false);
+  EXPECT_TRUE(ink_module().OnMessage(message));
+  EXPECT_FALSE(ink_module().enabled());
+}
+
+TEST_F(PdfInkModuleTest, MaybeSetCursorWhenChangingBrushes) {
+  {
+    InSequence seq;
+    EXPECT_CALL(client(), UpdateInkCursorImage(_))
+        .WillOnce([](SkBitmap bitmap) {
+          EXPECT_EQ(6, bitmap.width());
+          EXPECT_EQ(6, bitmap.height());
+        });
+    EXPECT_CALL(client(), UpdateInkCursorImage(_))
+        .WillOnce([](SkBitmap bitmap) {
+          EXPECT_EQ(20, bitmap.width());
+          EXPECT_EQ(20, bitmap.height());
+        });
+    EXPECT_CALL(client(), UpdateInkCursorImage(_))
+        .WillOnce([](SkBitmap bitmap) {
+          EXPECT_EQ(10, bitmap.width());
+          EXPECT_EQ(10, bitmap.height());
+        });
+  }
+
+  EnableAnnotationMode();
+  EXPECT_TRUE(ink_module().enabled());
+
+  TestAnnotationBrushMessageParams message_params{/*color_r=*/0,
+                                                  /*color_g=*/255,
+                                                  /*color_b=*/0};
+  base::Value::Dict message = CreateSetAnnotationBrushMessageForTesting(
+      "pen", /*size=*/16.0, &message_params);
+  EXPECT_TRUE(ink_module().OnMessage(message));
+
+  message = CreateSetAnnotationBrushMessageForTesting("eraser", /*size=*/8.0,
+                                                      nullptr);
+  EXPECT_TRUE(ink_module().OnMessage(message));
 }
 
 class PdfInkModuleStrokeTest : public PdfInkModuleTest {

@@ -19,7 +19,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
@@ -40,6 +39,7 @@
 #include "pdf/pdf_accessibility_image_fetcher.h"
 #include "pdf/pdf_features.h"
 #include "pdf/test/mock_web_associated_url_loader.h"
+#include "pdf/test/pdf_ink_test_helpers.h"
 #include "pdf/test/test_helpers.h"
 #include "pdf/test/test_pdfium_engine.h"
 #include "printing/metafile_skia.h"
@@ -94,7 +94,6 @@ using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
@@ -2442,7 +2441,47 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
 }
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-using PdfViewWebPluginInkTest = PdfViewWebPluginTest;
+class PdfViewWebPluginInkTest : public PdfViewWebPluginTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kPdfInk2};
+};
+
+TEST_F(PdfViewWebPluginInkTest, UpdateCursor) {
+  UpdatePluginGeometryWithoutWaiting(2.0f, {0, 0, 20, 20});
+
+  ON_CALL(*engine_ptr_, HandleInputEvent)
+      .WillByDefault([this](const blink::WebInputEvent& event) -> bool {
+        plugin_->UpdateCursor(ui::mojom::CursorType::kPointer);
+        return false;
+      });
+
+  blink::WebMouseEvent mouse_event;
+  mouse_event.SetType(blink::WebInputEvent::Type::kMouseMove);
+  mouse_event.SetPositionInWidget(10.0f, 20.0f);
+
+  ui::Cursor cursor;
+  EXPECT_EQ(ui::mojom::CursorType::kNull, cursor.type());
+  EXPECT_EQ(blink::WebInputEventResult::kNotHandled,
+            plugin_->HandleInputEvent(
+                blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
+                &cursor));
+  EXPECT_EQ(ui::mojom::CursorType::kPointer, cursor.type());
+
+  plugin_->OnMessage(CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
+  EXPECT_EQ(blink::WebInputEventResult::kNotHandled,
+            plugin_->HandleInputEvent(
+                blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
+                &cursor));
+  EXPECT_EQ(ui::mojom::CursorType::kCustom, cursor.type());
+
+  plugin_->OnMessage(
+      CreateSetAnnotationModeMessageForTesting(/*enable=*/false));
+  EXPECT_EQ(blink::WebInputEventResult::kNotHandled,
+            plugin_->HandleInputEvent(
+                blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
+                &cursor));
+  EXPECT_EQ(ui::mojom::CursorType::kPointer, cursor.type());
+}
 
 TEST_F(PdfViewWebPluginInkTest, VisiblePageIndexFromPoint) {
   ON_CALL(*engine_ptr_, GetPageContentsRect)

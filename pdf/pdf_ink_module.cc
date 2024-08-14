@@ -36,9 +36,11 @@
 #include "pdf/input_utils.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
+#include "pdf/pdf_ink_cursor.h"
 #include "pdf/pdf_ink_transform.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -557,6 +559,7 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   if (brush_type_string == "eraser") {
     auto& eraser_state = current_tool_state_.emplace<EraserState>();
     eraser_state.eraser_size = size;
+    MaybeSetCursor();
     return;
   }
 
@@ -583,11 +586,13 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   current_tool_state_.emplace<DrawingStrokeState>();
   drawing_stroke_state().brush =
       std::make_unique<PdfInkBrush>(brush_type.value(), params);
+  MaybeSetCursor();
 }
 
 void PdfInkModule::HandleSetAnnotationModeMessage(
     const base::Value::Dict& message) {
   enabled_ = message.FindBool("enable").value();
+  MaybeSetCursor();
 }
 
 std::vector<std::unique_ptr<InkInProgressStroke>>
@@ -761,6 +766,30 @@ void PdfInkModule::ApplyUndoRedoDiscards(
   } else {
     stroke_id_generator_.ResetIdTo(0);
   }
+}
+
+void PdfInkModule::MaybeSetCursor() {
+  if (!enabled()) {
+    // Do nothing when disabled. The code outside of PdfInkModule will select a
+    // normal mouse cursor and switch to that.
+    return;
+  }
+
+  SkColor color;
+  float brush_size;
+  if (is_drawing_stroke()) {
+    const auto& ink_brush = drawing_stroke_state().brush->GetInkBrush();
+    color = ink_brush.GetColor();
+    brush_size = ink_brush.GetSize();
+  } else {
+    CHECK(is_erasing_stroke());
+    constexpr SkColor kEraserColor = SK_ColorWHITE;
+    color = kEraserColor;
+    brush_size = erasing_stroke_state().eraser_size;
+  }
+
+  client_->UpdateInkCursorImage(
+      GenerateToolCursor(color, CursorDiameterFromBrushSize(brush_size)));
 }
 
 PdfInkModule::DrawingStrokeState::DrawingStrokeState() = default;

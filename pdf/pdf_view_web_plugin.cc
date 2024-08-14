@@ -916,6 +916,14 @@ void PdfViewWebPlugin::NavigateToDestination(int page,
 }
 
 void PdfViewWebPlugin::UpdateCursor(ui::mojom::CursorType new_cursor_type) {
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  if (ink_module_ && ink_module_->enabled()) {
+    // Block normal mouse cursor updates, so the cursor set by PdfInkModule
+    // while it is enabled does not get overwritten.
+    return;
+  }
+#endif
+
   cursor_ = new_cursor_type;
 }
 
@@ -2034,6 +2042,11 @@ void PdfViewWebPlugin::StrokeFinished() {
   base::Value::Dict message;
   message.Set("type", "finishInkStroke");
   client_->PostMessage(std::move(message));
+}
+
+void PdfViewWebPlugin::UpdateInkCursorImage(SkBitmap bitmap) {
+  gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
+  cursor_ = ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot));
 }
 
 int PdfViewWebPlugin::VisiblePageIndexFromPoint(const gfx::PointF& point) {

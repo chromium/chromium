@@ -403,13 +403,14 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
                           int32_t page_object_index) override;
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-  // PdfInkModule:
+  // PdfInkModule::Client:
   PageOrientation GetOrientation() const override;
   gfx::Rect GetPageContentsRect(int index) override;
   gfx::Vector2dF GetViewportOriginOffset() override;
   float GetZoom() const override;
   bool IsPageVisible(int index) override;
   void StrokeFinished() override;
+  void UpdateInkCursorImage(SkBitmap bitmap) override;
   int VisiblePageIndexFromPoint(const gfx::PointF& point) override;
 #endif
 
