@@ -381,10 +381,9 @@ Response* Response::staticJson(ScriptState* script_state,
   // "1. Let bytes the result of running serialize a JavaScript value to JSON
   // bytes on data."
   v8::Local<v8::String> v8_string;
-  v8::TryCatch try_catch(script_state->GetIsolate());
+  TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
   if (!v8::JSON::Stringify(script_state->GetContext(), data.V8Value())
            .ToLocal(&v8_string)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return nullptr;
   }
 

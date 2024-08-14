@@ -54,11 +54,10 @@ TrustedHTML* TrustedTypePolicy::CreateHTML(v8::Isolate* isolate,
         "'s TrustedTypePolicyOptions did not specify a 'createHTML' member.");
     return nullptr;
   }
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   String html;
   if (!policy_options_->createHTML()->Invoke(nullptr, input, args).To(&html)) {
-    DCHECK(try_catch.HasCaught());
-    exception_state.RethrowV8Exception(try_catch.Exception());
+    DCHECK(rethrow_scope.HasCaught());
     return nullptr;
   }
   return MakeGarbageCollected<TrustedHTML>(html);
@@ -75,13 +74,12 @@ TrustedScript* TrustedTypePolicy::CreateScript(
         "'s TrustedTypePolicyOptions did not specify a 'createScript' member.");
     return nullptr;
   }
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   String script;
   if (!policy_options_->createScript()
            ->Invoke(nullptr, input, args)
            .To(&script)) {
-    DCHECK(try_catch.HasCaught());
-    exception_state.RethrowV8Exception(try_catch.Exception());
+    DCHECK(rethrow_scope.HasCaught());
     return nullptr;
   }
   return MakeGarbageCollected<TrustedScript>(script);
@@ -98,13 +96,12 @@ TrustedScriptURL* TrustedTypePolicy::CreateScriptURL(
                                    "specify a 'createScriptURL' member.");
     return nullptr;
   }
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   String script_url;
   if (!policy_options_->createScriptURL()
            ->Invoke(nullptr, input, args)
            .To(&script_url)) {
-    DCHECK(try_catch.HasCaught());
-    exception_state.RethrowV8Exception(try_catch.Exception());
+    DCHECK(rethrow_scope.HasCaught());
     return nullptr;
   }
   return MakeGarbageCollected<TrustedScriptURL>(script_url);

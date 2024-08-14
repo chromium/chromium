@@ -87,9 +87,8 @@ ScriptPromise<IDLAny> DOMScheduler::postTask(
 
   AbortSignal* signal_option = options->getSignalOr(nullptr);
   if (signal_option && signal_option->aborted()) {
-    exception_state.RethrowV8Exception(
-        signal_option->reason(script_state).V8ValueFor(script_state));
-    return EmptyPromise();
+    return ScriptPromise<IDLAny>::Reject(script_state,
+                                         signal_option->reason(script_state));
   }
 
   DOMTaskSignal* priority_source = nullptr;
@@ -142,9 +141,8 @@ ScriptPromise<IDLUndefined> DOMScheduler::yield(
   }
 
   if (abort_source && abort_source->aborted()) {
-    exception_state.RethrowV8Exception(
-        abort_source->reason(script_state).V8ValueFor(script_state));
-    return EmptyPromise();
+    return ScriptPromise<IDLUndefined>::Reject(
+        script_state, abort_source->reason(script_state));
   }
 
   // `priority_source` will be null if there's nothing to inherit, i.e. yielding

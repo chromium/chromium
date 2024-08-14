@@ -351,7 +351,7 @@ void AddPropertyValuePairsForKeyframe(
   std::sort(keyframe_properties.begin(), keyframe_properties.end(),
             WTF::CodeUnitCompareLessThan);
 
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   for (const auto& property : keyframe_properties) {
     if (property == "offset" || property == "float" ||
         property == "composite" || property == "easing") {
@@ -369,7 +369,6 @@ void AddPropertyValuePairsForKeyframe(
     if (!keyframe_obj
              ->Get(isolate->GetCurrentContext(), V8String(isolate, property))
              .ToLocal(&v8_value)) {
-      exception_state.RethrowV8Exception(try_catch.Exception());
       return;
     }
 
@@ -540,11 +539,10 @@ bool GetPropertyIndexedKeyframeValues(const v8::Local<v8::Object>& keyframe,
   // By spec, we are only allowed to access a given (property, value) pair once.
   // This is observable by the web client, so we take care to adhere to that.
   v8::Local<v8::Value> v8_value;
-  v8::TryCatch try_catch(script_state->GetIsolate());
   v8::Local<v8::Context> context = script_state->GetContext();
   v8::Isolate* isolate = script_state->GetIsolate();
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   if (!keyframe->Get(context, V8String(isolate, property)).ToLocal(&v8_value)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return {};
   }
 

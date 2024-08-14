@@ -711,11 +711,10 @@ void ReadableStream::InitInternal(ScriptState* script_state,
   }
 
   // 4. Let type be ? GetV(underlyingSource, "type").
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   v8::Local<v8::Value> type;
   if (!underlying_source->Get(context, V8AtomicString(isolate, "type"))
            .ToLocal(&type)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return;
   }
 
@@ -723,7 +722,6 @@ void ReadableStream::InitInternal(ScriptState* script_state,
     // 5. Let typeString be ? ToString(type).
     v8::Local<v8::String> type_string;
     if (!type->ToString(context).ToLocal(&type_string)) {
-      exception_state.RethrowV8Exception(try_catch.Exception());
       return;
     }
 

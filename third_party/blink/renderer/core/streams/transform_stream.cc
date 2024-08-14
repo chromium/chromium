@@ -658,13 +658,12 @@ void TransformStream::InitInternal(ScriptState* script_state,
     return;
   }
 
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
 
   // 5. Let writableType be ? GetV(transformer, "writableType").
   v8::Local<v8::Value> writable_type;
   if (!transformer->Get(context, V8AtomicString(isolate, "writableType"))
            .ToLocal(&writable_type)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return;
   }
 
@@ -695,7 +694,6 @@ void TransformStream::InitInternal(ScriptState* script_state,
   v8::Local<v8::Value> readable_type;
   if (!transformer->Get(context, V8AtomicString(isolate, "readableType"))
            .ToLocal(&readable_type)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return;
   }
 

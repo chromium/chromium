@@ -159,8 +159,8 @@ ScriptValue WritableStreamDefaultWriter::desiredSize(
   //  2. If this.[[ownerWritableStream]] is undefined, throw a TypeError
   //     exception.
   if (!owner_writable_stream_) {
-    exception_state.RethrowV8Exception(CreateWriterLockReleasedException(
-        isolate, "used to get the desiredSize"));
+    exception_state.ThrowTypeError(
+        CreateWriterLockReleasedMessage("used to get the desiredSize"));
     return ScriptValue();
   }
 
