@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] lstm float32 tensors steps=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu', 'relu'] and options.layout='ifgo'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': DirectML: The lstm weight layout (ifgo) is not supported."
+Harness: the test ran to completion.
+
