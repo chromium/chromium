@@ -7,6 +7,7 @@ source_set("profile") {
     "profile_attributes_storage_ios.cc",
     "profile_attributes_storage_ios.h",
     "profile_ios.h",
+    "profile_ios_forward.h",
     "profile_manager_ios.h",
     "profile_manager_observer_ios.h",
   ]
