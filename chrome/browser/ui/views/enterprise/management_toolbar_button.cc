@@ -13,6 +13,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -100,6 +102,16 @@ void ManagementToolbarButton::UpdateManagementInfo() {
   PrefService* prefs = profile_->GetPrefs();
   std::string label;
   std::string icon_url;
+  if (prefs->HasPrefPath(prefs::kEnterpriseLogoUrl)) {
+    icon_url = prefs->GetString(prefs::kEnterpriseLogoUrl);
+  }
+  // If no icon is set at profile level but the browser and profile are managed
+  // by the same entity, use the browser level icon.
+  if (icon_url.empty() &&
+      chrome::AreProfileAndBrowserManagedBySameEntity(profile_)) {
+    icon_url =
+        g_browser_process->local_state()->GetString(prefs::kEnterpriseLogoUrl);
+  }
   bool show_management_toolbar_button = CanShowManagementToolbarButton(*prefs);
   bool button_becoming_visible =
       !GetVisible() && show_management_toolbar_button;
@@ -111,7 +123,7 @@ void ManagementToolbarButton::UpdateManagementInfo() {
   SetManagementLabel(prefs->GetString(prefs::kEnterpriseCustomLabel));
   if (show_management_toolbar_button) {
     enterprise_util::GetManagementIcon(
-        GURL(prefs->GetString(prefs::kEnterpriseLogoUrl)), profile_,
+        GURL(icon_url), profile_,
         base::BindOnce(&ManagementToolbarButton::SetManagementIcon,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
