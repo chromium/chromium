@@ -4,88 +4,76 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_transport.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/workers/dedicated_worker_test.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/webrtc/api/transport/network_control.h"
 
 namespace blink {
 
-const uint32_t kMaxCount = 10;
+using testing::_;
+using testing::Invoke;
 
-class RTCRtpTransportTest : public ::testing::Test {
+class MockFeedbackProvider : public FeedbackProvider {
  public:
-  void SetUp() override {}
-
- protected:
-  test::TaskEnvironment task_environment_;
+  MOCK_METHOD(void,
+              SetProcessor,
+              (CrossThreadWeakHandle<RTCRtpTransportProcessor>
+                   rtp_transport_processor_handle,
+               scoped_refptr<base::SequencedTaskRunner> task_runner),
+              (override));
 };
 
-webrtc::TransportPacketsFeedback CreateFeedback(size_t packet_count,
-                                                uint32_t feedback_time_ms) {
-  webrtc::TransportPacketsFeedback feedback;
-  feedback.feedback_time = webrtc::Timestamp::Millis(feedback_time_ms);
-  for (size_t i = 0; i < packet_count; i++) {
-    webrtc::PacketResult packet_result;
-    packet_result.receive_time =
-        webrtc::Timestamp::Millis(feedback_time_ms - packet_count + i);
-    feedback.packet_feedbacks.push_back(packet_result);
-  }
-  return feedback;
-}
+class RTCRtpTransportTest : public DedicatedWorkerTest {};
 
-TEST_F(RTCRtpTransportTest, EmptyReadReceivedAcks) {
-  V8TestingScope scope_;
-  RTCRtpTransport* transport =
-      MakeGarbageCollected<RTCRtpTransport>(scope_.GetExecutionContext());
-  EXPECT_EQ(transport->readReceivedAcks(kMaxCount).size(), 0ul);
-}
-
-TEST_F(RTCRtpTransportTest, ReadReceivedAcksReturnsFewerThanMax) {
+TEST_F(RTCRtpTransportTest, RegisterFeedbackProviderAfterCreateProcessor) {
   V8TestingScope scope_;
   RTCRtpTransport* transport =
       MakeGarbageCollected<RTCRtpTransport>(scope_.GetExecutionContext());
 
-  transport->OnFeedback(CreateFeedback(0, 0));
-  transport->OnFeedback(CreateFeedback(10, 1000));
-  transport->OnFeedback(CreateFeedback(20, 2000));
-  transport->OnFeedback(CreateFeedback(30, 3000));
+  base::RunLoop loop;
+  const String source_code = R"JS(
+    onrtcrtptransportprocessor = () => {};
+  )JS";
+  StartWorker();
+  EvaluateClassicScript(source_code);
+  WaitUntilWorkerIsRunning();
 
-  HeapVector<Member<RTCRtpAcks>> acks_vector =
-      transport->readReceivedAcks(kMaxCount);
-  EXPECT_EQ(acks_vector.size(), 4u);
-  for (size_t i = 0; i < 4; i++) {
-    EXPECT_EQ(acks_vector[i]->remoteSendTimestamp(), i * 1000);
-    EXPECT_EQ(acks_vector[i]->acks().size(), i * 10);
-  }
+  transport->createProcessor(scope_.GetScriptState(), WorkerObject(),
+                             scope_.GetExceptionState());
+
+  auto mock_feedback_provider = base::MakeRefCounted<MockFeedbackProvider>();
+
+  EXPECT_CALL(*mock_feedback_provider, SetProcessor(_, _))
+      .WillOnce(Invoke([&]() { loop.Quit(); }));
+  transport->RegisterFeedbackProvider(mock_feedback_provider);
+  loop.Run();
 }
 
-TEST_F(RTCRtpTransportTest, ReadReceivedAcksTruncatesToFirstMax) {
+TEST_F(RTCRtpTransportTest, RegisterFeedbackProviderBeforeCreateProcessor) {
   V8TestingScope scope_;
   RTCRtpTransport* transport =
       MakeGarbageCollected<RTCRtpTransport>(scope_.GetExecutionContext());
-  // Receive kMaxCount*2 feedbacks, with increasing packet counts and feedback
-  // timestamps;
-  for (size_t i = 0; i < kMaxCount * 2; i++) {
-    transport->OnFeedback(CreateFeedback(i * 10, i * 1000));
-  }
+  auto mock_feedback_provider = base::MakeRefCounted<MockFeedbackProvider>();
 
-  // Reading kMaxCount should return the first kMaxCount acks objects.
-  HeapVector<Member<RTCRtpAcks>> acks_vector =
-      transport->readReceivedAcks(kMaxCount);
-  EXPECT_EQ(acks_vector.size(), kMaxCount);
-  for (size_t i = 0; i < kMaxCount; i++) {
-    EXPECT_EQ(acks_vector[i]->remoteSendTimestamp(), i * 1000);
-    EXPECT_EQ(acks_vector[i]->acks().size(), i * 10);
-  }
+  EXPECT_CALL(*mock_feedback_provider, SetProcessor(_, _)).Times(0);
+  transport->RegisterFeedbackProvider(mock_feedback_provider);
+  transport->createProcessor(scope_.GetScriptState(), WorkerObject(),
+                             scope_.GetExceptionState());
 
-  // Reading again kMaxCount should return the remaining kMaxCount acks objects.
-  acks_vector = transport->readReceivedAcks(kMaxCount);
-  EXPECT_EQ(acks_vector.size(), kMaxCount);
-  for (size_t i = 0; i < kMaxCount; i++) {
-    EXPECT_EQ(acks_vector[i]->remoteSendTimestamp(), (i + kMaxCount) * 1000);
-    EXPECT_EQ(acks_vector[i]->acks().size(), (i + kMaxCount) * 10);
-  }
+  base::RunLoop loop;
+  EXPECT_CALL(*mock_feedback_provider, SetProcessor(_, _))
+      .WillOnce(Invoke([&]() { loop.Quit(); }));
+  const String source_code = R"JS(
+    onrtcrtptransportprocessor = () => {};
+  )JS";
+  StartWorker();
+  EvaluateClassicScript(source_code);
+  WaitUntilWorkerIsRunning();
+
+  loop.Run();
 }
 
 }  // namespace blink

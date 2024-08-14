@@ -7970,8 +7970,7 @@ interface RTCRtpTransceiver
 interface RTCRtpTransport
     attribute @@toStringTag
     method constructor
-    method readReceivedAcks
-    method readSentRtp
+    method createProcessor
 interface RTCSctpTransport : EventTarget
     attribute @@toStringTag
     getter maxChannels
