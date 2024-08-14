@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cert/cert_verifier.h"
 
 #include <algorithm>
@@ -23,6 +18,7 @@
 #include "net/cert/crl_set.h"
 #include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
+#include "net/cert/x509_util.h"
 #include "net/net_buildflags.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
@@ -67,10 +63,6 @@ class DefaultCertVerifyProcFactory : public net::CertVerifyProcFactory {
   ~DefaultCertVerifyProcFactory() override = default;
 };
 
-base::span<const uint8_t> CryptoBufferToSpan(const CRYPTO_BUFFER* b) {
-  return base::make_span(CRYPTO_BUFFER_data(b), CRYPTO_BUFFER_len(b));
-}
-
 void Sha256UpdateLengthPrefixed(SHA256_CTX* ctx, base::span<const uint8_t> s) {
   // Include a length prefix to ensure the hash is injective.
   uint64_t l = s.size();
@@ -106,10 +98,10 @@ CertVerifier::RequestParams::RequestParams(
   // sake.
   SHA256_CTX ctx;
   SHA256_Init(&ctx);
-  Sha256UpdateLengthPrefixed(&ctx,
-                             CryptoBufferToSpan(certificate_->cert_buffer()));
+  Sha256UpdateLengthPrefixed(&ctx, certificate_->cert_span());
   for (const auto& cert_handle : certificate_->intermediate_buffers()) {
-    Sha256UpdateLengthPrefixed(&ctx, CryptoBufferToSpan(cert_handle.get()));
+    Sha256UpdateLengthPrefixed(
+        &ctx, x509_util::CryptoBufferAsSpan(cert_handle.get()));
   }
   Sha256UpdateLengthPrefixed(&ctx, base::as_byte_span(hostname));
   SHA256_Update(&ctx, &flags, sizeof(flags));
