@@ -14,6 +14,7 @@
 #include "base/threading/thread.h"
 #include "chrome/enterprise_companion/app/app.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
+#include "chrome/enterprise_companion/event_logger.h"
 #include "chrome/enterprise_companion/url_loader_factory_provider.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -40,6 +41,15 @@ class AppNetWorker : public App {
 
  private:
   void FirstTaskRun() override {
+    // The cookie handler is created before reducing privilege, as opening the
+    // cookie file requires root.
+    base::SequenceBound<EventLoggerCookieHandler> event_logger_cookie_handler =
+        CreateEventLoggerCookieHandler();
+    if (!event_logger_cookie_handler) {
+      LOG(WARNING) << "Failed to create EventLoggerCookieHandler, logging "
+                      "cookies will not be transmitted or persisted.";
+    }
+
     // If running as root, drop down to "nobody".
     if (getuid() == 0) {
       if (setgid(kNobodyGid)) {
@@ -73,7 +83,7 @@ class AppNetWorker : public App {
     }
 
     url_loader_factory_provider_ = CreateInProcessUrlLoaderFactoryProvider(
-        net_thread_.task_runner(),
+        net_thread_.task_runner(), std::move(event_logger_cookie_handler),
         mojo::PendingReceiver<network::mojom::URLLoaderFactory>(
             std::move(pipe)),
         base::BindOnce(&AppNetWorker::Shutdown, weak_ptr_factory_.GetWeakPtr(),

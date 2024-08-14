@@ -41,6 +41,7 @@ TEST_F(URLLoaderFactoryProviderTest, StubDisconnectHandler) {
   base::SequenceBound<URLLoaderFactoryProvider> url_loader_factory_provider =
       CreateInProcessUrlLoaderFactoryProvider(
           base::ThreadPool::CreateSingleThreadTaskRunner({}),
+          /*event_logger_cookie_handler=*/{},
           remote.InitWithNewPipeAndPassReceiver(), run_loop.QuitClosure());
   remote.reset();
   run_loop.Run();

@@ -23,8 +23,10 @@
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion.h"
+#include "chrome/enterprise_companion/event_logger.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -37,6 +39,7 @@
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
 
@@ -128,12 +131,14 @@ class URLLoaderFactoryProxy final : public network::mojom::URLLoaderFactory {
 class InProcessURLLoaderFactoryProvider : public URLLoaderFactoryProvider {
  public:
   InProcessURLLoaderFactoryProvider(
+      base::SequenceBound<EventLoggerCookieHandler> event_logger_cookie_handler,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
       base::OnceClosure on_disconnect_callback)
       : url_loader_factory_owner_(
             base::MakeRefCounted<URLRequestContextGetter>(
                 base::SingleThreadTaskRunner::GetCurrentDefault()),
-            /*is_trusted=*/true) {
+            /*is_trusted=*/true),
+        event_logger_cookie_handler_(std::move(event_logger_cookie_handler)) {
     if (pending_receiver.is_valid()) {
       // Bind the incoming receiver to the URL loader factory indirectly
       // through a self-owned `URLLoaderFactoryProxy` receiver, allowing a
@@ -148,6 +153,16 @@ class InProcessURLLoaderFactoryProvider : public URLLoaderFactoryProvider {
           ->set_connection_error_handler(
               base::BindOnce(std::move(on_disconnect_callback)));
     }
+
+    if (event_logger_cookie_handler_) {
+      mojo::PendingRemote<network::mojom::CookieManager>
+          cookie_manager_pending_remote;
+      url_loader_factory_owner_.GetNetworkContext()->GetCookieManager(
+          cookie_manager_pending_remote.InitWithNewPipeAndPassReceiver());
+      event_logger_cookie_handler_.AsyncCall(&EventLoggerCookieHandler::Init)
+          .WithArgs(std::move(cookie_manager_pending_remote),
+                    base::DoNothing());
+    }
   }
 
   ~InProcessURLLoaderFactoryProvider() override = default;
@@ -161,6 +176,7 @@ class InProcessURLLoaderFactoryProvider : public URLLoaderFactoryProvider {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
   network::TransitionalURLLoaderFactoryOwner url_loader_factory_owner_;
+  base::SequenceBound<EventLoggerCookieHandler> event_logger_cookie_handler_;
 };
 
 #if BUILDFLAG(IS_MAC)
@@ -196,11 +212,12 @@ class URLLoaderFactoryProviderProxy : public URLLoaderFactoryProvider {
 base::SequenceBound<URLLoaderFactoryProvider>
 CreateInProcessUrlLoaderFactoryProvider(
     scoped_refptr<base::SingleThreadTaskRunner> net_thread_runner,
+    base::SequenceBound<EventLoggerCookieHandler> event_logger_cookie_handler,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
     base::OnceClosure on_disconnect_callback) {
   return base::SequenceBound<InProcessURLLoaderFactoryProvider>(
-      net_thread_runner, std::move(pending_receiver),
-      std::move(on_disconnect_callback));
+      net_thread_runner, std::move(event_logger_cookie_handler),
+      std::move(pending_receiver), std::move(on_disconnect_callback));
 }
 
 #if BUILDFLAG(IS_MAC)

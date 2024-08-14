@@ -9,15 +9,21 @@
 #include <optional>
 #include <string>
 
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/platform_file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/proto/log_request.pb.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace base {
 class Clock;
@@ -32,6 +38,9 @@ namespace enterprise_companion {
 // The shortest duration to wait between making remote log requests.
 inline constexpr base::TimeDelta kMinLogTransmissionCooldown =
     base::Minutes(15);
+
+extern const char kLoggingCookieName[];
+extern const char kLoggingCookieDefaultValue[];
 
 // Records events from the client and transmits service health metrics.
 // Construction, destruction, and all method calls must occur on the same
@@ -84,12 +93,35 @@ class EventLogUploader {
                             LogRequestCallback callback) = 0;
 };
 
+// Handles the initial population and persistence of the event logging cookie
+// for the duration of its lifetime.
+class EventLoggerCookieHandler {
+ public:
+  virtual ~EventLoggerCookieHandler() = default;
+
+  virtual void Init(mojo::PendingRemote<network::mojom::CookieManager>
+                        cookie_manager_pending_remote,
+                    base::OnceClosure callback) = 0;
+};
+
 std::unique_ptr<EventLoggerManager> CreateEventLoggerManager(
     std::unique_ptr<EventLogUploader> uploader,
     const base::Clock* clock = base::DefaultClock::GetInstance());
 
 std::unique_ptr<EventLogUploader> CreateEventLogUploader(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+std::optional<base::File> OpenDefaultEventLoggerCookieFile();
+
+// Creates an EventLoggerCookieHandler which persists the logging cookie to
+// `logging_cookie_file`. If the provided optional has no value, an invalid
+// SequenceBound will be returned. Because the file is accessible only by
+// elevated users, a handle is used instead of a path by this interface. This
+// allows the net worker process on MacOS to open the file while it is still
+// root, become the "nobody" user, and still access the cookie file.
+base::SequenceBound<EventLoggerCookieHandler> CreateEventLoggerCookieHandler(
+    std::optional<base::File> logging_cookie_file =
+        OpenDefaultEventLoggerCookieFile());
 }  // namespace enterprise_companion
 
 #endif  // CHROME_ENTERPRISE_COMPANION_EVENT_LOGGER_H_

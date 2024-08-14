@@ -111,8 +111,14 @@ class AppServer : public App {
       return;
     }
 #else
-    url_loader_factory_provider_ =
-        CreateInProcessUrlLoaderFactoryProvider(net_thread_.task_runner());
+    base::SequenceBound<EventLoggerCookieHandler> event_logger_cookie_handler =
+        CreateEventLoggerCookieHandler();
+    if (!event_logger_cookie_handler) {
+      LOG(WARNING) << "Failed to create EventLoggerCookieHandler, logging "
+                      "cookies will not be transmitted or persisted.";
+    }
+    url_loader_factory_provider_ = CreateInProcessUrlLoaderFactoryProvider(
+        net_thread_.task_runner(), std::move(event_logger_cookie_handler));
 #endif
 
     url_loader_factory_provider_
