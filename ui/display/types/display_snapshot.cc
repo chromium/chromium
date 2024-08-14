@@ -165,11 +165,12 @@ void DisplaySnapshot::AddIndexToDisplayId() {
 }
 
 bool DisplaySnapshot::IsVrrCapable() const {
-  return variable_refresh_rate_state_ != display::kVrrNotCapable;
+  return variable_refresh_rate_state_ !=
+         VariableRefreshRateState::kVrrNotCapable;
 }
 
 bool DisplaySnapshot::IsVrrEnabled() const {
-  return variable_refresh_rate_state_ == display::kVrrEnabled;
+  return variable_refresh_rate_state_ == VariableRefreshRateState::kVrrEnabled;
 }
 
 void DisplaySnapshot::set_current_mode(const DisplayMode* mode) {

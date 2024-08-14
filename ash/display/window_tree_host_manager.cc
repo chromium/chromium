@@ -128,7 +128,8 @@ void SetDisplayPropertiesOnHost(AshWindowTreeHost* ash_host,
   const display::ManagedDisplayInfo& display_info =
       GetDisplayManager()->GetDisplayInfo(display.id());
   std::optional<base::TimeDelta> max_vrr_interval = std::nullopt;
-  if (display_info.variable_refresh_rate_state() == display::kVrrEnabled &&
+  if (display_info.variable_refresh_rate_state() ==
+          display::VariableRefreshRateState::kVrrEnabled &&
       display_info.vsync_rate_min().has_value() &&
       display_info.vsync_rate_min() > 0) {
     max_vrr_interval = base::Hertz(display_info.vsync_rate_min().value());

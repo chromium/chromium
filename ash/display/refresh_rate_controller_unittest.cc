@@ -119,7 +119,8 @@ std::unique_ptr<DisplaySnapshot> BuildVrrPanelSnapshot(
       .SetType(type)
       .SetNativeMode(MakeDisplayMode(1920, 1200, false, 120.f, vsync_rate_min))
       .SetCurrentMode(MakeDisplayMode(1920, 1200, false, 120.f, vsync_rate_min))
-      .SetVariableRefreshRateState(display::kVrrDisabled)
+      .SetVariableRefreshRateState(
+          display::VariableRefreshRateState::kVrrDisabled)
       .Build();
 }
 

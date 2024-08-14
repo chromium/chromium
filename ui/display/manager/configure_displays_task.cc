@@ -243,7 +243,8 @@ void UpdateSnapshotAfterConfiguration(
   display->set_origin(request.origin);
   if (display->IsVrrCapable()) {
     display->set_variable_refresh_rate_state(
-        request.enable_vrr ? display::kVrrEnabled : display::kVrrDisabled);
+        request.enable_vrr ? VariableRefreshRateState::kVrrEnabled
+                           : VariableRefreshRateState::kVrrDisabled);
   }
 }
 
