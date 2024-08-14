@@ -383,7 +383,7 @@ TEST_F(PickerViewTest, SearchPlaceholderMatchesUnfocusedMode) {
                 .textfield_for_testing()
                 .GetPlaceholderText(),
             l10n_util::GetStringUTF16(
-                IDS_PICKER_SEARCH_FIELD_UNFOCUSED_PLACEHOLDER_TEXT));
+                IDS_PICKER_SEARCH_FIELD_NO_FOCUS_PLACEHOLDER_TEXT));
 }
 
 TEST_F(PickerViewTest, SearchPlaceholderMatchesNoSelectionModeWithEditor) {
@@ -411,12 +411,11 @@ TEST_F(PickerViewTest, SearchPlaceholderMatchesNoSelectionModeWithoutEditor) {
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
-  EXPECT_EQ(
-      picker_view->search_field_view_for_testing()
-          .textfield_for_testing()
-          .GetPlaceholderText(),
-      l10n_util::GetStringUTF16(
-          IDS_PICKER_SEARCH_FIELD_NO_SELECTION_WITHOUT_EDITOR_PLACEHOLDER_TEXT));
+  EXPECT_EQ(picker_view->search_field_view_for_testing()
+                .textfield_for_testing()
+                .GetPlaceholderText(),
+            l10n_util::GetStringUTF16(
+                IDS_PICKER_SEARCH_FIELD_NO_SELECTION_PLACEHOLDER_TEXT));
 }
 
 TEST_F(PickerViewTest, SearchPlaceholderMatchesHasSelectionModeWithEditor) {
@@ -444,12 +443,11 @@ TEST_F(PickerViewTest, SearchPlaceholderMatchesHasSelectionModeWithoutEditor) {
   widget->Show();
 
   PickerView* picker_view = GetPickerViewFromWidget(*widget);
-  EXPECT_EQ(
-      picker_view->search_field_view_for_testing()
-          .textfield_for_testing()
-          .GetPlaceholderText(),
-      l10n_util::GetStringUTF16(
-          IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_WITHOUT_EDITOR_PLACEHOLDER_TEXT));
+  EXPECT_EQ(picker_view->search_field_view_for_testing()
+                .textfield_for_testing()
+                .GetPlaceholderText(),
+            l10n_util::GetStringUTF16(
+                IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_PLACEHOLDER_TEXT));
 }
 #endif
 

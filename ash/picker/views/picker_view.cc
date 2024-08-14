@@ -204,17 +204,17 @@ std::u16string GetSearchFieldPlaceholderText(PickerModeType mode,
   switch (mode) {
     case PickerModeType::kUnfocused:
       return l10n_util::GetStringUTF16(
-          IDS_PICKER_SEARCH_FIELD_UNFOCUSED_PLACEHOLDER_TEXT);
+          IDS_PICKER_SEARCH_FIELD_NO_FOCUS_PLACEHOLDER_TEXT);
     case PickerModeType::kNoSelection:
       return l10n_util::GetStringUTF16(
           is_editor_available
               ? IDS_PICKER_SEARCH_FIELD_NO_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT
-              : IDS_PICKER_SEARCH_FIELD_NO_SELECTION_WITHOUT_EDITOR_PLACEHOLDER_TEXT);
+              : IDS_PICKER_SEARCH_FIELD_NO_SELECTION_PLACEHOLDER_TEXT);
     case PickerModeType::kHasSelection:
       return l10n_util::GetStringUTF16(
           is_editor_available
               ? IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT
-              : IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_WITHOUT_EDITOR_PLACEHOLDER_TEXT);
+              : IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_PLACEHOLDER_TEXT);
     default:
       NOTREACHED_NORETURN();
   }

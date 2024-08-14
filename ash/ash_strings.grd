@@ -7441,6 +7441,18 @@ New install
         desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches items from the their clipboard. 'Clipboard' is a product name and the correct localized version of the product name should be used.">
         Search Clipboard
       </message>
+      <message name="IDS_PICKER_SEARCH_FIELD_NO_SELECTION_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that they can type in this search field to search for links or files to insert into the document.">
+        Search to insert
+      </message>
+      <message name="IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that they can type in this search field to search for ways to edit some text in the document.">
+        Search to edit text
+      </message>
+      <message name="IDS_PICKER_SEARCH_FIELD_NO_FOCUS_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that they can type in this search field to search for links or files to open in a new window.">
+        Search to open
+      </message>
       <message name="IDS_PICKER_GENERAL_CATEGORY_TYPE_SECTION_TITLE"
         desc="This string appears as the heading text of a section. The section contains several selectable menu items that are related to inserting or opening content, such as links, emojis, or files.">
         Content
