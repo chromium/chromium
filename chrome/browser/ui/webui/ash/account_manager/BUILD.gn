@@ -18,12 +18,14 @@ static_library("account_manager") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/common",
     "//content/public/browser",
     "//content/public/common",
     "//ui/web_dialogs",
     "//url",
   ]
+
   deps = [
     "//build:branding_buildflags",
     "//chrome/app:generated_resources",
