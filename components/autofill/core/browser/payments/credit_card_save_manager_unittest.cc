@@ -6126,18 +6126,20 @@ class CreditCardSaveManagerWithVirtualCardEnrollTestParameterized
 // correctly only when a card becomes eligible after upload.
 TEST_P(CreditCardSaveManagerWithVirtualCardEnrollTestParameterized,
        PrepareUploadedCardForVirtualCardEnrollment) {
-#if BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList feature_list;
-  if (IsVirtualCardEnrollmentEnabled()) {
-    feature_list.InitWithFeatureState(features::kAutofillEnableVirtualCards,
-                                      IsVirtualCardEnrollmentEnabled());
-  }
-#else
+  base::flat_map<base::test::FeatureRef, bool> feature_states;
+#if !BUILDFLAG(IS_IOS)
   if (!IsVirtualCardEnrollmentEnabled()) {
     GTEST_SKIP() << "Virtual card enrollment is always enabled on non-iOS "
                     "platforms.";
   }
+#else
+  feature_states.insert({features::kAutofillEnableVirtualCards,
+                         IsVirtualCardEnrollmentEnabled()});
 #endif
+  feature_states.insert(
+      {features::kAutofillEnableSaveCardLoadingAndConfirmation, true});
+  feature_list.InitWithFeatureStates(feature_states);
   payments::PaymentsNetworkInterface::UploadCardResponseDetails
       upload_card_response_details;
   upload_card_response_details.card_art_url = GURL("https://www.example.com/");
@@ -6182,6 +6184,15 @@ TEST_P(CreditCardSaveManagerWithVirtualCardEnrollTestParameterized,
   credit_card_save_manager_->OnDidUploadCard(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       upload_card_response_details);
+
+  // If loading and confirmation is enabled, `InitVirtualCardEnroll` is passed
+  // as a closure to save card bubble controller that executes it after bubble
+  // is closed. Since there is no actual bubble, calling `InitVirtualCardEnroll`
+  // from here.
+  credit_card_save_manager_->InitVirtualCardEnroll(
+      credit_card_save_manager_->upload_request()->card,
+      std::move(upload_card_response_details
+                    .get_details_for_enrollment_response_details));
 
   // The condition inside of this if-statement is true if virtual card
   // enrollment should be offered.
